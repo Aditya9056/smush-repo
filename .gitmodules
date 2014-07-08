@@ -1,0 +1,3 @@
+[submodule "wpmudev-dashboard-notification"]
+	path = wpmudev-dashboard-notification
+	url = git@bitbucket.org:incsub/wpmudev-dashboard-notification.git
