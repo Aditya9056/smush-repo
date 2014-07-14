@@ -31,6 +31,8 @@ if ( ! function_exists( 'download_url' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
 }
 
+require_once('wp-smushit-pro-admin.php');
+
 if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 	class WpSmushitPro {
@@ -44,6 +46,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 			$this->constants();
 			$this->hooks();
+                        $this->admin = new WP_SmushIt_Pro_Admin();
 		}
                 
                 function constants(){

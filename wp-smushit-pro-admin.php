@@ -10,7 +10,7 @@
  *
  * @author Saurabh Shukla <contact.saurabhshukla@gmail.com>
  */
-class WP_SMushIt_Pro_Admin {
+class WpSmushItPro_Admin {
     
     public $settings = array(
         'smushit_auto' => 'Smush images on upload?',
