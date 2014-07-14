@@ -1,0 +1,8 @@
+Plugin Name: WP Smush.it Pro
+Author: Saurabh Shukla & Umesh Kumar
+
+Change Log:
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+1.0 - 2014-07-20 - Saurabh Shukla, Umesh Kumar
+- First release
