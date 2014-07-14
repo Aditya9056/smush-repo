@@ -12,18 +12,18 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 			$this->constants();
 			$this->hooks();
-                        $this->admin = new WpSmushItPro_Admin();
+			$this->admin = new WpSmushItPro_Admin();
 		}
-                
-                function constants(){
-                    /**
+
+		function constants() {
+			/**
 			 * Constants
 			 */
 			/**
 			 * TODO: Fix the URL
 			 */
 			define( 'SMUSHIT_PRO_SERVICE_URL', 'http://107.170.2.190:1203/upload/' );
-                        
+
 			define( 'WP_SMUSHIT_PRO_DOMAIN', 'wp-smushit-pro' );
 
 			//Updae this after confirmation
@@ -31,11 +31,11 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			define( 'WP_SMUSHIT_PRO_PLUGIN_DIR', dirname( plugin_basename( __FILE__ ) ) );
 
 			//Image Limit 5MB
-			define( 'WP_SMUSHIT_PRO_MAX_BYTES', 5*1024*1024 );
+			define( 'WP_SMUSHIT_PRO_MAX_BYTES', 5 * 1024 * 1024 );
 
-                        // since we are going to send 1 request per image in any scenario, this will be deprecated
-                        // 
-                        // The number of images (including generated sizes) that can return errors before abandoning all hope.
+			// since we are going to send 1 request per image in any scenario, this will be deprecated
+			//
+			// The number of images (including generated sizes) that can return errors before abandoning all hope.
 			// N.B. this doesn't work with the bulk uploader, since it creates a new HTTP request
 			// for each image.  It does work with the bulk smusher, though.
 			define( 'WP_SMUSHIT_PRO_ERRORS_BEFORE_QUITTING', 3 * count( get_intermediate_image_sizes() ) );
@@ -43,16 +43,16 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			//Set default values
 			define( 'WP_SMUSHIT_PRO_AUTO', intval( get_option( 'wp_smushit_pro_smushit_auto', 0 ) ) );
 			define( 'WP_SMUSHIT_PRO_TIMEOUT', intval( get_option( 'wp_smushit_pro_smushit_timeout', 60 ) ) );
-			
-                        define( 'WP_SMUSH_PRO_REMOVE_EXIF', intval( get_option( 'wp_smushit_pro_remove_exif', true ) ) );
+
+			define( 'WP_SMUSH_PRO_REMOVE_EXIF', intval( get_option( 'wp_smushit_pro_remove_exif', true ) ) );
 
 			define( 'WP_SMUSHIT_PRO_ENFORCE_SAME_URL', get_option( 'wp_smushit_pro_smushit_enforce_same_url', 'on' ) );
 
-			if ( 
-                                ! isset( $_GET['action'] )
-                                || $_GET['action'] != "wp_smushit_pro_manual"
-                                || (defined('WP_DEBUG') && WP_DEBUG===true)
-                                ){
+			if (
+				! isset( $_GET['action'] )
+				|| $_GET['action'] != "wp_smushit_pro_manual"
+				|| ( defined( 'WP_DEBUG' ) && WP_DEBUG === true )
+			) {
 				define( 'WP_SMUSHIT_PRO_DEBUG', get_option( 'wp_smushit_pro_smushit_debug', '' ) );
 			} else {
 				define( 'WP_SMUSHIT_PRO_DEBUG', '' );
@@ -69,21 +69,21 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			define( 'WP_SMUSHIT_PRO_AUTO_OK', 0 );
 			define( 'WP_SMUSHIT_PRO_AUTO_NEVER', - 1 );
 
-                }
-                
-                
-                function hooks(){
+		}
+
+
+		function hooks() {
 			if ( WP_SMUSHIT_PRO_AUTO == WP_SMUSHIT_PRO_AUTO_OK ) {
 				add_filter( 'wp_generate_attachment_metadata', array( &$this, 'resize_from_meta_data' ), 10, 2 );
-			}  
-			
-                        add_action( 'admin_action_wp_smushit_manual', array( &$this, 'smushit_manual' ) );	
-			
-                        // process callback from smush service
-                        add_action( 'wp_ajax_process_smushed_image', array( &$this, 'process_smushed_image_callback' ) );
+			}
+
+			add_action( 'admin_action_wp_smushit_manual', array( &$this, 'smushit_manual' ) );
+
+			// process callback from smush service
+			add_action( 'wp_ajax_process_smushed_image', array( &$this, 'process_smushed_image_callback' ) );
 			add_action( 'wp_ajax_nopriv_process_smushed_image', array( &$this, 'process_smushed_image_callback' ) );
-                }
-		
+		}
+
 		/**
 		 * Manually process an image from the Media Library
 		 */
@@ -129,11 +129,11 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			if ( ! file_exists( $img_path ) ) {
 				return __( "File does not exists", WP_SMUSHIT_PRO_DOMAIN );
 			}
-			
-                        //deprecating
-                        //static $error_count = 0;
-                        
-                        // deprecating
+
+			//deprecating
+			//static $error_count = 0;
+
+			// deprecating
 
 //			if ( $error_count >= WP_SMUSHIT_PRO_ERRORS_BEFORE_QUITTING ) {
 //				return __( "Did not Smush.it due to previous errors", WP_SMUSHIT_PRO_DOMAIN );
@@ -194,48 +194,47 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				return __( "Unable to process the image, please try again later", WP_SMUSHIT_PRO_DOMAIN );
 			}
 		}
-                
-                function dev_api_key(){
-                    return '3f2750fe583d6909b2018462fb216a2c5d5d75a9';
-                }
-                
-                function form_callback_url(){
-                    $callback_url = admin_url( 'admin-ajax.php' );
-                    
-                    $callback_url = add_query_arg(
-                            array(
-                                'action' => 'process_smushed_image'
-                                ),
-                            $callback_url
+
+		function dev_api_key() {
+			return '3f2750fe583d6909b2018462fb216a2c5d5d75a9';
+		}
+
+		function form_callback_url() {
+			$callback_url = admin_url( 'admin-ajax.php' );
+
+			$callback_url = add_query_arg(
+				array(
+					'action' => 'process_smushed_image'
+				),
+				$callback_url
 			);
-                    
-                    return apply_filters( 'smushitpro_callback_url', $callback_url );
-                }
-                
-                function prepare_smush_request_data($attachment_id = 0, $token){
-                    if(!$attachment_id){
-                        return false;
-                    }
-                    //Callback URL
+
+			return apply_filters( 'smushitpro_callback_url', $callback_url );
+		}
+
+		function prepare_smush_request_data( $attachment_id = 0, $token ) {
+			if ( ! $attachment_id ) {
+				return false;
+			}
+			//Callback URL
 			$post_fields = array(
-                            'callback_url'  => '',
-                            'api_key'       => '',
-                            'token'         => '',
-                            'attachment_id' => 0,
-                            'progressive'   => true,
-                            'gif_to_png'    => true,
-                            'remove_meta'   => true
-                        );
+				'callback_url'  => '',
+				'api_key'       => '',
+				'token'         => '',
+				'attachment_id' => 0,
+				'progressive'   => true,
+				'gif_to_png'    => true,
+				'remove_meta'   => true
+			);
 
 			$post_fields['callback_url'] = $this->form_callback_url();
-                        
+
 
 			// Get API Key for user
 			$post_fields['api_key'] = $this->dev_api_key();
 
 			// Generate Nonce
-			$post_fields['token']= $token;
-			
+			$post_fields['token'] = $token;
 
 
 			//Allow Progressive JPEGs
@@ -266,41 +265,41 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$post_fields['media_id'] = $attachment_id;
 
 			return $post_fields;
-                    
-                }
-                
-                function prepare_smush_request_payload($img_path, $ID, $boundary, $token){
-                    
-                    $post_fields = $this->prepare_smush_request_data($ID, $token);
-                    
-                    $payload = '';
 
-                    // First, add the standard POST fields:
-                    foreach ( $post_fields as $name => $value ) {
-                            $payload .= '--' . $boundary;
-                            $payload .= "\r\n";
-                            $payload .= 'Content-Disposition: form-data; name="' . $name .
-                                        '"' . "\r\n\r\n";
-                            $payload .= $value;
-                            $payload .= "\r\n";
-                    }
-                    // Upload the file
-                    if ( $img_path ) {
-                            $payload .= '--' . $boundary;
-                            $payload .= "\r\n";
-                            $payload .= 'Content-Disposition: form-data; name="' . 'upload' .
-                                        '"; filename="' . basename( $img_path ) . '"' . "\r\n";
-                            //        $payload .= 'Content-Type: image/jpeg' . "\r\n";
-                            $payload .= "\r\n";
-                            $payload .= file_get_contents( $img_path );
-                            $payload .= "\r\n";
-                    }
-                    
+		}
 
-                    $payload .= '--' . $boundary . '--';
+		function prepare_smush_request_payload( $img_path, $ID, $boundary, $token ) {
 
-                    return $payload;
-                }
+			$post_fields = $this->prepare_smush_request_data( $ID, $token );
+
+			$payload = '';
+
+			// First, add the standard POST fields:
+			foreach ( $post_fields as $name => $value ) {
+				$payload .= '--' . $boundary;
+				$payload .= "\r\n";
+				$payload .= 'Content-Disposition: form-data; name="' . $name .
+				            '"' . "\r\n\r\n";
+				$payload .= $value;
+				$payload .= "\r\n";
+			}
+			// Upload the file
+			if ( $img_path ) {
+				$payload .= '--' . $boundary;
+				$payload .= "\r\n";
+				$payload .= 'Content-Disposition: form-data; name="' . 'upload' .
+				            '"; filename="' . basename( $img_path ) . '"' . "\r\n";
+				//        $payload .= 'Content-Type: image/jpeg' . "\r\n";
+				$payload .= "\r\n";
+				$payload .= file_get_contents( $img_path );
+				$payload .= "\r\n";
+			}
+
+
+			$payload .= '--' . $boundary . '--';
+
+			return $payload;
+		}
 
 		function should_resmush( $previous_status ) {
 			if ( ! $previous_status || empty( $previous_status ) ) {
@@ -377,49 +376,49 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 		 *
 		 * @return bool|string, Response returned from API
 		 */
-                
+
 		function _post( $img_path = '', $attachment_id = 0, $token = false ) {
-                    
+
 			$req = SMUSHIT_PRO_SERVICE_URL;
 
 			$data = false;
-			
-                        if ( WP_SMUSHIT_PRO_DEBUG ) {
+
+			if ( WP_SMUSHIT_PRO_DEBUG ) {
 				echo "DEBUG: Calling API: [" . $req . "]<br />";
 			}
-                        
-			                     
-                        $boundary = wp_generate_password( 24 );
-                        $headers  = array(
-                                'content-type' => 'multipart/form-data; boundary=' . $boundary
-                        );
 
-                        $payload = $this->prepare_smush_request_payload($img_path, $attachment_id, $token, $boundary);
-                        
-                        $response = wp_remote_post( $req,
-                                array(
-                                        'headers'    => $headers,
-                                        'body'       => $payload,
-                                        'user-agent' => WP_SMUSHIT_PRO_UA,
-                                        'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
-                                        //Remove this code
-                                        'sslverify'  => false
-                                )
-                        );
 
-                        if ( $response && !is_wp_error( $response )) {
-                                if ( empty( $response['response']['code'] ) || $response['response']['code'] != 200 ) {
-                                        //Give a error
-                                        return __( 'Error in processing file', WP_SMUSHIT_PRO_DOMAIN );
-                                }
-                                $data = json_decode( 
-                                        wp_remote_retrieve_body(
-                                                $response
-                                                )
-                                        );
+			$boundary = wp_generate_password( 24 );
+			$headers  = array(
+				'content-type' => 'multipart/form-data; boundary=' . $boundary
+			);
 
-                        }
-			
+			$payload = $this->prepare_smush_request_payload( $img_path, $attachment_id, $token, $boundary );
+
+			$response = wp_remote_post( $req,
+				array(
+					'headers'    => $headers,
+					'body'       => $payload,
+					'user-agent' => WP_SMUSHIT_PRO_UA,
+					'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
+					//Remove this code
+					'sslverify'  => false
+				)
+			);
+
+			if ( $response && ! is_wp_error( $response ) ) {
+				if ( empty( $response['response']['code'] ) || $response['response']['code'] != 200 ) {
+					//Give a error
+					return __( 'Error in processing file', WP_SMUSHIT_PRO_DOMAIN );
+				}
+				$data = json_decode(
+					wp_remote_retrieve_body(
+						$response
+					)
+				);
+
+			}
+
 			return $data;
 		}
 
@@ -437,8 +436,6 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			return round( $bytes, $precision ) . ' ' . $units[ $pow ];
 		}
 
-
-		
 
 		/**
 		 * Download and Update the Image from Server corresponding to file id and URL
@@ -590,9 +587,6 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			exit;
 		}
 	}
-
-	$WpSmushitPro = new WpSmushitPro();
-	global $WpSmushitPro;
 
 }
 

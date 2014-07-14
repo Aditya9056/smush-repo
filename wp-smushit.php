@@ -28,20 +28,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
                                                                       */
 
 if ( ! function_exists( 'download_url' ) ) {
-    require_once( ABSPATH . 'wp-admin/includes/file.php' );
+	require_once( ABSPATH . 'wp-admin/includes/file.php' );
 }
 
+require_once( __DIR__ . '/wp-smushit-pro-admin.php' );
+require_once( __DIR__ . '/wp-smushit-pro.php' );
 
-require_once('wp-smushit-pro-admin.php');
-require_once('wp-smushit-pro.php');
-
-new WpSmushitPro();
+$WpSmushitPro = new WpSmushitPro();
+global $WpSmushitPro;
 
 if ( ! function_exists( 'wp_basename' ) ) {
-    /**
-     * Introduced in WP 3.1... this is copied verbatim from wp-includes/formatting.php.
-     */
-    function wp_basename( $path, $suffix = '' ) {
-            return urldecode( basename( str_replace( '%2F', '/', urlencode( $path ) ), $suffix ) );
-    }
+	/**
+	 * Introduced in WP 3.1... this is copied verbatim from wp-includes/formatting.php.
+	 */
+	function wp_basename( $path, $suffix = '' ) {
+		return urldecode( basename( str_replace( '%2F', '/', urlencode( $path ) ), $suffix ) );
+	}
 }
