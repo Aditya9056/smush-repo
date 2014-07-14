@@ -15,14 +15,14 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$this->admin = new WpSmushItPro_Admin();
 		}
 
+		/**
+		 *
+		 */
 		function constants() {
-			/**
-			 * Constants
-			 */
 			/**
 			 * TODO: Fix the URL
 			 */
-			define( 'SMUSHIT_PRO_SERVICE_URL', 'http://107.170.2.190:1203/upload/' );
+			define( 'SMUSHIT_PRO_SERVICE_URL', 'https://107.170.2.190:1203/upload/' );
 
 			define( 'WP_SMUSHIT_PRO_DOMAIN', 'wp-smushit-pro' );
 
@@ -71,7 +71,9 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 		}
 
-
+		/**
+		 *
+		 */
 		function hooks() {
 			if ( WP_SMUSHIT_PRO_AUTO == WP_SMUSHIT_PRO_AUTO_OK ) {
 				add_filter( 'wp_generate_attachment_metadata', array( &$this, 'resize_from_meta_data' ), 10, 2 );
@@ -130,26 +132,17 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				return __( "File does not exists", WP_SMUSHIT_PRO_DOMAIN );
 			}
 
-			//deprecating
-			//static $error_count = 0;
-
-			// deprecating
-
-//			if ( $error_count >= WP_SMUSHIT_PRO_ERRORS_BEFORE_QUITTING ) {
-//				return __( "Did not Smush.it due to previous errors", WP_SMUSHIT_PRO_DOMAIN );
-//			}
-
 			// check that the file exists
-			if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
-				return sprintf( __( "ERROR: Could not find <span class='code'>%s</span>", WP_SMUSHIT_PRO_DOMAIN ), $file_path );
+			if ( ! file_exists( $img_path ) || ! is_file( $img_path ) ) {
+				return sprintf( __( "ERROR: Could not find <span class='code'>%s</span>", WP_SMUSHIT_PRO_DOMAIN ), $img_path );
 			}
 
 			// check that the file is writable
-			if ( ! is_writable( dirname( $file_path ) ) ) {
-				return sprintf( __( "ERROR: <span class='code'>%s</span> is not writable", WP_SMUSHIT_PRO_DOMAIN ), dirname( $file_path ) );
+			if ( ! is_writable( dirname( $img_path ) ) ) {
+				return sprintf( __( "ERROR: <span class='code'>%s</span> is not writable", WP_SMUSHIT_PRO_DOMAIN ), dirname( $img_path ) );
 			}
 
-			$file_size = filesize( $file_path );
+			$file_size = filesize( $img_path );
 			if ( $file_size > WP_SMUSHIT_PRO_MAX_BYTES ) {
 				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s) Unable to Smush due to Yahoo 1mb size limits. See <a href="http://developer.yahoo.com/yslow/smushit/faq.html#faq_restrict">FAQ</a></span>', WP_SMUSHIT_PRO_DOMAIN ), $this->format_bytes( $file_size ) );
 			}
@@ -158,7 +151,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$token = wp_create_nonce( "smush_image_$ID" . "_$size" );
 
 			//Send file to API
-			$data = $this->_post( $file_url, $img_path, $ID, $token );
+			$data = $this->_post( $img_path, $ID, $token );
 
 			//For testing purpose
 //			error_log( json_encode( $data ) );
@@ -195,10 +188,19 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			}
 		}
 
+		/**
+		 * WPMUDev API Key
+		 * @return string
+		 * @Todo, fetch from dashboard plugin, or allow a input
+		 */
 		function dev_api_key() {
 			return '3f2750fe583d6909b2018462fb216a2c5d5d75a9';
 		}
 
+		/**
+		 * Generate a callback URL for API
+		 * @return mixed|void
+		 */
 		function form_callback_url() {
 			$callback_url = admin_url( 'admin-ajax.php' );
 
@@ -212,6 +214,14 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			return apply_filters( 'smushitpro_callback_url', $callback_url );
 		}
 
+		/**
+		 * Prepare All the fields required for request
+		 *
+		 * @param int $attachment_id
+		 * @param $token
+		 *
+		 * @return array
+		 */
 		function prepare_smush_request_data( $attachment_id = 0, $token ) {
 			if ( ! $attachment_id ) {
 				return false;
@@ -268,6 +278,16 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 		}
 
+		/**
+		 * Create a file payload, as wp_remote_post doesn't have a file support
+		 *
+		 * @param $img_path
+		 * @param $ID
+		 * @param $boundary
+		 * @param $token
+		 *
+		 * @return string
+		 */
 		function prepare_smush_request_payload( $img_path, $ID, $boundary, $token ) {
 
 			$post_fields = $this->prepare_smush_request_data( $ID, $token );
@@ -301,6 +321,13 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			return $payload;
 		}
 
+		/**
+		 * Check if we need to smush the image or not
+		 *
+		 * @param $previous_status
+		 *
+		 * @return bool
+		 */
 		function should_resmush( $previous_status ) {
 			if ( ! $previous_status || empty( $previous_status ) ) {
 				return true;
@@ -393,7 +420,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				'content-type' => 'multipart/form-data; boundary=' . $boundary
 			);
 
-			$payload = $this->prepare_smush_request_payload( $img_path, $attachment_id, $token, $boundary );
+			$payload = $this->prepare_smush_request_payload( $img_path, $attachment_id, $boundary, $token );
 
 			$response = wp_remote_post( $req,
 				array(
@@ -471,12 +498,14 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$metadata = wp_get_attachment_metadata( $attachment_id );
 
 			$smush_meta = ! empty( $metadata['smush_meta'] ) ? $metadata['smush_meta'] : '';
+
 			//Empty smush meta, probably some error on our end
 			if ( empty( $smush_meta ) ) {
 				//Response back to API, missing parameters
 				header( "HTTP/1.0 406 No Smush Meta" );
 				exit;
 			}
+
 			//Get the media from thumbnail file id
 			foreach ( $smush_meta as $image_size => $image_details ) {
 
@@ -484,8 +513,10 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				if ( empty( $image_details['file_id'] ) || $image_details['file_id'] != $file_id ) {
 					continue;
 				}
+
 				$size  = $image_size;
 				$token = $image_details['token'];
+
 				//Check for Nonce, corresponding to media id
 				if ( $token != $received_token ) {
 					error_log( "Nonce Verification failed for $attachment_id" );
@@ -496,8 +527,10 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				}
 
 				$attachment_file_path = get_attached_file( $attachment_id );
+
 				//Modify path if callback is for thumbnail
 				$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $metadata['sizes'][ $image_size ]['file'];
+
 				//We are done processing, end loop
 				break;
 			}
@@ -506,23 +539,31 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			//@Todo: Add option for user, Strict ssl use wp_safe_remote_get or download_url
 			//Copied from download_url, as it does not provice to turn off strict ssl
 			$temp_file = wp_tempnam( $file_url );
+
 			if ( ! $temp_file ) {
 				return new WP_Error( 'http_no_file', __( 'Could not create Temporary file.' ) );
 			}
 
-			$response = wp_remote_get( $file_url, array(
-				'timeout'   => 300,
-				'stream'    => true,
-				'filename'  => $temp_file,
-				'sslverify' => false
-			) );
+			$response = wp_remote_get(
+				$file_url,
+				array(
+					'timeout'   => 300,
+					'stream'    => true,
+					'filename'  => $temp_file,
+					'sslverify' => false
+				)
+			);
 
 			if ( is_wp_error( $response ) ) {
 				unlink( $temp_file );
+
+				//For Debugging on node
 				echo "<pre>";
 				print_r( $response );
 				echo "</pre>";
+
 				echo "Unsafe URL";
+
 				//Response back to API, missing parameters
 				header( "HTTP/1.0 406 Unsafe URL" );
 				exit;
@@ -530,11 +571,13 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 			if ( 200 != wp_remote_retrieve_response_code( $response ) ) {
 				echo trim( wp_remote_retrieve_response_message( $response ) );
+
 				unlink( $temp_file );
 				header( "HTTP/1.0 406  " . trim( wp_remote_retrieve_response_message( $response ) ) );
 			}
 
 			$content_md5 = wp_remote_retrieve_header( $response, 'content-md5' );
+
 			if ( $content_md5 ) {
 				$md5_check = verify_file_md5( $temp_file, $content_md5 );
 				if ( is_wp_error( $md5_check ) ) {
@@ -545,8 +588,10 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 					exit;
 				}
 			}
+
 			if ( is_wp_error( $temp_file ) ) {
 				@unlink( $temp_file );
+
 				echo "File path error";
 				error_log( sprintf( __( "Error downloading file (%s)", WP_SMUSHIT_PRO_DOMAIN ), $temp_file->get_error_message() ) );
 
@@ -556,6 +601,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 			if ( ! file_exists( $temp_file ) ) {
 				error_log( sprintf( __( "Unable to locate downloaded file (%s)", WP_SMUSHIT_PRO_DOMAIN ), $temp_file ) );
+
 				echo "Local server error";
 				header( "HTTP/1.0 406 Downloaded file not found" );
 				exit;
@@ -563,7 +609,9 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 			//Unlink the old file and replace it with new one
 			@unlink( $attachment_file_path_size );
+
 			$success = @rename( $temp_file, $attachment_file_path_size );
+
 			if ( ! $success ) {
 				copy( $temp_file, $attachment_file_path_size );
 				unlink( $temp_file );
@@ -575,13 +623,15 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				$savings_str = $response['before_smush'] - $response ['after_smush'] . 'Kb';
 			}
 
-			$results_msg                        = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSHIT_PRO_DOMAIN ),
-				$compression,
-				$savings_str );
+			$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSHIT_PRO_DOMAIN ), $compression, $savings_str );
+
 			$smush_meta[ $size ]['status_code'] = $status_code;
 			$smush_meta[ $size ]['status_msg']  = $results_msg;
-			$metadata['smush_meta']             = $smush_meta;
+
+			$metadata['smush_meta'] = $smush_meta;
+
 			wp_update_attachment_metadata( $attachment_id, $metadata );
+
 			//Response back to API, missing parameters
 			header( "HTTP/1.0 200 file updated" );
 			exit;
