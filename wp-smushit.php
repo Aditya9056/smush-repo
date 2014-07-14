@@ -31,8 +31,9 @@ if ( ! function_exists( 'download_url' ) ) {
     require_once( ABSPATH . 'wp-admin/includes/file.php' );
 }
 
-require_once('wp-smushit-pro.php');
+
 require_once('wp-smushit-pro-admin.php');
+require_once('wp-smushit-pro.php');
 
 new WpSmushitPro();
 
