@@ -9,6 +9,10 @@ if (class_exists('WpSmProReceive')) {
      */
     class WpSmProReceive {
 
+        /**
+         *
+         * @var type 
+         */
         public $options = array(
             'attachment_id' => '',
             'file_id' => '',
@@ -49,7 +53,11 @@ if (class_exists('WpSmProReceive')) {
             }
             $this->process($options);
         }
-
+        
+        /**
+         * 
+         * @param type $options
+         */
         function process($options = array()) {
             //Get Image sizes detail for media
             $metadata = wp_get_attachment_metadata($options['attachment_id']);
@@ -109,7 +117,11 @@ if (class_exists('WpSmProReceive')) {
             header("HTTP/1.0 200 file updated");
             exit;
         }
-
+        
+        /**
+         * 
+         * @param type $options
+         */
         public function fetch($options) {
             //Loop
             //@Todo: Add option for user, Strict ssl use wp_safe_remote_get or download_url
@@ -201,7 +213,14 @@ if (class_exists('WpSmProReceive')) {
                 unlink($temp_file);
             }
         }
-
+        
+        /**
+         * 
+         * @param type $compression
+         * @param type $before_smush
+         * @param type $after_smush
+         * @return type
+         */
         public function create_stat_string($compression, $before_smush, $after_smush) {
             $savings_str = '';
             $compressed = !empty($compression) ? $compression : '';

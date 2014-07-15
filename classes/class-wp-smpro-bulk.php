@@ -1,12 +1,6 @@
 <?php
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of WpSmProBulk
+ * Provides Bulk Smushing user interface
  *
  * @author Saurabh Shukla <contact.saurabhshukla@gmail.com>
  */
@@ -26,18 +20,31 @@ class WpSmProBulk {
             'bulk_ui'
         ));
         
+        // enqueue js only on this screen
         add_action('admin_print_scripts-' . $bulk_page_suffix, array(&$this,'enqueue'));
     }
     
+    /**
+     * Register js
+     */
     function admin_init() {
         /* Register our script. */
         wp_register_script( 'wp-smpro-queue', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
     }
     
+    /**
+     * enqueue js
+     */
     function enqueue(){
         wp_enqueue_script( 'wp-smpro-queue' );
     }
     
+    /**
+     * The images that still need to be smushed
+     * 
+     * @global type $wpdb
+     * @return type
+     */
     function to_smush_count() {
 	global $wpdb;
 
@@ -59,7 +66,7 @@ class WpSmProBulk {
     }
 
     /**
-     * Allows user to Bulk Smush the images
+     * Display the UI
      */
     function bulk_ui() {
 
@@ -97,18 +104,27 @@ class WpSmProBulk {
         <?php
     }
     
-    function progress_ui($progress, $echo = true) {
+    /**
+     * Show a progress bar
+     * 
+     * @param type $progress
+     * @return string
+     */
+    function progress_ui($progress) {
         $progress_ui = '
             <div id="wp-smpro-progressbar">
                 <div style="width:' . $progress . '%"></div>
             </div>
             ';
-        if ($echo)
-            echo $progress_ui;
-        else
-            return $progress_ui;
+        echo $progress_ui;
     }
-
+    /**
+     * Calculate progress %age for progress bar
+     * 
+     * @param type $progress
+     * @param type $total
+     * @return int
+     */
     function progress($progress, $total) {
         if ($total < 1) {
             return 100;

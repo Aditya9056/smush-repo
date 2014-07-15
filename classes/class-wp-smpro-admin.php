@@ -20,9 +20,6 @@ if (!class_exists('WpSmushItPro_Admin')) {
             // add extra columns for smushing to media lists
             add_filter('manage_media_columns', array(&$this, 'columns'));
             add_action('manage_media_custom_column', array(&$this, 'custom_column'), 10, 2);
-
-            // add the admin option screens
-            add_action('admin_init', array(&$this, 'admin_init'));
             
             add_action('admin_head-upload.php', array(&$this, 'add_bulk_actions_via_javascript'));
             add_action('admin_action_bulk_smushit', array(&$this, 'bulk_action_handler'));
@@ -147,10 +144,6 @@ if (!class_exists('WpSmushItPro_Admin')) {
          */
         function render_gif_to_png_opts() {
             echo $this->render_checked('gif_to_png');
-        }
-
-        function admin_init() {
-            wp_enqueue_script('common');
         }
 
     }
