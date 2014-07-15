@@ -10,8 +10,9 @@ if (!class_exists('WpSmProSend')) {
             
             add_action('wp_ajax_wp_smpro_queue', array(&$this, 'queue'));
             
-            // add automatic smushing on upload
+            
             if (WP_SMPRO_AUTO) {
+                // add automatic smushing on upload
                 add_filter('wp_generate_attachment_metadata', array(&$this, 'queue_on_upload'), 10, 2);
             }
         }
@@ -83,6 +84,28 @@ if (!class_exists('WpSmProSend')) {
         }
         
         /**
+         * Adjust the count cache
+         */
+        function recount($by){
+            
+            $cache_key = 'wp-smpro-to-smush-count';
+            // get the cached value
+            $count = wp_cache_get( $cache_key );
+            
+            // if there's a count in the cache, increment
+            if ( false != $count ) {
+                if($by===1){
+                    wp_cache_incr($cache_key);
+                }else{
+                    wp_cache_decr($cache_key);
+                }
+		
+            }
+            
+            // otherwise, do nothing the manual process will fetch and set a count
+        }
+        
+        /**
          * 
          * @param type $file_path
          * @param type $file_url
@@ -123,10 +146,13 @@ if (!class_exists('WpSmProSend')) {
             $invalid = $this->invalidate($img_path, $img_url);
 
             if ($invalid) {
+                update_post_meta($ID,'wp-smpro-is-smushed',1);
+                $this->recount(1);
                 return $invalid;
             }
+            
             //Send nonce
-            $token = wp_create_nonce("smush_image_$ID" . "_$size");
+            $token = wp_create_nonce("smush_image_{$ID}_{$size}");
 
             //Send file to API
             
@@ -164,10 +190,14 @@ if (!class_exists('WpSmProSend')) {
                 $smush_meta['smush_meta'][$size]['file_id'] = $file_id;
                 $smush_meta['smush_meta'][$size]['status_code'] = $status_code;
                 $smush_meta['smush_meta'][$size]['status_msg'] = $status_msg;
-                $smush_meta['smush_meta'][$size]['token'] = $token;
+                $smush_meta['smush_meta'][$size]['token'] = $data->token;
+                update_post_meta($ID,'wp-smpro-is-smushed',1);
+                $this->recount(1);
             } else {
                 //Return a error
                 $smush_meta['smush_meta'][$size]['status_msg'] = "Unable to process the image, please try again later";
+                update_post_meta($ID,'wp-smpro-is-smushed',0);
+                $this->recount(-1);
             }
         }
         
@@ -196,7 +226,7 @@ if (!class_exists('WpSmProSend')) {
 
             $file_size = filesize($img_path);
             if ($file_size > WP_SMUSHIT_PRO_MAX_BYTES) {
-                return sprintf(__('ERROR: <span style="color:#FF0000;">Skipped (%s) Unable to Smush due to Yahoo 1mb size limits. See <a href="http://developer.yahoo.com/yslow/smushit/faq.html#faq_restrict">FAQ</a></span>', WP_SMUSHIT_PRO_DOMAIN), $this->format_bytes($file_size));
+                return sprintf(__('ERROR: <span style="color:#FF0000;">Skipped (%s) Unable to Smush due to 5mb size limits.</span>', WP_SMUSHIT_PRO_DOMAIN), $this->format_bytes($file_size));
             }
 
             return false;

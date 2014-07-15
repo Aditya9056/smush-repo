@@ -29,20 +29,18 @@ class WpSmProBulk {
     function to_smush_count() {
 	global $wpdb;
 
-	$user = wp_get_current_user();
-
 	$cache_key = 'wp-smpro-to-smush-count';
         
         $query = "SELECT COUNT(p.ID) FROM {$wpdb->posts} p "
         . "LEFT JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id) "
-        . "WHERE (pm.metakey='wp-smpro-is-smushed' AND pm.metavalue=0) "
+        . "WHERE (pm.metakey='wp-smpro-is-smushed' AND pm.metavalue=1) "
                 . "AND p.post_type='attachment' "
                 . "AND p.post_mime_type = 'image'";
 
 	$count = wp_cache_get( $cache_key, 'count' );
 	if ( false === $count ) {
 		$count = $wpdb->get_var( $wpdb->prepare( $query ) );
-		wp_cache_set( $cache_key, $count, 'count' );
+		wp_cache_set( $cache_key, $count );
 	}
 
 	return $count;
@@ -59,7 +57,7 @@ class WpSmProBulk {
             $progress = 0;
         } else {
             $total = wp_count_attachments('image');
-            $progress = $total - (int)$this->to_smush_count();
+            $progress = (int)$this->to_smush_count();
         }
         
         ?>
