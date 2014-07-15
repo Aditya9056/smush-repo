@@ -25,32 +25,45 @@ class WpSmProBulk {
             'bulk_ui'
         ));
     }
+    
+    function to_smush_count() {
+	global $wpdb;
+
+	$user = wp_get_current_user();
+
+	$cache_key = 'wp-smpro-to-smush-count';
+        
+        $query = "SELECT COUNT(p.ID) FROM {$wpdb->posts} p "
+        . "LEFT JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id) "
+        . "WHERE (pm.metakey='wp-smpro-is-smushed' AND pm.metavalue=0) "
+                . "AND p.post_type='attachment' "
+                . "AND p.post_mime_type = 'image'";
+
+	$count = wp_cache_get( $cache_key, 'count' );
+	if ( false === $count ) {
+		$count = $wpdb->get_var( $wpdb->prepare( $query ) );
+		wp_cache_set( $cache_key, $count, 'count' );
+	}
+
+	return $count;
+    }
 
     /**
      * Allows user to Bulk Smush the images
      */
     function bulk_ui() {
 
-        $attachments = null;
-        $auto_start = false;
-
-        if (isset($_REQUEST['ids'])) {
-            $attachments = get_posts(array(
-                'numberposts' => -1,
-                'include' => explode(',', $_REQUEST['ids']),
-                'post_type' => 'attachment',
-                'post_mime_type' => 'image'
-            ));
+        $ids = isset($_REQUEST['ids'])?$_REQUEST['ids']:array();
+        if (!empty($ids)) {
+            $total = count($ids);
+            $progress = 0;
         } else {
-            $attachments = get_posts(array(
-                'numberposts' => 10,
-                'post_type' => 'attachment',
-                'post_mime_type' => 'image'
-            ));
+            $total = wp_count_attachments('image');
+            $progress = $total - (int)$this->to_smush_count();
         }
         
-        $total = count($attachments);
         ?>
+
         <div class="wrap">
             <div id="icon-upload" class="icon32"><br/></div>
             <h2><?php _e('Bulk WP Smush.it Pro', WP_SMUSHIT_PRO_DOMAIN) ?></h2>
@@ -65,6 +78,7 @@ class WpSmProBulk {
                     $this->progress_ui($progress);
                 }
                 ?>
+                <input type="hidden" id="wp-sm-pro-ids" val ="<?php echo explode($ids,','); ?>" />
                 <input type="hidden" id="wp-sm-pro-total" val="<?php echo $total; ?>" />
                 <input type="hidden" id="wp-sm-pro-done" val="<?php echo $progress; ?>" />
                 <input type="submit" id="wp-sm-pro-begin" class="button button-primary" value="Start" />

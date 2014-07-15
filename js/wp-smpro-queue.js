@@ -1,5 +1,16 @@
 jQuery('document').ready(function(){
     
+    function show_status($msg){
+        if($msg=''){
+            return;
+        }
+        $status_div = jQuery('.bulk_queue_wrap').find('.status-div').first();
+        $single_status = jQuery('<span/>');
+        $single_status.addClass('single-status');
+        $single_status.html($msg);
+        $status_div.append($single_status);
+    }
+    
     function DeferredAjax(opts) {
         this.options=opts;
         this.deferred=jQuery.Deferred();
@@ -52,14 +63,5 @@ jQuery('document').ready(function(){
         
     });
     
-    function show_status($msg){
-        if($msg=''){
-            return;
-        }
-        $status_div = jQuery('.bulk_queue_wrap').find('.status-div').first();
-        $single_status = jQuery('<span/>');
-        $single_status.addClass('single-status');
-        $single_status.html($msg);
-        $status_div.append($single_status);
-    }
+    
 });
