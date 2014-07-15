@@ -107,20 +107,9 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			wp_redirect( preg_replace( '|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer() ) );
 			exit();
 		}
-
-		/**
-		 * Process an image with Smush.it Pro API
-		 *
-		 * @param string $img_path , Image Path
-		 * @param string $file_url , Image URL
-		 * @param $ID , Attachment ID
-		 * @param $size , image size, default is full
-		 *
-		 * @return string, Message containing compression details
-		 */
-		function do_smushit( $img_path = '', $file_url = '', $ID, $size = 'full' ) {
-
-			if ( empty( $img_path ) ) {
+                
+                function invalidate_smush($img_path = '', $file_url = ''){
+                        if ( empty( $img_path ) ) {
 				return __( "File path is empty", WP_SMUSHIT_PRO_DOMAIN );
 			}
 
@@ -146,7 +135,28 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			if ( $file_size > WP_SMUSHIT_PRO_MAX_BYTES ) {
 				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s) Unable to Smush due to Yahoo 1mb size limits. See <a href="http://developer.yahoo.com/yslow/smushit/faq.html#faq_restrict">FAQ</a></span>', WP_SMUSHIT_PRO_DOMAIN ), $this->format_bytes( $file_size ) );
 			}
+                        
+                        return false;
 
+                }
+
+		/**
+		 * Process an image with Smush.it Pro API
+		 *
+		 * @param string $img_path , Image Path
+		 * @param string $img_url , Image URL
+		 * @param $ID , Attachment ID
+		 * @param $size , image size, default is full
+		 *
+		 * @return string, Message containing compression details
+		 */
+		function do_smushit( $img_path = '', $img_url = '', $ID=0, $size = 'full' ) {
+
+			$invalid = $this->invalidate_smush($img_path,$img_url);
+                        
+                        if($invalid){
+                            return $invalid;
+                        }
 			//Send nonce
 			$token = wp_create_nonce( "smush_image_$ID" . "_$size" );
 
@@ -163,7 +173,13 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			if ( $data->status_code === 0 ) {
 				return $data->status_message;
 			}
-			//Get the returned file id and store it in meta
+                        
+                        return $this->process_response($data, $ID);
+			
+		}
+                
+                function process_response($data, $ID){
+                        //Get the returned file id and store it in meta
 			$file_id     = isset( $data->file_id ) ? $data->file_id : '';
 			$status_code = isset( $data->status_code ) ? $data->status_code : '';
 			$status_msg  = isset ( $data->status_msg ) ? $data->status_msg : '';
@@ -186,8 +202,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				//Return a error
 				return __( "Unable to process the image, please try again later", WP_SMUSHIT_PRO_DOMAIN );
 			}
-		}
-
+                }
 		/**
 		 * WPMUDev API Key
 		 * @return string
@@ -222,11 +237,11 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 		 *
 		 * @return array
 		 */
-		function prepare_smush_request_data( $attachment_id = 0, $token ) {
-			if ( ! $attachment_id ) {
+		function prepare_request_data( $attachment_id = 0, $token='' ) {
+			if ( ! $attachment_id || $token ==='') {
 				return false;
 			}
-			//Callback URL
+                        
 			$post_fields = array(
 				'callback_url'  => '',
 				'api_key'       => '',
@@ -236,43 +251,24 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				'gif_to_png'    => true,
 				'remove_meta'   => true
 			);
-
-			$post_fields['callback_url'] = $this->form_callback_url();
-
-
-			// Get API Key for user
-			$post_fields['api_key'] = $this->dev_api_key();
-
-			// Generate Nonce
-			$post_fields['token'] = $token;
-
-
-			//Allow Progressive JPEGs
-			$key               = 'wp_smushit_pro_progressive_jpeg';
-			$progressive_jpegs = get_option( 'wp_smushit_pro_progressive_jpeg', '' );
-
-			if ( ! empty( $progressive_jpegs ) && $progressive_jpegs == 'on' ) {
-				$post_fields['progressive'] = 1;
-			}
-
-			//Check GIF Settings
-			$key        = 'wp_smushit_pro_gif_to_png';
-			$gif_to_png = get_option( $key, '' );
-
-			if ( ! empty( $gif_to_png ) && $gif_to_png == 'on' ) {
-				$post_fields['gif_to_png'] = 1;
-			}
-
-			//Check Exif settings
-			$key         = 'wp_smushit_pro_remove_exif';
-			$remove_exif = get_option( $key, '' );
-
-			if ( ! empty( $remove_exif ) && $remove_exif == 'on' ) {
-				$post_fields['remove_exif'] = 1;
-			}
-
-			//Attachment ID, makes it easy to get it back in callback
-			$post_fields['media_id'] = $attachment_id;
+                                   
+                        
+                        foreach($post_fields as $key => &$val){
+                            if(!is_bool($key)){
+                                continue;
+                            }
+                            
+                            $newval = get_option('wp_smushit_pro_'.$key,'');
+                            if ( empty( $newval ) || $newval != 'on' ) {
+                                    $post_fields[$key] = 0;
+                            }
+                                    
+                        }
+                        
+                        $post_fields['callback_url'] = $this->form_callback_url();
+                        $post_fields['attachment_id'] = $attachment_id;
+                        $post_fields['api_key'] = $this->dev_api_key();
+                        $post_fields['token'] = $token;
 
 			return $post_fields;
 
@@ -288,9 +284,13 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 		 *
 		 * @return string
 		 */
-		function prepare_smush_request_payload( $img_path, $ID, $boundary, $token ) {
+		function prepare_request_payload( $img_path, $ID, $boundary, $token ) {
 
-			$post_fields = $this->prepare_smush_request_data( $ID, $token );
+			$post_fields = $this->prepare_request_data( $ID, $token );
+                        
+                        if(!$post_fields){
+                            return false;
+                        }
 
 			$payload = '';
 
@@ -355,13 +355,11 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			}
 
 			$attachment_file_path = get_attached_file( $ID );
-			if ( WP_SMUSHIT_PRO_DEBUG ) {
-				echo "DEBUG: attachment_file_path=[" . $attachment_file_path . "]<br />";
-			}
 			$attachment_file_url = wp_get_attachment_url( $ID );
 			if ( WP_SMUSHIT_PRO_DEBUG ) {
-				echo "DEBUG: attachment_file_url=[" . $attachment_file_url . "]<br />";
-			}
+                                echo "DEBUG: attachment_file_path_size=[" . $attachment_file_path_size . "]<br />";
+                                echo "DEBUG: attachment_file_url_size=[" . $attachment_file_url_size . "]<br />";
+                        }
 
 			//Check if the image was prviously smushed
 			$previous_state = ! empty( $meta['smush_meta'] ) ? $meta['smush_meta']['full']['status_msg'] : '';
@@ -379,21 +377,56 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				if ( ! $force_resmush && $this->should_resmush( @$meta['sizes'][ $size_key ]['wp_smushit'] ) === false ) {
 					continue;
 				}
-
-				// We take the original image. The 'sizes' will all match the same URL and
-				// path. So just get the dirname and rpelace the filename.
-				$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
-				if ( WP_SMUSHIT_PRO_DEBUG ) {
-					echo "DEBUG: attachment_file_path_size=[" . $attachment_file_path_size . "]<br />";
-				}
-
-				$attachment_file_url_size = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
-				if ( WP_SMUSHIT_PRO_DEBUG ) {
-					echo "DEBUG: attachment_file_url_size=[" . $attachment_file_url_size . "]<br />";
-				}
-				$this->do_smushit( $attachment_file_path_size, $attachment_file_url_size, $ID, $size_key );
+                                
+                                $this->smush_each($attachment_file_path, $attachment_file_url, $ID, $size_key, $size_data);
 			}
 		}
+                
+                function smush_each($file_path, $file_url, $ID, $key, $meta){
+
+                        // We take the original image. The 'sizes' will all match the same URL and
+                        // path. So just get the dirname and rpelace the filename.
+                        $attachment_file_path_size = trailingslashit( dirname( $file_path ) ) . $meta['file'];
+
+                        $attachment_file_url_size = trailingslashit( dirname( $file_url ) ) . $meta['file'];
+                        
+                        if ( WP_SMUSHIT_PRO_DEBUG ) {
+                                echo "DEBUG: attachment_file_path_size=[" . $attachment_file_path_size . "]<br />";
+                                echo "DEBUG: attachment_file_url_size=[" . $attachment_file_url_size . "]<br />";
+                        }
+                        
+                        
+                        $this->do_smushit( $attachment_file_path_size, $attachment_file_url_size, $ID, $key );
+                }
+                
+                function _post_request($img_path = '', $attachment_id = 0, $token = false){
+                    $req = SMUSHIT_PRO_SERVICE_URL;
+                    
+                    if ( WP_SMUSHIT_PRO_DEBUG ) {
+				echo "DEBUG: Calling API: [" . $req . "]<br />";
+			}
+
+
+			$boundary = wp_generate_password( 24 );
+			$headers  = array(
+				'content-type' => 'multipart/form-data; boundary=' . $boundary
+			);
+
+			$payload = $this->prepare_request_payload( $img_path, $attachment_id, $boundary, $token );
+                        if(!$payload){
+                            return false;
+                        }
+			return wp_remote_post( $req,
+				array(
+					'headers'    => $headers,
+					'body'       => $payload,
+					'user-agent' => WP_SMUSHIT_PRO_UA,
+					'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
+					//Remove this code
+					'sslverify'  => false
+				)
+			);
+                }
 
 		/**
 		 * Send image to Smush.it Pro API
@@ -406,32 +439,9 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 		function _post( $img_path = '', $attachment_id = 0, $token = false ) {
 
-			$req = SMUSHIT_PRO_SERVICE_URL;
-
 			$data = false;
 
-			if ( WP_SMUSHIT_PRO_DEBUG ) {
-				echo "DEBUG: Calling API: [" . $req . "]<br />";
-			}
-
-
-			$boundary = wp_generate_password( 24 );
-			$headers  = array(
-				'content-type' => 'multipart/form-data; boundary=' . $boundary
-			);
-
-			$payload = $this->prepare_smush_request_payload( $img_path, $attachment_id, $boundary, $token );
-
-			$response = wp_remote_post( $req,
-				array(
-					'headers'    => $headers,
-					'body'       => $payload,
-					'user-agent' => WP_SMUSHIT_PRO_UA,
-					'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
-					//Remove this code
-					'sslverify'  => false
-				)
-			);
+			$response = $this->_post_request($img_path, $attachment_id, $token);
 
 			if ( $response && ! is_wp_error( $response ) ) {
 				if ( empty( $response['response']['code'] ) || $response['response']['code'] != 200 ) {
