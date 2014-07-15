@@ -5,16 +5,21 @@ if (!class_exists('WpSmProSend')) {
     class WpSmProSend {
 
         function __construct() {
-            add_action('admin_action_wp_smushit_manual', array(&$this, 'send_single_manual'));
+
+            add_action('admin_action_wp_smpro_queue', array(&$this, 'queue'));
+            
+            add_action('wp_ajax_wp_smpro_queue', array(&$this, 'queue'));
+            
+            // add automatic smushing on upload
             if (WP_SMPRO_AUTO) {
-                add_filter('wp_generate_attachment_metadata', array(&$this, 'auto_on_upload'), 10, 2);
+                add_filter('wp_generate_attachment_metadata', array(&$this, 'queue_on_upload'), 10, 2);
             }
         }
 
         /**
-         * Manually process an image from the Media Library
+         * Manually process an image from the M edia Library
          */
-        function send_single() {
+        function queue() {
             if (!current_user_can('upload_files')) {
                 wp_die(__("You don't have permission to work with uploaded files.", WP_SMUSHIT_PRO_DOMAIN));
             }
@@ -27,45 +32,81 @@ if (!class_exists('WpSmProSend')) {
 
             $original_meta = wp_get_attachment_metadata($attachment_ID);
 
-            $meta = $this->auto_on_upload($original_meta, $attachment_ID);
+            $meta = $this->queue_on_upload($original_meta, $attachment_ID);
 
             //Update attachemnt meta data
             wp_update_attachment_metadata($attachment_ID, $meta);
 
-            wp_redirect(preg_replace('|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer()));
-            exit();
+            wp_die($attachment_ID);
+        }
+        
+        /**
+         * 
+         * @param type $meta
+         * @param type $ID
+         * @param type $force_resmush
+         * @return type
+         */
+        function queue_on_upload($meta, $ID = null, $force_resmush = true) {
+            if ($ID && wp_attachment_is_image($ID) === false) {
+                return $meta;
+            }
+
+            $attachment_file_path = get_attached_file($ID);
+            $attachment_file_url = wp_get_attachment_url($ID);
+            if (WP_SMUSHIT_PRO_DEBUG) {
+                echo "DEBUG: attachment_file_path_size=[" . $attachment_file_path_size . "]<br />";
+                echo "DEBUG: attachment_file_url_size=[" . $attachment_file_url_size . "]<br />";
+            }
+
+            //Check if the image was prviously smushed
+            $previous_state = !empty($meta['smush_meta']) ? $meta['smush_meta']['full']['status_msg'] : '';
+
+            if ($force_resmush || $this->should_resend($previous_state)) {
+                $meta = $this->send($attachment_file_path, $attachment_file_url, $ID, 'full', $meta);
+            }
+
+            // no resized versions, so we can exit
+            if (!isset($meta['sizes'])) {
+                return $meta;
+            }
+
+            foreach ($meta['sizes'] as $size_key => $size_data) {
+                if (!$force_resmush && $this->should_resend(@$meta['sizes'][$size_key]['wp_smushit']) === false) {
+                    continue;
+                }
+
+                $this->send_each_size($attachment_file_path, $attachment_file_url, $ID, $size_key, $size_data);
+            }
+
+            return $meta;
+        }
+        
+        /**
+         * 
+         * @param type $file_path
+         * @param type $file_url
+         * @param type $ID
+         * @param type $key
+         * @param type $meta
+         */
+        function send_each_size($file_path, $file_url, $ID, $key, $meta) {
+
+            // We take the original image. The 'sizes' will all match the same URL and
+            // path. So just get the dirname and rpelace the filename.
+            $attachment_file_path_size = trailingslashit(dirname($file_path)) . $meta['file'];
+
+            $attachment_file_url_size = trailingslashit(dirname($file_url)) . $meta['file'];
+
+            if (WP_SMUSHIT_PRO_DEBUG) {
+                echo "DEBUG: attachment_file_path_size=[" . $attachment_file_path_size . "]<br />";
+                echo "DEBUG: attachment_file_url_size=[" . $attachment_file_url_size . "]<br />";
+            }
+
+
+            $this->send($attachment_file_path_size, $attachment_file_url_size, $ID, $key);
         }
 
-        function invalidate($img_path = '', $file_url = '') {
-            if (empty($img_path)) {
-                return __("File path is empty", WP_SMUSHIT_PRO_DOMAIN);
-            }
-
-            if (empty($file_url)) {
-                return __("File URL is empty", WP_SMUSHIT_PRO_DOMAIN);
-            }
-
-            if (!file_exists($img_path)) {
-                return __("File does not exists", WP_SMUSHIT_PRO_DOMAIN);
-            }
-
-            // check that the file exists
-            if (!file_exists($img_path) || !is_file($img_path)) {
-                return sprintf(__("ERROR: Could not find <span class='code'>%s</span>", WP_SMUSHIT_PRO_DOMAIN), $img_path);
-            }
-
-            // check that the file is writable
-            if (!is_writable(dirname($img_path))) {
-                return sprintf(__("ERROR: <span class='code'>%s</span> is not writable", WP_SMUSHIT_PRO_DOMAIN), dirname($img_path));
-            }
-
-            $file_size = filesize($img_path);
-            if ($file_size > WP_SMUSHIT_PRO_MAX_BYTES) {
-                return sprintf(__('ERROR: <span style="color:#FF0000;">Skipped (%s) Unable to Smush due to Yahoo 1mb size limits. See <a href="http://developer.yahoo.com/yslow/smushit/faq.html#faq_restrict">FAQ</a></span>', WP_SMUSHIT_PRO_DOMAIN), $this->format_bytes($file_size));
-            }
-
-            return false;
-        }
 
         /**
          * Process an image with Smush.it Pro API
@@ -129,6 +170,37 @@ if (!class_exists('WpSmProSend')) {
                 $smush_meta['smush_meta'][$size]['status_msg'] = "Unable to process the image, please try again later";
             }
         }
+        
+        function invalidate($img_path = '', $file_url = '') {
+            if (empty($img_path)) {
+                return __("File path is empty", WP_SMUSHIT_PRO_DOMAIN);
+            }
+
+            if (empty($file_url)) {
+                return __("File URL is empty", WP_SMUSHIT_PRO_DOMAIN);
+            }
+
+            if (!file_exists($img_path)) {
+                return __("File does not exists", WP_SMUSHIT_PRO_DOMAIN);
+            }
+
+            // check that the file exists
+            if (!file_exists($img_path) || !is_file($img_path)) {
+                return sprintf(__("ERROR: Could not find <span class='code'>%s</span>", WP_SMUSHIT_PRO_DOMAIN), $img_path);
+            }
+
+            // check that the file is writable
+            if (!is_writable(dirname($img_path))) {
+                return sprintf(__("ERROR: <span class='code'>%s</span> is not writable", WP_SMUSHIT_PRO_DOMAIN), dirname($img_path));
+            }
+
+            $file_size = filesize($img_path);
+            if ($file_size > WP_SMUSHIT_PRO_MAX_BYTES) {
+                return sprintf(__('ERROR: <span style="color:#FF0000;">Skipped (%s) Unable to Smush due to Yahoo 1mb size limits. See <a href="http://developer.yahoo.com/yslow/smushit/faq.html#faq_restrict">FAQ</a></span>', WP_SMUSHIT_PRO_DOMAIN), $this->format_bytes($file_size));
+            }
+
+            return false;
+        }
 
         /**
          * WPMUDev API Key
@@ -173,68 +245,7 @@ if (!class_exists('WpSmProSend')) {
 
             // otherwise an error
             return true;
-        }
-
-        /**
-         * Read the image paths from an attachment's meta data and process each image
-         * with wp_smushit().
-         *
-         * This method also adds a `wp_smushit` meta key for use in the media library.
-         *
-         * Called after `wp_generate_attachment_metadata` is completed.
-         */
-        function auto_on_upload($meta, $ID = null, $force_resmush = true) {
-            if ($ID && wp_attachment_is_image($ID) === false) {
-                return $meta;
-            }
-
-            $attachment_file_path = get_attached_file($ID);
-            $attachment_file_url = wp_get_attachment_url($ID);
-            if (WP_SMUSHIT_PRO_DEBUG) {
-                echo "DEBUG: attachment_file_path_size=[" . $attachment_file_path_size . "]<br />";
-                echo "DEBUG: attachment_file_url_size=[" . $attachment_file_url_size . "]<br />";
-            }
-
-            //Check if the image was prviously smushed
-            $previous_state = !empty($meta['smush_meta']) ? $meta['smush_meta']['full']['status_msg'] : '';
-
-            if ($force_resmush || $this->should_resend($previous_state)) {
-                $meta = $this->send($attachment_file_path, $attachment_file_url, $ID, 'full', $meta);
-            }
-
-            // no resized versions, so we can exit
-            if (!isset($meta['sizes'])) {
-                return $meta;
-            }
-
-            foreach ($meta['sizes'] as $size_key => $size_data) {
-                if (!$force_resmush && $this->should_resend(@$meta['sizes'][$size_key]['wp_smushit']) === false) {
-                    continue;
-                }
-
-                $this->send_each_size($attachment_file_path, $attachment_file_url, $ID, $size_key, $size_data);
-            }
-
-            return $meta;
-        }
-
-        function send_each_size($file_path, $file_url, $ID, $key, $meta) {
-
-            // We take the original image. The 'sizes' will all match the same URL and
-            // path. So just get the dirname and rpelace the filename.
-            $attachment_file_path_size = trailingslashit(dirname($file_path)) . $meta['file'];
-
-            $attachment_file_url_size = trailingslashit(dirname($file_url)) . $meta['file'];
-
-            if (WP_SMUSHIT_PRO_DEBUG) {
-                echo "DEBUG: attachment_file_path_size=[" . $attachment_file_path_size . "]<br />";
-                echo "DEBUG: attachment_file_url_size=[" . $attachment_file_url_size . "]<br />";
-            }
-
-
-            $this->send($attachment_file_path_size, $attachment_file_url_size, $ID, $key);
-        }
-
+        }    
 
 
         /**
