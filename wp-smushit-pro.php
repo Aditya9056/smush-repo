@@ -4,7 +4,7 @@ Plugin Name: WP Smush.it Pro
 Plugin URI: http://premium.wpmudev.org/projects/wp-smushit-pro/
 Description: Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
 Author: WPMU DEV
-Version: 0.1
+Version: 0.2
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit-pro
 WDP ID:
@@ -30,12 +30,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 if ( ! function_exists( 'download_url' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
 }
+require_once( __DIR__ . 'classes/class-wp-smpro-request.php' );
+require_once( __DIR__ . 'classes/class-wp-smpro-admin.php' );
+require_once( __DIR__ . 'classes/class-wp-smpro-send.php' );
+require_once( __DIR__ . 'classes/class-wp-smpro.php' );
 
-require_once( __DIR__ . '/wp-smushit-pro-admin.php' );
-require_once( __DIR__ . '/wp-smushit-pro.php' );
+$wp_sm_pro = new WpSmPro();
 
-$WpSmushitPro = new WpSmushitPro();
-global $WpSmushitPro;
+global $wp_sm_pro;
 
 if ( ! function_exists( 'wp_basename' ) ) {
 	/**
