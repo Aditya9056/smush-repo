@@ -36,12 +36,11 @@ class WpSmProBulk {
 
         if (isset($_REQUEST['ids'])) {
             $attachments = get_posts(array(
-                'numberposts' => - 1,
+                'numberposts' => -1,
                 'include' => explode(',', $_REQUEST['ids']),
                 'post_type' => 'attachment',
                 'post_mime_type' => 'image'
             ));
-            $auto_start = true;
         } else {
             $attachments = get_posts(array(
                 'numberposts' => 10,
@@ -49,6 +48,8 @@ class WpSmProBulk {
                 'post_mime_type' => 'image'
             ));
         }
+        
+        $total = count($attachments);
         ?>
         <div class="wrap">
             <div id="icon-upload" class="icon32"><br/></div>
@@ -56,29 +57,38 @@ class WpSmProBulk {
             <div class="bulk_queue_wrap">
                 <div class="status-div"></div>
                 <?php
-                if (sizeof($attachments) < 1) {
+                if ($total < 1) {
                     _e("<p>You don't appear to have uploaded any images yet.</p>", WP_SMUSHIT_PRO_DOMAIN);
-                } else {
                     ?>
-                    <ul class="bulk_queue">
-                        <?php
-                        foreach($attachments as $attachment){
-                            ?>
-                            <li>
-                                <input type="hidden" class="id-input" value="<?php echo $attachment_id; ?>"
-                                <img src="<?php echo $attachment_id; ?>" />
-                            </li>
-                            <?php
-                        }
-                        ?>
-                    </ul>
                     <?php
+                } else {
+                    $this->progress_ui($progress);
                 }
                 ?>
-                <input type="submit" class="button button-primary" name="beginsmush" value="Start" />
+                <input type="hidden" id="wp-sm-pro-total" val="<?php echo $total; ?>" />
+                <input type="hidden" id="wp-sm-pro-done" val="<?php echo $progress; ?>" />
+                <input type="submit" id="wp-sm-pro-begin" class="button button-primary" value="Start" />
             </div>
         </div>
         <?php
     }
+    
+    function progress_ui($progress, $echo = true) {
+        $progress_ui = '
+            <div id="wp-smpro-progressbar">
+                <div style="width:' . $progress . '%"></div>
+            </div>
+            ';
+        if ($echo)
+            echo $progress_ui;
+        else
+            return $progress_ui;
+    }
 
+    function progress($progress, $total) {
+        if ($total < 1) {
+            return 100;
+        }
+        return ($progress / $total) * 100;
+    }
 }
