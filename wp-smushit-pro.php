@@ -187,7 +187,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 			} else {
 				//Return a error
-				$smush_meta['smush_meta'][ $size ]['status_msg']  = "Unable to process the image, please try again later";
+				$smush_meta['smush_meta'][ $size ]['status_msg'] = "Unable to process the image, please try again later";
 			}
 
 			return $smush_meta;
@@ -227,8 +227,8 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 		 *
 		 * @return array
 		 */
-		function prepare_smush_request_data( $attachment_id = 0, $token ) {
-			if ( ! $attachment_id ) {
+		function prepare_smush_request_data( $attachment_id, $token ) {
+			if ( empty( $attachment_id ) ) {
 				return false;
 			}
 			//Callback URL
@@ -277,7 +277,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			}
 
 			//Attachment ID, makes it easy to get it back in callback
-			$post_fields['media_id'] = $attachment_id;
+			$post_fields['attachment_id'] = $attachment_id;
 
 			return $post_fields;
 
@@ -411,7 +411,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 		 * @return bool|string, Response returned from API
 		 */
 
-		function _post( $img_path = '', $attachment_id = 0, $token = false ) {
+		function _post( $img_path = '', $attachment_id, $token = false ) {
 
 			$req = SMUSHIT_PRO_SERVICE_URL;
 
@@ -488,9 +488,9 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$status_code    = ! empty( $response['status_code'] ) ? $response ['status_code'] : '';
 			$status_msg     = ! empty( $response['status_msg'] ) ? $response ['status_msg'] : '';
 
-			echo "<pre>";
-			print_r( $response );
-			echo "</pre>";
+//			echo "<pre>";
+//			print_r( $response );
+//			echo "</pre>";
 
 			if ( empty( $file_id ) || empty ( $attachment_id ) || empty( $received_token ) ) {
 				//Response back to API, missing parameters
@@ -509,14 +509,15 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$metadata = wp_get_attachment_metadata( $attachment_id );
 
 			$smush_meta = ! empty( $metadata['smush_meta'] ) ? $metadata['smush_meta'] : '';
-			echo "SMush Meta";
+
 			//Empty smush meta, probably some error on our end
 			if ( empty( $smush_meta ) ) {
 				//Response back to API, missing parameters
 				header( "HTTP/1.0 406 No Smush Meta" );
 				exit;
 			}
-			echo "SMush Meta done";
+//			echo "SMush Meta done";
+
 			//Get the media from thumbnail file id
 			foreach ( $smush_meta as $image_size => $image_details ) {
 
@@ -545,7 +546,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				//We are done processing, end loop
 				break;
 			}
-			echo "SMush Meta below loop";
+
 			//Loop
 			//@Todo: Add option for user, Strict ssl use wp_safe_remote_get or download_url
 			//Copied from download_url, as it does not provice to turn off strict ssl
@@ -639,11 +640,16 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 			$savings_str = '';
 			$compression = ! empty( $response['compression'] ) ? $response['compression'] : '';
+
 			if ( ! empty ( $response['before_smush'] ) && ! empty( $response['after_smush'] ) ) {
 				$savings_str = $response['before_smush'] - $response ['after_smush'] . 'Kb';
 			}
+			if ( $compression == 0 ) {
+				$results_msg = __( 'Optimised', WP_SMUSHIT_PRO_DOMAIN );
+			} else {
+				$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSHIT_PRO_DOMAIN ), $compression, $savings_str );
+			}
 
-			$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSHIT_PRO_DOMAIN ), $compression, $savings_str );
 
 			$smush_meta[ $size ]['status_code'] = $status_code;
 			$smush_meta[ $size ]['status_msg']  = $results_msg;
@@ -651,7 +657,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$metadata['smush_meta'] = $smush_meta;
 
 			wp_update_attachment_metadata( $attachment_id, $metadata );
-			error_log(json_encode(wp_get_attachment_metadata($attachment_id)));
+			error_log( json_encode( wp_get_attachment_metadata( $attachment_id ) ) );
 			//Response back to API, missing parameters
 			header( "HTTP/1.0 200 file updated" );
 			exit;
