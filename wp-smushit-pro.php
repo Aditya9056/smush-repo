@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 if ( ! function_exists( 'download_url' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
 }
+require_once( __DIR__ . 'classes/class-wp-smpro-bulk.php' );
+require_once( __DIR__ . 'classes/class-wp-smpro-receive.php' );
 require_once( __DIR__ . 'classes/class-wp-smpro-request.php' );
 require_once( __DIR__ . 'classes/class-wp-smpro-admin.php' );
 require_once( __DIR__ . 'classes/class-wp-smpro-send.php' );

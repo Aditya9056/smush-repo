@@ -6,7 +6,7 @@
  */
 if (!class_exists('WpSmushItPro_Admin')) {
 
-    class WpSmushItPro_Admin {
+    class WpSmProAdmin {
 
         public $settings = array(
             'auto' => 'Smush images on upload?',

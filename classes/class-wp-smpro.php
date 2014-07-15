@@ -41,7 +41,7 @@ if (!class_exists('WpSmPro')) {
             // instantiate the receiver
             $this->receiver = new WpSmProReceive();
             
-            $this->admin = new WpSmushItPro_Admin();
+            $this->admin = new WpSmProAdmin();
             
             load_plugin_textdomain( WP_SMPRO_DOMAIN, false, WP_SMPRO_DIR . '/languages/' );
         }
