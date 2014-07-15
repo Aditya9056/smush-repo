@@ -16,6 +16,7 @@ if (!class_exists('WpSmushItPro_Admin')) {
         );
 
         public function __construct() {
+            
             // add extra columns for smushing to media lists
             add_filter('manage_media_columns', array(&$this, 'columns'));
             add_action('manage_media_custom_column', array(&$this, 'custom_column'), 10, 2);
@@ -27,6 +28,9 @@ if (!class_exists('WpSmushItPro_Admin')) {
             add_action('admin_action_bulk_smushit', array(&$this, 'bulk_action_handler'));
 
             add_action('admin_init', array(&$this, 'register_settings'));
+            
+            // instantiate bulk ui
+            $bulk = new WpSmProBulk();
         }
 
         /**
