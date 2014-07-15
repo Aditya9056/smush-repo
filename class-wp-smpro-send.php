@@ -102,7 +102,10 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 			$original_meta = wp_get_attachment_metadata( $attachment_ID );
 
-			$this->resize_from_meta_data( $original_meta, $attachment_ID );
+			$meta = $this->resize_from_meta_data( $original_meta, $attachment_ID );
+
+			//Update attachemnt meta data
+			wp_update_attachment_metadata( $attachment_ID, $meta );
 
 			wp_redirect( preg_replace( '|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer() ) );
 			exit();
@@ -184,23 +187,22 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$status_code = isset( $data->status_code ) ? $data->status_code : '';
 			$status_msg  = isset ( $data->status_msg ) ? $data->status_msg : '';
 
+			//Fetch old smush meta and update with the file id returned by API
+			if ( empty ( $smush_meta ) ) {
+				$smush_meta = wp_get_attachment_metadata( $ID );
+			}
+
 			//If file id update
 			if ( ! empty( $file_id ) ) {
-				//Fetch old smush meta and update with the file id returned by API
-				$smush_meta = wp_get_attachment_metadata( $ID );
-
 				//Add file id, Status and Message
 				$smush_meta['smush_meta'][ $size ]['file_id']     = $file_id;
 				$smush_meta['smush_meta'][ $size ]['status_code'] = $status_code;
 				$smush_meta['smush_meta'][ $size ]['status_msg']  = $status_msg;
 				$smush_meta['smush_meta'][ $size ]['token']       = $token;
 
-				wp_update_attachment_metadata( $ID, $smush_meta );
-
-				return $status_msg;
 			} else {
 				//Return a error
-				return __( "Unable to process the image, please try again later", WP_SMUSHIT_PRO_DOMAIN );
+				$smush_meta['smush_meta'][ $size ]['status_msg'] = "Unable to process the image, please try again later";
 			}
                 }
 		/**
@@ -365,7 +367,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$previous_state = ! empty( $meta['smush_meta'] ) ? $meta['smush_meta']['full']['status_msg'] : '';
 
 			if ( $force_resmush || $this->should_resmush( $previous_state ) ) {
-				$this->do_smushit( $attachment_file_path, $attachment_file_url, $ID );
+				$meta = $this->do_smushit( $attachment_file_path, $attachment_file_url, $ID, 'full', $meta );
 			}
 
 			// no resized versions, so we can exit
@@ -380,6 +382,8 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
                                 
                                 $this->smush_each($attachment_file_path, $attachment_file_url, $ID, $size_key, $size_data);
 			}
+
+			return $meta;
 		}
                 
                 function smush_each($file_path, $file_url, $ID, $key, $meta){
@@ -491,6 +495,10 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$status_code    = ! empty( $response['status_code'] ) ? $response ['status_code'] : '';
 			$status_msg     = ! empty( $response['status_msg'] ) ? $response ['status_msg'] : '';
 
+//			echo "<pre>";
+//			print_r( $response );
+//			echo "</pre>";
+
 			if ( empty( $file_id ) || empty ( $attachment_id ) || empty( $received_token ) ) {
 				//Response back to API, missing parameters
 
@@ -515,6 +523,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 				header( "HTTP/1.0 406 No Smush Meta" );
 				exit;
 			}
+//			echo "SMush Meta done";
 
 			//Get the media from thumbnail file id
 			foreach ( $smush_meta as $image_size => $image_details ) {
@@ -551,7 +560,16 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$temp_file = wp_tempnam( $file_url );
 
 			if ( ! $temp_file ) {
-				return new WP_Error( 'http_no_file', __( 'Could not create Temporary file.' ) );
+				//For Debugging on node
+				echo "<pre>";
+				print_r( __( 'Could not create Temporary file.' ) );
+				echo "</pre>";
+
+				echo "Unsafe URL";
+
+				//Response back to API, missing parameters
+				header( "HTTP/1.0 406 No temp file" );
+				exit;
 			}
 
 			$response = wp_remote_get(
@@ -629,11 +647,16 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 
 			$savings_str = '';
 			$compression = ! empty( $response['compression'] ) ? $response['compression'] : '';
+
 			if ( ! empty ( $response['before_smush'] ) && ! empty( $response['after_smush'] ) ) {
 				$savings_str = $response['before_smush'] - $response ['after_smush'] . 'Kb';
 			}
+			if ( $compression == 0 ) {
+				$results_msg = __( 'Optimised', WP_SMUSHIT_PRO_DOMAIN );
+			} else {
+				$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSHIT_PRO_DOMAIN ), $compression, $savings_str );
+			}
 
-			$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSHIT_PRO_DOMAIN ), $compression, $savings_str );
 
 			$smush_meta[ $size ]['status_code'] = $status_code;
 			$smush_meta[ $size ]['status_msg']  = $results_msg;
@@ -641,7 +664,7 @@ if ( ! class_exists( 'WpSmushitPro' ) ) {
 			$metadata['smush_meta'] = $smush_meta;
 
 			wp_update_attachment_metadata( $attachment_id, $metadata );
-
+			error_log( json_encode( wp_get_attachment_metadata( $attachment_id ) ) );
 			//Response back to API, missing parameters
 			header( "HTTP/1.0 200 file updated" );
 			exit;
