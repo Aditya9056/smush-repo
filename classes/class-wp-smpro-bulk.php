@@ -13,6 +13,7 @@
 class WpSmProBulk {
 
     public function __construct() {
+        add_action('admin_init', array(&$this, 'admin_init'));
         add_action('admin_menu', array(&$this, 'admin_menu'));
     }
 
@@ -20,10 +21,21 @@ class WpSmProBulk {
      * Add Bulk option settings page
      */
     function admin_menu() {
-        add_media_page('Bulk Smush.it', 'Bulk Smush.it', 'edit_others_posts', 'wp-smpro-bulk', array(
+        $bulk_page_suffix = add_media_page('Bulk Smush.it', 'Bulk Smush.it', 'edit_others_posts', 'wp-smpro-bulk', array(
             &$this,
             'bulk_ui'
         ));
+        
+        add_action('admin_print_scripts-' . $bulk_page_suffix, array(&$this,'enqueue'));
+    }
+    
+    function admin_init() {
+        /* Register our script. */
+        wp_register_script( 'wp-smpro-queue', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
+    }
+    
+    function enqueue(){
+        wp_enqueue_script( 'wp-smpro-queue' );
     }
     
     function to_smush_count() {
