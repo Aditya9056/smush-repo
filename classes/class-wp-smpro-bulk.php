@@ -67,6 +67,19 @@ class WpSmProBulk {
 
 	return $count;
     }
+    
+    
+    function start_id(){
+        global $wpdb;
+        $query = "SELECT p.ID FROM {$wpdb->posts} p "
+            . "LEFT JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id) "
+            . "WHERE AND (pm.metakey='wp-smpro-is-smushed' AND pm.metavalue=1) "
+                . "AND p.post_type='attachment' "
+                . "AND p.post_mime_type = 'image' LIMIT 1";
+
+        $id = $wpdb->get_var( $wpdb->prepare( $query ) );
+        return $id;
+    }
 
     /**
      * Display the UI
@@ -75,6 +88,7 @@ class WpSmProBulk {
 
         $ids = isset($_REQUEST['ids'])?$_REQUEST['ids']:array();
         $idstr = '';
+        $start_id = 'null';
         if (!empty($ids)) {
             $total = count($ids);
             $progress = 0;
@@ -82,6 +96,7 @@ class WpSmProBulk {
         } else {
             $total = wp_count_attachments('image');
             $progress = (int)$this->to_smush_count();
+            $start_id = $this->start_id();
         }
         
         ?>
@@ -89,6 +104,7 @@ class WpSmProBulk {
             var wp_smpro_total = <?php echo $total; ?>;
             var wp_smpro_progress = <?php echo $progress; ?>;
             var wp_smpro_ids = [<?php echo $idstr; ?>];
+            var wp_smpro_start_id = <?php echo $idstr; ?>;
         </script>
 
         <div class="wrap">

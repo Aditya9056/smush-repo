@@ -1,12 +1,19 @@
 jQuery('document').ready(function(){
-    
+    if(!empty(wp_smpro_start_id)){
+        $start_id = wp_smpro_start_id;
+    }
+    // form the url
+    $url = wp_ajax_url + '?action=wp_smpro_queue';
+        
     $init_left = wp_smpro_total - wp_smpro_progress;
+    
     function smpro_progress(){
         wp_smpro_progress++;
         $progress = (wp_smpro_progress/wp_smpro_total)*100;
         jQuery('#wp-smpro-progressbar div').css('width',$progress+'%');
         
     }
+    
     function smpro_show_status($msg){
         if($msg===''){
             return;
@@ -18,43 +25,39 @@ jQuery('document').ready(function(){
         $status_div.append($single_status);
     }
     
-    // custom deferred object
-    function DeferredAjax(opts) {
-        this.options=opts;
-        this.deferred=jQuery.Deferred();
-        this.attachment_id=opts.attachment_id;
-    }
-    
-    // invokation
-    DeferredAjax.prototype.invoke=function() {
-        // assign data
-        var self=this, data={attachment_id:self.attachment_id};
-        
-        // visible output
-        smpro_show_status("Making request for [" + self.attachment_id + "]");
-        
-        // form the url
-        $url = wp_ajax_url + '?action=wp_smpro_queue';
-        
-        // ajax call
-        return jQuery.ajax({
+    function smproRequest($id) {
+        return $.ajax({
             type: "GET",
+            data: {attachment_ID:$id},
             url: $url,
-            data: data
         }).done(function(response){
-                smpro_show_status("Sent for smushing [" + self.attachment_id + "]");
+                smpro_show_status("Sent for smushing [" + $id + "]");
                 smpro_progress();
-                self.deferred.resolve();
+                return $start_id = praseInt(response);
             }).fail(function(response){
-                smpro_show_status("Smush request failed [" + self.attachment_id+"]");
+                smpro_show_status("Smush request failed [" + $id+"]");
                 smpro_progress();
-                self.deferred.resolve();
             });
-    };
+    }
+
+    var startingpoint=jQuery.Deferred();
+    startingpoint.resolve();
     
-    DeferredAjax.prototype.promise=function() {
-        return this.deferred.promise();
-    };
+    if(!empty(wp_smpro_ids)){
+        jQuery.each(wp_smpro_ids,function(ix,$id) {
+            startingpoint=startingpoint.then( function() {
+                smpro_show_status("Making request for [" + $id + "]");
+                return smproRequest($id);
+            });
+        });
+    }else{
+        for (var i = 0; i < $init_left; i++){
+            startingpoint=startingpoint.then( function() {
+                smpro_show_status("Making request for [" + $start_id + "]");
+                return smproRequest($start_id);
+            });
+        }
+    }
 
     
     jQuery('.bulk_queue_wrap'). on('click', 'input#wp-sm-pro-begin', function(e){
@@ -94,14 +97,6 @@ jQuery('document').ready(function(){
             }
         }
         
-    });
-    //code for removing elems from array
-    
-//    var removeItem = 2;   // item do array que deverÃ¡ ser removido
-// 
-//    arr = jQuery.grep(arr, function(value) {
-//        return value !== removeItem;
-//    });
-    
+    });    
     
 });
