@@ -1,7 +1,14 @@
 jQuery('document').ready(function(){
     
-    function show_status($msg){
-        if($msg=''){
+    $init_left = wp_smpro_total - wp_smpro_progress;
+    function smpro_progress(){
+        wp_smpro_progress++;
+        $progress = (wp_smpro_progress/wp_smpro_total)*100;
+        jQuery('#wp-smpro-progressbar div').css('width',$progress+'%');
+        
+    }
+    function smpro_show_status($msg){
+        if($msg===''){
             return;
         }
         $status_div = jQuery('.bulk_queue_wrap').find('.status-div').first();
@@ -11,27 +18,38 @@ jQuery('document').ready(function(){
         $status_div.append($single_status);
     }
     
+    // custom deferred object
     function DeferredAjax(opts) {
         this.options=opts;
         this.deferred=jQuery.Deferred();
         this.attachment_id=opts.attachment_id;
     }
     
+    // invokation
     DeferredAjax.prototype.invoke=function() {
+        // assign data
         var self=this, data={attachment_id:self.attachment_id};
-        console.log("Making request for [" + self.attachment_id + "]");
         
+        // visible output
+        smpro_show_status("Making request for [" + self.attachment_id + "]");
+        
+        // form the url
         $url = wp_ajax_url + '?action=wp_smpro_queue';
         
+        // ajax call
         return jQuery.ajax({
             type: "GET",
             url: $url,
-            data: data,
-            success: function(){
-                console.log("Successful request for [" + self.attachment_id + "]");
+            data: data
+        }).done(function(response){
+                smpro_show_status("Sent for smushing [" + self.attachment_id + "]");
+                smpro_progress();
                 self.deferred.resolve();
-            }
-        });
+            }).fail(function(response){
+                smpro_show_status("Smush request failed [" + self.attachment_id+"]");
+                smpro_progress();
+                self.deferred.resolve();
+            });
     };
     
     DeferredAjax.prototype.promise=function() {
@@ -39,29 +57,51 @@ jQuery('document').ready(function(){
     };
 
     
-    jQuery('.bulk_queue_wrap'). on('click', 'input#smush', function(e){
+    jQuery('.bulk_queue_wrap'). on('click', 'input#wp-sm-pro-begin', function(e){
+        
         e.preventDefault();
-        ids = jQuery('ul.bulk_queue li input.id-input');
     
-        if(count(img_list)<1){
+        if(wp_smpro_total<1){
+            smpro_show_status('Nothing to send');
             return;
         }
-        
+        $left = (wp_smpro_total-wp_smpro_progress);
+        smpro_show_status('Sending ' + left + ' of total '+wp_smpro_total+' attachments');
         var startingpoint = jQuery.Deferred();
     
         startingpoint.resolve();
-
-        jQuery.each(ids, function(ix, id) {
-            var da = new DeferredAjax({
-                attachment_id: id
+        if(!empty(wp_smpro_ids) ){
+            jQuery.each(wp_smpro_ids, function(ix, id) {
+                var da = new DeferredAjax({
+                    attachment_id: id
+                });
+                jQuery.when(startingpoint ).then(function() {
+                    da.invoke();
+                });
+                startingpoint= da;
             });
-            jQuery.when(startingpoint ).then(function() {
-                da.invoke();
-            });
-            startingpoint= da;
-        });
+        } else {
+            for (var i = 0; i < $init_left; i++){
+                
+                var da = new DeferredAjax({
+                    attachment_id: id
+                });
+                jQuery.when(startingpoint ).then(function() {
+                    da.invoke();
+                });
+                startingpoint= da;
+            
+            }
+        }
         
     });
+    //code for removing elems from array
+    
+//    var removeItem = 2;   // item do array que deverÃ¡ ser removido
+// 
+//    arr = jQuery.grep(arr, function(value) {
+//        return value !== removeItem;
+//    });
     
     
 });

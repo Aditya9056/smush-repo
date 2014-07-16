@@ -99,7 +99,6 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 
 			// deprecating, this should be default and not an option, whenever we add it
 			// define('WP_SMPRO_ENFORCE_SAME_URL', get_option('wp_smushit_pro_smushit_enforce_same_url', 'on'));
-
 			
 			// are we debugging, here?
 			if (defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {

@@ -74,15 +74,22 @@ class WpSmProBulk {
     function bulk_ui() {
 
         $ids = isset($_REQUEST['ids'])?$_REQUEST['ids']:array();
+        $idstr = '';
         if (!empty($ids)) {
             $total = count($ids);
             $progress = 0;
+            $idstr = explode($ids,',');
         } else {
             $total = wp_count_attachments('image');
             $progress = (int)$this->to_smush_count();
         }
         
         ?>
+        <script type="text/javascript">
+            var wp_smpro_total = <?php echo $total; ?>;
+            var wp_smpro_progress = <?php echo $progress; ?>;
+            var wp_smpro_ids = [<?php echo $idstr; ?>];
+        </script>
 
         <div class="wrap">
             <div id="icon-upload" class="icon32"><br/></div>
@@ -96,12 +103,11 @@ class WpSmProBulk {
                     <?php
                 } else {
                     $this->progress_ui($progress);
+                    ?>
+                    <input type="submit" id="wp-sm-pro-begin" class="button button-primary" value="Start" />
+                    <?php
                 }
                 ?>
-                <input type="hidden" id="wp-sm-pro-ids" val ="<?php echo explode($ids,','); ?>" />
-                <input type="hidden" id="wp-sm-pro-total" val="<?php echo $total; ?>" />
-                <input type="hidden" id="wp-sm-pro-done" val="<?php echo $progress; ?>" />
-                <input type="submit" id="wp-sm-pro-begin" class="button button-primary" value="Start" />
             </div>
         </div>
         <?php
