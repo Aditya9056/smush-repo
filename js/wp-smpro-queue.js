@@ -1,9 +1,9 @@
 jQuery('document').ready(function(){
-    if(!empty(wp_smpro_start_id)){
+    if( wp_smpro_start_id != null && typeof wp_smpro_start_id != 'undefined') {
         $start_id = wp_smpro_start_id;
     }
     // form the url
-    $url = wp_ajax_url + '?action=wp_smpro_queue';
+    $url = ajaxurl + '?action=wp_smpro_queue';
         
     $init_left = wp_smpro_total - wp_smpro_progress;
     
@@ -42,8 +42,8 @@ jQuery('document').ready(function(){
 
     var startingpoint=jQuery.Deferred();
     startingpoint.resolve();
-    
-    if(!empty(wp_smpro_ids)){
+
+    if( wp_smpro_start_id != null && typeof wp_smpro_start_id != 'undefined') {
         jQuery.each(wp_smpro_ids,function(ix,$id) {
             startingpoint=startingpoint.then( function() {
                 smpro_show_status("Making request for [" + $id + "]");
