@@ -113,13 +113,12 @@ class WpSmProBulk {
     function bulk_ui() {
 	    global $wpdb;
 
-        $ids = isset($_REQUEST['ids'])?$_REQUEST['ids']:array();
-        $idstr = '';
+        $idstr = isset($_REQUEST['ids'])?$_REQUEST['ids']:'';
+        $ids = explode(',',$idstr);
         $start_id = 'null';
         if (!empty($ids)) {
             $total = count($ids);
             $progress = 0;
-            $idstr = explode($ids,',');
         } else {
             $total = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'attachment'");
             $progress = (int)$this->smushed_count();
