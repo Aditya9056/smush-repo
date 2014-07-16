@@ -107,7 +107,7 @@ class WpSmProBulk {
             var wp_smpro_total = <?php echo $total; ?>;
             var wp_smpro_progress = <?php echo $progress; ?>;
             var wp_smpro_ids = [<?php echo $idstr; ?>];
-            var wp_smpro_start_id = <?php echo $idstr; ?>;
+            var wp_smpro_start_id = <?php echo $start_id; ?>;
         </script>
 
         <div class="wrap">
