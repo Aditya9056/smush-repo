@@ -87,7 +87,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 					if ( ! defined( $const_name ) ) {
 						$option_name = strtolower( $const_name );
 
-						define( $const_name, get_option( 'wp_smpro_' . $key, $val ) );
+						define( $const_name, $this->smush_settings[ $key ] );
 					}
 				}
 
@@ -99,9 +99,9 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 
 			// deprecating, this should be default and not an option, whenever we add it
 			// define('WP_SMPRO_ENFORCE_SAME_URL', get_option('wp_smushit_pro_smushit_enforce_same_url', 'on'));
-			
+
 			// are we debugging, here?
-			if (defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {
 				define( 'WP_SMPRO_DEBUG', true ); // removing from options
 			} else {
 				define( 'WP_SMPRO_DEBUG', false );
@@ -138,6 +138,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				'request_err_msg' => $request_err_msg,
 			);
 		}
+
 		function init_settings() {
 			foreach ( $this->smush_settings as $key => $val ) {
 				$this->smush_settings[ $key ] = get_option( 'wp_smpro_' . $key, $val );
