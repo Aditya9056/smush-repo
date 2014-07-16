@@ -37,10 +37,6 @@ require_once( __DIR__ . '/classes/class-wp-smpro-admin.php' );
 require_once( __DIR__ . '/classes/class-wp-smpro-send.php' );
 require_once( __DIR__ . '/classes/class-wp-smpro.php' );
 
-$wp_sm_pro = new WpSmPro();
-
-global $wp_sm_pro;
-
 if ( ! function_exists( 'wp_basename' ) ) {
 	/**
 	 * Introduced in WP 3.1... this is copied verbatim from wp-includes/formatting.php.
@@ -52,9 +48,13 @@ if ( ! function_exists( 'wp_basename' ) ) {
 // some constants
 
 define( 'WP_SMPRO_VERSION', '0.2' );
-                        
+
 // the plugin's path for easy access to files
-define( 'WP_SMPRO_DIR', plugindirname( plugin_basename( __FILE__ ) ) );
+define( 'WP_SMPRO_DIR', dirname( plugin_basename( __FILE__ ) ) );
 
 // the text domain for translation, use hyphen instead of underscores, since that's the way glotpress will create translations
 define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
+
+$wp_sm_pro = new WpSmPro();
+
+global $wp_sm_pro;

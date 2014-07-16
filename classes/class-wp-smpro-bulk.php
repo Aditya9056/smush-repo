@@ -53,15 +53,15 @@ class WpSmProBulk {
 
 	$cache_key = 'wp-smpro-to-smush-count';
         
-        $query = "SELECT COUNT(p.ID) FROM {$wpdb->posts} p "
-        . "LEFT JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id) "
-        . "WHERE (pm.metakey='wp-smpro-is-smushed' AND pm.metavalue=1) "
+        $query = "SELECT COUNT(p.ID) FROM {$wpdb->posts} as p "
+        . "LEFT JOIN {$wpdb->postmeta} as pm ON (p.ID = pm.post_id) "
+        . "WHERE (pm.meta_key='wp-smpro-is-smushed' AND pm.meta_value=%d) "
                 . "AND p.post_type='attachment' "
                 . "AND p.post_mime_type = 'image'";
 
 	$count = wp_cache_get( $cache_key, 'count' );
 	if ( false === $count ) {
-		$count = $wpdb->get_var( $wpdb->prepare( $query ) );
+		$count = $wpdb->get_var( $wpdb->prepare( $query, 1 ) );
 		wp_cache_set( $cache_key, $count );
 	}
 
@@ -71,13 +71,13 @@ class WpSmProBulk {
     
     function start_id(){
         global $wpdb;
-        $query = "SELECT p.ID FROM {$wpdb->posts} p "
-            . "LEFT JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id) "
-            . "WHERE AND (pm.metakey='wp-smpro-is-smushed' AND pm.metavalue=1) "
+        $query = "SELECT p.ID FROM {$wpdb->posts} as p "
+            . "LEFT JOIN {$wpdb->postmeta} as pm ON (p.ID = pm.post_id) "
+            . "WHERE (pm.meta_key='wp-smpro-is-smushed' AND pm.meta_value=%d) "
                 . "AND p.post_type='attachment' "
                 . "AND p.post_mime_type = 'image' LIMIT 1";
 
-        $id = $wpdb->get_var( $wpdb->prepare( $query ) );
+        $id = $wpdb->get_var( $wpdb->prepare( $query, 1 ) );
         return $id;
     }
 
@@ -85,6 +85,7 @@ class WpSmProBulk {
      * Display the UI
      */
     function bulk_ui() {
+	    global $wpdb;
 
         $ids = isset($_REQUEST['ids'])?$_REQUEST['ids']:array();
         $idstr = '';
@@ -94,7 +95,7 @@ class WpSmProBulk {
             $progress = 0;
             $idstr = explode($ids,',');
         } else {
-            $total = wp_count_attachments('image');
+            $total = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'attachment'");
             $progress = (int)$this->to_smush_count();
             $start_id = $this->start_id();
         }
