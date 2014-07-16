@@ -75,7 +75,6 @@ class WpSmProBulk {
         global $wpdb;
         $query = "SELECT p.ID FROM {$wpdb->posts} as p "
             . "LEFT JOIN {$wpdb->postmeta} as pm ON (p.ID = pm.post_id) "
-            . "WHERE (pm.meta_key='wp-smpro-is-smushed' AND pm.meta_value=%d) "
                 . "AND p.post_type='attachment' "
                 . "AND p.post_mime_type = 'image' LIMIT 1";
 
