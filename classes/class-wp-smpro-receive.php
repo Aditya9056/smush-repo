@@ -88,9 +88,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				}
 
 				$attachment_file_path = get_attached_file( $options['attachment_id'] );
-
-				//Modify path if callback is for thumbnail
-				$attachment_file_size_path = trailingslashit( dirname( $attachment_file_path ) ) . $metadata['sizes'][ $image_size ]['file'];
+				if ( $image_size == 'full' ){
+					//Modify path if callback is for thumbnail
+					$attachment_file_size_path = trailingslashit( dirname( $attachment_file_path ) ) . $metadata['file'];
+				}else {
+					//Modify path if callback is for thumbnail
+					$attachment_file_size_path = trailingslashit( dirname( $attachment_file_path ) ) . $metadata['sizes'][ $image_size ]['file'];
+				}
 
 				//We are done processing, end loop
 				break;
