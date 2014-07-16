@@ -1,76 +1,77 @@
 <?php
 
-if (class_exists('WpSmProReceive')) {
+if ( ! class_exists( 'WpSmProReceive' ) ) {
 
-    /**
-     * Receives the call back and fetches the files from the smush service
-     *
-     * @author Saurabh Shukla <contact.saurabhshukla@gmail.com>
-     */
-    class WpSmProReceive {
+	/**
+	 * Receives the call back and fetches the files from the smush service
+	 *
+	 * @author Saurabh Shukla <contact.saurabhshukla@gmail.com>
+	 */
+	class WpSmProReceive {
 
-        /**
-         *
-         * @var type 
-         */
-        public $options = array(
-            'attachment_id' => '',
-            'file_id' => '',
-            'file_url' => '',
-            'received_token' => '',
-            'status_code' => '',
-            'request_err_code' => ''
-        );
+		/**
+		 *
+		 * @var type
+		 */
+		public $options = array(
+			'attachment_id'    => '',
+			'file_id'          => '',
+			'file_url'         => '',
+			'received_token'   => '',
+			'status_code'      => '',
+			'request_err_code' => ''
+		);
 
-        public function __construct() {
-            // process callback from smush service
-            add_action('wp_ajax_receive_smushed_image', array(&$this, 'receive'));
-            add_action('wp_ajax_receive_process_smushed_image', array(&$this, 'receive'));
-        }
+		public function __construct() {
+			// process callback from smush service
+			add_action( 'wp_ajax_receive_smushed_image', array( &$this, 'receive' ) );
+			add_action( 'wp_ajax_receive_process_smushed_image', array( &$this, 'receive' ) );
+		}
 
-        /**
-         * Download and Update the Image from Server corresponding to file id and URL
-         */
-        function receive() {
+		/**
+		 * Download and Update the Image from Server corresponding to file id and URL
+		 */
+		function receive() {
 
-            $body = @file_get_contents('php://input');
-            // get the json into an array
-            $response = json_decode($body, true);
+			$body = @file_get_contents( 'php://input' );
+			// get the json into an array
+			$response = json_decode( $body, true );
 
-            $options = wp_parse_args($response, $this->options);
+			$options = wp_parse_args( $response, $this->options );
 
-            if (in_array('', $options)) {
-                //Response back to API, missing parameters
-                header("HTTP/1.0 406 Missing Parameters");
-                exit;
-            }
+			if ( in_array( '', $options ) ) {
+				//Response back to API, missing parameters
+				header( "HTTP/1.0 406 Missing Parameters" );
+				exit;
+			}
 
-            //If smushing wasn't succesfull
-            if ($options['status_code'] != 4) {
-                //@todo update meta with suitable error
-                header("HTTP/1.0 200");
-                echo json_encode(array('status'=>1));
-                exit;
-            }
-            $this->process($options);
-        }
-        
-        /**
-         * 
-         * @param type $options
-         */
-        function process($options = array()) {
-            //Get Image sizes detail for media
-            $metadata = wp_get_attachment_metadata($options['attachment_id']);
+			//If smushing wasn't succesfull
+			if ( $options['status_code'] != 4 ) {
+				//@todo update meta with suitable error
+				header( "HTTP/1.0 200" );
+				$output = array( 'status' => 1 );
+				echo json_encode( $output );
+				exit;
+			}
+			$this->process( $options );
+		}
 
-            $smush_meta = !empty($metadata['smush_meta']) ? $metadata['smush_meta'] : '';
+		/**
+		 *
+		 * @param type $options
+		 */
+		function process( $options = array() ) {
+			//Get Image sizes detail for media
+			$metadata = wp_get_attachment_metadata( $options['attachment_id'] );
 
-            //Empty smush meta, probably some error on our end
-            if (empty($smush_meta)) {
-                //Response back to API, missing parameters
-                header("HTTP/1.0 406 No Smush Meta");
-                exit;
-            }
+			$smush_meta = ! empty( $metadata['smush_meta'] ) ? $metadata['smush_meta'] : '';
+
+			//Empty smush meta, probably some error on our end
+			if ( empty( $smush_meta ) ) {
+				//Response back to API, missing parameters
+				header( "HTTP/1.0 406 No Smush Meta" );
+				exit;
+			}
 //			echo "SMush Meta done";
 			//Get the media from thumbnail file id
 			foreach ( $smush_meta as $image_size => $image_details ) {

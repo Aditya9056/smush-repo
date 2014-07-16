@@ -30,16 +30,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 if ( ! function_exists( 'download_url' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
 }
-require_once( __DIR__ . '/classes/class-wp-smpro-bulk.php' );
-require_once( __DIR__ . '/classes/class-wp-smpro-receive.php' );
-require_once( __DIR__ . '/classes/class-wp-smpro-request.php' );
-require_once( __DIR__ . '/classes/class-wp-smpro-admin.php' );
-require_once( __DIR__ . '/classes/class-wp-smpro-send.php' );
-require_once( __DIR__ . '/classes/class-wp-smpro.php' );
+define( 'WP_SMPRO_VERSION', '0.2' );
 
-$wp_sm_pro = new WpSmPro();
+// the plugin's path for easy access to files
+define( 'WP_SMPRO_DIR', plugin_dir_path(__FILE__) );
 
-global $wp_sm_pro;
+// the plugin's url for easy access to files
+define( 'WP_SMPRO_URL', plugin_dir_url(__FILE__) );
+
+// the text domain for translation, use hyphen instead of underscores, since that's the way glotpress will create translations
+define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
+
+
+require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-bulk.php' );
+require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-receive.php' );
+require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-request.php' );
+require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-admin.php' );
+require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-send.php' );
+require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro.php' );
 
 if ( ! function_exists( 'wp_basename' ) ) {
 	/**
@@ -51,10 +59,7 @@ if ( ! function_exists( 'wp_basename' ) ) {
 }
 // some constants
 
-define( 'WP_SMPRO_VERSION', '0.2' );
-                        
-// the plugin's path for easy access to files
-define( 'WP_SMPRO_DIR', plugindirname( plugin_basename( __FILE__ ) ) );
 
-// the text domain for translation, use hyphen instead of underscores, since that's the way glotpress will create translations
-define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
+$wp_sm_pro = new WpSmPro();
+
+global $wp_sm_pro;

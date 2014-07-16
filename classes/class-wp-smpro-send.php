@@ -16,9 +16,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				add_filter( 'wp_generate_attachment_metadata', array( &$this, 'queue_on_upload' ), 10, 2 );
 			}
 		}
-                
-                function ajax_queue(){
-                        if ( ! current_user_can( 'upload_files' ) ) {
+
+		function ajax_queue() {
+			if ( ! current_user_can( 'upload_files' ) ) {
 				wp_die( __( "You don't have permission to work with uploaded files.", WP_SMPRO_DOMAIN ) );
 			}
 
@@ -27,29 +27,31 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			}
 
 			$attachment_ID = intval( $_GET['attachment_ID'] );
-                        
-                        $this->process_meta_in_queue($attachment_ID);
-                        
-                        $next_id = $this->get_next_id($attachment_ID);
-                        
-                        echo $next_id;
-                        
-                        die();
-                    
-                }
-                
-                
-                function get_next_id($id){
-                    global $wpdb;
-                    $query = "SELECT p.ID FROM {$wpdb->posts} p "
-                        . "LEFT JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id) "
-                        . "WHERE p.ID > $id AND (pm.metakey='wp-smpro-is-smushed' AND pm.metavalue=1) "
-                            . "AND p.post_type='attachment' "
-                            . "AND p.post_mime_type = 'image' LIMIT 1";
-                
-                    $next_id = $wpdb->get_var( $wpdb->prepare( $query ) );
-                    return $next_id;
-                }
+
+			$this->process_meta_in_queue( $attachment_ID );
+
+			$next_id = $this->get_next_id( $attachment_ID );
+
+			echo $next_id;
+
+			die();
+
+		}
+
+
+		function get_next_id( $id ) {
+			global $wpdb;
+			$query = "SELECT p.ID FROM {$wpdb->posts} p "
+			         . "LEFT JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id) "
+			         . "WHERE p.ID > $id AND (pm.metakey='wp-smpro-is-smushed' AND pm.metavalue=1) "
+			         . "AND p.post_type='attachment' "
+			         . "AND p.post_mime_type = 'image' LIMIT 1";
+
+			$next_id = $wpdb->get_var( $wpdb->prepare( $query ) );
+
+			return $next_id;
+		}
+
 		/**
 		 * Manually process an image from the Media Library
 		 */
@@ -64,24 +66,24 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			$attachment_ID = intval( $_GET['attachment_ID'] );
 
-			$this->process_meta_in_queue($attachment_ID);
+			$this->process_meta_in_queue( $attachment_ID );
 //			wp_die( $attachment_ID );
 			wp_redirect( preg_replace( '|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer() ) );
 
 			exit();
 		}
-                
-                function process_meta_in_queue($attachment_ID){
-                        
-                        $original_meta = wp_get_attachment_metadata( $attachment_ID );
+
+		function process_meta_in_queue( $attachment_ID ) {
+
+			$original_meta = wp_get_attachment_metadata( $attachment_ID );
 
 			$meta = $this->queue_on_upload( $original_meta, $attachment_ID );
 
 			//Update attachemnt meta data
 			wp_update_attachment_metadata( $attachment_ID, $meta );
 
-                }
-                
+		}
+
 
 		/**
 		 *
