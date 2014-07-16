@@ -56,16 +56,9 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				define( 'WP_SMPRO_SERVICE_URL', 'https://107.170.2.190:1203/upload/' );
 			}
 
-			define( 'WP_SMPRO_VERSION', '0.2' );
-
-			// the text domain for translation, use hyphen instead of underscores, since that's the way glotpress will create translations
-			define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
-
 			// the user agent for the request
 			define( 'WP_SMPRO_USER_AGENT', 'WP Smush.it/' . WP_SMPRO_VERSION . '} (' . '+' . get_site_url() . ')' );
 
-			// the plugin's path for easy access to files
-			define( 'WP_SMPRO_DIR', dirname( plugin_basename( __FILE__ ) ) );
 
 			//Image Limit 5MB
 			// @todo, fetch limit from API, instead
@@ -107,19 +100,9 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			// deprecating, this should be default and not an option, whenever we add it
 			// define('WP_SMPRO_ENFORCE_SAME_URL', get_option('wp_smushit_pro_smushit_enforce_same_url', 'on'));
 
-			// if possible we'll do this and add buutons on the admin screen that are just ajax links to this command
-			// we can debug and test it better on user's sites
-			// run urls like /domainname.com/?smpro=start, ?smpro=stop
-			define( 'WP_SMPRO_COMMAND_START', 'start' );
-
-			define( 'WP_SMPRO_COMMAND_STOP', 'stop' );
-
-			define( 'WP_SMPRO_COMMAND_DEBUG', 'debug' );
-
+			
 			// are we debugging, here?
-			if (
-				( isset( $_GET['smushit'] ) && $_GET['smushit'] === "debug" ) || ( defined( 'WP_DEBUG' ) && WP_DEBUG === true )
-			) {
+			if (defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {
 				define( 'WP_SMPRO_DEBUG', true ); // removing from options
 			} else {
 				define( 'WP_SMPRO_DEBUG', false );

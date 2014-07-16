@@ -49,3 +49,12 @@ if ( ! function_exists( 'wp_basename' ) ) {
 		return urldecode( basename( str_replace( '%2F', '/', urlencode( $path ) ), $suffix ) );
 	}
 }
+// some constants
+
+define( 'WP_SMPRO_VERSION', '0.2' );
+                        
+// the plugin's path for easy access to files
+define( 'WP_SMPRO_DIR', plugindirname( plugin_basename( __FILE__ ) ) );
+
+// the text domain for translation, use hyphen instead of underscores, since that's the way glotpress will create translations
+define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );

@@ -31,6 +31,8 @@ class WpSmProBulk {
     function admin_init() {
         /* Register our script. */
         wp_register_script( 'wp-smpro-queue', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
+        //@todo enqueue minified script if not debugging
+        //wp_register_script( 'wp-smpro-queue-debug', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
     }
     
     /**
