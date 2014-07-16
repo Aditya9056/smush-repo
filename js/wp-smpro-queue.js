@@ -1,5 +1,5 @@
 jQuery('document').ready(function(){
-    if( typeof wp_smpro_start_id !== 'undefined' && wp_smpro_start_id !== null) {
+    if( wp_smpro_start_id != null && typeof wp_smpro_start_id != 'undefined') {
         $start_id = wp_smpro_start_id;
     }
     // form the url

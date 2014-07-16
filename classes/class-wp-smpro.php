@@ -114,12 +114,12 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		function init_status_messages() {
 			$smush_status = array(
 				0 => __( 'Request failed', WP_SMPRO_DOMAIN ),
-				1 => __( 'File successfully received', WP_SMPRO_DOMAIN ),
+				1 => __( 'File being processed by API', WP_SMPRO_DOMAIN ),
 				2 => __( 'File is in the queue', WP_SMPRO_DOMAIN ),
 				3 => __( 'File is being smushed', WP_SMPRO_DOMAIN ),
 				4 => __( 'Smushing successful and ready for download', WP_SMPRO_DOMAIN ),
 				5 => __( 'Smushing failed due to error', WP_SMPRO_DOMAIN ),
-				6 => __( 'Useless smushing', WP_SMPRO_DOMAIN )
+				6 => __( 'Already optimized', WP_SMPRO_DOMAIN )
 
 			);
 

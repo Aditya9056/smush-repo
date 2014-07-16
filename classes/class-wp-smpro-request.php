@@ -177,7 +177,8 @@ class WpSmProRequest {
 
 		if ( is_wp_error( $status ) ) {
 			// Some issues with API
-			error_log("API is not accessible");
+			error_log( "API is not accessible" );
+
 			return;
 		}
 
@@ -189,6 +190,7 @@ class WpSmProRequest {
 			//Remove this code
 			'sslverify'  => false
 		);
+
 		return wp_remote_post( $req, $req_args );
 	}
 
