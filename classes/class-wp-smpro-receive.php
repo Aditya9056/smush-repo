@@ -71,39 +71,39 @@ if (class_exists('WpSmProReceive')) {
                 exit;
             }
 //			echo "SMush Meta done";
-            //Get the media from thumbnail file id
-            foreach ($smush_meta as $image_size => $image_details) {
+			//Get the media from thumbnail file id
+			foreach ( $smush_meta as $image_size => $image_details ) {
 
-                //Skip the loop if file id is not the same
-                if (empty($image_details['file_id']) || $image_details['file_id'] != $file_id) {
-                    continue;
-                }
+				//Skip the loop if file id is not the same
+				if ( empty( $image_details['file_id'] ) || $image_details['file_id'] != $file_id ) {
+					continue;
+				}
 
-                $size = $image_size;
-                $token = $image_details['token'];
+				$size  = $image_size;
+				$token = $image_details['token'];
 
-                //Check for Nonce, corresponding to media id
-                if ($token != $options['received_token']) {
-                    error_log("Nonce Verification failed for " . $options['attachment_id']);
+				//Check for Nonce, corresponding to media id
+				if ( $token != $options['received_token'] ) {
+					error_log( "Nonce Verification failed for " . $options['attachment_id'] );
 
-                    //Response back to API, missing parameters
-                    header("HTTP/1.0 406 invalid token");
-                    exit;
-                }
+					//Response back to API, missing parameters
+					header( "HTTP/1.0 406 invalid token" );
+					exit;
+				}
 
-                $attachment_file_path = get_attached_file($options['attachment_id']);
+				$attachment_file_path = get_attached_file( $options['attachment_id'] );
 
-                //Modify path if callback is for thumbnail
-                $attachment_file_path_size = trailingslashit(dirname($attachment_file_path)) . $metadata['sizes'][$image_size]['file'];
+				//Modify path if callback is for thumbnail
+				$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $metadata['sizes'][ $image_size ]['file'];
 
-                //We are done processing, end loop
-                break;
-            }
-            $fetched = $this->fetch($options);
+				//We are done processing, end loop
+				break;
+			}
+			$fetched = $this->fetch( $options );
 
-            $results_msg = $this->create_stat_string(
-                    $response['compression'], $response['before_smush'], $response['after_smush']
-            );
+			$results_msg = $this->create_stat_string(
+				$response['compression'], $response['before_smush'], $response['after_smush']
+			);
 
 
             $smush_meta[$size]['status_code'] = $options['status_code'];
