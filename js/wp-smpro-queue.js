@@ -73,7 +73,7 @@ jQuery('document').ready(function(){
         var startingpoint = jQuery.Deferred();
     
         startingpoint.resolve();
-        if(wp_smpro_start_id != null && typeof wp_smpro_start_id != 'undefined' ){
+        if(typeof wp_smpro_ids !== 'undefined' && wp_smpro_ids !== null){
             jQuery.each(wp_smpro_ids, function(ix, id) {
                 var da = new DeferredAjax({
                     attachment_id: id

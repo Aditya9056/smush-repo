@@ -32,7 +32,7 @@ if ( ! class_exists( 'WpSmushItPro_Admin' ) ) {
                 function init_settings(){
                     $this->settings = array(
 				'auto'        => __( 'Smush images on upload?', WP_SMPRO_DOMAIN ),
-				'remove_exif' => __( 'Remove Exif data', WP_SMPRO_DOMAIN ),
+				'remove_meta' => __( 'Remove Exif data', WP_SMPRO_DOMAIN ),
 				'progressive' => __( 'Allow progressive JPEGs', WP_SMPRO_DOMAIN ),
 				'gif_to_png'  => __( 'Allow Gif to Png conversion', WP_SMPRO_DOMAIN ),
 			);
@@ -126,7 +126,7 @@ if ( ! class_exists( 'WpSmushItPro_Admin' ) ) {
 			$opt_val    = intval( get_option( $opt_name, constant( $const_name ) ) );
 
 			return sprintf(
-				"<input type='text' name='%1\$s' id='%1\$s' value='1' %2\$s>", esc_attr( $opt_name ), checked( $opt_val )
+				"<input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>", esc_attr( $opt_name ), checked( $opt_val, true, false )
 			);
 		}
 

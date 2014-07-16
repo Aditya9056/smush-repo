@@ -45,14 +45,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				exit;
 			}
 
-			//If smushing wasn't succesfull
-			if ( $options['status_code'] != 4 ) {
-				//@todo update meta with suitable error
-				header( "HTTP/1.0 200" );
-				$output = array( 'status' => 1 );
-				echo json_encode( $output );
-				exit;
-			}
 			$this->process( $options );
 		}
 
@@ -105,10 +97,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			//If smushing wasn't succesfull
 			if ( $options['status_code'] != 4 ) {
-                            global $wp_sm_pro;
+				global $wp_sm_pro;
+
 				//Update metadata
 				$smush_meta[ $size ]['status_code'] = $options['status_code'];
-				$smush_meta[ $size ]['status_msg']  = $wp_sm_pro->status_msgs['smush_status'][$options['status_code']];
+				$smush_meta[ $size ]['status_msg']  = $wp_sm_pro->status_msgs['smush_status'][ $options['status_code'] ];
 
 				$metadata['smush_meta'] = $smush_meta;
 
