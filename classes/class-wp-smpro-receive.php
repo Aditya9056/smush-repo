@@ -73,7 +73,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				if ( empty( $image_details['file_id'] ) || $image_details['file_id'] != $options['file_id'] ) {
 					continue;
 				}
-
 				$size  = $image_size;
 				$token = $image_details['token'];
 
@@ -89,6 +88,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 				$attachment_file_path = get_attached_file( $options['attachment_id'] );
 				if ( $image_size == 'full' ){
+					echo $metadata['file'];
 					//Modify path if callback is for thumbnail
 					$attachment_file_size_path = trailingslashit( dirname( $attachment_file_path ) ) . $metadata['file'];
 				}else {
@@ -98,6 +98,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 				//We are done processing, end loop
 				break;
+			}
+			if ( empty( $attachment_file_size_path ) ) {
+				echo "file_id mismatch";
+				header( "HTTP/1.0 200" );
+				exit;
 			}
 
 			//If smushing wasn't succesfull
