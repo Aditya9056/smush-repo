@@ -1,5 +1,5 @@
 jQuery('document').ready(function(){
-    if( wp_smpro_start_id != null && typeof wp_smpro_start_id != 'undefined') {
+    if( typeof wp_smpro_start_id !== 'undefined' && wp_smpro_start_id !== null) {
         $start_id = wp_smpro_start_id;
     }
     // form the url
@@ -69,11 +69,11 @@ jQuery('document').ready(function(){
             return;
         }
         $left = (wp_smpro_total-wp_smpro_progress);
-        smpro_show_status('Sending ' + left + ' of total '+wp_smpro_total+' attachments');
+        smpro_show_status('Sending ' + $left + ' of total '+wp_smpro_total+' attachments');
         var startingpoint = jQuery.Deferred();
     
         startingpoint.resolve();
-        if(!empty(wp_smpro_ids) ){
+        if(typeof wp_smpro_ids !== 'undefined' && wp_smpro_ids !== null){
             jQuery.each(wp_smpro_ids, function(ix, id) {
                 var da = new DeferredAjax({
                     attachment_id: id
