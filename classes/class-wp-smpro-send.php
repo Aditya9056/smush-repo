@@ -30,7 +30,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			$this->process_meta_in_queue( $attachment_ID );
 
-			$next_id = $this->get_next_id( $attachment_ID );
+			$next_id = $this->get_next_id( intval($attachment_ID) );
 
 			echo $next_id;
 
@@ -41,14 +41,29 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 		function get_next_id( $id ) {
 			global $wpdb;
-			$query = "SELECT p.ID FROM {$wpdb->posts} p "
-			         . "LEFT JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id) "
-			         . "WHERE p.ID > $id AND (pm.metakey='wp-smpro-is-smushed' AND pm.metavalue=1) "
-			         . "AND p.post_type='attachment' "
-			         . "AND p.post_mime_type = 'image' LIMIT 1";
-
-			$next_id = $wpdb->get_var( $wpdb->prepare( $query ) );
-
+                        
+			$query = "SELECT p.ID FROM {$wpdb->posts} p ". 
+                            "INNER JOIN {$wpdb->postmeta} pm ON "
+                            . "(p.ID = pm.post_id) ".
+                            "LEFT JOIN {$wpdb->postmeta} pmm ON "
+                                ."(p.ID = pmm.post_id AND pmm.meta_key = 'wp-smpro-is-smushed') "
+                            ."WHERE p.post_type = 'attachment' "
+                                    . "AND ("
+                                    . "p.post_mime_type = 'image/jpeg' "
+                                    . "OR p.post_mime_type = 'image/png' "
+                                    . "OR p.post_mime_type = 'image/gif'"
+                                    . ") "
+                            ."AND p.ID>{$id} " 
+                                    ."AND ( "
+                                    . "("
+                                    . "pm.meta_key = 'wp-smpro-is-smushed' "
+                                    . "AND CAST(pm.meta_value AS CHAR) = '0'"
+                                    . ") "
+                                    . "OR  pmm.post_id IS NULL"
+                                    . ") "
+                                    . "GROUP BY p.ID "
+                                            . "ORDER BY p.post_date ASC LIMIT 0, 1";
+                        $next_id = $wpdb->get_var( $query );
 			return $next_id;
 		}
 

@@ -56,10 +56,26 @@ class WpSmProBulk {
 	$cache_key = 'wp-smpro-to-smush-count';
         
         $query = "SELECT COUNT(p.ID) FROM {$wpdb->posts} as p "
-        . "LEFT JOIN {$wpdb->postmeta} as pm ON (p.ID = pm.post_id) "
-        . "WHERE (pm.meta_key='wp-smpro-is-smushed' AND pm.meta_value=%d) "
-                . "AND p.post_type='attachment' "
-                . "AND p.post_mime_type = 'image'";
+              
+        ."INNER JOIN {$wpdb->postmeta} pm ON "
+                            . "(p.ID = pm.post_id) ".
+                            "LEFT JOIN {$wpdb->postmeta} pmm ON "
+                                ."(p.ID = pmm.post_id AND pmm.meta_key = 'wp-smpro-is-smushed') "
+                            ."WHERE (p.post_type = 'attachment') "
+                                    . "AND ("
+                                    . "p.post_mime_type = 'image/jpeg' "
+                                    . "OR p.post_mime_type = 'image/png' "
+                                    . "OR p.post_mime_type = 'image/gif'"
+                                    . ") "
+                            ."AND ( "
+                                    . "("
+                                    . "pm.meta_key = 'wp-smpro-is-smushed' "
+                                    . "AND CAST(pm.meta_value AS CHAR) = '0'"
+                                    . ") "
+                                    . "OR  pmm.post_id IS NULL"
+                                    . ") "
+                                    . "GROUP BY p.ID "
+                                            . "ORDER BY p.post_date ASC";
 
 	$count = wp_cache_get( $cache_key, 'count' );
 	if ( false === $count ) {
@@ -74,30 +90,27 @@ class WpSmProBulk {
     function start_id(){
         global $wpdb;
         
-        $args = array(
-            'post_status' => 'inherit',
-            'posts_per_page' => 1,
-            'post_type'=> 'attachment',
-            'post_mime_type' => 'image/jpeg,image/gif,image/jpg,image/png',
-            'fields' => 'ids'
-            );
-        $meta_query = 
-                array( 
-                    'relation' => 'OR',
-                    array( 
-                        'key' => 'wp-smpro-is-smushed',
-                        'value' => 1, 
-                        ),
-                    array( 
-                        'key' => 'wp-smpro-is-smushed', 
-                        'value' => 'a',
-                        'compare' => 'NOT EXISTS'
-                        )
-                );
-        $args['meta_query'] = $meta_query; $posts = new WP_Query( $args );
-        
-
-        $id = $posts->posts[0];
+        $query = "SELECT p.ID FROM {$wpdb->posts} p ". 
+                            "INNER JOIN {$wpdb->postmeta} pm ON "
+                            . "(p.ID = pm.post_id) ".
+                            "LEFT JOIN {$wpdb->postmeta} pmm ON "
+                                ."(p.ID = pmm.post_id AND pmm.meta_key = 'wp-smpro-is-smushed') "
+                            ."WHERE p.post_type = 'attachment' "
+                                    . "AND ("
+                                    . "p.post_mime_type = 'image/jpeg' "
+                                    . "OR p.post_mime_type = 'image/png' "
+                                    . "OR p.post_mime_type = 'image/gif'"
+                                    . ") "
+                            ."AND ( "
+                                    . "("
+                                    . "pm.meta_key = 'wp-smpro-is-smushed' "
+                                    . "AND CAST(pm.meta_value AS CHAR) = '0'"
+                                    . ") "
+                                    . "OR  pmm.post_id IS NULL"
+                                    . ") "
+                                    . "GROUP BY p.ID "
+                                            . "ORDER BY p.post_date ASC LIMIT 0, 1";
+                        $id = $wpdb->get_var( $query );
         
         return $id;
     }
