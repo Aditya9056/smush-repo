@@ -49,6 +49,8 @@ if (class_exists('WpSmProReceive')) {
             if ($options['status_code'] != 4) {
                 //@todo update meta with suitable error
                 header("HTTP/1.0 200");
+                $output = array('status'=>1);
+                echo json_encode($output);
                 exit;
             }
             $this->process($options);
