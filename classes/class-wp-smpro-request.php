@@ -168,8 +168,12 @@ class WpSmProRequest {
 		if ( empty( $payload ) ) {
 			return false;
 		}
+		//@todo, option for strict ssl
+		$args = array(
+			'sslverify' => false
+		);
 		//Check if service is running or not
-		$status = wp_remote_head( $req );
+		$status = wp_remote_head( $req, $args );
 
 		if ( is_wp_error( $status ) ) {
 			// Some issues with API

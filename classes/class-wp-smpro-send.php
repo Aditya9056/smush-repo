@@ -284,7 +284,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			$callback_url = add_query_arg(
 				array(
-					'action' => 'process_smushed_image'
+					'action' => 'receive_smushed_image'
 				), $callback_url
 			);
 
