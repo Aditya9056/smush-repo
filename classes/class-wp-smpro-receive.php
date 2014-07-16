@@ -13,15 +13,18 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			'attachment_id'    => '',
 			'file_id'          => '',
 			'file_url'         => '',
-			'received_token'   => '',
+			'token'            => '',
 			'status_code'      => '',
-			'request_err_code' => ''
+			'request_err_code' => '',
+			'compression'      => '',
+			'before_smush'     => '',
+			'after_smush'      => ''
 		);
 
 		public function __construct() {
 			// process callback from smush service
 			add_action( 'wp_ajax_receive_smushed_image', array( &$this, 'receive' ) );
-			add_action( 'wp_ajax_receive_process_smushed_image', array( &$this, 'receive' ) );
+			add_action( 'wp_ajax_nopriv_receive_smushed_image', array( &$this, 'receive' ) );
 		}
 
 		/**
@@ -35,7 +38,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$options = wp_parse_args( $response, $this->options );
 
-			if ( in_array( '', $options ) ) {
+			/**
+			 * Check for required parameters
+			 */
+			if ( empty( $options['attachment_id'] ) || empty( $options['status_code'] ) || empty( $options['file_id'] ) ) {
 				//Response back to API, missing parameters
 				header( "HTTP/1.0 406 Missing Parameters" );
 				exit;
@@ -62,12 +68,12 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				header( "HTTP/1.0 406 No Smush Meta" );
 				exit;
 			}
-//			echo "SMush Meta done";
+
 			//Get the media from thumbnail file id
 			foreach ( $smush_meta as $image_size => $image_details ) {
 
 				//Skip the loop if file id is not the same
-				if ( empty( $image_details['file_id'] ) || $image_details['file_id'] != $file_id ) {
+				if ( empty( $image_details['file_id'] ) || $image_details['file_id'] != $options['file_id'] ) {
 					continue;
 				}
 
@@ -75,7 +81,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$token = $image_details['token'];
 
 				//Check for Nonce, corresponding to media id
-				if ( $token != $options['received_token'] ) {
+				if ( $token != $options['token'] ) {
+					echo "Nonce failed";
 					error_log( "Nonce Verification failed for " . $options['attachment_id'] );
 
 					//Response back to API, missing parameters
@@ -86,15 +93,15 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$attachment_file_path = get_attached_file( $options['attachment_id'] );
 
 				//Modify path if callback is for thumbnail
-				$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $metadata['sizes'][ $image_size ]['file'];
+				$attachment_file_size_path = trailingslashit( dirname( $attachment_file_path ) ) . $metadata['sizes'][ $image_size ]['file'];
 
 				//We are done processing, end loop
 				break;
 			}
-			$fetched = $this->fetch( $options );
+			$fetched = $this->fetch( $options, $attachment_file_size_path );
 
 			$results_msg = $this->create_stat_string(
-				$response['compression'], $response['before_smush'], $response['after_smush']
+				$options['compression'], $options['before_smush'], $options['after_smush']
 			);
 
 
@@ -103,14 +110,14 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$metadata['smush_meta'] = $smush_meta;
 
-			wp_update_attachment_metadata( $attachment_id, $metadata );
-			error_log( json_encode( wp_get_attachment_metadata( $attachment_id ) ) );
+			wp_update_attachment_metadata( $options['attachment_id'], $metadata );
+//			error_log( json_encode( wp_get_attachment_metadata( $options['attachment_id'] ) ) );
 			//Response back to API, missing parameters
 			header( "HTTP/1.0 200 file updated" );
 			exit;
 		}
 
-		public function fetch( $options ) {
+		public function fetch( $options, $attachment_file_size_path ) {
 			//Loop
 			//@Todo: Add option for user, Strict ssl use wp_safe_remote_get or download_url
 			//Copied from download_url, as it does not provice to turn off strict ssl
@@ -118,11 +125,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			if ( ! $temp_file ) {
 				//For Debugging on node
-				echo "<pre>";
-				print_r( __( 'Could not create Temporary file.' ) );
-				echo "</pre>";
-
-				echo "Unsafe URL";
+				echo "no temp file";
 
 				//Response back to API, missing parameters
 				header( "HTTP/1.0 406 No temp file" );
@@ -192,14 +195,15 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			}
 
 			//Unlink the old file and replace it with new one
-			@unlink( $attachment_file_path_size );
+			@unlink( $attachment_file_size_path );
 
-			$success = @rename( $temp_file, $attachment_file_path_size );
+			$success = @rename( $temp_file, $attachment_file_size_path );
 
 			if ( ! $success ) {
-				copy( $temp_file, $attachment_file_path_size );
+				copy( $temp_file, $attachment_file_size_path );
 				unlink( $temp_file );
 			}
+			echo "File updated";
 		}
 
 		public function create_stat_string( $compression, $before_smush, $after_smush ) {
