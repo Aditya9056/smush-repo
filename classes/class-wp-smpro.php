@@ -87,7 +87,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 					if ( ! defined( $const_name ) ) {
 						$option_name = strtolower( $const_name );
 
-						define( $const_name, $this->smush_settings[ $key ] );
+						define( $const_name, get_option( 'wp_smpro_' . $key, $val ) );
 					}
 				}
 
@@ -133,26 +133,12 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				6 => __( 'File larger than allowed limit', WP_SMPRO_DOMAIN )
 			);
 
-			// this auto will get set to true, at the beginning we need to reverse that
-			$settings_msg = array(
-				'auto'        => __( 'Smush images on upload?', WP_SMPRO_DOMAIN ),
-				'remove_exif' => __( 'Remove Exif data', WP_SMPRO_DOMAIN ),
-				'progressive' => __( 'Allow progressive JPEGs', WP_SMPRO_DOMAIN ),
-				'gif_to_png'  => __( 'Allow Gif to Png conversion', WP_SMPRO_DOMAIN ),
-			);
-
 			$this->status_msgs = array(
 				'smush_status'    => $smush_status,
 				'request_err_msg' => $request_err_msg,
-				'settings_msg'    => $settings_msg
 			);
 		}
 
-		function init_settings() {
-			foreach ( $this->smush_settings as $key => $val ) {
-				$this->smush_settings[ $key ] = get_option( 'wp_smpro_' . $key, $val );
-			}
-		}
 	}
 
 }

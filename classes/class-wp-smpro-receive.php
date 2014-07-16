@@ -49,8 +49,7 @@ if (class_exists('WpSmProReceive')) {
             if ($options['status_code'] != 4) {
                 //@todo update meta with suitable error
                 header("HTTP/1.0 200");
-                $output = array('status'=>1);
-                echo json_encode($output);
+                echo json_encode(array('status'=>1));
                 exit;
             }
             $this->process($options);
@@ -105,9 +104,10 @@ if (class_exists('WpSmProReceive')) {
 
 			//If smushing wasn't succesfull
 			if ( $options['status_code'] != 4 ) {
+                            global $wp_sm_pro;
 				//Update metadata
 				$smush_meta[ $size ]['status_code'] = $options['status_code'];
-				$smush_meta[ $size ]['status_msg']  = $options['status_msg'];
+				$smush_meta[ $size ]['status_msg']  = $wp_sm_pro->status_msgs['smush_status'][$options['status_code']];
 
 				$metadata['smush_meta'] = $smush_meta;
 
@@ -120,7 +120,7 @@ if (class_exists('WpSmProReceive')) {
 			//Else replace image
 			$fetched = $this->fetch( $options, $attachment_file_size_path );
 
-			$results_msg = $this->create_stat_string(
+			$results_msg = $this->create_status_string(
 				$options['compression'], $options['before_smush'], $options['after_smush']
 			);
 
@@ -226,7 +226,7 @@ if (class_exists('WpSmProReceive')) {
 			echo "File updated";
 		}
 
-		public function create_stat_string( $compression, $before_smush, $after_smush ) {
+		public function create_status_string( $compression, $before_smush, $after_smush ) {
 			$savings_str = '';
 			$compressed  = ! empty( $compression ) ? $compression : '';
 

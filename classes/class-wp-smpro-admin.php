@@ -8,12 +8,7 @@ if ( ! class_exists( 'WpSmushItPro_Admin' ) ) {
 
 	class WpSmProAdmin {
 
-		public $settings = array(
-			'auto'        => 'Smush images on upload?',
-			'remove_exif' => 'Remove Exif data',
-			'progressive' => 'Allow progressive JPEGs',
-			'gif_to_png'  => 'Allow Gif to Png conversion',
-		);
+		public $settings;
 
 		public function __construct() {
 
@@ -28,10 +23,20 @@ if ( ! class_exists( 'WpSmushItPro_Admin' ) ) {
 			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
 
 			add_action( 'admin_init', array( &$this, 'register_settings' ) );
-
+                        
+                        $this->init_settings();
 			// instantiate bulk ui
 			$bulk = new WpSmProBulk();
 		}
+                
+                function init_settings(){
+                    $this->settings = array(
+				'auto'        => __( 'Smush images on upload?', WP_SMPRO_DOMAIN ),
+				'remove_exif' => __( 'Remove Exif data', WP_SMPRO_DOMAIN ),
+				'progressive' => __( 'Allow progressive JPEGs', WP_SMPRO_DOMAIN ),
+				'gif_to_png'  => __( 'Allow Gif to Png conversion', WP_SMPRO_DOMAIN ),
+			);
+                }
 
 		/**
 		 * Print column header for Smush.it results in the media library using

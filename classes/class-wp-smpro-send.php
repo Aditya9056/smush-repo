@@ -243,11 +243,12 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @return $smush_meta
 		 */
 		function process_response( $data, $ID, $size, $smush_meta ) {
+                    
 			//Get the returned file id and store it in meta
 			$file_id     = isset( $data->file_id ) ? $data->file_id : '';
 			$status_code = isset( $data->status_code ) ? $data->status_code : '';
-			$status_msg  = isset( $data->status_msg ) ? $data->status_msg : '';
-
+                        $request_err_code  = isset( $data->request_err_code ) ? $data->request_err_code : '';
+                        
 			//Fetch old smush meta and update with the file id returned by API
 			if ( empty( $smush_meta ) ) {
 				$smush_meta = wp_get_attachment_metadata( $ID );
@@ -258,7 +259,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				//Add file id, Status and Message
 				$smush_meta['smush_meta'][ $size ]['file_id']     = $file_id;
 				$smush_meta['smush_meta'][ $size ]['status_code'] = $status_code;
-				$smush_meta['smush_meta'][ $size ]['status_msg']  = $status_msg;
+				$smush_meta['smush_meta'][ $size ]['status_msg']  = $this->get_status_msg($status_code,$request_err_code);
 				$smush_meta['smush_meta'][ $size ]['token']       = $data->token;
 
 				update_post_meta( $ID, 'wp-smpro-is-smushed', 1 );
@@ -273,6 +274,16 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			return $smush_meta;
 		}
+                
+                function get_status_msg($status_code, $request_err_code){
+                    global $wp_sm_pro;
+                    $status_code =intval($status_code);
+                    
+                    $msg = $wp_sm_pro->status_msgs['smush_status'][$status_code];
+                    if($status_code===0 && $request_err_code!==''){
+                        $msg .= ': '.$wp_sm_pro->status_msgs['request_err_msg'][intval($request_err_code)];
+                    }
+                }
 
 		function invalidate( $img_path = '', $file_url = '' ) {
 			if ( empty( $img_path ) ) {
