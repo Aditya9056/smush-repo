@@ -138,6 +138,11 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				'request_err_msg' => $request_err_msg,
 			);
 		}
+		function init_settings() {
+			foreach ( $this->smush_settings as $key => $val ) {
+				$this->smush_settings[ $key ] = get_option( 'wp_smpro_' . $key, $val );
+			}
+		}
 
 	}
 
