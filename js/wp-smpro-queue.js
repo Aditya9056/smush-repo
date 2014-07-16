@@ -43,7 +43,7 @@ jQuery('document').ready(function(){
     var startingpoint=jQuery.Deferred();
     startingpoint.resolve();
 
-    if( wp_smpro_start_id != null && typeof wp_smpro_start_id != 'undefined') {
+    if( wp_smpro_ids !== null && typeof wp_smpro_ids !== 'undefined') {
         jQuery.each(wp_smpro_ids,function(ix,$id) {
             startingpoint=startingpoint.then( function() {
                 smpro_show_status("Making request for [" + $id + "]");
