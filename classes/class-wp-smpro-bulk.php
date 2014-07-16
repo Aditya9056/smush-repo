@@ -50,17 +50,14 @@ class WpSmProBulk {
      * @global type $wpdb
      * @return type
      */
-    function to_smush_count() {
+    function smushed_count() {
 	global $wpdb;
 
 	$cache_key = 'wp-smpro-to-smush-count';
         
         $query = "SELECT COUNT(p.ID) FROM {$wpdb->posts} as p "
-              
-        ."INNER JOIN {$wpdb->postmeta} pm ON "
-                            . "(p.ID = pm.post_id) ".
-                            "LEFT JOIN {$wpdb->postmeta} pmm ON "
-                                ."(p.ID = pmm.post_id AND pmm.meta_key = 'wp-smpro-is-smushed') "
+                            ."LEFT JOIN {$wpdb->postmeta} pm ON "
+                                ."(p.ID = pm.post_id) "
                             ."WHERE (p.post_type = 'attachment') "
                                     . "AND ("
                                     . "p.post_mime_type = 'image/jpeg' "
@@ -68,14 +65,9 @@ class WpSmProBulk {
                                     . "OR p.post_mime_type = 'image/gif'"
                                     . ") "
                             ."AND ( "
-                                    . "("
                                     . "pm.meta_key = 'wp-smpro-is-smushed' "
-                                    . "AND CAST(pm.meta_value AS CHAR) = '0'"
-                                    . ") "
-                                    . "OR  pmm.post_id IS NULL"
-                                    . ") "
-                                    . "GROUP BY p.ID "
-                                            . "ORDER BY p.post_date ASC";
+                                    . "AND CAST(pm.meta_value AS CHAR) = '1'"
+                                    . ") ";
 
 	$count = wp_cache_get( $cache_key, 'count' );
 	if ( false === $count ) {
@@ -130,7 +122,7 @@ class WpSmProBulk {
             $idstr = explode($ids,',');
         } else {
             $total = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'attachment'");
-            $progress = (int)$this->to_smush_count();
+            $progress = (int)$this->smushed_count();
             $start_id = $this->start_id();
         }
         
@@ -153,9 +145,14 @@ class WpSmProBulk {
                     ?>
                     <?php
                 } else {
-                    $this->progress_ui($progress);
+                    $percent = ($progress/$total)*100;
+                    $this->progress_ui($percent);
+                    $disabled = '';
+                    if($total===$progress){
+                        $disabled=' disabled="disabled"';
+                    }
                     ?>
-                    <input type="submit" id="wp-sm-pro-begin" class="button button-primary" value="Start" />
+                    <input type="submit" id="wp-sm-pro-begin" class="button button-primary"<?php echo $disabled; ?> value="Start" />
                     <?php
                 }
                 ?>
