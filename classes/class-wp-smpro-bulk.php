@@ -1,9 +1,4 @@
 <?php
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  * Description of WpSmProBulk
@@ -76,12 +71,12 @@ class WpSmProBulk {
 
         <div class="wrap">
             <div id="icon-upload" class="icon32"><br/></div>
-            <h2><?php _e('Bulk WP Smush.it Pro', WP_SMUSHIT_PRO_DOMAIN) ?></h2>
+            <h2><?php _e('Bulk WP Smush.it Pro', WP_SMPRO_DOMAIN) ?></h2>
             <div class="bulk_queue_wrap">
                 <div class="status-div"></div>
                 <?php
                 if ($total < 1) {
-                    _e("<p>You don't appear to have uploaded any images yet.</p>", WP_SMUSHIT_PRO_DOMAIN);
+                    _e("<p>You don't appear to have uploaded any images yet.</p>", WP_SMPRO_DOMAIN);
                     ?>
                     <?php
                 } else {
