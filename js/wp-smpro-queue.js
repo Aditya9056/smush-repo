@@ -26,38 +26,23 @@ jQuery('document').ready(function(){
     }
     
     function smproRequest($id) {
-        return $.ajax({
+        return jQuery.ajax({
             type: "GET",
             data: {attachment_ID:$id},
-            url: $url,
+            url: $url
         }).done(function(response){
                 smpro_show_status("Sent for smushing [" + $id + "]");
                 smpro_progress();
-                return $start_id = praseInt(response);
+                return $start_id = parseInt(response);
             }).fail(function(response){
                 smpro_show_status("Smush request failed [" + $id+"]");
                 smpro_progress();
             });
     }
 
-    var startingpoint=jQuery.Deferred();
-    startingpoint.resolve();
+    
 
-    if( wp_smpro_ids !== null && typeof wp_smpro_ids !== 'undefined') {
-        jQuery.each(wp_smpro_ids,function(ix,$id) {
-            startingpoint=startingpoint.then( function() {
-                smpro_show_status("Making request for [" + $id + "]");
-                return smproRequest($id);
-            });
-        });
-    }else{
-        for (var i = 0; i < $init_left; i++){
-            startingpoint=startingpoint.then( function() {
-                smpro_show_status("Making request for [" + $start_id + "]");
-                return smproRequest($start_id);
-            });
-        }
-    }
+    
 
     
     jQuery('.bulk_queue_wrap'). on('click', 'input#wp-sm-pro-begin', function(e){
@@ -68,32 +53,27 @@ jQuery('document').ready(function(){
             smpro_show_status('Nothing to send');
             return;
         }
+        
         $left = (wp_smpro_total-wp_smpro_progress);
+        
         smpro_show_status('Sending ' + $left + ' of total '+wp_smpro_total+' attachments');
-        var startingpoint = jQuery.Deferred();
-    
+        
+        var startingpoint=jQuery.Deferred();
         startingpoint.resolve();
-        if(typeof wp_smpro_ids !== 'undefined' && wp_smpro_ids !== null){
-            jQuery.each(wp_smpro_ids, function(ix, id) {
-                var da = new DeferredAjax({
-                    attachment_id: id
+        
+        if( wp_smpro_ids.length>0) {
+            jQuery.each(wp_smpro_ids,function(ix,$id) {
+                startingpoint=startingpoint.then( function() {
+                    smpro_show_status("Making request for [" + $id + "]");
+                    return smproRequest($id);
                 });
-                jQuery.when(startingpoint ).then(function() {
-                    da.invoke();
-                });
-                startingpoint= da;
             });
-        } else {
+        }else{
             for (var i = 0; i < $init_left; i++){
-                
-                var da = new DeferredAjax({
-                    attachment_id: id
+                startingpoint=startingpoint.then( function() {
+                    smpro_show_status("Making request for [" + $start_id + "]");
+                    return smproRequest($start_id);
                 });
-                jQuery.when(startingpoint ).then(function() {
-                    da.invoke();
-                });
-                startingpoint= da;
-            
             }
         }
         

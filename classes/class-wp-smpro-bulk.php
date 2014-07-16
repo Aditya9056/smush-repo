@@ -73,12 +73,32 @@ class WpSmProBulk {
     
     function start_id(){
         global $wpdb;
-        $query = "SELECT p.ID FROM {$wpdb->posts} as p "
-            . "LEFT JOIN {$wpdb->postmeta} as pm ON (p.ID = pm.post_id) "
-                . "AND p.post_type='attachment' "
-                . "AND p.post_mime_type = 'image' LIMIT 1";
+        
+        $args = array(
+            'post_status' => 'inherit',
+            'posts_per_page' => 1,
+            'post_type'=> 'attachment',
+            'post_mime_type' => 'image/jpeg,image/gif,image/jpg,image/png',
+            'fields' => 'ids'
+            );
+        $meta_query = 
+                array( 
+                    'relation' => 'OR',
+                    array( 
+                        'key' => 'wp-smpro-is-smushed',
+                        'value' => 1, 
+                        ),
+                    array( 
+                        'key' => 'wp-smpro-is-smushed', 
+                        'value' => 'a',
+                        'compare' => 'NOT EXISTS'
+                        )
+                );
+        $args['meta_query'] = $meta_query; $posts = new WP_Query( $args );
+        
 
-        $id = $wpdb->get_var( $wpdb->prepare( $query, 1 ) );
+        $id = $posts->posts[0];
+        
         return $id;
     }
 
