@@ -168,16 +168,24 @@ class WpSmProRequest {
 		if ( empty( $payload ) ) {
 			return false;
 		}
+		//Check if service is running or not
+		$status = wp_remote_head( $req );
 
-		return wp_remote_post( $req, array(
-				'headers'    => $headers,
-				'body'       => $payload,
-				'user-agent' => WP_SMPRO_USER_AGENT,
-				'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
-				//Remove this code
-				'sslverify'  => false
-			)
+		if ( is_wp_error( $status ) ) {
+			// Some issues with API
+			error_log("API is not accessible");
+			return;
+		}
+
+		$req_args = array(
+			'headers'    => $headers,
+			'body'       => $payload,
+			'user-agent' => WP_SMPRO_USER_AGENT,
+			'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
+			//Remove this code
+			'sslverify'  => false
 		);
+		return wp_remote_post( $req, $req_args );
 	}
 
 }

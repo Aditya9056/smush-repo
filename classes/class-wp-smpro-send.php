@@ -39,6 +39,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			wp_update_attachment_metadata( $attachment_ID, $meta );
 
 //			wp_die( $attachment_ID );
+			wp_redirect( preg_replace( '|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer() ) );
+
+			exit();
 		}
 
 		/**
@@ -79,7 +82,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 					continue;
 				}
 
-				$this->send_each_size( $attachment_file_path, $attachment_file_url, $ID, $size_key, $size_data );
+				$meta = $this->send_each_size( $attachment_file_path, $attachment_file_url, $ID, $size_key, $meta );
 			}
 
 			return $meta;
@@ -108,20 +111,23 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		}
 
 		/**
+		 * Process the each thumbnail size
 		 *
 		 * @param type $file_path
 		 * @param type $file_url
 		 * @param type $ID
-		 * @param type $key
+		 * @param type $size
 		 * @param type $meta
+		 *
+		 * return $smush_meta
 		 */
-		function send_each_size( $file_path, $file_url, $ID, $key, $meta ) {
+		function send_each_size( $file_path, $file_url, $ID, $size, $meta ) {
 
 			// We take the original image. The 'sizes' will all match the same URL and
 			// path. So just get the dirname and rpelace the filename.
-			$attachment_file_path_size = trailingslashit( dirname( $file_path ) ) . $meta['file'];
+			$attachment_file_path_size = trailingslashit( dirname( $file_path ) ) . $meta['sizes'][ $size ]['file'];
 
-			$attachment_file_url_size = trailingslashit( dirname( $file_url ) ) . $meta['file'];
+			$attachment_file_url_size = trailingslashit( dirname( $file_url ) ) . $meta['sizes'][ $size ]['file'];
 
 			if ( defined( WP_SMPRO_DEBUG ) && WP_SMPRO_DEBUG ) {
 				echo "DEBUG: attachment_file_path_size=[" . $attachment_file_path_size . "]<br />";
@@ -129,7 +135,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			}
 
 
-			$this->send( $attachment_file_path_size, $attachment_file_url_size, $ID, $key );
+			return $this->send( $attachment_file_path_size, $attachment_file_url_size, $ID, $size, $meta );
 		}
 
 
@@ -143,7 +149,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 *
 		 * @return string, Message containing compression details
 		 */
-		function send( $img_path = '', $img_url = '', $ID = 0, $size = 'full' ) {
+		function send( $img_path = '', $img_url = '', $ID = 0, $size = 'full', $smush_meta ) {
 
 			$invalid = $this->invalidate( $img_path, $img_url );
 
@@ -165,18 +171,39 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			//For testing purpose
 //			error_log( json_encode( $data ) );
 			if ( empty( $data ) ) {
-				//Some code error
-				return __( "Error processing file, no data recieved", WP_SMPRO_DOMAIN );
+				//File was never processed, return the original meta
+				return $smush_meta;
 			}
+			//If there is no previous smush_data
+			if ( empty ( $smush_meta ['smush_meta'] ) ) {
+				$smush_meta['smush_meta'] = array(
+					$size => array()
+				);
+			}
+
 			//Check for error
 			if ( $data->status_code === 0 ) {
-				return $data->status_message;
+
+				$smush_meta['smush_meta'][ $size ]['status_msg'] = $data->status_msg;
+
+				return $smush_meta;
 			}
 
-			return $this->process_response( $data, $ID );
+			$smush_meta = $this->process_response( $data, $ID, $size, $smush_meta );
+
+			return $smush_meta;
 		}
 
-		function process_response( $data, $ID ) {
+		/**
+		 * Process the response from API
+		 *
+		 * @param $data
+		 * @param $ID
+		 * @param $smush_meta
+		 *
+		 * @return $smush_meta
+		 */
+		function process_response( $data, $ID, $size, $smush_meta ) {
 			//Get the returned file id and store it in meta
 			$file_id     = isset( $data->file_id ) ? $data->file_id : '';
 			$status_code = isset( $data->status_code ) ? $data->status_code : '';
@@ -194,14 +221,18 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				$smush_meta['smush_meta'][ $size ]['status_code'] = $status_code;
 				$smush_meta['smush_meta'][ $size ]['status_msg']  = $status_msg;
 				$smush_meta['smush_meta'][ $size ]['token']       = $data->token;
+
 				update_post_meta( $ID, 'wp-smpro-is-smushed', 1 );
 				$this->recount( 1 );
+
 			} else {
 				//Return a error
 				$smush_meta['smush_meta'][ $size ]['status_msg'] = "Unable to process the image, please try again later";
 				update_post_meta( $ID, 'wp-smpro-is-smushed', 0 );
 				$this->recount( - 1 );
 			}
+
+			return $smush_meta;
 		}
 
 		function invalidate( $img_path = '', $file_url = '' ) {
