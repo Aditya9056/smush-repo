@@ -33,6 +33,7 @@ class WpSmProBulk {
         wp_register_script( 'wp-smpro-queue', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
         //@todo enqueue minified script if not debugging
         //wp_register_script( 'wp-smpro-queue-debug', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
+        wp_register_style('wp-smpro-queue', trailingslashit(WP_SMPRO_DIR).'css/wp-smpro-queue.css');
     }
     
     /**
@@ -40,6 +41,7 @@ class WpSmProBulk {
      */
     function enqueue(){
         wp_enqueue_script( 'wp-smpro-queue' );
+        wp_enqueue_style( 'wp-smpro-queue' );
     }
     
     /**
