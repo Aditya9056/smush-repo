@@ -47,12 +47,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				exit;
 			}
 
-			//If smushing wasn't succesfull
-			if ( $options['status_code'] != 4 ) {
-				//@todo update meta with suitable error
-				header( "HTTP/1.0 200" );
-				exit;
-			}
 			$this->process( $options );
 		}
 
@@ -98,6 +92,22 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				//We are done processing, end loop
 				break;
 			}
+
+			//If smushing wasn't succesfull
+			if ( $options['status_code'] != 4 ) {
+				//Update metadata
+				$smush_meta[ $size ]['status_code'] = $options['status_code'];
+				$smush_meta[ $size ]['status_msg']  = $options['status_msg'];
+
+				$metadata['smush_meta'] = $smush_meta;
+
+				wp_update_attachment_metadata( $options['attachment_id'], $metadata );
+
+				//@todo update meta with suitable error
+				header( "HTTP/1.0 200" );
+				exit;
+			}
+			//Else replace image
 			$fetched = $this->fetch( $options, $attachment_file_size_path );
 
 			$results_msg = $this->create_stat_string(
