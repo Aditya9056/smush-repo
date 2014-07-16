@@ -17,7 +17,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			'attachment_id'    => '',
 			'file_id'          => '',
 			'file_url'         => '',
-			'received_token'   => '',
+			'token'   => '',
 			'status_code'      => '',
 			'request_err_code' => ''
 		);
@@ -25,7 +25,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		public function __construct() {
 			// process callback from smush service
 			add_action( 'wp_ajax_receive_smushed_image', array( &$this, 'receive' ) );
-			add_action( 'wp_ajax_receive_process_smushed_image', array( &$this, 'receive' ) );
+			add_action( 'wp_ajax_nopriv_receive_smushed_image', array( &$this, 'receive' ) );
 		}
 
 		/**
@@ -39,7 +39,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$options = wp_parse_args( $response, $this->options );
 
-			if ( in_array( '', $options ) ) {
+			if ( empty ( $options['attachment_id'] ) || empty ( $options['file_id'] ) || empty ( $options['status_code'] ) ) {
+				echo "Missing Parameters";
 				//Response back to API, missing parameters
 				header( "HTTP/1.0 406 Missing Parameters" );
 				exit;
@@ -107,6 +108,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 				wp_update_attachment_metadata( $options['attachment_id'], $metadata );
 
+				echo "Status updated";exit;
 				//@todo update meta with suitable error
 				header( "HTTP/1.0 200" );
 				exit;
@@ -126,6 +128,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			wp_update_attachment_metadata( $options['attachment_id'], $metadata );
 //			error_log( json_encode( wp_get_attachment_metadata( $options['attachment_id'] ) ) );
+
+			echo "File updated";
 			//Response back to API, missing parameters
 			header( "HTTP/1.0 200 file updated" );
 			exit;
@@ -217,7 +221,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				copy( $temp_file, $attachment_file_size_path );
 				unlink( $temp_file );
 			}
-			echo "File updated";
 		}
 
 		public function create_status_string( $compression, $before_smush, $after_smush ) {
