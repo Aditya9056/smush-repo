@@ -57,9 +57,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		function process( $options = array() ) {
 			global $wp_sm_pro;
 			//Get Image sizes detail for media
-			$metadata = wp_get_attachment_metadata( $options['attachment_id'] );
-
-			$smush_meta = ! empty( $metadata['smush_meta'] ) ? $metadata['smush_meta'] : '';
+			$smush_meta = get_post_meta( $options['attachment_id'], 'smush_meta', true );
 
 			//Empty smush meta, probably some error on our end
 			if ( empty( $smush_meta ) ) {

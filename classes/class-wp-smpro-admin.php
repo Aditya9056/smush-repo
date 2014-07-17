@@ -54,9 +54,12 @@ if ( ! class_exists( 'WpSmushItPro_Admin' ) ) {
 		 */
 		function custom_column( $column_name, $id ) {
 			if ( 'smushit' == $column_name ) {
-				$data = wp_get_attachment_metadata( $id );
-				if ( isset( $data['smush_meta'] ) && ! empty( $data['smush_meta']['full'] ) ) {
-					print $data['smush_meta']['full']['status_msg'];
+				$smush_meta = get_post_meta( $id, 'smush_meta', true );
+
+				if ( ! empty( $smush_meta ) && ! empty( $smush_meta['full'] ) ) {
+
+					echo $smush_meta['full']['status_msg'];
+
 					printf( "<br><a href=\"admin.php?action=wp_smpro_queue&amp;attachment_ID=%d\">%s</a>", $id, __( 'Re-smush', WP_SMPRO_DOMAIN ) );
 				} else {
 					if ( wp_attachment_is_image( $id ) ) {
