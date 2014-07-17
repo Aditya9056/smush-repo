@@ -41,9 +41,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$options = wp_parse_args( $response, $this->options );
 
 			if ( empty ( $options['filename'] ) || empty ( $options['file_id'] ) || empty ( $options['status_code'] ) || empty ( $options['attachment_id'] ) ) {
-				echo "Missing Parameters";
+				error_log("Missing Parameters for attachment[".$options['attachment_id']."], file id[".$options['file_id']."]");
 				//Response back to API, missing parameters
-				header( "HTTP/1.0 406 Missing Parameters" );
+                                $this->callback_response();
 				exit;
 			}
 
@@ -62,9 +62,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			//Empty smush meta, probably some error on our end
 			if ( empty( $smush_meta ) ) {
-				echo "No meta";
+                                error_log("No metadata for attachment[".$options['attachment_id']."], file id[".$options['file_id']."]");
+				$this->callback_response();
 				//Response back to API, missing parameters
-				header( "HTTP/1.0 406 No Smush Meta" );
 				exit;
 			}
 			foreach ( $smush_meta as $thumb_size => $thumb_details ){
@@ -79,11 +79,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$token = $smush_meta[ $size ]['token'];
 			//Check for Nonce, corresponding to media id
 			if ( $token != $options['token'] ) {
-				echo "Nonce failed";
-				error_log( "Nonce Verification failed for " . $options['attachment_id'] );
-
+				error_log("Nonce Verification failed for attachment[".$options['attachment_id']."], file id[".$options['file_id']."]");
+                                $this->callback_response();
 				//Response back to API, missing parameters
-				header( "HTTP/1.0 406 invalid token" );
 				exit;
 			}
 
@@ -92,8 +90,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$attachment_file_size_path = trailingslashit( dirname( $attachment_file_path ) ) . $options['filename'];
 
 			if ( empty( $attachment_file_size_path ) ) {
-				echo "No file path";
-				header( "HTTP/1.0 200" );
+                                error_log("No file path for attachment[".$options['attachment_id']."], file id[".$options['file_id']."]");
+                                $this->callback_response();
 				exit;
 			}
 
@@ -106,10 +104,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$smush_meta[ $size ]['status_msg']  = $wp_sm_pro->sender->get_status_msg( $options['status_code'], $options['request_err_code'] );
 
 				update_post_meta ( $options['attachment_id'], 'smush_meta', $smush_meta );
-
-				$this->callback_response(false);
+                                
+                                error_log("Smushing failed for attachment[".$options['attachment_id']."], file id[".$options['file_id']."]");
+				$this->callback_response();
 				//@todo update meta with suitable error
-				header( "HTTP/1.0 200" );
 				exit;
 			}
 			//Else replace image
@@ -124,11 +122,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$smush_meta[ $size ]['status_msg']  = $results_msg;
 
 			update_post_meta ( $options['attachment_id'], 'smush_meta', $smush_meta );
-//          error_log( json_encode( wp_get_attachment_metadata( $options['attachment_id'] ) ) );
-
-			$this->callback_response(true);
-			//Response back to API, missing parameters
-			header( "HTTP/1.0 200 file updated" );
+                        error_log("File updated for attachment[".$options['attachment_id']."], file id[".$options['file_id']."]");
+                        $this->callback_response();
 			exit;
 		}
 
@@ -140,10 +135,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			if ( ! $temp_file ) {
 				//For Debugging on node
-				echo "no temp file";
-
-				//Response back to API, missing parameters
-				header( "HTTP/1.0 406 No temp file" );
+                                error_log("No temp file for attachment[" . $options['attachment_id'] . "], file id[" . $options['file_id'] . "]");
+                                $this->callback_response(false);
+                                //Response back to API, missing parameters
 				exit;
 			}
 
@@ -159,34 +153,27 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			if ( is_wp_error( $response ) ) {
 				unlink( $temp_file );
 
-				//For Debugging on node
-				echo "<pre>";
-				print_r( $response );
-				echo "</pre>";
-
-				echo "Unsafe URL";
+				error_log("Call back from unsafe URL for attachment[".$options['attachment_id']."], file id[".$options['file_id']."]");
+				$this->callback_response(false);
 
 				//Response back to API, missing parameters
-				header( "HTTP/1.0 406 Unsafe URL" );
 				exit;
 			}
 
 			if ( 200 != wp_remote_retrieve_response_code( $response ) ) {
-				echo trim( wp_remote_retrieve_response_message( $response ) );
 
 				unlink( $temp_file );
-				header( "HTTP/1.0 406  " . trim( wp_remote_retrieve_response_message( $response ) ) );
+                                error_log("Bad callback status for attachment[".$options['attachment_id']."], file id[".$options['file_id']."]");
 			}
 
 			$content_md5 = wp_remote_retrieve_header( $response, 'content-md5' );
-
+                        
 			if ( $content_md5 ) {
 				$md5_check = verify_file_md5( $temp_file, $content_md5 );
 				if ( is_wp_error( $md5_check ) ) {
 					unlink( $temp_file );
-					echo "File check";
-					//Response back to API, missing parameters
-					header( "HTTP/1.0 406 URL authentication error" );
+					error_log("File check failed for attachment[" . $options['attachment_id'] . "], file id[" . $options['file_id'] . "]");
+                                        $this->callback_response(false);
 					exit;
 				}
 			}
@@ -194,18 +181,16 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			if ( is_wp_error( $temp_file ) ) {
 				@unlink( $temp_file );
 
-				echo "File path error";
-				error_log( sprintf( __( "Error downloading file (%s)", WP_SMPRO_DOMAIN ), $temp_file->get_error_message() ) );
-
-				header( "HTTP/1.0 406 File not downloaded" );
+				error_log("File path error for attachment[" . $options['attachment_id'] . "], file id[" . $options['file_id'] . "]");
+                                error_log( sprintf( __( "Error downloading file (%s)", WP_SMPRO_DOMAIN ), $temp_file->get_error_message() ) );
+                                $this->callback_response(false);
 				exit;
 			}
 
 			if ( ! file_exists( $temp_file ) ) {
+                                error_log("Local server error for attachment[" . $options['attachment_id'] . "], file id[" . $options['file_id'] . "]");
 				error_log( sprintf( __( "Unable to locate downloaded file (%s)", WP_SMPRO_DOMAIN ), $temp_file ) );
-
-				echo "Local server error";
-				header( "HTTP/1.0 406 Downloaded file not found" );
+                                $this->callback_response(false);
 				exit;
 			}
 
@@ -218,7 +203,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				copy( $temp_file, $attachment_file_size_path );
 				unlink( $temp_file );
 			}
-		}
+                    }
 
 		public function create_status_string( $compression, $before_smush, $after_smush ) {
 			$savings_str = '';
@@ -238,11 +223,16 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                 
                 /**
                  * Respond to service callback
+                 * If this response doesn't go to service,
+                 * Or a status 0 is sent,
+                 * service will resend callback
+                 * assuming server is busy or down or something
                  * 
-                 * @param boolean $done Is callback done? If not service will call again
+                 * @param boolean $done Is callback done?
                  */
                 public function callback_response($done=true){
                         echo json_encode(array('status' => (int)$done));
+                        header( "HTTP/1.0 200" );
                 }
 
 	}
