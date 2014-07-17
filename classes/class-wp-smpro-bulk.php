@@ -114,7 +114,7 @@ class WpSmProBulk {
 	    global $wpdb;
 
         $idstr = isset($_REQUEST['ids'])?$_REQUEST['ids']:'';
-        $ids = explode(',',$idstr);
+        $ids = (!empty($idstr))?explode(',',$idstr):array();
         $start_id = 'null';
         if (!empty($ids)) {
             $total = count($ids);
