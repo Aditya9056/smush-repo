@@ -15,13 +15,14 @@ jQuery('document').ready(function(){
     $check_queue = [];
     
     $queue_done = 0;
+    var smpro_poll_check;
     
     function smpro_progress(){
         wp_smpro_progress++;
         $progress = (wp_smpro_progress/wp_smpro_total)*100;
         if($progress===100){
             jQuery('input#wp-sm-pro-begin').prop('disabled',true);
-            var smpro_poll_check = setInterval(function() {
+            smpro_poll_check = setInterval(function() {
                 qHandler();
             }, 1000);
         }
