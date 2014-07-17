@@ -58,6 +58,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			global $wp_sm_pro;
 			//Get Image sizes detail for media
 			$smush_meta = get_post_meta( $options['attachment_id'], 'smush_meta', true );
+			$metadata = wp_get_attachment_metadata( $options['attachment_id'] );
 
 			//Empty smush meta, probably some error on our end
 			if ( empty( $smush_meta ) ) {
@@ -95,7 +96,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$attachment_file_path = get_attached_file( $options['attachment_id'] );
 			//Modify path if callback is for thumbnail
-			$attachment_file_size_path = trailingslashit( dirname( $attachment_file_path ) ) . $metadata['sizes'][ $size ]['file'];
+			$attachment_file_size_path = trailingslashit( dirname( $attachment_file_path ) ) . $options['filename'];
 
 			if ( empty( $attachment_file_size_path ) ) {
 				echo "No file path";
@@ -111,8 +112,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$smush_meta[ $size ]['status_code'] = $options['status_code'];
 				$smush_meta[ $size ]['status_msg']  = $wp_sm_pro->sender->get_status_msg( $options['status_code'], $options['request_err_code'] );
 
-				$metadata['smush_meta'] = $smush_meta;
-				wp_update_attachment_metadata( $options['attachment_id'], $metadata );
+				update_post_meta ( $options['attachment_id'], 'smush_meta', $smush_meta );
 
 				echo "Status updated";
 				//@todo update meta with suitable error
@@ -130,10 +130,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$smush_meta[ $size ]['status_code'] = $options['status_code'];
 			$smush_meta[ $size ]['status_msg']  = $results_msg;
 
-			$metadata['smush_meta'] = $smush_meta;
-
 			echo "Status " . $options['status_code'];
-			wp_update_attachment_metadata( $options['attachment_id'], $metadata );
+			update_post_meta ( $options['attachment_id'], 'smush_meta', $smush_meta );
 //          error_log( json_encode( wp_get_attachment_metadata( $options['attachment_id'] ) ) );
 
 			echo "File updated";
