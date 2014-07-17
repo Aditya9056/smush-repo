@@ -114,7 +114,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 				update_post_meta ( $options['attachment_id'], 'smush_meta', $smush_meta );
 
-				echo "Status updated";
+				echo json_encode(array('status'=>1));
 				//@todo update meta with suitable error
 				header( "HTTP/1.0 200" );
 				exit;

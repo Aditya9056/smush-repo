@@ -120,7 +120,8 @@ class WpSmProBulk {
             $total = count($ids);
             $progress = 0;
         } else {
-            $total = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'attachment'");
+            $total = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'attachment'"
+            . " AND (post_mime_type= 'image/jpeg' OR post_mime_type= 'image/png' OR post_mime_type= 'image/gif')");
             $progress = (int)$this->smushed_count();
             $start_id = $this->start_id();
         }
