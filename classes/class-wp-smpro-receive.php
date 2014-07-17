@@ -104,7 +104,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$smush_meta[ $size ]['status_msg']  = $wp_sm_pro->sender->get_status_msg( $options['status_code'], $options['request_err_code'] );
 
 				update_post_meta ( $options['attachment_id'], 'smush_meta', $smush_meta );
-                                
                                 error_log("Smushing failed for attachment[".$options['attachment_id']."], file id[".$options['file_id']."]");
 				$this->callback_response();
 				//@todo update meta with suitable error

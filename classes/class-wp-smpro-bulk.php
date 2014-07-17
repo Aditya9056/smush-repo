@@ -10,6 +10,7 @@ class WpSmProBulk {
     public function __construct() {
         add_action('admin_init', array(&$this, 'admin_init'));
         add_action('admin_menu', array(&$this, 'admin_menu'));
+        add_action( 'wp_ajax_wp_smpro_check', array( &$this, 'check_status' ) );
     }
 
     /**
@@ -42,6 +43,30 @@ class WpSmProBulk {
     function enqueue(){
         wp_enqueue_script( 'wp-smpro-queue' );
         wp_enqueue_style( 'wp-smpro-queue' );
+    }
+    
+    function check_status(){
+        
+        $id = $_GET[attachment_ID];
+        if(empty($id) || $id<=0){
+            echo 0;
+            die();
+        }
+        $smush_meta = get_post_meta( $id, 'smush_meta', true );
+
+        if ( empty( $smush_meta ) || empty( $smush_meta['full'] ) ) {
+            echo 1;
+            die();
+        }
+
+        $code = intval($smush_meta['full']['status_code']);
+        if($code===4 || $code ===6){
+            echo 2;
+            die();
+        }
+        
+        echo -1;        
+        die();
     }
     
     /**
@@ -126,6 +151,7 @@ class WpSmProBulk {
             $start_id = $this->start_id();
         }
         
+        $remaining = $total - $progress;
         ?>
         <script type="text/javascript">
             var wp_smpro_total = <?php echo $total; ?>;
@@ -138,19 +164,34 @@ class WpSmProBulk {
             <div id="icon-upload" class="icon32"><br/></div>
             <h2><?php _e('Bulk WP Smush.it Pro', WP_SMPRO_DOMAIN) ?></h2>
             <div class="bulk_queue_wrap">
-                <div class="status-div"></div>
+             
                 <?php
                 if ($total < 1) {
                     _e("<p>You don't appear to have uploaded any images yet.</p>", WP_SMPRO_DOMAIN);
                     ?>
                     <?php
                 } else {
-                    $percent = ($progress/$total)*100;
-                    $this->progress_ui($percent);
                     $disabled = '';
-                    if($total===$progress){
+                    ?>
+                <div class="status-div"> 
+                    <span class="single-status">
+                    <?php
+                    if($remaining===0){
                         $disabled=' disabled="disabled"';
+                        _e('All the images are already smushed',WP_SMPRO_DOMAIN);
+                    }else{
+                        printf(__('Ready to send %1d of %2d attachments for smushing',WP_SMPRO_DOMAIN),$remaining, $total);
                     }
+                    ?>
+                    </span>
+                </div>
+                    <?php
+                    $percent = ($progress/$total)*100;
+                    $this->progress_ui($percent,'wp-smpro-sent');
+                    ?>
+                    <?php
+                    $percent = ($progress/$total)*100;
+                    $this->progress_ui($percent,'wp-smpro-received');
                     ?>
                     <input type="submit" id="wp-sm-pro-begin" class="button button-primary"<?php echo $disabled; ?> value="Start" />
                     <?php
@@ -167,9 +208,9 @@ class WpSmProBulk {
      * @param type $progress
      * @return string
      */
-    function progress_ui($progress) {
+    function progress_ui($progress, $id) {
         $progress_ui = '
-            <div id="wp-smpro-progressbar">
+            <div id="'.$id.'" class="wp-smpro-progressbar">
                 <div style="width:' . $progress . '%"></div>
             </div>
             ';
