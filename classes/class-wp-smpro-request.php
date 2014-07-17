@@ -68,7 +68,7 @@ class WpSmProRequest {
 			'attachment_id' => 0,
 			'progressive'   => true,
 			'gif_to_png'    => true,
-			'remove_meta'   => true
+			'remove_meta'   => true,
 		);
 
 		// set values for the boolean fields
