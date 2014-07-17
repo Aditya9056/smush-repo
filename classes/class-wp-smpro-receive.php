@@ -67,23 +67,16 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				header( "HTTP/1.0 406 No Smush Meta" );
 				exit;
 			}
-			if ( basename( $metadata['file'] ) == $options['filename'] ) {
-				$size = 'full';
-			} else {
-				//Get the media from thumbnail file id
-				foreach ( $metadata['sizes'] as $image_size => $image_details ) {
+			foreach ( $smush_meta as $thumb_size => $thumb_details ){
 
-					//Skip the loop if file id is not the same
-					if ( $image_details['file'] != $options['filename'] ) {
-						continue;
-					}
-					$size = $image_size;
-					//We are done processing, end loop
+				if ( $thumb_details['file_id'] == $options['file_id'] ) {
+					$size = $thumb_size;
 					break;
 				}
-			}
-			$token = $smush_meta[ $size ]['token'];
 
+			}
+
+			$token = $smush_meta[ $size ]['token'];
 			//Check for Nonce, corresponding to media id
 			if ( $token != $options['token'] ) {
 				echo "Nonce failed";
