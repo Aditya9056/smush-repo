@@ -210,12 +210,14 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$compressed  = ! empty( $compression ) ? $compression : '';
 
 			if ( ! empty( $before_smush ) && ! empty( $after_smush ) ) {
-				$savings_str = $before_smush - $after_smush . 'Kb';
+				$savings_str = number_format_i18n(
+                                        (($before_smush - $after_smush)/1024),
+                                2);
 			}
 			if ( $compressed == 0 ) {
 				$results_msg = __( 'Optimised', WP_SMPRO_DOMAIN );
 			} else {
-				$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), $compressed, $savings_str );
+				$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), $compressed, $savings_str . 'Kb' );
 			}
 
 			return $results_msg;
