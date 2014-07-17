@@ -92,7 +92,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		function process_meta_in_queue( $attachment_ID ) {
 
 			$metadata = wp_get_attachment_metadata( $attachment_ID );
-			$this->queue_on_upload( $metadata , $attachment_ID );
+			$this->queue_on_upload( $metadata, $attachment_ID );
 
 		}
 
@@ -140,6 +140,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				$this->send_each_size( $attachment_file_path, $attachment_file_url, $ID, $size_key, $size_data['file'] );
 			}
+
+			return $meta;
 		}
 
 		/**
@@ -267,10 +269,10 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			//If file id update
 			if ( ! empty( $file_id ) ) {
 				//Add file id, Status and Message
-				$smush_meta[ $size ]['file_id']        = $file_id;
-				$smush_meta[ $size ]['status_code']    = $status_code;
-				$smush_meta[ $size ]['status_msg']     = $this->get_status_msg( $status_code, $request_err_code );
-				$smush_meta[ $size ][ $size ]['token'] = $data->token;
+				$smush_meta[ $size ]['file_id']     = $file_id;
+				$smush_meta[ $size ]['status_code'] = $status_code;
+				$smush_meta[ $size ]['status_msg']  = $this->get_status_msg( $status_code, $request_err_code );
+				$smush_meta[ $size ]['token']       = $data->token;
 
 				update_post_meta( $attachment_id, 'wp-smpro-is-smushed', 1 );
 				$this->recount( 1 );
