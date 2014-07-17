@@ -114,7 +114,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 				update_post_meta ( $options['attachment_id'], 'smush_meta', $smush_meta );
 
-				echo json_encode(array('status'=>1));
+				$this->callback_response(false);
 				//@todo update meta with suitable error
 				header( "HTTP/1.0 200" );
 				exit;
@@ -130,11 +130,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$smush_meta[ $size ]['status_code'] = $options['status_code'];
 			$smush_meta[ $size ]['status_msg']  = $results_msg;
 
-			echo "Status " . $options['status_code'];
 			update_post_meta ( $options['attachment_id'], 'smush_meta', $smush_meta );
 //          error_log( json_encode( wp_get_attachment_metadata( $options['attachment_id'] ) ) );
 
-			echo "File updated";
+			$this->callback_response(true);
 			//Response back to API, missing parameters
 			header( "HTTP/1.0 200 file updated" );
 			exit;
@@ -243,6 +242,15 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			return $results_msg;
 		}
+                
+                /**
+                 * Respond to service callback
+                 * 
+                 * @param boolean $done Is callback done? If not service will call again
+                 */
+                public function callback_response($done=true){
+                        echo json_encode(array('status' => (int)$done));
+                }
 
 	}
 
