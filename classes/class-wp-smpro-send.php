@@ -172,19 +172,26 @@ if (!class_exists('WpSmProSend')) {
 				return $meta;
 			}
 
-			//If smush meta is empty
-			$smush_meta = get_post_meta($ID, 'smush_meta', true);
-
+			
 			// attachment path and url
 			$attachment_file_path = get_attached_file($ID);
 			$attachment_file_url = wp_get_attachment_url($ID);
+			
+			
 
 			// some debug info
 			if (defined(WP_SMPRO_DEBUG) && WP_SMPRO_DEBUG) {
 				echo "DEBUG: attachment_file_path=[" . $attachment_file_path . "]<br />";
 				echo "DEBUG: attachment_file_url=[" . $attachment_file_url . "]<br />";
 			}
-
+			
+			// don't send if it's a static gif and user doesn't want png
+			if(!$this->send_if_gif($ID, $attachment_file_path)){
+				return $meta;
+			}
+			// smush meta
+			$smush_meta = get_post_meta($ID, 'smush_meta', true);
+			
 			//Check if the image was previously smushed
 			$previous_state = !empty($smush_meta) ? $smush_meta['full']['status_msg'] : '';
 
@@ -477,6 +484,72 @@ if (!class_exists('WpSmProSend')) {
 
 			// otherwise an error
 			return true;
+		}
+		
+		/**
+		 * Checks if a static gif should be sent for smushing
+		 * 
+		 * @param int $id attachment id
+		 * @param string $path the attachment file path
+		 * @return boolean true, if fine to send, false, if not
+		 */
+		function send_if_gif($id, $path){
+			$type = get_post_mime_type($id);
+			
+			// not a gif, we can send
+			if($type!=="image/gif"){
+				return true;
+			}
+			
+			// we will convert to png, send
+			if(WP_SMPRO_GIF_TO_PNG){
+				return true;
+				
+			}
+			
+			// if it is animated, we'll send
+			if($this->is_animated($path)){
+				return true;
+			}
+			// static gif that user doesn't want to convert to png
+			return false;
+		}
+		
+		/**
+		 * Checks if a gif is animated.
+		 * (http://php.net/manual/en/function.imagecreatefromgif.php#104473)
+		 * 
+		 * We don't send static gifs to service if gif_to_png is false
+		 * 
+		 * @param string $filename full filename with path
+		 * @return boolean whether the image is animated(more than 1 frame)
+		 */
+		function is_animated($filename) {
+			
+			if (!($fh = @fopen($filename, 'rb'))){
+				return false;
+			}
+			
+			$frames = 0;
+			
+			/*
+			 * an animated gif contains multiple "frames",
+			 * each frame has a header made up of:
+			 * * a static 4-byte sequence (\x00\x21\xF9\x04)
+			 * * 4 variable bytes
+			 * * a static 2-byte sequence (\x00\x2C)
+			 * * (some variants may use \x00\x21 ?) Adobe :|
+			 * We read through the file til we reach the end,
+			 * or we've found at least 2 frame headers
+			 * 
+			 */
+			while (!feof($fh) && $frames < 2) {
+				$chunk = fread($fh, 1024 * 100); //read 100kb at a time
+				$frames += preg_match_all('#\x00\x21\xF9\x04.{4}\x00(\x2C|\x21)#s', $chunk, $matches);
+			}
+
+			fclose($fh);
+			return $frames > 1;
 		}
 
 		/**
