@@ -1,9 +1,6 @@
 <?php
 
 /**
- * The main controller.
- * 
- * Calls and instantiates all other functionality.
  *
  * @package SmushItPro
  * 
@@ -15,7 +12,10 @@
  * @copyright (c) 2014, Incsub (http://incsub.com)
  */
 if ( ! class_exists( 'WpSmPro' ) ) {
-
+	
+	/**
+	 * The main controller. Calls and instantiates all other functionality.
+	 */
 	class WpSmPro {
 
 		/**

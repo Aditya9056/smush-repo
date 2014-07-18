@@ -1,9 +1,7 @@
 <?php
 /**
- * Admin options
- * 
  * @package SmushItPro/Admin
- * 
+ * @subpackage Admin
  * @version 1.0
  * 
  * @author Saurabh Shukla <saurabh@incsub.com>
@@ -12,7 +10,10 @@
  * @copyright (c) 2014, Incsub (http://incsub.com)
  */
 if ( ! class_exists( 'WpSmProAdmin' ) ) {
-
+	/**
+	 * Show settings in Media settings and add column to media library
+	 * 
+	 */
 	class WpSmProAdmin {
 		
 		/**

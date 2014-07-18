@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Receives call backs from service
- * 
- * @package SmushItPro/Receive
- * 
+ * @package SmushItPro
+ * @subpackage Receive
  * @version 1.0
  * 
  * @author Saurabh Shukla <saurabh@incsub.com>
@@ -13,7 +11,10 @@
  * @copyright (c) 2014, Incsub (http://incsub.com)
  */
 if (!class_exists('WpSmProReceive')) {
-
+	
+	/**
+	 * Receives call backs from service
+	 */
 	class WpSmProReceive {
 
 		/**

@@ -1,9 +1,8 @@
 <?php
 /**
- * Forms and sends post requests to service
  * 
- * @package SmushItPro/Sender
- * 
+ * @package SmushItPro
+ * @subpackage Sender
  * @version 1.0
  * 
  * @author Saurabh Shukla <saurabh@incsub.com>
@@ -12,6 +11,11 @@
  * @copyright (c) 2014, Incsub (http://incsub.com)
  */
 if (!class_exists('WpSmProRequest')) {
+	
+	/**
+	 * 
+	 * Forms and sends post requests to service
+	 */
 
 	class WpSmProRequest {
 

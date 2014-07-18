@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Sends Smush requests to service and processes response
  * 
- * @package SmushItPro/Sender
- * 
+ * @package SmushItPro
+ * @subpackage Sender
  * @version 1.0
  * 
  * @author Saurabh Shukla <saurabh@incsub.com>
@@ -16,7 +15,10 @@
  * @todo Filter for gifs based on gif_to_png setting. No need to send static gifs
  */
 if (!class_exists('WpSmProSend')) {
-
+	
+	/**
+	 * Sends Smush requests to service and processes response
+	 */
 	class WpSmProSend {
 
 		/**
