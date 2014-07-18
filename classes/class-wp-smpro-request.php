@@ -184,8 +184,8 @@ if (!class_exists('WpSmProRequest')) {
 
 			if (is_wp_error($status)) {
 				// Some issues with API
-				error_log("API is not accessible");
-
+				error_log( "API is not accessible" );
+				add_action('admin_notices', array( &$this, 'show_api_error') );
 				return;
 			}
 
@@ -200,6 +200,12 @@ if (!class_exists('WpSmProRequest')) {
 			
 			// make the post request and return the response
 			return wp_remote_post($req, $req_args);
+		}
+
+		public function show_api_error() {
+			echo "<pre>";
+			print_r("API not rechable");
+			echo "</pre>";exit;
 		}
 
 	}
