@@ -51,9 +51,6 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		 */
 		public function __construct() {
 
-			// setup some smushing settings
-			$this->init_settings();
-
 			// define some constants
 			$this->constants();
 
@@ -144,10 +141,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				// inefficient mode, set them up from options
 				if ( ! defined( $const_name ) ) {
 					$option_name = strtolower( $const_name );
-					define( 
-						$const_name,
-						get_option( $option_name, $value )
-						);
+					define( $const_name, get_option( $option_name, $value ) );
 				}
 				
 
