@@ -32,6 +32,8 @@ if (!class_exists('WpSmProSend')) {
 			// for ajax based smushing through bulk UI
 			add_action('wp_ajax_wp_smpro_queue', array(&$this, 'ajax_queue'));
 
+			//Admin notice, if api is not accessible
+			add_action( 'init', array( $this, 'check_api_status') );
 
 			if (WP_SMPRO_AUTO) {
 				// add automatic smushing on upload
@@ -128,6 +130,34 @@ if (!class_exists('WpSmProSend')) {
 				wp_die(__("You don't have permission to work with uploaded files.", WP_SMPRO_DOMAIN));
 			}
 
+			//Check if API is accessible
+			//@todo, option for strict ssl
+			$args = array(
+				'sslverify' => false
+			);
+
+			$req = WP_SMPRO_SERVICE_URL;
+
+			//Check if service is running or not
+			$status = wp_remote_head( $req, $args );
+
+			if ( is_wp_error( $status ) ) {
+
+				$referer = preg_replace( '|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer() );
+
+				//Add error
+				$referer = add_query_arg(
+					array(
+						'api_status' => 'error'
+					),
+					$referer
+				);
+				// redirect to media library
+				wp_redirect( $referer );
+
+				exit();
+			}
+
 			// get the attachment id from request
 			$attachment_id = $_GET['attachment_id'];
 
@@ -139,8 +169,12 @@ if (!class_exists('WpSmProSend')) {
 			// Send for further processing
 			$this->add_meta_then_queue(intval($attachment_id));
 
+			$referer = preg_replace( '|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer() );
+
+			//remove API status
+			$referer = remove_query_arg( 'api_status', $referer );
 			// redirect to media library
-			wp_redirect(preg_replace('|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer()));
+			wp_redirect( $referer );
 
 			exit();
 		}
@@ -303,7 +337,7 @@ if (!class_exists('WpSmProSend')) {
 			$data = $requester->_post($img_path, $ID, $token, $size);
 
 			// response is empty
-			if (empty($data)) {
+			if (empty($data) || is_wp_error( $data ) ) {
 				//File was never processed, return the original meta
 				return;
 			}
@@ -570,6 +604,27 @@ if (!class_exists('WpSmProSend')) {
 			return round($bytes, $precision) . ' ' . $units[$pow];
 		}
 
+		/**
+		 * Admin notice, If API is not reachable
+		 */
+		function server_not_found () { ?>
+			<div class="error">
+	            <p><?php _e( 'Sorry, we are having trouble reching WPMU servers, please try again later', WP_SMPRO_DOMAIN ); ?></p>
+			</div> <?php
+		}
+
+		/**
+		 * Check and add a admin notice If API is not accessible
+		 */
+		function check_api_status() {
+			if ( empty ( $_REQUEST ) || empty ($_REQUEST['api_status']) ) {
+				return;
+			}
+			if ( $_REQUEST['api_status'] == 'error' ){
+				add_action('admin_notices', array ($this, 'server_not_found') );
+			}
+			return;
+		}
 	}
 
 }
