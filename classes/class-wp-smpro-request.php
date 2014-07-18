@@ -197,7 +197,8 @@ if (!class_exists('WpSmProRequest')) {
 			    //Remove this code
 			    'sslverify' => false
 			);
-
+			
+			// make the post request and return the response
 			return wp_remote_post($req, $req_args);
 		}
 

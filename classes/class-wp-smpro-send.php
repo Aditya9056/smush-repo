@@ -468,7 +468,10 @@ if (!class_exists('WpSmProSend')) {
 				return true;
 			}
 
-			if (stripos($previous_status, 'no savings') !== false || stripos($previous_status, 'reduced') !== false) {
+			if (
+				stripos($previous_status, 'no savings') !== false 
+				|| stripos($previous_status, 'reduced') !== false
+				) {
 				return false;
 			}
 
@@ -479,8 +482,6 @@ if (!class_exists('WpSmProSend')) {
 		/**
 		 * Return the filesize in a humanly readable format.
 		 * Taken from http://www.php.net/manual/en/function.filesize.php#91477
-		 */
-		/**
 		 * 
 		 * @param int $bytes Bytes
 		 * @param int $precision The precision of rounding
