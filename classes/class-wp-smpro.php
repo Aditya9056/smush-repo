@@ -53,7 +53,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			if ( ! defined( 'WP_SMPRO_SERVICE_URL' ) ) {
 
 				// the service url, can be changed if we provide an alternate url, for eg, for self hosted, in future
-				define( 'WP_SMPRO_SERVICE_URL', 'https://107.170.2.190:1203/upload/' );
+				define( 'WP_SMPRO_SERVICE_URL', 'https://smush.wpmudev.org:1203/upload/' );
 			}
 
 			// the user agent for the request
