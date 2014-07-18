@@ -178,19 +178,6 @@ if (!class_exists('WpSmProRequest')) {
 			if (empty($payload)) {
 				return false;
 			}
-			//@todo, option for strict ssl
-			$args = array(
-			    'sslverify' => false
-			);
-			//Check if service is running or not
-			$status = wp_remote_head($req, $args);
-
-			if (is_wp_error($status)) {
-				// Some issues with API
-				error_log("API is not accessible");
-
-				return;
-			}
 
 			$req_args = array(
 			    'headers' => $headers,

@@ -82,21 +82,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * @param int $id The attachment id
 		 */
 		function custom_column( $column_name, $id ) {
-			
-			// if it isn't our column, get out
-			if ( 'smushit' == $column_name ) {
-				return;
-			}
-			
-			
-			$attachment_file_path = get_attached_file($id);
 
-			global $wp_sm_pro;
-			
-			// check if this is a gif and it should be smushed
-			if(!$wp_sm_pro->sender->send_if_gif($id, $attachment_file_path)){
+			// if it isn't our column, get out
+			if ( 'smushit' != $column_name ) {
 				return;
 			}
+
+			$attachment_file_path = get_attached_file($id);
 
 			// otherwise, get the smush meta
 			$smush_meta = get_post_meta( $id, 'smush_meta', true );
