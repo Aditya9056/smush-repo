@@ -1,9 +1,7 @@
 <?php
 /**
- * Provides Bulk Smushing user interface
- * 
- * @package SmushItPro/Admin
- * 
+ * @package SmushItPro
+ * @subpackage Admin
  * @version 1.0
  * 
  * @author Saurabh Shukla <saurabh@incsub.com>
@@ -12,7 +10,11 @@
  * @copyright (c) 2014, Incsub (http://incsub.com)
  */
 if (!class_exists('WpSmProBulk')) {
-
+	
+	/**
+	 * Provides Bulk Smushing user interface
+	 * 
+	 */
 	class WpSmProBulk {
 		
 		/**
