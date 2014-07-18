@@ -1,6 +1,6 @@
 <?php
 /**
- * @package SmushItPro/Admin
+ * @package SmushItPro
  * @subpackage Admin
  * @version 1.0
  * 
