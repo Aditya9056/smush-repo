@@ -1,6 +1,5 @@
 <?php
 /**
- * 
  * @package SmushItPro
  * @subpackage Sender
  * @version 1.0
@@ -13,8 +12,8 @@
 if (!class_exists('WpSmProRequest')) {
 	
 	/**
+	 * Forms and sends http post requests to service
 	 * 
-	 * Forms and sends post requests to service
 	 */
 
 	class WpSmProRequest {
