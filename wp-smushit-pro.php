@@ -1,5 +1,4 @@
 <?php
-
 /*
   Plugin Name: WP Smush.it Pro
   Plugin URI: http://premium.wpmudev.org/projects/wp-smushit-pro/
