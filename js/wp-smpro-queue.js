@@ -54,7 +54,7 @@ jQuery('document').ready(function(){
     function smproRequest($id) {
         return jQuery.ajax({
             type: "GET",
-            data: {attachment_ID: $id},
+            data: {attachment_id: $id},
             url: $send_url
         }).done(function(response){
                 smpro_show_status("Sent for smushing [" + $id + "]");
@@ -73,7 +73,7 @@ jQuery('document').ready(function(){
     function smproCheck($id) {
         return jQuery.ajax({
             type: "GET",
-            data: {attachment_ID: $id},
+            data: {attachment_id: $id},
             url: $check_url
         }).done(function(response) {
             $rem = false;

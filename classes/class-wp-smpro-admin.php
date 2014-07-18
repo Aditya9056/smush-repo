@@ -1,10 +1,17 @@
 <?php
 /**
- * Description of wp-smushit-pro-admin
- *
- * @author Saurabh Shukla <contact.saurabhshukla@gmail.com>
+ * Admin options
+ * 
+ * @package SmushItPro/Admin
+ * 
+ * @version 1.0
+ * 
+ * @author Saurabh Shukla <saurabh@incsub.com>
+ * @author Umesh Kumar <umesh@incsub.com>
+ * 
+ * @copyright (c) 2014, Incsub (http://incsub.com)
  */
-if ( ! class_exists( 'WpSmushItPro_Admin' ) ) {
+if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 	class WpSmProAdmin {
 
@@ -60,11 +67,11 @@ if ( ! class_exists( 'WpSmushItPro_Admin' ) ) {
 
 					echo $smush_meta['full']['status_msg'];
 
-					printf( "<br><a href=\"admin.php?action=wp_smpro_queue&amp;attachment_ID=%d\">%s</a>", $id, __( 'Re-smush', WP_SMPRO_DOMAIN ) );
+					printf( "<br><a href=\"admin.php?action=wp_smpro_queue&amp;attachment_id=%d\">%s</a>", $id, __( 'Re-smush', WP_SMPRO_DOMAIN ) );
 				} else {
 					if ( wp_attachment_is_image( $id ) ) {
 						print __( 'Not processed', WP_SMPRO_DOMAIN );
-						printf( "<br><a href=\"admin.php?action=wp_smpro_queue&amp;attachment_ID=%d\">%s</a>", $id, __( 'Smush.it now!', WP_SMPRO_DOMAIN ) );
+						printf( "<br><a href=\"admin.php?action=wp_smpro_queue&amp;attachment_id=%d\">%s</a>", $id, __( 'Smush.it now!', WP_SMPRO_DOMAIN ) );
 					}
 				}
 			}

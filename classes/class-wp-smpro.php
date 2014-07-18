@@ -1,29 +1,54 @@
 <?php
 
 /**
- * The main controller, that calls and instantiates everything else
+ * The main controller.
+ * 
+ * Calls and instantiates all other functionality.
  *
+ * @package SmushItPro
+ * 
+ * @version 1.0
+ * 
  * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umesh@incsub.com>
- * @copyright (c) 2014, Incsub
+ * 
+ * @copyright (c) 2014, Incsub (http://incsub.com)
  */
 if ( ! class_exists( 'WpSmPro' ) ) {
 
 	class WpSmPro {
 
 		/**
-		 * Status Messages
+		 * Status Messages for display
+                 * 
 		 * @var array
 		 */
 		public $status_msgs = array();
-
+                
+                /**
+		 * 
+                 * @var array Settings for smushing
+                 */
 		public $smush_settings = array(
+		    
+                        // auto smush on upload
 			'auto'        => false,
-			'remove_exif' => true,
+		
+			// remove exif & other meta from jpg
+			'remove_exif' => true, 
+			
+			// progressive optimisation for jpg
 			'progressive' => true,
-			'gif_to_png'  => true,
+			
+			// convert static gifs to png
+			'gif_to_png'  => true, 
 		);
-
+		
+		/**
+		 * Constructor.
+		 * 
+		 * Initialises parameters and classes for smushing
+		 */
 		public function __construct() {
 
 			// setup some smushing settings
@@ -42,63 +67,98 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			$this->receiver = new WpSmProReceive();
 
 			$this->admin = new WpSmProAdmin();
-
-			load_plugin_textdomain( WP_SMPRO_DOMAIN, false, WP_SMPRO_DIR . '/languages/' );
+			
+			// load translations
+			load_plugin_textdomain( 
+				WP_SMPRO_DOMAIN,
+				false,
+				WP_SMPRO_DIR . '/languages/'
+				);
 		}
-
+		
+		/**
+		 * Defines some constants.
+		 * 
+		 * @todo Define final service url
+		 * @todo fetch limit from API, instead
+		 */
 		function constants() {
-			/**
-			 * TODO: Fix the URL
-			 */
+			
 			if ( ! defined( 'WP_SMPRO_SERVICE_URL' ) ) {
 
-				// the service url, can be changed if we provide an alternate url, for eg, for self hosted, in future
+				/**
+				 * The service url.
+				 * 
+				 * Can be changed to an alternate url,
+				 * for eg, for self hosted, in future
+				 */
 				define( 'WP_SMPRO_SERVICE_URL', 'https://107.170.2.190:1203/upload/' );
 			}
 
-			// the user agent for the request
-			define( 'WP_SMPRO_USER_AGENT', 'WP Smush.it/' . WP_SMPRO_VERSION . '} (' . '+' . get_site_url() . ')' );
+			/**
+			 * The user agent for the request
+			 */
+			define( 'WP_SMPRO_USER_AGENT',
+				'WP Smush.it/' . WP_SMPRO_VERSION. '} (' 
+				. '+' . get_site_url() . ')'
+				);
 
 
-			//Image Limit 5MB
-			// @todo, fetch limit from API, instead
+			/**
+			 * Image Limit 5MB
+			 */
 			define( 'WP_SMPRO_MAX_BYTES', 5 * 1024 * 1024 );
 
-			//Time out for API request
+			/**
+			 * Time out for API request
+			 */
 			define( 'WP_SMUSHIT_PRO_TIMEOUT', 60 );
 
 
 			if ( ! defined( 'WP_SMPRO_EFFICIENT' ) ) {
-				// constant to decide whether to remove extra data
+				/**
+				 * constant to decide whether to remove extra data
+				 */
 				define( 'WP_SMPRO_EFFICIENT', false );
 			}
-
+			
+			// sacrifice cleverness for readability. this code needs to change
+			
 			// set up constants based on the settings, useful for debugging
 			foreach ( $this->smush_settings as $key => $value ) {
+				
+				// we set this separately
 				if ( 'auto' === $key ) {
 					continue;
 				}
-
+				
+				// the name
 				$const_name = 'WP_SMPRO_' . strtoupper( $key );
-
+				
+				// all the settings are true, in efficient mode
 				if ( WP_SMPRO_EFFICIENT ) {
 					define( $const_name, true );
-				} else {
-					if ( ! defined( $const_name ) ) {
-						$option_name = strtolower( $const_name );
-
-						define( $const_name, $this->smush_settings[ $key ] );
-					}
+					continue;
 				}
+				
+				// inefficient mode, set them up from options
+				if ( ! defined( $const_name ) ) {
+					$option_name = strtolower( $const_name );
+					define( 
+						$const_name,
+						get_option( $option_name, $value )
+						);
+				}
+				
 
 			}
-
+			
 			if ( ! defined( 'WP_SMPRO_AUTO' ) ) {
+				/**
+				 * Smush automatically on upload.
+				 */
 				define( 'WP_SMPRO_AUTO', $this->smush_settings['auto'] );
 			}
-
-			// deprecating, this should be default and not an option, whenever we add it
-			// define('WP_SMPRO_ENFORCE_SAME_URL', get_option('wp_smushit_pro_smushit_enforce_same_url', 'on'));
 
 			// are we debugging, here?
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {
@@ -112,6 +172,8 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		 * Initialise some translation ready status messages
 		 */
 		function init_status_messages() {
+			
+			// smush status messages for codes from service
 			$smush_status = array(
 				0 => __( 'Request failed', WP_SMPRO_DOMAIN ),
 				1 => __( 'File being processed by API', WP_SMPRO_DOMAIN ),
@@ -122,7 +184,8 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				6 => __( 'Already optimized', WP_SMPRO_DOMAIN )
 
 			);
-
+			
+			// additional request error messages
 			$request_err_msg = array(
 				0 => __( 'No file received', WP_SMPRO_DOMAIN ),
 				1 => __( 'Callback url not provided', WP_SMPRO_DOMAIN ),
@@ -132,17 +195,12 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				5 => __( 'Upload failed', WP_SMPRO_DOMAIN ),
 				6 => __( 'File larger than allowed limit', WP_SMPRO_DOMAIN )
 			);
-
+			
+			// set up the property
 			$this->status_msgs = array(
 				'smush_status'    => $smush_status,
 				'request_err_msg' => $request_err_msg,
 			);
-		}
-
-		function init_settings() {
-			foreach ( $this->smush_settings as $key => $val ) {
-				$this->smush_settings[ $key ] = get_option( 'wp_smpro_' . $key, $val );
-			}
 		}
 
 	}
