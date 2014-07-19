@@ -35,7 +35,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			'auto'        => false,
 		
 			// remove exif & other meta from jpg
-			'remove_exif' => true, 
+			'remove_meta' => true, 
 			
 			// progressive optimisation for jpg
 			'progressive' => true,
