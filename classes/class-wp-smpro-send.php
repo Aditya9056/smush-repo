@@ -29,17 +29,17 @@ if (!class_exists('WpSmProSend')) {
 		function __construct() {
 
 			// for manual individual smushing through media library
-			add_action('admin_action_wp_smpro_queue', array(&$this, 'queue'));
+			add_action('admin_action_wp_smpro_queue', array($this, 'queue'));
 
 			// for ajax based smushing through bulk UI
-			add_action('wp_ajax_wp_smpro_queue', array(&$this, 'ajax_queue'));
+			add_action('wp_ajax_wp_smpro_queue', array($this, 'ajax_queue'));
 
 			//Admin notice, if api is not accessible
 			add_action( 'init', array( $this, 'check_api_status') );
 
 			if (WP_SMPRO_AUTO) {
 				// add automatic smushing on upload
-				add_filter('wp_generate_attachment_metadata', array(&$this, 'prepare_and_send'), 10, 2);
+				add_filter('wp_generate_attachment_metadata', array($this, 'prepare_and_send'), 10, 2);
 			}
 		}
 

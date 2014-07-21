@@ -25,11 +25,11 @@ if (!class_exists('WpSmProBulk')) {
 		public function __construct() {
 			
 			// hook scripts and styles
-			add_action('admin_init', array(&$this, 'register'));
+			add_action('admin_init', array($this, 'register'));
 			// hook custom screen
-			add_action('admin_menu', array(&$this, 'screen'));
+			add_action('admin_menu', array($this, 'screen'));
 			// hook ajax call for checking smush status
-			add_action('wp_ajax_wp_smpro_check', array(&$this, 'check_status'));
+			add_action('wp_ajax_wp_smpro_check', array($this, 'check_status'));
 		}
 
 		/**
@@ -37,12 +37,12 @@ if (!class_exists('WpSmProBulk')) {
 		 */
 		function screen() {
 			$bulk_page_suffix = add_media_page('Bulk Smush.it', 'Bulk Smush.it', 'edit_others_posts', 'wp-smpro-bulk', array(
-			    &$this,
+			    $this,
 			    'bulk_ui'
 			));
 
 			// enqueue js only on this screen
-			add_action('admin_print_scripts-' . $bulk_page_suffix, array(&$this, 'enqueue'));
+			add_action('admin_print_scripts-' . $bulk_page_suffix, array($this, 'enqueue'));
 		}
 
 		/**
