@@ -323,10 +323,9 @@ if (!class_exists('WpSmProSend')) {
 
 			// it's invalid
 			if ($invalid) {
-				if($size==='full'){
-					update_post_meta($ID, 'wp-smpro-is-smushed', 1);
-					$this->recount(1);
-				}
+				// this needs to be handled better
+//				update_post_meta($ID, 'wp-smpro-is-smushed', 1);
+//				$this->recount(1);
 
 				return $invalid;
 			}
