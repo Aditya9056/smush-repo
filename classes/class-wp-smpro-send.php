@@ -480,7 +480,7 @@ if (!class_exists('WpSmProSend')) {
 		 * @Todo, fetch from dashboard plugin, or allow a input
 		 */
 		function dev_api_key() {
-			return '3f2750fe583d6909b2018462fb216a2c5d5d75a9';
+			return get_site_option( 'wpmudev_apikey' );
 		}
 
 		/**
