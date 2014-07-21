@@ -37,8 +37,8 @@ if (!class_exists('WpSmProReceive')) {
 		public function __construct() {
 
 			// process callback from smush service
-			add_action('wp_ajax_receive_smushed_image', array(&$this, 'receive'));
-			add_action('wp_ajax_nopriv_receive_smushed_image', array(&$this, 'receive'));
+			add_action('wp_ajax_receive_smushed_image', array($this, 'receive'));
+			add_action('wp_ajax_nopriv_receive_smushed_image', array($this, 'receive'));
 		}
 
 		/**

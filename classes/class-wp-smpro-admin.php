@@ -28,20 +28,20 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		public function __construct() {
 
 			// add extra columns for smushing to media lists
-			add_filter( 'manage_media_columns', array( &$this, 'columns' ) );
-			add_action( 'manage_media_custom_column', array( &$this, 'custom_column' ), 10, 2 );
+			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
+			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
 
 			// add the admin option screens
-			add_action( 'admin_init', array( &$this, 'admin_init' ) );
+			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			
 			// hook js for bulk actions
-			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_js' ) );
+			add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_js' ) );
 			
 			// hook handler for bulk smushing action
-			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
+			add_action( 'admin_action_bulk_smushit', array( $this, 'bulk_action_handler' ) );
 			
 			// hook settings
-			add_action( 'admin_init', array( &$this, 'register_settings' ) );
+			add_action( 'admin_init', array( $this, 'register_settings' ) );
 			
 			// initialise translation ready settings and titles
 			$this->init_settings();
@@ -152,7 +152,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			
 			// add the section to media settings
 			add_settings_section( 'wp_smpro_settings', 'WP Smush.it Pro', array(
-				&$this,
+				$this,
 				'settings_cb'
 			), 'media' );
 			
