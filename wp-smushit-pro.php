@@ -73,6 +73,16 @@ require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-request.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-admin.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-send.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro.php' );
+
+//load dashboard notice
+global $wpmudev_notices;
+$wpmudev_notices[] = array(
+	'id'=> 9999,
+	'name'=> 'Smushit Pro',
+	'screens' => array(
+		'options-media',
+	)
+);
 require_once( WP_SMPRO_DIR . 'wpmudev-dashboard-notification/wpmudev-dash-notification.php' );
 // do we need this? It is too support versions earlier than 3.1
 if ( ! function_exists( 'wp_basename' ) ) {
