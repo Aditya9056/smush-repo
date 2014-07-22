@@ -102,23 +102,27 @@ jQuery('document').ready(function() {
 	 * @param {integer} $id attachment id
 	 * @returns {object} The whole ajax request to reolve this promise and start next
 	 */
-	function smproRequest($id) {
+	function smproRequest($id, $getnxt) {
 		// make request
 		return jQuery.ajax({
 			type: "GET",
-			data: {attachment_id: $id},
+			data: {attachment_id: $id, get_next:$getnxt},
 			url: $send_url
 		}).done(function(response) {
 			// update status
 			smpro_show_status("Sent for smushing [" + $id + "]");
 			smpro_progress();
 			
-			// push into the receipt check queue, for polling
-			if (response !== '') {
-				$start_id = parseInt(response);
-				$check_queue.push($start_id);
-				return $start_id;
+			if($getnxt!==false){
+				// push into the receipt check queue, for polling
+				if (response !== '') {
+					$start_id = parseInt(response);
+					$check_queue.push($start_id);
+					return $start_id;
+				}
 			}
+			// otherwise, our queue is already formed
+			
 			
 		}).fail(function(response) {
 			// update status and still progress
@@ -210,7 +214,7 @@ jQuery('document').ready(function() {
 			jQuery.each(wp_smpro_ids, function(ix, $id) {
 				startingpoint = startingpoint.then(function() {
 					smpro_show_status("Making request for [" + $id + "]");
-					return smproRequest($id);
+					return smproRequest($id, false);
 				});
 			});
 		} else {
@@ -218,7 +222,7 @@ jQuery('document').ready(function() {
 			for (var i = 0; i < $remaining; i++) {
 				startingpoint = startingpoint.then(function() {
 					smpro_show_status("Making request for [" + $start_id + "]");
-					return smproRequest($start_id);
+					return smproRequest($start_id, true);
 				});
 			}
 		}

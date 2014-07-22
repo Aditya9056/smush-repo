@@ -28,42 +28,42 @@
  */
 /**
  * Main file.
- * 
+ *
  * With plugin meta data. Loads all the classes and functionality
- * 
+ *
  * @package SmushItPro
- * 
+ *
  * @version 1.0
- * 
+ *
  * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umesh@incsub.com>
- * 
+ *
  * @copyright (c) 2014, Incsub (http://incsub.com)
  */
 // include the files.php from core, needed to work with uploads
-if (!function_exists('download_url')) {
+if ( ! function_exists( 'download_url' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
 }
 
 /**
  * The version for enqueueing , etc.
  */
-define('WP_SMPRO_VERSION', '1.0');
+define( 'WP_SMPRO_VERSION', '1.0' );
 
 /**
  * The plugin's path for easy access to files.
  */
-define('WP_SMPRO_DIR', plugin_dir_path(__FILE__));
+define( 'WP_SMPRO_DIR', plugin_dir_path( __FILE__ ) );
 
 /**
  * The plugin's url for easy access to files.
  */
-define('WP_SMPRO_URL', plugin_dir_url(__FILE__));
+define( 'WP_SMPRO_URL', plugin_dir_url( __FILE__ ) );
 
 /**
- * The text domain for translation. 
+ * The text domain for translation.
  */
-define('WP_SMPRO_DOMAIN', 'wp-smushit-pro');
+define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
 //use hyphens instead of underscores for glotpress compatibility
 
 // include the classes
@@ -74,23 +74,123 @@ require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-admin.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-send.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro.php' );
 
+//load dashboard notice
+global $wpmudev_notices;
+$wpmudev_notices[] = array(
+	'id'      => 9999,
+	'name'    => 'Smushit Pro',
+	'screens' => array(
+		'options-media',
+	)
+);
+require_once( WP_SMPRO_DIR . 'wpmudev-dashboard-notification/wpmudev-dash-notification.php' );
+
 // do we need this? It is too support versions earlier than 3.1
-if (!function_exists('wp_basename')) {
+if ( ! function_exists( 'wp_basename' ) ) {
 
 	/**
 	 * Introduced in WP 3.1... this is copied verbatim from wp-includes/formatting.php.
 	 */
-	function wp_basename($path, $suffix = '') {
-		return urldecode(basename(str_replace('%2F', '/', urlencode($path)), $suffix));
+	function wp_basename( $path, $suffix = '' ) {
+		return urldecode( basename( str_replace( '%2F', '/', urlencode( $path ) ), $suffix ) );
 	}
 
+}
+//WPMU Dev Dashboard installation notice
+add_action( 'network_admin_notices', 'wp_smpro_notice' );
+add_action( 'admin_notices', 'wp_smpro_notice' );
+
+function wp_smpro_notice() {
+
+	//WPMU API Key
+	$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+
+	$plugin_path = WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php';
+
+	//If there is no WPMU API Key and Dashboard plugin is deactivated, ask for Dashboard plugin
+	if ( empty( $wpmudev_apikey ) && ! is_plugin_active( 'wpmudev-updates/update-notifications.php' ) ) {
+		?>
+
+		<div class="error smushit-pro-status"> <?php
+		if ( file_exists( $plugin_path ) ) {
+			wp_smpro_script();
+			$nonce = wp_create_nonce( 'activate_wpmudev-updates' );
+			?>
+			<p>
+				<b><?php _e( 'Smushit Pro:' ) ?></b> <?php _e( 'Click' ) ?> <a href="#"
+					onclick="wp_smpro_activate_plugin('smushit_pro_activate_plugin','<?php echo $nonce; ?>')">here</a> <?php _e( 'to activate WPMU DEV Dashboard.', 'rtmedia' ) ?>
+			</p>
+		<?php
+		} else {
+			?>
+			<!--			Ask to download and activate the Dashboard plugin-->
+			<p>
+				<b><?php _e( 'Smushit Pro:' ) ?></b> <?php _e( 'Install and activate <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a>' ); ?>
+			</p><?php
+		}
+		?>
+		</div><?php
+	} elseif ( empty( $wpmudev_apikey ) ) {
+		//User haven't logged in to Dashboard plugin
+		?>
+		<div class="error smushit-pro-status">
+			<p>
+				<b><?php _e( 'Smushit Pro:' ) ?></b> <?php _e( 'Login to WPMU DEV Dashboard to activate your subscription' ); ?>
+			</p>
+		</div><?php
+	}
+}
+
+//Handle plugin activation request
+add_action( 'wp_ajax_smushit_pro_activate_plugin', 'smushit_pro_activate_plugin' );
+
+function smushit_pro_activate_plugin() {
+
+	//Validate nonce
+	$nonce = ! empty( $_REQUEST['_ajax_nonce'] ) ? $_REQUEST['_ajax_nonce'] : '';
+	if ( ! wp_verify_nonce( $nonce, 'activate_wpmudev-updates' ) ) {
+		wp_send_json_error( __( 'ERROR: nonce verification failed', WP_SMPRO_DOMAIN ) );
+	}
+
+	//Activate plugin
+	$path            = WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php';
+	$activate_result = activate_plugin( $path );
+
+	if ( is_wp_error( $activate_result ) ) {
+		wp_send_json_error( sprintf( __( 'ERROR: Failed to activate plugin: %s', WP_SMPRO_DOMAIN ), $activate_result->get_error_message() ) );
+	}
+	wp_send_json_success( __( 'SUCCESS: plugin activated', WP_SMPRO_DOMAIN ) );
+}
+
+/**
+ * Output the required javascript for Plugin activation
+ */
+function wp_smpro_script() {
+	?>
+	<script type="text/javascript">
+		function wp_smpro_activate_plugin(action, smpro_nonce) {
+			jQuery('.smushit-pro-status').removeClass('error');
+			jQuery('.smushit-pro-status').addClass('updated');
+			jQuery('.smushit-pro-status p').html('<b>Smushit Pro:</b> Activating WPMU DEV Dashboard...');
+			var param = {
+				action: action,
+				_ajax_nonce: smpro_nonce
+			};
+			jQuery.post(ajaxurl, param, function (data) {
+//				data = jQuery.parseJSON( data );
+				if (data.success == true) {
+					jQuery('.smushit-pro-status p').html('<b>Smushit Pro:</b> WPMU DEV Dashbaord activated.');
+					location.reload();
+				} else {
+					jQuery('.smushit-pro-status p').html('<b>Smushit Pro:</b> There is some problem. Please try again.');
+				}
+
+			});
+		}
+	</script><?php
 }
 
 // instantiate our main class
 $wp_sm_pro = new WpSmPro();
 
 global $wp_sm_pro;
-
-/*
- * Where's the haiku?
- */
