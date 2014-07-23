@@ -67,7 +67,7 @@ define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
 //use hyphens instead of underscores for glotpress compatibility
 
 // include the classes
-require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-bulk.php' );
+require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-media-library.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-receive.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-request.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-admin.php' );
