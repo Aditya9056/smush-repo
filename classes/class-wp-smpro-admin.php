@@ -376,6 +376,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				}
 				?>
 			</ul>
+			<input id="wp-smpro-begin" type="button" class="button button-primary" value="Begin Smush">
 			<?php
 		}
 		
