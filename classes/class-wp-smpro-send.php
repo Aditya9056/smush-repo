@@ -36,8 +36,14 @@ if (!class_exists('WpSmProSend')) {
 
 			if (WP_SMPRO_AUTO) {
 				// add automatic smushing on upload
-				add_filter('wp_generate_attachment_metadata', array($this, 'prepare_and_send'), 10, 2);
+				add_filter('wp_generate_attachment_metadata', array($this, 'auto_smush'), 10, 2);
 			}
+		}
+		
+		function auto_smush($metadata,$attachment_id){
+			$this->add_meta_then_queue(intval($attachment_id));
+			
+			return $metadata;
 		}
 
 		/**
@@ -141,8 +147,22 @@ if (!class_exists('WpSmProSend')) {
 		 */
 		function add_meta_then_queue($attachment_id) {
 			
+			// check if it's an image
+			if ($attachment_id && wp_attachment_is_image($attachment_id) === false) {
+				return new WP_Error('invalid',__('Not a valid attachment', WP_SMPRO_DOMAIN));
+			}
+
+			// attachment path and url
+			$attachment_file_path = get_attached_file($attachment_id);
+			$attachment_file_url = wp_get_attachment_url($attachment_id);
+			
+			// some debug info
+			if (defined(WP_SMPRO_DEBUG) && WP_SMPRO_DEBUG) {
+				echo "DEBUG: attachment_file_path=[" . $attachment_file_path . "]<br />";
+				echo "DEBUG: attachment_file_url=[" . $attachment_file_url . "]<br />";
+			}
 			// send for further processing
-			$full_state = $this->prepare_and_send($attachment_id);
+			$full_state = $this->prepare_and_send($attachment_id, $attachment_file_path, $attachment_file_url);
 			
 			// we check the status of the full size to modify our meta
 			if (is_wp_error($full_state)) {
@@ -155,7 +175,7 @@ if (!class_exists('WpSmProSend')) {
 			update_post_meta($attachment_id, 'wp-smpro-is-smushed', $smushed_status);
 			
 			//now see if other sizes should be smushed
-			$this->check_send_sizes();
+			$this->check_send_sizes($attachment_id, $attachment_file_path, $attachment_file_url );
 			
 			return $smushed_status;
 			
@@ -169,22 +189,9 @@ if (!class_exists('WpSmProSend')) {
 		 * @param boolean $force_resmush Force resmushing, inspite of previous status 
 		 * @return bool|object True on success, WP_Error object on failure
 		 */
-		function prepare_and_send($ID = null, $force_resmush = true) {
+		function prepare_and_send($ID = null, $attachment_file_path='', $attachment_file_url='', $force_resmush = true) {
 			
-			// check if it's an image
-			if ($ID && wp_attachment_is_image($ID) === false) {
-				return new WP_Error('invalid',__('Not a valid attachment', WP_SMPRO_DOMAIN));
-			}
-
-			// attachment path and url
-			$attachment_file_path = get_attached_file($ID);
-			$attachment_file_url = wp_get_attachment_url($ID);
 			
-			// some debug info
-			if (defined(WP_SMPRO_DEBUG) && WP_SMPRO_DEBUG) {
-				echo "DEBUG: attachment_file_path=[" . $attachment_file_path . "]<br />";
-				echo "DEBUG: attachment_file_url=[" . $attachment_file_url . "]<br />";
-			}
 			
 			// don't send if it's a static gif and user doesn't want png
 			if(!$this->send_if_gif($ID, $attachment_file_path)){
@@ -207,7 +214,7 @@ if (!class_exists('WpSmProSend')) {
 			
 		}
 		
-		function check_send_sizes($force_resmush=true){
+		function check_send_sizes($attachment_id, $attachment_file_path='', $attachment_file_url='', $force_resmush=true){
 			
 			// get the attachment meta data
 			$meta = wp_get_attachment_metadata($attachment_id);
@@ -223,7 +230,7 @@ if (!class_exists('WpSmProSend')) {
 					continue;
 				}
 				// we aren't concerned with what happens to the rest of the sizes, are we?
-				$size_sent['size'] = $this->send_each_size($attachment_file_path, $attachment_file_url, $ID, $size_key, $size_data['file']);
+				$size_sent['size'] = $this->send_each_size($attachment_file_path, $attachment_file_url, $attachment_id, $size_key, $size_data['file']);
 			}
 
 			unset($size_sent);
@@ -291,6 +298,9 @@ if (!class_exists('WpSmProSend')) {
 				//File was never processed, return the original meta
 				return new WP_Error('response_failed', __('Response Failed', WP_SMPRO_DOMAIN));
 			}
+			
+			$smush_meta = get_post_meta($ID, 'smush_meta', true);
+			
 			//If there is no previous smush_data
 			if (empty($smush_meta [$size])) {
 				$smush_meta[$size] = array();

@@ -518,7 +518,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function check_status() {
 
 			// the attachment id
-			$id = $_GET[ attachment_id ];
+			$id = $_GET[ 'attachment_id' ];
 			
 			$response = array();
 			// send 0, means unknown error
