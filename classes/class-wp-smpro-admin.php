@@ -37,7 +37,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 			
 			// hook ajax call for checking smush status
-			//add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
+			add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
 				
 			// initialise translation ready settings and titles
 			$this->init_settings();
@@ -76,10 +76,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function register() {
 			/* Register our script. */
-			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'js/wp-smpro-queue.js', array( 'jquery' ), WP_SMPRO_VERSION );
+			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'jquery' ), WP_SMPRO_VERSION );
 			//@todo enqueue minified script if not debugging
 			//wp_register_script( 'wp-smpro-queue-debug', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
-			wp_register_style( 'wp-smpro-queue', WP_SMPRO_URL . 'css/wp-smpro-queue.css' );
+			wp_register_style( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/css/wp-smpro-queue.css' );
 		}
 
 		/**
@@ -399,9 +399,20 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			
 			$src = wp_get_attachment_thumb_url( $attachment_id );
+		
+			$status_msg = __('Not Processed',WP_SMPRO_DOMAIN);
+			// get the smush meta
+			$smush_meta = get_post_meta( $attachment_id, 'smush_meta', true );
+			
+			// if there's smush details, show it
+			if ( ! empty( $smush_meta ) && ! empty( $smush_meta['full'] ) ) {
+
+				$status_msg = $smush_meta['full']['status_msg'];
+			}
 			?>
-			<li>
+			<li id="wp-smpro-img-<?php echo $attachment_id; ?>">
 				<div class="img-wrap">
+					<div class="img-status"></div>
 					<img class="img-thumb" src="<?php echo $src; ?>">
 					<span class="img-type"><?php echo $ext;?></span>
 				</div>
@@ -409,7 +420,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<p class="img-meta">
 						<?php echo $attachment_id; ?> - <?php echo $title; ?>
 					</p>
-					<p class="img-smush-status"><?php _e('Not Processed',WP_SMPRO_DOMAIN); ?></p>
+					<p class="img-smush-status"><?php echo $status_msg; ?></p>
 				</div>
 			</li>
 			<?php
@@ -435,11 +446,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				<p>
 					<?php printf(
 						__(
-							'We have found <strong>%d images</strong> in your media library.'
+							'We have found <strong>%d unsmushed images</strong> in your media library.'
 							. ' You can smush them all by clicking the button below.',
 							WP_SMPRO_DOMAIN
 							),
-						$this->bulk->total
+						$this->bulk->remaining
 						);
 					?>
 				</p>
@@ -472,32 +483,82 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				</button>
 			</div>
 			<?php
-			}
+		}
 			
-			function print_loader(){
-				?>
-				<div id="wp-smpro-loader-wrap">
-					<div id="floatingCirclesG">
-						<div class="f_circleG" id="frotateG_01">
-						</div>
-						<div class="f_circleG" id="frotateG_02">
-						</div>
-						<div class="f_circleG" id="frotateG_03">
-						</div>
-						<div class="f_circleG" id="frotateG_04">
-						</div>
-						<div class="f_circleG" id="frotateG_05">
-						</div>
-						<div class="f_circleG" id="frotateG_06">
-						</div>
-						<div class="f_circleG" id="frotateG_07">
-						</div>
-						<div class="f_circleG" id="frotateG_08">
-						</div>
+		function print_loader(){
+			?>
+			<div id="wp-smpro-loader-wrap">
+				<div class="floatingCirclesG">
+					<div class="f_circleG" id="frotateG_01">
+					</div>
+					<div class="f_circleG" id="frotateG_02">
+					</div>
+					<div class="f_circleG" id="frotateG_03">
+					</div>
+					<div class="f_circleG" id="frotateG_04">
+					</div>
+					<div class="f_circleG" id="frotateG_05">
+					</div>
+					<div class="f_circleG" id="frotateG_06">
+					</div>
+					<div class="f_circleG" id="frotateG_07">
+					</div>
+					<div class="f_circleG" id="frotateG_08">
 					</div>
 				</div>
-				<?php
+			</div>
+			<?php
+		}
+			
+		/**
+		 * Check current smush status of sent attachments
+		 */
+		function check_status() {
+
+			// the attachment id
+			$id = $_GET[ attachment_id ];
+			
+			$response = array();
+			// send 0, means unknown error
+			if ( empty( $id ) || $id <= 0 ) {
+				$response['status']=0;
+				$response['msg']= __('ID error',WP_SMPRO_DOMAIN);
+				echo json_encode($response);
+				die();
 			}
+			// otherwise, get smush details
+			$smush_meta = get_post_meta( $id, 'smush_meta', true );
+
+			// if can't find, it's still awaited
+			if ( empty( $smush_meta ) || empty( $smush_meta['full'] ) ) {
+				$response['status']=1;
+				$response['msg']= __('Still waiting',WP_SMPRO_DOMAIN);
+				echo json_encode($response);
+				die();
+			}
+
+			// otherwise, we've received the image
+			$code = intval( $smush_meta['full']['status_code'] );
+			$response['msg']= $smush_meta['full']['status_msg'];
+			if ( $code === 4 || $code === 6 ) {
+				$response['status']=2;
+				echo json_encode($response);
+				die();
+			}
+
+			if ( $code === 5 ) {
+				// smush failed
+				$response['status']=0;
+				echo json_encode($response);
+				die();
+			}
+
+			// Not even that, we're still waiting
+			$response['status']=1;
+			$response['msg']= __('Still waiting',WP_SMPRO_DOMAIN);
+			echo json_encode($response);
+			die();
+		}
 
 	}
 

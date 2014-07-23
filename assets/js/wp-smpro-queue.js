@@ -44,14 +44,18 @@ jQuery('document').ready(function() {
 		// calculate %
 		$progress = (wp_smpro_progress / wp_smpro_total) * 100;
 		
-		// all done
+		// all sent
 		if ($progress === 100) {
-			// disable start button
-			jQuery('input#wp-sm-pro-begin').prop('disabled', true);
+			
+			// if there's nothing in queue, we are done
+			if($check_queue.length < 1){
+				wp_smpro_all_done();
+			}else{	
 			// start polling for receipt status
-			smpro_poll_check = setInterval(function() {
-				qHandler();
-			}, 1000);
+				smpro_poll_check = setInterval(function() {
+					qHandler();
+				}, 1000);
+			}
 		}
 		
 		// increase the progress bar
@@ -70,10 +74,10 @@ jQuery('document').ready(function() {
 		$new_width = ($queue_done / $remaining) * 100;
 		
 		// all done
-		if ($new_width === 100) {
-			smpro_show_status('Bulk smushing completed, back to media library!');
+		if($check_queue.length < 1){
+			wp_smpro_all_done();
 			// stop polling
-			clearInterval(smpro_poll_check);
+			clearInterval(smpro_poll_check);			
 		}
 		
 		// increase progress bar
@@ -107,19 +111,24 @@ jQuery('document').ready(function() {
 		return jQuery.ajax({
 			type: "GET",
 			data: {attachment_id: $id, get_next:$getnxt},
-			url: $send_url
+			url: $send_url,
+			dataType: 'json'
 		}).done(function(response) {
-			// update status
-			smpro_show_status("Sent for smushing [" + $id + "]");
+			if(parseInt(response.status_code)===0){
+				change_attachment_status($id, 'smush-fail',response.status_msg);
+				$check_queue = jQuery.grep($check_queue, function(value) {
+					return value !== $id;
+				});
+			}
 			smpro_progress();
-			
 			if($getnxt!==false){
 				// push into the receipt check queue, for polling
-				if (response !== '') {
-					$start_id = parseInt(response);
+				if (response.next=== '') {
+					$start_id = response.next;
 					$check_queue.push($start_id);
 					return $start_id;
 				}
+				
 			}
 			// otherwise, our queue is already formed
 			
@@ -141,31 +150,26 @@ jQuery('document').ready(function() {
 		return jQuery.ajax({
 			type: "GET",
 			data: {attachment_id: $id},
-			url: $check_url
+			url: $check_url,
+			dataType: 'json'
 		}).done(function(response) {
 			// don't remove from queue yet
 			$rem = false;
-			
+			$status = parseInt(response.status);
 			// handle different responses
 			// if smush succeeded or failed, remove from queue
-			switch (parseInt(response)) {
-				case 2:
-					$status_msg = "Received [" + $id + "]";
-					$rem = true;
-					break;
-				case 1:
-					$status_msg = "Still awaiting [" + $id + "]";
-					break;
-				case -1:
-					$status_msg = "Smush failed [" + $id + "]";
-					$rem = true;
-					break;
-				default:
-					$status_msg = "Unknown error [" + $id + "]";
-					break;
+			if($status===-1
+				|| parseInt($status)===2){
+				$rem = true;
 			}
-			// show status
-			smpro_show_status($status_msg);
+			
+			if($status===-1){
+				change_attachment_status($id, 'smush-fail',response.msg);
+			}
+			
+			if($status===2){
+				change_attachment_status($id, 'smush-done',response.msg);
+			}
 			// if done, remove from queue and show progress
 			if ($rem === true) {
 				smpro_check_progress();
@@ -188,26 +192,40 @@ jQuery('document').ready(function() {
 		return;
 	}
 	
-	/**
-	 * Handle the start button click
-	 */
-	jQuery('.wp-smpro-bulk-wrap').on('click', '#wp-smpro-begin', function(e) {
-
-		e.preventDefault();
-		$loader = jQuery('#floatingCirclesG');
-		jQuery(this).find('span').html('');
-		jQuery(this).addClass('wp-smpro-started');
-		jQuery(this).prepend($loader);
-		jQuery(this).find('span').html('Smushing in Progress');
+	function wp_smpro_all_done(){
+		$button = jQuery('.wp-smpro-bulk-wrap #wp-smpro-begin');
+		finish_button_state($button);
+	}
+	
+	function finish_button_state($button){
+		// copy the loader into an object
+		$loader = $button.find('.floatingCirclesG');
+		
+		// remove the loader
+		$loader.remove();
+		
+		// empty the current text
+		$button.find('span').html('');
+		
+		// add new class for css adjustment
+		$button.removeClass('wp-smpro-started');
+		$button.addClass('wp-smpro-finished');
+		
+		// add the progress text
+		$button.find('span').html('All done!');
+		
 		return;
-		// nothing to smush, get out
-		if (wp_smpro_total < 1) {
-			smpro_show_status('Nothing to send');
-			return;
-		}
-
-		// show stats
-		smpro_show_status('Sending ' + $remaining + ' of total ' + wp_smpro_total + ' attachments');
+	}
+	
+	function change_attachment_status($id, $status, $status_msg){
+		$attachment_element = jQuery('ul#wp-smpro-selected-images').find('li#wp-smpro-img-'+$id).first();
+		$status_div = $attachment_element.find('.img-smush-status').first();
+		$attachment_element.removeClass();
+		$attachment_element.addClass($status);
+		$status_div.html($status_msg);
+	}
+	
+	function bulk_smush(){
 		
 		// instantiate our deferred object for piping
 		var startingpoint = jQuery.Deferred();
@@ -218,18 +236,56 @@ jQuery('document').ready(function() {
 			$check_queue = wp_smpro_ids;
 			jQuery.each(wp_smpro_ids, function(ix, $id) {
 				startingpoint = startingpoint.then(function() {
-					smpro_show_status("Making request for [" + $id + "]");
-					return smproRequest($id, false);
+					change_attachment_status($id, 'in-progress', 'Sent for Smushing');
+					return smproRequest($id, 0);
 				});
 			});
 		} else {
 			// we smush everything that needs smushing
 			for (var i = 0; i < $remaining; i++) {
 				startingpoint = startingpoint.then(function() {
-					smpro_show_status("Making request for [" + $start_id + "]");
-					return smproRequest($start_id, true);
+					change_progress_status($id);
+					return smproRequest($start_id, 1);
 				});
 			}
 		}
+
+	}
+	
+	function change_button_state($button){
+		// copy the loader into an object
+		$loader = jQuery('#wp-smpro-loader-wrap .floatingCirclesG').clone();
+		
+		// empty the current text
+		$button.find('span').html('');
+		
+		// add new class for css adjustment
+		$button.addClass('wp-smpro-started');
+		
+		// prepend the loader html
+		$button.prepend($loader);
+		
+		// add the progress text
+		$button.find('span').html('Smushing in Progress');
+		
+		// disable the button
+		$button.prop('disabled',true);
+		
+		return;
+	}
+	
+	/**
+	 * Handle the start button click
+	 */
+	jQuery('.wp-smpro-bulk-wrap').on('click', '#wp-smpro-begin', function(e) {
+		// prevent the default action
+		e.preventDefault();
+		
+		change_button_state(jQuery(this));
+		
+		bulk_smush();
+		
+		return;
+		
 	});
 });

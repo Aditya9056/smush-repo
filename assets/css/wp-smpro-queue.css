@@ -30,8 +30,20 @@ ul#wp-smpro-selected-images {
 ul#wp-smpro-selected-images li{
 	display:inline-block;
 	list-style:none;
-	margin:20px 30px 20px 0;
-	width:185px;
+	margin:20px 20px 20px 0;
+	width:220px;
+}
+
+ul#wp-smpro-selected-images li.in-progress p.img-smush-status{
+	color:#fdfd96;
+	font-weight:bold;
+}
+ul#wp-smpro-selected-images li.smush-done p.img-smush-status{
+	color:#b3cc57;
+	font-weight:bold;
+}
+ul#wp-smpro-selected-images li.smush-done .img-status{
+	background-image: url(../images/check_mark.png);
 }
 ul#wp-smpro-selected-images li .img-wrap{
 	float:left;
@@ -42,6 +54,15 @@ ul#wp-smpro-selected-images li .img-wrap{
 ul#wp-smpro-selected-images li .img-wrap img{
 	width:48px;
 	height:48px;
+}
+ul#wp-smpro-selected-images li .img-wrap .img-status{
+	position:absolute;
+	height:48px;
+	width:48px;
+	top:0;
+	left:0;
+	background-position: center center;
+	background-repeat: no-repeat;
 }
 ul#wp-smpro-selected-images li .img-wrap span.img-type{
 	position:absolute;
@@ -70,7 +91,7 @@ Smush button transformation
 #wp-smpro-begin.wp-smpro-started{
 	padding:0 10px 1px 0;
 }
-#wp-smpro-begin.wp-smpro-started #floatingCirclesG{
+#wp-smpro-begin.wp-smpro-started .floatingCirclesG{
 	float:left;
 }
 /*
@@ -79,7 +100,7 @@ Loader
 #wp-smpro-loader-wrap{
 	display:none;
 }
-#floatingCirclesG{
+.floatingCirclesG{
 position:relative;
 width:28px;
 height:28px;

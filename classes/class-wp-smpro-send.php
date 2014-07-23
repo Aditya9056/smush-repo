@@ -28,9 +28,6 @@ if (!class_exists('WpSmProSend')) {
 		 */
 		function __construct() {
 
-			// for manual individual smushing through media library
-			add_action('admin_action_wp_smpro_queue', array($this, 'queue'));
-
 			// for ajax based smushing through bulk UI
 			add_action('wp_ajax_wp_smpro_queue', array($this, 'ajax_queue'));
 
@@ -44,7 +41,7 @@ if (!class_exists('WpSmProSend')) {
 		}
 
 		/**
-		 * Processes the ajax smush request from bulk ui
+		 * Processes the ajax smush request
 		 * 
 		 * @todo Conditionally get next id, only for requests that need it 
 		 */
@@ -66,19 +63,25 @@ if (!class_exists('WpSmProSend')) {
 				wp_die(__('No attachment ID was provided.', WP_SMPRO_DOMAIN));
 			}
 
-			// Send for further processing
-			$sent = $this->add_meta_then_queue(intval($attachment_id));
-			// whether this one is an error object or not doesn't matter
-			// we still fetch the next id if we are bulk smushing
+			$response = array();
 			
+			// Send for further processing
+			$response['status_code'] = $this->add_meta_then_queue(intval($attachment_id));
+			
+			// smush meta
+			$smush_meta = get_post_meta($attachment_id, 'smush_meta', true);
+			
+			// smush status msg
+			$response['status_msg'] = !empty($smush_meta) ? $smush_meta['full']['status_msg'] : '';
+			
+			// we still fetch the next id if we are bulk smushing
 			if(boolval($get_next)===true){
 				// get the next id to send back
-				$next_id = $this->get_next_id(intval($attachment_id));
+				$response['next'] = $this->get_next_id(intval($attachment_id));
 
-				// print it in the response
-				echo $next_id;
 			}
-			// otherwise the response will be empty, for selective smushing
+			// print out the response
+			echo json_encode($response);
 
 			// wp_ajax wants us to...
 			die();
@@ -131,90 +134,31 @@ if (!class_exists('WpSmProSend')) {
 		}
 
 		/**
-		 * Manually process an image from the Media Library
-		 */
-		function queue() {
-
-			// check user permissions
-			if (!current_user_can('upload_files')) {
-				wp_die(__("You don't have permission to work with uploaded files.", WP_SMPRO_DOMAIN));
-			}
-
-			//Check if API is accessible
-			//@todo, option for strict ssl
-			$args = array(
-				'sslverify' => false
-			);
-
-			$req = WP_SMPRO_SERVICE_URL;
-
-			//Check if service is running or not
-			$status = wp_remote_head( $req, $args );
-			
-			$referer = preg_replace( '|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer() );
-
-			if ( is_wp_error( $status ) ) {
-
-				//Add error
-				$referer = add_query_arg(
-					array(
-						'api_status' => 'error'
-					),
-					$referer
-				);
-				// redirect to media library
-				wp_redirect( $referer );
-
-				exit();
-			}
-
-			// get the attachment id from request
-			$attachment_id = $_GET['attachment_id'];
-
-			// check attachment id
-			if (!isset($attachment_id)) {
-				wp_die(__('No attachment ID was provided.', WP_SMPRO_DOMAIN));
-			}
-
-			// Send for further processing
-			$sent = $this->add_meta_then_queue(intval($attachment_id));
-			
-			if ( is_wp_error( $sent ) ) {
-
-				//Add error
-				$referer = add_query_arg(
-					array(
-						'api_status' => 'error'
-					),
-					$referer
-				);
-				
-			}else{
-				//remove API status
-				$referer = remove_query_arg( 'api_status', $referer );
-				
-			}
-			
-			// redirect to media library
-				
-			wp_redirect( $referer );
-
-			exit();
-
-			
-		}
-
-		/**
 		 * Gets the attachment meta and sends for smushing
 		 * 
 		 * @param int $attachment_id
 		 * @return bool|object True on success, WP_Error object on failure 
 		 */
 		function add_meta_then_queue($attachment_id) {
-			// get the attachment meta data
-			$metadata = wp_get_attachment_metadata($attachment_id);
+			
 			// send for further processing
-			return $this->prepare_and_send($metadata, $attachment_id);
+			$full_state = $this->prepare_and_send($attachment_id);
+			
+			// we check the status of the full size to modify our meta
+			if (is_wp_error($full_state)) {
+				$smushed_status = 0;
+			} else {
+				$smushed_status = 1;
+			}
+
+			// update meta
+			update_post_meta($attachment_id, 'wp-smpro-is-smushed', $smushed_status);
+			
+			//now see if other sizes should be smushed
+			$this->check_send_sizes();
+			
+			return $smushed_status;
+			
 		}
 
 		/**
@@ -225,11 +169,11 @@ if (!class_exists('WpSmProSend')) {
 		 * @param boolean $force_resmush Force resmushing, inspite of previous status 
 		 * @return bool|object True on success, WP_Error object on failure
 		 */
-		function prepare_and_send($meta, $ID = null, $force_resmush = true) {
-
+		function prepare_and_send($ID = null, $force_resmush = true) {
+			
 			// check if it's an image
 			if ($ID && wp_attachment_is_image($ID) === false) {
-				$full_state = new WP_Error('invalid',__('Not a valid attachment', WP_SMPRO_DOMAIN));
+				return new WP_Error('invalid',__('Not a valid attachment', WP_SMPRO_DOMAIN));
 			}
 
 			// attachment path and url
@@ -244,7 +188,7 @@ if (!class_exists('WpSmProSend')) {
 			
 			// don't send if it's a static gif and user doesn't want png
 			if(!$this->send_if_gif($ID, $attachment_file_path)){
-				$full_state = new WP_Error('invalid',__('GIFs are not allowed by your settings', WP_SMPRO_DOMAIN));
+				return new WP_Error('invalid',__('GIFs are not allowed by your settings', WP_SMPRO_DOMAIN));
 			}
 			// smush meta
 			$smush_meta = get_post_meta($ID, 'smush_meta', true);
@@ -259,16 +203,15 @@ if (!class_exists('WpSmProSend')) {
 				$full_state = new WP_Error('already_sent', __('The attachment has been smushed already'));
 			}
 			
-			// we check the status of the full size to modify our meta
-			if (is_wp_error($full_state)) {
-				$smushed_status = 0;
-			}else{
-				$smushed_status = 1;
-			}
+			return $full_state;
 			
-			// update meta
-			update_post_meta($ID, 'wp-smpro-is-smushed', $smushed_status);
-
+		}
+		
+		function check_send_sizes($force_resmush=true){
+			
+			// get the attachment meta data
+			$meta = wp_get_attachment_metadata($attachment_id);
+			
 			// no resized versions, so we can exit
 			if (!isset($meta['sizes'])) {
 				return;
@@ -282,9 +225,9 @@ if (!class_exists('WpSmProSend')) {
 				// we aren't concerned with what happens to the rest of the sizes, are we?
 				$size_sent['size'] = $this->send_each_size($attachment_file_path, $attachment_file_url, $ID, $size_key, $size_data['file']);
 			}
-			
+
 			unset($size_sent);
-			
+
 			return;
 		}
 
@@ -359,6 +302,7 @@ if (!class_exists('WpSmProSend')) {
 				$smush_meta[$size]['status_msg'] = $data->status_msg;
 				// update smush details
 				update_post_meta($ID, 'smush_meta', $smush_meta);
+				return new WP_Error('smush_failed', $data->status_msg);
 			}
 
 			// all's fine, send response for processing
