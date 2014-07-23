@@ -1,3 +1,69 @@
+/*
+Settings
+*/
+ul#wp-smpro-options-wrap {
+	display: block;
+	overflow: auto;
+	margin:0;
+}
+
+ul#wp-smpro-options-wrap li{
+	display:inline-block;
+	list-style: none;
+	float:left;
+	margin: 5px 20px 5px 0;
+	padding: 5px 5px 5px 0;
+}
+
+input#wp-smpro-save-settings{
+	margin:15px 0;
+}
+/*
+Selected smushing
+*/
+ul#wp-smpro-selected-images {
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+
+ul#wp-smpro-selected-images li{
+	display:inline-block;
+	list-style:none;
+	margin:5px 10px;
+	padding: 5px;
+}
+ul#wp-smpro-selected-images li .img-wrap{
+	float:left;
+	position:relative;
+	width:48px;
+	height:48px;
+}
+ul#wp-smpro-selected-images li .img-wrap img{
+	width:48px;
+	height:48px;
+}
+ul#wp-smpro-selected-images li .img-wrap span.img-type{
+	position:absolute;
+	left:0;
+	bottom:0;
+	text-transform: uppercase;
+	background: #232323 none;
+	color: #fff;
+	padding: 2px 4px;
+}
+
+ul#wp-smpro-selected-images li .img-descr{
+	float:right;
+	margin-left:10px;
+}
+ul#wp-smpro-selected-images li .img-descr .img-meta{
+	color:#232323;
+	margin:0;
+}
+ul#wp-smpro-selected-images li .img-descr .img-smush-status{
+	margin:0;
+}
 .bulk_queue_wrap{
    width: 90%; 
    margin:0 auto;

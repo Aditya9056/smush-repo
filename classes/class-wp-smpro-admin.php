@@ -37,11 +37,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 			
 			// hook ajax call for checking smush status
-			add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
+			//add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
 				
-			// hook settings
-			add_action( 'admin_init', array( $this, 'register_settings' ) );
-			
 			// initialise translation ready settings and titles
 			$this->init_settings();
 			
@@ -104,16 +101,18 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				<h2>
 					<?php _e( 'WP Smush.it Pro', WP_SMPRO_DOMAIN ) ?>
 				</h2>
-				
+				<h3>
+					<?php _e( 'Settings', WP_SMPRO_DOMAIN ) ?>
+				</h3>
 					<?php
 					// display the options
 					$this->options_ui();
 					?>
 				
 				<hr>
-				<h2>
+				<h3>
 					<?php _e( 'Smush in Bulk', WP_SMPRO_DOMAIN ) ?>
-				</h2>
+				</h3>
 				
 					<?php
 					// display the bulk ui
@@ -145,7 +144,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				// nonce
 				wp_nonce_field('save_wp_smpro_options','wp_smpro_options_nonce');
 				?>
-				<input type="submit" class="button button-primary" value="Save Changes">
+				<input type="submit" id="wp-smpro-save-settings" class="button button-primary" value="Save Changes">
 			</form>
 			<?php
 		}
@@ -214,10 +213,92 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function bulk_ui(){
 			// set up some variables and print out some js vars
 			$this->pre_bulk();
-			
+			$this->selected_ui();
 			?>
-			
 			<?php
+		}
+		
+		/**
+		 * The images that still need to be smushed
+		 *
+		 * @global object $wpdb WP database object
+		 * @return int count of smushed images
+		 */
+		function image_count( $type = 'unsmushed' ) {
+			// the cache key
+			$cache_key = "wp-smpro-to-$type-count";
+
+			// get it from cache
+			$count = wp_cache_get( $cache_key );
+
+			// if not in cache, query db
+			if ( false === $count ) {
+				$meta_query = array(
+					'relation' => 'OR',
+					array(
+						'key'     => 'wp-smpro-is-smushed',
+						'compare' => 'NOT EXISTS'
+					),
+					array(
+						'key'   => 'wp-smpro-is-smushed',
+						'value' => 0
+					)
+				);
+
+				$query = array(
+					'fields'         => 'ids',
+					'post_type'      => 'attachment',
+					'post_status'    => 'any',
+					'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+					'order'          => 'ASC',
+				);
+
+				if ( $type == 'unsmushed' ) {
+					$query['meta_query'] = $meta_query;
+				}
+
+				$results = new WP_Query( $query );
+				$count   = ! empty ( $results->post_count ) ? $results->post_count : '';
+				// update cache
+				wp_cache_set( $cache_key, $count );
+			}
+
+			// send the count
+			return $count;
+		}
+
+		/**
+		 * The first id to start from
+		 *
+		 * @global object $wpdb WP database object
+		 * @return int Attachmment id to start bulk smushing from
+		 */
+		function start_id() {
+			$query = array(
+				'fields'         => 'ids',
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'order'          => 'ASC',
+				'posts_per_page' => 1,
+				'meta_query'     => array(
+					'relation' => 'OR',
+					array(
+						'key'     => 'wp-smpro-is-smushed',
+						'compare' => 'NOT EXISTS'
+					),
+					array(
+						'key'   => 'wp-smpro-is-smushed',
+						'value' => 0
+					)
+				)
+
+			);
+
+			$results = new WP_Query( $query );
+			$id      = ! empty ( $results->posts ) ? $results->posts[0] : '';
+
+			return $id;
 		}
 		
 		/**
@@ -227,19 +308,21 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function pre_bulk(){
 			
 			global $wpdb;
+			
+			$this->bulk = new stdClass();
 
 			// if a fixed number of ids were sent
 			$this->bulk->idstr = isset( $_REQUEST['ids'] ) ? $_REQUEST['ids'] : '';
 
 			// get the ids to bulk smush in an array
-			$this->bulk->ids = ( ! empty( $idstr ) ) ? explode( ',', $idstr ) : array();
+			$this->bulk->ids = ( ! empty( $this->bulk->idstr ) ) ? explode( ',', $this->bulk->idstr ) : array();
 
 			// set the start id to string for js
 			$this->bulk->start_id = 'null';
 
 			// set up counts and start_ids in each case
-			if ( ! empty( $ids ) ) {
-				$this->bulk->total    = count( $ids );
+			if ( ! empty( $this->bulk->ids ) ) {
+				$this->bulk->total    = count( $this->bulk->ids );
 				$this->bulk->progress = 0;
 			} else {
 				$this->bulk->total    = $this->image_count( 'all' );
@@ -248,7 +331,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 
 			// how many remaining?
-			$this->bulk->remaining = $total - $progress;
+			$this->bulk->remaining = $this->bulk->total - $this->bulk->progress;
+			
+			$this->bulk_ui_js_vars();
 
 		}
 		
@@ -277,7 +362,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				<?php
 				printf(
 					__(
-						'You have selected the following %d images to smush:',
+						'You have selected the following <strong>%d images</strong> to smush:',
 						WP_SMPRO_DOMAIN
 					),
 					$this->bulk->total
@@ -299,9 +384,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$ext_arr = explode('/',$type);
 			$ext = $ext_arr[1];
 			$title = get_the_title($attachment_id);
-			$title_length = 60;
-			if(mb_strlen($title>$title_length)){
-				$title = mb_substr($title,0,$title_length-1).'$hellip;';
+			$title_length = 12;
+			if(mb_strlen($title)>$title_length){
+				$title = mb_substr($title,0,$title_length-1).'&hellip;';
 			}
 			
 			$src = wp_get_attachment_thumb_url( $attachment_id );
@@ -315,7 +400,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<p class="img-meta">
 						<?php echo $attachment_id; ?> - <?php echo $title; ?>
 					</p>
-					<p class="img-smush-status"><?php _('Not Processed',WP_SMPRO_DOMAIN); ?></p>
+					<p class="img-smush-status"><?php _e('Not Processed',WP_SMPRO_DOMAIN); ?></p>
 				</div>
 			</li>
 			<?php

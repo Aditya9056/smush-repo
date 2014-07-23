@@ -114,7 +114,7 @@ if (!class_exists('WpSmProMediaLibrary')) {
 			$ids = implode( ',', array_map( 'intval', $_REQUEST['media'] ) );
 
 			// Can't use wp_nonce_url() as it escapes HTML entities
-			wp_redirect( add_query_arg( '_wpnonce', wp_create_nonce( 'wp-smpro-bulk' ), admin_url( 'upload.php?page=wp-smpro-bulk&goback=1&ids=' . $ids ) ) );
+			wp_redirect( add_query_arg( '_wpnonce', wp_create_nonce( 'wp-smpro-admin' ), admin_url( 'upload.php?page=wp-smpro-admin&goback=1&ids=' . $ids ) ) );
 			exit();
 		}
 		
