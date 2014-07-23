@@ -260,12 +260,82 @@ jQuery('document').ready(function() {
 		}
 	}
 	
+	
+	function wp_smpro_change_media_status($id, $resmush, $msg){
+		$attachment_element = jQuery('.wp-list-table.media').find('tr#post-'+$id).first();
+		$status_div = $attachment_element.find('.smush-status').first();
+		$status_div.html($msg);
+		$button = $attachment_element.find('button.wp-smpro-smush');
+		$loader = $button.find('.floatingCirclesG');
+
+		// remove the loader
+		$loader.remove();
+
+		// empty the current text
+		$button.find('span').html('');
+
+		// add new class for css adjustment
+		$button.removeClass('wp-smpro-started');
+		
+		// add the progress text
+		if($resmush===true){
+			$html = 'Re-smush';
+		}else{
+			$html = 'Smush.it now!'
+		}
+		$button.find('span').html($html);
+		// disable the button
+		$button.prop('disabled',false);
+
+		return;
+		
+	}
+	
+	function singleCheck($id){
+		jQuery.ajax({
+			type: "GET",
+			data: {attachment_id: $id},
+			url: $check_url,
+			dataType: 'json'
+		}).done(function(response) {
+			$status = parseInt(response.status);
+			// handle different responses
+			// if smush succeeded or failed, remove from queue
+			if($status===-1
+				|| parseInt($status)===2){
+				clearInterval(smpro_poll_check);
+				wp_smpro_change_media_status($id, true, response.msg);
+			}
+
+		}).fail(function(response) {
+
+		});
+	}
+	
 	function wp_smpro_single_smush($button){
 		$nearest_tr = $button.closest('tr').first();
 		$elem_id =$nearest_tr.attr('id');
 		$id = $elem_id.replace(/[^0-9\.]+/g, '');
-		console.log($id);
+		jQuery.ajax({
+			type: "GET",
+			data: {attachment_id: $id},
+			url: $send_url,
+			dataType: 'json'
+		}).done(function(response) {
+			if(parseInt(response.status_code)===0){
+				wp_smpro_change_media_status($id, false, response.status_msg);
+			}else{
+				smpro_poll_check = setInterval(function() {
+						singleCheck($id);
+					}, 1000);
+			}
+			
+
+		}).fail(function(response) {
+
+		});
 	}
+	
 	
 	function wp_smpro_button_progress_state($button){
 		// copy the loader into an object
