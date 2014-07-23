@@ -42,7 +42,6 @@ if (!class_exists('WpSmProSend')) {
 		
 		function auto_smush($metadata,$attachment_id){
 			$this->add_meta_then_queue(intval($attachment_id));
-			
 			return $metadata;
 		}
 
