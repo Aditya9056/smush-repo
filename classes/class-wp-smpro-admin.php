@@ -144,7 +144,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				// nonce
 				wp_nonce_field('save_wp_smpro_options','wp_smpro_options_nonce');
 				?>
-				<input type="submit" id="wp-smpro-save-settings" class="button button-primary" value="Save Changes">
+				<input type="submit" id="wp-smpro-save-settings" class="button button-primary" value="<?php _e('Save Changes', WP_SMPRO_DOMAIN); ?>">
 			</form>
 			<?php
 		}
@@ -214,6 +214,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// set up some variables and print out some js vars
 			$this->pre_bulk();
 			$this->selected_ui();
+			$this->all_ui();
 			?>
 			<?php
 		}
@@ -324,14 +325,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			if ( ! empty( $this->bulk->ids ) ) {
 				$this->bulk->total    = count( $this->bulk->ids );
 				$this->bulk->progress = 0;
+				$this->bulk->remaining = $this->bulk->total;
 			} else {
 				$this->bulk->total    = $this->image_count( 'all' );
-				$this->bulk->progress = (int) $this->image_count();
+				$this->bulk->remaining = (int) $this->image_count();
 				$this->bulk->start_id = $this->start_id();
+				$this->bulk->progress = $this->bulk->total - $this->bulk->remaining;
 			}
 
-			// how many remaining?
-			$this->bulk->remaining = $this->bulk->total - $this->bulk->progress;
 			
 			$this->bulk_ui_js_vars();
 
@@ -376,7 +377,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				}
 				?>
 			</ul>
-			<input id="wp-smpro-begin" type="button" class="button button-primary" value="Begin Smush">
+			<input id="wp-smpro-begin" type="button" class="button button-primary" value="<?php _e('Begin Smush', WP_SMPRO_DOMAIN); ?>">
 			<?php
 		}
 		
@@ -407,6 +408,58 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			<?php
 			
 		}
+		
+		function all_ui(){
+			if(!empty($this->bulk->ids)){
+				return;
+			}
+			
+			if ( $this->bulk->total < 1 ) {
+				_e( "<p>You don't appear to have uploaded any images yet.</p>", WP_SMPRO_DOMAIN );
+				return;
+			}
+			
+			if ($this->bulk->remaining === 0) {
+				_e('All the images are already smushed', WP_SMPRO_DOMAIN);
+				return;
+			}
+			?>
+			<p>
+				<?php printf(
+					__(
+						'We have found <strong>%d images</strong> in your media library.'
+						. ' You can smush them all by clicking the button below.',
+						WP_SMPRO_DOMAIN
+						),
+					$this->bulk->total
+					);
+				?>
+			</p>
+			<p>
+				<?php _e(
+					'It may take some time for all images to be smushed.'
+					. ' If you leave this screen,'
+					. ' you can always start from where smushing was left off.',
+					WP_SMPRO_DOMAIN
+					);
+				?>
+				
+			</p>
+			<p>
+				<?php printf(
+					__(
+						'Alternatively, you can smush images individually'
+						. ' or as a bulk action from your'
+						. ' <a href="%s">Media Library</a>',
+						WP_SMPRO_DOMAIN
+						),
+					admin_url('upload.php')
+					);
+				?>
+			</p>
+			<input id="wp-smpro-begin" type="button" class="button button-primary" value="<?php _e('Smush all the images', WP_SMPRO_DOMAIN); ?>">
+			<?php
+			}
 			
 
 	}
