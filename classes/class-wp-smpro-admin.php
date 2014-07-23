@@ -215,6 +215,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->pre_bulk();
 			$this->selected_ui();
 			$this->all_ui();
+			$this->print_loader();
 			?>
 			<?php
 		}
@@ -359,25 +360,27 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			
 			?>
-			<p>
-				<?php
-				printf(
-					__(
-						'You have selected the following <strong>%d images</strong> to smush:',
-						WP_SMPRO_DOMAIN
-					),
-					$this->bulk->total
-				);
-				?>
-			</p>
-			<ul id="wp-smpro-selected-images">
-				<?php
-				foreach($this->bulk->ids as $attachment_id){
-					$this->attachment_ui($attachment_id);
-				}
-				?>
-			</ul>
-			<input id="wp-smpro-begin" type="button" class="button button-primary" value="<?php _e('Begin Smush', WP_SMPRO_DOMAIN); ?>">
+			<div id="select-bulk" class="wp-smpro-bulk-wrap">
+				<p>
+					<?php
+					printf(
+						__(
+							'You have selected the following <strong>%d images</strong> to smush:',
+							WP_SMPRO_DOMAIN
+						),
+						$this->bulk->total
+					);
+					?>
+				</p>
+				<ul id="wp-smpro-selected-images">
+					<?php
+					foreach($this->bulk->ids as $attachment_id){
+						$this->attachment_ui($attachment_id);
+					}
+					?>
+				</ul>
+				<input id="wp-smpro-begin" type="button" class="button button-primary" value="<?php _e('Begin Smush', WP_SMPRO_DOMAIN); ?>">
+			</div>
 			<?php
 		}
 		
@@ -424,43 +427,73 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				return;
 			}
 			?>
-			<p>
-				<?php printf(
-					__(
-						'We have found <strong>%d images</strong> in your media library.'
-						. ' You can smush them all by clicking the button below.',
+			<div id="all-bulk" class="wp-smpro-bulk-wrap">
+				<p>
+					<?php printf(
+						__(
+							'We have found <strong>%d images</strong> in your media library.'
+							. ' You can smush them all by clicking the button below.',
+							WP_SMPRO_DOMAIN
+							),
+						$this->bulk->total
+						);
+					?>
+				</p>
+				<p>
+					<?php _e(
+						'It may take some time for all images to be smushed.'
+						. ' If you leave this screen,'
+						. ' you can always start from where smushing was left off.',
 						WP_SMPRO_DOMAIN
-						),
-					$this->bulk->total
-					);
-				?>
-			</p>
-			<p>
-				<?php _e(
-					'It may take some time for all images to be smushed.'
-					. ' If you leave this screen,'
-					. ' you can always start from where smushing was left off.',
-					WP_SMPRO_DOMAIN
-					);
-				?>
-				
-			</p>
-			<p>
-				<?php printf(
-					__(
-						'Alternatively, you can smush images individually'
-						. ' or as a bulk action from your'
-						. ' <a href="%s">Media Library</a>',
-						WP_SMPRO_DOMAIN
-						),
-					admin_url('upload.php')
-					);
-				?>
-			</p>
-			<input id="wp-smpro-begin" type="button" class="button button-primary" value="<?php _e('Smush all the images', WP_SMPRO_DOMAIN); ?>">
+						);
+					?>
+
+				</p>
+				<p>
+					<?php printf(
+						__(
+							'Alternatively, you can smush images individually'
+							. ' or as a bulk action from your'
+							. ' <a href="%s">Media Library</a>',
+							WP_SMPRO_DOMAIN
+							),
+						admin_url('upload.php')
+						);
+					?>
+				</p>
+				<button id="wp-smpro-begin" class="button button-primary">
+					<span>
+						<?php _e('Smush all the images', WP_SMPRO_DOMAIN); ?>
+					</span>
+				</button>
+			</div>
 			<?php
 			}
 			
+			function print_loader(){
+				?>
+				<div id="wp-smpro-loader-wrap">
+					<div id="floatingCirclesG">
+						<div class="f_circleG" id="frotateG_01">
+						</div>
+						<div class="f_circleG" id="frotateG_02">
+						</div>
+						<div class="f_circleG" id="frotateG_03">
+						</div>
+						<div class="f_circleG" id="frotateG_04">
+						</div>
+						<div class="f_circleG" id="frotateG_05">
+						</div>
+						<div class="f_circleG" id="frotateG_06">
+						</div>
+						<div class="f_circleG" id="frotateG_07">
+						</div>
+						<div class="f_circleG" id="frotateG_08">
+						</div>
+					</div>
+				</div>
+				<?php
+			}
 
 	}
 

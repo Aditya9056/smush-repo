@@ -191,10 +191,15 @@ jQuery('document').ready(function() {
 	/**
 	 * Handle the start button click
 	 */
-	jQuery('.bulk_queue_wrap').on('click', 'input#wp-sm-pro-begin', function(e) {
+	jQuery('.wp-smpro-bulk-wrap').on('click', '#wp-smpro-begin', function(e) {
 
 		e.preventDefault();
-		
+		$loader = jQuery('#floatingCirclesG');
+		jQuery(this).find('span').html('');
+		jQuery(this).addClass('wp-smpro-started');
+		jQuery(this).prepend($loader);
+		jQuery(this).find('span').html('Smushing in Progress');
+		return;
 		// nothing to smush, get out
 		if (wp_smpro_total < 1) {
 			smpro_show_status('Nothing to send');
