@@ -68,15 +68,29 @@ if (!class_exists('WpSmProMediaLibrary')) {
 			
 			// if there's smush details, show it
 			if ( ! empty( $smush_meta ) && ! empty( $smush_meta['full'] ) ) {
-
-				echo $smush_meta['full']['status_msg'];
-
-				printf( "<br><a href=\"admin.php?action=wp_smpro_queue&amp;attachment_id=%d\">%s</a>", $id, __( 'Re-smush', WP_SMPRO_DOMAIN ) );
+				?>
+				<p class="smush-status">
+					<?php echo $smush_meta['full']['status_msg']; ?>
+				</p>
+				<button class="wp-smpro-smush button">
+					<span>
+						<?php _e('Re-smush', WP_SMPRO_DOMAIN); ?>
+					</span>
+				</button>
+				<?php
 			} else {
 				// not smushed yet, check if attachment is image
 				if ( wp_attachment_is_image( $id ) ) {
-					print __( 'Not processed', WP_SMPRO_DOMAIN );
-					printf( "<br><a href=\"admin.php?action=wp_smpro_queue&amp;attachment_id=%d\">%s</a>", $id, __( 'Smush.it now!', WP_SMPRO_DOMAIN ) );
+					?>
+					<p class="smush-status">
+						<?php _e( 'Not processed', WP_SMPRO_DOMAIN ); ?>
+					</p>
+					<button class="wp-smpro-smush button">
+						<span>
+							<?php _e('Smush.it now!', WP_SMPRO_DOMAIN); ?>
+						</span>
+					</button>
+				<?php
 				}
 			}
 			

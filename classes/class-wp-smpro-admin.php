@@ -38,6 +38,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			
 			// hook ajax call for checking smush status
 			add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
+			
+			add_action('admin_footer-upload.php', array( $this, 'print_loader' ) );
 				
 			// initialise translation ready settings and titles
 			$this->init_settings();
@@ -66,8 +68,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$this,
 				'ui'
 			) );
-
-			// enqueue js only on this screen
+			// enqueue js only on this screen and media_screen
+			add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );
 			add_action( 'admin_print_scripts-' . $admin_page_suffix, array( $this, 'enqueue' ) );
 		}
 		

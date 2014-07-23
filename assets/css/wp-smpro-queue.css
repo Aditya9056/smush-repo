@@ -88,10 +88,10 @@ ul#wp-smpro-selected-images li .img-descr .img-smush-status{
 /*
 Smush button transformation
 */
-#wp-smpro-begin.wp-smpro-started{
+.button.wp-smpro-started{
 	padding:0 10px 1px 0;
 }
-#wp-smpro-begin.wp-smpro-started .floatingCirclesG{
+.button.wp-smpro-started .floatingCirclesG{
 	float:left;
 }
 /*
