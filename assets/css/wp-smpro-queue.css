@@ -101,204 +101,200 @@ Loader
 	display:none;
 }
 .floatingCirclesG{
-position:relative;
-width:28px;
-height:28px;
--moz-transform:scale(0.6);
--webkit-transform:scale(0.6);
--ms-transform:scale(0.6);
--o-transform:scale(0.6);
-transform:scale(0.6);
+	position:relative;
+	width:28px;
+	height:28px;
+	-moz-transform:scale(0.6);
+	-webkit-transform:scale(0.6);
+	-ms-transform:scale(0.6);
+	-o-transform:scale(0.6);
+	transform:scale(0.6);
 }
 
 .f_circleG{
-position:absolute;
-background-color:#FFFFFF;
-height:5px;
-width:5px;
--moz-border-radius:3px;
--moz-animation-name:f_fadeG;
--moz-animation-duration:0.8s;
--moz-animation-iteration-count:infinite;
--moz-animation-direction:linear;
--webkit-border-radius:3px;
--webkit-animation-name:f_fadeG;
--webkit-animation-duration:0.8s;
--webkit-animation-iteration-count:infinite;
--webkit-animation-direction:linear;
--ms-border-radius:3px;
--ms-animation-name:f_fadeG;
--ms-animation-duration:0.8s;
--ms-animation-iteration-count:infinite;
--ms-animation-direction:linear;
--o-border-radius:3px;
--o-animation-name:f_fadeG;
--o-animation-duration:0.8s;
--o-animation-iteration-count:infinite;
--o-animation-direction:linear;
-border-radius:3px;
-animation-name:f_fadeG;
-animation-duration:0.8s;
-animation-iteration-count:infinite;
-animation-direction:linear;
+	position:absolute;
+	background-color:#FFFFFF;
+	height:5px;
+	width:5px;
+	-moz-border-radius:3px;
+	-moz-animation-name:f_fadeG;
+	-moz-animation-duration:0.8s;
+	-moz-animation-iteration-count:infinite;
+	-moz-animation-direction:linear;
+	-webkit-border-radius:3px;
+	-webkit-animation-name:f_fadeG;
+	-webkit-animation-duration:0.8s;
+	-webkit-animation-iteration-count:infinite;
+	-webkit-animation-direction:linear;
+	-ms-border-radius:3px;
+	-ms-animation-name:f_fadeG;
+	-ms-animation-duration:0.8s;
+	-ms-animation-iteration-count:infinite;
+	-ms-animation-direction:linear;
+	-o-border-radius:3px;
+	-o-animation-name:f_fadeG;
+	-o-animation-duration:0.8s;
+	-o-animation-iteration-count:infinite;
+	-o-animation-direction:linear;
+	border-radius:3px;
+	animation-name:f_fadeG;
+	animation-duration:0.8s;
+	animation-iteration-count:infinite;
+	animation-direction:linear;
 }
 
 #frotateG_01{
-left:0;
-top:11px;
--moz-animation-delay:0.3s;
--webkit-animation-delay:0.3s;
--ms-animation-delay:0.3s;
--o-animation-delay:0.3s;
-animation-delay:0.3s;
+	left:0;
+	top:11px;
+	-moz-animation-delay:0.3s;
+	-webkit-animation-delay:0.3s;
+	-ms-animation-delay:0.3s;
+	-o-animation-delay:0.3s;
+	animation-delay:0.3s;
 }
 
 #frotateG_02{
-left:3px;
-top:3px;
--moz-animation-delay:0.4s;
--webkit-animation-delay:0.4s;
--ms-animation-delay:0.4s;
--o-animation-delay:0.4s;
-animation-delay:0.4s;
+	left:3px;
+	top:3px;
+	-moz-animation-delay:0.4s;
+	-webkit-animation-delay:0.4s;
+	-ms-animation-delay:0.4s;
+	-o-animation-delay:0.4s;
+	animation-delay:0.4s;
 }
 
 #frotateG_03{
-left:11px;
-top:0;
--moz-animation-delay:0.5s;
--webkit-animation-delay:0.5s;
--ms-animation-delay:0.5s;
--o-animation-delay:0.5s;
-animation-delay:0.5s;
+	left:11px;
+	top:0;
+	-moz-animation-delay:0.5s;
+	-webkit-animation-delay:0.5s;
+	-ms-animation-delay:0.5s;
+	-o-animation-delay:0.5s;
+	animation-delay:0.5s;
 }
 
 #frotateG_04{
-right:3px;
-top:3px;
--moz-animation-delay:0.6s;
--webkit-animation-delay:0.6s;
--ms-animation-delay:0.6s;
--o-animation-delay:0.6s;
-animation-delay:0.6s;
+	right:3px;
+	top:3px;
+	-moz-animation-delay:0.6s;
+	-webkit-animation-delay:0.6s;
+	-ms-animation-delay:0.6s;
+	-o-animation-delay:0.6s;
+	animation-delay:0.6s;
 }
 
 #frotateG_05{
-right:0;
-top:11px;
--moz-animation-delay:0.7s;
--webkit-animation-delay:0.7s;
--ms-animation-delay:0.7s;
--o-animation-delay:0.7s;
-animation-delay:0.7s;
+	right:0;
+	top:11px;
+	-moz-animation-delay:0.7s;
+	-webkit-animation-delay:0.7s;
+	-ms-animation-delay:0.7s;
+	-o-animation-delay:0.7s;
+	animation-delay:0.7s;
 }
 
 #frotateG_06{
-right:3px;
-bottom:3px;
--moz-animation-delay:0.8s;
--webkit-animation-delay:0.8s;
--ms-animation-delay:0.8s;
--o-animation-delay:0.8s;
-animation-delay:0.8s;
+	right:3px;
+	bottom:3px;
+	-moz-animation-delay:0.8s;
+	-webkit-animation-delay:0.8s;
+	-ms-animation-delay:0.8s;
+	-o-animation-delay:0.8s;
+	animation-delay:0.8s;
 }
 
 #frotateG_07{
-left:11px;
-bottom:0;
--moz-animation-delay:0.9s;
--webkit-animation-delay:0.9s;
--ms-animation-delay:0.9s;
--o-animation-delay:0.9s;
-animation-delay:0.9s;
+	left:11px;
+	bottom:0;
+	-moz-animation-delay:0.9s;
+	-webkit-animation-delay:0.9s;
+	-ms-animation-delay:0.9s;
+	-o-animation-delay:0.9s;
+	animation-delay:0.9s;
 }
 
 #frotateG_08{
-left:3px;
-bottom:3px;
--moz-animation-delay:1s;
--webkit-animation-delay:1s;
--ms-animation-delay:1s;
--o-animation-delay:1s;
-animation-delay:1s;
+	left:3px;
+	bottom:3px;
+	-moz-animation-delay:1s;
+	-webkit-animation-delay:1s;
+	-ms-animation-delay:1s;
+	-o-animation-delay:1s;
+	animation-delay:1s;
 }
 
 @-moz-keyframes f_fadeG{
-0%{
-background-color:#000000}
+	0%{
+		background-color:#000000}
 
-100%{
-background-color:#FFFFFF}
+	100%{
+		background-color:#FFFFFF}
 
 }
 
 @-webkit-keyframes f_fadeG{
-0%{
-background-color:#000000}
+	0%{
+		background-color:#000000}
 
-100%{
-background-color:#FFFFFF}
+	100%{
+		background-color:#FFFFFF}
 
 }
 
 @-ms-keyframes f_fadeG{
-0%{
-background-color:#000000}
+	0%{
+		background-color:#000000}
 
-100%{
-background-color:#FFFFFF}
+	100%{
+		background-color:#FFFFFF}
 
 }
 
 @-o-keyframes f_fadeG{
-0%{
-background-color:#000000}
+	0%{
+		background-color:#000000}
 
-100%{
-background-color:#FFFFFF}
+	100%{
+		background-color:#FFFFFF}
 
 }
 
 @keyframes f_fadeG{
-0%{
-background-color:#000000}
+	0%{
+		background-color:#000000}
 
-100%{
-background-color:#FFFFFF}
+	100%{
+		background-color:#FFFFFF}
 
 }
-.bulk_queue_wrap{
-   width: 90%; 
-   margin:0 auto;
-}
-.bulk_queue_wrap .status-div{  
-    position: relative;
-    margin:10px auto;
-    background: none;
+
+/*
+Progressbar ui
+*/
+#progress-ui{
+	width: 80%;
+	margin-bottom: 20px;
+	display:none;
 }
 
-.bulk_queue_wrap .status-div span.single-status{
-    position:relative;
-    display:block;
-    margin: 5px auto;
+#progress-ui #wp-smpro-progress-wrap{
+	height: 16px;
+	border: 1px solid #0074a2;
+	border-radius: 7px;
 }
-
-.bulk_queue_wrap .wp-smpro-progressbar, .bulk_queue_wrap .wp-smpro-progressbar div{
-    border: 1px #232323 solid;
-    background: #fff none;
-    border-radius: 10px;
-    height:20px;
+#progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar{
+	height:16px;
+	float:left;
+	width:50%;
 }
-
-.bulk_queue_wrap .wp-smpro-progressbar{
-    margin:20px auto;
+#progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar div{
+	height:16px;
 }
-
-.bulk_queue_wrap .wp-smpro-progressbar div{
-    background: #fdfd96 none;
-    border: 0px #232323 solid;
+#progress-ui #wp-smpro-progress-wrap #wp-smpro-smush-progress div{
+	border-radius: 5px 0 0 5px;
+	background-color: #2ea2cc;
 }
-
-.bulk_queue_wrap #wp-smpro-received div{
-    background: #b3cc57 none;
+#progress-ui #wp-smpro-progress-wrap #wp-smpro-check-progress div{
+	border-radius: 0 5px 5px 0;
+	background-color: #0074a2;
 }

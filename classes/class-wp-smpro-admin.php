@@ -375,6 +375,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			<script type="text/javascript">
 				var wp_smpro_total = <?php echo $this->bulk->total; ?>;
 				var wp_smpro_progress = <?php echo $this->bulk->progress; ?>;
+				var wp_smpro_remaining = <?php echo $this->bulk->remaining; ?>;
 				var wp_smpro_ids = [<?php echo $this->bulk->idstr; ?>];
 				var wp_smpro_start_id = "<?php echo $this->bulk->start_id; ?>";
 			</script>
@@ -508,6 +509,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					);
 					?>
 				</p>
+				<?php 
+				$msg = sprintf(__('<span id="smush-sent-count">0</span> of <span id="smush-total-count">%d</span> images have been sent for smushing', WP_SMPRO_DOMAIN),$this->bulk->remaining);
+				$this->progress_ui($msg);
+				?>
 				<button id="wp-smpro-begin" class="button button-primary">
 					<span>
 						<?php _e( 'Smush all the images', WP_SMPRO_DOMAIN ); ?>
@@ -590,6 +595,20 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$response['msg']    = __( 'Still waiting', WP_SMPRO_DOMAIN );
 			echo json_encode( $response );
 			die();
+		}
+		
+		function progress_ui( $msg ) {
+			$progress_ui = '
+				<div id="progress-ui">
+				<div id="wp-smpro-progress-wrap">
+					<div id="wp-smpro-smush-progress" class="wp-smpro-progressbar"><div style="width:0%"></div></div>
+					<div id="wp-smpro-check-progress" class="wp-smpro-progressbar"><div style="width:0%"></div></div>
+				</div>
+				<p id="smush-status">'.$msg.'</p>
+				<p id="check-status"></p>
+				</div>
+				';
+			echo $progress_ui;
 		}
 
 	}
