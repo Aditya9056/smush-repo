@@ -47,13 +47,12 @@ if (!class_exists('WpSmProReceive')) {
 		function receive() {
 
 			// get the contents of the callback
-			$body = @file_get_contents('php://input');
-
-			// decode the callback json into an array
-			$response = json_decode($body, true);
+			$body = urldecode( file_get_contents('php://input') );
 
 			// filter with default data
-			$data = wp_parse_args($response, $this->default_data);
+			$data = array();
+
+			parse_str( $body, $data);
 
 			// data is invalid
 			if (
@@ -87,16 +86,29 @@ if (!class_exists('WpSmProReceive')) {
 			//Empty smush meta, probably some error on our end
 			if (empty($smush_meta)) {
 
-				error_log("No smush meta for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				error_log("No smush meta for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 				$this->callback_response();
 			}
+			//Use the size obtained in callback
+			$size = ! empty( $data['image_size'] ) ? $data['image_size'] : '';
 
-			// we have meta, figure out the sizes
-			foreach ($smush_meta as $thumb_size => $thumb_details) {
+			//Verify file id
+			if( empty( $smush_meta[$size] ) || $smush_meta[$size]['file_id'] != $data['file_id'] ) {
 
-				if ($thumb_details['file_id'] == $data['file_id']) {
-					$size = $thumb_size;
-					break;
+				//@todo: Check whether to send response or not
+				error_log("File id did not match File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				$this->callback_response();
+
+			}
+
+			if ( empty( $size ) ) {
+				// we have meta, figure out the sizes
+				foreach ($smush_meta as $thumb_size => $thumb_details) {
+
+					if ($thumb_details['file_id'] == $data['file_id']) {
+						$size = $thumb_size;
+						break;
+					}
 				}
 			}
 
@@ -106,7 +118,7 @@ if (!class_exists('WpSmProReceive')) {
 			//Check for Nonce, corresponding to media id
 			if ($token != $data['token']) {
 
-				error_log("Nonce Verification failed for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				error_log("Nonce Verification failed for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 				$this->callback_response();
 			}
 
@@ -119,7 +131,7 @@ if (!class_exists('WpSmProReceive')) {
 			// no file with us :(
 			if (empty($size_path)) {
 
-				error_log("No file path for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				error_log("No file path for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 				$this->callback_response();
 			}
 
@@ -133,7 +145,7 @@ if (!class_exists('WpSmProReceive')) {
 
 				update_post_meta($data['attachment_id'], 'smush_meta', $smush_meta);
 
-				error_log("Smushing failed for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				error_log("Smushing failed for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 				$this->callback_response();
 			}
 
@@ -151,7 +163,7 @@ if (!class_exists('WpSmProReceive')) {
 
 			update_post_meta($data['attachment_id'], 'smush_meta', $smush_meta);
 
-			error_log("File updated for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+			error_log("File updated for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 			$this->callback_response();
 		}
 
