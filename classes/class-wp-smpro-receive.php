@@ -90,19 +90,29 @@ if (!class_exists('WpSmProReceive')) {
 				error_log("No smush meta for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 				$this->callback_response();
 			}
+			//Use the size obtained in callback
+			$size = ! empty( $data['image_size'] ) ? $data['image_size'] : '';
 
-			// we have meta, figure out the sizes
-			foreach ($smush_meta as $thumb_size => $thumb_details) {
+			//Verify file id
+			if( empty( $smush_meta[$size] ) || $smush_meta[$size]['file_id'] != $data['file_id'] ) {
 
-				if ($thumb_details['file_id'] == $data['file_id']) {
-					$size = $thumb_size;
-					break;
+				//@todo: Check whether to send response or not
+				error_log("File id did not match File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				$this->callback_response();
+
+			}
+
+			if ( empty( $size ) ) {
+				// we have meta, figure out the sizes
+				foreach ($smush_meta as $thumb_size => $thumb_details) {
+
+					if ($thumb_details['file_id'] == $data['file_id']) {
+						$size = $thumb_size;
+						break;
+					}
 				}
 			}
-			//Use the size obtained in callback
-			if ( empty( $size ) ) {
-				$size = ! empty( $data['image_size'] ) ? $data['image_size'] : '';
-			}
+
 			// get token
 			$token = $smush_meta[$size]['token'];
 

@@ -249,6 +249,7 @@ if (!class_exists('WpSmProSend')) {
 		 */
 		function send_each_size($file_path, $file_url, $ID, $size, $file) {
 
+			error_log( $size );
 			// We take the original image. The 'sizes' will all match the same URL and
 			// path. So just get the dirname and rpelace the filename.
 			$attachment_file_path_size = trailingslashit(dirname($file_path)) . $file;
@@ -339,25 +340,26 @@ if (!class_exists('WpSmProSend')) {
 			//Fetch old smush meta and update with the file id returned by API
 			$smush_meta = get_post_meta($attachment_id, 'smush_meta', true);
 
-			if (empty($smush_meta[$size])) {
-				$smush_meta[$size] = array();
+			if (empty($smush_meta[$image_size])) {
+				$smush_meta[$image_size] = array();
 			}
 
 			//If file id update
 			if (!empty($file_id)) {
 				//Add file id, Status and Message
-				$smush_meta[$size]['file_id'] = $file_id;
-				$smush_meta[$size]['status_code'] = $status_code;
-				$smush_meta[$size]['status_msg'] = $this->get_status_msg($status_code, $request_err_code);
-				$smush_meta[$size]['token'] = $data->token;
+				$smush_meta[$image_size]['file_id'] = $file_id;
+				$smush_meta[$image_size]['status_code'] = $status_code;
+				$smush_meta[$image_size]['status_msg'] = $this->get_status_msg($status_code, $request_err_code);
+				$smush_meta[$image_size]['token'] = $data->token;
 				
 				$status = true;
 
 			} else {
-				$smush_meta[$size]['status_msg'] = __('Unable to process the image, please try again later',WP_SMPRO_DOMAIN);
-				$status = new WP_Error('smush_failed', $smush_meta[$size]['status_msg']);
+				$smush_meta[$image_size]['status_msg'] = __('Unable to process the image, please try again later',WP_SMPRO_DOMAIN);
+				$status = new WP_Error('smush_failed', $smush_meta[$image_size]['status_msg']);
 			}
-
+//			error_log(  "Processing response for " . $size );
+//			error_log ( json_encode( $smush_meta ) );
 			// update smush info
 			update_post_meta($attachment_id, 'smush_meta', $smush_meta);
 			
