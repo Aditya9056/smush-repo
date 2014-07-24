@@ -101,6 +101,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
 
 			//Style for container if there is no API key
+			$style = '';
 			if ( empty( $wpmudev_apikey ) ) {
 
 				$style = 'style="opacity: 0.4;"'; ?>

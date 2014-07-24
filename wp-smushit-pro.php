@@ -136,7 +136,7 @@ function wp_smpro_notice() {
 		?>
 		<div class="error smushit-pro-status">
 			<p>
-				<b><?php _e( 'WP Smush.it PRO:' ) ?></b> <?php _e( '<a href="' . $dashboard_url . '">Login to WPMU DEV Dashboard</a> to start using WP Smush.it PRO.' ); ?>
+				<b><?php _e( 'WP Smush.it PRO:' ) ?></b> <?php _e( '<a href="' . $dashboard_url . '">Login into WPMU DEV Dashboard</a> to start using WP Smush.it PRO.' ); ?>
 			</p>
 		</div><?php
 	}

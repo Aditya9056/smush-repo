@@ -61,7 +61,7 @@ if (!class_exists('WpSmProSend')) {
 			$attachment_id = $_GET['attachment_id'];
 			
 			// do we need to fetch the next id
-			$get_next = $_GET['get_next'];
+			$get_next = !empty( $_GET['get_next'] ) ? $_GET['get_next'] : false;
 
 			// check attachment id
 			if (!isset($attachment_id)) {

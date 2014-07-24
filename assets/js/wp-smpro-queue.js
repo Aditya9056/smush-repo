@@ -107,7 +107,7 @@ jQuery('document').ready(function() {
 		 * Send ajax request for smushing
 		 * 
 		 * @param {integer} $id attachment id
-		 * @returns {object} The whole ajax request to reolve this promise and start next
+		 * @returns {object} The whole ajax request to resolve this promise and start next
 		 */
 		function smproRequest($id, $getnxt) {
 			// make request
@@ -126,7 +126,7 @@ jQuery('document').ready(function() {
 				smpro_progress();
 				if($getnxt!==false){
 					// push into the receipt check queue, for polling
-					if (response.next=== '') {
+					if (response.next != null) {
 						$start_id = response.next;
 						$check_queue.push($start_id);
 						return $start_id;
@@ -251,7 +251,8 @@ jQuery('document').ready(function() {
 				// we smush everything that needs smushing
 				for (var i = 0; i < $remaining; i++) {
 					startingpoint = startingpoint.then(function() {
-						change_progress_status($id);
+                        //@todo: Add Progress bar
+//						change_progress_status($id);
 						return smproRequest($start_id, 1);
 					});
 				}
@@ -325,9 +326,10 @@ jQuery('document').ready(function() {
 			if(parseInt(response.status_code)===0){
 				wp_smpro_change_media_status($id, false, response.status_msg);
 			}else{
+                //Check Smush Status after every 5 Sec, until page refreshed
 				smpro_poll_check = setInterval(function() {
 						singleCheck($id);
-					}, 1000);
+					}, 5000);
 			}
 			
 
