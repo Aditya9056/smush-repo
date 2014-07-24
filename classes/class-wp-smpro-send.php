@@ -334,6 +334,7 @@ if (!class_exists('WpSmProSend')) {
 			$status_code = isset($data->status_code) ? $data->status_code : '';
 			$request_err_code = isset($data->request_err_code) ? $data->request_err_code : '';
 			$attachment_id = isset($data->attachment_id) ? $data->attachment_id : '';
+			$image_size = isset($data->image_size) ? $data->image_size : '';
 
 			//Fetch old smush meta and update with the file id returned by API
 			$smush_meta = get_post_meta($attachment_id, 'smush_meta', true);

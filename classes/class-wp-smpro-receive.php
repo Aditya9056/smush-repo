@@ -87,7 +87,7 @@ if (!class_exists('WpSmProReceive')) {
 			//Empty smush meta, probably some error on our end
 			if (empty($smush_meta)) {
 
-				error_log("No smush meta for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				error_log("No smush meta for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 				$this->callback_response();
 			}
 
@@ -106,7 +106,7 @@ if (!class_exists('WpSmProReceive')) {
 			//Check for Nonce, corresponding to media id
 			if ($token != $data['token']) {
 
-				error_log("Nonce Verification failed for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				error_log("Nonce Verification failed for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 				$this->callback_response();
 			}
 
@@ -119,7 +119,7 @@ if (!class_exists('WpSmProReceive')) {
 			// no file with us :(
 			if (empty($size_path)) {
 
-				error_log("No file path for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				error_log("No file path for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 				$this->callback_response();
 			}
 
@@ -133,7 +133,7 @@ if (!class_exists('WpSmProReceive')) {
 
 				update_post_meta($data['attachment_id'], 'smush_meta', $smush_meta);
 
-				error_log("Smushing failed for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+				error_log("Smushing failed for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 				$this->callback_response();
 			}
 
@@ -151,7 +151,7 @@ if (!class_exists('WpSmProReceive')) {
 
 			update_post_meta($data['attachment_id'], 'smush_meta', $smush_meta);
 
-			error_log("File updated for attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
+			error_log("File updated for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]");
 			$this->callback_response();
 		}
 
