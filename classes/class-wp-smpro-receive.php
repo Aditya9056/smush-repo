@@ -99,7 +99,10 @@ if (!class_exists('WpSmProReceive')) {
 					break;
 				}
 			}
-
+			//Use the size obtained in callback
+			if ( empty( $size ) ) {
+				$size = ! empty( $data['image_size'] ) ? $data['image_size'] : '';
+			}
 			// get token
 			$token = $smush_meta[$size]['token'];
 
