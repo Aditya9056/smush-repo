@@ -47,13 +47,12 @@ if (!class_exists('WpSmProReceive')) {
 		function receive() {
 
 			// get the contents of the callback
-			$body = @file_get_contents('php://input');
-
-			// decode the callback json into an array
-			$response = json_decode($body, true);
+			$body = urldecode( file_get_contents('php://input') );
 
 			// filter with default data
-			$data = wp_parse_args($response, $this->default_data);
+			$data = array();
+
+			parse_str( $body, $data);
 
 			// data is invalid
 			if (
