@@ -19,13 +19,17 @@ if (!class_exists('WpSmProMediaLibrary')) {
 	class WpSmProMediaLibrary {
 
 		public function __construct() {
-			
+
+			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+
 			// add the admin option screens
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
-			
-			// add extra columns for smushing to media lists
-			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
-			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
+
+			if ( ! empty( $wpmudev_apikey ) ) {
+				// add extra columns for smushing to media lists
+				add_filter( 'manage_media_columns', array( $this, 'columns' ) );
+				add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
+			}
 			
 			// hook js for bulk actions
 			add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_js' ) );
