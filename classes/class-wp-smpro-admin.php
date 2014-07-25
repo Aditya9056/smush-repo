@@ -351,14 +351,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// set up counts and start_ids in each case
 			if ( ! empty( $this->bulk->ids ) ) {
-				$this->bulk->total     = count( $this->bulk->ids );
-				$this->bulk->progress  = 0;
-				$this->bulk->remaining = $this->bulk->total;
+				$this->bulk->total = $this->bulk->remaining = count( $this->bulk->ids );;
 			} else {
 				$this->bulk->total     = $this->image_count( 'all' );
 				$this->bulk->remaining = (int) $this->image_count();
 				$this->bulk->start_id  = $this->start_id();
-				$this->bulk->progress  = $this->bulk->total - $this->bulk->remaining;
 			}
 
 
@@ -373,8 +370,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// print out some js vars
 			?>
 			<script type="text/javascript">
-				var wp_smpro_total = <?php echo $this->bulk->total; ?>;
-				var wp_smpro_progress = <?php echo $this->bulk->progress; ?>;
 				var wp_smpro_remaining = <?php echo $this->bulk->remaining; ?>;
 				var wp_smpro_ids = [<?php echo $this->bulk->idstr; ?>];
 				var wp_smpro_start_id = "<?php echo $this->bulk->start_id; ?>";
@@ -510,8 +505,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					?>
 				</p>
 				<?php 
-				$msg = sprintf(__('<span id="smush-sent-count">0</span> of <span id="smush-total-count">%d</span> images have been sent for smushing', WP_SMPRO_DOMAIN),$this->bulk->remaining);
-				$this->progress_ui($msg);
+				$this->progress_ui();
 				?>
 				<button id="wp-smpro-begin" class="button button-primary">
 					<span>
@@ -565,7 +559,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			// otherwise, get smush details
 			$smush_meta = get_post_meta( $id, 'smush_meta', true );
-
+			error_log(json_encode($mush_meta));
 			// if can't find, it's still awaited
 			if ( empty( $smush_meta ) || empty( $smush_meta['full'] ) ) {
 				$response['status'] = 1;
@@ -604,8 +598,26 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<div id="wp-smpro-smush-progress" class="wp-smpro-progressbar"><div style="width:0%"></div></div>
 					<div id="wp-smpro-check-progress" class="wp-smpro-progressbar"><div style="width:0%"></div></div>
 				</div>
-				<p id="smush-status">'.$msg.'</p>
-				<p id="check-status"></p>
+				<p id="smush-status">'.
+				sprintf(
+					__(
+						'<span id="smush-sent-count">0</span> of <span id="smush-total-count">%d</span> images'
+						. ' have been sent for smushing',
+						WP_SMPRO_DOMAIN
+						),
+					$this->bulk->remaining
+					).
+				'</p>
+				<p id="check-status">'.
+				sprintf(
+					__(
+						'<span id="smush-received-count">0</span> of <span id="smush-total-count">%d</span> images'
+						. ' have been received',
+						WP_SMPRO_DOMAIN
+						),
+					$this->bulk->remaining
+					).
+				'</p>
 				</div>
 				';
 			echo $progress_ui;

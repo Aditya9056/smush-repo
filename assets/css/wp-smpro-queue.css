@@ -35,7 +35,7 @@ ul#wp-smpro-selected-images li{
 }
 
 ul#wp-smpro-selected-images li.in-progress p.img-smush-status{
-	color:#fdfd96;
+	color:#0074a2;
 	font-weight:bold;
 }
 ul#wp-smpro-selected-images li.smush-done p.img-smush-status{
@@ -297,4 +297,8 @@ Progressbar ui
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-check-progress div{
 	border-radius: 0 5px 5px 0;
 	background-color: #0074a2;
+}
+
+#progress-ui p#check-status{
+	display:none;
 }
