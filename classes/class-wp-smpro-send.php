@@ -39,7 +39,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		}
 
 		function auto_smush( $metadata, $attachment_id ) {
-			$this->add_meta_then_queue( intval( $attachment_id ) );
+
+			//Send metadata and attachment id
+			$this->add_meta_then_queue( intval( $attachment_id ), $metadata );
 
 			return $metadata;
 		}
@@ -143,10 +145,11 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * Gets the attachment meta and sends for smushing
 		 *
 		 * @param int $attachment_id
+		 * @param array $metadata, default is empty
 		 *
 		 * @return bool|object True on success, WP_Error object on failure
 		 */
-		function add_meta_then_queue( $attachment_id ) {
+		function add_meta_then_queue( $attachment_id, $metadata = '' ) {
 
 			// check if it's an image
 			if ( $attachment_id && wp_attachment_is_image( $attachment_id ) === false ) {
@@ -176,7 +179,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			update_post_meta( $attachment_id, 'wp-smpro-is-smushed', $smushed_status );
 
 			//now see if other sizes should be smushed
-			$this->check_send_sizes( $attachment_id, $attachment_file_path, $attachment_file_url );
+			$this->check_send_sizes( $attachment_id, $attachment_file_path, $attachment_file_url, '', $metadata );
 
 			return $smushed_status;
 
@@ -215,10 +218,18 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 		}
 
-		function check_send_sizes( $attachment_id, $attachment_file_path = '', $attachment_file_url = '', $force_resmush = true ) {
+		/**
+		 * Send smush request for all Image sizes
+		 * @param $attachment_id
+		 * @param string $attachment_file_path
+		 * @param string $attachment_file_url
+		 * @param bool $force_resmush
+		 * @param string $metadata, default is null
+		 */
+		function check_send_sizes( $attachment_id, $attachment_file_path = '', $attachment_file_url = '', $force_resmush = true, $metadata = '' ) {
 
 			// get the attachment meta data
-			$meta = wp_get_attachment_metadata( $attachment_id );
+			$meta = ! empty ( $metadata ) ? $metadata : wp_get_attachment_metadata( $attachment_id );
 
 			// no resized versions, so we can exit
 			if ( ! isset( $meta['sizes'] ) ) {

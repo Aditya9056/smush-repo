@@ -30,18 +30,18 @@ if ( ! class_exists( 'WpSmPro' ) ) {
                  * @var array Settings for smushing
                  */
 		public $smush_settings = array(
-		    
-                        // auto smush on upload
+
+			// auto smush on upload
 			'auto'        => false,
-		
+
 			// remove exif & other meta from jpg
-			'remove_meta' => true, 
-			
+			'remove_meta' => true,
+
 			// progressive optimisation for jpg
 			'progressive' => true,
-			
+
 			// convert static gifs to png
-			'gif_to_png'  => true, 
+			'gif_to_png'  => true,
 		);
 		
 		/**
@@ -75,8 +75,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		
 		/**
 		 * Defines some constants.
-		 * 
-		 * @todo Define final service url
+		 *
 		 * @todo fetch limit from API, instead
 		 */
 		function constants() {
@@ -96,7 +95,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			 * The user agent for the request
 			 */
 			define( 'WP_SMPRO_USER_AGENT',
-				'WP Smush.it/' . WP_SMPRO_VERSION. '} (' 
+				'WP Smush.it PRO/' . WP_SMPRO_VERSION. '} ('
 				. '+' . get_site_url() . ')'
 				);
 
@@ -124,11 +123,6 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			// set up constants based on the settings, useful for debugging
 			foreach ( $this->smush_settings as $key => $value ) {
 				
-				// we set this separately
-				if ( 'auto' === $key ) {
-					continue;
-				}
-				
 				// the name
 				$const_name = 'WP_SMPRO_' . strtoupper( $key );
 				
@@ -145,13 +139,6 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				}
 				
 
-			}
-			
-			if ( ! defined( 'WP_SMPRO_AUTO' ) ) {
-				/**
-				 * Smush automatically on upload.
-				 */
-				define( 'WP_SMPRO_AUTO', $this->smush_settings['auto'] );
 			}
 
 			// are we debugging, here?
