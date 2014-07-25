@@ -45,7 +45,7 @@ jQuery('document').ready(function() {
 			wp_smpro_progress++;
 
 			// calculate %
-			$progress = (wp_smpro_progress / wp_smpro_total) * 100;
+			$progress = (wp_smpro_progress / wp_smpro_remaining) * 100;
 
 			// all sent
 			if ($progress === 100) {
@@ -124,9 +124,9 @@ jQuery('document').ready(function() {
 					});
 				}
 				smpro_progress();
-				if($getnxt!==false){
+				if($getnxt!==0){
 					// push into the receipt check queue, for polling
-					if (response.next != null) {
+					if (response.next !== null) {
 						$start_id = response.next;
 						$check_queue.push($start_id);
 						return $start_id;
@@ -227,6 +227,10 @@ jQuery('document').ready(function() {
 			$attachment_element.addClass($status);
 			$status_div.html($status_msg);
 		}
+		
+		function wp_smpro_change_progress_status($id){
+			
+		}
 
 		function wp_smpro_bulk_smush(){
 
@@ -252,7 +256,7 @@ jQuery('document').ready(function() {
 				for (var i = 0; i < $remaining; i++) {
 					startingpoint = startingpoint.then(function() {
                         //@todo: Add Progress bar
-//						change_progress_status($id);
+						wp_smpro_change_progress_status($id);
 						return smproRequest($start_id, 1);
 					});
 				}
@@ -338,6 +342,9 @@ jQuery('document').ready(function() {
 		});
 	}
 	
+	function wp_smpro_show_progress_ui(){
+		
+	}
 	
 	function wp_smpro_button_progress_state($button){
 		// copy the loader into an object
@@ -358,6 +365,11 @@ jQuery('document').ready(function() {
 		// disable the button
 		$button.prop('disabled',true);
 		
+		if(typeof(wp_smpro_ids) !== 'undefined'){
+			if(wp_smpro_ids.length < 1){
+				jQuery('#progress-ui').slideDown('fast');
+			}
+		}
 		return;
 	}
 	
