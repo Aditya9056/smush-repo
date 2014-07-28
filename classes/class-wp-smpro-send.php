@@ -77,8 +77,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// smush meta
 			$smush_meta = get_post_meta( $attachment_id, 'smush_meta', true );
 			
-			// this id for single smushing
-			$response['current_id'] = $attachment_id;
 			// smush status msg
 			$response['status_msg'] = ! empty( $smush_meta ) ? $smush_meta['full']['status_msg'] : '';
 

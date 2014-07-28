@@ -5,16 +5,17 @@
  * 
  */
 jQuery('document').ready(function() {
-	// form the urls
-	// for smushing
+
+	// url for smushing
 	$send_url = ajaxurl + '?action=wp_smpro_queue';
 
-	// for receipt checking
+	// url for receipt checking
 	$check_url = ajaxurl + '?action=wp_smpro_check';
 
 	// intialise queue for checking receipt status
 	$check_queue = [];
-
+        
+        // if we are on bulk smushing page
 	if (pagenow === 'media_page_wp-smpro-admin') {
 
 		// if these are set by php
@@ -51,7 +52,6 @@ jQuery('document').ready(function() {
 				if ($check_queue.length < 1) {
 					wp_smpro_all_done();
 				} else {
-					console.log('set up poll');
 					// start polling for receipt status
 					smpro_poll_check = setInterval(function() {
 						qHandler();
@@ -85,12 +85,13 @@ jQuery('document').ready(function() {
 			wp_smpro_change_check_status($queue_done, $progress);
 		}
 
-		/**
-		 * Send ajax request for smushing
-		 * 
-		 * @param {integer} $id attachment id
-		 * @returns {object} The whole ajax request to resolve this promise and start next
-		 */
+                /**
+                 * Send ajax request for smushing
+                 * 
+                 * @param {type} $id
+                 * @param {type} $getnxt
+                 * @returns {unresolved}
+                 */
 		function smproRequest($id, $getnxt) {
 			// make request
 			return jQuery.ajax({
@@ -99,13 +100,20 @@ jQuery('document').ready(function() {
 				url: $send_url,
 				dataType: 'json'
 			}).done(function(response) {
+                                
+                                // if smush failed immediately
 				if (parseInt(response.status_code) === 0) {
+                                        // change the display
 					wp_smpro_change_img_status($id, 'smush-fail', response.status_msg);
-					$check_queue = jQuery.grep($check_queue, function(value) {
+					
+                                        // remove from queue
+                                        $check_queue = jQuery.grep($check_queue, function(value) {
 						return value !== $id;
 					});
 				}
+                                // increase progressbar
 				smpro_progress();
+                                
 				if ($getnxt !== 0) {
 					// push into the receipt check queue, for polling
 					if (response.next !== null) {
@@ -116,12 +124,11 @@ jQuery('document').ready(function() {
 
 				}
 				// otherwise, our queue is already formed
-
-
-			}).fail(function(response) {
-				// update status and still progress
-				smpro_show_status("Smush request failed [" + $id + "]");
-				smpro_progress();
+                        
+                        // we don't need any parameters
+			}).fail(function() {
+                                // display failure
+				wp_smpro_change_img_status($id, 'smush-fail', 'Request timed out');
 			});
 		}
 
@@ -132,25 +139,24 @@ jQuery('document').ready(function() {
 		 */
 		function smproCheck($id) {
 			// send request
-			console.log('sent');
 			return jQuery.ajax({
 				type: "GET",
 				data: {attachment_id: $id},
 				url: $check_url,
 				dataType: 'json'
 			}).done(function(response) {
-				console.log('success');
-				// don't remove from queue yet
+			
+                                // don't remove from queue yet
 				$rem = false;
 				$status = parseInt(response.status);
-				// handle different responses
-				// if smush succeeded or failed, remove from queue
-				console.log(response);
+				
+                                // if smush succeeded or failed, remove from queue
 				if ($status === -1
 					|| parseInt($status) === 2) {
 					$rem = true;
 				}
-
+                                
+                                // change display
 				if ($status === -1) {
 					wp_smpro_change_img_status($id, 'smush-fail', response.msg);
 				}
@@ -158,14 +164,17 @@ jQuery('document').ready(function() {
 				if ($status === 2) {
 					wp_smpro_change_img_status($id, 'smush-done', response.msg);
 				}
-				// if done, remove from queue and show progress
+				
+                                // if done, remove from queue and show progress
 				if ($rem === true) {
 					smpro_check_progress();
-				}
-			}).fail(function(response) {
-				console.log('failed');
-				smpro_show_status("Checking failed [" + $id + "]");
-				smpro_check_progress();
+				}else{
+                                        // push back into queue
+                                        $check_queue.push($id);
+                                }
+			}).fail(function() {
+				// push back into queue
+                                $check_queue.push($id);
 			});
 		}
 
@@ -174,26 +183,33 @@ jQuery('document').ready(function() {
 		 * @returns
 		 */
 		function qHandler() {
-			console.log('called bulk');
+                        // get the div to display status
 			$check_status_div = jQuery('#progress-ui p#check-status');
-
+                        
+                        // if it's presnt in the UI (this isn't the image list one) 
 			if ($check_status_div.length>0 && !$check_status_div.is(':visible')) {
-				$check_status_div.slideDown('fast');
+				// display it
+                                $check_status_div.slideDown('fast');
 			}
+                        // if there are ids in the queue
 			if ($check_queue.length > 0) {
+                                // remove from queue and send for checking
 				$current_check = $check_queue.splice(0, 1);
-				smproCheck($current_check[0]);
+				smproCheck($check_queue[0]);
 			}
+                        // done
 			return;
 		}
-
+                
+                /**
+                 * Change the button status on bulk smush completion
+                 * 
+                 * @returns {undefined}
+                 */
 		function wp_smpro_all_done() {
 			$button = jQuery('.wp-smpro-bulk-wrap #wp-smpro-begin');
-			finish_button_state($button);
-		}
-
-		function finish_button_state($button) {
-			// copy the loader into an object
+			
+                        // copy the loader into an object
 			$loader = $button.find('.floatingCirclesG');
 
 			// remove the loader
@@ -211,40 +227,83 @@ jQuery('document').ready(function() {
 
 			return;
 		}
-
+                
+                /**
+                 * Change the image status
+                 * 
+                 * @param {type} $id
+                 * @param {type} $status
+                 * @param {type} $status_msg
+                 * @returns {undefined}
+                 */
 		function wp_smpro_change_img_status($id, $status, $status_msg) {
-			console.log('Ireached here');
-			$attachment_element = jQuery('ul#wp-smpro-selected-images').find('li#wp-smpro-img-' + $id).first();
+			
+                        // get the element
+                        $attachment_element = jQuery('ul#wp-smpro-selected-images').find('li#wp-smpro-img-' + $id).first();
 			if ($attachment_element.length < 1) {
 				return;
 			}
-			console.log('and here');
-			$status_div = $attachment_element.find('.img-smush-status').first();
-			$attachment_element.removeClass();
+			
+                        // get the div for status msgs
+                        $status_div = $attachment_element.find('.img-smush-status').first();
+			
+                        // change some classes
+                        $attachment_element.removeClass();
 			$attachment_element.addClass($status);
+                        
+                        // add the message
 			$status_div.html($status_msg);
 		}
-
+                
+                /**
+                 * Change progress bar and status
+                 * 
+                 * @param {type} $count
+                 * @param {type} $width
+                 * @returns {undefined}
+                 */
 		function wp_smpro_change_progress_status($count, $width) {
-			$progress_bar = jQuery('#wp-smpro-progress-wrap #wp-smpro-smush-progress div');
+			// get the progress bar
+                        $progress_bar = jQuery('#wp-smpro-progress-wrap #wp-smpro-smush-progress div');
 			if ($progress_bar.length < 1) {
 				return;
 			}
+                        
+                        // increase progress
 			$progress_bar.css('width', $width + '%');
+                        
+                        // change the counts
 			jQuery('#smush-status #smush-sent-count').html($count);
 
 		}
-
+                
+                /**
+                 * Check status
+                 * 
+                 * @param {type} $count
+                 * @param {type} $width
+                 * @returns {undefined}
+                 */
 		function wp_smpro_change_check_status($count, $width) {
-			$progress_bar = jQuery('#wp-smpro-progress-wrap #wp-smpro-check-progress div');
+			// get the progress bar
+                        $progress_bar = jQuery('#wp-smpro-progress-wrap #wp-smpro-check-progress div');
 			if ($progress_bar.length < 1) {
 				return;
 			}
+			
+                        // increase progress
 			$progress_bar.css('width', $width + '%');
+                        
+                        // change the counts
 			jQuery('#check-status #smush-received-count').html($count);
 
 		}
-
+                
+                /**
+                 * Send for bulk smushing
+                 * 
+                 * @returns {undefined}
+                 */
 		function wp_smpro_bulk_smush() {
 
 			// instantiate our deferred object for piping
@@ -290,23 +349,47 @@ jQuery('document').ready(function() {
 		});
 		
 	} else {
+                // this is the media library screen
 
-
+                /**
+                 * Handle the smush checking queue
+                 * 
+                 * @returns null
+                 */
 		function qSingleHandler() {
+                        // if there's something in the queue
 			if ($check_queue.length > 0) {
+                                // remove from and get the first id in queue
 				$current_check = $check_queue.splice(0, 1);
-				singleCheck($current_check[0]);
+				// send it for checking
+                                singleCheck($current_check[0]);
 			}
-
+                        // there's nothing in the queue
 			return;
 		}
 
-
+                /**
+                 * Display the status changes in the media library UI
+                 * 
+                 * @param {type} $id
+                 * @param {type} $resmush
+                 * @param {type} $msg
+                 * @returns {undefined}
+                 */
 		function wp_smpro_change_media_status($id, $resmush, $msg) {
-			$attachment_element = jQuery('.wp-list-table.media').find('tr#post-' + $id).first();
-			$status_div = $attachment_element.find('.smush-status').first();
+			// get the media library row
+                        $attachment_element = jQuery('.wp-list-table.media').find('tr#post-' + $id).first();
+			
+                        // find the div that displays status message
+                        $status_div = $attachment_element.find('.smush-status').first();
+                        
+                        // replace the older message
 			$status_div.html($msg);
+                        
+                        // find the smush button
 			$button = $attachment_element.find('button.wp-smpro-smush');
+                        
+                        // find the loader ui
 			$loader = $button.find('.floatingCirclesG');
 
 			// remove the loader
@@ -318,77 +401,111 @@ jQuery('document').ready(function() {
 			// add new class for css adjustment
 			$button.removeClass('wp-smpro-started');
 
-			// add the progress text
+			// add the button text
 			if ($resmush === true) {
 				$html = 'Re-smush';
 			} else {
-				$html = 'Smush.it now!'
+				$html = 'Smush.it now!';
 			}
 			$button.find('span').html($html);
-			// disable the button
+			
+                        // re-enable the button
 			$button.prop('disabled', false);
-
+                        
+                        // done!
 			return;
 
 		}
-
+                
+                /**
+                 * Checks the smush status in media library
+                 * 
+                 * @param {type} $id
+                 * @returns {undefined}
+                 */
 		function singleCheck($id) {
 			jQuery.ajax({
 				type: "GET",
 				data: {attachment_id: $id},
 				url: $check_url,
+                                timeout: 60000,
 				dataType: 'json'
 			}).done(function(response) {
 				$status = parseInt(response.status);
-				// handle different responses
-				// if smush succeeded or failed, remove from queue
+                                
+                                // if smush succeeded or failed, remove from queue
 				if ($status === -1
 					|| $status === 2) {
-					$check_queue = jQuery.grep($check_queue, function(value) {
+                                
+                                        // remove the id from queue
+                                        $check_queue = jQuery.grep($check_queue, function(value) {
 						return value !== $id;
 					});
+                                        
+                                        // change the display
 					wp_smpro_change_media_status($id, true, response.msg);
-				}
-
-			}).fail(function(response) {
-
+				
+                                }else{
+                                
+                                        //push the id back into queue
+                                        $check_queue.push($id);
+                                }
+                                
+			}).fail(function() {
+                                
+                                // it failed, push back into the queue
+                                $check_queue.push($id);
 			});
 		}
-
+                
+                /**
+                 * Sends the attachment for smushing in media libarry ui
+                 * 
+                 * @param {type} $button
+                 * @returns {undefined}
+                 */
 		function wp_smpro_single_smush($button) {
-			console.log($button);
-			$nearest_tr = $button.closest('tr').first();
-			console.log($nearest_tr);
-			$elem_id = $nearest_tr.attr('id');
-			console.log($elem_id);
+                        
+                        // get the row
+                        $nearest_tr = $button.closest('tr').first();
+			
+                        // get the row's DOM id
+                        $elem_id = $nearest_tr.attr('id');
+			
+                        // get the attachment id from DOM id
 			$id = $elem_id.replace(/[^0-9\.]+/g, '');
-			console.log($id);
+			
+                        // send the ajax request
 			jQuery.ajax({
 				type: "GET",
 				data: {attachment_id: $id},
 				url: $send_url,
 				dataType: 'json'
 			}).done(function(response) {
-				console.log($id);
-				console.log(response);
-				$current_id = parseInt(response.current_id);
-				if (parseInt(response.status_code) === 0) {
-					wp_smpro_change_media_status($current_id, false, response.status_msg);
+				
+                                // if smush failed immediately
+                                if (parseInt(response.status_code) === 0) {
+                                        // change display
+                                        wp_smpro_change_media_status($id, false, response.status_msg);
 				} else {
-					console.log('we got to: '+$current_id);
-					console.log($check_queue);
-					$check_queue.push($current_id);
-					console.log($check_queue);
-				}
+                                        // push the id into the queue for checking
+					$check_queue.push($id);
+                                }
 
-
-			}).fail(function(response) {
-
+			}).fail(function() {
+                                
 			});
 		}
-
+                
+                /**
+                 * Change the button display on sending
+                 * 
+                 * @param {type} $button
+                 * @returns {undefined}
+                 */
 		function wp_smpro_button_progress_state($button) {
-			// copy the loader into an object
+		
+                        // copy the loader into an object
 			$loader = jQuery('#wp-smpro-loader-wrap .floatingCirclesG').clone();
 
 			// empty the current text
@@ -406,11 +523,7 @@ jQuery('document').ready(function() {
 			// disable the button
 			$button.prop('disabled', true);
 
-			if (typeof (wp_smpro_ids) !== 'undefined') {
-				if (wp_smpro_ids.length < 1) {
-					jQuery('#progress-ui').slideDown('fast');
-				}
-			}
+			// done
 			return;
 		}
 
@@ -419,18 +532,24 @@ jQuery('document').ready(function() {
 		 * Handle the media library button click
 		 */
 		jQuery('.wp-list-table.media').on('click', '.wp-smpro-smush', function(e) {
-			// prevent the default action
+			
+                        // prevent the default action
 			e.preventDefault();
 
-			wp_smpro_button_progress_state(jQuery(this));
-
+			// change the button disply
+                        wp_smpro_button_progress_state(jQuery(this));
+                        
+                        // start smushing
 			wp_smpro_single_smush(jQuery(this));
-
+                        
+                        // done
 			return;
 
 		});
-
+                
+                // set up polling for checking the queue
 		smpro_poll_check = setInterval(function() {
+                        // handles the checking queue
 			qSingleHandler();
 		}, 1000);
 

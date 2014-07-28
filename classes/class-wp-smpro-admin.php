@@ -559,7 +559,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			// otherwise, get smush details
 			$smush_meta = get_post_meta( $id, 'smush_meta', true );
-			error_log(json_encode($mush_meta));
+			
 			// if can't find, it's still awaited
 			if ( empty( $smush_meta ) || empty( $smush_meta['full'] ) ) {
 				$response['status'] = 1;
