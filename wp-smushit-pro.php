@@ -67,7 +67,7 @@ define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
 //use hyphens instead of underscores for glotpress compatibility
 
 // include the classes
-require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-bulk.php' );
+require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-media-library.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-receive.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-request.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro-admin.php' );
@@ -117,25 +117,26 @@ function wp_smpro_notice() {
 			$nonce = wp_create_nonce( 'activate_wpmudev-updates' );
 			?>
 			<p>
-				<b><?php _e( 'Smushit Pro:' ) ?></b> <?php _e( 'Click' ) ?> <a href="#"
-					onclick="wp_smpro_activate_plugin('smushit_pro_activate_plugin','<?php echo $nonce; ?>')">here</a> <?php _e( 'to activate WPMU DEV Dashboard.', 'rtmedia' ) ?>
+				<b><?php _e( 'WP Smush.it PRO:' ) ?></b> <?php _e( 'Click' ) ?> <a href="#"
+					onclick="wp_smpro_activate_plugin('smushit_pro_activate_plugin','<?php echo $nonce; ?>')">here to</a> <?php _e( 'activate WPMU DEV Dashboard.', 'rtmedia' ) ?>
 			</p>
 		<?php
 		} else {
 			?>
 			<!--			Ask to download and activate the Dashboard plugin-->
 			<p>
-				<b><?php _e( 'Smushit Pro:' ) ?></b> <?php _e( 'Install and activate <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a>' ); ?>
+				<b><?php _e( 'WP Smush.it PRO requires WPMU DEV Dashboard plugin. Please' ) ?></b> <?php _e( 'Install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush.it PRO.', WP_SMPRO_DOMAIN ); ?>
 			</p><?php
 		}
 		?>
 		</div><?php
 	} elseif ( empty( $wpmudev_apikey ) ) {
 		//User haven't logged in to Dashboard plugin
+		$dashboard_url = is_multisite() ? network_admin_url( 'admin.php?page=wpmudev' ) : admin_url( 'admin.php?page=wpmudev' );
 		?>
 		<div class="error smushit-pro-status">
 			<p>
-				<b><?php _e( 'Smushit Pro:' ) ?></b> <?php _e( 'Login to WPMU DEV Dashboard to activate your subscription' ); ?>
+				<b><?php _e( 'WP Smush.it PRO:' ) ?></b> <?php _e( '<a href="' . $dashboard_url . '">Login into WPMU DEV Dashboard</a> to start using WP Smush.it PRO.' ); ?>
 			</p>
 		</div><?php
 	}
