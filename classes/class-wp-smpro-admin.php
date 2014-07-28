@@ -424,13 +424,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$src = wp_get_attachment_thumb_url( $attachment_id );
 
 			$status_msg = __( 'Not Processed', WP_SMPRO_DOMAIN );
-			// get the smush meta
-			$smush_meta = get_post_meta( $attachment_id, 'smush_meta', true );
+
+			// get the smush meta for full
+			$smush_meta_full = get_post_meta( $attachment_id, 'smush_meta_full', true );
 
 			// if there's smush details, show it
-			if ( ! empty( $smush_meta ) && ! empty( $smush_meta['full'] ) ) {
+			if ( ! empty( $smush_meta_full ) ) {
 
-				$status_msg = $smush_meta['full']['status_msg'];
+				$status_msg = $smush_meta_full ['status_msg'];
 			}
 			?>
 			<li id="wp-smpro-img-<?php echo $attachment_id; ?>">
@@ -558,10 +559,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				die();
 			}
 			// otherwise, get smush details
-			$smush_meta = get_post_meta( $id, 'smush_meta', true );
+			$smush_meta_full = get_post_meta( $id, 'smush_meta_full', true );
 			
 			// if can't find, it's still awaited
-			if ( empty( $smush_meta ) || empty( $smush_meta['full'] ) ) {
+			if ( empty( $smush_meta_full ) ) {
 				$response['status'] = 1;
 				$response['msg']    = __( 'Still waiting', WP_SMPRO_DOMAIN );
 				echo json_encode( $response );
@@ -569,8 +570,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 
 			// otherwise, we've received the image
-			$code            = intval( $smush_meta['full']['status_code'] );
-			$response['msg'] = $smush_meta['full']['status_msg'];
+			$code            = !empty( $smush_meta_full['status_code'] ) ? intval( $smush_meta_full['status_code'] ) : '';
+			$response['msg'] = $smush_meta_full['status_msg'];
 			if ( $code === 4 || $code === 6 ) {
 				$response['status'] = 2;
 				echo json_encode( $response );

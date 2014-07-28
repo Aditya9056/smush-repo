@@ -90,7 +90,7 @@ jQuery('document').ready(function() {
 					// start polling for receipt status
 					smpro_poll_check = setInterval(function() {
 						qHandler();
-					}, 1000);
+					}, 3000);
 				}
 			}
 

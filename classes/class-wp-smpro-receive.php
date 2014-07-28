@@ -80,8 +80,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			global $wp_sm_pro;
 
+			$size = $data['image_size'];
 			// get the smush data
-			$smush_meta = get_post_meta( $data['attachment_id'], 'smush_meta', true );
+			$smush_meta = get_post_meta( $data['attachment_id'], "smush_meta_$size", true );
 
 			//Empty smush meta, probably some error on our end
 			if ( empty( $smush_meta ) ) {
@@ -93,7 +94,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$size = ! empty( $data['image_size'] ) ? $data['image_size'] : '';
 
 			//Verify file id
-			if ( empty( $smush_meta[ $size ] ) || $smush_meta[ $size ]['file_id'] != $data['file_id'] ) {
+			if ( $smush_meta['file_id'] != $data['file_id'] ) {
 
 				//@todo: Check whether to send response or not
 				error_log( "File id did not match File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
@@ -101,19 +102,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			}
 
-			if ( empty( $size ) ) {
-				// we have meta, figure out the sizes
-				foreach ( $smush_meta as $thumb_size => $thumb_details ) {
-
-					if ( $thumb_details['file_id'] == $data['file_id'] ) {
-						$size = $thumb_size;
-						break;
-					}
-				}
-			}
-
 			// get token
-			$token = $smush_meta[ $size ]['token'];
+			$token = $smush_meta['token'];
 
 			//Check for Nonce, corresponding to media id
 			if ( $token != $data['token'] ) {
@@ -135,9 +125,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$this->callback_response();
 			}
 
-			//get size specific meta
-			$size_smush_meta = get_post_meta( $data['attachment_id'], "smush_meta_$size", true );
-
 			//If smushing wasn't succesful
 			if ( $data['status_code'] != 4 ) {
 				global $wp_sm_pro;
@@ -145,13 +132,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$request_err_code = ! empty( $data['request_err_code'] ) ? $data['request_err_code'] : '';
 
 				//Update metadata
-				$size_smush_meta['status_code'] = $data['status_code'];
-				$size_smush_meta['status_msg']  = $wp_sm_pro->sender->get_status_msg( $data['status_code'], $request_err_code );
+				$smush_meta['status_code'] = $data['status_code'];
+				$smush_meta['status_msg']  = $wp_sm_pro->sender->get_status_msg( $data['status_code'], $request_err_code );
 
-				update_post_meta( $data['attachment_id'], "smush_meta_$size", $size_smush_meta );
-
-				//Sync meta
-				$this->sync_meta( $data['attachment_id'], $size, $size_smush_meta );
+				update_post_meta( $data['attachment_id'], "smush_meta_$size", $smush_meta );
 
 				error_log( "Smushing failed for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 				$this->callback_response();
@@ -166,11 +150,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			);
 
 			// update smush details
-			$size_smush_meta['status_code'] = $data['status_code'];
-			$size_smush_meta['status_msg']  = $results_msg;
+			$smush_meta['status_code'] = $data['status_code'];
+			$smush_meta['status_msg']  = $results_msg;
 
-			update_post_meta( $data['attachment_id'], "smush_meta_$size", $size_smush_meta );
-			$this->sync_meta( $data['attachment_id'], $size, $size_smush_meta );
+			update_post_meta( $data['attachment_id'], "smush_meta_$size", $smush_meta );
 
 			error_log( "File updated for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 			$this->callback_response();
@@ -307,23 +290,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			echo json_encode( array( 'status' => (int) $done ) );
 			header( "HTTP/1.0 200" );
 			exit;
-		}
-
-		/**
-		 * Helps to keep metadata integrated, as callback might overwrite the metadata
-		 *
-		 * @param $attachment_id
-		 * @param $size
-		 * @param $meta
-		 */
-		function sync_meta( $attachment_id, $size, $meta ) {
-
-			$smush_meta = get_post_meta( $attachment_id, 'smush_meta', true );
-
-			$smush_meta[ $size ] = $meta;
-
-			update_post_meta( $attachment_id, 'smush_meta', $smush_meta );
-
 		}
 
 	}

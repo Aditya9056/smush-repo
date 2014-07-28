@@ -68,13 +68,13 @@ if (!class_exists('WpSmProMediaLibrary')) {
 			$attachment_file_path = get_attached_file($id);
 
 			// otherwise, get the smush meta
-			$smush_meta = get_post_meta( $id, 'smush_meta', true );
+			$smush_meta_full = get_post_meta( $id, 'smush_meta_full', true );
 			
 			// if there's smush details, show it
-			if ( ! empty( $smush_meta ) && ! empty( $smush_meta['full'] ) ) {
+			if ( ! empty( $smush_meta_full ) ) {
 				?>
 				<p class="smush-status">
-					<?php echo $smush_meta['full']['status_msg']; ?>
+					<?php echo $smush_meta_full['status_msg']; ?>
 				</p>
 				<button class="wp-smpro-smush button">
 					<span>
