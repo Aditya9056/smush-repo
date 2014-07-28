@@ -551,7 +551,7 @@ jQuery('document').ready(function() {
 				type: "GET",
 				data: {attachment_id: $id},
 				url: $send_url,
-                                timeout: 60000,
+                timeout: 20000,
 				dataType: 'json'
 			}).done(function(response) {
                                 
@@ -587,7 +587,7 @@ jQuery('document').ready(function() {
 		smpro_poll_check = setInterval(function() {
                         // handles the checking queue
 			qSingleHandler();
-		}, 1000);
+		}, 2000);
 
 	}
         // poll every 10 seconds for resmushing
