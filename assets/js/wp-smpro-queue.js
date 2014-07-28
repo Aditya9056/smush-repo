@@ -15,6 +15,41 @@ jQuery('document').ready(function() {
 	// intialise queue for checking receipt status
 	$check_queue = [];
         
+        /**
+        * Change the button display on sending
+        * 
+        * @param {type} $button
+        * @returns {undefined}
+        */
+        function wp_smpro_button_progress_state($button) {
+
+               // copy the loader into an object
+               $loader = jQuery('#wp-smpro-loader-wrap .floatingCirclesG').clone();
+
+               // empty the current text
+               $button.find('span').html('');
+
+               // add new class for css adjustment
+               $button.addClass('wp-smpro-started');
+
+               // prepend the loader html
+               $button.prepend($loader);
+
+               // add the progress text
+               $button.find('span').html('Smushing in Progress');
+
+               // disable the button
+               $button.prop('disabled', true);
+
+               if (typeof (wp_smpro_ids) !== 'undefined') {
+                       if (wp_smpro_ids.length < 1) {
+                               jQuery('#progress-ui').slideDown('fast');
+                       }
+               }
+               // done
+               return;
+        }
+        
         // if we are on bulk smushing page
 	if (pagenow === 'media_page_wp-smpro-admin') {
 
@@ -100,7 +135,6 @@ jQuery('document').ready(function() {
 				url: $send_url,
 				dataType: 'json'
 			}).done(function(response) {
-                                
                                 // if smush failed immediately
 				if (parseInt(response.status_code) === 0) {
                                         // change the display
@@ -110,7 +144,9 @@ jQuery('document').ready(function() {
                                         $check_queue = jQuery.grep($check_queue, function(value) {
 						return value !== $id;
 					});
-				}
+				}else{
+                                        $check_queue.push($id);
+                                }
                                 // increase progressbar
 				smpro_progress();
                                 
@@ -118,7 +154,6 @@ jQuery('document').ready(function() {
 					// push into the receipt check queue, for polling
 					if (response.next !== null) {
 						$start_id = response.next;
-						$check_queue.push($start_id);
 						return $start_id;
 					}
 
@@ -164,14 +199,20 @@ jQuery('document').ready(function() {
 				if ($status === 2) {
 					wp_smpro_change_img_status($id, 'smush-done', response.msg);
 				}
-				
+                                
+                                
                                 // if done, remove from queue and show progress
 				if ($rem === true) {
+                                        // remove the id from queue
+                                        $check_queue = jQuery.grep($check_queue, function(value) {
+						return value !== $id;
+					});
 					smpro_check_progress();
 				}else{
                                         // push back into queue
                                         $check_queue.push($id);
                                 }
+                                
 			}).fail(function() {
 				// push back into queue
                                 $check_queue.push($id);
@@ -496,36 +537,7 @@ jQuery('document').ready(function() {
                                 
 			});
 		}
-                
-                /**
-                 * Change the button display on sending
-                 * 
-                 * @param {type} $button
-                 * @returns {undefined}
-                 */
-		function wp_smpro_button_progress_state($button) {
-		
-                        // copy the loader into an object
-			$loader = jQuery('#wp-smpro-loader-wrap .floatingCirclesG').clone();
-
-			// empty the current text
-			$button.find('span').html('');
-
-			// add new class for css adjustment
-			$button.addClass('wp-smpro-started');
-
-			// prepend the loader html
-			$button.prepend($loader);
-
-			// add the progress text
-			$button.find('span').html('Smushing in Progress');
-
-			// disable the button
-			$button.prop('disabled', true);
-
-			// done
-			return;
-		}
+       
 
 
 		/**
