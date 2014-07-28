@@ -75,10 +75,10 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response['status_code'] = $this->add_meta_then_queue( intval( $attachment_id ) );
 
 			// smush meta
-			$smush_meta = get_post_meta( $attachment_id, 'smush_meta', true );
+			$smush_meta = get_post_meta( $attachment_id, 'smush_meta_full', true );
 			
 			// smush status msg
-			$response['status_msg'] = ! empty( $smush_meta ) ? $smush_meta['full']['status_msg'] : '';
+			$response['status_msg'] = ! empty( $smush_meta ) ? $smush_meta['status_msg'] : '';
 
 			// we still fetch the next id if we are bulk smushing
 			if ( boolval( $get_next ) === true ) {
@@ -202,10 +202,10 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				return new WP_Error( 'invalid', __( 'GIFs are not allowed by your settings', WP_SMPRO_DOMAIN ) );
 			}
 			// smush meta
-			$smush_meta = get_post_meta( $ID, 'smush_meta', true );
+			$smush_meta = get_post_meta( $ID, 'smush_meta_full', true );
 
 			//Check if the image was previously smushed
-			$previous_state = ! empty( $smush_meta ) ? $smush_meta['full']['status_msg'] : '';
+			$previous_state = ! empty( $smush_meta ) ? $smush_meta['status_msg'] : '';
 
 			// if we do send it for smushing
 			if ( $force_resmush || $this->should_resend( $previous_state ) ) {
@@ -324,9 +324,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// update smush details
 				update_post_meta( $ID, "smush_meta_$size", $size_smush_meta );
 
-				//Sync metadata
-				$wp_sm_pro->receiver->sync_meta( $ID, $size, $size_smush_meta );
-
 				return new WP_Error( 'smush_failed', $data->status_msg );
 			}
 
@@ -356,7 +353,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			//Fetch old smush meta and update with the file id returned by API
 			$image_size_smush_meta = get_post_meta( $attachment_id, "smush_meta_$image_size", true );
 
-			$smush_meta = ! empty( $smush_meta ) ? $smush_meta : array();
+			$image_size_smush_meta = ! empty( $image_size_smush_meta ) ? $image_size_smush_meta : array();
 
 			//If file id update
 			if ( ! empty( $file_id ) ) {
@@ -370,14 +367,11 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			} else {
 				$image_size_smush_meta['status_msg'] = __( 'Unable to process the image, please try again later', WP_SMPRO_DOMAIN );
-				$status                              = new WP_Error( 'smush_failed', $smush_meta[ $image_size ]['status_msg'] );
+				$status                              = new WP_Error( 'smush_failed', $image_size_smush_meta[ $image_size ]['status_msg'] );
 			}
 
 			// update smush info
-			update_post_meta( $attachment_id, "smush_meta_$image_size", $smush_meta );
-
-			//Sync smush meta
-			$wp_sm_pro->receiver->sync_meta( $attachment_id, $image_size, $image_size_smush_meta );
+			update_post_meta( $attachment_id, "smush_meta_$image_size", $image_size_smush_meta );
 
 			return $status;
 		}
