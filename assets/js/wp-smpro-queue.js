@@ -15,6 +15,9 @@ jQuery('document').ready(function() {
 	// intialise queue for checking receipt status
 	$check_queue = [];
         
+        // initialise queue for failed/timed out requests
+        $resmush_queue = [];
+        
         /**
         * Change the button display on sending
         * 
@@ -48,6 +51,36 @@ jQuery('document').ready(function() {
                }
                // done
                return;
+        }
+        
+        /**
+         * Resmush failed/timed out attachments
+         * 
+         * @returns {undefined}
+         */
+        function wp_smpro_resmush() {
+                
+                
+                // if we have a definite number of ids
+                if ($resmush_queue.length > 0) {
+                        // instantiate our deferred object for piping
+                        var resmushstartpoint = jQuery.Deferred();
+                        resmushstartpoint.resolve();
+
+                        // loop and pipe into deferred object
+                        jQuery.each($resmush_queue, function(ix, $id) {
+                                resmushstartpoint = resmushstartpoint.then(function() {
+                                        // change the image status
+                                        wp_smpro_change_img_status($id, 'in-progress', 'Sent for Smushing');
+                                        // call the ajax requestor
+                                        return smproRequest($id, 0);
+                                });
+                        });
+                }
+                
+                //otherwise, do nothing
+                return;
+
         }
         
         // if we are on bulk smushing page
@@ -133,6 +166,7 @@ jQuery('document').ready(function() {
 				type: "GET",
 				data: {attachment_id: $id, get_next: $getnxt},
 				url: $send_url,
+                                timeout: 60000,
 				dataType: 'json'
 			}).done(function(response) {
                                 
@@ -153,10 +187,8 @@ jQuery('document').ready(function() {
                         
                         // we don't need any parameters
 			}).fail(function() {
-                                // display failure
-				wp_smpro_change_img_status($id, 'smush-fail', 'Request timed out');
-                                $queue_done++;
-                                smpro_progress();
+                                // just send it to re-smush queue
+                                $resmush_queue.push($id);
 			});
 		}
 
@@ -170,6 +202,7 @@ jQuery('document').ready(function() {
 			return jQuery.ajax({
 				type: "GET",
 				data: {attachment_id: $id},
+                                timeout: 60000,
 				url: $check_url,
 				dataType: 'json'
 			}).done(function(response) {
@@ -392,6 +425,7 @@ jQuery('document').ready(function() {
                  * @returns null
                  */
 		function qSingleHandler() {
+                        
                         // if there's something in the queue
 			if ($check_queue.length > 0) {
                                 // remove from and get the first id in queue
@@ -399,6 +433,7 @@ jQuery('document').ready(function() {
 				// send it for checking
                                 singleCheck($current_check[0]);
 			}
+                        
                         // there's nothing in the queue
 			return;
 		}
@@ -486,6 +521,7 @@ jQuery('document').ready(function() {
                                         $check_queue.push($id);
                                 }
                                 
+                                
 			}).fail(function() {
                                 
                                 // it failed, push back into the queue
@@ -502,25 +538,27 @@ jQuery('document').ready(function() {
 		function wp_smpro_single_smush($button) {
                         
                         // get the row
-                        $nearest_tr = $button.closest('tr').first();
+                        var $nearest_tr = $button.closest('tr').first();
 			
                         // get the row's DOM id
-                        $elem_id = $nearest_tr.attr('id');
+                        var $elem_id = $nearest_tr.attr('id');
 			
                         // get the attachment id from DOM id
-			$id = $elem_id.replace(/[^0-9\.]+/g, '');
+			var $id = $elem_id.replace(/[^0-9\.]+/g, '');
 			
                         // send the ajax request
 			jQuery.ajax({
 				type: "GET",
 				data: {attachment_id: $id},
 				url: $send_url,
+                                timeout: 60000,
 				dataType: 'json'
 			}).done(function(response) {
+                                
                                 // push the id into the queue for checking
                                 $check_queue.push($id);
 			}).fail(function() {
-                                
+                                $resmush_queue.push($id);
 			});
 		}
        
@@ -552,4 +590,8 @@ jQuery('document').ready(function() {
 		}, 1000);
 
 	}
+        // poll every 10 seconds for resmushing
+        smpro_poll_resmush = setInterval(function(){
+                        wp_smpro_resmush();
+        }, 10000);
 });

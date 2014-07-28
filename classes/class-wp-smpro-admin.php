@@ -591,7 +591,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			die();
 		}
 		
-		function progress_ui( $msg ) {
+		function progress_ui() {
 			$progress_ui = '
 				<div id="progress-ui">
 				<div id="wp-smpro-progress-wrap">
