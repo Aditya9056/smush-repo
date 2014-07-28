@@ -110,7 +110,7 @@ jQuery('document').ready(function() {
 			$progress = ($queue_done / $remaining) * 100;
 
 			// all done
-			if ($check_queue.length < 1) {
+			if ($progress === 100) {
 				wp_smpro_all_done();
 				// stop polling
 				clearInterval(smpro_poll_check);
@@ -135,18 +135,8 @@ jQuery('document').ready(function() {
 				url: $send_url,
 				dataType: 'json'
 			}).done(function(response) {
-                                // if smush failed immediately
-				if (parseInt(response.status_code) === 0) {
-                                        // change the display
-					wp_smpro_change_img_status($id, 'smush-fail', response.status_msg);
-					
-                                        // remove from queue
-                                        $check_queue = jQuery.grep($check_queue, function(value) {
-						return value !== $id;
-					});
-				}else{
-                                        $check_queue.push($id);
-                                }
+                                
+                                $check_queue.push($id);
                                 // increase progressbar
 				smpro_progress();
                                 
@@ -154,6 +144,7 @@ jQuery('document').ready(function() {
 					// push into the receipt check queue, for polling
 					if (response.next !== null) {
 						$start_id = response.next;
+                                                $check_queue.push($start_id);
 						return $start_id;
 					}
 
@@ -164,6 +155,8 @@ jQuery('document').ready(function() {
 			}).fail(function() {
                                 // display failure
 				wp_smpro_change_img_status($id, 'smush-fail', 'Request timed out');
+                                $queue_done++;
+                                smpro_progress();
 			});
 		}
 
@@ -200,7 +193,6 @@ jQuery('document').ready(function() {
 					wp_smpro_change_img_status($id, 'smush-done', response.msg);
 				}
                                 
-                                
                                 // if done, remove from queue and show progress
 				if ($rem === true) {
                                         // remove the id from queue
@@ -224,6 +216,7 @@ jQuery('document').ready(function() {
 		 * @returns
 		 */
 		function qHandler() {
+                        
                         // get the div to display status
 			$check_status_div = jQuery('#progress-ui p#check-status');
                         
@@ -236,8 +229,9 @@ jQuery('document').ready(function() {
 			if ($check_queue.length > 0) {
                                 // remove from queue and send for checking
 				$current_check = $check_queue.splice(0, 1);
-				smproCheck($check_queue[0]);
+				smproCheck($current_check[0]);
 			}
+                        
                         // done
 			return;
 		}
@@ -523,16 +517,8 @@ jQuery('document').ready(function() {
 				url: $send_url,
 				dataType: 'json'
 			}).done(function(response) {
-				
-                                // if smush failed immediately
-                                if (parseInt(response.status_code) === 0) {
-                                        // change display
-                                        wp_smpro_change_media_status($id, false, response.status_msg);
-				} else {
-                                        // push the id into the queue for checking
-					$check_queue.push($id);
-                                }
-
+                                // push the id into the queue for checking
+                                $check_queue.push($id);
 			}).fail(function() {
                                 
 			});
