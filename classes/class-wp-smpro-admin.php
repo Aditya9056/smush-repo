@@ -82,7 +82,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			//@todo enqueue minified script if not debugging
 			//wp_register_script( 'wp-smpro-queue-debug', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
 			wp_register_style( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/css/wp-smpro-queue.css' );
-		}
+                        
+                        // localize translatable strings for js
+                        $this->localize();
+                }
 
 		/**
 		 * enqueue js and css
@@ -91,6 +94,19 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			wp_enqueue_script( 'wp-smpro-queue' );
 			wp_enqueue_style( 'wp-smpro-queue' );
 		}
+                
+                function localize(){
+                        $wp_smpro_msgs = array(
+                            'leave_screen'      => __('You may leave this screen now, <strong>we will update your site with smushed images, automatically</strong>!', WP_SMPRO_DOMAIN),
+                            'sent'              => __('Sent for Smushing', WP_SMPRO_DOMAIN),
+                            'progress'          => __('Smushing in Progress', WP_SMPRO_DOMAIN),
+                            'resmush'           => __('Re-smush', WP_SMPRO_DOMAIN),
+                            'smush_now'         => __('Smush.it now!', WP_SMPRO_DOMAIN),
+                            'done'              => __('All done!', WP_SMPRO_DOMAIN)
+                        );
+                        
+                        wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
+                }
 
 		/**
 		 * Display the ui
