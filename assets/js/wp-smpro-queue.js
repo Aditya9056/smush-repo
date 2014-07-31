@@ -19,6 +19,33 @@ jQuery('document').ready(function() {
         $resmush_queue = [];
         
         /**
+        * Change the image status
+        * 
+        * @param {type} $id
+        * @param {type} $status
+        * @param {type} $status_msg
+        * @returns {undefined}
+        */
+        function wp_smpro_change_img_status($id, $status, $status_msg) {
+
+               // get the element
+               $attachment_element = jQuery('ul#wp-smpro-selected-images').find('li#wp-smpro-img-' + $id).first();
+               if ($attachment_element.length < 1) {
+                       return;
+               }
+
+               // get the div for status msgs
+               $status_div = $attachment_element.find('.img-smush-status').first();
+
+               // change some classes
+               $attachment_element.removeClass();
+               $attachment_element.addClass($status);
+
+               // add the message
+               $status_div.html($status_msg);
+        }
+        
+        /**
          * Resmush failed/timed out attachments
          * 
          * @returns {undefined}
@@ -71,6 +98,7 @@ jQuery('document').ready(function() {
                         var $msg = jQuery('<div id="message" class="updated"></div>');
                         $msg.append(jQuery('<p></p>'));
                         $msg.find('p').first.append(wp_smpro_msgs.leave_screen);
+                        jQuery('#wp-smpro-begin').before($msg);
                         
                 }
 
@@ -268,32 +296,7 @@ jQuery('document').ready(function() {
 			return;
 		}
                 
-                /**
-                 * Change the image status
-                 * 
-                 * @param {type} $id
-                 * @param {type} $status
-                 * @param {type} $status_msg
-                 * @returns {undefined}
-                 */
-		function wp_smpro_change_img_status($id, $status, $status_msg) {
-			
-                        // get the element
-                        $attachment_element = jQuery('ul#wp-smpro-selected-images').find('li#wp-smpro-img-' + $id).first();
-			if ($attachment_element.length < 1) {
-				return;
-			}
-			
-                        // get the div for status msgs
-                        $status_div = $attachment_element.find('.img-smush-status').first();
-			
-                        // change some classes
-                        $attachment_element.removeClass();
-			$attachment_element.addClass($status);
-                        
-                        // add the message
-			$status_div.html($status_msg);
-		}
+                
                 
                 /**
                  * Change progress bar and status

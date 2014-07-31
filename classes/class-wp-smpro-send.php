@@ -73,7 +73,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// Send for further processing
 			$response['status_code'] = $this->add_meta_then_queue( intval( $attachment_id ) );
-
+                        
 			// smush meta
 			$smush_meta = get_post_meta( $attachment_id, 'smush_meta_full', true );
 			
