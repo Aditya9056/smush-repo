@@ -1,14 +1,14 @@
 <?php
 /*
-  Plugin Name: WP Smush.it Pro
-  Plugin URI: http://premium.wpmudev.org/projects/wp-smushit-pro/
-  Description: Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
-  Author: WPMU DEV
-  Version: 1.0
-  Author URI: http://premium.wpmudev.org/
-  Textdomain: wp-smushit-pro
-  WDP ID:
- */
+Plugin Name: WP Smush.it Pro
+Plugin URI: http://premium.wpmudev.org/projects/wp-smushit-pro/
+Description: Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
+Author: WPMU DEV
+Version: 1.0
+Author URI: http://premium.wpmudev.org/
+Textdomain: wp-smushit-pro
+WDP ID:
+*/
 
 /*
   Copyright 2009-2014 Incsub (http://incsub.com)
