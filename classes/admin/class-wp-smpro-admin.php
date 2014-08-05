@@ -278,13 +278,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function all_ui() {
-			if ( $this->bulk->total < 1 ) {
+			if ( $this->bulk['sent']['total'] < 1 ) {
 				_e( "<p>You don't appear to have uploaded any images yet.</p>", WP_SMPRO_DOMAIN );
 
 				return;
 			}
 
-			if ( $this->bulk->remaining === 0 ) {
+			if ( $this->bulk['received']['left'] === 0 ) {
 				_e( 'All the images are already smushed', WP_SMPRO_DOMAIN );
 
 				return;
@@ -298,7 +298,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 							. ' You can smush them all by clicking the button below.',
 							WP_SMPRO_DOMAIN
 						),
-						$this->bulk->remaining
+						$this->bulk['sent']['left']
 					);
 					?>
 				</p>
