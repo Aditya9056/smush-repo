@@ -116,7 +116,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			                         . "INNER JOIN {$wpdb->postmeta} pm ON "
 			                         . "(p.ID = pm.post_id) "
 			                         . "LEFT JOIN {$wpdb->postmeta} pmm ON "
-			                         . "(p.ID = pmm.post_id AND pmm.meta_key = 'wp-smpro-is-smushed') "
+			                         . "(p.ID = pmm.post_id AND pmm.meta_key = 'wp-smpro-is-sent') "
 			                         . "WHERE p.post_type = 'attachment' "
 			                         . "AND ("
 			                         . "p.post_mime_type = 'image/jpeg' "
@@ -126,7 +126,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			                         . "AND p.ID > %d "
 			                         . "AND ( "
 			                         . "("
-			                         . "pm.meta_key = 'wp-smpro-is-smushed' "
+			                         . "pm.meta_key = 'wp-smpro-is-sent' "
 			                         . "AND CAST(pm.meta_value AS CHAR) = '0'"
 			                         . ") "
 			                         . "OR  pmm.post_id IS NULL"
@@ -176,7 +176,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			}
 
 			// update meta
-			update_post_meta( $attachment_id, 'wp-smpro-is-smushed', $smushed_status );
+			update_post_meta( $attachment_id, 'wp-smpro-is-sent', $smushed_status );
 
 			//now see if other sizes should be smushed
 			$this->check_send_sizes( $attachment_id, $attachment_file_path, $attachment_file_url, '', $metadata );
