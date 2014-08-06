@@ -140,7 +140,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$smush_meta['status_msg']  = $wp_sm_pro->sender->get_status_msg( $data['status_code'], $request_err_code );
 
 				update_post_meta( $data['attachment_id'], "smush_meta_$size", $smush_meta );
-
+                                if($size==='full'){
+                                        update_post_meta( $data['attachment_id'], "wp-smpro-is-received", 1 );
+                                }
 				error_log( "Smushing failed for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 				$this->callback_response();
 			}
