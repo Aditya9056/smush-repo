@@ -30,7 +30,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			add_action( 'wp_ajax_wp_smpro_queue', array( $this, 'ajax_queue' ) );
 
 			//Admin notice, if api is not accessible
-			add_action( 'init', array( $this, 'check_api_status' ) );
+//			add_action( 'init', array( $this, 'check_api_status' ) );
 
 			if ( WP_SMPRO_AUTO ) {
 				// add automatic smushing on upload
@@ -44,6 +44,16 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$this->add_meta_then_queue( intval( $attachment_id ), $metadata );
 
 			return $metadata;
+		}
+
+		/**
+		 * Returns the bool value of a variable
+		 * @param $val
+		 *
+		 * @return bool
+		 */
+		function boolval($val) {
+			return (bool) $val;
 		}
 
 		/**
@@ -81,7 +91,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response['status_msg'] = ! empty( $smush_meta ) ? $smush_meta['status_msg'] : '';
 
 			// we still fetch the next id if we are bulk smushing
-			if ( boolval( $get_next ) === true ) {
+			if ( $this->boolval( $get_next ) === true ) {
 				// get the next id to send back
 				$response['next'] = $this->get_next_id( intval( $attachment_id ) );
 

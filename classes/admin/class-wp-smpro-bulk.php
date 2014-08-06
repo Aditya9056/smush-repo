@@ -101,7 +101,7 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 			// set up counts and start_id
                         $data['total']     = (int) $this->image_count( $type, 'all' );
                         $data['left'] = (int) $this->image_count( $type, 'left' );
-                        $data['done']  = $data['total'] - $data['remaining'];
+                        $data['done']  = $data['total'] - $data['left'];
                         $data['start_id']  = $this->start_id();
                         
                         return $data;
