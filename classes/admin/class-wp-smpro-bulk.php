@@ -22,7 +22,7 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 		 * @global object $wpdb WP database object
 		 * @return int count of smushed images
 		 */
-		function image_count( $type = 'sent', $include='done' ) {
+		function image_count( $type = 'sent', $include='all' ) {
 			
                         $query = array(
                                 'fields'         => 'ids',
@@ -30,6 +30,7 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
                                 'post_status'    => 'any',
                                 'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
                                 'order'          => 'ASC',
+                                'posts_per_page' => -1
                         );
                         
                         $metakey = "wp-smpro-is-$type";

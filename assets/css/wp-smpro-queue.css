@@ -282,7 +282,6 @@ Progressbar ui
 #progress-ui{
 	width: 80%;
 	margin-bottom: 20px;
-	display:none;
 }
 
 #progress-ui #wp-smpro-progress-wrap{
@@ -305,8 +304,4 @@ Progressbar ui
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-check-progress div{
 	border-radius: 0 5px 5px 0;
 	background-color: #0074a2;
-}
-
-#progress-ui p#check-status{
-	display:none;
 }
