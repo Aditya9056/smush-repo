@@ -110,34 +110,36 @@ function wp_smpro_notice() {
 
 	//If there is no WPMU API Key and Dashboard plugin is deactivated, ask for Dashboard plugin
 	if ( empty( $wpmudev_apikey ) && ! is_plugin_active( 'wpmudev-updates/update-notifications.php' ) ) {
-		?>
-
-		<div class="error smushit-pro-status"> <?php
-		if ( file_exists( $plugin_path ) ) {
-			wp_smpro_script();
-			$nonce = wp_create_nonce( 'activate_wpmudev-updates' );
+        ?>
+		<div class="error smushit-pro-status">
+                        <?php
+                        if ( file_exists( $plugin_path ) ) {
+                                wp_smpro_script();
+                                $nonce = wp_create_nonce( 'activate_wpmudev-updates' );
+                                ?>
+                                <p>
+                                        <strong><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(
+                                                __('<a href="#" onclick="%s">Click here</a> to activate WPMU DEV Dashboard.', WP_SMPRO_DOMAIN),
+                                                "wp_smpro_activate_plugin('smushit_pro_activate_plugin','$nonce'"); ?>
+                                </p>
+                        <?php
+                        } else {
 			?>
-			<p>
-				<b><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></b> <?php _e( 'Click', WP_SMPRO_DOMAIN ) ?> <a href="#"
-					onclick="wp_smpro_activate_plugin('smushit_pro_activate_plugin','<?php echo $nonce; ?>')"><?php _e( 'here to', WP_SMPRO_DOMAIN ) ?></a> <?php _e( 'activate WPMU DEV Dashboard.', WP_SMPRO_DOMAIN ) ?>
-			</p>
-		<?php
-		} else {
-			?>
-			<!--			Ask to download and activate the Dashboard plugin-->
-			<p>
-				<b><?php _e( 'WP Smush.it PRO requires WPMU DEV Dashboard plugin. Please', WP_SMPRO_DOMAIN ) ?></b> <?php _e( 'Install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush.it PRO.', WP_SMPRO_DOMAIN ); ?>
-			</p><?php
-		}
-		?>
-		</div><?php
+                                <p>
+                                        <strong><?php _e( 'WP Smush.it PRO requires WPMU DEV Dashboard plugin.', WP_SMPRO_DOMAIN ) ?></strong> <?php _e( 'Please install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush.it PRO.', WP_SMPRO_DOMAIN ); ?>
+                                </p>
+                        <?php
+                        }
+                        ?>
+		</div>
+        <?php
 	} elseif ( empty( $wpmudev_apikey ) ) {
 		//User haven't logged in to Dashboard plugin
 		$dashboard_url = is_multisite() ? network_admin_url( 'admin.php?page=wpmudev' ) : admin_url( 'admin.php?page=wpmudev' );
 		?>
 		<div class="error smushit-pro-status">
 			<p>
-				<b><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></b> <?php _e( '<a href="' . $dashboard_url . '">Login to WPMU DEV Dashboard</a> to start using WP Smush.it PRO.', WP_SMPRO_DOMAIN ); ?>
+				<strong><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(__( '<a href="%s">Login to WPMU DEV Dashboard</a> to start using WP Smush.it PRO.', WP_SMPRO_DOMAIN ),$dashboard_url); ?>
 			</p>
 		</div><?php
 	}
@@ -173,7 +175,7 @@ function wp_smpro_script() {
 		function wp_smpro_activate_plugin(action, smpro_nonce) {
 			jQuery('.smushit-pro-status').removeClass('error');
 			jQuery('.smushit-pro-status').addClass('updated');
-			jQuery('.smushit-pro-status p').html('<b>Smushit Pro:</b> Activating WPMU DEV Dashboard...');
+			jQuery('.smushit-pro-status p').html('<strong>Smushit Pro:</strong> Activating WPMU DEV Dashboard...');
 			var param = {
 				action: action,
 				_ajax_nonce: smpro_nonce
@@ -181,10 +183,10 @@ function wp_smpro_script() {
 			jQuery.post(ajaxurl, param, function (data) {
 //				data = jQuery.parseJSON( data );
 				if (data.success == true) {
-					jQuery('.smushit-pro-status p').html('<b>Smushit Pro:</b> WPMU DEV Dashbaord activated.');
+					jQuery('.smushit-pro-status p').html('<strong>Smushit Pro:</strong> WPMU DEV Dashbaord activated.');
 					location.reload();
 				} else {
-					jQuery('.smushit-pro-status p').html('<b>Smushit Pro:</b> There is some problem. Please try again.');
+					jQuery('.smushit-pro-status p').html('<strong>Smushit Pro:</strong> There is some problem. Please try again.');
 				}
 
 			});
