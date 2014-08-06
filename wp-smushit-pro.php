@@ -1,14 +1,14 @@
 <?php
 /*
-  Plugin Name: WP Smush.it Pro
-  Plugin URI: http://premium.wpmudev.org/projects/wp-smushit-pro/
-  Description: Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
-  Author: WPMU DEV
-  Version: 1.0
-  Author URI: http://premium.wpmudev.org/
-  Textdomain: wp-smushit-pro
-  WDP ID:
- */
+Plugin Name: WP Smush.it Pro
+Plugin URI: http://premium.wpmudev.org/projects/wp-smushit-pro/
+Description: Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
+Author: WPMU DEV
+Version: 1.0
+Author URI: http://premium.wpmudev.org/
+Textdomain: wp-smushit-pro
+WDP ID:
+*/
 
 /*
   Copyright 2009-2014 Incsub (http://incsub.com)
@@ -118,15 +118,15 @@ function wp_smpro_notice() {
 			$nonce = wp_create_nonce( 'activate_wpmudev-updates' );
 			?>
 			<p>
-				<b><?php _e( 'WP Smush.it PRO:' ) ?></b> <?php _e( 'Click' ) ?> <a href="#"
-					onclick="wp_smpro_activate_plugin('smushit_pro_activate_plugin','<?php echo $nonce; ?>')">here to</a> <?php _e( 'activate WPMU DEV Dashboard.', 'rtmedia' ) ?>
+				<b><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></b> <?php _e( 'Click', WP_SMPRO_DOMAIN ) ?> <a href="#"
+					onclick="wp_smpro_activate_plugin('smushit_pro_activate_plugin','<?php echo $nonce; ?>')"><?php _e( 'here to', WP_SMPRO_DOMAIN ) ?></a> <?php _e( 'activate WPMU DEV Dashboard.', WP_SMPRO_DOMAIN ) ?>
 			</p>
 		<?php
 		} else {
 			?>
 			<!--			Ask to download and activate the Dashboard plugin-->
 			<p>
-				<b><?php _e( 'WP Smush.it PRO requires WPMU DEV Dashboard plugin. Please' ) ?></b> <?php _e( 'Install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush.it PRO.', WP_SMPRO_DOMAIN ); ?>
+				<b><?php _e( 'WP Smush.it PRO requires WPMU DEV Dashboard plugin. Please', WP_SMPRO_DOMAIN ) ?></b> <?php _e( 'Install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush.it PRO.', WP_SMPRO_DOMAIN ); ?>
 			</p><?php
 		}
 		?>
@@ -137,7 +137,7 @@ function wp_smpro_notice() {
 		?>
 		<div class="error smushit-pro-status">
 			<p>
-				<b><?php _e( 'WP Smush.it PRO:' ) ?></b> <?php _e( '<a href="' . $dashboard_url . '">Login into WPMU DEV Dashboard</a> to start using WP Smush.it PRO.' ); ?>
+				<b><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></b> <?php _e( '<a href="' . $dashboard_url . '">Login to WPMU DEV Dashboard</a> to start using WP Smush.it PRO.', WP_SMPRO_DOMAIN ); ?>
 			</p>
 		</div><?php
 	}
