@@ -19,38 +19,30 @@ jQuery('document').ready(function() {
         $resmush_queue = [];
         
         /**
-        * Change the button display on sending
+        * Change the image status
         * 
-        * @param {type} $button
+        * @param {type} $id
+        * @param {type} $status
+        * @param {type} $status_msg
         * @returns {undefined}
         */
-        function wp_smpro_button_progress_state($button) {
+        function wp_smpro_change_img_status($id, $status, $status_msg) {
 
-               // copy the loader into an object
-               $loader = jQuery('#wp-smpro-loader-wrap .floatingCirclesG').clone();
-
-               // empty the current text
-               $button.find('span').html('');
-
-               // add new class for css adjustment
-               $button.addClass('wp-smpro-started');
-
-               // prepend the loader html
-               $button.prepend($loader);
-
-               // add the progress text
-               $button.find('span').html('Smushing in Progress');
-
-               // disable the button
-               $button.prop('disabled', true);
-
-               if (typeof (wp_smpro_ids) !== 'undefined') {
-                       if (wp_smpro_ids.length < 1) {
-                               jQuery('#progress-ui').slideDown('fast');
-                       }
+               // get the element
+               $attachment_element = jQuery('ul#wp-smpro-selected-images').find('li#wp-smpro-img-' + $id).first();
+               if ($attachment_element.length < 1) {
+                       return;
                }
-               // done
-               return;
+
+               // get the div for status msgs
+               $status_div = $attachment_element.find('.img-smush-status').first();
+
+               // change some classes
+               $attachment_element.removeClass();
+               $attachment_element.addClass($status);
+
+               // add the message
+               $status_div.html($status_msg);
         }
         
         /**
@@ -101,6 +93,14 @@ jQuery('document').ready(function() {
 
 		// a var to run the polling
 		var smpro_poll_check;
+                
+                function wp_smpro_sent_done(){
+                        var $msg = jQuery('<div id="message" class="updated"></div>');
+                        $msg.append(jQuery('<p></p>'));
+                        $msg.find('p').first.append(wp_smpro_msgs.leave_screen);
+                        jQuery('#wp-smpro-begin').before($msg);
+                        
+                }
 
 		/**
 		 * Show progress of smushing
@@ -291,37 +291,12 @@ jQuery('document').ready(function() {
 			$button.addClass('wp-smpro-finished');
 
 			// add the progress text
-			$button.find('span').html('All done!');
+			$button.find('span').html(wp_smpro_msgs.done);
 
 			return;
 		}
                 
-                /**
-                 * Change the image status
-                 * 
-                 * @param {type} $id
-                 * @param {type} $status
-                 * @param {type} $status_msg
-                 * @returns {undefined}
-                 */
-		function wp_smpro_change_img_status($id, $status, $status_msg) {
-			
-                        // get the element
-                        $attachment_element = jQuery('ul#wp-smpro-selected-images').find('li#wp-smpro-img-' + $id).first();
-			if ($attachment_element.length < 1) {
-				return;
-			}
-			
-                        // get the div for status msgs
-                        $status_div = $attachment_element.find('.img-smush-status').first();
-			
-                        // change some classes
-                        $attachment_element.removeClass();
-			$attachment_element.addClass($status);
-                        
-                        // add the message
-			$status_div.html($status_msg);
-		}
+                
                 
                 /**
                  * Change progress bar and status
@@ -401,6 +376,42 @@ jQuery('document').ready(function() {
 			}
 
 		}
+                
+                /**
+                * Change the button display on sending
+                * 
+                * @param {type} $button
+                * @returns {undefined}
+                */
+                function wp_smpro_button_progress_state($button) {
+
+                       // copy the loader into an object
+                       $loader = jQuery('#wp-smpro-loader-wrap .floatingCirclesG').clone();
+
+                       // empty the current text
+                       $button.find('span').html('');
+
+                       // add new class for css adjustment
+                       $button.addClass('wp-smpro-started');
+
+                       // prepend the loader html
+                       $button.prepend($loader);
+
+                       // add the progress text
+                       $button.find('span').html(wp_smpro_msgs.progress);
+
+                       // disable the button
+                       $button.prop('disabled', true);
+
+                       if (typeof (wp_smpro_ids) !== 'undefined') {
+                               if (wp_smpro_ids.length < 1) {
+                                       jQuery('#progress-ui').slideDown('fast');
+                               }
+                       }
+                       // done
+                       return;
+                }
+        
 		/**
 		 * Handle the start button click
 		 */
@@ -473,14 +484,14 @@ jQuery('document').ready(function() {
 
 			// add the button text
 			if ($resmush === true) {
-				$html = 'Re-smush';
+				$html = wp_smpro_msgs.resmush;
 			} else {
-				$html = 'Smush.it now!';
+				$html = wp_smpro_msgs.smush_now;
 			}
 			$button.find('span').html($html);
 			
-                        // re-enable the button
-			$button.prop('disabled', false);
+                        // re-enable all the buttons
+			jQuery('.wp-smpro-smush').prop('disabled', false);
                         
                         // done!
 			return;
@@ -551,9 +562,9 @@ jQuery('document').ready(function() {
 				type: "GET",
 				data: {attachment_id: $id},
 				url: $send_url,
-                timeout: 20000,
+                                timeout: 20000,
 				dataType: 'json'
-			}).done(function(response) {
+			}).done(function() {
                                 
                                 // push the id into the queue for checking
                                 $check_queue.push($id);
@@ -561,8 +572,36 @@ jQuery('document').ready(function() {
                                 $resmush_queue.push($id);
 			});
 		}
-       
+                
+                /**
+                 * Updates the button status and disables all the other buttons
+                 * 
+                 * @param {type} $button
+                 * @returns {undefined}
+                 */
+                function wp_smpro_single_button_progress_state($button){
+                       
+                        // copy the loader into an object
+                        $loader = jQuery('#wp-smpro-loader-wrap .floatingCirclesG').clone();
 
+                        // empty the current text
+                        $button.find('span').html('');
+
+                        // add new class for css adjustment
+                        $button.addClass('wp-smpro-started');
+
+                        // prepend the loader html
+                        $button.prepend($loader);
+
+                        // add the progress text
+                        $button.find('span').html(wp_smpro_msgs.progress);
+
+                        // disable all the buttons
+                        jQuery('.wp-smpro-smush').prop('disabled', true);
+
+                        // done
+                        return;
+                }
 
 		/**
 		 * Handle the media library button click
@@ -573,7 +612,7 @@ jQuery('document').ready(function() {
 			e.preventDefault();
 
 			// change the button disply
-                        wp_smpro_button_progress_state(jQuery(this));
+                        wp_smpro_single_button_progress_state(jQuery(this));
                         
                         // start smushing
 			wp_smpro_single_smush(jQuery(this));
