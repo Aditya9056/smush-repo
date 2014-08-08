@@ -58,10 +58,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function init_settings() {
 			$this->settings = array(
-				'auto'        => __( 'Smush images on upload?', WP_SMPRO_DOMAIN ),
-				'remove_meta' => __( 'Remove Exif data', WP_SMPRO_DOMAIN ),
-				'progressive' => __( 'Allow progressive JPEGs', WP_SMPRO_DOMAIN ),
-				'gif_to_png'  => __( 'Allow Gif to Png conversion', WP_SMPRO_DOMAIN ),
+				'auto'        => __( 'Auto-Smush images on upload', WP_SMPRO_DOMAIN ),
+				'remove_meta' => __( 'Remove EXIF data from JPEGs', WP_SMPRO_DOMAIN ),
+				'progressive' => __( 'Progressive optimization for JPEGs', WP_SMPRO_DOMAIN ),
+				'gif_to_png'  => __( 'Convert GIF to PNG', WP_SMPRO_DOMAIN ),
 			);
 		}
 
@@ -335,19 +335,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						<?php
 						printf(
 							__(
-								'We found <strong>%d unsmushed images</strong> in your media library.'
-                                                                , WP_SMPRO_DOMAIN
-							), $this->bulk['smushed']['left']
-						);
-						?>
-					</p>
-
-					<p>
-						<?php
-						printf(
-							__(
 								'You can also smush images individually'
-								. ' from your <a href="%s">Media Library</a>', WP_SMPRO_DOMAIN
+								. ' from your <a href="%s">Media Library</a>.', WP_SMPRO_DOMAIN
 							), admin_url( 'upload.php' )
 						);
 						?>

@@ -96,7 +96,6 @@ jQuery('document').ready(function () {
 
         function wp_smpro_reset_smush(){
                 $reset_url = ajaxurl + '?action=wp_smpro_reset';
-                console.log('reset called');
                 return jQuery.ajax({
                     type: "GET",
                     url: $reset_url,
@@ -105,7 +104,6 @@ jQuery('document').ready(function () {
                 }).done(function (response) {
                     wp_smpro_counts = response;
                     wp_smpro_refresh_progress();
-                    console.log('reset ajax complete');
                     wp_smpro_bulk_smush();
                     return;
                 }).fail(function () {
@@ -251,8 +249,6 @@ jQuery('document').ready(function () {
          * @returns {undefined}
          */
         function wp_smpro_bulk_smush() {
-                console.log('bulk called');
-                console.log(wp_smpro_counts.sent);
             $process_next = true;
             $remaining = wp_smpro_counts.sent.left;
             $start_id = wp_smpro_counts.sent.start_id;
@@ -316,7 +312,7 @@ jQuery('document').ready(function () {
 
             wp_smpro_button_progress_state(jQuery(this));
 
-            wp_smpro_bulk_smush();
+            wp_smpro_reset_smush();
 
             return;
 
