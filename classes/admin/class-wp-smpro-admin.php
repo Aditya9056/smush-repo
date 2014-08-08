@@ -9,471 +9,489 @@
  *
  * @copyright (c) 2014, Incsub (http://incsub.com)
  */
-if (!class_exists('WpSmProAdmin')) {
+if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
-        /**
-         * Show settings in Media settings and add column to media library
-         *
-         */
-        class WpSmProAdmin {
+	/**
+	 * Show settings in Media settings and add column to media library
+	 *
+	 */
+	class WpSmProAdmin {
 
-                /**
-                 *
-                 * @var array Settings
-                 */
-                public $settings;
-                public $bulk;
+		/**
+		 *
+		 * @var array Settings
+		 */
+		public $settings;
+		public $bulk;
+		var $api_connected;
 
-                /**
-                 * Constructor
-                 */
-                public function __construct() {
+		/**
+		 * Constructor
+		 */
+		public function __construct() {
 
-                        $this->bulk_data();
+			$this->bulk_data();
 
-                        // hook scripts and styles
-                        add_action('admin_init', array($this, 'register'));
+			// hook scripts and styles
+			add_action( 'admin_init', array( $this, 'register' ) );
 
-                        // hook custom screen
-                        add_action('admin_menu', array($this, 'screen'));
+			// hook custom screen
+			add_action( 'admin_menu', array( $this, 'screen' ) );
 
-                        // hook ajax call for checking smush status
-                        add_filter( 'heartbeat_received', array($this, 'check_count'), 10, 3 );
-                        add_action('wp_ajax_wp_smpro_check', array($this, 'check_status'));
+			// hook ajax call for checking smush status
+			add_filter( 'heartbeat_received', array( $this, 'check_count' ), 10, 3 );
+			add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
 
-                        add_action('admin_footer-upload.php', array($this, 'print_loader'));
+			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
 
-                        // initialise translation ready settings and titles
-                        $this->init_settings();
+			// initialise translation ready settings and titles
+			$this->init_settings();
 
-                        // instantiate Media Library mods
-                        $media_lib = new WpSmProMediaLibrary();
-                }
+			// instantiate Media Library mods
+			$media_lib = new WpSmProMediaLibrary();
+		}
 
-                /**
-                 * Translation ready settings
-                 */
-                function init_settings() {
-                        $this->settings = array(
-                            'auto' => __('Smush images on upload?', WP_SMPRO_DOMAIN),
-                            'remove_meta' => __('Remove Exif data', WP_SMPRO_DOMAIN),
-                            'progressive' => __('Allow progressive JPEGs', WP_SMPRO_DOMAIN),
-                            'gif_to_png' => __('Allow Gif to Png conversion', WP_SMPRO_DOMAIN),
-                        );
-                }
+		/**
+		 * Translation ready settings
+		 */
+		function init_settings() {
+			$this->settings = array(
+				'auto'        => __( 'Smush images on upload?', WP_SMPRO_DOMAIN ),
+				'remove_meta' => __( 'Remove Exif data', WP_SMPRO_DOMAIN ),
+				'progressive' => __( 'Allow progressive JPEGs', WP_SMPRO_DOMAIN ),
+				'gif_to_png'  => __( 'Allow Gif to Png conversion', WP_SMPRO_DOMAIN ),
+			);
+		}
 
-                /**
-                 * Add Bulk option settings page
-                 */
-                function screen() {
-                        $admin_page_suffix = add_media_page('WP Smush.it Pro', 'WP Smush.it Pro', 'edit_others_posts', 'wp-smpro-admin', array(
-                            $this,
-                            'ui'
-                                ));
-                        // enqueue js only on this screen and media_screen
-                        add_action('admin_print_scripts-upload.php', array($this, 'enqueue'));
-                        add_action('admin_print_scripts-' . $admin_page_suffix, array($this, 'enqueue'));
-                }
+		/**
+		 * Add Bulk option settings page
+		 */
+		function screen() {
+			$admin_page_suffix = add_media_page( 'WP Smush.it Pro', 'WP Smush.it Pro', 'edit_others_posts', 'wp-smpro-admin', array(
+				$this,
+				'ui'
+			) );
+			// enqueue js only on this screen and media_screen
+			add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );
+			add_action( 'admin_print_scripts-' . $admin_page_suffix, array( $this, 'enqueue' ) );
+		}
 
-                /**
-                 * Register js and css
-                 */
-                function register() {
-                        /* Register our script. */
-                        wp_register_script('wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array('jquery'), WP_SMPRO_VERSION);
-                        //@todo enqueue minified script if not debugging
-                        //wp_register_script( 'wp-smpro-queue-debug', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
-                        wp_register_style('wp-smpro-queue', WP_SMPRO_URL . 'assets/css/wp-smpro-queue.css');
+		/**
+		 * Register js and css
+		 */
+		function register() {
+			/* Register our script. */
+			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'jquery' ), WP_SMPRO_VERSION );
+			//@todo enqueue minified script if not debugging
+			//wp_register_script( 'wp-smpro-queue-debug', trailingslashit(WP_SMPRO_DIR).'js/wp-smpro-queue.js' );
+			wp_register_style( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/css/wp-smpro-queue.css' );
 
-                        // localize translatable strings for js
-                        $this->localize();
-                }
+			// localize translatable strings for js
+			$this->localize();
 
-                /**
-                 * enqueue js and css
-                 */
-                function enqueue() {
-                        wp_enqueue_script('wp-smpro-queue');
-                        wp_enqueue_style('wp-smpro-queue');
-                }
+			//Set API Status
+			$this->api_connected = $this->set_api_status();
+		}
 
-                function localize() {
-                        $wp_smpro_msgs = array(
-                            'leave_screen' => __('You may leave this screen now, <strong>we will update your site with smushed images, automatically</strong>!', WP_SMPRO_DOMAIN),
-                            'sent' => __('Sent for Smushing', WP_SMPRO_DOMAIN),
-                            'progress' => __('Smushing in Progress', WP_SMPRO_DOMAIN),
-                            'resmush' => __('Re-smush', WP_SMPRO_DOMAIN),
-                            'smush_now' => __('Smush.it now!', WP_SMPRO_DOMAIN),
-                            'done' => __('All done!', WP_SMPRO_DOMAIN)
-                        );
+		/**
+		 * enqueue js and css
+		 */
+		function enqueue() {
+			wp_enqueue_script( 'wp-smpro-queue' );
+			wp_enqueue_style( 'wp-smpro-queue' );
+		}
 
-                        wp_localize_script('wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs);
-                        wp_localize_script('wp-smpro-queue', 'wp_smpro_sent', $this->bulk['sent']);
-                        wp_localize_script('wp-smpro-queue', 'wp_smpro_received', $this->bulk['received']);
-                }
+		function localize() {
+			$wp_smpro_msgs = array(
+				'leave_screen' => __( 'You may leave this screen now, <strong>we will update your site with smushed images, automatically</strong>!', WP_SMPRO_DOMAIN ),
+				'sent'         => __( 'Sent for Smushing', WP_SMPRO_DOMAIN ),
+				'progress'     => __( 'Smushing in Progress', WP_SMPRO_DOMAIN ),
+				'resmush'      => __( 'Re-smush', WP_SMPRO_DOMAIN ),
+				'smush_now'    => __( 'Smush.it now!', WP_SMPRO_DOMAIN ),
+				'done'         => __( 'All done!', WP_SMPRO_DOMAIN ),
+				'smush_all'    => __( 'Smush all the images', WP_SMPRO_DOMAIN )
+			);
 
-                /**
-                 * Set up some data needed for the bulk ui
-                 * @global type $wpdb
-                 */
-                function bulk_data() {
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_sent', $this->bulk['sent'] );
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_received', $this->bulk['received'] );
+		}
 
-                        $bulk = new WpSmProBulk();
-                        $this->bulk['sent'] = $bulk->data('sent');
-                        $this->bulk['received'] = $bulk->data('received');
-                }
+		/**
+		 * Set up some data needed for the bulk ui
+		 * @global type $wpdb
+		 */
+		function bulk_data() {
 
-                /**
-                 * Display the ui
-                 */
-                function ui() {
+			$bulk                   = new WpSmProBulk();
+			$this->bulk['sent']     = $bulk->data( 'sent' );
+			$this->bulk['received'] = $bulk->data( 'received' );
+		}
 
-                        //Get dashboard API Key
-                        $wpmudev_apikey = get_site_option('wpmudev_apikey');
+		/**
+		 * Display the ui
+		 */
+		function ui() {
 
-                        //Style for container if there is no API key
-                        $style = '';
-                        if (empty($wpmudev_apikey)) {
+			//Get dashboard API Key
+			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
 
-                                $style = 'style="opacity: 0.4;"';
-                                ?>
+			$class      = $this->api_connected ? ' connected' : ' not-connected';
+			$text       = $this->api_connected ? __( 'API Connected', WP_SMPRO_DOMAIN ) : __( 'API not Connected', WP_SMPRO_DOMAIN );
 
-                                <script type="text/javascript">
+			//Style for container if there is no API key
+			$style = '';
+			if ( empty( $wpmudev_apikey ) ) {
 
-                                        jQuery(document).ready(function() {
+				$style = 'style="opacity: 0.4;"';
+				?>
 
-                                                //Disable all inputs
-                                                jQuery('.wp-smpro-container input').attr('disabled', 'disabled');
+				<script type="text/javascript">
 
-                                        });
+					jQuery(document).ready(function () {
 
-                                </script> <?php
-                        }
-                        ?>
-                        <div class="wrap">
-                                <div id="icon-upload" class="icon32"><br/></div>
+						//Disable all inputs
+						jQuery('.wp-smpro-container input').attr('disabled', 'disabled');
 
-                                <h2>
-                                        <?php _e('WP Smush.it Pro', WP_SMPRO_DOMAIN) ?>
-                                </h2>
+					});
 
-                                <div class="wp-smpro-container" <?php echo $style; ?>>
-                                        <h3>
-                                                <?php _e('Settings', WP_SMPRO_DOMAIN) ?>
-                                        </h3>
-                                        <?php
-                                        // display the options
-                                        $this->options_ui();
-                                        ?>
+				</script> <?php
+			}
+			?>
+			<div class="wrap">
+				<div id="icon-upload" class="icon32"><br/></div>
 
-                                        <hr>
-                                        <h3>
-                                                <?php _e('Smush in Bulk', WP_SMPRO_DOMAIN) ?>
-                                        </h3>
+				<h2>
+					<?php printf( __( 'WP Smush.it Pro <span title="%s" class="api-status%s">%s</span>', WP_SMPRO_DOMAIN ), $text, $class, $text ); ?>
+				</h2>
 
-                                        <?php
-                                        // display the bulk ui
-                                        $this->bulk_ui();
-                                        ?>
-                                </div>
-                        </div>
-                        <?php
-                }
+				<div class="wp-smpro-container" <?php echo $style; ?>>
+					<h3>
+						<?php _e( 'Settings', WP_SMPRO_DOMAIN ) ?>
+					</h3>
+					<?php
+					// display the options
+					$this->options_ui();
+					?>
 
-                /**
-                 * Process and display the options form
-                 */
-                function options_ui() {
+					<hr>
+					<h3>
+						<?php _e( 'Smush in Bulk', WP_SMPRO_DOMAIN ) ?>
+					</h3>
 
-                        // process options, if needed
-                        $this->process_options();
-                        ?>
-                        <form action="" method="post">
-                                <ul id="wp-smpro-options-wrap">
-                        <?php
-                        // display each setting
-                        foreach ($this->settings as $name => $text) {
-                                echo $this->render_checked($name, $text);
-                        }
-                        ?>
-                                </ul>
-                                        <?php
-                                        // nonce
-                                        wp_nonce_field('save_wp_smpro_options', 'wp_smpro_options_nonce');
-                                        ?>
-                                <input type="submit" id="wp-smpro-save-settings" class="button button-primary" value="<?php _e('Save Changes', WP_SMPRO_DOMAIN); ?>">
-                        </form>
-                        <?php
-                }
+					<?php
+					// display the bulk ui
+					$this->bulk_ui();
+					?>
+				</div>
+			</div>
+		<?php
+		}
 
-                /**
-                 * Check if form is submitted and process it
-                 *
-                 * @return null
-                 */
-                function process_options() {
+		/**
+		 * Process and display the options form
+		 */
+		function options_ui() {
 
-                        // we aren't saving options
-                        if (!isset($_POST['wp_smpro_options_nonce'])) {
-                                return;
-                        }
-                        // the nonce doesn't pan out
-                        if (!wp_verify_nonce($_POST['wp_smpro_options_nonce'], 'save_wp_smpro_options')) {
-                                return;
-                        }
+			// process options, if needed
+			$this->process_options();
+			?>
+			<form action="" method="post">
+				<ul id="wp-smpro-options-wrap">
+					<?php
+					// display each setting
+					foreach ( $this->settings as $name => $text ) {
+						echo $this->render_checked( $name, $text );
+					}
+					?>
+				</ul>
+				<?php
+				// nonce
+				wp_nonce_field( 'save_wp_smpro_options', 'wp_smpro_options_nonce' );
+				?>
+				<input type="submit" id="wp-smpro-save-settings" class="button button-primary" value="<?php _e( 'Save Changes', WP_SMPRO_DOMAIN ); ?>">
+			</form>
+		<?php
+		}
 
-                        // var to temporarily assign the option value 
-                        $setting = null;
+		/**
+		 * Check if form is submitted and process it
+		 *
+		 * @return null
+		 */
+		function process_options() {
 
-                        // process each setting and update options
-                        foreach ($this->settings as $name => $text) {
-                                // formulate the index of option
-                                $opt_name = 'wp_smpro_' . $name;
-                                // get the value to be saved
-                                $setting = isset($_POST[$opt_name]) ? true : false;
-                                // update the new value
-                                update_option($opt_name, $setting);
-                                // unset the var for next loop
-                                unset($setting);
-                        }
-                }
+			// we aren't saving options
+			if ( ! isset( $_POST['wp_smpro_options_nonce'] ) ) {
+				return;
+			}
+			// the nonce doesn't pan out
+			if ( ! wp_verify_nonce( $_POST['wp_smpro_options_nonce'], 'save_wp_smpro_options' ) ) {
+				return;
+			}
 
-                /**
-                 * Render a checkbox
-                 *
-                 * @param string $key The setting's name
-                 *
-                 * @return string checkbox html
-                 */
-                function render_checked($key, $text) {
-                        // the key for options table
-                        $opt_name = 'wp_smpro_' . $key;
+			// var to temporarily assign the option value
+			$setting = null;
 
-                        // the defined constant
-                        $const_name = strtoupper($opt_name);
+			// process each setting and update options
+			foreach ( $this->settings as $name => $text ) {
+				// formulate the index of option
+				$opt_name = 'wp_smpro_' . $name;
+				// get the value to be saved
+				$setting = isset( $_POST[ $opt_name ] ) ? true : false;
+				// update the new value
+				update_option( $opt_name, $setting );
+				// unset the var for next loop
+				unset( $setting );
+			}
+		}
 
-                        // default value
-                        $opt_val = intval(get_option($opt_name, constant($const_name)));
+		/**
+		 * Render a checkbox
+		 *
+		 * @param string $key The setting's name
+		 *
+		 * @return string checkbox html
+		 */
+		function render_checked( $key, $text ) {
+			// the key for options table
+			$opt_name = 'wp_smpro_' . $key;
 
-                        // return html
-                        return sprintf(
-                                "<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr($opt_name), checked($opt_val, true, false), $text
-                        );
-                }
+			// the defined constant
+			$const_name = strtoupper( $opt_name );
 
-                /**
-                 * Display the bulk smushing ui
-                 */
-                function bulk_ui() {
-                        // set up some variables and print out some js vars
-                        $this->all_ui();
-                        $this->print_loader();
-                        ?>
-                        <?php
-                }
+			// default value
+			$opt_val = intval( get_option( $opt_name, constant( $const_name ) ) );
 
-                function all_ui() {
-                        if ($this->bulk['sent']['total'] < 1) {
-                                _e("<p>You don't appear to have uploaded any images yet.</p>", WP_SMPRO_DOMAIN);
+			// return html
+			return sprintf(
+				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, true, false ), $text
+			);
+		}
 
-                                return;
-                        }
-                        ?>
-                        <div id="all-bulk" class="wp-smpro-bulk-wrap">
-                        <?php
-                        if ($this->bulk['received']['left'] === 0) {
-                                ?>
-                                        <p>
-                                <?php
-                                $button_class="wp-smpro-finished";
-                                $disabled = ' disabled="disabled"';
-                                _e('All the images are already smushed', WP_SMPRO_DOMAIN);
-                                ?>
-                                        </p>
-                                        <?php
-                                } else {
-                                        $button_class = "wp-smpro-unstarted";
-                                        $disabled = '';
-                                        ?>
-                                        <p>
-                                                <?php
-                                                printf(
-                                                        __(
-                                                                'We have found <strong>%d unsmushed images</strong> in your media library.'
-                                                                . ' You can smush them all by clicking the button below.', WP_SMPRO_DOMAIN
-                                                        ), $this->bulk['sent']['left']
-                                                );
-                                                ?>
-                                        </p>
+		/**
+		 * Display the bulk smushing ui
+		 */
+		function bulk_ui() {
+			// set up some variables and print out some js vars
+			$this->all_ui();
+			$this->print_loader();
+			?>
+		<?php
+		}
 
-                                        <p>
-                                                <?php
-                                                _e(
-                                                        'It may take some time for all images to be smushed.'
-                                                        . ' If you leave this screen,'
-                                                        . ' you can always start from where smushing was left off.', WP_SMPRO_DOMAIN
-                                                );
-                                                ?>
+		function all_ui() {
+			if ( $this->bulk['sent']['total'] < 1 ) {
+				_e( "<p>You don't appear to have uploaded any images yet.</p>", WP_SMPRO_DOMAIN );
 
-                                        </p>
+				return;
+			}
+			if ( $this->bulk['received']['left'] === 0 ) {
+				$button_text = __( 'All done!', WP_SMPRO_DOMAIN );
+			} else {
+				$button_text = __( 'Smush all the images', WP_SMPRO_DOMAIN );
+			}
+			?>
+			<div id="all-bulk" class="wp-smpro-bulk-wrap">
+				<?php
+				if ( $this->bulk['received']['left'] === 0 ) {
+					?>
+					<p>
+						<?php
+						$button_class = "wp-smpro-finished";
+						$disabled     = ' disabled="disabled"';
+						_e( 'All the images are already smushed', WP_SMPRO_DOMAIN );
+						?>
+					</p>
+				<?php
+				} else {
+					$button_class = "wp-smpro-unstarted";
+					$disabled     = $this->api_connected ? '' : ' disabled="disabled"';
+					?>
+					<p>
+						<?php
+						printf(
+							__(
+								'We have found <strong>%d unsmushed images</strong> in your media library.'
+								. ' You can smush them all by clicking the button below.', WP_SMPRO_DOMAIN
+							), $this->bulk['sent']['left']
+						);
+						?>
+					</p>
 
-                                        <p>
-                                                <?php
-                                                printf(
-                                                        __(
-                                                                'Alternatively, you can smush images individually'
-                                                                . ' from your <a href="%s">Media Library</a>', WP_SMPRO_DOMAIN
-                                                        ), admin_url('upload.php')
-                                                );
-                                                ?>
-                                        </p>
-                                                <?php
-                                        }
-                                        $this->progress_ui();
-                                        ?>
-                                <button id="wp-smpro-begin" class="button button-primary <?php echo $button_class; ?>" <?php echo $disabled; ?>>
-                                        <span>
-                                        <?php
-                                        if ($this->bulk['received']['left'] === 0) {
-                                                _e('All done!', WP_SMPRO_DOMAIN);
-                                        } else {
-                                                _e('Smush all the images', WP_SMPRO_DOMAIN);
-                                        }
-                                        ?>
-                                        </span>
-                                </button>
-                        </div>
-                                                <?php
-                                        }
+					<p>
+						<?php
+						_e(
+							'It may take some time for all images to be smushed.'
+							. ' If you leave this screen,'
+							. ' you can always start from where smushing was left off.', WP_SMPRO_DOMAIN
+						);
+						?>
 
-                                        function print_loader() {
-                                                ?>
-                        <div id="wp-smpro-loader-wrap">
-                                <div class="floatingCirclesG">
-                                        <div class="f_circleG" id="frotateG_01">
-                                        </div>
-                                        <div class="f_circleG" id="frotateG_02">
-                                        </div>
-                                        <div class="f_circleG" id="frotateG_03">
-                                        </div>
-                                        <div class="f_circleG" id="frotateG_04">
-                                        </div>
-                                        <div class="f_circleG" id="frotateG_05">
-                                        </div>
-                                        <div class="f_circleG" id="frotateG_06">
-                                        </div>
-                                        <div class="f_circleG" id="frotateG_07">
-                                        </div>
-                                        <div class="f_circleG" id="frotateG_08">
-                                        </div>
-                                </div>
-                        </div>
-                        <?php
-                }
-                
-                function check_count($response, $data, $screen_id) {
-                        if($screen_id != 'media_page_wp-smpro-admin'){
-                                return $response;
-                        }
-                        
-                        if ( empty( $data['wp-smpro-received-count'] ) ) {
-                                return $response;
-                        }
-                               
-                        $bulk = new WpSmProBulk();
-                        
-                        $total= (int) $bulk->image_count( 'received', 'all' );
-                        $left = (int) $bulk->image_count( 'received', 'left' );
-                        
-                        $response['wp-smpro-received-count']=$total-$left;
+					</p>
 
-                        return $response;
+					<p>
+						<?php
+						printf(
+							__(
+								'Alternatively, you can smush images individually'
+								. ' from your <a href="%s">Media Library</a>', WP_SMPRO_DOMAIN
+							), admin_url( 'upload.php' )
+						);
+						?>
+					</p>
+				<?php
+				}
+				$this->progress_ui();
+				?>
+				<button id="wp-smpro-begin" class="button button-primary <?php echo $button_class; ?>" <?php echo $disabled; ?>>
+					<span><?php echo $button_text ?></span>
+				</button>
+			</div>
+		<?php
+		}
 
-                }
+		function print_loader() {
+			?>
+			<div id="wp-smpro-loader-wrap">
+				<div class="floatingCirclesG">
+					<div class="f_circleG" id="frotateG_01">
+					</div>
+					<div class="f_circleG" id="frotateG_02">
+					</div>
+					<div class="f_circleG" id="frotateG_03">
+					</div>
+					<div class="f_circleG" id="frotateG_04">
+					</div>
+					<div class="f_circleG" id="frotateG_05">
+					</div>
+					<div class="f_circleG" id="frotateG_06">
+					</div>
+					<div class="f_circleG" id="frotateG_07">
+					</div>
+					<div class="f_circleG" id="frotateG_08">
+					</div>
+				</div>
+			</div>
+		<?php
+		}
 
-                /**
-                 * Check current smush status of sent attachments
-                 */
-                function check_status() {
-                               
-                        // the attachment id
-                        $id = $_GET['attachment_id'];
+		function check_count( $response, $data, $screen_id ) {
+			if ( $screen_id != 'media_page_wp-smpro-admin' ) {
+				return $response;
+			}
 
-                        $response = array();
-                        // send 0, means unknown error
-                        if (empty($id) || $id <= 0) {
-                                $response['status'] = 0;
-                                $response['msg'] = __('ID error', WP_SMPRO_DOMAIN);
-                                echo json_encode($response);
-                                die();
-                        }
-                        // otherwise, get smush details
-                        $smush_meta_full = get_post_meta($id, 'smush_meta_full', true);
- 
-                        // if can't find, it's still awaited
-                        if (empty($smush_meta_full)) {
-                                $response['status'] = 1;
-                                $response['msg'] = __('Still waiting', WP_SMPRO_DOMAIN);
-                                echo json_encode($response);
-                                die();
-                        }
+			if ( empty( $data['wp-smpro-received-count'] ) ) {
+				return $response;
+			}
 
-                        // otherwise, we've received the image
-                        $code = !empty($smush_meta_full['status_code']) ? intval($smush_meta_full['status_code']) : '';
-                        $response['msg'] = $smush_meta_full['status_msg'];
-                        if ($code === 4 || $code === 6) {
-                                $response['status'] = 2;
-                                echo json_encode($response);
-                                die();
-                }
+			$bulk = new WpSmProBulk();
 
-                        if ($code === 5) {
-                                // smush failed
-                                $response['status'] = 0;
-                                echo json_encode($response);
-                                die();
-                        }
+			$total = (int) $bulk->image_count( 'received', 'all' );
+			$left  = (int) $bulk->image_count( 'received', 'left' );
 
-                        // Not even that, we're still waiting
-                        $response['status'] = 1;
-                        $response['msg'] = __('Still waiting', WP_SMPRO_DOMAIN);
-                        echo json_encode($response);
-                        die();
-                }
+			$response['wp-smpro-received-count'] = $total - $left;
 
-                function progress_ui() {
+			return $response;
 
-                        $sent = $this->bulk['sent'];
-                        $recd = $this->bulk['received'];
-                        $sent_pc = $sent['done'] / $sent['total'] * 100;
-                        $recd_pc = $recd['done'] / $recd['total'] * 100;
-                        $progress_ui = '
+		}
+
+		/**
+		 * Check current smush status of sent attachments
+		 */
+		function check_status() {
+
+			// the attachment id
+			$id = $_GET['attachment_id'];
+
+			$response = array();
+			// send 0, means unknown error
+			if ( empty( $id ) || $id <= 0 ) {
+				$response['status'] = 0;
+				$response['msg']    = __( 'ID error', WP_SMPRO_DOMAIN );
+				echo json_encode( $response );
+				die();
+			}
+			// otherwise, get smush details
+			$smush_meta_full = get_post_meta( $id, 'smush_meta_full', true );
+
+			// if can't find, it's still awaited
+			if ( empty( $smush_meta_full ) ) {
+				$response['status'] = 1;
+				$response['msg']    = __( 'Still waiting', WP_SMPRO_DOMAIN );
+				echo json_encode( $response );
+				die();
+			}
+
+			// otherwise, we've received the image
+			$code            = ! empty( $smush_meta_full['status_code'] ) ? intval( $smush_meta_full['status_code'] ) : '';
+			$response['msg'] = $smush_meta_full['status_msg'];
+			if ( $code === 4 || $code === 6 ) {
+				$response['status'] = 2;
+				echo json_encode( $response );
+				die();
+			}
+
+			if ( $code === 5 ) {
+				// smush failed
+				$response['status'] = 0;
+				echo json_encode( $response );
+				die();
+			}
+
+			// Not even that, we're still waiting
+			$response['status'] = 1;
+			$response['msg']    = __( 'Still waiting', WP_SMPRO_DOMAIN );
+			echo json_encode( $response );
+			die();
+		}
+
+		function progress_ui() {
+
+			$sent        = $this->bulk['sent'];
+			$recd        = $this->bulk['received'];
+			$sent_pc     = $sent['done'] / $sent['total'] * 100;
+			$recd_pc     = $recd['done'] / $recd['total'] * 100;
+			$progress_ui = '
 				<div id="progress-ui">
 				<div id="wp-smpro-progress-wrap">
 					<div id="wp-smpro-smush-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
 					<div id="wp-smpro-check-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
 				</div>
 				<p id="smush-status">' .
-                                sprintf(
-                                        __(
-                                                '<span id="smush-sent-count">%d</span> of <span id="smush-total-count">%d</span> images'
-                                                . ' have been sent for smushing', WP_SMPRO_DOMAIN
-                                        ), $sent['done'], $sent['total']
-                                ) .
-                                '</p>
+			               sprintf(
+				               __(
+					               '<span id="smush-sent-count">%d</span> of <span id="smush-total-count">%d</span> images'
+					               . ' have been sent for smushing', WP_SMPRO_DOMAIN
+				               ), $sent['done'], $sent['total']
+			               ) .
+			               '</p>
 				<p id="check-status">' .
-                                sprintf(
-                                        __(
-                                                '<span id="smush-received-count">%d</span> of <span id="smush-total-count">%d</span> images'
-                                                . ' have been received', WP_SMPRO_DOMAIN
-                                        ), $recd['done'], $recd['total']
-                                ) .
-                                '</p>
-				</div>
-				';
-                        echo $progress_ui;
-                }
+			               sprintf(
+				               __(
+					               '<span id="smush-received-count">%d</span> of <span id="smush-total-count">%d</span> images'
+					               . ' have been received', WP_SMPRO_DOMAIN
+				               ), $recd['done'], $recd['total']
+			               ) .
+			               '</p>
+				</div>';
+			echo $progress_ui;
+		}
 
-        }
+		/**
+		 * Set Up API Status
+		 */
+		function set_api_status() {
+			if ( defined( 'WP_SMPRO_SERVICE_URL' ) ) {
+				$api = wp_remote_get( WP_SMPRO_SERVICE_URL );
+			}
+			if ( empty( $api ) || is_wp_error( $api ) ) {
+				return false;
+			}
+
+			return true;
+		}
+
+	}
 
 }

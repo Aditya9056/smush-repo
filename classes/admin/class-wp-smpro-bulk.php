@@ -15,43 +15,43 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 	/**
 	 * Methods for bulk processing
 	 */
-        class WpSmProBulk {
-                /**
+	class WpSmProBulk {
+		/**
 		 * The images that still need to be smushed
 		 *
 		 * @global object $wpdb WP database object
 		 * @return int count of smushed images
 		 */
-		function image_count( $type = 'sent', $include='all' ) {
-			
-                        $query = array(
-                                'fields'         => 'ids',
-                                'post_type'      => 'attachment',
-                                'post_status'    => 'any',
-                                'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
-                                'order'          => 'ASC',
-                                'posts_per_page' => -1
-                        );
-                        
-                        $metakey = "wp-smpro-is-$type";
-                
-                        if ( $include != 'all' ) {
-                                $meta_query = array(
-                                        'relation' => 'OR',
-                                        array(
-                                                'key'     => $metakey,
-                                                'compare' => 'NOT EXISTS'
-                                        ),
-                                        array(
-                                                'key'   => $metakey,
-                                                'value' => 0
-                                        )
-                                );
-                                $query['meta_query'] = $meta_query;
-                        }
+		function image_count( $type = 'sent', $include = 'all' ) {
 
-                        $results = new WP_Query( $query );
-                        $count   = ! empty ( $results->post_count ) ? $results->post_count : '';
+			$query = array(
+				'fields'         => 'ids',
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'order'          => 'ASC',
+				'posts_per_page' => - 1
+			);
+
+			$metakey = "wp-smpro-is-$type";
+
+			if ( $include != 'all' ) {
+				$meta_query          = array(
+					'relation' => 'OR',
+					array(
+						'key'     => $metakey,
+						'compare' => 'NOT EXISTS'
+					),
+					array(
+						'key'   => $metakey,
+						'value' => 0
+					)
+				);
+				$query['meta_query'] = $meta_query;
+			}
+
+			$results = new WP_Query( $query );
+			$count   = ! empty ( $results->post_count ) ? $results->post_count : '';
 
 			// send the count
 			return $count;
@@ -90,22 +90,22 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 
 			return $id;
 		}
-                
-                 /**
+
+		/**
 		 * Set up some data needed for the bulk ui
 		 * @global type $wpdb
 		 */
-		function data($type='sent') {
+		function data( $type = 'sent' ) {
 
 			$data = array();
 
 			// set up counts and start_id
-                        $data['total']     = (int) $this->image_count( $type, 'all' );
-                        $data['left'] = (int) $this->image_count( $type, 'left' );
-                        $data['done']  = $data['total'] - $data['left'];
-                        $data['start_id']  = $this->start_id();
-                        
-                        return $data;
+			$data['total']    = (int) $this->image_count( $type, 'all' );
+			$data['left']     = (int) $this->image_count( $type, 'left' );
+			$data['done']     = $data['total'] - $data['left'];
+			$data['start_id'] = $this->start_id();
+
+			return $data;
 		}
-        }
+	}
 }

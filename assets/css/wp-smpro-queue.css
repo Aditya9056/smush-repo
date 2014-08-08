@@ -305,3 +305,22 @@ Progressbar ui
 	border-radius: 0 5px 5px 0;
 	background-color: #0074a2;
 }
+/* API Status */
+
+.api-status {
+    background: none repeat scroll 0 0 #A3D900;
+    border-radius: 50%;
+    color: transparent;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 10px;
+    height: 10px;
+    line-height: 1;
+    margin-top: 5px;
+    overflow: hidden;
+    text-align: center;
+    width: 10px;
+}
+.api-status.not-connected {
+    background: none repeat scroll 0 0 #D64840;
+}

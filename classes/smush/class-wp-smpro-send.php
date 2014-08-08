@@ -29,9 +29,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// for ajax based smushing through bulk UI
 			add_action( 'wp_ajax_wp_smpro_queue', array( $this, 'ajax_queue' ) );
 
-			//Admin notice, if api is not accessible
-//			add_action( 'init', array( $this, 'check_api_status' ) );
-
 			if ( WP_SMPRO_AUTO ) {
 				// add automatic smushing on upload
 				add_filter( 'wp_generate_attachment_metadata', array( $this, 'auto_smush' ), 10, 2 );
@@ -40,19 +37,26 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 		function auto_smush( $metadata, $attachment_id ) {
 
-			//Send metadata and attachment id
-			$this->add_meta_then_queue( intval( $attachment_id ), $metadata );
+			global $wp_sm_pro;
+
+			//Check API Status
+			if ( $wp_sm_pro->admin->api_connected ) {
+
+				//Send metadata and attachment id
+				$this->add_meta_then_queue( intval( $attachment_id ), $metadata );
+			}
 
 			return $metadata;
 		}
 
 		/**
 		 * Returns the bool value of a variable
+		 *
 		 * @param $val
 		 *
 		 * @return bool
 		 */
-		function boolval($val) {
+		function boolval( $val ) {
 			return (bool) $val;
 		}
 
@@ -67,6 +71,19 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( ! current_user_can( 'upload_files' ) ) {
 				wp_die( __( "You don't have permission to work with uploaded files.", WP_SMPRO_DOMAIN ) );
 			}
+			global $wp_sm_pro;
+			$response = array();
+
+			//Check API Status
+			if ( ! $wp_sm_pro->admin->api_connected ) {
+				$response['status_code']    = 404;
+				$response['status_message'] = __( "API not accessible", WP_SMPRO_DOMAIN );
+				// print out the response
+				echo json_encode( $response );
+
+				// wp_ajax wants us to...
+				die();
+			}
 
 			// get the attachment id from request
 			$attachment_id = $_GET['attachment_id'];
@@ -79,14 +96,12 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				wp_die( __( 'No attachment ID was provided.', WP_SMPRO_DOMAIN ) );
 			}
 
-			$response = array();
-
 			// Send for further processing
 			$response['status_code'] = $this->add_meta_then_queue( intval( $attachment_id ) );
-                        
+
 			// smush meta
 			$smush_meta = get_post_meta( $attachment_id, 'smush_meta_full', true );
-			
+
 			// smush status msg
 			$response['status_msg'] = ! empty( $smush_meta ) ? $smush_meta['status_msg'] : '';
 
@@ -155,7 +170,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * Gets the attachment meta and sends for smushing
 		 *
 		 * @param int $attachment_id
-		 * @param array $metadata, default is empty
+		 * @param array $metadata , default is empty
 		 *
 		 * @return bool|object True on success, WP_Error object on failure
 		 */
@@ -230,11 +245,12 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 		/**
 		 * Send smush request for all Image sizes
+		 *
 		 * @param $attachment_id
 		 * @param string $attachment_file_path
 		 * @param string $attachment_file_url
 		 * @param bool $force_resmush
-		 * @param string $metadata, default is null
+		 * @param string $metadata , default is null
 		 */
 		function check_send_sizes( $attachment_id, $attachment_file_path = '', $attachment_file_url = '', $force_resmush = true, $metadata = '' ) {
 
@@ -592,30 +608,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$bytes /= pow( 1024, $pow );
 
 			return round( $bytes, $precision ) . ' ' . $units[ $pow ];
-		}
-
-		/**
-		 * Admin notice, If API is not reachable
-		 */
-		function server_not_found() {
-			?>
-			<div class="error">
-				<p><?php _e( 'Sorry, we are having trouble reching WPMU servers, please try again later', WP_SMPRO_DOMAIN ); ?></p>
-			</div> <?php
-		}
-
-		/**
-		 * Check and add a admin notice If API is not accessible
-		 */
-		function check_api_status() {
-			if ( empty ( $_REQUEST ) || empty ( $_REQUEST['api_status'] ) ) {
-				return;
-			}
-			if ( $_REQUEST['api_status'] == 'error' ) {
-				add_action( 'admin_notices', array( $this, 'server_not_found' ) );
-			}
-
-			return;
 		}
 	}
 
