@@ -126,6 +126,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$bulk                   = new WpSmProBulk();
 			$this->bulk['sent']     = $bulk->data( 'sent' );
 			$this->bulk['received'] = $bulk->data( 'received' );
+                        $this->bulk['smushed']  = $bulk->data( 'smushed' );
 		}
 
 		/**
@@ -286,7 +287,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 				return;
 			}
-			if ( $this->bulk['received']['left'] === 0 ) {
+			if ( $this->bulk['smushed']['left'] === 0 ) {
 				$button_text = __( 'All done!', WP_SMPRO_DOMAIN );
 			} else {
 				$button_text = __( 'Smush all the images', WP_SMPRO_DOMAIN );
@@ -294,7 +295,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			?>
 			<div id="all-bulk" class="wp-smpro-bulk-wrap">
 				<?php
-				if ( $this->bulk['received']['left'] === 0 ) {
+				if ( $this->bulk['smushed']['left'] === 0 ) {
 					?>
 					<p>
 						<?php

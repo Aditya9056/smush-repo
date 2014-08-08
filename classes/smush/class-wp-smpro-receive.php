@@ -163,6 +163,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         
                         if($size==='full'){
                                 update_post_meta( $data['attachment_id'], "wp-smpro-is-received", 1 );
+                                update_post_meta( $data['attachment_id'], "wp-smpro-is-smushed", 1 );
                         }
 
 			error_log( "File updated for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
