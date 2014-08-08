@@ -109,12 +109,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'resmush'      => __( 'Re-smush', WP_SMPRO_DOMAIN ),
 				'smush_now'    => __( 'Smush.it now!', WP_SMPRO_DOMAIN ),
 				'done'         => __( 'All done!', WP_SMPRO_DOMAIN ),
-				'smush_all'    => __( 'Smush all the images', WP_SMPRO_DOMAIN )
+				'smush_all'    => __( 'Smush all the images', WP_SMPRO_DOMAIN ),
+                                'resmush_all'  => __( 'Resend unsmushed images', WP_SMPRO_DOMAIN ),
 			);
 
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_sent', $this->bulk['sent'] );
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_received', $this->bulk['received'] );
+                        wp_localize_script( 'wp-smpro-queue', 'wp_smpro_smushed', $this->bulk['smushed'] );
 		}
 
 		/**
@@ -280,18 +282,35 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			?>
 		<?php
 		}
+                
+                function setup_button(){
+                        if ( $this->bulk['smushed']['left'] === 0 ) {
+				$button_text = __( 'All done!', WP_SMPRO_DOMAIN );
+                                $button_class = "wp-smpro-finished";
+                                $disabled     = ' disabled="disabled"';
+			} else {
+                                if($this->bulk['sent']['left'] > 0){
+                                        $button_text = __( 'Smush all the images', WP_SMPRO_DOMAIN );
+                                }else{
+                                        $button_text = __( 'Resend unsmushed images', WP_SMPRO_DOMAIN );
+                                }
+                                $button_class = "wp-smpro-unstarted";
+                                $disabled     = $this->api_connected ? '' : ' disabled="disabled"';
+			}
+                        ?>
+                        <button id="wp-smpro-begin" class="button button-primary <?php echo $button_class; ?>" <?php echo $disabled; ?>>
+                                <span><?php echo $button_text ?></span>
+                        </button>
+                        <?php
+                }
 
 		function all_ui() {
-			if ( $this->bulk['sent']['total'] < 1 ) {
+			if ( $this->bulk['smushed']['total'] < 1 ) {
 				_e( "<p>You don't appear to have uploaded any images yet.</p>", WP_SMPRO_DOMAIN );
 
 				return;
 			}
-			if ( $this->bulk['smushed']['left'] === 0 ) {
-				$button_text = __( 'All done!', WP_SMPRO_DOMAIN );
-			} else {
-				$button_text = __( 'Smush all the images', WP_SMPRO_DOMAIN );
-			}
+			
 			?>
 			<div id="all-bulk" class="wp-smpro-bulk-wrap">
 				<?php
@@ -299,15 +318,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					?>
 					<p>
 						<?php
-						$button_class = "wp-smpro-finished";
-						$disabled     = ' disabled="disabled"';
 						_e( 'All the images are already smushed', WP_SMPRO_DOMAIN );
 						?>
 					</p>
 				<?php
 				} else {
-					$button_class = "wp-smpro-unstarted";
-					$disabled     = $this->api_connected ? '' : ' disabled="disabled"';
 					?>
 					<p>
 						<?php
@@ -315,7 +330,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 							__(
 								'We have found <strong>%d unsmushed images</strong> in your media library.'
 								. ' You can smush them all by clicking the button below.', WP_SMPRO_DOMAIN
-							), $this->bulk['sent']['left']
+							), $this->bulk['smushed']['left']
 						);
 						?>
 					</p>
@@ -344,10 +359,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				<?php
 				}
 				$this->progress_ui();
+                                $this->setup_button();
 				?>
-				<button id="wp-smpro-begin" class="button button-primary <?php echo $button_class; ?>" <?php echo $disabled; ?>>
-					<span><?php echo $button_text ?></span>
-				</button>
+				
 			</div>
 		<?php
 		}
@@ -448,17 +462,23 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function progress_ui() {
-
+                        $smushed     = $this->bulk['smushed'];
 			$sent        = $this->bulk['sent'];
 			$recd        = $this->bulk['received'];
+                        $smushed_pc  = $smushed['done'] / $smushed['total'] * 100;
 			$sent_pc     = $sent['done'] / $sent['total'] * 100;
 			$recd_pc     = $recd['done'] / $recd['total'] * 100;
 			$progress_ui = '
 				<div id="progress-ui">
+                                <div id="wp-smpro-smush-progress-wrap">
+                                        <div id="wp-smpro-smush-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
+                                </div>
+                                
 				<div id="wp-smpro-progress-wrap">
-					<div id="wp-smpro-smush-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
+					<div id="wp-smpro-sent-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
 					<div id="wp-smpro-check-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
 				</div>
+                                <div id="wp-smpro-progress-status">
 				<p id="smush-status">' .
 			               sprintf(
 				               __(
@@ -475,6 +495,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				               ), $recd['done'], $recd['total']
 			               ) .
 			               '</p>
+                                               </div>
 				</div>';
 			echo $progress_ui;
 		}

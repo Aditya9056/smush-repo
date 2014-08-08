@@ -184,7 +184,7 @@ jQuery('document').ready(function () {
          */
         function wp_smpro_change_progress_status($count, $width) {
             // get the progress bar
-            $progress_bar = jQuery('#wp-smpro-progress-wrap #wp-smpro-smush-progress div');
+            $progress_bar = jQuery('#wp-smpro-progress-wrap #wp-smpro-sent-progress div');
             if ($progress_bar.length < 1) {
                 return;
             }
