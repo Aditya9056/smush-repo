@@ -41,6 +41,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// hook ajax call for checking smush status
 			add_filter( 'heartbeat_received', array( $this, 'check_count' ), 10, 3 );
 			add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
+                        
+                        add_action( 'wp_ajax_wp_smpro_reset', array( $this, 'reset_smush' ) );
 
 			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
 
@@ -114,9 +116,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			);
 
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
-			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_sent', $this->bulk['sent'] );
-			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_received', $this->bulk['received'] );
-                        wp_localize_script( 'wp-smpro-queue', 'wp_smpro_smushed', $this->bulk['smushed'] );
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->bulk );
 		}
 
 		/**
@@ -130,6 +130,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->bulk['received'] = $bulk->data( 'received' );
                         $this->bulk['smushed']  = $bulk->data( 'smushed' );
 		}
+                
+                function refresh_counts(){
+                        $this->bulk_data();
+                        return $this->bulk;
+                }
 
 		/**
 		 * Display the ui
@@ -291,8 +296,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			} else {
                                 if($this->bulk['sent']['left'] > 0){
                                         $button_text = __( 'Smush all the images', WP_SMPRO_DOMAIN );
+                                        $button_class = "wp-smpro-unstarted";
                                 }else{
                                         $button_text = __( 'Resend unsmushed images', WP_SMPRO_DOMAIN );
+                                        $button_class = "wp-smpro-resmush";
                                 }
                                 $button_class = "wp-smpro-unstarted";
                                 $disabled     = $this->api_connected ? '' : ' disabled="disabled"';
@@ -328,8 +335,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						<?php
 						printf(
 							__(
-								'We have found <strong>%d unsmushed images</strong> in your media library.'
-								. ' You can smush them all by clicking the button below.', WP_SMPRO_DOMAIN
+								'We found <strong>%d unsmushed images</strong> in your media library.'
+                                                                , WP_SMPRO_DOMAIN
 							), $this->bulk['smushed']['left']
 						);
 						?>
@@ -337,20 +344,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 					<p>
 						<?php
-						_e(
-							'It may take some time for all images to be smushed.'
-							. ' If you leave this screen,'
-							. ' you can always start from where smushing was left off.', WP_SMPRO_DOMAIN
-						);
-						?>
-
-					</p>
-
-					<p>
-						<?php
 						printf(
 							__(
-								'Alternatively, you can smush images individually'
+								'You can also smush images individually'
 								. ' from your <a href="%s">Media Library</a>', WP_SMPRO_DOMAIN
 							), admin_url( 'upload.php' )
 						);
@@ -402,14 +398,56 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$bulk = new WpSmProBulk();
 
-			$total = (int) $bulk->image_count( 'received', 'all' );
-			$left  = (int) $bulk->image_count( 'received', 'left' );
+			$r_total = (int) $bulk->image_count( 'received', 'all' );
+			$r_left  = (int) $bulk->image_count( 'received', 'left' );
+                        
+                        $s_total = (int) $bulk->image_count( 'smushed', 'all' );
+			$s_left  = (int) $bulk->image_count( 'smushed', 'left' );
 
-			$response['wp-smpro-received-count'] = $total - $left;
+			$response['wp-smpro-received-count'] = $r_total - $r_left;
+                        $response['wp-smpro-smushed-count'] = $s_total - $s_left;
 
 			return $response;
 
 		}
+                
+                function reset_smush(){
+                        $query = array(
+				'fields'         => 'ids',
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'order'          => 'ASC',
+				'posts_per_page' => - 1
+			);
+
+                        $meta_query          = array(
+                                'relation' => 'AND',
+                                array(
+                                        'key'     => 'wp-smpro-is-received',
+                                        'value' => 1
+                                ),
+                                array(
+                                        'key'   => 'wp-smpro-is-smushed',
+                                        'compare' =>  'NOT EXISTS'
+                                )
+                        );
+                        $query['meta_query'] = $meta_query;
+
+
+			$unsmushed = new WP_Query( $query );
+                        
+			foreach($unsmushed->posts as $unsmush){
+                                delete_post_meta($unsmush, 'wp-smpro-is-received');
+                                delete_post_meta($unsmush, 'wp-smpro-is-sent');        
+                        }
+                        
+                        $new_counts = $this->refresh_counts();
+                        echo json_encode($new_counts);
+                        
+                        die();
+
+                }
 
 		/**
 		 * Check current smush status of sent attachments
@@ -481,7 +519,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <p id="sent-status">' .
                                                        sprintf(
                                                                __(
-                                                                       '<span id="smush-sent-count">%d</span> of <span id="smush-total-count">%d</span> images'
+                                                                       '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
                                                                        . ' have been sent for smushing', WP_SMPRO_DOMAIN
                                                                ), $sent['done'], $sent['total']
                                                        ) .
@@ -489,7 +527,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <p id="check-status">' .
                                                        sprintf(
                                                                __(
-                                                                       '<span id="smush-received-count">%d</span> of <span id="smush-total-count">%d</span> images'
+                                                                       '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
                                                                        . ' have been received', WP_SMPRO_DOMAIN
                                                                ), $recd['done'], $recd['total']
                                                        ) .
@@ -497,7 +535,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <p id="smush-status">' .
                                                        sprintf(
                                                                __(
-                                                                       '<span id="smush-smushed-count">%d</span> of <span id="smush-total-count">%d</span> images'
+                                                                       '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
                                                                        . ' have been smushed', WP_SMPRO_DOMAIN
                                                                ), $smushed['done'], $smushed['total']
                                                        ) .

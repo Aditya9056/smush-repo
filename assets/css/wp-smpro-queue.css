@@ -19,73 +19,6 @@ input#wp-smpro-save-settings{
 	margin:15px 0;
 }
 /*
-Selected smushing
-*/
-ul#wp-smpro-selected-images {
-	display: block;
-	margin: 0;
-	padding: 0;
-}
-
-ul#wp-smpro-selected-images li{
-	display:inline-block;
-	list-style:none;
-	margin:20px 20px 20px 0;
-	width:240px;
-}
-
-ul#wp-smpro-selected-images li.in-progress p.img-smush-status{
-	color:#0074a2;
-	font-weight:bold;
-}
-ul#wp-smpro-selected-images li.smush-done p.img-smush-status{
-	color:#00cf21;
-	font-weight:bold;
-}
-ul#wp-smpro-selected-images li.smush-done .img-status{
-	background-image: url(../images/check_mark.png);
-}
-ul#wp-smpro-selected-images li .img-wrap{
-	float:left;
-	position:relative;
-	width:48px;
-	height:48px;
-}
-ul#wp-smpro-selected-images li .img-wrap img{
-	width:48px;
-	height:48px;
-}
-ul#wp-smpro-selected-images li .img-wrap .img-status{
-	position:absolute;
-	height:48px;
-	width:48px;
-	top:0;
-	left:0;
-	background-position: center center;
-	background-repeat: no-repeat;
-}
-ul#wp-smpro-selected-images li .img-wrap span.img-type{
-	position:absolute;
-	left:0;
-	bottom:0;
-	text-transform: uppercase;
-	background: rgba(35,35,35,0.5);
-	color: #fff;
-	padding: 2px 4px;
-}
-
-ul#wp-smpro-selected-images li .img-descr{
-	float:left;
-	margin-left:10px;
-}
-ul#wp-smpro-selected-images li .img-descr .img-meta{
-	color:#232323;
-	margin:0;
-}
-ul#wp-smpro-selected-images li .img-descr .img-smush-status{
-	margin:0;
-}
-/*
 Smush button transformation
 */
 .button.wp-smpro-started{
@@ -285,23 +218,23 @@ Progressbar ui
 }
 
 #progress-ui #wp-smpro-progress-wrap {
-	height: 16px;
+	height: 20px;
 	border: 1px solid #0074a2;
-	border-radius: 7px;
+	border-radius: 10px;
         position:relative;
 }
 
 #progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar{
-	height:16px;
+	height:20px;
 	position:absolute;
         width:100%;
 }
 #progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar div{
-	height:16px;
-        border-radius: 5px;
+	height:20px;
+        border-radius: 10px;
 }
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-smush-progress div{
-	background-color: #00cf21;
+	background-color: #a3d900;
 }
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-sent-progress div{
 	background-color: #2ea2cc;
@@ -311,13 +244,37 @@ Progressbar ui
 }
 
 div#wp-smpro-progress-status {
-overflow: hidden;
+        overflow: hidden;
+}
+
+#wp-smpro-progress-status p {
+float: left;
+width: 33%;
+}
+
+div#wp-smpro-progress-status p::before { 
+        content:"c";
+        background-color:#a3d900;
+        color:#a3d900;
+        display:inline-block;
+        width:20px;
+        margin-right:10px;
+}
+
+div#wp-smpro-progress-status p#sent-status::before {
+        background-color:#2ea2cc;
+        color:#2ea2cc;  
+}
+
+div#wp-smpro-progress-status p#check-status::before {
+        background-color:#0074a2;
+        color:#0074a2;  
 }
 
 /* API Status */
 
 .api-status {
-    background: none repeat scroll 0 0 #A3D900;
+    background: none repeat scroll 0 0 #a3d900;
     border-radius: 50%;
     color: transparent;
     cursor: pointer;

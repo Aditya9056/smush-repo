@@ -45,24 +45,72 @@ jQuery('document').ready(function () {
         return;
 
     }
+    
 
     // if we are on bulk smushing page
     if (pagenow === 'media_page_wp-smpro-admin') {
 
-        // count of receipt checks
-        $queue_done = wp_smpro_received.done;
-
-        $smush_done = wp_smpro_sent.done;
-
-        // a var to run the polling
-        var smpro_poll_check;
-
         function wp_smpro_sent_done() {
-            var $msg = jQuery('<div id="message" class="updated"></div>');
+            var $msg = jQuery('<div id="message" class="wp-smpro-msg updated"></div>');
             $msg.append(jQuery('<p></p>'));
             $msg.find('p').append(wp_smpro_msgs.leave_screen);
+            $msg.css('display','none');
             jQuery('#wp-smpro-begin').before($msg);
+            $msg.slideToggle();
 
+        }
+        
+        function wp_smpro_check_done(){
+            $button = jQuery('.wp-smpro-bulk-wrap #wp-smpro-begin');
+
+            // copy the loader into an object
+            $loader = $button.find('.floatingCirclesG');
+
+            // remove the loader
+            $loader.remove();
+
+            // empty the current text
+            $button.find('span').html('');
+
+            // add new class for css adjustment
+            $button.removeClass('wp-smpro-started');
+            $button.removeClass('wp-smpro-unstarted');
+            $button.addClass('wp-smpro-resmush');
+            
+            // reenable the button
+            $button.prop('disabled', false);
+
+            // add the progress text
+            $button.find('span').html(wp_smpro_msgs.resmush_all);
+
+            return; 
+        }
+        
+        function wp_smpro_refresh_progress(){
+            jQuery.each(wp_smpro_counts,function(i,e){
+                    $progress = (e.done/e.total)*100;
+                    wp_smpro_change_progress_status(i, e.done, $progress);
+                    $progress = 0;
+            });
+        }
+
+        function wp_smpro_reset_smush(){
+                $reset_url = ajaxurl + '?action=wp_smpro_reset';
+                console.log('reset called');
+                return jQuery.ajax({
+                    type: "GET",
+                    url: $reset_url,
+                    timeout: 60000,
+                    dataType: 'json'
+                }).done(function (response) {
+                    wp_smpro_counts = response;
+                    wp_smpro_refresh_progress();
+                    console.log('reset ajax complete');
+                    wp_smpro_bulk_smush();
+                    return;
+                }).fail(function () {
+                    return;
+                });
         }
 
         /**
@@ -71,10 +119,10 @@ jQuery('document').ready(function () {
         function smpro_progress() {
 
             // increase progress count
-            $smush_done++;
+            wp_smpro_counts.sent.done++;
 
             // calculate %
-            $progress = ($smush_done / wp_smpro_sent.total) * 100;
+            $progress = (wp_smpro_counts.sent.done / wp_smpro_counts.sent.total) * 100;
 
             // all sent
             if ($progress === 100) {
@@ -84,7 +132,7 @@ jQuery('document').ready(function () {
             }
 
             // increase the progress bar
-            wp_smpro_change_progress_status($smush_done, $progress);
+            wp_smpro_change_progress_status('sent', wp_smpro_counts.sent.done, $progress);
 
         }
 
@@ -182,9 +230,9 @@ jQuery('document').ready(function () {
          * @param {type} $width
          * @returns {undefined}
          */
-        function wp_smpro_change_progress_status($count, $width) {
+        function wp_smpro_change_progress_status($identifier, $count, $width) {
             // get the progress bar
-            $progress_bar = jQuery('#wp-smpro-progress-wrap #wp-smpro-sent-progress div');
+            $progress_bar = jQuery('#wp-smpro-progress-wrap #wp-smpro-'+$identifier+'-progress div');
             if ($progress_bar.length < 1) {
                 return;
             }
@@ -193,29 +241,7 @@ jQuery('document').ready(function () {
             $progress_bar.animate({'width': $width + '%'});
 
             // change the counts
-            jQuery('#sent-status #smush-sent-count').html($count);
-
-        }
-
-        /**
-         * Check status
-         *
-         * @param {type} $count
-         * @param {type} $width
-         * @returns {undefined}
-         */
-        function wp_smpro_change_check_status($count, $width) {
-            // get the progress bar
-            $progress_bar = jQuery('#wp-smpro-progress-wrap #wp-smpro-check-progress div');
-            if ($progress_bar.length < 1) {
-                return;
-            }
-
-            // increase progress
-            $progress_bar.animate({'width': $width + '%'});
-
-            // change the counts
-            jQuery('#check-status #smush-received-count').html($count);
+            jQuery('#'+$identifier+'-status .done-count').html($count);
 
         }
 
@@ -225,9 +251,11 @@ jQuery('document').ready(function () {
          * @returns {undefined}
          */
         function wp_smpro_bulk_smush() {
+                console.log('bulk called');
+                console.log(wp_smpro_counts.sent);
             $process_next = true;
-            $remaining = wp_smpro_sent.left;
-            $start_id = wp_smpro_sent.start_id;
+            $remaining = wp_smpro_counts.sent.left;
+            $start_id = wp_smpro_counts.sent.start_id;
             if ($remaining < 0) {
                 smpro_progress();
                 return;
@@ -293,6 +321,24 @@ jQuery('document').ready(function () {
             return;
 
         });
+        
+        jQuery('.wp-smpro-bulk-wrap').on('click', '#wp-smpro-begin.wp-smpro-resmush', function (e) {
+            // prevent the default action
+            e.preventDefault();
+
+            wp_smpro_button_progress_state(jQuery(this));
+            
+            wp_smpro_reset_smush();
+            
+            $msg = jQuery('#message.wp-smpro-msg');
+            
+            $msg.slideToggle(function(){
+                $msg.remove();    
+            });
+
+            return;
+
+        });
 
         wp.heartbeat.interval('fast');
 
@@ -306,15 +352,30 @@ jQuery('document').ready(function () {
             // Receive Data back from Heartbeat
             if (data.hasOwnProperty('wp-smpro-received-count')) {
                 // calculate %
-                $progress = (data['wp-smpro-received-count'] / wp_smpro_received.total) * 100;
+                $check_progress = (data['wp-smpro-received-count'] / wp_smpro_counts.received.total) * 100;
                 // all done
-                if ($progress === 100) {
-                    //wp_smpro_all_done();
+                if ($check_progress === 100) {
+                    wp_smpro_check_done();
 
                 }
 
                 // increase progress bar
-                wp_smpro_change_check_status(data['wp-smpro-received-count'], $progress);
+                wp_smpro_change_progress_status('check',data['wp-smpro-received-count'], $check_progress);
+
+            }
+            
+            // Receive Data back from Heartbeat
+            if (data.hasOwnProperty('wp-smpro-smushed-count')) {
+                // calculate %
+                $smush_progress = (data['wp-smpro-smushed-count'] / wp_smpro_counts.smushed.total) * 100;
+                // all done
+                if ($smush_progress === 100) {
+                    wp_smpro_all_done();
+
+                }
+
+                // increase progress bar
+                wp_smpro_change_progress_status('smush',data['wp-smpro-smushed-count'], $smush_progress);
 
             }
 
@@ -359,7 +420,7 @@ jQuery('document').ready(function () {
             $attachment_element = jQuery('.wp-list-table.media').find('tr#post-' + $id).first();
 
             // find the div that displays status message
-            $status_div = $attachment_element.find('.sent-status').first();
+            $status_div = $attachment_element.find('.smush-status').first();
 
             // replace the older message
             $status_div.html($msg);
