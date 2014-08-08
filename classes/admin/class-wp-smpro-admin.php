@@ -470,32 +470,39 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$recd_pc     = $recd['done'] / $recd['total'] * 100;
 			$progress_ui = '
 				<div id="progress-ui">
-                                <div id="wp-smpro-smush-progress-wrap">
-                                        <div id="wp-smpro-smush-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
-                                </div>
-                                
-				<div id="wp-smpro-progress-wrap">
-					<div id="wp-smpro-sent-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
-					<div id="wp-smpro-check-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
-				</div>
-                                <div id="wp-smpro-progress-status">
-				<p id="smush-status">' .
-			               sprintf(
-				               __(
-					               '<span id="smush-sent-count">%d</span> of <span id="smush-total-count">%d</span> images'
-					               . ' have been sent for smushing', WP_SMPRO_DOMAIN
-				               ), $sent['done'], $sent['total']
-			               ) .
-			               '</p>
-				<p id="check-status">' .
-			               sprintf(
-				               __(
-					               '<span id="smush-received-count">%d</span> of <span id="smush-total-count">%d</span> images'
-					               . ' have been received', WP_SMPRO_DOMAIN
-				               ), $recd['done'], $recd['total']
-			               ) .
-			               '</p>
-                                               </div>
+                                        <div id="wp-smpro-progress-wrap">
+                                                <div id="wp-smpro-sent-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
+                                                <div id="wp-smpro-check-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
+                                                <div id="wp-smpro-smush-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
+
+                                        </div>
+                                        <div id="wp-smpro-progress-status">
+
+                                                <p id="sent-status">' .
+                                                       sprintf(
+                                                               __(
+                                                                       '<span id="smush-sent-count">%d</span> of <span id="smush-total-count">%d</span> images'
+                                                                       . ' have been sent for smushing', WP_SMPRO_DOMAIN
+                                                               ), $sent['done'], $sent['total']
+                                                       ) .
+                                                '</p>
+                                                <p id="check-status">' .
+                                                       sprintf(
+                                                               __(
+                                                                       '<span id="smush-received-count">%d</span> of <span id="smush-total-count">%d</span> images'
+                                                                       . ' have been received', WP_SMPRO_DOMAIN
+                                                               ), $recd['done'], $recd['total']
+                                                       ) .
+                                                '</p>
+                                                <p id="smush-status">' .
+                                                       sprintf(
+                                                               __(
+                                                                       '<span id="smush-smushed-count">%d</span> of <span id="smush-total-count">%d</span> images'
+                                                                       . ' have been smushed', WP_SMPRO_DOMAIN
+                                                               ), $smushed['done'], $smushed['total']
+                                                       ) .
+                                                '</p>
+                                        </div>
 				</div>';
 			echo $progress_ui;
 		}

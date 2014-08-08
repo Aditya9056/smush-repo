@@ -193,7 +193,7 @@ jQuery('document').ready(function () {
             $progress_bar.animate({'width': $width + '%'});
 
             // change the counts
-            jQuery('#smush-status #smush-sent-count').html($count);
+            jQuery('#sent-status #smush-sent-count').html($count);
 
         }
 
@@ -309,7 +309,7 @@ jQuery('document').ready(function () {
                 $progress = (data['wp-smpro-received-count'] / wp_smpro_received.total) * 100;
                 // all done
                 if ($progress === 100) {
-                    wp_smpro_all_done();
+                    //wp_smpro_all_done();
 
                 }
 
@@ -359,7 +359,7 @@ jQuery('document').ready(function () {
             $attachment_element = jQuery('.wp-list-table.media').find('tr#post-' + $id).first();
 
             // find the div that displays status message
-            $status_div = $attachment_element.find('.smush-status').first();
+            $status_div = $attachment_element.find('.sent-status').first();
 
             // replace the older message
             $status_div.html($msg);

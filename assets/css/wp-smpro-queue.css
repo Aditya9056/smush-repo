@@ -284,41 +284,34 @@ Progressbar ui
 	margin-bottom: 20px;
 }
 
-#progress-ui #wp-smpro-progress-wrap, #progress-ui #wp-smpro-smush-progress-wrap {
+#progress-ui #wp-smpro-progress-wrap {
 	height: 16px;
 	border: 1px solid #0074a2;
 	border-radius: 7px;
-}
-
-#wp-smpro-smush-progress-wrap #wp-smpro-smush-progress div{
-        height:16px;
-        border-radius: 5px 0 0 5px;
-	background-color: #00cf21;
+        position:relative;
 }
 
 #progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar{
 	height:16px;
-	float:left;
-	width:50%;
+	position:absolute;
+        width:100%;
 }
 #progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar div{
 	height:16px;
+        border-radius: 5px;
+}
+#progress-ui #wp-smpro-progress-wrap #wp-smpro-smush-progress div{
+	background-color: #00cf21;
 }
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-sent-progress div{
-	border-radius: 5px 0 0 5px;
 	background-color: #2ea2cc;
 }
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-check-progress div{
-	border-radius: 0 5px 5px 0;
 	background-color: #0074a2;
 }
 
 div#wp-smpro-progress-status {
 overflow: hidden;
-}
-div#wp-smpro-progress-status p {
-float: left;
-width: 50%;
 }
 
 /* API Status */
