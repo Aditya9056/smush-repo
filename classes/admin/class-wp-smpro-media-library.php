@@ -69,12 +69,17 @@ if (!class_exists('WpSmProMediaLibrary')) {
 				<p class="smush-status">
 					<?php echo $smush_meta_full['status_msg']; ?>
 				</p>
-				<button class="wp-smpro-smush button">
-					<span>
-						<?php _e('Re-smush', WP_SMPRO_DOMAIN); ?>
-					</span>
-				</button>
-				<?php
+                                <?php
+                                $button_show=$this->re_smush_button($smush_meta_full);
+                                if($button_show===true){
+                                ?>
+                                        <button class="wp-smpro-smush button">
+                                                <span>
+                                                        <?php _e('Re-smush', WP_SMPRO_DOMAIN); ?>
+                                                </span>
+                                        </button>
+                                <?php
+                                }
 			} else {
 				// not smushed yet, check if attachment is image
 				if ( wp_attachment_is_image( $id ) ) {
@@ -92,6 +97,31 @@ if (!class_exists('WpSmProMediaLibrary')) {
 			}
 			
 		}
+                
+                function re_smush_button($smush_meta_full){
+                        $button_show = false;
+                        
+                        $status = (int)$smush_meta_full['status_code'];
+                        echo $status;
+                        
+                        if($status !=0 && $status!=5 && $status !=1){
+                                return $button_show;
+                        }
+                        
+                        if ($status===0 ||  $status===5){
+                                $button_show = true;
+                        }
+
+                        if($status===1){
+                                $age = (int)time() - (int)$smush_meta_full['timestamp'];
+                                if($age >= 2*DAY_IN_SECONDS){
+
+                                        $button_show = true;
+                                }
+
+                        }
+                        return $button_show;
+                }
 		
 		/**
 		 * enqueue common script

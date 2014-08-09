@@ -233,13 +233,13 @@ Progressbar ui
 	height:20px;
         border-radius: 10px;
 }
-#progress-ui #wp-smpro-progress-wrap #wp-smpro-smush-progress div{
+#progress-ui #wp-smpro-progress-wrap #wp-smpro-smushed-progress div{
 	background-color: #a3d900;
 }
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-sent-progress div{
 	background-color: #2ea2cc;
 }
-#progress-ui #wp-smpro-progress-wrap #wp-smpro-check-progress div{
+#progress-ui #wp-smpro-progress-wrap #wp-smpro-received-progress div{
 	background-color: #0074a2;
 }
 
@@ -266,7 +266,7 @@ div#wp-smpro-progress-status p#sent-status::before {
         color:#2ea2cc;  
 }
 
-div#wp-smpro-progress-status p#check-status::before {
+div#wp-smpro-progress-status p#received-status::before {
         background-color:#0074a2;
         color:#0074a2;  
 }

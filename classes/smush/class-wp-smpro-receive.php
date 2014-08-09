@@ -87,6 +87,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$size = $data['image_size'];
 			// get the smush data
 			$smush_meta = get_post_meta( $data['attachment_id'], "smush_meta_$size", true );
+                        $smush_meta['timestamp'] = (int)time();
 
 			//Empty smush meta or missing file_id, probably some error on our end
 			if ( empty( $smush_meta ) || empty( $smush_meta['file_id'] ) ) {

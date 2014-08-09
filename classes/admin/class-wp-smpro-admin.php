@@ -39,10 +39,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 
 			// hook ajax call for checking smush status
-			add_filter( 'heartbeat_received', array( $this, 'check_count' ), 10, 3 );
+			add_filter( 'heartbeat_received', array( $this, 'refresh_progress' ), 10, 3 );
 			add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
                         
-                        add_action( 'wp_ajax_wp_smpro_reset', array( $this, 'reset_smush' ) );
+                        add_action( 'wp_ajax_wp_smpro_reset', array( $this, 'reset_count' ) );
 
 			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
 
@@ -113,6 +113,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'done'         => __( 'All done!', WP_SMPRO_DOMAIN ),
 				'smush_all'    => __( 'Smush all the images', WP_SMPRO_DOMAIN ),
                                 'resmush_all'  => __( 'Resend unsmushed images', WP_SMPRO_DOMAIN ),
+                                'refresh_screen'        => sprintf(
+                                        __( 
+                                                'New images were uploaded, please <a href="%s">refresh this page</a> to smush them properly.',
+                                                WP_SMPRO_DOMAIN
+                                        ),
+                                        admin_url( 'upload.php?page=wp-smpro-admin' )
+                                        ),
 			);
 
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
@@ -313,7 +320,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 		function all_ui() {
 			if ( $this->bulk['smushed']['total'] < 1 ) {
-				_e( "<p>You don't appear to have uploaded any images yet.</p>", WP_SMPRO_DOMAIN );
+				printf(
+                                        __( 
+                                                '<p>Please <a href="%s">upload some images</a>.</p>',
+                                                WP_SMPRO_DOMAIN 
+                                                ),
+                                        admin_url('media-new.php')
+                                        );
 
 				return;
 			}
@@ -331,6 +344,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				<?php
 				} else {
 					?>
+                                        <p>
+						<?php
+						_e( 'Please avoid uploading/deleting media files while bulk smushing is going on.', WP_SMPRO_DOMAIN );
+						?>
+					</p>
 					<p>
 						<?php
 						printf(
@@ -376,31 +394,23 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		<?php
 		}
 
-		function check_count( $response, $data, $screen_id ) {
+		function refresh_progress( $response, $data, $screen_id ) {
 			if ( $screen_id != 'media_page_wp-smpro-admin' ) {
 				return $response;
 			}
 
-			if ( empty( $data['wp-smpro-received-count'] ) ) {
+			if ( empty( $data['wp-smpro-refresh-progress'] ) ) {
 				return $response;
 			}
 
-			$bulk = new WpSmProBulk();
-
-			$r_total = (int) $bulk->image_count( 'received', 'all' );
-			$r_left  = (int) $bulk->image_count( 'received', 'left' );
-                        
-                        $s_total = (int) $bulk->image_count( 'smushed', 'all' );
-			$s_left  = (int) $bulk->image_count( 'smushed', 'left' );
-
-			$response['wp-smpro-received-count'] = $r_total - $r_left;
-                        $response['wp-smpro-smushed-count'] = $s_total - $s_left;
+			$this->refresh_counts;
+			$response['wp-smpro-refresh-progress'] = $this->bulk;
 
 			return $response;
 
 		}
                 
-                function reset_smush(){
+                function revise_counts(){
                         $query = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
@@ -431,11 +441,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                 delete_post_meta($unsmush, 'wp-smpro-is-sent');        
                         }
                         
-                        $new_counts = $this->refresh_counts();
-                        echo json_encode($new_counts);
+                        return $this->refresh_counts();
+                }
+                
+                function reset_count(){
+                        
+                        echo json_encode($this->revise_counts());
                         
                         die();
-
                 }
 
 		/**
@@ -476,7 +489,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			if ( $code === 5 ) {
 				// smush failed
-				$response['status'] = 0;
+				$response['status'] = -1;
 				echo json_encode( $response );
 				die();
 			}
@@ -499,8 +512,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				<div id="progress-ui">
                                         <div id="wp-smpro-progress-wrap">
                                                 <div id="wp-smpro-sent-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
-                                                <div id="wp-smpro-check-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
-                                                <div id="wp-smpro-smush-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
+                                                <div id="wp-smpro-received-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
+                                                <div id="wp-smpro-smushed-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
 
                                         </div>
                                         <div id="wp-smpro-progress-status">
@@ -513,7 +526,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                                ), $sent['done'], $sent['total']
                                                        ) .
                                                 '</p>
-                                                <p id="check-status">' .
+                                                <p id="received-status">' .
                                                        sprintf(
                                                                __(
                                                                        '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
@@ -521,7 +534,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                                ), $recd['done'], $recd['total']
                                                        ) .
                                                 '</p>
-                                                <p id="smush-status">' .
+                                                <p id="smushed-status">' .
                                                        sprintf(
                                                                __(
                                                                        '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
