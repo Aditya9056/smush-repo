@@ -94,8 +94,6 @@ jQuery('document').ready(function() {
                         $button.find('span').html(wp_smpro_msgs.resmush_all);  
                         
 
-                        
-
                         return;
                 }
 
@@ -483,11 +481,12 @@ jQuery('document').ready(function() {
 
                         // add the button text
                         if ($resmush === true) {
-                                $html = wp_smpro_msgs.resmush;
+                                $button.remove();
                         } else {
-                                $html = wp_smpro_msgs.smush_now;
+                                $html = wp_smpro_msgs.resmush;
+                                $button.find('span').html($html);
                         }
-                        $button.find('span').html($html);
+                        
 
                         // re-enable all the buttons
                         jQuery('.wp-smpro-smush').prop('disabled', false);
@@ -521,9 +520,13 @@ jQuery('document').ready(function() {
                                         $check_queue = jQuery.grep($check_queue, function(value) {
                                                 return value !== $id;
                                         });
+                                        $resmush = true;
+                                        if($status===-1){
+                                                $resmush = false;
+                                        }
 
                                         // change the display
-                                        wp_smpro_change_media_status($id, true, response.msg);
+                                        wp_smpro_change_media_status($id, $resmush, response.msg);
 
                                 } else {
 
