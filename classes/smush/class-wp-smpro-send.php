@@ -378,6 +378,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			//Fetch old smush meta and update with the file id returned by API
 			$image_size_smush_meta = get_post_meta( $attachment_id, "smush_meta_$image_size", true );
+                        $image_size_smush_meta['timestamp']     = time();
 
 			$image_size_smush_meta = ! empty( $image_size_smush_meta ) ? $image_size_smush_meta : array();
 
@@ -395,6 +396,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				$image_size_smush_meta['status_msg'] = __( 'Unable to process the image, please try again later', WP_SMPRO_DOMAIN );
 				$status                              = new WP_Error( 'smush_failed', $image_size_smush_meta[ $image_size ]['status_msg'] );
 			}
+                        
+                        
 
 			// update smush info
 			update_post_meta( $attachment_id, "smush_meta_$image_size", $image_size_smush_meta );

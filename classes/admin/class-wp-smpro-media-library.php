@@ -102,7 +102,6 @@ if (!class_exists('WpSmProMediaLibrary')) {
                         $button_show = false;
                         
                         $status = (int)$smush_meta_full['status_code'];
-                        echo $status;
                         
                         if($status !=0 && $status!=5 && $status !=1){
                                 return $button_show;
