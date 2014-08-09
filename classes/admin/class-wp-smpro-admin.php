@@ -551,13 +551,20 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * Set Up API Status
 		 */
 		function set_api_status() {
+
+			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				// we don't want to slow it down
+				return get_transient('api_connected');
+			}
+
 			if ( defined( 'WP_SMPRO_SERVICE_URL' ) ) {
 				$api = wp_remote_get( WP_SMPRO_SERVICE_URL );
 			}
 			if ( empty( $api ) || is_wp_error( $api ) ) {
+				set_transient( 'api_connected', false );
 				return false;
 			}
-
+			set_transient( 'api_connected', true );
 			return true;
 		}
 
