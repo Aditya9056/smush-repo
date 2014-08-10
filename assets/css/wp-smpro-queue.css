@@ -287,6 +287,10 @@ div#wp-smpro-progress-status p#received-status::before {
         text-align: center;
         width: 10px;
 }
+.api-status-text {
+    font-size: 10px;
+    margin: 0 0 0 5px;
+}
 .api-status.not-connected {
         background: none repeat scroll 0 0 #D64840;
 }
