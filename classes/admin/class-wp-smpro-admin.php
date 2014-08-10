@@ -433,7 +433,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$sent_pc     = $sent['done'] / $sent['total'] * 100;
 			$recd_pc     = $recd['done'] / $recd['total'] * 100;
                         
-                        //  and status divs to show completed count/ total count
 			$progress_ui = '<div id="progress-ui">';
                         
                         // display the progress bars
@@ -442,8 +441,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <div id="wp-smpro-received-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
                                                 <div id="wp-smpro-smushed-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
 
-                                        </div>
-                                        <div id="wp-smpro-progress-status">
+                                        </div>';
+                        // status divs to show completed count/ total count
+                        $progress_ui .= '<div id="wp-smpro-progress-status">
 
                                                 <p id="sent-status">' .
                                                        sprintf(
@@ -471,11 +471,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 '</p>
                                         </div>
 				</div>';
+                        // print it out
 			echo $progress_ui;
 		}
 
                 /**
-                 * Set up the bulk smushing button
+                 * Display the bulk smushing button
+                 * 
                  * @todo Add the API status here, next to the button
                  */
                 function setup_button(){
@@ -508,25 +510,42 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                         <?php
                 }
                 
-
-		
+                /**
+                 * Filter Hearbeat response, Refresh the progress counts on Heartbeat received
+                 * 
+                 * @param array $response The unfiltered response about to be sent by the Heartbeat API
+                 * @param object|array $data The data received by the Heatbeat API
+                 * @param screen $screen_id The screen we're on
+                 * @return array The filtered response sent by the Heartbeat API
+                 */
 		function refresh_progress( $response, $data, $screen_id ) {
+                        // if it isn't our screen, get out
 			if ( $screen_id != 'media_page_wp-smpro-admin' ) {
 				return $response;
 			}
-
+                        // if we didn't request this, get out
 			if ( empty( $data['wp-smpro-refresh-progress'] ) ) {
 				return $response;
 			}
-
+                        
+                        // refresh the counts
 			$this->refresh_counts;
+                        
+                        // add the new counts in the response.
 			$response['wp-smpro-refresh-progress'] = $this->bulk;
-
+                        
+                        // return the filtered response
 			return $response;
 
 		}
                 
+                /**
+                 * Revise the counts
+                 * 
+                 * @return array the new counts
+                 */
                 function revise_counts(){
+                        // prepare the query
                         $query = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
@@ -535,7 +554,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'order'          => 'ASC',
 				'posts_per_page' => - 1
 			);
-
+                        
+                        // get images that have been received, but not smushed
                         $meta_query          = array(
                                 'relation' => 'AND',
                                 array(
@@ -548,18 +568,25 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                 )
                         );
                         $query['meta_query'] = $meta_query;
-
-
+                        
+                        // query
 			$unsmushed = new WP_Query( $query );
                         
+                        // for the unsmushed images
 			foreach($unsmushed->posts as $unsmush){
+                                // reset the received and
                                 delete_post_meta($unsmush, 'wp-smpro-is-received');
+                                // sent meta, so that they can be requeued
                                 delete_post_meta($unsmush, 'wp-smpro-is-sent');        
                         }
                         
+                        // refresh the counts, for queuing afresh
                         return $this->refresh_counts();
                 }
                 
+                /**
+                 * Print out the new counts for ajax requests
+                 */
                 function reset_count(){
                         
                         echo json_encode($this->revise_counts());
