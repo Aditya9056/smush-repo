@@ -22,7 +22,7 @@ input#wp-smpro-save-settings{
 Smush button transformation
 */
 .button.wp-smpro-started{
-        padding:0 10px 1px 0;
+        padding:0 10px 1px 10px;
 }
 .button.wp-smpro-started .floatingCirclesG{
         float:left;

@@ -425,11 +425,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
          */
         function progress_ui() {
                 // set up the counts
-                        $smushed     = $this->bulk['smushed'];
+            $smushed     = $this->bulk['smushed'];
 			$sent        = $this->bulk['sent'];
 			$recd        = $this->bulk['received'];
-                        // calculate %ages
-                        $smushed_pc  = $smushed['done'] / $smushed['total'] * 100;
+            // calculate %ages
+            $smushed_pc  = $smushed['done'] / $smushed['total'] * 100;
 			$sent_pc     = $sent['done'] / $sent['total'] * 100;
 			$recd_pc     = $recd['done'] / $recd['total'] * 100;
                         
