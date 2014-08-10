@@ -18,9 +18,10 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 	class WpSmProBulk {
 		/**
 		 * The images that still need to be smushed
-		 *
-		 * @global object $wpdb WP database object
-		 * @return int count of smushed images
+                 * 
+		 * @param string $type The type of count needed (sent, received, smushed)
+                 * @param string $include The type of count (all, done, left)
+		 * @return int count of images
 		 */
 		function image_count( $type = 'sent', $include = 'all' ) {
 
@@ -60,7 +61,6 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 		/**
 		 * The first id to start from
 		 *
-		 * @global object $wpdb WP database object
 		 * @return int Attachmment id to start bulk smushing from
 		 */
 		function start_id() {
@@ -92,9 +92,12 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 		}
 
 		/**
-		 * Set up some data needed for the bulk ui
-		 * @global type $wpdb
+		 * Return counts needed for the bulk ui
+                 * 
+                 * @param string $type the type of data- sent, received or smushed
+                 * @return array the counts
 		 */
+
 		function data( $type = 'sent' ) {
 
 			$data = array();
@@ -103,7 +106,9 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 			$data['total']    = (int) $this->image_count( $type, 'all' );
 			$data['left']     = (int) $this->image_count( $type, 'left' );
 			$data['done']     = $data['total'] - $data['left'];
-                        if('received'!=$type){
+                        
+                        // include start id if asked for sent data
+                        if('sent'===$type){
                                 $data['start_id'] = $this->start_id();
                         }
 
