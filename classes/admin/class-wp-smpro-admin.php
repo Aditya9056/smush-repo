@@ -530,7 +530,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
                         
                         // refresh the counts
-			$this->refresh_counts;
+			$this->refresh_counts();
                         
                         // add the new counts in the response.
 			$response['wp-smpro-refresh-progress'] = $this->bulk;

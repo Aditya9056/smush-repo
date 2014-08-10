@@ -130,7 +130,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$this->callback_response();
 			}
 
-			//If smushing wasn't succesful
+			//If smushing wasn't succesful, or if image is already smushed
 			if ( $data['status_code'] != 4 ) {
 				global $wp_sm_pro;
 
@@ -141,9 +141,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$smush_meta['status_msg']  = $wp_sm_pro->sender->get_status_msg( $data['status_code'], $request_err_code );
 
 				update_post_meta( $data['attachment_id'], "smush_meta_$size", $smush_meta );
-                                if($size==='full'){
-                                        update_post_meta( $data['attachment_id'], "wp-smpro-is-received", 1 );
-                                }
+                if($size==='full'){
+                        update_post_meta( $data['attachment_id'], "wp-smpro-is-received", 1 );
+                }
+				//If image is already optimized, show image as smushed
+				if ( $size == 'full' && $data['status_code'] == 6 ) {
+					update_post_meta( $data['attachment_id'], "wp-smpro-is-smushed", 1 );
+				}
 				error_log( "Smushing failed for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 				$this->callback_response();
 			}
@@ -162,7 +166,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			update_post_meta( $data['attachment_id'], "smush_meta_$size", $smush_meta );
                         
-                        if($size==='full'){
+                        if($size === 'full'){
                                 update_post_meta( $data['attachment_id'], "wp-smpro-is-received", 1 );
                                 update_post_meta( $data['attachment_id'], "wp-smpro-is-smushed", 1 );
                         }
