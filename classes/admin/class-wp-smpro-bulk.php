@@ -18,9 +18,9 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 	class WpSmProBulk {
 		/**
 		 * The images that still need to be smushed
-                 * 
+         *
 		 * @param string $type The type of count needed (sent, received, smushed)
-                 * @param string $include The type of count (all, done, left)
+         * @param string $include The type of count (all, done, left)
 		 * @return int count of images
 		 */
 		function image_count( $type = 'sent', $include = 'all' ) {
@@ -93,9 +93,9 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 
 		/**
 		 * Return counts needed for the bulk ui
-                 * 
-                 * @param string $type the type of data- sent, received or smushed
-                 * @return array the counts
+         *
+         * @param string $type the type of data- sent, received or smushed
+         * @return array the counts
 		 */
 
 		function data( $type = 'sent' ) {

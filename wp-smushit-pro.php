@@ -64,6 +64,11 @@ define( 'WP_SMPRO_URL', plugin_dir_url( __FILE__ ) );
  * The text domain for translation.
  */
 define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
+
+/**
+ * Plugin base name
+ */
+define( 'WP_SMPRO_BASENAME', plugin_basename(__FILE__) );
 //use hyphens instead of underscores for glotpress compatibility
 
 // include the classes

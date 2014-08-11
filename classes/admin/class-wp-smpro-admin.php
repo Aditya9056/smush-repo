@@ -22,44 +22,53 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * @var array Settings
 		 */
 		public $settings;
-                
-                /**
-                 *
-                 * @var array Assorted counts for bulk smushing 
-                 */
+
+		/**
+		 *
+		 * @var array Assorted counts for bulk smushing
+		 */
 		public $bulk;
-                
-                /**
-                 *
-                 * @var boolean API conectivity status
-                 */
+
+		/**
+		 *
+		 * @var boolean API conectivity status
+		 */
 		public $api_connected;
 
 		/**
 		 * Constructor
 		 */
 		public function __construct() {
-                        
-                        // set up image counts for progressive smushing
+
+			// set up image counts for progressive smushing
 			$this->bulk_data();
 
 			// hook scripts and styles
-                        add_action( 'admin_init', array( $this, 'register' ) );
+			add_action( 'admin_init', array( $this, 'register' ) );
 
 			// hook custom screen
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 
 			// hook into Heartbeat API to check smush progress
 			add_filter( 'heartbeat_received', array( $this, 'refresh_progress' ), 10, 3 );
-                        
-                        // hook ajax call for checking smush status
+
+			// hook ajax call for checking smush status
 			add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
-                        
-                        // hook ajax call to reset counts
-                        add_action( 'wp_ajax_wp_smpro_reset', array( $this, 'reset_count' ) );
-                        
-                        // hook into admin footer to load a hidden html/css spinner
+
+			// hook ajax call to reset counts
+			add_action( 'wp_ajax_wp_smpro_reset', array( $this, 'reset_count' ) );
+
+			// hook into admin footer to load a hidden html/css spinner
 			add_action( 'admin_footer-upload.php', array( $this, 'print_spinner' ) );
+
+			add_filter( 'plugin_action_links_' . WP_SMPRO_BASENAME, array(
+				$this,
+				'wp_smushit_pro_settings'
+			) );
+			add_filter( 'network_admin_plugin_action_links_' . WP_SMPRO_BASENAME, array(
+				$this,
+				'wp_smushit_pro_settings'
+			) );
 
 			// initialise translation ready settings and titles
 			$this->init_settings();
@@ -84,12 +93,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * Add Bulk option settings page
 		 */
 		function screen() {
-                        
+			global $admin_page_suffix;
 			$admin_page_suffix = add_media_page( 'WP Smush.it Pro', 'WP Smush.it Pro', 'edit_others_posts', 'wp-smpro-admin', array(
 				$this,
 				'ui'
 			) );
-                        
+
 			// enqueue js only on this screen and media_screen
 			add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );
 			add_action( 'admin_print_scripts-' . $admin_page_suffix, array( $this, 'enqueue' ) );
@@ -99,10 +108,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * Register js and css
 		 */
 		function register() {
-                        
+
 			// register js
 			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'jquery' ), WP_SMPRO_VERSION );
-                        
+
 			// register css
 			wp_register_style( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/css/wp-smpro-queue.css', array(), WP_SMPRO_VERSION );
 
@@ -120,56 +129,57 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			wp_enqueue_script( 'wp-smpro-queue' );
 			wp_enqueue_style( 'wp-smpro-queue' );
 		}
-                
-        /**
-         * Localise translatable strings for JS use on bulk UI
-         * Also localise initial counts
-         */
+
+		/**
+		 * Localise translatable strings for JS use on bulk UI
+		 * Also localise initial counts
+		 */
 		function localize() {
 			$wp_smpro_msgs = array(
-				'leave_screen' => __( 'You may leave this screen now, <strong>we will update your site with smushed images, automatically</strong>!', WP_SMPRO_DOMAIN ),
-				'sent'         => __( 'Sent for Smushing', WP_SMPRO_DOMAIN ),
-				'progress'     => __( 'Smushing in Progress', WP_SMPRO_DOMAIN ),
-				'resmush'      => __( 'Re-smush', WP_SMPRO_DOMAIN ),
-				'smush_now'    => __( 'Smush.it now!', WP_SMPRO_DOMAIN ),
-				'done'         => __( 'All done!', WP_SMPRO_DOMAIN ),
-				'smush_all'    => __( 'Smush all the images', WP_SMPRO_DOMAIN ),
-                                'resmush_all'  => __( 'Resend unsmushed images', WP_SMPRO_DOMAIN ),
-                                'refresh_screen'        => sprintf(
-                                        __( 
-                                                'New images were uploaded, please <a href="%s">refresh this page</a> to smush them properly.',
-                                                WP_SMPRO_DOMAIN
-                                        ),
-                                        admin_url( 'upload.php?page=wp-smpro-admin' )
-                                        ),
+				'leave_screen'   => __( 'You may leave this screen now, <strong>we will update your site with smushed images, automatically</strong>!', WP_SMPRO_DOMAIN ),
+				'sent'           => __( 'Sent for Smushing', WP_SMPRO_DOMAIN ),
+				'progress'       => __( 'Smushing in Progress', WP_SMPRO_DOMAIN ),
+				'resmush'        => __( 'Re-smush', WP_SMPRO_DOMAIN ),
+				'smush_now'      => __( 'Smush.it now!', WP_SMPRO_DOMAIN ),
+				'done'           => __( 'All done!', WP_SMPRO_DOMAIN ),
+				'smush_all'      => __( 'Smush all images', WP_SMPRO_DOMAIN ),
+				'resmush_all'    => __( 'Resend unsmushed images', WP_SMPRO_DOMAIN ),
+				'refresh_screen' => sprintf(
+					__(
+						'New images were uploaded, please <a href="%s">refresh this page</a> to smush them properly.',
+						WP_SMPRO_DOMAIN
+					),
+					admin_url( 'upload.php?page=wp-smpro-admin' )
+				),
 			);
 
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
-                        
-                        // localise counts
+
+			// localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->bulk );
 		}
 
 		/**
 		 * Set up some data needed for the bulk ui
 		 */
-                
+
 		function bulk_data() {
 
 			$bulk                   = new WpSmProBulk();
 			$this->bulk['sent']     = $bulk->data( 'sent' );
 			$this->bulk['received'] = $bulk->data( 'received' );
-                        $this->bulk['smushed']  = $bulk->data( 'smushed' );
+			$this->bulk['smushed']  = $bulk->data( 'smushed' );
 		}
-                
-                /**
-                 * Refresh all the counts
-                 * @return array the counts
-                 */
-                function refresh_counts(){
-                        $this->bulk_data();
-                        return $this->bulk;
-                }
+
+		/**
+		 * Refresh all the counts
+		 * @return array the counts
+		 */
+		function refresh_counts() {
+			$this->bulk_data();
+
+			return $this->bulk;
+		}
 
 		/**
 		 * Display the ui
@@ -179,8 +189,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			//Get dashboard API Key
 			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
 
-			$class      = $this->api_connected ? ' connected' : ' not-connected';
-			$text       = $this->api_connected ? __( 'API Connected', WP_SMPRO_DOMAIN ) : __( 'API Not Connected', WP_SMPRO_DOMAIN );
+			$class = $this->api_connected ? ' connected' : ' not-connected';
+			$text  = $this->api_connected ? __( 'API Connected', WP_SMPRO_DOMAIN ) : __( 'API Not Connected', WP_SMPRO_DOMAIN );
 
 			//Style for container if there is no API key
 			$style = '';
@@ -318,38 +328,39 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function bulk_ui() {
 			// set up some variables and print out some js vars
 			$this->all_ui();
-                        // print the spinner for UI use
+			// print the spinner for UI use
 			$this->print_spinner();
 			?>
 		<?php
 		}
-                
-                
-                /**
-                 * The UI for bulk smushing
-                 * 
-                 * @return null
-                 */
+
+
+		/**
+		 * The UI for bulk smushing
+		 *
+		 * @return null
+		 */
 		function all_ui() {
-                        
-                        // if there are no images in the media library
+
+			// if there are no images in the media library
 			if ( $this->bulk['smushed']['total'] < 1 ) {
 				printf(
-                                        __( 
-                                                '<p>Please <a href="%s">upload some images</a>.</p>',
-                                                WP_SMPRO_DOMAIN 
-                                                ),
-                                        admin_url('media-new.php')
-                                        );
-                                // no need to print out the rest of the UI
+					__(
+						'<p>Please <a href="%s">upload some images</a>.</p>',
+						WP_SMPRO_DOMAIN
+					),
+					admin_url( 'media-new.php' )
+				);
+
+				// no need to print out the rest of the UI
 				return;
 			}
-			
-                        // otherwise, start displaying the UI
+
+			// otherwise, start displaying the UI
 			?>
 			<div id="all-bulk" class="wp-smpro-bulk-wrap">
 				<?php
-                                // everything has been smushed, display a notice
+				// everything has been smushed, display a notice
 				if ( $this->bulk['smushed']['left'] === 0 ) {
 					?>
 					<p>
@@ -359,18 +370,18 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					</p>
 				<?php
 				} else {
-                    // we have some smushing to do! :)
+					// we have some smushing to do! :)
 
-                    // first some warnings
+					// first some warnings
 					?>
-                    <p>
+					<p>
 						<?php
 						_e( 'Please avoid uploading/deleting media files while bulk smushing is going on.', WP_SMPRO_DOMAIN );
 						?>
 					</p>
 					<p>
 						<?php
-                        // let the user know that there's an alternative
+						// let the user know that there's an alternative
 						printf(
 							__(
 								'You can also smush images individually'
@@ -381,21 +392,21 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					</p>
 				<?php
 				}
-                                
-                // display the progress bar
+
+				// display the progress bar
 				$this->progress_ui();
-                // display the appropriate button
-                $this->setup_button();
+				// display the appropriate button
+				$this->setup_button();
 				?>
-				
+
 			</div>
 		<?php
 		}
-                
-        /**
-         * Print out a hidden html/css spinner to be used by the UI
-         */
-        function print_spinner() {
+
+		/**
+		 * Print out a hidden html/css spinner to be used by the UI
+		 */
+		function print_spinner() {
 			?>
 			<div id="wp-smpro-spinner-wrap">
 				<div class="floatingCirclesG">
@@ -419,67 +430,67 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			</div>
 		<?php
 		}
-                
-        /**
-         * Print out the progress bar
-         */
-        function progress_ui() {
-                // set up the counts
-            $smushed     = $this->bulk['smushed'];
-			$sent        = $this->bulk['sent'];
-			$recd        = $this->bulk['received'];
-            // calculate %ages
-            $smushed_pc  = $smushed['done'] / $smushed['total'] * 100;
-			$sent_pc     = $sent['done'] / $sent['total'] * 100;
-			$recd_pc     = $recd['done'] / $recd['total'] * 100;
-                        
+
+		/**
+		 * Print out the progress bar
+		 */
+		function progress_ui() {
+			// set up the counts
+			$smushed = $this->bulk['smushed'];
+			$sent    = $this->bulk['sent'];
+			$recd    = $this->bulk['received'];
+			// calculate %ages
+			$smushed_pc = $smushed['done'] / $smushed['total'] * 100;
+			$sent_pc    = $sent['done'] / $sent['total'] * 100;
+			$recd_pc    = $recd['done'] / $recd['total'] * 100;
+
 			$progress_ui = '<div id="progress-ui">';
-                        
-                        // display the progress bars
-                        $progress_ui .=  '<div id="wp-smpro-progress-wrap">
+
+			// display the progress bars
+			$progress_ui .= '<div id="wp-smpro-progress-wrap">
                                                 <div id="wp-smpro-sent-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
                                                 <div id="wp-smpro-received-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
                                                 <div id="wp-smpro-smushed-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
 
                                         </div>';
-                        // status divs to show completed count/ total count
-                        $progress_ui .= '<div id="wp-smpro-progress-status">
+			// status divs to show completed count/ total count
+			$progress_ui .= '<div id="wp-smpro-progress-status">
 
                                                 <p id="sent-status">' .
-                                                       sprintf(
-                                                               __(
-                                                                       '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
-                                                                       . ' have been sent for smushing', WP_SMPRO_DOMAIN
-                                                               ), $sent['done'], $sent['total']
-                                                       ) .
-                                                '</p>
+			                sprintf(
+				                __(
+					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
+					                . ' have been sent for smushing', WP_SMPRO_DOMAIN
+				                ), $sent['done'], $sent['total']
+			                ) .
+			                '</p>
                                                 <p id="received-status">' .
-                                                       sprintf(
-                                                               __(
-                                                                       '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
-                                                                       . ' have been received', WP_SMPRO_DOMAIN
-                                                               ), $recd['done'], $recd['total']
-                                                       ) .
-                                                '</p>
+			                sprintf(
+				                __(
+					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
+					                . ' have been received', WP_SMPRO_DOMAIN
+				                ), $recd['done'], $recd['total']
+			                ) .
+			                '</p>
                                                 <p id="smushed-status">' .
-                                                       sprintf(
-                                                               __(
-                                                                       '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
-                                                                       . ' have been smushed', WP_SMPRO_DOMAIN
-                                                               ), $smushed['done'], $smushed['total']
-                                                       ) .
-                                                '</p>
+			                sprintf(
+				                __(
+					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
+					                . ' have been smushed', WP_SMPRO_DOMAIN
+				                ), $smushed['done'], $smushed['total']
+			                ) .
+			                '</p>
                                         </div>
 				</div>';
-                        // print it out
+			// print it out
 			echo $progress_ui;
 		}
 
-        /**
-         * Display the bulk smushing button
-         *
-         * @todo Add the API status here, next to the button
-         */
+		/**
+		 * Display the bulk smushing button
+		 *
+		 * @todo Add the API status here, next to the button
+		 */
 		function setup_button() {
 			// if we have nothing left to smush
 			// disable the button
@@ -491,7 +502,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				// we still have some images to send to the API
 				// we check received because that is the only useful flag
 				if ( $this->bulk['received']['left'] > 0 ) {
-					$button_text  = __( 'Smush all the images', WP_SMPRO_DOMAIN );
+					$button_text  = __( 'Smush all images', WP_SMPRO_DOMAIN );
 					$button_class = "wp-smpro-unstarted";
 				} else {
 					// everything has been sent to the API
@@ -520,22 +531,22 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * @return array The filtered response sent by the Heartbeat API
 		 */
 		function refresh_progress( $response, $data, $screen_id ) {
-                        // if it isn't our screen, get out
+			// if it isn't our screen, get out
 			if ( $screen_id != 'media_page_wp-smpro-admin' ) {
 				return $response;
 			}
-                        // if we didn't request this, get out
+			// if we didn't request this, get out
 			if ( empty( $data['wp-smpro-refresh-progress'] ) ) {
 				return $response;
 			}
-                        
-                        // refresh the counts
+
+			// refresh the counts
 			$this->refresh_counts();
-                        
-                        // add the new counts in the response.
+
+			// add the new counts in the response.
 			$response['wp-smpro-refresh-progress'] = $this->bulk;
-                        
-                        // return the filtered response
+
+			// return the filtered response
 			return $response;
 
 		}
@@ -572,9 +583,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// query
 			$unsmushed = new WP_Query( $query );
-                        
-                        // for the unsmushed images
-			foreach($unsmushed->posts as $unsmush){
+
+			// for the unsmushed images
+			foreach ( $unsmushed->posts as $unsmush ) {
 				// reset the received and
 				delete_post_meta( $unsmush, 'wp-smpro-is-received' );
 				// sent meta, so that they can be requeued
@@ -633,7 +644,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			if ( $code === 5 ) {
 				// smush failed
-				$response['status'] = -1;
+				$response['status'] = - 1;
 				echo json_encode( $response );
 				die();
 			}
@@ -645,7 +656,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			die();
 		}
 
-		
+
 		/**
 		 * Set Up API Status
 		 */
@@ -653,7 +664,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 				// we don't want to slow it down
-				return get_transient('api_connected');
+				return get_transient( 'api_connected' );
 			}
 
 			if ( defined( 'WP_SMPRO_SERVICE_URL' ) ) {
@@ -661,10 +672,29 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			if ( empty( $api ) || is_wp_error( $api ) ) {
 				set_transient( 'api_connected', false );
+
 				return false;
 			}
 			set_transient( 'api_connected', true );
+
 			return true;
+		}
+
+		/**
+		 * Adds a smushit pro settings link on plugin page
+		 *
+		 * @param $links
+		 *
+		 * @return array
+		 */
+		function wp_smushit_pro_settings( $links ) {
+
+			$settings_page = admin_url( 'upload.php?page=wp-smpro-admin' );
+			$settings      = '<a href="' . $settings_page . '">Settings</a>';
+
+			array_unshift( $links, $settings );
+
+			return $links;
 		}
 
 	}
