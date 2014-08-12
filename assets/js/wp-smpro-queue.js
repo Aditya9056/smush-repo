@@ -71,11 +71,11 @@ jQuery('document').ready(function () {
 
             $button = jQuery('.wp-smpro-bulk-wrap #wp-smpro-begin');
 
-            // copy the loader into an object
-            $loader = $button.find('.floatingCirclesG');
+            // copy the spinner into an object
+            $spinner = $button.find('.floatingCirclesG');
 
-            // remove the loader
-            $loader.remove();
+            // remove the spinner
+            $spinner.remove();
 
             // empty the current text
             $button.find('span').html('');
@@ -104,6 +104,9 @@ jQuery('document').ready(function () {
 
                 if ($progress === 100 && i === 'sent') {
                     if (wp_smpro_counts.received.total !== e.total) {
+                        jQuery('.wp-smpro-msg.no_leave').slideToggle(function () {
+                                jQuery('.wp-smpro-msg.no_leave').remove();
+                        });
                         wp_smpro_show_msg('leave_screen');
                     }
                 }
@@ -149,7 +152,9 @@ jQuery('document').ready(function () {
 
             // all sent
             if ($progress === 100) {
-
+                jQuery('.wp-smpro-msg.no_leave').slideToggle(function () {
+                        jQuery('.wp-smpro-msg.no_leave').remove();
+                });
                 wp_smpro_show_msg('leave_screen');
 
             }
@@ -189,11 +194,11 @@ jQuery('document').ready(function () {
                     //Update the button Status
                     $button = jQuery('.wp-smpro-bulk-wrap #wp-smpro-begin');
 
-                    // copy the loader into an object
-                    $loader = $button.find('.floatingCirclesG');
+                    // copy the spinner into an object
+                    $spinner = $button.find('.floatingCirclesG');
 
-                    // remove the loader
-                    $loader.remove();
+                    // remove the spinner
+                    $spinner.remove();
 
                     // empty the current text
                     $button.find('span').html(wp_smpro_msgs.smush_all);
@@ -230,11 +235,11 @@ jQuery('document').ready(function () {
         function wp_smpro_all_done() {
             $button = jQuery('.wp-smpro-bulk-wrap #wp-smpro-begin');
 
-            // copy the loader into an object
-            $loader = $button.find('.floatingCirclesG');
+            // copy the spinner into an object
+            $spinner = $button.find('.floatingCirclesG');
 
-            // remove the loader
-            $loader.remove();
+            // remove the spinner
+            $spinner.remove();
 
             // empty the current text
             $button.find('span').html('');
@@ -344,8 +349,8 @@ jQuery('document').ready(function () {
          */
         function wp_smpro_button_progress_state($button) {
 
-            // copy the loader into an object
-            $loader = jQuery('#wp-smpro-loader-wrap .floatingCirclesG').clone();
+            // copy the spinner into an object
+            $spinner = jQuery('#wp-smpro-spinner-wrap .floatingCirclesG').clone();
 
             // empty the current text
             $button.find('span').html('');
@@ -353,8 +358,8 @@ jQuery('document').ready(function () {
             // add new class for css adjustment
             $button.addClass('wp-smpro-started');
 
-            // prepend the loader html
-            $button.prepend($loader);
+            // prepend the spinner html
+            $button.prepend($spinner);
 
             // add the progress text
             $button.find('span').html(wp_smpro_msgs.progress);
@@ -372,39 +377,33 @@ jQuery('document').ready(function () {
         /**
          * Handle the start button click
          */
-        jQuery('.wp-smpro-bulk-wrap').on('click', '#wp-smpro-begin.wp-smpro-unstarted', function (e) {
+
+        jQuery('.wp-smpro-bulk-wrap').on('click', '#wp-smpro-begin', function (e) {
             // prevent the default action
             e.preventDefault();
 
             wp_smpro_button_progress_state(jQuery(this));
 
             wp_smpro_reset_smush();
+            
+            // remove previous messages
             $msg = jQuery('#message.wp-smpro-msg');
 
             $msg.slideToggle(function () {
                 $msg.remove();
             });
-
+            
+            // show a notice
+            wp_smpro_show_msg('no_leave');
+            
             return;
 
         });
-
-        jQuery('.wp-smpro-bulk-wrap').on('click', '#wp-smpro-begin.wp-smpro-resmush', function (e) {
-            // prevent the default action
-            e.preventDefault();
-
-            wp_smpro_button_progress_state(jQuery(this));
-
-            wp_smpro_reset_smush();
-
-            $msg = jQuery('#message.wp-smpro-msg');
-
-            $msg.slideToggle(function () {
-                $msg.remove();
+        jQuery('.wp-smpro-bulk-wrap').on('click', '.smush-notices button.button', function (e) {
+             e.preventDefault();
+             jQuery('.smush-notices').slideToggle(function () {
+                jQuery('.smush-notices').remove();
             });
-
-            return;
-
         });
 
 
@@ -421,6 +420,8 @@ jQuery('document').ready(function () {
             wp.heartbeat.enqueue('wp-smpro-refresh-progress', 'dummy', false);
 
         });
+        
+        
 
 
     } else {
@@ -466,11 +467,11 @@ jQuery('document').ready(function () {
             // find the smush button
             $button = $attachment_element.find('button.wp-smpro-smush');
 
-            // find the loader ui
-            $loader = $button.find('.floatingCirclesG');
+            // find the spinner ui
+            $spinner = $button.find('.floatingCirclesG');
 
-            // remove the loader
-            $loader.remove();
+            // remove the spinner
+            $spinner.remove();
 
             // empty the current text
             $button.find('span').html('');
@@ -587,8 +588,8 @@ jQuery('document').ready(function () {
          */
         function wp_smpro_single_button_progress_state($button) {
 
-            // copy the loader into an object
-            $loader = jQuery('#wp-smpro-loader-wrap .floatingCirclesG').clone();
+            // copy the spinner into an object
+            $spinner = jQuery('#wp-smpro-spinner-wrap .floatingCirclesG').clone();
 
             // empty the current text
             $button.find('span').html('');
@@ -596,8 +597,8 @@ jQuery('document').ready(function () {
             // add new class for css adjustment
             $button.addClass('wp-smpro-started');
 
-            // prepend the loader html
-            $button.prepend($loader);
+            // prepend the spinner html
+            $button.prepend($spinner);
 
             // add the progress text
             $button.find('span').html(wp_smpro_msgs.progress);

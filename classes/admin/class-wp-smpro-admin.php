@@ -144,6 +144,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'done'           => __( 'All done!', WP_SMPRO_DOMAIN ),
 				'smush_all'      => __( 'Smush all images', WP_SMPRO_DOMAIN ),
 				'resmush_all'    => __( 'Resend unsmushed images', WP_SMPRO_DOMAIN ),
+                                'no_leave'       => __( 'Please do not leave the screen till all the images have been sent for smushing', WP_SMPRO_DOMAIN ),
 				'refresh_screen' => sprintf(
 					__(
 						'New images were uploaded, please <a href="%s">refresh this page</a> to smush them properly.',
@@ -374,11 +375,33 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 					// first some warnings
 					?>
-					<p>
-						<?php
-						_e( 'Please avoid uploading/deleting media files while bulk smushing is going on.', WP_SMPRO_DOMAIN );
-						?>
-					</p>
+                                        <div class="smush-notices">
+                                                <h3>
+                                                        <?php
+                                                        _e( 'Your website <em>may</em> get a little slow while bulk smushing is in progress.', WP_SMPRO_DOMAIN );
+                                                        ?> 
+                                                </h3>
+                                                <p>
+                                                        <?php
+                                                        _e( 'This depends on various things like your server resources, '
+                                                                . 'number and size of attachments, and the different sizes '
+                                                                . 'for each attachment (thumbnail, medium, large, etc). To prevent your site from getting too slow:', WP_SMPRO_DOMAIN );
+                                                        ?>
+                                                </p>
+                                                <ol>
+                                                        <li>
+                                                                <?php
+                                                                _e( 'Avoid updating themes or plugins or running any other maintenance task while bulk smushing is going on.', WP_SMPRO_DOMAIN );
+                                                                ?>   
+                                                        </li>
+                                                        <li>
+                                                                <?php
+                                                                _e( 'Avoid uploading/deleting media files while bulk smushing is going on.', WP_SMPRO_DOMAIN );
+                                                                ?>   
+                                                        </li>  
+                                                </ol>
+                                                <button class="button button-secondary"><?php _e('Got it!', WP_SMPRO_DOMAIN); ?></button>
+                                        </div>
 					<p>
 						<?php
 						// let the user know that there's an alternative

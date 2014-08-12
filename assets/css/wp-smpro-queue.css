@@ -18,6 +18,22 @@ ul#wp-smpro-options-wrap li{
 input#wp-smpro-save-settings{
         margin:15px 0;
 }
+.smush-notices{
+        margin: 5px 0 15px;
+        border-left: 4px solid #dd3d36;
+        background: #fff;
+        -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+        box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+        padding: 1px 12px;
+        overflow:hidden;
+}
+.smush-notices h3{
+        font-weight:normal;
+}
+
+.smush-notices button.button {
+        margin: 5px;
+}
 /*
 Smush button transformation
 */
