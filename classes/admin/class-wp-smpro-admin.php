@@ -144,7 +144,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'done'           => __( 'All done!', WP_SMPRO_DOMAIN ),
 				'smush_all'      => __( 'Smush all images', WP_SMPRO_DOMAIN ),
 				'resmush_all'    => __( 'Resend unsmushed images', WP_SMPRO_DOMAIN ),
-                                'no_leave'       => __( 'Please do not leave the screen till all the images have been sent for smushing', WP_SMPRO_DOMAIN ),
+                                'no_leave'       => __( 'Please <strong>do not leave the screen</strong> till all the images have been sent for smushing.', WP_SMPRO_DOMAIN ),
 				'refresh_screen' => sprintf(
 					__(
 						'New images were uploaded, please <a href="%s">refresh this page</a> to smush them properly.',
