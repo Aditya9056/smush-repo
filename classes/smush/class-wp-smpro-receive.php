@@ -88,6 +88,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			// get the smush data
 			$smush_meta = get_post_meta( $data['attachment_id'], "smush_meta_$size", true );
                         $smush_meta['timestamp'] = (int)time();
+                        $smush_meta['status_code'] = $data['status_code'];
+                        $data['compression'] =$data['compression'];
+                        $data['before_smush']=$data['before_smush'];
+                        $data['after_smush'] =$data['after_smush'];
 
 			//Empty smush meta or missing file_id, probably some error on our end
 			if ( empty( $smush_meta ) || empty( $smush_meta['file_id'] ) ) {
@@ -137,13 +141,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$request_err_code = ! empty( $data['request_err_code'] ) ? $data['request_err_code'] : '';
 
 				//Update metadata
-				$smush_meta['status_code'] = $data['status_code'];
+				
 				$smush_meta['status_msg']  = $wp_sm_pro->sender->get_status_msg( $data['status_code'], $request_err_code );
 
 				update_post_meta( $data['attachment_id'], "smush_meta_$size", $smush_meta );
-                if($size==='full'){
-                        update_post_meta( $data['attachment_id'], "wp-smpro-is-received", 1 );
-                }
+                                if($size==='full'){
+                                        update_post_meta( $data['attachment_id'], "wp-smpro-is-received", 1 );
+                                }
 				//If image is already optimized, show image as smushed
 				if ( $size == 'full' && $data['status_code'] == 6 ) {
 					update_post_meta( $data['attachment_id'], "wp-smpro-is-smushed", 1 );
@@ -161,7 +165,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			);
 
 			// update smush details
-			$smush_meta['status_code'] = $data['status_code'];
 			$smush_meta['status_msg']  = $results_msg;
 
 			update_post_meta( $data['attachment_id'], "smush_meta_$size", $smush_meta );
