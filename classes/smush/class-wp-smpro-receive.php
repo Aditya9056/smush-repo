@@ -89,9 +89,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$smush_meta = get_post_meta( $data['attachment_id'], "smush_meta_$size", true );
                         $smush_meta['timestamp'] = (int)time();
                         $smush_meta['status_code'] = $data['status_code'];
-                        $data['compression'] =$data['compression'];
-                        $data['before_smush']=$data['before_smush'];
-                        $data['after_smush'] =$data['after_smush'];
+                        $smush_meta['compression'] =$data['compression'];
+                        $smush_meta['before_smush']=$data['before_smush'];
+                        $smush_meta['after_smush'] =$data['after_smush'];
 
 			//Empty smush meta or missing file_id, probably some error on our end
 			if ( empty( $smush_meta ) || empty( $smush_meta['file_id'] ) ) {
