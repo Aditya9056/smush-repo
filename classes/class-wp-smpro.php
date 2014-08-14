@@ -375,6 +375,9 @@ if (!class_exists('WpSmPro')) {
                                 return;
                         }
                         $smush_stats = get_post_meta($id, 'wp-smpro-smush-stats', true);
+                        if(empty($smush_stats) || !is_array($smush_stats)){
+                                return;
+                        }
                         $this->update_global_stats($smush_stats, false);
                 }
                 
