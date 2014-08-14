@@ -65,18 +65,18 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			if ( 'smushit' != $column_name ) {
 				return;
 			}
-
-			// otherwise, get the smush meta
-			$smush_meta_full = get_post_meta( $id, 'smush_meta_full', true );
-
+                        
+                        $is_smushed = get_post_meta( $id, "wp-smpro-is-smushed" , true );
+                        
+			
 			// if the image is smushed
-			if ( ! empty( $smush_meta_full ) ) {
-
+			if ( ! empty( $is_smushed ) ) {
 				// the status
-				$status_txt = $smush_meta_full['status_msg'];
+                                $stats = get_post_meta($id, 'wp-smpro-smush-stats', true);
+				$status_txt = $stats['status_msg'];
 
 				// check if we need to show the resmush button
-				$show_button = $this->show_resmush_button( $smush_meta_full );
+				$show_button = $this->show_resmush_button( $id );
 
 				// the button text
 				$button_txt = __( 'Re-smush', WP_SMPRO_DOMAIN );
@@ -97,6 +97,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			$this->column_html( $id, $status_txt, $button_txt, $show_button );
 
 		}
+     
 
 		/**
 		 * Print the column html
@@ -124,9 +125,9 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			}
 			?>
 			<button class="wp-smpro-smush button">
-                <span>
-                        <?php echo $button_txt; ?>
-                </span>
+                                <span>
+                                        <?php echo $button_txt; ?>
+                                </span>
 			</button>
 		<?php
 
@@ -139,20 +140,22 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 *
 		 * @return boolean true to display the button
 		 */
-		function show_resmush_button( $smush_meta_full ) {
+		function show_resmush_button( $id ) {
 			$button_show = false;
+                        $smush_meta_full = get_post_meta( $id, 'wp-smpro-is-smushed', true );
+			$smush_status = get_post_meta( $id, 'wp-smpro-is-smushed', true );
+                        $receive_status = get_post_meta( $id, 'wp-smpro-is-received', true );
+			
 
-			$status = (int) $smush_meta_full['status_code'];
-
-			if ( $status != 0 && $status != 5 && $status != 1 ) {
+			if ( $smush_status === '1' ) {
 				return $button_show;
 			}
 
-			if ( $status === 0 || $status === 5 ) {
+			if ( $smush_status === '0' && $receive_status === '1') {
 				$button_show = true;
 			}
 
-			if ( $status === 1 ) {
+			if ( $smush_status === '0' && $receive_status === '0' ) {
 				$age = (int) time() - (int) $smush_meta_full['timestamp'];
 				if ( $age >= 2 * DAY_IN_SECONDS ) {
 

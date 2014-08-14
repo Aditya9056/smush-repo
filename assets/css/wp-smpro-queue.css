@@ -286,7 +286,15 @@ div#wp-smpro-progress-status p#received-status::before {
         background-color:#0074a2;
         color:#0074a2;  
 }
+p#wp-smpro-compression {
+        text-align: center;
+        font-size: 1.1em;
+        line-height: 1;
+}
 
+p#wp-smpro-compression span{
+        font-weight:bold;
+}
 /* API Status */
 
 .api-status {

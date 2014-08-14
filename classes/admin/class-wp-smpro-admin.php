@@ -170,6 +170,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->bulk['sent']     = $bulk->data( 'sent' );
 			$this->bulk['received'] = $bulk->data( 'received' );
 			$this->bulk['smushed']  = $bulk->data( 'smushed' );
+                        $this->bulk['stats']    = $bulk->compression();
 		}
 
 		/**
@@ -462,6 +463,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$smushed = $this->bulk['smushed'];
 			$sent    = $this->bulk['sent'];
 			$recd    = $this->bulk['received'];
+                        $stats = $this->bulk['stats'];
 			// calculate %ages
 			$smushed_pc = $smushed['done'] / $smushed['total'] * 100;
 			$sent_pc    = $sent['done'] / $sent['total'] * 100;
@@ -476,6 +478,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <div id="wp-smpro-smushed-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
 
                                         </div>';
+                        
+                        $progress_ui .= '<p id="wp-smpro-compression">'
+                                                . __( "Reduced by ", WP_SMPRO_DOMAIN )
+                                                . '<span id="percent">'.$stats['compressed_percent'].'</span>% (<span id="kb">'.$stats['compressed_kb'].'</span>KB)
+                                        </p>';
+                                                
 			// status divs to show completed count/ total count
 			$progress_ui .= '<div id="wp-smpro-progress-status">
 
@@ -646,31 +654,18 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				die();
 			}
 			// otherwise, get smush details
-			$smush_meta_full = get_post_meta( $id, 'smush_meta_full', true );
-
-			// if can't find, it's still awaited
-			if ( empty( $smush_meta_full ) ) {
-				$response['status'] = 1;
-				$response['msg']    = __( 'Still waiting', WP_SMPRO_DOMAIN );
-				echo json_encode( $response );
-				die();
-			}
+                        $is_smushed = get_post_meta( $id, "wp-smpro-is-smushed" , true );
 
 			// otherwise, we've received the image
-			$code            = ! empty( $smush_meta_full['status_code'] ) ? intval( $smush_meta_full['status_code'] ) : '';
-			$response['msg'] = $smush_meta_full['status_msg'];
-			if ( $code === 4 || $code === 6 ) {
+                        
+			if ( $is_smushed ) {
 				$response['status'] = 2;
+                                $stats = get_post_meta($id, 'wp-smpro-smush-stats',true);
+                                $response['msg'] = $stats['status_msg'];
 				echo json_encode( $response );
 				die();
 			}
 
-			if ( $code === 5 ) {
-				// smush failed
-				$response['status'] = - 1;
-				echo json_encode( $response );
-				die();
-			}
 
 			// Not even that, we're still waiting
 			$response['status'] = 1;

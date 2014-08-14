@@ -46,6 +46,65 @@ jQuery('document').ready(function () {
         return;
 
     }
+    
+    /**
+         * Send ajax request for smushing
+         *
+         * @param {type} $id
+         * @param {type} $getnxt
+         * @returns {unresolved}
+         */
+        function smproRequest($id, $getnxt) {
+            if (!$process_next) {
+                return false;
+            }
+            // make request
+            return jQuery.ajax({
+                type: "GET",
+                data: {attachment_id: $id, get_next: $getnxt},
+                url: $send_url,
+                timeout: 60000,
+                dataType: 'json'
+            }).done(function (response) {
+                if (response.status_code == 404) {
+                    //Exit deferred
+                    $process_next = false;
+
+                    //Update the button Status
+                    $button = jQuery('.wp-smpro-bulk-wrap #wp-smpro-begin');
+
+                    // copy the spinner into an object
+                    $spinner = $button.find('.floatingCirclesG');
+
+                    // remove the spinner
+                    $spinner.remove();
+
+                    // empty the current text
+                    $button.find('span').html(wp_smpro_msgs.smush_all);
+                    $button.css('padding-left', '10px');
+
+                    return;
+                }
+                // increase progressbar
+                smpro_progress();
+
+                if ($getnxt !== 0) {
+                    // push into the receipt check queue, for polling
+                    if (response.next !== null) {
+                        $start_id = response.next;
+                        return $start_id;
+                    }
+
+                }
+                // otherwise, our queue is already formed
+
+                // we don't need any parameters
+            }).fail(function () {
+                // just send it to re-smush queue
+                $resmush_queue.push($id);
+            });
+        }
+
 
 
     // if we are on bulk smushing page
@@ -169,65 +228,6 @@ jQuery('document').ready(function () {
         }
 
         /**
-         * Send ajax request for smushing
-         *
-         * @param {type} $id
-         * @param {type} $getnxt
-         * @returns {unresolved}
-         */
-        function smproRequest($id, $getnxt) {
-            if (!$process_next) {
-                return false;
-            }
-            // make request
-            return jQuery.ajax({
-                type: "GET",
-                data: {attachment_id: $id, get_next: $getnxt},
-                url: $send_url,
-                timeout: 60000,
-                dataType: 'json'
-            }).done(function (response) {
-                if (response.status_code == 404) {
-                    //Exit deferred
-                    $process_next = false;
-
-                    //Update the button Status
-                    $button = jQuery('.wp-smpro-bulk-wrap #wp-smpro-begin');
-
-                    // copy the spinner into an object
-                    $spinner = $button.find('.floatingCirclesG');
-
-                    // remove the spinner
-                    $spinner.remove();
-
-                    // empty the current text
-                    $button.find('span').html(wp_smpro_msgs.smush_all);
-                    $button.css('padding-left', '10px');
-
-                    return;
-                }
-                // increase progressbar
-                smpro_progress();
-
-                if ($getnxt !== 0) {
-                    // push into the receipt check queue, for polling
-                    if (response.next !== null) {
-                        $start_id = response.next;
-                        return $start_id;
-                    }
-
-                }
-                // otherwise, our queue is already formed
-
-                // we don't need any parameters
-            }).fail(function () {
-                // just send it to re-smush queue
-                $resmush_queue.push($id);
-            });
-        }
-
-
-        /**
          * Change the button status on bulk smush completion
          *
          * @returns {undefined}
@@ -302,10 +302,16 @@ jQuery('document').ready(function () {
 
             // increase progress
             $progress_bar.animate({'width': $width + '%'});
+            
 
             // change the counts
             jQuery('#' + $identifier + '-status .done-count').html($count);
             jQuery('#' + $identifier + '-status .total-count').html($totalcount);
+            
+            //update stats
+            jQuery('p#wp-smpro-compression span#kb').html(wp_smpro_counts.stats['compressed_kb']);
+            jQuery('p#wp-smpro-compression span#percent').html(wp_smpro_counts.stats['compressed_percent']);
+            
 
         }
 
