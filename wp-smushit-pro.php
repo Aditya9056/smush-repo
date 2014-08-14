@@ -87,6 +87,7 @@ $wpmudev_notices[] = array(
 	'name'    => 'Smushit Pro',
 	'screens' => array(
 		'options-media',
+		'plugins'
 	)
 );
 require_once( WP_SMPRO_DIR . 'wpmudev-dashboard-notification/wpmudev-dash-notification.php' );
