@@ -130,8 +130,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				error_log( "No file path for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 				$this->callback_response();
 			}
-
-                        global $wp_sm_pro;
                         
 			//If smushing wasn't succesful, or if image is already smushed
 			if ( $data['status_code'] != 4 ) {

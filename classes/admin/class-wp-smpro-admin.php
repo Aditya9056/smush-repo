@@ -170,7 +170,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->bulk['sent']     = $bulk->data( 'sent' );
 			$this->bulk['received'] = $bulk->data( 'received' );
 			$this->bulk['smushed']  = $bulk->data( 'smushed' );
-                        $this->bulk['stats']    = $bulk->compression();
+                        $this->bulk['stats']    = get_option('wp-smpro-global-stats', array());
 		}
 
 		/**
@@ -463,7 +463,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$smushed = $this->bulk['smushed'];
 			$sent    = $this->bulk['sent'];
 			$recd    = $this->bulk['received'];
-                        $stats = $this->bulk['stats'];
+                        $stats = array(
+                            'compressed_percent'=> 0,
+                            'compressed_human'=> '0KB'
+                            );
+                        $stats = wp_parse_args($this->bulk['stats'], $stats);
 			// calculate %ages
 			$smushed_pc = $smushed['done'] / $smushed['total'] * 100;
 			$sent_pc    = $sent['done'] / $sent['total'] * 100;
@@ -476,13 +480,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <div id="wp-smpro-sent-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
                                                 <div id="wp-smpro-received-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
                                                 <div id="wp-smpro-smushed-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
-
+                                                <p id="wp-smpro-compression">'
+                                                        . __( "Reduced by ", WP_SMPRO_DOMAIN )
+                                                        . '<span id="percent">'.$stats['compressed_percent'].'</span>% (<span id="kb">'.$stats['compressed_human'].'</span>)
+                                                </p>
                                         </div>';
-                        
-                        $progress_ui .= '<p id="wp-smpro-compression">'
-                                                . __( "Reduced by ", WP_SMPRO_DOMAIN )
-                                                . '<span id="percent">'.$stats['compressed_percent'].'</span>% (<span id="kb">'.$stats['compressed_kb'].'</span>KB)
-                                        </p>';
                                                 
 			// status divs to show completed count/ total count
 			$progress_ui .= '<div id="wp-smpro-progress-status">
@@ -523,12 +525,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * @todo Add the API status here, next to the button
 		 */
 		function setup_button() {
+                        $cancel = false;
 			// if we have nothing left to smush
 			// disable the button
 			if ( $this->bulk['smushed']['left'] === 0 ) {
 				$button_text  = __( 'All done!', WP_SMPRO_DOMAIN );
 				$button_class = "wp-smpro-finished";
 				$disabled     = ' disabled="disabled"';
+                                $cancel = ' disabled="disabled"';
 			} else {
 				// we still have some images to send to the API
 				// we check received because that is the only useful flag
@@ -544,12 +548,17 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 				// disable the button, if API is not connected
 				$disabled = $this->api_connected ? '' : ' disabled="disabled"';
+                                $cancel = '';
 			}
 			?>
 			<button id="wp-smpro-begin" class="button button-primary <?php echo $button_class; ?>" <?php echo $disabled; ?>>
 				<span><?php echo $button_text ?></span>
 			</button>
-		<?php
+                        <button id="wp-smpro-cancel" class="button button-secondary" <?php echo $cancel; ?>>
+				<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
+			</button>
+                        <?php
+                        
 		}
 
 		/**
@@ -661,7 +670,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			if ( $is_smushed ) {
 				$response['status'] = 2;
                                 $stats = get_post_meta($id, 'wp-smpro-smush-stats',true);
-                                $response['msg'] = $stats['status_msg'];
+                                if ( $stats['compressed_bytes'] == 0 ) {
+                                        $status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
+                                } else {
+                                        $status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), $stats['compressed_percent'], $stats['compressed_human'] );
+                                }
 				echo json_encode( $response );
 				die();
 			}

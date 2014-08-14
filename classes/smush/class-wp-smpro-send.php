@@ -464,7 +464,7 @@ if (!class_exists('WpSmProSend')) {
 
                         $file_size = filesize($img_path);
                         if ($file_size > WP_SMPRO_MAX_BYTES) {
-                                return new WP_Error('invalid', sprintf(__('ERROR: <span style="color:#FF0000;">Skipped (%s) Unable to Smush due to 5mb size limits.</span>', WP_SMPRO_DOMAIN), $this->format_bytes($file_size)));
+                                return new WP_Error('invalid', sprintf(__('ERROR: <span style="color:#FF0000;">Skipped (%s) Unable to Smush due to 5mb size limits.</span>', WP_SMPRO_DOMAIN), $file_size));
                         }
 
                         return true;
@@ -588,24 +588,6 @@ if (!class_exists('WpSmProSend')) {
                         return $frames > 1;
                 }
 
-                /**
-                 * Return the filesize in a humanly readable format.
-                 * Taken from http://www.php.net/manual/en/function.filesize.php#91477
-                 *
-                 * @param int $bytes Bytes
-                 * @param int $precision The precision of rounding
-                 *
-                 * @return string formatted size
-                 */
-                function format_bytes($bytes, $precision = 2) {
-                        $units = array('B', 'KB', 'MB', 'GB', 'TB');
-                        $bytes = max($bytes, 0);
-                        $pow = floor(( $bytes ? log($bytes) : 0 ) / log(1024));
-                        $pow = min($pow, count($units) - 1);
-                        $bytes /= pow(1024, $pow);
-
-                        return round($bytes, $precision) . ' ' . $units[$pow];
-                }
 
         }
 

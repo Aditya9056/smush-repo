@@ -73,7 +73,11 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			if ( ! empty( $is_smushed ) ) {
 				// the status
                                 $stats = get_post_meta($id, 'wp-smpro-smush-stats', true);
-				$status_txt = $stats['status_msg'];
+                                if ( $stats['compressed_bytes'] == 0 ) {
+                                        $status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
+                                } else {
+                                        $status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), $stats['compressed_percent'], $stats['compressed_human'] );
+                                }
 
 				// check if we need to show the resmush button
 				$show_button = $this->show_resmush_button( $id );
@@ -82,15 +86,30 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				$button_txt = __( 'Re-smush', WP_SMPRO_DOMAIN );
 
 			} else {
+                                $is_sent = get_post_meta( $id, "wp-smpro-is-sent" , true );
+                                
+                                if(!empty($is_sent)){
+                                        // the status
+                                        $status_txt = __('File is being processed by API', WP_SMPRO_DOMAIN);
 
-				// the status
-				$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );;
+                                        // we need to show the smush button
+                                        $show_button = false;
+                                        
+                                        // the button text
+                                        $button_txt = '';
+                                        
+                                }else{
+                                        
+                                        // the status
+                                        $status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
 
-				// we need to show the smush button
-				$show_button = true;
-
-				// the button text
-				$button_txt = __( 'Smush.it now!', WP_SMPRO_DOMAIN );
+                                        // we need to show the smush button
+                                        $show_button = true;
+                                        
+                                        // the button text
+                                        $button_txt = __( 'Smush.it now!', WP_SMPRO_DOMAIN );
+                                }
+				
 
 			}
 

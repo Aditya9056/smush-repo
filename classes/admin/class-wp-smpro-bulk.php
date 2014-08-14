@@ -115,47 +115,5 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 			return $data;
 		}
                 
-                function compression(){
-                        $query = array(
-				'fields'         => 'ids',
-				'post_type'      => 'attachment',
-				'post_status'    => 'any',
-				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
-				'order'          => 'ASC',
-				'posts_per_page' => - 1
-			);
-
-			
-                        $query['meta_query']    = array(
-                                array(
-                                        'key'   => "wp-smpro-is-smushed",
-                                        'value' => 1
-                                )
-                        );
-			
-
-			$results = new WP_Query( $query );
-                        
-                        
-                        $stats = array();
-                        
-                        foreach($results->posts as $post){
-                                $smush_stats = get_post_meta($post, 'wp-smpro-smush-stats', true);
-                                $stats['before_smush'][] = $smush_stats['before_smush'];
-                                $stats['after_smush'][] = $smush_stats['after_smush'];
-                        }
-                        $statistics = array();
-                        
-                        $statistics['before_smush'] = array_sum($stats['before_smush']);
-                        $statistics['after_smush'] = array_sum($stats['after_smush']);
-                        
-                        $statistics['compressed_bytes'] = $statistics['before_smush'] - $statistics['after_smush'];
-                        $statistics['compressed_percent'] = number_format_i18n(($statistics['compressed_bytes']/$statistics['before_smush'])*100, 2);
-                        $statistics['compressed_kb'] = number_format_i18n(
-					( $statistics['compressed_bytes'] / 1024 ), 2 );
-                        
-                        return $statistics;
-                        
-                }
 	}
 }
