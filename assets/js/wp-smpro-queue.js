@@ -289,6 +289,14 @@ jQuery('document').ready(function() {
 
                         return;
                 }
+                
+                function check_throttle(){
+                        // if the sent count - received_count is more than 0,
+                        // it means we still have some images left to receive,
+                        // so throttling is active, since we only sent the throttle limit, at one go.
+                        // So as to apply it on single smushing, as well
+                        // we'll have to check this on server side.
+                }
 
 
                 function wp_smpro_cancelled() {
@@ -351,7 +359,7 @@ jQuery('document').ready(function() {
                         jQuery('#' + $identifier + '-status .total-count').html($totalcount);
 
                         //update stats
-                        jQuery('p#wp-smpro-compression span#kb').html(wp_smpro_counts.stats['compressed_kb']);
+                        jQuery('p#wp-smpro-compression span#kb').html(wp_smpro_counts.stats['compressed_human']);
                         jQuery('p#wp-smpro-compression span#percent').html(wp_smpro_counts.stats['compressed_percent']);
 
 
@@ -364,6 +372,7 @@ jQuery('document').ready(function() {
                  */
                 function wp_smpro_bulk_smush() {
                         $remaining = wp_smpro_counts.sent.left;
+                        $throttle = wp_smpro_counts.throttle;
                         $start_id = wp_smpro_counts.sent.start_id;
                         original_count = wp_smpro_counts.sent.total;
                         if ($remaining < 0) {
@@ -372,9 +381,14 @@ jQuery('document').ready(function() {
                         // instantiate our deferred object for piping
                         var startingpoint = jQuery.Deferred();
                         startingpoint.resolve();
-
+                        
+                        if($throttle>$remaining){
+                                $limit = $remaining;
+                        }else{
+                                $limit = $throttle;
+                        }
                         // we smush everything that needs smushing
-                        for (var i = 0; i < $remaining; i++) {
+                        for (var i = 0; i < $limit; i++) {
                                 startingpoint = startingpoint.then(function() {
                                         return smproRequest($start_id, 1);
                                 });
@@ -543,8 +557,7 @@ jQuery('document').ready(function() {
                         if ($resmush === true) {
                                 $button.remove();
                         } else {
-                                $html = wp_smpro_msgs.resmush;
-                                $button.find('span').html($html);
+                                $button.find('span').html(wp_smpro_msgs.resmush);
                         }
 
 
@@ -630,9 +643,10 @@ jQuery('document').ready(function() {
 
                                 //If API is not accessible
                                 if (res.status_code == 404) {
-                                        wp_smpro_change_media_status($id, false, res.status_msg)
+                                        wp_smpro_change_media_status($id, false, res.status_msg);
                                         return;
                                 }
+                                wp_smpro_change_media_status($id, true, wp_smpro_msgs.sent);
                                 // push the id into the queue for checking
                                 $check_queue.push($id);
                         }).fail(function() {

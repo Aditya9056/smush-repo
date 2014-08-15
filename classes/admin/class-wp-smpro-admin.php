@@ -171,6 +171,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->bulk['received'] = $bulk->data( 'received' );
 			$this->bulk['smushed']  = $bulk->data( 'smushed' );
                         $this->bulk['stats']    = get_option('wp-smpro-global-stats', array());
+                        $this->bulk['throttle'] = WP_SMPRO_THROTTLE;
 		}
 
 		/**
@@ -686,7 +687,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$response['msg']    = __( 'Still waiting', WP_SMPRO_DOMAIN );
 			echo json_encode( $response );
 			die();
-		}
+                }
 
 
 		/**

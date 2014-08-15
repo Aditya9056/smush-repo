@@ -47,6 +47,7 @@ if (!class_exists('WpSmPro')) {
                  * Initialises parameters and classes for smushing
                  */
                 public function __construct() {
+                        add_action('init',array($this,'register_session'));
 
                         // define some constants
                         $this->constants();
@@ -86,6 +87,10 @@ if (!class_exists('WpSmPro')) {
                                  * for eg, for self hosted, in future
                                  */
                                 define('WP_SMPRO_SERVICE_URL', 'https://smush.wpmudev.org:1203/upload/');
+                        }
+                        
+                        if(!defined('WP_SMPRO_THROTTLE')){
+                                define('WP_SMPRO_THROTTLE', 100);
                         }
 
                         /**
@@ -402,6 +407,12 @@ if (!class_exists('WpSmPro')) {
                         $formatted['unit'] = $units[$pow];
                         
                         return $formatted;
+                }
+                
+                function register_session(){
+                        if( !session_id() ){
+                                session_start();
+                        }
                 }
 
         }

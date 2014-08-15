@@ -91,6 +91,10 @@ if (!class_exists('WpSmProSend')) {
                         // smush meta
                         $sent = get_post_meta($attachment_id, 'wp-smpro-is-sent', true);
                         $response['status_code'] = $sent;
+                        
+                        $sent_count = $_SESSION['wp_smpro_sent_count'];
+                        $sent_count++;
+                        $_SESSION['wp_smpro_sent_count'] = $sent_count;
 
                         // we still fetch the next id if we are bulk smushing
                         if (boolval($get_next) === true) {
