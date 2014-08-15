@@ -89,9 +89,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$smush_meta = get_post_meta( $data['attachment_id'], "smush_meta_$size", true );
                         $smush_meta['timestamp'] = (int)time();
                         $smush_meta['status_code'] = $data['status_code'];
-                        $data['compression'] =$data['compression'];
-                        $data['before_smush']=$data['before_smush'];
-                        $data['after_smush'] =$data['after_smush'];
 
 			//Empty smush meta or missing file_id, probably some error on our end
 			if ( empty( $smush_meta ) || empty( $smush_meta['file_id'] ) ) {
@@ -133,50 +130,55 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				error_log( "No file path for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 				$this->callback_response();
 			}
-
+                        
 			//If smushing wasn't succesful, or if image is already smushed
 			if ( $data['status_code'] != 4 ) {
-				global $wp_sm_pro;
+				
 
 				$request_err_code = ! empty( $data['request_err_code'] ) ? $data['request_err_code'] : '';
 
-				//Update metadata
-				
-				$smush_meta['status_msg']  = $wp_sm_pro->sender->get_status_msg( $data['status_code'], $request_err_code );
-
-				update_post_meta( $data['attachment_id'], "smush_meta_$size", $smush_meta );
-                                if($size==='full'){
-                                        update_post_meta( $data['attachment_id'], "wp-smpro-is-received", 1 );
-                                }
+				$this->receive_smush($data['attachment_id'], $size, $smush_meta, 0);
 				//If image is already optimized, show image as smushed
-				if ( $size == 'full' && $data['status_code'] == 6 ) {
-					update_post_meta( $data['attachment_id'], "wp-smpro-is-smushed", 1 );
-				}
 				error_log( "Smushing failed for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 				$this->callback_response();
 			}
 
 			//Else replace image
 			$this->fetch_replace( $data, $size_path );
-
-			// formulate status string
-			$results_msg = $this->create_status_string(
-				$data['compression'], $data['before_smush'], $data['after_smush']
-			);
-
-			// update smush details
-			$smush_meta['status_msg']  = $results_msg;
-
-			update_post_meta( $data['attachment_id'], "smush_meta_$size", $smush_meta );
                         
-                        if($size === 'full'){
-                                update_post_meta( $data['attachment_id'], "wp-smpro-is-received", 1 );
-                                update_post_meta( $data['attachment_id'], "wp-smpro-is-smushed", 1 );
-                        }
+                        $smush_meta['compression'] =$data['compression'];
+                        $smush_meta['before_smush']=$data['before_smush'];
+                        $smush_meta['after_smush'] =$data['after_smush'];
+
+			$this->receive_smush($data['attachment_id'], $size, $smush_meta, 1);
 
 			error_log( "File updated for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 			$this->callback_response();
 		}
+                
+                function receive_smush($id, $size, $smush_meta, $smushed){
+                        //Update metadata
+                        update_post_meta( $id, "smush_meta_$size", $smush_meta );
+                        
+                        global $wp_sm_pro;
+                        $wp_sm_pro->set_check_status($id, 'received', $size, 1);
+                        $wp_sm_pro->set_check_status($id, 'smushed', $size, $smushed);
+                        
+                        $received_count = $_SESSION['wp_smpro_received_count'];
+                        $received_count++;
+                        
+                        $_SESSION['wp_smpro_received_count'] = $received_count;
+                        error_log($_SESSION['wp_smpro_received_count']);
+                        
+                        // reset throttle, if we have received all that was sent
+                        if($received_count>=WP_SMPRO_THROTTLE){
+                                
+                                $_SESSION['wp_smpro_received_count'] = 0;
+                                $_SESSION['wp_smpro_sent_count'] = 0;
+                        }
+                }
+                
+                
 
 		/**
 		 * Replace file with new file
@@ -268,32 +270,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				copy( $temp_file, $size_path );
 				unlink( $temp_file );
 			}
-		}
-
-		/**
-		 * Formulate success status string
-		 *
-		 * @param string $compression Compression percent
-		 * @param string $before_smush Size in bytes before smushing
-		 * @param string $after_smush Size in bytes after smushing
-		 *
-		 * @return string Status message
-		 */
-		public function create_status_string( $compression, $before_smush, $after_smush ) {
-			$savings_str = '';
-			$compressed  = ! empty( $compression ) ? $compression : '';
-
-			if ( ! empty( $before_smush ) && ! empty( $after_smush ) ) {
-				$savings_str = number_format_i18n(
-					( ( $before_smush - $after_smush ) / 1024 ), 2 );
-			}
-			if ( $compressed == 0 ) {
-				$results_msg = __( 'Optimised', WP_SMPRO_DOMAIN );
-			} else {
-				$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), $compressed, $savings_str . 'Kb' );
-			}
-
-			return $results_msg;
 		}
 
 		/**

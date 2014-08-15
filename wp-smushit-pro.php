@@ -200,6 +200,18 @@ function wp_smpro_script() {
 	</script><?php
 }
 
+if(!function_exists('boolval')){
+                /**
+		 * Returns the bool value of a variable <PHP5.5
+		 *
+		 * @param $val
+		 *
+		 * @return bool
+		 */
+		function boolval( $val ) {
+			return (bool) $val;
+		}
+}
 // instantiate our main class
 $wp_sm_pro = new WpSmPro();
 

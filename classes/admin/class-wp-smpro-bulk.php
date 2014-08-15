@@ -93,9 +93,9 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 
 		/**
 		 * Return counts needed for the bulk ui
-         *
-         * @param string $type the type of data- sent, received or smushed
-         * @return array the counts
+                *
+                * @param string $type the type of data- sent, received or smushed
+                * @return array the counts
 		 */
 
 		function data( $type = 'sent' ) {
@@ -114,5 +114,6 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 
 			return $data;
 		}
+                
 	}
 }
