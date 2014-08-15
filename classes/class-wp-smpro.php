@@ -414,6 +414,36 @@ if (!class_exists('WpSmPro')) {
                                 session_start();
                         }
                 }
+                
+                function is_throttled(){
+                        $session_throttle = $this->check_session_throttle();
+                        if($session_throttle){
+                                return true;
+                        }
+                        $bulk = new WpSmProBulk();
+                        $sent_left = (int) $bulk->image_count( 'sent', 'left' );
+                        $received_left = (int) $bulk->image_count( 'received', 'left' );
+                        
+                        error_log('count sent: '. $sent_left);
+                        error_log('count recd: '. $received_left);
+                        
+                        // there are still some images left to receive from previous throttled batch
+                        if($received_left > $sent_left){
+                                return true;
+                        }
+                        return false;
+                }
+                
+                function check_session_throttle(){
+                        $_SESSION['wp_smpro_sent_count'] = 0;
+                        $sent = $_SESSION['wp_smpro_sent_count'];
+                        error_log('session sent: '. $sent);
+                        
+                        if($sent>=WP_SMPRO_THROTTLE){
+                                return true;
+                        }
+                        return false;        
+                }
 
         }
 

@@ -70,7 +70,8 @@ jQuery('document').ready(function() {
                         timeout: 60000,
                         dataType: 'json'
                 }).done(function(response) {
-                        if (response.status_code == 404) {
+                        $status = parseInt(response.status_code);
+                        if ($status === 404 || $status === 503) {
                                 //Exit deferred
                                 $process_next = false;
 
@@ -86,9 +87,21 @@ jQuery('document').ready(function() {
                                 // empty the current text
                                 $button.find('span').html(wp_smpro_msgs.smush_all);
                                 $button.css('padding-left', '10px');
+                                console.log(response.status_message);
+                                if (jQuery('.wp-smpro-msg.throttle').length > 0) {
+                                        return;
+                                }
+                                var $msg = jQuery('<div id="message" class="wp-smpro-msg updated"></div>');
+                                $msg.addClass('throttle');
+                                $msg.append(jQuery('<p></p>'));
+                                $msg.find('p').append(response.status_message);
+                                $msg.css('display', 'none');
+                                jQuery('#wp-smpro-begin').before($msg);
+                                $msg.slideToggle();
 
                                 return;
                         }
+                        
                         
 
                         if ($getnxt !== 0) {
@@ -382,11 +395,12 @@ jQuery('document').ready(function() {
                         var startingpoint = jQuery.Deferred();
                         startingpoint.resolve();
                         
-                        if($throttle>$remaining){
+                        //if($throttle>$remaining){
                                 $limit = $remaining;
-                        }else{
-                                $limit = $throttle;
-                        }
+                        //}else{
+                                //$limit = $throttle;
+                        //}
+                        console.log($limit);
                         // we smush everything that needs smushing
                         for (var i = 0; i < $limit; i++) {
                                 startingpoint = startingpoint.then(function() {
