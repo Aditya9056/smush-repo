@@ -675,6 +675,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                 } else {
                                         $status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), $stats['compressed_percent'], $stats['compressed_human'] );
                                 }
+                                $response['msg'] = $status_txt;
 				echo json_encode( $response );
 				die();
 			}

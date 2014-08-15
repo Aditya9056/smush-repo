@@ -40,11 +40,6 @@ if (!class_exists('WpSmPro')) {
                     'gif_to_png' => true,
                 );
 
-                /**
-                 *
-                 * @var array All the sizes for an attachment
-                 */
-                public $sizes = array();
 
                 /**
                  * Constructor.
@@ -58,9 +53,6 @@ if (!class_exists('WpSmPro')) {
 
                         // initialise status messages
                         $this->init_status_messages();
-
-                        // initialise image sizes
-                        add_action('after_theme_setup',array($this,'init_sizes'));
                         
                         add_action('delete_attachment', array($this, 'delete_image'));
 
@@ -153,9 +145,19 @@ if (!class_exists('WpSmPro')) {
                 /**
                  * Add all the available sizes to global variable
                  */
-                private function init_sizes() {
-                        $this->sizes = get_intermediate_image_sizes();
-                        $this->sizes[] = 'full';
+                private function get_sizes() {
+                        $meta = wp_get_attachment_metadata($attachment_id);
+                        if(isset($meta['sizes'])){
+                                $sizes = $meta['sizes'];
+                                foreach($sizes as $key=>$data){
+                                        $size_array[] = $key;
+                                }
+                        }
+                        
+                        
+                        $size_array[] = 'full';
+                        
+                        return $size_array;
                 }
 
                 /**
@@ -218,12 +220,10 @@ if (!class_exists('WpSmPro')) {
                         $status = array();
                         
                         
-                        if(empty($this->sizes)){
-                               $this->init_sizes(); 
-                        }
+                        $sizes = $this->get_sizes();
 
                         // get the status for each size
-                        foreach ($this->sizes as $size) {
+                        foreach ($sizes as $size) {
                                 // if the transient is not set or doesn't have a value, it'll return false
                                 $status[$size] = intval(get_transient("wp-smpro-{$status_type}-{$attachment_id}-{$size}"));
                                 error_log($size.' : '.$status[$size] . ' : '. $status_type);
@@ -232,7 +232,7 @@ if (!class_exists('WpSmPro')) {
                         // if none of the sizes is false (all were processed successfully)
                         if (!in_array(0, $status)) {
                                 // delete all the transients
-                                foreach ($this->sizes as $size) {
+                                foreach ($sizes as $size) {
                                         delete_transient("wp-smpro-{$status_type}-{$attachment_id}-{$size}");
                                 }
                                 // update meta
@@ -275,7 +275,8 @@ if (!class_exists('WpSmPro')) {
                 public function update_stats($attachment_id){
                         $stats = array();
                         $statistics = array();
-                        $sizes = get_intermediate_image_sizes();
+                        
+                        $sizes = $this->get_sizes();
                         
                         foreach($sizes as $size){
                                 $smush_meta = null;
