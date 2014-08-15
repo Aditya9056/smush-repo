@@ -246,12 +246,30 @@ if (!class_exists('WpSmPro')) {
                                 if($status_type==='smushed'){
                                         $this->update_stats($attachment_id);
                                 }
+                                if($status_type==='received'){
+                                        $this->received_throttle_adjust();
+                                }
 
 
                                 return 1;
                         }
                         // otherwise all the sizes would be processed again.
                         return 0;
+                }
+                
+                public function received_throttle_adjust(){
+                        $received_count = $_SESSION['wp_smpro_received_count'];
+                        $received_count++;
+                        
+                        $_SESSION['wp_smpro_received_count'] = $received_count;
+                        error_log('received count: '.$_SESSION['wp_smpro_received_count']);
+                        
+                        // reset throttle, if we have received all that was sent
+                        if($received_count>=WP_SMPRO_THROTTLE){
+                                
+                                $_SESSION['wp_smpro_received_count'] = 0;
+                                $_SESSION['wp_smpro_sent_count'] = 0;
+                        }
                 }
                 
                 /**
@@ -435,7 +453,7 @@ if (!class_exists('WpSmPro')) {
                 }
                 
                 function check_session_throttle(){
-                        $_SESSION['wp_smpro_sent_count'] = 0;
+                        // $_SESSION['wp_smpro_sent_count'] = 0;
                         $sent = $_SESSION['wp_smpro_sent_count'];
                         error_log('session sent: '. $sent);
                         

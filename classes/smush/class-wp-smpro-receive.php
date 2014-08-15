@@ -168,9 +168,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         $received_count++;
                         
                         $_SESSION['wp_smpro_received_count'] = $received_count;
+                        error_log($_SESSION['wp_smpro_received_count']);
                         
                         // reset throttle, if we have received all that was sent
                         if($received_count>=WP_SMPRO_THROTTLE){
+                                
                                 $_SESSION['wp_smpro_received_count'] = 0;
                                 $_SESSION['wp_smpro_sent_count'] = 0;
                         }
