@@ -70,7 +70,8 @@ jQuery('document').ready(function() {
                         timeout: 60000,
                         dataType: 'json'
                 }).done(function(response) {
-                        if (response.status_code === 404) {
+                        $status = parseInt(response.status_code);
+                        if ($status === 404 || $status === 503) {
                                 //Exit deferred
                                 $process_next = false;
 
@@ -630,9 +631,10 @@ jQuery('document').ready(function() {
 
                                 //If API is not accessible
                                 if (res.status_code == 404) {
-                                        wp_smpro_change_media_status($id, false, res.status_msg)
+                                        wp_smpro_change_media_status($id, false, res.status_msg);
                                         return;
                                 }
+                                wp_smpro_change_media_status($id, true, wp_smpro_msgs.sent);
                                 // push the id into the queue for checking
                                 $check_queue.push($id);
                         }).fail(function() {

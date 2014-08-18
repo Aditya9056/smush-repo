@@ -274,23 +274,24 @@ if (!class_exists('WpSmPro')) {
                         $statistics = array();
                         
                         $sizes = $this->get_sizes( $attachment_id );
-                        
-                        foreach($sizes as $size){
-                                $smush_meta = null;
-                                $status = 0;
-                                
-                                $smush_meta = get_post_meta($attachment_id,"smush_meta_$size", true);
-                                
-                                
-                                $status = intval($smush_meta['status_code']);
-                                error_log(var_dump($status));
-                                error_log($status);
-                                
-                                if($status===4 ||$status===6){
-                                        $stats['before_smush'][] = $smush_meta['before_smush'];
-                                        $stats['after_smush'][] = $smush_meta['after_smush'];
-                                }      
-                        }
+
+		                foreach ( $sizes as $size ) {
+			                $smush_meta = null;
+			                $status     = 0;
+
+			                $smush_meta = get_post_meta( $attachment_id, "smush_meta_$size", true );
+
+
+			                $status = intval( $smush_meta['status_code'] );
+
+			                $stats['before_smush'][] = "";
+			                $stats['after_smush'][]  = "";
+
+			                if ( $status === 4 ) {
+				                $stats['before_smush'][] = $smush_meta['before_smush'];
+				                $stats['after_smush'][]  = $smush_meta['after_smush'];
+			                }
+		                }
                         
                         $statistics['before_smush'] = array_sum($stats['before_smush']);
                         $statistics['after_smush'] = array_sum($stats['after_smush']);
@@ -399,35 +400,6 @@ if (!class_exists('WpSmPro')) {
                         $formatted['unit'] = $units[$pow];
                         
                         return $formatted;
-                }
-                
-                function is_throttled(){
-                        $sent = intval(get_transient('wp_smpro_queue_count'));
-                        
-                        if($sent<WP_SMPRO_THROTTLE){
-                        
-                                return false;
-                        }
-                        
-                        $now = (int)time();
-
-                        $sent_timestamp = intval(get_transient('wp_smpro_queue_time'));
-
-                        $sent_since = $sent_timestamp - $now;
-
-                        // sent more than 47 hours ago
-                        if($sent_since > (2*DAY_IN_SECONDS-1*HOUR_IN_SECONDS)){
-                              $sent = 0;
-                              set_transient('wp_smpro_queue_count', 0);
-                              set_transient('wp_smpro_queue_time', (int)time());
-                              return false;
-                        }
-
-                        error_log('session sent: '. $sent);
-
-
-                        return true;
-                        
                 }
 
         }

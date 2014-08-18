@@ -170,7 +170,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->bulk['sent']     = $bulk->data( 'sent' );
 			$this->bulk['received'] = $bulk->data( 'received' );
 			$this->bulk['smushed']  = $bulk->data( 'smushed' );
-                        $this->bulk['stats']    = get_option('wp-smpro-global-stats', array());
+            $this->bulk['stats']    = get_option('wp-smpro-global-stats', array());
 		}
 
 		/**
