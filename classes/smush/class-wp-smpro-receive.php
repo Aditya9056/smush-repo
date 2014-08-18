@@ -184,7 +184,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		public function fetch_replace( $data, $size_path ) {
 			//Loop
 			//@Todo: Add option for user, Strict ssl use wp_safe_remote_get or download_url
-			//Copied from download_url, as it does not provice to turn off strict ssl
+			//Copied from download_url, as it does not provide to turn off strict ssl
 			// create temp file
 			$temp_file = wp_tempnam( $data['file_url'] );
 
