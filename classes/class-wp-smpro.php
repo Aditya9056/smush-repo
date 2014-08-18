@@ -47,8 +47,6 @@ if (!class_exists('WpSmPro')) {
                  * Initialises parameters and classes for smushing
                  */
                 public function __construct() {
-                        add_action('init',array($this,'register_session'));
-
                         // define some constants
                         $this->constants();
 
@@ -208,7 +206,6 @@ if (!class_exists('WpSmPro')) {
                  * @param string $state The state received from smushing processes
                  */
                 public function set_status($attachment_id, $status_type, $size, $state=0) {
-                        error_log('got here: '.$status_type. ' | '.$size);
                         // set the transient for the size
                         set_transient("wp-smpro-{$status_type}-{$attachment_id}-{$size}", $state);
                 }
@@ -258,18 +255,21 @@ if (!class_exists('WpSmPro')) {
                 }
                 
                 public function received_throttle_adjust(){
-                        $received_count = $_SESSION['wp_smpro_received_count'];
-                        $received_count++;
+                        $queue_count = intval(get_transient('wp_smpro_queue_count'));
+                        if($queue_count === WP_SMPRO_THROTTLE){
+                                $bulk = WpSmProBulk();
+                                $sent_count = (int) $bulk->image_count( 'sent', 'done' );
+                                $received_count = (int) $bulk->image_count( 'received', 'done' );
+                                if($sent_count === $received_count){
+                                // get the total sent count
+                                // if the total receive count is equal to tal sent count and the queue_count is 100, we can reset queue count
                         
-                        $_SESSION['wp_smpro_received_count'] = $received_count;
-                        error_log('received count: '.$_SESSION['wp_smpro_received_count']);
-                        
-                        // reset throttle, if we have received all that was sent
-                        if($received_count>=WP_SMPRO_THROTTLE){
-                                
-                                $_SESSION['wp_smpro_received_count'] = 0;
-                                $_SESSION['wp_smpro_sent_count'] = 0;
+                                set_transient('wp_smpro_queue_count',0);
+                                }
                         }
+                        error_log('received count: '.get_transient('wp_smpro_queue_count'));
+                        
+                        
                 }
                 
                 /**
@@ -427,40 +427,33 @@ if (!class_exists('WpSmPro')) {
                         return $formatted;
                 }
                 
-                function register_session(){
-                        if( !session_id() ){
-                                session_start();
-                        }
-                }
-                
                 function is_throttled(){
-                        $session_throttle = $this->check_session_throttle();
-                        if($session_throttle){
-                                return true;
-                        }
-                        $bulk = new WpSmProBulk();
-                        $sent_left = (int) $bulk->image_count( 'sent', 'left' );
-                        $received_left = (int) $bulk->image_count( 'received', 'left' );
+                        $sent = intval(get_transient('wp_smpro_queue_count'));
                         
-                        error_log('count sent: '. $sent_left);
-                        error_log('count recd: '. $received_left);
+                        if($sent<WP_SMPRO_THROTTLE){
                         
-                        // there are still some images left to receive from previous throttled batch
-                        if($received_left > $sent_left){
-                                return true;
+                                return false;
                         }
-                        return false;
-                }
-                
-                function check_session_throttle(){
-                        // $_SESSION['wp_smpro_sent_count'] = 0;
-                        $sent = $_SESSION['wp_smpro_sent_count'];
+                        
+                        $now = (int)time();
+
+                        $sent_timestamp = intval(get_transient('wp_smpro_queue_time'));
+
+                        $sent_since = $sent_timestamp - $now;
+
+                        // sent more than 47 hours ago
+                        if($sent_since > (2*DAY_IN_SECONDS-1*HOUR_IN_SECONDS)){
+                              $sent = 0;
+                              set_transient('wp_smpro_queue_count', 0);
+                              set_transient('wp_smpro_queue_time', (int)time());
+                              return false;
+                        }
+
                         error_log('session sent: '. $sent);
+
+
+                        return true;
                         
-                        if($sent>=WP_SMPRO_THROTTLE){
-                                return true;
-                        }
-                        return false;        
                 }
 
         }

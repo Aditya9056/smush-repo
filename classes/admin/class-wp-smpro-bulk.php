@@ -38,14 +38,9 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 
 			if ( $include != 'all' ) {
 				$meta_query          = array(
-					'relation' => 'OR',
-					array(
-						'key'     => $metakey,
-						'compare' => 'NOT EXISTS'
-					),
 					array(
 						'key'   => $metakey,
-						'value' => 0
+						'value' => 1
 					)
 				);
 				$query['meta_query'] = $meta_query;
@@ -104,8 +99,8 @@ if ( ! class_exists( 'WpSmProBulk' ) ) {
 
 			// set up counts and start_id
 			$data['total']    = (int) $this->image_count( $type, 'all' );
-			$data['left']     = (int) $this->image_count( $type, 'left' );
-			$data['done']     = $data['total'] - $data['left'];
+			$data['done']     = (int) $this->image_count( $type, 'done' );
+			$data['left']     = $data['total'] - $data['done'];
                         
                         // include start id if asked for sent data
                         if('sent'===$type){

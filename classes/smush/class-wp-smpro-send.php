@@ -103,9 +103,9 @@ if (!class_exists('WpSmProSend')) {
                         $sent = get_post_meta($attachment_id, 'wp-smpro-is-sent', true);
                         $response['status_code'] = $sent;
                         
-                        $sent_count = $_SESSION['wp_smpro_sent_count'];
+                        $sent_count = intval(get_transient('wp_smpro_queue_count'));
                         $sent_count++;
-                        $_SESSION['wp_smpro_sent_count'] = $sent_count;
+                        set_transient('wp_smpro_queue_count',$sent_count);
 
                         // we still fetch the next id if we are bulk smushing
                         if (boolval($get_next) === true) {
