@@ -401,35 +401,6 @@ if (!class_exists('WpSmPro')) {
                         
                         return $formatted;
                 }
-                
-                function is_throttled(){
-                        $sent = intval(get_transient('wp_smpro_queue_count'));
-                        
-                        if($sent<WP_SMPRO_THROTTLE){
-                        
-                                return false;
-                        }
-                        
-                        $now = (int)time();
-
-                        $sent_timestamp = intval(get_transient('wp_smpro_queue_time'));
-
-                        $sent_since = $sent_timestamp - $now;
-
-                        // sent more than 47 hours ago
-                        if($sent_since > (2*DAY_IN_SECONDS-1*HOUR_IN_SECONDS)){
-                              $sent = 0;
-                              set_transient('wp_smpro_queue_count', 0);
-                              set_transient('wp_smpro_queue_time', (int)time());
-                              return false;
-                        }
-
-                        error_log('session sent: '. $sent);
-
-
-                        return true;
-                        
-                }
 
         }
 
