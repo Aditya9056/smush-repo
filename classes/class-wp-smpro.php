@@ -300,23 +300,24 @@ if (!class_exists('WpSmPro')) {
                         $statistics = array();
                         
                         $sizes = $this->get_sizes( $attachment_id );
-                        
-                        foreach($sizes as $size){
-                                $smush_meta = null;
-                                $status = 0;
-                                
-                                $smush_meta = get_post_meta($attachment_id,"smush_meta_$size", true);
-                                
-                                
-                                $status = intval($smush_meta['status_code']);
-                                error_log(var_dump($status));
-                                error_log($status);
-                                
-                                if($status===4 ||$status===6){
-                                        $stats['before_smush'][] = $smush_meta['before_smush'];
-                                        $stats['after_smush'][] = $smush_meta['after_smush'];
-                                }      
-                        }
+
+		                foreach ( $sizes as $size ) {
+			                $smush_meta = null;
+			                $status     = 0;
+
+			                $smush_meta = get_post_meta( $attachment_id, "smush_meta_$size", true );
+
+
+			                $status = intval( $smush_meta['status_code'] );
+
+			                $stats['before_smush'][] = "";
+			                $stats['after_smush'][]  = "";
+
+			                if ( $status === 4 ) {
+				                $stats['before_smush'][] = $smush_meta['before_smush'];
+				                $stats['after_smush'][]  = $smush_meta['after_smush'];
+			                }
+		                }
                         
                         $statistics['before_smush'] = array_sum($stats['before_smush']);
                         $statistics['after_smush'] = array_sum($stats['after_smush']);
@@ -436,7 +437,7 @@ if (!class_exists('WpSmPro')) {
                 function is_throttled(){
                         $session_throttle = $this->check_session_throttle();
                         if($session_throttle){
-                                return true;
+                                return false;
                         }
                         $bulk = new WpSmProBulk();
                         $sent_left = (int) $bulk->image_count( 'sent', 'left' );
@@ -447,7 +448,7 @@ if (!class_exists('WpSmPro')) {
                         
                         // there are still some images left to receive from previous throttled batch
                         if($received_left > $sent_left){
-                                return true;
+                                return false;
                         }
                         return false;
                 }

@@ -62,8 +62,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			) {
 				$size = $data['image_size'];
 				//get previous status if available
-				$record_status = get_post_meta( $data['attachment_id'], "smush_meta_$size");
-				$status = !empty($record_status['status_msg']) ? $record_status['status_msg'] : '';
+				$record_status = get_post_meta( $data['attachment_id'], "smush_meta_$size" );
+				$status        = ! empty( $record_status['status_msg'] ) ? $record_status['status_msg'] : '';
 				// debug
 				error_log( "Missing Parameters for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "], Previous Status: " . $status );
 				// respond to service api
@@ -86,9 +86,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$size = $data['image_size'];
 			// get the smush data
-			$smush_meta = get_post_meta( $data['attachment_id'], "smush_meta_$size", true );
-                        $smush_meta['timestamp'] = (int)time();
-                        $smush_meta['status_code'] = $data['status_code'];
+			$smush_meta                = get_post_meta( $data['attachment_id'], "smush_meta_$size", true );
+			$smush_meta['timestamp']   = (int) time();
+			$smush_meta['status_code'] = $data['status_code'];
 
 			//Empty smush meta or missing file_id, probably some error on our end
 			if ( empty( $smush_meta ) || empty( $smush_meta['file_id'] ) ) {
@@ -130,14 +130,17 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				error_log( "No file path for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 				$this->callback_response();
 			}
-                        
+
 			//If smushing wasn't succesful, or if image is already smushed
 			if ( $data['status_code'] != 4 ) {
-				
+
 
 				$request_err_code = ! empty( $data['request_err_code'] ) ? $data['request_err_code'] : '';
-
-				$this->receive_smush($data['attachment_id'], $size, $smush_meta, 0);
+				if ( $data['status_code'] != 6 ) {
+					$this->receive_smush( $data['attachment_id'], $size, $smush_meta, 0 );
+				} else {
+					$this->receive_smush( $data['attachment_id'], $size, $smush_meta, 1 );
+				}
 				//If image is already optimized, show image as smushed
 				error_log( "Smushing failed for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 				$this->callback_response();
@@ -145,40 +148,39 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			//Else replace image
 			$this->fetch_replace( $data, $size_path );
-                        
-                        $smush_meta['compression'] =$data['compression'];
-                        $smush_meta['before_smush']=$data['before_smush'];
-                        $smush_meta['after_smush'] =$data['after_smush'];
 
-			$this->receive_smush($data['attachment_id'], $size, $smush_meta, 1);
+			$smush_meta['compression']  = $data['compression'];
+			$smush_meta['before_smush'] = $data['before_smush'];
+			$smush_meta['after_smush']  = $data['after_smush'];
+
+			$this->receive_smush( $data['attachment_id'], $size, $smush_meta, 1 );
 
 			error_log( "File updated for File: " . $data['filename'] . ", Image Size: " . $data['image_size'] . ", attachment[" . $data['attachment_id'] . "], file id[" . $data['file_id'] . "]" );
 			$this->callback_response();
 		}
-                
-        function receive_smush($id, $size, $smush_meta, $smushed){
-                //Update metadata
-                update_post_meta( $id, "smush_meta_$size", $smush_meta );
 
-                global $wp_sm_pro;
-                $wp_sm_pro->set_check_status($id, 'received', $size, 1);
-                $wp_sm_pro->set_check_status($id, 'smushed', $size, $smushed);
+		function receive_smush( $id, $size, $smush_meta, $smushed ) {
+			//Update metadata
+			update_post_meta( $id, "smush_meta_$size", $smush_meta );
 
-                $received_count = !empty( $_SESSION['wp_smpro_received_count'] ) ? $_SESSION['wp_smpro_received_count'] : 0;
-                $received_count++;
+			global $wp_sm_pro;
+			$wp_sm_pro->set_check_status( $id, 'received', $size, 1 );
+			$wp_sm_pro->set_check_status( $id, 'smushed', $size, $smushed );
 
-                $_SESSION['wp_smpro_received_count'] = $received_count;
-                error_log($_SESSION['wp_smpro_received_count']);
+			$received_count = ! empty( $_SESSION['wp_smpro_received_count'] ) ? $_SESSION['wp_smpro_received_count'] : 0;
+			$received_count ++;
 
-                // reset throttle, if we have received all that was sent
-                if($received_count>=WP_SMPRO_THROTTLE){
+			$_SESSION['wp_smpro_received_count'] = $received_count;
+			error_log( $_SESSION['wp_smpro_received_count'] );
 
-                        $_SESSION['wp_smpro_received_count'] = 0;
-                        $_SESSION['wp_smpro_sent_count'] = 0;
-                }
-        }
-                
-                
+			// reset throttle, if we have received all that was sent
+			if ( $received_count >= WP_SMPRO_THROTTLE ) {
+
+				$_SESSION['wp_smpro_received_count'] = 0;
+				$_SESSION['wp_smpro_sent_count']     = 0;
+			}
+		}
+
 
 		/**
 		 * Replace file with new file

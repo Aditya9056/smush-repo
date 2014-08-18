@@ -87,7 +87,7 @@ jQuery('document').ready(function() {
                                 // empty the current text
                                 $button.find('span').html(wp_smpro_msgs.smush_all);
                                 $button.css('padding-left', '10px');
-                                console.log(response.status_message);
+//                                console.log(response.status_message);
                                 if (jQuery('.wp-smpro-msg.throttle').length > 0) {
                                         return;
                                 }
@@ -399,8 +399,8 @@ jQuery('document').ready(function() {
                                 $limit = $remaining;
                         //}else{
                                 //$limit = $throttle;
-                        //}
-                        console.log($limit);
+//                        //}
+//                        console.log($limit);
                         // we smush everything that needs smushing
                         for (var i = 0; i < $limit; i++) {
                                 startingpoint = startingpoint.then(function() {
