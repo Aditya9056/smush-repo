@@ -370,6 +370,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				$statistics['compressed_bytes']   = 0;
 				$statistics['compressed_percent'] = 0;
 				$statistics['compressed_human']   = 0;
+				return $statistics;
 			}
 			$statistics['compressed_bytes']   = $statistics['before_smush'] - $statistics['after_smush'];
 			$statistics['compressed_percent'] = number_format_i18n( ( $statistics['compressed_bytes'] / $statistics['before_smush'] ) * 100, 2 );
