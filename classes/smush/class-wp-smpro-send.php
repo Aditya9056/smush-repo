@@ -56,16 +56,6 @@ if (!class_exists('WpSmProSend')) {
                  */
                 function ajax_queue() {
                         global $wp_sm_pro;
-                        
-                        if($wp_sm_pro->is_throttled()){
-                                $response['status_code'] = 503;
-                                $response['status_message'] = sprintf(__("You can only send %d attachments at a time. Please wait till all the sent images are smushed", WP_SMPRO_DOMAIN),WP_SMPRO_THROTTLE);
-                                // print out the response
-                                echo json_encode($response);
-
-                                // wp_ajax wants us to...
-                                die();
-                        }
 
                         // check user permissions
                         if (!current_user_can('upload_files')) {
