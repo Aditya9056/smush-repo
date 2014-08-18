@@ -243,34 +243,12 @@ if (!class_exists('WpSmPro')) {
                                 if($status_type==='smushed'){
                                         $this->update_stats($attachment_id);
                                 }
-                                if($status_type==='received'){
-                                        $this->received_throttle_adjust();
-                                }
-
-
                                 return 1;
                         }
                         // otherwise all the sizes would be processed again.
                         return 0;
                 }
                 
-                public function received_throttle_adjust(){
-                        $queue_count = intval(get_transient('wp_smpro_queue_count'));
-                        if($queue_count === WP_SMPRO_THROTTLE){
-                                $bulk = WpSmProBulk();
-                                $sent_count = (int) $bulk->image_count( 'sent', 'done' );
-                                $received_count = (int) $bulk->image_count( 'received', 'done' );
-                                if($sent_count === $received_count){
-                                // get the total sent count
-                                // if the total receive count is equal to tal sent count and the queue_count is 100, we can reset queue count
-                        
-                                set_transient('wp_smpro_queue_count',0);
-                                }
-                        }
-                        error_log('received count: '.get_transient('wp_smpro_queue_count'));
-                        
-                        
-                }
                 
                 /**
                  * Wrapper to call both set_status and check_status consecutively

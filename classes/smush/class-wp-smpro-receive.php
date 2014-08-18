@@ -156,27 +156,14 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$this->callback_response();
 		}
                 
-        function receive_smush($id, $size, $smush_meta, $smushed){
-                //Update metadata
-                update_post_meta( $id, "smush_meta_$size", $smush_meta );
+                function receive_smush($id, $size, $smush_meta, $smushed){
+                        //Update metadata
+                        update_post_meta( $id, "smush_meta_$size", $smush_meta );
 
-                global $wp_sm_pro;
-                $wp_sm_pro->set_check_status($id, 'received', $size, 1);
-                $wp_sm_pro->set_check_status($id, 'smushed', $size, $smushed);
-
-                $received_count = !empty( $_SESSION['wp_smpro_received_count'] ) ? $_SESSION['wp_smpro_received_count'] : 0;
-                $received_count++;
-
-                $_SESSION['wp_smpro_received_count'] = $received_count;
-                error_log($_SESSION['wp_smpro_received_count']);
-
-                // reset throttle, if we have received all that was sent
-                if($received_count>=WP_SMPRO_THROTTLE){
-
-                        $_SESSION['wp_smpro_received_count'] = 0;
-                        $_SESSION['wp_smpro_sent_count'] = 0;
+                        global $wp_sm_pro;
+                        $wp_sm_pro->set_check_status($id, 'received', $size, 1);
+                        $wp_sm_pro->set_check_status($id, 'smushed', $size, $smushed);
                 }
-        }
                 
                 
 
