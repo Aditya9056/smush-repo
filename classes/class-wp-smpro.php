@@ -148,7 +148,7 @@ if (!class_exists('WpSmPro')) {
                 /**
                  * Add all the available sizes to global variable
                  */
-                private function get_sizes() {
+                private function get_sizes( $attachment_id ) {
                         $meta = wp_get_attachment_metadata($attachment_id);
                         if(isset($meta['sizes'])){
                                 $sizes = $meta['sizes'];
@@ -222,7 +222,7 @@ if (!class_exists('WpSmPro')) {
                         $status = array();
                         
                         
-                        $sizes = $this->get_sizes();
+                        $sizes = $this->get_sizes( $attachment_id );
 
                         // get the status for each size
                         foreach ($sizes as $size) {
@@ -299,7 +299,7 @@ if (!class_exists('WpSmPro')) {
                         $stats = array();
                         $statistics = array();
                         
-                        $sizes = $this->get_sizes();
+                        $sizes = $this->get_sizes( $attachment_id );
                         
                         foreach($sizes as $size){
                                 $smush_meta = null;
