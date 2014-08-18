@@ -86,10 +86,6 @@ if (!class_exists('WpSmPro')) {
                                  */
                                 define('WP_SMPRO_SERVICE_URL', 'https://smush.wpmudev.org:1203/upload/');
                         }
-                        
-                        if(!defined('WP_SMPRO_THROTTLE')){
-                                define('WP_SMPRO_THROTTLE', 100);
-                        }
 
                         /**
                          * The user agent for the request
