@@ -343,7 +343,7 @@ jQuery('document').ready(function() {
 
                         original_count = wp_smpro_counts.sent.total;
                         
-                        if($disabled!==true){
+                        if($disable!==true){
                                 // reenable the button
                                 $button.prop('disabled', false);
                         }
