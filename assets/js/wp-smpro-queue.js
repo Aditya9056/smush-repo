@@ -119,7 +119,7 @@ jQuery('document').ready(function() {
                 original_count = wp_smpro_counts.sent.total;
 
                 function wp_smpro_show_msg(msg) {
-                        console.log(msg);
+                        
                         if (jQuery('.wp-smpro-msg.' + msg).length > 0) {
                                 return;
                         }
@@ -165,12 +165,25 @@ jQuery('document').ready(function() {
 
                 function wp_smpro_refresh_progress() {
                         if(wp_smpro_is_throttled>0){
-                                wp_smpro_show_msg('throttled');
-                                $process_next = false;
-                        
-                                setTimeout(function(){
-                                        wp_smpro_cancelled();
-                                }, 2000);
+                                if (jQuery('.wp-smpro-throttle').length < 1) {
+                                        var $msg = jQuery('<div id="message" class="wp-smpro-throttle error"></div>');
+                                        $msg.append(jQuery('<p></p>'));
+                                        $msg.find('p').append(wp_smpro_msgs['throttled']);
+                                        $msg.css('display', 'none');
+                                        jQuery('#wp-smpro-begin').before($msg);
+                                        $msg.slideToggle();
+                                        $process_next = false;
+
+                                        setTimeout(function(){
+                                                wp_smpro_cancelled(true);
+                                        }, 2000);
+                                }
+                        }else{
+                                var $msg = jQuery('<div id="message" class="wp-smpro-throttle error"></div>');
+                                $msg.slideToggle(function(){
+                                        $msg.remove();
+                                });
+                                
                         }
                         var $progress = 0;
                         jQuery.each(wp_smpro_counts, function(i, e) {
@@ -297,9 +310,6 @@ jQuery('document').ready(function() {
                                 $button.prop('disabled', true);
                                 
                                 $cancel_button.prop('disabled', true);
-
-                                // slow down the heartbeat
-                                wp.heartbeat.interval(60);
                         }
 
 
@@ -307,14 +317,14 @@ jQuery('document').ready(function() {
                 }
 
 
-                function wp_smpro_cancelled() {
+                function wp_smpro_cancelled($disable) {
                         // remove previous messages
                         $msg = jQuery('#message.wp-smpro-msg');
 
                         $msg.slideToggle(function() {
                                 $msg.remove();
                         });
-                        
+                        jQuery(window).off('beforeunload');
                         $button = jQuery('.wp-smpro-bulk-wrap #wp-smpro-begin');
 
                         // copy the spinner into an object
@@ -332,9 +342,11 @@ jQuery('document').ready(function() {
                         $button.addClass('wp-smpro-resmush');
 
                         original_count = wp_smpro_counts.sent.total;
-
-                        // reenable the button
-                        $button.prop('disabled', false);
+                        
+                        if($disabled!==true){
+                                // reenable the button
+                                $button.prop('disabled', false);
+                        }
 
                         // add the progress text
                         $button.find('span').html(wp_smpro_msgs.smush_all);
@@ -474,7 +486,7 @@ jQuery('document').ready(function() {
 
                         $process_next = false;
                         
-                        wp_smpro_cancelled();
+                        wp_smpro_cancelled(false);
 
                         return;
 
