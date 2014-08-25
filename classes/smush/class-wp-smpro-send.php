@@ -330,7 +330,10 @@ if (!class_exists('WpSmProSend')) {
                         if (is_wp_error($invalid)) {
                                 return $invalid;
                         }
-
+                        
+                        if(intval( get_transient( "wp-smpro-smushed-{$ID}-{$size}" ) )){
+                                return true;
+                        }
                         // data is fine
                         // create nonce
                         $token = wp_create_nonce("smush_image_{$ID}_{$size}");
