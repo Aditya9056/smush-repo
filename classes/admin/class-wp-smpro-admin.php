@@ -586,7 +586,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// add the new counts in the response.
 			$response['wp-smpro-refresh-progress'] = $this->bulk;
-                        $response['wp-smpro-is-throttled'] = intval(get_option(wp_smpro_is_throttled, 0));
+                        $response['wp-smpro-is-throttled'] = intval(get_option('wp_smpro_is_throttled', 0));
 
 			// return the filtered response
 			return $response;
