@@ -137,7 +137,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function localize() {
 			$wp_smpro_msgs = array(
 				'leave_screen'   => __( 'You may leave this screen now, <strong>we will update your site with smushed images, automatically</strong>!', WP_SMPRO_DOMAIN ),
-				'throttled'      => __( 'You have reached the limit of 100 images at a time. Please try after some time.', WP_SMPRO_DOMAIN ),
+				'throttled'      => __( 'You have reached the limit of 50 images at a time. Please try after some time.', WP_SMPRO_DOMAIN ),
                                 'sent'           => __( 'Sent for Smushing', WP_SMPRO_DOMAIN ),
 				'progress'       => __( 'Smushing in Progress', WP_SMPRO_DOMAIN ),
 				'resmush'        => __( 'Re-smush', WP_SMPRO_DOMAIN ),
