@@ -179,9 +179,10 @@ jQuery('document').ready(function() {
                                 
 
                                 if ($progress === 100 && i === 'sent') {
-                                        if (wp_smpro_counts.received.total !== e.total) {
+                                        if (wp_smpro_counts.received.done !== e.done) {
                                                 jQuery('.wp-smpro-msg.no_leave').slideToggle(function() {
                                                         jQuery('.wp-smpro-msg.no_leave').remove();
+                                                        jQuery(window).off('beforeunload');
                                                 });
                                                 wp_smpro_show_msg('leave_screen');
                                         }
@@ -231,6 +232,7 @@ jQuery('document').ready(function() {
                         if ($progress === 100 && wp_smpro_counts.smushed.done !== wp_smpro_counts.sent.done) {
                                 jQuery('.wp-smpro-msg.no_leave').slideToggle(function() {
                                         jQuery('.wp-smpro-msg.no_leave').remove();
+                                        jQuery(window).off('beforeunload');
                                 });
                                 wp_smpro_show_msg('leave_screen');
 
