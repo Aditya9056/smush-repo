@@ -18,6 +18,8 @@ jQuery('document').ready(function() {
         // initialise queue for failed/timed out requests
         $resmush_queue = [];
         original_count = 0;
+        wp_smpro_is_throttled = 0;
+        
 
         /**
          * Resmush failed/timed out attachments
