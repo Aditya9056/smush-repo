@@ -105,9 +105,6 @@ if (!class_exists('WpSmProSend')) {
                         die();
                 }
                 
-                function throttle_on(){
-                        update_option('wp_smpro_is_throttled', 1);
-                }
 
                 /**
                  * Gets the next id in queue
@@ -362,7 +359,8 @@ if (!class_exists('WpSmProSend')) {
                         }
                         
                         if ($data->status_code === 7) {
-                                $this->throttle_on();
+                                error_log('throttled');
+                                update_option('wp_smpro_is_throttled', 1);
                                 return new WP_Error('smush_throttled', $data->status_msg);
                                 
                         }
