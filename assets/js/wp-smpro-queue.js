@@ -161,9 +161,19 @@ jQuery('document').ready(function() {
                 }
 
                 function wp_smpro_refresh_progress() {
+                        if(wp_smpro_is_throttled>0){
+                                wp_smpro_show_msg('throttled');
+                                $process_next = false;
+                        
+                                setTimeout(function(){
+                                        wp_smpro_cancelled();
+                                }, 2000);
+                        }
                         var $progress = 0;
                         jQuery.each(wp_smpro_counts, function(i, e) {
                                 $progress = (e.done / original_count) * 100;
+                                
+                                
 
                                 if ($progress === 100 && i === 'sent') {
                                         if (wp_smpro_counts.received.total !== e.total) {
@@ -474,6 +484,7 @@ jQuery('document').ready(function() {
                         // Receive Data back from Heartbeat
                         if (data.hasOwnProperty('wp-smpro-refresh-progress')) {
                                 wp_smpro_counts = data['wp-smpro-refresh-progress'];
+                                wp_smpro_is_throttled = parseInt(data['wp-smpro-is-throttled']);
                                 wp_smpro_refresh_progress();
                         }
 

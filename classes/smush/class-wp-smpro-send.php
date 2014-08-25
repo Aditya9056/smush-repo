@@ -104,6 +104,10 @@ if (!class_exists('WpSmProSend')) {
                         // wp_ajax wants us to...
                         die();
                 }
+                
+                function throttle_on(){
+                        update_option('wp_smpro_is_throttled', 1);
+                }
 
                 /**
                  * Gets the next id in queue
@@ -352,6 +356,12 @@ if (!class_exists('WpSmProSend')) {
                                 update_post_meta($ID, "smush_meta_$size", $size_smush_meta);
 
                                 return new WP_Error('smush_failed', $data->status_msg);
+                        }
+                        
+                        if ($data->status_code === 7) {
+                                $this->throttle_on();
+                                return new WP_Error('smush_throttled', $data->status_msg);
+                                
                         }
 
                         // all's fine, send response for processing

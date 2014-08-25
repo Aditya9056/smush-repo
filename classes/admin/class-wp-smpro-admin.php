@@ -137,7 +137,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function localize() {
 			$wp_smpro_msgs = array(
 				'leave_screen'   => __( 'You may leave this screen now, <strong>we will update your site with smushed images, automatically</strong>!', WP_SMPRO_DOMAIN ),
-				'sent'           => __( 'Sent for Smushing', WP_SMPRO_DOMAIN ),
+				'throttled'      => __( 'You have reached the limit of 100 images at a time. Please try after some time.', WP_SMPRO_DOMAIN ),
+                                'sent'           => __( 'Sent for Smushing', WP_SMPRO_DOMAIN ),
 				'progress'       => __( 'Smushing in Progress', WP_SMPRO_DOMAIN ),
 				'resmush'        => __( 'Re-smush', WP_SMPRO_DOMAIN ),
 				'smush_now'      => __( 'Smush.it now!', WP_SMPRO_DOMAIN ),
@@ -170,7 +171,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->bulk['sent']     = $bulk->data( 'sent' );
 			$this->bulk['received'] = $bulk->data( 'received' );
 			$this->bulk['smushed']  = $bulk->data( 'smushed' );
-            $this->bulk['stats']    = get_option('wp-smpro-global-stats', array());
+                        $this->bulk['stats']    = get_option('wp-smpro-global-stats', array());
 		}
 
 		/**
@@ -585,6 +586,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// add the new counts in the response.
 			$response['wp-smpro-refresh-progress'] = $this->bulk;
+                        $response['wp-smpro-is-throttled'] = intval(get_option(wp_smpro_is_throttled, 0));
 
 			// return the filtered response
 			return $response;
