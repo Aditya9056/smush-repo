@@ -457,6 +457,11 @@ jQuery('document').ready(function() {
                         // show a notice
                         wp_smpro_show_msg('no_leave');
 
+                        //Before leave screen, show alert
+                        jQuery(window).on('beforeunload', function (e) {
+                            return wp_smpro_msgs.no_leave.replace(/(<([^>]+)>)/ig,"");
+                        });
+
                         return;
 
                 });
