@@ -360,7 +360,7 @@ if (!class_exists('WpSmProSend')) {
                         
                         if ($data->status_code === 7) {
                                 error_log('throttled');
-                                $update = update_option('wp_smpro_is_throttled', 1);
+                                update_option('wp_smpro_is_throttled', 1);
                                 return new WP_Error('smush_throttled', $data->status_msg);
                                 
                         }

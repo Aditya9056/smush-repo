@@ -379,7 +379,7 @@ jQuery('document').ready(function() {
                         jQuery('#' + $identifier + '-status .total-count').html($totalcount);
 
                         //update stats
-                        jQuery('p#wp-smpro-compression span#kb').html(wp_smpro_counts.stats['compressed_kb']);
+                        jQuery('p#wp-smpro-compression span#kb').html(wp_smpro_counts.stats['compressed_human']);
                         jQuery('p#wp-smpro-compression span#percent').html(wp_smpro_counts.stats['compressed_percent']);
 
 
