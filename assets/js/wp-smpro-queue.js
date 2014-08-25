@@ -119,6 +119,7 @@ jQuery('document').ready(function() {
                 original_count = wp_smpro_counts.sent.total;
 
                 function wp_smpro_show_msg(msg) {
+                        console.log(msg);
                         if (jQuery('.wp-smpro-msg.' + msg).length > 0) {
                                 return;
                         }
