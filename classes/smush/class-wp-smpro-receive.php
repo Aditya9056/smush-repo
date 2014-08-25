@@ -98,6 +98,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			}
 			//Use the size obtained in callback
 			$size = ! empty( $data['image_size'] ) ? $data['image_size'] : '';
+                        
+                        if(intval(get_transient("wp-smpro-smushed-{$data['attachment_id']}-{$size}"))>0){
+                                $this->callback_response();
+                        }
 
 			//Verify file id
 			if ( $smush_meta['file_id'] != $data['file_id'] ) {
