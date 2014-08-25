@@ -364,6 +364,8 @@ if (!class_exists('WpSmProSend')) {
                                 return new WP_Error('smush_throttled', $data->status_msg);
                                 
                         }
+                        
+                        update_option('wp_smpro_is_throttled', 0);
 
                         // all's fine, send response for processing
                         return $this->process_response($data);
