@@ -69,7 +69,7 @@ if (!class_exists('WpSmProRequest')) {
 		 *
 		 * @return array The post data for the request
 		 */
-		private function _data($attachment_id = 0, $token = '', $size) {
+		private function _data($attachment_id = 0, $token = '', $size, $img_path ) {
 			global $wp_sm_pro;
 			// We can't do anything without these
 			if (!$attachment_id || $token === '' || empty( $size ) ) {
@@ -85,7 +85,8 @@ if (!class_exists('WpSmProRequest')) {
 				'progressive'   => true,
 				'gif_to_png'    => true,
 				'remove_meta'   => true,
-				'size'          => ''
+				'size'          => '',
+				'img_url'       => ''
 			);
 
 			// set values for the boolean fields
@@ -106,6 +107,7 @@ if (!class_exists('WpSmProRequest')) {
 			$post_fields['api_key'] = $wp_sm_pro->sender->dev_api_key();
 			$post_fields['token'] = $token;
 			$post_fields['size'] = $size;
+			$post_fields['img_url'] = $img_path;
 
 			// presenting, the post data
 			return $post_fields;
@@ -127,7 +129,7 @@ if (!class_exists('WpSmProRequest')) {
 			$payload = '';
 
 			// get the post data
-			$post_fields = $this->_data($ID, $token, $size);
+			$post_fields = $this->_data($ID, $token, $size, $img_path );
 
 			// if the data isn't set up, we can't do anything
 			if (empty($post_fields)) {
@@ -143,18 +145,6 @@ if (!class_exists('WpSmProRequest')) {
 				$payload .= $value;
 				$payload .= "\r\n";
 			}
-			// Upload the file
-			if ($img_path) {
-				$payload .= '--' . $boundary;
-				$payload .= "\r\n";
-				$payload .= 'Content-Disposition: form-data; name="' . 'upload' .
-					'"; filename="' . basename($img_path) . '"' . "\r\n";
-				//        $payload .= 'Content-Type: image/jpeg' . "\r\n";
-				$payload .= "\r\n";
-				$payload .= file_get_contents($img_path);
-				$payload .= "\r\n";
-			}
-
 
 			$payload .= '--' . $boundary . '--';
 
@@ -178,13 +168,21 @@ if (!class_exists('WpSmProRequest')) {
 				echo "DEBUG: Calling API: [" . $req . "]<br />";
 			}
 
+			//Get Image URL
+			$img_url = wp_get_attachment_image_src( $attachment_id, $size );
+			if( empty ( $img_url ) ) {
+				error_log("No Image URL for $attachment_id $size");
+				return;
+			}
+
+			$img_url = $img_url[0];
 
 			$boundary = wp_generate_password(24);
 			$headers = array(
 			    'content-type' => 'multipart/form-data; boundary=' . $boundary
 			);
 
-			$payload = $this->_payload($img_path, $attachment_id, $boundary, $token, $size);
+			$payload = $this->_payload($img_url, $attachment_id, $boundary, $token, $size);
 			if (empty($payload)) {
 				return false;
 			}
