@@ -240,6 +240,7 @@ Progressbar ui
         height: 20px;
         border: 1px solid #0074a2;
         border-radius: 10px;
+        overflow: hidden;
         position:relative;
 }
 

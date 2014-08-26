@@ -702,8 +702,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 
 			if ( defined( 'WP_SMPRO_SERVICE_URL' ) ) {
-				$api = wp_remote_get( WP_SMPRO_SERVICE_URL, array( 'sslverify' => false ) );
+				$api = wp_remote_get( WP_SMPRO_SERVICE_URL, array( 'sslverify' => false, 'timeout'  => 20 ) );
 			}
+
 			if ( empty( $api ) || is_wp_error( $api ) ) {
 				set_transient( 'api_connected', false );
 
