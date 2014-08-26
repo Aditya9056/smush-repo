@@ -19,6 +19,7 @@ jQuery('document').ready(function() {
         $resmush_queue = [];
         original_count = 0;
         wp_smpro_is_throttled = 0;
+        $process_next = true;
         
 
         /**

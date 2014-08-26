@@ -105,6 +105,114 @@ if (!class_exists('WpSmProSend')) {
                         die();
                 }
                 
+                function get_unsmushed(){
+                        
+                        global $wpdb;
+                        
+                        $sql = "SELECT p.ID as attachment_id, md.meta_value as metadata, mp.meta_value as metapath"
+                                . " FROM $wpdb->posts as p"
+                                . " LEFT JOIN $wpdb->postmeta as md"
+                                . " ON (p.ID= md.post_id AND md.meta_key='_wp_attachment_metadata')"
+                                . " LEFT JOIN $wpdb->postmeta as mp"
+                                . " ON (p.ID= mp.post_id AND mp.meta_key='_wp_attached_file')"
+                                . " LEFT JOIN $wpdb->postmeta as m"
+                                . " ON (p.ID= m.post_id AND m.meta_key='wp-smpro-is-smushed')"
+                                . " WHERE"
+                                . " p.post_type='attachment'"
+                                . " AND p.post_mime_type LIKE '%image/%'"
+                                . " AND (m.meta_value='0' OR m.post_id IS NULL)"
+                                . " ORDER BY p.post_date ASC";
+                        $results = $wpdb->query($sql);
+                        unset($sql);
+                        return $results;
+                        
+                }
+                
+                function format_request($result){
+                        $request = new stdClass();
+                        
+                        $request->attachment_id = $result->attachment_id;
+                        
+                        $metadata = maybe_unserialize($result->metadata);
+                        
+                        $full_size_array = pathinfo($result->metapath);
+                        
+                        $request->path_prefix = $full_size_array['dirname'];
+                        
+                        $full_image = $full_size_array['basename'];
+                        
+                        $filenames = array();
+                        // check large
+                        foreach($metadata['sizes'] as $size_key => $size_data){
+                                $filenames[$size_key]=$size_data['file'];
+                        }
+                        
+                        if(!isset($filenames['large'])){
+                               $filenames['full'] = $full_image; 
+                        }
+                        
+                        $request->files = $filenames;
+                        unset($filenames);
+                        unset($metadata);
+                        unset($full_size_array);
+                        unset($full_image);
+                        
+                        return $request;
+        
+                }
+                
+                function form_request(){
+                        $attachments = $this->get_unsmushed();
+                        
+                        foreach($attachments as &$attachment){
+                                $attachment = $this->format_request($attachment);
+                        }
+                        
+                        $request = new stdClass();
+                        
+                        $request->data = $attachments;
+                        unset($attachments);
+                        
+                        $path_base =wp_upload_dir();
+                        $request->url_prefix = $path_base['baseurl'];
+                        unset($path_base);
+                        
+                        $request->api_key = get_site_option('wpmudev_apikey');
+                        
+                        return $request;
+                }
+                
+                function send_request(){
+                        /*
+                         * {
+                         *      'api_key': '',
+                         *      'url_prefix': 'http://somesite.com/wp-content/uploads',
+                         *      'data': {
+                         *                      {
+                         *                              'attachment_id': 1254,
+                         *                              'path_prefix': '14/08/',
+                         *                              'files': {
+                         *                                              'large' : 'file-720X480.jpg',
+                         *                                              'medium' : 'file-270X230.jpg',
+                         *                                              'thumbnail': 'file-150X150.jpg' 
+                         *                                        }
+                         *                      },
+                         *                      {
+                         *                              'attachment_id': 1255,
+                         *                              'path_prefix': '14/08/',
+                         *                              'files': {
+                         *                                              'full' : 'file2.jpg', // no large image
+                         *                                              'medium' : 'file2-270X230.jpg',
+                         *                                              'thumbnail': 'file2-150X150.jpg' 
+                         *                                        }
+                         *                      },
+                         *                      ... and so on
+                         *      }
+                         * }
+                         */
+                        $request = $this->form_request();
+                        
+                }
 
                 /**
                  * Gets the next id in queue
