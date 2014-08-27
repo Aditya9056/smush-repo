@@ -52,7 +52,7 @@ if (!class_exists('WpSmProSend')) {
                 /**
                  * Processes the ajax smush request
                  *
-                 * @todo Conditionally get next id, only for requests that need it
+                 * 
                  */
                 function ajax_queue() {
                         global $wp_sm_pro;
@@ -185,8 +185,6 @@ if (!class_exists('WpSmProSend')) {
                         $path_base =wp_upload_dir();
                         $request_data->url_prefix = $path_base['baseurl'];
                         
-                        unset($path_base);
-                        
                         // add the API key
                         $request_data->api_key = get_site_option('wpmudev_apikey');
                         
@@ -197,8 +195,9 @@ if (!class_exists('WpSmProSend')) {
                         $request_data = $this->add_options($request_data);
 
                         // add data for all the attachments
-                        $request_data = $this->add_attachment_data( $request_data,$attachment_id);
-
+                        $request_data = $this->add_attachment_data( $request_data,$attachment_id, $path_base['basedir']);
+                        
+                        unset($path_base);
                         // return the formed request data
                         return $request_data;
                 }
@@ -236,24 +235,44 @@ if (!class_exists('WpSmProSend')) {
                  * 
                  * @param object $request_data The request data
                  * @param int|bool|array $attachment_id The attachment id, or array of attachment ids or false
+                 * @param string $pathprefix path to the uploads dir
                  * @return object the request data with attachment data
                  */
-                private function add_attachment_data($request_data, $attachment_id){
+                private function add_attachment_data($request_data, $attachment_id, $pathprefix){
                         
                         // get all the attachment data from the db
                         $attachments = $this->get_attachments($attachment_id);
+                        print_r($attachments); die();
 
-	                    //If there are no atachments, return
-	                    if ( empty( $attachments ) ) {
-		                    return $request_data;
-	                    }
+                        //If there are no atachments, return
+                        if ( empty( $attachments ) ) {
+                                return $request_data;
+                        }
                         // get the array of ids already sent
                         $sent_ids = get_site_option(WP_SMPRO_PREFIX.'sent-ids',array());
                         
                         // loop
-                        foreach( $attachments as &$attachment){
+                        foreach( $attachments as $key=>&$attachment){
+                                //assume it is not animated
+                                $anim = false;
+                                
+                                // if it is a gif and user doesn't want to smush to png
+                                if(!$this->send_if_gif($attachment)){
+                                        
+                                        // check if this gif is animated
+                                        $anim = $this->is_animated($pathprefix.$attachment->metapath);
+                                        
+                                        // if it is not animated, we don't send it
+                                        if (!$anim) {
+                                                unset($attachment[$key]);
+                                                continue;
+                                        } 
+                                        
+                                }
+                                
                                 // get the attachment data in the format we need
-                                $attachment = $this->format_attachment_data($attachment);
+                                $attachment = $this->format_attachment_data($attachment, $anim);
+                                
                                 // add this id to the list of sent ids
                                 $sent_ids[] = $attachment->attachment_id;
                         }
@@ -286,7 +305,7 @@ if (!class_exists('WpSmProSend')) {
                         $existing_clause = $this->existing_clause();
                         
                         // get the attachment id, attachment metadata and full size's path
-                        $sql = "SELECT p.ID as attachment_id, md.meta_value as metadata, mp.meta_value as metapath"
+                        $sql = "SELECT p.ID as attachment_id, p.post_mime_type as type, md.meta_value as metadata, mp.meta_value as metapath"
                                 . " FROM $wpdb->posts as p"
                                 // for attachment metadata
                                 . " LEFT JOIN $wpdb->postmeta as md"
@@ -364,10 +383,10 @@ if (!class_exists('WpSmProSend')) {
                  * Formats the database result for each attachment
                  * 
                  * @param object $row the databse row for each attachment
+                 * @param boolean $anim whether the attachment is an animated gif
                  * @return \stdClass the formatted row
-                 * @todo GIF checking
                  */
-                private function format_attachment_data($row){
+                private function format_attachment_data($row, $anim){
                         $request_item = new stdClass();
                         
                         $request_item->attachment_id = $row->attachment_id;
@@ -386,7 +405,9 @@ if (!class_exists('WpSmProSend')) {
                                 $filenames[$size_key]=$size_data['file'];
                         }
                         
-                        if(!isset($filenames['large'])){
+                        // if there's no large size, the full is the large size
+                        // if it is an animated gif, we'll send the full size
+                        if(!isset($filenames['large']) || $anim===true){
                                $filenames['full'] = $full_image; 
                         }
                         
@@ -470,318 +491,7 @@ if (!class_exists('WpSmProSend')) {
                         return $response;
                 }
 
-                /**
-                 * Gets the next id in queue
-                 *
-                 * @global object $wpdb WordPress database object
-                 *
-                 * @param int $id The current id
-                 *
-                 * @return int The next id
-                 */
-                function get_next_id($id) {
-                        global $wpdb;
-
-                        // the query folks
-                        /*
-                         * We need attachments that either
-                         * 	have the smush status meta as false, or
-                         * 	do not have the meta set, at all
-                         * So we do two joins
-                         */
-                        $query = $wpdb->prepare("SELECT p.ID FROM {$wpdb->posts} p "
-                                . "INNER JOIN {$wpdb->postmeta} pm ON "
-                                . "(p.ID = pm.post_id) "
-                                . "LEFT JOIN {$wpdb->postmeta} pmm ON "
-                                . "(p.ID = pmm.post_id AND pmm.meta_key = 'wp-smpro-is-sent') "
-                                . "WHERE p.post_type = 'attachment' "
-                                . "AND ("
-                                . "p.post_mime_type = 'image/jpeg' "
-                                . "OR p.post_mime_type = 'image/png' "
-                                . "OR p.post_mime_type = 'image/gif'"
-                                . ") "
-                                . "AND p.ID > %d "
-                                . "AND ( "
-                                . "("
-                                . "pm.meta_key = 'wp-smpro-is-sent' "
-                                . "AND CAST(pm.meta_value AS CHAR) = '0'"
-                                . ") "
-                                . "OR  pmm.post_id IS NULL"
-                                . ") "
-                                . "GROUP BY p.ID "
-                                . "ORDER BY p.post_date ASC LIMIT 0, 1", $id);
-
-                        // next id
-                        $next_id = $wpdb->get_var($query);
-
-                        // return it
-                        return $next_id;
-                }
-
-                /**
-                 * Gets the attachment meta and sends for smushing
-                 *
-                 * @param int $attachment_id
-                 * @param array $metadata , default is empty
-                 *
-                 * @return bool|object True on success, WP_Error object on failure
-                 */
-                function add_meta_then_queue($attachment_id, $metadata = '') {
-
-                        // check if it's an image
-                        if ($attachment_id && wp_attachment_is_image($attachment_id) === false) {
-                                return new WP_Error('invalid', __('Not a valid attachment', WP_SMPRO_DOMAIN));
-                        }
-
-                        // attachment path and url
-                        $attachment_file_path = get_attached_file($attachment_id);
-                        $attachment_file_url = wp_get_attachment_url($attachment_id);
-
-                        // some debug info
-                        if (defined(WP_SMPRO_DEBUG) && WP_SMPRO_DEBUG) {
-                                echo "DEBUG: attachment_file_path=[" . $attachment_file_path . "]<br />";
-                                echo "DEBUG: attachment_file_url=[" . $attachment_file_url . "]<br />";
-                        }
-                        // send for further processing
-                        $full_state = $this->prepare_and_send($attachment_id, $attachment_file_path, $attachment_file_url);
-                        if (is_wp_error($full_state)) {
-                                $smushed = 0;
-                        } else {
-                                $smushed = 1;
-                        }
-                        global $wp_sm_pro;
-
-                        $wp_sm_pro->set_status($attachment_id, 'sent', 'full', $smushed);
-
-                        //now see if other sizes should be smushed
-                        $this->check_send_sizes($attachment_id, $attachment_file_path, $attachment_file_url, '', $metadata);
-
-                        $status = $wp_sm_pro->check_status($attachment_id, 'sent');
-
-                        return $status;
-                }
-
-                /**
-                 * Prepares the attachment and all its sizes and sends for smushing
-                 *
-                 * @param array $meta The attachment metadata, with sizes, etc
-                 * @param int $ID The attachment id
-                 * @param boolean $force_resmush Force resmushing, inspite of previous status
-                 *
-                 * @return bool|object True on success, WP_Error object on failure
-                 */
-                function prepare_and_send($ID = null, $attachment_file_path = '', $attachment_file_url = '', $force_resmush = true) {
-
-
-                        // don't send if it's a static gif and user doesn't want png
-                        if (!$this->send_if_gif($ID, $attachment_file_path)) {
-                                return new WP_Error('invalid', __('GIFs are not allowed by your settings', WP_SMPRO_DOMAIN));
-                        }
-                        // smush meta
-                        $smush_meta = get_post_meta($ID, 'smush_meta_full', true);
-
-                        //Check if the image was previously smushed
-                        $previous_state = !empty($smush_meta) ? $smush_meta['status_msg'] : '';
-
-                        // if we do send it for smushing
-                        if ($force_resmush || $this->should_resend($previous_state)) {
-                                $full_state = $this->send($attachment_file_path, $attachment_file_url, $ID, 'full');
-                        } else {
-                                $full_state = new WP_Error('already_sent', __('The attachment has been smushed already'));
-                        }
-
-                        return $full_state;
-                }
-
-                /**
-                 * Send smush request for all Image sizes
-                 *
-                 * @param $attachment_id
-                 * @param string $attachment_file_path
-                 * @param string $attachment_file_url
-                 * @param bool $force_resmush
-                 * @param string $metadata , default is null
-                 */
-                function check_send_sizes($attachment_id, $attachment_file_path = '', $attachment_file_url = '', $force_resmush = true, $metadata = '') {
-
-                        // get the attachment meta data
-                        $meta = !empty($metadata) ? $metadata : wp_get_attachment_metadata($attachment_id);
-
-                        // no resized versions, so we can exit
-                        if (!isset($meta['sizes'])) {
-                                return;
-                        }
-                        
-                       
-                        // otherwise, send each size
-                        global $wp_sm_pro;
-                         
-                        $smushed = 0;
-                        $size_sent = false;
-                        
-                        foreach ($meta['sizes'] as $size_key => $size_data) {
-                                if (!$force_resmush && $this->should_resend(@$meta['sizes'][$size_key]['wp_smushit']) === false) {
-                                        continue;
-                                }
-                                // we aren't concerned with what happens to the rest of the sizes, are we?
-                                $size_sent = $this->send_each_size($attachment_file_path, $attachment_file_url, $attachment_id, $size_key, $size_data['file']);
-                                if (is_wp_error($size_sent)) {
-                                        $smushed = 0;
-                                } else {
-                                        $smushed = 1;
-                                }
-                                $wp_sm_pro->set_status($attachment_id,'sent',$size_key, $smushed);
-                                $smushed = 0;
-                                $size_sent = false;
-                        }
-
-
-                        unset($size_sent);
-                        unset($smushed);
-
-                        return;
-                }
-
-                /**
-                 * Process each image size
-                 *
-                 * @param string $file_path The image file path
-                 * @param string $file_url The image url
-                 * @param int $ID The attachment id
-                 * @param string $size The size name, i.e., full, medium, thumbnail, etc
-                 * @param string $file The filename
-                 *
-                 * @return bool|object True on success, WP_Error object on failure
-                 */
-                function send_each_size($file_path, $file_url, $ID, $size, $file) {
-
-                        error_log($size);
-                        // We take the original image. The 'sizes' will all match the same URL and
-                        // path. So just get the dirname and rpelace the filename.
-                        $attachment_file_path_size = trailingslashit(dirname($file_path)) . $file;
-
-                        $attachment_file_url_size = trailingslashit(dirname($file_url)) . $file;
-
-                        if (defined(WP_SMPRO_DEBUG) && WP_SMPRO_DEBUG) {
-                                echo "DEBUG: attachment_file_path_size=[" . $attachment_file_path_size . "]<br />";
-                                echo "DEBUG: attachment_file_url_size=[" . $attachment_file_url_size . "]<br />";
-                        }
-
-                        // send it
-                        return $this->send($attachment_file_path_size, $attachment_file_url_size, $ID, $size);
-                }
-
-                /**
-                 * Process an image with Smush.it Pro API
-                 *
-                 * @param string $img_path Image Path
-                 * @param string $img_url Image URL
-                 * @param int $ID Attachment id
-                 * @param string $size The size name, i.e., full, medium, thumbnail, etc
-                 *
-                 * @return bool|object True on success, WP_Error object on failure
-                 */
-                function send($img_path = '', $img_url = '', $ID = 0, $size = '') {
-                        global $wp_sm_pro;
-
-                        // try and make this data invalid
-                        $invalid = $this->invalidate($img_path, $img_url);
-
-                        // it's invalid
-                        if (is_wp_error($invalid)) {
-                                return $invalid;
-                        }
-                        
-                        if(intval( get_transient( "wp-smpro-smushed-{$ID}-{$size}" ) )){
-                                return true;
-                        }
-                        // data is fine
-                        // create nonce
-                        $token = wp_create_nonce("smush_image_{$ID}_{$size}");
-
-                        //instantiate the request class
-                        $requester = new WpSmProRequest();
-                        // send the post request and get the response data
-                        $data = $requester->_post($img_path, $ID, $token, $size);
-
-                        // response is empty
-                        if (empty($data) || is_wp_error($data)) {
-                                //File was never processed, return the original meta
-                                return new WP_Error('response_failed', __('Response Failed', WP_SMPRO_DOMAIN));
-                        }
-
-                        $size_smush_meta = get_post_meta($ID, "smush_meta_$size", true);
-
-                        //Check for error
-                        if ($data->status_code === 0) {
-
-                                $size_smush_meta['status_msg'] = $data->status_msg;
-                                // update smush details
-                                update_post_meta($ID, "smush_meta_$size", $size_smush_meta);
-
-                                return new WP_Error('smush_failed', $data->status_msg);
-                        }
-                        
-                        if ($data->status_code === 7) {
-                                error_log('throttled');
-                                update_option('wp_smpro_is_throttled', 1);
-                                return new WP_Error('smush_throttled', $data->status_msg);
-                                
-                        }
-                        
-                        update_option('wp_smpro_is_throttled', 0);
-
-                        // all's fine, send response for processing
-                        return $this->process_response($data);
-                }
-
-                /**
-                 * Process the response from API
-                 *
-                 * @param object $data The data returned from service
-                 *
-                 * @return bool|object True on success, WP_Error object on failure
-                 */
-                function process_response($data) {
-                        global $wp_sm_pro;
-
-                        $status = false;
-
-                        //Get the returned file id and store it in meta
-                        $file_id = isset($data->file_id) ? $data->file_id : '';
-                        $status_code = isset($data->status_code) ? $data->status_code : '';
-                        $request_err_code = isset($data->request_err_code) ? $data->request_err_code : '';
-                        $attachment_id = isset($data->attachment_id) ? $data->attachment_id : '';
-                        $image_size = isset($data->image_size) ? $data->image_size : '';
-
-                        //Fetch old smush meta and update with the file id returned by API
-                        $image_size_smush_meta = get_post_meta($attachment_id, "smush_meta_$image_size", true);
-                        $image_size_smush_meta['timestamp'] = time();
-
-                        $image_size_smush_meta = !empty($image_size_smush_meta) ? $image_size_smush_meta : array();
-
-                        //If file id update
-                        if (!empty($file_id)) {
-                                //Add file id, Status and Message
-                                $image_size_smush_meta['file_id'] = $file_id;
-                                $image_size_smush_meta['status_code'] = $status_code;
-                                $image_size_smush_meta['status_msg'] = $this->get_status_msg($status_code, $request_err_code);
-                                $image_size_smush_meta['token'] = $data->token;
-
-                                $status = true;
-                        } else {
-                                $image_size_smush_meta['status_msg'] = __('Unable to process the image, please try again later', WP_SMPRO_DOMAIN);
-                                $status = new WP_Error('smush_failed', $image_size_smush_meta[$image_size]['status_msg']);
-                        }
-
-
-
-                        // update smush info
-                        update_post_meta($attachment_id, "smush_meta_$image_size", $image_size_smush_meta);
-
-                        return $status;
-                }
-
+                
                 /**
                  * Form appropriate status message
                  *
@@ -827,7 +537,7 @@ if (!class_exists('WpSmProSend')) {
                         }
 
                         if (!file_exists($img_path)) {
-                                return new WP_Error('invalid', __("File does not exists", WP_SMPRO_DOMAIN));
+                                return new WP_Error('invalid', __("File does not exist", WP_SMPRO_DOMAIN));
                         }
 
                         // check that the file exists
@@ -880,40 +590,16 @@ if (!class_exists('WpSmProSend')) {
                 }
 
                 /**
-                 * Check if we need to smush the image or not
-                 *
-                 * @param string $previous_status Previous smush status
-                 *
-                 * @return boolean True, if we need to smush and false, if not
-                 */
-                function should_resend($previous_status) {
-                        if (!$previous_status || empty($previous_status)) {
-                                return true;
-                        }
-
-                        if (
-                                stripos($previous_status, 'no savings') !== false || stripos($previous_status, 'reduced') !== false
-                        ) {
-                                return false;
-                        }
-
-                        // otherwise an error
-                        return true;
-                }
-
-                /**
                  * Checks if a static gif should be sent for smushing
                  *
-                 * @param int $id attachment id
-                 * @param string $path the attachment file path
+                 * @param int $attachment attachment id
                  *
                  * @return boolean true, if fine to send, false, if not
                  */
-                function send_if_gif($id, $path) {
-                        $type = get_post_mime_type($id);
+                function send_if_gif($attachment) {
 
                         // not a gif, we can send
-                        if ($type !== "image/gif") {
+                        if ($attachment->type !== "image/gif") {
                                 return true;
                         }
 
@@ -922,12 +608,7 @@ if (!class_exists('WpSmProSend')) {
                                 return true;
                         }
 
-                        // if it is animated, we'll send
-                        if ($this->is_animated($path)) {
-                                return true;
-                        }
-
-                        // static gif that user doesn't want to convert to png
+                        // gif that user doesn't want to convert to png
                         return false;
                 }
 
