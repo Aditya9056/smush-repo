@@ -43,7 +43,7 @@ if (!class_exists('WpSmProSend')) {
                         if ($wp_sm_pro->admin->api_connected) {
 
                                 //Send metadata and attachment id
-                                $this->add_meta_then_queue(intval($attachment_id), $metadata);
+                                $sent = $this->send_request($attachment_id);
                         }
 
                         return $metadata;
@@ -75,40 +75,30 @@ if (!class_exists('WpSmProSend')) {
                                 die();
                         }
 
-                        // get the attachment id from request
-                        $attachment_id = $_GET['attachment_id'];
-
-                        // do we need to fetch the next id
-                        $get_next = !empty($_GET['get_next']) ? $_GET['get_next'] : false;
-
-                        // check attachment id
-                        if (!isset($attachment_id)) {
-                                wp_die(__('No attachment ID was provided.', WP_SMPRO_DOMAIN));
+                        $sent = $this->send_request();
+                        
+                        if(!$sent || is_wp_error($sent)){
+                                echo 0;
                         }
-
-                        // Send for further processing
-                        $status_code = $this->add_meta_then_queue(intval($attachment_id));
-
-                        // smush meta
-                        $sent = get_post_meta($attachment_id, 'wp-smpro-is-sent', true);
-                        $response['status_code'] = $sent;
-
-                        // we still fetch the next id if we are bulk smushing
-                        if (boolval($get_next) === true) {
-                                // get the next id to send back
-                                $response['next'] = $this->get_next_id(intval($attachment_id));
-                        }
-                        // print out the response
-                        echo json_encode($response);
+                        
+                        echo 1;
 
                         // wp_ajax wants us to...
                         die();
                 }
                 
-                function get_unsmushed(){
+                /**
+                 * 
+                 * @global object $wpdb
+                 * @param type $attachment_id
+                 * @return type
+                 */
+                function get_attachments($attachment_id = false){
                         
                         global $wpdb;
                         
+                        $where_id_clause = $this->where_id_clause($attachment_id);
+                      
                         $sql = "SELECT p.ID as attachment_id, md.meta_value as metadata, mp.meta_value as metapath"
                                 . " FROM $wpdb->posts as p"
                                 . " LEFT JOIN $wpdb->postmeta as md"
@@ -121,23 +111,61 @@ if (!class_exists('WpSmProSend')) {
                                 . " p.post_type='attachment'"
                                 . " AND p.post_mime_type LIKE '%image/%'"
                                 . " AND (m.meta_value='0' OR m.post_id IS NULL)"
-                                . " ORDER BY p.post_date ASC";
+                                . $where_id_clause
+                                . " ORDER BY p.post_date ASC"
+                                . " LIMIT 1000";
+                        
                         $results = $wpdb->query($sql);
-                        unset($sql);
+                        
+                        unset($sql,$where_id_clause);
                         return $results;
                         
                 }
                 
-                function format_request($result){
-                        $request = new stdClass();
+                /**
+                 * 
+                 * @param type $id
+                 * @return string
+                 */
+                private function where_id_clause($id=false){
                         
-                        $request->attachment_id = $result->attachment_id;
+                        
+                        if(empty($id) || $id ===false){
+                                return;
+                        }
+                        
+                        $clause = ' AND p.ID';
+                        
+                        if(is_numeric($id)){
+                               $clause .= '='.(int)$id;
+                               return $clause;
+                        }
+                        
+                        if(is_array($id)){
+                                $id_list = implode(',',$id);
+                                $clause .= " IN ($id_list)";
+                                unset($id_list);
+                                return $clause;
+                        }
+                               
+                }
+                
+                /**
+                 * 
+                 * @param type $result
+                 * @return \stdClass
+                 * @todo GIF checking
+                 */
+                private function format_request($result){
+                        $request_item = new stdClass();
+                        
+                        $request_item->attachment_id = $result->attachment_id;
                         
                         $metadata = maybe_unserialize($result->metadata);
                         
                         $full_size_array = pathinfo($result->metapath);
                         
-                        $request->path_prefix = $full_size_array['dirname'];
+                        $request_item->path_prefix = $full_size_array['dirname'];
                         
                         $full_image = $full_size_array['basename'];
                         
@@ -151,27 +179,21 @@ if (!class_exists('WpSmProSend')) {
                                $filenames['full'] = $full_image; 
                         }
                         
-                        $request->files = $filenames;
-                        unset($filenames);
-                        unset($metadata);
-                        unset($full_size_array);
-                        unset($full_image);
+                        $request_item->files = $filenames;
                         
-                        return $request;
+                        unset($filenames,$metadata,$full_size_array,$full_image);
+                        
+                        return $request_item;
         
                 }
                 
-                function form_request(){
-                        $attachments = $this->get_unsmushed();
-                        
-                        foreach($attachments as &$attachment){
-                                $attachment = $this->format_request($attachment);
-                        }
+                /**
+                 * 
+                 * @return \stdClass
+                 */
+                private function form_request($attachment_id){
                         
                         $request = new stdClass();
-                        
-                        $request->data = $attachments;
-                        unset($attachments);
                         
                         $path_base =wp_upload_dir();
                         $request->url_prefix = $path_base['baseurl'];
@@ -179,14 +201,71 @@ if (!class_exists('WpSmProSend')) {
                         
                         $request->api_key = get_site_option('wpmudev_apikey');
                         
+                        $request->token = wp_create_nonce("wp-smpro-request");
+                        
+                        $request = $this->add_options($request);
+                        
+                        $request = $this->add_attachment_data($request,$attachment_id);       
+                        
                         return $request;
                 }
                 
-                function send_request(){
+                /**
+                 * 
+                 * @param type $request
+                 * @return type
+                 */
+                private function add_attachment_data($request, $attachment_id){
+                        $attachments = $this->get_attachments($attachment_id);
+                        
+                        foreach($attachments as &$attachment){
+                                $attachment = $this->format_request($attachment);
+                        }
+                        
+                        
+                        
+                        $request->data = $attachments;
+                        unset($attachments);
+                        
+                        return $request;
+                }
+                
+                /**
+                 * 
+                 * @param type $request
+                 * @return type
+                 */
+                private function add_options($request){
+                        $options = array(
+				'progressive'   => true,
+				'gif_to_png'    => true,
+				'remove_meta'   => true,
+			);
+
+			// set values for the boolean fields
+			foreach ($options as $key => &$val) {
+				$request->{$key} = get_option('wp_smushit_pro_' . $key, '');
+				if (empty($request->{$key}) || $request->{$key} != 'on') {
+                                        $request->{$key} = 0;
+				}
+			}
+                        
+                        unset($options);
+                        
+                        return $request;
+                }
+                
+                /**
+                 * 
+                 * @param type $attachment_id
+                 * @return type
+                 */
+                function send_request($attachment_id=false){
                         /*
                          * {
                          *      'api_key': '',
                          *      'url_prefix': 'http://somesite.com/wp-content/uploads',
+                         *      'token': 2wde456gd,
                          *      'data': {
                          *                      {
                          *                              'attachment_id': 1254,
@@ -210,9 +289,99 @@ if (!class_exists('WpSmProSend')) {
                          *      }
                          * }
                          */
-                        $request = $this->form_request();
+                        $request = $this->form_request($attachment_id);
+                        
+                        $token = $request->token;
+                        
+                        $response = $this->_post($request);
+                        
+                        if(is_wp_error($response)){
+                                unset($request);
+                                return $response;
+                        }
+                        
+                        $response = json_decode($response);
+                        
+                        unset($request);
+                        $request_id = $response['request_id'];
+                        
+                        $updated = update_option("wp_smpro_request_token_$request_id", $token);
+                        
+                        unset($request_id,$token,$response);
+                        
+                        return $updated;
                         
                 }
+                
+                /**
+                 * 
+                 * @param type $request
+                 * @return \WP_Error
+                 */
+                private function _post($request){
+                        
+                        $response = $this->_post_request($request);
+                        
+                        if (!$response || is_wp_error($response)) {
+                                unset($response, $request);
+                                return new WP_Error('failed', __('Request failed', WP_SMPRO_DOMAIN));
+                        }
+                        
+
+                        // if there was an http error
+                        if (empty($response['response']['code']) || $response['response']['code'] != 200) {
+                                unset($response,$request);
+                                //Give a error
+                                return new WP_Error('failed', __('Service unavailable', WP_SMPRO_DOMAIN));
+                        }
+
+                        // otherwise, we received a proper response from the service
+                        $data = json_decode(
+                                wp_remote_retrieve_body(
+                                        $response
+                                )
+                        );
+			
+                        
+                        unset($response,$request);
+
+			// presenting service response
+			return $data;
+                }
+                
+                /**
+                 * 
+                 * @param type $request_data
+                 * @return boolean
+                 */
+                private function _post_request($request_data ) {
+                        
+                        if (empty($request_data)) {
+				return false;
+			}
+
+			if (defined(WP_SMPRO_DEBUG) && WP_SMPRO_DEBUG) {
+				echo "DEBUG: Calling API: [" . $req . "]<br />";
+			}
+			
+                        $boundary = wp_generate_password(24);
+                        
+			$req_args = array(
+                            'headers'           => array(
+                                'content-type'          => 'multipart/form-data; boundary=' . $boundary
+                            ),
+                            'body'              => json_encode($request_data),
+                            'user-agent'        => WP_SMPRO_USER_AGENT,
+                            'timeout'           => WP_SMUSHIT_PRO_TIMEOUT,
+                            //Remove this code
+                            'sslverify'         => false
+                        );
+                        
+                        unset($boundary);
+                        
+                        // make the post request and return the response
+			return wp_remote_post(WP_SMPRO_SERVICE_URL, $req_args);
+		}
 
                 /**
                  * Gets the next id in queue
