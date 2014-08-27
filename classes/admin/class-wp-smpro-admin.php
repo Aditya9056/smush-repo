@@ -294,7 +294,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				// formulate the index of option
 				$opt_name = 'wp_smpro_' . $name;
 				// get the value to be saved
-				$setting = isset( $_POST[ $opt_name ] ) ? true : false;
+				$setting = isset( $_POST[ $opt_name ] ) ? 1 : 0;
 				// update the new value
 				update_option( $opt_name, $setting );
 				// unset the var for next loop
@@ -321,7 +321,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// return html
 			return sprintf(
-				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, true, false ), $text
+				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, 1, false ), $text
 			);
 		}
 

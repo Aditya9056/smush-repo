@@ -31,13 +31,13 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		 */
 		public $smush_settings = array(
 			// auto smush on upload
-			'auto'        => false,
+			'auto'        => 0,
 			// remove exif & other meta from jpg
-			'remove_meta' => true,
+			'remove_meta' => 0,
 			// progressive optimisation for jpg
-			'progressive' => true,
+			'progressive' => 1,
 			// convert static gifs to png
-			'gif_to_png'  => true,
+			'gif_to_png'  => 1,
 		);
 
 
@@ -122,7 +122,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 
 				// all the settings are true, in efficient mode
 				if ( WP_SMPRO_EFFICIENT ) {
-					define( $const_name, true );
+					define( $const_name, 1 );
 					continue;
 				}
 
