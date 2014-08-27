@@ -58,7 +58,7 @@ if (!class_exists('WpSmProMediaLibrary')) {
                  * @return null
                  */
                 function custom_column($column_name, $id) {
-
+	                    $status_txt = '';
                         // if it isn't our column, get out
                         if ('smushit' != $column_name) {
                                 return;
@@ -66,16 +66,15 @@ if (!class_exists('WpSmProMediaLibrary')) {
 
                         $is_smushed = get_post_meta($id, "wp-smpro-is-smushed", true);
 
-
                         // if the image is smushed
                         if (!empty($is_smushed)) {
                                 // the status
-                                $stats = get_post_meta($id, 'wp-smpro-smush-stats', true);
-                                if ($stats['compressed_bytes'] == 0) {
-                                        $status_txt = __('Already Optimized', WP_SMPRO_DOMAIN);
-                                } else {
-                                        $status_txt = sprintf(__("Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN), $stats['compressed_percent'], $stats['compressed_human']);
-                                }
+	                        $stats = get_post_meta( $id, 'wp-smpro-smush-stats', true );
+	                        if ( isset( $stats['compressed_bytes'] ) && $stats['compressed_bytes'] == 0 ) {
+		                        $status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
+	                        } elseif ( ! empty( $stats['compressed_percent'] ) && ! empty( $stats['compressed_human'] ) ) {
+		                        $status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), $stats['compressed_percent'], $stats['compressed_human'] );
+	                        }
 
                                 // check if we need to show the resmush button
                                 $show_button = $this->show_resmush_button($id);

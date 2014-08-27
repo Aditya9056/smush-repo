@@ -57,6 +57,16 @@ if (!class_exists('WpSmProSend')) {
                 function ajax_queue() {
                         global $wp_sm_pro;
 
+	                    if( empty( $_REQUEST['attachment_id'] ) ) {
+		                    $response['status_code'] = 404;
+		                    $response['status_message'] = __("Attachment id missing", WP_SMPRO_DOMAIN);
+		                    // print out the response
+		                    echo json_encode($response);
+
+		                    // wp_ajax wants us to...
+		                    die();
+	                    }
+
                         // check user permissions
                         if (!current_user_can('upload_files')) {
                                 wp_die(__("You don't have permission to work with uploaded files.", WP_SMPRO_DOMAIN));
@@ -74,8 +84,9 @@ if (!class_exists('WpSmProSend')) {
                                 // wp_ajax wants us to...
                                 die();
                         }
+	                    $attachment_id = $_REQUEST['attachment_id'];
 
-                        $sent = $this->send_request();
+                        $sent = $this->send_request( $attachment_id );
                         
                         if(!$sent || is_wp_error($sent)){
                                 echo 0;
@@ -93,7 +104,7 @@ if (!class_exists('WpSmProSend')) {
                  * @param bool|array|int $attachment_id attachment id or an array of attachment ids or false(for bulk smushing)
                  * @return bool whether request was successful
                  */
-                function send_request($attachment_id=false){
+                function send_request( $attachment_id = false ){
                         /*
                          * {
                          *      'api_key': '',
@@ -125,9 +136,9 @@ if (!class_exists('WpSmProSend')) {
                          *      }
                          * }
                          */
-                        
                         // formulate the request data as shown in the comment above
                         $request_data = $this->form_request_data($attachment_id);
+	                    var_dump( $request_data );
                         
                         // get the token out
                         $token = $request_data->token;
@@ -185,13 +196,13 @@ if (!class_exists('WpSmProSend')) {
                         
                         // add a token
                         $request_data->token = wp_create_nonce(WP_SMPRO_PREFIX."request");
-                        
+
                         // add the smushing options
                         $request_data = $this->add_options($request_data);
-                        
+
                         // add data for all the attachments
-                        $request_data = $this->add_attachment_data($request,$attachment_id);       
-                        
+                        $request_data = $this->add_attachment_data( $request_data,$attachment_id);
+
                         // return the formed request data
                         return $request_data;
                 }
@@ -235,12 +246,16 @@ if (!class_exists('WpSmProSend')) {
                         
                         // get all the attachment data from the db
                         $attachments = $this->get_attachments($attachment_id);
-                        
+
+	                    //If there are no atachments, return
+	                    if ( empty( $attachments ) ) {
+		                    return $request_data;
+	                    }
                         // get the array of ids already sent
                         $sent_ids = get_site_option(WP_SMPRO_PREFIX.'sent-ids',array());
                         
                         // loop
-                        foreach($attachments as &$attachment){
+                        foreach( $attachments as &$attachment){
                                 // get the attachment data in the format we need
                                 $attachment = $this->format_attachment_data($attachment);
                                 // add this id to the list of sent ids
@@ -268,12 +283,12 @@ if (!class_exists('WpSmProSend')) {
                 function get_attachments($attachment_id = false){
                         
                         global $wpdb;
-                        
+                        var_dump( $attachment_id );
                         // figure if we need to get data for specific ids
-                        $where_id_clause = $this->where_id_clause($attachment_id);
+                        echo $where_id_clause = $this->where_id_clause($attachment_id);
                         
                         // so that we don't include the ids already sent
-                        $existing_clause = $this->existing_clause();
+                        echo $existing_clause = $this->existing_clause();
                         
                         // get the attachment id, attachment metadata and full size's path
                         $sql = "SELECT p.ID as attachment_id, md.meta_value as metadata, mp.meta_value as metapath"
@@ -296,9 +311,10 @@ if (!class_exists('WpSmProSend')) {
                                 . " ORDER BY p.post_date ASC"
                                 // get only 1000 at a time
                                 . " LIMIT 1000";
-                        
-                        $results = $wpdb->query($sql);
-                        
+                        $results = $wpdb->get_results( $sql );
+	                echo "<pre>";
+	                print_r( $results );
+	                echo "</pre>";
                         unset($sql,$where_id_clause);
                         return $results;
                         
@@ -336,19 +352,21 @@ if (!class_exists('WpSmProSend')) {
                  * 
                  * @return string|null the NOT IN clause
                  */
-                private function existing_clause(){
-                        $sent_ids = get_site_option(WP_SMPRO_PREFIX.'sent-ids',array());
-                        
-                        if(empty($sent_ids)){
-                             return;   
-                        }
-                        
-                        $id_list = implode(',',$sent_ids);
-                        unset($sent_ids);
-                        $clause .= " AND p.ID NOT IN ($id_list)";
-                        unset($id_list);
-                        return $clause;        
-                }
+		        private function existing_clause() {
+			        $sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
+
+			        if ( empty( $sent_ids ) ) {
+				        return;
+			        }
+
+			        $id_list = implode( ',', $sent_ids );
+			        unset( $sent_ids );
+
+			        $clause = " AND p.ID NOT IN ($id_list)";
+			        unset( $id_list );
+
+			        return $clause;
+		        }
                 
                 /**
                  * Formats the database result for each attachment
