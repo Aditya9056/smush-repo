@@ -66,6 +66,11 @@ define( 'WP_SMPRO_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
 
 /**
+ * Prefix to use for the meta keys and options
+ */
+define( 'WP_SMPRO_PREFIX', 'wp-smpro-');
+
+/**
  * Plugin base name
  */
 define( 'WP_SMPRO_BASENAME', plugin_basename(__FILE__) );

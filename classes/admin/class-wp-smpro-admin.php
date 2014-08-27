@@ -292,7 +292,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// process each setting and update options
 			foreach ( $this->settings as $name => $text ) {
 				// formulate the index of option
-				$opt_name = 'wp_smpro_' . $name;
+				$opt_name = WP_SMPRO_PREFIX . $name;
 				// get the value to be saved
 				$setting = isset( $_POST[ $opt_name ] ) ? 1 : 0;
 				// update the new value
@@ -311,7 +311,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function render_checked( $key, $text ) {
 			// the key for options table
-			$opt_name = 'wp_smpro_' . $key;
+			$opt_name = WP_SMPRO_PREFIX . $key;
 
 			// the defined constant
 			$const_name = strtoupper( $opt_name );
