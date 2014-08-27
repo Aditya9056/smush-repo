@@ -138,7 +138,6 @@ if (!class_exists('WpSmProSend')) {
                          */
                         // formulate the request data as shown in the comment above
                         $request_data = $this->form_request_data($attachment_id);
-	                    var_dump( $request_data );
                         
                         // get the token out
                         $token = $request_data->token;
@@ -283,12 +282,11 @@ if (!class_exists('WpSmProSend')) {
                 function get_attachments($attachment_id = false){
                         
                         global $wpdb;
-                        var_dump( $attachment_id );
                         // figure if we need to get data for specific ids
-                        echo $where_id_clause = $this->where_id_clause($attachment_id);
+                        $where_id_clause = $this->where_id_clause($attachment_id);
                         
                         // so that we don't include the ids already sent
-                        echo $existing_clause = $this->existing_clause();
+                        $existing_clause = $this->existing_clause();
                         
                         // get the attachment id, attachment metadata and full size's path
                         $sql = "SELECT p.ID as attachment_id, md.meta_value as metadata, mp.meta_value as metapath"
@@ -459,12 +457,10 @@ if (!class_exists('WpSmProSend')) {
 			        if ( defined( WP_SMPRO_DEBUG ) && WP_SMPRO_DEBUG ) {
 				        echo "DEBUG: Calling API: [" . $request_data . "]<br />";
 			        }
-
 			        $req_args = array(
-				        'body'       => json_encode( $request_data ),
+				        'body'       => $request_data,
 				        'user-agent' => WP_SMPRO_USER_AGENT,
 				        'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
-				        //Remove this code
 				        'sslverify'  => false
 			        );
 
