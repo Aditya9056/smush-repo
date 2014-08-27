@@ -362,22 +362,15 @@ if (!class_exists('WpSmProSend')) {
 
 			if (defined(WP_SMPRO_DEBUG) && WP_SMPRO_DEBUG) {
 				echo "DEBUG: Calling API: [" . $req . "]<br />";
-			}
-			
-                        $boundary = wp_generate_password(24);
+                        }
                         
 			$req_args = array(
-                            'headers'           => array(
-                                'content-type'          => 'multipart/form-data; boundary=' . $boundary
-                            ),
                             'body'              => json_encode($request_data),
                             'user-agent'        => WP_SMPRO_USER_AGENT,
                             'timeout'           => WP_SMUSHIT_PRO_TIMEOUT,
                             //Remove this code
                             'sslverify'         => false
                         );
-                        
-                        unset($boundary);
                         
                         // make the post request and return the response
 			return wp_remote_post(WP_SMPRO_SERVICE_URL, $req_args);
