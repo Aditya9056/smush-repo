@@ -124,31 +124,14 @@ if (!class_exists('WpSmProRequest')) {
 		 *
 		 * @return string|boolean
 		 */
-		private function _payload($img_path, $ID, $boundary, $token, $size ) {
+		private function _payload($img_path, $ID, $token, $size ) {
 
 			$payload = '';
 
 			// get the post data
 			$post_fields = $this->_data($ID, $token, $size, $img_path );
 
-			// if the data isn't set up, we can't do anything
-			if (empty($post_fields)) {
-				return $payload;
-			}
-
-			// First, add the standard POST fields:
-			foreach ($post_fields as $name => $value) {
-				$payload .= '--' . $boundary;
-				$payload .= "\r\n";
-				$payload .= 'Content-Disposition: form-data; name="' . $name .
-					'"' . "\r\n\r\n";
-				$payload .= $value;
-				$payload .= "\r\n";
-			}
-
-			$payload .= '--' . $boundary . '--';
-
-			return $payload;
+			return $post_fields;
 		}
 
 		/**
@@ -177,18 +160,12 @@ if (!class_exists('WpSmProRequest')) {
 
 			$img_url = $img_url[0];
 
-			$boundary = wp_generate_password(24);
-			$headers = array(
-			    'content-type' => 'multipart/form-data; boundary=' . $boundary
-			);
-
-			$payload = $this->_payload($img_url, $attachment_id, $boundary, $token, $size);
+			$payload = $this->_payload($img_url, $attachment_id, $token, $size);
 			if (empty($payload)) {
 				return false;
 			}
 
 			$req_args = array(
-			    'headers' => $headers,
 			    'body' => $payload,
 			    'user-agent' => WP_SMPRO_USER_AGENT,
 			    'timeout' => WP_SMUSHIT_PRO_TIMEOUT,
