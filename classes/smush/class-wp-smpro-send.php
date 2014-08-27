@@ -178,6 +178,9 @@ if (!class_exists('WpSmProSend')) {
                         // instantiate
                         $request_data = new stdClass();
                         
+                        // add the callback url
+                        $request_data->callback_url = $this->form_callback_url();
+                        
                         // get the upload url prefix (http://domain.com/wp-content/uploads or similar)
                         $path_base =wp_upload_dir();
                         $request_data->url_prefix = $path_base['baseurl'];
@@ -453,7 +456,9 @@ if (!class_exists('WpSmProSend')) {
                                 echo "DEBUG: Calling API: [" . $request_data . "]<br />";
                         }
                         $req_args = array(
-                                'body'       => array('json'=>json_encode($request_data)),
+                                'body'       => array(
+                                    'json'      => json_encode($request_data)
+                                    ),
                                 'user-agent' => WP_SMPRO_USER_AGENT,
                                 'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
                                 'sslverify'  => false
@@ -866,7 +871,11 @@ if (!class_exists('WpSmProSend')) {
                             'action' => 'receive_smushed_image'
                                 ), $callback_url
                         );
-
+                        /**
+                         * Filters the callback url for smushing
+                         * 
+                         * @param string $callback_url the original callback url
+                         */
                         return apply_filters('smushitpro_callback_url', $callback_url);
                 }
 
