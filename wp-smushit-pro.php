@@ -79,7 +79,6 @@ define( 'WP_SMPRO_BASENAME', plugin_basename(__FILE__) );
 // include the classes
 require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-media-library.php' );
 require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-receive.php' );
-require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-request.php' );
 require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-bulk.php' );
 require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-admin.php' );
 require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-send.php' );
