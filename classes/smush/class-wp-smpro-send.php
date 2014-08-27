@@ -56,17 +56,6 @@ if (!class_exists('WpSmProSend')) {
                  */
                 function ajax_queue() {
                         global $wp_sm_pro;
-
-	                    if( empty( $_REQUEST['attachment_id'] ) ) {
-		                    $response['status_code'] = 404;
-		                    $response['status_message'] = __("Attachment id missing", WP_SMPRO_DOMAIN);
-		                    // print out the response
-		                    echo json_encode($response);
-
-		                    // wp_ajax wants us to...
-		                    die();
-	                    }
-
                         // check user permissions
                         if (!current_user_can('upload_files')) {
                                 wp_die(__("You don't have permission to work with uploaded files.", WP_SMPRO_DOMAIN));
@@ -84,12 +73,17 @@ if (!class_exists('WpSmProSend')) {
                                 // wp_ajax wants us to...
                                 die();
                         }
-	                    $attachment_id = $_REQUEST['attachment_id'];
-
-                        $sent = $this->send_request( $attachment_id );
+                        $attachment_id = $_GET['attachment_id'];
+                        
+                        // force attachment id to false if it isn't there
+                        if(empty($attachment_id)){
+                                $attachment_id = false;
+                        }
+	                $sent = $this->send_request( $attachment_id );
                         
                         if(!$sent || is_wp_error($sent)){
                                 echo 0;
+                                die();
                         }
                         
                         echo 1;
@@ -218,10 +212,10 @@ if (!class_exists('WpSmProSend')) {
 
 		        // set values for the boolean fields
 		        foreach ( $options as $key => $val ) {
-			        if( $key == 'auto' ) {
+			        if( $key === 'auto' ) {
 				        continue;
 			        }
-			        $value = get_option( 'wp_smpro' . $key, '' );
+			        $value = get_option( WP_SMPRO_PREFIX . $key, '' );
 
 			        //Check if option is not set, use the default value
 			        $value = !empty( $value ) ? $value : $val;
@@ -448,27 +442,28 @@ if (!class_exists('WpSmProSend')) {
                  * @param type $request_data
                  * @return boolean|array false or the response
                  */
-		        private function _post_request( $request_data ) {
+                private function _post_request( $request_data ) {
 
-			        if ( empty( $request_data ) ) {
-				        return false;
-			        }
+                        if ( empty( $request_data ) ) {
+                                return false;
+                        }
+                        
 
-			        if ( defined( WP_SMPRO_DEBUG ) && WP_SMPRO_DEBUG ) {
-				        echo "DEBUG: Calling API: [" . $request_data . "]<br />";
-			        }
-			        $req_args = array(
-				        'body'       => $request_data,
-				        'user-agent' => WP_SMPRO_USER_AGENT,
-				        'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
-				        'sslverify'  => false
-			        );
+                        if ( defined( WP_SMPRO_DEBUG ) && WP_SMPRO_DEBUG ) {
+                                echo "DEBUG: Calling API: [" . $request_data . "]<br />";
+                        }
+                        $req_args = array(
+                                'body'       => array('json'=>json_encode($request_data)),
+                                'user-agent' => WP_SMPRO_USER_AGENT,
+                                'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
+                                'sslverify'  => false
+                        );
 
-			        // make the post request and return the response
-			        $response = wp_remote_post( WP_SMPRO_SERVICE_URL, $req_args );
+                        // make the post request and return the response
+                        $response = wp_remote_post( WP_SMPRO_SERVICE_URL, $req_args );
 
-			        return $response;
-		        }
+                        return $response;
+                }
 
                 /**
                  * Gets the next id in queue
