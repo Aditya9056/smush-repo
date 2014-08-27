@@ -128,7 +128,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 
 				// inefficient mode, set them up from options
 				if ( ! defined( $const_name ) ) {
-					$option_name = strtolower( $const_name );
+					$option_name = WP_SMPRO_PREFIX.strtolower( $key );
 					define( $const_name, get_option( $option_name, $value ) );
 				}
 			}

@@ -88,9 +88,10 @@ if (!class_exists('WpSmProSend')) {
                 }
                 
                 /**
+                 * Send a request for smushing
                  * 
-                 * @param type $attachment_id
-                 * @return type
+                 * @param bool|array|int $attachment_id attachment id or an array of attachment ids or false(for bulk smushing)
+                 * @return bool whether request was successful
                  */
                 function send_request($attachment_id=false){
                         /*
@@ -98,7 +99,9 @@ if (!class_exists('WpSmProSend')) {
                          *      'api_key': '',
                          *      'url_prefix': 'http://somesite.com/wp-content/uploads',
                          *      'token': 2wde456gd,
-                         *      
+                         *      'progressive': 1,
+                         * 	'gif_to_png': 1,
+                         * 	'remove_meta': 1,
                          *      'data': {
                          *                      {
                          *                              'attachment_id': 1254,
@@ -122,51 +125,162 @@ if (!class_exists('WpSmProSend')) {
                          *      }
                          * }
                          */
-                        $request = $this->form_request($attachment_id);
                         
-                        $token = $request->token;
+                        // formulate the request data as shown in the comment above
+                        $request_data = $this->form_request_data($attachment_id);
                         
-                        $response = $this->_post($request);
+                        // get the token out
+                        $token = $request_data->token;
                         
+                        // post the request and get the response
+                        $response = $this->_post($request_data);
+                        
+                        // if thre was an error, return it
                         if(is_wp_error($response)){
-                                unset($request);
+                                // destroy the large request_data from memory
+                                unset($request_data);
                                 return $response;
                         }
                         
+                        // otherwise get into array
                         $response = json_decode($response);
                         
-                        unset($request);
+                        // destroy the large request_data from memory
+                        unset($request_data);
+                        
+                        // get the unique request id issued by smush service
                         $request_id = $response['request_id'];
                         
-                        $updated = update_site_option("wp_smpro_request_token_$request_id", $token);
+                        // save it for reference
+                        $updated = update_site_option(WP_SMPRO_PREFIX."request-token-$request_id", $token);
                         
+                        // destroy all vars that we don't need
                         unset($request_id,$token,$response);
                         
-                        return $updated;
+                        // return the success status of update option
+                        // otherwise all this was a waste since we won't know how to process further
+                        return boolval($updated);
                         
                 }
                 
                 /**
+                 * Formulate the request data
+                 * 
+                 * @param int|array|bool $attachment_id The attachment id, or array of attachment ids or false
+                 * @return object The request data
+                 */
+                private function form_request_data($attachment_id){
+                        
+                        // instantiate
+                        $request_data = new stdClass();
+                        
+                        // get the upload url prefix (http://domain.com/wp-content/uploads or similar)
+                        $path_base =wp_upload_dir();
+                        $request_data->url_prefix = $path_base['baseurl'];
+                        
+                        unset($path_base);
+                        
+                        // add the API key
+                        $request_data->api_key = get_site_option('wpmudev_apikey');
+                        
+                        // add a token
+                        $request_data->token = wp_create_nonce(WP_SMPRO_PREFIX."request");
+                        
+                        // add the smushing options
+                        $request_data = $this->add_options($request);
+                        
+                        // add data for all the attachments
+                        $request_data = $this->add_attachment_data($request,$attachment_id);       
+                        
+                        // return the formed request data
+                        return $request_data;
+                }
+                
+                /**
+                 * Add smush options to the request data
+                 * @param object $request_data The existing request data
+                 * @return object request data with options
+                 */
+                private function add_options($request_data){
+                        $options = array(
+				'progressive'   => true,
+				'gif_to_png'    => true,
+				'remove_meta'   => true,
+			);
+
+			// set properties for each options
+			foreach ($options as $key => &$val) {
+                                $request_data->{$key} = get_option(WP_SMPRO_PREFIX . $key, 0);
+			}
+                        
+                        unset($options);
+                        
+                        return $request_data;
+                }
+                
+                /**
+                 * Add data for all attachments to the request data
+                 * 
+                 * @param object $request_data The request data
+                 * @param int|bool|array $attachment_id The attachment id, or array of attachment ids or false
+                 * @return object the request data with attachment data
+                 */
+                private function add_attachment_data($request_data, $attachment_id){
+                        
+                        // get all the attachment data from the db
+                        $attachments = $this->get_attachments($attachment_id);
+                        
+                        // get the array of ids already sent
+                        $sent_ids = get_site_option(WP_SMPRO_PREFIX.'sent-ids',array());
+                        
+                        // loop
+                        foreach($attachments as &$attachment){
+                                // get the attachment data in the format we need
+                                $attachment = $this->format_attachment_data($attachment);
+                                // add this id to the list of sent ids
+                                $sent_ids[] = $attachment->attachment_id;
+                        }
+                        
+                        // update the sent ids
+                        update_site_option(WP_SMPRO_PREFIX.'sent-ids', $sent_ids);
+                        unset($sent_ids);
+                        
+                        // add the formatted attachment data to the request data
+                        $request_data->data = $attachments;
+                        unset($attachments);
+                        
+                        return $request_data;
+                }
+                
+                /**
+                 * Get the attachments from the database for smushing
                  * 
                  * @global object $wpdb
-                 * @param type $attachment_id
-                 * @return type
+                 * @param int|bool|array $attachment_id
+                 * @return object query results
                  */
                 function get_attachments($attachment_id = false){
                         
                         global $wpdb;
                         
+                        // figure if we need to get data for specific ids
                         $where_id_clause = $this->where_id_clause($attachment_id);
+                        
+                        // so that we don't include the ids already sent
                         $existing_clause = $this->existing_clause();
-                      
+                        
+                        // get the attachment id, attachment metadata and full size's path
                         $sql = "SELECT p.ID as attachment_id, md.meta_value as metadata, mp.meta_value as metapath"
                                 . " FROM $wpdb->posts as p"
+                                // for attachment metadata
                                 . " LEFT JOIN $wpdb->postmeta as md"
                                 . " ON (p.ID= md.post_id AND md.meta_key='_wp_attachment_metadata')"
+                                // for full size's path
                                 . " LEFT JOIN $wpdb->postmeta as mp"
                                 . " ON (p.ID= mp.post_id AND mp.meta_key='_wp_attached_file')"
+                                // to check if attachment isn't already smushed
                                 . " LEFT JOIN $wpdb->postmeta as m"
-                                . " ON (p.ID= m.post_id AND m.meta_key='wp-smpro-is-smushed')"
+                                . " ON (p.ID= m.post_id AND m.meta_key='".WP_SMPRO_PREFIX."is-smushed')"
                                 . " WHERE"
                                 . " p.post_type='attachment'"
                                 . " AND p.post_mime_type LIKE '%image/%'"
@@ -174,6 +288,7 @@ if (!class_exists('WpSmProSend')) {
                                 . $where_id_clause
                                 . $existing_clause
                                 . " ORDER BY p.post_date ASC"
+                                // get only 1000 at a time
                                 . " LIMIT 1000";
                         
                         $results = $wpdb->query($sql);
@@ -184,9 +299,10 @@ if (!class_exists('WpSmProSend')) {
                 }
                 
                 /**
+                 * Creates an IN clause if we need to smush a single or specif ids
                  * 
-                 * @param type $id
-                 * @return string
+                 * @param int|bool|array $id attachment id
+                 * @return string|null the IN clause
                  */
                 private function where_id_clause($id=false){
                         if(empty($id) || $id ===false){
@@ -209,8 +325,13 @@ if (!class_exists('WpSmProSend')) {
                                
                 }
                 
+                /**
+                 * Creates a NOT IN clause for ids that have already been sent
+                 * 
+                 * @return string|null the NOT IN clause
+                 */
                 private function existing_clause(){
-                        $sent_ids = get_site_option('wp-smpro-sent-ids',array());
+                        $sent_ids = get_site_option(WP_SMPRO_PREFIX.'sent-ids',array());
                         
                         if(empty($sent_ids)){
                              return;   
@@ -224,19 +345,20 @@ if (!class_exists('WpSmProSend')) {
                 }
                 
                 /**
+                 * Formats the database result for each attachment
                  * 
-                 * @param type $result
-                 * @return \stdClass
+                 * @param object $row the databse row for each attachment
+                 * @return \stdClass the formatted row
                  * @todo GIF checking
                  */
-                private function format_request($result){
+                private function format_attachment_data($row){
                         $request_item = new stdClass();
                         
-                        $request_item->attachment_id = $result->attachment_id;
+                        $request_item->attachment_id = $row->attachment_id;
                         
-                        $metadata = maybe_unserialize($result->metadata);
+                        $metadata = maybe_unserialize($row->metadata);
                         
-                        $full_size_array = pathinfo($result->metapath);
+                        $full_size_array = pathinfo($row->metapath);
                         
                         $request_item->path_prefix = $full_size_array['dirname'];
                         
@@ -260,95 +382,29 @@ if (!class_exists('WpSmProSend')) {
         
                 }
                 
-                /**
-                 * 
-                 * @return \stdClass
-                 */
-                private function form_request($attachment_id){
-                        
-                        $request = new stdClass();
-                        
-                        $path_base =wp_upload_dir();
-                        $request->url_prefix = $path_base['baseurl'];
-                        unset($path_base);
-                        
-                        $request->api_key = get_site_option('wpmudev_apikey');
-                        
-                        $request->token = wp_create_nonce("wp-smpro-request");
-                        
-                        $request = $this->add_options($request);
-                        
-                        $request = $this->add_attachment_data($request,$attachment_id);       
-                        
-                        return $request;
-                }
+                
                 
                 /**
+                 * Post the request data and return the response body
                  * 
-                 * @param type $request
-                 * @return type
-                 */
-                private function add_attachment_data($request, $attachment_id){
-                        $attachments = $this->get_attachments($attachment_id);
-                        
-                        $sent_ids = get_site_option('wp-smpro-sent-ids',array());
-                        foreach($attachments as &$attachment){
-                                $attachment = $this->format_request($attachment);
-                                $sent_ids[] = $attachment->attachment_id;
-                        }
-                        
-                        update_site_option('wp-smpro-sent-ids', $sent_ids);
-                        unset($sent_ids);
-                        
-                        $request->data = $attachments;
-                        unset($attachments);
-                        
-                        return $request;
-                }
-                
-                /**
-                 * 
-                 * @param type $request
-                 * @return type
-                 */
-                private function add_options($request){
-                        $options = array(
-				'progressive'   => true,
-				'gif_to_png'    => true,
-				'remove_meta'   => true,
-			);
-
-			// set values for the boolean fields
-			foreach ($options as $key => &$val) {
-				$request->{$key} = get_option('wp_smushit_pro_' . $key, '');
-				if (empty($request->{$key}) || $request->{$key} != 'on') {
-                                        $request->{$key} = 0;
-				}
-			}
-                        
-                        unset($options);
-                        
-                        return $request;
-                }
-                
-                /**
-                 * 
-                 * @param type $request
+                 * @param object $request_data
                  * @return \WP_Error
                  */
-                private function _post($request){
+                private function _post($request_data){
                         
-                        $response = $this->_post_request($request);
+                        // send a post request and get response
+                        $response = $this->_post_request($request_data);
                         
+                        // validate response
                         if (!$response || is_wp_error($response)) {
-                                unset($response, $request);
+                                unset($response, $request_data);
                                 return new WP_Error('failed', __('Request failed', WP_SMPRO_DOMAIN));
                         }
                         
 
                         // if there was an http error
                         if (empty($response['response']['code']) || $response['response']['code'] != 200) {
-                                unset($response,$request);
+                                unset($response,$request_data);
                                 //Give a error
                                 return new WP_Error('failed', __('Service unavailable', WP_SMPRO_DOMAIN));
                         }
@@ -361,16 +417,17 @@ if (!class_exists('WpSmProSend')) {
                         );
 			
                         
-                        unset($response,$request);
+                        unset($response,$request_data);
 
 			// presenting service response
 			return $data;
                 }
                 
                 /**
+                 * Make a post request to smush api and return the response
                  * 
                  * @param type $request_data
-                 * @return boolean
+                 * @return boolean|array false or the response
                  */
                 private function _post_request($request_data ) {
                         
@@ -391,7 +448,9 @@ if (!class_exists('WpSmProSend')) {
                         );
                         
                         // make the post request and return the response
-			return wp_remote_post(WP_SMPRO_SERVICE_URL, $req_args);
+			$response = wp_remote_post(WP_SMPRO_SERVICE_URL, $req_args);
+                        
+                        return $response;
 		}
 
                 /**
