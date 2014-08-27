@@ -89,6 +89,65 @@ if (!class_exists('WpSmProSend')) {
                 
                 /**
                  * 
+                 * @param type $attachment_id
+                 * @return type
+                 */
+                function send_request($attachment_id=false){
+                        /*
+                         * {
+                         *      'api_key': '',
+                         *      'url_prefix': 'http://somesite.com/wp-content/uploads',
+                         *      'token': 2wde456gd,
+                         *      
+                         *      'data': {
+                         *                      {
+                         *                              'attachment_id': 1254,
+                         *                              'path_prefix': '14/08/',
+                         *                              'files': {
+                         *                                              'large' : 'file-720X480.jpg',
+                         *                                              'medium' : 'file-270X230.jpg',
+                         *                                              'thumbnail': 'file-150X150.jpg' 
+                         *                                        }
+                         *                      },
+                         *                      {
+                         *                              'attachment_id': 1255,
+                         *                              'path_prefix': '14/08/',
+                         *                              'files': {
+                         *                                              'full' : 'file2.jpg', // no large image
+                         *                                              'medium' : 'file2-270X230.jpg',
+                         *                                              'thumbnail': 'file2-150X150.jpg' 
+                         *                                        }
+                         *                      },
+                         *                      ... and so on
+                         *      }
+                         * }
+                         */
+                        $request = $this->form_request($attachment_id);
+                        
+                        $token = $request->token;
+                        
+                        $response = $this->_post($request);
+                        
+                        if(is_wp_error($response)){
+                                unset($request);
+                                return $response;
+                        }
+                        
+                        $response = json_decode($response);
+                        
+                        unset($request);
+                        $request_id = $response['request_id'];
+                        
+                        $updated = update_site_option("wp_smpro_request_token_$request_id", $token);
+                        
+                        unset($request_id,$token,$response);
+                        
+                        return $updated;
+                        
+                }
+                
+                /**
+                 * 
                  * @global object $wpdb
                  * @param type $attachment_id
                  * @return type
@@ -98,6 +157,7 @@ if (!class_exists('WpSmProSend')) {
                         global $wpdb;
                         
                         $where_id_clause = $this->where_id_clause($attachment_id);
+                        $existing_clause = $this->existing_clause();
                       
                         $sql = "SELECT p.ID as attachment_id, md.meta_value as metadata, mp.meta_value as metapath"
                                 . " FROM $wpdb->posts as p"
@@ -112,6 +172,7 @@ if (!class_exists('WpSmProSend')) {
                                 . " AND p.post_mime_type LIKE '%image/%'"
                                 . " AND (m.meta_value='0' OR m.post_id IS NULL)"
                                 . $where_id_clause
+                                . $existing_clause
                                 . " ORDER BY p.post_date ASC"
                                 . " LIMIT 1000";
                         
@@ -128,8 +189,6 @@ if (!class_exists('WpSmProSend')) {
                  * @return string
                  */
                 private function where_id_clause($id=false){
-                        
-                        
                         if(empty($id) || $id ===false){
                                 return;
                         }
@@ -148,6 +207,20 @@ if (!class_exists('WpSmProSend')) {
                                 return $clause;
                         }
                                
+                }
+                
+                private function existing_clause(){
+                        $sent_ids = get_site_option('wp-smpro-sent-ids',array());
+                        
+                        if(empty($sent_ids)){
+                             return;   
+                        }
+                        
+                        $id_list = implode(',',$sent_ids);
+                        unset($sent_ids);
+                        $clause .= " AND p.ID NOT IN ($id_list)";
+                        unset($id_list);
+                        return $clause;        
                 }
                 
                 /**
@@ -218,11 +291,14 @@ if (!class_exists('WpSmProSend')) {
                 private function add_attachment_data($request, $attachment_id){
                         $attachments = $this->get_attachments($attachment_id);
                         
+                        $sent_ids = get_site_option('wp-smpro-sent-ids',array());
                         foreach($attachments as &$attachment){
                                 $attachment = $this->format_request($attachment);
+                                $sent_ids[] = $attachment->attachment_id;
                         }
                         
-                        
+                        update_site_option('wp-smpro-sent-ids', $sent_ids);
+                        unset($sent_ids);
                         
                         $request->data = $attachments;
                         unset($attachments);
@@ -253,64 +329,6 @@ if (!class_exists('WpSmProSend')) {
                         unset($options);
                         
                         return $request;
-                }
-                
-                /**
-                 * 
-                 * @param type $attachment_id
-                 * @return type
-                 */
-                function send_request($attachment_id=false){
-                        /*
-                         * {
-                         *      'api_key': '',
-                         *      'url_prefix': 'http://somesite.com/wp-content/uploads',
-                         *      'token': 2wde456gd,
-                         *      'data': {
-                         *                      {
-                         *                              'attachment_id': 1254,
-                         *                              'path_prefix': '14/08/',
-                         *                              'files': {
-                         *                                              'large' : 'file-720X480.jpg',
-                         *                                              'medium' : 'file-270X230.jpg',
-                         *                                              'thumbnail': 'file-150X150.jpg' 
-                         *                                        }
-                         *                      },
-                         *                      {
-                         *                              'attachment_id': 1255,
-                         *                              'path_prefix': '14/08/',
-                         *                              'files': {
-                         *                                              'full' : 'file2.jpg', // no large image
-                         *                                              'medium' : 'file2-270X230.jpg',
-                         *                                              'thumbnail': 'file2-150X150.jpg' 
-                         *                                        }
-                         *                      },
-                         *                      ... and so on
-                         *      }
-                         * }
-                         */
-                        $request = $this->form_request($attachment_id);
-                        
-                        $token = $request->token;
-                        
-                        $response = $this->_post($request);
-                        
-                        if(is_wp_error($response)){
-                                unset($request);
-                                return $response;
-                        }
-                        
-                        $response = json_decode($response);
-                        
-                        unset($request);
-                        $request_id = $response['request_id'];
-                        
-                        $updated = update_option("wp_smpro_request_token_$request_id", $token);
-                        
-                        unset($request_id,$token,$response);
-                        
-                        return $updated;
-                        
                 }
                 
                 /**
