@@ -263,7 +263,7 @@ if (!class_exists('WpSmProSend')) {
                         }
                         
                         // update the sent ids
-                        update_site_option(WP_SMPRO_PREFIX.'sent-ids', $sent_ids);
+//                        update_site_option(WP_SMPRO_PREFIX.'sent-ids', $sent_ids);
                         unset($sent_ids);
                         
                         // add the formatted attachment data to the request data
@@ -312,9 +312,6 @@ if (!class_exists('WpSmProSend')) {
                                 // get only 1000 at a time
                                 . " LIMIT 1000";
                         $results = $wpdb->get_results( $sql );
-	                echo "<pre>";
-	                print_r( $results );
-	                echo "</pre>";
                         unset($sql,$where_id_clause);
                         return $results;
                         
@@ -453,29 +450,29 @@ if (!class_exists('WpSmProSend')) {
                  * @param type $request_data
                  * @return boolean|array false or the response
                  */
-                private function _post_request($request_data ) {
-                        
-                        if (empty($request_data)) {
-				return false;
-			}
+		        private function _post_request( $request_data ) {
 
-			if (defined(WP_SMPRO_DEBUG) && WP_SMPRO_DEBUG) {
-				echo "DEBUG: Calling API: [" . $req . "]<br />";
-                        }
-                        
-			$req_args = array(
-                            'body'              => json_encode($request_data),
-                            'user-agent'        => WP_SMPRO_USER_AGENT,
-                            'timeout'           => WP_SMUSHIT_PRO_TIMEOUT,
-                            //Remove this code
-                            'sslverify'         => false
-                        );
-                        
-                        // make the post request and return the response
-			$response = wp_remote_post(WP_SMPRO_SERVICE_URL, $req_args);
-                        
-                        return $response;
-		}
+			        if ( empty( $request_data ) ) {
+				        return false;
+			        }
+
+			        if ( defined( WP_SMPRO_DEBUG ) && WP_SMPRO_DEBUG ) {
+				        echo "DEBUG: Calling API: [" . $request_data . "]<br />";
+			        }
+
+			        $req_args = array(
+				        'body'       => json_encode( $request_data ),
+				        'user-agent' => WP_SMPRO_USER_AGENT,
+				        'timeout'    => WP_SMUSHIT_PRO_TIMEOUT,
+				        //Remove this code
+				        'sslverify'  => false
+			        );
+
+			        // make the post request and return the response
+			        $response = wp_remote_post( WP_SMPRO_SERVICE_URL, $req_args );
+
+			        return $response;
+		        }
 
                 /**
                  * Gets the next id in queue
