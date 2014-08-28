@@ -27,7 +27,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 *
 		 * @var array Assorted counts for bulk smushing
 		 */
-		public $bulk;
+		public $counts;
 
 		/**
 		 *
@@ -41,7 +41,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		public function __construct() {
 
 			// set up image counts for progressive smushing
-			$this->bulk_data();
+			$this->setup_counts();
 
 			// hook scripts and styles
 			add_action( 'admin_init', array( $this, 'register' ) );
@@ -158,20 +158,20 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
 
 			// localise counts
-			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->bulk );
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
 		}
 
 		/**
 		 * Set up some data needed for the bulk ui
 		 */
 
-		function bulk_data() {
+		function setup_counts() {
 
-			$bulk                   = new WpSmProBulk();
-			$this->bulk['sent']     = $bulk->data( 'sent' );
-			$this->bulk['received'] = $bulk->data( 'received' );
-			$this->bulk['smushed']  = $bulk->data( 'smushed' );
-                        $this->bulk['stats']    = get_option('wp-smpro-global-stats', array());
+			$counts = new WpSmProCount();
+                        $counts->init();
+                        
+                        $this->counts = $counts->counts;
+                        $this->counts['stats']    = get_option('wp-smpro-global-stats', array());
 		}
 
 		/**
@@ -179,9 +179,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * @return array the counts
 		 */
 		function refresh_counts() {
-			$this->bulk_data();
+			$this->setup_counts();
 
-			return $this->bulk;
+			return $this->counts;
 		}
 
 		/**
@@ -346,7 +346,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function all_ui() {
 
 			// if there are no images in the media library
-			if ( $this->bulk['smushed']['total'] < 1 ) {
+			if ( $this->counts['total'] < 1 ) {
 				printf(
 					__(
 						'<p>Please <a href="%s">upload some images</a>.</p>',
@@ -364,7 +364,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			<div id="all-bulk" class="wp-smpro-bulk-wrap">
 				<?php
 				// everything has been smushed, display a notice
-				if ( $this->bulk['smushed']['left'] === 0 ) {
+				if ( $this->counts['smushed'] === $this->counts['total'] ) {
 					?>
 					<p>
 						<?php
@@ -461,25 +461,22 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function progress_ui() {
 			// set up the counts
-			$smushed = $this->bulk['smushed'];
-			$sent    = $this->bulk['sent'];
-			$recd    = $this->bulk['received'];
+                        
                         $stats = array(
                             'compressed_percent'=> 0,
                             'compressed_human'=> '0KB'
                             );
-                        $stats = wp_parse_args($this->bulk['stats'], $stats);
+                        $stats = wp_parse_args($this->counts['stats'], $stats);
 			// calculate %ages
-			$smushed_pc = $smushed['done'] / $smushed['total'] * 100;
-			$sent_pc    = $sent['done'] / $sent['total'] * 100;
-			$recd_pc    = $recd['done'] / $recd['total'] * 100;
+			$smushed_pc = $this->counts['smushed'] / $this->counts['total'] * 100;
+			$sent_pc    = $this->counts['sent'] / $this->counts['total'] * 100;
+			
 
 			$progress_ui = '<div id="progress-ui">';
 
 			// display the progress bars
 			$progress_ui .= '<div id="wp-smpro-progress-wrap">
                                                 <div id="wp-smpro-sent-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
-                                                <div id="wp-smpro-received-progress" class="wp-smpro-progressbar"><div style="width:' . $recd_pc . '%"></div></div>
                                                 <div id="wp-smpro-smushed-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
                                                 <p id="wp-smpro-compression">'
                                                         . __( "Reduced by ", WP_SMPRO_DOMAIN )
@@ -495,23 +492,16 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				                __(
 					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
 					                . ' have been sent for smushing', WP_SMPRO_DOMAIN
-				                ), $sent['done'], $sent['total']
+				                ), $this->counts['sent'], $this->counts['total']
 			                ) .
 			                '</p>
-                                                <p id="received-status">' .
-			                sprintf(
-				                __(
-					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
-					                . ' have been received', WP_SMPRO_DOMAIN
-				                ), $recd['done'], $recd['total']
-			                ) .
-			                '</p>
+                                                
                                                 <p id="smushed-status">' .
 			                sprintf(
 				                __(
 					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
 					                . ' have been smushed', WP_SMPRO_DOMAIN
-				                ), $smushed['done'], $smushed['total']
+				                ), $this->counts['smushed'], $this->counts['total']
 			                ) .
 			                '</p>
                                         </div>

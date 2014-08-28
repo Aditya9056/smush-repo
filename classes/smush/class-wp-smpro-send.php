@@ -104,8 +104,8 @@ if (!class_exists('WpSmProSend')) {
                          *      'api_key': '',
                          *      'url_prefix': 'http://somesite.com/wp-content/uploads',
                          *      'token': 2wde456gd,
+                         *      'callback_url': 'http://somesite.com/admin-ajax.php?action=wp-smpro-received'
                          *      'progressive': 1,
-                         * 	'gif_to_png': 1,
                          * 	'remove_meta': 1,
                          *      'data': {
                          *                      {
@@ -413,6 +413,8 @@ if (!class_exists('WpSmProSend')) {
                         if (!isset($filenames['large']) || $anim === true) {
                                 $filenames['full'] = $full_image;
                         }
+                        
+                        // not sending full size, otherwise
 
                         $request_item->files = $filenames;
 
@@ -516,45 +518,6 @@ if (!class_exists('WpSmProSend')) {
                         }
 
                         return $msg;
-                }
-
-                /**
-                 * Try and see if data is invalid
-                 *
-                 * @param string $img_path Image's file path
-                 * @param string $file_url Image's file url
-                 *
-                 * @return bool|object True if valid, WP_Error object if invalid
-                 */
-                function invalidate($img_path = '', $file_url = '') {
-                        if (empty($img_path)) {
-                                return new WP_Error('invalid', __("File path is empty", WP_SMPRO_DOMAIN));
-                        }
-
-                        if (empty($file_url)) {
-                                return new WP_Error('invalid', __("File URL is empty", WP_SMPRO_DOMAIN));
-                        }
-
-                        if (!file_exists($img_path)) {
-                                return new WP_Error('invalid', __("File does not exist", WP_SMPRO_DOMAIN));
-                        }
-
-                        // check that the file exists
-                        if (!file_exists($img_path) || !is_file($img_path)) {
-                                return new WP_Error('invalid', sprintf(__("ERROR: Could not find <span class='code'>%s</span>", WP_SMPRO_DOMAIN), $img_path));
-                        }
-
-                        // check that the file is writable
-                        if (!is_writable(dirname($img_path))) {
-                                return new WP_Error('invalid', sprintf(__("ERROR: <span class='code'>%s</span> is not writable", WP_SMPRO_DOMAIN), dirname($img_path)));
-                        }
-
-                        $file_size = filesize($img_path);
-                        if ($file_size > WP_SMPRO_MAX_BYTES) {
-                                return new WP_Error('invalid', sprintf(__('ERROR: <span style="color:#FF0000;">Skipped (%s) Unable to Smush due to 5mb size limits.</span>', WP_SMPRO_DOMAIN), $file_size));
-                        }
-
-                        return true;
                 }
 
                 /**
