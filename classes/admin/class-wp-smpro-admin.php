@@ -311,7 +311,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$opt_name = WP_SMPRO_PREFIX . $key;
 
 			// the defined constant
-			$const_name = strtoupper( $opt_name );
+			$const_name = strtoupper( 'WP_SMPRO_'.$key );
 
 			// default value
 			$opt_val = intval( get_option( $opt_name, constant( $const_name ) ) );
