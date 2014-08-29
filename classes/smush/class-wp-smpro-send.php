@@ -27,7 +27,7 @@ if (!class_exists('WpSmProSend')) {
                 function __construct() {
 
                         // for ajax based smushing through bulk UI
-                        add_action('wp_ajax_wp_smpro_queue', array($this, 'ajax_queue'));
+                        add_action('wp_ajax_wp_smpro_send', array($this, 'ajax_send'));
 
                         if (WP_SMPRO_AUTO) {
                                 // add automatic smushing on upload
@@ -54,8 +54,9 @@ if (!class_exists('WpSmProSend')) {
                  *
                  * 
                  */
-                function ajax_queue() {
+                function ajax_send() {
                         global $wp_sm_pro;
+                        
                         // check user permissions
                         if (!current_user_can('upload_files')) {
                                 wp_die(__("You don't have permission to work with uploaded files.", WP_SMPRO_DOMAIN));
@@ -80,16 +81,39 @@ if (!class_exists('WpSmProSend')) {
                                 $attachment_id = false;
                         }
                         $sent = $this->send_request($attachment_id);
-
-                        if (!$sent || is_wp_error($sent)) {
-                                echo 0;
+                        
+                        if(!$sent){
+                                $response['status_code'] = 0;
+                                $response['status_message'] = __('Sending failed. Please try again later', WP_SMPRO_DOMAIN);
+                        
+                                echo json_encode($response);
                                 die();
                         }
 
-                        echo 1;
+                        if (is_wp_error($sent)) {
+                                echo json_encode($this->wperror_tojs($sent));
+                                die();
+                        }
+                        
+                        $response['status_code'] = 1;
+                        echo $response;
 
                         // wp_ajax wants us to...
                         die();
+                }
+                
+                function wperror_tojs($wp_err){
+                        
+                        if(!is_wp_error($wp_err)){
+                                return array();
+                        }
+                        foreach($wp_err->errors as $err){
+                                $response['status_code'] = 0;
+                                $response['status_message'] = $err[0];
+                        }
+                        
+                        return $response;   
+                        
                 }
 
                 /**
@@ -135,6 +159,11 @@ if (!class_exists('WpSmProSend')) {
 
                         // get the token out
                         $token = $request_data->token;
+                        
+                        // get the sent ids, for our processing
+                        $sent_ids = $request_data->sent_ids;
+                        // remove them from the request object
+                        unset($request_data->sent_ids);
 
                         // post the request and get the response
                         $response = $this->_post($request_data);
@@ -151,19 +180,112 @@ if (!class_exists('WpSmProSend')) {
 
                         // destroy the large request_data from memory
                         unset($request_data);
-
-                        // get the unique request id issued by smush service
-                        $request_id = $response['request_id'];
-
-                        // save it for reference
-                        $updated = update_site_option(WP_SMPRO_PREFIX . "request-token-$request_id", $token);
-
+                        
+                        // process the response
+                        $updated = $this->process_response($response, $token, $sent_ids);
+                        
                         // destroy all vars that we don't need
-                        unset($request_id, $token, $response);
+                        unset( $token, $response, $sent_ids);
 
                         // return the success status of update option
                         // otherwise all this was a waste since we won't know how to process further
                         return boolval($updated);
+                }
+                
+                /**
+                 * 
+                 * @param type $response
+                 * @param type $token
+                 * @param type $sent_ids
+                 * @return boolean
+                 */
+                private function process_response($response, $token, $sent_ids){
+                        // request was successfully received
+                        if($response['success']){
+                                // get the unique request id issued by smush service
+                                $request_id = $response['request_id'];
+                                
+                                $updated = $this->update_options($request_id,$token,$sent_ids);
+                        }else{
+                                $updated = false;
+                        }
+                        
+                        return $updated;
+                }
+                
+                /**
+                 * 
+                 * @param type $request_id
+                 * @param type $token
+                 * @param type $sent_ids
+                 * @return boolean
+                 */
+                private function update_options($request_id,$token,$sent_ids){
+                        // update the sent ids array
+                        $sent_update = $this->update_sent_ids($sent_ids); 
+
+                        // if sent ids were updated, proceed further
+                        if($sent_update){
+
+                                // save the sent_ids for this request
+                                update_option(WP_SMPRO_PREFIX . "sent-ids-$request_id", $sent_ids);
+
+                                $this->update_bulk_status($sent_ids);
+
+                                // save token with request_id for reference
+                                $updated = boolval(update_option(WP_SMPRO_PREFIX . "request-token-$request_id", $token));
+                        }else{
+                                //otherwise the remaining process will break
+                                $updated = false;
+                        }
+                        
+                        unset($sent_update);
+                        
+                        return $updated;
+                }
+                
+                /**
+                 * 
+                 * @param type $sent_ids
+                 * @return type
+                 */
+                private function update_bulk_status($sent_ids = false){
+                        if(!is_array($sent_ids)){
+                                return;
+                        }
+                        $is_bulk = (count($sent_ids)>1);
+                        
+                        if(!$is_bulk){
+                              unset($is_bulk);
+                              return;  
+                        }
+                        
+                        unset($is_bulk);
+                        // save that a bulk request has been sent for this site and is expected back
+                        update_option(WP_SMPRO_PREFIX . "bulk-sent", 1);
+                }
+
+                /**
+                 * Updates the sent ids array in options table
+                 * 
+                 * @param array $sent_ids The sent ids from the current request
+                 * @return boolean Whether the update was successful
+                 */
+                private function update_sent_ids($sent_ids){
+                        // get the array of ids sent previously
+                        $prev_sent_ids = get_option(WP_SMPRO_PREFIX . 'sent-ids', array());
+                        
+                        // merge the newest sent ids with the existing ones
+                        
+                        $sent_ids = array_merge($prev_sent_ids,$sent_ids);
+                        
+                        if(is_array($sent_ids)){
+                                // update the sent ids
+                                $update = update_option(WP_SMPRO_PREFIX.'sent-ids', $sent_ids);
+                                return boolval($update);
+                        }
+                        
+                        return false;
                 }
 
                 /**
@@ -237,15 +359,13 @@ if (!class_exists('WpSmProSend')) {
 
                         // get all the attachment data from the db
                         $attachments = $this->get_attachments($attachment_id);
-                        print_r($attachments);
-                        die();
+                        
 
                         //If there are no atachments, return
                         if (empty($attachments)) {
                                 return $request_data;
                         }
-                        // get the array of ids already sent
-                        $sent_ids = get_site_option(WP_SMPRO_PREFIX . 'sent-ids', array());
+                        
 
                         // loop
                         foreach ($attachments as $key => &$attachment) {
@@ -271,9 +391,9 @@ if (!class_exists('WpSmProSend')) {
                                 // add this id to the list of sent ids
                                 $sent_ids[] = $attachment->attachment_id;
                         }
-
+                        
                         // update the sent ids
-//                        update_site_option(WP_SMPRO_PREFIX.'sent-ids', $sent_ids);
+                        $request_data->sent_ids = $sent_ids;
                         unset($sent_ids);
 
                         // add the formatted attachment data to the request data

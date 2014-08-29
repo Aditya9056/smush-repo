@@ -49,9 +49,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// hook custom screen
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 
-			// hook into Heartbeat API to check smush progress
-			add_filter( 'heartbeat_received', array( $this, 'refresh_progress' ), 10, 3 );
-
 			// hook ajax call for checking smush status
 			add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
 
@@ -460,9 +457,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * Print out the progress bar
 		 */
 		function progress_ui() {
-			// set up the counts
-                        
-                        $stats = array(
+			$stats = array(
                             'compressed_percent'=> 0,
                             'compressed_human'=> '0KB'
                             );
@@ -516,41 +511,89 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * @todo Add the API status here, next to the button
 		 */
 		function setup_button() {
-                        $cancel = false;
-			// if we have nothing left to smush
-			// disable the button
-			if ( $this->bulk['smushed']['left'] === 0 ) {
-				$button_text  = __( 'All done!', WP_SMPRO_DOMAIN );
-				$button_class = "wp-smpro-finished";
-				$disabled     = ' disabled="disabled"';
-                                $cancel = ' disabled="disabled"';
-			} else {
-				// we still have some images to send to the API
-				// we check received because that is the only useful flag
-				if ( $this->bulk['received']['left'] > 0 ) {
-					$button_text  = __( 'Smush all images', WP_SMPRO_DOMAIN );
-					$button_class = "wp-smpro-unstarted";
-				} else {
-					// everything has been sent to the API
-					$button_text  = __( 'Resend unsmushed images', WP_SMPRO_DOMAIN );
-					$button_class = "wp-smpro-resmush";
-				}
-				$button_class = "wp-smpro-unstarted";
-
-				// disable the button, if API is not connected
-				$disabled = $this->api_connected ? '' : ' disabled="disabled"';
-                                $cancel = '';
-			}
+                        $button = $this->button_state();
 			?>
-			<button id="wp-smpro-begin" class="button button-primary <?php echo $button_class; ?>" <?php echo $disabled; ?>>
-				<span><?php echo $button_text ?></span>
+			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
+				<span><?php echo $button['text'] ?></span>
 			</button>
-                        <button id="wp-smpro-cancel" class="button button-secondary" <?php echo $cancel; ?>>
+                        <button id="wp-smpro-cancel" class="button button-secondary" <?php echo $button['cancel']; ?>>
 				<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
 			</button>
                         <?php
                         
 		}
+                
+                private function button_state(){
+                        $button = array(
+                            'cancel' => false,
+                        );
+                        
+			// if we have nothing left to smush
+			// disable the buttons
+			if ( $this->counts['smushed'] === $this->counts['total'] ) {
+				$button['text']  = __( 'All done!', WP_SMPRO_DOMAIN );
+				$button['id'] = "wp-smpro-finished";
+				$button['disabled']     = ' disabled="disabled"';
+                                $button['cancel'] = ' disabled="disabled"';
+                                
+                                return $button;
+			}
+                        
+                        // otherwise we have something to smush
+                        
+                        // check if we are awaiting a bulk request's smush response
+                        $is_bulk_sent = boolval(get_option(WP_SMPRO_PREFIX . "bulk-sent",0));
+                        
+                        // check if we have received this bulk request's callback
+                        $is_bulk_received = boolval(get_option(WP_SMPRO_PREFIX . "bulk-received",0));
+                        
+                        // a bulk request has been sent but not received
+                        if($is_bulk_sent && !$is_bulk_received){
+                                $button['text']  = __( 'Smushing in progress', WP_SMPRO_DOMAIN );
+				$button['id'] = "wp-smpro-waiting";
+				$button['disabled']     = ' disabled="disabled"';
+                                $button['cancel'] = ' disabled="disabled"';
+                                
+                                return $button;
+                        }
+                        
+                        // no bulk request awaited
+                        if(!$is_bulk_sent && !$is_bulk_received){
+                                if(!$this->api_connected){
+                                        $button['text']  = __( 'Service unavailable!', WP_SMPRO_DOMAIN );
+                                        $button['disabled']     = ' disabled="disabled"';
+                                        $button['cancel'] = ' disabled="disabled"';
+                                }else{
+                                        $button['text']  = __( 'Send smush request', WP_SMPRO_DOMAIN );
+
+                                        $button['disabled']     = false;
+                                        $button['cancel'] = false;
+                                }
+                                $button['id'] = "wp-smpro-send";
+                                
+                                return $button;
+                        }
+                        
+                        // bulk request has been smushed and callback was received
+                        if($is_bulk_received){
+                                // if API not connected
+                                if(!$this->api_connected){
+                                        $button['text']  = __( 'Service unavailable!', WP_SMPRO_DOMAIN );
+                                        $button['disabled']     = ' disabled="disabled"';
+                                        $button['cancel'] = ' disabled="disabled"';
+                                }else{
+                                        $button['text']  = __( 'Fetch smushed images', WP_SMPRO_DOMAIN );
+                                        $button['disabled']     = false;
+                                        $button['cancel'] = false;
+                                }
+                                
+                                $button['id'] = "wp-smpro-fetch";
+                                
+                                return $button;
+                        }
+                        
+                        
+                }
 
 		/**
 		 * Filter Hearbeat response, Refresh the progress counts on Heartbeat received

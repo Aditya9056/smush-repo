@@ -46,7 +46,7 @@ if (!class_exists('WpSmProCount')) {
                             'posts_per_page' => - 1
                         );
                         $results = new WP_Query($query);
-                        $count = !empty($results->post_count) ? $results->post_count : '';
+                        $count = !empty($results->post_count) ? $results->post_count : 0;
 
                         // send the count
                         return $count;
@@ -69,7 +69,7 @@ if (!class_exists('WpSmProCount')) {
                         );
 
                         $results = new WP_Query($query);
-                        $count = !empty($results->post_count) ? $results->post_count : '';
+                        $count = !empty($results->post_count) ? $results->post_count : 0;
 
                         // send the count
                         return $count;
