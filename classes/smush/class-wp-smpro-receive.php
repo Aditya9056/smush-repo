@@ -18,20 +18,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 	class WpSmProReceive {
 
 		/**
-		 *
-		 * @var array The default data array
-		 */
-		public $default_data = array(
-			'attachment_id'    => '',
-			'file_id'          => '',
-			'file_url'         => '',
-			'token'            => '',
-			'status_code'      => '',
-			'request_err_code' => '',
-			'filename'         => ''
-		);
-
-		/**
 		 * Constructor, hooks callback urls
 		 */
 		public function __construct() {
@@ -83,6 +69,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         
                         $sent_ids = get_option(WP_SMPRO_PREFIX . "sent-ids-$request_id",array());
                         
+                        $is_bulk = (count($sent_ids)>1);
+                        
                         global $wpdb;
                         
                         $sql = "INSERT INTO $wpdb->post_meta (post_id,meta_key,meta_value) VALUES ";
@@ -97,6 +85,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         $sql .= implode(',', $values);
                         
                         $insert = $wpdb->query($sql);
+                        
+                        if(!$is_bulk){
+                                WpSmProFetch::fetch($attachment_id);
+                        }
                         return $insert;
                         
                 }
@@ -106,7 +98,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                                 return $insert;
                         }
                         
-                        delete_option(WP_SMPRO_PREFIX . "bulk-sent");
+                        
                         delete_option(WP_SMPRO_PREFIX . "request-token-$request_id");
                         
                         
@@ -114,7 +106,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         
                         return $updated;
                 }
-                
 
 	}
 

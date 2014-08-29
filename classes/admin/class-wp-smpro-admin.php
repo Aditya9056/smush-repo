@@ -156,6 +156,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
+                        
+                        $current_request_id = get_option(WP_SMPRO_PREFIX . "bulk-sent");
+                        
+                        $sent_ids = get_option(WP_SMPRO_PREFIX."sent-ids-$current_request_id");
+                        // localise counts
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_sent_ids', $sent_ids );
+                        
 		}
 
 		/**

@@ -33,16 +33,18 @@ if (!class_exists('WpSmProFetch')) {
                         $this->basedir = trailingslashit($pathbase['basedir']);
 
                         // hook the ajax call for fetching the attachment
-                        add_action('wp_ajax_wp_smpro_fetch', array($this, 'fetch'));
+                        add_action('wp_ajax_wp_smpro_fetch', WpSmProFetch::fetch());
                 }
 
                 /**
                  * 
                  * @return type
                  */
-                function fetch() {
-
-                        $attachment_id = $_GET['attachment_id'];
+                static function fetch($attachment_id=false) {
+                        
+                        if(!$attachment_id){
+                                $attachment_id = $_GET['attachment_id'];
+                        }
 
                         if (!$attachment_id) {
                                 return;

@@ -230,7 +230,7 @@ if (!class_exists('WpSmProSend')) {
                                 // save the sent_ids for this request
                                 update_option(WP_SMPRO_PREFIX . "sent-ids-$request_id", $sent_ids);
 
-                                $this->update_bulk_status($sent_ids);
+                                $this->update_bulk_status($sent_ids, $request_id);
 
                                 // save token with request_id for reference
                                 $updated = boolval(update_option(WP_SMPRO_PREFIX . "request-token-$request_id", $token));
@@ -249,7 +249,7 @@ if (!class_exists('WpSmProSend')) {
                  * @param type $sent_ids
                  * @return type
                  */
-                private function update_bulk_status($sent_ids = false){
+                private function update_bulk_status($sent_ids = false, $request_id){
                         if(!is_array($sent_ids)){
                                 return;
                         }
@@ -262,7 +262,7 @@ if (!class_exists('WpSmProSend')) {
                         
                         unset($is_bulk);
                         // save that a bulk request has been sent for this site and is expected back
-                        update_option(WP_SMPRO_PREFIX . "bulk-sent", 1);
+                        update_option(WP_SMPRO_PREFIX . "bulk-sent", $request_id);
                 }
 
                 /**

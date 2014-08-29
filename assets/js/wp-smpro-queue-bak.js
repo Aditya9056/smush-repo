@@ -669,10 +669,8 @@ jQuery('document').ready(function() {
                                         return;
                                 }
                                 wp_smpro_change_media_status($id, true, wp_smpro_msgs.sent);
-                                // push the id into the queue for checking
-                                $check_queue.push($id);
                         }).fail(function() {
-                                $resmush_queue.push($id);
+                                
                         });
                 }
 
