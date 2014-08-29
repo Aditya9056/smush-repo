@@ -51,7 +51,7 @@ if (!class_exists('WpSmProFetch')) {
 
                         $zip = $this->fetch_file($smush_data['download_url']);
 
-                        $filename = $this->basedir . WP_SMPRO_PREFIX . '/' . $attachment_id . '.zip';
+                        $filename = $this->basedir . WP_SMPRO_PREFIX . 'fetched/' . $attachment_id . '.zip';
 
                         $fp = fopen($filename, 'w');
                         fwrite($fp, $zip);
