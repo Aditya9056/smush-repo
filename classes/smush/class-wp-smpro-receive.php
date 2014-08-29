@@ -163,14 +163,14 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$this->callback_response();
 		}
                 
-        function receive_smush($id, $size, $smush_meta, $smushed){
-                //Update metadata
-                update_post_meta( $id, "smush_meta_$size", $smush_meta );
+                function receive_smush($id, $size, $smush_meta, $smushed){
+                        //Update metadata
+                        update_post_meta( $id, "smush_meta_$size", $smush_meta );
 
-                global $wp_sm_pro;
-                $wp_sm_pro->set_check_status($id, 'received', $size, 1);
-                $wp_sm_pro->set_check_status($id, 'smushed', $size, $smushed);
-        }
+                        global $wp_sm_pro;
+                        $wp_sm_pro->set_check_status($id, 'received', $size, 1);
+                        $wp_sm_pro->set_check_status($id, 'smushed', $size, $smushed);
+                }
                 
                 
 
