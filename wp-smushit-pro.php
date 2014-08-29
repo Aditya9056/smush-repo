@@ -81,6 +81,7 @@ require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-media-library.php' );
 require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-receive.php' );
 require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-count.php' );
 require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-admin.php' );
+require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-fetch.php' );
 require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-send.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro.php' );
 

@@ -69,7 +69,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         
                         $sent_ids = get_option(WP_SMPRO_PREFIX . "sent-ids-$request_id",array());
                         
-                        $is_bulk = (count($sent_ids)>1);
+                        $is_single = (count($sent_ids)>1);
                         
                         global $wpdb;
                         
@@ -86,7 +86,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         
                         $insert = $wpdb->query($sql);
                         
-                        if(!$is_bulk){
+                        if($is_single){
                                 WpSmProFetch::fetch($attachment_id);
                         }
                         return $insert;

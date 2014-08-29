@@ -60,6 +60,8 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 
 			// instantiate the receiver
 			$this->receiver = new WpSmProReceive();
+                        
+                        $this->fetch = new WpSmproFetch();
 
 			$this->admin = new WpSmProAdmin();
 
