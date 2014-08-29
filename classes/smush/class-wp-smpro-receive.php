@@ -42,32 +42,24 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         
                         $request_id = $data['request_id'];
                         
-                        if(!$this->verify($request_id, $token)){
+                        $current_requests = get_option(WP_SMPRO_PREFIX . "current-requests", array());
+                        
+                        if($data['token']!= $current_requests[$request_id]['token']){
                                 unset($data);
                                 return;
                         }
                         
                         $attachment_data = $data['data'];
                         
-                        $insert = $this->save($request_id,$attachment_data);
+                        $insert = $this->save($attachment_data, $current_requests[$request_id]['sent_ids']);
                         
                         unset($attachment_data);
                         
-                        $this->process($insert,$request_id);
+                        $this->process($insert,$request_id, $current_requests);
 		}
                 
-                private function verify($request_id, $token){
-                        $stored_token = get_option(WP_SMPRO_PREFIX . "request-token-$request_id", '');
-                        
-                        if($token === $stored_token){
-                                return true;
-                        }
-                        return false;
-                }
                 
-                private function save($request_id,$data) {
-                        
-                        $sent_ids = get_option(WP_SMPRO_PREFIX . "sent-ids-$request_id",array());
+                private function save($data,$sent_ids) {
                         
                         $is_single = (count($sent_ids)>1);
                         
@@ -93,14 +85,14 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         
                 }
                 
-                private function process($insert, $request_id){
+                private function process($insert, $request_id, $current_requests){
                         if($insert === false){
                                 return $insert;
                         }
                         
+                        unset($current_requests[$request_id]);
                         
-                        delete_option(WP_SMPRO_PREFIX . "request-token-$request_id");
-                        
+                        update_option(WP_SMPRO_PREFIX . "current-requests", $current_requests);
                         
                         $updated = update_option(WP_SMPRO_PREFIX . "bulk-received",1);
                         

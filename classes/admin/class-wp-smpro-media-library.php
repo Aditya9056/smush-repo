@@ -16,6 +16,8 @@ if (!class_exists('WpSmProMediaLibrary')) {
          *
          */
         class WpSmProMediaLibrary {
+                
+                var $current_requests;
 
                 /**
                  * Constructor
@@ -34,6 +36,8 @@ if (!class_exists('WpSmProMediaLibrary')) {
                                 add_filter('manage_media_columns', array($this, 'columns'));
                                 add_action('manage_media_custom_column', array($this, 'custom_column'), 10, 2);
                         }
+                        
+                        $this->current_requests = get_option(WP_SMPRO_PREFIX.'current-requests', array());
                 }
 
                 /**
@@ -69,7 +73,7 @@ if (!class_exists('WpSmProMediaLibrary')) {
                         // if the image is smushed
                         if (!empty($is_smushed)) {
                                 // the status
-	                        $stats = get_post_meta( $id, 'wp-smpro-smush-stats', true );
+	                        $stats = get_post_meta( $id, WP_SMPRO_PREFIX.'smush-data', true );
 	                        if ( isset( $stats['compressed_bytes'] ) && $stats['compressed_bytes'] == 0 ) {
 		                        $status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
 	                        } elseif ( ! empty( $stats['compressed_percent'] ) && ! empty( $stats['compressed_human'] ) ) {
@@ -82,7 +86,9 @@ if (!class_exists('WpSmProMediaLibrary')) {
                                 // the button text
                                 $button_txt = __('Re-smush', WP_SMPRO_DOMAIN);
                         } else {
-                                $is_sent = get_post_meta($id, "wp-smpro-is-sent", true);
+                                $sent_ids = get_option(WP_SMPRO_PREFIX.'sent-ids',array());
+                                
+                                $is_sent = in_array($id, $sent_ids);
 
                                 if (!empty($is_sent)) {
                                         // the status
@@ -151,23 +157,21 @@ if (!class_exists('WpSmProMediaLibrary')) {
                  */
                 function show_resmush_button($id) {
                         $button_show = false;
-                        $smush_meta_full = get_post_meta($id, 'smush-meta-full', true);
+                        $smush_data = get_post_meta($id, WP_SMPRO_PREFIX.'smush-data', true);
                         $smush_status = get_post_meta($id, 'wp-smpro-is-smushed', true);
-                        $receive_status = get_post_meta($id, 'wp-smpro-is-received', true);
-
-
+                        
                         if ($smush_status === '1') {
                                 return $button_show;
                         }
-
-                        if ($smush_status === '0' && $receive_status === '1') {
-                                $button_show = true;
+                        foreach($this->current_requests as $request_id=>$data){
+                                if(in_array($id,$data['sent_ids'])){
+                                        $timestamp = $data['timestamp'];
+                                        exit();
+                                }
                         }
-
-                        if ($smush_status === '0' && $receive_status === '0') {
-                                $age = (int) time() - (int) $smush_meta_full['timestamp'];
-                                if ($age >= 2 * DAY_IN_SECONDS) {
-
+                        if ($smush_status === '0') {
+                                $age = (int) time() - (int) $timestamp;
+                                if ($age >= 10 * DAY_IN_SECONDS) {
                                         $button_show = true;
                                 }
                         }

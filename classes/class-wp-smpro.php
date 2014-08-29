@@ -105,7 +105,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			/**
 			 * Time out for API request
 			 */
-			define( 'WP_SMUSHIT_PRO_TIMEOUT', 60 );
+			define( 'WP_SMPRO_TIMEOUT', 60 );
 
 
 			if ( ! defined( 'WP_SMPRO_EFFICIENT' ) ) {
@@ -141,6 +141,10 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			} else {
 				define( 'WP_SMPRO_DEBUG', false );
 			}
+                        
+                        if( !defined( 'WP_SMPRO_REQUEST_LIMIT' ) ){
+                                define( 'WP_SMPRO_REQUEST_LIMIT', 1000 );
+                        }
 		}
 
 		/**

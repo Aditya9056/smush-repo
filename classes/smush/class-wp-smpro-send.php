@@ -228,12 +228,17 @@ if (!class_exists('WpSmProSend')) {
                         if($sent_update){
 
                                 // save the sent_ids for this request
-                                update_option(WP_SMPRO_PREFIX . "sent-ids-$request_id", $sent_ids);
-
                                 $this->update_bulk_status($sent_ids, $request_id);
-
-                                // save token with request_id for reference
-                                $updated = boolval(update_option(WP_SMPRO_PREFIX . "request-token-$request_id", $token));
+                                
+                                $current_requests = get_option(WP_SMPRO_PREFIX.'current-requests', array());
+                                
+                                $current_requests[$request_id]['token'] = $token;
+                                
+                                $current_requests[$request_id]['sent_ids'] = $sent_ids;
+                                
+                                $current_requests[$request_id]['timestamp'] = time();
+                                
+                                $updated = boolval(update_option(WP_SMPRO_PREFIX.'current-requests', $current_requests));
                         }else{
                                 //otherwise the remaining process will break
                                 $updated = false;
@@ -249,7 +254,7 @@ if (!class_exists('WpSmProSend')) {
                  * @param type $sent_ids
                  * @return type
                  */
-                private function update_bulk_status($sent_ids = false, $request_id){
+                private function update_bulk_status($sent_ids = false, $request_id=''){
                         if(!is_array($sent_ids)){
                                 return;
                         }
@@ -439,7 +444,7 @@ if (!class_exists('WpSmProSend')) {
                                 . $existing_clause
                                 . " ORDER BY p.post_date ASC"
                                 // get only 1000 at a time
-                                . " LIMIT 1000";
+                                . " LIMIT ".WP_SMPRO_REQUEST_LIMIT;
                         $results = $wpdb->get_results($sql);
                         unset($sql, $where_id_clause);
                         return $results;
