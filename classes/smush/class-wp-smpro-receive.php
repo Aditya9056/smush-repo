@@ -78,7 +78,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                                 $attachment_id = $val['attachment_id'];
                                 unset($val['attachment_id']);
                                 if(in_array($attachment_id, $sent_ids)){
-                                        $values[] = "(".$attachment_id.", '".WP_SMPRO_PREFIX."', ".maybe_serialize($val).")";
+                                        $values[] = "(".$attachment_id.", '".WP_SMPRO_PREFIX."smush-data', ".maybe_serialize($val).")";
                                 }
                         }
                         

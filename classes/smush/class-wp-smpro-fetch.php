@@ -49,7 +49,7 @@ if (!class_exists('WpSmProFetch')) {
                         if (!$attachment_id) {
                                 return;
                         }
-                        $smush_data = get_post_meta($attachment_id, true);
+                        $smush_data = get_post_meta($attachment_id, WP_SMPRO_PREFIX.'smush-data', true);
 
                         $zip = $this->fetch_file($smush_data['download_url']);
 
@@ -62,6 +62,7 @@ if (!class_exists('WpSmProFetch')) {
                         $result = $this->replace($filename);
                         
                         if($result){
+                                unset($smush_data['download_url']);
                                 update_post_meta($attachment_id,WP_SMPRO_PREFIX.'is-smushed',1);
                         }
 
