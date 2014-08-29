@@ -58,6 +58,10 @@ if (!class_exists('WpSmProFetch')) {
                         fclose($fp);
 
                         $result = $this->replace($filename);
+                        
+                        if($result){
+                                update_post_meta($attachment_id,WP_SMPRO_PREFIX.'is-smushed',1);
+                        }
 
                         echo boolval($result);
                         die();
