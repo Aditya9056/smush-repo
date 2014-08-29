@@ -30,7 +30,7 @@ if (!class_exists('WpSmProFetch')) {
 
                         // set up the base path
                         $pathbase = wp_upload_dir();
-                        $this->basedir = $pathbase['basedir'];
+                        $this->basedir = trailingslashit($pathbase['basedir']);
 
                         // hook the ajax call for fetching the attachment
                         add_action('wp_ajax_wp_smpro_fetch', array($this, 'fetch'));
