@@ -90,9 +90,9 @@ if (!class_exists('WpSmProMediaLibrary')) {
                                 
                                 $is_sent = in_array($id, $sent_ids);
 
-                                if (!empty($is_sent)) {
+                                if ($is_sent) {
                                         // the status
-                                        $status_txt = __('File is being processed by API', WP_SMPRO_DOMAIN);
+                                        $status_txt = __('API is smushing it', WP_SMPRO_DOMAIN);
 
                                         // we need to show the smush button
                                         $show_button = false;

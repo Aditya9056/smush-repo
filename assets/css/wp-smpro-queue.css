@@ -34,6 +34,10 @@ input#wp-smpro-save-settings{
 .smush-notices button.button {
         margin: 5px;
 }
+
+#fetch-notice{
+        display:none;
+}
 /*
 Smush button transformation
 */
@@ -44,7 +48,7 @@ Smush button transformation
         float:left;
 }
 
-.button.wp-smpro-finished,.button.wp-smpro-finished:disabled,.button.wp-smpro-finished[disabled]{
+.button#wp-smpro-finished,.button#wp-smpro-finished:disabled,.button#wp-smpro-finished[disabled]{
         color:#fff!important;
         background: #00cf21!important;
         border-color: #619f6b!important;
@@ -259,9 +263,6 @@ Progressbar ui
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-sent-progress div{
         background-color: #2ea2cc;
 }
-#progress-ui #wp-smpro-progress-wrap #wp-smpro-received-progress div{
-        background-color: #0074a2;
-}
 
 div#wp-smpro-progress-status {
         overflow: hidden;
@@ -269,7 +270,7 @@ div#wp-smpro-progress-status {
 
 #wp-smpro-progress-status p {
         float: left;
-        width: 33%;
+        width: 50%;
 }
 
 div#wp-smpro-progress-status p::before { 
@@ -286,10 +287,6 @@ div#wp-smpro-progress-status p#sent-status::before {
         color:#2ea2cc;  
 }
 
-div#wp-smpro-progress-status p#received-status::before {
-        background-color:#0074a2;
-        color:#0074a2;  
-}
 p#wp-smpro-compression {
         text-align: center;
         font-size: 1.1em;

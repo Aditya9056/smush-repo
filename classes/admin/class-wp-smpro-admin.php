@@ -50,7 +50,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 
 			// hook ajax call for checking smush status
-			add_action( 'wp_ajax_wp_smpro_check', array( $this, 'check_status' ) );
+			add_action( 'wp_ajax_wp_smpro_hide', array( $this, 'hide_notice' ) );
 
 			// hook ajax call to reset counts
 			add_action( 'wp_ajax_wp_smpro_reset', array( $this, 'reset_count' ) );
@@ -133,23 +133,15 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function localize() {
 			$wp_smpro_msgs = array(
-				'leave_screen'   => __( 'You may leave this screen now, <strong>we will update your site with smushed images, automatically</strong>!', WP_SMPRO_DOMAIN ),
-				'throttled'      => __( 'You have reached the limit of 50 images at a time. Please try after some time.', WP_SMPRO_DOMAIN ),
-                                'sent'           => __( 'Sent for Smushing', WP_SMPRO_DOMAIN ),
-				'progress'       => __( 'Smushing in Progress', WP_SMPRO_DOMAIN ),
-				'resmush'        => __( 'Re-smush', WP_SMPRO_DOMAIN ),
-				'smush_now'      => __( 'Smush.it now!', WP_SMPRO_DOMAIN ),
-				'done'           => __( 'All done!', WP_SMPRO_DOMAIN ),
-				'smush_all'      => __( 'Smush all images', WP_SMPRO_DOMAIN ),
-				'resmush_all'    => __( 'Resend unsmushed images', WP_SMPRO_DOMAIN ),
-                                'no_leave'       => __( 'Please <strong>do not leave the screen</strong> till all the images have been sent for smushing.', WP_SMPRO_DOMAIN ),
-				'refresh_screen' => sprintf(
-					__(
-						'New images were uploaded, please <a href="%s">refresh this page</a> to smush them properly.',
-						WP_SMPRO_DOMAIN
-					),
-					admin_url( 'upload.php?page=wp-smpro-admin' )
-				),
+				'fetch'         => __( 'Fetch smushed images', WP_SMPRO_DOMAIN ),
+                                'sending'       => __( 'Sending &hellip;', WP_SMPRO_DOMAIN ),
+				'at_api'        => __( 'API is smushing it', WP_SMPRO_DOMAIN ),
+                                'fetching'      => __( 'Fetching smushed images', WP_SMPRO_DOMAIN ),
+				'resmush'       => __( 'Re-smush', WP_SMPRO_DOMAIN ),
+				'smush_now'     => __( 'Smush.it now!', WP_SMPRO_DOMAIN ),
+				'done'          => __( 'All done!', WP_SMPRO_DOMAIN ),
+				'no_leave'      => __( 'Images are being fetched from the API. If you leave the screen, <strong>the fetching will stop</strong>.', WP_SMPRO_DOMAIN ),
+				
 			);
 
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
@@ -157,9 +149,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
                         
-                        $current_request_id = get_option(WP_SMPRO_PREFIX . "bulk-sent");
+                        $current_bulk_request = get_option(WP_SMPRO_PREFIX . "bulk-sent");
                         
-                        $sent_ids = get_option(WP_SMPRO_PREFIX."sent-ids-$current_request_id");
+                        $sent_ids = get_option(WP_SMPRO_PREFIX."sent-ids-$current_bulk_request");
                         // localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_sent_ids', $sent_ids );
                         
@@ -187,7 +179,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			return $this->counts;
 		}
-
+                
+                function hide_notice(){
+                        update_option(WP_SMPRO_PREFIX.'hide-notice',1);
+                        die();
+                }
 		/**
 		 * Display the ui
 		 */
@@ -397,6 +393,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 				// display the progress bar
 				$this->progress_ui();
+                                
+                                $this->show_notice();
 				// display the appropriate button
 				$this->setup_button();
 				?>
@@ -484,18 +482,17 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// print it out
 			echo $progress_ui;
 		}
-
-		/**
-		 * Display the bulk smushing button
-		 *
-		 * @todo Add the API status here, next to the button
-		 */
-		function setup_button() {
+                
+                function show_notice(){
+                        $hide = intval(get_option(WP_SMPRO_PREFIX.'hide-notice',0));
+                        if($hide){
+                                return;
+                        }
                         ?>
-                        <div class="smush-notices">
+                        <div class="smush-notices" id="fetch-notice">
                                 <h3>
                                         <?php
-                                        _e( 'Your website <em>may</em> get a little slow while bulk smushing is in progress.', WP_SMPRO_DOMAIN );
+                                        _e( 'Your website <em>may</em> get a little slow while the images are fetched from the API.', WP_SMPRO_DOMAIN );
                                         ?> 
                                 </h3>
                                 <p>
@@ -517,9 +514,18 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 ?>   
                                         </li>  
                                 </ol>
-                                <button class="button button-secondary"><?php _e('Got it!', WP_SMPRO_DOMAIN); ?></button>
+                                <button class="button button-primary"><?php _e('Got it!', WP_SMPRO_DOMAIN); ?></button>
+                                <button class="button button-secondary"><?php _e("Don't show this again", WP_SMPRO_DOMAIN); ?></button>
                         </div>
                         <?php
+                }
+
+		/**
+		 * Display the bulk smushing button
+		 *
+		 * @todo Add the API status here, next to the button
+		 */
+		function setup_button() {
                         $button = $this->button_state();
 			?>
 			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>

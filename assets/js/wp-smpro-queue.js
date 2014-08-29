@@ -12,7 +12,11 @@ jQuery('document').ready(function() {
         // url for fetching
         $fetch_url = ajaxurl + '?action=wp_smpro_fetch';
         
+        $hide_notice_url = ajaxurl + '?action=wp_smpro_hide';
+        
         $smushedcount = 0;
+        
+        $process_next = true;
         
         function wp_smpro_send_request(){
                 return jQuery.ajax({
@@ -76,7 +80,7 @@ jQuery('document').ready(function() {
                $button.prepend($spinner);
 
                // add the progress text
-               $button.find('span').html(wp_smpro_msgs.progress);
+               $button.find('span').html(wp_smpro_msgs.fetching);
 
                // disable the button
                $button.prop('disabled', true);
@@ -86,6 +90,9 @@ jQuery('document').ready(function() {
        }
         
         function smproFetch($id){
+                if (!$process_next) {
+                        return false;
+                }
                 return jQuery.ajax({
                         type: "GET",
                         data: {attachment_id: $id, get_next: $getnxt},
@@ -117,6 +124,17 @@ jQuery('document').ready(function() {
                 
         }
         
+        function wp_smpro_bulk_start(){
+                wp_smpro_button_progress_state(jQuery(this));
+                                
+                wp_smpro_bulk_fetch();
+
+                //Before leave screen, show alert
+                jQuery(window).on('beforeunload', function (e) {
+                    return wp_smpro_msgs.no_leave.replace(/(<([^>]+)>)/ig,"");
+                });
+        }
+        
         function wp_smpro_bulk_fetch(){
                 
                 $smushed_count = wp_smpro_counts.smushed;
@@ -131,6 +149,28 @@ jQuery('document').ready(function() {
                         });
                         
                 });
+        }
+        
+        function wp_smpro_cancelled(){
+                jQuery(window).off('beforeunload');
+                
+                $button = jQuery('#wp-smpro-fetch');
+
+                // copy the spinner into an object
+                $spinner = $button.find('.floatingCirclesG');
+
+                // remove the spinner
+                $spinner.remove();
+
+                // empty the current text
+                $button.find('span').html('');
+                
+                $button.removeClass('wp-smpro-started');
+                
+                $button.prop('disabled', false);
+                
+                $button.find('span').html(wp_smpro_msgs.fetch);
+
         }
         
         /**
@@ -153,8 +193,8 @@ jQuery('document').ready(function() {
                // prepend the spinner html
                $button.prepend($spinner);
 
-               // add the progress text
-               $button.find('span').html(wp_smpro_msgs.progress);
+               // add the sending text
+               $button.find('span').html(wp_smpro_msgs.sending);
 
                // disable all the buttons
                jQuery('.wp-smpro-smush').prop('disabled', true);
@@ -177,14 +217,48 @@ jQuery('document').ready(function() {
                         }).on('click', '#wp-smpro-fetch', function(e) {
                                 // prevent the default action
                                 e.preventDefault();
-                                
-                                wp_smpro_button_progress_state(jQuery(this));
-                                
-                                wp_smpro_bulk_fetch();
+                                if(jQuery('#fetch-notice').length>0){
+                                        jQuery('#fetch-notice').slideToggle();
+                                }else{
+                                        wp_smpro_bulk_start();
+                                }
                                 
                                 return;
                                 
                         });
+                        
+                jQuery('.wp-smpro-bulk-wrap').on('click', '#fetch-notice button.button', function(e) {
+                        
+                        e.preventDefault();
+                        
+                        if(jQuery(this).hasClass('button-secondary')){
+                                jQuery.ajax({
+                                        type: "GET",
+                                        data: {hide: true},
+                                        url: $hide_notice_url,
+                                        timeout: 60000
+                                })  ; 
+                        }
+                        
+                        jQuery('#fetch-notice').slideToggle(function() {
+                                jQuery('#fetch-notice').remove();
+                        });
+                        
+                        wp_smpro_bulk_start();
+                        
+                });
+                
+                jQuery('.wp-smpro-bulk-wrap').on('click', '#wp-smpro-cancel', function(e) {
+                        // prevent the default action
+                        e.preventDefault();
+
+                        $process_next = false;
+                        
+                        wp_smpro_cancelled();
+
+                        return;
+
+                });
         }else{
                 /**
                  * Handle the media library button click
