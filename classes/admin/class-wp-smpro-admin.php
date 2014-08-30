@@ -161,7 +161,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
                 
                 function admin_notice(){
-                        if(boolval(get_option(WP_SMPRO_PREFIX.'smush-notice',0))){
+                        if(boolval(get_option(WP_SMPRO_PREFIX.'bulk-received',0))){
                                 $message = array();
                                 $message[]= sprintf(__('A recent bulk smushing request on your site %s has been completed!', WP_SMPRO_DOMAIN),get_option('siteurl'));
                                 $message[] = sprintf(__('Visit your dashboard (%s) to download the smushed images to your site.', WP_SMPRO_DOMAIN),admin_url( 'upload.php?page=wp-smpro-admin' ));

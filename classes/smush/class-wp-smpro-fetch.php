@@ -64,6 +64,26 @@ if (!class_exists('WpSmProFetch')) {
                         if($result){
                                 unset($smush_data['download_url']);
                                 update_post_meta($attachment_id,WP_SMPRO_PREFIX.'is-smushed',1);
+                                $current_requests = get_option(WP_SMPRO_PREFIX . "current-requests", array());
+                                $remove_request = false;
+                                foreach($current_requests as $request_id=>&$data){
+                                        if(in_array($attachment_id,$data['sent_ids'])){
+                                                $sent_ids= array_diff($data['sent_ids'], array($attachment_id));
+                                                if($request_id === get_option(WP_SMPRO_PREFIX . "bulk-sent",0)
+                                                        && empty($sent_ids)){
+                                                        delete_option(WP_SMPRO_PREFIX . "bulk-sent");
+                                                        delete_option(WP_SMPRO_PREFIX . "bulk-received");
+                                                        $remove_request = $request_id;
+                                                }
+                                                exit();
+                                        }
+                                
+                                }
+                                if($remove_request){
+                                       unset($current_requests[$remove_request]);
+                                       update_option(WP_SMPRO_PREFIX . "current-requests",$current_requests);
+                                }
+                                
                         }
 
                         echo boolval($result);
