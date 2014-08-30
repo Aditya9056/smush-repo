@@ -55,10 +55,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         $insert = $this->save($attachment_data, $current_requests[$request_id]['sent_ids'], $is_single);
                         
                         unset($attachment_data);
+                        unset($data);
                         
-                        $processed = $this->process($insert,$request_id, $current_requests);
+                        $updated = $this->update($insert,$request_id, $current_requests);
                         
-                        $notify = $this->notify($processed);
+                        $this->notify($updated);
                         
                         
 		}
@@ -88,7 +89,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         
                 }
                 
-                private function process($insert, $request_id, $current_requests){
+                private function update($insert, $request_id, $current_requests){
                         if($insert === false){
                                 return $insert;
                         }
