@@ -56,7 +56,7 @@
                         }
                         $msg.find('p').append(msgvar.str);
                         $msg.css('display', 'none');
-                        elem.after($msg);
+                        elem.find('#wp-smpro-progress-status').after($msg);
                         $msg.slideToggle();
 
                 };
@@ -344,8 +344,6 @@
             return this.each(function(){
                 var element = $(this);
                 
-                console.log(element);
-
                 // Return early if this element already has a plugin instance
                 if (element.data('smushitpro'))
                     return;
@@ -359,4 +357,4 @@
         };
         
         
-});
+})( jQuery );
