@@ -5,7 +5,7 @@
                 
                 var defaults = {
                         is_single     : false,
-                        ajax_url      : '',
+                        ajaxurl      : '',
                         msgs          : {},
                         counts        : {},
                         spinner       : $('#wp-smpro-spinner-wrap .floatingCirclesG'),
@@ -340,11 +340,11 @@
                 });
         };
                 
-        $.fn.smushitpro = function(options)
-        {
-            return this.each(function()
-            {
+        $.fn.smushitpro = function(options){
+            return this.each(function(){
                 var element = $(this);
+                
+                console.log(element);
 
                 // Return early if this element already has a plugin instance
                 if (element.data('smushitpro'))
@@ -360,4 +360,3 @@
         
         
 });
-

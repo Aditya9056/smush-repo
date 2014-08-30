@@ -13,8 +13,8 @@ jQuery('document').ready(function() {
                 jQuery('.wp-smpro-bulk-wrap').smushitpro({
                         'msgs'          : wp_smpro_msgs,
                         'counts'        : wp_smpro_counts,
-                        'ids'           : wp_smpro_ids,
-                        'ajax_url'      : ajax_url,
+                        'ids'           : wp_smpro_sent_ids,
+                        'ajaxurl'      : ajaxurl,
                         'is_single'     : false
                         
                 });
@@ -25,9 +25,8 @@ jQuery('document').ready(function() {
                 jQuery('.wp-list-table.media').smushitpro({
                         'msgs'          : wp_smpro_msgs,
                         'counts'        : wp_smpro_counts,
-                        'ajax_url'      : ajax_url,
-                        'is_single'     : true
-                        
+                        'ajaxurl'      : ajaxurl,
+                        'is_single'     : true        
                 });
         }
 
