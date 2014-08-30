@@ -66,7 +66,7 @@ if (!class_exists('WpSmProSend')) {
 
                         //Check API Status
                         if (!$wp_sm_pro->admin->api_connected) {
-                                $response['status_code'] = 404;
+                                $response['status_code'] = 0;
                                 $response['status_message'] = __("API not accessible", WP_SMPRO_DOMAIN);
                                 // print out the response
                                 echo json_encode($response);

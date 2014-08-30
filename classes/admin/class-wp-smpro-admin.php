@@ -110,7 +110,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function register() {
 
 			// register js
-			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'jquery' ), WP_SMPRO_VERSION );
+                        // register js
+			wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array( 'jquery' ), WP_SMPRO_VERSION );
+			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'wp-smpro'), WP_SMPRO_VERSION );
 
 			// register css
 			wp_register_style( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/css/wp-smpro-queue.css', array(), WP_SMPRO_VERSION );
@@ -138,6 +140,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$wp_smpro_msgs = array(
 				'fetch'         => __( 'Fetch smushed images', WP_SMPRO_DOMAIN ),
                                 'sending'       => __( 'Sending &hellip;', WP_SMPRO_DOMAIN ),
+                                'send_fail'     => __('Sending failed. Please try again later', WP_SMPRO_DOMAIN),
 				'at_api'        => __( 'API is smushing it', WP_SMPRO_DOMAIN ),
                                 'fetching'      => __( 'Fetching smushed images', WP_SMPRO_DOMAIN ),
 				'resmush'       => __( 'Re-smush', WP_SMPRO_DOMAIN ),
@@ -603,7 +606,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                         $button['text']  = __( 'Send smush request', WP_SMPRO_DOMAIN );
 
                                         $button['disabled']     = false;
-                                        $button['cancel'] = false;
+                                        $button['cancel'] = ' disabled="disabled"';
                                 }
                                 $button['id'] = "wp-smpro-send";
                                 

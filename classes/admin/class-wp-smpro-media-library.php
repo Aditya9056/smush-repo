@@ -140,7 +140,7 @@ if (!class_exists('WpSmProMediaLibrary')) {
                                 return;
                         }
                         ?>
-                        <button class="wp-smpro-smush button">
+                        <button id="wp-smpro-send" class="button">
                                 <span>
                         <?php echo $button_txt; ?>
                                 </span>
