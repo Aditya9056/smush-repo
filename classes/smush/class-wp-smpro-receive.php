@@ -83,7 +83,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         $insert = $wpdb->query($sql);
                         
                         if($is_single){
-                                WpSmProFetch::fetch($attachment_id);
+                                global $wp_sm_pro;
+                                $wp_sm_pro->fetch->fetch($attachment_id);
                         }
                         return $insert;
                         

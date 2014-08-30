@@ -35,9 +35,9 @@
                         
                 };
                 
-                var msg = function(msgvar,$id){
+                var msg = function(msgvar){
                         if(config.is_single){
-                                singleMsg(msgvar, $id);
+                                singleMsg(msgvar);
                                 return;
                         }
                         if (elem.find(config.msg_class+'.' + msgvar.msg).length > 0) {
@@ -61,13 +61,10 @@
 
                 };
                 
-                var singleMsg = function(msgvar, $id){
-                        
-                        // get the media library row
-                        $attachment_element = elem.find('tr#post-' + $id).first();
+                var singleMsg = function(msgvar){
                         
                         // find the div that displays status message
-                        $status_div = $attachment_element.find('.smush-status');
+                        $status_div = elem.find('.smush-status');
                         
                         if(!msgvar.str){
                                 msgvar.str = config.msgs[msgvar.msg];
@@ -84,7 +81,7 @@
                         }
 
                         // find the smush button
-                        $button = $attachment_element.find('button#wp-smpro-send');
+                        $button = elem.find('button#wp-smpro-send');
 
                         // find the spinner ui
                         $spinner = $button.find('.floatingCirclesG');
@@ -118,21 +115,21 @@
                                         dataType: 'json'
                                 }).done(function(response) {
                                         if(parseInt(response.status_code)>0){
-                                                sendSuccess(response,$id);
+                                                sendSuccess(response);
                                         }else{
-                                                sendFailure(response,$id);
+                                                sendFailure(response);
                                         }
                                         return;
                                 }).fail(function() {
                                         response = {};
-                                        sendFailure(response,$id);
+                                        sendFailure(response);
                                         return;
                                 });
 
                 };
                 
                 
-                var sendSuccess = function($response, $id){
+                var sendSuccess = function($response){
                         if(!config.is_single){
                                sendProgress($response.count);                         
                         }
@@ -141,12 +138,12 @@
                                 'str':$response.status_message,
                                 'err':false
                         };
-                        msg(msgvar, $id);
+                        msg(msgvar);
                         return;
 
                 };
                 
-                var sendFailure = function($response,$id){
+                var sendFailure = function($response){
                 
                         if($.isEmptyObject($response)){
                                 $response = {'status_message': config.msgs.send_fail};
@@ -158,7 +155,7 @@
                                 'err':true
                         };
                         
-                        msg(msgvar, $id);
+                        msg(msgvar);
                         return;
                 };
                 

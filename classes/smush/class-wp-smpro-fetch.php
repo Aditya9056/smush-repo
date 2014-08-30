@@ -33,14 +33,14 @@ if (!class_exists('WpSmProFetch')) {
                         $this->basedir = trailingslashit($pathbase['basedir']);
 
                         // hook the ajax call for fetching the attachment
-                        //add_action('wp_ajax_wp_smpro_fetch', WpSmProFetch::fetch());
+                        add_action('wp_ajax_wp_smpro_fetch', array($this,'fetch'));
                 }
 
                 /**
                  * 
                  * @return type
                  */
-                static function fetch($attachment_id=false) {
+                function fetch($attachment_id=false) {
                         
                         if(!$attachment_id){
                                 $attachment_id = $_GET['attachment_id'];
@@ -50,12 +50,12 @@ if (!class_exists('WpSmProFetch')) {
                                 return;
                         }
                         
-                        $smushed_file = self::save($attachment_id);
+                        $smushed_file = $this->save($attachment_id);
                         
-                        $result = self::replace($smushed_file);
+                        $result = $this->replace($smushed_file);
                         
                         if($result){
-                                self::update($attachment_id);  
+                                $this->update($attachment_id);  
                                 update_post_meta($attachment_id,WP_SMPRO_PREFIX.'is-smushed',1);
                         }
                         

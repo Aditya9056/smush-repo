@@ -22,7 +22,7 @@ jQuery('document').ready(function() {
                 /**
                  * Handle the media library button click
                  */
-                jQuery('.wp-list-table.media').smushitpro({
+                jQuery('.wp-list-table.media tr').smushitpro({
                         'msgs'          : wp_smpro_msgs,
                         'counts'        : wp_smpro_counts,
                         'ajaxurl'      : ajaxurl,
