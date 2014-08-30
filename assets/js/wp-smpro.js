@@ -75,34 +75,37 @@
                         
                         if(msgvar.err){
                                
-                               $status_div.addClass('fail'); 
+                               $status_div.addClass('fail');
+                               // find the smush button
+                                $button = elem.find('button#wp-smpro-send');
+
+                                // find the spinner ui
+                                $spinner = $button.find('.floatingCirclesG');
+
+                                // remove the spinner
+                                $spinner.remove();
+
+                                // empty the current text
+                                $button.find('span').html(config.msgs.smush_now);
+
+                                // add new class for css adjustment
+                                $button.removeClass('wp-smpro-started');
+
+                                // re-enable all the buttons
+                                $button.prop('disabled', false);
+
                         }else{
                                $status_div.addClass('success');
+                               $button.remove();
                         }
 
-                        // find the smush button
-                        $button = elem.find('button#wp-smpro-send');
-
-                        // find the spinner ui
-                        $spinner = $button.find('.floatingCirclesG');
-
-                        // remove the spinner
-                        $spinner.remove();
-
-                        // empty the current text
-                        // $button.find('span').html('');
-
-                        // add new class for css adjustment
-                        $button.removeClass('wp-smpro-started');
-
-                        // re-enable all the buttons
-                        jQuery('.wp-smpro-smush').prop('disabled', false);
-
+                        
                         // done!
                         return;
                 };
                 
                 var send = function($id){
+                        
                         var $data = {};
                         if( $id !== false ){
                             $data = {'attachment_id':$id}; 
@@ -159,18 +162,32 @@
                         return;
                 };
                 
+                var sendProgress = function(){
+                        sent_count++;
+                
+                        $percent = (sent_count/parseInt(config.counts.total))*100;
+                
+                        elem.find('#wp-smpro-sent-progress div').css('width',$percent+'%');
+                        elem.find('#wp-smpro-progress-status p#smushed-status .done-count').html(sent_count);
+                
+//                        if(config.counts.sent === smushed_count){
+//                                msg(config.msgs.sent_done, false, false);
+//                                //wp_smpro_all_done();
+//                        }
+                };
+                
                 var fetchProgress = function(){
                         smushed_count++;
                 
                         $percent = (smushed_count/parseInt(config.counts.total))*100;
                 
                         elem.find('#wp-smpro-smushed-progress div').css('width',$percent+'%');
-                        elem.find('#wp-smpro-progress-status p.done').html(smushed_count);
+                        elem.find('#wp-smpro-progress-status p#smushed-status .done-count').html(smushed_count);
                 
-                        if(config.counts.sent === smushed_count){
-                                msg(config.msgs.sent_done, false, false);
-                                //wp_smpro_all_done();
-                        }
+//                        if(config.counts.sent === smushed_count){
+//                                msg(config.msgs.sent_done, false, false);
+//                                //wp_smpro_all_done();
+//                        }
                 };
                 
                 var fetch = function($id){
@@ -195,7 +212,7 @@
                         });
                 };
                 
-                var buttonFetchProgress = function($button) {
+                var buttonProgress = function($button, $text) {
 
                         // copy the spinner into an object
                         $spinner = config.spinner.clone();
@@ -210,7 +227,7 @@
                         $button.prepend($spinner);
 
                         // add the progress text
-                        $button.find('span').html(config.msgs.fetching);
+                        $button.find('span').html($text);
 
                         // disable the button
                         $button.prop('disabled', true);
@@ -236,7 +253,7 @@
                 };
                 
                 var bulkStart = function($button){
-                        buttonFetchProgress($button);
+                        buttonProgress($button, config.msgs.fetching);
 
                         bulkFetch();
 
@@ -274,6 +291,7 @@
                 elem.on('click', '#wp-smpro-send', function(e) {
                                 // prevent the default action
                                 e.preventDefault();
+                                buttonProgress($(this), config.msgs.sending);
                                 if(!config.is_single){
                                         sent_count = config.counts.sent;
                                         send(false);
