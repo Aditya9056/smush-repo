@@ -50,18 +50,21 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         }
                         
                         $attachment_data = $data['data'];
+                        $is_single = (count($current_requests[$request_id]['sent_ids'])>1);
                         
-                        $insert = $this->save($attachment_data, $current_requests[$request_id]['sent_ids']);
+                        $insert = $this->save($attachment_data, $current_requests[$request_id]['sent_ids'], $is_single);
                         
                         unset($attachment_data);
                         
-                        $this->process($insert,$request_id, $current_requests);
+                        $processed = $this->process($insert,$request_id, $current_requests);
+                        
+                        $notify = $this->notify($processed);
+                        
+                        
 		}
                 
                 
-                private function save($data,$sent_ids) {
-                        
-                        $is_single = (count($sent_ids)>1);
+                private function save($data,$sent_ids, $is_single) {
                         
                         global $wpdb;
                         
@@ -97,6 +100,27 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         $updated = update_option(WP_SMPRO_PREFIX . "bulk-received",1);
                         
                         return $updated;
+                }
+                
+                private function notify($processed){
+                        
+                        if($processed===false){
+                                return;
+                        }
+                        
+                        update_option(WP_SMPRO_PREFIX.'smush-notice',1);
+                        
+                        $to = get_option('admin_email');
+                        
+                        $subject = sprintf(__("%s: Smush.It Pro bulk smushing completed", WP_SMPRO_DOMAIN),get_option('blogname'));
+                        
+                        $message = array();
+                        
+                        $message[] = sprintf(__('A recent bulk smushing request on your site %s has been completed!', WP_SMPRO_DOMAIN),get_option('siteurl'));
+                        $message[] = sprintf(__('Visit your dashboard (%s) to download the smushed images to your site.', WP_SMPRO_DOMAIN),admin_url( 'upload.php?page=wp-smpro-admin' ));
+                        
+                        $body = implode("\r\n",$message);
+                        return wp_mail($to, $subject, $body);
                 }
 
 	}

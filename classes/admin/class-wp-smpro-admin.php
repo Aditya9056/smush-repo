@@ -45,6 +45,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// hook scripts and styles
 			add_action( 'admin_init', array( $this, 'register' ) );
+                        
+                        // hook admin notice
+                        add_action('admin_notices', array( $this, 'admin_notice' ) );
 
 			// hook custom screen
 			add_action( 'admin_menu', array( $this, 'screen' ) );
@@ -156,6 +159,24 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_sent_ids', $sent_ids );
                         
 		}
+                
+                function admin_notice(){
+                        if(boolval(get_option(WP_SMPRO_PREFIX.'smush-notice',0))){
+                                $message = array();
+                                $message[]= sprintf(__('A recent bulk smushing request on your site %s has been completed!', WP_SMPRO_DOMAIN),get_option('siteurl'));
+                                $message[] = sprintf(__('Visit your dashboard (%s) to download the smushed images to your site.', WP_SMPRO_DOMAIN),admin_url( 'upload.php?page=wp-smpro-admin' ));
+                        
+                                ?>
+                                <div class="updated">
+                                        <p>
+                                                <?php echo implode('</p><p>',$message); ?>
+                                        </p>
+                                </div>
+
+                                <?php
+                        }
+                        
+                }
 
 		/**
 		 * Set up some data needed for the bulk ui
