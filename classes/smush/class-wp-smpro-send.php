@@ -96,6 +96,8 @@ if (!class_exists('WpSmProSend')) {
                         }
                         
                         $response['status_code'] = 1;
+                        $response['count']      = count($sent);
+                        $response['status_message'] = sprintf(__('%d were sent for smushing', WP_SMPRO_DOMAIN), $response['count']);
                         echo $response;
 
                         // wp_ajax wants us to...
@@ -183,6 +185,10 @@ if (!class_exists('WpSmProSend')) {
                         
                         // process the response
                         $updated = $this->process_response($response, $token, $sent_ids);
+                        
+                        if($updated){
+                                $updated = $sent_ids;
+                        }
                         
                         // destroy all vars that we don't need
                         unset( $token, $response, $sent_ids);

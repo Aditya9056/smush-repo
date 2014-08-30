@@ -14,7 +14,9 @@ jQuery('document').ready(function() {
         
         $hide_notice_url = ajaxurl + '?action=wp_smpro_hide';
         
-        $smushedcount = 0;
+        $smushed_count = 0;
+        
+        $sent_count = 0;
         
         $process_next = true;
         
@@ -26,9 +28,12 @@ jQuery('document').ready(function() {
                                 dataType: 'json'
                         }).done(function(response) {
                                 if(parseInt(response.status_code)>0){
-                                        wp_smpro_show_msg('fail', response.status_message, false);
+                                        wp_smpro_sent_progress($response.count);
+                                        wp_smpro_show_msg('update', response.status_message, false);
+                                        
                                 }else{
-                                        wp_smpro_show_msg('update', response.status_message, true);
+                                        wp_smpro_show_msg('fail', response.status_message, true);
+                                        
                                 }
                                 return;
                         }).fail(function() {
@@ -111,8 +116,10 @@ jQuery('document').ready(function() {
                 });
         }
         
+        
         function smproProgress(){
                 $smushed_count++;
+                
                 $percent = ($smushed_count/parseInt(wp_smpro_counts.total))*100;
                 
                 jQuery('#wp-smpro-smushed-progress div').css('width',$percent+'%');
@@ -122,6 +129,13 @@ jQuery('document').ready(function() {
                         wp_smpro_all_done();
                 }
                 
+        }
+        
+        function wp_smpro_sent_progress(){
+                $sent_count++;
+                $percent = ($sent_count/parseInt(wp_smpro_counts.total))*100;
+                
+                jQuery('#wp-smpro-sent-progress div').css('width',$percent+'%');
         }
         
         function wp_smpro_bulk_start(){
@@ -209,7 +223,7 @@ jQuery('document').ready(function() {
                 jQuery('.wp-smpro-bulk-wrap').on('click', '#wp-smpro-send', function(e) {
                                 // prevent the default action
                                 e.preventDefault();
-                                
+                                $sent_count = wp_smpro_counts.sent;
                                 wp_smpro_send_request();
                                 
                                 return;
