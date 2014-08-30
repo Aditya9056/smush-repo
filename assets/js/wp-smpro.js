@@ -62,19 +62,22 @@
                 };
                 
                 var singleMsg = function(msgvar, $id){
+                        
                         // get the media library row
-                        $attachment_element = $('.wp-list-table.media').find('tr#post-' + $id).first();
-
+                        $attachment_element = elem.find('tr#post-' + $id).first();
+                        
                         // find the div that displays status message
-                        $status_div = $attachment_element.find('.smush-status').first();
+                        $status_div = $attachment_element.find('.smush-status');
                         
                         if(!msgvar.str){
                                 msgvar.str = config.msgs[msgvar.msg];
                         }
+                        
                         // replace the older message
                         $status_div.html(msgvar.str);
                         
-                        if(!msgvar.err){
+                        if(msgvar.err){
+                               
                                $status_div.addClass('fail'); 
                         }else{
                                $status_div.addClass('success');
@@ -90,7 +93,7 @@
                         $spinner.remove();
 
                         // empty the current text
-                        $button.find('span').html('');
+                        // $button.find('span').html('');
 
                         // add new class for css adjustment
                         $button.removeClass('wp-smpro-started');
@@ -115,21 +118,21 @@
                                         dataType: 'json'
                                 }).done(function(response) {
                                         if(parseInt(response.status_code)>0){
-                                                sendSuccess(response);
+                                                sendSuccess(response,$id);
                                         }else{
-                                                sendFailure(response);
+                                                sendFailure(response,$id);
                                         }
                                         return;
                                 }).fail(function() {
                                         response = {};
-                                        sendFailure(response);
+                                        sendFailure(response,$id);
                                         return;
                                 });
 
                 };
                 
                 
-                var sendSuccess = function($response){
+                var sendSuccess = function($response, $id){
                         if(!config.is_single){
                                sendProgress($response.count);                         
                         }
@@ -138,12 +141,12 @@
                                 'str':$response.status_message,
                                 'err':false
                         };
-                        msg(msgvar, false);
+                        msg(msgvar, $id);
                         return;
 
                 };
                 
-                var sendFailure = function($response){
+                var sendFailure = function($response,$id){
                 
                         if($.isEmptyObject($response)){
                                 $response = {'status_message': config.msgs.send_fail};
@@ -155,7 +158,7 @@
                                 'err':true
                         };
                         
-                        msg(msgvar, false);
+                        msg(msgvar, $id);
                         return;
                 };
                 
@@ -280,10 +283,10 @@
                                 }else{
                                         // get the row
                                         var $nearest_tr = $(this).closest('tr').first();
-
+                                        
                                         // get the row's DOM id
                                         var $elem_id = $nearest_tr.attr('id');
-
+                                        
                                         // get the attachment id from DOM id
                                         var $id = $elem_id.replace(/[^0-9\.]+/g, '');
                                         
