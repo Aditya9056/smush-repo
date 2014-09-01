@@ -33,55 +33,60 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		function receive() {
 
 			// get the contents of the callback
-			$body = urldecode( file_get_contents( 'php://input' ) );
+			$body = file_get_contents( 'php://input' );
+
+			$data = json_decode( $body );
 
 			// filter with default data
 			$defaults = array(
-                            'request_id' => null,
-                            'token'     => null,
-                            'data'      => array()
-                        );
+				'request_id' => null,
+				'token'      => null,
+				'data'       => array()
+			);
 
-			$data = wp_parse_args( $body, $defaults );
+			$data = wp_parse_args( $data, $defaults );
                         
-                        $request_id = $data['request_id'];
-                        
-                        $current_requests = get_option(WP_SMPRO_PREFIX . "current-requests", array());
-                        
-                        if($data['token']!= $current_requests[$request_id]['token']){
-                                unset($data);
-                                return;
-                        }
-                        
-                        $attachment_data = $data['data'];
-                        $is_single = (count($current_requests[$request_id]['sent_ids'])>1);
-                        
-                        $insert = $this->save($attachment_data, $current_requests[$request_id]['sent_ids'], $is_single);
-                        
-                        unset($attachment_data);
-                        unset($data);
-                        
-                        $updated = $this->update($insert,$request_id, $current_requests);
-                        
-                        $this->notify($updated);
+            $request_id = $data['request_id'];
+
+            $current_requests = get_option(WP_SMPRO_PREFIX . "current-requests", array());
+
+            if($data['token']!= $current_requests[$request_id]['token']){
+                    unset($data);
+                    return;
+            }
+
+            $attachment_data = $data['data'];
+            $is_single = (count($current_requests[$request_id]['sent_ids'])>1);
+
+            $insert = $this->save($attachment_data, $current_requests[$request_id]['sent_ids'], $is_single);
+
+            unset($attachment_data);
+            unset($data);
+
+            $updated = $this->update($insert,$request_id, $current_requests);
+
+            $this->notify($updated);
                         
                         
 		}
                 
                 
                 private function save($data,$sent_ids, $is_single) {
+		                if ( empty( $data ) ) {
+			                return;
+		                }
                         
                         global $wpdb;
                         
                         $timestamp = time();
-                        
-                        $sql = "INSERT INTO $wpdb->post_meta (post_id,meta_key,meta_value) VALUES ";
-                        foreach ($data as $attachment_id=>&$smush_data){
-                                if(in_array($attachment_id, $sent_ids)){
-                                        $smush_data['timestamp'] = $timestamp;
-                                        $values[] = "(".$attachment_id.", '".WP_SMPRO_PREFIX."smush-data', ".maybe_serialize($smush_data).")";
-                                }
-                        }
+
+		                $sql = "INSERT INTO $wpdb->post_meta (post_id,meta_key,meta_value) VALUES ";
+		                foreach ( $data as $attachment_id => &$smush_data ) {
+			                if ( in_array( $attachment_id, $sent_ids ) ) {
+				                $smush_data['timestamp'] = $timestamp;
+				                $values[]                = "(" . $attachment_id . ", '" . WP_SMPRO_PREFIX . "smush-data', " . maybe_serialize( $smush_data ) . ")";
+			                }
+		                }
                         
                         $sql .= implode(',', $values);
                         
@@ -94,7 +99,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         return $insert;
                         
                 }
-                
+
                 private function update($insert, $request_id, $current_requests){
                         if($insert === false){
                                 return $insert;
