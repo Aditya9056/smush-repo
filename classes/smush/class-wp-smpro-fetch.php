@@ -132,8 +132,8 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 			$attachment_meta = wp_get_attachment_metadata( $attachment_id );
 
-			foreach ( $attachment_meta['sizes'] as $size => &$details ) {
-				$details['file'] = $filenames[ $size ];
+			foreach ( $attachment_meta['sizes'] as $size => $details ) {
+				$attachment_meta['sizes'][$size] = $filenames[ $size ];
 			}
 
 			return wp_update_attachment_metadata( $attachment_id, $attachment_meta );
