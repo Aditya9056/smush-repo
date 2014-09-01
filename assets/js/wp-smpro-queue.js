@@ -15,7 +15,7 @@ jQuery('document').ready(function() {
                         'counts'        : wp_smpro_counts,
                         'ids'           : wp_smpro_sent_ids,
                         'ajaxurl'      : ajaxurl,
-                        'is_single'     : false
+                        'isSingle'     : false
                         
                 });
         }else{
@@ -26,7 +26,7 @@ jQuery('document').ready(function() {
                         'msgs'          : wp_smpro_msgs,
                         'counts'        : wp_smpro_counts,
                         'ajaxurl'      : ajaxurl,
-                        'is_single'     : true        
+                        'isSingle'     : true        
                 });
         }
 
