@@ -36,9 +36,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$body = urldecode( file_get_contents( 'php://input' ) );
 
 			// filter with default data
-			$data = array();
+			$defaults = array(
+                            'request_id' => null,
+                            'token'     => null,
+                            'data'      => array()
+                        );
 
-			parse_str( $body, $data );
+			$data = wp_parse_args( $body, $defaults );
                         
                         $request_id = $data['request_id'];
                         
@@ -69,12 +73,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         
                         global $wpdb;
                         
+                        $timestamp = time();
+                        
                         $sql = "INSERT INTO $wpdb->post_meta (post_id,meta_key,meta_value) VALUES ";
-                        foreach ($data as $key=>&$val){
-                                $attachment_id = $val['attachment_id'];
-                                unset($val['attachment_id']);
+                        foreach ($data as $attachment_id=>&$smush_data){
                                 if(in_array($attachment_id, $sent_ids)){
-                                        $values[] = "(".$attachment_id.", '".WP_SMPRO_PREFIX."smush-data', ".maybe_serialize($val).")";
+                                        $smush_data['timestamp'] = $timestamp;
+                                        $values[] = "(".$attachment_id.", '".WP_SMPRO_PREFIX."smush-data', ".maybe_serialize($smush_data).")";
                                 }
                         }
                         
@@ -83,8 +88,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
                         $insert = $wpdb->query($sql);
                         
                         if($is_single){
-                                global $wp_sm_pro;
-                                $wp_sm_pro->fetch->fetch($attachment_id);
+                                global $wp_smpro;
+                                $wp_smpro->fetch->fetch($attachment_id);
                         }
                         return $insert;
                         

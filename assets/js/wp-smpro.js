@@ -191,8 +191,8 @@
                         elem.find(config.fetchProgressBar +' div').css('width',$percent+'%');
                         elem.find(config.statusWrap+' p#fetched-status .done-count').html(fetchCount);
                         
-                        config.statsWrap.find('#percent').html($stats['percent']);
-                        config.statsWrap.find('#percent').html($stats['human']);
+                        config.statsWrap.find('#percent').html($stats['compression_percent']);
+                        config.statsWrap.find('#human').html($stats['compression_human']);
 //                        if(config.counts.sent === fetchCount){
 //                                msg(config.msgs.sent_done, false, false);
 //                                //wp_smpro_all_done();

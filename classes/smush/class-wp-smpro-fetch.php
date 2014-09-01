@@ -57,9 +57,9 @@ if (!class_exists('WpSmProFetch')) {
                                 die();
                         }
                         
-                        $smush_data = get_post_meta($attachment_id, WP_SMPRO_PREFIX.'smush-data', true);
+                        $smush_data = $this->update_smush_data($attachment_id);
                         
-                        $smushed_file = $this->save_zip($attachment_id, $smush_data['download_url']);
+                        $smushed_file = $this->save_zip($attachment_id, $smush_data['file_url']);
                         
                         $result = $this->replace_files($smushed_file);
                         
@@ -75,7 +75,7 @@ if (!class_exists('WpSmProFetch')) {
                         update_post_meta($attachment_id,WP_SMPRO_PREFIX.'is-smushed',1);
                         $output['success']   = true;
                         $output['stats']     = $smush_data['stats'];
-                        $ouput['msg']   = '';
+                        $output['msg']   = '';
                         
                         unset($smush_data);
                         
@@ -171,6 +171,22 @@ if (!class_exists('WpSmProFetch')) {
                         $response = wp_remote_get($url);
                         $zip = wp_remote_retrieve_body($response);
                         return $zip;
+                }
+                
+                private function update_smush_data($attachment_id){
+                        $smush_data = get_post_meta($attachment_id, WP_SMPRO_PREFIX.'smush-data', true);
+                        $stats = $smush_data['stats'];
+                        $stats['compression_bytes'] = (int)$stats['size_before'] - (int)$stats['size_after'];
+                        global $wp_smpro;
+                        $compression = $wp_smpro->format_bytes($stats['compression_bytes']);
+                        $stats['compression_human'] = $compression['size'].' '.$compression['unit'];
+                        $stats['compression_percent'] = number_format_i18n(
+                                ((int)$stats['compression_bytes']/(int)$stats['size_before'])*100
+                                );
+                        $smush_data['stats'] = $stats;
+                        update_post_meta($attachment_id, WP_SMPRO_PREFIX.'smush-data');
+                        
+                        return $smush_data;
                 }
 
         }

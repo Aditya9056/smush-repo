@@ -37,10 +37,10 @@ if (!class_exists('WpSmProSend')) {
 
                 function auto_smush($metadata, $attachment_id) {
 
-                        global $wp_sm_pro;
+                        global $wp_smpro;
 
                         //Check API Status
-                        if ($wp_sm_pro->admin->api_connected) {
+                        if ($wp_smpro->admin->api_connected) {
 
                                 //Send metadata and attachment id
                                 $sent = $this->send_request($attachment_id);
@@ -55,7 +55,7 @@ if (!class_exists('WpSmProSend')) {
                  * 
                  */
                 function ajax_send() {
-                        global $wp_sm_pro;
+                        global $wp_smpro;
                         
                         // check user permissions
                         if (!current_user_can('upload_files')) {
@@ -65,7 +65,7 @@ if (!class_exists('WpSmProSend')) {
                         $response = array();
 
                         //Check API Status
-                        if (!$wp_sm_pro->admin->api_connected) {
+                        if (!$wp_smpro->admin->api_connected) {
                                 $response['status_code'] = 0;
                                 $response['status_message'] = __("API not available", WP_SMPRO_DOMAIN);
                                 // print out the response
@@ -340,8 +340,8 @@ if (!class_exists('WpSmProSend')) {
                  * @return object request data with options
                  */
                 private function add_options($request_data) {
-                        global $wp_sm_pro;
-                        $options = $wp_sm_pro->smush_settings;
+                        global $wp_smpro;
+                        $options = $wp_smpro->smush_settings;
 
                         // set values for the boolean fields
                         foreach ($options as $key => $val) {
@@ -627,7 +627,7 @@ if (!class_exists('WpSmProSend')) {
                 /**
                  * Form appropriate status message
                  *
-                 * @global object $wp_sm_pro The plugin's global object
+                 * @global object $wp_smpro The plugin's global object
                  *
                  * @param int $status_code The status code returned from service
                  * @param int $request_err_code Additional request error code from service
@@ -636,16 +636,16 @@ if (!class_exists('WpSmProSend')) {
                  */
                 function get_status_msg($status_code, $request_err_code) {
 
-                        global $wp_sm_pro;
+                        global $wp_smpro;
 
                         $status_code = intval($status_code);
 
                         // get the status message for the status code
-                        $msg = $wp_sm_pro->status_msgs['smush_status'][$status_code];
+                        $msg = $wp_smpro->status_msgs['smush_status'][$status_code];
 
                         // if there was a request error, add the appropriate request error message
                         if ($status_code === 0 && $request_err_code !== '') {
-                                $msg .= ': ' . $wp_sm_pro->status_msgs['request_err_msg'][intval($request_err_code)];
+                                $msg .= ': ' . $wp_smpro->status_msgs['request_err_msg'][intval($request_err_code)];
                         }
 
                         return $msg;

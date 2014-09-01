@@ -218,6 +218,6 @@ if(!function_exists('boolval')){
 		}
 }
 // instantiate our main class
-$wp_sm_pro = new WpSmPro();
+$wp_smpro = new WpSmPro();
 
-global $wp_sm_pro;
+global $wp_smpro;
