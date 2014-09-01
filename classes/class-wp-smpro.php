@@ -53,8 +53,6 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			// initialise status messages
 			$this->init_status_messages();
 
-			add_action( 'delete_attachment', array( $this, 'delete_image' ) );
-
 			// instantiate the sender
 			$this->sender = new WpSmProSend();
 
@@ -200,129 +198,6 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			);
 		}
                 
-                 
-                
-                /**
-		 *
-		 * @param type $attachment_id
-		 */
-		public function update_stats( $attachment_id ) {
-			$stats      = array();
-			$statistics = array();
-
-			$sizes = $this->get_sizes( $attachment_id );
-
-			foreach ( $sizes as $size ) {
-				$smush_meta = null;
-				$status     = 0;
-
-				$smush_meta = get_post_meta( $attachment_id, "smush_meta_$size", true );
-
-
-				$status = intval( $smush_meta['status_code'] );
-
-				$stats['before_smush'][] = "";
-				$stats['after_smush'][]  = "";
-
-				if ( $status === 4 ) {
-					$stats['before_smush'][] = $smush_meta['before_smush'];
-					$stats['after_smush'][]  = $smush_meta['after_smush'];
-				}
-			}
-
-			$statistics['before_smush'] = array_sum( $stats['before_smush'] );
-			$statistics['after_smush']  = array_sum( $stats['after_smush'] );
-			$statistics                 = $this->calculate_compression( $statistics );
-
-			update_post_meta( $attachment_id, 'wp-smpro-smush-stats', $statistics );
-			$this->update_global_stats( $statistics, true );
-
-		}
-
-		public function update_global_stats( $stats, $increment = true ) {
-			$global_stats = get_option( 'wp-smpro-global-stats', array() );
-			if ( empty( $global_stats ) ) {
-				$global_stats = $this->global_compression();
-			}
-			if ( $increment === false ) {
-				foreach ( $stats as $key => $value ) {
-					$stats[ $key ] = - (int) $value;
-				}
-			}
-
-			$statistics['before_smush'] = $global_stats['before_smush'] + $stats['before_smush'];
-			$statistics['after_smush']  = $global_stats['after_smush'] + $stats['after_smush'];
-
-			$statistics = $this->calculate_compression( $statistics );
-
-			update_option( 'wp-smpro-global-stats', $statistics );
-		}
-
-		public function global_compression() {
-			$query = array(
-				'fields'         => 'ids',
-				'post_type'      => 'attachment',
-				'post_status'    => 'any',
-				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
-				'order'          => 'ASC',
-				'posts_per_page' => - 1
-			);
-
-
-			$query['meta_query'] = array(
-				array(
-					'key'   => "wp-smpro-is-smushed",
-					'value' => 1
-				)
-			);
-
-
-			$results = new WP_Query( $query );
-
-
-			$stats = array();
-
-			foreach ( $results->posts as $post ) {
-				$smush_stats             = get_post_meta( $post, 'wp-smpro-smush-stats', true );
-				$stats['before_smush'][] = $smush_stats['before_smush'];
-				$stats['after_smush'][]  = $smush_stats['after_smush'];
-			}
-			$statistics = array();
-
-			$statistics['before_smush'] = array_sum( $stats['before_smush'] );
-			$statistics['after_smush']  = array_sum( $stats['after_smush'] );
-
-			$statistics = $this->calculate_compression( $statistics );
-
-			return $statistics;
-
-		}
-
-		function calculate_compression( $statistics ) {
-			if ( empty( $statistics['before_smush'] ) || empty( $statistics['after_smush'] ) ) {
-				$statistics['compressed_bytes']   = 0;
-				$statistics['compressed_percent'] = 0;
-				$statistics['compressed_human']   = 0;
-				return $statistics;
-			}
-			$statistics['compressed_bytes']   = $statistics['before_smush'] - $statistics['after_smush'];
-			$statistics['compressed_percent'] = number_format_i18n( ( $statistics['compressed_bytes'] / $statistics['before_smush'] ) * 100, 2 );
-			$formatted                        = $this->format_bytes( $statistics['compressed_bytes'], 2 );
-			$statistics['compressed_human']   = $formatted['size'] . $formatted['unit'];
-
-			return $statistics;
-		}
-
-		public function delete_image( $id ) {
-			if ( ! wp_attachment_is_image( $id ) ) {
-				return;
-			}
-			$smush_stats = get_post_meta( $id, 'wp-smpro-smush-stats', true );
-			if ( empty( $smush_stats ) || ! is_array( $smush_stats ) ) {
-				return;
-			}
-			$this->update_global_stats( $smush_stats, false );
-		}
 
 		/**
 		 * Return the filesize in a humanly readable format.

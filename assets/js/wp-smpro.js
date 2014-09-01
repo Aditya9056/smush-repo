@@ -184,11 +184,11 @@
                 };
                 
                 var compression = function($stats){
-                        config.counts.before_smush +=$stats.before_smush;
-                        config.counts.after_smush +=$stats.after_smush;
-                        $bytes = config.counts.before_smush - config.counts.after_smush;
+                        config.counts.size_before +=$stats.size_before;
+                        config.counts.size_after +=$stats.size_after;
+                        $bytes = config.counts.size_before - config.counts.size_after;
                         config.counts.human = formatBytes($bytes);
-                        config.counts.percent = ($bytes/config.counts.before_smush)*100;
+                        config.counts.percent = ($bytes/config.counts.size_before)*100;
                         return config.counts;
                 };
                 

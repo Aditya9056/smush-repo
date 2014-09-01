@@ -40,9 +40,6 @@ if (!class_exists('WpSmProAdmin')) {
                  */
                 public function __construct() {
 
-                        // set up image counts for progressive smushing
-                        $this->setup_counts();
-
                         // hook scripts and styles
                         add_action('admin_init', array($this, 'register'));
 
@@ -63,7 +60,7 @@ if (!class_exists('WpSmProAdmin')) {
 
                         add_filter('plugin_action_links_' . WP_SMPRO_BASENAME, array(
                             $this,
-                            'wp_smushit_pro_settings'
+                            'settings_link'
                         ));
                         add_filter('network_admin_plugin_action_links_' . WP_SMPRO_BASENAME, array(
                             $this,
@@ -108,6 +105,9 @@ if (!class_exists('WpSmProAdmin')) {
                  * Register js and css
                  */
                 function register() {
+                        
+                        // set up image counts for progressive smushing
+                        $this->setup_counts();
 
                         // register js
                         // register js
@@ -805,17 +805,16 @@ if (!class_exists('WpSmProAdmin')) {
                         
                         $global_data = $wpdb->get_col( $wpdb->prepare( $sql, WP_SMPRO_PREFIX."smush-data" ) );
                         
-                        $before_smush = 0;
-                        $after_smush = 0;
-                        
                         foreach($global_data as $data){
-                                $smush_data['before_smush']     += (int)$data['before_smush'];
-                                $smush_data['after_smush']      += (int)$data['after_smush'];
+                                $smush_data['size_before']     += (int)$data['size_before'];
+                                $smush_data['size_after']      += (int)$data['size_after'];
                         }
                         
-                        $bytes = $smush_data['before_smush'] - $smush_data['after_smush'];
-                        
-                        $smush_data['percent']  = ($smush_data['bytes']/$before_smush)*100;
+                        $bytes = $smush_data['size_before'] - $smush_data['size_after'];
+                        $smush_data['percent'] = 0;
+                        if($smush_data['size_before']>0){
+                                $smush_data['percent']  = ($smush_data['bytes']/$smush_data['size_before'])*100;
+                        }
                         
                         $smush_data['human'] = $wp_smpro->format_bytes($smush_data['bytes']);
                         

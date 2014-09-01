@@ -221,3 +221,4 @@ if(!function_exists('boolval')){
 $wp_smpro = new WpSmPro();
 
 global $wp_smpro;
+
