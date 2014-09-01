@@ -474,7 +474,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// display the progress bars
 			$progress_ui .= '<div id="wp-smpro-progress-wrap">
                                                 <div id="wp-smpro-sent-progress" class="wp-smpro-progressbar"><div style="width:' . $sent_pc . '%"></div></div>
-                                                <div id="wp-smpro-smushed-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
+                                                <div id="wp-smpro-fetched-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
                                                 <p id="wp-smpro-compression">'
                                                         . __( "Reduced by ", WP_SMPRO_DOMAIN )
                                                         . '<span id="percent">'.$stats['compressed_percent'].'</span>% (<span id="human">'.$stats['compressed_human'].'</span>)
@@ -493,7 +493,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			                ) .
 			                '</p>
                                                 
-                                                <p id="smushed-status">' .
+                                                <p id="fetched-status">' .
 			                sprintf(
 				                __(
 					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'

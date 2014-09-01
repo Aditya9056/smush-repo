@@ -15,14 +15,14 @@
                         fetchButton       : '#wp-smpro-fetch',
                         cancelButton      : '#wp-smpro-cancel',
                         sendProgressBar : '#wp-smpro-sent-progress',
-                        fetchProgressBar        : '#wp-smpro-smushed-progress',
+                        fetchProgressBar        : '#wp-smpro-fetched-progress',
                         statusWrap              : '#wp-smpro-progress-status',
                         statsWrap               : '#wp-smpro-compression',
                 };
                 
-                var smushed_count = 0;
+                var fetchCount = 0;
         
-                var sent_count = 0;
+                var sentCount = 0;
 
                 var process_next = true;
                 
@@ -170,30 +170,30 @@
                 };
                 
                 var sendProgress = function(){
-                        sent_count++;
+                        sentCount++;
                 
-                        $percent = (sent_count/parseInt(config.counts.total))*100;
+                        $percent = (sentCount/parseInt(config.counts.total))*100;
                 
                         elem.find(config.sendProgressBar+' div').css('width',$percent+'%');
-                        elem.find(config.statusWrap+' p#sent-status .done-count').html(sent_count);
+                        elem.find(config.statusWrap+' p#sent-status .done-count').html(sentCount);
                 
-//                        if(config.counts.sent === smushed_count){
+//                        if(config.counts.sent === fetchCount){
 //                                msg(config.msgs.sent_done, false, false);
 //                                //wp_smpro_all_done();
 //                        }
                 };
                 
                 var fetchProgress = function($stats){
-                        smushed_count++;
+                        fetchCount++;
                 
-                        $percent = (smushed_count/parseInt(config.counts.total))*100;
+                        $percent = (fetchCount/parseInt(config.counts.total))*100;
                 
                         elem.find(config.fetchProgressBar +' div').css('width',$percent+'%');
-                        elem.find(config.statusWrap+' p#smushed-status .done-count').html(smushed_count);
+                        elem.find(config.statusWrap+' p#fetched-status .done-count').html(fetchCount);
                         
                         config.statsWrap.find('#percent').html($stats['percent']);
                         config.statsWrap.find('#percent').html($stats['human']);
-//                        if(config.counts.sent === smushed_count){
+//                        if(config.counts.sent === fetchCount){
 //                                msg(config.msgs.sent_done, false, false);
 //                                //wp_smpro_all_done();
 //                        }
@@ -251,7 +251,7 @@
                 
                 var bulkFetch = function(){
                 
-                        smushed_count = config.counts.smushed;
+                        fetchCount = config.counts.smushed;
 
                         var startingpoint = jQuery.Deferred();
                         startingpoint.resolve();
@@ -306,7 +306,7 @@
                                 e.preventDefault();
                                 buttonProgress($(this), config.msgs.sending);
                                 if(!config.isSingle){
-                                        sent_count = config.counts.sent;
+                                        sentCount = config.counts.sent;
                                         send(false);
                                 }else{
                                         // get the row
