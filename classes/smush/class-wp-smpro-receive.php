@@ -31,8 +31,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		 * Receive the callback and send data for further processing
 		 */
 		function receive() {
-
-			// get the contents of the callback
+                        
+                        // get the contents of the callback
 			$body = file_get_contents( 'php://input' );
 
 			$data = json_decode( $body, true );
@@ -57,7 +57,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			}
 
 			$attachment_data = $data['data'];
-			$is_single       = ( count( $current_requests[ $request_id ]['sent_ids'] ) > 1 );
+			$is_single       = !( count( $current_requests[ $request_id ]['sent_ids'] ) > 1 );
 
 			$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], $is_single );
 

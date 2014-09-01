@@ -804,10 +804,22 @@ if (!class_exists('WpSmProAdmin')) {
                         $sql = "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s";
                         
                         $global_data = $wpdb->get_col( $wpdb->prepare( $sql, WP_SMPRO_PREFIX."smush-data" ) );
+                        error_log('global data');
+                        error_log(var_export($global_data, true));
+                        
+                        $smush_data= array(
+                                'size_before'   => 0,
+                                'size_after'    => 0,
+                                'percent'       => 0,
+                                'human'         => 0
+                        );
                         
                         foreach($global_data as $data){
-                                $smush_data['size_before']     += (int)$data['size_before'];
-                                $smush_data['size_after']      += (int)$data['size_after'];
+                                $data = maybe_unserialize($data);
+                                error_log('ind data');
+                                error_log(var_export($data, true));
+                                $smush_data['size_before']     += (int)$data['stats']['size_before'];
+                                $smush_data['size_after']      += (int)$data['stats']['size_after'];
                         }
                         
                         $bytes = $smush_data['size_before'] - $smush_data['size_after'];

@@ -208,7 +208,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		 *
 		 * @return string formatted size
 		 */
-		public function format_bytes( $bytes, $return='array',$precision = 2 ) {
+		public function format_bytes( $bytes, $return='string',$precision = 2 ) {
 			$units = array( 'B', 'KB', 'MB', 'GB', 'TB' );
 			$bytes = max( $bytes, 0 );
 			$pow   = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
