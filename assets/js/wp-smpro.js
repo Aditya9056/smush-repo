@@ -183,6 +183,15 @@
 //                        }
                 };
                 
+                var compression = function($stats){
+                        config.counts.before_smush +=$stats.before_smush;
+                        config.counts.after_smush +=$stats.after_smush;
+                        $bytes = config.counts.before_smush - config.counts.after_smush;
+                        config.counts.human = formatBytes($bytes);
+                        config.counts.percent = ($bytes/config.counts.before_smush)*100;
+                        return config.counts;
+                };
+                
                 var fetchProgress = function($stats){
                         fetchCount++;
                 
@@ -191,9 +200,11 @@
                         elem.find(config.fetchProgressBar +' div').css('width',$percent+'%');
                         elem.find(config.statusWrap+' p#fetched-status .done-count').html(fetchCount);
                         
-                        config.statsWrap.find('#percent').html($stats['compression_percent']);
-                        config.statsWrap.find('#human').html($stats['compression_human']);
-//                        if(config.counts.sent === fetchCount){
+                        compression(); 
+                        
+                        config.statsWrap.find('#percent').html(config.counts.percent);
+                        config.statsWrap.find('#human').html(config.counts.human);
+//                        if(config.counts.total === fetchCount){
 //                                msg(config.msgs.sent_done, false, false);
 //                                //wp_smpro_all_done();
 //                        }
@@ -211,8 +222,8 @@
                         }).done(function(response){
                                 var $is_fetched = parseInt(response.success);
                                 // file was successfully fetched
-                                if($is_fetched>0 && response.stats!==null){
-                                        fetchProgress(response.stats);
+                                if($is_fetched>0 && response.bytes!==null){
+                                        fetchProgress(response.bytes);
                                 }else{
                                         msg({
                                                 'msg':'fail',
@@ -298,7 +309,7 @@
 
                 };
                 
-                var number_format = function (number, decimals, dec_point, thousands_sep) {
+                var numberFormat = function (number, decimals, dec_point, thousands_sep) {
                         number = (number + '')
                           .replace(/[^0-9+\-Ee.]/g, '');
                         var n = !isFinite(+number) ? 0 : +number,
@@ -324,10 +335,10 @@
                             .join('0');
                         }
                         return s.join(dec);
-                }
+                };
                 
-                var number_format_i18n = function($number, $decimals){
-                        $formatted = number_format( 
+                var numberFormatI18n = function($number, $decimals){
+                        $formatted = numberFormat( 
                                 $number,
                                 Math.abs( parseInt( $decimals ) ),
                                 wp_smpro_locale.decimal,
@@ -335,26 +346,22 @@
                                 );
                         return $formatted;
 
-                }
+                };
                 
-                var format_bytes = function( $bytes, $precision ) {
+                var formatBytes = function( $bytes, $precision ) {
                         if(!$precision){
                                 $precision = 2;
                         }
 			$units = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 			$bytes = Math.max( $bytes, 0 );
 			$pow   = Math.floor( ( $bytes ? Math.log( $bytes ) : 0 ) / Math.log( 1024 ) );
-			$pow   = Math.min( $pow, count( $units ) - 1 );
-			$bytes /= pow( 1024, $pow );
+			$pow   = Math.min( $pow, $units.length - 1 );
+			$bytes /= Math.pow( 1024, $pow );
 
-			$formatted['size'] = number_format_i18n( Math.round( $bytes, $precision ), $precision );
-			$formatted['unit'] = $units[ $pow ];
-                        if('array' === $return){
-                                return $formatted;   
-                        }else{
-                                return $formatted['size'] + ' ' + $formatted['unit'];
-                        }
-			
+			$size = numberFormatI18n( Math.round( $bytes, $precision ), $precision );
+			$unit = $units[ $pow ];
+                        
+                        return $size + ' ' + $unit;
 		};
                 
                 

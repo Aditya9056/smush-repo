@@ -164,6 +164,7 @@ if (!class_exists('WpSmProAdmin')) {
                             'thousands_sep'     => $wp_locale->number_format['thousands_sep']    
                         );
                         
+                        
                         wp_localize_script('wp-smpro-queue', 'wp_smpro_locale', $locale);
 
                         // localise counts
@@ -196,6 +197,7 @@ if (!class_exists('WpSmProAdmin')) {
 
                         $this->counts = $counts->counts;
                         $this->counts['stats'] = get_option('wp-smpro-global-stats', array());
+                        $this->counts = array_merge($this->counts,$this->global_stats());
                 }
 
                 /**
@@ -460,11 +462,7 @@ if (!class_exists('WpSmProAdmin')) {
                  * Print out the progress bar
                  */
                 function progress_ui() {
-                        $stats = array(
-                            'percent' => 0,
-                            'human' => '0KB'
-                        );
-                        $stats = wp_parse_args($this->global_stats(), $stats);
+                        
                         // calculate %ages
                         $smushed_pc = $this->counts['smushed'] / $this->counts['total'] * 100;
                         $sent_pc = $this->counts['sent'] / $this->counts['total'] * 100;
@@ -478,7 +476,7 @@ if (!class_exists('WpSmProAdmin')) {
                                                 <div id="wp-smpro-fetched-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
                                                 <p id="wp-smpro-compression">'
                                 . __("Reduced by ", WP_SMPRO_DOMAIN)
-                                . '<span id="percent">' . $stats['percent'] . '</span>% (<span id="human">' . $stats['human'] . '</span>)
+                                . '<span id="percent">' . $this->counts['percent'] . '</span>% (<span id="human">' . $this->counts['human'] . '</span>)
                                                 </p>
                                         </div>';
 
@@ -811,15 +809,15 @@ if (!class_exists('WpSmProAdmin')) {
                         $after_smush = 0;
                         
                         foreach($global_data as $data){
-                                $before_smush     += (int)$data['before_smush'];
-                                $after_smush      += (int)$data['after_smush'];
+                                $smush_data['before_smush']     += (int)$data['before_smush'];
+                                $smush_data['after_smush']      += (int)$data['after_smush'];
                         }
                         
-                        $smush_data['bytes'] = $before_smush - $after_smush;
+                        $bytes = $smush_data['before_smush'] - $smush_data['after_smush'];
                         
                         $smush_data['percent']  = ($smush_data['bytes']/$before_smush)*100;
                         
-                        $smush_data['human'] = $wp_smpro->format_bytes($bytes);
+                        $smush_data['human'] = $wp_smpro->format_bytes($smush_data['bytes']);
                         
                         return $smush_data;
                 }

@@ -187,13 +187,13 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$smush_data = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', true );
 
 			$stats                      = $smush_data['stats'];
-			$stats['compression_bytes'] = (int) $stats['size_before'] - (int) $stats['size_after'];
+			$stats['bytes'] = (int) $stats['size_before'] - (int) $stats['size_after'];
 			global $wp_smpro;
 
-			$stats['compression_human'] = $wp_smpro->format_bytes( $stats['compression_bytes'] );
+			$stats['human'] = $wp_smpro->format_bytes( $stats['bytes'] );
 
-			$stats['compression_percent'] = number_format_i18n(
-				( (int) $stats['compression_bytes'] / (int) $stats['size_before'] ) * 100
+			$stats['percent'] = number_format_i18n(
+				( (int) $stats['bytes'] / (int) $stats['size_before'] ) * 100
 			);
 
 			$smush_data['stats'] = $stats;
