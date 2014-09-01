@@ -190,8 +190,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$stats['compression_bytes'] = (int) $stats['size_before'] - (int) $stats['size_after'];
 			global $wp_smpro;
 
-			$compression                = $wp_smpro->format_bytes( $stats['compression_bytes'] );
-			$stats['compression_human'] = $compression['size'] . ' ' . $compression['unit'];
+			$stats['compression_human'] = $wp_smpro->format_bytes( $stats['compression_bytes'] );
 
 			$stats['compression_percent'] = number_format_i18n(
 				( (int) $stats['compression_bytes'] / (int) $stats['size_before'] ) * 100

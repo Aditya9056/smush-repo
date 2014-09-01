@@ -200,6 +200,8 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			);
 		}
                 
+                 
+                
                 /**
 		 *
 		 * @param type $attachment_id
@@ -331,7 +333,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		 *
 		 * @return string formatted size
 		 */
-		public function format_bytes( $bytes, $precision = 2 ) {
+		public function format_bytes( $bytes, $return='array',$precision = 2 ) {
 			$units = array( 'B', 'KB', 'MB', 'GB', 'TB' );
 			$bytes = max( $bytes, 0 );
 			$pow   = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
@@ -340,8 +342,12 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 
 			$formatted['size'] = number_format_i18n( round( $bytes, $precision ), $precision );
 			$formatted['unit'] = $units[ $pow ];
-
-			return $formatted;
+                        if('array' === $return){
+                                return $formatted;   
+                        }else{
+                                return $formatted['size'] . ' ' . $formatted['unit'];
+                        }
+			
 		}
 
 	}

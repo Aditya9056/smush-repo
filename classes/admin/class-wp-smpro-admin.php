@@ -67,7 +67,7 @@ if (!class_exists('WpSmProAdmin')) {
                         ));
                         add_filter('network_admin_plugin_action_links_' . WP_SMPRO_BASENAME, array(
                             $this,
-                            'wp_smushit_pro_settings'
+                            'settings_link'
                         ));
 
                         // initialise translation ready settings and titles
@@ -157,6 +157,15 @@ if (!class_exists('WpSmProAdmin')) {
                         $current_bulk_request = get_option(WP_SMPRO_PREFIX . "bulk-sent");
 
                         $sent_ids = get_option(WP_SMPRO_PREFIX . "sent-ids-$current_bulk_request");
+                        
+                        global $wp_locale;
+                        $locale = array(
+                            'decimal'   => $wp_locale->number_format['decimal_point'],
+                            'thousands_sep'     => $wp_locale->number_format['thousands_sep']    
+                        );
+                        
+                        wp_localize_script('wp-smpro-queue', 'wp_smpro_locale', $locale);
+
                         // localise counts
                         wp_localize_script('wp-smpro-queue', 'wp_smpro_sent_ids', $sent_ids);
                 }
@@ -452,10 +461,10 @@ if (!class_exists('WpSmProAdmin')) {
                  */
                 function progress_ui() {
                         $stats = array(
-                            'compressed_percent' => 0,
-                            'compressed_human' => '0KB'
+                            'percent' => 0,
+                            'human' => '0KB'
                         );
-                        $stats = wp_parse_args($this->counts['stats'], $stats);
+                        $stats = wp_parse_args($this->global_stats(), $stats);
                         // calculate %ages
                         $smushed_pc = $this->counts['smushed'] / $this->counts['total'] * 100;
                         $sent_pc = $this->counts['sent'] / $this->counts['total'] * 100;
@@ -469,7 +478,7 @@ if (!class_exists('WpSmProAdmin')) {
                                                 <div id="wp-smpro-fetched-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
                                                 <p id="wp-smpro-compression">'
                                 . __("Reduced by ", WP_SMPRO_DOMAIN)
-                                . '<span id="percent">' . $stats['compressed_percent'] . '</span>% (<span id="human">' . $stats['compressed_human'] . '</span>)
+                                . '<span id="percent">' . $stats['percent'] . '</span>% (<span id="human">' . $stats['human'] . '</span>)
                                                 </p>
                                         </div>';
 
@@ -780,7 +789,7 @@ if (!class_exists('WpSmProAdmin')) {
                  *
                  * @return array
                  */
-                function wp_smushit_pro_settings($links) {
+                function settings_link($links) {
 
                         $settings_page = admin_url('upload.php?page=wp-smpro-admin');
                         $settings = '<a href="' . $settings_page . '">Settings</a>';
@@ -788,6 +797,31 @@ if (!class_exists('WpSmProAdmin')) {
                         array_unshift($links, $settings);
 
                         return $links;
+                }
+                
+                function global_stats(){
+                        
+                        global $wpdb, $wp_smpro;
+                        
+                        $sql = "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s";
+                        
+                        $global_data = $wpdb->get_col( $wpdb->prepare( $sql, WP_SMPRO_PREFIX."smush-data" ) );
+                        
+                        $before_smush = 0;
+                        $after_smush = 0;
+                        
+                        foreach($global_data as $data){
+                                $before_smush     += (int)$data['before_smush'];
+                                $after_smush      += (int)$data['after_smush'];
+                        }
+                        
+                        $smush_data['bytes'] = $before_smush - $after_smush;
+                        
+                        $smush_data['percent']  = ($smush_data['bytes']/$before_smush)*100;
+                        
+                        $smush_data['human'] = $wp_smpro->format_bytes($bytes);
+                        
+                        return $smush_data;
                 }
 
         }
