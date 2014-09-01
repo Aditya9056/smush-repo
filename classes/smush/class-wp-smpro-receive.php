@@ -35,7 +35,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			// get the contents of the callback
 			$body = file_get_contents( 'php://input' );
 
-			$data = json_decode( $body );
+			$data = json_decode( $body, true );
 
 			// filter with default data
 			$defaults = array(
