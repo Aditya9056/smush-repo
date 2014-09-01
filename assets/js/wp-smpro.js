@@ -4,13 +4,20 @@
                 var elem = $(element);
                 
                 var defaults = {
-                        is_single     : false,
+                        isSingle     : false,
                         ajaxurl      : '',
                         msgs          : {},
                         counts        : {},
                         spinner       : $('#wp-smpro-spinner-wrap .floatingCirclesG'),
-                        msg_class     : '.wp-smpro-msg',
-                        ids           : []
+                        msgClass     : 'wp-smpro-msg',
+                        ids           : [],
+                        sendButton      : '#wp-smpro-send',
+                        fetchButton       : '#wp-smpro-fetch',
+                        cancelButton      : '#wp-smpro-cancel',
+                        sendProgressBar : '#wp-smpro-sent-progress',
+                        fetchProgressBar        : '#wp-smpro-smushed-progress',
+                        statusWrap              : '#wp-smpro-progress-status',
+                        statsWrap               : '#wp-smpro-compression',
                 };
                 
                 var smushed_count = 0;
@@ -36,14 +43,14 @@
                 };
                 
                 var msg = function(msgvar){
-                        if(config.is_single){
+                        if(config.isSingle){
                                 singleMsg(msgvar);
                                 return;
                         }
-                        if (elem.find(config.msg_class+'.' + msgvar.msg).length > 0) {
+                        if (elem.find(config.msgClass+'.' + msgvar.msg).length > 0) {
                                 return;
                         }
-                        var $msg = $('<div id="message" class="wp-smpro-msg"></div>');
+                        var $msg = $('<div id="message" class="'+config.msgClass+'"></div>');
                         if(!msgvar.err){
                                 $msg.addClass('updated');
                         }else{
@@ -56,7 +63,7 @@
                         }
                         $msg.find('p').append(msgvar.str);
                         $msg.css('display', 'none');
-                        elem.find('#wp-smpro-progress-status').after($msg);
+                        elem.find(config.statusWrap).after($msg);
                         $msg.slideToggle();
 
                 };
@@ -77,7 +84,7 @@
                                
                                $status_div.addClass('fail');
                                // find the smush button
-                                $button = elem.find('button#wp-smpro-send');
+                                $button = elem.find(config.sendButton);
 
                                 // find the spinner ui
                                 $spinner = $button.find('.floatingCirclesG');
@@ -133,7 +140,7 @@
                 
                 
                 var sendSuccess = function($response){
-                        if(!config.is_single){
+                        if(!config.isSingle){
                                sendProgress($response.count);                         
                         }
                         var msgvar = {
@@ -167,8 +174,8 @@
                 
                         $percent = (sent_count/parseInt(config.counts.total))*100;
                 
-                        elem.find('#wp-smpro-sent-progress div').css('width',$percent+'%');
-                        elem.find('#wp-smpro-progress-status p#smushed-status .done-count').html(sent_count);
+                        elem.find(config.sendProgressBar+' div').css('width',$percent+'%');
+                        elem.find(config.statusWrap+' p#sent-status .done-count').html(sent_count);
                 
 //                        if(config.counts.sent === smushed_count){
 //                                msg(config.msgs.sent_done, false, false);
@@ -176,14 +183,16 @@
 //                        }
                 };
                 
-                var fetchProgress = function(){
+                var fetchProgress = function($stats){
                         smushed_count++;
                 
                         $percent = (smushed_count/parseInt(config.counts.total))*100;
                 
-                        elem.find('#wp-smpro-smushed-progress div').css('width',$percent+'%');
-                        elem.find('#wp-smpro-progress-status p#smushed-status .done-count').html(smushed_count);
-                
+                        elem.find(config.fetchProgressBar +' div').css('width',$percent+'%');
+                        elem.find(config.statusWrap+' p#smushed-status .done-count').html(smushed_count);
+                        
+                        config.statsWrap.find('#percent').html($stats['percent']);
+                        config.statsWrap.find('#percent').html($stats['human']);
 //                        if(config.counts.sent === smushed_count){
 //                                msg(config.msgs.sent_done, false, false);
 //                                //wp_smpro_all_done();
@@ -200,12 +209,16 @@
                                 url: config.fetch_url,
                                 timeout: 60000
                         }).done(function(response){
-                                var $is_fetched = parseInt(response);
+                                var $is_fetched = parseInt(response.success);
                                 // file was successfully fetched
-                                if($is_fetched>0){
-                                        fetchProgress();
+                                if($is_fetched>0 && response.stats!==null){
+                                        fetchProgress(response.stats);
                                 }else{
-                                        // do nothing
+                                        msg({
+                                                'msg':'fail',
+                                                'str':response.msg,
+                                                'err':true
+                                        });
                                 }
                         }).fail(function(){
 
@@ -266,7 +279,7 @@
                 var bulkCancel = function(){
                         $(window).off('beforeunload');
 
-                        $button = $('#wp-smpro-fetch');
+                        $button = elem.find(config.fetchButton);
 
                         // copy the spinner into an object
                         $spinner = $button.find('.floatingCirclesG');
@@ -288,11 +301,11 @@
                 
                 init();
                 
-                elem.on('click', '#wp-smpro-send', function(e) {
+                elem.on('click', config.sendButton, function(e) {
                                 // prevent the default action
                                 e.preventDefault();
                                 buttonProgress($(this), config.msgs.sending);
-                                if(!config.is_single){
+                                if(!config.isSingle){
                                         sent_count = config.counts.sent;
                                         send(false);
                                 }else{
@@ -311,7 +324,7 @@
                                 
                                 return;
 
-                        }).on('click', '#wp-smpro-fetch', function(e) {
+                        }).on('click', config.fetchButton, function(e) {
                                 // prevent the default action
                                 e.preventDefault();
                                 if($('#fetch-notice').length>0){
@@ -322,38 +335,34 @@
                                 
                                 return;
                                 
-                        });
+                        }).on('click', '#fetch-notice button.button', function(e) {
                         
-                elem.on('click', '#fetch-notice button.button', function(e) {
-                        
-                        e.preventDefault();
-                        
-                        if($(this).hasClass('button-secondary')){
-                                jQuery.ajax({
-                                        type: "GET",
-                                        data: {hide: true},
-                                        url: config.hide_notice_url,
-                                        timeout: 60000
-                                }); 
-                        }
-                        
-                        $('#fetch-notice').slideToggle(function() {
-                                $('#fetch-notice').remove();
-                        });
-                        
-                        bulkStart($(this));
-                        
-                });
-                
-                elem.on('click', '#wp-smpro-cancel', function(e) {
-                        // prevent the default action
-                        e.preventDefault();
+                                e.preventDefault();
 
-                        config.process_next = false;
-                        
-                        bulkCancel();
+                                if($(this).hasClass('button-secondary')){
+                                        jQuery.ajax({
+                                                type: "GET",
+                                                data: {hide: true},
+                                                url: config.hide_notice_url,
+                                                timeout: 60000
+                                        }); 
+                                }
 
-                        return;
+                                $('#fetch-notice').slideToggle(function() {
+                                        $('#fetch-notice').remove();
+                                });
+
+                                bulkStart($(this));
+                        
+                        }).on('click', config.cancelButton, function(e) {
+                                // prevent the default action
+                                e.preventDefault();
+
+                                config.process_next = false;
+
+                                bulkCancel();
+
+                                return;
 
                 });
         };

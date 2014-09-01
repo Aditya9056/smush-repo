@@ -477,7 +477,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <div id="wp-smpro-smushed-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
                                                 <p id="wp-smpro-compression">'
                                                         . __( "Reduced by ", WP_SMPRO_DOMAIN )
-                                                        . '<span id="percent">'.$stats['compressed_percent'].'</span>% (<span id="kb">'.$stats['compressed_human'].'</span>)
+                                                        . '<span id="percent">'.$stats['compressed_percent'].'</span>% (<span id="human">'.$stats['compressed_human'].'</span>)
                                                 </p>
                                         </div>';
                                                 
