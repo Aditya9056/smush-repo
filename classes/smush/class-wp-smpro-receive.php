@@ -85,7 +85,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			foreach ( $data as $attachment_id => &$smush_data ) {
 				if ( in_array( $attachment_id, $sent_ids ) ) {
 					$smush_data['timestamp'] = $timestamp;
-					$values[]                = "(" . $attachment_id . ", '" . WP_SMPRO_PREFIX . "smush-data', " . maybe_serialize( $smush_data ) . ")";
+					$values[]                = "(" . $attachment_id . ", '" . WP_SMPRO_PREFIX . "smush-data', '" . maybe_serialize( $smush_data ) . "')";
 				}
 			}
 
