@@ -98,8 +98,7 @@ if (!class_exists('WpSmProSend')) {
                         $response['status_code'] = 1;
                         $response['count']      = count($sent);
                         $response['status_message'] = sprintf(__('%d were sent for smushing', WP_SMPRO_DOMAIN), $response['count']);
-                        echo $response;
-
+						echo json_encode($response);
                         // wp_ajax wants us to...
                         die();
                 }
@@ -177,9 +176,6 @@ if (!class_exists('WpSmProSend')) {
                                 return $response;
                         }
 
-                        // otherwise get into array
-                        $response = json_decode($response);
-
                         // destroy the large request_data from memory
                         unset($request_data);
                         
@@ -207,9 +203,9 @@ if (!class_exists('WpSmProSend')) {
                  */
                 private function process_response($response, $token, $sent_ids){
                         // request was successfully received
-                        if($response['success']){
+                        if($response->success){
                                 // get the unique request id issued by smush service
-                                $request_id = $response['request_id'];
+                                $request_id = $response->request_id;
                                 
                                 $updated = $this->update_options($request_id,$token,$sent_ids);
                         }else{
@@ -614,7 +610,7 @@ if (!class_exists('WpSmProSend')) {
                                 'json' => json_encode($request_data)
                             ),
                             'user-agent' => WP_SMPRO_USER_AGENT,
-                            'timeout' => WP_SMUSHIT_PRO_TIMEOUT,
+                            'timeout' => WP_SMPRO_TIMEOUT,
                             'sslverify' => false
                         );
 

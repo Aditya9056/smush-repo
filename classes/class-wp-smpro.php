@@ -87,12 +87,13 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				 * for eg, for self hosted, in future
 				 */
 				define( 'WP_SMPRO_SERVICE_URL', 'https://107.170.2.190:1203/upload/' );
+				define( 'WP_SMPRO_SERVICE_STATUS', 'https://107.170.2.190:1203/status/' );
 			}
 
 			/**
 			 * The user agent for the request
 			 */
-			define( 'WP_SMPRO_USER_AGENT', 'WP Smush.it PRO/' . WP_SMPRO_VERSION . '} ('
+			define( 'WP_SMPRO_USER_AGENT', 'WP Smush.it PRO/' . WP_SMPRO_VERSION . '('
 			                               . '+' . get_site_url() . ')'
 			);
 

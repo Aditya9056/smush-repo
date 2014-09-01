@@ -79,12 +79,12 @@
                         
                         // replace the older message
                         $status_div.html(msgvar.str);
+		                // find the smush button
+		                $button = elem.find(config.sendButton);
                         
                         if(msgvar.err){
                                
                                $status_div.addClass('fail');
-                               // find the smush button
-                                $button = elem.find(config.sendButton);
 
                                 // find the spinner ui
                                 $spinner = $button.find('.floatingCirclesG');
