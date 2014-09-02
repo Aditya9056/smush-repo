@@ -476,7 +476,7 @@ if (!class_exists('WpSmProAdmin')) {
                                                 <div id="wp-smpro-fetched-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
                                                 <p id="wp-smpro-compression">'
                                 . __("Reduced by ", WP_SMPRO_DOMAIN)
-                                . '<span id="percent">' . $this->counts['percent'] . '</span>% (<span id="human">' . $this->counts['human'] . '</span>)
+                                . '<span id="percent">' . number_format( $this->counts['percent'], 2, '.', '' ) . '</span>% (<span id="human">' . $this->counts['human'] . '</span>)
                                                 </p>
                                         </div>';
 
@@ -741,7 +741,7 @@ if (!class_exists('WpSmProAdmin')) {
                                 if ($stats['compressed_bytes'] == 0) {
                                         $status_txt = __('Already Optimized', WP_SMPRO_DOMAIN);
                                 } else {
-                                        $status_txt = sprintf(__("Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN), $stats['compressed_percent'], $stats['compressed_human']);
+                                        $status_txt = sprintf(__("Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN), number_format( $stats['compressed_percent'], 2, '.', ''), $stats['compressed_human'] );
                                 }
                                 $response['msg'] = $status_txt;
                                 echo json_encode($response);
