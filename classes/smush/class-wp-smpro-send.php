@@ -43,7 +43,7 @@ if (!class_exists('WpSmProSend')) {
                         if ($wp_smpro->admin->api_connected) {
 
                                 //Send metadata and attachment id
-                                $sent = $this->send_request($attachment_id);
+                                $sent = $this->send_request($attachment_id, $metadata);
                         }
 
                         return $metadata;
@@ -121,9 +121,10 @@ if (!class_exists('WpSmProSend')) {
                  * Send a request for smushing
                  * 
                  * @param bool|array|int $attachment_id attachment id or an array of attachment ids or false(for bulk smushing)
+                 * @param string $metadata
                  * @return bool whether request was successful
                  */
-                function send_request($attachment_id = false) {
+                function send_request($attachment_id = false, $metadata = '') {
                         /*
                          * {
                          *      'api_key': '',
@@ -156,7 +157,7 @@ if (!class_exists('WpSmProSend')) {
                          * }
                          */
                         // formulate the request data as shown in the comment above
-                        $request_data = $this->form_request_data($attachment_id);
+                        $request_data = $this->form_request_data($attachment_id, $metadata);
 
                         // get the token out
                         $token = $request_data->token;
@@ -301,7 +302,7 @@ if (!class_exists('WpSmProSend')) {
                  * @param int|array|bool $attachment_id The attachment id, or array of attachment ids or false
                  * @return object The request data
                  */
-                private function form_request_data($attachment_id) {
+                private function form_request_data($attachment_id, $metadata = '') {
 
                         // instantiate
                         $request_data = new stdClass();
@@ -323,7 +324,7 @@ if (!class_exists('WpSmProSend')) {
                         $request_data = $this->add_options($request_data);
 
                         // add data for all the attachments
-                        $request_data = $this->add_attachment_data($request_data, $attachment_id, $path_base['basedir']);
+                        $request_data = $this->add_attachment_data($request_data, $attachment_id, $path_base['basedir'], $metadata);
 
                         unset($path_base);
                         // return the formed request data
@@ -362,17 +363,22 @@ if (!class_exists('WpSmProSend')) {
                  * @param string $pathprefix path to the uploads dir
                  * @return object the request data with attachment data
                  */
-                private function add_attachment_data($request_data, $attachment_id, $pathprefix) {
+                private function add_attachment_data($request_data, $attachment_id, $pathprefix, $metadata = '') {
 
+	                    if ( !empty( $metadata ) ) {
+		                    $attachments[0]['type'] = get_post_mime_type($attachment_id);
+		                    $attachments[0]['attachment_id'] = $attachment_id;
+		                    $attachments[0]['metadata'] = maybe_serialize( $metadata );
+		                    $attachments[0]['metapath'] = $metadata['file'];
+		                    $attachments = json_decode( json_encode( $attachments ), FALSE );
+	                    }
                         // get all the attachment data from the db
-                        $attachments = $this->get_attachments($attachment_id);
-                        
+                        $attachments = !empty( $attachments ) ? $attachments : $this->get_attachments($attachment_id);
 
                         //If there are no atachments, return
                         if (empty($attachments)) {
                                 return $request_data;
                         }
-                        
 
                         // loop
                         foreach ($attachments as $key => &$attachment) {
@@ -391,7 +397,6 @@ if (!class_exists('WpSmProSend')) {
                                                 continue;
                                         }
                                 }
-
                                 // get the attachment data in the format we need
                                 $attachment = $this->format_attachment_data($attachment, $anim);
 
@@ -417,7 +422,7 @@ if (!class_exists('WpSmProSend')) {
                  * @param int|bool|array $attachment_id
                  * @return object query results
                  */
-                function get_attachments($attachment_id = false) {
+                function get_attachments($attachment_id = false ) {
 
                         global $wpdb;
                         // figure if we need to get data for specific ids
@@ -530,6 +535,7 @@ if (!class_exists('WpSmProSend')) {
                         $full_image = $full_size_array['basename'];
 
                         $filenames = array();
+
                         // check large
                         foreach ($metadata['sizes'] as $size_key => $size_data) {
                                 $filenames[$size_key] = $size_data['file'];

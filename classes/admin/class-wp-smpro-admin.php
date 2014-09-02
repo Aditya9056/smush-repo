@@ -814,8 +814,6 @@ if (!class_exists('WpSmProAdmin')) {
                         
                         foreach($global_data as $data){
                                 $data = maybe_unserialize($data);
-                                error_log('ind data');
-                                error_log(var_export($data, true));
                                 $smush_data['size_before']     += (int)$data['stats']['size_before'];
                                 $smush_data['size_after']      += (int)$data['stats']['size_after'];
                         }
