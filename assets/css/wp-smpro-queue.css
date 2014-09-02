@@ -266,7 +266,7 @@ Progressbar ui
         height:20px;
         border-radius: 10px;
 }
-#progress-ui #wp-smpro-progress-wrap #wp-smpro-smushed-progress div{
+#progress-ui #wp-smpro-progress-wrap #wp-smpro-fetched-progress div{
         background-color: #7ad03a;
 }
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-sent-progress div{

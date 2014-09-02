@@ -73,11 +73,12 @@ if (!class_exists('WpSmProMediaLibrary')) {
                         // if the image is smushed
                         if (!empty($is_smushed)) {
                                 // the status
-	                        $stats = get_post_meta( $id, WP_SMPRO_PREFIX.'smush-data', true );
-	                        if ( isset( $stats['compressed_bytes'] ) && $stats['compressed_bytes'] == 0 ) {
+	                        $data = get_post_meta( $id, WP_SMPRO_PREFIX.'smush-data', true );
+                                $stats = $data['stats'];
+	                        if ( isset( $data['stats']['bytes'] ) && $data['stats']['bytes'] === 0 ) {
 		                        $status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
-	                        } elseif ( ! empty( $stats['compressed_percent'] ) && ! empty( $stats['compressed_human'] ) ) {
-		                        $status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), $stats['compressed_percent'], $stats['compressed_human'] );
+	                        } elseif ( ! empty( $data['stats']['percent'] ) && ! empty( $data['stats']['human'] ) ) {
+		                        $status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), $data['stats']['percent'], $data['stats']['human'] );
 	                        }
 
                                 // check if we need to show the resmush button
