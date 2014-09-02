@@ -78,7 +78,7 @@ if (!class_exists('WpSmProMediaLibrary')) {
 	                        if ( isset( $data['stats']['bytes'] ) && $data['stats']['bytes'] === 0 ) {
 		                        $status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
 	                        } elseif ( ! empty( $data['stats']['percent'] ) && ! empty( $data['stats']['human'] ) ) {
-		                        $status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format( $data['stats']['percent'], 2, '.', '' ), $data['stats']['human'] );
+		                        $status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $data['stats']['percent'], 2, '.', '' ), $data['stats']['human'] );
 	                        }
 
                                 // check if we need to show the resmush button
