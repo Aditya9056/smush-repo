@@ -67,8 +67,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$updated = $this->update( $insert, $request_id, $current_requests );
 
 			$this->notify( $updated );
-
-
+                        
+                        echo json_encode(array('status'=>1));
+                        die();
 		}
 
 
