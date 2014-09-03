@@ -9,184 +9,206 @@
  *
  * @copyright (c) 2014, Incsub (http://incsub.com)
  */
-if (!class_exists('WpSmProMediaLibrary')) {
+if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 
-        /**
-         * Show settings in Media settings and add column to media library
-         *
-         */
-        class WpSmProMediaLibrary {
-                
-                var $current_requests;
+	/**
+	 * Show settings in Media settings and add column to media library
+	 *
+	 */
+	class WpSmProMediaLibrary {
 
-                /**
-                 * Constructor
-                 */
-                public function __construct() {
+		var $current_requests;
 
-                        // get the DEV api key
-                        $wpmudev_apikey = get_site_option('wpmudev_apikey');
+		/**
+		 * Constructor
+		 */
+		public function __construct() {
 
-                        // add the admin option screens
-                        add_action('admin_init', array($this, 'admin_init'));
+			// get the DEV api key
+			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
 
-                        // if there's a key
-                        if (!empty($wpmudev_apikey)) {
-                                // add extra columns for smushing to media lists
-                                add_filter('manage_media_columns', array($this, 'columns'));
-                                add_action('manage_media_custom_column', array($this, 'custom_column'), 10, 2);
-                        }
-                        
-                        $this->current_requests = get_option(WP_SMPRO_PREFIX.'current-requests', array());
-                }
+			// add the admin option screens
+			add_action( 'admin_init', array( $this, 'admin_init' ) );
 
-                /**
-                 * Print column header for Smush.it results in the media library
-                 *
-                 * @param array $defaults The default columns
-                 *
-                 * @return array columns with our header added
-                 */
-                function columns($defaults) {
-                        $defaults['smushit'] = 'Smush.it';
+			//On deleting images update sent ids
+			add_action( 'delete_attachment', array( $this, 'update_sent_ids' ) );
 
-                        return $defaults;
-                }
+			// if there's a key
+			if ( ! empty( $wpmudev_apikey ) ) {
+				// add extra columns for smushing to media lists
+				add_filter( 'manage_media_columns', array( $this, 'columns' ) );
+				add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
+			}
 
-                /**
-                 * Show our custom smush data for each attachment
-                 *
-                 * @param string $column_name The name of the column
-                 * @param int $id The attachment id
-                 *
-                 * @return null
-                 */
-                function custom_column($column_name, $id) {
-	                    $status_txt = '';
-                        // if it isn't our column, get out
-                        if ('smushit' != $column_name) {
-                                return;
-                        }
+			$this->current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
+		}
 
-                        $is_smushed = get_post_meta($id, "wp-smpro-is-smushed", true);
+		/**
+		 * Print column header for Smush.it results in the media library
+		 *
+		 * @param array $defaults The default columns
+		 *
+		 * @return array columns with our header added
+		 */
+		function columns( $defaults ) {
+			$defaults['smushit'] = 'Smush.it';
 
-                        // if the image is smushed
-                        if (!empty($is_smushed)) {
-                                // the status
-	                        $data = get_post_meta( $id, WP_SMPRO_PREFIX.'smush-data', true );
-                                $stats = $data['stats'];
-	                        if ( isset( $data['stats']['bytes'] ) && $data['stats']['bytes'] === 0 ) {
-		                        $status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
-	                        } elseif ( ! empty( $data['stats']['percent'] ) && ! empty( $data['stats']['human'] ) ) {
-		                        $status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $data['stats']['percent'], 2, '.', '' ), $data['stats']['human'] );
-	                        }
+			return $defaults;
+		}
 
-                                // check if we need to show the resmush button
-                                $show_button = $this->show_resmush_button($id);
+		/**
+		 * Show our custom smush data for each attachment
+		 *
+		 * @param string $column_name The name of the column
+		 * @param int $id The attachment id
+		 *
+		 * @return null
+		 */
+		function custom_column( $column_name, $id ) {
+			$status_txt = '';
+			// if it isn't our column, get out
+			if ( 'smushit' != $column_name ) {
+				return;
+			}
 
-                                // the button text
-                                $button_txt = __('Re-smush', WP_SMPRO_DOMAIN);
-                        } else {
-                                $sent_ids = get_site_option(WP_SMPRO_PREFIX.'sent-ids',array());
-                                
-                                $is_sent = in_array($id, $sent_ids);
+			$is_smushed = get_post_meta( $id, "wp-smpro-is-smushed", true );
 
-                                if ($is_sent) {
-                                        // the status
-                                        $status_txt = __('API is smushing it', WP_SMPRO_DOMAIN);
+			// if the image is smushed
+			if ( ! empty( $is_smushed ) ) {
+				// the status
+				$data  = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
+				$stats = $data['stats'];
+				if ( isset( $data['stats']['bytes'] ) && $data['stats']['bytes'] === 0 ) {
+					$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
+				} elseif ( ! empty( $data['stats']['percent'] ) && ! empty( $data['stats']['human'] ) ) {
+					$status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $data['stats']['percent'], 2, '.', '' ), $data['stats']['human'] );
+				}
 
-                                        // we need to show the smush button
-                                        $show_button = false;
+				// check if we need to show the resmush button
+				$show_button = $this->show_resmush_button( $id );
 
-                                        // the button text
-                                        $button_txt = '';
-                                } else {
+				// the button text
+				$button_txt = __( 'Re-smush', WP_SMPRO_DOMAIN );
+			} else {
+				$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
 
-                                        // the status
-                                        $status_txt = __('Not processed', WP_SMPRO_DOMAIN);
+				$is_sent = in_array( $id, $sent_ids );
 
-                                        // we need to show the smush button
-                                        $show_button = true;
+				if ( $is_sent ) {
+					// the status
+					$status_txt = __( 'API is smushing it', WP_SMPRO_DOMAIN );
 
-                                        // the button text
-                                        $button_txt = __('Smush.it now!', WP_SMPRO_DOMAIN);
-                                }
-                        }
+					// we need to show the smush button
+					$show_button = false;
 
-                        $this->column_html($id, $status_txt, $button_txt, $show_button);
-                }
+					// the button text
+					$button_txt = '';
+				} else {
 
-                /**
-                 * Print the column html
-                 *
-                 * @param string $id Media id
-                 * @param string $status_txt Status text
-                 * @param string $button_txt Button label
-                 * @param boolean $show_button Whether to shoe the button
-                 *
-                 * @return null
-                 */
-                function column_html($id, $status_txt = "", $button_txt = "", $show_button = true) {
-                        // don't proceed if attachment is not image
-                        if (!wp_attachment_is_image($id)) {
-                                return;
-                        }
-                        ?>
-                        <p class="smush-status">
-                        <?php echo $status_txt; ?>
-                        </p>
-                        <?php
-                        // if we aren't showing the button
-                        if (!$show_button) {
-                                return;
-                        }
-                        ?>
-                        <button id="wp-smpro-send" class="button">
+					// the status
+					$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
+
+					// we need to show the smush button
+					$show_button = true;
+
+					// the button text
+					$button_txt = __( 'Smush.it now!', WP_SMPRO_DOMAIN );
+				}
+			}
+
+			$this->column_html( $id, $status_txt, $button_txt, $show_button );
+		}
+
+		/**
+		 * Print the column html
+		 *
+		 * @param string $id Media id
+		 * @param string $status_txt Status text
+		 * @param string $button_txt Button label
+		 * @param boolean $show_button Whether to shoe the button
+		 *
+		 * @return null
+		 */
+		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true ) {
+			// don't proceed if attachment is not image
+			if ( ! wp_attachment_is_image( $id ) ) {
+				return;
+			}
+			?>
+			<p class="smush-status">
+				<?php echo $status_txt; ?>
+			</p>
+			<?php
+			// if we aren't showing the button
+			if ( ! $show_button ) {
+				return;
+			}
+			?>
+			<button id="wp-smpro-send" class="button">
                                 <span>
                         <?php echo $button_txt; ?>
                                 </span>
-                        </button>
-                        <?php
-                }
+			</button>
+		<?php
+		}
 
-                /**
-                 * Whether to show resmush buton
-                 *
-                 * @param array $smush_meta_full the smush metadata for full image size
-                 *
-                 * @return boolean true to display the button
-                 */
-                function show_resmush_button($id) {
-                        $button_show = false;
-                        $smush_data = get_post_meta($id, WP_SMPRO_PREFIX.'smush-data', true);
-                        $smush_status = get_post_meta($id, 'wp-smpro-is-smushed', true);
-                        
-                        if ($smush_status === '1') {
-                                return $button_show;
-                        }
-                        foreach($this->current_requests as $request_id=>$data){
-                                if(in_array($id,$data['sent_ids'])){
-                                        $timestamp = $data['timestamp'];
-                                        exit();
-                                }
-                        }
-                        if ($smush_status === '0') {
-                                $age = (int) time() - (int) $timestamp;
-                                if ($age >= 10 * DAY_IN_SECONDS) {
-                                        $button_show = true;
-                                }
-                        }
+		/**
+		 * Whether to show resmush buton
+		 *
+		 * @param array $smush_meta_full the smush metadata for full image size
+		 *
+		 * @return boolean true to display the button
+		 */
+		function show_resmush_button( $id ) {
+			$button_show  = false;
+			$smush_data   = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
+			$smush_status = get_post_meta( $id, 'wp-smpro-is-smushed', true );
 
-                        return $button_show;
-                }
+			if ( $smush_status === '1' ) {
+				return $button_show;
+			}
+			foreach ( $this->current_requests as $request_id => $data ) {
+				if ( in_array( $id, $data['sent_ids'] ) ) {
+					$timestamp = $data['timestamp'];
+				}
+			}
+			if ( $smush_status === '0' ) {
+				$age = (int) time() - (int) $timestamp;
+				if ( $age >= 10 * DAY_IN_SECONDS ) {
+					$button_show = true;
+				}
+			}
 
-                /**
-                 * enqueue common script
-                 */
-                function admin_init() {
-                        wp_enqueue_script('common');
-                }
+			return $button_show;
+		}
 
-        }
+		/**
+		 * enqueue common script
+		 */
+		function admin_init() {
+			wp_enqueue_script( 'common' );
+		}
+
+		/**
+		 * Update Sent ids
+		 */
+		function update_sent_ids( $attachment_id ) {
+			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids' );
+
+			if ( empty( $sent_ids ) ) {
+				return;
+			}
+			// Search
+			$pos = array_search( $attachment_id, $sent_ids );
+			if ( ! $pos ) {
+				return;
+			}
+			unset( $sent_ids[ $pos ] );
+			update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
+
+			return;
+		}
+
+	}
 
 }

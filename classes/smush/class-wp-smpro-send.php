@@ -281,7 +281,7 @@ if (!class_exists('WpSmProSend')) {
                  */
                 private function update_sent_ids($sent_ids){
                         // get the array of ids sent previously
-                        $prev_sent_ids = get_site_option(WP_SMPRO_PREFIX . 'sent-ids', array());
+                        $prev_sent_ids = get_site_option(WP_SMPRO_PREFIX . 'sent-ids', array(), false );
                         
                         // merge the newest sent ids with the existing ones
                         
@@ -290,6 +290,7 @@ if (!class_exists('WpSmProSend')) {
                         if(is_array($sent_ids)){
                                 // update the sent ids
                                 $update = update_site_option(WP_SMPRO_PREFIX.'sent-ids', $sent_ids);
+
                                 return boolval($update);
                         }
                         
