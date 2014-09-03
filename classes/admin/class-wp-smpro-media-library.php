@@ -74,10 +74,13 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			if ( ! empty( $is_smushed ) ) {
 				// the status
 				$data  = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
-				$stats = $data['stats'];
-				if ( isset( $data['stats']['bytes'] ) && $data['stats']['bytes'] === 0 ) {
+
+				$bytes = isset( $data['stats']['bytes'] ) ? $data['stats']['bytes'] : 0;
+				$percent = isset( $data['stats']['percent'] ) ? $data['stats']['percent'] : 0;
+
+				if ( $bytes == 0 || $percent == 0 ) {
 					$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
-				} elseif ( ! empty( $data['stats']['percent'] ) && ! empty( $data['stats']['human'] ) ) {
+				} elseif ( ! $percent && ! empty( $data['stats']['human'] ) ) {
 					$status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $data['stats']['percent'], 2, '.', '' ), $data['stats']['human'] );
 				}
 

@@ -22,13 +22,43 @@ if (!class_exists('WpSmProCount')) {
                     'sent'      => 0,
                     'smushed'   => 0
                 );
-                
+
                 function init(){
-                        $this->counts = array(
-                                'total'=> $this->total_count(),
-                                'sent' => $this->sent_count(),
-                                'smushed' => $this->smushed_count(),
-                        );
+	                $this->counts = array(
+		                'total'   => (int) $this->total_count(),
+		                'sent'    => (int) $this->sent_count(),
+		                'smushed' => (int) $this->smushed_count(),
+	                );
+
+					//Fix Myself if I'm wrong
+
+	                //If there is any problem with sent counts, check sent ids and update if image doesn't exists
+	                if ( $this->counts['sent'] > $this->counts['total'] ) {
+		                $sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids' );
+		                foreach ( $sent_ids as $attachment_id ) {
+			                if ( ! get_post_status( $attachment_id ) ) {
+				                $pos = array_search( $attachment_id, $sent_ids );
+				                unset( $sent_ids[ $pos ] );
+			                }
+		                }
+		                //Update the sent ids
+		                update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
+		                $this->counts['sent'] = $this->sent_count();
+	                }
+
+	                //If there is any problem with Smushed counts, check posts for existence
+	                if ( $this->counts['smushed'] > $this->counts['total'] ) {
+		                $smushed = $this->smushed_count( true );
+		                if ( empty( $smushed ) ) {
+			                return;
+		                }
+		                foreach ( $smushed as $attachment_id ) {
+			                if ( ! get_post_status( $attachment_id ) ) {
+				                delete_post_meta( $attachment_id, 'wp-smpro-is-smushed' );
+			                }
+		                }
+		                $this->counts['smushed'] = $this->smushed_count();
+	                }
                 }
                 
                 function sent_count(){
@@ -52,7 +82,7 @@ if (!class_exists('WpSmProCount')) {
                         return $count;
                 }
                 
-                function smushed_count(){
+                function smushed_count( $return_ids = false ){
                         $query = array(
                             'fields' => 'ids',
                             'post_type' => 'attachment',
@@ -69,7 +99,11 @@ if (!class_exists('WpSmProCount')) {
                         );
 
                         $results = new WP_Query($query);
-                        $count = !empty($results->post_count) ? $results->post_count : 0;
+	                    if( !$return_ids ) {
+		                    $count = ! empty( $results->post_count ) ? $results->post_count : 0;
+	                    }else{
+		                    return $results->posts;
+	                    }
 
                         // send the count
                         return $count;

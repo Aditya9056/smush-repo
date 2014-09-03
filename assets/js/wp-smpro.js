@@ -154,7 +154,7 @@
                 
                 var sendSuccess = function($response){
                         if(!config.isSingle){
-                               sendProgress($response.count);                         
+                               sendProgress($response.sent_count);
                         }
                         var msgvar = {
                                 'msg':'update',
