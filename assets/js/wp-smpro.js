@@ -169,8 +169,7 @@
                         return;
                 };
                 
-                var sendProgress = function(){
-                        sentCount++;
+                var sendProgress = function( sentCount ){
                 
                         $percent = (sentCount/parseInt(config.counts.total))*100;
                 

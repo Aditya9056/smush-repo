@@ -74,7 +74,7 @@ if (!class_exists('WpSmProSend')) {
                                 // wp_ajax wants us to...
                                 die();
                         }
-                        $attachment_id = $_GET['attachment_id'];
+                        $attachment_id = !empty( $_GET['attachment_id'] ) ? $_GET['attachment_id'] : '';
 
                         // force attachment id to false if it isn't there
                         if (empty($attachment_id)) {
@@ -96,7 +96,7 @@ if (!class_exists('WpSmProSend')) {
                         }
                         
                         $response['status_code'] = 1;
-                        $response['count']      = count($sent);
+                        $response['count']      = $sent;
                         $response['status_message'] = sprintf(__('%d were sent for smushing', WP_SMPRO_DOMAIN), $response['count']);
 						echo json_encode($response);
                         // wp_ajax wants us to...
@@ -125,6 +125,7 @@ if (!class_exists('WpSmProSend')) {
                  * @return bool whether request was successful
                  */
                 function send_request($attachment_id = false, $metadata = '') {
+	                    $updated_count = '';
                         /*
                          * {
                          *      'api_key': '',
@@ -184,7 +185,7 @@ if (!class_exists('WpSmProSend')) {
                         $updated = $this->process_response($response, $token, $sent_ids);
                         
                         if($updated){
-                                $updated = $sent_ids;
+                                $updated_count = count( $sent_ids );
                         }
                         
                         // destroy all vars that we don't need
@@ -192,7 +193,7 @@ if (!class_exists('WpSmProSend')) {
 
                         // return the success status of update option
                         // otherwise all this was a waste since we won't know how to process further
-                        return boolval($updated);
+                        return $updated_count;
                 }
                 
                 /**

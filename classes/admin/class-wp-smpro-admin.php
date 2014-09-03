@@ -838,7 +838,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * Update Sent ids
 		 */
 		function update_sent_ids( $attachment_id ) {
-			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids' );
+			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', false );
 
 			if ( empty( $sent_ids ) ) {
 				return;
@@ -850,6 +850,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			unset( $sent_ids[ $pos ] );
 			update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
+
+			if( empty( $sent_ids ) ) {
+				//No media, remove bulk meta
+				delete_site_option(WP_SMPRO_PREFIX . "bulk-sent");
+				delete_site_option(WP_SMPRO_PREFIX . "bulk-received");
+			}
 
 			return;
 		}
