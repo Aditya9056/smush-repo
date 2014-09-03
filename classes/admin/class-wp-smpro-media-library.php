@@ -87,7 +87,7 @@ if (!class_exists('WpSmProMediaLibrary')) {
                                 // the button text
                                 $button_txt = __('Re-smush', WP_SMPRO_DOMAIN);
                         } else {
-                                $sent_ids = get_option(WP_SMPRO_PREFIX.'sent-ids',array());
+                                $sent_ids = get_site_option(WP_SMPRO_PREFIX.'sent-ids',array());
                                 
                                 $is_sent = in_array($id, $sent_ids);
 
