@@ -66,6 +66,19 @@
                         elem.find(config.statusWrap).after($msg);
                         $msg.slideToggle();
 
+		                // find the smush button
+		                $button = elem.find(config.sendButton);
+
+		                // find the spinner ui
+		                $spinner = $button.find('.floatingCirclesG');
+
+		                // remove the spinner
+		                $spinner.remove();
+
+		                // add the progress text
+		                $button.find('span').html(config.msgs.sent);
+
+
                 };
                 
                 var singleMsg = function(msgvar){

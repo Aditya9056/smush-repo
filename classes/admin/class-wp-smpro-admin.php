@@ -144,6 +144,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'fetch'     => __( 'Fetch smushed images', WP_SMPRO_DOMAIN ),
 				'sending'   => __( 'Sending &hellip;', WP_SMPRO_DOMAIN ),
 				'send_fail' => __( 'Sending failed. Please try again later', WP_SMPRO_DOMAIN ),
+				'sent'      => __( 'Smushing in progress', WP_SMPRO_DOMAIN ),
 				'at_api'    => __( 'API is smushing it', WP_SMPRO_DOMAIN ),
 				'fetching'  => __( 'Fetching smushed images', WP_SMPRO_DOMAIN ),
 				'resmush'   => __( 'Re-smush', WP_SMPRO_DOMAIN ),
