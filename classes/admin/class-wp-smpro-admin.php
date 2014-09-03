@@ -72,6 +72,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// instantiate Media Library mods
 			$media_lib = new WpSmProMediaLibrary();
+
+			//On deleting images update sent ids
+			add_action( 'delete_attachment', array( $this, 'update_sent_ids' ) );
 		}
 
 		/**
@@ -830,6 +833,25 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$smush_data['human'] = $wp_smpro->format_bytes( $smush_data['bytes'] );
 
 			return $smush_data;
+		}
+		/**
+		 * Update Sent ids
+		 */
+		function update_sent_ids( $attachment_id ) {
+			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids' );
+
+			if ( empty( $sent_ids ) ) {
+				return;
+			}
+			// Search
+			$pos = array_search( $attachment_id, $sent_ids );
+			if ( ! $pos ) {
+				return;
+			}
+			unset( $sent_ids[ $pos ] );
+			update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
+
+			return;
 		}
 
 	}

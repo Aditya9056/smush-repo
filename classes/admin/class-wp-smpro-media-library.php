@@ -30,9 +30,6 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			// add the admin option screens
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 
-			//On deleting images update sent ids
-			add_action( 'delete_attachment', array( $this, 'update_sent_ids' ) );
-
 			// if there's a key
 			if ( ! empty( $wpmudev_apikey ) ) {
 				// add extra columns for smushing to media lists
@@ -187,26 +184,6 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 */
 		function admin_init() {
 			wp_enqueue_script( 'common' );
-		}
-
-		/**
-		 * Update Sent ids
-		 */
-		function update_sent_ids( $attachment_id ) {
-			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids' );
-
-			if ( empty( $sent_ids ) ) {
-				return;
-			}
-			// Search
-			$pos = array_search( $attachment_id, $sent_ids );
-			if ( ! $pos ) {
-				return;
-			}
-			unset( $sent_ids[ $pos ] );
-			update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
-
-			return;
 		}
 
 	}
