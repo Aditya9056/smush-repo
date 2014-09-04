@@ -31,8 +31,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		 * Receive the callback and send data for further processing
 		 */
 		function receive() {
-                        
-                        // get the contents of the callback
+
+			// get the contents of the callback
 			$body = file_get_contents( 'php://input' );
 
 			$data = json_decode( $body, true );
@@ -57,19 +57,19 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			}
 
 			$attachment_data = $data['data'];
-			$is_single       = !( count( $current_requests[ $request_id ]['sent_ids'] ) > 1 );
+			$is_single       = ! ( count( $current_requests[ $request_id ]['sent_ids'] ) > 1 );
 
 			$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], $is_single );
 
 			unset( $attachment_data );
 			unset( $data );
 
-			$updated = $this->update( $insert, $request_id, $current_requests );
+			$updated = $this->update( $insert );
 
 			$this->notify( $updated );
-                        
-                        echo json_encode(array('status'=>1));
-                        die();
+
+			echo json_encode( array( 'status' => 1 ) );
+			die();
 		}
 
 
@@ -103,14 +103,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 		}
 
-		private function update( $insert, $request_id, $current_requests ) {
+		private function update( $insert ) {
 			if ( $insert === false ) {
 				return $insert;
 			}
-
-			unset( $current_requests[ $request_id ] );
-
-			update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 
 			$updated = update_option( WP_SMPRO_PREFIX . "bulk-received", 1 );
 

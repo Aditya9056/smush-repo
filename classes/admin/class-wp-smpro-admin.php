@@ -159,8 +159,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
 
 			$current_bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent" );
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-			$sent_ids = get_site_option( WP_SMPRO_PREFIX . "sent-ids-$current_bulk_request" );
+			$sent_ids = !empty($current_requests[$current_bulk_request]) ? $current_requests[$current_bulk_request]['sent_ids'] : '';
 
 			global $wp_locale;
 			$locale = array(
@@ -542,7 +543,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						?>
 					</li>
 				</ol>
-				<button class="button button-primary"><?php _e( 'Got it!', WP_SMPRO_DOMAIN ); ?></button>
+				<button class="button button-primary accept-slow-notice"><?php _e( 'Got it!', WP_SMPRO_DOMAIN ); ?></button>
 				<button class="button button-secondary"><?php _e( "Don't show this again", WP_SMPRO_DOMAIN ); ?></button>
 			</div>
 		<?php
@@ -854,8 +855,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			if( empty( $sent_ids ) ) {
 				//No media, remove bulk meta
-				delete_site_option(WP_SMPRO_PREFIX . "bulk-sent");
-				delete_site_option(WP_SMPRO_PREFIX . "bulk-received");
+				delete_option(WP_SMPRO_PREFIX . "bulk-sent");
+				delete_option(WP_SMPRO_PREFIX . "bulk-received");
 			}
 
 			return;

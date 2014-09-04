@@ -85,10 +85,10 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				 * for eg, for self hosted, in future
 				 */
 				if( !defined('WP_SMPRO_SERVICE_URL') ) {
-					define( 'WP_SMPRO_SERVICE_URL', 'https://smush.wpmudev.org:1203/upload/' );
+					define( 'WP_SMPRO_SERVICE_URL', 'https://107.170.2.190:1203/upload/' );
 				}
 				if( !defined('WP_SMPRO_SERVICE_STATUS') ) {
-					define( 'WP_SMPRO_SERVICE_STATUS', 'https://smush.wpmudev.org:1203/status/' );
+					define( 'WP_SMPRO_SERVICE_STATUS', 'https://107.170.2.190:1203/status/' );
 				}
 			}
 

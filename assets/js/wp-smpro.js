@@ -278,9 +278,9 @@
 
                         var startingpoint = jQuery.Deferred();
                         startingpoint.resolve();
-
-
+	                    console.log(config);
                         $.each(config.ids, function(i, $id){
+	                            console.log("Inside");
                                 startingpoint = startingpoint.then(function() {
                                         return fetch($id);
                                 });
@@ -405,10 +405,14 @@
                         }).on('click', config.fetchButton, function(e) {
                                 // prevent the default action
                                 e.preventDefault();
+	                            $this = $(this);
                                 if($('#fetch-notice').length>0){
                                         $('#fetch-notice').slideToggle();
+	                                    jQuery('.accept-slow-notice').on('click', function(){
+		                                    bulkStart($this);
+	                                    });
                                 }else{
-                                        bulkStart($(this));
+                                        bulkStart($this);
                                 }
                                 
                                 return;
