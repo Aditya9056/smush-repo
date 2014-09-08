@@ -580,6 +580,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$button['cancel']   = ' disabled="disabled"';
 
 				return $button;
+			}elseif($this->counts['sent'] === $this->counts['total']){
+				$button['text']     = __( 'Smushing in progress', WP_SMPRO_DOMAIN );
+				$button['id']       = "wp-smpro-waiting";
+				$button['disabled'] = ' disabled="disabled"';
+				$button['cancel']   = ' disabled="disabled"';
+
+				return $button;
 			}
 
 			// otherwise we have something to smush
@@ -633,36 +640,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 				return $button;
 			}
-		}
-
-		/**
-		 * Filter Hearbeat response, Refresh the progress counts on Heartbeat received
-		 *
-		 * @param array $response The unfiltered response about to be sent by the Heartbeat API
-		 * @param object|array $data The data received by the Heatbeat API
-		 * @param screen $screen_id The screen we're on
-		 *
-		 * @return array The filtered response sent by the Heartbeat API
-		 */
-		function refresh_progress( $response, $data, $screen_id ) {
-			// if it isn't our screen, get out
-			if ( $screen_id != 'media_page_wp-smpro-admin' ) {
-				return $response;
-			}
-			// if we didn't request this, get out
-			if ( empty( $data['wp-smpro-refresh-progress'] ) ) {
-				return $response;
-			}
-
-			// refresh the counts
-			$this->refresh_counts();
-
-			// add the new counts in the response.
-			$response['wp-smpro-refresh-progress'] = $this->bulk;
-			$response['wp-smpro-is-throttled']     = intval( get_option( 'wp_smpro_is_throttled', 0 ) );
-
-			// return the filtered response
-			return $response;
 		}
 
 		/**
