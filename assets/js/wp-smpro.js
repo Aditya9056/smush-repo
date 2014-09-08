@@ -200,12 +200,12 @@
 			config.counts.size_after = parseInt(config.counts.size_after);
 			config.counts.percent = parseInt(config.counts.percent);
 
-			config.counts.size_before += $stats.size_before;
-			config.counts.size_after += $stats.size_after;
+			config.counts.size_before += parseInt( $stats.size_before );
+			config.counts.size_after += parseInt( $stats.size_after );
+
 			$bytes = config.counts.size_before - config.counts.size_after;
 			config.counts.human = formatBytes($bytes);
 			config.counts.percent = ( ($bytes / config.counts.size_before) * 100 ).toFixed(2);
-			console.log(config.counts);
 			return config.counts;
 		};
 
@@ -217,13 +217,21 @@
 			elem.find(config.fetchProgressBar + ' div').css('width', $percent + '%');
 			elem.find(config.statusWrap + ' p#fetched-status .done-count').html(fetchCount);
 
-			compression($stats);
-			jQuery(config.statsWrap).find('#percent').html(config.counts.percent);
+			$count_percent = parseFloat( config.counts.percent).toFixed(2);
+
+			jQuery(config.statsWrap).find('#percent').html( $count_percent );
 			jQuery(config.statsWrap).find('#human').html(config.counts.human);
 
 			if (config.counts.sent == fetchCount) {
-				jQuery(config.sendButton).find('span').html(config.msgs.sent);
-				jQuery(config.sendButton).removeAttr('disabled');
+				$button = jQuery(config.fetchButton);
+
+				// find the spinner ui
+				$spinner = $button.find('.floatingCirclesG');
+				$spinner.remove();
+
+				$button.find('span').html(config.msgs.done);
+				$button.attr('id', 'wp-smpro-finished');
+				$button.removeClass('wp-smpro-started');
 			}
 		};
 

@@ -58,8 +58,8 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 
 			// instantiate the receiver
 			$this->receiver = new WpSmProReceive();
-                        
-                        $this->fetch = new WpSmproFetch();
+
+			$this->fetch = new WpSmproFetch();
 
 			$this->admin = new WpSmProAdmin();
 
@@ -77,7 +77,6 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		private function constants() {
 
 			if ( ! defined( 'WP_SMPRO_SERVICE_URL' ) ) {
-
 				/**
 				 * The service url.
 				 *
@@ -86,7 +85,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				 */
 				define( 'WP_SMPRO_SERVICE_URL', 'https://smush.wpmudev.org:1203/upload/' );
 			}
-			if( !defined('WP_SMPRO_SERVICE_STATUS') ) {
+			if ( ! defined( 'WP_SMPRO_SERVICE_STATUS' ) ) {
 				define( 'WP_SMPRO_SERVICE_STATUS', 'https://smush.wpmudev.org:1203/status/' );
 			}
 
@@ -131,7 +130,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 
 				// inefficient mode, set them up from options
 				if ( ! defined( $const_name ) ) {
-					$option_name = WP_SMPRO_PREFIX.strtolower( $key );
+					$option_name = WP_SMPRO_PREFIX . strtolower( $key );
 					define( $const_name, get_option( $option_name, $value ) );
 				}
 			}
@@ -142,10 +141,10 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			} else {
 				define( 'WP_SMPRO_DEBUG', false );
 			}
-                        
-                        if( !defined( 'WP_SMPRO_REQUEST_LIMIT' ) ){
-                                define( 'WP_SMPRO_REQUEST_LIMIT', 1000 );
-                        }
+
+			if ( ! defined( 'WP_SMPRO_REQUEST_LIMIT' ) ) {
+				define( 'WP_SMPRO_REQUEST_LIMIT', 1000 );
+			}
 		}
 
 		/**
@@ -199,7 +198,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				'request_err_msg' => $request_err_msg,
 			);
 		}
-                
+
 
 		/**
 		 * Return the filesize in a humanly readable format.
@@ -210,7 +209,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		 *
 		 * @return string formatted size
 		 */
-		public function format_bytes( $bytes, $return='string',$precision = 2 ) {
+		public function format_bytes( $bytes, $return = 'string', $precision = 2 ) {
 			$units = array( 'B', 'KB', 'MB', 'GB', 'TB' );
 			$bytes = max( $bytes, 0 );
 			$pow   = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
@@ -219,12 +218,12 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 
 			$formatted['size'] = number_format_i18n( round( $bytes, $precision ), $precision );
 			$formatted['unit'] = $units[ $pow ];
-                        if('array' === $return){
-                                return $formatted;   
-                        }else{
-                                return $formatted['size'] . ' ' . $formatted['unit'];
-                        }
-			
+			if ( 'array' === $return ) {
+				return $formatted;
+			} else {
+				return $formatted['size'] . ' ' . $formatted['unit'];
+			}
+
 		}
 
 	}
