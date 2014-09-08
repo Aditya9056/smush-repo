@@ -48,7 +48,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			);
 
 			if ( ! $attachment_id ) {
-				$attachment_id = $_GET['attachment_id'];
+				$attachment_id = !empty( $_GET['attachment_id'] ) ? $_GET['attachment_id'] : '';
 			}
 
 			if ( ! $attachment_id ) {
@@ -65,7 +65,6 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 			if ( ! $result ) {
 				unset( $smush_data );
-				//@todo: $output won't be set, if there is no result, fix it
 				echo json_encode( $output );
 				die();
 			}
@@ -116,8 +115,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 			foreach ( $current_requests as $request_id => &$data ) {
 				if ( in_array( $attachment_id, $data['sent_ids'] ) ) {
-					$remove = $this->reset_flags( $attachment_id, $request_id, $data['sent_ids'] );
-					$current_request_id = $request_id;
+					$remove = $this->reset_flags( $attachment_id, $request_id, $data['sent_ids'], $current_requests );
 					continue;
 				}
 
@@ -125,10 +123,6 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			if ( $remove ) {
 				unset( $current_requests[ $remove ] );
 
-				return update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
-			}else{
-				//Remove Send ids from current request if file is replaced, so that next time same file is not fetched again
-				unset( $current_requests[ $current_request_id ]['sent_ids'][ $attachment_id ] );
 				return update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 			}
 
@@ -149,12 +143,20 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 		}
 
-		function reset_flags( $attachment_id, $request_id, $sent_ids ) {
+		function reset_flags( $attachment_id, $request_id, $sent_ids, $current_requests ) {
+			//Unset the smush id
+			$index = array_search( $attachment_id, $current_requests[ $request_id ]['sent_ids'] );
+
+			//Remove Send ids from current request if file is replaced, so that next time same file is not fetched again
+			unset( $current_requests[ $request_id ]['sent_ids'][ $index ] );
+
+			update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+
 			$sent_ids = array_diff( $sent_ids, array( $attachment_id ) );
 
 			$sent_request_id = get_option( WP_SMPRO_PREFIX . "bulk-sent", 0 );
 
-			if ( $request_id === $sent_request_id
+			if ( $request_id == $sent_request_id
 			     && empty( $sent_ids )
 			) {
 				delete_option( WP_SMPRO_PREFIX . "bulk-sent" );
