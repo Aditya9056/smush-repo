@@ -84,12 +84,10 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				 * Can be changed to an alternate url,
 				 * for eg, for self hosted, in future
 				 */
-				if( !defined('WP_SMPRO_SERVICE_URL') ) {
-					define( 'WP_SMPRO_SERVICE_URL', 'https://smush.wpmudev.org:1203/upload/' );
-				}
-				if( !defined('WP_SMPRO_SERVICE_STATUS') ) {
-					define( 'WP_SMPRO_SERVICE_STATUS', 'https://smush.wpmudev.org:1203/status/' );
-				}
+				define( 'WP_SMPRO_SERVICE_URL', 'https://smush.wpmudev.org:1203/upload/' );
+			}
+			if( !defined('WP_SMPRO_SERVICE_STATUS') ) {
+				define( 'WP_SMPRO_SERVICE_STATUS', 'https://smush.wpmudev.org:1203/status/' );
 			}
 
 			/**
