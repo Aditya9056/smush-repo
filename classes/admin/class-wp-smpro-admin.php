@@ -570,6 +570,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$button = array(
 				'cancel' => false,
 			);
+			// otherwise we have something to smush
+			// check if we are awaiting a bulk request's smush response
+			$is_bulk_sent = boolval( get_option( WP_SMPRO_PREFIX . "bulk-sent", 0 ) );
+
+			// check if we have received this bulk request's callback
+			$is_bulk_received = boolval( get_option( WP_SMPRO_PREFIX . "bulk-received", 0 ) );
 
 			// if we have nothing left to smush
 			// disable the buttons
@@ -580,7 +586,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$button['cancel']   = ' disabled="disabled"';
 
 				return $button;
-			}elseif($this->counts['sent'] === $this->counts['total']){
+			}elseif($this->counts['sent'] === $this->counts['total'] && !$is_bulk_sent ){
 				$button['text']     = __( 'Smushing in progress', WP_SMPRO_DOMAIN );
 				$button['id']       = "wp-smpro-waiting";
 				$button['disabled'] = ' disabled="disabled"';
@@ -588,13 +594,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 				return $button;
 			}
-
-			// otherwise we have something to smush
-			// check if we are awaiting a bulk request's smush response
-			$is_bulk_sent = boolval( get_option( WP_SMPRO_PREFIX . "bulk-sent", 0 ) );
-
-			// check if we have received this bulk request's callback
-			$is_bulk_received = boolval( get_option( WP_SMPRO_PREFIX . "bulk-received", 0 ) );
 
 			// a bulk request has been sent but not received
 			if ( $is_bulk_sent && ! $is_bulk_received ) {

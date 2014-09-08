@@ -415,16 +415,17 @@
 			// prevent the default action
 			e.preventDefault();
 			$this = $(this);
+			var count = 0;
 			if ($('#fetch-notice').length > 0) {
 				$('#fetch-notice').slideToggle();
-				jQuery('.accept-slow-notice').on('click', function () {
-					bulkStart($this);
-				});
 			} else {
 				bulkStart($this);
 			}
-
 			return;
+
+		}).on('click', '.accept-slow-notice', function (e) {
+
+			bulkStart($this);
 
 		}).on('click', '#fetch-notice button.button', function (e) {
 
@@ -471,6 +472,5 @@
 			element.data('smushitpro', smushitpro);
 		});
 	};
-
 
 })(jQuery);
