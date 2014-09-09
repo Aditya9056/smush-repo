@@ -187,7 +187,7 @@ if (!class_exists('WpSmProSend')) {
                         if($updated){
                                 $updated_count = count( $sent_ids );
                         }
-                        
+
                         // destroy all vars that we don't need
                         unset( $token, $response, $sent_ids);
 

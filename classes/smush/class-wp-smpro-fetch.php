@@ -48,7 +48,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			);
 
 			if ( ! $attachment_id ) {
-				$attachment_id = !empty( $_GET['attachment_id'] ) ? $_GET['attachment_id'] : '';
+				$attachment_id = ! empty( $_GET['attachment_id'] ) ? $_GET['attachment_id'] : '';
 			}
 
 			if ( ! $attachment_id ) {
@@ -132,14 +132,33 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		function update_filenames( $attachment_id, $filenames ) {
 			$attachment_meta = wp_get_attachment_metadata( $attachment_id );
 
+			$path        = pathinfo( $attachment_meta['file'] );
+			$path_prefix = $path['dirname'];
+
+			$upload_dir   = wp_upload_dir();
+			$upload_path  = $upload_dir['basedir'];
+			$unlink_files = array();
+
 			foreach ( $attachment_meta['sizes'] as $size => $details ) {
-				if ( ! in_array( $size, $filenames ) ) {
+				if ( ! isset( $filenames[ $size ] ) || $filenames[ $size ] == $attachment_meta['sizes'][ $size ]['file'] ) {
 					continue;
 				}
-				$attachment_meta['sizes'][ $size ]['file'] = $filenames[ $size ];
-			}
+				$file_path    = $upload_path . '/' . $path_prefix . '/' . $filenames[ $size ];
+				$file_details = wp_check_filetype_and_ext( $file_path, $filenames[ $size ] );
 
+				$unlink_files[]                                 = $upload_path . '/' . $path_prefix . '/' . $attachment_meta['sizes'][ $size ]['file'];
+				$attachment_meta['sizes'][ $size ]['file']      = $filenames[ $size ];
+				$attachment_meta['sizes'][ $size ]['mime-type'] = $file_details['type'];
+			}
 			wp_update_attachment_metadata( $attachment_id, $attachment_meta );
+			if ( ! empty( $unlink_files ) ) {
+				foreach ( $unlink_files as $filepath ) {
+					echo $filepath;
+					if ( file_exists( $filepath ) ) {
+						unlink( $filepath );
+					}
+				}
+			}
 
 		}
 
