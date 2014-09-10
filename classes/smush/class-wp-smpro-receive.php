@@ -34,6 +34,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			// get the contents of the callback
 			$body = file_get_contents( 'php://input' );
+			$body = urldecode($body);
 
 			$data = json_decode( $body, true );
 
