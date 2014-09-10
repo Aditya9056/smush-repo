@@ -58,6 +58,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// hook into admin footer to load a hidden html/css spinner
 			add_action( 'admin_footer-upload.php', array( $this, 'print_spinner' ) );
 
+			// Dismiss Smush Notice
+			add_action( 'wp_ajax_dismiss_smush_notice', array( $this, 'dismiss_smush_notice' ) );
+
 			add_filter( 'plugin_action_links_' . WP_SMPRO_BASENAME, array(
 				$this,
 				'settings_link'
@@ -177,15 +180,45 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function admin_notice() {
-			if ( boolval( get_option( WP_SMPRO_PREFIX . 'bulk-received', 0 ) ) ) {
+			if ( boolval( get_option( WP_SMPRO_PREFIX . 'bulk-received', 0 ) ) && !get_site_option('hide_smush_notice') ) {
 				$message   = array();
 				$message[] = sprintf( __( 'A recent bulk smushing request on your site has been completed!', WP_SMPRO_DOMAIN ), get_option( 'siteurl' ) );
 				$message[] = sprintf( __( 'Visit <strong><a href="%s">Media &raquo; WP Smush.it Pro</a></strong> to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
 				?>
-				<div class="updated">
+				<style type="text/css">
+					.bulk-smush-notice{
+						position: relative;
+					}
+					.dismiss-smush-notice {
+						color: red;
+						cursor: pointer;
+						font-size: 15px;
+						margin: 0 !important;
+						position: absolute;
+						right: 10px;
+						top: 0;
+					}
+				</style>
+				<script type="text/javascript">
+					jQuery('document').ready(function(){
+						jQuery('body').on('click', '.dismiss-smush-notice', function(){
+							$this = jQuery(this);
+							jQuery.ajax({
+								'url':  ajaxurl,
+								'type': 'POST',
+								'data': { action: 'dismiss_smush_notice' },
+								'success': function(){
+									$this.parent().remove();
+								}
+							});
+						});
+					});
+				</script>
+				<div class="updated bulk-smush-notice">
 					<p>
 						<?php echo implode( '</p><p>', $message ); ?>
 					</p>
+					<a class="dismiss-smush-notice" title="<?php _e('Dismiss notice', WP_SMPRO_DOMAIN ); ?>" href="#">x</a>
 				</div>
 
 			<?php
@@ -830,12 +863,21 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
 
 			if( empty( $sent_ids ) ) {
+				remove_action( 'admin_notices', array( $this, 'admin_notice' ) );
 				//No media, remove bulk meta
 				delete_option(WP_SMPRO_PREFIX . "bulk-sent");
 				delete_option(WP_SMPRO_PREFIX . "bulk-received");
 			}
 
 			return;
+		}
+
+		/**
+		 * Remove the smush notice untill next bulk request
+		 */
+		function dismiss_smush_notice(){
+			update_site_option('hide_smush_notice', 1);
+			wp_send_json_success();
 		}
 
 	}

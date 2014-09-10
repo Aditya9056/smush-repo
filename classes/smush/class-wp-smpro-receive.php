@@ -110,6 +110,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			}
 
 			$updated = update_option( WP_SMPRO_PREFIX . "bulk-received", 1 );
+			//Enable admin notice if it was hidden
+			update_site_option('hide_smush_notice', 0);
 
 			return $updated;
 		}
@@ -127,7 +129,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$message = array();
 
 			$message[] = sprintf( __( 'A recent bulk smushing request on your site %s has been completed!', WP_SMPRO_DOMAIN ), get_option( 'siteurl' ) );
-			$message[] = sprintf( __( 'Visit your dashboard (%s) to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
+			$message[] = sprintf( __( 'Visit your <a href="%s">dashboard</a> to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
 
 			$body = implode( "\r\n", $message );
 
