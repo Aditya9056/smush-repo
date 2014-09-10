@@ -201,7 +201,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				</style>
 				<script type="text/javascript">
 					jQuery('document').ready(function(){
-						jQuery('body').on('click', '.dismiss-smush-notice', function(){
+						jQuery('body').on('click', '.dismiss-smush-notice', function(e){
+							e.preventDefault();
 							$this = jQuery(this);
 							jQuery.ajax({
 								'url':  ajaxurl,

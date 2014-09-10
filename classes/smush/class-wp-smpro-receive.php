@@ -53,7 +53,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			if ( $data['token'] != $current_requests[ $request_id ]['token'] ) {
 				unset( $data );
-
+				error_log("Token Mismatch");
 				return;
 			}
 

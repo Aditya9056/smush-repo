@@ -195,7 +195,9 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			WP_Filesystem();
 			if ( unzip_file( $zip, $this->basedir ) ) {
 				// Now that the zip file has been used, destroy it
-				unlink( $zip );
+				if( file_exists($zip)) {
+					unlink( $zip );
+				}
 
 				return true;
 			}
