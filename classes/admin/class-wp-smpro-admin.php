@@ -69,6 +69,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$this,
 				'settings_link'
 			) );
+			add_filter( 'http_request_timeout', array($this, 'filter_http_request_timeout') );
 
 			// initialise translation ready settings and titles
 			$this->init_settings();
@@ -881,6 +882,21 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function dismiss_smush_notice(){
 			update_site_option('hide_smush_notice', 1);
 			wp_send_json_success();
+		}
+
+		/**
+		 * Increase Time out
+		 * @param $current_timeout
+		 *
+		 * @return int
+		 */
+		function filter_http_request_timeout($current_timeout) {
+			if (intval($current_timeout) < 60){
+				return intval(60);
+			}
+			else{
+				return intval($current_timeout);
+			}
 		}
 
 	}
