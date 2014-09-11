@@ -831,8 +831,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			if ( ! empty( $global_data ) ) {
 				foreach ( $global_data as $data ) {
 					$data = maybe_unserialize( $data );
-					$smush_data['size_before'] += (int) $data['stats']['size_before'];
-					$smush_data['size_after'] += (int) $data['stats']['size_after'];
+					if( !empty($data['stats']) ) {
+						$smush_data['size_before'] += !empty($data['stats']['size_before']) ? (int) $data['stats']['size_before'] : 0;
+						$smush_data['size_after'] += !empty($data['stats']['size_after']) ? (int) $data['stats']['size_after']: 0;
+					}
 				}
 			}
 
