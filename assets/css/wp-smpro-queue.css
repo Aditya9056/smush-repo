@@ -322,6 +322,7 @@ p#wp-smpro-compression span{
         margin-top: 5px;
         overflow: hidden;
         text-align: center;
+        text-indent: -9999px;
         width: 10px;
 }
 .api-status-text {
