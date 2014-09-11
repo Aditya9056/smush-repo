@@ -131,9 +131,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * enqueue js and css
 		 */
 		function enqueue() {
+			global $current_screen, $admin_page_suffix;
 			wp_enqueue_script( 'wp-smpro-queue' );
 			wp_enqueue_style( 'wp-smpro-queue' );
-			$this->set_api_status();
+
+			//Set API status on bulk page load only
+			if( $current_screen->id == $admin_page_suffix ) {
+				$this->set_api_status();
+			}
 		}
 
 		/**
