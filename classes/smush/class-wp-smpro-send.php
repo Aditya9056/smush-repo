@@ -548,16 +548,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// check large
 			foreach ( $metadata['sizes'] as $size_key => $size_data ) {
-				if ( !$this->send_if_gif( $size_data['mime-type'] ) ) {
-
-					// check if this gif is animated
-					$anim = $this->is_animated( $path_prefix . '/' . $request_item->path_prefix . '/' . $size_data['file'] );
-
-					// if it is not animated, we don't send it
-					if ( ! $anim ) {
-						continue;
-					}
-				}
 				$filenames[$size_key] = $size_data['file'];
 			}
 
