@@ -18,6 +18,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 	 * Sends Smush requests to service and processes response
 	 */
 	class WpSmProSend {
+		var $api_connected;
 
 		/**
 		 * Constructor.
@@ -33,6 +34,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// add automatic smushing on upload
 				add_filter( 'wp_generate_attachment_metadata', array( $this, 'auto_smush' ), 10, 2 );
 			}
+			$this->api_connected = get_transient('api_connected');
 		}
 
 		function auto_smush( $metadata, $attachment_id ) {
@@ -40,7 +42,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			global $wp_smpro;
 
 			//Check API Status
-			if ( $wp_smpro->admin->api_connected ) {
+			if ( $this->api_connected ) {
 
 				//Send metadata and attachment id
 				$sent = $this->send_request( $attachment_id, $metadata );
@@ -55,8 +57,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 *
 		 */
 		function ajax_send() {
-			global $wp_smpro;
-
 			// check user permissions
 			if ( ! current_user_can( 'upload_files' ) ) {
 				wp_die( __( "You don't have permission to work with uploaded files.", WP_SMPRO_DOMAIN ) );
@@ -65,7 +65,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response = array();
 
 			//Check API Status
-			if ( ! $wp_smpro->admin->api_connected ) {
+			if ( ! $this->api_connected ) {
 				$response['status_code']    = 0;
 				$response['status_message'] = __( "API not available", WP_SMPRO_DOMAIN );
 				// print out the response
