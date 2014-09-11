@@ -126,9 +126,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// localize translatable strings for js
 			$this->localize();
-
-			//Set API Status
-			$this->api_connected = $this->set_api_status();
 		}
 
 		/**
@@ -137,6 +134,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function enqueue() {
 			wp_enqueue_script( 'wp-smpro-queue' );
 			wp_enqueue_style( 'wp-smpro-queue' );
+			$this->set_api_status();
 		}
 
 		/**
@@ -786,12 +784,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			if ( defined( 'WP_SMPRO_SERVICE_URL' ) ) {
 				$api = wp_remote_get( WP_SMPRO_SERVICE_STATUS, array( 'sslverify' => false, 'timeout' => 20 ) );
 			}
-
 			if ( empty( $api ) || is_wp_error( $api ) ) {
 				set_transient( 'api_connected', false );
 
 				return false;
 			}
+			$this->api_connected = true;
 			set_transient( 'api_connected', true );
 
 			return true;
