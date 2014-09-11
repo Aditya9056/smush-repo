@@ -366,7 +366,7 @@ if (!class_exists('WpSmProSend')) {
                  * @return object the request data with attachment data
                  */
                 private function add_attachment_data($request_data, $attachment_id, $pathprefix, $metadata = '') {
-
+	                    $sent_ids = array();
 	                    if ( !empty( $metadata ) ) {
 		                    $attachments[0]['type'] = get_post_mime_type($attachment_id);
 		                    $attachments[0]['attachment_id'] = $attachment_id;
@@ -383,24 +383,11 @@ if (!class_exists('WpSmProSend')) {
                         }
 
                         // loop
-                        foreach ($attachments as $key => &$attachment) {
+                        foreach ($attachments as $key => $attachment) {
                                 //assume it is not animated
                                 $anim = false;
-
-                                // if it is a gif and user doesn't want to smush to png
-                                if (!$this->send_if_gif($attachment)) {
-
-                                        // check if this gif is animated
-                                        $anim = $this->is_animated($pathprefix . $attachment->metapath);
-
-                                        // if it is not animated, we don't send it
-                                        if (!$anim) {
-                                                unset($attachment[$key]);
-                                                continue;
-                                        }
-                                }
                                 // get the attachment data in the format we need
-                                $attachment = $this->format_attachment_data($attachment, $anim);
+                                $attachment = $this->format_attachment_data($attachment, $anim, $pathprefix);
 
                                 // add this id to the list of sent ids
                                 $sent_ids[] = $attachment->attachment_id;
@@ -522,7 +509,7 @@ if (!class_exists('WpSmProSend')) {
                  * @param boolean $anim whether the attachment is an animated gif
                  * @return \stdClass the formatted row
                  */
-                private function format_attachment_data($row, $anim=false) {
+                private function format_attachment_data($row, $anim=false, $path_prefix) {
                         
                         $request_item = new stdClass();
 
@@ -540,12 +527,22 @@ if (!class_exists('WpSmProSend')) {
 
                         // check large
                         foreach ($metadata['sizes'] as $size_key => $size_data) {
-                                $filenames[$size_key] = $size_data['file'];
+		                        if (!$this->send_if_gif($size_data)) {
+
+			                        // check if this gif is animated
+			                        $anim = $this->is_animated($path_prefix . $size_data['file']);
+
+			                        // if it is not animated, we don't send it
+			                        if (!$anim) {
+				                        continue;
+			                        }
+			                        $filenames[$size_key] = $size_data['file'];
+		                        }
                         }
 
                         // if there's no large size, the full is the large size
                         // if it is an animated gif, we'll send the full size
-                        if (!isset($filenames['large']) || $anim === true) {
+                        if ( !isset($filenames['large']) ) {
                                 $filenames['full'] = $full_image;
                         }
                         
@@ -694,9 +691,8 @@ if (!class_exists('WpSmProSend')) {
                  * @return boolean true, if fine to send, false, if not
                  */
                 function send_if_gif($attachment) {
-
                         // not a gif, we can send
-                        if ($attachment->type !== "image/gif") {
+                        if ($attachment['mime-type'] !== "image/gif") {
                                 return true;
                         }
 
