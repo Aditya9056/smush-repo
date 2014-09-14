@@ -231,6 +231,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		private function update_options( $request_id, $token, $sent_ids ) {
 			// update the sent ids array
 			$sent_update = $this->update_sent_ids( $sent_ids );
+//			$sent_update = true;
 
 			// if sent ids were updated, proceed further
 			if ( $sent_update ) {
