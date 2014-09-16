@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package SmushItPro
  * @subpackage Admin
@@ -17,6 +16,8 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 	 *
 	 */
 	class WpSmProMediaLibrary {
+
+		var $current_requests;
 
 		/**
 		 * Constructor
@@ -36,6 +37,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
 			}
 
+			$this->current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
 		}
 
 		/**
@@ -46,7 +48,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 * @return array columns with our header added
 		 */
 		function columns( $defaults ) {
-			$defaults['smushit'] = 'Smush.it';
+			$defaults['smushit'] = 'Smush';
 
 			return $defaults;
 		}
@@ -60,42 +62,61 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 * @return null
 		 */
 		function custom_column( $column_name, $id ) {
-
+			$status_txt = '';
 			// if it isn't our column, get out
 			if ( 'smushit' != $column_name ) {
 				return;
 			}
 
-			// otherwise, get the smush meta
-			$smush_meta_full = get_post_meta( $id, 'smush_meta_full', true );
+			$is_smushed = get_post_meta( $id, "wp-smpro-is-smushed", true );
 
 			// if the image is smushed
-			if ( ! empty( $smush_meta_full ) ) {
-
+			if ( ! empty( $is_smushed ) ) {
 				// the status
-				$status_txt = $smush_meta_full['status_msg'];
+				$data  = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
+
+				$bytes = isset( $data['stats']['bytes'] ) ? $data['stats']['bytes'] : 0;
+				$percent = isset( $data['stats']['percent'] ) ? $data['stats']['percent'] : 0;
+
+				if ( $bytes == 0 || $percent == 0 ) {
+					$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
+				} elseif ( ! empty( $percent ) && ! empty( $data['stats']['human'] ) ) {
+					$status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $data['stats']['percent'], 2, '.', '' ), $data['stats']['human'] );
+				}
 
 				// check if we need to show the resmush button
-				$show_button = $this->show_resmush_button( $smush_meta_full );
+				$show_button = $this->show_resmush_button( $id );
 
 				// the button text
 				$button_txt = __( 'Re-smush', WP_SMPRO_DOMAIN );
-
 			} else {
+				$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
 
-				// the status
-				$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );;
+				$is_sent = in_array( $id, $sent_ids );
 
-				// we need to show the smush button
-				$show_button = true;
+				if ( $is_sent ) {
+					// the status
+					$status_txt = __( 'Currently smushing', WP_SMPRO_DOMAIN );
 
-				// the button text
-				$button_txt = __( 'Smush.it now!', WP_SMPRO_DOMAIN );
+					// we need to show the smush button
+					$show_button = false;
 
+					// the button text
+					$button_txt = '';
+				} else {
+
+					// the status
+					$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
+
+					// we need to show the smush button
+					$show_button = true;
+
+					// the button text
+					$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
+				}
 			}
 
 			$this->column_html( $id, $status_txt, $button_txt, $show_button );
-
 		}
 
 		/**
@@ -110,7 +131,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 */
 		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true ) {
 			// don't proceed if attachment is not image
-			if ( !wp_attachment_is_image( $id ) ) {
+			if ( ! wp_attachment_is_image( $id ) ) {
 				return;
 			}
 			?>
@@ -123,13 +144,12 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				return;
 			}
 			?>
-			<button class="wp-smpro-smush button">
-                <span>
+			<button id="wp-smpro-send" class="button">
+                                <span>
                         <?php echo $button_txt; ?>
-                </span>
+                                </span>
 			</button>
 		<?php
-
 		}
 
 		/**
@@ -139,26 +159,24 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 *
 		 * @return boolean true to display the button
 		 */
-		function show_resmush_button( $smush_meta_full ) {
-			$button_show = false;
+		function show_resmush_button( $id ) {
+			$button_show  = false;
+			$smush_data   = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
+			$smush_status = get_post_meta( $id, 'wp-smpro-is-smushed', true );
 
-			$status = (int) $smush_meta_full['status_code'];
-
-			if ( $status != 0 && $status != 5 && $status != 1 ) {
+			if ( $smush_status === '1' ) {
 				return $button_show;
 			}
-
-			if ( $status === 0 || $status === 5 ) {
-				$button_show = true;
+			foreach ( $this->current_requests as $request_id => $data ) {
+				if ( in_array( $id, $data['sent_ids'] ) ) {
+					$timestamp = $data['timestamp'];
+				}
 			}
-
-			if ( $status === 1 ) {
-				$age = (int) time() - (int) $smush_meta_full['timestamp'];
-				if ( $age >= 2 * DAY_IN_SECONDS ) {
-
+			if ( $smush_status === '0' ) {
+				$age = (int) time() - (int) $timestamp;
+				if ( $age >= 10 * DAY_IN_SECONDS ) {
 					$button_show = true;
 				}
-
 			}
 
 			return $button_show;
@@ -170,7 +188,6 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		function admin_init() {
 			wp_enqueue_script( 'common' );
 		}
-
 
 	}
 

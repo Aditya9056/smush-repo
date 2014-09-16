@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: WP Smush.it Pro
+Plugin Name: WP Smush Pro
 Plugin URI: http://premium.wpmudev.org/projects/wp-smushit-pro/
-Description: Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
+Description: Reduce image file sizes and improve performance using the premium WPMU DEV smushing API within WordPress.
 Author: WPMU DEV
 Version: 1.0
 Author URI: http://premium.wpmudev.org/
@@ -64,14 +64,24 @@ define( 'WP_SMPRO_URL', plugin_dir_url( __FILE__ ) );
  * The text domain for translation.
  */
 define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
+
+/**
+ * Prefix to use for the meta keys and options
+ */
+define( 'WP_SMPRO_PREFIX', 'wp-smpro-');
+
+/**
+ * Plugin base name
+ */
+define( 'WP_SMPRO_BASENAME', plugin_basename(__FILE__) );
 //use hyphens instead of underscores for glotpress compatibility
 
 // include the classes
 require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-media-library.php' );
 require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-receive.php' );
-require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-request.php' );
-require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-bulk.php' );
+require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-count.php' );
 require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-admin.php' );
+require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-fetch.php' );
 require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-send.php' );
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro.php' );
 
@@ -79,9 +89,10 @@ require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro.php' );
 global $wpmudev_notices;
 $wpmudev_notices[] = array(
 	'id'      => 9999,
-	'name'    => 'Smushit Pro',
+	'name'    => 'WP Smush Pro',
 	'screens' => array(
 		'options-media',
+		'plugins'
 	)
 );
 require_once( WP_SMPRO_DIR . 'wpmudev-dashboard-notification/wpmudev-dash-notification.php' );
@@ -139,7 +150,7 @@ function wp_smpro_notice() {
 		?>
 		<div class="error smushit-pro-status">
 			<p>
-				<strong><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(__( '<a href="%s">Login to WPMU DEV Dashboard</a> to start using WP Smush.it PRO.', WP_SMPRO_DOMAIN ),$dashboard_url); ?>
+				<strong><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(__( '<a href="%s">Login to WPMU DEV Dashboard</a> to start using WP Smush PRO.', WP_SMPRO_DOMAIN ),$dashboard_url); ?>
 			</p>
 		</div><?php
 	}
@@ -194,7 +205,20 @@ function wp_smpro_script() {
 	</script><?php
 }
 
+if(!function_exists('boolval')){
+                /**
+		 * Returns the bool value of a variable <PHP5.5
+		 *
+		 * @param $val
+		 *
+		 * @return bool
+		 */
+		function boolval( $val ) {
+			return (bool) $val;
+		}
+}
 // instantiate our main class
-$wp_sm_pro = new WpSmPro();
+$wp_smpro = new WpSmPro();
 
-global $wp_sm_pro;
+global $wp_smpro;
+

@@ -18,6 +18,35 @@ ul#wp-smpro-options-wrap li{
 input#wp-smpro-save-settings{
         margin:15px 0;
 }
+.smush-notices{
+        margin: 5px 0 15px;
+        border-left: 4px solid #dd3d36;
+        background: #fff;
+        -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+        box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+        padding: 1px 12px;
+        overflow:hidden;
+}
+.smush-notices h3{
+        font-weight:normal;
+}
+
+.smush-notices button.button {
+        margin: 5px;
+}
+
+#fetch-notice{
+        display:none;
+}
+/*
+Single smush status
+*/
+.smush-status.fail{
+        color:#dd3d36;
+}
+.smush-status.success{
+        color:#7ad03a;
+}
 /*
 Smush button transformation
 */
@@ -28,12 +57,15 @@ Smush button transformation
         float:left;
 }
 
-.button.wp-smpro-finished,.button.wp-smpro-finished:disabled,.button.wp-smpro-finished[disabled]{
+.button#wp-smpro-finished,.button#wp-smpro-finished:disabled,.button#wp-smpro-finished[disabled]{
         color:#fff!important;
-        background: #00cf21!important;
+        background: #7ad03a!important;
         border-color: #619f6b!important;
         -webkit-box-shadow: inset 0 1px 0 rgba(0,207,33,.5),0 1px 0 rgba(0,0,0,.15)!important;
         box-shadow: inset 0 1px 0 rgba(0,207,33,.5),0 1px 0 rgba(0,0,0,.15)!important;
+}
+.button#wp-smpro-cancel {
+        margin-left: 10px;
 }
 /*
 Loader
@@ -221,6 +253,7 @@ Progressbar ui
         height: 20px;
         border: 1px solid #0074a2;
         border-radius: 10px;
+        overflow: hidden;
         position:relative;
 }
 
@@ -233,14 +266,11 @@ Progressbar ui
         height:20px;
         border-radius: 10px;
 }
-#progress-ui #wp-smpro-progress-wrap #wp-smpro-smushed-progress div{
-        background-color: #a3d900;
+#progress-ui #wp-smpro-progress-wrap #wp-smpro-fetched-progress div{
+        background-color: #7ad03a;
 }
 #progress-ui #wp-smpro-progress-wrap #wp-smpro-sent-progress div{
         background-color: #2ea2cc;
-}
-#progress-ui #wp-smpro-progress-wrap #wp-smpro-received-progress div{
-        background-color: #0074a2;
 }
 
 div#wp-smpro-progress-status {
@@ -249,13 +279,13 @@ div#wp-smpro-progress-status {
 
 #wp-smpro-progress-status p {
         float: left;
-        width: 33%;
+        width: 50%;
 }
 
 div#wp-smpro-progress-status p::before { 
         content:"c";
-        background-color:#a3d900;
-        color:#a3d900;
+        background-color:#7ad03a;
+        color:#7ad03a;
         display:inline-block;
         width:20px;
         margin-right:10px;
@@ -266,15 +296,22 @@ div#wp-smpro-progress-status p#sent-status::before {
         color:#2ea2cc;  
 }
 
-div#wp-smpro-progress-status p#received-status::before {
-        background-color:#0074a2;
-        color:#0074a2;  
+p#wp-smpro-compression {
+        text-align: center;
+        font-size: 1.1em;
+        line-height: 20px;
+        position:absolute;
+        margin:0;
+        width:100%;
 }
 
+p#wp-smpro-compression span{
+        font-weight:bold;
+}
 /* API Status */
 
 .api-status {
-        background: none repeat scroll 0 0 #a3d900;
+        background: none repeat scroll 0 0 #7ad03a;
         border-radius: 50%;
         color: transparent;
         cursor: pointer;
@@ -285,6 +322,7 @@ div#wp-smpro-progress-status p#received-status::before {
         margin-top: 5px;
         overflow: hidden;
         text-align: center;
+        text-indent: -9999px;
         width: 10px;
 }
 .api-status-text {
