@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: WP Smush.it Pro
+Plugin Name: WP Smush Pro
 Plugin URI: http://premium.wpmudev.org/projects/wp-smushit-pro/
-Description: Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
+Description: Reduce image file sizes and improve performance using the premium WPMU DEV smushing API within WordPress.
 Author: WPMU DEV
 Version: 1.0
 Author URI: http://premium.wpmudev.org/
@@ -89,7 +89,7 @@ require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro.php' );
 global $wpmudev_notices;
 $wpmudev_notices[] = array(
 	'id'      => 9999,
-	'name'    => 'Smushit Pro',
+	'name'    => 'WP Smush Pro',
 	'screens' => array(
 		'options-media',
 		'plugins'
@@ -150,7 +150,7 @@ function wp_smpro_notice() {
 		?>
 		<div class="error smushit-pro-status">
 			<p>
-				<strong><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(__( '<a href="%s">Login to WPMU DEV Dashboard</a> to start using WP Smush.it PRO.', WP_SMPRO_DOMAIN ),$dashboard_url); ?>
+				<strong><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(__( '<a href="%s">Login to WPMU DEV Dashboard</a> to start using WP Smush PRO.', WP_SMPRO_DOMAIN ),$dashboard_url); ?>
 			</p>
 		</div><?php
 	}

@@ -92,7 +92,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			/**
 			 * The user agent for the request
 			 */
-			define( 'WP_SMPRO_USER_AGENT', 'WP Smush.it PRO/' . WP_SMPRO_VERSION . '('
+			define( 'WP_SMPRO_USER_AGENT', 'WP Smush PRO/' . WP_SMPRO_VERSION . '('
 			                               . '+' . get_site_url() . ')'
 			);
 

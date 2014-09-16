@@ -151,10 +151,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'sending'   => __( 'Sending &hellip;', WP_SMPRO_DOMAIN ),
 				'send_fail' => __( 'Sending failed. Please try again later', WP_SMPRO_DOMAIN ),
 				'sent'      => __( 'Smushing in progress', WP_SMPRO_DOMAIN ),
-				'at_api'    => __( 'API is smushing it', WP_SMPRO_DOMAIN ),
+				'at_api'    => __( 'Currently Smushing &hellip;', WP_SMPRO_DOMAIN ),
 				'fetching'  => __( 'Fetching smushed images', WP_SMPRO_DOMAIN ),
 				'resmush'   => __( 'Re-smush', WP_SMPRO_DOMAIN ),
-				'smush_now' => __( 'Smush.it now!', WP_SMPRO_DOMAIN ),
+				'smush_now' => __( 'Smush now!', WP_SMPRO_DOMAIN ),
 				'done'      => __( 'All done!', WP_SMPRO_DOMAIN ),
 				'no_leave'  => __( 'Images are being fetched from the API. If you leave the screen, <strong>the fetching will stop</strong>.', WP_SMPRO_DOMAIN ),
 			);
@@ -185,8 +185,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function admin_notice() {
 			if ( boolval( get_option( WP_SMPRO_PREFIX . 'bulk-received', 0 ) ) && !get_site_option('hide_smush_notice') ) {
 				$message   = array();
-				$message[] = sprintf( __( 'A recent bulk smushing request on your site has been completed!', WP_SMPRO_DOMAIN ), get_option( 'siteurl' ) );
-				$message[] = sprintf( __( 'Visit <strong><a href="%s">Media &raquo; WP Smush.it Pro</a></strong> to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
+				$message[] = sprintf( __( 'A recent bulk smushing request has been completed!', WP_SMPRO_DOMAIN ), get_option( 'siteurl' ) );
+				if ( !isset( $_GET['page'] ) && 'wp-smpro-admin' != $_GET['page'] ) { //if not on smush page
+					$message[] = sprintf( __( 'Visit <strong><a href="%s">Media &raquo; WP Smush Pro</a></strong> to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
+				}
 				?>
 				<style type="text/css">
 					.bulk-smush-notice{
@@ -291,7 +293,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				<div id="icon-upload" class="icon32"><br/></div>
 
 				<h2>
-					<?php printf( __( 'WP Smush.it Pro <span title="%s" class="api-status%s">%s</span><span class="api-status-text">%s</span>', WP_SMPRO_DOMAIN ), $text, $class, $text, $text ); ?>
+					<?php printf( __( 'WP Smush Pro <span title="%s" class="api-status%s">%s</span><span class="api-status-text">%s</span>', WP_SMPRO_DOMAIN ), $text, $class, $text, $text ); ?>
 				</h2>
 
 				<div class="wp-smpro-container" <?php echo $style; ?>>
@@ -438,7 +440,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					?>
 					<p>
 						<?php
-						_e( 'All the images are already smushed', WP_SMPRO_DOMAIN );
+						_e( 'All your images are already smushed', WP_SMPRO_DOMAIN );
 						?>
 					</p>
 				<?php
@@ -450,9 +452,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						<?php
 						// let the user know that there's an alternative
 						printf(
-							__(
-								'You can also smush images individually'
-								. ' from your <a href="%s">Media Library</a>.', WP_SMPRO_DOMAIN
+							__( 'You can also smush images individually from your <a href="%s">Media Library</a>.', WP_SMPRO_DOMAIN
 							), admin_url( 'upload.php' )
 						);
 						?>
@@ -563,9 +563,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 				<p>
 					<?php
-					_e( 'This depends on various things like your server resources, '
-					    . 'number and size of attachments, and the different sizes '
-					    . 'for each attachment (thumbnail, medium, large, etc). To prevent your site from getting too slow:', WP_SMPRO_DOMAIN );
+					_e( 'This depends on various things like your server resources, number and size of attachments, and the different sizes for each attachment (thumbnail, medium, large, etc). To prevent your site from getting too slow:', WP_SMPRO_DOMAIN );
 					?>
 				</p>
 				<ol>

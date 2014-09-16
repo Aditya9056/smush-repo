@@ -124,12 +124,12 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$to = get_site_option( 'admin_email' );
 
-			$subject = sprintf( __( "%s: Smush.It Pro bulk smushing completed", WP_SMPRO_DOMAIN ), get_option( 'blogname' ) );
+			$subject = sprintf( __( "%s: Smush Pro bulk smushing completed", WP_SMPRO_DOMAIN ), get_option( 'blogname' ) );
 
 			$message = array();
 
-			$message[] = sprintf( __( 'A recent bulk smushing request on your site %s has been completed!', WP_SMPRO_DOMAIN ), get_option( 'siteurl' ) );
-			$message[] = sprintf( __( 'Visit your <a href="%s">dashboard</a> to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
+			$message[] = sprintf( __( 'A recent bulk smushing request on your site %s has been completed!', WP_SMPRO_DOMAIN ), home_url() );
+			$message[] = sprintf( __( 'Visit %s to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
 
 			$body = implode( "\r\n", $message );
 

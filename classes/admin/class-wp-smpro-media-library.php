@@ -48,7 +48,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 * @return array columns with our header added
 		 */
 		function columns( $defaults ) {
-			$defaults['smushit'] = 'Smush.it';
+			$defaults['smushit'] = 'Smush';
 
 			return $defaults;
 		}
@@ -96,7 +96,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 
 				if ( $is_sent ) {
 					// the status
-					$status_txt = __( 'API is smushing it', WP_SMPRO_DOMAIN );
+					$status_txt = __( 'Currently smushing', WP_SMPRO_DOMAIN );
 
 					// we need to show the smush button
 					$show_button = false;
@@ -112,7 +112,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 					$show_button = true;
 
 					// the button text
-					$button_txt = __( 'Smush.it now!', WP_SMPRO_DOMAIN );
+					$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
 				}
 			}
 
