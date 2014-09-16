@@ -122,7 +122,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				return;
 			}
 
-			$to = get_option( 'admin_email' );
+			$to = get_site_option( 'admin_email' );
 
 			$subject = sprintf( __( "%s: Smush.It Pro bulk smushing completed", WP_SMPRO_DOMAIN ), get_option( 'blogname' ) );
 
