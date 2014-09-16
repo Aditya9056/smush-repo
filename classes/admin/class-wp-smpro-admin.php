@@ -88,7 +88,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'auto'        => __( 'Auto-Smush images on upload', WP_SMPRO_DOMAIN ),
 				'remove_meta' => __( 'Remove EXIF data from JPEGs', WP_SMPRO_DOMAIN ),
 				'progressive' => __( 'Progressive optimization for JPEGs', WP_SMPRO_DOMAIN ),
-				'gif_to_png'  => __( 'Convert GIF to PNG', WP_SMPRO_DOMAIN ),
+//				'gif_to_png'  => __( 'Convert GIF to PNG', WP_SMPRO_DOMAIN ),
 			);
 		}
 

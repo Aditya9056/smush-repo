@@ -94,10 +94,11 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				echo json_encode( $this->wperror_tojs( $sent ) );
 				die();
 			}
+			$status_message = $attachment_id !== false ? sprintf( __( "%d were sent for smushing. You'll be notified by email at %s, once bulk smushing is finished.", WP_SMPRO_DOMAIN ), $sent, get_site_option( 'admin_email' ) ) : sprintf( __( "%d were sent for smushing", WP_SMPRO_DOMAIN ), $sent );
 			$response['status_code']    = 1;
 			$response['count']          = $sent;
 			$response['sent_count']     = count( get_site_option( WP_SMPRO_PREFIX . 'sent-ids', '', false ) ); //Fetch from site option
-			$response['status_message'] = sprintf( __( "%d were sent for smushing. You'll be notified by email at %s, once bulk smushing is finished.", WP_SMPRO_DOMAIN ), $response['count'], get_site_option( 'admin_email' ) );
+			$response['status_message'] = $status_message;
 			echo json_encode( $response );
 			// wp_ajax wants us to...
 			die();

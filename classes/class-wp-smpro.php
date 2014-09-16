@@ -31,13 +31,13 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		 */
 		public $smush_settings = array(
 			// auto smush on upload
-			'auto'        => 0,
+			'auto'        => 1,
 			// remove exif & other meta from jpg
-			'remove_meta' => 0,
+			'remove_meta' => 1,
 			// progressive optimisation for jpg
 			'progressive' => 1,
 			// convert static gifs to png
-			'gif_to_png'  => 1,
+			'gif_to_png'  => 0,
 		);
 
 
