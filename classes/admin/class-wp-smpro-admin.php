@@ -134,9 +134,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			global $current_screen, $admin_page_suffix;
 			wp_enqueue_script( 'wp-smpro-queue' );
 			wp_enqueue_style( 'wp-smpro-queue' );
-
 			//Set API status on bulk page load only
-			if( $current_screen->id == $admin_page_suffix ) {
+			if ( $current_screen->id == $admin_page_suffix ) {
 				$this->set_api_status();
 			}
 		}
@@ -165,9 +164,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
 
 			$current_bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent" );
-			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests     = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-			$sent_ids = !empty($current_requests[$current_bulk_request]) ? $current_requests[$current_bulk_request]['sent_ids'] : '';
+			$sent_ids = ! empty( $current_requests[ $current_bulk_request ] ) ? $current_requests[ $current_bulk_request ]['sent_ids'] : '';
 
 			global $wp_locale;
 			$locale = array(
@@ -183,17 +182,18 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function admin_notice() {
-			if ( boolval( get_option( WP_SMPRO_PREFIX . 'bulk-received', 0 ) ) && !get_site_option('hide_smush_notice') ) {
+			if ( boolval( get_option( WP_SMPRO_PREFIX . 'bulk-received', 0 ) ) && ! get_site_option( 'hide_smush_notice' ) ) {
 				$message   = array();
 				$message[] = sprintf( __( 'A recent bulk smushing request has been completed!', WP_SMPRO_DOMAIN ), get_option( 'siteurl' ) );
-				if ( !isset( $_GET['page'] ) || 'wp-smpro-admin' != $_GET['page'] ) { //if not on smush page
+				if ( ! isset( $_GET['page'] ) || 'wp-smpro-admin' != $_GET['page'] ) { //if not on smush page
 					$message[] = sprintf( __( 'Visit <strong><a href="%s">Media &raquo; WP Smush Pro</a></strong> to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
 				}
 				?>
 				<style type="text/css">
-					.bulk-smush-notice{
+					.bulk-smush-notice {
 						position: relative;
 					}
+
 					.dismiss-smush-notice {
 						color: red;
 						cursor: pointer;
@@ -205,15 +205,15 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					}
 				</style>
 				<script type="text/javascript">
-					jQuery('document').ready(function(){
-						jQuery('body').on('click', '.dismiss-smush-notice', function(e){
+					jQuery('document').ready(function () {
+						jQuery('body').on('click', '.dismiss-smush-notice', function (e) {
 							e.preventDefault();
 							$this = jQuery(this);
 							jQuery.ajax({
-								'url':  ajaxurl,
+								'url': ajaxurl,
 								'type': 'POST',
-								'data': { action: 'dismiss_smush_notice' },
-								'success': function(){
+								'data': {action: 'dismiss_smush_notice'},
+								'success': function () {
 									$this.parent().remove();
 								}
 							});
@@ -224,7 +224,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<p>
 						<?php echo implode( '</p><p>', $message ); ?>
 					</p>
-					<a class="dismiss-smush-notice" title="<?php _e('Dismiss notice', WP_SMPRO_DOMAIN ); ?>" href="#">x</a>
+					<a class="dismiss-smush-notice" title="<?php _e( 'Dismiss notice', WP_SMPRO_DOMAIN ); ?>" href="#">x</a>
 				</div>
 
 			<?php
@@ -309,6 +309,18 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<h3>
 						<?php _e( 'Smush in Bulk', WP_SMPRO_DOMAIN ) ?>
 					</h3>
+					<div class="updated">
+						<h4><?php _e('How it works?', WP_SMPRO_DOMAIN); ?></h4>
+						<ol>
+							<li><?php _e("Out of all images, we send 1000(maximum) at a time, for smushing, to our API server", WP_SMPRO_DOMAIN); ?></li>
+							<li><?php _e("Once you are done sending the bulk smush request, you can leave this page", WP_SMPRO_DOMAIN); ?></li>
+							<li><?php _e("API queues the smushing request on FIFO(First in First Out) basis, single smush request are given priority over bulk smushing", WP_SMPRO_DOMAIN); ?></li>
+							<li><?php _e("Depending upon the previous pending request and image sizes, it might take upto few hours/days to handle smush request", WP_SMPRO_DOMAIN); ?></li>
+							<li><?php _e("On smushing completion, you'll be updated via email and a admin notice displays the link to fetch the smushed images.", WP_SMPRO_DOMAIN); ?></li>
+							<li><?php _e("You can start fetching the images on bulk smushing page. Progress bar displays the number of images fetched and total savings in terms of data.", WP_SMPRO_DOMAIN); ?></li>
+							<li><?php _e("Fetching process is flexible, if you have to navigate away from page, you can always start fetching back from where you left. Images are stored on server for a time period of 30 days.", WP_SMPRO_DOMAIN); ?></li>
+						</ol>
+					</div>
 
 					<?php
 					// display the bulk ui
@@ -563,23 +575,46 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 				<p>
 					<?php
-					_e( 'This depends on various things like your server resources, number and size of attachments, and the different sizes for each attachment (thumbnail, medium, large, etc). To prevent your site from getting too slow:', WP_SMPRO_DOMAIN );
+					_e( 'This depends on various things like your server resources, number and size of attachments, and the different sizes for each attachment (thumbnail, medium, large, etc).', WP_SMPRO_DOMAIN );
 					?>
 				</p>
+				<h4><?php echo __( 'How it works?' ); ?></h4>
 				<ol>
 					<li>
 						<?php
-						_e( 'Avoid updating themes or plugins or running any other maintenance task while bulk smushing is going on.', WP_SMPRO_DOMAIN );
+						_e( 'For a list of sent attachment ids, we download the attachment files from server.', WP_SMPRO_DOMAIN );
 						?>
 					</li>
 					<li>
 						<?php
-						_e( 'Avoid uploading/deleting media files while bulk smushing is going on.', WP_SMPRO_DOMAIN );
+						_e( 'Upon downloading files for each attachment, existing images are replaced with smushed images.', WP_SMPRO_DOMAIN );
+						?>
+					</li>
+				</ol>
+				<h4><?php echo __( 'Why it might get slow?' ); ?></h4>
+				<ol>
+					<li>
+						<?php
+						_e( 'As bulk smushing involves downloading attachment files and replacing them (Each attachment might have 5-6 files, depending upon number of registered media sizes.) ', WP_SMPRO_DOMAIN );
+						?>
+					</li>
+				</ol>
+				<h4><?php _e( 'To prevent further slow down:', WP_SMPRO_DOMAIN ); ?></h4>
+				<ol>
+					<li>
+						<?php
+						_e( 'Avoid updating themes or plugins or running any other maintenance task while images are being fetched from server.', WP_SMPRO_DOMAIN );
+						?>
+					</li>
+					<li>
+						<?php
+						_e( 'Avoid uploading/deleting media files while images are being fetched from server.', WP_SMPRO_DOMAIN );
 						?>
 					</li>
 				</ol>
 				<button class="button button-primary accept-slow-notice"><?php _e( 'Got it!', WP_SMPRO_DOMAIN ); ?></button>
-				<button class="button button-secondary"><?php _e( "Don't show this again", WP_SMPRO_DOMAIN ); ?></button>
+				<!--				<button class="button button-secondary">-->
+				<?php //_e( "Don't show this again", WP_SMPRO_DOMAIN ); ?><!--</button>-->
 			</div>
 		<?php
 		}
@@ -621,7 +656,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$button['cancel']   = ' disabled="disabled"';
 
 				return $button;
-			}elseif($this->counts['sent'] === $this->counts['total'] && !$is_bulk_sent ){
+			} elseif ( $this->counts['sent'] === $this->counts['total'] && ! $is_bulk_sent ) {
 				$button['text']     = __( 'Smushing in progress', WP_SMPRO_DOMAIN );
 				$button['id']       = "wp-smpro-waiting";
 				$button['disabled'] = ' disabled="disabled"';
@@ -832,9 +867,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			if ( ! empty( $global_data ) ) {
 				foreach ( $global_data as $data ) {
 					$data = maybe_unserialize( $data );
-					if( !empty($data['stats']) ) {
-						$smush_data['size_before'] += !empty($data['stats']['size_before']) ? (int) $data['stats']['size_before'] : 0;
-						$smush_data['size_after'] += !empty($data['stats']['size_after']) ? (int) $data['stats']['size_after']: 0;
+					if ( ! empty( $data['stats'] ) ) {
+						$smush_data['size_before'] += ! empty( $data['stats']['size_before'] ) ? (int) $data['stats']['size_before'] : 0;
+						$smush_data['size_after'] += ! empty( $data['stats']['size_after'] ) ? (int) $data['stats']['size_after'] : 0;
 					}
 				}
 			}
@@ -849,6 +884,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			return $smush_data;
 		}
+
 		/**
 		 * Update Sent ids
 		 */
@@ -866,11 +902,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			unset( $sent_ids[ $pos ] );
 			update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
 
-			if( empty( $sent_ids ) ) {
+			if ( empty( $sent_ids ) ) {
 				remove_action( 'admin_notices', array( $this, 'admin_notice' ) );
 				//No media, remove bulk meta
-				delete_option(WP_SMPRO_PREFIX . "bulk-sent");
-				delete_option(WP_SMPRO_PREFIX . "bulk-received");
+				delete_option( WP_SMPRO_PREFIX . "bulk-sent" );
+				delete_option( WP_SMPRO_PREFIX . "bulk-received" );
 			}
 
 			return;
@@ -879,8 +915,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		/**
 		 * Remove the smush notice untill next bulk request
 		 */
-		function dismiss_smush_notice(){
-			update_site_option('hide_smush_notice', 1);
+		function dismiss_smush_notice() {
+			update_site_option( 'hide_smush_notice', 1 );
 			wp_send_json_success();
 		}
 

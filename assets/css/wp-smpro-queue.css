@@ -27,6 +27,9 @@ input#wp-smpro-save-settings{
         padding: 1px 12px;
         overflow:hidden;
 }
+.update.smush-notices {
+    border-left: 4px solid #dd3d36;
+}
 .smush-notices h3{
         font-weight:normal;
 }
