@@ -309,16 +309,17 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<h3>
 						<?php _e( 'Smush in Bulk', WP_SMPRO_DOMAIN ) ?>
 					</h3>
-					<div class="updated">
-						<h4><?php _e('How it works?', WP_SMPRO_DOMAIN); ?></h4>
+
+					<div class="smush-notices update">
+						<h4><?php _e( 'How it works?', WP_SMPRO_DOMAIN ); ?></h4>
 						<ol>
-							<li><?php _e("Out of all images, we send 1000(maximum) at a time, for smushing, to our API server", WP_SMPRO_DOMAIN); ?></li>
-							<li><?php _e("Once you are done sending the bulk smush request, you can leave this page", WP_SMPRO_DOMAIN); ?></li>
-							<li><?php _e("API queues the smushing request on FIFO(First in First Out) basis, single smush request are given priority over bulk smushing", WP_SMPRO_DOMAIN); ?></li>
-							<li><?php _e("Depending upon the previous pending request and image sizes, it might take upto few hours/days to handle smush request", WP_SMPRO_DOMAIN); ?></li>
-							<li><?php _e("On smushing completion, you'll be updated via email and a admin notice displays the link to fetch the smushed images.", WP_SMPRO_DOMAIN); ?></li>
-							<li><?php _e("You can start fetching the images on bulk smushing page. Progress bar displays the number of images fetched and total savings in terms of data.", WP_SMPRO_DOMAIN); ?></li>
-							<li><?php _e("Fetching process is flexible, if you have to navigate away from page, you can always start fetching back from where you left. Images are stored on server for a time period of 30 days.", WP_SMPRO_DOMAIN); ?></li>
+							<li><?php _e( "Out of all images, we send 1000(maximum) at a time, for smushing, to our API server", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "Once you are done sending the bulk smush request, you can leave this page", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "API queues the smushing request on FIFO(First in First Out) basis, single smush request are given priority over bulk smushing", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "Depending upon the previous pending request and image sizes, it might take upto few hours/days to handle smush request", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "On smushing completion, you'll be updated via email and a admin notice displays the link to fetch the smushed images.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "You can start fetching the images on bulk smushing page. Progress bar displays the number of images fetched and total savings in terms of data.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "Fetching process is flexible, if you have to navigate away from page, you can always start fetching back from where you left. Images are stored on server for a time period of 30 days.", WP_SMPRO_DOMAIN ); ?></li>
 						</ol>
 					</div>
 
@@ -578,7 +579,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					_e( 'This depends on various things like your server resources, number and size of attachments, and the different sizes for each attachment (thumbnail, medium, large, etc).', WP_SMPRO_DOMAIN );
 					?>
 				</p>
-				<h4><?php echo __( 'How it works?' ); ?></h4>
+				<h4><?php echo __( 'How it works?', WP_SMPRO_DOMAIN ); ?></h4>
 				<ol>
 					<li>
 						<?php
