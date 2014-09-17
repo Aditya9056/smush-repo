@@ -77,9 +77,13 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$output['msg']     = '';
 
 			unset( $smush_data );
-
-			echo json_encode( $output );
-			die();
+			if( empty($attachment_id)) {
+				echo json_encode( $output );
+				die();
+			}else{
+				echo json_encode( array( 'status' => 1 ) );
+				die();
+			}
 		}
 
 		function save_zip( $attachment_id, $url ) {
