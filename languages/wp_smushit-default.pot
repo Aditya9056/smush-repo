@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://premium.wpmudev.org/\n"
-"POT-Creation-Date: 2014-09-17 21:09:50+00:00\n"
+"POT-Creation-Date: 2014-09-17 21:38:11+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -108,11 +108,11 @@ msgid "Here is how bulk smushing works:"
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:316
-msgid "Click send up to 1000 images at a time to our API server, you can then leave this page."
+msgid "Click to send up to 1000 attachments at a time to our API server."
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:317
-msgid "We'll queue your bulk smush job for processing in the order it's received. Normal single smush requests are given priority over bulk smushing."
+msgid "We'll queue your bulk smush job for processing by the order it's received. Normal single smush requests are given priority over bulk smushing."
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:318
@@ -124,11 +124,11 @@ msgid "When ready, you'll be notified via email and an admin notice that your jo
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:320
-msgid "You can then start fetching the images via the button on this page. The progress bar displays the number of images fetched and total savings in terms of data."
+msgid "You can then start fetching the images via the button on this page. The progress bar will continually update displaying the number of images fetched and total savings in terms of data."
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:321
-msgid "If you have to navigate away from this page during the fetching process, you can always return to start fetching where you left. You have 30 days to complete the fetch."
+msgid "If you have to navigate away from this page during the fetching process, you can always return to resume fetching where you left off. You have 30 days to complete the fetch."
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:355

@@ -313,12 +313,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<div class="smush-notices update">
 						<h4><?php _e( 'Here is how bulk smushing works:', WP_SMPRO_DOMAIN ); ?></h4>
 						<ol>
-							<li><?php _e( "Click send up to 1000 images at a time to our API server, you can then leave this page.", WP_SMPRO_DOMAIN ); ?></li>
-							<li><?php _e( "We'll queue your bulk smush job for processing in the order it's received. Normal single smush requests are given priority over bulk smushing.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "Click to send up to 1000 attachments at a time to our API server.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "We'll queue your bulk smush job for processing by the order it's received. Normal single smush requests are given priority over bulk smushing.", WP_SMPRO_DOMAIN ); ?></li>
 							<li><?php _e( "Depending upon the size of the queue, your job, and image sizes, it may take anywhere from a few minutes to a few days to complete your bulk job.", WP_SMPRO_DOMAIN ); ?></li>
 							<li><?php _e( "When ready, you'll be notified via email and an admin notice that your job is ready to be fetched.", WP_SMPRO_DOMAIN ); ?></li>
-							<li><?php _e( "You can then start fetching the images via the button on this page. The progress bar displays the number of images fetched and total savings in terms of data.", WP_SMPRO_DOMAIN ); ?></li>
-							<li><?php _e( "If you have to navigate away from this page during the fetching process, you can always return to start fetching where you left. You have 30 days to complete the fetch.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "You can then start fetching the images via the button on this page. The progress bar will continually update displaying the number of images fetched and total savings in terms of data.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "If you have to navigate away from this page during the fetching process, you can always return to resume fetching where you left off. You have 30 days to complete the fetch.", WP_SMPRO_DOMAIN ); ?></li>
 						</ol>
 					</div>
 
