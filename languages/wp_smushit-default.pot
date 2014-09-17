@@ -1,286 +1,339 @@
-# Translation of the WordPress plugin WP Smush.it 1.6.5.2 by WPMU DEV.
-# Copyright (C) 2013 WPMU DEV
-# This file is distributed under the same license as the WP Smush.it package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
-#
-#, fuzzy
+# Copyright (C) 2014 
+# This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Smush.it 1.6.5.2\n"
-"Report-Msgid-Bugs-To: http://wordpress.org/tag/wp-smushit\n"
-"POT-Creation-Date: 2013-09-02 08:12-0500\n"
-"PO-Revision-Date: 2013-MO-DA HO:MI+ZONE\n"
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://premium.wpmudev.org/\n"
+"POT-Creation-Date: 2014-09-17 21:09:50+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 
-#: wp-smushit.php:110
-msgid "Use Smush.it on upload?"
+#: classes/admin/class-wp-smpro-admin.php:88
+msgid "Auto-Smush images on upload"
 msgstr ""
 
-#: wp-smushit.php:113
-msgid "How many seconds should we wait for a response from Smush.it?"
+#: classes/admin/class-wp-smpro-admin.php:89
+msgid "Remove EXIF data from JPEGs"
 msgstr ""
 
-#: wp-smushit.php:116
-msgid "Enable debug processing"
+#: classes/admin/class-wp-smpro-admin.php:90
+msgid "Progressive optimization for JPEGs"
 msgstr ""
 
-#: wp-smushit.php:131
-msgid "Automatically process on upload"
+#: classes/admin/class-wp-smpro-admin.php:149
+#: classes/admin/class-wp-smpro-admin.php:664
+msgid "Fetch smushed images"
 msgstr ""
 
-#: wp-smushit.php:132
-msgid "Do not process on upload"
+#: classes/admin/class-wp-smpro-admin.php:150
+msgid "Sending &hellip;"
 msgstr ""
 
-#: wp-smushit.php:136
-#, php-format
-msgid "Temporarily disabled until %s"
+#: classes/admin/class-wp-smpro-admin.php:151
+#: classes/smush/class-wp-smpro-send.php:87
+msgid "Sending failed. Please try again later"
 msgstr ""
 
-#: wp-smushit.php:150
-msgid ""
-"If you are having trouble with the plugin enable this option can reveal some "
-"information about your system needed for support."
+#: classes/admin/class-wp-smpro-admin.php:152
+#: classes/admin/class-wp-smpro-admin.php:621
+#: classes/admin/class-wp-smpro-admin.php:631
+msgid "Smushing in progress"
 msgstr ""
 
-#: wp-smushit.php:195
-msgid "Bulk WP Smush.it"
+#: classes/admin/class-wp-smpro-admin.php:153
+msgid "Currently Smushing &hellip;"
 msgstr ""
 
-#: wp-smushit.php:199
-msgid "<p>You don't appear to have uploaded any images yet.</p>"
+#: classes/admin/class-wp-smpro-admin.php:154
+msgid "Fetching smushed images"
 msgstr ""
 
-#: wp-smushit.php:203
-msgid ""
-"<p>This tool will run all of the images in your media library through the WP "
-"Smush.it web service. Any image already processed will not be reprocessed. "
-"Any new images or unsuccessful attempts will be processed.</p>"
-msgstr ""
-
-#: wp-smushit.php:204
-msgid ""
-"<p>As part of the Yahoo! Smush.it API this plugin wil provide a URL to each "
-"of your images to be processed. The Yahoo! service will download the image "
-"via the URL. The Yahoo Smush.it service will then return a URL to this "
-"plugin of the new version of the image. This image will be downloaded and "
-"replace the original image on your server.</p>"
-msgstr ""
-
-#: wp-smushit.php:206
-msgid "<p>Limitations of using the Yahoo Smush.it API</p>"
-msgstr ""
-
-#: wp-smushit.php:209
-msgid ""
-"The image MUST be less than 1 megabyte in size. This is a limit of the "
-"Yahoo! service not this plugin."
-msgstr ""
-
-#: wp-smushit.php:210
-msgid ""
-"The image MUST be accessible via a non-https URL. The Yahoo! Smush.it "
-"service will not handle https:// image URLs. This is a limit of the Yahoo! "
-"service not this plugin."
-msgstr ""
-
-#: wp-smushit.php:211
-msgid ""
-"The image MUST publicly accessible server. As the Yahoo! Smush.it service "
-"needs to download the image via a URL the image needs to be on a public "
-"server and not a local local development system. This is a limit of the "
-"Yahoo! service not this plugin."
-msgstr ""
-
-#: wp-smushit.php:212
-msgid ""
-"The image MUST be local to the site. This plugin cannot update images stored "
-"on Content Delivery Networks (CDN)"
-msgstr ""
-
-#: wp-smushit.php:215
-#, php-format
-msgid ""
-"<p><strong>This is an experimental feature.</strong> Please post any "
-"feedback to the %s.</p>"
-msgstr ""
-
-#: wp-smushit.php:215
-msgid "WordPress WP Smush.it forums"
-msgstr ""
-
-#: wp-smushit.php:219
-#, php-format
-msgid ""
-"<p>We found %d images in your media library. Be forewarned, <strong>it will "
-"take <em>at least</em> %d minutes</strong> to process all these images if "
-"they have never been smushed before.</p>"
-msgstr ""
-
-#: wp-smushit.php:222
-msgid "Run all my images through WP Smush.it right now"
-msgstr ""
-
-#: wp-smushit.php:223
-msgid ""
-"<p><em>N.B. If your server <tt>gzip</tt>s content you may not see the "
-"progress updates as your files are processed.</em></p>"
-msgstr ""
-
-#: wp-smushit.php:226
-msgid ""
-"<p>DEBUG mode is currently enabled. To disable see the Settings > Media page."
-"</p>"
-msgstr ""
-
-#: wp-smushit.php:234
-msgid "Cheatin&#8217; uh?"
-msgstr ""
-
-#: wp-smushit.php:241
-#, php-format
-msgid "<p>Processing <strong>%s</strong>&hellip;<br />"
-msgstr ""
-
-#: wp-smushit.php:251 wp-smushit.php:409
-msgid "No savings"
-msgstr ""
-
-#: wp-smushit.php:252 wp-smushit.php:264
-msgid "<strong>already smushed</strong>"
-msgstr ""
-
-#: wp-smushit.php:280
-msgid "<hr /></p>Smush.it finished processing.</p>"
-msgstr ""
-
-#: wp-smushit.php:293
-msgid "You don't have permission to work with uploaded files."
-msgstr ""
-
-#: wp-smushit.php:297
-msgid "No attachment ID was provided."
-msgstr ""
-
-#: wp-smushit.php:323
-msgid "File path is empty"
-msgstr ""
-
-#: wp-smushit.php:327
-msgid "File URL is empty"
-msgstr ""
-
-#: wp-smushit.php:333
-msgid "Did not smush due to previous errors"
-msgstr ""
-
-#: wp-smushit.php:338
-#, php-format
-msgid "Could not find <span class='code'>%s</span>"
-msgstr ""
-
-#: wp-smushit.php:343
-#, php-format
-msgid "<span class='code'>%s</span> is not writable"
-msgstr ""
-
-#: wp-smushit.php:348
-#, php-format
-msgid ""
-"<span style=\"color:#FF0000;\">Skipped (%s) Unable to Smush due to Yahoo 1mb "
-"size limits. See <a href=\"http://developer.yahoo.com/yslow/smushit/faq."
-"html#faq_restrict\">FAQ</a></span>"
-msgstr ""
-
-#: wp-smushit.php:359
-#, php-format
-msgid ""
-"<span class='code'>%s</span> must be within the website directory (<span "
-"class='code'>%s</span>)"
-msgstr ""
-
-#: wp-smushit.php:371
-#, php-format
-msgid ""
-"<span class='code'>%s</span> must be within the website home URL (<span "
-"class='code'>%s</span>)"
-msgstr ""
-
-#: wp-smushit.php:382
-msgid "Error posting to Smush.it"
-msgstr ""
-
-#: wp-smushit.php:388 wp-smushit.php:406
-msgid "Bad response from Smush.it"
-msgstr ""
-
-#: wp-smushit.php:412
-msgid "Smush.it error: "
-msgstr ""
-
-#: wp-smushit.php:412
-msgid "unknown error"
-msgstr ""
-
-#: wp-smushit.php:413
-#, php-format
-msgid ""
-" while processing <span class='code'>%s</span> (<span class='code'>%s</span>)"
-msgstr ""
-
-#: wp-smushit.php:429
-#, php-format
-msgid "Error downloading file (%s)"
-msgstr ""
-
-#: wp-smushit.php:433
-#, php-format
-msgid "Unable to locate Smuch.it downloaded file (%s)"
-msgstr ""
-
-#: wp-smushit.php:447
-#, php-format
-msgid "Reduced by %01.1f%% (%s)"
-msgstr ""
-
-#: wp-smushit.php:545
-msgid "WP Smush.it requires WordPress 2.8 or greater"
-msgstr ""
-
-#: wp-smushit.php:585
+#: classes/admin/class-wp-smpro-admin.php:155
+#: classes/admin/class-wp-smpro-media-library.php:91
 msgid "Re-smush"
 msgstr ""
 
-#: wp-smushit.php:588
+#: classes/admin/class-wp-smpro-admin.php:156
+#: classes/admin/class-wp-smpro-media-library.php:115
+msgid "Smush now!"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:157
+#: classes/admin/class-wp-smpro-admin.php:614
+msgid "All done!"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:158
+msgid "Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:187
+msgid "A recent bulk smushing request has been completed!"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:189
+msgid "Visit <strong><a href=\"%s\">Media &raquo; WP Smush Pro</a></strong> to download the smushed images to your site."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:227
+msgid "Dismiss notice"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:271
+msgid "API Connected"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:271
+msgid "API Not Connected"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:296
+msgid "WP Smush Pro <span title=\"%s\" class=\"api-status%s\">%s</span><span class=\"api-status-text\">%s</span>"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:301
+msgid "Settings"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:310
+msgid "Smush in Bulk"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:314
+msgid "Here is how bulk smushing works:"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:316
+msgid "Click send up to 1000 images at a time to our API server, you can then leave this page."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:317
+msgid "We'll queue your bulk smush job for processing in the order it's received. Normal single smush requests are given priority over bulk smushing."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:318
+msgid "Depending upon the size of the queue, your job, and image sizes, it may take anywhere from a few minutes to a few days to complete your bulk job."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:319
+msgid "When ready, you'll be notified via email and an admin notice that your job is ready to be fetched."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:320
+msgid "You can then start fetching the images via the button on this page. The progress bar displays the number of images fetched and total savings in terms of data."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:321
+msgid "If you have to navigate away from this page during the fetching process, you can always return to start fetching where you left. You have 30 days to complete the fetch."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:355
+msgid "Save Changes"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:437
+msgid "<p>Please <a href=\"%s\">upload some images</a>.</p>"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:455
+msgid "All your images are already smushed!"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:467
+msgid "You can also smush images individually from your <a href=\"%s\">Media Library</a>."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:532
+msgid "Reduced by "
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:542
+msgid "<span class=\"done-count\">%d</span> of <span class=\"total-count\">%d</span> attachments have been sent for smushing"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:550
+msgid "<span class=\"done-count\">%d</span> of <span class=\"total-count\">%d</span> smushed attachments have been fetched"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:570
+msgid "NOTE: Your website <em>might</em> get a little slow while the images are being fetched."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:575
+msgid "This depends on various things like your server resources, number and size of attachments, and the different sizes for each attachment (thumbnail, medium, large, etc)."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:578
+msgid "Got it!"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:595
+msgid "Cancel"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:642
+#: classes/admin/class-wp-smpro-admin.php:660
+msgid "Service unavailable!"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:646
+msgid "Send smush request"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:742
+msgid "ID error"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:755
+#: classes/admin/class-wp-smpro-media-library.php:82
+msgid "Already Optimized"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:757
+#: classes/admin/class-wp-smpro-media-library.php:84
+msgid "Reduced by %01.1f%% (%s)"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:767
+msgid "Still waiting"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-media-library.php:99
+msgid "Currently smushing"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-media-library.php:109
 msgid "Not processed"
 msgstr ""
 
-#: wp-smushit.php:591
-msgid "Smush.it now!"
+#: classes/class-wp-smpro.php:175 classes/smush/class-wp-smpro-send.php:587
+msgid "Request failed"
 msgstr ""
 
-#. Plugin Name of the plugin/theme
-msgid "WP Smush.it"
+#: classes/class-wp-smpro.php:176
+msgid "File is being processed by API"
 msgstr ""
 
-#. Plugin URI of the plugin/theme
-msgid "http://wordpress.org/extend/plugins/wp-smushit/"
+#: classes/class-wp-smpro.php:177
+msgid "File is in the queue"
 msgstr ""
 
-#. Description of the plugin/theme
-msgid ""
-"Reduce image file sizes and improve performance using the <a href=\"http://"
-"smush.it/\">Smush.it</a> API within WordPress."
+#: classes/class-wp-smpro.php:178
+msgid "File is being smushed"
 msgstr ""
 
-#. Author of the plugin/theme
-msgid "WPMU DEV"
+#: classes/class-wp-smpro.php:179
+msgid "Smushing successful and ready for download"
 msgstr ""
 
-#. Author URI of the plugin/theme
-msgid "http://premium.wpmudev.org/"
+#: classes/class-wp-smpro.php:180
+msgid "Smushing failed due to error"
+msgstr ""
+
+#: classes/class-wp-smpro.php:181
+msgid "Already optimized"
+msgstr ""
+
+#: classes/class-wp-smpro.php:186
+msgid "No file received"
+msgstr ""
+
+#: classes/class-wp-smpro.php:187
+msgid "Callback url not provided"
+msgstr ""
+
+#: classes/class-wp-smpro.php:188
+msgid "Token not provided"
+msgstr ""
+
+#: classes/class-wp-smpro.php:189
+msgid "Invalid API key"
+msgstr ""
+
+#: classes/class-wp-smpro.php:190
+msgid "The file type is not supported"
+msgstr ""
+
+#: classes/class-wp-smpro.php:191
+msgid "Upload failed"
+msgstr ""
+
+#: classes/class-wp-smpro.php:192
+msgid "File larger than allowed limit"
+msgstr ""
+
+#: classes/smush/class-wp-smpro-fetch.php:47
+msgid "Fetching failed. Please retry later."
+msgstr ""
+
+#: classes/smush/class-wp-smpro-fetch.php:55
+msgid "No attachment ID was provided."
+msgstr ""
+
+#: classes/smush/class-wp-smpro-receive.php:127
+msgid "%s: Smush Pro bulk smushing completed"
+msgstr ""
+
+#: classes/smush/class-wp-smpro-receive.php:131
+msgid "A recent bulk smushing request on your site %s has been completed!"
+msgstr ""
+
+#: classes/smush/class-wp-smpro-receive.php:132
+msgid "Visit %s to download the smushed images to your site."
+msgstr ""
+
+#: classes/smush/class-wp-smpro-send.php:62
+msgid "You don't have permission to work with uploaded files."
+msgstr ""
+
+#: classes/smush/class-wp-smpro-send.php:70
+msgid "API not available"
+msgstr ""
+
+#: classes/smush/class-wp-smpro-send.php:97
+msgid "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing is finished."
+msgstr ""
+
+#: classes/smush/class-wp-smpro-send.php:97
+msgid "%d were sent for smushing"
+msgstr ""
+
+#: classes/smush/class-wp-smpro-send.php:596
+msgid "Service unavailable"
+msgstr ""
+
+#: wp-smushit-pro.php:139 wp-smushit-pro.php:160
+msgid "WP Smush.it PRO:"
+msgstr ""
+
+#: wp-smushit-pro.php:140
+msgid "<a href=\"#\" onclick=\"%s\">Click here</a> to activate WPMU DEV Dashboard."
+msgstr ""
+
+#: wp-smushit-pro.php:147
+msgid "WP Smush.it PRO requires WPMU DEV Dashboard plugin."
+msgstr ""
+
+#: wp-smushit-pro.php:147
+msgid "Please install <a href=\"http://premium.wpmudev.org/project/wpmu-dev-dashboard/\" target=\"_blank\">WPMU DEV Dashboard</a> to use WP Smush.it PRO."
+msgstr ""
+
+#: wp-smushit-pro.php:160
+msgid "<a href=\"%s\">Login to WPMU DEV Dashboard</a> to start using WP Smush PRO."
+msgstr ""
+
+#: wp-smushit-pro.php:174
+msgid "ERROR: nonce verification failed"
+msgstr ""
+
+#: wp-smushit-pro.php:182
+msgid "ERROR: Failed to activate plugin: %s"
+msgstr ""
+
+#: wp-smushit-pro.php:184
+msgid "SUCCESS: plugin activated"
 msgstr ""

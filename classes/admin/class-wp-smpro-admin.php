@@ -155,7 +155,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'resmush'   => __( 'Re-smush', WP_SMPRO_DOMAIN ),
 				'smush_now' => __( 'Smush now!', WP_SMPRO_DOMAIN ),
 				'done'      => __( 'All done!', WP_SMPRO_DOMAIN ),
-				'no_leave'  => __( 'Images are being fetched from the API. If you leave the screen, <strong>the fetching will stop</strong>.', WP_SMPRO_DOMAIN ),
+				'no_leave'  => __( 'Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again.', WP_SMPRO_DOMAIN ),
 			);
 
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
@@ -311,15 +311,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					</h3>
 
 					<div class="smush-notices update">
-						<h4><?php _e( 'How it works?', WP_SMPRO_DOMAIN ); ?></h4>
+						<h4><?php _e( 'Here is how bulk smushing works:', WP_SMPRO_DOMAIN ); ?></h4>
 						<ol>
-							<li><?php _e( "Out of all images, we send 1000(maximum) at a time, for smushing, to our API server", WP_SMPRO_DOMAIN ); ?></li>
-							<li><?php _e( "Once you are done sending the bulk smush request, you can leave this page", WP_SMPRO_DOMAIN ); ?></li>
-							<li><?php _e( "API queues the smushing request on FIFO(First in First Out) basis, single smush request are given priority over bulk smushing", WP_SMPRO_DOMAIN ); ?></li>
-							<li><?php _e( "Depending upon the previous pending request and image sizes, it might take upto few hours/days to handle smush request", WP_SMPRO_DOMAIN ); ?></li>
-							<li><?php _e( "On smushing completion, you'll be updated via email and a admin notice displays the link to fetch the smushed images.", WP_SMPRO_DOMAIN ); ?></li>
-							<li><?php _e( "You can start fetching the images on bulk smushing page. Progress bar displays the number of images fetched and total savings in terms of data.", WP_SMPRO_DOMAIN ); ?></li>
-							<li><?php _e( "Fetching process is flexible, if you have to navigate away from page, you can always start fetching back from where you left. Images are stored on server for a time period of 30 days.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "Click send up to 1000 images at a time to our API server, you can then leave this page.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "We'll queue your bulk smush job for processing in the order it's received. Normal single smush requests are given priority over bulk smushing.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "Depending upon the size of the queue, your job, and image sizes, it may take anywhere from a few minutes to a few days to complete your bulk job.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "When ready, you'll be notified via email and an admin notice that your job is ready to be fetched.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "You can then start fetching the images via the button on this page. The progress bar displays the number of images fetched and total savings in terms of data.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "If you have to navigate away from this page during the fetching process, you can always return to start fetching where you left. You have 30 days to complete the fetch.", WP_SMPRO_DOMAIN ); ?></li>
 						</ol>
 					</div>
 
@@ -453,7 +452,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					?>
 					<p>
 						<?php
-						_e( 'All your images are already smushed', WP_SMPRO_DOMAIN );
+						_e( 'All your images are already smushed!', WP_SMPRO_DOMAIN );
 						?>
 					</p>
 				<?php
@@ -541,8 +540,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <p id="sent-status">' .
 			                sprintf(
 				                __(
-					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
-					                . ' have been sent for smushing', WP_SMPRO_DOMAIN
+					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> attachments have been sent for smushing', WP_SMPRO_DOMAIN
 				                ), $this->counts['sent'], $this->counts['total']
 			                ) .
 			                '</p>
@@ -550,8 +548,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <p id="fetched-status">' .
 			                sprintf(
 				                __(
-					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> images'
-					                . ' have been smushed', WP_SMPRO_DOMAIN
+					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> smushed attachments have been fetched', WP_SMPRO_DOMAIN
 				                ), $this->counts['smushed'], $this->counts['total']
 			                ) .
 			                '</p>
@@ -570,52 +567,15 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			<div class="smush-notices" id="fetch-notice">
 				<h3>
 					<?php
-					_e( 'Your website <em>may</em> get a little slow while the images are fetched from the API.', WP_SMPRO_DOMAIN );
+					_e( 'NOTE: Your website <em>might</em> get a little slow while the images are being fetched.', WP_SMPRO_DOMAIN );
 					?>
 				</h3>
-
 				<p>
 					<?php
 					_e( 'This depends on various things like your server resources, number and size of attachments, and the different sizes for each attachment (thumbnail, medium, large, etc).', WP_SMPRO_DOMAIN );
 					?>
 				</p>
-				<h4><?php echo __( 'How it works?', WP_SMPRO_DOMAIN ); ?></h4>
-				<ol>
-					<li>
-						<?php
-						_e( 'For a list of sent attachment ids, we download the attachment files from server.', WP_SMPRO_DOMAIN );
-						?>
-					</li>
-					<li>
-						<?php
-						_e( 'Upon downloading files for each attachment, existing images are replaced with smushed images.', WP_SMPRO_DOMAIN );
-						?>
-					</li>
-				</ol>
-				<h4><?php echo __( 'Why it might get slow?' ); ?></h4>
-				<ol>
-					<li>
-						<?php
-						_e( 'As bulk smushing involves downloading attachment files and replacing them (Each attachment might have 5-6 files, depending upon number of registered media sizes.) ', WP_SMPRO_DOMAIN );
-						?>
-					</li>
-				</ol>
-				<h4><?php _e( 'To prevent further slow down:', WP_SMPRO_DOMAIN ); ?></h4>
-				<ol>
-					<li>
-						<?php
-						_e( 'Avoid updating themes or plugins or running any other maintenance task while images are being fetched from server.', WP_SMPRO_DOMAIN );
-						?>
-					</li>
-					<li>
-						<?php
-						_e( 'Avoid uploading/deleting media files while images are being fetched from server.', WP_SMPRO_DOMAIN );
-						?>
-					</li>
-				</ol>
 				<button class="button button-primary accept-slow-notice"><?php _e( 'Got it!', WP_SMPRO_DOMAIN ); ?></button>
-				<!--				<button class="button button-secondary">-->
-				<?php //_e( "Don't show this again", WP_SMPRO_DOMAIN ); ?><!--</button>-->
 			</div>
 		<?php
 		}
