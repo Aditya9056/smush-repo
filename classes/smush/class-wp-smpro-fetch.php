@@ -40,7 +40,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 *
 		 * @return type
 		 */
-		function fetch( $attachment_id = false ) {
+		function fetch( $attachment_id = false, $is_single = false ) {
 
 			$output = array(
 				'success' => false,
@@ -77,7 +77,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$output['msg']     = '';
 
 			unset( $smush_data );
-			if( empty($attachment_id)) {
+			if( !$is_single) {
 				echo json_encode( $output );
 				die();
 			}else{

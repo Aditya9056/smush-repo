@@ -97,7 +97,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			if ( $is_single ) {
 				global $wp_smpro;
-				$wp_smpro->fetch->fetch( $attachment_id );
+				$wp_smpro->fetch->fetch( $attachment_id, true );
 			}
 
 			return $insert;
