@@ -222,7 +222,8 @@
 			jQuery(config.statsWrap).find('#percent').html( $count_percent );
 			jQuery(config.statsWrap).find('#human').html(config.counts.human);
 
-			if (config.counts.sent == fetchCount) {
+			if (config.counts.total == fetchCount || config.counts.sent == fetchCount ) {
+				jQuery(window).off('beforeunload');
 				$button = jQuery(config.fetchButton);
 
 				// find the spinner ui
@@ -232,6 +233,7 @@
 				$button.find('span').html(config.msgs.done);
 				$button.attr('id', 'wp-smpro-finished');
 				$button.removeClass('wp-smpro-started');
+				jQuery(config.cancelButton).remove();
 			}
 		};
 
@@ -300,11 +302,16 @@
 		var bulkStart = function ($button) {
 			buttonProgress($button, config.msgs.fetching);
 
+			//Enable the Cancel button
+			jQuery(config.cancelButton).removeClass('disabled');
+
 			bulkFetch();
 
 			//Before leave screen, show alert
 			jQuery(window).on('beforeunload', function (e) {
-				return wp_smpro_msgs.no_leave.replace(/(<([^>]+)>)/ig, "");
+				var message = wp_smpro_msgs.no_leave.replace(/(<([^>]+)>)/ig, "");
+				(e || window.event).returnValue = message;
+				return message;
 			});
 		};
 

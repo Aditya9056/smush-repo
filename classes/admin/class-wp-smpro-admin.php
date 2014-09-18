@@ -590,11 +590,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			?>
 			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
 				<span><?php echo $button['text'] ?></span>
-			</button>
-			<button id="wp-smpro-cancel" class="button button-secondary" <?php echo $button['cancel']; ?>>
-				<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
-			</button>
-		<?php
+			</button><?php
+			if( $button['id'] == 'wp-smpro-fetch' ) {
+				//show cancel button only for fetching
+			?>
+				<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
+					<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
+				</button><?php
+			}
 		}
 
 		private function button_state() {
