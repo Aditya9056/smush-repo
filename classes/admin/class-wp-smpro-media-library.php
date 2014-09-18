@@ -99,10 +99,18 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 					$status_txt = __( 'Currently smushing', WP_SMPRO_DOMAIN );
 
 					// we need to show the smush button
-					$show_button = false;
+					$show_button = $this->show_resmush_button( $id );
 
-					// the button text
-					$button_txt = '';
+					if( !$show_button ) {
+						// the button text
+						$button_txt = '';
+					}else{
+						// the status
+						$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
+
+						// the button text
+						$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
+					}
 				} else {
 
 					// the status
@@ -172,9 +180,9 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 					$timestamp = $data['timestamp'];
 				}
 			}
-			if ( $smush_status === '0' ) {
+			if ( $smush_status === '' ) {
 				$age = (int) time() - (int) $timestamp;
-				if ( $age >= 10 * DAY_IN_SECONDS ) {
+				if ( $age >= 12*HOUR_IN_SECONDS ) {
 					$button_show = true;
 				}
 			}
