@@ -81,7 +81,8 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				if ( $bytes == 0 || $percent == 0 ) {
 					$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
 				} elseif ( ! empty( $percent ) && ! empty( $data['stats']['human'] ) ) {
-					$status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $data['stats']['percent'], 2, '.', '' ), $data['stats']['human'] );
+					$percent = $percent > 0 ? 0 : $percent;
+					$status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $percent, 2, '.', '' ), $data['stats']['human'] );
 				}
 
 				// check if we need to show the resmush button
@@ -182,6 +183,8 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			}
 			if ( $smush_status === '' ) {
 				$age = (int) time() - (int) $timestamp;
+				var_dump($age);
+				var_dump( 12*HOUR_IN_SECONDS );
 				if ( $age >= 12*HOUR_IN_SECONDS ) {
 					$button_show = true;
 				}
