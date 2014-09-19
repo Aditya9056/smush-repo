@@ -82,7 +82,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			global $wpdb;
 
 			$timestamp = time();
-
+			//@todo: fix query, it inserts multiple rows for same meta key
 			$sql = "INSERT INTO $wpdb->postmeta (post_id,meta_key,meta_value) VALUES ";
 			foreach ( $data as $attachment_id => &$smush_data ) {
 				if ( in_array( $attachment_id, $sent_ids ) ) {
