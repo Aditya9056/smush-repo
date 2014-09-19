@@ -77,11 +77,11 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 
 				$bytes = isset( $data['stats']['bytes'] ) ? $data['stats']['bytes'] : 0;
 				$percent = isset( $data['stats']['percent'] ) ? $data['stats']['percent'] : 0;
+				$percent = $percent < 0 ? 0 : $percent;
 
 				if ( $bytes == 0 || $percent == 0 ) {
 					$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
 				} elseif ( ! empty( $percent ) && ! empty( $data['stats']['human'] ) ) {
-					$percent = $percent > 0 ? 0 : $percent;
 					$status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $percent, 2, '.', '' ), $data['stats']['human'] );
 				}
 
