@@ -181,10 +181,13 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 					$timestamp = $data['timestamp'];
 				}
 			}
-			if ( $smush_status === '' ) {
-				if ( $timestamp >= strtotime('-12 hours') ) {
+
+			if ( $smush_status === '' && !empty($timestamp) ) {
+				if ( $timestamp <= strtotime('-12 hours') ) {
 					$button_show = true;
 				}
+			}else{
+				$button_show = false;
 			}
 
 			return $button_show;
