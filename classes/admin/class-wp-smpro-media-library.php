@@ -182,10 +182,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				}
 			}
 			if ( $smush_status === '' ) {
-				$age = (int) time() - (int) $timestamp;
-				var_dump($age);
-				var_dump( 12*HOUR_IN_SECONDS );
-				if ( $age >= 12*HOUR_IN_SECONDS ) {
+				if ( $timestamp >= strtotime('-12 hours') ) {
 					$button_show = true;
 				}
 			}
