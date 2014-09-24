@@ -157,7 +157,6 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			wp_update_attachment_metadata( $attachment_id, $attachment_meta );
 			if ( ! empty( $unlink_files ) ) {
 				foreach ( $unlink_files as $filepath ) {
-					echo $filepath;
 					if ( file_exists( $filepath ) ) {
 						unlink( $filepath );
 					}

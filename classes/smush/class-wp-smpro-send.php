@@ -166,7 +166,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$token = $request_data->token;
 
 			// get the sent ids, for our processing
-			$sent_ids = $request_data->sent_ids;
+			$sent_ids = !empty( $request_data->sent_ids ) ? $request_data->sent_ids : '';
 			// remove them from the request object
 			unset( $request_data->sent_ids );
 			// post the request and get the response

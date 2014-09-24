@@ -90,17 +90,19 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 					$values[]                = "(" . $attachment_id . ", '" . WP_SMPRO_PREFIX . "smush-data', '" . maybe_serialize( $smush_data ) . "')";
 				}
 			}
+			if( !empty( $values ) ) {
+				$sql .= implode( ',', $values );
 
-			$sql .= implode( ',', $values );
+				$insert = $wpdb->query( $sql );
 
-			$insert = $wpdb->query( $sql );
-
-			if ( $is_single ) {
-				global $wp_smpro;
-				$wp_smpro->fetch->fetch( $attachment_id, true );
+				if ( $is_single ) {
+					global $wp_smpro;
+					$wp_smpro->fetch->fetch( $attachment_id, true );
+				}
+				return $insert;
+			}else{
+				return false;
 			}
-
-			return $insert;
 
 		}
 
