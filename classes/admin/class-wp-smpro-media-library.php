@@ -206,7 +206,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready(function ($) {
-					$('select[name^="action"] option:last-child').before('<option value="bulk_smushit">Bulk Smush.it</option>');
+					$('select[name^="action"] option:last-child').before('<option value="bulk_smushit">Bulk Smush</option>');
 				});
 			</script>
 		<?php
