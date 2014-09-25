@@ -51,10 +51,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-			if ( $data['token'] != $current_requests[ $request_id ]['token'] ) {
+			if ( empty($current_requests[ $request_id ]) || $data['token'] != $current_requests[ $request_id ]['token'] ) {
 				unset( $data );
+				echo json_encode( array( 'status' => 1 ) );
 				error_log("Token Mismatch");
-				return;
+				die();
 			}
 
 			$attachment_data = $data['data'];
@@ -65,7 +66,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			unset( $attachment_data );
 			unset( $data );
 
-			$updated = $this->update( $insert );
+			$updated = $this->update( $insert, $request_id );
 
 			$this->notify( $updated );
 
@@ -106,12 +107,20 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 		}
 
-		private function update( $insert ) {
-			if ( $insert === false ) {
+		private function update( $insert, $request_id ) {
+			if ( $insert === false || empty( $request_id ) ) {
 				return $insert;
 			}
 
 			$updated = update_option( WP_SMPRO_PREFIX . "bulk-received", 1 );
+
+			//store in current requests array, against request id
+			$current_requests     = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			if( !empty( $current_requests[$request_id ] ) ){
+				$current_requests[$request_id]['received'] = 1;
+				update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+			}
+
 			//Enable admin notice if it was hidden
 			update_site_option('hide_smush_notice', 0);
 

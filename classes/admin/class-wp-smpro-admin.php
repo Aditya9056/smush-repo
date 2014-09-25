@@ -166,7 +166,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$current_bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent" );
 			$current_requests     = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-			$sent_ids = ! empty( $current_requests[ $current_bulk_request ] ) ? $current_requests[ $current_bulk_request ]['sent_ids'] : '';
+			$sent_ids = array();
+			foreach( $current_requests as $request_id => $request ){
+				if( $request['received'] == 1 ) {
+					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
+				}
+			}
 
 			global $wp_locale;
 			$locale = array(
@@ -290,23 +295,29 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			//Check if there are input ids in URL
 			if ( ! empty( $_REQUEST['ids'] ) ) {
-				if ( $this->api_connected ) {
-					global $wp_smpro;
+				$current_bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent" );
+				if( !empty( $current_bulk_request ) ) { ?>
+					<div class="error"><p><?php _e( 'Bulk smush failed, as another bulk request is already being processed.' ); ?></p></div><?php
+				}else {
+					if ( $this->api_connected ) {
+						global $wp_smpro;
 
-					$ids = $_REQUEST['ids'];
-					$ids = explode( ',', $ids );
-					if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'wp-smpro-admin' ) ) {
-						?>
-						<div class="error"><?php _e( 'Nonce verification failed' ); ?></div><?php
+						$ids = $_REQUEST['ids'];
+						$ids = explode( ',', $ids );
+						if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'wp-smpro-admin' ) ) {
+							?>
+							<div class="error"><?php _e( 'Nonce verification failed' ); ?></div><?php
+						} else {
+							$wp_smpro->sender->send_request( $ids );
+							// Reset Counts
+							$this->setup_counts();
+						}
 					} else {
-						$wp_smpro->sender->send_request( $ids );
-						// Reset Counts
-						$this->setup_counts();
+						//display a error, images were not sent for smushing
+						?>
+						<div class="error"><p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p>
+						</div><?php
 					}
-				} else {
-					//display a error, images were not sent for smushing
-					?>
-					<div class="error"><p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p></div><?php
 				}
 			}
 			?>

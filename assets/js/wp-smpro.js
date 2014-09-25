@@ -291,9 +291,12 @@
 
 			var startingpoint = jQuery.Deferred();
 			startingpoint.resolve();
-			$.each(config.ids, function (i, $id) {
-				startingpoint = startingpoint.then(function () {
-					return fetch($id);
+			//Fetch ids which have been smushed and recieved
+			$.each(config.ids, function ($request_id, $ids) {
+				$.each($ids.sent_ids, function (i, $id) {
+					startingpoint = startingpoint.then(function () {
+						return fetch($id);
+					});
 				});
 
 			});
