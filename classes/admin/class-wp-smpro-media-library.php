@@ -38,6 +38,8 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			}
 
 			$this->current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
+			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
+			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
 		}
 
 		/**
@@ -198,6 +200,41 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 */
 		function admin_init() {
 			wp_enqueue_script( 'common' );
+		}
+		// Borrowed from http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
+		function add_bulk_actions_via_javascript() {
+			?>
+			<script type="text/javascript">
+				jQuery(document).ready(function ($) {
+					$('select[name^="action"] option:last-child').before('<option value="bulk_smushit">Bulk Smush.it</option>');
+				});
+			</script>
+		<?php
+		}
+		// Handles the bulk actions POST
+		// Borrowed from http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
+		function bulk_action_handler() {
+			check_admin_referer( 'bulk-media' );
+
+			if ( empty( $_REQUEST['media'] ) || ! is_array( $_REQUEST['media'] ) ) {
+				return;
+			}
+
+			$ids = implode( ',', array_map( 'intval', $_REQUEST['media'] ) );
+
+			// Can't use wp_nonce_url() as it escapes HTML entities
+			$url = admin_url( 'upload.php' );
+			$url = add_query_arg(
+				array(
+					'page'     => 'wp-smpro-admin',
+					'goback'   => 1,
+					'ids'      => $ids,
+					'_wpnonce' => wp_create_nonce( 'wp-smpro-admin' )
+				),
+				$url
+			);
+			wp_redirect( $url );
+			exit();
 		}
 
 	}

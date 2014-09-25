@@ -288,6 +288,27 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 				</script> <?php
 			}
+			//Check if there are input ids in URL
+			if ( ! empty( $_REQUEST['ids'] ) ) {
+				if ( $this->api_connected ) {
+					global $wp_smpro;
+
+					$ids = $_REQUEST['ids'];
+					$ids = explode( ',', $ids );
+					if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'wp-smpro-admin' ) ) {
+						?>
+						<div class="error"><?php _e( 'Nonce verification failed' ); ?></div><?php
+					} else {
+						$wp_smpro->sender->send_request( $ids );
+						// Reset Counts
+						$this->setup_counts();
+					}
+				} else {
+					//display a error, images were not sent for smushing
+					?>
+					<div class="error"><p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p></div><?php
+				}
+			}
 			?>
 			<div class="wrap">
 				<div id="icon-upload" class="icon32"><br/></div>
@@ -570,6 +591,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					_e( 'NOTE: Your website <em>might</em> get a little slow while the images are being fetched.', WP_SMPRO_DOMAIN );
 					?>
 				</h3>
+
 				<p>
 					<?php
 					_e( 'This depends on various things like your server resources, number and size of attachments, and the different sizes for each attachment (thumbnail, medium, large, etc).', WP_SMPRO_DOMAIN );
@@ -588,14 +610,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function setup_button() {
 			$button = $this->button_state();
 			?>
-			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
-				<span><?php echo $button['text'] ?></span>
+		<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
+			<span><?php echo $button['text'] ?></span>
 			</button><?php
-			if( $button['id'] == 'wp-smpro-fetch' ) {
+			if ( $button['id'] == 'wp-smpro-fetch' ) {
 				//show cancel button only for fetching
-			?>
-				<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
-					<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
+				?>
+			<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
+				<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
 				</button><?php
 			}
 		}
