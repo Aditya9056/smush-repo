@@ -168,7 +168,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$sent_ids = array();
 			foreach( $current_requests as $request_id => $request ){
-				if( $request['received'] == 1 ) {
+				if( !empty($request['received']) && $request['received'] == 1 ) {
 					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
 				}
 			}
