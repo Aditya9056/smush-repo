@@ -457,7 +457,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			           . $where_id_clause
 			           . $existing_clause
 			           . " ORDER BY p.post_date ASC"
-			           // get only 1000 at a time
+			           // get only 100 at a time
 			           . " LIMIT " . WP_SMPRO_REQUEST_LIMIT;
 			$results = $wpdb->get_results( $sql );
 			unset( $sql, $where_id_clause );

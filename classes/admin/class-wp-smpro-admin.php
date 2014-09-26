@@ -345,7 +345,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<div class="smush-notices update">
 						<h4><?php _e( 'Here is how bulk smushing works:', WP_SMPRO_DOMAIN ); ?></h4>
 						<ol>
-							<li><?php _e( "Click to send up to 1000 attachments at a time to our API server.", WP_SMPRO_DOMAIN ); ?></li>
+							<li><?php _e( "Click to send up to 100 attachments at a time to our API server.", WP_SMPRO_DOMAIN ); ?></li>
 							<li><?php _e( "We'll queue your bulk smush job for processing by the order it's received. Normal single smush requests are given priority over bulk smushing.", WP_SMPRO_DOMAIN ); ?></li>
 							<li><?php _e( "Depending upon the size of the queue, your job, and image sizes, it may take anywhere from a few minutes to a few days to complete your bulk job.", WP_SMPRO_DOMAIN ); ?></li>
 							<li><?php _e( "When ready, you'll be notified via email and an admin notice that your job is ready to be fetched.", WP_SMPRO_DOMAIN ); ?></li>
