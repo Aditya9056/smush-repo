@@ -49,6 +49,17 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$request_id = $data['request_id'];
 
+			if( !empty( $data['error']) ){
+				//Update sent ids
+				$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+				if( !empty( $current_requests[$request_id ] ) ) {
+					unset($current_requests[$request_id ]);
+					update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+				}
+				echo json_encode( array( 'status' => 1 ) );
+				die();
+			}
+
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			if ( empty($current_requests[ $request_id ]) || $data['token'] != $current_requests[ $request_id ]['token'] ) {
