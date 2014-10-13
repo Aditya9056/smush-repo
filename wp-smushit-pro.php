@@ -59,6 +59,10 @@ define( 'WP_SMPRO_DIR', plugin_dir_path( __FILE__ ) );
  * The plugin's url for easy access to files.
  */
 define( 'WP_SMPRO_URL', plugin_dir_url( __FILE__ ) );
+/**
+ * The plugin's url for easy access to files.
+ */
+define( 'WP_SMPRO_JS', WP_SMPRO_URL. 'assets/js/' );
 
 /**
  * The text domain for translation.
@@ -136,7 +140,7 @@ function wp_smpro_notice() {
                                 $nonce = wp_create_nonce( 'activate_wpmudev-updates' );
                                 ?>
                                 <p>
-                                        <strong><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(
+                                        <strong><?php _e( 'WP Smush PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(
                                                 __('<a href="#" onclick="%s">Click here</a> to activate WPMU DEV Dashboard.', WP_SMPRO_DOMAIN),
                                                 "wp_smpro_activate_plugin('smushit_pro_activate_plugin','$nonce'"); ?>
                                 </p>
@@ -144,7 +148,7 @@ function wp_smpro_notice() {
                         } else {
 			?>
                                 <p>
-                                        <strong><?php _e( 'WP Smush.it PRO requires WPMU DEV Dashboard plugin.', WP_SMPRO_DOMAIN ) ?></strong> <?php _e( 'Please install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush.it PRO.', WP_SMPRO_DOMAIN ); ?>
+                                        <strong><?php _e( 'WP Smush PRO requires WPMU DEV Dashboard plugin.', WP_SMPRO_DOMAIN ) ?></strong> <?php _e( 'Please install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush PRO.', WP_SMPRO_DOMAIN ); ?>
                                 </p>
                         <?php
                         }
@@ -157,7 +161,7 @@ function wp_smpro_notice() {
 		?>
 		<div class="error smushit-pro-status">
 			<p>
-				<strong><?php _e( 'WP Smush.it PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(__( '<a href="%s">Login to WPMU DEV Dashboard</a> to start using WP Smush PRO.', WP_SMPRO_DOMAIN ),$dashboard_url); ?>
+				<strong><?php _e( 'WP Smush PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(__( '<a href="%s">Login to WPMU DEV Dashboard</a> to start using WP Smush PRO.', WP_SMPRO_DOMAIN ),$dashboard_url); ?>
 			</p>
 		</div><?php
 	}

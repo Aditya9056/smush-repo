@@ -1,4 +1,4 @@
-Plugin Name: WP Smush.it Pro
+Plugin Name: WP Smush Pro
 Author: Saurabh Shukla & Umesh Kumar
 
 Change Log:

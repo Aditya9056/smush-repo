@@ -307,7 +307,7 @@ msgid "Service unavailable"
 msgstr ""
 
 #: wp-smushit-pro.php:139 wp-smushit-pro.php:160
-msgid "WP Smush.it PRO:"
+msgid "WP Smush PRO:"
 msgstr ""
 
 #: wp-smushit-pro.php:140
@@ -315,11 +315,11 @@ msgid "<a href=\"#\" onclick=\"%s\">Click here</a> to activate WPMU DEV Dashboar
 msgstr ""
 
 #: wp-smushit-pro.php:147
-msgid "WP Smush.it PRO requires WPMU DEV Dashboard plugin."
+msgid "WP Smush PRO requires WPMU DEV Dashboard plugin."
 msgstr ""
 
 #: wp-smushit-pro.php:147
-msgid "Please install <a href=\"http://premium.wpmudev.org/project/wpmu-dev-dashboard/\" target=\"_blank\">WPMU DEV Dashboard</a> to use WP Smush.it PRO."
+msgid "Please install <a href=\"http://premium.wpmudev.org/project/wpmu-dev-dashboard/\" target=\"_blank\">WPMU DEV Dashboard</a> to use WP Smush PRO."
 msgstr ""
 
 #: wp-smushit-pro.php:160

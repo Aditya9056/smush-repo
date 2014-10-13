@@ -40,10 +40,11 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			$this->current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
 			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
 			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
+			add_filter( 'wp_prepare_attachment_for_js', array( $this, 'insert_image_smush_data' ), '', 3 );
 		}
 
 		/**
-		 * Print column header for Smush.it results in the media library
+		 * Print column header for Smush results in the media library
 		 *
 		 * @param array $defaults The default columns
 		 *
@@ -70,64 +71,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				return;
 			}
 
-			$is_smushed = get_post_meta( $id, "wp-smpro-is-smushed", true );
-
-			// if the image is smushed
-			if ( ! empty( $is_smushed ) ) {
-				// the status
-				$data  = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
-
-				$bytes = isset( $data['stats']['bytes'] ) ? $data['stats']['bytes'] : 0;
-				$percent = isset( $data['stats']['percent'] ) ? $data['stats']['percent'] : 0;
-				$percent = $percent < 0 ? 0 : $percent;
-
-				if ( $bytes == 0 || $percent == 0 ) {
-					$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
-				} elseif ( ! empty( $percent ) && ! empty( $data['stats']['human'] ) ) {
-					$status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $percent, 2, '.', '' ), $data['stats']['human'] );
-				}
-
-				// check if we need to show the resmush button
-				$show_button = $this->show_resmush_button( $id );
-
-				// the button text
-				$button_txt = __( 'Re-smush', WP_SMPRO_DOMAIN );
-			} else {
-				$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
-
-				$is_sent = in_array( $id, $sent_ids );
-
-				if ( $is_sent ) {
-					// the status
-					$status_txt = __( 'Currently smushing', WP_SMPRO_DOMAIN );
-
-					// we need to show the smush button
-					$show_button = $this->show_resmush_button( $id );
-
-					if( !$show_button ) {
-						// the button text
-						$button_txt = '';
-					}else{
-						// the status
-						$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
-
-						// the button text
-						$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
-					}
-				} else {
-
-					// the status
-					$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
-
-					// we need to show the smush button
-					$show_button = true;
-
-					// the button text
-					$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
-				}
-			}
-
-			$this->column_html( $id, $status_txt, $button_txt, $show_button );
+			$this->set_status( $id );
 		}
 
 		/**
@@ -140,27 +84,33 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 *
 		 * @return null
 		 */
-		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true ) {
+		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $echo = true ) {
 			// don't proceed if attachment is not image
 			if ( ! wp_attachment_is_image( $id ) ) {
 				return;
 			}
-			?>
-			<p class="smush-status">
-				<?php echo $status_txt; ?>
-			</p>
-			<?php
+			$html = '
+			<p class="smush-status">'. $status_txt . '</p>';
 			// if we aren't showing the button
 			if ( ! $show_button ) {
-				return;
+				if ( $echo ) {
+					echo $html;
+
+					return;
+				}
 			}
-			?>
+			if( !$echo ) {
+				 $html = '';
+			}
+			$html .= '
 			<button id="wp-smpro-send" class="button">
-                                <span>
-                        <?php echo $button_txt; ?>
-                                </span>
-			</button>
-		<?php
+                <span>'. $button_txt . '</span>
+			</button>';
+			if ( $echo ) {
+				echo $html;
+			} else {
+				return $html;
+			}
 		}
 
 		/**
@@ -184,11 +134,11 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				}
 			}
 
-			if ( $smush_status === '' && !empty($timestamp) ) {
-				if ( $timestamp <= strtotime('-12 hours') ) {
+			if ( $smush_status === '' && ! empty( $timestamp ) ) {
+				if ( $timestamp <= strtotime( '-12 hours' ) ) {
 					$button_show = true;
 				}
-			}else{
+			} else {
 				$button_show = false;
 			}
 
@@ -201,8 +151,10 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		function admin_init() {
 			wp_enqueue_script( 'common' );
 		}
+
 		// Borrowed from http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 		function add_bulk_actions_via_javascript() {
+			global $wp_filter;
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready(function ($) {
@@ -237,6 +189,77 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			exit();
 		}
 
+		/**
+		 * Add all attributes to
+		 */
+		function insert_image_smush_data( $response, $attachment, $meta ) {
+			$response['html'] = trim( $this->set_status($attachment->ID, false) );
+			return $response;
+		}
+
+		function set_status( $id, $echo = true ) {
+			$is_smushed = get_post_meta( $id, "wp-smpro-is-smushed", true );
+
+			// if the image is smushed
+			if ( ! empty( $is_smushed ) ) {
+				// the status
+				$data = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
+
+				$bytes   = isset( $data['stats']['bytes'] ) ? $data['stats']['bytes'] : 0;
+				$percent = isset( $data['stats']['percent'] ) ? $data['stats']['percent'] : 0;
+				$percent = $percent < 0 ? 0 : $percent;
+
+				if ( $bytes == 0 || $percent == 0 ) {
+					$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
+				} elseif ( ! empty( $percent ) && ! empty( $data['stats']['human'] ) ) {
+					$status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $percent, 2, '.', '' ), $data['stats']['human'] );
+				}
+
+				// check if we need to show the resmush button
+				$show_button = $this->show_resmush_button( $id );
+
+				// the button text
+				$button_txt = __( 'Re-smush', WP_SMPRO_DOMAIN );
+			} else {
+				$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
+
+				$is_sent = in_array( $id, $sent_ids );
+
+				if ( $is_sent ) {
+					// the status
+					$status_txt = __( 'Currently smushing', WP_SMPRO_DOMAIN );
+
+					// we need to show the smush button
+					$show_button = $this->show_resmush_button( $id );
+
+					if ( ! $show_button ) {
+						// the button text
+						$button_txt = '';
+					} else {
+						// the status
+						$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
+
+						// the button text
+						$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
+					}
+				} else {
+
+					// the status
+					$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
+
+					// we need to show the smush button
+					$show_button = true;
+
+					// the button text
+					$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
+				}
+			}
+
+			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $echo );
+			if( !$echo ) {
+				return $text;
+			}
+		}
 	}
 
 }

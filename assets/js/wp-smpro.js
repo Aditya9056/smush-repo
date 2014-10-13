@@ -482,5 +482,13 @@
 			element.data('smushitpro', smushitpro);
 		});
 	};
+	_.extend( wp.media.view.AttachmentCompat.prototype, {
+		render:function() {
+			//
+			this.$el.html(this.model.get('html'));
+			this.views.render();
+			return this;
+		}
+	});
 
-})(jQuery);
+})(jQuery, _);

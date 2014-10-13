@@ -97,7 +97,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function screen() {
 			global $admin_page_suffix;
-			$admin_page_suffix = add_media_page( 'WP Smush.it Pro', 'WP Smush.it Pro', 'edit_others_posts', 'wp-smpro-admin', array(
+			$admin_page_suffix = add_media_page( 'WP Smush Pro', 'WP Smush Pro', 'edit_others_posts', 'wp-smpro-admin', array(
 				$this,
 				'ui'
 			) );
@@ -117,7 +117,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// register js
 			// register js
-			wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array( 'jquery' ), WP_SMPRO_VERSION );
+			wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array( 'jquery', 'media-views' ), WP_SMPRO_VERSION );
 			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'wp-smpro' ), WP_SMPRO_VERSION );
 
 			// register css
