@@ -98,7 +98,12 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 
 					return;
 				}else{
-					return $html;
+					if( !$smushed ){
+						$class = ' unsmushed';
+					}else{
+						$class = ' smushed';
+					}
+					return '<div class="smush-wrap'. $class . '">' . $html . '</div>';
 				}
 			}
 			if ( ! $echo ) {
