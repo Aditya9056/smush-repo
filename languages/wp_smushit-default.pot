@@ -181,7 +181,7 @@ msgid "Service unavailable!"
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:646
-msgid "Send smush request"
+msgid "Bulk Smush now!"
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:742

@@ -226,7 +226,7 @@
 			jQuery(config.statsWrap).find('#percent').html( $count_percent );
 			jQuery(config.statsWrap).find('#human').html(config.counts.human);
 
-			if (config.counts.total == fetchCount || config.counts.sent == fetchCount ) {
+			if (config.counts.total == fetchCount ) {
 				jQuery(window).off('beforeunload');
 				$button = jQuery(config.fetchButton);
 
@@ -237,6 +237,18 @@
 				$button.find('span').html(config.msgs.done);
 				$button.attr('id', 'wp-smpro-finished');
 				$button.removeClass('wp-smpro-started');
+				jQuery(config.cancelButton).remove();
+			}else if( config.counts.sent == fetchCount ){
+				jQuery(window).off('beforeunload');
+				$button = jQuery(config.fetchButton);
+
+				// find the spinner ui
+				$spinner = $button.find('.floatingCirclesG');
+				$spinner.remove();
+				$button.find('span').html(config.msgs.bulk_smush_now);
+				$button.attr('id', 'wp-smpro-send');
+				$button.removeClass('wp-smpro-started');
+				$button.removeAttr('disabled');
 				jQuery(config.cancelButton).remove();
 			}
 		};
