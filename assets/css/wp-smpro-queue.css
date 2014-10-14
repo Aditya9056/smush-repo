@@ -2,336 +2,381 @@
 Settings
 */
 ul#wp-smpro-options-wrap {
-        display: block;
-        overflow: auto;
-        margin:0;
+    display: block;
+    overflow: auto;
+    margin: 0;
 }
 
-ul#wp-smpro-options-wrap li{
-        display:inline-block;
-        list-style: none;
-        float:left;
-        margin: 5px 20px 5px 0;
-        padding: 5px 5px 5px 0;
+ul#wp-smpro-options-wrap li {
+    display: inline-block;
+    list-style: none;
+    float: left;
+    margin: 5px 20px 5px 0;
+    padding: 5px 5px 5px 0;
 }
 
-input#wp-smpro-save-settings{
-        margin:15px 0;
+input#wp-smpro-save-settings {
+    margin: 15px 0;
 }
-.smush-notices{
-        margin: 5px 0 15px;
-        border-left: 4px solid #dd3d36;
-        background: #fff;
-        -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
-        box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
-        padding: 1px 12px;
-        overflow:hidden;
+
+.smush-notices {
+    margin: 5px 0 15px;
+    border-left: 4px solid #dd3d36;
+    background: #fff;
+    -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+    padding: 1px 12px;
+    overflow: hidden;
 }
+
 .update.smush-notices {
     border-left: 4px solid #7ad03a;
 }
-.smush-notices h3{
-        font-weight:normal;
+
+.smush-notices h3 {
+    font-weight: normal;
 }
 
 .smush-notices button.button {
-        margin: 5px;
+    margin: 5px;
 }
 
-#fetch-notice{
-        display:none;
+#fetch-notice {
+    display: none;
 }
+
 /*
 Single smush status
 */
-.smush-status.fail{
-        color:#dd3d36;
+
+.smush-wrap {
+    margin-left: 14%;
+    max-width: 60%;
 }
-.smush-status.success{
-        color:#7ad03a;
+
+.smush-wrap.unsmushed .smush-status {
+    display: none;
 }
+
+.smush-wrap #wp-smpro-send {
+    display: none;
+}
+
+.smush-wrap.unsmushed #wp-smpro-send {
+    display: block;
+    margin-top: 15px;
+}
+
+.smush-status.fail {
+    color: #dd3d36;
+}
+
+.smush-status.success {
+    color: #7ad03a;
+}
+
 /*
 Smush button transformation
 */
-.button.wp-smpro-started{
-        padding:0 10px 1px 10px;
-}
-.button.wp-smpro-started .floatingCirclesG{
-        float:left;
+.button.wp-smpro-started {
+    padding: 0 10px 1px 10px;
 }
 
-.button#wp-smpro-finished,.button#wp-smpro-finished:disabled,.button#wp-smpro-finished[disabled]{
-        color:#fff!important;
-        background: #7ad03a!important;
-        border-color: #619f6b!important;
-        -webkit-box-shadow: inset 0 1px 0 rgba(0,207,33,.5),0 1px 0 rgba(0,0,0,.15)!important;
-        box-shadow: inset 0 1px 0 rgba(0,207,33,.5),0 1px 0 rgba(0,0,0,.15)!important;
+.button.wp-smpro-started .floatingCirclesG {
+    float: left;
 }
+
+.button#wp-smpro-finished, .button#wp-smpro-finished:disabled, .button#wp-smpro-finished[disabled] {
+    color: #fff !important;
+    background: #7ad03a !important;
+    border-color: #619f6b !important;
+    -webkit-box-shadow: inset 0 1px 0 rgba(0, 207, 33, .5), 0 1px 0 rgba(0, 0, 0, .15) !important;
+    box-shadow: inset 0 1px 0 rgba(0, 207, 33, .5), 0 1px 0 rgba(0, 0, 0, .15) !important;
+}
+
 .button#wp-smpro-cancel {
-        margin-left: 10px;
+    margin-left: 10px;
 }
+
 /*
 Loader
 */
-#wp-smpro-spinner-wrap{
-        display:none;
-}
-.floatingCirclesG{
-        position:relative;
-        width:28px;
-        height:28px;
-        -moz-transform:scale(0.6);
-        -webkit-transform:scale(0.6);
-        -ms-transform:scale(0.6);
-        -o-transform:scale(0.6);
-        transform:scale(0.6);
+#wp-smpro-spinner-wrap {
+    display: none;
 }
 
-.f_circleG{
-        position:absolute;
-        background-color:#FFFFFF;
-        height:5px;
-        width:5px;
-        -moz-border-radius:3px;
-        -moz-animation-name:f_fadeG;
-        -moz-animation-duration:0.8s;
-        -moz-animation-iteration-count:infinite;
-        -moz-animation-direction:linear;
-        -webkit-border-radius:3px;
-        -webkit-animation-name:f_fadeG;
-        -webkit-animation-duration:0.8s;
-        -webkit-animation-iteration-count:infinite;
-        -webkit-animation-direction:linear;
-        -ms-border-radius:3px;
-        -ms-animation-name:f_fadeG;
-        -ms-animation-duration:0.8s;
-        -ms-animation-iteration-count:infinite;
-        -ms-animation-direction:linear;
-        -o-border-radius:3px;
-        -o-animation-name:f_fadeG;
-        -o-animation-duration:0.8s;
-        -o-animation-iteration-count:infinite;
-        -o-animation-direction:linear;
-        border-radius:3px;
-        animation-name:f_fadeG;
-        animation-duration:0.8s;
-        animation-iteration-count:infinite;
-        animation-direction:linear;
+.floatingCirclesG {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    -moz-transform: scale(0.6);
+    -webkit-transform: scale(0.6);
+    -ms-transform: scale(0.6);
+    -o-transform: scale(0.6);
+    transform: scale(0.6);
 }
 
-#frotateG_01{
-        left:0;
-        top:11px;
-        -moz-animation-delay:0.3s;
-        -webkit-animation-delay:0.3s;
-        -ms-animation-delay:0.3s;
-        -o-animation-delay:0.3s;
-        animation-delay:0.3s;
+.f_circleG {
+    position: absolute;
+    background-color: #FFFFFF;
+    height: 5px;
+    width: 5px;
+    -moz-border-radius: 3px;
+    -moz-animation-name: f_fadeG;
+    -moz-animation-duration: 0.8s;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-direction: linear;
+    -webkit-border-radius: 3px;
+    -webkit-animation-name: f_fadeG;
+    -webkit-animation-duration: 0.8s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-direction: linear;
+    -ms-border-radius: 3px;
+    -ms-animation-name: f_fadeG;
+    -ms-animation-duration: 0.8s;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-direction: linear;
+    -o-border-radius: 3px;
+    -o-animation-name: f_fadeG;
+    -o-animation-duration: 0.8s;
+    -o-animation-iteration-count: infinite;
+    -o-animation-direction: linear;
+    border-radius: 3px;
+    animation-name: f_fadeG;
+    animation-duration: 0.8s;
+    animation-iteration-count: infinite;
+    animation-direction: linear;
 }
 
-#frotateG_02{
-        left:3px;
-        top:3px;
-        -moz-animation-delay:0.4s;
-        -webkit-animation-delay:0.4s;
-        -ms-animation-delay:0.4s;
-        -o-animation-delay:0.4s;
-        animation-delay:0.4s;
+#frotateG_01 {
+    left: 0;
+    top: 11px;
+    -moz-animation-delay: 0.3s;
+    -webkit-animation-delay: 0.3s;
+    -ms-animation-delay: 0.3s;
+    -o-animation-delay: 0.3s;
+    animation-delay: 0.3s;
 }
 
-#frotateG_03{
-        left:11px;
-        top:0;
-        -moz-animation-delay:0.5s;
-        -webkit-animation-delay:0.5s;
-        -ms-animation-delay:0.5s;
-        -o-animation-delay:0.5s;
-        animation-delay:0.5s;
+#frotateG_02 {
+    left: 3px;
+    top: 3px;
+    -moz-animation-delay: 0.4s;
+    -webkit-animation-delay: 0.4s;
+    -ms-animation-delay: 0.4s;
+    -o-animation-delay: 0.4s;
+    animation-delay: 0.4s;
 }
 
-#frotateG_04{
-        right:3px;
-        top:3px;
-        -moz-animation-delay:0.6s;
-        -webkit-animation-delay:0.6s;
-        -ms-animation-delay:0.6s;
-        -o-animation-delay:0.6s;
-        animation-delay:0.6s;
+#frotateG_03 {
+    left: 11px;
+    top: 0;
+    -moz-animation-delay: 0.5s;
+    -webkit-animation-delay: 0.5s;
+    -ms-animation-delay: 0.5s;
+    -o-animation-delay: 0.5s;
+    animation-delay: 0.5s;
 }
 
-#frotateG_05{
-        right:0;
-        top:11px;
-        -moz-animation-delay:0.7s;
-        -webkit-animation-delay:0.7s;
-        -ms-animation-delay:0.7s;
-        -o-animation-delay:0.7s;
-        animation-delay:0.7s;
+#frotateG_04 {
+    right: 3px;
+    top: 3px;
+    -moz-animation-delay: 0.6s;
+    -webkit-animation-delay: 0.6s;
+    -ms-animation-delay: 0.6s;
+    -o-animation-delay: 0.6s;
+    animation-delay: 0.6s;
 }
 
-#frotateG_06{
-        right:3px;
-        bottom:3px;
-        -moz-animation-delay:0.8s;
-        -webkit-animation-delay:0.8s;
-        -ms-animation-delay:0.8s;
-        -o-animation-delay:0.8s;
-        animation-delay:0.8s;
+#frotateG_05 {
+    right: 0;
+    top: 11px;
+    -moz-animation-delay: 0.7s;
+    -webkit-animation-delay: 0.7s;
+    -ms-animation-delay: 0.7s;
+    -o-animation-delay: 0.7s;
+    animation-delay: 0.7s;
 }
 
-#frotateG_07{
-        left:11px;
-        bottom:0;
-        -moz-animation-delay:0.9s;
-        -webkit-animation-delay:0.9s;
-        -ms-animation-delay:0.9s;
-        -o-animation-delay:0.9s;
-        animation-delay:0.9s;
+#frotateG_06 {
+    right: 3px;
+    bottom: 3px;
+    -moz-animation-delay: 0.8s;
+    -webkit-animation-delay: 0.8s;
+    -ms-animation-delay: 0.8s;
+    -o-animation-delay: 0.8s;
+    animation-delay: 0.8s;
 }
 
-#frotateG_08{
-        left:3px;
-        bottom:3px;
-        -moz-animation-delay:1s;
-        -webkit-animation-delay:1s;
-        -ms-animation-delay:1s;
-        -o-animation-delay:1s;
-        animation-delay:1s;
+#frotateG_07 {
+    left: 11px;
+    bottom: 0;
+    -moz-animation-delay: 0.9s;
+    -webkit-animation-delay: 0.9s;
+    -ms-animation-delay: 0.9s;
+    -o-animation-delay: 0.9s;
+    animation-delay: 0.9s;
 }
 
-@-moz-keyframes f_fadeG{
-        0%{
-                background-color:#000000}
-
-        100%{
-                background-color:#FFFFFF}
-
+#frotateG_08 {
+    left: 3px;
+    bottom: 3px;
+    -moz-animation-delay: 1s;
+    -webkit-animation-delay: 1s;
+    -ms-animation-delay: 1s;
+    -o-animation-delay: 1s;
+    animation-delay: 1s;
 }
 
-@-webkit-keyframes f_fadeG{
-        0%{
-                background-color:#000000}
+@-moz-keyframes f_fadeG {
+    0% {
+        background-color: #000000
+    }
 
-        100%{
-                background-color:#FFFFFF}
+    100% {
+        background-color: #FFFFFF
+    }
 
 }
 
-@-ms-keyframes f_fadeG{
-        0%{
-                background-color:#000000}
+@-webkit-keyframes f_fadeG {
+    0% {
+        background-color: #000000
+    }
 
-        100%{
-                background-color:#FFFFFF}
-
-}
-
-@-o-keyframes f_fadeG{
-        0%{
-                background-color:#000000}
-
-        100%{
-                background-color:#FFFFFF}
+    100% {
+        background-color: #FFFFFF
+    }
 
 }
 
-@keyframes f_fadeG{
-        0%{
-                background-color:#000000}
+@-ms-keyframes f_fadeG {
+    0% {
+        background-color: #000000
+    }
 
-        100%{
-                background-color:#FFFFFF}
+    100% {
+        background-color: #FFFFFF
+    }
+
+}
+
+@-o-keyframes f_fadeG {
+    0% {
+        background-color: #000000
+    }
+
+    100% {
+        background-color: #FFFFFF
+    }
+
+}
+
+@keyframes f_fadeG {
+    0% {
+        background-color: #000000
+    }
+
+    100% {
+        background-color: #FFFFFF
+    }
 
 }
 
 /*
 Progressbar ui
 */
-#progress-ui{
-        width: 80%;
-        margin-bottom: 20px;
+#progress-ui {
+    width: 80%;
+    margin-bottom: 20px;
 }
 
 #progress-ui #wp-smpro-progress-wrap {
-        height: 20px;
-        border: 1px solid #0074a2;
-        border-radius: 10px;
-        overflow: hidden;
-        position:relative;
+    height: 20px;
+    border: 1px solid #0074a2;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
 }
 
-#progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar{
-        height:20px;
-        position:absolute;
-        width:100%;
+#progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar {
+    height: 20px;
+    position: absolute;
+    width: 100%;
 }
-#progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar div{
-        height:20px;
-        border-radius: 10px;
+
+#progress-ui #wp-smpro-progress-wrap .wp-smpro-progressbar div {
+    height: 20px;
+    border-radius: 10px;
 }
-#progress-ui #wp-smpro-progress-wrap #wp-smpro-fetched-progress div{
-        background-color: #7ad03a;
+
+#progress-ui #wp-smpro-progress-wrap #wp-smpro-fetched-progress div {
+    background-color: #7ad03a;
 }
-#progress-ui #wp-smpro-progress-wrap #wp-smpro-sent-progress div{
-        background-color: #2ea2cc;
+
+#progress-ui #wp-smpro-progress-wrap #wp-smpro-sent-progress div {
+    background-color: #2ea2cc;
 }
 
 div#wp-smpro-progress-status {
-        overflow: hidden;
+    overflow: hidden;
 }
 
 #wp-smpro-progress-status p {
-        float: left;
-        width: 50%;
+    float: left;
+    width: 50%;
 }
 
-div#wp-smpro-progress-status p::before { 
-        content:"c";
-        background-color:#7ad03a;
-        color:#7ad03a;
-        display:inline-block;
-        width:20px;
-        margin-right:10px;
+div#wp-smpro-progress-status p::before {
+    content: "c";
+    background-color: #7ad03a;
+    color: #7ad03a;
+    display: inline-block;
+    width: 20px;
+    margin-right: 10px;
 }
 
 div#wp-smpro-progress-status p#sent-status::before {
-        background-color:#2ea2cc;
-        color:#2ea2cc;  
+    background-color: #2ea2cc;
+    color: #2ea2cc;
 }
 
 p#wp-smpro-compression {
-        text-align: center;
-        font-size: 1.1em;
-        line-height: 20px;
-        position:absolute;
-        margin:0;
-        width:100%;
+    text-align: center;
+    font-size: 1.1em;
+    line-height: 20px;
+    position: absolute;
+    margin: 0;
+    width: 100%;
 }
 
-p#wp-smpro-compression span{
-        font-weight:bold;
+p#wp-smpro-compression span {
+    font-weight: bold;
 }
+
 /* API Status */
 
 .api-status {
-        background: none repeat scroll 0 0 #7ad03a;
-        border-radius: 50%;
-        color: transparent;
-        cursor: pointer;
-        display: inline-block;
-        font-size: 10px;
-        height: 10px;
-        line-height: 1;
-        margin-top: 5px;
-        overflow: hidden;
-        text-align: center;
-        text-indent: -9999px;
-        width: 10px;
+    background: none repeat scroll 0 0 #7ad03a;
+    border-radius: 50%;
+    color: transparent;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 10px;
+    height: 10px;
+    line-height: 1;
+    margin-top: 5px;
+    overflow: hidden;
+    text-align: center;
+    text-indent: -9999px;
+    width: 10px;
 }
+
 .api-status-text {
     font-size: 10px;
     margin: 0 0 0 5px;
 }
+
 .api-status.not-connected {
-        background: none repeat scroll 0 0 #D64840;
+    background: none repeat scroll 0 0 #D64840;
 }

@@ -113,10 +113,14 @@
 
 				// re-enable all the buttons
 				$button.prop('disabled', false);
+				//For grid view
+				jQuery('.smush-wrap').removeClass('unsmushed');
 
 			} else {
 				$status_div.addClass('success');
 				$button.remove();
+				//For grid view
+				jQuery('.smush-wrap').removeClass('unsmushed');
 			}
 
 

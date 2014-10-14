@@ -84,32 +84,39 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 *
 		 * @return null
 		 */
-		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $echo = true ) {
+		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true ) {
 			// don't proceed if attachment is not image
 			if ( ! wp_attachment_is_image( $id ) ) {
 				return;
 			}
 			$html = '
-			<p class="smush-status">'. $status_txt . '</p>';
+			<p class="smush-status">' . $status_txt . '</p>';
 			// if we aren't showing the button
 			if ( ! $show_button ) {
 				if ( $echo ) {
 					echo $html;
 
 					return;
+				}else{
+					return $html;
 				}
 			}
-			if( !$echo ) {
-				 $html = '';
-			}
-			$html .= '
-			<button id="wp-smpro-send" class="button">
-                <span>'. $button_txt . '</span>
-			</button>';
-			if ( $echo ) {
-				echo $html;
+			if ( ! $echo ) {
+				$html .= '
+				<button id="wp-smpro-send" class="button button-primary">
+	                <span>' . $button_txt . '</span>
+				</button>';
+				if( !$smushed ){
+					$class = ' unsmushed';
+				}else{
+					$class = ' smushed';
+				}
+				return '<div class="smush-wrap'. $class . '">' . $html . '</div>';
 			} else {
-				return $html;
+				$html .= '<button id="wp-smpro-send" class="button">
+                    <span>' . $button_txt . '</span>
+				</button>';
+				echo $html;
 			}
 		}
 
@@ -193,7 +200,8 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 * Add all attributes to
 		 */
 		function insert_image_smush_data( $response, $attachment, $meta ) {
-			$response['html'] = trim( $this->set_status($attachment->ID, false) );
+			$response['html'] = trim( $this->set_status( $attachment->ID, false ) );
+
 			return $response;
 		}
 
@@ -255,8 +263,8 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				}
 			}
 
-			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $echo );
-			if( !$echo ) {
+			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $is_smushed, $echo );
+			if ( ! $echo ) {
 				return $text;
 			}
 		}
