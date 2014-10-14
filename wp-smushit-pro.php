@@ -59,10 +59,6 @@ define( 'WP_SMPRO_DIR', plugin_dir_path( __FILE__ ) );
  * The plugin's url for easy access to files.
  */
 define( 'WP_SMPRO_URL', plugin_dir_url( __FILE__ ) );
-/**
- * The plugin's url for easy access to files.
- */
-define( 'WP_SMPRO_JS', WP_SMPRO_URL. 'assets/js/' );
 
 /**
  * The text domain for translation.

@@ -400,7 +400,7 @@
 
 		elem.on('click', config.sendButton, function (e) {
 			// prevent the default action
-			e.preventDefault();
+			//e.preventDefault();
 			buttonProgress($(this), config.msgs.sending);
 			if (!config.isSingle) {
 				sentCount = config.counts.sent;
@@ -409,11 +409,14 @@
 				// get the row
 				var $nearest_tr = $(this).closest('tr').first();
 
-				// get the row's DOM id
-				var $elem_id = $nearest_tr.attr('id');
-
-				// get the attachment id from DOM id
-				var $id = $elem_id.replace(/[^0-9\.]+/g, '');
+				if( $nearest_tr.length !== 0 ) {
+					// get the row's DOM id
+					var $elem_id = $nearest_tr.attr('id');
+					// get the attachment id from DOM id
+					var $id = $elem_id.replace(/[^0-9\.]+/g, '');
+				}else{
+					var $id = jQuery(this).parents().eq(4).data('id');
+				}
 
 				send($id);
 			}
@@ -492,3 +495,17 @@
 	});
 
 })(jQuery, _);
+jQuery(document).ready(function() {
+	jQuery('body').on('click', '.attachment-info #wp-smpro-send', function () {
+		/**
+		 * Handle the media library button click
+		 */
+		jQuery('.attachment-info .attachment-compat').smushitpro({
+			'msgs'          : wp_smpro_msgs,
+			'counts'        : wp_smpro_counts,
+			'ajaxurl'      : ajaxurl,
+			'isSingle'     : true
+		});
+		jQuery('.attachment-info .attachment-compat #wp-smpro-send').click();
+	});
+});
