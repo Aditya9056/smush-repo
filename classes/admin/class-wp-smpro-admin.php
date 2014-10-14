@@ -88,6 +88,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'auto'        => __( 'Auto-Smush images on upload', WP_SMPRO_DOMAIN ),
 				'remove_meta' => __( 'Remove EXIF data from JPEGs', WP_SMPRO_DOMAIN ),
 				'progressive' => __( 'Progressive optimization for JPEGs', WP_SMPRO_DOMAIN ),
+				'debug_mode' => __( 'Enable debug mode', WP_SMPRO_DOMAIN ),
 //				'gif_to_png'  => __( 'Convert GIF to PNG', WP_SMPRO_DOMAIN ),
 			);
 		}
@@ -437,10 +438,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// default value
 			$opt_val = intval( get_option( $opt_name, constant( $const_name ) ) );
-
+			if( $key == 'debug_mode' ) {
+				$checked = checked( $opt_val, 0, false );
+			}else{
+				$checked = checked( $opt_val, 1, false );
+			}
 			// return html
 			return sprintf(
-				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, 1, false ), $text
+				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), $checked, $text
 			);
 		}
 
