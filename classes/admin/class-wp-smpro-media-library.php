@@ -99,7 +99,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 					return;
 				}else{
 					if( !$smushed ){
-						$class = ' unsmushed';
+						$class = ' currently-smushing';
 					}else{
 						$class = ' smushed';
 					}

@@ -57,7 +57,9 @@ Single smush status
 .smush-wrap.unsmushed .smush-status {
     display: none;
 }
-
+.currently-smushing .smush-status {
+    color: #7ad03a;
+}
 .smush-wrap #wp-smpro-send {
     display: none;
 }

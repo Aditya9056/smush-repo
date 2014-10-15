@@ -154,7 +154,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'fetching'  => __( 'Fetching smushed images', WP_SMPRO_DOMAIN ),
 				'resmush'   => __( 'Re-smush', WP_SMPRO_DOMAIN ),
 				'smush_now' => __( 'Smush now!', WP_SMPRO_DOMAIN ),
-				'bulk_smush_now' => __( 'Bulk Smush now!', WP_SMPRO_DOMAIN ),
+				'bulk_smush_now' => __( 'Send Smush Request', WP_SMPRO_DOMAIN ),
 				'done'      => __( 'All done!', WP_SMPRO_DOMAIN ),
 				'no_leave'  => __( 'Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again.', WP_SMPRO_DOMAIN ),
 			);
@@ -684,7 +684,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					$button['disabled'] = ' disabled="disabled"';
 					$button['cancel']   = ' disabled="disabled"';
 				} else {
-					$button['text'] = __( 'Bulk Smush now!', WP_SMPRO_DOMAIN );
+					$button['text'] = __( 'Send Smush Request', WP_SMPRO_DOMAIN );
 
 					$button['disabled'] = false;
 					$button['cancel']   = ' disabled="disabled"';

@@ -431,7 +431,7 @@
 					// get the attachment id from DOM id
 					var $id = $elem_id.replace(/[^0-9\.]+/g, '');
 				}else{
-					var $id = jQuery(this).parents().eq(4).data('id');
+					var $id = jQuery(this).parents().eq(5).data('id');
 				}
 
 				send($id);
