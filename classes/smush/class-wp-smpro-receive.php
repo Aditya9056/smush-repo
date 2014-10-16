@@ -148,7 +148,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$to = get_site_option( 'admin_email' );
 
-			$subject = sprintf( __( "%s: Smush Pro bulk smushing completed", WP_SMPRO_DOMAIN ), get_site_option( 'blogname' ) );
+			$subject = sprintf( __( "%s: Smush Pro bulk smushing completed", WP_SMPRO_DOMAIN ), get_option( 'blogname' ) );
 
 			$message = array();
 
