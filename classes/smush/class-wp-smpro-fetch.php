@@ -198,7 +198,8 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 */
 		private function replace_files( $zip ) {
 			WP_Filesystem();
-			if ( unzip_file( $zip, $this->basedir ) ) {
+			$unzipped = unzip_file( $zip, $this->basedir );
+			if ( $unzipped ) {
 				// Now that the zip file has been used, destroy it
 				if( file_exists($zip)) {
 					unlink( $zip );
