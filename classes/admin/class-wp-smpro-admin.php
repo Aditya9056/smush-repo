@@ -117,7 +117,16 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->setup_counts();
 
 			// register js
-			wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array( 'jquery', 'media-views' ), WP_SMPRO_VERSION );
+			if( !empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid') {
+				wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array(
+						'jquery',
+						'media-views'
+					), WP_SMPRO_VERSION );
+			}else{
+				wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array(
+					'jquery', 'underscore'
+				), WP_SMPRO_VERSION );
+			}
 			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'wp-smpro' ), WP_SMPRO_VERSION );
 
 			// register css
@@ -156,6 +165,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'smush_now' => __( 'Smush now!', WP_SMPRO_DOMAIN ),
 				'bulk_smush_now' => __( 'Send Smush Request', WP_SMPRO_DOMAIN ),
 				'done'      => __( 'All done!', WP_SMPRO_DOMAIN ),
+				'timeout'      => __( 'It is taking too long for the requests, Ajax timed out.', WP_SMPRO_DOMAIN ),
 				'no_leave'  => __( 'Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again.', WP_SMPRO_DOMAIN ),
 			);
 
@@ -438,14 +448,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// default value
 			$opt_val = intval( get_option( $opt_name, constant( $const_name ) ) );
-			if( $key == 'debug_mode' ) {
-				$checked = checked( $opt_val, 0, false );
-			}else{
-				$checked = checked( $opt_val, 1, false );
-			}
+
 			// return html
 			return sprintf(
-				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), $checked, $text
+				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, 1, false ), $text
 			);
 		}
 

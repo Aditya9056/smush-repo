@@ -122,8 +122,6 @@
 				//For grid view
 				jQuery('.smush-wrap').removeClass('unsmushed');
 			}
-
-
 			// done!
 			return;
 		};
@@ -138,17 +136,18 @@
 				type: "GET",
 				url: config.send_url,
 				data: $data,
-				timeout: 60000,
+				timeout: 90000,
 				dataType: 'json'
 			}).done(function (response) {
-				if (parseInt(response.status_code) > 0) {
-					sendSuccess(response);
-				} else {
+				if( typeof response.error !== 'undefined' ) {
 					sendFailure(response);
+				}else {
+					sendSuccess(response);
 				}
 				return;
-			}).fail(function () {
+			}).fail(function (jqXHR, textStatus, errorThrown) {
 				response = {};
+				response.error = config.msgs.timeout;
 				sendFailure(response);
 				return;
 			});
@@ -158,8 +157,9 @@
 
 		var sendSuccess = function ($response) {
 			if (!config.isSingle) {
-				sendProgress($response.sent_count);
+				sendProgress($response.success.sent_count);
 			}
+			$msg = $response.debug ? $response.success.status_message + '<br />' + $response.debug : $response.success.status_message;
 			var msgvar = {
 				'msg': 'update',
 				'str': $response.status_message,
@@ -176,9 +176,11 @@
 				$response = {'status_message': config.msgs.send_fail};
 			}
 
+			$msg = $response.debug ? $response.error + '<br />' + $response.debug : $response.error;
+
 			var msgvar = {
 				'msg': 'fail',
-				'str': $response.status_message,
+				'str': $msg,
 				'err': true
 			};
 
@@ -258,7 +260,7 @@
 				type: "GET",
 				data: {attachment_id: $id},
 				url: config.fetch_url,
-				timeout: 60000
+				timeout: 90000
 			}).done(function (response) {
 				response = jQuery.parseJSON(response);
 				var $is_fetched = response.success;
@@ -272,8 +274,12 @@
 						'err': true
 					});
 				}
-			}).fail(function () {
-
+			}).fail(function (jqXHR, textStatus, errorThrown) {
+				response = {};
+				console.log(errorThrown);
+				response.error = config.msgs.timeout;
+				sendFailure(response);
+				return;
 			});
 		};
 
@@ -416,7 +422,7 @@
 
 		elem.on('click', config.sendButton, function (e) {
 			// prevent the default action
-			//e.preventDefault();
+			e.preventDefault();
 			buttonProgress($(this), config.msgs.sending);
 			if (!config.isSingle) {
 				sentCount = config.counts.sent;
@@ -501,14 +507,16 @@
 			element.data('smushitpro', smushitpro);
 		});
 	};
-	_.extend( wp.media.view.AttachmentCompat.prototype, {
-		render:function() {
-			//
-			this.$el.html(this.model.get('html'));
-			this.views.render();
-			return this;
-		}
-	});
+	if( typeof wp !== 'undefined' ) {
+		_.extend(wp.media.view.AttachmentCompat.prototype, {
+			render: function () {
+				//
+				this.$el.html(this.model.get('html'));
+				this.views.render();
+				return this;
+			}
+		});
+	}
 
 })(jQuery, _);
 jQuery(document).ready(function() {

@@ -137,13 +137,6 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				}
 			}
 
-			// are we debugging, here?
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {
-				define( 'WP_SMPRO_DEBUG', true ); // removing from options
-			} else {
-				define( 'WP_SMPRO_DEBUG', false );
-			}
-
 			if ( ! defined( 'WP_SMPRO_REQUEST_LIMIT' ) ) {
 				define( 'WP_SMPRO_REQUEST_LIMIT', 100 );
 			}

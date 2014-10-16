@@ -19,6 +19,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 	 */
 	class WpSmProSend {
 		var $api_connected;
+		var $debug;
 
 		/**
 		 * Constructor.
@@ -30,11 +31,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// for ajax based smushing through bulk UI
 			add_action( 'wp_ajax_wp_smpro_send', array( $this, 'ajax_send' ) );
 
+			//Debug variable
+			$this->debug = get_option( 'wp-smpro-debug_mode', false );
+
 			if ( WP_SMPRO_AUTO ) {
 				// add automatic smushing on upload
 				add_filter( 'wp_generate_attachment_metadata', array( $this, 'auto_smush' ), 10, 2 );
 			}
-			$this->api_connected = get_transient('api_connected');
+			$this->api_connected = get_transient( 'api_connected' );
 		}
 
 		function auto_smush( $metadata, $attachment_id ) {
@@ -66,8 +70,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			//Check API Status
 			if ( ! $this->api_connected ) {
-				$response['status_code']    = 0;
-				$response['status_message'] = __( "API not available", WP_SMPRO_DOMAIN );
+				$response['error'] = __( 'Oh Snap! Seems like Smush Pro server is not reachable, you can try back in some time.', WP_SMPRO_DOMAIN );
 				// print out the response
 				echo json_encode( $response );
 
@@ -80,25 +83,25 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( empty( $attachment_id ) ) {
 				$attachment_id = false;
 			}
-			$sent = $this->send_request( $attachment_id );
+			$response = $this->send_request( $attachment_id );
 
-			if ( ! $sent ) {
-				$response['status_code']    = 0;
-				$response['status_message'] = __( 'Sending failed. Please try again later', WP_SMPRO_DOMAIN );
+			if( !empty( $response['error'] ) ) {
+				echo json_encode( $response );
+				die();
+			}
+
+			if ( empty( $response['updated_count'] ) || ! $response['updated_count'] ) {
+				$response['error'] = __( 'Sending failed. Please try again later', WP_SMPRO_DOMAIN );
 
 				echo json_encode( $response );
 				die();
 			}
 
-			if ( is_wp_error( $sent ) ) {
-				echo json_encode( $this->wperror_tojs( $sent ) );
-				die();
-			}
-			$status_message = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing is finished.", WP_SMPRO_DOMAIN ), $sent, get_site_option( 'admin_email' ) ) : __( "Image was sent for smushing", WP_SMPRO_DOMAIN );
-			$response['status_code']    = 1;
-			$response['count']          = $sent;
-			$response['sent_count']     = count( get_site_option( WP_SMPRO_PREFIX . 'sent-ids', '', false ) ); //Fetch from site option
-			$response['status_message'] = $status_message;
+			$status_message             = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing is finished.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_site_option( 'admin_email' ) ) : __( "Image was sent for smushing", WP_SMPRO_DOMAIN );
+			$response['success']['status_code']    = 1;
+			$response['success']['count']          = $response['updated_count'];
+			$response['success']['sent_count']     = count( get_site_option( WP_SMPRO_PREFIX . 'sent-ids', '', false ) ); //Fetch from site option
+			$response['success']['status_message'] = $status_message;
 			echo json_encode( $response );
 			// wp_ajax wants us to...
 			die();
@@ -160,42 +163,46 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			 * }
 			 */
 			// formulate the request data as shown in the comment above
-			$request_data = $this->form_request_data( $attachment_id, $metadata );
+			$response = $this->form_request_data( $attachment_id, $metadata );
 
-			// get the token out
-			$token = $request_data->token;
-
-			// get the sent ids, for our processing
-			$sent_ids = !empty( $request_data->sent_ids ) ? $request_data->sent_ids : '';
-			// remove them from the request object
-			unset( $request_data->sent_ids );
-			// post the request and get the response
-			$response = $this->_post( $request_data );
-
-			// if thre was an error, return it
-			if ( is_wp_error( $response ) ) {
-				// destroy the large request_data from memory
-				unset( $request_data );
-
+			if( !empty( $response['error'] ) ) {
 				return $response;
 			}
+			// get the token out
+			$token = $response['request_data']->token;
+
+			// get the sent ids, for our processing
+			$sent_ids = ! empty( $response['request_data']->sent_ids ) ? $response['request_data']->sent_ids : '';
+
+			// remove them from the request object
+			unset( $response['request_data']->sent_ids );
+
+			// post the request and get the response
+			$response = $this->_post( $response['request_data'] );
 
 			// destroy the large request_data from memory
 			unset( $request_data );
 
-			// process the response
-			$updated = $this->process_response( $response, $token, $sent_ids );
+			// if thre was an error, return it
+			if ( $response['error'] != '' ) {
 
-			if ( $updated ) {
+				return $response;
+			}
+
+			// process the response
+			$response = $this->process_response( $response, $token, $sent_ids );
+
+			if ( ! empty( $response['updated'] ) && $response['updated'] ) {
 				$updated_count = count( $sent_ids );
 			}
 
 			// destroy all vars that we don't need
-			unset( $token, $response, $sent_ids );
+			unset( $token, $sent_ids );
+			$response['updated_count'] = $updated_count;
 
 			// return the success status of update option
 			// otherwise all this was a waste since we won't know how to process further
-			return $updated_count;
+			return $response;
 		}
 
 		/**
@@ -207,18 +214,39 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @return boolean
 		 */
 		private function process_response( $response, $token, $sent_ids ) {
+
+			// otherwise, we received a proper response from the service
+			$data = json_decode(
+				wp_remote_retrieve_body(
+					$response['api']
+				)
+			);
+			if( $this->debug ) {
+				$response['debug'] = $response['debug'] . '<br /> Request sent to API. ';
+			}
 			// request was successfully received
-			if ( $response->success ) {
+			if ( $data->success ) {
+				if( $this->debug ) {
+					$response['debug'] = $response['debug'] . '<br /> Request was successful ';
+				}
 				// get the unique request id issued by smush service
-				$request_id = $response->request_id;
+				$request_id = $data->request_id;
 
 				$updated = $this->update_options( $request_id, $token, $sent_ids );
 //				$updated = true;
 			} else {
-				$updated = false;
+				$updated           = false;
+				if( $this->debug ) {
+					$response['debug'] = $response['debug'] . '<br /> No response from server ' . json_encode( $data );
+				}
 			}
 
-			return $updated;
+			if( $this->debug ) {
+				$response['debug'] = $response['debug'] . '<br /> Updated request details in database.';
+			}
+			$response['updated'] = $updated;
+
+			return $response;
 		}
 
 		/**
@@ -299,7 +327,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			if ( is_array( $sent_ids ) ) {
 				// update the sent ids
-                $update = update_site_option(WP_SMPRO_PREFIX.'sent-ids', $sent_ids);
+				$update = update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
+
 //				$update = true;
 
 				return boolval( $update );
@@ -319,6 +348,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// instantiate
 			$request_data = new stdClass();
+
+			//Response
+			$response = array();
 
 			// add the callback url
 			$request_data->callback_url = $this->form_callback_url();
@@ -340,9 +372,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$request_data = $this->add_attachment_data( $request_data, $attachment_id, $path_base['basedir'], $metadata );
 
 			unset( $path_base );
+			if ( empty( $request_data ) ) {
+				$reponse['error'] = __( "We couldn't find any attachment data to send.", WP_SMPRO_DOMAIN );
+			} else {
+				$response['request_data'] = $request_data;
+			}
 
 			// return the formed request data
-			return $request_data;
+			return $response;
 		}
 
 		/**
@@ -550,7 +587,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// check large
 			foreach ( $metadata['sizes'] as $size_key => $size_data ) {
-				$filenames[$size_key] = $size_data['file'];
+				$filenames[ $size_key ] = $size_data['file'];
 			}
 
 			// if there's no large size, the full is the large size
@@ -581,33 +618,27 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response = $this->_post_request( $request_data );
 
 			// validate response
-			if ( ! $response || is_wp_error( $response ) ) {
-				unset( $response, $request_data );
+			if ( ! $response['api'] || is_wp_error( $response['api'] ) ) {
+				unset( $request_data );
+				$response['error'] = __( 'Sorry, we were unable to send the request, as the site was not able to communicate with Smush Pro server.', WP_SMPRO_DOMAIN );
 
-				return new WP_Error( 'failed', __( 'Request failed', WP_SMPRO_DOMAIN ) );
+				return $response;
 			}
 
 
 			// if there was an http error
-			if ( empty( $response['response']['code'] ) || $response['response']['code'] != 200 ) {
+			if ( empty( $response['api']['response']['code'] ) || $response['api']['response']['code'] != 200 ) {
 				unset( $response, $request_data );
 
-				//Give a error
-				return new WP_Error( 'failed', __( 'Service unavailable', WP_SMPRO_DOMAIN ) );
+				$response['error'] = __( 'Oh Snap! Seems like Smush Pro server is not reachable, you can try back in some time.', WP_SMPRO_DOMAIN );
+
+				return $response;
 			}
 
-			// otherwise, we received a proper response from the service
-			$data = json_decode(
-				wp_remote_retrieve_body(
-					$response
-				)
-			);
-
-
-			unset( $response, $request_data );
+			unset( $request_data );
 
 			// presenting service response
-			return $data;
+			return $response;
 		}
 
 		/**
@@ -623,13 +654,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				return false;
 			}
 
+			$request_data = json_encode( $request_data );
 
-			if ( defined( WP_SMPRO_DEBUG ) && WP_SMPRO_DEBUG ) {
-				echo "DEBUG: Calling API: [" . $request_data . "]<br />";
+			if ( $this->debug ) {
+				$response['debug'] = "DEBUG: Calling API: [" . $request_data . "]<br />";
 			}
 			$req_args = array(
 				'body'       => array(
-					'json' => json_encode( $request_data )
+					'json' => $request_data
 				),
 				'user-agent' => WP_SMPRO_USER_AGENT,
 				'timeout'    => WP_SMPRO_TIMEOUT,
@@ -637,7 +669,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			);
 
 			// make the post request and return the response
-			$response = wp_remote_post( WP_SMPRO_SERVICE_URL, $req_args );
+			$response['api'] = wp_remote_post( WP_SMPRO_SERVICE_URL, $req_args );
 
 			return $response;
 		}
