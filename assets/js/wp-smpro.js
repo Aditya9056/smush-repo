@@ -78,7 +78,7 @@
 
 			// add the progress text
 			$button.find('span').html(config.msgs.sent);
-
+			alert(config.msgs.smush_email);
 
 		};
 		var checkSmushStatus = function () {
@@ -86,7 +86,6 @@
 				type: "GET",
 				url: config.smush_status
 			}).done(function (response) {
-				console.log(response);
 				if (!response.success) {
 					//Call itself after every 5min
 					setTimeout(function () {
@@ -117,8 +116,14 @@
 					// re-enable all the buttons
 					$button.prop('disabled', false);
 
+					alert(config.msgs.smush_completed);
+
 				}
 				return;
+			}).fail(function(){
+					setTimeout(function () {
+						checkSmushStatus();
+					}, config.wp_smpro_poll_interval.interval);
 			});
 		}
 

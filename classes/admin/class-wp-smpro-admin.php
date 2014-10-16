@@ -88,7 +88,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'auto'        => __( 'Auto-Smush images on upload', WP_SMPRO_DOMAIN ),
 				'remove_meta' => __( 'Remove EXIF data from JPEGs', WP_SMPRO_DOMAIN ),
 				'progressive' => __( 'Progressive optimization for JPEGs', WP_SMPRO_DOMAIN ),
-				'debug_mode' => __( 'Enable debug mode', WP_SMPRO_DOMAIN ),
+				'debug_mode'  => __( 'Enable debug mode', WP_SMPRO_DOMAIN ),
 //				'gif_to_png'  => __( 'Convert GIF to PNG', WP_SMPRO_DOMAIN ),
 			);
 		}
@@ -117,14 +117,15 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->setup_counts();
 
 			// register js
-			if( !empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid') {
+			if ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) {
 				wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array(
-						'jquery',
-						'media-views'
-					), WP_SMPRO_VERSION );
-			}else{
+					'jquery',
+					'media-views'
+				), WP_SMPRO_VERSION );
+			} else {
 				wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array(
-					'jquery', 'underscore'
+					'jquery',
+					'underscore'
 				), WP_SMPRO_VERSION );
 			}
 			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'wp-smpro' ), WP_SMPRO_VERSION );
@@ -155,18 +156,20 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function localize() {
 			$wp_smpro_msgs = array(
-				'fetch'     => __( 'Fetch smushed images', WP_SMPRO_DOMAIN ),
-				'sending'   => __( 'Sending &hellip;', WP_SMPRO_DOMAIN ),
-				'send_fail' => __( 'Sending failed. Please try again later', WP_SMPRO_DOMAIN ),
-				'sent'      => __( 'Smushing in progress', WP_SMPRO_DOMAIN ),
-				'at_api'    => __( 'Currently Smushing &hellip;', WP_SMPRO_DOMAIN ),
-				'fetching'  => __( 'Fetching smushed images', WP_SMPRO_DOMAIN ),
-				'resmush'   => __( 'Re-smush', WP_SMPRO_DOMAIN ),
-				'smush_now' => __( 'Smush now!', WP_SMPRO_DOMAIN ),
-				'bulk_smush_now' => __( 'Send Smush Request', WP_SMPRO_DOMAIN ),
-				'done'      => __( 'All done!', WP_SMPRO_DOMAIN ),
-				'timeout'      => __( 'It is taking too long for the requests, Ajax timed out.', WP_SMPRO_DOMAIN ),
-				'no_leave'  => __( 'Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again.', WP_SMPRO_DOMAIN ),
+				'fetch'           => __( 'Fetch smushed images', WP_SMPRO_DOMAIN ),
+				'sending'         => __( 'Sending &hellip;', WP_SMPRO_DOMAIN ),
+				'send_fail'       => __( 'Sending failed. Please try again later', WP_SMPRO_DOMAIN ),
+				'sent'            => __( 'Smushing in progress', WP_SMPRO_DOMAIN ),
+				'at_api'          => __( 'Currently Smushing &hellip;', WP_SMPRO_DOMAIN ),
+				'fetching'        => __( 'Fetching smushed images', WP_SMPRO_DOMAIN ),
+				'resmush'         => __( 'Re-smush', WP_SMPRO_DOMAIN ),
+				'smush_now'       => __( 'Smush now!', WP_SMPRO_DOMAIN ),
+				'bulk_smush_now'  => __( 'Send Smush Request', WP_SMPRO_DOMAIN ),
+				'done'            => __( 'All done!', WP_SMPRO_DOMAIN ),
+				'timeout'         => __( 'It is taking too long for the requests, Ajax timed out.', WP_SMPRO_DOMAIN ),
+				'smush_email'     => __( 'You will receive an email, once images are smushed and ready to fetch', WP_SMPRO_DOMAIN ),
+				'smush_completed' => __( 'Images have been smushed, you can fetch them by clicking on <strong>Fetch Smushed Images</strong> button', WP_SMPRO_DOMAIN ),
+				'no_leave'        => __( 'Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again.', WP_SMPRO_DOMAIN ),
 			);
 
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
@@ -176,21 +179,21 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$sent_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
-			$sent_request = !empty( $sent_request ) ? array( 'sent' => true ) : array( 'sent' => false );
+			$sent_request = ! empty( $sent_request ) ? array( 'sent' => true ) : array( 'sent' => false );
 
-			$current_requests     = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			$sent_ids = array();
-			$count = 0;
-			foreach( $current_requests as $request_id => $request ){
-				if( !empty($request['received']) && $request['received'] == 1 && !empty($request['sent_ids']) ) {
+			$count    = 0;
+			foreach ( $current_requests as $request_id => $request ) {
+				if ( ! empty( $request['received'] ) && $request['received'] == 1 && ! empty( $request['sent_ids'] ) ) {
 					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
 
 					//Used to decide whether localize or not sent request variable, if we already received smush completion, we need
 					//not to poll on page refresh
 					$sent_request = false;
 				}
-				if( !empty( $request['sent_ids'] ) ){
+				if ( ! empty( $request['sent_ids'] ) ) {
 					$count = count( $request['sent_ids'] );
 				}
 			}
@@ -210,23 +213,24 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// Bulk request sent
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent_request );
 
-			$this->setPollInterval($count);
+			$this->setPollInterval( $count );
 
 		}
-		function setPollInterval( $count ){
+
+		function setPollInterval( $count ) {
 			//Set Interval for polling
-			if( $count <= 5 ) {
+			if ( $count <= 5 ) {
 				//Poll every 30 seconds
-				$interval = 30000  ;
-			} elseif( $count <= 20 ){
+				$interval = 30000;
+			} elseif ( $count <= 20 ) {
 				//Poll every minute
 				$interval = MINUTE_IN_SECONDS * 1000;
-			} else{
+			} else {
 				//Poll every 3 miuntes
 				$interval = 3 * MINUTE_IN_SECONDS * 1000;
 			}
 			// Bulk request sent
-			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_poll_interval', array('interval' => $interval) );
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_poll_interval', array( 'interval' => $interval ) );
 		}
 
 		function admin_notice() {
@@ -339,9 +343,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			//Check if there are input ids in URL
 			if ( ! empty( $_REQUEST['ids'] ) ) {
 				$current_bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent" );
-				if( !empty( $current_bulk_request ) ) { ?>
-					<div class="error"><p><?php _e( 'Bulk smush failed, as another bulk request is already being processed.' ); ?></p></div><?php
-				}else {
+				if ( ! empty( $current_bulk_request ) ) {
+					?>
+					<div class="error">
+					<p><?php _e( 'Bulk smush failed, as another bulk request is already being processed.' ); ?></p>
+					</div><?php
+				} else {
 					if ( $this->api_connected ) {
 						global $wp_smpro;
 
@@ -361,10 +368,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						<div class="error"><p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p>
 						</div><?php
 					}
-					$sent = !empty( $current_bulk_request ) ? array('sent' => true ) : array('sent' => false );
+					$sent = ! empty( $current_bulk_request ) ? array( 'sent' => true ) : array( 'sent' => false );
 					// Bulk request sent
 					wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent );
-					$this->setPollInterval( count($ids) );
+					$this->setPollInterval( count( $ids ) );
 				}
 			}
 			?>
@@ -390,16 +397,23 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					</h3>
 
 					<div class="bulk-smush">
-							<img src="<?php echo WP_SMPRO_URL; ?>assets/images/bulk-smush-instructions.png" alt="<?php _e('Bulk Smushing Instructions', WP_SMPRO_DOMAIN ); ?>" />
-<!--						<h4>--><?php //_e( 'Here is how bulk smushing works:', WP_SMPRO_DOMAIN ); ?><!--</h4>-->
-<!--						<ol>-->
-<!--							<li>--><?php //_e( "Click to send up to 100 attachments at a time to our API server.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
-<!--							<li>--><?php //_e( "We'll queue your bulk smush job for processing by the order it's received. Normal single smush requests are given priority over bulk smushing.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
-<!--							<li>--><?php //_e( "Depending upon the size of the queue, your job, and image sizes, it may take anywhere from a few minutes to a few days to complete your bulk job.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
-<!--							<li>--><?php //_e( "When ready, you'll be notified via email and an admin notice that your job is ready to be fetched.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
-<!--							<li>--><?php //_e( "You can then start fetching the images via the button on this page. The progress bar will continually update displaying the number of images fetched and total savings in terms of data.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
-<!--							<li>--><?php //_e( "If you have to navigate away from this page during the fetching process, you can always return to resume fetching where you left off. You have 30 days to complete the fetch.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
-<!--						</ol>-->
+						<img src="<?php echo WP_SMPRO_URL; ?>assets/images/bulk-smush-instructions.png" alt="<?php _e( 'Bulk Smushing Instructions', WP_SMPRO_DOMAIN ); ?>"/>
+						<!--						<h4>-->
+						<?php //_e( 'Here is how bulk smushing works:', WP_SMPRO_DOMAIN ); ?><!--</h4>-->
+						<!--						<ol>-->
+						<!--							<li>-->
+						<?php //_e( "Click to send up to 100 attachments at a time to our API server.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
+						<!--							<li>-->
+						<?php //_e( "We'll queue your bulk smush job for processing by the order it's received. Normal single smush requests are given priority over bulk smushing.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
+						<!--							<li>-->
+						<?php //_e( "Depending upon the size of the queue, your job, and image sizes, it may take anywhere from a few minutes to a few days to complete your bulk job.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
+						<!--							<li>-->
+						<?php //_e( "When ready, you'll be notified via email and an admin notice that your job is ready to be fetched.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
+						<!--							<li>-->
+						<?php //_e( "You can then start fetching the images via the button on this page. The progress bar will continually update displaying the number of images fetched and total savings in terms of data.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
+						<!--							<li>-->
+						<?php //_e( "If you have to navigate away from this page during the fetching process, you can always return to resume fetching where you left off. You have 30 days to complete the fetch.", WP_SMPRO_DOMAIN ); ?><!--</li>-->
+						<!--						</ol>-->
 					</div>
 
 					<?php
