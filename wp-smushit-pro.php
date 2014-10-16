@@ -4,7 +4,7 @@ Plugin Name: WP Smush Pro
 Plugin URI: http://premium.wpmudev.org/projects/wp-smushit-pro/
 Description: Reduce image file sizes and improve performance using the premium WPMU DEV smushing API within WordPress.
 Author: WPMU DEV
-Version: 1.0
+Version: 1.0.1
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit-pro
 WDP ID:
@@ -33,7 +33,7 @@ WDP ID:
  *
  * @package SmushItPro
  *
- * @version 1.0
+ * @version 1.0.1
  *
  * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umesh@incsub.com>
@@ -48,7 +48,7 @@ if ( ! function_exists( 'download_url' ) ) {
 /**
  * The version for enqueueing , etc.
  */
-define( 'WP_SMPRO_VERSION', '1.0' );
+define( 'WP_SMPRO_VERSION', '1.0.1' );
 
 /**
  * The plugin's path for easy access to files.

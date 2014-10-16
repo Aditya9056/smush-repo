@@ -89,9 +89,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				echo json_encode( $response );
 				die();
 			}
-			echo "<pre>";
-			print_r( $response );
-			echo "</pre>";
 			if ( empty( $response['updated_count'] ) || ! $response['updated_count'] ) {
 				$response['error'] = __( 'Sending failed. Please try again later', WP_SMPRO_DOMAIN );
 
