@@ -176,7 +176,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$sent_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
-			$sent_request = !empty( $sent_request ) ? true : false;
+			$sent_request = !empty( $sent_request ) ? array('sent' => true ) : array('sent' => false );
 
 			$current_requests     = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
@@ -361,7 +361,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						<div class="error"><p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p>
 						</div><?php
 					}
-					$sent = !empty( $current_bulk_request ) ? true : false;
+					$sent = !empty( $current_bulk_request ) ? array('sent' => true ) : array('sent' => false );
 					// Bulk request sent
 					wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent );
 					$this->setPollInterval( count($ids) );

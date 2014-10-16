@@ -159,6 +159,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			return wp_mail( $to, $subject, $body );
 		}
 		function check_smush_status() {
+			//Polling
+			$GLOBALS['wp_object_cache']->delete( 'WP_SMPRO_PREFIX . "current-requests"', 'options' );
+
 			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );

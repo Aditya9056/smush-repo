@@ -84,18 +84,21 @@
 
 
 		};
-		var checkSmushStatus = function(){
+		var checkSmushStatus = function () {
 			jQuery.ajax({
 				type: "GET",
 				url: config.smush_status
 			}).done(function (response) {
-				if( !response.success) {
+				if (!response.success) {
 					//Call itself after every 5min
 					setTimeout(function () {
 						checkSmushStatus();
 					}, config.wp_smpro_poll_interval);
-				}else{
+				} else {
 					wp_smpro_sent_ids = response.data;
+
+					config.ids = wp_smpro_sent_ids;
+
 					//Enable the fetch button
 
 					// find the div that displays status message
@@ -179,11 +182,11 @@
 				timeout: 90000,
 				dataType: 'json'
 			}).done(function (response) {
-				if( typeof response.error !== 'undefined' ) {
+				if (typeof response.error !== 'undefined') {
 					sendFailure(response);
-				}else {
+				} else {
 					sendSuccess(response);
-					if( !$id ) {
+					if (!$id) {
 						//Send a ajax at interval to check if images are smushed
 						checkSmushStatus();
 					}
@@ -198,7 +201,7 @@
 
 		};
 
-		if( typeof config.wp_smpro_request_sent !== 'undefined' && config.wp_smpro_request_sent[0] ) {
+		if (typeof config.wp_smpro_request_sent !== 'undefined' && config.wp_smpro_request_sent.sent) {
 			checkSmushStatus();
 		}
 
@@ -241,6 +244,7 @@
 
 			elem.find(config.sendProgressBar + ' div').css('width', $percent + '%');
 			elem.find(config.statusWrap + ' p#sent-status .done-count').html(sentCount);
+			config.counts.sent = sentCount;
 
 //                        if(config.counts.sent === fetchCount){
 //                                msg(config.msgs.sent_done, false, false);
@@ -253,8 +257,8 @@
 			config.counts.size_after = parseInt(config.counts.size_after);
 			config.counts.percent = parseInt(config.counts.percent);
 
-			config.counts.size_before += parseInt( $stats.size_before );
-			config.counts.size_after += parseInt( $stats.size_after );
+			config.counts.size_before += parseInt($stats.size_before);
+			config.counts.size_after += parseInt($stats.size_after);
 
 			$bytes = config.counts.size_before - config.counts.size_after;
 			config.counts.human = formatBytes($bytes);
@@ -269,13 +273,14 @@
 
 			elem.find(config.fetchProgressBar + ' div').css('width', $percent + '%');
 			elem.find(config.statusWrap + ' p#fetched-status .done-count').html(fetchCount);
+			config.counts.smushed = fetchCount;
 
-			$count_percent = parseFloat( config.counts.percent).toFixed(2);
+			$count_percent = parseFloat(config.counts.percent).toFixed(2);
 
-			jQuery(config.statsWrap).find('#percent').html( $count_percent );
+			jQuery(config.statsWrap).find('#percent').html($count_percent);
 			jQuery(config.statsWrap).find('#human').html(config.counts.human);
 
-			if (config.counts.total == fetchCount ) {
+			if (config.counts.total == fetchCount) {
 				jQuery(window).off('beforeunload');
 				$button = jQuery(config.fetchButton);
 
@@ -287,7 +292,7 @@
 				$button.attr('id', 'wp-smpro-finished');
 				$button.removeClass('wp-smpro-started');
 				jQuery(config.cancelButton).remove();
-			}else if( config.counts.sent == fetchCount ){
+			} else if (config.counts.sent == fetchCount) {
 				jQuery(window).off('beforeunload');
 				$button = jQuery(config.fetchButton);
 
@@ -420,7 +425,7 @@
 				toFixedFix = function (n, prec) {
 					var k = Math.pow(10, prec);
 					return '' + (Math.round(n * k) / k)
-						.toFixed(prec);
+							.toFixed(prec);
 				};
 			// Fix for IE parseFloat(0.55).toFixed(0) = 0;
 			s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
@@ -478,12 +483,12 @@
 				// get the row
 				var $nearest_tr = $(this).closest('tr').first();
 
-				if( $nearest_tr.length !== 0 ) {
+				if ($nearest_tr.length !== 0) {
 					// get the row's DOM id
 					var $elem_id = $nearest_tr.attr('id');
 					// get the attachment id from DOM id
 					var $id = $elem_id.replace(/[^0-9\.]+/g, '');
-				}else{
+				} else {
 					var $id = jQuery(this).parents().eq(5).data('id');
 				}
 
@@ -554,7 +559,7 @@
 			element.data('smushitpro', smushitpro);
 		});
 	};
-	if( typeof wp !== 'undefined' ) {
+	if (typeof wp !== 'undefined') {
 		_.extend(wp.media.view.AttachmentCompat.prototype, {
 			render: function () {
 				//
@@ -566,16 +571,16 @@
 	}
 
 })(jQuery, _);
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 	jQuery('body').on('click', '.attachment-info #wp-smpro-send', function () {
 		/**
 		 * Handle the media library button click
 		 */
 		jQuery('.attachment-info .attachment-compat').smushitpro({
-			'msgs'          : wp_smpro_msgs,
-			'counts'        : wp_smpro_counts,
-			'ajaxurl'      : ajaxurl,
-			'isSingle'     : true
+			'msgs': wp_smpro_msgs,
+			'counts': wp_smpro_counts,
+			'ajaxurl': ajaxurl,
+			'isSingle': true
 		});
 		jQuery('.attachment-info .attachment-compat #wp-smpro-send').click();
 	});
