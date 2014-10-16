@@ -37,9 +37,6 @@
 			// url for fetching
 			config.fetch_url = config.ajaxurl + '?action=wp_smpro_fetch';
 
-			// url for checking smush status
-			config.smush_status = config.ajaxurl + '?action=wp_smpro_smush_status';
-
 			config.hide_notice_url = config.ajaxurl + '?action=wp_smpro_hide';
 
 
@@ -89,11 +86,12 @@
 				type: "GET",
 				url: config.smush_status
 			}).done(function (response) {
+				console.log(response);
 				if (!response.success) {
 					//Call itself after every 5min
 					setTimeout(function () {
 						checkSmushStatus();
-					}, config.wp_smpro_poll_interval);
+					}, config.wp_smpro_poll_interval.interval);
 				} else {
 					wp_smpro_sent_ids = response.data;
 

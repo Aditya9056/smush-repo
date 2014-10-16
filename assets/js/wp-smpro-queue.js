@@ -17,6 +17,8 @@ jQuery('document').ready(function () {
 			'ajaxurl'                   : ajaxurl,
 			'wp_smpro_request_sent'     : wp_smpro_request_sent,
             'wp_smpro_poll_interval'    : wp_smpro_poll_interval,
+			// url for checking smush status
+			'smush_status'              : ajaxurl + '?action=wp_smpro_smush_status',
 			'isSingle'                  : false
 
 		});

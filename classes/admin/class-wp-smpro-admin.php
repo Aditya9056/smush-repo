@@ -176,7 +176,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$sent_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
-			$sent_request = !empty( $sent_request ) ? array('sent' => true ) : array('sent' => false );
+			$sent_request = !empty( $sent_request ) ? array( 'sent' => true ) : array( 'sent' => false );
 
 			$current_requests     = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
@@ -226,7 +226,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$interval = 3 * MINUTE_IN_SECONDS * 1000;
 			}
 			// Bulk request sent
-			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_poll_interval', $interval );
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_poll_interval', array('interval' => $interval) );
 		}
 
 		function admin_notice() {

@@ -25,7 +25,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			// process callback from smush service
 			add_action( 'wp_ajax_receive_smushed_image', array( $this, 'receive' ) );
 			add_action( 'wp_ajax_nopriv_receive_smushed_image', array( $this, 'receive' ) );
-			add_action('wp_ajax_wp_smpro_smush_status', array($this, 'check_smush_status') );
+			add_action( 'wp_ajax_wp_smpro_smush_status', array( $this, 'check_smush_status' ) );
 		}
 
 		/**
@@ -35,7 +35,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			// get the contents of the callback
 			$body = file_get_contents( 'php://input' );
-			$body = urldecode($body);
+			$body = urldecode( $body );
 
 			$data = json_decode( $body, true );
 
@@ -50,11 +50,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$request_id = $data['request_id'];
 
-			if( !empty( $data['error']) ){
+			if ( ! empty( $data['error'] ) ) {
 				//Update sent ids
 				$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
-				if( !empty( $current_requests[$request_id ] ) ) {
-					unset($current_requests[$request_id ]);
+				if ( ! empty( $current_requests[ $request_id ] ) ) {
+					unset( $current_requests[ $request_id ] );
 					update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 				}
 				echo json_encode( array( 'status' => 1 ) );
@@ -63,10 +63,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-			if ( empty($current_requests[ $request_id ]) || $data['token'] != $current_requests[ $request_id ]['token'] ) {
+			if ( empty( $current_requests[ $request_id ] ) || $data['token'] != $current_requests[ $request_id ]['token'] ) {
 				unset( $data );
 				echo json_encode( array( 'status' => 1 ) );
-				error_log("Token Mismatch");
+				error_log( "Token Mismatch" );
 				die();
 			}
 
@@ -103,7 +103,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 					$values[]                = "(" . $attachment_id . ", '" . WP_SMPRO_PREFIX . "smush-data', '" . maybe_serialize( $smush_data ) . "')";
 				}
 			}
-			if( !empty( $values ) ) {
+			if ( ! empty( $values ) ) {
 				$sql .= implode( ',', $values );
 
 				$insert = $wpdb->query( $sql );
@@ -112,8 +112,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 					global $wp_smpro;
 					$wp_smpro->fetch->fetch( $attachment_id, true );
 				}
+
 				return $insert;
-			}else{
+			} else {
 				return false;
 			}
 
@@ -127,14 +128,14 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$updated = update_option( WP_SMPRO_PREFIX . "bulk-received", 1 );
 
 			//store in current requests array, against request id
-			$current_requests     = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
-			if( !empty( $current_requests[$request_id ] ) ){
-				$current_requests[$request_id]['received'] = 1;
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			if ( ! empty( $current_requests[ $request_id ] ) ) {
+				$current_requests[ $request_id ]['received'] = 1;
 				update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 			}
 
 			//Enable admin notice if it was hidden
-			update_site_option('hide_smush_notice', 0);
+			update_site_option( 'hide_smush_notice', 0 );
 
 			return $updated;
 		}
@@ -158,21 +159,25 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			return wp_mail( $to, $subject, $body );
 		}
+
 		function check_smush_status() {
 			//Polling
 			$GLOBALS['wp_object_cache']->delete( 'WP_SMPRO_PREFIX . "current-requests"', 'options' );
 
 			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+			if ( empty( $bulk_request ) ) {
+				wp_send_json_error();
+			}
 
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-			$sent_ids[ $bulk_request ]['sent_ids'] = !empty( $current_requests[$bulk_request] ) ? $current_requests[$bulk_request]['sent_ids'] : '';
+			$sent_ids[ $bulk_request ]['sent_ids'] = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ]['sent_ids'] : '';
 
 			//if there is no sent id or images are not smushed yet
-			if( empty( $sent_ids[ $bulk_request ] ) || empty( $current_requests[$bulk_request]['received'] ) ){
+			if ( empty( $sent_ids[ $bulk_request ] ) || empty( $current_requests[ $bulk_request ]['received'] ) ) {
 				wp_send_json_error();
-			}else{
-				wp_send_json_success($sent_ids);
+			} else {
+				wp_send_json_success( $sent_ids );
 			}
 		}
 
