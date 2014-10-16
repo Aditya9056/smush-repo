@@ -181,13 +181,17 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$current_requests     = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			$sent_ids = array();
+			$count = 0;
 			foreach( $current_requests as $request_id => $request ){
 				if( !empty($request['received']) && $request['received'] == 1 && !empty($request['sent_ids']) ) {
 					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
 
 					//Used to decide whether localize or not sent request variable, if we already received smush completion, we need
-					//not to have poll on page refresh
+					//not to poll on page refresh
 					$sent_request = false;
+				}
+				if( !empty( $request['sent_ids'] ) ){
+					$count = count( $request['sent_ids'] );
 				}
 			}
 
@@ -206,6 +210,23 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// Bulk request sent
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent_request );
 
+			$this->setPollInterval($count);
+
+		}
+		function setPollInterval( $count ){
+			//Set Interval for polling
+			if( $count <= 5 ) {
+				//Poll every 30 seconds
+				$interval = 30000  ;
+			} elseif( $count <= 20 ){
+				//Poll every minute
+				$interval = MINUTE_IN_SECONDS * 1000;
+			} else{
+				//Poll every 3 miuntes
+				$interval = 3 * MINUTE_IN_SECONDS * 1000;
+			}
+			// Bulk request sent
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_poll_interval', $interval );
 		}
 
 		function admin_notice() {
@@ -343,6 +364,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					$sent = !empty( $current_bulk_request ) ? true : false;
 					// Bulk request sent
 					wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent );
+					$this->setPollInterval( count($ids) );
 				}
 			}
 			?>

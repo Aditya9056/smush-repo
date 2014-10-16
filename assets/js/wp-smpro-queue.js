@@ -16,6 +16,7 @@ jQuery('document').ready(function () {
 			'ids'                       : wp_smpro_sent_ids,
 			'ajaxurl'                   : ajaxurl,
 			'wp_smpro_request_sent'     : wp_smpro_request_sent,
+            'wp_smpro_poll_interval'    : wp_smpro_poll_interval,
 			'isSingle'                  : false
 
 		});

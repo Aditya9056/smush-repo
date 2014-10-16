@@ -91,9 +91,9 @@
 			}).done(function (response) {
 				if( !response.success) {
 					//Call itself after every 5min
-					setInterval(function () {
+					setTimeout(function () {
 						checkSmushStatus();
-					}, 180000);
+					}, config.wp_smpro_poll_interval);
 				}else{
 					wp_smpro_sent_ids = response.data;
 					//Enable the fetch button

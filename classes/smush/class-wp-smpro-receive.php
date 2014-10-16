@@ -159,14 +159,14 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			return wp_mail( $to, $subject, $body );
 		}
 		function check_smush_status() {
+			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
-			$sent_ids = array();
-			foreach( $current_requests as $request_id => $request ){
-				if( !empty($request['received']) && $request['received'] == 1 && !empty($request['sent_ids']) ) {
-					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
-				}
-			}
-			if( empty( $sent_ids ) ){
+
+			$sent_ids[ $bulk_request ]['sent_ids'] = !empty( $current_requests[$bulk_request] ) ? $current_requests[$bulk_request]['sent_ids'] : '';
+
+			//if there is no sent id or images are not smushed yet
+			if( empty( $sent_ids[ $bulk_request ] ) || empty( $current_requests[$bulk_request]['received'] ) ){
 				wp_send_json_error();
 			}else{
 				wp_send_json_success($sent_ids);

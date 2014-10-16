@@ -184,7 +184,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			unset( $request_data );
 
 			// if thre was an error, return it
-			if ( $response['error'] != '' ) {
+			if ( !empty( $response['error'] ) ) {
 
 				return $response;
 			}
