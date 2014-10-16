@@ -184,7 +184,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			unset( $request_data );
 
 			// if thre was an error, return it
-			if ( $response['error'] != '' ) {
+			if ( empty( $response['error'] ) ) {
 
 				return $response;
 			}
@@ -224,9 +224,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if( $this->debug ) {
 				$response['debug'] = $response['debug'] . '<br /> Request received by API. ';
 			}
-			echo "<pre>";
-			print_r();
-			echo "</pre>";
 			// request was successfully received
 			if ( $data->success ) {
 				if( $this->debug ) {
@@ -235,7 +232,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// get the unique request id issued by smush service
 				$request_id = $data->request_id;
 
-				$updated = $this->update_site_options( $request_id, $token, $sent_ids );
+				$updated = $this->update_options( $request_id, $token, $sent_ids );
 //				$updated = true;
 			} else {
 				$updated           = false;
