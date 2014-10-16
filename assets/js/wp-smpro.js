@@ -37,6 +37,9 @@
 			// url for fetching
 			config.fetch_url = config.ajaxurl + '?action=wp_smpro_fetch';
 
+			// url for checking smush status
+			config.smush_status = config.ajaxurl + '?action=wp_smpro_smush_status';
+
 			config.hide_notice_url = config.ajaxurl + '?action=wp_smpro_hide';
 
 
@@ -47,6 +50,7 @@
 				singleMsg(msgvar);
 				return;
 			}
+
 			if (elem.find(config.msgClass + '.' + msgvar.msg).length > 0) {
 				return;
 			}
@@ -80,6 +84,42 @@
 
 
 		};
+		var checkSmushStatus = function(){
+			jQuery.ajax({
+				type: "GET",
+				url: config.smush_status
+			}).done(function (response) {
+				if( !response.success) {
+					//Call itself after every 5min
+					setInterval(function () {
+						checkSmushStatus();
+					}, 180000);
+				}else{
+					wp_smpro_sent_ids = response.data;
+					//Enable the fetch button
+
+					// find the div that displays status message
+					$status_div = elem.find('.smush-status');
+
+					// find the smush button
+					$button = elem.find(config.sendButton);
+
+					// empty the current text
+					$button.find('span').html(config.msgs.fetch);
+
+					// add new class for css adjustment
+					$button.removeClass('wp-smpro-started');
+
+					// add new class for css adjustment
+					$button.attr('id', 'wp-smpro-fetch');
+
+					// re-enable all the buttons
+					$button.prop('disabled', false);
+
+				}
+				return;
+			});
+		}
 
 		var singleMsg = function (msgvar) {
 
@@ -143,6 +183,10 @@
 					sendFailure(response);
 				}else {
 					sendSuccess(response);
+					if( !$id ) {
+						//Send a ajax at interval to check if images are smushed
+						checkSmushStatus();
+					}
 				}
 				return;
 			}).fail(function (jqXHR, textStatus, errorThrown) {
@@ -154,6 +198,9 @@
 
 		};
 
+		if( typeof config.wp_smpro_request_sent !== 'undefined' && config.wp_smpro_request_sent[0] ) {
+			checkSmushStatus();
+		}
 
 		var sendSuccess = function ($response) {
 			if (!config.isSingle) {
@@ -162,7 +209,7 @@
 			$msg = $response.debug ? $response.success.status_message + '<br />' + $response.debug : $response.success.status_message;
 			var msgvar = {
 				'msg': 'update',
-				'str': $response.status_message,
+				'str': $msg,
 				'err': false
 			};
 			msg(msgvar);

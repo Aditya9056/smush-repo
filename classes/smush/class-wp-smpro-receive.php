@@ -25,6 +25,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			// process callback from smush service
 			add_action( 'wp_ajax_receive_smushed_image', array( $this, 'receive' ) );
 			add_action( 'wp_ajax_nopriv_receive_smushed_image', array( $this, 'receive' ) );
+			add_action('wp_ajax_wp_smpro_smush_status', array($this, 'check_smush_status') );
 		}
 
 		/**
@@ -156,6 +157,20 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$body = implode( "\r\n", $message );
 
 			return wp_mail( $to, $subject, $body );
+		}
+		function check_smush_status() {
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$sent_ids = array();
+			foreach( $current_requests as $request_id => $request ){
+				if( !empty($request['received']) && $request['received'] == 1 && !empty($request['sent_ids']) ) {
+					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
+				}
+			}
+			if( empty( $sent_ids ) ){
+				wp_send_json_error();
+			}else{
+				wp_send_json_success($sent_ids);
+			}
 		}
 
 	}

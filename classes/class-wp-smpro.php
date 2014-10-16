@@ -88,7 +88,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				define( 'WP_SMPRO_SERVICE_URL', 'https://smush.wpmudev.org/upload/' );
 			}
 			if ( ! defined( 'WP_SMPRO_SERVICE_STATUS' ) ) {
-				define( 'WP_SMPRO_SERVICE_STATUS', 'https://smush.wpmudev.org/status' );
+				define( 'WP_SMPRO_SERVICE_STATUS', 'https://smush.wpmudev.org/status/' );
 			}
 
 			/**
@@ -138,7 +138,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			}
 
 			if ( ! defined( 'WP_SMPRO_REQUEST_LIMIT' ) ) {
-				define( 'WP_SMPRO_REQUEST_LIMIT', 100 );
+				define( 'WP_SMPRO_REQUEST_LIMIT', 2 );
 			}
 		}
 

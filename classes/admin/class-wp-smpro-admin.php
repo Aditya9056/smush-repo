@@ -174,13 +174,20 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
 
-			$current_bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent" );
+			$sent_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+
+			$sent_request = !empty( $sent_request ) ? true : false;
+
 			$current_requests     = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			$sent_ids = array();
 			foreach( $current_requests as $request_id => $request ){
-				if( !empty($request['received']) && $request['received'] == 1 ) {
+				if( !empty($request['received']) && $request['received'] == 1 && !empty($request['sent_ids']) ) {
 					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
+
+					//Used to decide whether localize or not sent request variable, if we already received smush completion, we need
+					//not to have poll on page refresh
+					$sent_request = false;
 				}
 			}
 
@@ -195,6 +202,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_sent_ids', $sent_ids );
+
+			// Bulk request sent
+			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent_request );
+
 		}
 
 		function admin_notice() {
@@ -329,6 +340,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						<div class="error"><p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p>
 						</div><?php
 					}
+					$sent = !empty( $current_bulk_request ) ? true : false;
+					// Bulk request sent
+					wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent );
 				}
 			}
 			?>
