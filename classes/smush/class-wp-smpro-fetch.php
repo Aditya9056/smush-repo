@@ -116,7 +116,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		}
 
 		function update_flags( $attachment_id ) {
-			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			$remove = false;
 
@@ -129,7 +129,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			if ( $remove ) {
 				unset( $current_requests[ $remove ] );
 
-				return update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+				return update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 			}
 
 			return false;
@@ -174,11 +174,11 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			//Remove Send ids from current request if file is replaced, so that next time same file is not fetched again
 			unset( $current_requests[ $request_id ]['sent_ids'][ $index ] );
 
-			update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+			update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 
 			$sent_ids = array_diff( $sent_ids, array( $attachment_id ) );
 
-			$sent_request_id = get_option( WP_SMPRO_PREFIX . "bulk-sent", 0 );
+			$sent_request_id = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0 );
 
 			if ( $request_id == $sent_request_id
 			     && empty( $sent_ids )

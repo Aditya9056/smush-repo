@@ -52,16 +52,16 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			if ( ! empty( $data['error'] ) ) {
 				//Update sent ids
-				$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
 				if ( ! empty( $current_requests[ $request_id ] ) ) {
 					unset( $current_requests[ $request_id ] );
-					update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+					update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 				}
 				echo json_encode( array( 'status' => 1 ) );
 				die();
 			}
 
-			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			if ( empty( $current_requests[ $request_id ] ) || $data['token'] != $current_requests[ $request_id ]['token'] ) {
 				unset( $data );
@@ -125,13 +125,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				return $insert;
 			}
 
-			$updated = update_option( WP_SMPRO_PREFIX . "bulk-received", 1 );
+			$updated = update_site_option( WP_SMPRO_PREFIX . "bulk-received", 1 );
 
 			//store in current requests array, against request id
-			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
 			if ( ! empty( $current_requests[ $request_id ] ) ) {
 				$current_requests[ $request_id ]['received'] = 1;
-				update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+				update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 			}
 
 			//Enable admin notice if it was hidden
@@ -148,7 +148,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$to = get_site_option( 'admin_email' );
 
-			$subject = sprintf( __( "%s: Smush Pro bulk smushing completed", WP_SMPRO_DOMAIN ), get_option( 'blogname' ) );
+			$subject = sprintf( __( "%s: Smush Pro bulk smushing completed", WP_SMPRO_DOMAIN ), get_site_option( 'blogname' ) );
 
 			$message = array();
 
@@ -161,15 +161,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		}
 
 		function check_smush_status() {
-			//Polling
-			$GLOBALS['wp_object_cache']->delete( 'WP_SMPRO_PREFIX . "current-requests"', 'options' );
 
-			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+			$bulk_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array(), false );
 			if ( empty( $bulk_request ) ) {
 				wp_send_json_error();
 			}
 
-			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
 
 			$sent_ids[ $bulk_request ]['sent_ids'] = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ]['sent_ids'] : '';
 

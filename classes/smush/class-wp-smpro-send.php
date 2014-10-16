@@ -32,7 +32,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			add_action( 'wp_ajax_wp_smpro_send', array( $this, 'ajax_send' ) );
 
 			//Debug variable
-			$this->debug = get_option( 'wp-smpro-debug_mode', false );
+			$this->debug = get_site_option( 'wp-smpro-debug_mode', false );
 
 			if ( WP_SMPRO_AUTO ) {
 				// add automatic smushing on upload
@@ -184,7 +184,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			unset( $request_data );
 
 			// if thre was an error, return it
-			if ( !empty( $response['error'] ) ) {
+			if ( $response['error'] != '' ) {
 
 				return $response;
 			}
@@ -222,8 +222,11 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				)
 			);
 			if( $this->debug ) {
-				$response['debug'] = $response['debug'] . '<br /> Request sent to API. ';
+				$response['debug'] = $response['debug'] . '<br /> Request received by API. ';
 			}
+			echo "<pre>";
+			print_r();
+			echo "</pre>";
 			// request was successfully received
 			if ( $data->success ) {
 				if( $this->debug ) {
@@ -232,12 +235,12 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// get the unique request id issued by smush service
 				$request_id = $data->request_id;
 
-				$updated = $this->update_options( $request_id, $token, $sent_ids );
+				$updated = $this->update_site_options( $request_id, $token, $sent_ids );
 //				$updated = true;
 			} else {
 				$updated           = false;
 				if( $this->debug ) {
-					$response['debug'] = $response['debug'] . '<br /> No response from server ' . json_encode( $data );
+					$response['debug'] = $response['debug'] . '<br /> Request error ' . json_encode( $data );
 				}
 			}
 
@@ -268,7 +271,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// save the sent_ids for this request
 				$this->update_bulk_status( $sent_ids, $request_id );
 
-				$current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
+				$current_requests = get_site_option( WP_SMPRO_PREFIX . 'current-requests', array() );
 
 				$current_requests[ $request_id ]['token'] = $token;
 
@@ -276,7 +279,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				$current_requests[ $request_id ]['timestamp'] = time();
 
-				$updated = boolval( update_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
+				$updated = boolval( update_site_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
 			} else {
 				//otherwise the remaining process will break
 				$updated = false;
@@ -307,7 +310,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			unset( $is_bulk );
 			// save that a bulk request has been sent for this site and is expected back
-			update_option( WP_SMPRO_PREFIX . "bulk-sent", $request_id );
+			update_site_option( WP_SMPRO_PREFIX . "bulk-sent", $request_id );
 		}
 
 		/**
@@ -398,7 +401,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				if ( $key === 'auto' ) {
 					continue;
 				}
-				$value = get_option( WP_SMPRO_PREFIX . $key, $val );
+				$value = get_site_option( WP_SMPRO_PREFIX . $key, $val );
 
 				$request_data->{$key} = isset( $value ) ? $value : $val;
 

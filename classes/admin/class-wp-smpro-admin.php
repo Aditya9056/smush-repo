@@ -177,11 +177,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
 
-			$sent_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+			$sent_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
 			$sent_request = ! empty( $sent_request ) ? array( 'sent' => true ) : array( 'sent' => false );
 
-			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			$sent_ids = array();
 			$count    = 0;
@@ -234,9 +234,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function admin_notice() {
-			if ( boolval( get_option( WP_SMPRO_PREFIX . 'bulk-received', 0 ) ) && ! get_site_option( 'hide_smush_notice' ) ) {
+			if ( boolval( get_site_option( WP_SMPRO_PREFIX . 'bulk-received', 0 ) ) && ! get_site_option( 'hide_smush_notice' ) ) {
 				$message   = array();
-				$message[] = sprintf( __( 'A recent bulk smushing request has been completed!', WP_SMPRO_DOMAIN ), get_option( 'siteurl' ) );
+				$message[] = sprintf( __( 'A recent bulk smushing request has been completed!', WP_SMPRO_DOMAIN ), get_site_option( 'siteurl' ) );
 				if ( ! isset( $_GET['page'] ) || 'wp-smpro-admin' != $_GET['page'] ) { //if not on smush page
 					$message[] = sprintf( __( 'Visit <strong><a href="%s">Media &raquo; WP Smush Pro</a></strong> to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
 				}
@@ -292,7 +292,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$counts->init();
 
 			$this->counts          = $counts->counts;
-			$this->counts['stats'] = get_option( 'wp-smpro-global-stats', array() );
+			$this->counts['stats'] = get_site_option( 'wp-smpro-global-stats', array() );
 			$this->counts          = array_merge( $this->counts, $this->global_stats() );
 		}
 
@@ -307,7 +307,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function hide_notice() {
-			update_option( WP_SMPRO_PREFIX . 'hide-notice', 1 );
+			update_site_option( WP_SMPRO_PREFIX . 'hide-notice', 1 );
 			die();
 		}
 
@@ -342,7 +342,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			//Check if there are input ids in URL
 			if ( ! empty( $_REQUEST['ids'] ) ) {
-				$current_bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent" );
+				$current_bulk_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent" );
 				if ( ! empty( $current_bulk_request ) ) {
 					?>
 					<div class="error">
@@ -477,7 +477,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				// get the value to be saved
 				$setting = isset( $_POST[ $opt_name ] ) ? 1 : 0;
 				// update the new value
-				update_option( $opt_name, $setting );
+				update_site_option( $opt_name, $setting );
 				// unset the var for next loop
 				unset( $setting );
 			}
@@ -498,7 +498,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$const_name = strtoupper( 'WP_SMPRO_' . $key );
 
 			// default value
-			$opt_val = intval( get_option( $opt_name, constant( $const_name ) ) );
+			$opt_val = intval( get_site_option( $opt_name, constant( $const_name ) ) );
 
 			// return html
 			return sprintf(
@@ -653,7 +653,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function show_notice() {
-			$hide = intval( get_option( WP_SMPRO_PREFIX . 'hide-notice', 0 ) );
+			$hide = intval( get_site_option( WP_SMPRO_PREFIX . 'hide-notice', 0 ) );
 			if ( $hide ) {
 				return;
 			}
@@ -701,10 +701,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			);
 			// otherwise we have something to smush
 			// check if we are awaiting a bulk request's smush response
-			$is_bulk_sent = boolval( get_option( WP_SMPRO_PREFIX . "bulk-sent", 0 ) );
+			$is_bulk_sent = boolval( get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0 ) );
 
 			// check if we have received this bulk request's callback
-			$is_bulk_received = boolval( get_option( WP_SMPRO_PREFIX . "bulk-received", 0 ) );
+			$is_bulk_received = boolval( get_site_option( WP_SMPRO_PREFIX . "bulk-received", 0 ) );
 
 			// if we have nothing left to smush
 			// disable the buttons
