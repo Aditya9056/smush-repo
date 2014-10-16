@@ -168,7 +168,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'done'            => __( 'All done!', WP_SMPRO_DOMAIN ),
 				'timeout'         => __( 'It is taking too long for the requests, Ajax timed out.', WP_SMPRO_DOMAIN ),
 				'smush_email'     => __( 'You will receive an email, once images are smushed and ready to fetch', WP_SMPRO_DOMAIN ),
-				'smush_completed' => __( 'Images have been smushed, you can fetch them by clicking on <strong>Fetch Smushed Images</strong> button', WP_SMPRO_DOMAIN ),
+				'smush_completed' => __( 'Images have been smushed, you can fetch them by clicking on "Fetch smushed images" button', WP_SMPRO_DOMAIN ),
 				'no_leave'        => __( 'Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again.', WP_SMPRO_DOMAIN ),
 			);
 

@@ -78,7 +78,6 @@
 
 			// add the progress text
 			$button.find('span').html(config.msgs.sent);
-			alert(config.msgs.smush_email);
 
 		};
 		var checkSmushStatus = function () {
@@ -189,6 +188,7 @@
 					sendFailure(response);
 				} else {
 					sendSuccess(response);
+					alert(config.msgs.smush_email);
 					if (!$id) {
 						//Send a ajax at interval to check if images are smushed
 						checkSmushStatus();
