@@ -250,6 +250,7 @@
 
 			elem.find(config.sendProgressBar + ' div').css('width', $percent + '%');
 			elem.find(config.statusWrap + ' p#sent-status .done-count').html(sentCount);
+			elem.find(config.statusWrap + ' p#fetched-status .sent-count').html(sentCount);
 			config.counts.sent = sentCount;
 
 //                        if(config.counts.sent === fetchCount){

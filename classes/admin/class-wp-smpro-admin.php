@@ -117,7 +117,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->setup_counts();
 
 			// register js
-			if ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) {
+			//Either request variable is not empty and grid mode is set, or if request empty then view is as per user choice
+			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) || ( empty( $_REQUEST) && get_user_meta('wp_media_library_mode') == 'grid' ) ) {
 				wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array(
 					'jquery',
 					'media-views'
@@ -355,7 +356,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				if ( ! empty( $current_bulk_request ) ) {
 					?>
 					<div class="error">
-					<p><?php _e( 'Bulk smush failed, as another bulk request is already being processed.' ); ?></p>
+						<p><?php _e( 'Bulk smush failed, as another bulk request is already being processed.' ); ?></p>
 					</div><?php
 				} else {
 					if ( $this->api_connected ) {
@@ -377,6 +378,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						<div class="error"><p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p>
 						</div><?php
 					}
+					//Query again, as images were sent recently
+					$current_bulk_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0, false );
 					$sent = ! empty( $current_bulk_request ) ? array( 'sent' => true ) : array( 'sent' => false );
 					// Bulk request sent
 					wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent );
@@ -621,7 +624,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function progress_ui() {
 
 			// calculate %ages
-			$smushed_pc = $this->counts['smushed'] / $this->counts['sent'] * 100;
+			$smushed_pc = $this->counts['smushed'] / $this->counts['total'] * 100;
 			$sent_pc    = $this->counts['sent'] / $this->counts['total'] * 100;
 
 
@@ -651,7 +654,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <p id="fetched-status">' .
 			                sprintf(
 				                __(
-					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> sent attachments have been fetched', WP_SMPRO_DOMAIN
+					                '<span class="done-count">%d</span> of <span class="sent-count">%d</span> sent attachments have been fetched', WP_SMPRO_DOMAIN
 				                ), $this->counts['smushed'], $this->counts['sent']
 			                ) .
 			                '</p>
