@@ -138,7 +138,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			}
 
 			if ( ! defined( 'WP_SMPRO_REQUEST_LIMIT' ) ) {
-				define( 'WP_SMPRO_REQUEST_LIMIT', 500 );
+				define( 'WP_SMPRO_REQUEST_LIMIT', 1000 );
 			}
 		}
 
