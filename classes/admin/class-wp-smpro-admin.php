@@ -621,7 +621,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function progress_ui() {
 
 			// calculate %ages
-			$smushed_pc = $this->counts['smushed'] / $this->counts['total'] * 100;
+			$smushed_pc = $this->counts['smushed'] / $this->counts['sent'] * 100;
 			$sent_pc    = $this->counts['sent'] / $this->counts['total'] * 100;
 
 
@@ -651,8 +651,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <p id="fetched-status">' .
 			                sprintf(
 				                __(
-					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> smushed attachments have been fetched', WP_SMPRO_DOMAIN
-				                ), $this->counts['smushed'], $this->counts['total']
+					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> sent attachments have been fetched', WP_SMPRO_DOMAIN
+				                ), $this->counts['smushed'], $this->counts['sent']
 			                ) .
 			                '</p>
                                         </div>

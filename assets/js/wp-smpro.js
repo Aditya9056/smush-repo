@@ -378,7 +378,8 @@
 						return fetch($id);
 					});
 				});
-
+				//Remove notice after fetching is done
+				jQuery('.updated.bulk-smush-notice').remove();
 			});
 		};
 

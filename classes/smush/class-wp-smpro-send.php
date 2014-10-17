@@ -96,7 +96,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				die();
 			}
 
-			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing is finished.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_site_option( 'admin_email' ) ) : __( "Image sent for smushing", WP_SMPRO_DOMAIN );
+			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_site_option( 'admin_email' ) ) : __( "Image sent for smushing", WP_SMPRO_DOMAIN );
 			$response['success']['status_code']    = 1;
 			$response['success']['count']          = $response['updated_count'];
 			$response['success']['sent_count']     = count( get_site_option( WP_SMPRO_PREFIX . 'sent-ids', '', false ) ); //Fetch from site option
