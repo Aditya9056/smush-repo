@@ -75,6 +75,12 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$this->update_filenames( $attachment_id, $smush_data['filenames'] );
 			$this->update_flags( $attachment_id );
 			update_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'is-smushed', 1 );
+			$media_library = new WpSmProMediaLibrary();
+
+			$smush_text =  $media_library->set_status($attachment_id, false, true );
+
+			$output['smush_text'] = $smush_text;
+
 			$output['success'] = true;
 			$output['stats']   = $smush_data['stats'];
 			$output['msg']     = '';

@@ -86,10 +86,12 @@
 				url: config.smush_status
 			}).done(function (response) {
 				if (!response.success) {
+					//if (callback) {
 					//Call itself after every 5min
 					setTimeout(function () {
 						checkSmushStatus();
 					}, config.wp_smpro_poll_interval.interval);
+					//}
 				} else {
 					wp_smpro_sent_ids = response.data;
 
@@ -102,6 +104,10 @@
 
 					// find the smush button
 					$button = elem.find(config.sendButton);
+
+					if ($button.length === 0) {
+						$button = elem.find(jQuery('#wp-smpro-waiting'));
+					}
 
 					// empty the current text
 					$button.find('span').html(config.msgs.fetch);
@@ -204,9 +210,12 @@
 		};
 
 		if (typeof config.wp_smpro_request_sent !== 'undefined' && config.wp_smpro_request_sent.sent) {
-			setTimeout(function () {
-				checkSmushStatus();
-			}, config.wp_smpro_poll_interval.interval);
+			//Only for bulk
+			if (elem.attr('class') === 'wp-smpro-bulk-wrap' && elem.attr('id') === 'all-bulk') {
+				setTimeout(function () {
+					checkSmushStatus();
+				}, config.wp_smpro_poll_interval.interval);
+			}
 		}
 
 		var sendSuccess = function ($response) {
@@ -324,6 +333,13 @@
 				// file was successfully fetched
 				if ($is_fetched && response.stats.bytes !== null) {
 					fetchProgress(response.stats);
+
+					//If element exists
+					if( jQuery('#wp-smpro-selected-images').length ){
+						$selected_element = jQuery('#wp-smpro-selected-images #wp-smpro-img-' + $id);
+						$selected_element.addClass('smush-done');
+						$selected_element.find('.img-smush-status').html(response.smush_text);
+					}
 				} else {
 					msg({
 						'msg': 'fail',
@@ -482,6 +498,10 @@
 			// prevent the default action
 			e.preventDefault();
 			buttonProgress($(this), config.msgs.sending);
+
+			//Remove Selected image div if there
+			jQuery('#select-bulk').remove();
+
 			if (!config.isSingle) {
 				sentCount = config.counts.sent;
 				send(false);

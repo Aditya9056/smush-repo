@@ -383,9 +383,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 							?>
 							<div class="error"><?php _e( 'Nonce verification failed' ); ?></div><?php
 						} else {
-							$wp_smpro->sender->send_request( $send_ids );
-							// Reset Counts
-							$this->setup_counts();
+							if( !empty( $send_ids ) ) {
+								$wp_smpro->sender->send_request( $send_ids );
+								$this->setup_counts();
+							}
 						}
 					} else {
 						//display a error, images were not sent for smushing
@@ -403,6 +404,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						/* <![CDATA[ */
 						wp_smpro_request_sent = <?php echo json_encode( $sent ); ?>;
 						wp_smpro_poll_interval = <?php echo json_encode( array('interval' => $this->setPollInterval( count( $send_ids ), true ) ) ); ?>;
+						wp_smpro_counts = <?php echo json_encode($this->counts); ?>;
 						/* ]]> */
 					</script> <?php
 				}
