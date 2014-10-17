@@ -212,7 +212,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			return $response;
 		}
 
-		function set_status( $id, $echo = true ) {
+		function set_status( $id, $echo = true, $text_only = false ) {
 			$is_smushed = get_post_meta( $id, "wp-smpro-is-smushed", true );
 
 			// if the image is smushed
@@ -269,7 +269,9 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 					$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
 				}
 			}
-
+			if( $text_only ) {
+				return $status_txt;
+			}
 			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $is_smushed, $echo );
 			if ( ! $echo ) {
 				return $text;

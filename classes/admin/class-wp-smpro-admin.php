@@ -35,6 +35,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		public $api_connected;
 
+		var $media_lib;
+
 		/**
 		 * Constructor
 		 */
@@ -74,7 +76,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->init_settings();
 
 			// instantiate Media Library mods
-			$media_lib = new WpSmProMediaLibrary();
+			$this->media_lib = new WpSmProMediaLibrary();
 
 			//On deleting images update sent ids
 			add_action( 'delete_attachment', array( $this, 'update_sent_ids' ) );
@@ -118,7 +120,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// register js
 			//Either request variable is not empty and grid mode is set, or if request empty then view is as per user choice
-			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) || ( empty( $_REQUEST) && get_user_meta('wp_media_library_mode') == 'grid' ) ) {
+			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) || ( empty( $_REQUEST ) && get_user_meta( 'wp_media_library_mode' ) == 'grid' ) ) {
 				wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array(
 					'jquery',
 					'media-views'
@@ -350,25 +352,35 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 				</script> <?php
 			}
+			$send_ids = $received_ids = '';
 			//Check if there are input ids in URL
 			if ( ! empty( $_REQUEST['ids'] ) ) {
 				$current_bulk_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent" );
 				if ( ! empty( $current_bulk_request ) ) {
 					?>
 					<div class="error">
-						<p><?php _e( 'Bulk smush failed, as another bulk request is already being processed.' ); ?></p>
+					<p><?php _e( 'Bulk smush failed, as another bulk request is already being processed.' ); ?></p>
 					</div><?php
 				} else {
 					if ( $this->api_connected ) {
 						global $wp_smpro;
 
-						$ids = $_REQUEST['ids'];
-						$ids = explode( ',', $ids );
+						$ids      = $_REQUEST['ids'];
+						$send_ids = $received_ids = explode( ',', $ids );
+
+						//Check if already smushed
+						foreach ( $send_ids as $index => $id ) {
+							$is_smushed = get_post_meta( $id, WP_SMPRO_PREFIX . 'is-smushed', true );
+							if ( $is_smushed ) {
+								unset( $send_ids[ $index ] );
+							}
+						}
+
 						if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'wp-smpro-admin' ) ) {
 							?>
 							<div class="error"><?php _e( 'Nonce verification failed' ); ?></div><?php
 						} else {
-							$wp_smpro->sender->send_request( $ids );
+							$wp_smpro->sender->send_request( $send_ids );
 							// Reset Counts
 							$this->setup_counts();
 						}
@@ -380,10 +392,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					}
 					//Query again, as images were sent recently
 					$current_bulk_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0, false );
-					$sent = ! empty( $current_bulk_request ) ? array( 'sent' => true ) : array( 'sent' => false );
+					$sent                 = ! empty( $current_bulk_request ) ? array( 'sent' => true ) : array( 'sent' => false );
+
 					// Bulk request sent
-					wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent );
-					$this->setPollInterval( count( $ids ) );
+					var_dump( wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent ) );
+					$this->setPollInterval( count( $send_ids ) );
 				}
 			}
 			?>
@@ -430,7 +443,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 					<?php
 					// display the bulk ui
-					$this->bulk_ui();
+					$this->bulk_ui( $send_ids, $received_ids );
 					?>
 				</div>
 			</div>
@@ -521,9 +534,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		/**
 		 * Display the bulk smushing ui
 		 */
-		function bulk_ui() {
+		function bulk_ui( $send_ids, $received_ids ) {
 			// set up some variables and print out some js vars
-			$this->all_ui();
+			$this->all_ui( $send_ids, $received_ids );
 			// print the spinner for UI use
 			$this->print_spinner();
 			?>
@@ -535,7 +548,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 *
 		 * @return null
 		 */
-		function all_ui() {
+		function all_ui( $send_ids, $received_ids ) {
 
 			// if there are no images in the media library
 			if ( $this->counts['total'] < 1 ) {
@@ -563,6 +576,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					</p>
 				<?php
 				} else {
+					$this->selected_ui( $send_ids, $received_ids );
 					// we have some smushing to do! :)
 					// first some warnings
 					?>
@@ -868,7 +882,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				die();
 			}
 			// otherwise, get smush details
-			$is_smushed = get_post_meta( $id, "wp-smpro-is-smushed", true );
+			$is_smushed = get_post_meta( $id, WP_SMPRO_PREFIX . "is-smushed", true );
 
 			// otherwise, we've received the image
 
@@ -1003,6 +1017,73 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function dismiss_smush_notice() {
 			update_site_option( 'hide_smush_notice', 1 );
 			wp_send_json_success();
+		}
+
+		/**
+		 * Display Thumbnails, if bulk action is choosen
+		 */
+		function selected_ui( $send_ids, $received_ids ) {
+			if ( empty( $received_ids ) ) {
+				return;
+			}
+
+			?>
+			<div id="select-bulk" class="wp-smpro-bulk-wrap">
+				<p>
+					<?php
+					printf(
+						__(
+							'<strong>%d of %d images</strong> were sent for smushing:',
+							WP_SMPRO_DOMAIN
+						),
+						count( $send_ids ), count( $received_ids )
+					);
+					?>
+				</p>
+				<ul id="wp-smpro-selected-images">
+					<?php
+					foreach ( $received_ids as $attachment_id ) {
+						$this->attachment_ui( $attachment_id );
+					}
+					?>
+				</ul>
+			</div>
+		<?php
+		}
+
+		function attachment_ui( $attachment_id ) {
+			$type         = get_post_mime_type( $attachment_id );
+			$ext_arr      = explode( '/', $type );
+			$ext          = $ext_arr[1];
+			$title        = get_the_title( $attachment_id );
+			$title_length = 12;
+			if ( mb_strlen( $title ) > $title_length ) {
+				$title = mb_substr( $title, 0, $title_length - 1 ) . '&hellip;';
+			}
+
+			$src = wp_get_attachment_thumb_url( $attachment_id );
+
+			$status_msg = $this->media_lib->set_status( $attachment_id, false, true );
+			$is_smushed = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'is-smushed' );
+			$class      = $is_smushed ? ' class="smush-done"' : '';
+
+			?>
+			<li id="wp-smpro-img-<?php echo $attachment_id; ?>"<?php echo $class; ?>>
+				<div class="img-wrap">
+					<div class="img-status"></div>
+					<img class="img-thumb" src="<?php echo $src; ?>">
+					<span class="img-type"><?php echo $ext; ?></span>
+				</div>
+				<div class="img-descr">
+					<p class="img-meta">
+						<?php echo $attachment_id; ?> - <?php echo $title; ?>
+					</p>
+
+					<p class="img-smush-status"><?php echo $status_msg; ?></p>
+				</div>
+			</li>
+		<?php
+
 		}
 
 	}
