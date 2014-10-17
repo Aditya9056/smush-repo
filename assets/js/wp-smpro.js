@@ -119,10 +119,6 @@
 
 				}
 				return;
-			}).fail(function () {
-				setTimeout(function () {
-					checkSmushStatus();
-				}, config.wp_smpro_poll_interval.interval);
 			});
 		}
 
@@ -208,7 +204,9 @@
 		};
 
 		if (typeof config.wp_smpro_request_sent !== 'undefined' && config.wp_smpro_request_sent.sent) {
-			checkSmushStatus();
+			setTimeout(function () {
+				checkSmushStatus();
+			}, config.wp_smpro_poll_interval.interval);
 		}
 
 		var sendSuccess = function ($response) {

@@ -183,8 +183,8 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			if ( $request_id == $sent_request_id
 			     && empty( $sent_ids )
 			) {
-				delete_option( WP_SMPRO_PREFIX . "bulk-sent" );
-				delete_option( WP_SMPRO_PREFIX . "bulk-received" );
+				delete_site_option( WP_SMPRO_PREFIX . "bulk-sent" );
+				delete_site_option( WP_SMPRO_PREFIX . "bulk-received" );
 				update_site_option( WP_SMPRO_PREFIX . 'hide-notice', 1 );
 
 				return $request_id;

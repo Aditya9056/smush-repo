@@ -229,7 +229,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 		}
 
-		function setPollInterval( $count ) {
+		function setPollInterval( $count, $return = false ) {
 			//Set Interval for polling
 			if ( $count <= 5 ) {
 				//Poll every 30 seconds
@@ -240,6 +240,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			} else {
 				//Poll every 3 miuntes
 				$interval = 3 * MINUTE_IN_SECONDS * 1000;
+			}
+			if ( $return ) {
+				return $interval;
 			}
 			// Bulk request sent
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_poll_interval', array( 'interval' => $interval ) );
@@ -395,8 +398,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					$sent                 = ! empty( $current_bulk_request ) ? array( 'sent' => true ) : array( 'sent' => false );
 
 					// Bulk request sent
-					var_dump( wp_localize_script( 'wp-smpro-queue', 'wp_smpro_request_sent', $sent ) );
-					$this->setPollInterval( count( $send_ids ) );
+					?>
+					<script type="text/javascript">
+						/* <![CDATA[ */
+						wp_smpro_request_sent = <?php echo json_encode( $sent ); ?>;
+						wp_smpro_poll_interval = <?php echo json_encode( array('interval' => $this->setPollInterval( count( $send_ids ), true ) ) ); ?>;
+						/* ]]> */
+					</script> <?php
 				}
 			}
 			?>
@@ -1004,8 +1012,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			if ( empty( $sent_ids ) ) {
 				remove_action( 'admin_notices', array( $this, 'admin_notice' ) );
 				//No media, remove bulk meta
-				delete_option( WP_SMPRO_PREFIX . "bulk-sent" );
-				delete_option( WP_SMPRO_PREFIX . "bulk-received" );
+				delete_site_option( WP_SMPRO_PREFIX . "bulk-sent" );
+				delete_site_option( WP_SMPRO_PREFIX . "bulk-received" );
 			}
 
 			return;
