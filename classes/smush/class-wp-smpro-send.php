@@ -85,7 +85,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			}
 			$response = $this->send_request( $attachment_id );
 
-			if( !empty( $response['error'] ) ) {
+			if ( ! empty( $response['error'] ) ) {
 				echo json_encode( $response );
 				die();
 			}
@@ -96,7 +96,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				die();
 			}
 
-			$status_message             = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing is finished.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_site_option( 'admin_email' ) ) : __( "Image was sent for smushing", WP_SMPRO_DOMAIN );
+			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing is finished.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_site_option( 'admin_email' ) ) : __( "Image sent for smushing", WP_SMPRO_DOMAIN );
 			$response['success']['status_code']    = 1;
 			$response['success']['count']          = $response['updated_count'];
 			$response['success']['sent_count']     = count( get_site_option( WP_SMPRO_PREFIX . 'sent-ids', '', false ) ); //Fetch from site option
@@ -164,7 +164,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// formulate the request data as shown in the comment above
 			$response = $this->form_request_data( $attachment_id, $metadata );
 
-			if( !empty( $response['error'] ) ) {
+			if ( ! empty( $response['error'] ) ) {
 				return $response;
 			}
 			// get the token out
@@ -183,7 +183,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			unset( $request_data );
 
 			// if thre was an error, return it
-			if ( !empty( $response['error'] ) ) {
+			if ( ! empty( $response['error'] ) ) {
 
 				return $response;
 			}
@@ -220,12 +220,12 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 					$response['api']
 				)
 			);
-			if( $this->debug ) {
+			if ( $this->debug ) {
 				$response['debug'] = $response['debug'] . '<br /> Request received by API. ';
 			}
 			// request was successfully received
 			if ( $data->success ) {
-				if( $this->debug ) {
+				if ( $this->debug ) {
 					$response['debug'] = $response['debug'] . '<br /> Request was successful ';
 				}
 				// get the unique request id issued by smush service
@@ -234,13 +234,13 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				$updated = $this->update_options( $request_id, $token, $sent_ids );
 //				$updated = true;
 			} else {
-				$updated           = false;
-				if( $this->debug ) {
+				$updated = false;
+				if ( $this->debug ) {
 					$response['debug'] = $response['debug'] . '<br /> Request error ' . json_encode( $data );
 				}
 			}
 
-			if( $this->debug ) {
+			if ( $this->debug ) {
 				$response['debug'] = $response['debug'] . '<br /> Updated request details in database.';
 			}
 			$response['updated'] = $updated;

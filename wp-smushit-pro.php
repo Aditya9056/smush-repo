@@ -68,12 +68,12 @@ define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
 /**
  * Prefix to use for the meta keys and options
  */
-define( 'WP_SMPRO_PREFIX', 'wp-smpro-');
+define( 'WP_SMPRO_PREFIX', 'wp-smpro-' );
 
 /**
  * Plugin base name
  */
-define( 'WP_SMPRO_BASENAME', plugin_basename(__FILE__) );
+define( 'WP_SMPRO_BASENAME', plugin_basename( __FILE__ ) );
 //use hyphens instead of underscores for glotpress compatibility
 
 // include the classes
@@ -128,37 +128,37 @@ function wp_smpro_notice() {
 
 	//If there is no WPMU API Key and Dashboard plugin is deactivated, ask for Dashboard plugin
 	if ( empty( $wpmudev_apikey ) && ! is_plugin_active( 'wpmudev-updates/update-notifications.php' ) ) {
-        ?>
+		?>
 		<div class="error smushit-pro-status">
-                        <?php
-                        if ( file_exists( $plugin_path ) ) {
-                                wp_smpro_script();
-                                $nonce = wp_create_nonce( 'activate_wpmudev-updates' );
-                                ?>
-                                <p>
-                                        <strong><?php _e( 'WP Smush PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(
-                                                __('<a href="#" onclick="%s">Click here</a> to activate WPMU DEV Dashboard.', WP_SMPRO_DOMAIN),
-                                                "wp_smpro_activate_plugin('smushit_pro_activate_plugin','$nonce'"); ?>
-                                </p>
-                        <?php
-                        } else {
+			<?php
+			if ( file_exists( $plugin_path ) ) {
+				wp_smpro_script();
+				$nonce = wp_create_nonce( 'activate_wpmudev-updates' );
+				?>
+				<p>
+					<strong><?php _e( 'WP Smush PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(
+						__( '<a href="#" onclick="%s">Click here</a> to activate WPMU DEV Dashboard.', WP_SMPRO_DOMAIN ),
+						"wp_smpro_activate_plugin('smushit_pro_activate_plugin','$nonce'" ); ?>
+				</p>
+			<?php
+			} else {
+				?>
+				<p>
+					<strong><?php _e( 'WP Smush PRO requires WPMU DEV Dashboard plugin.', WP_SMPRO_DOMAIN ) ?></strong> <?php _e( 'Please install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush PRO.', WP_SMPRO_DOMAIN ); ?>
+				</p>
+			<?php
+			}
 			?>
-                                <p>
-                                        <strong><?php _e( 'WP Smush PRO requires WPMU DEV Dashboard plugin.', WP_SMPRO_DOMAIN ) ?></strong> <?php _e( 'Please install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush PRO.', WP_SMPRO_DOMAIN ); ?>
-                                </p>
-                        <?php
-                        }
-                        ?>
 		</div>
-        <?php
+	<?php
 	} elseif ( empty( $wpmudev_apikey ) ) {
 		//User haven't logged in to Dashboard plugin
 		$dashboard_url = is_multisite() ? network_admin_url( 'admin.php?page=wpmudev' ) : admin_url( 'admin.php?page=wpmudev' );
 		?>
 		<div class="error smushit-pro-status">
-			<p>
-				<strong><?php _e( 'WP Smush PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(__( '<a href="%s">Login to WPMU DEV Dashboard</a> to start using WP Smush PRO.', WP_SMPRO_DOMAIN ),$dashboard_url); ?>
-			</p>
+		<p>
+			<strong><?php _e( 'WP Smush PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf( __( '<a href="%s">Login to WPMU DEV Dashboard</a> to start using WP Smush PRO.', WP_SMPRO_DOMAIN ), $dashboard_url ); ?>
+		</p>
 		</div><?php
 	}
 }
@@ -212,17 +212,17 @@ function wp_smpro_script() {
 	</script><?php
 }
 
-if(!function_exists('boolval')){
-                /**
-		 * Returns the bool value of a variable <PHP5.5
-		 *
-		 * @param $val
-		 *
-		 * @return bool
-		 */
-		function boolval( $val ) {
-			return (bool) $val;
-		}
+if ( ! function_exists( 'boolval' ) ) {
+	/**
+	 * Returns the bool value of a variable <PHP5.5
+	 *
+	 * @param $val
+	 *
+	 * @return bool
+	 */
+	function boolval( $val ) {
+		return (bool) $val;
+	}
 }
 // instantiate our main class
 $wp_smpro = new WpSmPro();

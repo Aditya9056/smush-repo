@@ -160,7 +160,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'sending'         => __( 'Sending &hellip;', WP_SMPRO_DOMAIN ),
 				'send_fail'       => __( 'Sending failed. Please try again later', WP_SMPRO_DOMAIN ),
 				'sent'            => __( 'Smushing in progress', WP_SMPRO_DOMAIN ),
-				'at_api'          => __( 'Currently Smushing &hellip;', WP_SMPRO_DOMAIN ),
+				'at_api'          => __( 'Image sent for smushing &hellip;', WP_SMPRO_DOMAIN ),
 				'fetching'        => __( 'Fetching smushed images', WP_SMPRO_DOMAIN ),
 				'resmush'         => __( 'Re-smush', WP_SMPRO_DOMAIN ),
 				'smush_now'       => __( 'Smush now!', WP_SMPRO_DOMAIN ),
@@ -185,14 +185,23 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$sent_ids = array();
 			$count    = 0;
+			if ( empty( $current_requests ) ) {
+				$sent_request = array( 'sent' => false );
+			}
 			foreach ( $current_requests as $request_id => $request ) {
 				if ( ! empty( $request['received'] ) && $request['received'] == 1 && ! empty( $request['sent_ids'] ) ) {
 					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
 
 					//Used to decide whether localize or not sent request variable, if we already received smush completion, we need
 					//not to poll on page refresh
-					$sent_request = false;
+					$sent_request = array( 'sent' => false );
 				}
+
+				//If there are no sent ids
+				if ( empty( $request['sent_ids'] ) ) {
+					$sent_request = array( 'sent' => false );
+				}
+
 				if ( ! empty( $request['sent_ids'] ) ) {
 					$count = count( $request['sent_ids'] );
 				}
@@ -699,6 +708,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$button = array(
 				'cancel' => false,
 			);
+			//Check for sent ids
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
+
 			// otherwise we have something to smush
 			// check if we are awaiting a bulk request's smush response
 			$is_bulk_sent = boolval( get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0 ) );
@@ -706,6 +718,17 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// check if we have received this bulk request's callback
 			$is_bulk_received = boolval( get_site_option( WP_SMPRO_PREFIX . "bulk-received", 0 ) );
 
+			//check if current_requests and bulk sent exists
+			if ( empty( $current_requests ) && $is_bulk_received ) {
+
+				update_site_option( WP_SMPRO_PREFIX . 'hide-notice', 1 );
+
+				//probably someone tempered with data, cleanup
+				error_log( "Inconsistent data, Current requests was empty, while bulk received was set" );
+
+				update_site_option( WP_SMPRO_PREFIX . "bulk-received", 0 );
+				$is_bulk_received = false;
+			}
 			// if we have nothing left to smush
 			// disable the buttons
 			if ( $this->counts['smushed'] === $this->counts['total'] ) {
@@ -752,7 +775,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 
 			// bulk request has been smushed and callback was received
-			if ( $is_bulk_received ) {
+			if ( $is_bulk_received && ! empty( $current_requests ) ) {
 				// if API not connected
 				if ( ! $this->api_connected ) {
 					$button['text']     = __( 'Service unavailable!', WP_SMPRO_DOMAIN );

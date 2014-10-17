@@ -97,13 +97,14 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 					echo $html;
 
 					return;
-				}else{
-					if( !$smushed ){
+				} else {
+					if ( ! $smushed ) {
 						$class = ' currently-smushing';
-					}else{
+					} else {
 						$class = ' smushed';
 					}
-					return '<div class="smush-wrap'. $class . '">' . $html . '</div>';
+
+					return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
 				}
 			}
 			if ( ! $echo ) {
@@ -111,12 +112,13 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				<button id="wp-smpro-send" class="button button-primary">
 	                <span>' . $button_txt . '</span>
 				</button>';
-				if( !$smushed ){
+				if ( ! $smushed ) {
 					$class = ' unsmushed';
-				}else{
+				} else {
 					$class = ' smushed';
 				}
-				return '<div class="smush-wrap'. $class . '">' . $html . '</div>';
+
+				return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
 			} else {
 				$html .= '<button id="wp-smpro-send" class="button">
                     <span>' . $button_txt . '</span>

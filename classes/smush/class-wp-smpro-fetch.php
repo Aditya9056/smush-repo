@@ -59,7 +59,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			}
 
 			$smush_data = $this->update_smush_data( $attachment_id );
-			if( $smush_data ) {
+			if ( $smush_data ) {
 
 				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'] );
 
@@ -80,10 +80,10 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$output['msg']     = '';
 
 			unset( $smush_data );
-			if( !$is_single) {
+			if ( ! $is_single ) {
 				echo json_encode( $output );
 				die();
-			}else{
+			} else {
 				echo json_encode( array( 'status' => 1 ) );
 				die();
 			}
@@ -185,6 +185,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			) {
 				delete_option( WP_SMPRO_PREFIX . "bulk-sent" );
 				delete_option( WP_SMPRO_PREFIX . "bulk-received" );
+				update_site_option( WP_SMPRO_PREFIX . 'hide-notice', 1 );
 
 				return $request_id;
 			}
@@ -201,7 +202,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$unzipped = unzip_file( $zip, $this->basedir );
 			if ( $unzipped ) {
 				// Now that the zip file has been used, destroy it
-				if( file_exists($zip)) {
+				if ( file_exists( $zip ) ) {
 					unlink( $zip );
 				}
 
@@ -226,7 +227,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 		private function update_smush_data( $attachment_id ) {
 			$smush_data = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', true );
-			if( empty( $smush_data )) {
+			if ( empty( $smush_data ) ) {
 				//no smush data recieved yet
 				return false;
 			}

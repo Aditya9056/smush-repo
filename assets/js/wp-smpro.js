@@ -119,10 +119,10 @@
 
 				}
 				return;
-			}).fail(function(){
-					setTimeout(function () {
-						checkSmushStatus();
-					}, config.wp_smpro_poll_interval.interval);
+			}).fail(function () {
+				setTimeout(function () {
+					checkSmushStatus();
+				}, config.wp_smpro_poll_interval.interval);
 			});
 		}
 
@@ -188,10 +188,13 @@
 					sendFailure(response);
 				} else {
 					sendSuccess(response);
-					alert(config.msgs.smush_email);
+					if (!config.isSingle) {
+						alert(config.msgs.smush_email);
+					}
 					if (!$id) {
-						//Send a ajax at interval to check if images are smushed
-						checkSmushStatus();
+						setTimeout(function () {
+							checkSmushStatus();
+						}, config.wp_smpro_poll_interval.interval);
 					}
 				}
 				return;
