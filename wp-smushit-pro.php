@@ -83,6 +83,12 @@ require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-count.php' );
 require_once( WP_SMPRO_DIR . 'classes/admin/class-wp-smpro-admin.php' );
 require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-fetch.php' );
 require_once( WP_SMPRO_DIR . 'classes/smush/class-wp-smpro-send.php' );
+/**
+ * Error Log
+ */
+require_once( WP_SMPRO_DIR . 'classes/error/class-wp-smpro-errorlog.php' );
+require_once( WP_SMPRO_DIR . 'classes/error/class-wp-smpro-errorregistry.php' );
+
 require_once( WP_SMPRO_DIR . 'classes/class-wp-smpro.php' );
 
 //load dashboard notice

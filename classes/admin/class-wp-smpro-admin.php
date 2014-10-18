@@ -104,6 +104,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$this,
 				'ui'
 			) );
+			add_media_page( 'Error Log', 'Wp Smpro Error Log', 'edit_others_posts', 'wp-smpro-errorlog', array(
+				$this,
+				'create_admin_error_log_page'
+			) );
 
 			// enqueue js only on this screen and media_screen
 			add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );
@@ -708,7 +712,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				</p>
 				<button class="button button-primary accept-slow-notice"><?php _e( 'Got it!', WP_SMPRO_DOMAIN ); ?></button>
 			</div>
-		<?php
+		<?phps
 		}
 
 		/**
@@ -1094,6 +1098,24 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			</li>
 		<?php
 
+		}
+		/**
+		 * Creates Admin Error Log info page.
+		 *
+		 * @access private.
+		 */
+		function create_admin_error_log_page() {
+			$log = new WpSmproErrorLog;
+			if ( 'purge' == @$_GET['action'] ) {
+				$log->purge_errors();
+				$log->purge_notices();
+			}
+			$errors  = $log->get_all_errors();
+			$notices = $log->get_all_notices();
+			/**
+			 * Error Log Form
+			 */
+			require_once( WP_SMPRO_DIR . 'lib/forms/error_log.php' );
 		}
 
 	}
