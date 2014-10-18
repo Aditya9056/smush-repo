@@ -32,7 +32,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		 * Receive the callback and send data for further processing
 		 */
 		function receive() {
-
+			global $log;
 			// get the contents of the callback
 			$body = file_get_contents( 'php://input' );
 			$body = urldecode( $body );
@@ -51,6 +51,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$request_id = $data['request_id'];
 
 			if ( ! empty( $data['error'] ) ) {
+				$log->error('WpSmproReceive: receieve', 'Error from API' . json_encode( $data['error']  ) );
+
 				//Update sent ids
 				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
 				if ( ! empty( $current_requests[ $request_id ] ) ) {
@@ -66,7 +68,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			if ( empty( $current_requests[ $request_id ] ) || $data['token'] != $current_requests[ $request_id ]['token'] ) {
 				unset( $data );
 				echo json_encode( array( 'status' => 1 ) );
-				error_log( "Token Mismatch" );
+				$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch" );
 				die();
 			}
 
@@ -141,6 +143,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		}
 
 		private function notify( $processed ) {
+			global $log;
 
 			if ( $processed === false ) {
 				return;
@@ -156,8 +159,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$message[] = sprintf( __( 'Visit %s to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
 
 			$body = implode( "\r\n", $message );
-
-			return wp_mail( $to, $subject, $body );
+			$mail_sent = wp_mail( $to, $subject, $body );
+			if ( !$mail_sent ){
+				$log->error('WpSmproReceive: notify', 'Notification email could not be sent');
+			}
+			return $mail_sent;
 		}
 
 		function check_smush_status() {
@@ -177,6 +183,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			} else {
 				wp_send_json_success( $sent_ids );
 			}
+			die(1);
 		}
 
 	}

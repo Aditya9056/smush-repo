@@ -90,7 +90,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'auto'        => __( 'Auto-Smush images on upload', WP_SMPRO_DOMAIN ),
 				'remove_meta' => __( 'Remove EXIF data from JPEGs', WP_SMPRO_DOMAIN ),
 				'progressive' => __( 'Progressive optimization for JPEGs', WP_SMPRO_DOMAIN ),
-				'debug_mode'  => __( 'Enable debug mode', WP_SMPRO_DOMAIN ),
 //				'gif_to_png'  => __( 'Convert GIF to PNG', WP_SMPRO_DOMAIN ),
 			);
 		}
@@ -395,7 +394,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					} else {
 						//display a error, images were not sent for smushing
 						?>
-						<div class="error"><p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p>
+						<div class="error">
+							<p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p>
 						</div><?php
 					}
 					//Query again, as images were sent recently
@@ -712,7 +712,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				</p>
 				<button class="button button-primary accept-slow-notice"><?php _e( 'Got it!', WP_SMPRO_DOMAIN ); ?></button>
 			</div>
-		<?phps
+		<?php
 		}
 
 		/**
@@ -723,14 +723,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function setup_button() {
 			$button = $this->button_state();
 			?>
-		<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
-			<span><?php echo $button['text'] ?></span>
+			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
+				<span><?php echo $button['text'] ?></span>
 			</button><?php
 			if ( $button['id'] == 'wp-smpro-fetch' ) {
-				//show cancel button only for fetching
-				?>
-			<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
-				<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
+					//show cancel button only for fetching
+					?>
+				<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
+					<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
 				</button><?php
 			}
 		}
@@ -880,51 +880,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		/**
-		 * Check current smush status of sent attachments
-		 */
-		function check_status() {
-
-			// the attachment id
-			$id = $_GET['attachment_id'];
-
-			$response = array();
-			// send 0, means unknown error
-			if ( empty( $id ) || $id <= 0 ) {
-				$response['status'] = 0;
-				$response['msg']    = __( 'ID error', WP_SMPRO_DOMAIN );
-				echo json_encode( $response );
-				die();
-			}
-			// otherwise, get smush details
-			$is_smushed = get_post_meta( $id, WP_SMPRO_PREFIX . "is-smushed", true );
-
-			// otherwise, we've received the image
-
-			if ( $is_smushed ) {
-				$response['status'] = 2;
-				$stats              = get_post_meta( $id, 'wp-smpro-smush-stats', true );
-				if ( $stats['compressed_bytes'] == 0 ) {
-					$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
-				} else {
-					$status_txt = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMPRO_DOMAIN ), number_format_i18n( $stats['compressed_percent'], 2, '.', '' ), $stats['compressed_human'] );
-				}
-				$response['msg'] = $status_txt;
-				echo json_encode( $response );
-				die();
-			}
-
-
-			// Not even that, we're still waiting
-			$response['status'] = 1;
-			$response['msg']    = __( 'Still waiting', WP_SMPRO_DOMAIN );
-			echo json_encode( $response );
-			die();
-		}
-
-		/**
 		 * Set Up API Status
 		 */
 		function set_api_status() {
+			global $log;
 
 			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 				// we don't want to slow it down
@@ -936,6 +895,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			if ( empty( $api ) || is_wp_error( $api ) ) {
 				set_transient( 'api_connected', false );
+				if( is_wp_error($api ) ) {
+					$log->error('WpSmProAdmin: set_api_status', json_encode($api) );
+				}
 
 				return false;
 			}
@@ -1105,6 +1067,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * @access private.
 		 */
 		function create_admin_error_log_page() {
+			global $log;
 			if ( 'purge' == @$_GET['action'] ) {
 				$log->purge_errors();
 				$log->purge_notices();

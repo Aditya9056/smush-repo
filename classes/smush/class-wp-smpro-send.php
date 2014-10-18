@@ -31,9 +31,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// for ajax based smushing through bulk UI
 			add_action( 'wp_ajax_wp_smpro_send', array( $this, 'ajax_send' ) );
 
-			//Debug variable
-			$this->debug = get_site_option( 'wp-smpro-debug_mode', false );
-
 			if ( WP_SMPRO_AUTO ) {
 				// add automatic smushing on upload
 				add_filter( 'wp_generate_attachment_metadata', array( $this, 'auto_smush' ), 10, 2 );
@@ -42,14 +39,17 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		}
 
 		function auto_smush( $metadata, $attachment_id ) {
-
-			global $wp_smpro;
-
+			global $log;
 			//Check API Status
 			if ( $this->api_connected ) {
 
 				//Send metadata and attachment id
 				$sent = $this->send_request( $attachment_id, $metadata );
+				if ( ! $sent ) {
+					$log->error( 'WpSmproSend: auto_smush', 'Request not sent' );
+				}
+			} else {
+				$log->error( 'WpSmproSend: auto_smush', 'API not connected' );
 			}
 
 			return $metadata;
@@ -61,6 +61,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 *
 		 */
 		function ajax_send() {
+			global $log;
+
 			// check user permissions
 			if ( ! current_user_can( 'upload_files' ) ) {
 				wp_die( __( "You don't have permission to work with uploaded files.", WP_SMPRO_DOMAIN ) );
@@ -90,7 +92,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				die();
 			}
 			if ( empty( $response['updated_count'] ) || ! $response['updated_count'] ) {
-				$response['error'] = __( 'Sending failed. Please try again later', WP_SMPRO_DOMAIN );
+				$response['error'] = __( 'Failed to update smush data for attachment meta', WP_SMPRO_DOMAIN );
+				$log->error( 'WpSmproSend: ajax_send', 'Sent ids count not updated.' );
 
 				echo json_encode( $response );
 				die();
@@ -129,6 +132,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @return bool whether request was successful
 		 */
 		function send_request( $attachment_id = false, $metadata = '' ) {
+			global $log;
 			$updated_count = '';
 			/*
 			 * {
@@ -165,6 +169,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response = $this->form_request_data( $attachment_id, $metadata );
 
 			if ( ! empty( $response['error'] ) ) {
+				$log->error( 'WpSmproSend: send_request', 'Request data error' . json_encode( $response ) );
+
 				return $response;
 			}
 			// get the token out
@@ -184,7 +190,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// if thre was an error, return it
 			if ( ! empty( $response['error'] ) ) {
-
+				//Error logged in _post function, so we don't need that here
 				return $response;
 			}
 
@@ -231,7 +237,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				global $log;
 				$updated = false;
 				if ( $this->debug ) {
-					$log->error( 'Request error ' . json_encode( $data ) );
+					$log->error( 'WpSmProSend: process_response', 'Request error ' . json_encode( $data ) );
 				}
 			}
 
@@ -604,6 +610,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @return \WP_Error
 		 */
 		private function _post( $request_data ) {
+			global $log;
 
 			// send a post request and get response
 			$response = $this->_post_request( $request_data );
@@ -612,6 +619,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( ! $response['api'] || is_wp_error( $response['api'] ) ) {
 				unset( $request_data );
 				$response['error'] = __( 'Sorry, we were unable to send the request, as the site was not able to communicate with Smush Pro server.', WP_SMPRO_DOMAIN );
+				$log->error( 'WpSmproSend: _post', 'Request sending failed' . json_encode( $response['api'] ) );
 
 				return $response;
 			}

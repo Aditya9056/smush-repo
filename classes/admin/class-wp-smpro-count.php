@@ -30,8 +30,6 @@ if ( ! class_exists( 'WpSmProCount' ) ) {
 				'smushed' => (int) $this->smushed_count(),
 			);
 
-			//Fix Myself if I'm wrong
-
 			//If there is any problem with sent counts, check sent ids and update if image doesn't exists
 			if ( $this->counts['sent'] > $this->counts['total'] ) {
 				$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids' );

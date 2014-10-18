@@ -41,6 +41,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 * @return type
 		 */
 		function fetch( $attachment_id = false, $is_single = false ) {
+			global $log;
 			$result = '';
 
 			$output = array(
@@ -54,7 +55,10 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 			if ( ! $attachment_id ) {
 				$output['msg'] = __( 'No attachment ID was provided.', WP_SMPRO_DOMAIN );
+
 				echo json_encode( $output );
+				$log->error( 'WpSmProFetch: fetch', 'Missing attachment id for fetch request' );
+
 				die();
 			}
 
@@ -66,7 +70,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				$result = $this->replace_files( $smushed_file );
 			}
 
-			if ( ! $result ) {
+			if ( ! $result || is_wp_error( $result ) ) {
 				unset( $smush_data );
 				echo json_encode( $output );
 				die();
@@ -74,19 +78,22 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 			$this->update_filenames( $attachment_id, $smush_data['filenames'] );
 			$this->update_flags( $attachment_id );
+
 			update_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'is-smushed', 1 );
-			$media_library = new WpSmProMediaLibrary();
 
-			$smush_text =  $media_library->set_status($attachment_id, false, true );
-
-			$output['smush_text'] = $smush_text;
-
-			$output['success'] = true;
-			$output['stats']   = $smush_data['stats'];
-			$output['msg']     = '';
-
-			unset( $smush_data );
 			if ( ! $is_single ) {
+				$media_library = new WpSmProMediaLibrary();
+
+				$smush_text = $media_library->set_status( $attachment_id, false, true );
+
+				$output['smush_text'] = $smush_text;
+
+				$output['success'] = true;
+				$output['stats']   = $smush_data['stats'];
+				$output['msg']     = '';
+
+				unset( $smush_data );
+
 				echo json_encode( $output );
 				die();
 			} else {
@@ -96,7 +103,6 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		}
 
 		function save_zip( $attachment_id, $url ) {
-
 
 			$zip = $this->_get( $url );
 
@@ -204,6 +210,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 * @return boolean
 		 */
 		private function replace_files( $zip ) {
+			global $log;
 			WP_Filesystem();
 			$unzipped = unzip_file( $zip, $this->basedir );
 			if ( $unzipped ) {
@@ -213,33 +220,42 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				}
 
 				return true;
+			} elseif ( is_wp_error( $unzipped ) ) {
+				$log->error( 'WpSmproFetch: replace_files', 'Error unzipping files' );
 			}
 
 			return false;
 		}
 
 		/**
+		 * Download a file from giver URL, return body
 		 *
 		 * @param type $url
 		 *
 		 * @return type
 		 */
 		private function _get( $url ) {
+			global $log;
 			$response = wp_remote_get( $url, array( 'sslverify' => false ) );
-			$zip      = wp_remote_retrieve_body( $response );
+			if ( is_wp_error( $response ) ) {
+				$log->error( 'WPSmproFetch: _get', 'Error in downloading zip' . json_encode( $response ) );
+			}
+			$zip = wp_remote_retrieve_body( $response );
 
 			return $zip;
 		}
 
 		private function update_smush_data( $attachment_id ) {
+			global $log, $wp_smpro;
 			$smush_data = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', true );
 			if ( empty( $smush_data ) ) {
 				//no smush data recieved yet
+				$log->error( 'WpSmProFetch: update_smush_data', 'Missing smush data for attachment id' . $attachment_id );
+
 				return false;
 			}
 			$stats          = $smush_data['stats'];
 			$stats['bytes'] = (int) $stats['size_before'] - (int) $stats['size_after'];
-			global $wp_smpro;
 
 			$stats['human'] = $wp_smpro->format_bytes( $stats['bytes'] );
 

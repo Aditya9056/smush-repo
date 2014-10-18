@@ -36,8 +36,6 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			'remove_meta' => 1,
 			// progressive optimisation for jpg
 			'progressive' => 1,
-			//Debug Mode
-			'debug_mode'  => 1,
 			// convert static gifs to png
 			'gif_to_png'  => 0,
 		);
