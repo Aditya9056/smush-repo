@@ -64,3 +64,5 @@ class WpSmproErrorLog {
 		update_site_option( 'sp_notice_log', $notices );
 	}
 }
+global $log;
+$log = new WpSmproErrorLog;

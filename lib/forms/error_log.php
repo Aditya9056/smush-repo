@@ -6,7 +6,7 @@ $time_fmt        = $time_fmt ? $time_fmt : 'H:i:s';
 $datetime_format = "{$date_fmt} {$time_fmt}";
 ?>
 <div class="wrap">
-	<h2><?php _e( 'Error Log', 'wdfb' ); ?></h2>
+	<h2><?php _e( 'Error Log', WP_SMPRO_DOMAIN ); ?></h2>
 
 	<h3>Errors</h3>
 	<?php if ( $errors ) { ?>
@@ -48,8 +48,8 @@ $datetime_format = "{$date_fmt} {$time_fmt}";
 	<?php } ?>
 
 	<?php if ( current_user_can( 'manage_network_options' ) ) { ?>
-		<p><a href="#notices" class="wdfb_toggle_notices">Show/Hide notices</a></p>
-		<div id="wdfb_notices" style="display:none">
+		<p><a href="#notices" class="wp_smpro_toggle_notices">Show/Hide notices</a></p>
+		<div id="wp_smpro_notices" style="display:none">
 			<h3>Notices</h3>
 			<?php if ( $notices ) { ?>
 				<table class="widefat">
@@ -87,9 +87,9 @@ $datetime_format = "{$date_fmt} {$time_fmt}";
 			(function ($) {
 				$(function () {
 
-					$(".wdfb_toggle_notices").click(function () {
-						if ($("#wdfb_notices").is(":visible")) $("#wdfb_notices").hide();
-						else $("#wdfb_notices").show();
+					$(".wp_smpro_toggle_notices").click(function () {
+						if ($("#wp_smpro_notices").is(":visible")) $("#wp_smpro_notices").hide();
+						else $("#wp_smpro_notices").show();
 						return false;
 					});
 

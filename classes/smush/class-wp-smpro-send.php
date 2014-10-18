@@ -220,29 +220,21 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 					$response['api']
 				)
 			);
-			if ( $this->debug ) {
-				$response['debug'] = $response['debug'] . '<br /> Request received by API. ';
-			}
 			// request was successfully received
 			if ( $data->success ) {
-				if ( $this->debug ) {
-					$response['debug'] = $response['debug'] . '<br /> Request was successful ';
-				}
 				// get the unique request id issued by smush service
 				$request_id = $data->request_id;
 
 				$updated = $this->update_options( $request_id, $token, $sent_ids );
 //				$updated = true;
 			} else {
+				global $log;
 				$updated = false;
 				if ( $this->debug ) {
-					$response['debug'] = $response['debug'] . '<br /> Request error ' . json_encode( $data );
+					$log->error( 'Request error ' . json_encode( $data ) );
 				}
 			}
 
-			if ( $this->debug ) {
-				$response['debug'] = $response['debug'] . '<br /> Updated request details in database.';
-			}
 			$response['updated'] = $updated;
 
 			return $response;
@@ -655,9 +647,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			$request_data = json_encode( $request_data );
 
-			if ( $this->debug ) {
-				$response['debug'] = "DEBUG: Calling API: [" . $request_data . "]<br />";
-			}
 			$req_args = array(
 				'body'       => array(
 					'json' => $request_data
