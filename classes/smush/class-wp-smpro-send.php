@@ -19,7 +19,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 	 */
 	class WpSmProSend {
 		var $api_connected;
-		var $debug;
 
 		/**
 		 * Constructor.
@@ -236,9 +235,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			} else {
 				global $log;
 				$updated = false;
-				if ( $this->debug ) {
-					$log->error( 'WpSmProSend: process_response', 'Request error ' . json_encode( $data ) );
-				}
+				$log->error( 'WpSmProSend: process_response', 'Request error ' . json_encode( $data ) );
+				$response['error'] = !empty( $data->message ) ? $data->message : __('Attachment data missing, request not processed by API', WP_SMPRO_DOMAIN );
 			}
 
 			$response['updated'] = $updated;
@@ -416,6 +414,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @return object the request data with attachment data
 		 */
 		private function add_attachment_data( $request_data, $attachment_id, $pathprefix, $metadata = '' ) {
+			global $log;
 			$sent_ids = array();
 			if ( ! empty( $metadata ) ) {
 				$attachments[0]['type']          = get_post_mime_type( $attachment_id );
@@ -429,6 +428,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			//If there are no atachments, return
 			if ( empty( $attachments ) ) {
+				$log->error('WpSmproSend: add_attachment_data', 'Attachment data not found for the attachment: ' . $attachment_id );
 				return $request_data;
 			}
 
@@ -539,7 +539,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @return string|null the NOT IN clause
 		 */
 		private function existing_clause() {
-
+			global $log;
 			// get all the sent ids
 			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
 
@@ -550,6 +550,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// otherwise, create the clause
 			$id_list = implode( ',', $sent_ids );
+			if( !empty( $id_list ) ) {
+				$log->error('WpSmproSend: existing_clause', 'Ids Already sent for smushing - ' . $id_list );
+			}
 			unset( $sent_ids );
 
 			$clause = " AND p.ID NOT IN ($id_list)";
@@ -624,7 +627,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				return $response;
 			}
 
-
 			// if there was an http error
 			if ( empty( $response['api']['response']['code'] ) || $response['api']['response']['code'] != 200 ) {
 				unset( $response, $request_data );
@@ -633,6 +635,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				return $response;
 			}
+
 
 			unset( $request_data );
 
@@ -664,6 +667,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				'sslverify'  => false
 			);
 
+			error_log(json_encode($req_args));
 			// make the post request and return the response
 			$response['api'] = wp_remote_post( WP_SMPRO_SERVICE_URL, $req_args );
 

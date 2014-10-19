@@ -24,7 +24,7 @@ class WpSmproErrorLog {
 	}
 
 	function error( $function, $exception ) {
-		sp_ErrorRegistry::store( $exception );
+		WpSmproErrorRegistry::store( $exception );
 		$info = is_object( $exception ) && method_exists( $exception, 'getMessage' )
 			? $exception->getMessage()
 			: $exception;
@@ -65,4 +65,4 @@ class WpSmproErrorLog {
 	}
 }
 global $log;
-$log = new WpSmproErrorLog;
+$log = new WpSmproErrorLog();

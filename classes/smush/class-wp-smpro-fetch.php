@@ -63,11 +63,17 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			}
 
 			$smush_data = $this->update_smush_data( $attachment_id );
-			if ( $smush_data ) {
+			//If we have smush data and image is not already optimized, download zip
+			if ( $smush_data && $smush_data['bytes'] ) {
 
 				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'] );
 
 				$result = $this->replace_files( $smushed_file );
+
+				$this->update_filenames( $attachment_id, $smush_data['filenames'] );
+
+			}elseif( $smush_data && !$smush_data['bytes'] ){
+				$result = true;
 			}
 
 			if ( ! $result || is_wp_error( $result ) ) {
@@ -76,7 +82,6 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				die();
 			}
 
-			$this->update_filenames( $attachment_id, $smush_data['filenames'] );
 			$this->update_flags( $attachment_id );
 
 			update_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'is-smushed', 1 );
@@ -237,6 +242,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		private function _get( $url ) {
 			global $log;
 			$response = wp_remote_get( $url, array( 'sslverify' => false ) );
+			error_log( $url );
 			if ( is_wp_error( $response ) ) {
 				$log->error( 'WPSmproFetch: _get', 'Error in downloading zip' . json_encode( $response ) );
 			}
