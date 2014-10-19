@@ -68,7 +68,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			if ( empty( $current_requests[ $request_id ] ) || $data['token'] != $current_requests[ $request_id ]['token'] ) {
 				unset( $data );
 				echo json_encode( array( 'status' => 1 ) );
-				$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch" );
+				$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
 				die();
 			}
 

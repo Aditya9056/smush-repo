@@ -178,7 +178,9 @@
 			var $data = {};
 			if ($id !== false) {
 				$data = {'attachment_id': $id};
+				jQuery('.column-smushit #wp-smpro-send').attr('disabled', 'disabled');
 			}
+
 			return $.ajax({
 				type: "GET",
 				url: config.send_url,
@@ -186,6 +188,7 @@
 				timeout: 90000,
 				dataType: 'json'
 			}).done(function (response) {
+				jQuery('.column-smushit #wp-smpro-send').removeAttr('disabled');
 				if (typeof response.error !== 'undefined') {
 					sendFailure(response);
 				} else {
@@ -201,6 +204,7 @@
 				}
 				return;
 			}).fail(function (jqXHR, textStatus, errorThrown) {
+				jQuery('.column-smushit #wp-smpro-send').removeAttr('disabled');
 				response = {};
 				response.error = config.msgs.timeout;
 				sendFailure(response);

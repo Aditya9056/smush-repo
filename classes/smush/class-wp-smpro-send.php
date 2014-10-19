@@ -103,7 +103,12 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response['success']['count']          = $response['updated_count'];
 			$response['success']['sent_count']     = count( get_site_option( WP_SMPRO_PREFIX . 'sent-ids', '', false ) ); //Fetch from site option
 			$response['success']['status_message'] = $status_message;
+
+			unset($response['api']);
+
 			echo json_encode( $response );
+
+			unset( $response );
 			// wp_ajax wants us to...
 			die();
 		}
@@ -667,7 +672,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				'sslverify'  => false
 			);
 
-			error_log(json_encode($req_args));
 			// make the post request and return the response
 			$response['api'] = wp_remote_post( WP_SMPRO_SERVICE_URL, $req_args );
 

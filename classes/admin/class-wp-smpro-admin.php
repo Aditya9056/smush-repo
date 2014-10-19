@@ -386,7 +386,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 							?>
 							<div class="error"><?php _e( 'Nonce verification failed' ); ?></div><?php
 						} else {
-							if( !empty( $send_ids ) ) {
+							if ( ! empty( $send_ids ) ) {
 								$wp_smpro->sender->send_request( $send_ids );
 								$this->setup_counts();
 							}
@@ -395,7 +395,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						//display a error, images were not sent for smushing
 						?>
 						<div class="error">
-							<p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p>
+						<p><?php _e( 'Images not sent for smushing as API is unreachable.' ); ?></p>
 						</div><?php
 					}
 					//Query again, as images were sent recently
@@ -723,14 +723,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function setup_button() {
 			$button = $this->button_state();
 			?>
-			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
-				<span><?php echo $button['text'] ?></span>
+		<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
+			<span><?php echo $button['text'] ?></span>
 			</button><?php
 			if ( $button['id'] == 'wp-smpro-fetch' ) {
-					//show cancel button only for fetching
-					?>
-				<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
-					<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
+				//show cancel button only for fetching
+				?>
+			<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
+				<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
 				</button><?php
 			}
 		}
@@ -895,8 +895,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 			if ( empty( $api ) || is_wp_error( $api ) ) {
 				set_transient( 'api_connected', false );
-				if( is_wp_error($api ) ) {
-					$log->error('WpSmProAdmin: set_api_status', json_encode($api) );
+				if ( is_wp_error( $api ) ) {
+					$message = ! empty( $api ) ? json_encode( $api ) : __( 'No response from API', WP_SMPRO_DOMAIN );
+					$log->error( 'WpSmProAdmin: set_api_status', $message );
 				}
 
 				return false;
@@ -1061,6 +1062,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		<?php
 
 		}
+
 		/**
 		 * Creates Admin Error Log info page.
 		 *
