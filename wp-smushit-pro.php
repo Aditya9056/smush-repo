@@ -150,7 +150,7 @@ function wp_smpro_notice() {
 			} else {
 				?>
 				<p>
-					<strong><?php _e( 'WP Smush PRO requires WPMU DEV Dashboard plugin.', WP_SMPRO_DOMAIN ) ?></strong> <?php _e( 'Please install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">WPMU DEV Dashboard</a> to use WP Smush PRO.', WP_SMPRO_DOMAIN ); ?>
+					<strong><?php _e( 'WP Smush Pro requires the WPMU DEV Dashboard plugin.', WP_SMPRO_DOMAIN ) ?></strong> <?php _e( 'Please install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">the WPMU DEV Dashboard plugin</a> to use WP Smush PRO.', WP_SMPRO_DOMAIN ); ?>
 				</p>
 			<?php
 			}
