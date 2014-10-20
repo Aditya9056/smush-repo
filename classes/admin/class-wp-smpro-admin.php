@@ -890,6 +890,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				return get_transient( 'api_connected' );
 			}
 
+			//If we don't have api key
+			if ( !get_site_option( 'wpmudev_apikey', false ) ){
+				set_transient( 'api_connected', false );
+				return false;
+			}
+
 			if ( defined( 'WP_SMPRO_SERVICE_URL' ) ) {
 				$api = wp_remote_get( WP_SMPRO_SERVICE_STATUS, array( 'sslverify' => false, 'timeout' => 10 ) );
 			}
