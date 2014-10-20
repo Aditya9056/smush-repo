@@ -10,7 +10,7 @@ $datetime_format = "{$date_fmt} {$time_fmt}";
 
 	<h3>Errors</h3>
 	<?php if ( $errors ) { ?>
-		<a href="<?php echo admin_url( 'admin.php?page=wp-smpro-errorlog&action=purge' ); ?>">Purge log</a>
+		<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=wp-smpro-errorlog&action=purge' ), 'purge_log' ); ?>"><?php _e('Purge log', WP_SMPRO_DOMAIN ); ?></a>
 		<table class="widefat">
 			<thead>
 			<tr>

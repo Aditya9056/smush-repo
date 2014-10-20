@@ -1081,9 +1081,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function create_admin_error_log_page() {
 			global $log;
-			if ( 'purge' == @$_GET['action'] ) {
-				$log->purge_errors();
-				$log->purge_notices();
+			if ( !empty( $_GET['action'] ) && 'purge' == @$_GET['action'] ) {
+				//Check Nonce
+				if( empty( $_GET['_wpnonce'] ) || !wp_verify_nonce( $_GET['_wpnonce'], 'purge_log' ) ){
+					echo '<div class="error"><p>'. __('Nonce verification failed', WP_SMPRO_DOMAIN ) .'</p></div>';
+				}else{
+					$log->purge_errors();
+					$log->purge_notices();
+				}
 			}
 			$errors  = $log->get_all_errors();
 			$notices = $log->get_all_notices();
