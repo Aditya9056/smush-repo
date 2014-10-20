@@ -452,3 +452,14 @@ ul#wp-smpro-selected-images li .img-descr .img-smush-status{
     color: #0074a2;
     margin:0;
 }
+.bulk-smush ul li {
+    display: inline-block;
+    margin: 0 10px;
+}
+.bulk-smush ul li:first-child {
+    margin-left: 0;
+}
+.bulk-smush > p {
+    max-width: 550px;
+    text-align: center;
+}

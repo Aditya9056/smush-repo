@@ -82,7 +82,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			add_action( 'delete_attachment', array( $this, 'update_sent_ids' ) );
 
 			//Attachment status
-			add_action('wp_ajax_attachment_status', array( $this, 'attachment_status') );
+			add_action( 'wp_ajax_attachment_status', array( $this, 'attachment_status' ) );
 		}
 
 		/**
@@ -128,7 +128,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$wp_media_library_mode = get_user_meta( 'wp_media_library_mode' );
 			//Either request variable is not empty and grid mode is set, or if request empty then view is as per user choice, or no view is set
 			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) ||
-			     ( empty( $_REQUEST['mode'] ) &&  $wp_media_library_mode != 'list' ) ) {
+			     ( empty( $_REQUEST['mode'] ) && $wp_media_library_mode != 'list' )
+			) {
 				wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array(
 					'jquery',
 					'media-views'
@@ -441,7 +442,25 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					</h3>
 
 					<div class="bulk-smush">
-						<img src="<?php echo WP_SMPRO_URL; ?>assets/images/bulk-smush-instructions.png" alt="<?php _e( 'Bulk Smushing Instructions', WP_SMPRO_DOMAIN ); ?>"/>
+						<h4><?php _e( 'Send images', WP_SMPRO_DOMAIN ); ?></h4>
+						<ul class="bulk-instruction-send"><?php
+							for ( $i = 1; $i < 4; $i ++ ) {
+								?>
+								<li><img src="<?php echo WP_SMPRO_URL . 'assets/images/step-' . $i . '.png';  ?>" alt="<?php _e('Bulk Smushing Send Instruction', WP_SMPRO_DOMAIN); ?>"></li><?php
+							}
+							?>
+						</ul>
+						<p><?php _e('Wait for your images to be sent to our server to be smushed. Once sent you may leave the page, we will email you when smushed images are ready to be fetched back.'); ?></p>
+
+						<h4><?php _e( 'Fetch images', WP_SMPRO_DOMAIN ); ?></h4>
+						<ul class="bulk-instruction-fetch"><?php
+							for ( $i = 4; $i < 6; $i ++ ) {
+								?>
+								<li><img src="<?php echo WP_SMPRO_URL . 'assets/images/step-' . $i . '.png';  ?>" alt="<?php _e('Bulk Smushing Send Instruction', WP_SMPRO_DOMAIN); ?>" ></li><?php
+							}
+							?>
+						</ul>
+						<p><?php _e('Once you receive an email, you can click a link in there or go to WP Smush Pro settings page to fetch smushed images.'); ?></p>
 						<!--						<h4>-->
 						<?php //_e( 'Here is how bulk smushing works:', WP_SMPRO_DOMAIN ); ?><!--</h4>-->
 						<!--						<ol>-->
@@ -896,8 +915,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 
 			//If we don't have api key
-			if ( !get_site_option( 'wpmudev_apikey', false ) ){
+			if ( ! get_site_option( 'wpmudev_apikey', false ) ) {
 				set_transient( 'api_connected', false );
+
 				return false;
 			}
 
@@ -1081,11 +1101,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function create_admin_error_log_page() {
 			global $log;
-			if ( !empty( $_GET['action'] ) && 'purge' == @$_GET['action'] ) {
+			if ( ! empty( $_GET['action'] ) && 'purge' == @$_GET['action'] ) {
 				//Check Nonce
-				if( empty( $_GET['_wpnonce'] ) || !wp_verify_nonce( $_GET['_wpnonce'], 'purge_log' ) ){
-					echo '<div class="error"><p>'. __('Nonce verification failed', WP_SMPRO_DOMAIN ) .'</p></div>';
-				}else{
+				if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'purge_log' ) ) {
+					echo '<div class="error"><p>' . __( 'Nonce verification failed', WP_SMPRO_DOMAIN ) . '</p></div>';
+				} else {
 					$log->purge_errors();
 					$log->purge_notices();
 				}
@@ -1097,8 +1117,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			 */
 			require_once( WP_SMPRO_DIR . 'lib/forms/error_log.php' );
 		}
+
 		function attachment_status() {
-			$id = $_REQUEST['id'];
+			$id          = $_REQUEST['id'];
 			$status_text = $this->media_lib->smush_status( $id );
 			wp_send_json_success( $status_text );
 			die();
