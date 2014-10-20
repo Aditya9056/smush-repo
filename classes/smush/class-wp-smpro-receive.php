@@ -51,10 +51,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$request_id = $data['request_id'];
 
 			if ( ! empty( $data['error'] ) ) {
-				$log->error('WpSmproReceive: receieve', 'Error from API' . json_encode( $data['error']  ) );
+				$log->error( 'WpSmproReceive: receieve', 'Error from API' . json_encode( $data['error'] ) );
 
 				//Update sent ids
 				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
+
 				if ( ! empty( $current_requests[ $request_id ] ) ) {
 					unset( $current_requests[ $request_id ] );
 					update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
@@ -70,7 +71,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				echo json_encode( array( 'status' => 1 ) );
 
 				//Remove Smush Status for the id, as we are never going to get the callback again
-				unset($current_requests[$request_id] );
+				unset( $current_requests[ $request_id ] );
 				update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 
 				$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
@@ -163,11 +164,12 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$message[] = sprintf( __( 'A recent bulk smushing request on your site %s has been completed!', WP_SMPRO_DOMAIN ), home_url() );
 			$message[] = sprintf( __( 'Visit %s to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
 
-			$body = implode( "\r\n", $message );
+			$body      = implode( "\r\n", $message );
 			$mail_sent = wp_mail( $to, $subject, $body );
-			if ( !$mail_sent ){
-				$log->error('WpSmproReceive: notify', 'Notification email could not be sent');
+			if ( ! $mail_sent ) {
+				$log->error( 'WpSmproReceive: notify', 'Notification email could not be sent' );
 			}
+
 			return $mail_sent;
 		}
 
@@ -188,7 +190,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			} else {
 				wp_send_json_success( $sent_ids );
 			}
-			die(1);
+			die( 1 );
 		}
 
 	}

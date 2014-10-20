@@ -27,9 +27,10 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 * Constructor
 		 */
 		function __construct() {
-
+			global $log;
 			// set up the base path
 			$pathbase      = wp_upload_dir();
+
 			$this->basedir = trailingslashit( $pathbase['basedir'] );
 
 			// hook the ajax call for fetching the attachment
@@ -42,7 +43,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 */
 		function fetch( $attachment_id = false, $is_single = false ) {
 			global $log;
-			$result = '';
+			$result = false;
 
 			$output = array(
 				'success' => false,
@@ -63,8 +64,9 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			}
 
 			$smush_data = $this->update_smush_data( $attachment_id );
+
 			//If we have smush data and image is not already optimized, download zip
-			if ( $smush_data && !empty( $smush_data['bytes'] ) ) {
+			if ( $smush_data && !empty( $smush_data['stats']['bytes'] ) ) {
 
 				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'] );
 
@@ -72,7 +74,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 				$this->update_filenames( $attachment_id, $smush_data['filenames'] );
 
-			}elseif( $smush_data && empty( $smush_data['bytes'] ) ){
+			}elseif( !empty( $smush_data ) && $smush_data['stats']['bytes'] === 0 ){
 				$result = true;
 			}
 
@@ -216,7 +218,9 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 */
 		private function replace_files( $zip ) {
 			global $log;
+
 			WP_Filesystem();
+
 			$unzipped = unzip_file( $zip, $this->basedir );
 			if ( $unzipped ) {
 				// Now that the zip file has been used, destroy it
@@ -228,6 +232,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			} elseif ( is_wp_error( $unzipped ) ) {
 				$log->error( 'WpSmproFetch: replace_files', 'Error unzipping files' );
 			}
+			$log->error('Files Unzipped', $unzipped );
 
 			return false;
 		}

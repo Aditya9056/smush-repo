@@ -1,7 +1,7 @@
 <?php
 
 class WpSmproErrorLog {
-	var $_limit = 40;
+	var $_limit = 100;
 
 	function get_all_errors() {
 		$errors = get_site_option( 'sp_error_log' );
