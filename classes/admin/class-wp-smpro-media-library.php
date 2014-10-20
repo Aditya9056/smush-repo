@@ -40,7 +40,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			$this->current_requests = get_site_option( WP_SMPRO_PREFIX . 'current-requests', array() );
 			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
 			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
-			add_filter( 'wp_prepare_attachment_for_js', array( $this, 'insert_image_smush_data' ), '', 3 );
+//			add_filter( 'wp_prepare_attachment_for_js', array( $this, 'insert_image_smush_data' ), '', 3 );
 		}
 
 		/**
@@ -206,8 +206,8 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		/**
 		 * Add all attributes to
 		 */
-		function insert_image_smush_data( $response, $attachment, $meta ) {
-			$response['html'] = trim( $this->set_status( $attachment->ID, false ) );
+		function smush_status( $id ) {
+			$response = trim( $this->set_status( $id, false ) );
 
 			return $response;
 		}

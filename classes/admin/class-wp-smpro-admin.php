@@ -80,6 +80,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			//On deleting images update sent ids
 			add_action( 'delete_attachment', array( $this, 'update_sent_ids' ) );
+
+			//Attachment status
+			add_action('wp_ajax_attachment_status', array( $this, 'attachment_status') );
 		}
 
 		/**
@@ -122,8 +125,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->setup_counts();
 
 			// register js
-			//Either request variable is not empty and grid mode is set, or if request empty then view is as per user choice
-			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) || ( empty( $_REQUEST ) && get_user_meta( 'wp_media_library_mode' ) == 'grid' ) ) {
+			$wp_media_library_mode = get_user_meta( 'wp_media_library_mode' );
+			//Either request variable is not empty and grid mode is set, or if request empty then view is as per user choice, or no view is set
+			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) ||
+			     ( empty( $_REQUEST['mode'] ) &&  $wp_media_library_mode != 'list' ) ) {
 				wp_register_script( 'wp-smpro', WP_SMPRO_URL . 'assets/js/wp-smpro.js', array(
 					'jquery',
 					'media-views'
@@ -1086,6 +1091,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			 * Error Log Form
 			 */
 			require_once( WP_SMPRO_DIR . 'lib/forms/error_log.php' );
+		}
+		function attachment_status() {
+			$id = $_REQUEST['id'];
+			$status_text = $this->media_lib->smush_status( $id );
+			wp_send_json_success( $status_text );
+			die();
 		}
 
 	}
