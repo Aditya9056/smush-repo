@@ -68,6 +68,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			if ( empty( $current_requests[ $request_id ] ) || $data['token'] != $current_requests[ $request_id ]['token'] ) {
 				unset( $data );
 				echo json_encode( array( 'status' => 1 ) );
+
+				//Remove Smush Status for the id, as we are never going to get the callback again
+				unset($current_requests[$request_id] );
+				update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+
 				$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
 				die();
 			}
