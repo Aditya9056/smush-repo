@@ -336,6 +336,7 @@
 		};
 
 		var fetch = function ($id) {
+			jQuery('.wp-smpro-msg.smush-notices.fail').remove();
 			return jQuery.ajax({
 				type: "GET",
 				data: {attachment_id: $id},
