@@ -198,11 +198,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$sent_ids = array();
 			$count    = 0;
 			if ( empty( $current_requests ) || empty( $current_requests[ $sent_request_id ] ) || empty( $current_requests[ $sent_request_id ]['sent_ids'] ) ) {
+				if ( empty( $current_requests[ $sent_request_id ]['sent_ids'] ) ) {
+					delete_site_option( WP_SMPRO_PREFIX . "bulk-sent" );
+				}
 				$sent_request = array( 'sent' => false );
 			}
 			foreach ( $current_requests as $request_id => $request ) {
-				if( empty( $current_requests[$request_id ]['sent_ids'] ) ){
-					unset( $current_requests[$request_id]);
+				if ( empty( $current_requests[ $request_id ]['sent_ids'] ) ) {
+					unset( $current_requests[ $request_id ] );
 				}
 				if ( ! empty( $request['received'] ) && $request['received'] == 1 && ! empty( $request['sent_ids'] ) ) {
 					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
@@ -216,7 +219,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					$count = count( $request['sent_ids'] );
 				}
 			}
-			update_site_option(WP_SMPRO_PREFIX . "current-requests", $current_requests );
+			update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 
 			global $wp_locale;
 			$locale = array(
