@@ -559,8 +559,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function bulk_ui( $send_ids, $received_ids ) {
 			// set up some variables and print out some js vars
 			$this->all_ui( $send_ids, $received_ids );
-			// print the spinner for UI use
-			$this->print_spinner();
 			?>
 		<?php
 		}
@@ -731,14 +729,20 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function setup_button() {
 			$button = $this->button_state();
 			?>
-		<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
-			<span><?php echo $button['text'] ?></span>
-			</button><?php
+			<div class="smush-notices update checking-status">
+				<p><?php
+					_e('Checking smush status...', WP_SMPRO_DOMAIN );
+					$this->print_spinner(); ?>
+			</div>
+			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
+				<span><?php echo $button['text'] ?></span>
+			</button>
+			<?php
 			if ( $button['id'] == 'wp-smpro-fetch' ) {
-				//show cancel button only for fetching
-				?>
-			<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
-				<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
+					//show cancel button only for fetching
+					?>
+				<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
+					<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
 				</button><?php
 			}
 		}

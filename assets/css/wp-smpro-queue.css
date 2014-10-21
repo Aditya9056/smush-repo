@@ -463,3 +463,15 @@ ul#wp-smpro-selected-images li .img-descr .img-smush-status{
     max-width: 550px;
     text-align: center;
 }
+.checking-status {
+    display: none;
+    width: 50%;
+}
+.checking-status p {
+    display: inline-block;
+    margin: 0.5em 0;
+}
+.checking-status #wp-smpro-spinner-wrap {
+    display: inline-block;
+    vertical-align: middle;
+}

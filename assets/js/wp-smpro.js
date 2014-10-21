@@ -8,7 +8,7 @@
 			ajaxurl: '',
 			msgs: {},
 			counts: {},
-			spinner: $('#wp-smpro-spinner-wrap .floatingCirclesG'),
+			spinner: $('.checking-status #wp-smpro-spinner-wrap .floatingCirclesG'),
 			msgClass: 'wp-smpro-msg',
 			ids: [],
 			sendButton: '#wp-smpro-send',
@@ -81,6 +81,8 @@
 
 		};
 		var checkSmushStatus = function () {
+
+			jQuery('.smush-notices.checking-status').show();
 			jQuery.ajax({
 				type: "GET",
 				url: config.smush_status
@@ -252,6 +254,9 @@
 			};
 
 			msg(msgvar);
+			var button = jQuery(config.sendButton);
+			button.find('span').html(config.msgs.bulk_smush_now);
+			jQuery(config.sendButton).removeAttribute('disabled');
 			return;
 		};
 

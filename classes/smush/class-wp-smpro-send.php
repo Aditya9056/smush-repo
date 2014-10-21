@@ -113,20 +113,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			die();
 		}
 
-		function wperror_tojs( $wp_err ) {
-
-			if ( ! is_wp_error( $wp_err ) ) {
-				return array();
-			}
-			foreach ( $wp_err->errors as $err ) {
-				$response['status_code']    = 0;
-				$response['status_message'] = $err[0];
-			}
-
-			return $response;
-
-		}
-
 		/**
 		 * Send a request for smushing
 		 *
