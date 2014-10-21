@@ -245,6 +245,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				//Poll every 3 miuntes
 				$interval = 3 * MINUTE_IN_SECONDS * 1000;
 			}
+			$interval = 6000;
 			if ( $return ) {
 				return $interval;
 			}
@@ -441,21 +442,25 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 						<ul class="bulk-instruction-send"><?php
 							for ( $i = 1; $i < 4; $i ++ ) {
 								?>
-								<li><img src="<?php echo WP_SMPRO_URL . 'assets/images/step-' . $i . '.png';  ?>" alt="<?php _e('Bulk Smushing Send Instruction', WP_SMPRO_DOMAIN); ?>"></li><?php
+								<li>
+								<img src="<?php echo WP_SMPRO_URL . 'assets/images/step-' . $i . '.png'; ?>" alt="<?php _e( 'Bulk Smushing Send Instruction', WP_SMPRO_DOMAIN ); ?>">
+								</li><?php
 							}
 							?>
 						</ul>
-						<p><?php _e('Wait for your images to be sent to our server to be smushed. Once sent you may leave the page, we will email you when smushed images are ready to be fetched back.'); ?></p>
+						<p><?php _e( 'Wait for your images to be sent to our server to be smushed. Once sent you may leave the page, we will email you when smushed images are ready to be fetched back.' ); ?></p>
 
 						<h4><?php _e( 'Fetch images', WP_SMPRO_DOMAIN ); ?></h4>
 						<ul class="bulk-instruction-fetch"><?php
 							for ( $i = 4; $i < 6; $i ++ ) {
 								?>
-								<li><img src="<?php echo WP_SMPRO_URL . 'assets/images/step-' . $i . '.png';  ?>" alt="<?php _e('Bulk Smushing Send Instruction', WP_SMPRO_DOMAIN); ?>" ></li><?php
+								<li>
+								<img src="<?php echo WP_SMPRO_URL . 'assets/images/step-' . $i . '.png'; ?>" alt="<?php _e( 'Bulk Smushing Send Instruction', WP_SMPRO_DOMAIN ); ?>">
+								</li><?php
 							}
 							?>
 						</ul>
-						<p><?php _e('Once you receive an email, you can click a link in there or go to WP Smush Pro settings page to fetch smushed images.'); ?></p>
+						<p><?php _e( 'Once you receive an email, you can click a link in there or go to WP Smush Pro settings page to fetch smushed images.' ); ?></p>
 					</div>
 
 					<?php
@@ -726,7 +731,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			?>
 			<div class="smush-notices update checking-status">
 				<p><?php
-					_e('Checking smush status...', WP_SMPRO_DOMAIN );
+					_e( 'Checking smush status...', WP_SMPRO_DOMAIN );
 					$this->print_spinner(); ?>
 			</div>
 			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
@@ -734,8 +739,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			</button>
 			<?php
 			if ( $button['id'] == 'wp-smpro-fetch' ) {
-					//show cancel button only for fetching
-					?>
+				//show cancel button only for fetching
+				?>
 				<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
 					<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
 				</button><?php

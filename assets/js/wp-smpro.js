@@ -81,7 +81,7 @@
 
 		};
 		var checkSmushStatus = function () {
-
+			jQuery('.smush-api-status').remove();
 			jQuery('.smush-notices.checking-status').show();
 			jQuery.ajax({
 				type: "GET",
@@ -90,10 +90,14 @@
 				jQuery('.smush-notices.checking-status').hide();
 				if (!response.success) {
 					//if (callback) {
-					//Call itself after every 5min
+					//Call itself after every fix interval
 					setTimeout(function () {
 						checkSmushStatus();
 					}, config.wp_smpro_poll_interval.interval);
+					if( typeof response.data !== 'undefined' ) {
+						var div = '<div class="smush-notices update smush-api-status"><p>' + response.data.message +'</p></div>';
+						jQuery('#progress-ui').after(div);
+					}
 					//}
 				} else {
 					wp_smpro_sent_ids = response.data;

@@ -475,3 +475,6 @@ ul#wp-smpro-selected-images li .img-descr .img-smush-status{
     display: inline-block;
     vertical-align: middle;
 }
+.smush-api-status {
+    width: 50%;
+}

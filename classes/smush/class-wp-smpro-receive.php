@@ -175,6 +175,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 		function check_smush_status() {
 
+			global $log;
+
 			$bulk_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array(), false );
 			if ( empty( $bulk_request ) ) {
 				wp_send_json_error();
@@ -186,7 +188,32 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			//if there is no sent id or images are not smushed yet
 			if ( empty( $sent_ids[ $bulk_request ] ) || empty( $current_requests[ $bulk_request ]['received'] ) ) {
-				wp_send_json_error();
+				//Query Server for status
+				$req_args = array(
+					'user-agent' => WP_SMPRO_USER_AGENT,
+					'timeout'    => WP_SMPRO_TIMEOUT,
+					'sslverify'  => false
+				);
+				$url = add_query_arg( array('id' => $bulk_request ), WP_SMPRO_SERVICE_STATUS);
+				// make the post request and return the response
+				$response = wp_remote_get( $url, $req_args );
+				if( !$response || is_wp_error( $response ) ) {
+					$log->error('WpSmproReceive: check_smush_status', 'Error while querying request status from server.');
+				}else{
+					$data = array();
+					$response_body = wp_remote_retrieve_body( $response );
+					if( !empty( $response_body ) ) {
+						$response_body = json_decode( $response_body );
+						if( $response_body->message == 'queue') {
+							$data['message'] = __('Your smush request is in queue, it will be processed soon', WP_SMPRO_DOMAIN );
+							wp_send_json_error($data);
+						}elseif ( $response_body->message == 'processing' ) {
+							$data['message'] = sprintf( __('Your smush request is being processed. %d images are remaining.', WP_SMPRO_DOMAIN ), $response_body['count'] );
+							wp_send_json_error($data);
+						}
+					}
+				}
+
 			} else {
 				wp_send_json_success( $sent_ids );
 			}
