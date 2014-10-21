@@ -234,7 +234,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function setPollInterval( $count, $return = false ) {
-			//Set Interval for polling
+			//Set Interval for po
+			//lling
 			if ( $count <= 5 ) {
 				//Poll every 30 seconds
 				$interval = 30000;
@@ -245,7 +246,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				//Poll every 3 miuntes
 				$interval = 3 * MINUTE_IN_SECONDS * 1000;
 			}
-			$interval = 6000;
 			if ( $return ) {
 				return $interval;
 			}
