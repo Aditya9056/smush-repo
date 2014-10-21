@@ -274,6 +274,17 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				//no smush data recieved yet
 				$log->error( 'WpSmProFetch: update_smush_data', 'Missing smush data for attachment id' . $attachment_id );
 
+				//Remove it from sent ids, if it's in a bulk request
+				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
+				$bulk_request     = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+
+				if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
+					$index = array_search( $attachment_id, $current_requests[ $bulk_request ]['sent_ids'] );
+					if ( ! empty( $index ) ) {
+						unset( $current_requests[ $bulk_request ]['sent_ids'][ $index ] );
+					}
+				}
+
 				return false;
 			}
 			$stats          = $smush_data['stats'];
