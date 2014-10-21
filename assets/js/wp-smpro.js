@@ -402,6 +402,9 @@
 
 			var startingpoint = jQuery.Deferred();
 			startingpoint.resolve();
+			if( config.ids.length === 0 || config.ids === '' ) {
+				return false;
+			}
 			//Fetch ids which have been smushed and recieved
 			$.each(config.ids, function ($request_id, $ids) {
 				$.each($ids.sent_ids, function (i, $id) {

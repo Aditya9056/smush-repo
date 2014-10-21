@@ -249,6 +249,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$response = wp_remote_get( $url, array( 'sslverify' => false ) );
 			if ( is_wp_error( $response ) ) {
 				$log->error( 'WPSmproFetch: _get', 'Error in downloading zip' . json_encode( $response ) );
+				return false;
 			}
 			$zip = wp_remote_retrieve_body( $response );
 
