@@ -189,18 +189,21 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
 
-			$sent_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+			$sent_request_id = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
-			$sent_request = ! empty( $sent_request ) ? array( 'sent' => true ) : array( 'sent' => false );
+			$sent_request = ! empty( $sent_request_id ) ? array( 'sent' => true ) : array( 'sent' => false );
 
 			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
 
 			$sent_ids = array();
 			$count    = 0;
-			if ( empty( $current_requests ) ) {
+			if ( empty( $current_requests ) || empty( $current_requests[ $sent_request_id ] ) || empty( $current_requests[ $sent_request_id ]['sent_ids'] ) ) {
 				$sent_request = array( 'sent' => false );
 			}
 			foreach ( $current_requests as $request_id => $request ) {
+				if( empty( $current_requests[$request_id ]['sent_ids'] ) ){
+					unset( $current_requests[$request_id]);
+				}
 				if ( ! empty( $request['received'] ) && $request['received'] == 1 && ! empty( $request['sent_ids'] ) ) {
 					$sent_ids[ $request_id ]['sent_ids'] = $request['sent_ids'];
 
@@ -213,6 +216,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					$count = count( $request['sent_ids'] );
 				}
 			}
+			update_site_option(WP_SMPRO_PREFIX . "current-requests", $current_requests );
 
 			global $wp_locale;
 			$locale = array(
@@ -741,8 +745,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			if ( $button['id'] == 'wp-smpro-fetch' ) {
 				//show cancel button only for fetching
 				?>
-				<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
-					<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
+			<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
+				<span><?php _e( 'Cancel', WP_SMPRO_DOMAIN ); ?></span>
 				</button><?php
 			}
 		}
