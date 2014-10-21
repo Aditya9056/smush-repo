@@ -29,7 +29,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		function __construct() {
 			global $log;
 			// set up the base path
-			$pathbase      = wp_upload_dir();
+			$pathbase = wp_upload_dir();
 
 			$this->basedir = trailingslashit( $pathbase['basedir'] );
 
@@ -66,15 +66,22 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$smush_data = $this->update_smush_data( $attachment_id );
 
 			//If we have smush data and image is not already optimized, download zip
-			if ( $smush_data && !empty( $smush_data['stats']['bytes'] ) ) {
+			if ( $smush_data && ! empty( $smush_data['stats']['bytes'] ) ) {
 
-				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'] );
+				$smushed_file  = $this->save_zip( $attachment_id, $smush_data['file_url'] );
+				$output['msg'] = sprintf( __( 'Error downloading smushed file for attachment id: %d', WP_SMPRO_DOMAIN ), $attachment_id );
+				if ( ! $smushed_file ) {
+					$result = false;
+					unset( $smush_data );
+					echo json_encode( $output );
+					die();
+				}
 
 				$result = $this->replace_files( $smushed_file );
 
 				$this->update_filenames( $attachment_id, $smush_data['filenames'] );
 
-			}elseif( !empty( $smush_data ) && $smush_data['stats']['bytes'] === 0 ){
+			} elseif ( ! empty( $smush_data ) && $smush_data['stats']['bytes'] === 0 ) {
 				$result = true;
 			}
 
@@ -112,6 +119,9 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		function save_zip( $attachment_id, $url ) {
 
 			$zip = $this->_get( $url, $attachment_id );
+			if ( ! $zip ) {
+				return false;
+			}
 
 			$filename = $this->upload_zip( $attachment_id, $zip );
 
@@ -232,7 +242,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			} elseif ( is_wp_error( $unzipped ) ) {
 				$log->error( 'WpSmproFetch: replace_files', 'Error unzipping files' );
 			}
-			$log->error('Files Unzipped', $unzipped );
+			$log->error( 'Files Unzipped', $unzipped );
 
 			return false;
 		}
@@ -249,6 +259,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$response = wp_remote_get( $url, array( 'sslverify' => false ) );
 			if ( is_wp_error( $response ) ) {
 				$log->error( 'WPSmproFetch: _get', 'Error in downloading zip for ' . $attachment_id . ' - ' . $url . '-' . json_encode( $response ) );
+
 				return false;
 			}
 			$zip = wp_remote_retrieve_body( $response );
