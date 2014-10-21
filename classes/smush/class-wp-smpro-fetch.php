@@ -111,7 +111,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 		function save_zip( $attachment_id, $url ) {
 
-			$zip = $this->_get( $url );
+			$zip = $this->_get( $url, $attachment_id );
 
 			$filename = $this->upload_zip( $attachment_id, $zip );
 
@@ -244,11 +244,11 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 *
 		 * @return type
 		 */
-		private function _get( $url ) {
+		private function _get( $url, $attachment_id ) {
 			global $log;
 			$response = wp_remote_get( $url, array( 'sslverify' => false ) );
 			if ( is_wp_error( $response ) ) {
-				$log->error( 'WPSmproFetch: _get', 'Error in downloading zip' . json_encode( $response ) );
+				$log->error( 'WPSmproFetch: _get', 'Error in downloading zip for ' . $attachment_id . ' - ' . json_encode( $response ) );
 				return false;
 			}
 			$zip = wp_remote_retrieve_body( $response );
