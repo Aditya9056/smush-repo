@@ -225,9 +225,7 @@
 		if (typeof config.wp_smpro_request_sent !== 'undefined' && config.wp_smpro_request_sent.sent) {
 			//Only for bulk
 			if (elem.attr('class') === 'wp-smpro-bulk-wrap' && elem.attr('id') === 'all-bulk') {
-				setTimeout(function () {
-					checkSmushStatus();
-				}, config.wp_smpro_poll_interval.interval);
+				checkSmushStatus();
 			}
 		}
 
