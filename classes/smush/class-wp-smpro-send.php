@@ -45,7 +45,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				//Send metadata and attachment id
 				$sent = $this->send_request( $attachment_id, $metadata );
 				if ( ! $sent ) {
-					$log->error( 'WpSmproSend: auto_smush', 'Request not sent' );
+					$log->error( 'WpSmproSend: auto_smush', 'Auto Smush request not sent' );
 				}
 			} else {
 				$log->error( 'WpSmproSend: auto_smush', 'API not connected' );
@@ -475,7 +475,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$where_id_clause = $this->where_id_clause( $attachment_id );
 
 			// so that we don't include the ids already sent
-			$existing_clause = $this->existing_clause();
+			$existing_clause = $this->existing_clause( $attachment_id );
 
 			// get the attachment id, attachment metadata and full size's path
 			$sql     = "SELECT p.ID as attachment_id, p.post_mime_type as type, md.meta_value as metadata, mp.meta_value as metapath"
@@ -543,7 +543,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 *
 		 * @return string|null the NOT IN clause
 		 */
-		private function existing_clause() {
+		private function existing_clause( $id ) {
 			global $log;
 			// get all the sent ids
 			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
@@ -555,9 +555,20 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// otherwise, create the clause
 			$id_list = implode( ',', $sent_ids );
-			if( !empty( $id_list ) ) {
-				$log->error('WpSmproSend: existing_clause', 'Ids Already sent for smushing - ' . $id_list );
+
+			if( !empty( $id ) && ! empty( $sent_ids ) ) {
+				if( !is_array( $id ) ) {
+					if ( in_array( $id, $sent_ids ) ) {
+						$log->error( 'WpSmproSend: existing_clause', 'Id already sent for smushing - ' . $id_list );
+					}
+				}else{
+					$common_ids = array_intersect($id, $sent_ids );
+					if( !empty( $common_ids ) ) {
+						$log->error( 'WpSmproSend: existing_clause', 'Ids already sent for smushing - ' . implode( ',' ,  $id ) );
+					}
+				}
 			}
+
 			unset( $sent_ids );
 
 			$clause = " AND p.ID NOT IN ($id_list)";

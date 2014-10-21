@@ -24,6 +24,7 @@ if ( ! class_exists( 'WpSmProCount' ) ) {
 		);
 
 		function init() {
+			global $log;
 			$this->counts = array(
 				'total'   => (int) $this->total_count(),
 				'sent'    => (int) $this->sent_count(),
@@ -56,6 +57,13 @@ if ( ! class_exists( 'WpSmProCount' ) ) {
 					}
 				}
 				$this->counts['smushed'] = $this->smushed_count();
+			}
+
+			//If sent counts is lesser than smushed count, return smushed count,
+			//this might be due to manually removing smush data
+			if ( $this->counts['sent'] < $this->counts['smushed'] ) {
+				$this->counts['sent'] = $this->smushed_count();
+				$log->notice('WpSmproCount -> init: Sent count are lesser than fetch count.');
 			}
 		}
 
