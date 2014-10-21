@@ -282,6 +282,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 					$index = array_search( $attachment_id, $current_requests[ $bulk_request ]['sent_ids'] );
 					if ( ! empty( $index ) ) {
 						unset( $current_requests[ $bulk_request ]['sent_ids'][ $index ] );
+						update_site_option(WP_SMPRO_PREFIX . "current-requests", $current_requests);
 					}
 				}
 
