@@ -194,25 +194,28 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 					'timeout'    => WP_SMPRO_TIMEOUT,
 					'sslverify'  => false
 				);
-				$url = add_query_arg( array('id' => $bulk_request ), WP_SMPRO_SERVICE_STATUS);
+				$url      = add_query_arg( array( 'id' => $bulk_request ), WP_SMPRO_SERVICE_STATUS );
 				// make the post request and return the response
 				$response = wp_remote_get( $url, $req_args );
-				if( !$response || is_wp_error( $response ) ) {
-					$log->error('WpSmproReceive: check_smush_status', 'Error while querying request status from server.');
-				}else{
-					$data = array();
+				if ( ! $response || is_wp_error( $response ) ) {
+					$log->error( 'WpSmproReceive: check_smush_status', 'Error while querying request status from server.' );
+				} else {
+					$data          = array();
 					$response_body = wp_remote_retrieve_body( $response );
-					if( !empty( $response_body ) ) {
+					if ( ! empty( $response_body ) ) {
 						$response_body = json_decode( $response_body );
-						if( $response_body->message == 'queue') {
-							$data['message'] = __('Your smush request is in queue, it will be processed soon', WP_SMPRO_DOMAIN );
-							wp_send_json_error($data);
-						}elseif ( $response_body->message == 'processing' ) {
-							$data['message'] = sprintf( __('Your smush request is being processed. %d images are remaining.', WP_SMPRO_DOMAIN ), $response_body['count'] );
-							wp_send_json_error($data);
+						if ( ! empty( $response_body->message ) ) {
+							if ( $response_body->message == 'queue' ) {
+								$data['message'] = __( 'Your smush request is in queue, it will be processed soon', WP_SMPRO_DOMAIN );
+								wp_send_json_error( $data );
+							} elseif ( $response_body->message == 'processing' ) {
+								$data['message'] = sprintf( __( 'Your smush request is being processed. %d images are remaining.', WP_SMPRO_DOMAIN ), $response_body['count'] );
+								wp_send_json_error( $data );
+							}
 						}
 					}
 				}
+				wp_send_json_error();
 
 			} else {
 				wp_send_json_success( $sent_ids );
