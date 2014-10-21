@@ -87,6 +87,7 @@
 				type: "GET",
 				url: config.smush_status
 			}).done(function (response) {
+				jQuery('.smush-notices.checking-status').hide();
 				if (!response.success) {
 					//if (callback) {
 					//Call itself after every 5min
@@ -127,6 +128,8 @@
 
 				}
 				return;
+			}).fail(function(){
+				jQuery('.smush-notices.checking-status').hide();
 			});
 		}
 

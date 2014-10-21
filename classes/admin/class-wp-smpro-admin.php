@@ -193,7 +193,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$sent_request = ! empty( $sent_request ) ? array( 'sent' => true ) : array( 'sent' => false );
 
-			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
 
 			$sent_ids = array();
 			$count    = 0;
@@ -206,11 +206,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 					//Used to decide whether localize or not sent request variable, if we already received smush completion, we need
 					//not to poll on page refresh
-					$sent_request = array( 'sent' => false );
-				}
-
-				//If there are no sent ids
-				if ( empty( $request['sent_ids'] ) ) {
 					$sent_request = array( 'sent' => false );
 				}
 
