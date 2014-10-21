@@ -209,7 +209,11 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								$data['message'] = __( 'Your smush request is in queue, it will be processed soon', WP_SMPRO_DOMAIN );
 								wp_send_json_error( $data );
 							} elseif ( $response_body->message == 'processing' ) {
-								$data['message'] = sprintf( __( 'Your smush request is being processed. %d images are remaining.', WP_SMPRO_DOMAIN ), $response_body->count );
+								if( $response_body->count === 0 ) {
+									$data['message'] = __( 'All images have been smushed, preparing compression stats.', WP_SMPRO_DOMAIN );
+								}else{
+									$data['message'] = sprintf( __( 'Your smush request is being processed. %d images are remaining.', WP_SMPRO_DOMAIN ), $response_body->count );
+								}
 								wp_send_json_error( $data );
 							}
 						}
