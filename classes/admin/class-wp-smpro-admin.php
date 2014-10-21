@@ -795,6 +795,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$button['cancel']   = ' disabled="disabled"';
 
 				return $button;
+			} elseif ( $this->counts['sent'] === $this->counts['total'] && ! $is_bulk_sent ) {
+				$button['text']     = __( 'Send Smush Request', WP_SMPRO_DOMAIN );
+				$button['disabled'] = ' disabled="disabled"';
+				$button['id']       = "wp-smpro-send";
+
+				return $button;
 			}
 
 			// a bulk request has been sent but not received
