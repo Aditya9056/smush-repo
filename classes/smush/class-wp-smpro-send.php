@@ -586,10 +586,11 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$full_image = $full_size_array['basename'];
 
 			$filenames = array();
-
-			// check large
-			foreach ( $metadata['sizes'] as $size_key => $size_data ) {
-				$filenames[ $size_key ] = $size_data['file'];
+			if( !empty( $metadata['sizes'] ) ) {
+				// check large
+				foreach ( $metadata['sizes'] as $size_key => $size_data ) {
+					$filenames[ $size_key ] = $size_data['file'];
+				}
 			}
 
 			// if there's no large size, the full is the large size

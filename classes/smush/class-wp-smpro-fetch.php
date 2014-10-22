@@ -165,25 +165,36 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		}
 
 		function update_filenames( $attachment_id, $filenames ) {
+			global $log;
 			$attachment_meta = wp_get_attachment_metadata( $attachment_id );
 
-			$path        = pathinfo( $attachment_meta['file'] );
-			$path_prefix = $path['dirname'];
+			if( !empty( $attachment_meta['file'] ) ) {
+				$path        = pathinfo( $attachment_meta['file'] );
+				$path_prefix = $path['dirname'];
+			}else{
+				$log->error('WpSmproFetch: update_filenames', 'No Attachment metadat for attachmnet ' . $attachment_id );
+				return;
+			}
 
 			$upload_dir   = wp_upload_dir();
 			$upload_path  = $upload_dir['basedir'];
 			$unlink_files = array();
 
-			foreach ( $attachment_meta['sizes'] as $size => $details ) {
-				if ( ! isset( $filenames[ $size ] ) || $filenames[ $size ] == $attachment_meta['sizes'][ $size ]['file'] ) {
-					continue;
-				}
-				$file_path    = $upload_path . '/' . $path_prefix . '/' . $filenames[ $size ];
-				$file_details = wp_check_filetype_and_ext( $file_path, $filenames[ $size ] );
+			if( !empty( $attachment_meta['sizes'] ) ) {
+				foreach ( $attachment_meta['sizes'] as $size => $details ) {
+					if ( ! isset( $filenames[ $size ] ) || $filenames[ $size ] == $attachment_meta['sizes'][ $size ]['file'] ) {
+						continue;
+					}
+					$file_path    = $upload_path . '/' . $path_prefix . '/' . $filenames[ $size ];
+					$file_details = wp_check_filetype_and_ext( $file_path, $filenames[ $size ] );
 
-				$unlink_files[]                                 = $upload_path . '/' . $path_prefix . '/' . $attachment_meta['sizes'][ $size ]['file'];
-				$attachment_meta['sizes'][ $size ]['file']      = $filenames[ $size ];
-				$attachment_meta['sizes'][ $size ]['mime-type'] = $file_details['type'];
+					$unlink_files[]                                 = $upload_path . '/' . $path_prefix . '/' . $attachment_meta['sizes'][ $size ]['file'];
+					$attachment_meta['sizes'][ $size ]['file']      = $filenames[ $size ];
+					$attachment_meta['sizes'][ $size ]['mime-type'] = $file_details['type'];
+				}
+			}else{
+				$log->error('WpSmproFetch: update_filenames', 'Size details not found in attachment metadata for attachmnet ' . $attachment_id );
+				return;
 			}
 			wp_update_attachment_metadata( $attachment_id, $attachment_meta );
 			if ( ! empty( $unlink_files ) ) {
@@ -257,7 +268,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		private function _get( $url, $attachment_id ) {
 			global $log;
 			$response = wp_remote_get( $url, array( 'sslverify' => false ) );
-			if ( is_wp_error( $response ) ) {
+			if ( is_wp_error( $response ) || empty( $response ) || $response['response']['code'] !== 404 ) {
 				$log->error( 'WPSmproFetch: _get', 'Error in downloading zip for ' . $attachment_id . ' - ' . $url . '-' . json_encode( $response ) );
 
 				return false;

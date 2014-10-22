@@ -189,7 +189,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
 
-			$sent_request_id = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+			$sent_request_id = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0 );
 
 			$sent_request = ! empty( $sent_request_id ) ? array( 'sent' => true ) : array( 'sent' => false );
 
@@ -197,7 +197,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$sent_ids = array();
 			$count    = 0;
-			if ( empty( $current_requests ) || empty( $current_requests[ $sent_request_id ] ) || empty( $current_requests[ $sent_request_id ]['sent_ids'] ) ) {
+			//Check if current request is empty, or if bulk request is set, check if sent ids are not empty for
+			//th bulk request in current requestß
+			if ( empty( $current_requests ) ||
+				     ( $sent_request_id &&
+				       ( empty( $current_requests[ $sent_request_id ] ) || empty( $current_requests[ $sent_request_id ]['sent_ids'] ) )
+				     )
+			){
 				if ( empty( $current_requests[ $sent_request_id ]['sent_ids'] ) ) {
 					delete_site_option( WP_SMPRO_PREFIX . "bulk-sent" );
 				}
