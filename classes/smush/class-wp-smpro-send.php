@@ -104,7 +104,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response['success']['sent_count']     = count( get_site_option( WP_SMPRO_PREFIX . 'sent-ids', '', false ) ); //Fetch from site option
 			$response['success']['status_message'] = $status_message;
 
-			unset($response['api']);
+			unset( $response['api'] );
 
 			echo json_encode( $response );
 
@@ -227,7 +227,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				global $log;
 				$updated = false;
 				$log->error( 'WpSmProSend: process_response', 'Request error ' . json_encode( $data ) );
-				$response['error'] = !empty( $data->message ) ? $data->message : __('Attachment data missing, request not processed by API', WP_SMPRO_DOMAIN );
+				$response['error'] = ! empty( $data->message ) ? $data->message : __( 'Attachment data missing, request not processed by API', WP_SMPRO_DOMAIN );
 			}
 
 			$response['updated'] = $updated;
@@ -244,23 +244,28 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @return boolean
 		 */
 		private function update_options( $request_id, $token, $sent_ids ) {
+			global $log;
 			// update the sent ids array
 			$sent_update = $this->update_sent_ids( $sent_ids );
 //			$sent_update = true;
-
+			if ( ! $sent_update ) {
+				$log->error( 'WpSmproSend: update_options', 'Sent-ids not updated' );
+			}
 			// if sent ids were updated, proceed further
 			if ( $sent_update ) {
 
 				// save the sent_ids for this request
 				$this->update_bulk_status( $sent_ids, $request_id );
 
-				$current_requests = get_site_option( WP_SMPRO_PREFIX . 'current-requests', array() );
+				$previous_req = $current_requests = get_site_option( WP_SMPRO_PREFIX . 'current-requests', array(), false );
 
 				$current_requests[ $request_id ]['token'] = $token;
 
 				$current_requests[ $request_id ]['sent_ids'] = $sent_ids;
 
 				$current_requests[ $request_id ]['timestamp'] = time();
+
+				$diff = count( $current_requests ) - count( $previous_req );
 
 				$updated = boolval( update_site_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
 			} else {
@@ -304,11 +309,13 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @return boolean Whether the update was successful
 		 */
 		private function update_sent_ids( $sent_ids ) {
+			if ( ! array( $sent_ids ) ) {
+				$sent_ids = explode( ',', $sent_ids );
+			}
 			// get the array of ids sent previously
 			$prev_sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array(), false );
 
 			// merge the newest sent ids with the existing ones
-
 			$sent_ids = array_merge( $prev_sent_ids, $sent_ids );
 
 			if ( is_array( $sent_ids ) ) {
@@ -318,6 +325,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 //				$update = true;
 
 				return boolval( $update );
+			} else {
+				error_log( "String provided instead of array in WpSmproSend: update_sent_ids" );
 			}
 
 			return false;
@@ -419,7 +428,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			//If there are no atachments, return
 			if ( empty( $attachments ) ) {
-				$log->error('WpSmproSend: add_attachment_data', 'Attachment data not found for the attachment: ' . $attachment_id );
+				$log->error( 'WpSmproSend: add_attachment_data', 'Attachment data not found for the attachment: ' . $attachment_id );
+
 				return $request_data;
 			}
 
@@ -532,7 +542,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		private function existing_clause( $id ) {
 			global $log;
 			// get all the sent ids
-			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
+			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array(), false );
 
 			// we don't have any, no clause required
 			if ( empty( $sent_ids ) ) {
@@ -542,15 +552,15 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// otherwise, create the clause
 			$id_list = implode( ',', $sent_ids );
 
-			if( !empty( $id ) && ! empty( $sent_ids ) ) {
-				if( !is_array( $id ) ) {
+			if ( ! empty( $id ) && ! empty( $sent_ids ) ) {
+				if ( ! is_array( $id ) ) {
 					if ( in_array( $id, $sent_ids ) ) {
 						$log->error( 'WpSmproSend: existing_clause', 'Id already sent for smushing - ' . $id_list );
 					}
-				}else{
-					$common_ids = array_intersect($id, $sent_ids );
-					if( !empty( $common_ids ) ) {
-						$log->error( 'WpSmproSend: existing_clause', 'Ids already sent for smushing - ' . implode( ',' ,  $id ) );
+				} else {
+					$common_ids = array_intersect( $id, $sent_ids );
+					if ( ! empty( $common_ids ) ) {
+						$log->error( 'WpSmproSend: existing_clause', 'Ids already sent for smushing - ' . implode( ',', $id ) );
 					}
 				}
 			}
@@ -586,7 +596,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$full_image = $full_size_array['basename'];
 
 			$filenames = array();
-			if( !empty( $metadata['sizes'] ) ) {
+			if ( ! empty( $metadata['sizes'] ) ) {
 				// check large
 				foreach ( $metadata['sizes'] as $size_key => $size_data ) {
 					$filenames[ $size_key ] = $size_data['file'];

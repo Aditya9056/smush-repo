@@ -46,12 +46,12 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				'data'       => array()
 			);
 
-			$data = wp_parse_args( $data, $defaults );
+			$req_data = wp_parse_args( $data, $defaults );
 
-			$request_id = $data['request_id'];
+			$request_id = $req_data['request_id'];
 
-			if ( ! empty( $data['error'] ) ) {
-				$log->error( 'WpSmproReceive: receieve', 'Error from API' . json_encode( $data['error'] ) );
+			if ( ! empty( $req_data['error'] ) ) {
+				$log->error( 'WpSmproReceive: receieve', 'Error from API' . json_encode( $req_data['error'] ) );
 
 				//Update sent ids
 				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
@@ -66,24 +66,33 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-			if ( empty( $current_requests[ $request_id ] ) || $data['token'] != $current_requests[ $request_id ]['token'] ) {
-				unset( $data );
+			if ( empty( $current_requests[ $request_id ] ) || $req_data['token'] != $current_requests[ $request_id ]['token'] ) {
+
 				echo json_encode( array( 'status' => 1 ) );
 
 				//Remove Smush Status for the id, as we are never going to get the callback again
 				unset( $current_requests[ $request_id ] );
+
 				update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 
-				$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
+				if ( empty( $current_requests[ $request_id ] ) ) {
+					$log->error( 'WpSmProReceive: receive', "Smush receive error, sent id not set in current requests " . $request_id );
+				} else {
+					error_log(json_encode($req_data));
+					$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
+				}
+
+				unset( $req_data );
 				die();
 			}
 
-			$attachment_data = $data['data'];
+			$attachment_data = $req_data['data'];
 			$is_single       = ! ( count( $current_requests[ $request_id ]['sent_ids'] ) > 1 );
 
 			$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], $is_single );
 
 			unset( $attachment_data );
+			unset( $req_data );
 			unset( $data );
 
 			$updated = $this->update( $insert, $request_id );
@@ -209,9 +218,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								$data['message'] = __( 'Your smush request is in queue, it will be processed soon', WP_SMPRO_DOMAIN );
 								wp_send_json_error( $data );
 							} elseif ( $response_body->message == 'processing' ) {
-								if( $response_body->count === 0 ) {
+								if ( $response_body->count === 0 ) {
 									$data['message'] = __( 'All images have been smushed, preparing compression stats.', WP_SMPRO_DOMAIN );
-								}else{
+								} else {
 									$data['message'] = sprintf( __( 'Your smush request is being processed. %d images are remaining.', WP_SMPRO_DOMAIN ), $response_body->count );
 								}
 								wp_send_json_error( $data );
