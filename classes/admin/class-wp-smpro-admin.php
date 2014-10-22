@@ -794,7 +794,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$button['cancel']   = ' disabled="disabled"';
 
 				return $button;
-			} elseif ( $this->counts['sent'] === $this->counts['total'] && $is_bulk_sent ) {
+			} elseif ( $this->counts['sent'] === $this->counts['total'] && $is_bulk_sent && !$is_bulk_received ) {
 				$button['text']     = __( 'Smushing in progress', WP_SMPRO_DOMAIN );
 				$button['id']       = "wp-smpro-waiting";
 				$button['disabled'] = ' disabled="disabled"';
