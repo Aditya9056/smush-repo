@@ -125,8 +125,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->setup_counts();
 
 			// register js
-			$current_blog_id = get_current_blog_id();
-			$meta_key = $current_blog_id == 1 ? 'wp_media_library_mode' : 'wp_' . $current_blog_id . '_media_library_mode';
+			$current_blog_id       = get_current_blog_id();
+			$meta_key              = $current_blog_id == 1 ? 'wp_media_library_mode' : 'wp_' . $current_blog_id . '_media_library_mode';
 			$wp_media_library_mode = get_user_meta( get_current_user_id(), $meta_key, true );
 			//Either request variable is not empty and grid mode is set, or if request empty then view is as per user choice, or no view is set
 			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) ||
@@ -202,10 +202,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			//Check if current request is empty, or if bulk request is set, check if sent ids are not empty for
 			//th bulk request in current requestß
 			if ( empty( $current_requests ) ||
-				     ( $sent_request_id &&
-				       ( empty( $current_requests[ $sent_request_id ] ) || empty( $current_requests[ $sent_request_id ]['sent_ids'] ) )
-				     )
-			){
+			     ( $sent_request_id &&
+			       ( empty( $current_requests[ $sent_request_id ] ) || empty( $current_requests[ $sent_request_id ]['sent_ids'] ) )
+			     )
+			) {
 				if ( empty( $current_requests[ $sent_request_id ]['sent_ids'] ) ) {
 					delete_site_option( WP_SMPRO_PREFIX . "bulk-sent" );
 				}
@@ -796,7 +796,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$button['cancel']   = ' disabled="disabled"';
 
 				return $button;
-			} elseif ( $this->counts['sent'] === $this->counts['total'] && $is_bulk_sent && !$is_bulk_received ) {
+			} elseif ( $this->counts['sent'] === $this->counts['total'] && $is_bulk_sent && ! $is_bulk_received ) {
 				$button['text']     = __( 'Smushing in progress', WP_SMPRO_DOMAIN );
 				$button['id']       = "wp-smpro-waiting";
 				$button['disabled'] = ' disabled="disabled"';
@@ -1018,6 +1018,20 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			unset( $sent_ids[ $pos ] );
 			update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
 
+			//Update Current requests
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . 'current-requests', array(), false );
+			if ( ! empty( $current_requests ) ) {
+				foreach ( $current_requests as $req_id => $request ) {
+					$index = array_search( $attachment_id, $request['sent_ids'] );
+					if ( $index ) {
+						unset( $current_requests[ $req_id ]['sent_ids'][ $index ] );
+						if ( empty( $current_requests[ $req_id ]['sent_ids'] ) ) {
+							unset( $current_requests[ $req_id ] );
+						}
+						update_site_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests );
+					}
+				}
+			}
 			if ( empty( $sent_ids ) ) {
 				remove_action( 'admin_notices', array( $this, 'admin_notice' ) );
 				//No media, remove bulk meta
