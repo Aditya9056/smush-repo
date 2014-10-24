@@ -31,7 +31,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 		/**
 		 *
-		 * @var boolean API conectivity status
+		 * @var boolean API connectivity status
 		 */
 		public $api_connected;
 
@@ -125,7 +125,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$this->setup_counts();
 
 			// register js
-			$wp_media_library_mode = get_user_meta( 'wp_media_library_mode' );
+			$current_blog_id = get_current_blog_id();
+			$meta_key = $current_blog_id == 1 ? 'wp_media_library_mode' : 'wp_' . $current_blog_id . '_media_library_mode';
+			$wp_media_library_mode = get_user_meta( get_current_user_id(), $meta_key, true );
 			//Either request variable is not empty and grid mode is set, or if request empty then view is as per user choice, or no view is set
 			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) ||
 			     ( empty( $_REQUEST['mode'] ) && $wp_media_library_mode != 'list' )
