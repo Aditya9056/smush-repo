@@ -221,7 +221,12 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								if ( $response_body->count === 0 ) {
 									$data['message'] = __( 'All images have been smushed, preparing compression stats.', WP_SMPRO_DOMAIN );
 								} else {
-									$data['message'] = sprintf( __( 'Your smush request is being processed. %d images are remaining.', WP_SMPRO_DOMAIN ), $response_body->count );
+									$processed = __( 'Your smush request is being processed.', WP_SMPRO_DOMAIN );
+									$remaining_message = $response_body->count == 1 ? __(' %d image is remaining.', WP_SMPRO_DOMAIN ) : __(' %d images are remaining.', WP_SMPRO_DOMAIN ) ;
+									$data['message'] = $processed . sprintf( $remaining_message, $response_body->count );
+
+									unset( $processed );
+									unset( $remaining_message );
 								}
 								wp_send_json_error( $data );
 							}
