@@ -183,7 +183,7 @@
 		};
 
 		var send = function ($id) {
-
+			jQuery('.wp-smpro-msg.updated.update').remove();
 			var $data = {};
 			if ($id !== false) {
 				$data = {'attachment_id': $id};
