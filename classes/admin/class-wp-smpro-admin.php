@@ -143,9 +143,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				), WP_SMPRO_VERSION );
 			}
 			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'wp-smpro' ), WP_SMPRO_VERSION );
+			wp_register_script( 'wp-smpro-alert', WP_SMPRO_URL . 'assets/js/wp-smpro-alert.min.js', array( 'wp-smpro' ), WP_SMPRO_VERSION );
 
 			// register css
-			wp_register_style( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/css/wp-smpro-queue.css', array(), WP_SMPRO_VERSION );
+			wp_register_style( 'wp-smpro-style', WP_SMPRO_URL . 'assets/css/wp-smpro-queue.css', array(), WP_SMPRO_VERSION );
+			wp_register_style( 'wp-smpro-alert-style', WP_SMPRO_URL . 'assets/css/wp-smpro-alert.css', array(), WP_SMPRO_VERSION );
 
 			// localize translatable strings for js
 			$this->localize();
@@ -157,7 +159,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function enqueue() {
 			global $current_screen, $admin_page_suffix;
 			wp_enqueue_script( 'wp-smpro-queue' );
-			wp_enqueue_style( 'wp-smpro-queue' );
+			wp_enqueue_script( 'wp-smpro-alert' );
+
+			wp_enqueue_style( 'wp-smpro-style' );
+			wp_enqueue_style( 'wp-smpro-alert-style' );
+
 			//Set API status on bulk page load only
 			if ( $current_screen->id == $admin_page_suffix ) {
 				$this->set_api_status();

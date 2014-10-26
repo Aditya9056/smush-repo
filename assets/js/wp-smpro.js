@@ -128,7 +128,7 @@
 					// re-enable all the buttons
 					$button.prop('disabled', false);
 
-					alert(config.msgs.smush_completed);
+					swal('', config.msgs.smush_completed, 'success');
 
 				}
 				return;
@@ -203,7 +203,7 @@
 				} else {
 					sendSuccess(response);
 					if (!config.isSingle) {
-						alert(config.msgs.smush_email);
+						swal('', config.msgs.smush_email, 'success');
 					}
 					if (!$id) {
 						setTimeout(function () {
