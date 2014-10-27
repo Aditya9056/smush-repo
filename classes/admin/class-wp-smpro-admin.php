@@ -197,7 +197,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// localise counts
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_counts', $this->counts );
 
-			$sent_request_id = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0 );
+			$sent_request_id = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0, false );
 
 			$sent_request = ! empty( $sent_request_id ) ? array( 'sent' => true ) : array( 'sent' => false );
 
@@ -275,7 +275,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function admin_notice() {
-			if ( boolval( get_site_option( WP_SMPRO_PREFIX . 'bulk-received', 0 ) ) && ! get_site_option( 'hide_smush_notice' ) ) {
+			if ( boolval( get_site_option( WP_SMPRO_PREFIX . 'bulk-received', 0, false ) ) && ! get_site_option( 'hide_smush_notice' ) ) {
 				$message   = array();
 				$message[] = sprintf( __( 'A recent bulk smushing request has been completed!', WP_SMPRO_DOMAIN ), get_site_option( 'siteurl' ) );
 				if ( ! isset( $_GET['page'] ) || 'wp-smpro-admin' != $_GET['page'] ) { //if not on smush page
@@ -384,7 +384,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$send_ids = $received_ids = '';
 			//Check if there are input ids in URL
 			if ( ! empty( $_REQUEST['ids'] ) ) {
-				$current_bulk_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent" );
+				$current_bulk_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", false, false );
 				if ( ! empty( $current_bulk_request ) ) {
 					?>
 					<div class="error">
@@ -773,14 +773,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'cancel' => false,
 			);
 			//Check for sent ids
-			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
 
 			// otherwise we have something to smush
 			// check if we are awaiting a bulk request's smush response
-			$is_bulk_sent = boolval( get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0 ) );
+			$is_bulk_sent = boolval( get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0, false ) );
 
 			// check if we have received this bulk request's callback
-			$is_bulk_received = boolval( get_site_option( WP_SMPRO_PREFIX . "bulk-received", 0 ) );
+			$is_bulk_received = boolval( get_site_option( WP_SMPRO_PREFIX . "bulk-received", 0, false ) );
 
 			//check if current_requests and bulk sent exists
 			if ( empty( $current_requests ) && $is_bulk_received ) {

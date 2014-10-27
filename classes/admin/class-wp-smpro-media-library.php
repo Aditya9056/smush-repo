@@ -37,7 +37,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
 			}
 
-			$this->current_requests = get_site_option( WP_SMPRO_PREFIX . 'current-requests', array() );
+			$this->current_requests = get_site_option( WP_SMPRO_PREFIX . 'current-requests', array(), false );
 			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
 			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
 //			add_filter( 'wp_prepare_attachment_for_js', array( $this, 'insert_image_smush_data' ), '', 3 );
@@ -236,7 +236,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				// the button text
 				$button_txt = __( 'Re-smush', WP_SMPRO_DOMAIN );
 			} else {
-				$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
+				$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array(), false );
 
 				$is_sent = in_array( $id, $sent_ids );
 

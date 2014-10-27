@@ -54,7 +54,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$log->error( 'WpSmproReceive: receieve', 'Error from API' . json_encode( $req_data['error'] ) );
 
 				//Update sent ids
-				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
+				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
 
 				if ( ! empty( $current_requests[ $request_id ] ) ) {
 					unset( $current_requests[ $request_id ] );
@@ -64,7 +64,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				die();
 			}
 
-			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
 
 			if ( empty( $current_requests[ $request_id ] ) || $req_data['token'] != $current_requests[ $request_id ]['token'] ) {
 
@@ -145,7 +145,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$updated = update_site_option( WP_SMPRO_PREFIX . "bulk-received", 1 );
 
 			//store in current requests array, against request id
-			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
 			if ( ! empty( $current_requests[ $request_id ] ) ) {
 				$current_requests[ $request_id ]['received'] = 1;
 				update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );

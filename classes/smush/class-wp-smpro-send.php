@@ -265,8 +265,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				$current_requests[ $request_id ]['timestamp'] = time();
 
-				$diff = count( $current_requests ) - count( $previous_req );
-
 				$updated = boolval( update_site_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
 			} else {
 				//otherwise the remaining process will break
@@ -806,7 +804,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			return $frames > 1;
 		}
-
 	}
 
 }

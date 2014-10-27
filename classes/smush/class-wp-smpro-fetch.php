@@ -145,7 +145,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		}
 
 		function update_flags( $attachment_id ) {
-			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
+			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
 
 			$remove = false;
 
@@ -218,7 +218,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 			$sent_ids = array_diff( $sent_ids, array( $attachment_id ) );
 
-			$sent_request_id = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0 );
+			$sent_request_id = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0, false );
 
 			if ( $request_id == $sent_request_id
 			     && empty( $sent_ids )
@@ -286,8 +286,8 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				$log->error( 'WpSmProFetch: update_smush_data', 'Missing smush data for attachment id' . $attachment_id );
 
 				//Remove it from sent ids, if it's in a bulk request
-				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array() );
-				$bulk_request     = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
+				$bulk_request     = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array(), false );
 
 				if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
 					$index = array_search( $attachment_id, $current_requests[ $bulk_request ]['sent_ids'] );
