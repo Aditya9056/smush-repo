@@ -33,7 +33,7 @@ WDP ID:
  *
  * @package SmushItPro
  *
- * @version 1.0.1
+ * @version 1.0
  *
  * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umesh@incsub.com>
@@ -48,7 +48,7 @@ if ( ! function_exists( 'download_url' ) ) {
 /**
  * The version for enqueueing , etc.
  */
-define( 'WP_SMPRO_VERSION', '1.0.1' );
+define( 'WP_SMPRO_VERSION', '1.0' );
 
 /**
  * The plugin's path for easy access to files.
