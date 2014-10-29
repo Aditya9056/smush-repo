@@ -261,7 +261,7 @@
 			msg(msgvar);
 			var button = jQuery(config.sendButton);
 			button.find('span').html(config.msgs.bulk_smush_now);
-			jQuery(config.sendButton).removeAttribute('disabled');
+			jQuery(config.sendButton).removeAttr('disabled');
 			return;
 		};
 

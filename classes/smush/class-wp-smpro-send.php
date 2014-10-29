@@ -19,6 +19,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 	 */
 	class WpSmProSend {
 		var $api_connected;
+		var $id3;
 
 		/**
 		 * Constructor.
@@ -26,6 +27,10 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * Hooks actions for smushing through admin or ajax
 		 */
 		function __construct() {
+			if ( ! class_exists( 'getID3' ) ) {
+				require( ABSPATH . WPINC . '/ID3/getid3.php' );
+			}
+			$this->id3 = new getID3();
 
 			// for ajax based smushing through bulk UI
 			add_action( 'wp_ajax_wp_smpro_send', array( $this, 'ajax_send' ) );
@@ -312,9 +317,10 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			}
 			// get the array of ids sent previously
 			$prev_sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array(), false );
-
-			// merge the newest sent ids with the existing ones
-			$sent_ids = array_merge( $prev_sent_ids, $sent_ids );
+			if( is_array( $sent_ids ) ) {
+				// merge the newest sent ids with the existing ones
+				$sent_ids = array_merge( $prev_sent_ids, $sent_ids );
+			}
 
 			if ( is_array( $sent_ids ) ) {
 				// update the sent ids
@@ -324,6 +330,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				return boolval( $update );
 			} else {
+				error_log( $sent_ids );
 				error_log( "String provided instead of array in WpSmproSend: update_sent_ids" );
 			}
 
@@ -435,11 +442,36 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			foreach ( $attachments as $key => &$attachment ) {
 				//assume it is not animated
 				$anim = false;
+
+				$file          = get_attached_file( $attachment->attachment_id );
+				$image_details = getimagesize( $file );
+				$file_size     = filesize( $file );
+
+				//Skip attachment as its not a image
+				if ( empty( $image_details ) ) {
+					$log->error( 'WpSmproSend: add_attachment_data', 'Not a image file ' . $attachment->attachment_id );
+					continue;
+				}
+				//if there are no metadata check size
+				if ( empty( $attachment->metadata ) ) {
+					if ( ! empty( $file_size ) && $file_size > 5000000 ) {
+						$log->error( "WpSmpro_Send: add_attachment_data", "File size limit exceeded for attachment" . $attachment->attachment_id );
+					}
+					if ( sizeof( $attachments ) == 1 ) {
+						$request_data['error'] = __( "File not sent", WP_SMPRO_DOMAIN );
+
+						return $request_data;
+					} else {
+						continue;
+					}
+				}
 				// get the attachment data in the format we need
-				$attachment = $this->format_attachment_data( $attachment, $anim, $pathprefix );
+				$attachment = $this->format_attachment_data( $attachment, $anim, $pathprefix, $file_size );
 
 				// add this id to the list of sent ids
 				$sent_ids[] = $attachment->attachment_id;
+
+				unset( $file, $image_details );
 			}
 
 			// update the sent ids
@@ -579,7 +611,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 *
 		 * @return \stdClass the formatted row
 		 */
-		private function format_attachment_data( $row, $anim = false, $path_prefix ) {
+		private function format_attachment_data( $row, $anim = false, $path_prefix, $file_size ) {
+			global $log;
 
 			$request_item = new stdClass();
 
@@ -604,7 +637,11 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// if there's no large size, the full is the large size
 			// if it is an animated gif, we'll send the full size
 			if ( ! isset( $filenames['large'] ) ) {
-				$filenames['full'] = $full_image;
+				if ( ! empty( $file_size ) && $file_size < 5000000 ) {
+					$filenames['full'] = $full_image;
+				} else {
+					$log->error( 'Wp_Smpro_Send: format_attachmnet_data', 'File size exceeded the limit for attachment ' . $row->attachment_id );
+				}
 			}
 
 			// not sending full size, otherwise
