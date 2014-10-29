@@ -19,7 +19,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 	 */
 	class WpSmProSend {
 		var $api_connected;
-		var $id3;
 
 		/**
 		 * Constructor.
@@ -27,10 +26,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * Hooks actions for smushing through admin or ajax
 		 */
 		function __construct() {
-			if ( ! class_exists( 'getID3' ) ) {
-				require( ABSPATH . WPINC . '/ID3/getid3.php' );
-			}
-			$this->id3 = new getID3();
 
 			// for ajax based smushing through bulk UI
 			add_action( 'wp_ajax_wp_smpro_send', array( $this, 'ajax_send' ) );
