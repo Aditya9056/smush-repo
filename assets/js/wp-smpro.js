@@ -89,15 +89,23 @@
 			}).done(function (response) {
 				jQuery('.smush-notices.checking-status').hide();
 				if (!response.success) {
-					//if (callback) {
+					var callback = true;
+					if( typeof response.data.check_status != 'undefined' ) {
+						if ( !response.data.check_status ){
+							callback = false;
+						}
+					}
 					//Call itself after every fix interval
-					setTimeout(function () {
-						checkSmushStatus();
-					}, config.wp_smpro_poll_interval.interval);
+					if( callback ) {
+						setTimeout(function () {
+							checkSmushStatus();
+						}, config.wp_smpro_poll_interval.interval);
+					}
 					if( typeof response.data !== 'undefined' ) {
 						var div = '<div class="smush-notices update smush-api-status"><p>' + response.data.message +'</p></div>';
 						jQuery('#progress-ui').after(div);
 					}
+					delete callback;
 					//}
 				} else {
 					wp_smpro_sent_ids = response.data;

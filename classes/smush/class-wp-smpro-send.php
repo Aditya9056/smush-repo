@@ -97,11 +97,10 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				echo json_encode( $response );
 				die();
 			}
-
-			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_site_option( 'admin_email' ) ) : __( "Image sent for smushing", WP_SMPRO_DOMAIN );
+			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_option( 'admin_email' ) ) : __( "Image sent for smushing", WP_SMPRO_DOMAIN );
 			$response['success']['status_code']    = 1;
 			$response['success']['count']          = $response['updated_count'];
-			$response['success']['sent_count']     = count( get_site_option( WP_SMPRO_PREFIX . 'sent-ids', '', false ) ); //Fetch from site option
+			$response['success']['sent_count']     = count( get_option( WP_SMPRO_PREFIX . 'sent-ids', '' ) ); //Fetch from site option
 			$response['success']['status_message'] = $status_message;
 
 			unset( $response['api'] );
@@ -257,7 +256,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// save the sent_ids for this request
 				$this->update_bulk_status( $sent_ids, $request_id );
 
-				$previous_req = $current_requests = get_site_option( WP_SMPRO_PREFIX . 'current-requests', array(), false );
+				$current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
 
 				$current_requests[ $request_id ]['token'] = $token;
 
@@ -265,7 +264,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				$current_requests[ $request_id ]['timestamp'] = time();
 
-				$updated = boolval( update_site_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
+				$updated = boolval( update_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
 			} else {
 				//otherwise the remaining process will break
 				$updated = false;
@@ -296,7 +295,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			unset( $is_bulk );
 			// save that a bulk request has been sent for this site and is expected back
-			update_site_option( WP_SMPRO_PREFIX . "bulk-sent", $request_id );
+			update_option( WP_SMPRO_PREFIX . "bulk-sent", $request_id );
 		}
 
 		/**
@@ -310,8 +309,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( ! array( $sent_ids ) ) {
 				$sent_ids = explode( ',', $sent_ids );
 			}
+
 			// get the array of ids sent previously
-			$prev_sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array(), false );
+			$prev_sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
 			if( is_array( $sent_ids ) ) {
 				// merge the newest sent ids with the existing ones
 				$sent_ids = array_merge( $prev_sent_ids, $sent_ids );
@@ -319,7 +319,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			if ( is_array( $sent_ids ) ) {
 				// update the sent ids
-				$update = update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
+				$update = update_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
 
 //				$update = true;
 
@@ -393,7 +393,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				if ( $key === 'auto' ) {
 					continue;
 				}
-				$value = get_site_option( WP_SMPRO_PREFIX . $key, $val );
+				$value = get_option( WP_SMPRO_PREFIX . $key, $val );
 
 				$request_data->{$key} = isset( $value ) ? $value : $val;
 
@@ -567,7 +567,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		private function existing_clause( $id ) {
 			global $log;
 			// get all the sent ids
-			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array(), false );
+			$sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
 
 			// we don't have any, no clause required
 			if ( empty( $sent_ids ) ) {

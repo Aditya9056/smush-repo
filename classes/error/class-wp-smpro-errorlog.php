@@ -4,23 +4,23 @@ class WpSmproErrorLog {
 	var $_limit = 100;
 
 	function get_all_errors() {
-		$errors = get_site_option( 'sp_error_log' );
+		$errors = get_option( 'sp_error_log' );
 
 		return $errors ? $errors : array();
 	}
 
 	function get_all_notices() {
-		$notices = get_site_option( 'sp_notice_log' );
+		$notices = get_option( 'sp_notice_log' );
 
 		return $notices ? $notices : array();
 	}
 
 	function purge_errors() {
-		update_site_option( 'sp_error_log', array() );
+		update_option( 'sp_error_log', array() );
 	}
 
 	function purge_notices() {
-		update_site_option( 'sp_notice_log', array() );
+		update_option( 'sp_notice_log', array() );
 	}
 
 	function error( $function, $exception ) {
@@ -52,7 +52,7 @@ class WpSmproErrorLog {
 			$errors = array_slice( $errors, ( ( $this->_limit * - 1 ) - 1 ), $this->_limit - 1 );
 		}
 		$errors[] = $error;
-		update_site_option( 'sp_error_log', $errors );
+		update_option( 'sp_error_log', $errors );
 	}
 
 	function _update_notice_queue( $notice ) {
@@ -61,7 +61,7 @@ class WpSmproErrorLog {
 			$notices = array_slice( $notices, - $this->_limit );
 		} // * -1)), $this->_limit-1);
 		$notices[] = $notice;
-		update_site_option( 'sp_notice_log', $notices );
+		update_option( 'sp_notice_log', $notices );
 	}
 }
 global $log;

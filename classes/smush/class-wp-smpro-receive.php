@@ -50,21 +50,19 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$request_id = $req_data['request_id'];
 
+			//Update sent ids
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+
 			if ( ! empty( $req_data['error'] ) ) {
 				$log->error( 'WpSmproReceive: receieve', 'Error from API' . json_encode( $req_data['error'] ) );
 
-				//Update sent ids
-				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
-
 				if ( ! empty( $current_requests[ $request_id ] ) ) {
 					unset( $current_requests[ $request_id ] );
-					update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+					update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 				}
 				echo json_encode( array( 'status' => 1 ) );
 				die();
 			}
-
-			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
 
 			if ( empty( $current_requests[ $request_id ] ) || $req_data['token'] != $current_requests[ $request_id ]['token'] ) {
 
@@ -73,7 +71,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				//Remove Smush Status for the id, as we are never going to get the callback again
 				unset( $current_requests[ $request_id ] );
 
-				update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+				update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 
 				if ( empty( $current_requests[ $request_id ] ) ) {
 					$log->error( 'WpSmProReceive: receive', "Smush receive error, sent id not set in current requests " . $request_id );
@@ -142,17 +140,17 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				return $insert;
 			}
 
-			$updated = update_site_option( WP_SMPRO_PREFIX . "bulk-received", 1 );
+			$updated = update_option( WP_SMPRO_PREFIX . "bulk-received", 1 );
 
 			//store in current requests array, against request id
-			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 			if ( ! empty( $current_requests[ $request_id ] ) ) {
 				$current_requests[ $request_id ]['received'] = 1;
-				update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+				update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 			}
 
 			//Enable admin notice if it was hidden
-			update_site_option( 'hide_smush_notice', 0 );
+			update_option( 'hide_smush_notice', 0 );
 
 			return $updated;
 		}
@@ -164,7 +162,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				return;
 			}
 
-			$to = get_site_option( 'admin_email' );
+			$to = get_option( 'admin_email' );
 
 			$subject = sprintf( __( "%s: Smush Pro bulk smushing completed", WP_SMPRO_DOMAIN ), get_option( 'blogname' ) );
 
@@ -186,12 +184,17 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			global $log;
 
-			$bulk_request = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array(), false );
+			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+
 			if ( empty( $bulk_request ) ) {
-				wp_send_json_error();
+				$res = array(
+					'status' => 'no_request',
+					'check_status' => false
+				);
+				wp_send_json_error($res);
 			}
 
-			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			$sent_ids[ $bulk_request ]['sent_ids'] = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ]['sent_ids'] : '';
 

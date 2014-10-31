@@ -33,7 +33,7 @@ if ( ! class_exists( 'WpSmProCount' ) ) {
 
 			//If there is any problem with sent counts, check sent ids and update if image doesn't exists
 			if ( $this->counts['sent'] > $this->counts['total'] ) {
-				$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids' );
+				$sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', array(), false );
 				foreach ( $sent_ids as $attachment_id ) {
 					if ( ! get_post_status( $attachment_id ) ) {
 						$pos = array_search( $attachment_id, $sent_ids );
@@ -41,7 +41,7 @@ if ( ! class_exists( 'WpSmProCount' ) ) {
 					}
 				}
 				//Update the sent ids
-				update_site_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
+				update_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
 				$this->counts['sent'] = $this->sent_count();
 			}
 
@@ -68,7 +68,7 @@ if ( ! class_exists( 'WpSmProCount' ) ) {
 		}
 
 		function sent_count() {
-			$sent_ids = get_site_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
+			$sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
 
 			return count( $sent_ids );
 		}

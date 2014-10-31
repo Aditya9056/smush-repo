@@ -145,7 +145,8 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		}
 
 		function update_flags( $attachment_id ) {
-			$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
+
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			$remove = false;
 
@@ -158,7 +159,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			if ( $remove ) {
 				unset( $current_requests[ $remove ] );
 
-				return update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+				return update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 			}
 
 			return false;
@@ -216,18 +217,19 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			//Remove Send ids from current request if file is replaced, so that next time same file is not fetched again
 			unset( $current_requests[ $request_id ]['sent_ids'][ $index ] );
 
-			update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+			update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 
 			$sent_ids = array_diff( $sent_ids, array( $attachment_id ) );
 
-			$sent_request_id = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", 0, false );
+			wp_cache_delete( WP_SMPRO_PREFIX . "bulk-sent", 'options' );
+			$sent_request_id = get_option( WP_SMPRO_PREFIX . "bulk-sent", 0 );
 
 			if ( $request_id == $sent_request_id
 			     && empty( $sent_ids )
 			) {
-				delete_site_option( WP_SMPRO_PREFIX . "bulk-sent" );
-				delete_site_option( WP_SMPRO_PREFIX . "bulk-received" );
-				update_site_option( WP_SMPRO_PREFIX . 'hide-notice', 1 );
+				delete_option( WP_SMPRO_PREFIX . "bulk-sent" );
+				delete_option( WP_SMPRO_PREFIX . "bulk-received" );
+				update_option( WP_SMPRO_PREFIX . 'hide-notice', 1 );
 
 				return $request_id;
 			}
@@ -294,14 +296,16 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				$log->error( 'WpSmProFetch: update_smush_data', 'Missing smush data for attachment id' . $attachment_id );
 
 				//Remove it from sent ids, if it's in a bulk request
-				$current_requests = get_site_option( WP_SMPRO_PREFIX . "current-requests", array(), false );
-				$bulk_request     = get_site_option( WP_SMPRO_PREFIX . "bulk-sent", array(), false );
+				$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+
+				wp_cache_delete( WP_SMPRO_PREFIX . "bulk-sent", 'options' );
+				$bulk_request     = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
 				if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
 					$index = array_search( $attachment_id, $current_requests[ $bulk_request ]['sent_ids'] );
 					if ( ! empty( $index ) ) {
 						unset( $current_requests[ $bulk_request ]['sent_ids'][ $index ] );
-						update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+						update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 					}
 				}
 
