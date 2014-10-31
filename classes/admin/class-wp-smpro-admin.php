@@ -752,7 +752,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			?>
 			<div class="smush-notices update checking-status">
 				<p><?php
-					_e( 'Checking smush status...', WP_SMPRO_DOMAIN );
+					_e( 'Checking smush progress...', WP_SMPRO_DOMAIN );
 					$this->print_spinner(); ?>
 			</div>
 			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
@@ -936,8 +936,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				return false;
 			}
 
-			if ( defined( 'WP_SMPRO_SERVICE_URL' ) ) {
-				$api = wp_remote_get( WP_SMPRO_SERVICE_STATUS, array( 'sslverify' => false, 'timeout' => 10 ) );
+			if ( defined( 'WP_SMPRO_SERVICE_STATUS' ) ) {
+				$req_args = array(
+					'user-agent' => WP_SMPRO_USER_AGENT,
+					'referrer'   => WP_SMPRO_REFRER,
+					'timeout'    => WP_SMPRO_TIMEOUT,
+					'sslverify'  => false
+				);
+				$api      = wp_remote_get( WP_SMPRO_SERVICE_STATUS, $req_args );
 			}
 			if ( empty( $api ) || is_wp_error( $api ) ) {
 				set_transient( 'api_connected', false );

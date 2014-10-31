@@ -92,10 +92,12 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			/**
 			 * The user agent for the request
 			 */
-			define( 'WP_SMPRO_USER_AGENT', 'WP Smush PRO/' . WP_SMPRO_VERSION . '('
-			                               . '+' . get_site_url() . ')'
-			);
+			define( 'WP_SMPRO_USER_AGENT', 'WP Smush PRO/' . WP_SMPRO_VERSION . '(' . '+' . get_site_url() . ')' );
 
+			/**
+			 * The user agent for the request
+			 */
+			define( 'WP_SMPRO_REFRER',  get_site_url() );
 
 			/**
 			 * Image Limit 5MB
@@ -105,7 +107,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			/**
 			 * Time out for API request
 			 */
-			define( 'WP_SMPRO_TIMEOUT', 60 );
+			define( 'WP_SMPRO_TIMEOUT', 15 );
 
 
 			if ( ! defined( 'WP_SMPRO_EFFICIENT' ) ) {

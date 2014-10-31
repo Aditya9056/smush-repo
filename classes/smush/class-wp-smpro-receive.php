@@ -78,7 +78,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				if ( empty( $current_requests[ $request_id ] ) ) {
 					$log->error( 'WpSmProReceive: receive', "Smush receive error, sent id not set in current requests " . $request_id );
 				} else {
-					error_log(json_encode($req_data));
+					error_log( json_encode( $req_data ) );
 					$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
 				}
 
@@ -200,6 +200,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				//Query Server for status
 				$req_args = array(
 					'user-agent' => WP_SMPRO_USER_AGENT,
+					'referrer'   => WP_SMPRO_REFRER,
 					'timeout'    => WP_SMPRO_TIMEOUT,
 					'sslverify'  => false
 				);
@@ -215,15 +216,16 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 						$response_body = json_decode( $response_body );
 						if ( ! empty( $response_body->message ) ) {
 							if ( $response_body->message == 'queue' ) {
-								$data['message'] = __( 'Your smush request is in queue, it will be processed soon', WP_SMPRO_DOMAIN );
+								$data['message'] = __( 'The smushing elfs are busy, You are $%d in queue.', WP_SMPRO_DOMAIN );
+								$data['message'] = sprintf( $data['message'], $response_body->pending_requests );
 								wp_send_json_error( $data );
 							} elseif ( $response_body->message == 'processing' ) {
 								if ( $response_body->count === 0 ) {
-									$data['message'] = __( 'All images have been smushed, preparing compression stats.', WP_SMPRO_DOMAIN );
+									$data['message'] = __( 'Woohooo, we are crunching the numbers for you and than it is all done.', WP_SMPRO_DOMAIN );
 								} else {
-									$processed = __( 'Your smush request is being processed.', WP_SMPRO_DOMAIN );
-									$remaining_message = $response_body->count == 1 ? __(' %d image is remaining.', WP_SMPRO_DOMAIN ) : __(' %d images are remaining.', WP_SMPRO_DOMAIN ) ;
-									$data['message'] = $processed . sprintf( $remaining_message, $response_body->count );
+									$processed         = __( 'Your smush request is being processed.', WP_SMPRO_DOMAIN );
+									$remaining_message = $response_body->count == 1 ? __( ' %d image is remaining.', WP_SMPRO_DOMAIN ) : __( ' %d images are remaining.', WP_SMPRO_DOMAIN );
+									$data['message']   = $processed . sprintf( $remaining_message, $response_body->count );
 
 									unset( $processed );
 									unset( $remaining_message );

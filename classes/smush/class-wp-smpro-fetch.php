@@ -168,11 +168,12 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			global $log;
 			$attachment_meta = wp_get_attachment_metadata( $attachment_id );
 
-			if( !empty( $attachment_meta['file'] ) ) {
+			if ( ! empty( $attachment_meta['file'] ) ) {
 				$path        = pathinfo( $attachment_meta['file'] );
 				$path_prefix = $path['dirname'];
-			}else{
-				$log->error('WpSmproFetch: update_filenames', 'No Attachment metadat for attachmnet ' . $attachment_id );
+			} else {
+				$log->error( 'WpSmproFetch: update_filenames', 'No Attachment metadat for attachmnet ' . $attachment_id );
+
 				return;
 			}
 
@@ -180,7 +181,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$upload_path  = $upload_dir['basedir'];
 			$unlink_files = array();
 
-			if( !empty( $attachment_meta['sizes'] ) ) {
+			if ( ! empty( $attachment_meta['sizes'] ) ) {
 				foreach ( $attachment_meta['sizes'] as $size => $details ) {
 					if ( ! isset( $filenames[ $size ] ) || $filenames[ $size ] == $attachment_meta['sizes'][ $size ]['file'] ) {
 						continue;
@@ -192,8 +193,9 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 					$attachment_meta['sizes'][ $size ]['file']      = $filenames[ $size ];
 					$attachment_meta['sizes'][ $size ]['mime-type'] = $file_details['type'];
 				}
-			}else{
-				$log->error('WpSmproFetch: update_filenames', 'Size details not found in attachment metadata for attachmnet ' . $attachment_id );
+			} else {
+				$log->error( 'WpSmproFetch: update_filenames', 'Size details not found in attachment metadata for attachmnet ' . $attachment_id );
+
 				return;
 			}
 			wp_update_attachment_metadata( $attachment_id, $attachment_meta );
@@ -267,7 +269,13 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 */
 		private function _get( $url, $attachment_id ) {
 			global $log;
-			$response = wp_remote_get( $url, array( 'sslverify' => false ) );
+			$req_args = array(
+				'user-agent' => WP_SMPRO_USER_AGENT,
+				'referrer'   => WP_SMPRO_REFRER,
+				'timeout'    => WP_SMPRO_TIMEOUT,
+				'sslverify'  => false
+			);
+			$response = wp_remote_get( $url, $req_args );
 			if ( is_wp_error( $response ) || empty( $response ) || $response['response']['code'] == 404 ) {
 				$log->error( 'WPSmproFetch: _get', 'Error in downloading zip for ' . $attachment_id . ' - ' . $url . '-' . json_encode( $response ) );
 
@@ -293,7 +301,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 					$index = array_search( $attachment_id, $current_requests[ $bulk_request ]['sent_ids'] );
 					if ( ! empty( $index ) ) {
 						unset( $current_requests[ $bulk_request ]['sent_ids'][ $index ] );
-						update_site_option(WP_SMPRO_PREFIX . "current-requests", $current_requests);
+						update_site_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 					}
 				}
 
