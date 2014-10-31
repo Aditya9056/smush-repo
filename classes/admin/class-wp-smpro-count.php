@@ -33,7 +33,7 @@ if ( ! class_exists( 'WpSmProCount' ) ) {
 
 			//If there is any problem with sent counts, check sent ids and update if image doesn't exists
 			if ( $this->counts['sent'] > $this->counts['total'] ) {
-				$sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', array(), false );
+				$sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
 				foreach ( $sent_ids as $attachment_id ) {
 					if ( ! get_post_status( $attachment_id ) ) {
 						$pos = array_search( $attachment_id, $sent_ids );
