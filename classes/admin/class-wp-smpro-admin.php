@@ -345,7 +345,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		function hide_notice() {
-			updateoption( WP_SMPRO_PREFIX . 'hide-notice', 1 );
+			update_option( WP_SMPRO_PREFIX . 'hide-notice', 1 );
 			die();
 		}
 
@@ -1017,7 +1017,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function update_sent_ids( $attachment_id ) {
 
-			wp_cache_delete( WP_SMPRO_PREFIX . "sent-ids", 'options' );
 			$sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', false );
 
 			if ( empty( $sent_ids ) ) {

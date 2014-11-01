@@ -221,7 +221,6 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 			$sent_ids = array_diff( $sent_ids, array( $attachment_id ) );
 
-			wp_cache_delete( WP_SMPRO_PREFIX . "bulk-sent", 'options' );
 			$sent_request_id = get_option( WP_SMPRO_PREFIX . "bulk-sent", 0 );
 
 			if ( $request_id == $sent_request_id
@@ -298,7 +297,6 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				//Remove it from sent ids, if it's in a bulk request
 				$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-				wp_cache_delete( WP_SMPRO_PREFIX . "bulk-sent", 'options' );
 				$bulk_request     = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
 				if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
