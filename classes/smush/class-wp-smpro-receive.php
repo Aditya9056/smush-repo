@@ -219,7 +219,12 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 						$response_body = json_decode( $response_body );
 						if ( ! empty( $response_body->message ) ) {
 							if ( $response_body->message == 'queue' ) {
-								$data['message'] = __( 'The smushing elfs are busy, You are $%d in queue.', WP_SMPRO_DOMAIN );
+								if( $response_body->pending_requests == 0 ) {
+									$data['message'] = __( 'The smushing elfs are busy, You are first in queue.', WP_SMPRO_DOMAIN );
+								}else{
+									$data['message'] = __( 'The smushing elfs are busy, You are %d in queue.', WP_SMPRO_DOMAIN );
+								}
+
 								$data['message'] = sprintf( $data['message'], $response_body->pending_requests );
 								wp_send_json_error( $data );
 							} elseif ( $response_body->message == 'processing' ) {
