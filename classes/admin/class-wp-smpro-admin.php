@@ -944,7 +944,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				);
 				$api      = wp_remote_get( WP_SMPRO_SERVICE_STATUS, $req_args );
 			}
-			if ( empty( $api ) || is_wp_error( $api ) ) {
+			if ( empty( $api ) || is_wp_error( $api ) || $api['response']['code'] != 200 ) {
 				set_transient( 'api_connected', false );
 				if ( is_wp_error( $api ) ) {
 					$message = ! empty( $api ) ? json_encode( $api ) : __( 'No response from API', WP_SMPRO_DOMAIN );
