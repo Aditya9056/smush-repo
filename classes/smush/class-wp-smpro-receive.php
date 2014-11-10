@@ -48,7 +48,12 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$req_data = wp_parse_args( $data, $defaults );
 
+
 			$request_id = $req_data['request_id'];
+			if( empty( $request_id ) ) {
+				echo json_encode( array( 'status' => 0, 'error' => 'empty_req_id' ) );
+				return false;
+			}
 
 			//Update sent ids
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
@@ -63,7 +68,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				echo json_encode( array( 'status' => 1 ) );
 				die();
 			}
-
 			if ( empty( $current_requests[ $request_id ] ) || $req_data['token'] != $current_requests[ $request_id ]['token'] ) {
 
 				echo json_encode( array( 'status' => 1 ) );
@@ -76,7 +80,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				if ( empty( $current_requests[ $request_id ] ) ) {
 					$log->error( 'WpSmProReceive: receive', "Smush receive error, sent id not set in current requests " . $request_id );
 				} else {
-					error_log( json_encode( $req_data ) );
 					$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
 				}
 
@@ -239,6 +242,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 									unset( $remaining_message );
 								}
 								wp_send_json_error( $data );
+							}elseif( $response_body->message == 'not_reachable' ) {
+								$data['message'] = __( 'Smush server was unable to access images from your site.', WP_SMPRO_DOMAIN );
+
+								//Reset the current bulk request
+								$this->resetBulkRequest();
+
+								wp_send_json_error( $data );
 							}
 						}
 					}
@@ -249,6 +259,32 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				wp_send_json_success( $sent_ids );
 			}
 			die( 1 );
+		}
+
+		/**
+		 * Delete the sent ids from current requests and sent ids for the recent bulk request
+		 */
+		function resetBulkRequest() {
+			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+
+			$sent_ids[ $bulk_request ]['sent_ids'] = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ]['sent_ids'] : '';
+
+			$sent_ids_list = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
+
+			if ( is_array( $sent_ids ) && is_array( $sent_ids_list ) && count( $sent_ids ) > 0 ) {
+				$sent_ids_diff = $sent_ids_list - $sent_ids;
+			}
+			//Update sent ids
+			update_option(WP_SMPRO_PREFIX . 'sent-ids', $sent_ids_diff );
+
+			//Update current request
+			unset( $current_requests[ $bulk_request ] );
+			update_option(WP_SMPRO_PREFIX . "current-requests", $current_requests );
+
+			//update bulk sent
+			update_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 		}
 
 	}

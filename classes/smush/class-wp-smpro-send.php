@@ -325,7 +325,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				return boolval( $update );
 			} else {
-				error_log( $sent_ids );
 				error_log( "String provided instead of array in WpSmproSend: update_sent_ids" );
 			}
 
