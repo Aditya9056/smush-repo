@@ -50,8 +50,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 
 			$request_id = $req_data['request_id'];
-			if( empty( $request_id ) ) {
+			if ( empty( $request_id ) ) {
 				echo json_encode( array( 'status' => 0, 'error' => 'empty_req_id' ) );
+
 				return false;
 			}
 
@@ -191,10 +192,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			if ( empty( $bulk_request ) ) {
 				$res = array(
-					'status' => 'no_request',
+					'status'       => 'no_request',
 					'check_status' => false
 				);
-				wp_send_json_error($res);
+				wp_send_json_error( $res );
 			}
 
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
@@ -222,13 +223,32 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 						$response_body = json_decode( $response_body );
 						if ( ! empty( $response_body->message ) ) {
 							if ( $response_body->message == 'queue' ) {
-								if( $response_body->pending_requests == 0 ) {
+								if ( $response_body->pending_requests == 1 || $response_body->pending_requests == 0 ) {
 									$data['message'] = __( 'The smushing elfs are busy, You are first in queue.', WP_SMPRO_DOMAIN );
-								}else{
-									$data['message'] = __( 'The smushing elfs are busy, You are %d in queue.', WP_SMPRO_DOMAIN );
+								} else {
+									$data['message'] = __( 'The smushing elfs are busy, You are %s in queue. <br /> Current wait time: %s', WP_SMPRO_DOMAIN );
 								}
 
-								$data['message'] = sprintf( $data['message'], $response_body->pending_requests );
+								$ordinal_suffix = $this->getOrdinalSuffix( $response_body->pending_requests );
+								$wait_time      = ( $response_body->pending_requests * 1.5 ) + 1;
+
+								$d     = floor( $wait_time / 24 );
+								$hours = $wait_time - $d * 24;
+								if ( $d > 0 ) {
+									$d = $d > 1 ? $d . ' days' : $d . ' day';
+								} else {
+									$d = '';
+								}
+								if ( $hours > 0 ) {
+									$hours = $hours > 1 ? $hours . ' hours' : $hours . ' hour';
+								} else {
+									$hours = '';
+								}
+
+								$data['message'] = sprintf( $data['message'], $ordinal_suffix, $d.$hours );
+
+								unset( $d, $hours, $wait_time, $ordinal_suffix );
+
 								wp_send_json_error( $data );
 							} elseif ( $response_body->message == 'processing' ) {
 								if ( $response_body->count === 0 ) {
@@ -242,7 +262,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 									unset( $remaining_message );
 								}
 								wp_send_json_error( $data );
-							}elseif( $response_body->message == 'not_reachable' ) {
+							} elseif ( $response_body->message == 'not_reachable' ) {
 								$data['message'] = __( 'Smush server was unable to access images from your site.', WP_SMPRO_DOMAIN );
 
 								//Reset the current bulk request
@@ -277,14 +297,39 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				$sent_ids_diff = $sent_ids_list - $sent_ids;
 			}
 			//Update sent ids
-			update_option(WP_SMPRO_PREFIX . 'sent-ids', $sent_ids_diff );
+			update_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids_diff );
 
 			//Update current request
 			unset( $current_requests[ $bulk_request ] );
-			update_option(WP_SMPRO_PREFIX . "current-requests", $current_requests );
+			update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 
 			//update bulk sent
 			update_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+		}
+
+		/**
+		 * returns a suffix for the number like "nd, th, st, rd"
+		 *
+		 * @param $number
+		 *
+		 * @return string
+		 */
+		function getOrdinalSuffix( $number ) {
+			if ( class_exists( 'NumberFormatter' ) ) {
+				$locale       = 'en_US';
+				$nf           = new NumberFormatter( $locale, NumberFormatter::ORDINAL );
+				$abbreviation = $nf->format( $number );
+			} else {
+				//for php version < 5.3.0
+				$ends = array( 'th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th' );
+				if ( ( $number % 100 ) >= 11 && ( $number % 100 ) <= 13 ) {
+					$abbreviation = $number . 'th';
+				} else {
+					$abbreviation = $number . $ends[ $number % 10 ];
+				}
+			}
+
+			return $abbreviation;
 		}
 
 	}

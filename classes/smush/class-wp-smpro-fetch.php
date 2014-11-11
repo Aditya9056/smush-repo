@@ -69,10 +69,14 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			if ( $smush_data && ! empty( $smush_data['stats']['bytes'] ) ) {
 
 				$smushed_file  = $this->save_zip( $attachment_id, $smush_data['file_url'] );
+
 				$output['msg'] = sprintf( __( 'Error downloading smushed file for attachment id: %d', WP_SMPRO_DOMAIN ), $attachment_id );
+
 				if ( ! $smushed_file ) {
+
 					$result = false;
 					unset( $smush_data );
+
 					echo json_encode( $output );
 					die();
 				}
@@ -84,7 +88,6 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			} elseif ( ! empty( $smush_data ) && $smush_data['stats']['bytes'] === 0 ) {
 				$result = true;
 			}
-
 			if ( ! $result || is_wp_error( $result ) ) {
 				unset( $smush_data );
 				echo json_encode( $output );
@@ -314,9 +317,11 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 			$stats['human'] = $wp_smpro->format_bytes( $stats['bytes'] );
 
-			$stats['percent'] = number_format_i18n(
-				( (int) $stats['bytes'] / (int) $stats['size_before'] ) * 100
-			);
+			if( !empty( $stats['size_before']) && !empty( $stats['bytes'] ) ) {
+				$stats['percent'] = number_format_i18n(
+					( (int) $stats['bytes'] / (int) $stats['size_before'] ) * 100
+				);
+			}
 
 			$smush_data['stats'] = $stats;
 

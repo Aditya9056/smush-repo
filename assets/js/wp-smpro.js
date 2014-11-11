@@ -369,6 +369,7 @@
 						'str': response.msg,
 						'err': true
 					});
+					return;
 				}
 			}).fail(function (jqXHR, textStatus, errorThrown) {
 				response = {};
