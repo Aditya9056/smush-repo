@@ -256,15 +256,26 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// save the sent_ids for this request
 				$this->update_bulk_status( $sent_ids, $request_id );
 
-				$current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
+				if( is_array( $sent_ids ) && count($sent_ids) >  1 ) {
+					$current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
 
-				$current_requests[ $request_id ]['token'] = $token;
+					$current_requests[ $request_id ] = array(
+						'token' => $token,
+						'sent_ids'  => $sent_ids,
+						'timestamp' => time()
+					);
 
-				$current_requests[ $request_id ]['sent_ids'] = $sent_ids;
+					$updated = boolval( update_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
 
-				$current_requests[ $request_id ]['timestamp'] = time();
-
-				$updated = boolval( update_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
+					unset( $current_requests );
+				}else{
+					$smush_sent = array(
+						'token' => $token,
+						'sent_ids'  => $sent_ids[0],
+						'timestamp' => time()
+					);
+					$updated = boolval( update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-' . $request_id, $smush_sent ) );
+				}
 			} else {
 				//otherwise the remaining process will break
 				$updated = false;

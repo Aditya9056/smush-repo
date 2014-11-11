@@ -48,51 +48,68 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 			$req_data = wp_parse_args( $data, $defaults );
 
-
 			$request_id = $req_data['request_id'];
 			if ( empty( $request_id ) ) {
 				echo json_encode( array( 'status' => 0, 'error' => 'empty_req_id' ) );
 
 				return false;
 			}
-
-			//Update sent ids
-			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
-
-			if ( ! empty( $req_data['error'] ) ) {
-				$log->error( 'WpSmproReceive: receieve', 'Error from API' . json_encode( $req_data['error'] ) );
-
-				if ( ! empty( $current_requests[ $request_id ] ) ) {
-					unset( $current_requests[ $request_id ] );
-					update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
-				}
-				echo json_encode( array( 'status' => 1 ) );
-				die();
-			}
-			if ( empty( $current_requests[ $request_id ] ) || $req_data['token'] != $current_requests[ $request_id ]['token'] ) {
-
-				echo json_encode( array( 'status' => 1 ) );
-
-				//Remove Smush Status for the id, as we are never going to get the callback again
-				unset( $current_requests[ $request_id ] );
-
-				update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
-
-				if ( empty( $current_requests[ $request_id ] ) ) {
-					$log->error( 'WpSmProReceive: receive', "Smush receive error, sent id not set in current requests " . $request_id );
-				} else {
-					$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
-				}
-
-				unset( $req_data );
-				die();
-			}
-
 			$attachment_data = $req_data['data'];
-			$is_single       = ! ( count( $current_requests[ $request_id ]['sent_ids'] ) > 1 );
+			//Check for post meta
+			$args       = array(
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'post_mime_type' => 'image/jpeg,image/gif,image/jpg,image/png',
+				'no_found_rows'  => true,
+				'meta_query'     => array(
+					array(
+						'key' => WP_SMPRO_PREFIX . 'request-' . $request_id
+					)
+				),
+				'fields'         => 'ids'
+			);
+			$attachment = new WP_Query( $args );
+			if ( $attachment->post_count == 1 ) {
+				$attachment_id = $attachment->posts[0];
+				if( !empty( $attachment_id ) ) {
+					$smush_sent = get_post_meta($attachment_id, WP_SMPRO_PREFIX . 'request-' . $request_id, true);
+				}
+				$insert = $this->save( $attachment_data, array( $attachment_id ), true );
+			} else {
 
-			$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], $is_single );
+				//Update sent ids
+				$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
+				if ( ! empty( $req_data['error'] ) ) {
+					$log->error( 'WpSmproReceive: receieve', 'Error from API' . json_encode( $req_data['error'] ) );
+
+					if ( ! empty( $current_requests[ $request_id ] ) ) {
+						unset( $current_requests[ $request_id ] );
+						update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+					}
+					echo json_encode( array( 'status' => 1 ) );
+					die();
+				}
+				if ( empty( $current_requests[ $request_id ] ) || $req_data['token'] != $current_requests[ $request_id ]['token'] ) {
+
+					echo json_encode( array( 'status' => 1 ) );
+
+					//Remove Smush Status for the id, as we are never going to get the callback again
+					unset( $current_requests[ $request_id ] );
+
+					update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+
+					if ( empty( $current_requests[ $request_id ] ) ) {
+						$log->error( 'WpSmProReceive: receive', "Smush receive error, sent id not set in current requests " . $request_id );
+					} else {
+						$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
+					}
+
+					unset( $req_data );
+					die();
+				}
+				$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], false );
+			}
 			unset( $attachment_data );
 			unset( $req_data );
 			unset( $data );
@@ -245,7 +262,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 									$hours = '';
 								}
 
-								$data['message'] = sprintf( $data['message'], $ordinal_suffix, $d.$hours );
+								$data['message'] = sprintf( $data['message'], $ordinal_suffix, $d . $hours );
 
 								unset( $d, $hours, $wait_time, $ordinal_suffix );
 

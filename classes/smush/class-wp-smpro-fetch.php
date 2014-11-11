@@ -292,7 +292,11 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 		private function update_smush_data( $attachment_id ) {
 			global $log, $wp_smpro;
+			$attachment_id = intval( $attachment_id );
+
+			wp_cache_delete($attachment_id, 'post_meta');
 			$smush_data = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', true );
+
 			if ( empty( $smush_data ) ) {
 				//no smush data recieved yet
 				$log->error( 'WpSmProFetch: update_smush_data', 'Missing smush data for attachment id' . $attachment_id );
