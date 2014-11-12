@@ -74,7 +74,19 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				if( !empty( $attachment_id ) ) {
 					$smush_sent = get_post_meta($attachment_id, WP_SMPRO_PREFIX . 'request-' . $request_id, true);
 				}
-				$insert = $this->save( $attachment_data, array( $attachment_id ), true );
+				if( !empty( $smush_sent ) ) {
+					//Check request token
+					if( $smush_sent['token'] == $req_data['token'] ) {
+						$insert = $this->save( $attachment_data, array( $attachment_id ), true );
+					}else{
+						$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
+						die();
+					}
+				}else{
+					$log->error('WpSmProReceive: receive', "Smush sent data missing for request " . $request_id );
+					echo json_encode( array( 'status' => 1 ) );
+					die();
+				}
 			} else {
 
 				//Update sent ids
@@ -240,13 +252,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 						$response_body = json_decode( $response_body );
 						if ( ! empty( $response_body->message ) ) {
 							if ( $response_body->message == 'queue' ) {
-								if ( $response_body->pending_requests == 1 || $response_body->pending_requests == 0 ) {
+								if ( $response_body->pending_requests == 0 ) {
 									$data['message'] = __( 'The smushing elfs are busy, You are first in queue.', WP_SMPRO_DOMAIN );
 								} else {
 									$data['message'] = __( 'The smushing elfs are busy, You are %s in queue. <br /> Current wait time: %s', WP_SMPRO_DOMAIN );
 								}
 
-								$ordinal_suffix = $this->getOrdinalSuffix( $response_body->pending_requests );
+								$ordinal_suffix = $this->getOrdinalSuffix( $response_body->pending_requests + 1 );
 								$wait_time      = ( $response_body->pending_requests * 1.5 ) + 1;
 
 								$d     = floor( $wait_time / 24 );
