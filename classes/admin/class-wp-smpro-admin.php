@@ -690,7 +690,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
                                                 <div id="wp-smpro-fetched-progress" class="wp-smpro-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
                                                 <p id="wp-smpro-compression">'
 			                . __( "Reduced by ", WP_SMPRO_DOMAIN )
-			                . '<span id="percent">' . number_format_i18n( $this->counts['percent'], 2, '.', '' ) . '</span>% (<span id="human">' . $this->counts['human'] . '</span>)
+			                . '<span id="human">' . $this->counts['human'] . '</span>( <span id="percent">' . number_format_i18n( $this->counts['percent'], 2, '.', '' ) . '</span>% )
                                                 </p>
                                         </div>';
 
@@ -1001,8 +1001,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				}
 			}
 
-			$smush_data['bytes']   = $smush_data['size_before'] - $smush_data['size_after'];
-			$smush_data['percent'] = 0;
+			$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
+
+			if( $smush_data['bytes'] < 0 ) {
+				$smush_data['bytes'] = 0;
+			}
+
 			if ( $smush_data['size_before'] > 0 ) {
 				$smush_data['percent'] = ( $smush_data['bytes'] / $smush_data['size_before'] ) * 100;
 			}
