@@ -128,27 +128,36 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		}
 
 		/**
-		 * Whether to show resmush buton
+		 * Check whether to Show resmush buton, if smush request is 12 hours old
 		 *
 		 * @param array $smush_meta_full the smush metadata for full image size
 		 *
 		 * @return boolean true to display the button
 		 */
 		function show_resmush_button( $id ) {
-			$button_show  = false;
-			$smush_data   = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
-			$smush_status = get_post_meta( $id, 'wp-smpro-is-smushed', true );
+			$button_show = false;
+			$timestamp = '';
 
-			if ( $smush_status === '1' ) {
+			$is_smushed = get_post_meta( $id, 'wp-smpro-is-smushed', true );
+
+			if ( $is_smushed === '1' ) {
 				return $button_show;
 			}
-			foreach ( $this->current_requests as $request_id => $data ) {
-				if ( in_array( $id, $data['sent_ids'] ) ) {
-					$timestamp = $data['timestamp'];
+			//This post meta is set only if image is sent individually, and we want to show
+			//smush button only for single request after 12 hours
+			$smush_request_id = get_post_meta( $id, WP_SMPRO_PREFIX . 'request-id', true );
+
+			if ( empty( $smush_request_id ) ) {
+				$button_show = false;
+			} else {
+				//get smush request meta, to fetch timestamp
+				$smpro_request_data = get_post_meta( $id, WP_SMPRO_PREFIX . 'request-' . $smush_request_id, true );
+				if ( ! empty( $smpro_request_data ) ) {
+					$timestamp = !empty( $smpro_request_data['timestamp'] ) ? $smpro_request_data['timestamp'] : '';
 				}
 			}
 
-			if ( $smush_status === '' && ! empty( $timestamp ) ) {
+			if ( !$is_smushed && ! empty( $timestamp ) ) {
 				if ( $timestamp <= strtotime( '-12 hours' ) ) {
 					$button_show = true;
 				}
@@ -269,7 +278,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 					$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
 				}
 			}
-			if( $text_only ) {
+			if ( $text_only ) {
 				return $status_txt;
 			}
 			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $is_smushed, $echo );

@@ -274,6 +274,10 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 						'sent_ids'  => $sent_ids[0],
 						'timestamp' => time()
 					);
+
+					//used in media library for showing button again
+					update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-id' , $request_id );
+
 					$updated    = boolval( update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-' . $request_id, $smush_sent ) );
 				}
 			} else {
