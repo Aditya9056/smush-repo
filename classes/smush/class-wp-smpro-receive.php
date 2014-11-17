@@ -222,7 +222,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			if ( empty( $bulk_request ) ) {
 				$res = array(
 					'status'       => 'no_request',
-					'check_status' => false
+					'check_status' => false,
+					'message'      => __( 'Bulk request not found', WP_SMPRO_DOMAIN )
 				);
 				wp_send_json_error( $res );
 			}

@@ -423,6 +423,9 @@
 				//Remove notice after fetching is done
 				jQuery('.updated.bulk-smush-notice').remove();
 			});
+			jQuery.when( startingpoint).done( function() {
+				bulkReset();
+			});
 		};
 
 		var bulkStart = function ($button) {
@@ -460,6 +463,28 @@
 			$button.prop('disabled', false);
 
 			$button.find('span').html(wp_smpro_msgs.fetch);
+
+		};
+
+		var bulkReset = function () {
+			$(window).off('beforeunload');
+
+			$button = elem.find(config.fetchButton);
+
+			// copy the spinner into an object
+			$spinner = $button.find('.floatingCirclesG');
+
+			// remove the spinner
+			$spinner.remove();
+
+			// empty the current text
+			$button.find('span').html('');
+
+			$button.removeClass('wp-smpro-started');
+
+			$button.prop('disabled', false);
+
+			$button.find('span').html(wp_smpro_msgs.bulk_smush_now);
 
 		};
 
