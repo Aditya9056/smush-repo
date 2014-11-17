@@ -256,11 +256,11 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// save the sent_ids for this request
 				$this->update_bulk_status( $sent_ids, $request_id );
 
-				if( is_array( $sent_ids ) && count($sent_ids) >  1 ) {
+				if ( is_array( $sent_ids ) && count( $sent_ids ) > 1 ) {
 					$current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
 
 					$current_requests[ $request_id ] = array(
-						'token' => $token,
+						'token'     => $token,
 						'sent_ids'  => $sent_ids,
 						'timestamp' => time()
 					);
@@ -268,13 +268,13 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 					$updated = boolval( update_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
 
 					unset( $current_requests );
-				}else{
+				} else {
 					$smush_sent = array(
-						'token' => $token,
+						'token'     => $token,
 						'sent_ids'  => $sent_ids[0],
 						'timestamp' => time()
 					);
-					$updated = boolval( update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-' . $request_id, $smush_sent ) );
+					$updated    = boolval( update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-' . $request_id, $smush_sent ) );
 				}
 			} else {
 				//otherwise the remaining process will break
@@ -323,7 +323,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// get the array of ids sent previously
 			$prev_sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
-			if( is_array( $sent_ids ) ) {
+			if ( is_array( $sent_ids ) ) {
 				// merge the newest sent ids with the existing ones
 				$sent_ids = array_merge( $prev_sent_ids, $sent_ids );
 			}
@@ -378,7 +378,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			unset( $path_base );
 			if ( empty( $request_data ) ) {
-				$reponse['error'] = __( "We couldn't find any attachment data to send.", WP_SMPRO_DOMAIN );
+				$response['error'] = __( "We couldn't find any attachment data to send.", WP_SMPRO_DOMAIN );
 			} else {
 				$response['request_data'] = $request_data;
 			}
@@ -454,27 +454,28 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				//Skip attachment as its not a image
 				if ( empty( $image_details ) ) {
-					$log->error( 'WpSmproSend: add_attachment_data', 'Not a image file ' . $attachment->attachment_id );
+					unset( $attachments[ $key ] );
+					$log->error( "WpSmpro_Send: add_attachment_data", "Not a image file" . $attachment->attachment_id );
 					continue;
 				}
-				//if there are no metadata check size
+				//if there is no metadata check size
 				if ( empty( $attachment->metadata ) ) {
-					if ( ! empty( $file_size ) && $file_size > 5000000 ) {
-						$log->error( "WpSmpro_Send: add_attachment_data", "File size limit exceeded for attachment" . $attachment->attachment_id );
-					}
 					if ( sizeof( $attachments ) == 1 ) {
-						$request_data['error'] = __( "File not sent", WP_SMPRO_DOMAIN );
+						$log->error( "WpSmpro_Send: add_attachment_data", __( "Image not sent, attachment metadata is missing for the image", WP_SMPRO_DOMAIN ) );
 
 						return $request_data;
 					} else {
+						$log->error( "WpSmpro_Send: add_attachment_data", "Attachment data not found for the image, attachment id: " . $attachment->attachment_id );
+						unset( $attachments[ $key ] );
 						continue;
 					}
-				}
-				// get the attachment data in the format we need
-				$attachment = $this->format_attachment_data( $attachment, $anim, $pathprefix, $file_size );
+				} else {
+					// get the attachment data in the format we need
+					$attachment = $this->format_attachment_data( $attachment, $anim, $pathprefix, $file_size );
 
-				// add this id to the list of sent ids
-				$sent_ids[] = $attachment->attachment_id;
+					// add this id to the list of sent ids
+					$sent_ids[] = $attachment->attachment_id;
+				}
 
 				unset( $file, $image_details );
 			}
@@ -483,8 +484,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$request_data->sent_ids = $sent_ids;
 			unset( $sent_ids );
 
-			// add the formatted attachment data to the request data
-			$request_data->data = $attachments;
+			if ( ! empty( $attachments ) ) {
+				// add the formatted attachment data to the request data
+				$request_data->data = $attachments;
+			} else {
+				$log->error( "WpSmpro_Send: add_attachment_data", "WpSmpro_Send: no attachments to smush " );
+
+				return $request_data;
+			}
 			unset( $attachments );
 
 			return $request_data;
@@ -616,7 +623,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 *
 		 * @return \stdClass the formatted row
 		 */
-		private function format_attachment_data( $row, $anim = false, $path_prefix, $file_size ) {
+		private function format_attachment_data( $row, $anim = false, $pathprefix, $file_size ) {
 			global $log;
 
 			$request_item = new stdClass();
@@ -635,7 +642,12 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( ! empty( $metadata['sizes'] ) ) {
 				// check large
 				foreach ( $metadata['sizes'] as $size_key => $size_data ) {
-					$filenames[ $size_key ] = $size_data['file'];
+					$size = filesize( $pathprefix . '/' . $request_item->path_prefix . $size_data['file'] );
+					if ( ! empty( $file_size ) && $size < 5000000 ) {
+						$filenames[ $size_key ] = $size_data['file'];
+					} else {
+						$log->error( 'Wp_Smpro_Send: format_attachmnet_data', 'File size exceeded the limit for image size: ' . $size_key . ', for attachment ' . $row->attachment_id );
+					}
 				}
 			}
 
