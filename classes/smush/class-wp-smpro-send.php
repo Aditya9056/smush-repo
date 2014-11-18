@@ -646,7 +646,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( ! empty( $metadata['sizes'] ) ) {
 				// check large
 				foreach ( $metadata['sizes'] as $size_key => $size_data ) {
-					$size = filesize( $pathprefix . '/' . $request_item->path_prefix . $size_data['file'] );
+					$size = filesize( $pathprefix . '/' . trailingslashit( $request_item->path_prefix ) . $size_data['file'] );
 					if ( ! empty( $file_size ) && $size < 5000000 ) {
 						$filenames[ $size_key ] = $size_data['file'];
 					} else {
