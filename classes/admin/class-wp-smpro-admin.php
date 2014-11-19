@@ -106,10 +106,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$this,
 				'ui'
 			) );
-			add_media_page( 'WP Smpro Error Log', 'Error Log', 'edit_others_posts', 'wp-smpro-errorlog', array(
-				$this,
-				'create_admin_error_log_page'
-			) );
+			//Register Debug page only if WP_SMPRO_DEBUG is defined and true
+			if( defined('WP_SMPRO_DEBUG') && WP_SMPRO_DEBUG ) {
+				add_media_page( 'WP Smpro Error Log', 'Error Log', 'edit_others_posts', 'wp-smpro-errorlog', array(
+					$this,
+					'create_admin_error_log_page'
+				) );
+			}
 
 			// enqueue js only on this screen and media_screen
 			add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );

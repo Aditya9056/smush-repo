@@ -136,6 +136,7 @@
 					// re-enable all the buttons
 					$button.prop('disabled', false);
 
+					//Sweet Alert
 					swal('', config.msgs.smush_completed, 'success');
 
 				}
@@ -211,6 +212,7 @@
 				} else {
 					sendSuccess(response);
 					if (!config.isSingle) {
+						//sweet alert
 						swal('', config.msgs.smush_email, 'success');
 					}
 					if (!$id) {

@@ -265,7 +265,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								$d     = floor( $wait_time / 24 );
 								$hours = $wait_time - $d * 24;
 								if ( $d > 0 ) {
-									$d = $d > 1 ? $d . ' days' : $d . ' day';
+									$d = $d > 1 ? $d . ' days ' : $d . ' day ';
 								} else {
 									$d = '';
 								}

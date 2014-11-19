@@ -107,7 +107,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			/**
 			 * Time out for API request
 			 */
-			define( 'WP_SMPRO_TIMEOUT', 15 );
+			define( 'WP_SMPRO_TIMEOUT', 30 );
 
 
 			if ( ! defined( 'WP_SMPRO_EFFICIENT' ) ) {

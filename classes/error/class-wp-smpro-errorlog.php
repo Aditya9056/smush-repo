@@ -24,6 +24,9 @@ class WpSmproErrorLog {
 	}
 
 	function error( $function, $exception ) {
+		if( !defined('WP_SMPRO_DEBUG') || !WP_SMPRO_DEBUG ) {
+			return;
+		}
 		WpSmproErrorRegistry::store( $exception );
 		$info = is_object( $exception ) && method_exists( $exception, 'getMessage' )
 			? $exception->getMessage()

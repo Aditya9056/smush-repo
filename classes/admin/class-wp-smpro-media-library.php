@@ -159,7 +159,20 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 
 			if ( !$is_smushed && ! empty( $timestamp ) ) {
 				if ( $timestamp <= strtotime( '-12 hours' ) ) {
-					$button_show = true;
+
+					//if request is older than 12 hours, remove from sent ids
+					$sent_ids = get_option(WP_SMPRO_PREFIX . 'sent-ids');
+
+					// Search
+					$pos = array_search( $id, $sent_ids );
+					if ( ! $pos ) {
+						//Attachment id is not set in sent ids, show the smush button
+						$button_show = true;
+					}else {
+						unset( $sent_ids[ $pos ] );
+						update_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
+						$button_show = true;
+					}
 				}
 			} else {
 				$button_show = false;
