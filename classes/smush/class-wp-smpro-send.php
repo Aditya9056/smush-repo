@@ -158,7 +158,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response = $this->form_request_data( $attachment_id, $metadata );
 
 			if ( ! empty( $response['error'] ) ) {
-				$log->error( 'WpSmproSend: send_request', 'Request data error' . json_encode( $response ) );
+				$log->error( 'WpSmproSend: send_request', 'Request not sent - ' . json_encode( $response ) );
 
 				return $response;
 			}
@@ -171,8 +171,13 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// remove them from the request object
 			unset( $response['request_data']->sent_ids );
 
-			// post the request and get the response
-			$response = $this->_post( $response['request_data'] );
+			//If we have any ids to send
+			if ( ! empty( $sent_ids ) ) {
+				// post the request and get the response
+				$response = $this->_post( $response['request_data'] );
+			} else {
+
+			}
 
 			// destroy the large request_data from memory
 			unset( $request_data );
@@ -276,9 +281,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 					);
 
 					//used in media library for showing button again
-					update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-id' , $request_id );
+					update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-id', $request_id );
 
-					$updated    = boolval( update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-' . $request_id, $smush_sent ) );
+					$updated = boolval( update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-' . $request_id, $smush_sent ) );
 				}
 			} else {
 				//otherwise the remaining process will break
@@ -381,8 +386,11 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$request_data = $this->add_attachment_data( $request_data, $attachment_id, $path_base['basedir'], $metadata );
 
 			unset( $path_base );
+
 			if ( empty( $request_data ) ) {
 				$response['error'] = __( "We couldn't find any attachment data to send.", WP_SMPRO_DOMAIN );
+			} elseif ( ! empty( $request_data->error ) ) {
+				$response['error'] = $request_data->error;
 			} else {
 				$response['request_data'] = $request_data;
 			}
@@ -449,27 +457,51 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// loop
 			foreach ( $attachments as $key => &$attachment ) {
+				$image_details = $file_size = '';
 				//assume it is not animated
 				$anim = false;
 
-				$file          = get_attached_file( $attachment->attachment_id );
-				$image_details = getimagesize( $file );
-				$file_size     = filesize( $file );
+				$file = get_attached_file( $attachment->attachment_id );
 
-				//Skip attachment as its not a image
-				if ( empty( $image_details ) ) {
-					unset( $attachments[ $key ] );
-					$log->error( "WpSmpro_Send: add_attachment_data", "Not a image file" . $attachment->attachment_id );
-					continue;
-				}
-				//if there is no metadata check size
-				if ( empty( $attachment->metadata ) ) {
-					if ( sizeof( $attachments ) == 1 ) {
-						$log->error( "WpSmpro_Send: add_attachment_data", __( "Image not sent, attachment metadata is missing for the image", WP_SMPRO_DOMAIN ) );
+				//Check if file exists
+				if ( file_exists( $file ) ) {
+					$image_details = getimagesize( $file );
+					$file_size     = filesize( $file );
+				} else {
+					if ( count( $attachments ) == 1 ) {
+						$log->error( "WpSmpro_Send: add_attachment_data", __( "File not found", WP_SMPRO_DOMAIN ) );
+						$request_data->error = __( "Image file not found", WP_SMPRO_DOMAIN );
 
 						return $request_data;
 					} else {
-						$log->error( "WpSmpro_Send: add_attachment_data", "Attachment data not found for the image, attachment id: " . $attachment->attachment_id );
+						$log->error( "WpSmpro_Send: add_attachment_data", "File not found " . $attachment->attachment_id );
+						unset( $attachments[ $key ] );
+						continue;
+					}
+				}
+
+				//If there are no image details, Skip attachment
+				if ( empty( $image_details ) ) {
+					if ( count( $attachments ) == 1 ) {
+						$log->error( "WpSmpro_Send: add_attachment_data", "Not a image file" . $attachment->attachment_id );
+						$request_data->error = __( "Not a image file", WP_SMPRO_DOMAIN );
+
+						return $request_data;
+					} else {
+						$log->error( "WpSmpro_Send: add_attachment_data", "Not a image file" . $attachment->attachment_id );
+						unset( $attachments[ $key ] );
+						continue;
+					}
+				}
+				//if there is no metadata check size
+				if ( empty( $attachment->metadata ) ) {
+					if ( count( $attachments ) == 1 ) {
+						$log->error( "WpSmpro_Send: add_attachment_data", "Image metadata not found." . $attachment->attachment_id );
+						$request_data->error = __( "Image metadata not found", WP_SMPRO_DOMAIN );
+
+						return $request_data;
+					} else {
+						$log->error( "WpSmpro_Send: add_attachment_data", "Image metadata not found" . $attachment->attachment_id );
 						unset( $attachments[ $key ] );
 						continue;
 					}
