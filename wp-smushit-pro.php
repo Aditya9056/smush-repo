@@ -33,7 +33,7 @@ WDP ID:
  *
  * @package SmushItPro
  *
- * @version 1.0
+ * @version 1.0 - Beta 2
  *
  * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umesh@incsub.com>
