@@ -194,7 +194,9 @@
 		var send = function ($id) {
 			jQuery('.wp-smpro-msg.updated.update').remove();
 			var $data = {};
+			var is_bulk = true;
 			if ($id !== false) {
+				is_bulk = false;
 				$data = {'attachment_id': $id};
 				jQuery('.column-smushit #wp-smpro-send').attr('disabled', 'disabled');
 			}
@@ -208,7 +210,7 @@
 			}).done(function (response) {
 				jQuery('.column-smushit #wp-smpro-send').removeAttr('disabled');
 				if (typeof response.error !== 'undefined') {
-					sendFailure(response);
+					sendFailure(response, is_bulk);
 				} else {
 					sendSuccess(response);
 					if (!config.isSingle) {
@@ -226,7 +228,7 @@
 				jQuery('.column-smushit #wp-smpro-send').removeAttr('disabled');
 				response = {};
 				response.error = config.msgs.timeout;
-				sendFailure(response);
+				sendFailure(response, is_bulk );
 				return;
 			});
 
@@ -254,7 +256,7 @@
 
 		};
 
-		var sendFailure = function ($response) {
+		var sendFailure = function ($response, is_bulk ) {
 
 			if ($.isEmptyObject($response)) {
 				$response = {'status_message': config.msgs.send_fail};
@@ -270,7 +272,11 @@
 
 			msg(msgvar);
 			var button = jQuery(config.sendButton);
-			button.find('span').html(config.msgs.bulk_smush_now);
+			if( is_bulk ) {
+				button.find('span').html(config.msgs.bulk_smush_now);
+			}else{
+				button.find('span').html(config.msgs.smush_now);
+			}
 			jQuery(config.sendButton).removeAttr('disabled');
 			return;
 		};
@@ -346,6 +352,11 @@
 		};
 
 		var fetch = function ($id) {
+			var is_bulk = false;
+			if( ! $id ) {
+				is_bulk = true;
+			}
+
 			jQuery('.wp-smpro-msg.smush-notices.fail').remove();
 			return jQuery.ajax({
 				type: "GET",
@@ -377,7 +388,7 @@
 				response = {};
 				console.log(errorThrown);
 				response.error = config.msgs.timeout;
-				sendFailure(response);
+				sendFailure(response, is_bulk);
 				return;
 			});
 		};
