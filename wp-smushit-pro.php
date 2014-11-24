@@ -7,7 +7,7 @@ Author: WPMU DEV
 Version: 1.0
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit-pro
-WDP ID:
+WDP ID: 912164
 */
 
 /*
