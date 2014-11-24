@@ -240,7 +240,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		}
 
 		/**
-		 *
+		 * Updates the sent-ids, bulk-sent and current requests parameters
 		 * @param type $request_id
 		 * @param type $token
 		 * @param type $sent_ids
