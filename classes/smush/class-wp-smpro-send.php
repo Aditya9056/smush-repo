@@ -97,12 +97,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				echo json_encode( $response );
 				die();
 			}
-			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_option( 'admin_email' ) ) : __( "Image sent for smushing", WP_SMPRO_DOMAIN );
+			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_option( 'admin_email' ) ) : __( "Image sent for smushing.", WP_SMPRO_DOMAIN );
 			$response['success']['status_code']    = 1;
 			$response['success']['count']          = $response['updated_count'];
 			$response['success']['sent_count']     = count( get_option( WP_SMPRO_PREFIX . 'sent-ids', '' ) ); //Fetch from site option
 			$response['success']['status_message'] = $status_message;
-
+			if( $response['cdn'] ) {
+				$response['success']['status_message'] .= __('<br /> It seems you are using a CDN service, please whitelist the Smush server IP: 66.135.55.161, for succesful smushing.');
+			}
 			unset( $response['api'] );
 
 			echo json_encode( $response );
@@ -175,8 +177,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( ! empty( $sent_ids ) ) {
 				// post the request and get the response
 				$response = $this->_post( $response['request_data'] );
-			} else {
-
 			}
 
 			// destroy the large request_data from memory
@@ -220,6 +220,13 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 					$response['api']
 				)
 			);
+			$response['cdn'] = false;
+			if( !empty( $data->server ) ) {
+				//check for cloudflare or CDN or MaxCDN in server
+				if( stripos( $data->server, 'cloudflare' ) !== false || strpos( $data->server, 'cdn' ) !== false ||  strpos( $data->server, 'maxcdn' ) !== false ) {
+					$response['cdn'] = true;
+				}
+			}
 			// request was successfully received
 			if ( $data->success ) {
 				// get the unique request id issued by smush service

@@ -254,13 +254,14 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 						if ( ! empty( $response_body->message ) ) {
 							if ( $response_body->message == 'queue' ) {
 								if ( $response_body->pending_requests == 0 ) {
-									$data['message'] = __( 'The smushing elfs are busy, You are first in queue.', WP_SMPRO_DOMAIN );
+									$data['message'] = __( 'The smushing elves are busy, You are first in queue.', WP_SMPRO_DOMAIN );
 								} else {
-									$data['message'] = __( 'The smushing elfs are busy, You are %s in queue. <br /> Current wait time: %s', WP_SMPRO_DOMAIN );
+									$data['message'] = __( 'The smushing elves are busy, You are %s in queue. <br /> Current wait time: %s', WP_SMPRO_DOMAIN );
 								}
 
 								$ordinal_suffix = $this->getOrdinalSuffix( $response_body->pending_requests + 1 );
-								$wait_time      = ( $response_body->pending_requests * 1.5 ) + 1;
+								//n*1 hour for each request, plus an additional hour for margin
+								$wait_time      = ( $response_body->pending_requests * 1 ) + 1;
 
 								$d     = floor( $wait_time / 24 );
 								$hours = $wait_time - $d * 24;
