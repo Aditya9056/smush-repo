@@ -57,6 +57,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// hook ajax call to reset counts
 			add_action( 'wp_ajax_wp_smpro_reset', array( $this, 'reset_count' ) );
 
+			// hook ajax call to reset counts
+			add_action( 'wp_ajax_wp_smpro_reset_bulk_request', array( $this, 'reset_bulk_request' ) );
+
 			// hook into admin footer to load a hidden html/css spinner
 			add_action( 'admin_footer-upload.php', array( $this, 'print_spinner' ) );
 
@@ -107,7 +110,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'ui'
 			) );
 			//Register Debug page only if WP_SMPRO_DEBUG is defined and true
-			if( defined('WP_SMPRO_DEBUG') && WP_SMPRO_DEBUG ) {
+			if ( defined( 'WP_SMPRO_DEBUG' ) && WP_SMPRO_DEBUG ) {
 				add_media_page( 'WP Smpro Error Log', 'Error Log', 'edit_others_posts', 'wp-smpro-errorlog', array(
 					$this,
 					'create_admin_error_log_page'
@@ -215,9 +218,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			       ( empty( $current_requests[ $sent_request_id ] ) || empty( $current_requests[ $sent_request_id ]['sent_ids'] ) )
 			     )
 			) {
-				if ( empty( $current_requests[ $sent_request_id ]['sent_ids'] ) ) {
-					delete_option( WP_SMPRO_PREFIX . "bulk-sent" );
-				}
+				delete_option( WP_SMPRO_PREFIX . "bulk-sent" );
 				$sent_request = array( 'sent' => false );
 			}
 			foreach ( $current_requests as $request_id => $request ) {
@@ -750,7 +751,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * @todo Add the API status here, next to the button
 		 */
 		function setup_button() {
-			$button = $this->button_state();
+			$request_status = get_option( WP_SMPRO_PREFIX . 'request_status' );
+			$button         = $this->button_state( $request_status );
+			$reset_button   = '';
+			//Don't show a reset button, if request is already being processed or it request is ready to fetch
+			if ( $request_status !== 'processing' && $button['id'] !== 'wp-smpro-fetch' && $button['id'] !== 'wp-smpro-send' ) {
+				$reset_button = $this->reset_bulk_button();
+			}
 			?>
 			<div class="smush-notices update checking-status">
 				<p><?php
@@ -761,6 +768,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				<span><?php echo $button['text'] ?></span>
 			</button>
 			<?php
+			if ( ! empty( $reset_button ) ) {
+				echo $reset_button;
+			}
 			if ( $button['id'] == 'wp-smpro-fetch' ) {
 				//show cancel button only for fetching
 				?>
@@ -770,7 +780,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 		}
 
-		private function button_state() {
+		/**
+		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not
+		 *
+		 * @param $request_status
+		 *
+		 * @return array
+		 */
+		private function button_state( $request_status ) {
 			$button = array(
 				'cancel' => false,
 			);
@@ -821,7 +838,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// a bulk request has been sent but not received
 			if ( $is_bulk_sent && ! $is_bulk_received ) {
-				$button['text']     = __( 'Smushing in progress', WP_SMPRO_DOMAIN );
+				if ( $request_status == 'not_reachable' ) {
+					$button['text'] = __( 'Request failed', WP_SMPRO_DOMAIN );
+				} else {
+					$button['text'] = __( 'Smushing in progress', WP_SMPRO_DOMAIN );
+				}
 				$button['id']       = "wp-smpro-waiting";
 				$button['disabled'] = ' disabled="disabled"';
 				$button['cancel']   = ' disabled="disabled"';
@@ -1006,7 +1027,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
 
-			if( $smush_data['bytes'] < 0 ) {
+			if ( $smush_data['bytes'] < 0 ) {
 				$smush_data['bytes'] = 0;
 			}
 
@@ -1020,7 +1041,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		/**
-		 * Update Sent ids
+		 * Update attachment ids sent for smushing
 		 */
 		function update_sent_ids( $attachment_id ) {
 
@@ -1165,6 +1186,109 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$status_text = $this->media_lib->smush_status( $id );
 			wp_send_json_success( $status_text );
 			die();
+		}
+
+		/**
+		 * Send a POST request to smush API, to remove a bulk request
+		 *
+		 * @param $request_id
+		 * @param $nonce
+		 */
+		function request_API_bulk_reset( $request_id, $token ) {
+			global $wp_smpro;
+			//missing details, do not send a request
+			if ( empty( $request_id ) || empty( $token ) ) {
+				return false;
+			}
+
+			return $wp_smpro->sender->reset_bulk( $request_id, $token );
+
+		}
+
+		/**
+		 * Ajax handler for resetting Bulk request
+		 */
+		function reset_bulk_request() {
+			//Verify nonce, send error if it fails
+			if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'reset_bulk_request' ) ) {
+				wp_send_json_error( 'Nonce verification failed' );
+			}
+
+			$reset_done = $this->resetBulkRequest();
+			if ( $reset_done ) {
+				wp_send_json_success( __( "The current bulk request was removed for you, you can send a new one anytime!", WP_SMPRO_DOMAIN ) );
+			} else {
+				wp_send_json_error( __( 'Ah crap! Some error occurred while resetting the request for you. Reload the page and try to reset it again.' ) );
+			}
+
+		}
+
+		/**
+		 * Delete the sent ids from current requests and sent ids for the recent bulk request
+		 */
+		function resetBulkRequest() {
+			global $wp_smpro;
+			$sent_ids_diff = array();
+			$bulk_request  = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+
+			if( empty( $bulk_request ) || empty( $current_requests ) ) {
+				return false;
+			}
+			$sent_ids[ $bulk_request ]['sent_ids'] = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ]['sent_ids'] : '';
+
+			$sent_ids_list = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
+
+			if ( is_array( $sent_ids[$bulk_request]['sent_ids'] ) && is_array( $sent_ids_list ) && count( $sent_ids ) > 0 ) {
+				$sent_ids_diff = array_diff( $sent_ids_list, $sent_ids[$bulk_request]['sent_ids'] );
+			}
+
+			//send a request to API, to reset the request from there too, as we don't want to waste the resources
+			$response = $wp_smpro->sender->reset_bulk( $bulk_request, $current_requests[ $bulk_request ]['token'] );
+
+			//Server is down or other issue
+			if( $response['api']['response']['code'] !== 200 ) {
+				return false;
+			}else {
+
+				$response_body = wp_remote_retrieve_body($response['api']);
+				$response_body = json_decode( $response_body );
+				//if response has body
+				if( !empty( $response_body ) ) {
+					//Check if bulk request was not removed
+					if( !$response_body->success ) {
+						return false;
+					}
+				}else{
+					return false;
+				}
+			}
+			//Update sent ids
+			update_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids_diff );
+
+			//Update current request
+			unset( $current_requests[ $bulk_request ] );
+			$current_requests_updated = update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
+
+			//update bulk sent
+			$bulk_sent_updated = update_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+
+			if ( $current_requests_updated && $bulk_sent_updated ) {
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Creates a reset button for bulk request
+		 */
+		function reset_bulk_button() {
+			$reset_nonce  = wp_nonce_field( 'reset_bulk_request', 'wp-smpro-reset-nonce', '', false );
+			$reset_button = '<button id="wp-smpro-reset-bulk" class="button button-primary">' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</button>';
+
+			return $reset_button . $reset_nonce;
 		}
 
 	}

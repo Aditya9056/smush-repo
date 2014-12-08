@@ -14,6 +14,7 @@
 			sendButton: '#wp-smpro-send',
 			fetchButton: '#wp-smpro-fetch',
 			cancelButton: '#wp-smpro-cancel',
+			resetButton: '#wp-smpro-reset-bulk',
 			sendProgressBar: '#wp-smpro-sent-progress',
 			fetchProgressBar: '#wp-smpro-fetched-progress',
 			statusWrap: '#wp-smpro-progress-status',
@@ -39,6 +40,7 @@
 
 			config.hide_notice_url = config.ajaxurl + '?action=wp_smpro_hide';
 
+			config.resetUrl = config.ajaxurl + '?action=wp_smpro_reset_bulk_request';
 
 		};
 
@@ -556,12 +558,50 @@
 			return $size + ' ' + $unit;
 		};
 
+		var resetBulkRequest = function() {
+			jQuery('.smush-notices').remove();
+			return jQuery.ajax({
+				type: "POST",
+				url: config.resetUrl,
+				data: { 'nonce' : jQuery('#wp-smpro-reset-nonce').val() },
+				timeout: 90000
+			}).done(function (response) {
+				var button = jQuery('#wp-smpro-waiting');
+				if( typeof response !== 'undefined' && response.success ) {
+
+					//Remove the reset button
+					jQuery(config.resetButton).remove();
+
+					//Add a message
+					var div = '<div class="smush-notices update bulk-reset"><p>' + response.data +'</p></div>';
+					jQuery('#progress-ui').after(div);
+
+					//disable the check status
+					wp_smpro_request_sent = {"sent":""};
+
+					//Enable the send bulk request button
+					button.removeClass('wp-smpro-started');
+
+					button.prop('disabled', false);
+
+					button.find('span').html(wp_smpro_msgs.bulk_smush_now);
+					button.attr('id', 'wp-smpro-send')
+
+				}else{
+					//there was an error resetting, just show a error message and ask for page reload
+				}
+			});
+		};
 
 		init();
 
+		//Handle button clicks and call respective functions
 		elem.on('click', config.sendButton, function (e) {
 			// prevent the default action
 			e.preventDefault();
+			//remove all smush notices
+			jQuery('.smush-notices').remove();
+
 			buttonProgress($(this), config.msgs.sending);
 
 			//Remove Selected image div if there
@@ -632,6 +672,10 @@
 
 			return;
 
+		}).on('click', config.resetButton, function(e){
+			e.preventDefault();
+			resetBulkRequest();
+			return;
 		});
 	};
 

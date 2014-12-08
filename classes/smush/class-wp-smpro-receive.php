@@ -252,6 +252,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 					if ( ! empty( $response_body ) ) {
 						$response_body = json_decode( $response_body );
 						if ( ! empty( $response_body->message ) ) {
+							update_option(WP_SMPRO_PREFIX . 'request_status', $response_body->message );
 							if ( $response_body->message == 'queue' ) {
 								if ( $response_body->pending_requests == 0 ) {
 									$data['message'] = __( 'The smushing elves are busy, You are first in queue.', WP_SMPRO_DOMAIN );
@@ -295,10 +296,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								wp_send_json_error( $data );
 							} elseif ( $response_body->message == 'not_reachable' ) {
 								$data['message'] = __( 'Smush server was unable to access images from your site.', WP_SMPRO_DOMAIN );
-
-								//Reset the current bulk request
-								$this->resetBulkRequest();
-
 								wp_send_json_error( $data );
 							}
 						}
@@ -310,32 +307,6 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				wp_send_json_success( $sent_ids );
 			}
 			die( 1 );
-		}
-
-		/**
-		 * Delete the sent ids from current requests and sent ids for the recent bulk request
-		 */
-		function resetBulkRequest() {
-			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
-
-			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
-
-			$sent_ids[ $bulk_request ]['sent_ids'] = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ]['sent_ids'] : '';
-
-			$sent_ids_list = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
-
-			if ( is_array( $sent_ids ) && is_array( $sent_ids_list ) && count( $sent_ids ) > 0 ) {
-				$sent_ids_diff = $sent_ids_list - $sent_ids;
-			}
-			//Update sent ids
-			update_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids_diff );
-
-			//Update current request
-			unset( $current_requests[ $bulk_request ] );
-			update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
-
-			//update bulk sent
-			update_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 		}
 
 		/**

@@ -102,8 +102,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response['success']['count']          = $response['updated_count'];
 			$response['success']['sent_count']     = count( get_option( WP_SMPRO_PREFIX . 'sent-ids', '' ) ); //Fetch from site option
 			$response['success']['status_message'] = $status_message;
-			if( $response['cdn'] ) {
-				$response['success']['status_message'] .= __('<br /> It seems you are using a CDN service, please whitelist the Smush server IP: 66.135.55.161, for succesful smushing.');
+			if ( $response['cdn'] ) {
+				$response['success']['status_message'] .= __( '<br /> It seems you are using a CDN service, please whitelist the Smush server IP: 66.135.55.161, for succesful smushing.' );
 			}
 			unset( $response['api'] );
 
@@ -215,15 +215,15 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		private function process_response( $response, $token, $sent_ids ) {
 
 			// otherwise, we received a proper response from the service
-			$data = json_decode(
+			$data            = json_decode(
 				wp_remote_retrieve_body(
 					$response['api']
 				)
 			);
 			$response['cdn'] = false;
-			if( !empty( $data->server ) ) {
+			if ( ! empty( $data->server ) ) {
 				//check for cloudflare or CDN or MaxCDN in server
-				if( stripos( $data->server, 'cloudflare' ) !== false || strpos( $data->server, 'cdn' ) !== false ||  strpos( $data->server, 'maxcdn' ) !== false ) {
+				if ( stripos( $data->server, 'cloudflare' ) !== false || strpos( $data->server, 'cdn' ) !== false || strpos( $data->server, 'maxcdn' ) !== false ) {
 					$response['cdn'] = true;
 				}
 			}
@@ -248,6 +248,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 		/**
 		 * Updates the sent-ids, bulk-sent and current requests parameters
+		 *
 		 * @param type $request_id
 		 * @param type $token
 		 * @param type $sent_ids
@@ -339,7 +340,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// get the array of ids sent previously
 			$prev_sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
-			if ( is_array( $sent_ids ) ) {
+			if ( is_array( $sent_ids ) && !empty( $prev_sent_ids ) ) {
 				// merge the newest sent ids with the existing ones
 				$sent_ids = array_merge( $prev_sent_ids, $sent_ids );
 			}
@@ -381,7 +382,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$request_data->url_prefix = $path_base['baseurl'];
 
 			// add the API key
-			$request_data->api_key = get_site_option( 'wpmudev_apikey' );
+			$request_data->api_key = $this->dev_api_key();
 
 			// add a token
 			$request_data->token = wp_create_nonce( WP_SMPRO_PREFIX . "request" );
@@ -900,6 +901,32 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			fclose( $fh );
 
 			return $frames > 1;
+		}
+
+		/**
+		 * Send a request to reset the bulk request
+		 */
+		function reset_bulk( $request_id, $token ) {
+			$request_data               = array();
+			$request_data['api_key']    = $this->dev_api_key();
+			$request_data['token']      = $token;
+			$request_data['request_id'] = $request_id;
+
+			$request_data = json_encode( $request_data );
+
+			$req_args = array(
+				'body'       => array(
+					'json' => $request_data
+				),
+				'user-agent' => WP_SMPRO_USER_AGENT,
+				'timeout'    => WP_SMPRO_TIMEOUT,
+				'sslverify'  => false
+			);
+
+			// make the post request and return the response
+			$response['api'] = wp_remote_post( 'http://107.170.2.190/reset/', $req_args );
+
+			return $response;
 		}
 	}
 
