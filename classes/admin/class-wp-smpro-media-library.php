@@ -85,8 +85,9 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 * @return null
 		 */
 		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true ) {
-			// don't proceed if attachment is not image
-			if ( ! wp_attachment_is_image( $id ) ) {
+			$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
+			// don't proceed if attachment is not image, or if image is not a jpg, png or gif
+			if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
 				return;
 			}
 			$html = '
@@ -136,7 +137,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 */
 		function show_resmush_button( $id ) {
 			$button_show = false;
-			$timestamp = '';
+			$timestamp   = '';
 
 			$is_smushed = get_post_meta( $id, 'wp-smpro-is-smushed', true );
 
@@ -153,22 +154,22 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 				//get smush request meta, to fetch timestamp
 				$smpro_request_data = get_post_meta( $id, WP_SMPRO_PREFIX . 'request-' . $smush_request_id, true );
 				if ( ! empty( $smpro_request_data ) ) {
-					$timestamp = !empty( $smpro_request_data['timestamp'] ) ? $smpro_request_data['timestamp'] : '';
+					$timestamp = ! empty( $smpro_request_data['timestamp'] ) ? $smpro_request_data['timestamp'] : '';
 				}
 			}
 
-			if ( !$is_smushed && ! empty( $timestamp ) ) {
+			if ( ! $is_smushed && ! empty( $timestamp ) ) {
 				if ( $timestamp <= strtotime( '-12 hours' ) ) {
 
 					//if request is older than 12 hours, remove from sent ids
-					$sent_ids = get_option(WP_SMPRO_PREFIX . 'sent-ids');
+					$sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids' );
 
 					// Search
 					$pos = array_search( $id, $sent_ids );
 					if ( ! $pos ) {
 						//Attachment id is not set in sent ids, show the smush button
 						$button_show = true;
-					}else {
+					} else {
 						unset( $sent_ids[ $pos ] );
 						update_option( WP_SMPRO_PREFIX . 'sent-ids', $sent_ids );
 						$button_show = true;

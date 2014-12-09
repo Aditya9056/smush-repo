@@ -39,6 +39,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 		function auto_smush( $metadata, $attachment_id ) {
 			global $log;
+
+			$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
+
+			//check image type before sending
+			if( !in_array( get_post_mime_type($attachment_id ), $allowed_images ) ) {
+				return $metadata;
+			}
+
 			//Check API Status
 			if ( $this->api_connected ) {
 
@@ -340,7 +348,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// get the array of ids sent previously
 			$prev_sent_ids = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
-			if ( is_array( $sent_ids ) && !empty( $prev_sent_ids ) ) {
+			if ( is_array( $sent_ids ) && ! empty( $prev_sent_ids ) ) {
 				// merge the newest sent ids with the existing ones
 				$sent_ids = array_merge( $prev_sent_ids, $sent_ids );
 			}
@@ -558,26 +566,27 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// so that we don't include the ids already sent
 			$existing_clause = $this->existing_clause( $attachment_id );
+			$allowed_images  = "( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' )";
 
 			// get the attachment id, attachment metadata and full size's path
-			$sql     = "SELECT p.ID as attachment_id, p.post_mime_type as type, md.meta_value as metadata, mp.meta_value as metapath"
-			           . " FROM $wpdb->posts as p"
-			           // for attachment metadata
-			           . " LEFT JOIN $wpdb->postmeta as md"
-			           . " ON (p.ID= md.post_id AND md.meta_key='_wp_attachment_metadata')"
-			           // for full size's path
-			           . " LEFT JOIN $wpdb->postmeta as mp"
-			           . " ON (p.ID= mp.post_id AND mp.meta_key='_wp_attached_file')"
-			           // to check if attachment isn't already smushed
-			           . " LEFT JOIN $wpdb->postmeta as m"
-			           . " ON (p.ID= m.post_id AND m.meta_key='" . WP_SMPRO_PREFIX . "is-smushed')"
-			           . " WHERE"
-			           . " p.post_type='attachment'"
-			           . " AND p.post_mime_type LIKE '%image/%'"
-			           . " AND (m.meta_value='0' OR m.post_id IS NULL)"
+			$sql = "SELECT p.ID as attachment_id, p.post_mime_type as type, md.meta_value as metadata, mp.meta_value as metapath"
+			       . " FROM $wpdb->posts as p"
+			       // for attachment metadata
+			       . " LEFT JOIN $wpdb->postmeta as md"
+			       . " ON (p.ID= md.post_id AND md.meta_key='_wp_attachment_metadata')"
+			       // for full size's path
+			       . " LEFT JOIN $wpdb->postmeta as mp"
+			       . " ON (p.ID= mp.post_id AND mp.meta_key='_wp_attached_file')"
+			       // to check if attachment isn't already smushed
+			       . " LEFT JOIN $wpdb->postmeta as m"
+			       . " ON (p.ID= m.post_id AND m.meta_key='" . WP_SMPRO_PREFIX . "is-smushed')"
+			       . " WHERE"
+			       . " p.post_type='attachment'"
+			       . " AND p.post_mime_type IN " . $allowed_images
+			           . " AND ( m . meta_value = '0' OR m . post_id IS null)"
 			           . $where_id_clause
 			           . $existing_clause
-			           . " ORDER BY p.post_date ASC"
+			           . " ORDER BY p . post_date ASC"
 			           // get only 100 at a time
 			           . " LIMIT " . WP_SMPRO_REQUEST_LIMIT;
 			$results = $wpdb->get_results( $sql );
@@ -606,7 +615,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// if we have an array of ids
 			if ( is_array( $id ) ) {
 				$id_list = implode( ',', $id );
-				$clause .= " IN ($id_list)";
+				$clause .= " IN( $id_list )";
 				unset( $id_list );
 
 				return $clause;
@@ -653,7 +662,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			unset( $sent_ids );
 
-			$clause = " AND p.ID NOT IN ($id_list)";
+			$clause = " AND p . ID NOT IN( $id_list )";
 			unset( $id_list );
 
 			return $clause;
@@ -851,7 +860,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 */
 		function send_if_gif( $type = '' ) {
 			// not a gif, we can send
-			if ( $type !== "image/gif" ) {
+			if ( $type !== "image / gif" ) {
 				return true;
 			}
 
