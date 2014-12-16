@@ -52,6 +52,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 
 			// hook ajax call for checking smush status
+			add_action( 'wp_ajax_smush_api_status', array( $this, 'smush_api_status' ) );
+
+			// hook ajax call for checking smush status
 			add_action( 'wp_ajax_wp_smpro_hide', array( $this, 'hide_notice' ) );
 
 			// hook ajax call to reset counts
@@ -170,10 +173,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			wp_enqueue_style( 'wp-smpro-style' );
 			wp_enqueue_style( 'wp-smpro-alert-style' );
 
-			//Set API status on bulk page load only
-			if ( $current_screen->id == $admin_page_suffix ) {
-				$this->set_api_status();
-			}
 		}
 
 		/**
@@ -361,11 +360,35 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			//Get dashboard API Key
 			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
 
-			$class = $this->api_connected ? ' connected' : ' not-connected';
+			$class = $this->api_connected ? ' connected' : ' waiting';
 			$text  = $this->api_connected ? __( 'API Connected', WP_SMPRO_DOMAIN ) : __( 'API Not Connected', WP_SMPRO_DOMAIN );
 
 			//Style for container if there is no API key
-			$style = '';
+			$style = ''; ?>
+<!--			Check API status-->
+			<script type="text/javascript">
+				jQuery(document).ready( function() {
+					jQuery.ajax({
+						type: "GET",
+						url: ajaxurl + '?action=smush_api_status'
+					}).done(function (response) {
+						if( typeof response.success !== 'undefined' && response.success ) {
+							//API Connected
+							jQuery('.api-status').removeClass('waiting').addClass('connected').attr('title', '<?php echo __('API Connected', WP_SMPRO_DOMAIN ); ?>');
+							jQuery('.api-status-text').html('<?php echo __('API Connected', WP_SMPRO_DOMAIN ); ?>');
+
+							//Enable Send button
+							jQuery('#wp-smpro-send').removeAttr('disabled');
+							jQuery('#wp-smpro-send span').html('<?php echo __( 'Smush now!', WP_SMPRO_DOMAIN ); ?>');
+						}else{
+							//API not connected
+							jQuery('.api-status').removeClass('waiting').addClass('not-connected');
+							jQuery('.api-status-text').html('<?php echo __('API Not Connected', WP_SMPRO_DOMAIN ); ?>');
+						}
+					});
+				});
+			</script>
+			<?php
 			if ( empty( $wpmudev_apikey ) ) {
 
 				$style = 'style="opacity: 0.4;"';
@@ -374,7 +397,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				<script type="text/javascript">
 
 					jQuery(document).ready(function () {
-
 						//Disable all inputs
 						jQuery('.wp-smpro-container input').attr('disabled', 'disabled');
 
@@ -443,9 +465,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			<div class="wrap">
 				<div id="icon-upload" class="icon32"><br/></div>
 
-				<h2>
-					<?php printf( __( 'WP Smush Pro <span title="%s" class="api-status%s">%s</span><span class="api-status-text">%s</span>', WP_SMPRO_DOMAIN ), $text, $class, $text, $text ); ?>
-				</h2>
+				<h2><?php printf( __( 'WP Smush Pro <span title="%s" class="api-status%s">%s</span><span class="api-status-text">%s</span>', WP_SMPRO_DOMAIN ), $text, $class, $text, __( "Checking API status..." ) ); ?></h2>
 
 				<div class="wp-smpro-container" <?php echo $style; ?>>
 					<h3>
@@ -947,11 +967,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function set_api_status() {
 			global $log;
 
-			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-				// we don't want to slow it down
-				return get_transient( 'api_connected' );
-			}
-
 			//If we don't have api key
 			if ( ! get_site_option( 'wpmudev_apikey', false ) ) {
 				set_transient( 'api_connected', false );
@@ -1233,34 +1248,34 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-			if( empty( $bulk_request ) || empty( $current_requests ) ) {
+			if ( empty( $bulk_request ) || empty( $current_requests ) ) {
 				return false;
 			}
 			$sent_ids[ $bulk_request ]['sent_ids'] = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ]['sent_ids'] : '';
 
 			$sent_ids_list = get_option( WP_SMPRO_PREFIX . 'sent-ids', array() );
 
-			if ( is_array( $sent_ids[$bulk_request]['sent_ids'] ) && is_array( $sent_ids_list ) && count( $sent_ids ) > 0 ) {
-				$sent_ids_diff = array_diff( $sent_ids_list, $sent_ids[$bulk_request]['sent_ids'] );
+			if ( is_array( $sent_ids[ $bulk_request ]['sent_ids'] ) && is_array( $sent_ids_list ) && count( $sent_ids ) > 0 ) {
+				$sent_ids_diff = array_diff( $sent_ids_list, $sent_ids[ $bulk_request ]['sent_ids'] );
 			}
 
 			//send a request to API, to reset the request from there too, as we don't want to waste the resources
 			$response = $wp_smpro->sender->reset_bulk( $bulk_request, $current_requests[ $bulk_request ]['token'] );
 
 			//Server is down or other issue
-			if( $response['api']['response']['code'] !== 200 ) {
+			if ( $response['api']['response']['code'] !== 200 ) {
 				return false;
-			}else {
+			} else {
 
-				$response_body = wp_remote_retrieve_body($response['api']);
+				$response_body = wp_remote_retrieve_body( $response['api'] );
 				$response_body = json_decode( $response_body );
 				//if response has body
-				if( !empty( $response_body ) ) {
+				if ( ! empty( $response_body ) ) {
 					//Check if bulk request was not removed
-					if( !$response_body->success ) {
+					if ( ! $response_body->success ) {
 						return false;
 					}
-				}else{
+				} else {
 					return false;
 				}
 			}
@@ -1289,6 +1304,19 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$reset_button = '<button id="wp-smpro-reset-bulk" class="button button-primary">' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</button>';
 
 			return $reset_button . $reset_nonce;
+		}
+
+		/**
+		 * Ajax Callback to check API status
+		 */
+		function smush_api_status() {
+			$this->api_connected = $this->set_api_status();
+			if ( $this->api_connected ) {
+				wp_send_json_success();
+			} else {
+				wp_send_json_error();
+			}
+			die();
 		}
 
 	}

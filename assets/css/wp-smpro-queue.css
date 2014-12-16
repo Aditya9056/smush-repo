@@ -385,6 +385,11 @@ p#wp-smpro-compression span {
     background: none repeat scroll 0 0 #D64840;
 }
 
+.api-status.waiting {
+    background: url("../images/ajax-loader.gif") no-repeat;
+    background-size: 10px 10px;
+}
+
 /*
 Selected smushing
 */

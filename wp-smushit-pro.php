@@ -126,37 +126,48 @@ add_action( 'network_admin_notices', 'wp_smpro_notice' );
 add_action( 'admin_notices', 'wp_smpro_notice' );
 
 function wp_smpro_notice() {
-
+	global $WPMUDEV_Dashboard_Notice3, $admin_page_suffix;
 	//WPMU API Key
 	$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
 
 	$plugin_path = WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php';
 
+	if ( method_exists( $WPMUDEV_Dashboard_Notice3, 'auto_install_url' ) ) {
+		$url = $WPMUDEV_Dashboard_Notice3->auto_install_url();
+	} else {
+		$url = "http://premium.wpmudev.org/project/wpmu-dev-dashboard/";
+	}
+
+	$current_screen = get_current_screen();
+	$current_screen = !empty( $current_screen ) ? $current_screen : '';
 	//If there is no WPMU API Key and Dashboard plugin is deactivated, ask for Dashboard plugin
 	if ( empty( $wpmudev_apikey ) && ! is_plugin_active( 'wpmudev-updates/update-notifications.php' ) ) {
-		?>
-		<div class="error smushit-pro-status">
-			<?php
-			if ( file_exists( $plugin_path ) ) {
-				wp_smpro_script();
-				$nonce = wp_create_nonce( 'activate_wpmudev-updates' );
-				?>
-				<p>
-					<strong><?php _e( 'WP Smush PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(
-						__( '<a href="#" onclick="%s">Click here</a> to activate WPMU DEV Dashboard.', WP_SMPRO_DOMAIN ),
-						"wp_smpro_activate_plugin('smushit_pro_activate_plugin','$nonce'" ); ?>
-				</p>
-			<?php
-			} else {
-				?>
-				<p>
-					<strong><?php _e( 'WP Smush Pro requires the WPMU DEV Dashboard plugin.', WP_SMPRO_DOMAIN ) ?></strong> <?php _e( 'Please install <a href="http://premium.wpmudev.org/project/wpmu-dev-dashboard/" target="_blank">the WPMU DEV Dashboard plugin</a> to use WP Smush PRO.', WP_SMPRO_DOMAIN ); ?>
-				</p>
-			<?php
-			}
+		//Don't show the notice on smush pro page, as we have dash notification to take care of it
+		if( ( $current_screen->id !== $admin_page_suffix ) && $current_screen->id != 'upload' ) {
 			?>
-		</div>
-	<?php
+			<div class="error smushit-pro-status">
+				<?php
+				if ( file_exists( $plugin_path ) ) {
+					wp_smpro_script();
+					$nonce = wp_create_nonce( 'activate_wpmudev-updates' );
+					?>
+					<p>
+						<strong><?php _e( 'WP Smush PRO:', WP_SMPRO_DOMAIN ) ?></strong> <?php printf(
+							__( '<a href="#" onclick="%s">Click here</a> to activate WPMU DEV Dashboard.', WP_SMPRO_DOMAIN ),
+							"wp_smpro_activate_plugin('smushit_pro_activate_plugin','$nonce'" ); ?>
+					</p>
+				<?php
+				} else {
+					?>
+					<p>
+						<strong><?php _e( 'WP Smush Pro requires the WPMU DEV Dashboard plugin.', WP_SMPRO_DOMAIN ) ?></strong> <?php _e( 'Please install the <a href="' . $url . '" >WPMU DEV Dashboard plugin</a> to use WP Smush PRO.', WP_SMPRO_DOMAIN ); ?>
+					</p>
+				<?php
+				}
+				?>
+			</div>
+		<?php
+		}
 	} elseif ( empty( $wpmudev_apikey ) ) {
 		//User haven't logged in to Dashboard plugin
 		$dashboard_url = is_multisite() ? network_admin_url( 'admin.php?page=wpmudev' ) : admin_url( 'admin.php?page=wpmudev' );

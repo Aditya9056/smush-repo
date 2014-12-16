@@ -111,7 +111,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$response['success']['sent_count']     = count( get_option( WP_SMPRO_PREFIX . 'sent-ids', '' ) ); //Fetch from site option
 			$response['success']['status_message'] = $status_message;
 			if ( $response['cdn'] ) {
-				$response['success']['status_message'] .= __( '<br /> It seems you are using a CDN service, please whitelist the Smush server IP: 66.135.55.161, for succesful smushing.' );
+				$response['success']['status_message'] .= __( '<br /> It looks like you are using a CDN service, please whitelist the Smush server IP: 66.135.55.161, for succesful smushing.' );
 			}
 			unset( $response['api'] );
 
