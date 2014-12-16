@@ -7,8 +7,12 @@ Change Log:
 
 1.0.1 - 2014-12-24 - Umesh Kumar
 ----------------------------------------------------------------------
-- Updated: Wait Time
-- New: Cloudflare suggestion to whitelist IP
+- New:      CDN, suggestion to whitelist IP
+- New:      Use Ajax to check API status
+- New:      Reset bulk request option
+- Fixed:    Request status
+- Updated:  Allowed file types
+- Updated:  Wait Time
 
 
 1.0 - 2014-11-24 - Saurabh Shukla, Umesh Kumar
