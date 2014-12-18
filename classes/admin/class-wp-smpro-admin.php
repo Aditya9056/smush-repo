@@ -365,25 +365,32 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			//Style for container if there is no API key
 			$style = ''; ?>
-<!--			Check API status-->
+			<!--			Check API status-->
 			<script type="text/javascript">
-				jQuery(document).ready( function() {
+				jQuery(document).ready(function () {
 					jQuery.ajax({
 						type: "GET",
 						url: ajaxurl + '?action=smush_api_status'
 					}).done(function (response) {
-						if( typeof response.success !== 'undefined' && response.success ) {
+						// button id
+						var button_id = jQuery('.wp-smush-button').attr('id');
+
+						if (typeof response.success !== 'undefined' && response.success) {
 							//API Connected
 							jQuery('.api-status').removeClass('waiting').addClass('connected').attr('title', '<?php echo __('API Connected', WP_SMPRO_DOMAIN ); ?>');
 							jQuery('.api-status-text').html('<?php echo __('API Connected', WP_SMPRO_DOMAIN ); ?>');
 
-							//Enable Send button
-							jQuery('#wp-smpro-send').removeAttr('disabled');
-							jQuery('#wp-smpro-send span').html('<?php echo __( 'Smush now!', WP_SMPRO_DOMAIN ); ?>');
-						}else{
-							//API not connected
+							//enable if send or fetch button
+							if ('wp-smpro-send' == button_id || 'wp-smpro-fetch' == button_id) {
+								jQuery('#' + button_id).removeAttr('disabled');
+							}
+						} else {
+							/* API not connected */
 							jQuery('.api-status').removeClass('waiting').addClass('not-connected');
 							jQuery('.api-status-text').html('<?php echo __('API Not Connected', WP_SMPRO_DOMAIN ); ?>');
+							/* Disable button */
+							jQuery('#' + button_id).html('<?php echo __('Service unavailable!', WP_SMPRO_DOMAIN ); ?>');
+
 						}
 					});
 				});
@@ -416,7 +423,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<p><?php _e( 'Bulk smush failed, as another bulk request is already being processed.' ); ?></p>
 					</div><?php
 				} else {
-					if ( $this->api_connected ) {
+					if ( $this->set_api_status() ) {
 						global $wp_smpro;
 
 						$ids      = $_REQUEST['ids'];
@@ -784,7 +791,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					_e( 'Checking smush progress...', WP_SMPRO_DOMAIN );
 					$this->print_spinner(); ?>
 			</div>
-			<button id="<?php echo $button['id']; ?>" class="button button-primary" <?php echo $button['disabled']; ?>>
+			<button id="<?php echo $button['id']; ?>" class="button button-primary wp-smush-button" <?php echo $button['disabled']; ?>>
 				<span><?php echo $button['text'] ?></span>
 			</button>
 			<?php
@@ -872,17 +879,12 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// no bulk request awaited
 			if ( ! $is_bulk_sent && ! $is_bulk_received ) {
-				if ( ! $this->api_connected ) {
-					$button['text']     = __( 'Service unavailable!', WP_SMPRO_DOMAIN );
-					$button['disabled'] = ' disabled="disabled"';
-					$button['cancel']   = ' disabled="disabled"';
-				} else {
-					$button['text'] = __( 'Send Smush Request', WP_SMPRO_DOMAIN );
 
-					$button['disabled'] = false;
-					$button['cancel']   = ' disabled="disabled"';
-				}
-				$button['id'] = "wp-smpro-send";
+				$button['text'] = __( 'Send Smush Request', WP_SMPRO_DOMAIN );
+
+				$button['disabled'] = $this->api_connected ? false : ' disabled="disabled"';
+				$button['cancel']   = ' disabled="disabled"';
+				$button['id']       = "wp-smpro-send";
 
 				return $button;
 			}
@@ -890,17 +892,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			// bulk request has been smushed and callback was received
 			if ( $is_bulk_received && ! empty( $current_requests ) ) {
 				// if API not connected
-				if ( ! $this->api_connected ) {
-					$button['text']     = __( 'Service unavailable!', WP_SMPRO_DOMAIN );
-					$button['disabled'] = ' disabled="disabled"';
-					$button['cancel']   = ' disabled="disabled"';
-				} else {
-					$button['text']     = __( 'Fetch smushed images', WP_SMPRO_DOMAIN );
-					$button['disabled'] = false;
-					$button['cancel']   = false;
-				}
 
-				$button['id'] = "wp-smpro-fetch";
+				$button['text']     = __( 'Fetch smushed images', WP_SMPRO_DOMAIN );
+				$button['disabled'] = $this->api_connected ? false : ' disabled="disabled"';
+				$button['cancel']   = false;
+				$button['id']       = "wp-smpro-fetch";
 
 				return $button;
 			}
