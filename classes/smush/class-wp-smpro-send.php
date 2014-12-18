@@ -245,8 +245,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			} else {
 				global $log;
 				$updated = false;
-				$log->error( 'WpSmProSend: process_response', 'Request error ' . json_encode( $data ) );
-				$response['error'] = ! empty( $data->message ) ? $data->message : __( 'Attachment data missing, request not processed by API', WP_SMPRO_DOMAIN );
+
+				//Check for existing bulk request
+				if( !empty( $data->message ) && 'pending_request' == $data->message ) {
+					$response['error'] = __( 'Hey there, it looks like there is a pending bulk request for this site, you can send a new one once the current request is completed.', WP_SMPRO_DOMAIN );
+				}else {
+					$log->error( 'WpSmProSend: process_response', 'Request error ' . json_encode( $data ) );
+					$response['error'] = ! empty( $data->message ) ? $data->message : __( 'Attachment data missing, request not processed by API', WP_SMPRO_DOMAIN );
+				}
 			}
 
 			$response['updated'] = $updated;

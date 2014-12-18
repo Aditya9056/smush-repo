@@ -63,7 +63,7 @@ define( 'WP_SMPRO_URL', plugin_dir_url( __FILE__ ) );
 /**
  * The text domain for translation.
  */
-define( 'WP_SMPRO_DOMAIN', 'wp-smushit-pro' );
+define( 'WP_SMPRO_DOMAIN', 'wp-smush-pro' );
 
 /**
  * Prefix to use for the meta keys and options
