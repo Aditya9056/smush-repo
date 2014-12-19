@@ -92,19 +92,19 @@
 				jQuery('.smush-notices.checking-status').hide();
 				if (!response.success) {
 					var callback = true;
-					if( typeof response.data.check_status != 'undefined' ) {
-						if ( !response.data.check_status ){
+					if (typeof response.data.check_status != 'undefined') {
+						if (!response.data.check_status) {
 							callback = false;
 						}
 					}
 					//Call itself after every fix interval
-					if( callback ) {
+					if (callback) {
 						setTimeout(function () {
 							checkSmushStatus();
 						}, config.wp_smpro_poll_interval.interval);
 					}
-					if( typeof response.data !== 'undefined' ) {
-						var div = '<div class="smush-notices update smush-api-status"><p>' + response.data.message +'</p></div>';
+					if (typeof response.data !== 'undefined') {
+						var div = '<div class="smush-notices update smush-api-status"><p>' + response.data.message + '</p></div>';
 						jQuery('#progress-ui').after(div);
 					}
 					delete callback;
@@ -143,7 +143,7 @@
 
 				}
 				return;
-			}).fail(function(){
+			}).fail(function () {
 				jQuery('.smush-notices.checking-status').hide();
 			});
 		}
@@ -230,7 +230,7 @@
 				jQuery('.column-smushit #wp-smpro-send').removeAttr('disabled');
 				response = {};
 				response.error = config.msgs.timeout;
-				sendFailure(response, is_bulk );
+				sendFailure(response, is_bulk);
 				return;
 			});
 
@@ -258,7 +258,7 @@
 
 		};
 
-		var sendFailure = function ($response, is_bulk ) {
+		var sendFailure = function ($response, is_bulk) {
 
 			if ($.isEmptyObject($response)) {
 				$response = {'status_message': config.msgs.send_fail};
@@ -274,9 +274,9 @@
 
 			msg(msgvar);
 			var button = jQuery(config.sendButton);
-			if( is_bulk ) {
+			if (is_bulk) {
 				button.find('span').html(config.msgs.bulk_smush_now);
-			}else{
+			} else {
 				button.find('span').html(config.msgs.smush_now);
 			}
 			jQuery(config.sendButton).removeAttr('disabled');
@@ -355,7 +355,7 @@
 
 		var fetch = function ($id) {
 			var is_bulk = false;
-			if( ! $id ) {
+			if (!$id) {
 				is_bulk = true;
 			}
 
@@ -373,7 +373,7 @@
 					fetchProgress(response.stats);
 
 					//If element exists
-					if( jQuery('#wp-smpro-selected-images').length ){
+					if (jQuery('#wp-smpro-selected-images').length) {
 						$selected_element = jQuery('#wp-smpro-selected-images #wp-smpro-img-' + $id);
 						$selected_element.addClass('smush-done');
 						$selected_element.find('.img-smush-status').html(response.smush_text);
@@ -425,7 +425,7 @@
 
 			var startingpoint = jQuery.Deferred();
 			startingpoint.resolve();
-			if( config.ids.length === 0 || config.ids === '' ) {
+			if (config.ids.length === 0 || config.ids === '') {
 				return false;
 			}
 			//Fetch ids which have been smushed and recieved
@@ -438,7 +438,7 @@
 				//Remove notice after fetching is done
 				jQuery('.updated.bulk-smush-notice').remove();
 			});
-			jQuery.when( startingpoint).done( function() {
+			jQuery.when(startingpoint).done(function () {
 				bulkReset();
 			});
 		};
@@ -558,26 +558,27 @@
 			return $size + ' ' + $unit;
 		};
 
-		var resetBulkRequest = function() {
+		var resetBulkRequest = function () {
+
 			jQuery('.smush-notices').remove();
 			return jQuery.ajax({
 				type: "POST",
 				url: config.resetUrl,
-				data: { 'nonce' : jQuery('#wp-smpro-reset-nonce').val() },
+				data: {'nonce': jQuery('#wp-smpro-reset-nonce').val()},
 				timeout: 90000
 			}).done(function (response) {
 				var button = jQuery('#wp-smpro-waiting');
-				if( typeof response !== 'undefined' && response.success ) {
+				if (typeof response !== 'undefined' && response.success) {
 
 					//Remove the reset button
 					jQuery(config.resetButton).remove();
 
 					//Add a message
-					var div = '<div class="smush-notices update bulk-reset"><p>' + response.data +'</p></div>';
+					var div = '<div class="smush-notices update bulk-reset"><p>' + response.data + '</p></div>';
 					jQuery('#progress-ui').after(div);
 
 					//disable the check status
-					wp_smpro_request_sent = {"sent":""};
+					wp_smpro_request_sent = {"sent": ""};
 
 					//Enable the send bulk request button
 					button.removeClass('wp-smpro-started');
@@ -585,9 +586,21 @@
 					button.prop('disabled', false);
 
 					button.find('span').html(wp_smpro_msgs.bulk_smush_now);
-					button.attr('id', 'wp-smpro-send')
+					button.attr('id', 'wp-smpro-send');
+					//reload page, after 5s
+					function countdown() {
+						var i = jQuery('body span#counter');
+						if (parseInt(i.html()) < 1) {
+							location.reload();
+						}else {
+							i.html(parseInt(i.html()) - 1);
+						}
+					};
+					setInterval(function () {
+						countdown();
+					}, 1000);
 
-				}else{
+				} else {
 					//there was an error resetting, just show a error message and ask for page reload
 				}
 			});
@@ -672,7 +685,7 @@
 
 			return;
 
-		}).on('click', config.resetButton, function(e){
+		}).on('click', config.resetButton, function (e) {
 			e.preventDefault();
 			resetBulkRequest();
 			return;
@@ -699,7 +712,7 @@
 			render: function () {
 				$view = this;
 				//Dirty hack, as there is no way around to get updated status of attachment
-				$html = jQuery.get( ajaxurl + '?action=attachment_status', { 'id': this.model.get('id') }, function(res){
+				$html = jQuery.get(ajaxurl + '?action=attachment_status', {'id': this.model.get('id')}, function (res) {
 					$view.$el.html(res.data);
 					$view.views.render();
 					return $view;

@@ -781,8 +781,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$request_status = get_option( WP_SMPRO_PREFIX . 'request_status' );
 			$button         = $this->button_state( $request_status );
 			$reset_button   = '';
-			//Don't show a reset button, if request is already being processed or it request is ready to fetch
-			if ( $request_status !== 'processing' && $button['id'] !== 'wp-smpro-fetch' && $button['id'] !== 'wp-smpro-send' ) {
+			//Don't show a reset button if request is ready to fetch or it is not yet sent
+			if ( $button['id'] !== 'wp-smpro-fetch' && $button['id'] !== 'wp-smpro-send' ) {
 				$reset_button = $this->reset_bulk_button();
 			}
 			?>
@@ -1227,7 +1227,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			$reset_done = $this->resetBulkRequest();
 			if ( $reset_done ) {
-				wp_send_json_success( __( "The current bulk request was removed for you, you can send a new one anytime!", WP_SMPRO_DOMAIN ) );
+				wp_send_json_success( __( "The current bulk request was removed for you, you can send a new one anytime! Reloading page in <span id='counter'>5</span>s..", WP_SMPRO_DOMAIN ) );
 			} else {
 				wp_send_json_error( __( 'Ah crap! Some error occurred while resetting the request for you. Reload the page and try to reset it again.' ) );
 			}
