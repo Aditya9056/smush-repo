@@ -152,7 +152,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				), WP_SMPRO_VERSION );
 			}
 			wp_register_script( 'wp-smpro-queue', WP_SMPRO_URL . 'assets/js/wp-smpro-queue.js', array( 'wp-smpro' ), WP_SMPRO_VERSION );
-			wp_register_script( 'wp-smpro-alert', WP_SMPRO_URL . 'assets/js/wp-smpro-alert.min.js', array( 'wp-smpro' ), WP_SMPRO_VERSION );
+			wp_register_script( 'wp-smpro-alert', WP_SMPRO_URL . 'assets/js/sweet-alert.js', array( 'wp-smpro' ), WP_SMPRO_VERSION );
 
 			// register css
 			wp_register_style( 'wp-smpro-style', WP_SMPRO_URL . 'assets/css/wp-smpro-queue.css', array(), WP_SMPRO_VERSION );
@@ -195,6 +195,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'smush_email'     => __( 'You will receive an email, once images are smushed and ready to fetch', WP_SMPRO_DOMAIN ),
 				'smush_completed' => __( 'Images have been smushed, you can fetch them by clicking on "Fetch smushed images" button', WP_SMPRO_DOMAIN ),
 				'no_leave'        => __( 'Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again.', WP_SMPRO_DOMAIN ),
+				'confirm'         => __( 'You really want to remove the bulk request?', WP_SMPRO_DOMAIN ),
+				'confirm_button'  => __( 'Just do it', WP_SMPRO_DOMAIN ),
+				'reset_success'   => __( 'Make sure to send another bulk smush', WP_SMPRO_DOMAIN )
 			);
 
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );

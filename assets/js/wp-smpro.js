@@ -139,7 +139,12 @@
 					$button.prop('disabled', false);
 
 					//Sweet Alert
-					swal('', config.msgs.smush_completed, 'success');
+					swal({
+						title: '',
+						text: config.msgs.smush_completed,
+						type: "success",
+						confirmButtonColor: "#2ea2cc"
+					});
 
 				}
 				return;
@@ -217,7 +222,12 @@
 					sendSuccess(response);
 					if (!config.isSingle) {
 						//sweet alert
-						swal('', config.msgs.smush_email, 'success');
+						swal({
+							title: '',
+							text: config.msgs.smush_email,
+							type: "success",
+							confirmButtonColor: "#2ea2cc"
+						});
 					}
 					if (!$id) {
 						setTimeout(function () {
@@ -575,6 +585,12 @@
 
 					//Add a message
 					var div = '<div class="smush-notices update bulk-reset"><p>' + response.data + '</p></div>';
+					swal({
+						title: wp_smpro_msgs.done,
+						text: wp_smpro_msgs.reset_success,
+						type: "success",
+						confirmButtonColor: "#2ea2cc"
+					});
 					jQuery('#progress-ui').after(div);
 
 					//disable the check status
@@ -592,7 +608,7 @@
 						var i = jQuery('body span#counter');
 						if (parseInt(i.html()) < 1) {
 							location.reload();
-						}else {
+						} else {
 							i.html(parseInt(i.html()) - 1);
 						}
 					};
@@ -687,7 +703,18 @@
 
 		}).on('click', config.resetButton, function (e) {
 			e.preventDefault();
-			resetBulkRequest();
+			//Confirm for reset request
+			swal({
+				title: wp_smpro_msgs.confirm,
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#DD6B55",
+				confirmButtonText: wp_smpro_msgs.confirm_button,
+				closeOnConfirm: false
+
+			}, function () {
+				resetBulkRequest();
+			});
 			return;
 		});
 	};
