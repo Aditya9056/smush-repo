@@ -618,3 +618,5 @@
 .sweet-alert .confirm.button-primary:active {
   vertical-align: baseline;
 }
+/* Reset Button */
+#wp-smpro-reset-bulk { display: none; }

@@ -785,7 +785,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			$button         = $this->button_state( $request_status );
 			$reset_button   = '';
 			//Don't show a reset button if request is ready to fetch or it is not yet sent
-			if ( $button['id'] !== 'wp-smpro-fetch' && $button['id'] !== 'wp-smpro-send' ) {
+			if ( $button['id'] !== 'wp-smpro-fetch' && $button['id'] !== 'wp-smpro-send' && $button['id'] != 'wp-smpro-finished' ) {
 				$reset_button = $this->reset_bulk_button();
 			}
 			?>
@@ -1229,11 +1229,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 
 			$reset_done = $this->resetBulkRequest();
-			if ( $reset_done ) {
+			if ( $reset_done && empty( $reset_done['error'] ) ) {
 				wp_send_json_success( __( "The current bulk request was removed for you, you can send a new one anytime! Reloading page in <span id='counter'>5</span>s..", WP_SMPRO_DOMAIN ) );
 			} else {
-				wp_send_json_error( __( 'Ah crap! Some error occurred while resetting the request for you. Reload the page and try to reset it again.' ) );
+				$message = !empty( $reset_done['error'] ) ? $reset_done['error'] : __( 'Ah crap! Some error occurred while resetting the request for you. Reload the page and try to reset it again.' );
+				wp_send_json_error( $message );
 			}
+			die(1);
 
 		}
 
@@ -1243,12 +1245,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function resetBulkRequest() {
 			global $wp_smpro;
 			$sent_ids_diff = array();
+			$message = array();
 			$bulk_request  = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			if ( empty( $bulk_request ) || empty( $current_requests ) ) {
-				return false;
+				$message['error'] = __("There is no pending bulk request.", WP_SMPRO_DOMAIN );
+				return $message;
 			}
 			$sent_ids[ $bulk_request ]['sent_ids'] = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ]['sent_ids'] : '';
 
@@ -1300,7 +1304,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function reset_bulk_button() {
 			$reset_nonce  = wp_nonce_field( 'reset_bulk_request', 'wp-smpro-reset-nonce', '', false );
-			$reset_button = '<button id="wp-smpro-reset-bulk" class="button button-primary">' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</button>';
+			$reset_button = '<a href="#" id="wp-smpro-reset-bulk">' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</a>';
 
 			return $reset_button . $reset_nonce;
 		}

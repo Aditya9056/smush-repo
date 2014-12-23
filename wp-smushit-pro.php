@@ -48,7 +48,7 @@ if ( ! function_exists( 'download_url' ) ) {
 /**
  * The version for enqueueing , etc.
  */
-define( 'WP_SMPRO_VERSION', '1.0.1' );
+define( 'WP_SMPRO_VERSION', '1.0.1-beta3' );
 
 /**
  * The plugin's path for easy access to files.

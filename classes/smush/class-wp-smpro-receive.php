@@ -255,9 +255,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 							update_option(WP_SMPRO_PREFIX . 'request_status', $response_body->message );
 							if ( $response_body->message == 'queue' ) {
 								if ( $response_body->pending_requests == 0 ) {
-									$data['message'] = __( 'The smushing elves are busy, You are first in queue.', WP_SMPRO_DOMAIN );
+									$data['message'] = __( 'The smushing elves are busy, You are first in the queue.', WP_SMPRO_DOMAIN );
 								} else {
-									$data['message'] = __( 'The smushing elves are busy, You are %s in queue. <br /> Current wait time: %s', WP_SMPRO_DOMAIN );
+									$data['message'] = __( 'The smushing elves are busy, You are %s in the queue. <br /> Estimated wait time: %s', WP_SMPRO_DOMAIN );
 								}
 
 								$ordinal_suffix = $this->getOrdinalSuffix( $response_body->pending_requests + 1 );

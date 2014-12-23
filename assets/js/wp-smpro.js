@@ -618,6 +618,9 @@
 
 				} else {
 					//there was an error resetting, just show a error message and ask for page reload
+					//Add a message
+					var div = '<div class="smush-notices update bulk-reset"><p>' + response.data + '</p></div>';
+					jQuery('#progress-ui').after(div);
 				}
 			});
 		};
@@ -710,7 +713,7 @@
 				showCancelButton: true,
 				confirmButtonColor: "#DD6B55",
 				confirmButtonText: wp_smpro_msgs.confirm_button,
-				closeOnConfirm: false
+				closeOnConfirm: true
 
 			}, function () {
 				resetBulkRequest();
