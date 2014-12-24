@@ -1265,8 +1265,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			//send a request to API, to reset the request from there too, as we don't want to waste the resources
 			$response = $wp_smpro->sender->reset_bulk( $bulk_request, $current_requests[ $bulk_request ]['token'] );
 
+			echo "<pre>";
+			print_r( $response );
+			echo "</pre>";
 			//Server is down or other issue
-			if ( $response['api']['response']['code'] !== 200 ) {
+			if ( is_wp_error($response) || $response['api']['response']['code'] !== 200 ) {
 				return false;
 			} else {
 

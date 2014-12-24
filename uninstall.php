@@ -10,6 +10,10 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
+if( !defined('WP_SMPRO_RESET_URL')) {
+	define('WP_SMPRO_RESET_URL', 'https://smush.wpmudev.org/reset/');
+}
+global $wpdb;
 /**
  * Sends a reset request to API
  */
@@ -29,13 +33,13 @@ function remove_bulk_request() {
 			'body'       => array(
 				'json' => $request_data
 			),
-			'user-agent' => 'WP Smush PRO/' . WP_SMPRO_VERSION . '(' . '+' . get_site_url() . ')',
+			'user-agent' => 'WP Smush PRO(' . '+' . get_site_url() . ')',
 			'timeout'    => 30,
 			'sslverify'  => false
 		);
 
-// make the post request and return the response
-		wp_remote_post( 'https://smush.wpmudev.org/reset/', $req_args );
+		// make the post request and return the response
+		wp_remote_post( WP_SMPRO_RESET_URL, $req_args );
 	}
 }
 if ( is_multisite() ) {
@@ -50,8 +54,6 @@ if ( is_multisite() ) {
 } else {
 	remove_bulk_request();
 }
-
-global $wpdb;
 $smush_pro_keys = array(
 	'auto',
 	'remove_meta',
