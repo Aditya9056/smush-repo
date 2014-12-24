@@ -88,6 +88,9 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			if ( ! defined( 'WP_SMPRO_SERVICE_STATUS' ) ) {
 				define( 'WP_SMPRO_SERVICE_STATUS', 'https://smush.wpmudev.org/status/' );
 			}
+			if ( ! defined( 'WP_SMPRO_RESET_URL' ) ) {
+				define( 'WP_SMPRO_RESET_URL', 'https://smush.wpmudev.org/reset/' );
+			}
 
 			/**
 			 * The user agent for the request
@@ -97,7 +100,7 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			/**
 			 * The user agent for the request
 			 */
-			define( 'WP_SMPRO_REFRER',  get_site_url() );
+			define( 'WP_SMPRO_REFRER', get_site_url() );
 
 			/**
 			 * Image Limit 5MB

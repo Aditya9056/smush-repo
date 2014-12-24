@@ -939,7 +939,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			);
 
 			// make the post request and return the response
-			$response['api'] = wp_remote_post( 'http://107.170.2.190/reset/', $req_args );
+			$response['api'] = wp_remote_post( WP_SMPRO_RESET_URL, $req_args );
 
 			return $response;
 		}
