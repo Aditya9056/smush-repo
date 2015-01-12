@@ -1,0 +1,226 @@
+/*
+Smush button transformation
+*/
+.button.wp-smushit-started{
+	padding:0 10px 1px 0;
+}
+.button.wp-smushit-started .floatingCirclesG{
+	float:left;
+}
+
+.button.wp-smushit-finished,.button.wp-smushit-finished:disabled,.button.wp-smushit-finished[disabled]{
+        color:#fff!important;
+        background: #00cf21!important;
+        border-color: #619f6b!important;
+        -webkit-box-shadow: inset 0 1px 0 rgba(0,207,33,.5),0 1px 0 rgba(0,0,0,.15)!important;
+        box-shadow: inset 0 1px 0 rgba(0,207,33,.5),0 1px 0 rgba(0,0,0,.15)!important;
+}
+/*
+Loader
+*/
+#wp-smushit-loader-wrap{
+	display:none;
+}
+.floatingCirclesG{
+	position:relative;
+	width:28px;
+	height:28px;
+	-moz-transform:scale(0.6);
+	-webkit-transform:scale(0.6);
+	-ms-transform:scale(0.6);
+	-o-transform:scale(0.6);
+	transform:scale(0.6);
+}
+
+.f_circleG{
+	position:absolute;
+	background-color:#FFFFFF;
+	height:5px;
+	width:5px;
+	-moz-border-radius:3px;
+	-moz-animation-name:f_fadeG;
+	-moz-animation-duration:0.8s;
+	-moz-animation-iteration-count:infinite;
+	-moz-animation-direction:linear;
+	-webkit-border-radius:3px;
+	-webkit-animation-name:f_fadeG;
+	-webkit-animation-duration:0.8s;
+	-webkit-animation-iteration-count:infinite;
+	-webkit-animation-direction:linear;
+	-ms-border-radius:3px;
+	-ms-animation-name:f_fadeG;
+	-ms-animation-duration:0.8s;
+	-ms-animation-iteration-count:infinite;
+	-ms-animation-direction:linear;
+	-o-border-radius:3px;
+	-o-animation-name:f_fadeG;
+	-o-animation-duration:0.8s;
+	-o-animation-iteration-count:infinite;
+	-o-animation-direction:linear;
+	border-radius:3px;
+	animation-name:f_fadeG;
+	animation-duration:0.8s;
+	animation-iteration-count:infinite;
+	animation-direction:linear;
+}
+
+#frotateG_01{
+	left:0;
+	top:11px;
+	-moz-animation-delay:0.3s;
+	-webkit-animation-delay:0.3s;
+	-ms-animation-delay:0.3s;
+	-o-animation-delay:0.3s;
+	animation-delay:0.3s;
+}
+
+#frotateG_02{
+	left:3px;
+	top:3px;
+	-moz-animation-delay:0.4s;
+	-webkit-animation-delay:0.4s;
+	-ms-animation-delay:0.4s;
+	-o-animation-delay:0.4s;
+	animation-delay:0.4s;
+}
+
+#frotateG_03{
+	left:11px;
+	top:0;
+	-moz-animation-delay:0.5s;
+	-webkit-animation-delay:0.5s;
+	-ms-animation-delay:0.5s;
+	-o-animation-delay:0.5s;
+	animation-delay:0.5s;
+}
+
+#frotateG_04{
+	right:3px;
+	top:3px;
+	-moz-animation-delay:0.6s;
+	-webkit-animation-delay:0.6s;
+	-ms-animation-delay:0.6s;
+	-o-animation-delay:0.6s;
+	animation-delay:0.6s;
+}
+
+#frotateG_05{
+	right:0;
+	top:11px;
+	-moz-animation-delay:0.7s;
+	-webkit-animation-delay:0.7s;
+	-ms-animation-delay:0.7s;
+	-o-animation-delay:0.7s;
+	animation-delay:0.7s;
+}
+
+#frotateG_06{
+	right:3px;
+	bottom:3px;
+	-moz-animation-delay:0.8s;
+	-webkit-animation-delay:0.8s;
+	-ms-animation-delay:0.8s;
+	-o-animation-delay:0.8s;
+	animation-delay:0.8s;
+}
+
+#frotateG_07{
+	left:11px;
+	bottom:0;
+	-moz-animation-delay:0.9s;
+	-webkit-animation-delay:0.9s;
+	-ms-animation-delay:0.9s;
+	-o-animation-delay:0.9s;
+	animation-delay:0.9s;
+}
+
+#frotateG_08{
+	left:3px;
+	bottom:3px;
+	-moz-animation-delay:1s;
+	-webkit-animation-delay:1s;
+	-ms-animation-delay:1s;
+	-o-animation-delay:1s;
+	animation-delay:1s;
+}
+
+@-moz-keyframes f_fadeG{
+	0%{
+		background-color:#000000}
+
+	100%{
+		background-color:#FFFFFF}
+
+}
+
+@-webkit-keyframes f_fadeG{
+	0%{
+		background-color:#000000}
+
+	100%{
+		background-color:#FFFFFF}
+
+}
+
+@-ms-keyframes f_fadeG{
+	0%{
+		background-color:#000000}
+
+	100%{
+		background-color:#FFFFFF}
+
+}
+
+@-o-keyframes f_fadeG{
+	0%{
+		background-color:#000000}
+
+	100%{
+		background-color:#FFFFFF}
+
+}
+
+@keyframes f_fadeG{
+	0%{
+		background-color:#000000}
+
+	100%{
+		background-color:#FFFFFF}
+
+}
+
+/*
+Progressbar ui
+*/
+#progress-ui{
+	width: 80%;
+	margin-bottom: 20px;
+	display:none;
+}
+
+#progress-ui #wp-smushit-progress-wrap{
+	height: 16px;
+	border: 1px solid #0074a2;
+	border-radius: 7px;
+    overflow: hidden;
+}
+#progress-ui #wp-smushit-progress-wrap .wp-smushit-progressbar{
+	height:16px;
+	float:left;
+	width:100%;
+}
+#progress-ui #wp-smushit-progress-wrap .wp-smushit-progressbar div{
+	height:16px;
+}
+#progress-ui #wp-smushit-progress-wrap #wp-smushit-smush-progress div{
+	border-radius: 5px 0 0 5px;
+	background-color: #2ea2cc;
+}
+#progress-ui #wp-smushit-progress-wrap #wp-smushit-check-progress div{
+	border-radius: 0 5px 5px 0;
+	background-color: #0074a2;
+}
+
+#progress-ui p#check-status{
+	display:none;
+}
