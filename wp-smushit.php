@@ -203,6 +203,7 @@ if ( ! class_exists( 'WpSmushit' ) ) {
 			if ( ( defined( 'WP_SMUSHIT_ENFORCE_SAME_URL' ) ) && ( WP_SMUSHIT_ENFORCE_SAME_URL == 'on' ) ) {
 				$home_url = str_replace( 'https://', 'http://', get_option( 'home' ) );
 				$error_message = "DEBUG: file_url [" . $file_url . "] home_url [" . $home_url . "]<br />";
+				$error_message .= "DEBUG: file_path [" . $file_path . "] <br />";
 
 				if ( stripos( $file_url, $home_url ) !== 0 ) {
 					return sprintf( __( "ERROR: <span class='code'>%s</span> must be within the website home URL (<span class='code'>%s</span>)", WP_SMUSHIT_DOMAIN ),
@@ -351,19 +352,7 @@ if ( ! class_exists( 'WpSmushit' ) ) {
 				$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
 
 				$attachment_file_url_size = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
-				if ( WP_SMUSHIT_DEBUG ) {
-					$debug_message = "DEBUG: attachment_file_path=[" . $attachment_file_path_size . "]<br />";
-					$debug_message .= "DEBUG: attachment_file_url=[" . $attachment_file_url_size . "]<br />" ;
-				}
-				$log->error(
-					'resize_from_meta_data',
-					array(
-						$ID,
-						$attachment_file_path_size,
-						$attachment_file_url_size
-					),
-					$debug_message
-				);
+
 				$meta['sizes'][ $size_key ]['wp_smushit'] = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
 
 				//echo "size_key[". $size_key ."] wp_smushit<pre>"; print_r($meta['sizes'][$size_key]['wp_smushit']); echo "</pre>";
@@ -509,7 +498,7 @@ require_once( WP_SMUSHIT_DIR . '/lib/class-wp-smushit-admin.php' );
  * Error Log
  */
 require_once( WP_SMUSHIT_DIR . '/lib/error/class-wp-smushit-errorlog.php' );
-require_once( WP_SMUSHIT_DIR . '/lib/error/class-wp-smushit -errorregistry.php' );
+require_once( WP_SMUSHIT_DIR . '/lib/error/class-wp-smushit-errorregistry.php' );
 
 if ( ! function_exists( 'wp_basename' ) ) {
 	/**

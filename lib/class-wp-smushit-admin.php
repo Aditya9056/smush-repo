@@ -400,7 +400,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! empty( $_GET['action'] ) && 'purge' == @$_GET['action'] ) {
 				//Check Nonce
 				if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'purge_log' ) ) {
-					echo '<div class="error"><p>' . __( 'Nonce verification failed', WP_SMPRO_DOMAIN ) . '</p></div>';
+					echo '<div class="error"><p>' . __( 'Nonce verification failed', WP_SMUSHIT_DOMAIN ) . '</p></div>';
 				} else {
 					$log->purge_errors();
 					$log->purge_notices();
@@ -411,7 +411,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			/**
 			 * Error Log Form
 			 */
-			require_once( WP_SMPRO_DIR . 'lib/forms/error_log.php' );
+			require_once( WP_SMUSHIT_DIR . '/lib/error_log.php' );
 		}
 	}
 
