@@ -67,11 +67,7 @@ if ( ! class_exists( 'WpSmushit' ) ) {
 			define( 'WP_SMUSHIT_TIMEOUT', intval( get_option( 'wp_smushit_smushit_timeout', 60 ) ) );
 			define( 'WP_SMUSHIT_ENFORCE_SAME_URL', get_option( 'wp_smushit_smushit_enforce_same_url', 'on' ) );
 
-			if ( ( ! isset( $_GET['action'] ) ) || ( $_GET['action'] != "wp_smushit_manual" ) ) {
-				define( 'WP_SMUSHIT_DEBUG', get_option( 'wp_smushit_smushit_debug', '' ) );
-			} else {
-				define( 'WP_SMUSHIT_DEBUG', '' );
-			}
+			define( 'WP_SMUSHIT_DEBUG', get_option( 'wp_smushit_smushit_debug', '' ) );
 
 			/*
 			Each service has a setting specifying whether it should be used automatically on upload.
@@ -201,9 +197,8 @@ if ( ! class_exists( 'WpSmushit' ) ) {
 // the assumption the remote image and the local file are the same. Also with the assumption that the CDN service will somehow be updated when the image
 // is changed. 
 			if ( ( defined( 'WP_SMUSHIT_ENFORCE_SAME_URL' ) ) && ( WP_SMUSHIT_ENFORCE_SAME_URL == 'on' ) ) {
-				$home_url = str_replace( 'https://', 'http://', get_option( 'home' ) );
-				$error_message = "DEBUG: file_url [" . $file_url . "] home_url [" . $home_url . "]<br />";
-				$error_message .= "DEBUG: file_path [" . $file_path . "] <br />";
+				$home_url      = str_replace( 'https://', 'http://', get_option( 'home' ) );
+				$error_message = "<b>Home URL: </b>" . $home_url . " <br />";
 
 				if ( stripos( $file_url, $home_url ) !== 0 ) {
 					return sprintf( __( "ERROR: <span class='code'>%s</span> must be within the website home URL (<span class='code'>%s</span>)", WP_SMUSHIT_DOMAIN ),
@@ -212,7 +207,7 @@ if ( ! class_exists( 'WpSmushit' ) ) {
 			}
 
 			//echo "calling _post(". $file_url .")<br />";
-			$data = $this->_post( $file_url );
+			$data = $this->_post( $attachment_id, $file_url );
 
 			//echo "returned from _post data<pre>"; print_r($data); echo "</pre>";
 
@@ -227,15 +222,18 @@ if ( ! class_exists( 'WpSmushit' ) ) {
 			if ( strpos( trim( $data ), '{' ) != 0 ) {
 				return __( 'Bad response from Smush.it', WP_SMUSHIT_DOMAIN );
 			}
+			$string_data = http_build_query( json_decode( $data, true ), '', '<br />' );
+			$string_data = urldecode( $string_data );
+
 			//Log data for debugging purpose
-			$error_message .= "DEBUG: return from API: $data";
+			$error_message .= "<b>Return from API:</b> <br />$string_data";
 			if ( WP_SMUSHIT_DEBUG ) {
 				$log->error(
 					"do_smushit",
 					array(
-						"attachment_id" => $attachment_id,
-						"file_url"      => $file_url,
-						"file_path"     => $file_path
+						"Attachment id" => "<b>Attachment id: </b>" . $attachment_id,
+						"File URL"      => "<b>File URL: </b>" . $file_url,
+						"File Path"     => "<b>File Path: </b>" . $file_path
 					),
 					$error_message );
 			}
@@ -332,7 +330,7 @@ if ( ! class_exists( 'WpSmushit' ) ) {
 			}
 
 			$attachment_file_path = get_attached_file( $ID );
-			$attachment_file_url = wp_get_attachment_url( $ID );
+			$attachment_file_url  = wp_get_attachment_url( $ID );
 
 			if ( $force_resmush || $this->should_resmush( @$meta['wp_smushit'] ) ) {
 				$meta['wp_smushit'] = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
@@ -369,12 +367,17 @@ if ( ! class_exists( 'WpSmushit' ) ) {
 		 *
 		 * @return  string|boolean  Returns the JSON response on success or else false
 		 */
-		function _post( $file_url ) {
+		function _post( $id, $file_url ) {
+			global $log;
 			$req = sprintf( SMUSHIT_REQ_URL, urlencode( $file_url ) );
 
 			$data = false;
 			if ( WP_SMUSHIT_DEBUG ) {
-				echo "DEBUG: Calling API: [" . $req . "]<br />";
+				$debug = "<b>Calling API: </b>[" . $req . "]<br />";
+				$log->error( '_post', array(
+					' attachment_id' => "<b>Attachment id: </b>" . $id,
+					'file_url'       => "<b>File URL: </b>" . $file_url
+				), $debug );
 			}
 			if ( function_exists( 'wp_remote_get' ) ) {
 				$response = wp_remote_get( $req, array(

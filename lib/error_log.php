@@ -10,7 +10,7 @@ $datetime_format = "{$date_fmt} {$time_fmt}";
 
 	<h3>Errors</h3>
 	<?php if ( $errors ) { ?>
-		<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=wp-smpro-errorlog&action=purge' ), 'purge_log' ); ?>"><?php _e( 'Purge log', WP_SMUSHIT_DOMAIN ); ?></a>
+		<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=wp-smushit-errorlog&action=purge' ), 'purge_log' ); ?>"><?php _e( 'Purge log', WP_SMUSHIT_DOMAIN ); ?></a>
 		<table class="widefat">
 			<thead>
 			<tr>
@@ -35,7 +35,7 @@ $datetime_format = "{$date_fmt} {$time_fmt}";
 					<td><?php echo date( $datetime_format, $error['date'] ); ?></td>
 					<td><?php echo $error['area']; ?></td>
 					<td><?php echo $error['image']; ?></td>
-					<td><?php echo $error['info']; ?></td>
+					<td><?php echo urldecode( $error['info'] ); ?></td>
 				</tr>
 			<?php } ?>
 			</tbody>
