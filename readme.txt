@@ -1,13 +1,13 @@
 === WP Smush.it ===
 Plugin Name: WP Smush.it
-Version: 1.7
+Version: 1.6.5.4
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org
 Contributors: WPMUDEV, alexdunae
-Tags: Attachment,Attachments,Compress,Compress Image File,Compress Image Size,Compress JPG,Compressed JPG, Compression Image,Image,Images,JPG,Optimise,Optimize,Photo,Photos,Pictures,PNG,Reduce Image Size,Smush,Smush.it,Upload,WordPress Compression,WordPress Image Tool,Yahoo, Yahoo Smush.it
+Tags: Compress, Image Files, Compress Image Size,Compress JPG, Photo Optimization, Optimize Photos, Smush, Smush.it, Yahoo Smush.it
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 1.7
+Stable tag: 1.6.5.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
@@ -71,12 +71,6 @@ This will give us a good foundation to start adding some new features!
 
 
 == Changelog ==
-
-= 1.7 =
-* Updated UI/UX, uses Ajax request for sending and receiving images to avoid timeouts and internal server error
-* Other Notice and bug fixes
-* Settings page moved under Media > WP Smush.it
-* Added debug log file
 
 = 1.6.5.4 =
 * Added settings option to disable check for home url.

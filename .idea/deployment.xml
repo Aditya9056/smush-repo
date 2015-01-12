@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="dilliboss">
+    <serverData>
+      <paths name="dilliboss">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/wp-content/plugins/wp-smushit" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="incsub-development">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/wp-content/plugins/wp-smushit" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
