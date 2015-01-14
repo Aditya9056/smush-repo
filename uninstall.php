@@ -12,7 +12,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 global $wpdb;
 
-$smush_pro_keys = array(
+$smushit_keys = array(
 	'smushit_auto',
 	'smushit_timeout',
 	'smushit_enforce_same_url',
@@ -20,8 +20,8 @@ $smush_pro_keys = array(
 	'error_log',
 	'notice_log'
 );
-foreach ( $smush_pro_keys as $key ) {
-	$key = 'wp-smpro-' . $key;
+foreach ( $smushit_keys as $key ) {
+	$key = 'wp_smushit_' . $key;
 	if ( is_multisite() ) {
 		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
 		if ( $blogs ) {
