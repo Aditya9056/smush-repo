@@ -68,7 +68,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			//If we have smush data and image is not already optimized, download zip
 			if ( $smush_data && ! empty( $smush_data['stats']['bytes'] ) ) {
 
-				$smushed_file  = $this->save_zip( $attachment_id, $smush_data['file_url'] );
+				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'] );
 
 				$output['msg'] = sprintf( __( 'Error downloading smushed file for attachment id: %d', WP_SMPRO_DOMAIN ), $attachment_id );
 
@@ -294,7 +294,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			global $log, $wp_smpro;
 			$attachment_id = intval( $attachment_id );
 
-			wp_cache_delete($attachment_id, 'post_meta');
+			wp_cache_delete( $attachment_id, 'post_meta' );
 			$smush_data = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', true );
 
 			if ( empty( $smush_data ) ) {
@@ -304,7 +304,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				//Remove it from sent ids, if it's in a bulk request
 				$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
-				$bulk_request     = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+				$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
 				if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
 					$index = array_search( $attachment_id, $current_requests[ $bulk_request ]['sent_ids'] );
@@ -321,7 +321,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 
 			$stats['human'] = $wp_smpro->format_bytes( $stats['bytes'] );
 
-			if( !empty( $stats['size_before']) && !empty( $stats['bytes'] ) ) {
+			if ( ! empty( $stats['size_before'] ) && ! empty( $stats['bytes'] ) ) {
 				$stats['percent'] = number_format_i18n(
 					( (int) $stats['bytes'] / (int) $stats['size_before'] ) * 100
 				);
@@ -330,6 +330,13 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			$smush_data['stats'] = $stats;
 
 			update_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', $smush_data );
+
+			//Clean Up
+			$request_id = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'request-id', true );
+			if ( ! empty( $request_id ) ) {
+				delete_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'request-' . $request_id );
+				delete_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'request-id' );
+			}
 
 			return $smush_data;
 		}
