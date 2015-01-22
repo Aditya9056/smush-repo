@@ -43,7 +43,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
 
 			//check image type before sending
-			if( !in_array( get_post_mime_type($attachment_id ), $allowed_images ) ) {
+			if ( ! in_array( get_post_mime_type( $attachment_id ), $allowed_images ) ) {
 				return $metadata;
 			}
 
@@ -131,7 +131,59 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @return bool whether request was successful
 		 */
 		function send_request( $attachment_id = false, $metadata = '' ) {
-			global $log;
+			global $log, $wp_version;
+
+			//Check for single smush limit
+
+			if ( count( $attachment_id ) == 1 ) {
+				if ( $wp_version < '3.9' ) {
+					$meta_query =
+						array(
+							'relation' => 'AND',
+							array(
+								'key'     => WP_SMPRO_PREFIX . 'is-smushed',
+								'value'   => 'smush',
+								'compare' => 'NOT EXISTS'
+							),
+							array(
+								'key'     => WP_SMPRO_PREFIX . 'request-id',
+								'compare' => 'EXISTS'
+
+							)
+						);
+				} else {
+					$meta_query =
+						array(
+							'relation' => 'AND',
+							array(
+								'key'     => WP_SMPRO_PREFIX . 'is-smushed',
+								'compare' => 'NOT EXISTS'
+							),
+							array(
+								'key'     => WP_SMPRO_PREFIX . 'request-id',
+								'compare' => 'EXISTS'
+
+							)
+						);
+				}
+				//Check for existing single requests
+				$args             = array(
+					'fields'         => 'ids',
+					'post_type'      => 'attachment',
+					'post_status'    => 'any',
+					'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+					'order'          => 'ASC',
+					'posts_per_page' => - 1,
+					'meta_query'     => $meta_query
+				);
+				$existing_singles = new WP_Query( $args );
+				if ( ! empty( $existing_singles->posts ) && count( $existing_singles->posts ) >= 1000 ) {
+					//Don't send
+					$response['error'] = __( 'Heya, there are around 1000 images being smushed already, you gotta wait until they finish up !!', WP_SMPRO_DOMAIN );
+
+					return $response;
+				}
+			}
 			$updated_count = '';
 			/*
 			 * {
@@ -247,9 +299,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				$updated = false;
 
 				//Check for existing bulk request
-				if( !empty( $data->message ) && 'pending_request' == $data->message ) {
+				if ( ! empty( $data->message ) && 'pending_request' == $data->message ) {
 					$response['error'] = __( 'Hey there, it looks like there is a pending bulk request for this site, you can send a new one once the current request is completed.', WP_SMPRO_DOMAIN );
-				}else {
+				} else {
 					$log->error( 'WpSmProSend: process_response', 'Request error ' . json_encode( $data ) );
 					$response['error'] = ! empty( $data->message ) ? $data->message : __( 'Attachment data missing, request not processed by API', WP_SMPRO_DOMAIN );
 				}
@@ -575,20 +627,20 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			$allowed_images  = "( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' )";
 
 			// get the attachment id, attachment metadata and full size's path
-			$sql = "SELECT p.ID as attachment_id, p.post_mime_type as type, md.meta_value as metadata, mp.meta_value as metapath"
-			       . " FROM $wpdb->posts as p"
-			       // for attachment metadata
-			       . " LEFT JOIN $wpdb->postmeta as md"
-			       . " ON (p.ID= md.post_id AND md.meta_key='_wp_attachment_metadata')"
-			       // for full size's path
-			       . " LEFT JOIN $wpdb->postmeta as mp"
-			       . " ON (p.ID= mp.post_id AND mp.meta_key='_wp_attached_file')"
-			       // to check if attachment isn't already smushed
-			       . " LEFT JOIN $wpdb->postmeta as m"
-			       . " ON (p.ID= m.post_id AND m.meta_key='" . WP_SMPRO_PREFIX . "is-smushed')"
-			       . " WHERE"
-			       . " p.post_type='attachment'"
-			       . " AND p.post_mime_type IN " . $allowed_images
+			$sql     = "SELECT p.ID as attachment_id, p.post_mime_type as type, md.meta_value as metadata, mp.meta_value as metapath"
+			           . " FROM $wpdb->posts as p"
+			           // for attachment metadata
+			           . " LEFT JOIN $wpdb->postmeta as md"
+			           . " ON (p.ID= md.post_id AND md.meta_key='_wp_attachment_metadata')"
+			           // for full size's path
+			           . " LEFT JOIN $wpdb->postmeta as mp"
+			           . " ON (p.ID= mp.post_id AND mp.meta_key='_wp_attached_file')"
+			           // to check if attachment isn't already smushed
+			           . " LEFT JOIN $wpdb->postmeta as m"
+			           . " ON (p.ID= m.post_id AND m.meta_key='" . WP_SMPRO_PREFIX . "is-smushed')"
+			           . " WHERE"
+			           . " p.post_type='attachment'"
+			           . " AND p.post_mime_type IN " . $allowed_images
 			           . " AND ( m . meta_value = '0' OR m . post_id IS null)"
 			           . $where_id_clause
 			           . $existing_clause
