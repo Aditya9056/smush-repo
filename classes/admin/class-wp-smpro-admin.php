@@ -114,7 +114,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			) );
 			//Register Debug page only if WP_SMPRO_DEBUG is defined and true
 			if ( defined( 'WP_SMPRO_DEBUG' ) && WP_SMPRO_DEBUG ) {
-				add_media_page( 'WP Smpro Error Log', 'Error Log', 'edit_others_posts', 'wp-smpro-errorlog', array(
+				add_media_page( 'WP Smpro Error Log', 'Error Log', 'edit_others_posts', 'wp-smpro-debug', array(
 					$this,
 					'create_admin_error_log_page'
 				) );
@@ -1172,7 +1172,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		/**
-		 * Creates Admin Error Log info page.
+		 * Creates Admin Debug info page.
 		 *
 		 * @access private.
 		 */
@@ -1187,12 +1187,201 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					$log->purge_notices();
 				}
 			}
-			$errors  = $log->get_all_errors();
-			$notices = $log->get_all_notices();
-			/**
-			 * Error Log Form
-			 */
-			require_once( WP_SMPRO_DIR . 'lib/forms/error_log.php' );
+			$tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'error';
+			?>
+			<div class="wrap">
+				<?php $this->error_log_tabs(); ?>
+				<?php $this->error_log_tabs_content( $tab ); ?>
+			</div>
+		<?php
+		}
+
+		/**
+		 * Create required tabs
+		 */
+		function error_log_tabs() {
+			$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'error';
+
+			$tabs = array(
+				'error'    => __( 'Error Log', WP_SMPRO_DOMAIN ),
+				'requests' => __( 'Smush Requests', WP_SMPRO_DOMAIN ),
+				'notice'   => __( 'Notice', WP_SMPRO_DOMAIN )
+			);
+			echo '<h2 class="nav-tab-wrapper">';
+			foreach ( $tabs as $tab_key => $tab_caption ) {
+				$active = $current_tab == $tab_key ? 'nav-tab-active' : '';
+				echo '<a class="nav-tab ' . $active . '" href="?page=wp-smpro-debug&tab=' . $tab_key . '">' . $tab_caption . '</a>';
+			}
+			echo '</h2>';
+		}
+
+		/**
+		 * Echo the content of respective tab
+		 *
+		 * @param string $current
+		 */
+		function error_log_tabs_content( $current = 'error' ) {
+			$tabs = array(
+				'error'    => __( 'Error Log', WP_SMPRO_DOMAIN ),
+				'requests' => __( 'Smush Requests', WP_SMPRO_DOMAIN ),
+				'notice'   => __( 'Notice', WP_SMPRO_DOMAIN )
+			);
+			switch ( $current ) {
+				case 'error' :
+					require_once( WP_SMPRO_DIR . 'lib/forms/error_log.php' );
+					break;
+				case 'notice' :
+					require_once( WP_SMPRO_DIR . 'lib/forms/notice_log.php' );
+					break;
+				case 'requests';
+					$this->get_smush_requests();
+					break;
+			}
+		}
+
+		/**
+		 * Get all the current sent Single requests for the website
+		 */
+		function get_current_single_requests() {
+
+			global $wp_version;
+			if ( $wp_version < '3.9' ) {
+				$meta_query =
+					array(
+						'relation' => 'AND',
+						array(
+							'key'     => WP_SMPRO_PREFIX . 'is-smushed',
+							'value'   => 'smush',
+							'compare' => 'NOT EXISTS'
+						),
+						array(
+							'key'     => WP_SMPRO_PREFIX . 'request-id',
+							'compare' => 'EXISTS'
+
+						)
+					);
+			} else {
+				$meta_query =
+					array(
+						'relation' => 'AND',
+						array(
+							'key'     => WP_SMPRO_PREFIX . 'is-smushed',
+							'compare' => 'NOT EXISTS'
+						),
+						array(
+							'key'     => WP_SMPRO_PREFIX . 'request-id',
+							'compare' => 'EXISTS'
+
+						)
+					);
+			}
+
+			//Query all the posts which are not smushed "wp-smpro-is-smushed" but sent for smushing "wp-smpro-request-id"
+			$args         = array(
+				'fields'         => 'ids',
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'order'          => 'ASC',
+				'posts_per_page' => - 1,
+				'meta_query'     => $meta_query
+			);
+			$sent_singles = new WP_Query( $args );
+			if ( ! empty( $sent_singles->posts ) ) {
+				return $sent_singles->posts;
+			} else {
+				return array();
+			}
+		}
+
+		/**
+		 * Get all the Bulk and Single smush requests
+		 */
+		function get_smush_requests() {
+
+			//get thee bulk requests
+			$bulk_request    = get_option( WP_SMPRO_PREFIX . "bulk-sent" );
+			$single_requests = $this->get_current_single_requests(); ?>
+			<h3><?php _e( 'Bulk Request' ); ?></h3><?php
+
+			if ( empty( $bulk_request ) ) { ?>
+				<p><?php _e( 'Yayyy! No pending bulk requests.', WP_SMPRO_DOMAIN ); ?></p><?php
+			} else {
+				$current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests' );
+				$current_bulk_req = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ] : '';
+				$date             = '';
+				if ( ! empty( $current_bulk_req ) ) {
+					$timestamp = ! empty( $current_bulk_req['timestamp'] ) ? $current_bulk_req['timestamp'] : '';
+					$date      = date( 'Y-m-d H:i:s e', (int) $timestamp );
+					$received  = ! empty( $current_bulk_req['received'] ) ? $current_bulk_req['received'] : false;
+					$status    = ( $received && $received == 1 ) ? 'Completed' : 'Pending';
+				} ?>
+
+				<table class="widefat">
+				<thead>
+				<tr>
+					<th><?php _e( 'Request id', WP_SMPRO_DOMAIN ) ?></th>
+					<th><?php _e( 'Date', WP_SMPRO_DOMAIN ) ?></th>
+					<th><?php _e( 'Status', WP_SMPRO_DOMAIN ) ?></th>
+				</tr>
+				</thead>
+				<tfoot>
+				<tr>
+					<th><?php _e( 'Request id', WP_SMPRO_DOMAIN ) ?></th>
+					<th><?php _e( 'Date', WP_SMPRO_DOMAIN ) ?></th>
+					<th><?php _e( 'Status', WP_SMPRO_DOMAIN ) ?></th>
+				</tr>
+				</tfoot>
+				<tbody>
+				<tr>
+					<td><?php echo $bulk_request; ?></td>
+					<td><?php echo $date; ?></td>
+					<td><?php echo $status; ?></td>
+				</tr>
+				</tbody>
+				</table><?php
+
+			} ?>
+			<h3><?php _e( 'Single requests', WP_SMPRO_DOMAIN ); ?></h3><?php
+			if ( empty( $single_requests ) ) { ?>
+				<p><?php _e( "Yayyy! No pending single request." ); ?></p><?php
+			} else {
+				?>
+				<table class="widefat">
+				<thead>
+				<tr>
+					<th><?php _e( 'Request id', WP_SMPRO_DOMAIN ) ?></th>
+					<th><?php _e( 'Date', WP_SMPRO_DOMAIN ) ?></th>
+					<th><?php _e( 'Status', WP_SMPRO_DOMAIN ) ?></th>
+				</tr>
+				</thead>
+				<tfoot>
+				<tr>
+					<th><?php _e( 'Request id', WP_SMPRO_DOMAIN ) ?></th>
+					<th><?php _e( 'Date', WP_SMPRO_DOMAIN ) ?></th>
+					<th><?php _e( 'Status', WP_SMPRO_DOMAIN ) ?></th>
+				</tr>
+				</tfoot>
+				<tbody><?php
+				foreach ( $single_requests as $attachment_id ) {
+					//get request id
+					$request_id = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'request-id', true );
+					//if request id exists
+					if ( ! empty( $request_id ) ) {
+						//get request details
+						$request   = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'request-' . $request_id, true );
+						$timestamp = ! empty( $request['timestamp'] ) ? $request['timestamp'] : '';
+						$date      = date( 'Y-m-d H:i:s e', (int) $timestamp );
+						$status    = 'Pending'; ?>
+						<tr>
+						<td><?php echo $request_id; ?></td>
+						<td><?php echo $date; ?></td>
+						<td><?php echo $status; ?></td>
+						</tr><?php
+					}
+				} ?>
+				</tbody><?php
+			}
 		}
 
 		function attachment_status() {
@@ -1232,10 +1421,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			if ( $reset_done && empty( $reset_done['error'] ) ) {
 				wp_send_json_success( __( "The current bulk request was removed for you, you can send a new one anytime! Reloading page in <span id='counter'>5</span>s..", WP_SMPRO_DOMAIN ) );
 			} else {
-				$message = !empty( $reset_done['error'] ) ? $reset_done['error'] : __( 'Ah crap! Some error occurred while resetting the request for you. Reload the page and try to reset it again.' );
+				$message = ! empty( $reset_done['error'] ) ? $reset_done['error'] : __( 'Ah crap! Some error occurred while resetting the request for you. Reload the page and try to reset it again.' );
 				wp_send_json_error( $message );
 			}
-			die(1);
+			die( 1 );
 
 		}
 
@@ -1245,13 +1434,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function resetBulkRequest() {
 			global $wp_smpro;
 			$sent_ids_diff = array();
-			$message = array();
+			$message       = array();
 			$bulk_request  = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
 			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
 
 			if ( empty( $bulk_request ) || empty( $current_requests ) ) {
-				$message['error'] = __("There is no pending bulk request.", WP_SMPRO_DOMAIN );
+				$message['error'] = __( "There is no pending bulk request.", WP_SMPRO_DOMAIN );
+
 				return $message;
 			}
 			$sent_ids[ $bulk_request ]['sent_ids'] = ! empty( $current_requests[ $bulk_request ] ) ? $current_requests[ $bulk_request ]['sent_ids'] : '';
@@ -1265,11 +1455,8 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			//send a request to API, to reset the request from there too, as we don't want to waste the resources
 			$response = $wp_smpro->sender->reset_bulk( $bulk_request, $current_requests[ $bulk_request ]['token'] );
 
-			echo "<pre>";
-			print_r( $response );
-			echo "</pre>";
 			//Server is down or other issue
-			if ( is_wp_error($response) || $response['api']['response']['code'] !== 200 ) {
+			if ( is_wp_error( $response ) || $response['api']['response']['code'] !== 200 ) {
 				return false;
 			} else {
 
