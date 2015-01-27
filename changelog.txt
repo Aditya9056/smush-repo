@@ -9,13 +9,12 @@ Change Log:
 ----------------------------------------------------------------------
 - New:      CDN, suggestion to whitelist IP
 - New:      Use Ajax to check API status
-- New:      Reset bulk request option
 - New:      Limit concurrent pending single smush to 1000, to avoid hogging up of server resources
 - Fixed:    Db cleanup on uninstall
-- Fixed:    Remove unnecessary left outs on install
-- Fixed:    Request status
-- Updated:  Allowed file types
-- Updated:  Wait Time
+- Fixed:    Remove unnecessary meta on install
+- Fixed:    Request status for removed bulk requests
+- Updated:  Allowed file types (JPEF, PNG, GIF )
+- Updated:  Wait Time reduced
 
 
 1.0 - 2014-11-24 - Saurabh Shukla, Umesh Kumar
