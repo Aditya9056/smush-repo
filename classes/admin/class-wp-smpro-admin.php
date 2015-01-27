@@ -1494,7 +1494,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 */
 		function reset_bulk_button() {
 			$reset_nonce  = wp_nonce_field( 'reset_bulk_request', 'wp-smpro-reset-nonce', '', false );
-			$reset_button = '<a href="#" id="wp-smpro-reset-bulk">' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</a>';
+			//Check URL for show_smush arg
+			$class = ( !empty( $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset'] ) && $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset'] == 'true' )? '' : ' class="hide"';
+			$reset_button = '<a href="#" id="wp-smpro-reset-bulk"' . $class .'>' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</a>';
 
 			return $reset_button . $reset_nonce;
 		}

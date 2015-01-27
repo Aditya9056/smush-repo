@@ -619,4 +619,4 @@
   vertical-align: baseline;
 }
 /* Reset Button */
-#wp-smpro-reset-bulk { display: none; }
+#wp-smpro-reset-bulk.hide { display: none; }
