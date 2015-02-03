@@ -8,6 +8,7 @@ Change Log:
 1.0.2 - 2015-02-03 - Umesh Kumar
 ----------------------------------------------------------------------
 - Fixed: Use options instead of transient to fix W3TC object caching issue
+- New:   Modify email address for bulk smush notification
 
 1.0.1 - 2015-01-01 - Umesh Kumar
 ----------------------------------------------------------------------

@@ -195,7 +195,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				return;
 			}
 
-			$to = get_option( 'admin_email' );
+			$notify_at = get_option( WP_SMPRO_PREFIX . 'notify-at' );
+			$notify_at = ! empty( $notify_at ) ? $notify_at : get_option( 'admin_email' );
 
 			$subject = sprintf( __( "%s: Smush Pro bulk smushing completed", WP_SMPRO_DOMAIN ), get_option( 'blogname' ) );
 
@@ -205,7 +206,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$message[] = sprintf( __( 'Visit %s to download the smushed images to your site.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php?page=wp-smpro-admin' ) );
 
 			$body      = implode( "\r\n", $message );
-			$mail_sent = wp_mail( $to, $subject, $body );
+			$mail_sent = wp_mail( $notify_at, $subject, $body );
 			if ( ! $mail_sent ) {
 				$log->error( 'WpSmproReceive: notify', 'Notification email could not be sent' );
 			}

@@ -533,6 +533,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			// process options, if needed
 			$this->process_options();
+			// default value
+			$notify_at = get_option( WP_SMPRO_PREFIX . 'notify-at' );
+			$notify_at = ! empty( $notify_at ) ? $notify_at : get_option( 'admin_email' );
 			?>
 			<form action="" method="post">
 				<ul id="wp-smpro-options-wrap">
@@ -543,6 +546,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					}
 					?>
 				</ul>
+				<p>
+					<label><?php _e( '<b>Get notifications at:</b> ', WP_SMPRO_DOMAIN ); ?>
+						<input type="text" name="<?php echo WP_SMPRO_PREFIX . 'notify-at'; ?>" id="<?php echo WP_SMPRO_PREFIX . 'notify-at'; ?>" value="<?php echo $notify_at; ?>" size="50"/>
+						<br/>
+						<small><?php _e( '* If left empty, it uses admin email address for the site', WP_SMPRO_DOMAIN ); ?></small>
+					</label>
+				</p>
 				<?php
 				// nonce
 				wp_nonce_field( 'save_wp_smpro_options', 'wp_smpro_options_nonce' );
@@ -581,6 +591,26 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				update_option( $opt_name, $setting );
 				// unset the var for next loop
 				unset( $setting );
+			}
+			//Process email address
+			if ( isset( $_POST[ WP_SMPRO_PREFIX . 'notify-at' ] ) ) {
+				$email = ! empty( $_POST[ WP_SMPRO_PREFIX . 'notify-at' ] ) ? $_POST[ WP_SMPRO_PREFIX . 'notify-at' ] : '';
+
+				if ( ! empty( $email ) ) {
+					//Validate
+					if ( filter_var( $_POST[ WP_SMPRO_PREFIX . 'notify-at' ], FILTER_VALIDATE_EMAIL ) ) {
+						//save option
+						update_option( WP_SMPRO_PREFIX . 'notify-at', $_POST[ WP_SMPRO_PREFIX . 'notify-at' ] );
+					}else{
+						?>
+						<div class="error">
+							<p><?php _e( 'Invalid email address.', WP_SMPRO_DOMAIN ); ?></p>
+						</div><?php
+					}
+				} else {
+					//Update null
+					update_option( WP_SMPRO_PREFIX . 'notify-at', '' );
+				}
 			}
 		}
 
@@ -1493,10 +1523,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		 * Creates a reset button for bulk request
 		 */
 		function reset_bulk_button() {
-			$reset_nonce  = wp_nonce_field( 'reset_bulk_request', 'wp-smpro-reset-nonce', '', false );
+			$reset_nonce = wp_nonce_field( 'reset_bulk_request', 'wp-smpro-reset-nonce', '', false );
 			//Check URL for show_smush arg
-			$class = ( !empty( $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset'] ) && $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset'] == 'true' )? '' : ' class="hide"';
-			$reset_button = '<a href="#" id="wp-smpro-reset-bulk"' . $class .'>' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</a>';
+			$class        = ( ! empty( $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset' ] ) && $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset' ] == 'true' ) ? '' : ' class="hide"';
+			$reset_button = '<a href="#" id="wp-smpro-reset-bulk"' . $class . '>' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</a>';
 
 			return $reset_button . $reset_nonce;
 		}
