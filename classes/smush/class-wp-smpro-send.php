@@ -34,7 +34,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// add automatic smushing on upload
 				add_filter( 'wp_generate_attachment_metadata', array( $this, 'auto_smush' ), 10, 2 );
 			}
-			$this->api_connected = get_transient( 'api_connected' );
+			$this->api_connected = get_option( 'api_connected' );
 		}
 
 		function auto_smush( $metadata, $attachment_id ) {

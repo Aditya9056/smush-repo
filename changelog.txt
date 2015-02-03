@@ -7,6 +7,10 @@ Change Log:
 
 1.0.1 - 2014-12-24 - Umesh Kumar
 ----------------------------------------------------------------------
+- Fixed: Use options instead of transient to fix W3TC object caching issue
+
+1.0.1 - 2014-12-24 - Umesh Kumar
+----------------------------------------------------------------------
 - New:      CDN, suggestion to whitelist IP
 - New:      Use Ajax to check API status
 - New:      Limit concurrent pending single smush to 1000, to avoid hogging up of server resources

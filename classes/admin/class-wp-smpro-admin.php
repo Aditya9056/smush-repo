@@ -968,7 +968,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 
 			//If we don't have api key
 			if ( ! get_site_option( 'wpmudev_apikey', false ) ) {
-				set_transient( 'api_connected', false );
+				update_option( 'api_connected', false );
 
 				return false;
 			}
@@ -983,7 +983,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$api      = wp_remote_get( WP_SMPRO_SERVICE_STATUS, $req_args );
 			}
 			if ( empty( $api ) || is_wp_error( $api ) || $api['response']['code'] != 200 ) {
-				set_transient( 'api_connected', false );
+				update_option( 'api_connected', false );
 				if ( is_wp_error( $api ) ) {
 					$message = ! empty( $api ) ? json_encode( $api ) : __( 'No response from API', WP_SMPRO_DOMAIN );
 					$log->error( 'WpSmProAdmin: set_api_status', $message );
@@ -992,7 +992,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				return false;
 			}
 			$this->api_connected = true;
-			set_transient( 'api_connected', true );
+			update_option( 'api_connected', true );
 
 			return true;
 		}
