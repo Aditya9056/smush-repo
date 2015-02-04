@@ -529,6 +529,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				return $request_data;
 			}
 
+			$attachments_count = count( $attachments );
 			// loop
 			foreach ( $attachments as $key => &$attachment ) {
 				$image_details = $file_size = '';
@@ -556,7 +557,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				//If there are no image details, Skip attachment
 				if ( empty( $image_details ) ) {
-					if ( count( $attachments ) == 1 ) {
+					if ( $attachments_count == 1 ) {
 						$log->error( "WpSmpro_Send: add_attachment_data", "Not a image file" . $attachment->attachment_id );
 						$request_data->error = __( "Not a image file", WP_SMPRO_DOMAIN );
 
@@ -805,9 +806,19 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// if there was an http error
 			if ( empty( $response['api']['response']['code'] ) || $response['api']['response']['code'] != 200 ) {
+
+				$log->error( 'WpSmProSend::_post', @json_encode( $response ) );
+
+				$response_code = $response['api']['response']['code'];
 				unset( $response, $request_data );
 
-				$response['error'] = __( 'Oh Snap! Seems like Smush Pro server is not reachable, you can try back in some time.', WP_SMPRO_DOMAIN );
+				if ( $response_code == 413 ) {
+
+					$response['error'] = __( "Request Entity Too Large (HTTP Error 413). Try sending lesser number of images, you can use define( 'WP_SMPRO_REQUEST_LIMIT', 500 ) to send less number of images", WP_SMPRO_DOMAIN );
+
+				} else {
+					$response['error'] = __( 'Something went wrong, smush request rejected by server.', WP_SMPRO_DOMAIN );
+				}
 
 				return $response;
 			}
