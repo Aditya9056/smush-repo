@@ -1,16 +1,16 @@
-# Copyright (C) 2014 WP Smush Pro
+# Copyright (C) 2015 WP Smush Pro
 # This file is distributed under the same license as the WP Smush Pro package.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Smush Pro 1.0\n"
-"Report-Msgid-Bugs-To: https://premium.wpmudev.org/project/wp-smush-pro\n"
-"POT-Creation-Date: 2014-12-18 04:09:08+00:00\n"
+"Project-Id-Version: WP Smush Pro 1.0.2\n"
+"Report-Msgid-Bugs-To: https://premium.wpmudev.org/forums/"
+"POT-Creation-Date: 2015-02-18 06:07:58+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Umesh Kumar <umeshsingla05@gmail.com>\n"
-"Language-Team: WPMUDev\n"
+"Language-Team: WPMU Dev\n"
 
 #: classes/admin/class-wp-smpro-admin.php:99
 msgid "Auto-Smush images on upload"
@@ -25,7 +25,7 @@ msgid "Progressive optimization for JPEGs"
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:184
-#: classes/admin/class-wp-smpro-admin.php:896
+#: classes/admin/class-wp-smpro-admin.php:929
 msgid "Fetch smushed images"
 msgstr ""
 
@@ -38,8 +38,8 @@ msgid "Sending failed. Please try again later"
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:187
-#: classes/admin/class-wp-smpro-admin.php:852
-#: classes/admin/class-wp-smpro-admin.php:871
+#: classes/admin/class-wp-smpro-admin.php:885
+#: classes/admin/class-wp-smpro-admin.php:904
 msgid "Smushing in progress"
 msgstr ""
 
@@ -63,13 +63,13 @@ msgid "Smush now!"
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:192
-#: classes/admin/class-wp-smpro-admin.php:859
-#: classes/admin/class-wp-smpro-admin.php:883
+#: classes/admin/class-wp-smpro-admin.php:892
+#: classes/admin/class-wp-smpro-admin.php:916
 msgid "Send Smush Request"
 msgstr ""
 
 #: classes/admin/class-wp-smpro-admin.php:193
-#: classes/admin/class-wp-smpro-admin.php:845
+#: classes/admin/class-wp-smpro-admin.php:878
 msgid "All done!"
 msgstr ""
 
@@ -89,152 +89,234 @@ msgstr ""
 msgid "Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:280
+#: classes/admin/class-wp-smpro-admin.php:198
+msgid "You really want to remove the bulk request?"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:199
+msgid "Just do it"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:200
+msgid "Make sure to send another bulk smush"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:283
 msgid "A recent bulk smushing request has been completed!"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:282
+#: classes/admin/class-wp-smpro-admin.php:285
 msgid "Visit <strong><a href=\"%s\">Media &raquo; WP Smush Pro</a></strong> to download the smushed images to your site."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:320
+#: classes/admin/class-wp-smpro-admin.php:323
 msgid "Dismiss notice"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:364
-#: classes/admin/class-wp-smpro-admin.php:380
-#: classes/admin/class-wp-smpro-admin.php:381
+#: classes/admin/class-wp-smpro-admin.php:367
+#: classes/admin/class-wp-smpro-admin.php:383
+#: classes/admin/class-wp-smpro-admin.php:384
 msgid "API Connected"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:364
-#: classes/admin/class-wp-smpro-admin.php:390
+#: classes/admin/class-wp-smpro-admin.php:367
+#: classes/admin/class-wp-smpro-admin.php:393
 msgid "API Not Connected"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:392
+#: classes/admin/class-wp-smpro-admin.php:395
 msgid "Service unavailable!"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:423
+#: classes/admin/class-wp-smpro-admin.php:426
 msgid "Bulk smush failed, as another bulk request is already being processed."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:442
-#: classes/admin/class-wp-smpro-admin.php:1181
+#: classes/admin/class-wp-smpro-admin.php:445
+#: classes/admin/class-wp-smpro-admin.php:1214
 msgid "Nonce verification failed"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:453
+#: classes/admin/class-wp-smpro-admin.php:456
 msgid "Images not sent for smushing as API is unreachable."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:475
+#: classes/admin/class-wp-smpro-admin.php:478
 msgid "WP Smush Pro <span title=\"%s\" class=\"api-status%s\">%s</span><span class=\"api-status-text\">%s</span>"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:475
+#: classes/admin/class-wp-smpro-admin.php:478
 msgid "Checking API status..."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:479
+#: classes/admin/class-wp-smpro-admin.php:482
 msgid "Settings"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:488
+#: classes/admin/class-wp-smpro-admin.php:491
 msgid "Smush in Bulk"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:492
+#: classes/admin/class-wp-smpro-admin.php:495
 msgid "Send images"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:497
-#: classes/admin/class-wp-smpro-admin.php:509
+#: classes/admin/class-wp-smpro-admin.php:500
+#: classes/admin/class-wp-smpro-admin.php:512
 msgid "Bulk Smushing Send Instruction"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:502
+#: classes/admin/class-wp-smpro-admin.php:505
 msgid "Wait for your images to be sent to our server to be smushed. Once sent you may leave the page, we will email you when smushed images are ready to be fetched back."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:504
+#: classes/admin/class-wp-smpro-admin.php:507
 msgid "Fetch images"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:514
+#: classes/admin/class-wp-smpro-admin.php:517
 msgid "Once you receive an email, you can click a link in there or go to WP Smush Pro settings page to fetch smushed images."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:547
+#: classes/admin/class-wp-smpro-admin.php:550
+msgid "<b>Get notifications at:</b> "
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:553
+msgid "* If left empty, it uses admin email address for the site"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:560
 msgid "Save Changes"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:627
+#: classes/admin/class-wp-smpro-admin.php:607
+msgid "Invalid email address."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:660
 msgid "<p>Please <a href=\"%s\">upload some images</a>.</p>"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:645
+#: classes/admin/class-wp-smpro-admin.php:678
 msgid "All your images are already smushed!"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:658
+#: classes/admin/class-wp-smpro-admin.php:691
 msgid "You can also smush images individually from your <a href=\"%s\">Media Library</a>."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:723
+#: classes/admin/class-wp-smpro-admin.php:756
 msgid "Reduced by "
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:733
+#: classes/admin/class-wp-smpro-admin.php:766
 msgid "<span class=\"done-count\">%d</span> of <span class=\"total-count\">%d</span> attachments have been sent for smushing"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:741
+#: classes/admin/class-wp-smpro-admin.php:774
 msgid "<span class=\"done-count\">%d</span> of <span class=\"sent-count\">%d</span> sent attachments have been fetched"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:761
+#: classes/admin/class-wp-smpro-admin.php:794
 msgid "NOTE: Your website <em>might</em> get a little slow while the images are being fetched."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:767
+#: classes/admin/class-wp-smpro-admin.php:800
 msgid "This depends on various things like your server resources, number and size of attachments, and the different sizes for each attachment (thumbnail, medium, large, etc)."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:770
+#: classes/admin/class-wp-smpro-admin.php:803
 msgid "Got it!"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:791
+#: classes/admin/class-wp-smpro-admin.php:824
 msgid "Checking smush progress..."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:805
+#: classes/admin/class-wp-smpro-admin.php:838
 msgid "Cancel"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:869 classes/class-wp-smpro.php:170
+#: classes/admin/class-wp-smpro-admin.php:902 classes/class-wp-smpro.php:173
 msgid "Request failed"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:985
+#: classes/admin/class-wp-smpro-admin.php:1018
 msgid "No response from API"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:1117
+#: classes/admin/class-wp-smpro-admin.php:1150
 msgid "<strong>%d of %d images</strong> were sent for smushing:"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:1230
-msgid "The current bulk request was removed for you, you can send a new one anytime!"
+#: classes/admin/class-wp-smpro-admin.php:1236
+#: classes/admin/class-wp-smpro-admin.php:1255
+msgid "Error Log"
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:1232
+#: classes/admin/class-wp-smpro-admin.php:1237
+#: classes/admin/class-wp-smpro-admin.php:1256
+msgid "Smush Requests"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1238
+#: classes/admin/class-wp-smpro-admin.php:1257
+msgid "Notice"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1335
+msgid "Bulk Request"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1338
+msgid "Yayyy! No pending bulk requests."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1353
+#: classes/admin/class-wp-smpro-admin.php:1360
+#: classes/admin/class-wp-smpro-admin.php:1383
+#: classes/admin/class-wp-smpro-admin.php:1390
+msgid "Request id"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1354
+#: classes/admin/class-wp-smpro-admin.php:1361
+#: classes/admin/class-wp-smpro-admin.php:1384
+#: classes/admin/class-wp-smpro-admin.php:1391 lib/forms/error_log.php:18
+#: lib/forms/error_log.php:27 lib/forms/notice_log.php:18
+#: lib/forms/notice_log.php:25
+msgid "Date"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1355
+#: classes/admin/class-wp-smpro-admin.php:1362
+#: classes/admin/class-wp-smpro-admin.php:1385
+#: classes/admin/class-wp-smpro-admin.php:1392
+msgid "Status"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1375
+msgid "Single requests"
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1377
+msgid "Yayyy! No pending single request."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1452
+msgid "The current bulk request was removed for you, you can send a new one anytime! Reloading page in <span id='counter'>5</span>s.."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1454
 msgid "Ah crap! Some error occurred while resetting the request for you. Reload the page and try to reset it again."
 msgstr ""
 
-#: classes/admin/class-wp-smpro-admin.php:1300
+#: classes/admin/class-wp-smpro-admin.php:1473
+msgid "There is no pending bulk request."
+msgstr ""
+
+#: classes/admin/class-wp-smpro-admin.php:1529
 msgid "Reset bulk request"
 msgstr ""
 
@@ -255,55 +337,55 @@ msgstr ""
 msgid "Not processed"
 msgstr ""
 
-#: classes/class-wp-smpro.php:171
+#: classes/class-wp-smpro.php:174
 msgid "File is being processed by API"
 msgstr ""
 
-#: classes/class-wp-smpro.php:172
+#: classes/class-wp-smpro.php:175
 msgid "File is in the queue"
 msgstr ""
 
-#: classes/class-wp-smpro.php:173
+#: classes/class-wp-smpro.php:176
 msgid "File is being smushed"
 msgstr ""
 
-#: classes/class-wp-smpro.php:174
+#: classes/class-wp-smpro.php:177
 msgid "Smushing successful and ready for download"
 msgstr ""
 
-#: classes/class-wp-smpro.php:175
+#: classes/class-wp-smpro.php:178
 msgid "Smushing failed due to error"
 msgstr ""
 
-#: classes/class-wp-smpro.php:176
+#: classes/class-wp-smpro.php:179
 msgid "Already optimized"
 msgstr ""
 
-#: classes/class-wp-smpro.php:181
+#: classes/class-wp-smpro.php:184
 msgid "No file received"
 msgstr ""
 
-#: classes/class-wp-smpro.php:182
+#: classes/class-wp-smpro.php:185
 msgid "Callback url not provided"
 msgstr ""
 
-#: classes/class-wp-smpro.php:183
+#: classes/class-wp-smpro.php:186
 msgid "Token not provided"
 msgstr ""
 
-#: classes/class-wp-smpro.php:184
+#: classes/class-wp-smpro.php:187
 msgid "Invalid API key"
 msgstr ""
 
-#: classes/class-wp-smpro.php:185
+#: classes/class-wp-smpro.php:188
 msgid "The file type is not supported"
 msgstr ""
 
-#: classes/class-wp-smpro.php:186
+#: classes/class-wp-smpro.php:189
 msgid "Upload failed"
 msgstr ""
 
-#: classes/class-wp-smpro.php:187
+#: classes/class-wp-smpro.php:190
 msgid "File larger than allowed limit"
 msgstr ""
 
@@ -319,47 +401,47 @@ msgstr ""
 msgid "Error downloading smushed file for attachment id: %d"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:200
+#: classes/smush/class-wp-smpro-receive.php:201
 msgid "%s: Smush Pro bulk smushing completed"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:204
+#: classes/smush/class-wp-smpro-receive.php:205
 msgid "A recent bulk smushing request on your site %s has been completed!"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:205
+#: classes/smush/class-wp-smpro-receive.php:206
 msgid "Visit %s to download the smushed images to your site."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:226
+#: classes/smush/class-wp-smpro-receive.php:227
 msgid "Bulk request not found"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:258
-msgid "The smushing elves are busy, You are first in queue."
+#: classes/smush/class-wp-smpro-receive.php:259
+msgid "The smushing elves are busy, You are first in the queue."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:260
-msgid "The smushing elves are busy, You are %s in queue. <br /> Current wait time: %s"
+#: classes/smush/class-wp-smpro-receive.php:261
+msgid "The smushing elves are busy, You are %s in the queue. <br /> Estimated wait time: %s"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:287
+#: classes/smush/class-wp-smpro-receive.php:288
 msgid "Woohooo, we are crunching the numbers for you and than it is all done."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:289
+#: classes/smush/class-wp-smpro-receive.php:290
 msgid "Your smush request is being processed."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:290
+#: classes/smush/class-wp-smpro-receive.php:291
 msgid " %d image is remaining."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:290
+#: classes/smush/class-wp-smpro-receive.php:291
 msgid " %d images are remaining."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:298
+#: classes/smush/class-wp-smpro-receive.php:299
 msgid "Smush server was unable to access images from your site."
 msgstr ""
 
@@ -368,7 +450,6 @@ msgid "You don't have permission to work with uploaded files."
 msgstr ""
 
 #: classes/smush/class-wp-smpro-send.php:82
-#: classes/smush/class-wp-smpro-send.php:758
 msgid "Oh Snap! Seems like Smush Pro server is not reachable, you can try back in some time."
 msgstr ""
 
@@ -376,85 +457,92 @@ msgstr ""
 msgid "Failed to update smush data for attachment meta"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:108
+#: classes/smush/class-wp-smpro-send.php:111
 msgid "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:108
+#: classes/smush/class-wp-smpro-send.php:111
 msgid "Image sent for smushing."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:114
+#: classes/smush/class-wp-smpro-send.php:117
 msgid "<br /> It looks like you are using a CDN service, please whitelist the Smush server IP: 66.135.55.161, for succesful smushing."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:251
+#: classes/smush/class-wp-smpro-send.php:185
+msgid "Heya, there are around 1000 images being smushed already, you gotta wait until they finish up !!"
+msgstr ""
+
+#: classes/smush/class-wp-smpro-send.php:306
 msgid "Hey there, it looks like there is a pending bulk request for this site, you can send a new one once the current request is completed."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:254
+#: classes/smush/class-wp-smpro-send.php:309
 msgid "Attachment data missing, request not processed by API"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:413
+#: classes/smush/class-wp-smpro-send.php:468
 msgid "We couldn't find any attachment data to send."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:494
+#: classes/smush/class-wp-smpro-send.php:550
 msgid "File not found"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:495
+#: classes/smush/class-wp-smpro-send.php:551
 msgid "Image file not found"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:509
+#: classes/smush/class-wp-smpro-send.php:565
 msgid "Not a image file"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:522
+#: classes/smush/class-wp-smpro-send.php:578
 msgid "Image metadata not found"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-send.php:748
+#: classes/smush/class-wp-smpro-send.php:807
 msgid "Sorry, we were unable to send the request, as the site was not able to communicate with Smush Pro server."
 msgstr ""
 
-#: lib/forms/error_log.php:9
-msgid "Error Log"
+#: classes/smush/class-wp-smpro-send.php:823
+msgid "Request Entity Too Large (HTTP Error 413). Try sending lesser number of images, you can use define( 'WP_SMPRO_REQUEST_LIMIT', 500 ) to send less number of images"
 msgstr ""
 
-#: lib/forms/error_log.php:13
+#: classes/smush/class-wp-smpro-send.php:826
+msgid "Something went wrong, smush request rejected by server."
+msgstr ""
+
+#: lib/forms/error_log.php:14
 msgid "Purge log"
 msgstr ""
 
-#: lib/forms/error_log.php:17 lib/forms/error_log.php:26
-#: lib/forms/error_log.php:58 lib/forms/error_log.php:65
-msgid "Date"
-msgstr ""
-
-#: lib/forms/error_log.php:18 lib/forms/error_log.php:27
-#: lib/forms/error_log.php:59 lib/forms/error_log.php:66
+#: lib/forms/error_log.php:19 lib/forms/error_log.php:28
+#: lib/forms/notice_log.php:19 lib/forms/notice_log.php:26
 msgid "User"
 msgstr ""
 
-#: lib/forms/error_log.php:19 lib/forms/error_log.php:28
+#: lib/forms/error_log.php:20 lib/forms/error_log.php:29
 msgid "Area"
 msgstr ""
 
-#: lib/forms/error_log.php:20 lib/forms/error_log.php:29
+#: lib/forms/error_log.php:21 lib/forms/error_log.php:30
 msgid "Type"
 msgstr ""
 
-#: lib/forms/error_log.php:21 lib/forms/error_log.php:30
+#: lib/forms/error_log.php:22 lib/forms/error_log.php:31
 msgid "Info"
 msgstr ""
 
-#: lib/forms/error_log.php:38 lib/forms/error_log.php:75
+#: lib/forms/error_log.php:39 lib/forms/notice_log.php:35
 msgid "Unknown"
 msgstr ""
 
-#: lib/forms/error_log.php:60 lib/forms/error_log.php:67
+#: lib/forms/notice_log.php:14
+msgid "Purge Notices"
+msgstr ""
+
+#: lib/forms/notice_log.php:20 lib/forms/notice_log.php:27
 msgid "Message"
 msgstr ""
 
