@@ -105,7 +105,10 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				echo json_encode( $response );
 				die();
 			}
-			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_option( 'admin_email' ) ) : __( "Image sent for smushing.", WP_SMPRO_DOMAIN );
+			// default value
+			$notify_at = get_option( WP_SMPRO_PREFIX . 'notify-at' );
+			$notify_at = ! empty( $notify_at ) ? $notify_at : get_option( 'admin_email' );
+			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], $notify_at ) : __( "Image sent for smushing.", WP_SMPRO_DOMAIN );
 			$response['success']['status_code']    = 1;
 			$response['success']['count']          = $response['updated_count'];
 			$response['success']['sent_count']     = count( get_option( WP_SMPRO_PREFIX . 'sent-ids', '' ) ); //Fetch from site option
@@ -639,6 +642,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			           // to check if attachment isn't already smushed
 			           . " LEFT JOIN $wpdb->postmeta as m"
 			           . " ON (p.ID= m.post_id AND m.meta_key='" . WP_SMPRO_PREFIX . "is-smushed')"
+			           // to check if attachment isn't already smushed, Single smush Check
+			           . " LEFT JOIN $wpdb->postmeta as ms"
+			           . " ON (p.ID= ms.post_id AND ms.meta_key='" . WP_SMPRO_PREFIX . "request-id')"
 			           . " WHERE"
 			           . " p.post_type='attachment'"
 			           . " AND p.post_mime_type IN " . $allowed_images

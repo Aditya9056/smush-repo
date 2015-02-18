@@ -236,7 +236,7 @@ function wp_smush_pro_activation() {
 
 	global $wpdb;
 
-	//Query all the posts which are not smushes "wp-smpro-is-smushed" but sent for smushing "wp-smpro-request-id"
+	//Query all the posts which are smushed "wp-smpro-is-smushed"
 	$args = array(
 		'fields'         => 'ids',
 		'post_type'      => 'attachment',
