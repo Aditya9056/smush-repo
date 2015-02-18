@@ -361,7 +361,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function ui() {
 
 			//Get dashboard API Key
-			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$wpmudev_apikey = WPMUDEV_APIKEY;
+			} else {
+				$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+			}
 
 			$class = $this->api_connected ? ' connected' : ' waiting';
 			$text  = $this->api_connected ? __( 'API Connected', WP_SMPRO_DOMAIN ) : __( 'API Not Connected', WP_SMPRO_DOMAIN );
@@ -601,10 +605,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					if ( filter_var( $_POST[ WP_SMPRO_PREFIX . 'notify-at' ], FILTER_VALIDATE_EMAIL ) ) {
 						//save option
 						update_option( WP_SMPRO_PREFIX . 'notify-at', $_POST[ WP_SMPRO_PREFIX . 'notify-at' ] );
-					}else{
+					} else {
 						?>
 						<div class="error">
-							<p><?php _e( 'Invalid email address.', WP_SMPRO_DOMAIN ); ?></p>
+						<p><?php _e( 'Invalid email address.', WP_SMPRO_DOMAIN ); ?></p>
 						</div><?php
 					}
 				} else {
@@ -996,8 +1000,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function set_api_status() {
 			global $log;
 
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$wpmudev_apikey = WPMUDEV_APIKEY;
+			} else {
+				$wpmudev_apikey = get_site_option( 'wpmudev_apikey', false );
+			}
+
 			//If we don't have api key
-			if ( ! get_site_option( 'wpmudev_apikey', false ) ) {
+			if ( ! $wpmudev_apikey ) {
 				update_option( 'api_connected', false );
 
 				return false;

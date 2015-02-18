@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WP Smush Pro package.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Smush Pro 1.0.2\n"
+"Project-Id-Version: WP Smush Pro 1.0.3\n"
 "Report-Msgid-Bugs-To: https://premium.wpmudev.org/forums/"
 "POT-Creation-Date: 2015-02-18 06:07:58+00:00\n"
 "MIME-Version: 1.0\n"

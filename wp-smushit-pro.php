@@ -4,7 +4,7 @@ Plugin Name: WP Smush Pro
 Plugin URI: http://premium.wpmudev.org/projects/wp-smush-pro/
 Description: Reduce image file sizes and improve performance using the premium WPMU DEV smushing API within WordPress.
 Author: WPMU DEV
-Version: 1.0.2
+Version: 1.0.3
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit-pro
 WDP ID: 912164
@@ -48,7 +48,7 @@ if ( ! function_exists( 'download_url' ) ) {
 /**
  * The version for enqueueing , etc.
  */
-define( 'WP_SMPRO_VERSION', '1.0.2' );
+define( 'WP_SMPRO_VERSION', '1.0.3' );
 
 /**
  * The plugin's path for easy access to files.
@@ -128,7 +128,11 @@ add_action( 'admin_notices', 'wp_smpro_notice' );
 function wp_smpro_notice() {
 	global $WPMUDEV_Dashboard_Notice3, $admin_page_suffix;
 	//WPMU API Key
-	$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+	if ( defined( 'WPMUDEV_APIKEY' ) ) {
+		$wpmudev_apikey = WPMUDEV_APIKEY;
+	} else {
+		$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+	}
 
 	$plugin_path = WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php';
 
@@ -268,7 +272,7 @@ function wp_smush_pro_activation() {
 						$request_id = get_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id', true );
 						if ( ! empty( $request_id ) ) {
 							delete_post_meta( $post_id, WP_SMPRO_PREFIX . '-request-' . $request_id );
-							delete_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id');
+							delete_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id' );
 						}
 					}
 				}
@@ -282,7 +286,7 @@ function wp_smush_pro_activation() {
 				$request_id = get_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id', true );
 				if ( ! empty( $request_id ) ) {
 					delete_post_meta( $post_id, WP_SMPRO_PREFIX . '-request-' . $request_id );
-					delete_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id');
+					delete_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id' );
 				}
 			}
 		}

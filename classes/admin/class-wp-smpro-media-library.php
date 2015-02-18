@@ -25,7 +25,11 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		public function __construct() {
 
 			// get the DEV api key
-			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$wpmudev_apikey = WPMUDEV_APIKEY;
+			} else {
+				$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+			}
 
 			// add the admin option screens
 			add_action( 'admin_init', array( $this, 'admin_init' ) );

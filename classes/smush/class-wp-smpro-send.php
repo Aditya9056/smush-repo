@@ -106,8 +106,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				die();
 			}
 			// default value
-			$notify_at = get_option( WP_SMPRO_PREFIX . 'notify-at' );
-			$notify_at = ! empty( $notify_at ) ? $notify_at : get_option( 'admin_email' );
+			$notify_at                             = get_option( WP_SMPRO_PREFIX . 'notify-at' );
+			$notify_at                             = ! empty( $notify_at ) ? $notify_at : get_option( 'admin_email' );
 			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], $notify_at ) : __( "Image sent for smushing.", WP_SMPRO_DOMAIN );
 			$response['success']['status_code']    = 1;
 			$response['success']['count']          = $response['updated_count'];
@@ -900,7 +900,13 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 *
 		 */
 		function dev_api_key() {
-			return get_site_option( 'wpmudev_apikey' );
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$wpmudev_apikey = WPMUDEV_APIKEY;
+			} else {
+				$wpmudev_apikey = get_site_option( 'wpmudev_apikey', false );
+			}
+
+			return $wpmudev_apikey;
 		}
 
 		/**
