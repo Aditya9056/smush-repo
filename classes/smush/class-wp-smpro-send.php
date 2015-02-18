@@ -34,7 +34,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				// add automatic smushing on upload
 				add_filter( 'wp_generate_attachment_metadata', array( $this, 'auto_smush' ), 10, 2 );
 			}
-			$this->api_connected = get_transient( 'api_connected' );
+			$this->api_connected = get_option( 'api_connected' );
 		}
 
 		function auto_smush( $metadata, $attachment_id ) {
@@ -105,7 +105,10 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				echo json_encode( $response );
 				die();
 			}
-			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], get_option( 'admin_email' ) ) : __( "Image sent for smushing.", WP_SMPRO_DOMAIN );
+			// default value
+			$notify_at = get_option( WP_SMPRO_PREFIX . 'notify-at' );
+			$notify_at = ! empty( $notify_at ) ? $notify_at : get_option( 'admin_email' );
+			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], $notify_at ) : __( "Image sent for smushing.", WP_SMPRO_DOMAIN );
 			$response['success']['status_code']    = 1;
 			$response['success']['count']          = $response['updated_count'];
 			$response['success']['sent_count']     = count( get_option( WP_SMPRO_PREFIX . 'sent-ids', '' ) ); //Fetch from site option
@@ -529,6 +532,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				return $request_data;
 			}
 
+			$attachments_count = count( $attachments );
 			// loop
 			foreach ( $attachments as $key => &$attachment ) {
 				$image_details = $file_size = '';
@@ -556,7 +560,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 				//If there are no image details, Skip attachment
 				if ( empty( $image_details ) ) {
-					if ( count( $attachments ) == 1 ) {
+					if ( $attachments_count == 1 ) {
 						$log->error( "WpSmpro_Send: add_attachment_data", "Not a image file" . $attachment->attachment_id );
 						$request_data->error = __( "Not a image file", WP_SMPRO_DOMAIN );
 
@@ -638,6 +642,9 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			           // to check if attachment isn't already smushed
 			           . " LEFT JOIN $wpdb->postmeta as m"
 			           . " ON (p.ID= m.post_id AND m.meta_key='" . WP_SMPRO_PREFIX . "is-smushed')"
+			           // to check if attachment isn't already smushed, Single smush Check
+			           . " LEFT JOIN $wpdb->postmeta as ms"
+			           . " ON (p.ID= ms.post_id AND ms.meta_key='" . WP_SMPRO_PREFIX . "request-id')"
 			           . " WHERE"
 			           . " p.post_type='attachment'"
 			           . " AND p.post_mime_type IN " . $allowed_images
@@ -805,9 +812,19 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			// if there was an http error
 			if ( empty( $response['api']['response']['code'] ) || $response['api']['response']['code'] != 200 ) {
+
+				$log->error( 'WpSmProSend::_post', @json_encode( $response ) );
+
+				$response_code = $response['api']['response']['code'];
 				unset( $response, $request_data );
 
-				$response['error'] = __( 'Oh Snap! Seems like Smush Pro server is not reachable, you can try back in some time.', WP_SMPRO_DOMAIN );
+				if ( $response_code == 413 ) {
+
+					$response['error'] = __( "Request Entity Too Large (HTTP Error 413). Try sending lesser number of images, you can use define( 'WP_SMPRO_REQUEST_LIMIT', 500 ) to send less number of images", WP_SMPRO_DOMAIN );
+
+				} else {
+					$response['error'] = __( 'Something went wrong, smush request rejected by server.', WP_SMPRO_DOMAIN );
+				}
 
 				return $response;
 			}
