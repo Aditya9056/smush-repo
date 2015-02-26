@@ -8,6 +8,7 @@ Change Log:
 1.0.3 - 2015-02-03 - Umesh Kumar
 ----------------------------------------------------------------------
 - New:   Added constant 'WPMUDEV_APIKEY', to specify WPMU membership key explicitly
+- Fixed: Plugin activation issue i Multisite
 
 1.0.2 - 2015-02-03 - Umesh Kumar
 ----------------------------------------------------------------------

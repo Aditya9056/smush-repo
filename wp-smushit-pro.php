@@ -233,68 +233,6 @@ function wp_smpro_script() {
 	</script><?php
 }
 
-/**
- * Clean up the useless meta on plugin activation
- */
-function wp_smush_pro_activation() {
-
-	global $wpdb;
-
-	//Query all the posts which are smushed "wp-smpro-is-smushed"
-	$args = array(
-		'fields'         => 'ids',
-		'post_type'      => 'attachment',
-		'post_status'    => 'any',
-		'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
-		'order'          => 'ASC',
-		'posts_per_page' => - 1,
-		'meta_query'     => array(
-			'relation' => 'AND',
-			array(
-				'key'     => WP_SMPRO_PREFIX . 'is-smushed',
-				'compare' => 'EXISTS'
-			),
-			array(
-				'key'     => WP_SMPRO_PREFIX . 'request-id',
-				'compare' => 'EXISTS'
-
-			)
-		),
-	);
-	if ( is_multisite() ) {
-		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
-		if ( $blogs ) {
-			foreach ( $blogs as $blog ) {
-				switch_to_blog( $blog['blog_id'] );
-				$query = new WP_Query( $args );
-				if ( ! empty( $query->posts ) ) {
-					foreach ( $query->posts as $post_id ) {
-						$request_id = get_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id', true );
-						if ( ! empty( $request_id ) ) {
-							delete_post_meta( $post_id, WP_SMPRO_PREFIX . '-request-' . $request_id );
-							delete_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id' );
-						}
-					}
-				}
-			}
-			restore_current_blog();
-		}
-	} else {
-		$query = new WP_Query( $args );
-		if ( ! empty( $query->posts ) ) {
-			foreach ( $query->posts as $post_id ) {
-				$request_id = get_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id', true );
-				if ( ! empty( $request_id ) ) {
-					delete_post_meta( $post_id, WP_SMPRO_PREFIX . '-request-' . $request_id );
-					delete_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id' );
-				}
-			}
-		}
-	}
-}
-
-register_activation_hook( __FILE__, 'wp_smush_pro_activation' );
-
 if ( ! function_exists( 'boolval' ) ) {
 	/**
 	 * Returns the bool value of a variable <PHP5.5
