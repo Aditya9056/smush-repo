@@ -439,7 +439,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( get_option('dismiss_smush_warning') ) return;
 			?>
 			<div class="error">
-				<a href="<?php echo admin_url('index.php'); ?>?dismiss_smush_notice=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
+				<a href="<?php echo admin_url('index.php'); ?>?dismiss_smush_warning=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
 				<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Urgent Smush.it Notice</h3>
 				<p>Yahoo appears to be either discontinuing or not supporting their free Smush.it service - bah!</p>
 				<p>So, WPMU DEV is looking into how we can provide a free service to you that replaces this... but it's going to take some time.</p>
