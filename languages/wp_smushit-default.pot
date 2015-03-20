@@ -92,7 +92,7 @@ msgstr ""
 msgid ""
 "The image MUST publicly accessible server. As the Yahoo! Smush.it service "
 "needs to download the image via a URL the image needs to be on a public "
-"server and not a local local development system. This is a limit of the "
+"server and not a local development system. This is a limit of the "
 "Yahoo! service not this plugin."
 msgstr ""
 
