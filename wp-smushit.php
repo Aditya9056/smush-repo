@@ -4,7 +4,7 @@ Plugin Name: WP Smush.it
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
 Author: WPMU DEV
-Version: 1.7
+Version: 1.7.1
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp_smushit
 */
@@ -39,7 +39,7 @@ if ( ! class_exists( 'WpSmushit' ) ) {
 
 	class WpSmushit {
 
-		var $version = "1.6.6";
+		var $version = "1.7.1";
 
 		/**
 		 * Constructor

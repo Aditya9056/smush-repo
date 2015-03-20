@@ -73,6 +73,9 @@ This will give us a good foundation to start adding some new features!
 
 == Changelog ==
 
+= 1.7.1 =
+* Add depreciated warnings about Smush.it outage
+
 = 1.7 =
 * Use Ajax for Bulk Smush to avoid timeouts and internal server error
 * Other Notice and bug fixes
