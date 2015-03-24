@@ -5,7 +5,7 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
-1.0.3.1 - 2015-03-24 - Umesh Kumar
+1.0.3.1 - 2015-03-25 - Umesh Kumar
 ----------------------------------------------------------------------
 - New:     Suggest manual smushing for smaller bulk request
 - New:     Allow media sorting in list view as per smush status

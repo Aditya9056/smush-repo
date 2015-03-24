@@ -24,8 +24,6 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 */
 		public function __construct() {
 
-			global $current_screen;
-
 			// get the DEV api key
 			if ( defined( 'WPMUDEV_APIKEY' ) ) {
 				$wpmudev_apikey = WPMUDEV_APIKEY;
