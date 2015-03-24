@@ -268,6 +268,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								$d     = floor( $wait_time / 24 );
 								$hours = $wait_time - $d * 24;
 								if ( $d > 0 ) {
+
+									//Adjust long wait times, as actually it doesn't take that long
+									$d = ( $d >= 5 ) ? $d - 1 : $d;
+
 									$d = $d > 1 ? $d . ' days ' : $d . ' day ';
 								} else {
 									$d = '';
