@@ -624,8 +624,8 @@
 				}
 			});
 		};
-		var sendRequest = function (current_element) {
-			buttonProgress(jQuery(current_element), config.msgs.sending);
+		var sendRequest = function (thisObject) {
+			buttonProgress( thisObject, config.msgs.sending);
 
 			//Remove Selected image div if there
 			jQuery('#select-bulk').remove();
@@ -635,7 +635,7 @@
 				send(false);
 			} else {
 				// get the row
-				var $nearest_tr = jQuery(current_element).closest('tr').first();
+				var $nearest_tr = thisObject.closest('tr').first();
 
 				if ($nearest_tr.length !== 0) {
 					// get the row's DOM id
@@ -643,7 +643,7 @@
 					// get the attachment id from DOM id
 					var $id = $elem_id.replace(/[^0-9\.]+/g, '');
 				} else {
-					var $id = jQuery(current_element).parents().eq(5).data('id');
+					var $id = thisObject.parents().eq(5).data('id');
 				}
 
 				send($id);
@@ -656,6 +656,7 @@
 		elem.on('click', config.sendButton, function (e) {
 			// prevent the default action
 			e.preventDefault();
+			var thisObj = jQuery(this);
 			//remove all smush notices
 			jQuery('.smush-notices').remove();
 			//Check if unsmushed image count is lesser than 20, suggest to send manual smush requests
@@ -669,11 +670,11 @@
 						closeOnConfirm: true
 
 					}, function () {
-						sendRequest(config.sendButton);
+						sendRequest(thisObj);
 					}
 				);
 			} else {
-				sendRequest(config.sendButton);
+				sendRequest(thisObj);
 			}
 
 
