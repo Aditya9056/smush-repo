@@ -359,6 +359,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 					//used in media library for showing button again
 					update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-id', $request_id );
+					update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'is-smushed', 0 );
 
 					$updated = boolval( update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-' . $request_id, $smush_sent ) );
 				}
@@ -626,8 +627,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// figure if we need to get data for specific ids
 			$where_id_clause = $this->where_id_clause( $attachment_id );
 
-			// so that we don't include the ids already sent
-			$existing_clause = $this->existing_clause( $attachment_id );
 			$allowed_images  = "( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' )";
 
 			// get the attachment id, attachment metadata and full size's path
@@ -650,8 +649,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			           . " AND p.post_mime_type IN " . $allowed_images
 			           . " AND ( m . meta_value = '0' OR m . post_id IS null)"
 			           . $where_id_clause
-			           . $existing_clause
-			           . " ORDER BY p . post_date ASC"
+			           . " ORDER BY p . post_date DESC"
 			           // get only 100 at a time
 			           . " LIMIT " . WP_SMPRO_REQUEST_LIMIT;
 			$results = $wpdb->get_results( $sql );
