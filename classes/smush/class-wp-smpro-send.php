@@ -138,7 +138,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			//Check for single smush limit
 
-			if ( count( $attachment_id ) == 1 ) {
+			if ( $attachment_id && count( $attachment_id ) == 1 ) {
 				if ( $wp_version < '3.9' ) {
 					$meta_query =
 						array(
@@ -627,7 +627,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// figure if we need to get data for specific ids
 			$where_id_clause = $this->where_id_clause( $attachment_id );
 
-			$allowed_images  = "( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' )";
+			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' )";
 
 			// get the attachment id, attachment metadata and full size's path
 			$sql     = "SELECT p.ID as attachment_id, p.post_mime_type as type, md.meta_value as metadata, mp.meta_value as metapath"

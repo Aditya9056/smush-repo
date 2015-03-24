@@ -624,17 +624,8 @@
 				}
 			});
 		};
-
-		init();
-
-		//Handle button clicks and call respective functions
-		elem.on('click', config.sendButton, function (e) {
-			// prevent the default action
-			e.preventDefault();
-			//remove all smush notices
-			jQuery('.smush-notices').remove();
-
-			buttonProgress($(this), config.msgs.sending);
+		var sendRequest = function (current_element) {
+			buttonProgress(jQuery(current_element), config.msgs.sending);
 
 			//Remove Selected image div if there
 			jQuery('#select-bulk').remove();
@@ -644,7 +635,7 @@
 				send(false);
 			} else {
 				// get the row
-				var $nearest_tr = $(this).closest('tr').first();
+				var $nearest_tr = jQuery(current_element).closest('tr').first();
 
 				if ($nearest_tr.length !== 0) {
 					// get the row's DOM id
@@ -652,10 +643,37 @@
 					// get the attachment id from DOM id
 					var $id = $elem_id.replace(/[^0-9\.]+/g, '');
 				} else {
-					var $id = jQuery(this).parents().eq(5).data('id');
+					var $id = jQuery(current_element).parents().eq(5).data('id');
 				}
 
 				send($id);
+			}
+		};
+
+		init();
+
+		//Handle button clicks and call respective functions
+		elem.on('click', config.sendButton, function (e) {
+			// prevent the default action
+			e.preventDefault();
+			//remove all smush notices
+			jQuery('.smush-notices').remove();
+			//Check if unsmushed image count is lesser than 20, suggest to send manual smush requests
+			if (( wp_smpro_counts.total - wp_smpro_counts.smushed ) <= 30) {
+				swal({
+						title: wp_smpro_msgs.prompt_manual,
+						type: "warning",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: wp_smpro_msgs.continue,
+						closeOnConfirm: true
+
+					}, function () {
+						sendRequest(config.sendButton);
+					}
+				);
+			} else {
+				sendRequest(config.sendButton);
 			}
 
 

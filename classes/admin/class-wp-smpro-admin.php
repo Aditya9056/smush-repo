@@ -197,7 +197,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				'no_leave'        => __( 'Images are being fetched from the API. If you leave this screen, the fetching will pause until you return again.', WP_SMPRO_DOMAIN ),
 				'confirm'         => __( 'You really want to remove the bulk request?', WP_SMPRO_DOMAIN ),
 				'confirm_button'  => __( 'Just do it', WP_SMPRO_DOMAIN ),
-				'reset_success'   => __( 'Make sure to send another bulk smush', WP_SMPRO_DOMAIN )
+				'reset_success'   => __( 'Make sure to send another bulk smush', WP_SMPRO_DOMAIN ),
+				'prompt_manual'   => __( "As you're processing 30 or less images it would be quicker if you Smush individually or you can continue sending the Bulk request", WP_SMPRO_DOMAIN ),
+				'continue'        => __( 'Continue', WP_SMPRO_DOMAIN )
 			);
 
 			wp_localize_script( 'wp-smpro-queue', 'wp_smpro_msgs', $wp_smpro_msgs );
