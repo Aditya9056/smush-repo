@@ -182,33 +182,6 @@ function wp_smpro_notice() {
 		</p>
 		</div><?php
 	}
-	if ( ! current_user_can( 'edit_others_posts' ) ) {
-		return;
-	}
-
-	if ( isset( $_GET['page'] ) && 'wp-smushit-bulk' == $_GET['page'] ) {
-		return;
-	}
-
-	if ( isset( $_GET['dismiss_smush_pro_notice'] ) ) {
-		update_option( 'dismiss_smush_pro_notice', 1 );
-	}
-
-	if ( get_option( 'dismiss_smush_pro_notice' ) ) {
-		return;
-	}
-	?>
-	<div class="error">
-		<a href="<?php echo admin_url( 'index.php' ); ?>?dismiss_smush_pro_notice=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
-
-		<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Notice - WP Smush Pro</h3>
-
-		<p> Due to Yahoo seemingly discontinuing their free Smush.it service we have had an unprecedented spike in
-			demand, we are working to bring down wait times as quickly as possible,</p>
-
-		<p> But we do guarantee that your images will be well and truly smushed eventually!</p>
-	</div>
-<?php
 }
 
 //Handle plugin activation request

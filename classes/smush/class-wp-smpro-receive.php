@@ -254,6 +254,8 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 						$response_body = json_decode( $response_body );
 						if ( ! empty( $response_body->message ) ) {
 							update_option( WP_SMPRO_PREFIX . 'request_status', $response_body->message );
+							$smush_notice = '<p><b>' . __( 'Notice - ', WP_SMPRO_DOMAIN ) . '</b>' . __( 'Due to Yahoo seemingly discontinuing their free Smush.it service we have had an unprecedented spike in
+		demand, we are working to bring down wait times as quickly as possible', WP_SMPRO_DOMAIN ) . ', But we do guarantee that your images will be well and truly smushed eventually!</p>';
 							if ( $response_body->message == 'queue' ) {
 								if ( $response_body->pending_requests == 0 ) {
 									$data['message'] = __( 'The smushing elves are busy, You are first in the queue.', WP_SMPRO_DOMAIN );
@@ -289,6 +291,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								}
 
 								$data['message'] = sprintf( $data['message'], $ordinal_suffix, $time );
+								if ( $response_body->pending_requests > 10 ) {
+									$data['message'] .= $smush_notice;
+								}
 
 								unset( $d, $hours, $wait_time, $ordinal_suffix );
 
