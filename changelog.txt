@@ -5,11 +5,12 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
-1.0.3.1 - 2015-03-25 - Umesh Kumar
+1.0.3.1 - 2015-03-26 - Umesh Kumar
 ----------------------------------------------------------------------
 - New:     Suggest manual smushing for smaller bulk request
 - New:     Allow media sorting in list view as per smush status
 - Updated: Bulk smush query
+- Updated: Wait time estimation
 
 1.0.3 - 2015-02-27 - Umesh Kumar
 ----------------------------------------------------------------------
