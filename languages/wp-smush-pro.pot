@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP Smush Pro 1.0.3.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wp-smush-pro\n"
-"POT-Creation-Date: 2015-03-24 20:40:58+00:00\n"
+"POT-Creation-Date: 2015-03-25 22:13:06+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -429,31 +429,41 @@ msgstr ""
 msgid "Bulk request not found"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:259
-msgid "The smushing elves are busy, You are first in the queue."
+#: classes/smush/class-wp-smpro-receive.php:257
+msgid "Notice - "
+msgstr ""
+
+#: classes/smush/class-wp-smpro-receive.php:257
+msgid ""
+"Due to Yahoo seemingly discontinuing their free Smush.it service we have had an unprecedented spike in\n"
+"\t\tdemand, we are working to bring down wait times as quickly as possible"
 msgstr ""
 
 #: classes/smush/class-wp-smpro-receive.php:261
+msgid "The smushing elves are busy, You are first in the queue."
+msgstr ""
+
+#: classes/smush/class-wp-smpro-receive.php:263
 msgid "The smushing elves are busy, You are %s in the queue. <br /> Estimated wait time: %s"
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:292
+#: classes/smush/class-wp-smpro-receive.php:303
 msgid "Woohooo, we are crunching the numbers for you and than it is all done."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:294
+#: classes/smush/class-wp-smpro-receive.php:305
 msgid "Your smush request is being processed."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:295
+#: classes/smush/class-wp-smpro-receive.php:306
 msgid " %d image is remaining."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:295
+#: classes/smush/class-wp-smpro-receive.php:306
 msgid " %d images are remaining."
 msgstr ""
 
-#: classes/smush/class-wp-smpro-receive.php:303
+#: classes/smush/class-wp-smpro-receive.php:314
 msgid "Smush server was unable to access images from your site."
 msgstr ""
 
