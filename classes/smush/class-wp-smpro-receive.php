@@ -77,7 +77,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				if ( ! empty( $smush_sent ) ) {
 					//Check request token
 					if ( $smush_sent['token'] == $req_data['token'] ) {
-						$insert = $this->save( $attachment_data, array( $attachment_id ), true );
+						$insert = $this->save( $attachment_data, array( $attachment_id ), true, $smush_sent );
 					} else {
 						$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
 						die();
@@ -120,7 +120,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 					unset( $req_data );
 					die();
 				}
-				$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], false );
+				$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], false, $current_requests );
 			}
 			unset( $attachment_data );
 			unset( $req_data );
@@ -135,7 +135,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		}
 
 
-		private function save( $data, $sent_ids, $is_single ) {
+		private function save( $data, $sent_ids, $is_single, $attachment_data ) {
 			if ( empty( $data ) ) {
 				return;
 			}
@@ -158,7 +158,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 				if ( $is_single ) {
 					global $wp_smpro;
-					$wp_smpro->fetch->fetch( $attachment_id, true );
+					$wp_smpro->fetch->fetch( $attachment_id, true, $attachment_data );
 				}
 
 				return $insert;

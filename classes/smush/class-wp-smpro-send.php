@@ -347,6 +347,12 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 						'timestamp' => time()
 					);
 
+					/* If random smush server is assigned, sotre a parameter, to allow compatibility with
+					current smush api, while fetching images */
+					if ( get_site_option( WP_SMPRO_PREFIX . 'smush_server', false ) ) {
+						$smush_sent['smush_server_assigned'] = true;
+					}
+
 					$updated = boolval( update_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
 
 					unset( $current_requests );
@@ -354,8 +360,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 					$smush_sent = array(
 						'token'     => $token,
 						'sent_ids'  => $sent_ids[0],
-						'timestamp' => time()
+						'timestamp' => time(),
 					);
+
+					/* If random smush server is assigned, sotre a parameter, to allow compatibility with
+					current smush api, while fetching images */
+					if ( get_site_option( WP_SMPRO_PREFIX . 'smush_server', false ) ) {
+						$smush_sent['smush_server_assigned'] = true;
+					}
 
 					//used in media library for showing button again
 					update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-id', $request_id );
@@ -737,7 +749,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @param object $row the databse row for each attachment
 		 * @param boolean $anim whether the attachment is an animated gif
 		 *
-		 * @return \stdClass the formatted row
+		 * @return stdClass the formatted row
 		 */
 		private function format_attachment_data( $row, $anim = false, $pathprefix, $file_size ) {
 			global $log;

@@ -233,6 +233,34 @@ function wp_smpro_script() {
 	</script><?php
 }
 
+/**
+ * Adds a server randomly to db
+ */
+function assign_server() {
+	//Assign a Smush Server on Plugin activation, if not already assigned
+	$server_list  = array(
+		'https://smush1.wpmudev.com/',
+		'https://smush2.wpmudev.com/',
+		'https://smush3.wpmudev.com/',
+		'https://smush4.wpmudev.com/',
+		'https://smush5.wpmudev.com/',
+		'https://smush6.wpmudev.com/',
+		'https://smush7.wpmudev.com/',
+		'https://smush8.wpmudev.com/',
+		'https://smush9.wpmudev.com/',
+		'https://smush10.wpmudev.com/'
+	);
+	$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server', false );
+	//If smush server is not set, select a random server
+	if ( ! $smush_server ) {
+		$assigned_server = array_rand( $server_list, 1 );
+		update_site_option( WP_SMPRO_PREFIX . 'smush_server', $server_list[ $assigned_server ] );
+	}
+}
+
+register_activation_hook( __FILE__, 'assign_server' );
+
+
 if ( ! function_exists( 'boolval' ) ) {
 	/**
 	 * Returns the bool value of a variable <PHP5.5

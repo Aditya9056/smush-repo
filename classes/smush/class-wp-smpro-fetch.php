@@ -41,7 +41,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 *
 		 * @return type
 		 */
-		function fetch( $attachment_id = false, $is_single = false ) {
+		function fetch( $attachment_id = false, $is_single = false, $attachment_data = '' ) {
 			global $log;
 			$result = false;
 
@@ -68,7 +68,8 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			//If we have smush data and image is not already optimized, download zip
 			if ( $smush_data && ! empty( $smush_data['stats']['bytes'] ) ) {
 
-				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'] );
+				$smush_server_assigned = !empty( $attachment_data ['smush_server_assigned'] ) ? $attachment_data['smush_server_assigned'] : false;
+				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'], $smush_server_assigned );
 
 				$output['msg'] = sprintf( __( 'Error downloading smushed file for attachment id: %d', WP_SMPRO_DOMAIN ), $attachment_id );
 
@@ -119,8 +120,21 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			}
 		}
 
-		function save_zip( $attachment_id, $url ) {
+		/**
+		 * Downloads the optimised zip
+		 *
+		 * @param $attachment_id
+		 * @param $url
+		 * @param $smush_server_assigned
+		 *
+		 * @return bool|string
+		 */
+		function save_zip( $attachment_id, $url, $smush_server_assigned ) {
 
+			if( $smush_server_assigned ) {
+				$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server', false );
+				$url = $smush_server . $url;
+			}
 			$zip = $this->_get( $url, $attachment_id );
 			if ( ! $zip ) {
 				return false;
