@@ -68,7 +68,13 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			//If we have smush data and image is not already optimized, download zip
 			if ( $smush_data && ! empty( $smush_data['stats']['bytes'] ) ) {
 
-				$smush_server_assigned = !empty( $attachment_data ['smush_server_assigned'] ) ? $attachment_data['smush_server_assigned'] : false;
+				//Works for single requests
+				$smush_server_assigned = ! empty( $attachment_data ['smush_server_assigned'] ) ? $attachment_data['smush_server_assigned'] : false;
+
+				//For Bulk requests
+				if ( ! empty( $smush_data['smush_server_assigned'] ) && ! $smush_server_assigned ) {
+					$smush_server_assigned = $smush_data['smush_server_assigned'];
+				}
 				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'], $smush_server_assigned );
 
 				$output['msg'] = sprintf( __( 'Error downloading smushed file for attachment id: %d', WP_SMPRO_DOMAIN ), $attachment_id );
@@ -131,10 +137,11 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 */
 		function save_zip( $attachment_id, $url, $smush_server_assigned ) {
 
-			if( $smush_server_assigned ) {
+			if ( $smush_server_assigned ) {
 				$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server', false );
-				$url = $smush_server . $url;
+				$url          = $smush_server . $url;
 			}
+
 			$zip = $this->_get( $url, $attachment_id );
 			if ( ! $zip ) {
 				return false;
@@ -327,8 +334,9 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 						update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 					}
 				}
+				$smush_data['smush_server_assigned'] = ! empty( $current_requests[ $bulk_request ] ) && ! empty( $current_requests[ $bulk_request ]['smush_server_assigned'] ) ? $current_requests[ $bulk_request ]['smush_server_assigned'] : false;
 
-				return false;
+				return $smush_data;
 			}
 			$stats          = $smush_data['stats'];
 			$stats['bytes'] = (int) $stats['size_before'] - (int) $stats['size_after'];
@@ -341,7 +349,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				);
 			}
 
-			$smush_data['stats'] = $stats;
+			$smush_data['stats']                 = $stats;
 
 			update_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', $smush_data );
 

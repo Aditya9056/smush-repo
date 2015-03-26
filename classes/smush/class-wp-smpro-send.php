@@ -350,7 +350,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 					/* If random smush server is assigned, sotre a parameter, to allow compatibility with
 					current smush api, while fetching images */
 					if ( get_site_option( WP_SMPRO_PREFIX . 'smush_server', false ) ) {
-						$smush_sent['smush_server_assigned'] = true;
+						$current_requests[ $request_id ]['smush_server_assigned'] = true;
 					}
 
 					$updated = boolval( update_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );

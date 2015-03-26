@@ -120,7 +120,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 					unset( $req_data );
 					die();
 				}
-				$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], false, $current_requests );
+				$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], false, $current_requests[ $request_id ] );
 			}
 			unset( $attachment_data );
 			unset( $req_data );
