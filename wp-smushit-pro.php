@@ -234,10 +234,9 @@ function wp_smpro_script() {
 }
 
 /**
- * Adds a server randomly to db
+ * The list of current api servers
  */
-function assign_server() {
-	//Assign a Smush Server on Plugin activation, if not already assigned
+function wp_smpro_servers() {
 	$server_list  = array(
 		'https://smush1.wpmudev.com/',
 		'https://smush2.wpmudev.com/',
@@ -250,16 +249,9 @@ function assign_server() {
 		'https://smush9.wpmudev.com/',
 		'https://smush10.wpmudev.com/'
 	);
-	$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server', false );
-	//If smush server is not set, select a random server
-	if ( ! $smush_server ) {
-		$assigned_server = array_rand( $server_list, 1 );
-		update_site_option( WP_SMPRO_PREFIX . 'smush_server', $server_list[ $assigned_server ] );
-	}
+
+	return $server_list;
 }
-
-register_activation_hook( __FILE__, 'assign_server' );
-
 
 if ( ! function_exists( 'boolval' ) ) {
 	/**
@@ -277,4 +269,3 @@ if ( ! function_exists( 'boolval' ) ) {
 $wp_smpro = new WpSmPro();
 
 global $wp_smpro;
-
