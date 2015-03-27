@@ -5,9 +5,9 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
-1.0.3.2 - 2015-03-27 - Umesh Kumar
+1.1 - 2015-03-27 - Umesh Kumar
 ----------------------------------------------------------------------
-- New:     Additional Servers added for faster optimisation
+- New:     New API Servers added for faster optimization
 - Fixed:   PHP warning for broken files
 
 1.0.3.1 - 2015-03-26 - Umesh Kumar
