@@ -76,20 +76,22 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		 */
 		private function constants() {
 
+			//Check db for assigned URL
+			$smush_server = $this->get_server();
+
+			//API upload endpoint
 			if ( ! defined( 'WP_SMPRO_SERVICE_URL' ) ) {
-				/**
-				 * The service url.
-				 *
-				 * Can be changed to an alternate url,
-				 * for eg, for self hosted, in future
-				 */
-				define( 'WP_SMPRO_SERVICE_URL', 'https://smush.wpmudev.org/upload/' );
+				define( 'WP_SMPRO_SERVICE_URL', $smush_server . 'upload/' );
 			}
+
+			//API status endpoint
 			if ( ! defined( 'WP_SMPRO_SERVICE_STATUS' ) ) {
-				define( 'WP_SMPRO_SERVICE_STATUS', 'https://smush.wpmudev.org/status/' );
+				define( 'WP_SMPRO_SERVICE_STATUS', $smush_server . 'status/' );
 			}
+
+			//API reset request endpoint
 			if ( ! defined( 'WP_SMPRO_RESET_URL' ) ) {
-				define( 'WP_SMPRO_RESET_URL', 'https://smush.wpmudev.org/reset/' );
+				define( 'WP_SMPRO_RESET_URL', $smush_server . 'reset/' );
 			}
 
 			/**
@@ -222,6 +224,26 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				return $formatted['size'] . ' ' . $formatted['unit'];
 			}
 
+		}
+
+		/**
+		 * Returns the current server being used for smushing
+		 *
+		 * @return string API URL
+		 */
+		function get_server() {
+			//Check db for assigned URL
+			$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server', false );
+
+			//select one at random if not stored already
+			if ( empty( $smush_server ) ) {
+				$server_list = wp_smpro_servers();
+				$assigned_server = array_rand( $server_list, 1 );
+				$smush_server = $server_list[ $assigned_server ];
+				update_site_option( WP_SMPRO_PREFIX . 'smush_server', $smush_server );
+			}
+
+			return $smush_server;
 		}
 
 	}

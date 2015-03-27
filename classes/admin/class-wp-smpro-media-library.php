@@ -25,7 +25,11 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		public function __construct() {
 
 			// get the DEV api key
-			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$wpmudev_apikey = WPMUDEV_APIKEY;
+			} else {
+				$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+			}
 
 			// add the admin option screens
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
@@ -34,13 +38,17 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			if ( ! empty( $wpmudev_apikey ) ) {
 				// add extra columns for smushing to media lists
 				add_filter( 'manage_media_columns', array( $this, 'columns' ) );
-				add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
+
+				//Make the olumn sortable
+				add_filter( 'manage_upload_sortable_columns', array( $this, 'sortable_smush' ), 10, 2 );
+				//Manage column sorting
+				add_action( 'pre_get_posts', array( $this, 'smushit_orderby' ) );
+				add_action( 'manage_media_custom_column', array( $this, 'smush_column' ), 10, 2 );
 			}
 
 			$this->current_requests = get_option( WP_SMPRO_PREFIX . 'current-requests', array() );
 			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
 			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
-//			add_filter( 'wp_prepare_attachment_for_js', array( $this, 'insert_image_smush_data' ), '', 3 );
 		}
 
 		/**
@@ -64,7 +72,7 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 		 *
 		 * @return null
 		 */
-		function custom_column( $column_name, $id ) {
+		function smush_column( $column_name, $id ) {
 			$status_txt = '';
 			// if it isn't our column, get out
 			if ( 'smushit' != $column_name ) {
@@ -299,6 +307,50 @@ if ( ! class_exists( 'WpSmProMediaLibrary' ) ) {
 			if ( ! $echo ) {
 				return $text;
 			}
+		}
+
+		/**
+		 * Sort Smush column as per smush status
+		 *
+		 * @param $columns
+		 *
+		 * @return mixed
+		 */
+		function sortable_smush( $columns ) {
+			$columns['smushit'] = __( 'Smush', WP_SMPRO_DOMAIN );
+
+			return $columns;
+		}
+
+		/**
+		 * Orderby query for smush columns
+		 */
+		function smushit_orderby( $query ) {
+
+			global $current_screen, $wpdb;
+
+			//Filter only media screen
+			if ( ! is_admin() || ( !empty( $current_screen) && $current_screen->base != 'upload' ) ) {
+				return;
+			}
+
+			$orderby = $query->get( 'orderby' );
+
+			if ( isset( $orderby ) && 'Smush' == $orderby ) {
+				$query->set( 'meta_query', array(
+					'relation' => 'OR',
+					array(
+						'key'     => WP_SMPRO_PREFIX . 'is-smushed',
+						'compare' => 'EXISTS'
+					),
+					array(
+						'key'     => WP_SMPRO_PREFIX . 'is-smushed',
+						'compare' => 'NOT EXISTS'
+					)
+				) );
+				$query->set( 'orderby', 'meta_value_num' );
+			}
+
 		}
 	}
 

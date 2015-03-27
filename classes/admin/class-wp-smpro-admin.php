@@ -361,7 +361,11 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function ui() {
 
 			//Get dashboard API Key
-			$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$wpmudev_apikey = WPMUDEV_APIKEY;
+			} else {
+				$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+			}
 
 			$class = $this->api_connected ? ' connected' : ' waiting';
 			$text  = $this->api_connected ? __( 'API Connected', WP_SMPRO_DOMAIN ) : __( 'API Not Connected', WP_SMPRO_DOMAIN );
@@ -601,10 +605,10 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					if ( filter_var( $_POST[ WP_SMPRO_PREFIX . 'notify-at' ], FILTER_VALIDATE_EMAIL ) ) {
 						//save option
 						update_option( WP_SMPRO_PREFIX . 'notify-at', $_POST[ WP_SMPRO_PREFIX . 'notify-at' ] );
-					}else{
+					} else {
 						?>
 						<div class="error">
-							<p><?php _e( 'Invalid email address.', WP_SMPRO_DOMAIN ); ?></p>
+						<p><?php _e( 'Invalid email address.', WP_SMPRO_DOMAIN ); ?></p>
 						</div><?php
 					}
 				} else {
@@ -687,10 +691,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					<p>
 						<?php
 						// let the user know that there's an alternative
-						printf(
-							__( 'You can also smush images individually from your <a href="%s">Media Library</a>.', WP_SMPRO_DOMAIN
-							), admin_url( 'upload.php' )
-						);
+						printf( __( 'You can also smush images individually from your <a href="%s">Media Library</a>.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php' ) );
 						?>
 					</p>
 				<?php
@@ -702,8 +703,9 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 				$this->show_notice();
 				// display the appropriate button
 				$this->setup_button();
-				?>
 
+				?>
+				<p class="smush-api-server"><?php printf( __( "API Server: %s", WP_SMPRO_DOMAIN ), parse_url( WP_SMPRO_SERVICE_URL, PHP_URL_HOST ) ); ?></p>
 			</div>
 		<?php
 		}
@@ -996,8 +998,14 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		function set_api_status() {
 			global $log;
 
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$wpmudev_apikey = WPMUDEV_APIKEY;
+			} else {
+				$wpmudev_apikey = get_site_option( 'wpmudev_apikey', false );
+			}
+
 			//If we don't have api key
-			if ( ! get_site_option( 'wpmudev_apikey', false ) ) {
+			if ( ! $wpmudev_apikey ) {
 				update_option( 'api_connected', false );
 
 				return false;
@@ -1483,7 +1491,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 
 			//send a request to API, to reset the request from there too, as we don't want to waste the resources
-			$response = $wp_smpro->sender->reset_bulk( $bulk_request, $current_requests[ $bulk_request ]['token'] );
+			$response = $wp_smpro->sender->reset_bulk( $bulk_request, $current_requests[ $bulk_request ]['token'], $current_requests[ $bulk_request ] );
 
 			//Server is down or other issue
 			if ( is_wp_error( $response ) || $response['api']['response']['code'] !== 200 ) {
@@ -1522,10 +1530,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		/**
 		 * Creates a reset button for bulk request
 		 */
-		function reset_bulk_button() {
+		function reset_bulk_button( $show = false ) {
 			$reset_nonce = wp_nonce_field( 'reset_bulk_request', 'wp-smpro-reset-nonce', '', false );
 			//Check URL for show_smush arg
 			$class        = ( ! empty( $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset' ] ) && $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset' ] == 'true' ) ? '' : ' class="hide"';
+			if( $show ) {
+				$class = '';
+			}
 			$reset_button = '<a href="#" id="wp-smpro-reset-bulk"' . $class . '>' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</a>';
 
 			return $reset_button . $reset_nonce;

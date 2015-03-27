@@ -10,9 +10,6 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
-if( !defined('WP_SMPRO_RESET_URL')) {
-	define('WP_SMPRO_RESET_URL', 'https://smush.wpmudev.org/reset/');
-}
 global $wpdb;
 /**
  * Sends a reset request to API
@@ -21,9 +18,25 @@ function remove_bulk_request() {
 //Check if there is a pending bulk request, tell api to remove it
 	$bulk_request     = get_option( "wp-smpro-bulk-sent", array() );
 	$current_requests = get_option( "wp-smpro-current-requests", array() );
+
+	//Check db for assigned URL
+	$smush_server = get_site_option( 'wp-smpro-smush_server', false );
+
+	if ( empty( $smush_server ) ) {
+		$smush_server = 'https://smush.wpmudev.org/';
+	}
+
+	if ( ! defined( 'WP_SMPRO_RESET_URL' ) ) {
+		define( 'WP_SMPRO_RESET_URL', $smush_server . 'reset/' );
+	}
+
 	if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
-		$request_data               = array();
-		$request_data['api_key']    = get_site_option( 'wpmudev_apikey' );
+		$request_data = array();
+		if ( defined( 'WPMUDEV_APIKEY' ) ) {
+			$request_data['api_key'] = WPMUDEV_APIKEY;
+		} else {
+			$request_data['api_key'] = get_site_option( 'wpmudev_apikey' );
+		}
 		$request_data['token']      = $current_requests[ $bulk_request ]['token'];
 		$request_data['request_id'] = $bulk_request;
 
@@ -42,6 +55,7 @@ function remove_bulk_request() {
 		wp_remote_post( WP_SMPRO_RESET_URL, $req_args );
 	}
 }
+
 if ( is_multisite() ) {
 	$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
 	if ( $blogs ) {
