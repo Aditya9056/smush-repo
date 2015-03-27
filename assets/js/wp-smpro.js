@@ -625,7 +625,7 @@
 			});
 		};
 		var sendRequest = function (thisObject) {
-			buttonProgress( thisObject, config.msgs.sending);
+			buttonProgress(thisObject, config.msgs.sending);
 
 			//Remove Selected image div if there
 			jQuery('#select-bulk').remove();
@@ -659,24 +659,8 @@
 			var thisObj = jQuery(this);
 			//remove all smush notices
 			jQuery('.smush-notices').remove();
-			//Check if unsmushed image count is lesser than 20, suggest to send manual smush requests
-			if (( wp_smpro_counts.total - wp_smpro_counts.smushed ) <= 30) {
-				swal({
-						title: wp_smpro_msgs.prompt_manual,
-						type: "warning",
-						showCancelButton: true,
-						confirmButtonColor: "#DD6B55",
-						confirmButtonText: wp_smpro_msgs.continue,
-						closeOnConfirm: true
 
-					}, function () {
-						sendRequest(thisObj);
-					}
-				);
-			} else {
-				sendRequest(thisObj);
-			}
-
+			sendRequest(thisObj);
 
 			return;
 
