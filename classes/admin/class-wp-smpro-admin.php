@@ -1497,7 +1497,7 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 			}
 
 			//send a request to API, to reset the request from there too, as we don't want to waste the resources
-			$response = $wp_smpro->sender->reset_bulk( $bulk_request, $current_requests[ $bulk_request ]['token'] );
+			$response = $wp_smpro->sender->reset_bulk( $bulk_request, $current_requests[ $bulk_request ]['token'], $current_requests[ $bulk_request ] );
 
 			//Server is down or other issue
 			if ( is_wp_error( $response ) || $response['api']['response']['code'] !== 200 ) {
@@ -1536,10 +1536,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		/**
 		 * Creates a reset button for bulk request
 		 */
-		function reset_bulk_button() {
+		function reset_bulk_button( $show = false ) {
 			$reset_nonce = wp_nonce_field( 'reset_bulk_request', 'wp-smpro-reset-nonce', '', false );
 			//Check URL for show_smush arg
 			$class        = ( ! empty( $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset' ] ) && $_REQUEST[ WP_SMPRO_PREFIX . 'allow_reset' ] == 'true' ) ? '' : ' class="hide"';
+			if( $show ) {
+				$class = '';
+			}
 			$reset_button = '<a href="#" id="wp-smpro-reset-bulk"' . $class . '>' . __( 'Reset bulk request', WP_SMPRO_PREFIX ) . '</a>';
 
 			return $reset_button . $reset_nonce;

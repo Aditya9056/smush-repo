@@ -10,9 +10,6 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
-if ( ! defined( 'WP_SMPRO_RESET_URL' ) ) {
-	define( 'WP_SMPRO_RESET_URL', 'https://smush.wpmudev.org/reset/' );
-}
 global $wpdb;
 /**
  * Sends a reset request to API
@@ -21,6 +18,20 @@ function remove_bulk_request() {
 //Check if there is a pending bulk request, tell api to remove it
 	$bulk_request     = get_option( "wp-smpro-bulk-sent", array() );
 	$current_requests = get_option( "wp-smpro-current-requests", array() );
+
+	//Check db for assigned URL
+	$smush_server = get_site_option( 'wp-smpro-smush_server', false );
+
+	if ( ! defined( 'WP_SMPRO_RESET_URL' ) ) {
+		//If there is no server
+		if ( ! empty( $smush_server ) ) {
+			$api_reset_url = $smush_server . 'reset/';
+		} else {
+			$api_reset_url = 'https://smush.wpmudev.org/reset/';
+		}
+		define( 'WP_SMPRO_RESET_URL', $api_reset_url );
+	}
+
 	if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
 		$request_data = array();
 		if ( defined( 'WPMUDEV_APIKEY' ) ) {

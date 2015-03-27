@@ -216,7 +216,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 		function check_smush_status() {
 
-			global $log;
+			global $log, $wp_smpro;
 
 			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
@@ -236,26 +236,46 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			//if there is no sent id or images are not smushed yet
 			if ( empty( $sent_ids[ $bulk_request ] ) || empty( $current_requests[ $bulk_request ]['received'] ) ) {
 				//Query Server for status
-				$req_args = array(
+				$req_args   = array(
 					'user-agent' => WP_SMPRO_USER_AGENT,
 					'referrer'   => WP_SMPRO_REFRER,
 					'timeout'    => WP_SMPRO_TIMEOUT,
 					'sslverify'  => false
 				);
-				$url      = add_query_arg( array( 'id' => $bulk_request ), WP_SMPRO_SERVICE_STATUS );
+				$status_url = WP_SMPRO_SERVICE_STATUS;
+
+				//If smush server assigned is set use the new server url for request status, otherwise old url
+				if ( ! empty ( $current_requests[ $bulk_request ] ) && empty( $current_requests[ $bulk_request ]['smush_server_assigned'] ) ) {
+					$status_url = 'https://smush.wpmudev.org/status/';
+				}
+
+				$url = add_query_arg( array( 'id' => $bulk_request ), $status_url );
 				// make the post request and return the response
 				$response = wp_remote_get( $url, $req_args );
 				if ( ! $response || is_wp_error( $response ) ) {
 					$log->error( 'WpSmproReceive: check_smush_status', 'Error while querying request status from server.' );
 				} else {
-					$data          = array();
+					$data = array();
+
+					//Get reset link
+					$cancel_link = $wp_smpro->admin->reset_bulk_button( true );
+
+					//Get bulk request status from server
 					$response_body = wp_remote_retrieve_body( $response );
+
 					if ( ! empty( $response_body ) ) {
 						$response_body = json_decode( $response_body );
+
 						if ( ! empty( $response_body->message ) ) {
 							update_option( WP_SMPRO_PREFIX . 'request_status', $response_body->message );
+
+							//Performance slow and upcoming additional server notice
 							$smush_notice = '<p><b>' . __( 'Notice - ', WP_SMPRO_DOMAIN ) . '</b>' . __( 'Due to Yahoo seemingly discontinuing their free Smush.it service we have had an unprecedented spike in
 		demand, we are working to bring down wait times as quickly as possible', WP_SMPRO_DOMAIN ) . ', But we do guarantee that your images will be well and truly smushed eventually!</p>';
+
+							//Cancel smush notice, for long queue number
+							$cancel_smush = '<p>' . __( 'Taking too long? Click ', WP_SMPRO_DOMAIN ) . $cancel_link . __( ', to cancel this request and try it again on our new super fast API', WP_SMPRO_DOMAIN ) . '</p>';
+
 							if ( $response_body->message == 'queue' ) {
 								if ( $response_body->pending_requests == 0 ) {
 									$data['message'] = __( 'The smushing elves are busy, You are first in the queue.', WP_SMPRO_DOMAIN );
@@ -291,8 +311,12 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								}
 
 								$data['message'] = sprintf( $data['message'], $ordinal_suffix, $time );
-								if ( $response_body->pending_requests > 10 ) {
-									$data['message'] .= $smush_notice;
+
+								//If number of pending requests is greater than 50 and Check if current bulk request is on old server
+								$smush_server_assigned = ! empty( $current_requests[ $bulk_request ] ) && ! empty( $current_requests[ $bulk_request ]['smush_server_assigned'] ) ? $current_requests[ $bulk_request ]['smush_server_assigned'] : '';
+
+								if ( $response_body->pending_requests > 50 && ! $smush_server_assigned ) {
+									$data['message'] .= $cancel_smush;
 								}
 
 								unset( $d, $hours, $wait_time, $ordinal_suffix );

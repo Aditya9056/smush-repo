@@ -1009,7 +1009,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		/**
 		 * Send a request to reset the bulk request
 		 */
-		function reset_bulk( $request_id, $token ) {
+		function reset_bulk( $request_id, $token, $bulk_request_details ) {
 			$request_data               = array();
 			$request_data['api_key']    = $this->dev_api_key();
 			$request_data['token']      = $token;
@@ -1025,9 +1025,17 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				'timeout'    => WP_SMPRO_TIMEOUT,
 				'sslverify'  => false
 			);
+			//Reset URL, check if the request contains smush server assigned, and decide URL on bais of that
+			$reset_url = WP_SMPRO_RESET_URL;
+
+			//If smush server assigned is set use the new server url for request status, otherwise old url
+			if ( ! empty ( $bulk_request_details ) && empty( $bulk_request_details['smush_server_assigned'] ) ) {
+				$reset_url = 'https://smush.wpmudev.org/reset/';
+			}
+
 
 			// make the post request and return the response
-			$response['api'] = wp_remote_post( WP_SMPRO_RESET_URL, $req_args );
+			$response['api'] = wp_remote_post( $reset_url, $req_args );
 
 			return $response;
 		}
