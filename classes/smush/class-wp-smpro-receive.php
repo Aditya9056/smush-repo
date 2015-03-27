@@ -271,10 +271,10 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 							//Performance slow and upcoming additional server notice
 							$smush_notice = '<p><b>' . __( 'Notice - ', WP_SMPRO_DOMAIN ) . '</b>' . __( 'Due to Yahoo seemingly discontinuing their free Smush.it service we have had an unprecedented spike in
-		demand, we are working to bring down wait times as quickly as possible', WP_SMPRO_DOMAIN ) . ', But we do guarantee that your images will be well and truly smushed eventually!</p>';
+		demand, we are working to bring down wait times as quickly as possible, But we do guarantee that your images will be well and truly smushed eventually!', WP_SMPRO_DOMAIN ) . '</p>';
 
 							//Cancel smush notice, for long queue number
-							$cancel_smush = '<p>' . __( 'Taking too long? Click ', WP_SMPRO_DOMAIN ) . $cancel_link . __( ', to cancel this request and try it again on our new super fast API', WP_SMPRO_DOMAIN ) . '</p>';
+							$cancel_smush = '<p>' . sprintf( __( 'Taking too long? Click %s to cancel this request then try it again on our new super fast API!', WP_SMPRO_DOMAIN ), $cancel_link) . '</p>';
 
 							if ( $response_body->message == 'queue' ) {
 								if ( $response_body->pending_requests == 0 ) {

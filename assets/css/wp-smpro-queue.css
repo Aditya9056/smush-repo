@@ -503,3 +503,8 @@ ul#wp-smpro-selected-images li .img-descr .img-smush-status {
 .smush-api-status {
     width: 50%;
 }
+
+.smush-api-server {
+    float: right;
+    font-size: 80%;
+}
