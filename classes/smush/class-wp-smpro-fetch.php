@@ -311,6 +311,13 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			return $zip;
 		}
 
+		/**
+		 * Update Compression Stats for provided image id
+		 *
+		 * @param $attachment_id
+		 *
+		 * @return mixed
+		 */
 		private function update_smush_data( $attachment_id ) {
 			global $log, $wp_smpro;
 			$attachment_id = intval( $attachment_id );
@@ -318,14 +325,16 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			wp_cache_delete( $attachment_id, 'post_meta' );
 			$smush_data = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', true );
 
+			//Remove it from sent ids, if it's in a bulk request
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+
+			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+
+			$smush_data['smush_server_assigned'] = ! empty( $current_requests[ $bulk_request ] ) && ! empty( $current_requests[ $bulk_request ]['smush_server_assigned'] ) ? $current_requests[ $bulk_request ]['smush_server_assigned'] : false;
+
 			if ( empty( $smush_data ) ) {
 				//no smush data recieved yet
 				$log->error( 'WpSmProFetch: update_smush_data', 'Missing smush data for attachment id' . $attachment_id );
-
-				//Remove it from sent ids, if it's in a bulk request
-				$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
-
-				$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
 				if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
 					$index = array_search( $attachment_id, $current_requests[ $bulk_request ]['sent_ids'] );
@@ -334,7 +343,6 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 						update_option( WP_SMPRO_PREFIX . "current-requests", $current_requests );
 					}
 				}
-				$smush_data['smush_server_assigned'] = ! empty( $current_requests[ $bulk_request ] ) && ! empty( $current_requests[ $bulk_request ]['smush_server_assigned'] ) ? $current_requests[ $bulk_request ]['smush_server_assigned'] : false;
 
 				return $smush_data;
 			}
@@ -349,7 +357,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 				);
 			}
 
-			$smush_data['stats']                 = $stats;
+			$smush_data['stats'] = $stats;
 
 			update_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', $smush_data );
 
