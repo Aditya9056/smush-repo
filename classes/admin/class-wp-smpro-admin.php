@@ -692,11 +692,13 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 					?>
 					<p>
 						<?php
+						$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server' );
+
 						// let the user know that there's an alternative
-						printf(
-							__( 'You can also smush images individually from your <a href="%s">Media Library</a>.', WP_SMPRO_DOMAIN
-							), admin_url( 'upload.php' )
-						);
+						printf( __( 'You can also smush images individually from your <a href="%s">Media Library</a>.', WP_SMPRO_DOMAIN ), admin_url( 'upload.php' ) );
+						if ( ! empty( $smush_server ) ) {
+							printf( __( " Assigned Smush server: %s", WP_SMPRO_DOMAIN ), $smush_server );
+						}
 						?>
 					</p>
 				<?php
