@@ -5,6 +5,11 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
+1.0.3.2 - 2015-03-27 - Umesh Kumar
+----------------------------------------------------------------------
+- New:     Additional Servers added for faster optimisation
+- Fixed:   PHP warning for broken files
+
 1.0.3.1 - 2015-03-26 - Umesh Kumar
 ----------------------------------------------------------------------
 - New:     Suggest manual smushing for smaller bulk request

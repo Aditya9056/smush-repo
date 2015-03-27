@@ -770,11 +770,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( ! empty( $metadata['sizes'] ) ) {
 				// check large
 				foreach ( $metadata['sizes'] as $size_key => $size_data ) {
-					$size = filesize( $pathprefix . '/' . trailingslashit( $request_item->path_prefix ) . $size_data['file'] );
-					if ( ! empty( $file_size ) && $size < 5000000 ) {
-						$filenames[ $size_key ] = $size_data['file'];
-					} else {
-						$log->error( 'Wp_Smpro_Send: format_attachmnet_data', 'File size exceeded the limit for image size: ' . $size_key . ', for attachment ' . $row->attachment_id );
+					$f_path = $pathprefix . '/' . trailingslashit( $request_item->path_prefix ) . $size_data['file'];
+					if ( file_exists( $f_path ) ) {
+						$size = filesize( $f_path );
+						if ( ! empty( $file_size ) && $size < 5000000 ) {
+							$filenames[ $size_key ] = $size_data['file'];
+						} else {
+							$log->error( 'Wp_Smpro_Send: format_attachmnet_data', 'File size exceeded the limit for image size: ' . $size_key . ', for attachment ' . $row->attachment_id );
+						}
 					}
 				}
 			}
