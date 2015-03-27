@@ -257,8 +257,7 @@ function assign_server() {
 		update_site_option( WP_SMPRO_PREFIX . 'smush_server', $server_list[ $assigned_server ] );
 	}
 }
-
-register_activation_hook( __FILE__, 'assign_server' );
+assign_server();
 
 
 if ( ! function_exists( 'boolval' ) ) {

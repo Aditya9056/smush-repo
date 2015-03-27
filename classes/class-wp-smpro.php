@@ -77,38 +77,21 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 		private function constants() {
 
 			//Check db for assigned URL
-			$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server', false );
+			$smush_server = $this->get_server();
 
 			//API upload endpoint
 			if ( ! defined( 'WP_SMPRO_SERVICE_URL' ) ) {
-				if ( ! empty( $smush_server ) ) {
-					$api_upload_url = $smush_server . 'upload/';
-				} else {
-					$api_upload_url = 'https://smush.wpmudev.org/upload/';
-				}
-				define( 'WP_SMPRO_SERVICE_URL', $api_upload_url );
+				define( 'WP_SMPRO_SERVICE_URL', $smush_server . 'upload/' );
 			}
 
 			//API status endpoint
 			if ( ! defined( 'WP_SMPRO_SERVICE_STATUS' ) ) {
-				//If there is no server
-				if ( ! empty( $smush_server ) ) {
-					$api_status_url = $smush_server . 'status/';
-				} else {
-					$api_status_url = 'https://smush.wpmudev.org/status/';
-				}
-				define( 'WP_SMPRO_SERVICE_STATUS', $api_status_url );
+				define( 'WP_SMPRO_SERVICE_STATUS', $smush_server . 'status/' );
 			}
 
 			//API reset request endpoint
 			if ( ! defined( 'WP_SMPRO_RESET_URL' ) ) {
-				//If there is no server
-				if ( ! empty( $smush_server ) ) {
-					$api_reset_url = $smush_server . 'reset/';
-				} else {
-					$api_reset_url = 'https://smush.wpmudev.org/reset/';
-				}
-				define( 'WP_SMPRO_RESET_URL', $api_reset_url );
+				define( 'WP_SMPRO_RESET_URL', $smush_server . 'reset/' );
 			}
 
 			/**
@@ -241,6 +224,22 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 				return $formatted['size'] . ' ' . $formatted['unit'];
 			}
 
+		}
+
+		/**
+		 * Returns the current server being used for smushing
+		 *
+		 * @return string API URL
+		 */
+		function get_server() {
+			//Check db for assigned URL
+			$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server', false );
+
+			if ( empty( $smush_server ) ) {
+				$smush_server = 'https://smush.wpmudev.org/';
+			}
+
+			return $smush_server;
 		}
 
 	}

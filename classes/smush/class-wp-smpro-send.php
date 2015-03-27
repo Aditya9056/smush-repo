@@ -1010,6 +1010,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * Send a request to reset the bulk request
 		 */
 		function reset_bulk( $request_id, $token, $bulk_request_details ) {
+			global $wp_smpro;
 			$request_data               = array();
 			$request_data['api_key']    = $this->dev_api_key();
 			$request_data['token']      = $token;
@@ -1032,7 +1033,6 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( ! empty ( $bulk_request_details ) && empty( $bulk_request_details['smush_server_assigned'] ) ) {
 				$reset_url = 'https://smush.wpmudev.org/reset/';
 			}
-
 
 			// make the post request and return the response
 			$response['api'] = wp_remote_post( $reset_url, $req_args );

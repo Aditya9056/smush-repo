@@ -22,14 +22,12 @@ function remove_bulk_request() {
 	//Check db for assigned URL
 	$smush_server = get_site_option( 'wp-smpro-smush_server', false );
 
+	if ( empty( $smush_server ) ) {
+		$smush_server = 'https://smush.wpmudev.org/';
+	}
+
 	if ( ! defined( 'WP_SMPRO_RESET_URL' ) ) {
-		//If there is no server
-		if ( ! empty( $smush_server ) ) {
-			$api_reset_url = $smush_server . 'reset/';
-		} else {
-			$api_reset_url = 'https://smush.wpmudev.org/reset/';
-		}
-		define( 'WP_SMPRO_RESET_URL', $api_reset_url );
+		define( 'WP_SMPRO_RESET_URL', $smush_server . 'reset/' );
 	}
 
 	if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
