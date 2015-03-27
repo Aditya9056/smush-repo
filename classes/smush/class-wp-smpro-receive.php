@@ -386,7 +386,13 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$dtF     = new DateTime( "@0" );
 			$dtT     = new DateTime( "@$seconds" );
 
-			return $dtF->diff( $dtT )->format( '%a days, %h hours' );
+			//If wait time is atleast 1 hour
+			if( $seconds > 3600 ) {
+				return $dtF->diff( $dtT )->format( '%a days, %h hours' );
+			}else{
+				//return wait time in minutes
+				return $dtF->diff( $dtT )->format( '%i minutes' );
+			}
 		}
 
 	}
