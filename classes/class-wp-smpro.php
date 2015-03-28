@@ -235,8 +235,12 @@ if ( ! class_exists( 'WpSmPro' ) ) {
 			//Check db for assigned URL
 			$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server', false );
 
+			//select one at random if not stored already
 			if ( empty( $smush_server ) ) {
-				$smush_server = 'https://smush.wpmudev.org/';
+				$server_list = wp_smpro_servers();
+				$assigned_server = array_rand( $server_list, 1 );
+				$smush_server = $server_list[ $assigned_server ];
+				update_site_option( WP_SMPRO_PREFIX . 'smush_server', $smush_server );
 			}
 
 			return $smush_server;
