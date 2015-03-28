@@ -71,19 +71,19 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$attachment = new WP_Query( $args );
 			if ( $attachment->post_count == 1 ) {
 				$attachment_id = $attachment->posts[0];
-				if( !empty( $attachment_id ) ) {
-					$smush_sent = get_post_meta($attachment_id, WP_SMPRO_PREFIX . 'request-' . $request_id, true);
+				if ( ! empty( $attachment_id ) ) {
+					$smush_sent = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'request-' . $request_id, true );
 				}
-				if( !empty( $smush_sent ) ) {
+				if ( ! empty( $smush_sent ) ) {
 					//Check request token
-					if( $smush_sent['token'] == $req_data['token'] ) {
-						$insert = $this->save( $attachment_data, array( $attachment_id ), true );
-					}else{
+					if ( $smush_sent['token'] == $req_data['token'] ) {
+						$insert = $this->save( $attachment_data, array( $attachment_id ), true, $smush_sent );
+					} else {
 						$log->error( 'WpSmProReceive: receive', "Smush receive error, Token Mismatch for request " . $request_id );
 						die();
 					}
-				}else{
-					$log->error('WpSmProReceive: receive', "Smush sent data missing for request " . $request_id );
+				} else {
+					$log->error( 'WpSmProReceive: receive', "Smush sent data missing for request " . $request_id );
 					echo json_encode( array( 'status' => 1 ) );
 					die();
 				}
@@ -120,7 +120,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 					unset( $req_data );
 					die();
 				}
-				$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], false );
+				$insert = $this->save( $attachment_data, $current_requests[ $request_id ]['sent_ids'], false, $current_requests[ $request_id ] );
 			}
 			unset( $attachment_data );
 			unset( $req_data );
@@ -135,7 +135,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		}
 
 
-		private function save( $data, $sent_ids, $is_single ) {
+		private function save( $data, $sent_ids, $is_single, $attachment_data ) {
 			if ( empty( $data ) ) {
 				return;
 			}
@@ -158,7 +158,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 				if ( $is_single ) {
 					global $wp_smpro;
-					$wp_smpro->fetch->fetch( $attachment_id, true );
+					$wp_smpro->fetch->fetch( $attachment_id, true, $attachment_data );
 				}
 
 				return $insert;
@@ -216,7 +216,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 
 		function check_smush_status() {
 
-			global $log;
+			global $log, $wp_smpro;
 
 			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
@@ -236,24 +236,46 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			//if there is no sent id or images are not smushed yet
 			if ( empty( $sent_ids[ $bulk_request ] ) || empty( $current_requests[ $bulk_request ]['received'] ) ) {
 				//Query Server for status
-				$req_args = array(
+				$req_args   = array(
 					'user-agent' => WP_SMPRO_USER_AGENT,
 					'referrer'   => WP_SMPRO_REFRER,
 					'timeout'    => WP_SMPRO_TIMEOUT,
 					'sslverify'  => false
 				);
-				$url      = add_query_arg( array( 'id' => $bulk_request ), WP_SMPRO_SERVICE_STATUS );
+				$status_url = WP_SMPRO_SERVICE_STATUS;
+
+				//If smush server assigned is set use the new server url for request status, otherwise old url
+				if ( ! empty ( $current_requests[ $bulk_request ] ) && empty( $current_requests[ $bulk_request ]['smush_server_assigned'] ) ) {
+					$status_url = 'https://smush.wpmudev.org/status/';
+				}
+
+				$url = add_query_arg( array( 'id' => $bulk_request ), $status_url );
 				// make the post request and return the response
 				$response = wp_remote_get( $url, $req_args );
 				if ( ! $response || is_wp_error( $response ) ) {
 					$log->error( 'WpSmproReceive: check_smush_status', 'Error while querying request status from server.' );
 				} else {
-					$data          = array();
+					$data = array();
+
+					//Get reset link
+					$cancel_link = $wp_smpro->admin->reset_bulk_button( true );
+
+					//Get bulk request status from server
 					$response_body = wp_remote_retrieve_body( $response );
+
 					if ( ! empty( $response_body ) ) {
 						$response_body = json_decode( $response_body );
+
 						if ( ! empty( $response_body->message ) ) {
-							update_option(WP_SMPRO_PREFIX . 'request_status', $response_body->message );
+							update_option( WP_SMPRO_PREFIX . 'request_status', $response_body->message );
+
+							//Performance slow and upcoming additional server notice
+							$smush_notice = '<p><b>' . __( 'Notice - ', WP_SMPRO_DOMAIN ) . '</b>' . __( 'Due to Yahoo seemingly discontinuing their free Smush.it service we have had an unprecedented spike in
+		demand, we are working to bring down wait times as quickly as possible, But we do guarantee that your images will be well and truly smushed eventually!', WP_SMPRO_DOMAIN ) . '</p>';
+
+							//Cancel smush notice, for long queue number
+							$cancel_smush = '<p>' . sprintf( __( 'Taking too long? Click %s to cancel this request then try it again on our new super fast API!', WP_SMPRO_DOMAIN ), $cancel_link) . '</p>';
+
 							if ( $response_body->message == 'queue' ) {
 								if ( $response_body->pending_requests == 0 ) {
 									$data['message'] = __( 'The smushing elves are busy, You are first in the queue.', WP_SMPRO_DOMAIN );
@@ -262,23 +284,40 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								}
 
 								$ordinal_suffix = $this->getOrdinalSuffix( $response_body->pending_requests + 1 );
-								//n*1 hour for each request, plus an additional hour for margin
-								$wait_time      = ( $response_body->pending_requests * 1 ) + 1;
+								if ( ! empty( $response_body->wait_time ) ) {
+									$time = $this->secondsToTime( $response_body->wait_time );
 
-								$d     = floor( $wait_time / 24 );
-								$hours = $wait_time - $d * 24;
-								if ( $d > 0 ) {
-									$d = $d > 1 ? $d . ' days ' : $d . ' day ';
 								} else {
-									$d = '';
-								}
-								if ( $hours > 0 ) {
-									$hours = $hours > 1 ? $hours . ' hours' : $hours . ' hour';
-								} else {
-									$hours = '';
+									//n*1 hour for each request, plus an additional hour for margin
+									$wait_time = ( $response_body->pending_requests * 0.8 ) + 1;
+
+									$d     = floor( $wait_time / 24 );
+									$hours = $wait_time - $d * 24;
+									if ( $d > 0 ) {
+
+										//Adjust long wait times, as actually it doesn't take that long
+										$d = ( $d >= 5 ) ? $d - 1 : $d;
+
+										$d = $d > 1 ? $d . ' days ' : $d . ' day ';
+									} else {
+										$d = '';
+									}
+									if ( $hours > 0 ) {
+										$hours = $hours > 1 ? $hours . ' hours' : $hours . ' hour';
+									} else {
+										$hours = '';
+									}
+									$time = $d . $hours;
 								}
 
-								$data['message'] = sprintf( $data['message'], $ordinal_suffix, $d . $hours );
+								$data['message'] = sprintf( $data['message'], $ordinal_suffix, $time );
+
+								//If number of pending requests is greater than 50 and Check if current bulk request is on old server
+								$smush_server_assigned = ! empty( $current_requests[ $bulk_request ] ) && ! empty( $current_requests[ $bulk_request ]['smush_server_assigned'] ) ? $current_requests[ $bulk_request ]['smush_server_assigned'] : '';
+
+								if ( $response_body->pending_requests > 50 && ! $smush_server_assigned ) {
+									$data['message'] .= $cancel_smush;
+								}
 
 								unset( $d, $hours, $wait_time, $ordinal_suffix );
 
@@ -333,6 +372,27 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			}
 
 			return $abbreviation;
+		}
+
+		/**
+		 * Convert seconds to Day, hour month
+		 *
+		 * @param $seconds
+		 *
+		 * @return string
+		 */
+		function secondsToTime( $seconds ) {
+			$seconds = intval( $seconds );
+			$dtF     = new DateTime( "@0" );
+			$dtT     = new DateTime( "@$seconds" );
+
+			//If wait time is atleast 1 hour
+			if( $seconds > 3600 ) {
+				return $dtF->diff( $dtT )->format( '%a days, %h hours' );
+			}else{
+				//return wait time in minutes
+				return $dtF->diff( $dtT )->format( '%i minutes' );
+			}
 		}
 
 	}

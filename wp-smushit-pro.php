@@ -4,7 +4,7 @@ Plugin Name: WP Smush Pro
 Plugin URI: http://premium.wpmudev.org/projects/wp-smush-pro/
 Description: Reduce image file sizes and improve performance using the premium WPMU DEV smushing API within WordPress.
 Author: WPMU DEV
-Version: 1.0.2
+Version: 1.1
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit-pro
 WDP ID: 912164
@@ -48,7 +48,7 @@ if ( ! function_exists( 'download_url' ) ) {
 /**
  * The version for enqueueing , etc.
  */
-define( 'WP_SMPRO_VERSION', '1.0.2' );
+define( 'WP_SMPRO_VERSION', '1.1' );
 
 /**
  * The plugin's path for easy access to files.
@@ -128,7 +128,11 @@ add_action( 'admin_notices', 'wp_smpro_notice' );
 function wp_smpro_notice() {
 	global $WPMUDEV_Dashboard_Notice3, $admin_page_suffix;
 	//WPMU API Key
-	$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+	if ( defined( 'WPMUDEV_APIKEY' ) ) {
+		$wpmudev_apikey = WPMUDEV_APIKEY;
+	} else {
+		$wpmudev_apikey = get_site_option( 'wpmudev_apikey' );
+	}
 
 	$plugin_path = WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php';
 
@@ -230,66 +234,24 @@ function wp_smpro_script() {
 }
 
 /**
- * Clean up the useless meta on plugin activation
+ * The list of current api servers
  */
-function wp_smush_pro_activation() {
-
-	global $wpdb;
-
-	//Query all the posts which are smushed "wp-smpro-is-smushed"
-	$args = array(
-		'fields'         => 'ids',
-		'post_type'      => 'attachment',
-		'post_status'    => 'any',
-		'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
-		'order'          => 'ASC',
-		'posts_per_page' => - 1,
-		'meta_query'     => array(
-			'relation' => 'AND',
-			array(
-				'key'     => WP_SMPRO_PREFIX . 'is-smushed',
-				'compare' => 'EXISTS'
-			),
-			array(
-				'key'     => WP_SMPRO_PREFIX . 'request-id',
-				'compare' => 'EXISTS'
-
-			)
-		),
+function wp_smpro_servers() {
+	$server_list  = array(
+		'https://smush1.wpmudev.com/',
+		'https://smush2.wpmudev.com/',
+		'https://smush3.wpmudev.com/',
+		'https://smush4.wpmudev.com/',
+		'https://smush5.wpmudev.com/',
+		'https://smush6.wpmudev.com/',
+		'https://smush7.wpmudev.com/',
+		'https://smush8.wpmudev.com/',
+		'https://smush9.wpmudev.com/',
+		'https://smush10.wpmudev.com/'
 	);
-	if ( is_multisite() ) {
-		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
-		if ( $blogs ) {
-			foreach ( $blogs as $blog ) {
-				switch_to_blog( $blog['blog_id'] );
-				$query = new WP_Query( $args );
-				if ( ! empty( $query->posts ) ) {
-					foreach ( $query->posts as $post_id ) {
-						$request_id = get_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id', true );
-						if ( ! empty( $request_id ) ) {
-							delete_post_meta( $post_id, WP_SMPRO_PREFIX . '-request-' . $request_id );
-							delete_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id');
-						}
-					}
-				}
-			}
-			restore_current_blog();
-		}
-	} else {
-		$query = new WP_Query( $args );
-		if ( ! empty( $query->posts ) ) {
-			foreach ( $query->posts as $post_id ) {
-				$request_id = get_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id', true );
-				if ( ! empty( $request_id ) ) {
-					delete_post_meta( $post_id, WP_SMPRO_PREFIX . '-request-' . $request_id );
-					delete_post_meta( $post_id, WP_SMPRO_PREFIX . 'request-id');
-				}
-			}
-		}
-	}
-}
 
-register_activation_hook( __FILE__, 'wp_smush_pro_activation' );
+	return $server_list;
+}
 
 if ( ! function_exists( 'boolval' ) ) {
 	/**
@@ -307,4 +269,3 @@ if ( ! function_exists( 'boolval' ) ) {
 $wp_smpro = new WpSmPro();
 
 global $wp_smpro;
-

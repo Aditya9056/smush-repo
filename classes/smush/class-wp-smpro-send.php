@@ -106,8 +106,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				die();
 			}
 			// default value
-			$notify_at = get_option( WP_SMPRO_PREFIX . 'notify-at' );
-			$notify_at = ! empty( $notify_at ) ? $notify_at : get_option( 'admin_email' );
+			$notify_at                             = get_option( WP_SMPRO_PREFIX . 'notify-at' );
+			$notify_at                             = ! empty( $notify_at ) ? $notify_at : get_option( 'admin_email' );
 			$status_message                        = $attachment_id === false ? sprintf( __( "%d attachments were sent for smushing. You'll be notified by email at %s once bulk smushing has been completed.", WP_SMPRO_DOMAIN ), $response['updated_count'], $notify_at ) : __( "Image sent for smushing.", WP_SMPRO_DOMAIN );
 			$response['success']['status_code']    = 1;
 			$response['success']['count']          = $response['updated_count'];
@@ -138,7 +138,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 
 			//Check for single smush limit
 
-			if ( count( $attachment_id ) == 1 ) {
+			if ( $attachment_id && count( $attachment_id ) == 1 ) {
 				if ( $wp_version < '3.9' ) {
 					$meta_query =
 						array(
@@ -347,6 +347,12 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 						'timestamp' => time()
 					);
 
+					/* If random smush server is assigned, sotre a parameter, to allow compatibility with
+					current smush api, while fetching images */
+					if ( get_site_option( WP_SMPRO_PREFIX . 'smush_server', false ) ) {
+						$current_requests[ $request_id ]['smush_server_assigned'] = true;
+					}
+
 					$updated = boolval( update_option( WP_SMPRO_PREFIX . 'current-requests', $current_requests ) );
 
 					unset( $current_requests );
@@ -354,11 +360,18 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 					$smush_sent = array(
 						'token'     => $token,
 						'sent_ids'  => $sent_ids[0],
-						'timestamp' => time()
+						'timestamp' => time(),
 					);
+
+					/* If random smush server is assigned, sotre a parameter, to allow compatibility with
+					current smush api, while fetching images */
+					if ( get_site_option( WP_SMPRO_PREFIX . 'smush_server', false ) ) {
+						$smush_sent['smush_server_assigned'] = true;
+					}
 
 					//used in media library for showing button again
 					update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-id', $request_id );
+					update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'is-smushed', 0 );
 
 					$updated = boolval( update_post_meta( $sent_ids[0], WP_SMPRO_PREFIX . 'request-' . $request_id, $smush_sent ) );
 				}
@@ -626,9 +639,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			// figure if we need to get data for specific ids
 			$where_id_clause = $this->where_id_clause( $attachment_id );
 
-			// so that we don't include the ids already sent
-			$existing_clause = $this->existing_clause( $attachment_id );
-			$allowed_images  = "( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' )";
+			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' )";
 
 			// get the attachment id, attachment metadata and full size's path
 			$sql     = "SELECT p.ID as attachment_id, p.post_mime_type as type, md.meta_value as metadata, mp.meta_value as metapath"
@@ -650,8 +661,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			           . " AND p.post_mime_type IN " . $allowed_images
 			           . " AND ( m . meta_value = '0' OR m . post_id IS null)"
 			           . $where_id_clause
-			           . $existing_clause
-			           . " ORDER BY p . post_date ASC"
+			           . " ORDER BY p . post_date DESC"
 			           // get only 100 at a time
 			           . " LIMIT " . WP_SMPRO_REQUEST_LIMIT;
 			$results = $wpdb->get_results( $sql );
@@ -739,7 +749,7 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 * @param object $row the databse row for each attachment
 		 * @param boolean $anim whether the attachment is an animated gif
 		 *
-		 * @return \stdClass the formatted row
+		 * @return stdClass the formatted row
 		 */
 		private function format_attachment_data( $row, $anim = false, $pathprefix, $file_size ) {
 			global $log;
@@ -760,11 +770,14 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 			if ( ! empty( $metadata['sizes'] ) ) {
 				// check large
 				foreach ( $metadata['sizes'] as $size_key => $size_data ) {
-					$size = filesize( $pathprefix . '/' . trailingslashit( $request_item->path_prefix ) . $size_data['file'] );
-					if ( ! empty( $file_size ) && $size < 5000000 ) {
-						$filenames[ $size_key ] = $size_data['file'];
-					} else {
-						$log->error( 'Wp_Smpro_Send: format_attachmnet_data', 'File size exceeded the limit for image size: ' . $size_key . ', for attachment ' . $row->attachment_id );
+					$f_path = $pathprefix . '/' . trailingslashit( $request_item->path_prefix ) . $size_data['file'];
+					if ( file_exists( $f_path ) ) {
+						$size = filesize( $f_path );
+						if ( ! empty( $file_size ) && $size < 5000000 ) {
+							$filenames[ $size_key ] = $size_data['file'];
+						} else {
+							$log->error( 'Wp_Smpro_Send: format_attachmnet_data', 'File size exceeded the limit for image size: ' . $size_key . ', for attachment ' . $row->attachment_id );
+						}
 					}
 				}
 			}
@@ -900,7 +913,13 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		 *
 		 */
 		function dev_api_key() {
-			return get_site_option( 'wpmudev_apikey' );
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$wpmudev_apikey = WPMUDEV_APIKEY;
+			} else {
+				$wpmudev_apikey = get_site_option( 'wpmudev_apikey', false );
+			}
+
+			return $wpmudev_apikey;
 		}
 
 		/**
@@ -990,7 +1009,8 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 		/**
 		 * Send a request to reset the bulk request
 		 */
-		function reset_bulk( $request_id, $token ) {
+		function reset_bulk( $request_id, $token, $bulk_request_details ) {
+			global $wp_smpro;
 			$request_data               = array();
 			$request_data['api_key']    = $this->dev_api_key();
 			$request_data['token']      = $token;
@@ -1006,9 +1026,16 @@ if ( ! class_exists( 'WpSmProSend' ) ) {
 				'timeout'    => WP_SMPRO_TIMEOUT,
 				'sslverify'  => false
 			);
+			//Reset URL, check if the request contains smush server assigned, and decide URL on bais of that
+			$reset_url = WP_SMPRO_RESET_URL;
+
+			//If smush server assigned is set use the new server url for request status, otherwise old url
+			if ( ! empty ( $bulk_request_details ) && empty( $bulk_request_details['smush_server_assigned'] ) ) {
+				$reset_url = 'https://smush.wpmudev.org/reset/';
+			}
 
 			// make the post request and return the response
-			$response['api'] = wp_remote_post( WP_SMPRO_RESET_URL, $req_args );
+			$response['api'] = wp_remote_post( $reset_url, $req_args );
 
 			return $response;
 		}

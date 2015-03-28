@@ -41,7 +41,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 		 *
 		 * @return type
 		 */
-		function fetch( $attachment_id = false, $is_single = false ) {
+		function fetch( $attachment_id = false, $is_single = false, $attachment_data = '' ) {
 			global $log;
 			$result = false;
 
@@ -68,7 +68,14 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			//If we have smush data and image is not already optimized, download zip
 			if ( $smush_data && ! empty( $smush_data['stats']['bytes'] ) ) {
 
-				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'] );
+				//Works for single requests
+				$smush_server_assigned = ! empty( $attachment_data ['smush_server_assigned'] ) ? $attachment_data['smush_server_assigned'] : false;
+
+				//For Bulk requests
+				if ( ! empty( $smush_data['smush_server_assigned'] ) && ! $smush_server_assigned ) {
+					$smush_server_assigned = $smush_data['smush_server_assigned'];
+				}
+				$smushed_file = $this->save_zip( $attachment_id, $smush_data['file_url'], $smush_server_assigned );
 
 				$output['msg'] = sprintf( __( 'Error downloading smushed file for attachment id: %d', WP_SMPRO_DOMAIN ), $attachment_id );
 
@@ -119,7 +126,21 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			}
 		}
 
-		function save_zip( $attachment_id, $url ) {
+		/**
+		 * Downloads the optimised zip
+		 *
+		 * @param $attachment_id
+		 * @param $url
+		 * @param $smush_server_assigned
+		 *
+		 * @return bool|string
+		 */
+		function save_zip( $attachment_id, $url, $smush_server_assigned ) {
+
+			if ( $smush_server_assigned ) {
+				$smush_server = get_site_option( WP_SMPRO_PREFIX . 'smush_server', false );
+				$url          = $smush_server . $url;
+			}
 
 			$zip = $this->_get( $url, $attachment_id );
 			if ( ! $zip ) {
@@ -194,7 +215,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 					$file_details = wp_check_filetype_and_ext( $file_path, $filenames[ $size ] );
 
 					$unlink_files[]                                 = $upload_path . '/' . $path_prefix . '/' . $attachment_meta['sizes'][ $size ]['file'];
-					$attachment_meta['sizes'][ $size ]['file']      = $filenames[ $size ];
+					$attachment_meta['sizes'][ $size ]['file']      = urldecode( $filenames[ $size ] );
 					$attachment_meta['sizes'][ $size ]['mime-type'] = $file_details['type'];
 				}
 			} else {
@@ -290,6 +311,13 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			return $zip;
 		}
 
+		/**
+		 * Update Compression Stats for provided image id
+		 *
+		 * @param $attachment_id
+		 *
+		 * @return mixed
+		 */
 		private function update_smush_data( $attachment_id ) {
 			global $log, $wp_smpro;
 			$attachment_id = intval( $attachment_id );
@@ -297,14 +325,16 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 			wp_cache_delete( $attachment_id, 'post_meta' );
 			$smush_data = get_post_meta( $attachment_id, WP_SMPRO_PREFIX . 'smush-data', true );
 
+			//Remove it from sent ids, if it's in a bulk request
+			$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
+
+			$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
+
+			$smush_data['smush_server_assigned'] = ! empty( $current_requests[ $bulk_request ] ) && ! empty( $current_requests[ $bulk_request ]['smush_server_assigned'] ) ? $current_requests[ $bulk_request ]['smush_server_assigned'] : false;
+
 			if ( empty( $smush_data ) ) {
 				//no smush data recieved yet
 				$log->error( 'WpSmProFetch: update_smush_data', 'Missing smush data for attachment id' . $attachment_id );
-
-				//Remove it from sent ids, if it's in a bulk request
-				$current_requests = get_option( WP_SMPRO_PREFIX . "current-requests", array() );
-
-				$bulk_request = get_option( WP_SMPRO_PREFIX . "bulk-sent", array() );
 
 				if ( ! empty( $bulk_request ) && ! empty( $current_requests[ $bulk_request ] ) ) {
 					$index = array_search( $attachment_id, $current_requests[ $bulk_request ]['sent_ids'] );
@@ -314,7 +344,7 @@ if ( ! class_exists( 'WpSmProFetch' ) ) {
 					}
 				}
 
-				return false;
+				return $smush_data;
 			}
 			$stats          = $smush_data['stats'];
 			$stats['bytes'] = (int) $stats['size_before'] - (int) $stats['size_after'];

@@ -624,17 +624,8 @@
 				}
 			});
 		};
-
-		init();
-
-		//Handle button clicks and call respective functions
-		elem.on('click', config.sendButton, function (e) {
-			// prevent the default action
-			e.preventDefault();
-			//remove all smush notices
-			jQuery('.smush-notices').remove();
-
-			buttonProgress($(this), config.msgs.sending);
+		var sendRequest = function (thisObject) {
+			buttonProgress(thisObject, config.msgs.sending);
 
 			//Remove Selected image div if there
 			jQuery('#select-bulk').remove();
@@ -644,7 +635,7 @@
 				send(false);
 			} else {
 				// get the row
-				var $nearest_tr = $(this).closest('tr').first();
+				var $nearest_tr = thisObject.closest('tr').first();
 
 				if ($nearest_tr.length !== 0) {
 					// get the row's DOM id
@@ -652,12 +643,24 @@
 					// get the attachment id from DOM id
 					var $id = $elem_id.replace(/[^0-9\.]+/g, '');
 				} else {
-					var $id = jQuery(this).parents().eq(5).data('id');
+					var $id = thisObject.parents().eq(5).data('id');
 				}
 
 				send($id);
 			}
+		};
 
+		init();
+
+		//Handle button clicks and call respective functions
+		elem.on('click', config.sendButton, function (e) {
+			// prevent the default action
+			e.preventDefault();
+			var thisObj = jQuery(this);
+			//remove all smush notices
+			jQuery('.smush-notices').remove();
+
+			sendRequest(thisObj);
 
 			return;
 
