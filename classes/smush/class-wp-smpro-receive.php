@@ -61,11 +61,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 				'post_status'    => 'any',
 				'post_mime_type' => 'image/jpeg,image/gif,image/jpg,image/png',
 				'no_found_rows'  => true,
-				'meta_query'     => array(
-					array(
-						'key' => WP_SMPRO_PREFIX . 'request-' . $request_id
-					)
-				),
+				'meta_key'       => WP_SMPRO_PREFIX . 'request-' . $request_id,
 				'fields'         => 'ids'
 			);
 			$attachment = new WP_Query( $args );
@@ -274,7 +270,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 		demand, we are working to bring down wait times as quickly as possible, But we do guarantee that your images will be well and truly smushed eventually!', WP_SMPRO_DOMAIN ) . '</p>';
 
 							//Cancel smush notice, for long queue number
-							$cancel_smush = '<p>' . sprintf( __( 'Taking too long? Click %s to cancel this request then try it again on our new super fast API!', WP_SMPRO_DOMAIN ), $cancel_link) . '</p>';
+							$cancel_smush = '<p>' . sprintf( __( 'Taking too long? Click %s to cancel this request then try it again on our new super fast API!', WP_SMPRO_DOMAIN ), $cancel_link ) . '</p>';
 
 							if ( $response_body->message == 'queue' ) {
 								if ( $response_body->pending_requests == 0 ) {
@@ -324,7 +320,7 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 								wp_send_json_error( $data );
 							} elseif ( $response_body->message == 'processing' ) {
 								if ( $response_body->count === 0 ) {
-									$data['message'] = __( 'Woohooo, we are crunching the numbers for you and than it is all done.', WP_SMPRO_DOMAIN );
+									$data['message'] = __( 'Woohooo, we are crunching the numbers for you and then it is all done.', WP_SMPRO_DOMAIN );
 								} else {
 									$processed         = __( 'Your smush request is being processed.', WP_SMPRO_DOMAIN );
 									$remaining_message = $response_body->count == 1 ? __( ' %d image is remaining.', WP_SMPRO_DOMAIN ) : __( ' %d images are remaining.', WP_SMPRO_DOMAIN );
@@ -387,9 +383,9 @@ if ( ! class_exists( 'WpSmProReceive' ) ) {
 			$dtT     = new DateTime( "@$seconds" );
 
 			//If wait time is atleast 1 hour
-			if( $seconds > 3600 ) {
+			if ( $seconds > 3600 ) {
 				return $dtF->diff( $dtT )->format( '%a days, %h hours' );
-			}else{
+			} else {
 				//return wait time in minutes
 				return $dtF->diff( $dtT )->format( '%i minutes' );
 			}

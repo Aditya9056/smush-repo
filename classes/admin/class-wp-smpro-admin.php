@@ -1430,23 +1430,6 @@ if ( ! class_exists( 'WpSmProAdmin' ) ) {
 		}
 
 		/**
-		 * Send a POST request to smush API, to remove a bulk request
-		 *
-		 * @param $request_id
-		 * @param $nonce
-		 */
-		function request_API_bulk_reset( $request_id, $token ) {
-			global $wp_smpro;
-			//missing details, do not send a request
-			if ( empty( $request_id ) || empty( $token ) ) {
-				return false;
-			}
-
-			return $wp_smpro->sender->reset_bulk( $request_id, $token );
-
-		}
-
-		/**
 		 * Ajax handler for resetting Bulk request
 		 */
 		function reset_bulk_request() {

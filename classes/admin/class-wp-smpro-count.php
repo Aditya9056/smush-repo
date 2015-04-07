@@ -63,7 +63,7 @@ if ( ! class_exists( 'WpSmProCount' ) ) {
 			//this might be due to manually removing smush data
 			if ( $this->counts['sent'] < $this->counts['smushed'] ) {
 				$this->counts['sent'] = $this->smushed_count();
-				$log->notice('WpSmproCount -> init: Sent count are lesser than fetch count.');
+				$log->notice( 'WpSmproCount -> init: Sent count are lesser than fetch count.' );
 			}
 		}
 
@@ -97,12 +97,7 @@ if ( ! class_exists( 'WpSmProCount' ) ) {
 				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
-				'meta_query'     => array(
-					array(
-						'key'   => "wp-smpro-is-smushed",
-						'value' => 1
-					)
-				)
+				'meta_key'       => "wp-smpro-is-smushed"
 			);
 
 			$results = new WP_Query( $query );
