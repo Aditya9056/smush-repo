@@ -566,6 +566,33 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 
+		/**
+		 * Returns percent saved from the api call response
+		 *
+		 * @param string $message
+		 *
+		 * @return string|bool
+		 */
+		function get_saved_percentage( $message ){
+			if ( preg_match('/\d+(\.\d+)?%/', $message, $matches) )
+				return isset( $matches[0] ) ? $matches[0] : false;
+
+			return false;
+		}
+
+		/**
+		 * Returns size saved from the api call response
+		 *
+		 * @param string $message
+		 *
+		 * @return string|bool
+		 */
+		function get_saved_size( $message ) {
+			if ( preg_match( '/\((.*)\)/', $message, $matches ) )
+				return isset( $matches[1] ) ? $matches[1] : false;
+
+			return false;
+		}
 	}
 
 	$WpSmush = new WpSmush();
