@@ -482,7 +482,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			if( empty( $transient ) ){
 				// call api
-				$url = self::API_SERVER . '&key=' . urlencode( self::_get_api_key() );
+				$url = self::API_SERVER . '&key=' . urlencode( $this->_get_api_key() );
 
 				$request = wp_remote_get($url, array(
 					"timeout" => 3
