@@ -10,11 +10,11 @@ Textdomain: wp_smushit
 */
 
 /*
-This plugin was originally developed by Alex Dunae. 
+This plugin was originally developed by Alex Dunae.
 http://dialect.ca/
 */
 
-/* 
+/*
 Copyright 2007-2013 Incsub (http://incsub.com)
 
 This program is free software; you can redistribute it and/or modify
@@ -393,11 +393,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$data = wp_get_attachment_metadata( $id );
 				if ( isset( $data['wp_smushit'] ) && ! empty( $data['wp_smushit'] ) ) {
 					echo "<div class='smush-status'>" . $data['wp_smushit'] . "</div>";
-					printf( "<a href='#' id='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
+					printf( "<a href='#' class='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
 				} else {
 					if ( wp_attachment_is_image( $id ) ) {
 						echo "<div class='smush-status'>" . __( 'Not processed', WP_SMUSHIT_DOMAIN ) . "</div>";
-						printf( "<a href='#' id='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
+						printf( "<a href='#' class='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
 					}
 				}
 			}

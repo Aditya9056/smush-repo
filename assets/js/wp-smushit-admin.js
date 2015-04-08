@@ -4,14 +4,15 @@
  * @author Saurabh Shukla <saurabh@incsub.com>
  *
  */
-jQuery('document').ready(function () {
+
+jQuery('document').ready(function ($) {
 
 	// url for smushing
 	$bulk_send_url = ajaxurl + '?action=wp_smushit_bulk';
 	$manual_smush_url = ajaxurl + '?action=wp_smushit_manual';
 	$remaining = '';
 	$smush_done = 1;
-
+    WP_Smush.timeout = 60000;
 	/**
 	 * Checks for the specified param in URL
 	 * @param sParam
@@ -53,6 +54,18 @@ jQuery('document').ready(function () {
 
 	}
 
+
+    WP_Smush.ajax = function($id, $send_url, $getnxt){
+        "use strict";
+        return $.ajax({
+            type: "GET",
+            data: {attachment_id: $id, get_next: $getnxt},
+            url: $send_url,
+            timeout: WP_Smush.timeout,
+            dataType: 'json'
+        });
+    };
+
 	/**
 	 * Send ajax request for smushing
 	 *
@@ -60,19 +73,13 @@ jQuery('document').ready(function () {
 	 * @param {type} $getnxt
 	 * @returns {unresolved}
 	 */
-	function smushitRequest($id, $getnxt, $is_single, current_elem) {
+	WP_Smush.smushitRequest = function($id, $getnxt, $is_single, current_elem) {
 
 		//Specify the smush URL, for single or bulk smush
-		$send_url = $is_single ? $manual_smush_url : $bulk_send_url;
+		var $send_url = $is_single ? $manual_smush_url : $bulk_send_url;
 
 		// make request
-		return jQuery.ajax({
-			type: "GET",
-			data: {attachment_id: $id, get_next: $getnxt},
-			url: $send_url,
-			timeout: 60000,
-			dataType: 'json'
-		}).done(function (response) {
+        WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
 
 			//Handle bulk smush progress
 			if (!$is_single) {
@@ -87,7 +94,7 @@ jQuery('document').ready(function () {
 				}
 			}
 		});
-	}
+	};
 
 	/**
 	 * Change the button status on bulk smush completion
@@ -125,11 +132,11 @@ jQuery('document').ready(function () {
 	 */
 	function wp_smushit_change_progress_status($count, $width) {
 		// get the progress bar
-		$progress_bar = jQuery('#wp-smushit-progress-wrap #wp-smushit-smush-progress div');
+		var $progress_bar = jQuery('#wp-smushit-progress-wrap #wp-smushit-smush-progress div');
 		if ($progress_bar.length < 1) {
 			return;
 		}
-		jQuery('#smushed-count').html($count);
+		$('#smushed-count').html($count);
 		// increase progress
 		$progress_bar.css('width', $width + '%');
 
@@ -146,8 +153,8 @@ jQuery('document').ready(function () {
 		startingpoint.resolve();
 
 		//Show progress bar
-		jQuery('#wp-smushit-progress-wrap #wp-smushit-smush-progress div').css('width', 0);
-		jQuery('#progress-ui').show();
+		$('#wp-smushit-progress-wrap #wp-smushit-smush-progress div').css('width', 0);
+		$('#progress-ui').show();
 
 		// if we have a definite number of ids
 		if (wp_smushit_ids.length > 0) {
@@ -157,10 +164,10 @@ jQuery('document').ready(function () {
 			// loop and pipe into deferred object
 			jQuery.each(wp_smushit_ids, function (ix, $id) {
 				startingpoint = startingpoint.then(function () {
-					$remaining = $remaining - 1;
+					var $remaining = $remaining - 1;
 
 					// call the ajax requestor
-					return smushitRequest($id, 0, false);
+					return WP_Smush.smushitRequest($id, 0, false);
 				});
 			});
 		}
@@ -170,10 +177,10 @@ jQuery('document').ready(function () {
 	/**
 	 * Send a ajax request for smushing and show waiting
 	 */
-	function sendRequest(current_elem) {
+    WP_Smush.sendRequest = function (current_elem) {
 
 		//Get media id
-		$id = current_elem.data('id');
+		var $id = current_elem.data('id');
 
 		if (!$id) {
 			return false;
@@ -182,11 +189,11 @@ jQuery('document').ready(function () {
 		//disable link
 
 		//Send the ajax request
-		smushitRequest($id, 0, true, current_elem);
-	}
+		WP_Smush.smushitRequest($id, 0, true, current_elem);
+	};
 
 	//If ids are set in url, click over bulk smush button
-	$ids = geturlparam('ids');
+	var $ids = geturlparam('ids');
 	if ($ids && $ids != '') {
 		wp_smushit_bulk_smush();
 
@@ -196,11 +203,11 @@ jQuery('document').ready(function () {
 	/**
 	 * Handle the start button click
 	 */
-	jQuery('button[name="smush-all"]').on('click', function (e) {
+	$('button[name="smush-all"]').on('click', function (e) {
 		// prevent the default action
 		e.preventDefault();
 
-		jQuery(this).attr('disabled', 'disabled');
+		$(this).attr('disabled', 'disabled');
 
 		wp_smushit_bulk_smush();
 
@@ -209,14 +216,14 @@ jQuery('document').ready(function () {
 	});
 
 	//Handle smush button click
-	jQuery('body').on('click', '#wp-smush-image', function (e) {
+	$('body').on('click', '.wp-smush-image', function (e) {
 		// prevent the default action
 		e.preventDefault();
 		var thisObj = jQuery(this);
 		//remove all smush notices
-		jQuery('.smush-notices').remove();
+		$('.smush-notices').remove();
 
-		sendRequest(thisObj);
+        WP_Smush.sendRequest(thisObj);
 
 		return;
 	});

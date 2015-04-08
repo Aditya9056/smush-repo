@@ -224,3 +224,16 @@ Progressbar ui
 #progress-ui p#check-status{
 	display:none;
 }
+.media-lib-wp-smush-el{
+    position: absolute;
+    top: 40%;
+    left: 25%;
+    height: 20%;
+    width: 50%;
+    cursor: pointer;
+    display: none;
+}
+
+.has-smush-button:hover .media-lib-wp-smush-el{
+    display: block;
+}

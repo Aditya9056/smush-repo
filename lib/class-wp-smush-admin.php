@@ -40,8 +40,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle Smush Bulk Ajax
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
 
+
 			//Handle Smush Single Ajax
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
+
+			add_action("admin_enqueue_scripts", array($this, "admin_enqueue_scripts"));
+
 		}
 
 		/**
@@ -75,11 +79,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			/* Register our script. */
 			wp_register_script( 'wp-smushit-admin-js', WP_SMUSHIT_URL . 'assets/js/wp-smushit-admin.js', array( 'jquery' ), $WpSmush->version );
 
+
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSHIT_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
 
 			// localize translatable strings for js
 			$this->localize();
+
+			wp_enqueue_script( 'wp-smushit-admin-media-js', WP_SMUSHIT_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
+
 		}
 
 		/**
@@ -105,6 +113,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $bulk->get_attachments();
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_ids', $ids );
 
+		}
+
+		function admin_enqueue_scripts(){
+			wp_enqueue_script('wp-smushit-admin-media-js');
 		}
 
 		/**
