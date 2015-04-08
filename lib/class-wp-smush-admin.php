@@ -104,7 +104,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$wp_smushit_msgs = array(
 				'progress' => __( 'Smushing in Progress', WP_SMUSHIT_DOMAIN ),
-				'done'     => __( 'All done!', WP_SMUSHIT_DOMAIN )
+				'done'     => __( 'All done!', WP_SMUSHIT_DOMAIN ),
+				'resmush'     => __( 'Re-smush', WP_SMUSHIT_DOMAIN )
 			);
 
 			wp_localize_script( $handle, 'wp_smushit_msgs', $wp_smushit_msgs );
@@ -395,9 +396,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_update_attachment_metadata( $attachment_id, $meta );
 
-			//Set smush status for all the images
-			update_post_meta( $attachment_id, 'wp-is-smushed', 1 );
-
 			wp_send_json_success( 'processed' );
 		}
 
@@ -449,7 +447,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_update_attachment_metadata( $attachment_id, $new_meta );
 
-			wp_send_json_success( $new_meta['wp_smushit'] );
+			$stats = $WpSmush->get_smush_stats($attachment_id, $new_meta );
+
+			wp_send_json_success( $stats );
 		}
 	}
 

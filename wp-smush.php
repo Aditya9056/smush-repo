@@ -284,6 +284,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$meta['wp_smushit'] = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
 			}
 
+			//Set smush status for all the images
+			update_post_meta( $ID, 'wp-is-smushed', 1 );
+
 			return $meta;
 		}
 

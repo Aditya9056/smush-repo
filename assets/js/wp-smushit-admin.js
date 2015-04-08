@@ -12,7 +12,7 @@ jQuery('document').ready(function ($) {
 	$manual_smush_url = ajaxurl + '?action=wp_smushit_manual';
 	$remaining = '';
 	$smush_done = 1;
-    WP_Smush.timeout = 60000;
+	WP_Smush.timeout = 60000;
 	/**
 	 * Checks for the specified param in URL
 	 * @param sParam
@@ -55,16 +55,16 @@ jQuery('document').ready(function ($) {
 	}
 
 
-    WP_Smush.ajax = function($id, $send_url, $getnxt){
-        "use strict";
-        return $.ajax({
-            type: "GET",
-            data: {attachment_id: $id, get_next: $getnxt},
-            url: $send_url,
-            timeout: WP_Smush.timeout,
-            dataType: 'json'
-        });
-    };
+	WP_Smush.ajax = function ($id, $send_url, $getnxt) {
+		"use strict";
+		return $.ajax({
+			type: "GET",
+			data: {attachment_id: $id, get_next: $getnxt},
+			url: $send_url,
+			timeout: WP_Smush.timeout,
+			dataType: 'json'
+		});
+	};
 
 	/**
 	 * Send ajax request for smushing
@@ -73,13 +73,13 @@ jQuery('document').ready(function ($) {
 	 * @param {type} $getnxt
 	 * @returns {unresolved}
 	 */
-	WP_Smush.smushitRequest = function($id, $getnxt, $is_single, current_elem) {
+	WP_Smush.smushitRequest = function ($id, $getnxt, $is_single, current_elem) {
 
 		//Specify the smush URL, for single or bulk smush
 		var $send_url = $is_single ? $manual_smush_url : $bulk_send_url;
 
 		// make request
-        WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
+		WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
 
 			//Handle bulk smush progress
 			if (!$is_single) {
@@ -91,6 +91,7 @@ jQuery('document').ready(function ($) {
 				if (typeof response.data != 'undefined') {
 					//Append the smush stats or error
 					current_elem.parent().find('.smush-status').html(response.data);
+					current_elem.html(wp_smushit_msgs.resmush);
 				}
 			}
 		});
@@ -177,7 +178,7 @@ jQuery('document').ready(function ($) {
 	/**
 	 * Send a ajax request for smushing and show waiting
 	 */
-    WP_Smush.sendRequest = function (current_elem) {
+	WP_Smush.sendRequest = function (current_elem) {
 
 		//Get media id
 		var $id = current_elem.data('id');
@@ -223,7 +224,7 @@ jQuery('document').ready(function ($) {
 		//remove all smush notices
 		$('.smush-notices').remove();
 
-        WP_Smush.sendRequest(thisObj);
+		WP_Smush.sendRequest(thisObj);
 
 		return;
 	});
