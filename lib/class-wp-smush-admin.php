@@ -82,11 +82,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSHIT_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
+			wp_register_style( 'wp-smushit-sweet-alert', WP_SMUSHIT_URL . 'assets/css/sweet-alert.css');
 
 			// localize translatable strings for js
 			$this->localize();
 
 			wp_enqueue_script( 'wp-smushit-admin-media-js', WP_SMUSHIT_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
+			wp_enqueue_script( 'wp-smushit-admin-sweetalert-js', WP_SMUSHIT_URL . 'assets/js/sweet-alert.min.js', array( 'jquery' ) );
 
 		}
 
@@ -96,6 +98,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function enqueue() {
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 			wp_enqueue_style( 'wp-smushit-admin-css' );
+			wp_enqueue_style( 'wp-smushit-sweet-alert' );
 		}
 
 		function localize() {
@@ -104,7 +107,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$wp_smushit_msgs = array(
 				'progress' => __( 'Smushing in Progress', WP_SMUSHIT_DOMAIN ),
-				'done'     => __( 'All done!', WP_SMUSHIT_DOMAIN )
+				'done'     => __( 'All done!', WP_SMUSHIT_DOMAIN ),
+				'something_went_wrong'     => __( 'Ops!... something went wrong', WP_SMUSHIT_DOMAIN )
 			);
 
 			wp_localize_script( $handle, 'wp_smushit_msgs', $wp_smushit_msgs );
@@ -117,6 +121,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		function admin_enqueue_scripts(){
 			wp_enqueue_script('wp-smushit-admin-media-js');
+			wp_enqueue_script('wp-smushit-admin-sweetalert-js');
 		}
 
 		/**

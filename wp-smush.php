@@ -393,11 +393,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$data = wp_get_attachment_metadata( $id );
 				if ( isset( $data['wp_smushit'] ) && ! empty( $data['wp_smushit'] ) ) {
 					echo "<div class='smush-status'>" . $data['wp_smushit'] . "</div>";
-					printf( "<a href='#' class='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
+					printf( "<button  class='button wp-smush-image' data-id='%d'>%s</button>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
 				} else {
 					if ( wp_attachment_is_image( $id ) ) {
 						echo "<div class='smush-status'>" . __( 'Not processed', WP_SMUSHIT_DOMAIN ) . "</div>";
-						printf( "<a href='#' class='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
+						printf( "<button href='#' class='button button wp-smush-image' data-id='%d'>%s</button>", $id, __( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
 					}
 				}
 			}

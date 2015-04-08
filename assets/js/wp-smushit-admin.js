@@ -79,7 +79,7 @@ jQuery('document').ready(function ($) {
 		var $send_url = $is_single ? $manual_smush_url : $bulk_send_url;
 
 		// make request
-        WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
+        return WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
 
 			//Handle bulk smush progress
 			if (!$is_single) {
@@ -93,7 +93,17 @@ jQuery('document').ready(function ($) {
 					current_elem.parent().find('.smush-status').html(response.data);
 				}
 			}
-		});
+
+            if( response && response.success ){
+                sweetAlert(wp_smushit_msgs.done, response.data, "success");
+            }
+
+            if( response && !response.success ){
+                sweetAlert(wp_smushit_msgs.something_went_wrong, response.data, "error");
+            }
+		}).error(function(res){
+            sweetAlert(wp_smushit_msgs.something_went_wrong, res.data, "error");
+        });
 	};
 
 	/**
@@ -189,7 +199,7 @@ jQuery('document').ready(function ($) {
 		//disable link
 
 		//Send the ajax request
-		WP_Smush.smushitRequest($id, 0, true, current_elem);
+		return WP_Smush.smushitRequest($id, 0, true, current_elem);
 	};
 
 	//If ids are set in url, click over bulk smush button
@@ -219,11 +229,18 @@ jQuery('document').ready(function ($) {
 	$('body').on('click', '.wp-smush-image', function (e) {
 		// prevent the default action
 		e.preventDefault();
-		var thisObj = jQuery(this);
+		var $this = jQuery(this),
+            $loader = $('<span class="wp-smush-loader"></span>');
 		//remove all smush notices
 		$('.smush-notices').remove();
 
-        WP_Smush.sendRequest(thisObj);
+        $this.after( $loader );
+        $this.prop("disabled", true);
+        WP_Smush.sendRequest($this).complete(function(){
+            "use strict";
+            $loader.remove();
+            $this.prop("disabled", false);
+        });
 
 		return;
 	});

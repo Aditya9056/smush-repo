@@ -16,15 +16,32 @@ jQuery(function($){
         },
         render: function(){
             var data = this.model.toJSON(),
-                $button = $("<button class='button button-primary media-lib-wp-smush-button'>Smush it</button>");
+                $button = $("<button class='button button-primary media-lib-wp-smush-button'>Smush it</button>"),
+                $loader = $('<span class="wp-smush-loader"></span>').hide();
 
             this.$button = $button;
+            this.$loader = $loader;
+
             this.$el.html($button);
+            this.$el.append($loader);
             $button.data("id", data.id);
         },
         click: function(e){
+            var ajax = WP_Smush.sendRequest( this.$button),
+                self = this;
+
             e.preventDefault();
-            WP_Smush.sendRequest( this.$button );
+            e.stopPropagation();
+
+            this.$el.css({ display: "block"});
+            this.$button.prop("disabled", true);
+
+            this.$loader.show();
+
+            ajax.complete(function(res){
+                self.$loader.hide();
+                self.$button.prop("disabled", false);
+            });
         }
     });
 
