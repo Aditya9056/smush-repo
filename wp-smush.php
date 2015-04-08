@@ -2,9 +2,9 @@
 /*
 Plugin Name: WP Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
-Description: Reduce image file sizes and improve performance using the <a href="http://smush.it/">Smush.it</a> API within WordPress.
+Description: Reduce image file sizes and improve performance using the <a href="https://premium.wpmudev.org/">WPMU DEV</a> Smush API within WordPress.
 Author: WPMU DEV
-Version: 1.7.1.1
+Version: 2.0
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp_smushit
 */
@@ -52,15 +52,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			/**
 			 * Constants
 			 */
-			define( 'SMUSHIT_REQ_URL', 'https://smushpro.wpmudev.org/' );
-			define( 'SMUSHIT_BASE_URL', 'https://smushpro.wpmudev.org/' );
+			define( 'SMUSHIT_REQ_URL', 'https://smushpro.wpmudev.org/1.0/' );
+			define( 'SMUSHIT_BASE_URL', 'https://smushpro.wpmudev.org/1.0/' );
 
 			define( 'WP_SMUSHIT_DOMAIN', 'wp_smushit' );
-			define( 'WP_SMUSHIT_UA', "WP Smush/{$this->version} (+http://wordpress.org/extend/plugins/wp-smushit/)" );
+			define( 'WP_SMUSHIT_UA', "WP Smush/{$this->version}; " . network_site_url() );
 			define( 'WP_SMUSHIT_DIR', plugin_dir_path( __FILE__ ) );
 			define( 'WP_SMUSHIT_URL', plugin_dir_url( __FILE__ ) );
-			define( 'WP_SMUSHIT_MAX_BYTES', 1048576 );
-			define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 630000 );
+			define( 'WP_SMUSHIT_MAX_BYTES', 1000000 );
+			define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 8000000 );
 
 			// The number of images (including generated sizes) that can return errors before abandoning all hope.
 			// N.B. this doesn't work with the bulk uploader, since it creates a new HTTP request
@@ -69,7 +69,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			define( 'WP_SMUSHIT_AUTO', intval( get_option( 'wp_smushit_smushit_auto', 0 ) ) );
 			define( 'WP_SMUSHIT_TIMEOUT', intval( get_option( 'wp_smushit_smushit_timeout', 60 ) ) );
-			define( 'WP_SMUSHIT_ENFORCE_SAME_URL', get_option( 'wp_smushit_smushit_enforce_same_url', 'on' ) );
 
 			define( 'WP_SMUSHIT_DEBUG', get_option( 'wp_smushit_smushit_debug', '' ) );
 
@@ -110,7 +109,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
-		 * Process an image with Smush.it.
+		 * Process an image with Smush.
 		 *
 		 * Returns an array of the $file $results.
 		 *
@@ -133,7 +132,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			static $error_count = 0;
 
 			if ( $error_count >= WP_SMUSHIT_ERRORS_BEFORE_QUITTING ) {
-				return __( "Did not Smush.it due to previous errors", WP_SMUSHIT_DOMAIN );
+				return __( "Did not Smush due to previous errors", WP_SMUSHIT_DOMAIN );
 			}
 
 			// check that the file exists
@@ -149,7 +148,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$file_size = filesize( $file_path );
 
 			//Check if premium user
-			$api_key = $this->is_premium();
+			$api_key = $this->_get_api_key();
 
 			$max_size = ! empty( $api_key ) ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSHIT_MAX_BYTES;
 
@@ -162,27 +161,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), size limit exceeded.</span>', WP_SMUSHIT_DOMAIN ), $this->format_bytes( $file_size ) );
 			}
 
-			// File URL check disabled 2013-10-11 - The assumption here is the URL may not be the local site URL. The image may be served via a sub-domain pointed
-			// to this same host or may be an external CDN. In either case the image would be the same. So we let the Yahoo! Smush.it service use the image URL with
-			// the assumption the remote image and the local file are the same. Also with the assumption that the CDN service will somehow be updated when the image
-			// is changed.
-			if ( ( defined( 'WP_SMUSHIT_ENFORCE_SAME_URL' ) ) && ( WP_SMUSHIT_ENFORCE_SAME_URL == 'on' ) ) {
-				$home_url      = str_replace( 'https://', 'http://', get_option( 'home' ) );
-				$error_message = "<b>Home URL: </b>" . $home_url . " <br />";
-
-				if ( stripos( $file_url, $home_url ) !== 0 ) {
-					return sprintf( __( "ERROR: <span class='code'>%s</span> must be within the website home URL (<span class='code'>%s</span>)", WP_SMUSHIT_DOMAIN ),
-						htmlentities( $file_url ), $home_url );
-				}
-			}
-
 			/** Send image for smushing, and fetch the response */
 			$response = $this->_post( $file_path, $file_size, $api_key );
 
 			if ( false === $response ) {
 				$error_count ++;
-
-				return __( 'ERROR: posting to Smush.it', WP_SMUSHIT_DOMAIN );
+				return __( 'ERROR: posting to Smush', WP_SMUSHIT_DOMAIN );
 			}
 			//If there is no data
 			if ( empty( $response['data'] ) ) {
@@ -209,7 +193,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				unlink( $tempfile );
 			}
 
-			//If file renaming was successfull
+			//If file renaming was successful
 			if ( ! $success ) {
 				copy( $tempfile, $file_path );
 				unlink( $tempfile );
@@ -294,9 +278,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
-		 * Post an image to Smush.it.
+		 * Post an image to Smush.
 		 *
-		 * @param   string $file_url URL of the file to send to Smush.it
+		 * @param   string $file_url URL of the file to send to Smush
 		 *
 		 * @return  array  Returns array containing success status, and stats
 		 */
@@ -314,50 +298,60 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				//Check if premium member, add API key
 				if ( ! empty( $api_key ) ) {
-					$headers['api_key'] = $api_key;
+					$headers['apikey'] = $api_key;
 				}
 
 				//If premium check if user has allowed lossy optimisation
 				if ( ! empty( $api_key ) ) {
-					//Check if lossy compression allowed and add it to headers
-					$headers['lossy'] = true;
+					//TODO Check if lossy compression allowed and add it to headers
+					$headers['lossy'] = 'true';
+				} else {
+					$headers['lossy'] = 'false';
 				}
 
 				$args   = array(
 					'headers' => $headers,
 					'body'    => $file_data,
-					'timeout' => 10
+					'timeout' => 30
 				);
 				$result = wp_remote_post( SMUSHIT_REQ_URL, $args );
 
 				//Close file connection
 				fclose( $file );
-				unset( $file_data );
+				unset( $file_data );//free memory
 
 				if ( is_wp_error( $result ) ) {
 					//Handle error
-					$data['message'] = __( 'Error posting to server', WP_SMUSHIT_DOMAIN );
+					$data['message'] = sprintf( __( 'Error posting to server: %s', WP_SMUSHIT_DOMAIN ), $result->get_error_message() );
 					$data['success'] = false;
-
+					unset( $result ); //free memory
+					return $data;
+				} else if ( '200' != wp_remote_retrieve_response_code( $result ) ) {
+					//Handle error
+					$data['message'] = sprintf( __( 'Error posting to server: %s %s', WP_SMUSHIT_DOMAIN ), wp_remote_retrieve_response_code( $result ), wp_remote_retrieve_response_message( $result ) );
+					$data['success'] = false;
+					unset( $result ); //free memory
 					return $data;
 				}
-				$response = json_decode( $result['body'] );
 
 				//If there is a response and image was successfully optimised
+				$response = json_decode( $result['body'] );
 				if ( $response && $response->success == true ) {
 
 					//If there is any savings
 					if ( $response->data->bytes_saved > 0 ) {
-						$image     = base64_decode( $response->data->image );
+						$image     = base64_decode( $response->data->image ); //base64_decode is necessary to send binary img over JSON, no security problems here!
 						$image_md5 = md5( $response->data->image );
 						if ( $response->data->image_md5 != $image_md5 ) {
 							//Handle error
-							$data['message'] = __( 'Image data corrupted', WP_SMUSHIT_DOMAIN );
+							$data['message'] = __( 'Image data corrupted during download, try again.', WP_SMUSHIT_DOMAIN );
 							$data['success'] = false;
+							unset( $image );//free memory
 						} else {
 							$data['success']     = true;
 							$data['data']        = $response->data;
 							$data['data']->image = $image;
+							unset( $image );//free memory
 						}
 					} else {
 						//just return the data
@@ -366,19 +360,21 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					}
 				} else {
 					//Server side error, get message from response
-					$data['message'] = ! empty( $response->data->message ) ? $response->data->message : __( "Image couldn't be smushed", WP_SMUSHIT_DOMAIN );
+					$data['message'] = ! empty( $response->data ) ? $response->data : __( "Image couldn't be smushed", WP_SMUSHIT_DOMAIN );
 					$data['success'] = false;
 				}
 			} else {
 				wp_die( __( 'WP Smush requires WordPress 2.8 or greater', WP_SMUSHIT_DOMAIN ) );
 			}
 
+			unset( $result );//free memory
+			unset( $response );//free memory
 			return $data;
 		}
 
 
 		/**
-		 * Print column header for Smush.it results in the media library using
+		 * Print column header for Smush results in the media library using
 		 * the `manage_media_columns` hook.
 		 */
 		function columns( $defaults ) {
@@ -402,7 +398,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
-		 * Print column data for Smush.it results in the media library using
+		 * Print column data for Smush results in the media library using
 		 * the `manage_media_custom_column` hook.
 		 */
 		function custom_column( $column_name, $id ) {
@@ -421,7 +417,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				} else {
 					if ( wp_attachment_is_image( $id ) ) {
 						echo "<div class='smush-status'>" . __( 'Not processed', WP_SMUSHIT_DOMAIN ) . "</div>";
-						printf( "<button href='#' class='button button wp-smush-image' data-id='%d'>%s</button>", $id, __( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
+						printf( "<button href='#' class='button button wp-smush-image' data-id='%d'>%s</button>", $id, __( 'Smush now!', WP_SMUSHIT_DOMAIN ) );
 					}
 				}
 			}
@@ -433,7 +429,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready(function ($) {
-					$('select[name^="action"] option:last-child').before('<option value="bulk_smushit">Bulk Smush.it</option>');
+					$('select[name^="action"] option:last-child').before('<option value="bulk_smushit">Bulk Smush</option>');
 				});
 			</script>
 		<?php
@@ -466,11 +462,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			exit();
 		}
 
-		// default is 6hrs
-		function temporarily_disable( $seconds = 21600 ) {
-			update_option( 'wp_smushit_smushit_auto', time() + $seconds );
-		}
-
 		/**
 		 * Check if user is premium member, check for api key
 		 *
@@ -478,9 +469,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function is_premium() {
 
-			$transient = get_site_transient( self::VALIDITY_KEY);
-			$valid = false;
-			if( empty( $transient ) ){
+			if ( false === ( $valid = get_site_transient( self::VALIDITY_KEY ) ) ) {
 				// call api
 				$url = self::API_SERVER . '&key=' . urlencode( $this->_get_api_key() );
 
@@ -489,22 +478,24 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					)
 				);
 
-				if( !is_wp_error( $request ) ){
-					$result =  wp_remote_retrieve_body( $request );
-					if ( $result['success'] )
-						$valid =  true;
+				if ( ! is_wp_error( $request ) && '200' == wp_remote_retrieve_response_code( $request ) ) {
+					$result = json_decode( wp_remote_retrieve_body( $request ) );
+					if ( $result && $result->success ) {
+						$valid = true;
+						set_site_transient( self::VALIDITY_KEY, 1, 12 * HOUR_IN_SECONDS );
+					} else {
+						$valid = false;
+						set_site_transient( self::VALIDITY_KEY, 0, 30 * MINUTE_IN_SECONDS ); //cache failure much shorter
+					}
 
-					set_site_transient( self::VALIDITY_KEY, true, 12 * HOUR_IN_SECONDS );
-					return $valid;
-
-				}else{
-					return $request;
+				} else {
+					$valid = false;
+					set_site_transient( self::VALIDITY_KEY, 0, 5 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
 				}
 
 			}
 
-			if( !empty( $transient ) )
-				return (bool) $transient;
+			return (bool) $valid;
 		}
 
 		/**
