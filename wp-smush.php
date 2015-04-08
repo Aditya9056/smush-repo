@@ -478,8 +478,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function is_premium() {
 
-			$transient = get_transient( self::VALIDITY_KEY );
-
+			$transient = get_site_transient( self::VALIDITY_KEY);
+			$valid = false;
 			if( empty( $transient ) ){
 				// call api
 				$url = self::API_SERVER . '&key=' . urlencode( $this->_get_api_key() );
@@ -488,21 +488,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					"timeout" => 3
 					)
 				);
+
 				if( !is_wp_error( $request ) ){
 					$result =  wp_remote_retrieve_body( $request );
-					if ( $result['success'] ){
-						set_transient( self::VALIDITY_KEY, true );
-						return true;
-					}
+					if ( $result['success'] )
+						$valid =  true;
 
-					set_transient( self::VALIDITY_KEY, false );
-					return false;
+					set_site_transient( self::VALIDITY_KEY, true, 12 * HOUR_IN_SECONDS );
+					return $valid;
 
 				}else{
 					return $request;
 				}
 
-				return $result;
 			}
 
 			if( !empty( $transient ) )
