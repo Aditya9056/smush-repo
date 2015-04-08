@@ -15,7 +15,7 @@ http://dialect.ca/
 */
 
 /*
-Copyright 2007-2013 Incsub (http://incsub.com)
+Copyright 2007-2015 Incsub (http://incsub.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -39,7 +39,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
 
-		var $version = "1.7.1";
+		var $version = "2.0";
 
 		const VALIDITY_KEY = "wp-smush-valid";
 		const API_SERVER  = 'https://premium.wpmudev.org/wdp-un.php?action=smushit_check';
@@ -301,9 +301,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$headers['apikey'] = $api_key;
 				}
 
-				//If premium check if user has allowed lossy optimisation
-				if ( ! empty( $api_key ) ) {
-					//TODO Check if lossy compression allowed and add it to headers
+				//Check if lossy compression allowed and add it to headers
+				$lossy = get_site_option('wp_smushit_lossy'); //TODO this setting does not exist at the moment
+				if ( $lossy && $this->is_premium() ) {
 					$headers['lossy'] = 'true';
 				} else {
 					$headers['lossy'] = 'false';
