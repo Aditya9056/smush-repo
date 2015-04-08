@@ -90,7 +90,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_filter( 'manage_media_columns', array( &$this, 'columns' ) );
 			add_action( 'manage_media_custom_column', array( &$this, 'custom_column' ), 10, 2 );
 			add_action( 'admin_init', array( &$this, 'admin_init' ) );
-			add_action( 'admin_action_wp_smushit_manual', array( &$this, 'smushit_manual' ) );
 			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
 			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
 		}
@@ -105,29 +104,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function admin_init() {
 			load_plugin_textdomain( WP_SMUSHIT_DOMAIN, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 			wp_enqueue_script( 'common' );
-		}
-
-		/**
-		 * Manually process an image from the Media Library
-		 */
-		function smushit_manual() {
-			if ( ! current_user_can( 'upload_files' ) ) {
-				wp_die( __( "You don't have permission to work with uploaded files.", WP_SMUSHIT_DOMAIN ) );
-			}
-
-			if ( ! isset( $_GET['attachment_ID'] ) ) {
-				wp_die( __( 'No attachment ID was provided.', WP_SMUSHIT_DOMAIN ) );
-			}
-
-			$attachment_ID = intval( $_GET['attachment_ID'] );
-
-			$original_meta = wp_get_attachment_metadata( $attachment_ID );
-
-			$new_meta = $this->resize_from_meta_data( $original_meta, $attachment_ID );
-			wp_update_attachment_metadata( $attachment_ID, $new_meta );
-
-			wp_redirect( preg_replace( '|[^a-z0-9-~+_.?#=&;,/:]|i', '', wp_get_referer() ) );
-			exit();
 		}
 
 		/**
@@ -175,7 +151,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$max_size = ! empty( $api_key ) ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSHIT_MAX_BYTES;
 
 			//Check if file exists
-			if( $file_size == 0 ) {
+			if ( $file_size == 0 ) {
 				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), image not found.</span>', WP_SMUSHIT_DOMAIN ), $this->format_bytes( $file_size ) );
 			}
 			//Check size limit
@@ -212,7 +188,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//If there are no savings, or image returned is bigger in size
 			if ( ( ! empty( $response['data']->bytes_saved ) && intval( $response['data']->bytes_saved ) <= 0 )
-			     || empty( $response['data']->image ) ) {
+			     || empty( $response['data']->image )
+			) {
 				return __( 'No savings', WP_SMUSHIT_DOMAIN );
 			}
 
@@ -224,13 +201,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//replace the file
 			$success = @rename( $tempfile, $file_path );
 
-			try {
-				//delete the temp file
+			//if tempfile still exists, unlink it
+			if ( file_exists( $tempfile ) ) {
 				unlink( $tempfile );
-			} catch ( Exception $e ) {
-				echo 'Caught exception: ', $e->getMessage(), "\n";
 			}
 
+			//If file renaming was successfull
 			if ( ! $success ) {
 				copy( $tempfile, $file_path );
 				unlink( $tempfile );
@@ -295,11 +271,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$attachment_file_url_size = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
 
 				$meta['sizes'][ $size_key ]['wp_smushit'] = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
-
-				//echo "size_key[". $size_key ."] wp_smushit<pre>"; print_r($meta['sizes'][$size_key]['wp_smushit']); echo "</pre>";
 			}
 
-			//echo "meta<pre>"; print_r($meta); echo "</pre>";
 			return $meta;
 		}
 
@@ -328,26 +301,27 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 
 				//If premium check if user has allowed lossy optimisation
-				if( !empty( $api_key ) ) {
+				if ( ! empty( $api_key ) ) {
 					//Check if lossy compression allowed and add it to headers
 					$headers['lossy'] = true;
 				}
 
-				$args     = array(
+				$args   = array(
 					'headers' => $headers,
 					'body'    => $file_data,
 					'timeout' => 10
 				);
-				$result   = wp_remote_post( SMUSHIT_REQ_URL, $args );
+				$result = wp_remote_post( SMUSHIT_REQ_URL, $args );
 
 				//Close file connection
 				fclose( $file );
 				unset( $file_data );
 
-				if( is_wp_error( $result ) ) {
+				if ( is_wp_error( $result ) ) {
 					//Handle error
 					$data['message'] = __( 'Error posting to server', WP_SMUSHIT_DOMAIN );
 					$data['success'] = false;
+
 					return $data;
 				}
 				$response = json_decode( $result['body'] );
@@ -368,10 +342,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							$data['data']        = $response->data;
 							$data['data']->image = $image;
 						}
-					}else{
+					} else {
 						//just return the data
-						$data['success']     = true;
-						$data['data']        = $response->data;
+						$data['success'] = true;
+						$data['data']    = $response->data;
 					}
 				} else {
 					//Server side error, get message from response
@@ -391,7 +365,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * the `manage_media_columns` hook.
 		 */
 		function columns( $defaults ) {
-			$defaults['smushit'] = 'Smush.it';
+			$defaults['smushit'] = 'WP Smush';
 
 			return $defaults;
 		}
@@ -418,16 +392,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( 'smushit' == $column_name ) {
 				$data = wp_get_attachment_metadata( $id );
 				if ( isset( $data['wp_smushit'] ) && ! empty( $data['wp_smushit'] ) ) {
-					print $data['wp_smushit'];
-					printf( "<br><a href=\"admin.php?action=wp_smushit_manual&amp;attachment_ID=%d\">%s</a>",
-						$id,
-						__( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
+					echo "<div class='smush-status'>" . $data['wp_smushit'] . "</div>";
+					printf( "<a href='#' id='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
 				} else {
 					if ( wp_attachment_is_image( $id ) ) {
-						print __( 'Not processed', WP_SMUSHIT_DOMAIN );
-						printf( "<br><a href=\"admin.php?action=wp_smushit_manual&amp;attachment_ID=%d\">%s</a>",
-							$id,
-							__( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
+						echo "<div class='smush-status'>" . __( 'Not processed', WP_SMUSHIT_DOMAIN ) . "</div>";
+						printf( "<a href='#' id='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
 					}
 				}
 			}

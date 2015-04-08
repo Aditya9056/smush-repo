@@ -37,15 +37,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
 
-			//Handle Smush Ajax
+			//Handle Smush Bulk Ajax
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
+
+			//Handle Smush Single Ajax
+			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
 		}
 
 		/**
 		 * Add Bulk option settings page
 		 */
 		function screen() {
-			$admin_page_suffix = add_media_page( 'Bulk WP Smush.it', 'WP Smush', 'edit_others_posts', 'wp-smushit-bulk', array(
+			global $hook_suffix;
+			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smushit-bulk', array(
 				$this,
 				'ui'
 			) );
@@ -58,6 +62,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 			// enqueue js only on this screen
 			add_action( 'admin_print_scripts-' . $admin_page_suffix, array( $this, 'enqueue' ) );
+
+			// Enqueue js on media screen
+			add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );
 		}
 
 		/**
@@ -401,6 +408,33 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 * Error Log Form
 			 */
 			require_once( WP_SMUSHIT_DIR . '/lib/error_log.php' );
+		}
+
+		/**
+		 * Smush single images
+		 *
+		 * @return mixed
+		 */
+		function smush_single() {
+			if ( ! current_user_can( 'upload_files' ) ) {
+				wp_die( __( "You don't have permission to work with uploaded files.", WP_SMUSHIT_DOMAIN ) );
+			}
+
+			if ( ! isset( $_GET['attachment_id'] ) ) {
+				wp_die( __( 'No attachment ID was provided.', WP_SMUSHIT_DOMAIN ) );
+			}
+
+			global $WpSmush;
+
+			$attachment_id = intval( $_GET['attachment_id'] );
+
+			$original_meta = wp_get_attachment_metadata( $attachment_id );
+
+			$new_meta = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
+
+			wp_update_attachment_metadata( $attachment_id, $new_meta );
+
+			wp_send_json_success( $new_meta['wp_smushit'] );
 		}
 	}
 
