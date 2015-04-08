@@ -41,6 +41,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		var $version = "1.7.1";
 
+		const VALIDITY_KEY = "wp-smush-valid";
+		const API_SERVER  = 'https://premium.wpmudev.org/wdp-un.php?action=smushit_check';
+
 		/**
 		 * Constructor
 		 */
@@ -475,14 +478,48 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function is_premium() {
 
-			$api_key = '';
+			$transient = get_transient( self::VALIDITY_KEY );
 
+			if( empty( $transient ) ){
+				// call api
+				$url = self::API_SERVER . '&key=' . urlencode( self::_get_api_key() );
+
+				$request = wp_remote_get($url, array(
+					"timeout" => 3
+					)
+				);
+				if( !is_wp_error( $request ) ){
+					$result =  wp_remote_retrieve_body( $request );
+					if ( $result['success'] ){
+						set_transient( self::VALIDITY_KEY, true );
+						return true;
+					}
+
+					set_transient( self::VALIDITY_KEY, false );
+					return false;
+
+				}else{
+					return $request;
+				}
+
+				return $result;
+			}
+
+			if( !empty( $transient ) )
+				return (bool) $transient;
+		}
+
+		/**
+		 * Returns api key
+		 *
+		 * @return mixed
+		 */
+		private function _get_api_key(){
 			if ( defined( 'WPMUDEV_APIKEY' ) ) {
 				$api_key = WPMUDEV_APIKEY;
 			} else {
 				$api_key = get_site_option( 'wpmudev_apikey' );
 			}
-
 			return $api_key;
 		}
 
@@ -529,6 +566,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			return $compression;
 		}
+
 
 	}
 
