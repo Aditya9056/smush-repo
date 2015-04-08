@@ -44,7 +44,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle Smush Single Ajax
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
 
-			add_action("admin_enqueue_scripts", array($this, "admin_enqueue_scripts"));
+			add_action( "admin_enqueue_scripts", array( $this, "admin_enqueue_scripts" ) );
 
 		}
 
@@ -115,8 +115,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		}
 
-		function admin_enqueue_scripts(){
-			wp_enqueue_script('wp-smushit-admin-media-js');
+		function admin_enqueue_scripts() {
+			wp_enqueue_script( 'wp-smushit-admin-media-js' );
 		}
 
 		/**
@@ -319,7 +319,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							<?php printf( __( "Click below to smush all your images. Alternatively, you can smush your images individually or as a bulk action from your <a href='%s'>Media Library</a>", WP_SMUSHIT_DOMAIN ), $media_lib ); ?>
 						</div>
 
-						<!--					Bulk Smushing-->
+						<!-- Bulk Smushing -->
 						<?php wp_nonce_field( 'wp-smushit-bulk', '_wpnonce' ); ?>
 						<br/>
 						<?php $this->progress_ui(); ?>
@@ -394,6 +394,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$meta = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id, false );
 
 			wp_update_attachment_metadata( $attachment_id, $meta );
+
+			//Set smush status for all the images
+			update_post_meta( $attachment_id, 'wp-is-smushed', 1 );
 
 			wp_send_json_success( 'processed' );
 		}

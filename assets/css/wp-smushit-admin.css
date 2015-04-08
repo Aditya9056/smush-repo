@@ -237,3 +237,6 @@ Progressbar ui
 .has-smush-button:hover .media-lib-wp-smush-el{
     display: block;
 }
+.smush-status {
+    font-size: 12px;
+}

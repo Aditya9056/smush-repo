@@ -244,33 +244,44 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function resize_from_meta_data( $meta, $ID = null, $force_resmush = true ) {
 			global $log;
+
+			//Flag to check, if full image needs to be smushed or not
+			$smush_full = true;
+
 			if ( $ID && wp_attachment_is_image( $ID ) === false ) {
 				return $meta;
 			}
 
+			//File path and URL for original image
 			$attachment_file_path = get_attached_file( $ID );
 			$attachment_file_url  = wp_get_attachment_url( $ID );
 
-			if ( $force_resmush || $this->should_resmush( @$meta['wp_smushit'] ) ) {
-				$meta['wp_smushit'] = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
-			}
+			// If images has other registered size, smush them first
+			if ( ! empty( $meta['sizes'] ) ) {
 
-			// no resized versions, so we can exit
-			if ( ! isset( $meta['sizes'] ) ) {
-				return $meta;
-			}
-			foreach ( $meta['sizes'] as $size_key => $size_data ) {
-				if ( ! $force_resmush && $this->should_resmush( @$meta['sizes'][ $size_key ]['wp_smushit'] ) === false ) {
-					continue;
+				foreach ( $meta['sizes'] as $size_key => $size_data ) {
+
+					if ( $size_key == 'large' ) {
+						//if large size is registered for image, skip the full
+						$smush_full = false;
+					}
+					//Check if size is already smushed
+					if ( ! $force_resmush && $this->should_resmush( @$meta['sizes'][ $size_key ]['wp_smushit'] ) === false ) {
+						continue;
+					}
+
+					// We take the original image. The 'sizes' will all match the same URL and
+					// path. So just get the dirname and rpelace the filename.
+					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
+
+					$attachment_file_url_size = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
+
+					$meta['sizes'][ $size_key ]['wp_smushit'] = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
 				}
+			}
 
-				// We take the original image. The 'sizes' will all match the same URL and
-				// path. So just get the dirname and rpelace the filename.
-				$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
-
-				$attachment_file_url_size = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
-
-				$meta['sizes'][ $size_key ]['wp_smushit'] = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
+			if ( $smush_full && ( $force_resmush || $this->should_resmush( @$meta['wp_smushit'] ) ) ) {
+				$meta['wp_smushit'] = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
 			}
 
 			return $meta;
@@ -391,8 +402,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function custom_column( $column_name, $id ) {
 			if ( 'smushit' == $column_name ) {
 				$data = wp_get_attachment_metadata( $id );
-				if ( isset( $data['wp_smushit'] ) && ! empty( $data['wp_smushit'] ) ) {
-					echo "<div class='smush-status'>" . $data['wp_smushit'] . "</div>";
+
+				$is_smushed        = $this->is_smushed( $id, $data );
+				$compression_stats = $this->get_smush_stats( $id, $data );
+
+				if ( $is_smushed ) {
+					echo "<div class='smush-status'>" . $compression_stats . "</div>";
 					printf( "<a href='#' class='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
 				} else {
 					if ( wp_attachment_is_image( $id ) ) {
@@ -463,6 +478,48 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			return $api_key;
+		}
+
+		/**
+		 * Check if image is already smushed
+		 */
+		function is_smushed( $id, $data ) {
+
+			//For new images
+			$wp_is_smushed = get_post_meta( $id, 'wp-is-smushed', true );
+
+			//Not smushed, backward compatibility, check attachment metadata
+			if ( ! $wp_is_smushed ) {
+				if ( isset( $data['wp_smushit'] ) && ! empty( $data['wp_smushit'] ) ) {
+					$wp_is_smushed = true;
+				}
+			}
+
+			return $wp_is_smushed;
+		}
+
+		/**
+		 * Return the stats for each image size
+		 *
+		 * @param $id
+		 * @param $meta
+		 */
+		function get_smush_stats( $id, $meta ) {
+
+			$compression = "<b>" . __( 'Compression stats:', WP_SMUSHIT_DOMAIN ) . "</b>";
+			//stats for full size image if any
+			if ( ! empty( $meta['wp_smushit'] ) ) {
+				$compression .= "<br><b>Full:</b> " . $meta['wp_smushit'];
+			}
+			//Add the stats for each size
+			if ( ! empty( $meta['sizes'] ) ) {
+				foreach ( $meta['sizes'] as $size_name => $size_meta ) {
+					if ( ! empty( $size_meta['wp_smushit'] ) ) {
+						$compression .= "<br><b>" . $size_name . "</b>: " . $size_meta['wp_smushit'];
+					}
+				}
+			}
+			return $compression;
 		}
 
 	}
