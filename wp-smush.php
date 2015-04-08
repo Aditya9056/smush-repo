@@ -469,9 +469,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function is_premium() {
 
+			//no api key set, always false
+			$api_key = $this->_get_api_key();
+			if ( empty( $api_key ) ) return false;
+
 			if ( false === ( $valid = get_site_transient( self::VALIDITY_KEY ) ) ) {
 				// call api
-				$url = self::API_SERVER . '&key=' . urlencode( $this->_get_api_key() );
+				$url = self::API_SERVER . '&key=' . urlencode( $api_key );
 
 				$request = wp_remote_get($url, array(
 					"timeout" => 3
@@ -503,7 +507,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return mixed
 		 */
-		private function _get_api_key(){
+		private function _get_api_key() {
 			if ( defined( 'WPMUDEV_APIKEY' ) ) {
 				$api_key = WPMUDEV_APIKEY;
 			} else {
