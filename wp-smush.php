@@ -411,11 +411,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				if ( $is_smushed ) {
 					echo "<div class='smush-status'>" . $compression_stats . "</div>";
-					printf( "<a href='#' class='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
+					printf( "<button  class='button wp-smush-image' data-id='%d'>%s</button>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
 				} else {
 					if ( wp_attachment_is_image( $id ) ) {
 						echo "<div class='smush-status'>" . __( 'Not processed', WP_SMUSHIT_DOMAIN ) . "</div>";
-						printf( "<a href='#' class='wp-smush-image' data-id='%d'>%s</a>", $id, __( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
+						printf( "<button href='#' class='button button wp-smush-image' data-id='%d'>%s</button>", $id, __( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
 					}
 				}
 			}

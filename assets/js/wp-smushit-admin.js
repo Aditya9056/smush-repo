@@ -12,7 +12,7 @@ jQuery('document').ready(function ($) {
 	$manual_smush_url = ajaxurl + '?action=wp_smushit_manual';
 	$remaining = '';
 	$smush_done = 1;
-	WP_Smush.timeout = 60000;
+    WP_Smush.timeout = 60000;
 	/**
 	 * Checks for the specified param in URL
 	 * @param sParam
@@ -55,16 +55,16 @@ jQuery('document').ready(function ($) {
 	}
 
 
-	WP_Smush.ajax = function ($id, $send_url, $getnxt) {
-		"use strict";
-		return $.ajax({
-			type: "GET",
-			data: {attachment_id: $id, get_next: $getnxt},
-			url: $send_url,
-			timeout: WP_Smush.timeout,
-			dataType: 'json'
-		});
-	};
+    WP_Smush.ajax = function($id, $send_url, $getnxt){
+        "use strict";
+        return $.ajax({
+            type: "GET",
+            data: {attachment_id: $id, get_next: $getnxt},
+            url: $send_url,
+            timeout: WP_Smush.timeout,
+            dataType: 'json'
+        });
+    };
 
 	/**
 	 * Send ajax request for smushing
@@ -73,13 +73,13 @@ jQuery('document').ready(function ($) {
 	 * @param {type} $getnxt
 	 * @returns {unresolved}
 	 */
-	WP_Smush.smushitRequest = function ($id, $getnxt, $is_single, current_elem) {
+	WP_Smush.smushitRequest = function($id, $getnxt, $is_single, current_elem) {
 
 		//Specify the smush URL, for single or bulk smush
 		var $send_url = $is_single ? $manual_smush_url : $bulk_send_url;
 
 		// make request
-		WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
+        return WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
 
 			//Handle bulk smush progress
 			if (!$is_single) {
@@ -94,7 +94,17 @@ jQuery('document').ready(function ($) {
 					current_elem.html(wp_smushit_msgs.resmush);
 				}
 			}
-		});
+
+            if( response && response.success ){
+                sweetAlert(wp_smushit_msgs.done, '', "success");
+            }
+
+            if( response && !response.success ){
+                sweetAlert(wp_smushit_msgs.something_went_wrong, '', "error");
+            }
+		}).error(function(res){
+            sweetAlert(wp_smushit_msgs.something_went_wrong, res.data, "error");
+        });
 	};
 
 	/**
@@ -190,7 +200,7 @@ jQuery('document').ready(function ($) {
 		//disable link
 
 		//Send the ajax request
-		WP_Smush.smushitRequest($id, 0, true, current_elem);
+		return WP_Smush.smushitRequest($id, 0, true, current_elem);
 	};
 
 	//If ids are set in url, click over bulk smush button
@@ -220,11 +230,18 @@ jQuery('document').ready(function ($) {
 	$('body').on('click', '.wp-smush-image', function (e) {
 		// prevent the default action
 		e.preventDefault();
-		var thisObj = jQuery(this);
+		var $this = jQuery(this),
+            $loader = $('<span class="wp-smush-loader"></span>');
 		//remove all smush notices
 		$('.smush-notices').remove();
 
-		WP_Smush.sendRequest(thisObj);
+        $this.after( $loader );
+        $this.prop("disabled", true);
+        WP_Smush.sendRequest($this).complete(function(){
+            "use strict";
+            $loader.remove();
+            $this.prop("disabled", false);
+        });
 
 		return;
 	});

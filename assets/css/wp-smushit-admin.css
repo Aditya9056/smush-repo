@@ -224,6 +224,7 @@ Progressbar ui
 #progress-ui p#check-status{
 	display:none;
 }
+
 .media-lib-wp-smush-el{
     position: absolute;
     top: 40%;
@@ -233,9 +234,24 @@ Progressbar ui
     cursor: pointer;
     display: none;
 }
-
+.media-lib-wp-smush-el .spinner{
+    display: block;
+}
+.media-lib-wp-smush-button{
+    margin-bottom: 5% !important;
+}
+.wp-smush-loader{
+    display: block;
+    height: 11px;
+    width: 43px;
+    background: url("../images/ajax-loader.gif") center center;
+    margin: 0 auto;
+}
 .has-smush-button:hover .media-lib-wp-smush-el{
     display: block;
+}
+.column-smushit .wp-smush-loader{
+    margin: 10px;
 }
 .smush-status {
     font-size: 12px;
