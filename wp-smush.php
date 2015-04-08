@@ -410,7 +410,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$compression_stats = $this->get_smush_stats( $id, $data );
 
 				if ( $is_smushed ) {
-					echo "<div class='smush-status'>" . $compression_stats . "</div>";
+					echo "<p class='wp-smush-status-title'>" . __( 'Compression stats:', WP_SMUSHIT_DOMAIN ) . "</p>";
+					echo "<div class='smush-status'>";
+					echo $compression_stats;
+					echo "</div>";
 					printf( "<button  class='button wp-smush-image' data-id='%d'>%s</button>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
 				} else {
 					if ( wp_attachment_is_image( $id ) ) {
@@ -509,19 +512,21 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function get_smush_stats( $id, $meta ) {
 
-			$compression = "<b>" . __( 'Compression stats:', WP_SMUSHIT_DOMAIN ) . "</b>";
+			$compression = "";
 			//stats for full size image if any
+
 			if ( ! empty( $meta['wp_smushit'] ) ) {
-				$compression .= "<br><b>Full:</b> " . $meta['wp_smushit'];
+				$compression .= "<b>Full:</b> " . $meta['wp_smushit'];
 			}
 			//Add the stats for each size
 			if ( ! empty( $meta['sizes'] ) ) {
 				foreach ( $meta['sizes'] as $size_name => $size_meta ) {
 					if ( ! empty( $size_meta['wp_smushit'] ) ) {
-						$compression .= "<br><b>" . $size_name . "</b>: " . $size_meta['wp_smushit'];
+						$compression .= "<br><b>" . ucfirst( $size_name ) . "</b>: " . $size_meta['wp_smushit'];
 					}
 				}
 			}
+
 			return $compression;
 		}
 

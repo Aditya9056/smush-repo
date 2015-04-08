@@ -90,18 +90,19 @@ jQuery('document').ready(function ($) {
 				//Check for response message
 				if (typeof response.data != 'undefined') {
 					//Append the smush stats or error
-					current_elem.parent().find('.smush-status').html(response.data);
-					current_elem.html(wp_smushit_msgs.resmush);
+                    var $status = current_elem.parent().find('.smush-status');
+                    $status.html(response.data);
+                    $status.addClass("smush-status-error");
 				}
 			}
 
-            if( response && response.success ){
-                sweetAlert(wp_smushit_msgs.done, '', "success");
-            }
-
-            if( response && !response.success ){
-                sweetAlert(wp_smushit_msgs.something_went_wrong, '', "error");
-            }
+            //if( response && response.success ){
+            //    sweetAlert(wp_smushit_msgs.done, response.data, "success");
+            //}
+            //
+            //if( response && !response.success ){
+            //    sweetAlert(wp_smushit_msgs.something_went_wrong, response.data, "error");
+            //}
 		}).error(function(res){
             sweetAlert(wp_smushit_msgs.something_went_wrong, res.data, "error");
         });

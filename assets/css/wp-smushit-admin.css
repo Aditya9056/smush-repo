@@ -252,7 +252,35 @@ Progressbar ui
 }
 .column-smushit .wp-smush-loader{
     margin: 10px;
+    float: left;
 }
-.smush-status {
-    font-size: 12px;
+.smush-status{
+    background: #e5e5e5;
+    padding: 0 10px;
+    margin: 0 10px 10px 0;
+    border-radius: 5px;
+    white-space: nowrap;
+    display: block;
+    float: left;
+    overflow: hidden;
+    line-height: 28px;
+    color: #343434;
+}
+.smush-status-error{
+    background: red;
+    color:#fff;
+}
+
+.smush-status-success{
+    background: green;
+    color:#fff;
+}
+.wp-smush-status-title{
+    font-size: 15px;
+    font-weight: bold;
+}
+.wp-smush-image{
+    display: block;
+    float: left;
+    clear: left;
 }
