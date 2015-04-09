@@ -295,7 +295,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 							<?php _e( "<p><b>You can not leave this page, until all images have been received back, and you see a success message.</b></p>", WP_SMUSH_DOMAIN ); ?>
 							<br/>
-							<?php printf( __( "Click below to smush all your images. Alternatively, you can smush your images individually or as a bulk action from your <a href='%s'>Media Library</a>", WP_SMUSH_DOMAIN ), $media_lib ); ?>
 						</div>
 
 						<!-- Bulk Smushing -->
