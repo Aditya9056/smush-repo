@@ -607,7 +607,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
-				'meta_key'       => "wp-smush-data"
+				'meta_key'       => "SMUSHED_META_KEY"
 			);
 
 			$results = new WP_Query( $query );

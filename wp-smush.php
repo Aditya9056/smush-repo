@@ -97,7 +97,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 *
 		 */
-		const SMUSHED_META_KEY = 'wp-smush-data';
+		const SMUSHED_META_KEY = 'wp-smpro-smush-data';
 
 		/**
 		 * Meta key to save migrated version
@@ -369,8 +369,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			}
 
-			//Set smush status for all the images
-			update_post_meta( $ID, WP_SMUSH_PREFIX . 'data', $stats );
+			//Set smush status for all the images, store it in wp-smpro-smush-data
+			update_post_meta( $ID, SMUSHED_META_KEY, $stats );
 
 			//return stats
 			return $stats['stats'];
@@ -505,45 +505,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( 'smushit' == $column_name ) {
 				$this->set_status( $id );
 			}
-		}
-
-
-		// Borrowed from http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
-		function add_bulk_actions_via_javascript() {
-			?>
-			<script type="text/javascript">
-				jQuery(document).ready(function ($) {
-					$('select[name^="action"] option:last-child').before('<option value="bulk_smushit">Bulk Smush</option>');
-				});
-			</script>
-		<?php
-		}
-
-
-		// Handles the bulk actions POST
-		// Borrowed from http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
-		function bulk_action_handler() {
-			check_admin_referer( 'bulk-media' );
-
-			if ( empty( $_REQUEST['media'] ) || ! is_array( $_REQUEST['media'] ) ) {
-				return;
-			}
-
-			$ids = implode( ',', array_map( 'intval', $_REQUEST['media'] ) );
-
-			// Can't use wp_nonce_url() as it escapes HTML entities
-			$url = admin_url( 'upload.php' );
-			$url = add_query_arg(
-				array(
-					'page'     => 'wp-smush-bulk',
-					'goback'   => 1,
-					'ids'      => $ids,
-					'_wpnonce' => wp_create_nonce( 'wp-smush-bulk' )
-				),
-				$url
-			);
-			wp_redirect( $url );
-			exit();
 		}
 
 		/**
