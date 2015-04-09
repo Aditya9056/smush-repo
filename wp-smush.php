@@ -357,10 +357,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
 				}
 
-				list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], $stats['stats']['bytes_saved'] )
+				//Update stats
+				list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 					= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
-			}
+		}
+
+			//Store stats
+			list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], $stats['stats']['bytes_saved'] ) =
+				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
 			//Set smush status for all the images, store it in wp-smpro-smush-data
 			update_post_meta( $ID, 'wp-smpro-smush-data', $stats );
@@ -749,7 +754,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array
 		 */
-		private function _update_stats_data( $response_data, $size_before, $size_after, $total_time, $compression, $bytes_saved ) {
+		private function _update_stats_data( $response_data, $size_before, $size_after, $total_time, $bytes_saved ) {
 			$size_before += ! empty( $response_data->before_size ) ? (int) $response_data->before_size : 0;
 			$size_after += ( ! empty( $response_data->after_size ) && $response_data->after_size > 0 ) ? (int) $response_data->after_size : (int) $response_data->before_size;
 			$total_time += ! empty( $response_data->time ) ? (float) $response_data->time : 0;
