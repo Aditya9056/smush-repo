@@ -42,8 +42,33 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		var $version = "1.7.1";
 
+		/**
+		 * Meta key for api validity
+		 *
+		 */
 		const VALIDITY_KEY = "wp-smush-valid";
+
+		/**
+		 * Api server url to check api key validity
+		 *
+		 */
 		const API_SERVER = 'https://premium.wpmudev.org/wdp-un.php?action=smushit_check';
+
+		/**
+		 * Meta key to save smush result to db
+		 *
+		 *
+		 */
+		const SMUSHED_META_KEY = 'wp-smush-data';
+
+		/**
+		 * Meta key to save migrated version
+		 *
+		 */
+		const MIGRATED_VERSION = "wp-smush-migrated-version";
+
+
+		private $_migrator;
 
 		/**
 		 * Constructor
@@ -97,7 +122,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
 			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
 
+			add_action("admin_init", array( $this, "migrate" ));
 			require_once WP_SMUSHIT_DIR ."/lib/class-wp-smush-migrate.php";
+			$this->_migrator = new WpSmushMigrate();
 		}
 
 		function WpSmush() {
@@ -635,7 +662,40 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				echo $html;
 			}
 		}
+
+		/**
+		 * Migrates smushit api message to the latest structure
+		 *
+		 *
+		 * @return void
+		 */
+		function migrate(){
+
+			if( !version_compare( $this->version, "1.7.1", "lte" ) ) return;
+
+			$migrated_version = get_option( self::MIGRATED_VERSION );
+
+			if( $migrated_version === $this->version ) return;
+
+			global $wpdb;
+
+			$q = $wpdb->prepare( "SELECT * FROM `" . $wpdb->postmeta . "` WHERE `meta_key`=%s AND `meta_value` LIKE %s ", "_wp_attachment_metadata", "%wp_smushit%"   );
+			$results = $wpdb->get_results( $q );
+
+			if( count( $results ) < 1 ) return;
+
+			$migrator = new WpSmushMigrate();
+			foreach( $results as $attachment_meta){
+				$migrated_message = $this->_migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
+				if( $migrated_message !== array() ){
+					update_post_meta( $attachment_meta->post_id, self::SMUSHED_META_KEY,  $migrated_message);
+				}
+			}
+
+			update_option( self::MIGRATED_VERSION , $this->version);
+
 		}
+	}
 
 	$WpSmush = new WpSmush();
 	global $WpSmush;
@@ -658,3 +718,8 @@ if ( ! function_exists( 'wp_basename' ) ) {
 		return urldecode( basename( str_replace( '%2F', '/', urlencode( $path ) ), $suffix ) );
 	}
 }
+
+$migrator = new WpSmushMigrate();
+$data = unserialize('a:6:{s:5:"width";i:990;s:6:"height";i:458;s:4:"file";s:17:"2014/11/home1.jpg";s:5:"sizes";a:3:{s:9:"thumbnail";a:5:{s:4:"file";s:17:"home1-150x150.jpg";s:5:"width";i:150;s:6:"height";i:150;s:9:"mime-type";s:10:"image/jpeg";s:10:"wp_smushit";s:27:"Reduced by 0.2% (22&nbsp;B)";}s:6:"medium";a:5:{s:4:"file";s:17:"home1-300x138.jpg";s:5:"width";i:300;s:6:"height";i:138;s:9:"mime-type";s:10:"image/jpeg";s:10:"wp_smushit";s:28:"Reduced by 0.7% (115&nbsp;B)";}s:14:"post-thumbnail";a:5:{s:4:"file";s:17:"home1-604x270.jpg";s:5:"width";i:604;s:6:"height";i:270;s:9:"mime-type";s:10:"image/jpeg";s:10:"wp_smushit";s:28:"Reduced by 1.3% (665&nbsp;B)";}}s:10:"image_meta";a:11:{s:8:"aperture";i:0;s:6:"credit";s:0:"";s:6:"camera";s:0:"";s:7:"caption";s:0:"";s:17:"created_timestamp";i:0;s:9:"copyright";s:0:"";s:12:"focal_length";i:0;s:3:"iso";i:0;s:13:"shutter_speed";i:0;s:5:"title";s:0:"";s:11:"orientation";i:0;}s:10:"wp_smushit";s:28:"Reduced by 0.2% (199&nbsp;B)";}');
+echo "<pre>";
+print_r($migrator->migrate_api_message($data));die;
