@@ -505,8 +505,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			return $api_key;
 		}
 
+
 		/**
-		 * Check if image is already smushed
+		 * Checks if image is already smushed
+		 *
+		 * @param int $id
+		 * @param array $data
+		 *
+		 * @return bool|mixed
 		 */
 		function is_smushed( $id, $data ) {
 
@@ -531,131 +537,130 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return string|bool
 		 */
 		function get_saved_percentage( $message ) {
-			if ( preg_match( '/\d+(\.\d+)?%/', $message, $matches ) ) {
+			if ( preg_match( '/\d+(\.\d+)?%/', $message, $matches ) )
 				return isset( $matches[0] ) ? $matches[0] : false;
 
 				return false;
+		}
+
+		/**
+		 * Returns size saved from the api call response
+		 *
+		 * @param string $message
+		 *
+		 * @return string|bool
+		 */
+		function get_saved_size( $message ) {
+			if ( preg_match( '/\((.*)\)/', $message, $matches ) ) {
+				return isset( $matches[1] ) ? $matches[1] : false;
 			}
 
-			/**
-			 * Returns size saved from the api call response
-			 *
-			 * @param string $message
-			 *
-			 * @return string|bool
-			 */
-			function get_saved_size( $message ) {
-				if ( preg_match( '/\((.*)\)/', $message, $matches ) ) {
-					return isset( $matches[1] ) ? $matches[1] : false;
+			return false;
+		}
+
+		/**
+		 * Set send button status
+		 *
+		 * @param $id
+		 * @param bool $echo
+		 * @param bool $text_only
+		 *
+		 * @return string|void
+		 */
+		function set_status( $id, $echo = true, $text_only = false ) {
+			$is_smushed = get_post_meta( $id, "wp-smpro-is-smushed", true );
+
+			// if the image is smushed
+			if ( ! empty( $is_smushed ) ) {
+				// the status
+				$data = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
+
+				$bytes   = isset( $data['stats']['bytes'] ) ? $data['stats']['bytes'] : 0;
+				$percent = isset( $data['stats']['percent'] ) ? $data['stats']['percent'] : 0;
+				$percent = $percent < 0 ? 0 : $percent;
+
+				if ( $bytes == 0 || $percent == 0 ) {
+					$status_txt = __( 'Already Optimized', WP_SMUSH_DOMAIN );
+				} elseif ( ! empty( $percent ) && ! empty( $data['stats']['human'] ) ) {
+					$status_txt = sprintf( __( "Reduced by %s (  %01.1f%% )", WP_SMUSH_DOMAIN ), $data['stats']['human'], number_format_i18n( $percent, 2, '.', '' ) );
 				}
 
-				return false;
+				// the button text
+				$button_txt = __( 'Re-smush', WP_SMUSH_DOMAIN );
+			} else {
+
+				// the status
+				$status_txt = __( 'Not processed', WP_SMUSH_DOMAIN );
+
+				// we need to show the smush button
+				$show_button = true;
+
+				// the button text
+				$button_txt = __( 'Smush now!', WP_SMUSH_DOMAIN );
 			}
-
-			/**
-			 * Set send button status
-			 *
-			 * @param $id
-			 * @param bool $echo
-			 * @param bool $text_only
-			 *
-			 * @return string|void
-			 */
-			function set_status( $id, $echo = true, $text_only = false ) {
-				$is_smushed = get_post_meta( $id, "wp-smpro-is-smushed", true );
-
-				// if the image is smushed
-				if ( ! empty( $is_smushed ) ) {
-					// the status
-					$data = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
-
-					$bytes   = isset( $data['stats']['bytes'] ) ? $data['stats']['bytes'] : 0;
-					$percent = isset( $data['stats']['percent'] ) ? $data['stats']['percent'] : 0;
-					$percent = $percent < 0 ? 0 : $percent;
-
-					if ( $bytes == 0 || $percent == 0 ) {
-						$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
-					} elseif ( ! empty( $percent ) && ! empty( $data['stats']['human'] ) ) {
-						$status_txt = sprintf( __( "Reduced by %s (  %01.1f%% )", WP_SMPRO_DOMAIN ), $data['stats']['human'], number_format_i18n( $percent, 2, '.', '' ) );
-					}
-
-					// the button text
-					$button_txt = __( 'Re-smush', WP_SMPRO_DOMAIN );
-				} else {
-
-					// the status
-					$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
-
-					// we need to show the smush button
-					$show_button = true;
-
-					// the button text
-					$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
-				}
-				if ( $text_only ) {
-					return $status_txt;
-				}
-				$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $is_smushed, $echo );
-				if ( ! $echo ) {
-					return $text;
-				}
+			if ( $text_only ) {
+				return $status_txt;
 			}
+			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $is_smushed, $echo );
+			if ( ! $echo ) {
+				return $text;
+			}
+		}
 
-			/**
-			 * Print the column html
-			 *
-			 * @param string $id Media id
-			 * @param string $status_txt Status text
-			 * @param string $button_txt Button label
-			 * @param boolean $show_button Whether to shoe the button
-			 *
-			 * @return null
-			 */
-			function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true ) {
-				$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
-				// don't proceed if attachment is not image, or if image is not a jpg, png or gif
-				if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
+		/**
+		 * Print the column html
+		 *
+		 * @param string $id Media id
+		 * @param string $status_txt Status text
+		 * @param string $button_txt Button label
+		 * @param boolean $show_button Whether to shoe the button
+		 *
+		 * @return null
+		 */
+		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true ) {
+			$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
+			// don't proceed if attachment is not image, or if image is not a jpg, png or gif
+			if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
+				return;
+			}
+			$html = '
+		<p class="smush-status">' . $status_txt . '</p>';
+			// if we aren't showing the button
+			if ( ! $show_button ) {
+				if ( $echo ) {
+					echo $html;
+
 					return;
-				}
-				$html = '
-			<p class="smush-status">' . $status_txt . '</p>';
-				// if we aren't showing the button
-				if ( ! $show_button ) {
-					if ( $echo ) {
-						echo $html;
-
-						return;
-					} else {
-						if ( ! $smushed ) {
-							$class = ' currently-smushing';
-						} else {
-							$class = ' smushed';
-						}
-
-						return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
-					}
-				}
-				if ( ! $echo ) {
-					$html .= '
-				<button id="wp-smush-send" class="button button-primary" data-id="' . $id . '">
-	                <span>' . $button_txt . '</span>
-				</button>';
+				} else {
 					if ( ! $smushed ) {
-						$class = ' unsmushed';
+						$class = ' currently-smushing';
 					} else {
 						$class = ' smushed';
 					}
 
 					return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
-				} else {
-					$html .= '<button id="wp-smush-send" class="button" data-id="' . $id . '">
-                    <span>' . $button_txt . '</span>
-				</button>';
-					echo $html;
 				}
 			}
+			if ( ! $echo ) {
+				$html .= '
+			<button id="wp-smush-send" class="button button-primary" data-id="' . $id . '">
+                <span>' . $button_txt . '</span>
+			</button>';
+				if ( ! $smushed ) {
+					$class = ' unsmushed';
+				} else {
+					$class = ' smushed';
+				}
+
+				return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+			} else {
+				$html .= '<button id="wp-smush-send" class="button" data-id="' . $id . '">
+                <span>' . $button_txt . '</span>
+			</button>';
+				echo $html;
+			}
 		}
-	}
+		}
 
 	$WpSmush = new WpSmush();
 	global $WpSmush;
