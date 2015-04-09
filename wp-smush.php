@@ -35,11 +35,50 @@ if ( ! function_exists( 'download_url' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
 }
 
+
+/**
+ * Constants
+ */
+define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
+define( 'WP_SMUSH_VERSON',  "2.0" );
+
+define( 'WP_SMUSH_DOMAIN', 'wp_smush' );
+define( 'WP_SMUSH_UA', 'WP Smush PRO/' . $this->version . '(' . '+' . get_site_url() . ')' );;
+define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
+define( 'WP_SMUSH_MAX_BYTES', 1000000 );
+define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 8000000 );
+define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
+
+// The number of images (including generated sizes) that can return errors before abandoning all hope.
+// N.B. this doesn't work with the bulk uploader, since it creates a new HTTP request
+// for each image.  It does work with the bulk smusher, though.
+define( 'WP_SMUSHIT_ERRORS_BEFORE_QUITTING', 3 * count( get_intermediate_image_sizes() ) );
+
+define( 'WP_SMUSHIT_AUTO', intval( get_option( 'wp_smushit_smushit_auto', 0 ) ) );
+define( 'WP_SMUSHIT_TIMEOUT', intval( get_option( 'wp_smushit_smushit_timeout', 60 ) ) );
+
+define( 'WP_SMUSHIT_DEBUG', get_option( 'wp_smushit_smushit_debug', '' ) );
+
+/*
+Each service has a setting specifying whether it should be used automatically on upload.
+Values are:
+	-1  Don't use (until manually enabled via Media > Settings)
+	0   Use automatically
+	n   Any other number is a Unix timestamp indicating when the service can be used again
+*/
+
+define( 'WP_SMUSHIT_AUTO_OK', 0 );
+define( 'WP_SMUSHIT_AUTO_NEVER', - 1 );
+
+require_once WP_SMUSH_DIR ."/lib/class-wp-smush-migrate.php";
+
+
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
 
-		var $version = "2.0";
+		var $version = WP_SMUSH_VERSON;
 
 		/**
 		 * Meta key for api validity
@@ -67,62 +106,32 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		const MIGRATED_VERSION = "wp-smush-migrated-version";
 
 
+		/**
+		 * Instance of WpSmushMigrate class
+		 *
+		 * @var WpSmushMigrate  $_migrator
+		 */
 		private $_migrator;
 
 		/**
 		 * Constructor
 		 */
 		function __construct() {
-
-			/**
-			 * Constants
-			 */
-			define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
-
-			define( 'WP_SMUSH_DOMAIN', 'wp_smush' );
-			define( 'WP_SMUSH_UA', 'WP Smush PRO/' . $this->version . '(' . '+' . get_site_url() . ')' );;
-			define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
-			define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
-			define( 'WP_SMUSH_MAX_BYTES', 1000000 );
-			define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 8000000 );
-			define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
-
-			// The number of images (including generated sizes) that can return errors before abandoning all hope.
-			// N.B. this doesn't work with the bulk uploader, since it creates a new HTTP request
-			// for each image.  It does work with the bulk smusher, though.
-			define( 'WP_SMUSHIT_ERRORS_BEFORE_QUITTING', 3 * count( get_intermediate_image_sizes() ) );
-
-			define( 'WP_SMUSHIT_AUTO', intval( get_option( 'wp_smushit_smushit_auto', 0 ) ) );
-			define( 'WP_SMUSHIT_TIMEOUT', intval( get_option( 'wp_smushit_smushit_timeout', 60 ) ) );
-
-			define( 'WP_SMUSHIT_DEBUG', get_option( 'wp_smushit_smushit_debug', '' ) );
-
-			/*
-			Each service has a setting specifying whether it should be used automatically on upload.
-			Values are:
-				-1  Don't use (until manually enabled via Media > Settings)
-				0   Use automatically
-				n   Any other number is a Unix timestamp indicating when the service can be used again
-			*/
-
-			define( 'WP_SMUSHIT_AUTO_OK', 0 );
-			define( 'WP_SMUSHIT_AUTO_NEVER', - 1 );
+			$this->_migrator = new WpSmushMigrate();
 
 			/**
 			 * Hooks
 			 */
 			if ( WP_SMUSHIT_AUTO == WP_SMUSHIT_AUTO_OK ) {
-				add_filter( 'wp_generate_attachment_metadata', array( &$this, 'resize_from_meta_data' ), 10, 2 );
+				add_filter( 'wp_generate_attachment_metadata', array( $this, 'resize_from_meta_data' ), 10, 2 );
 			}
-			add_filter( 'manage_media_columns', array( &$this, 'columns' ) );
-			add_action( 'manage_media_custom_column', array( &$this, 'custom_column' ), 10, 2 );
-			add_action( 'admin_init', array( &$this, 'admin_init' ) );
-			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
-			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
-
+			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
+			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
+			add_action( 'admin_init', array( $this, 'admin_init' ) );
+			add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
+			add_action( 'admin_action_bulk_smushit', array( $this, 'bulk_action_handler' ) );
 			add_action("admin_init", array( $this, "migrate" ));
-			require_once WP_SMUSH_DIR ."/lib/class-wp-smush-migrate.php";
-			$this->_migrator = new WpSmushMigrate();
+
 		}
 
 		function WpSmush() {
@@ -245,23 +254,61 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
+		 * Fills $placeholder array with values from $data array without creating new keys
+		 *
+		 * @param array $placeholders
+		 * @param array $data
+		 *
+		 * @return array
+		 */
+		private function _array_fill_placeholders(array $placeholders, array $data){
+			return array_merge($placeholders, array_intersect_key($data, $placeholders));
+		}
+
+		/**
+		 * Returns signature for single size of the smush api message to be saved to db;
+		 *
+		 * @return array
+		 */
+		private function _get_size_signature(){
+			return array(
+				'compression' => -1,
+				'bytes_saved' => -1,
+				'before_size' => -1,
+				'after_size' => -1,
+				'time' => -1
+			);
+		}
+
+		/**
 		 * Read the image paths from an attachment's meta data and process each image
 		 * with wp_smushit().
 		 *
 		 * This method also adds a `wp_smushit` meta key for use in the media library.
-		 *
 		 * Called after `wp_generate_attachment_metadata` is completed.
+		 *
+		 * @param $meta
+		 * @param null $ID
+		 * @param bool $force_resmush
+		 *
+		 * @return mixed
 		 */
 		function resize_from_meta_data( $meta, $ID = null, $force_resmush = true ) {
-			global $log;
 
 			//Flag to check, if full image needs to be smushed or not
 			$smush_full = true;
-			$stats      = array();
+			$stats = array(
+				"stats" => array_merge( $this->_get_size_signature(), array(
+						'api_version' => -1,
+						'lossy' => -1
+					)
+				),
+				'sizes' => array()
+			);
 
-			if ( $ID && wp_attachment_is_image( $ID ) === false ) {
-				return $meta;
-			}
+			$size_before    = $size_after = $compression = $total_time = $bytes_saved = 0;
+
+			if ( $ID && wp_attachment_is_image( $ID ) === false ) return $meta;
 
 			//File path and URL for original image
 			$attachment_file_path = get_attached_file( $ID );
@@ -269,55 +316,30 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			// If images has other registered size, smush them first
 			if ( ! empty( $meta['sizes'] ) ) {
-				$size_before    = $size_after = $compression = $total_time = $bytes_saved = 0;
-				$stats['stats'] = array();
-				foreach ( $meta['sizes'] as $size_key => $size_data ) {
-					$response = '';
 
-					if ( $size_key == 'large' ) {
-						//if large size is registered for image, skip the full
-						$smush_full = false;
-					}
+				foreach ( $meta['sizes'] as $size_key => $size_data ) {
+
+					if ( $size_key == 'large' ) $smush_full = false;
 
 					//Check if size is already smushed
-					if ( ! $force_resmush && $this->should_resmush( @$meta['sizes'][ $size_key ]['wp_smushit'] ) === false ) {
+					if ( ! $force_resmush && $this->should_resmush( @$meta['sizes'][ $size_key ]['wp_smushit'] ) === false ) continue;
 
-						continue;
-
-					}
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and rpelace the filename.
 
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
-
 					$attachment_file_url_size = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
 
 					//Store details for each size key
 					$response = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
 
-					/**
-					 * @todo move this code to a function
-					 */
 					if ( ! empty( $response['data'] ) ) {
-
-						$stats['sizes'][ $size_key ] = array(
-							'after_size'  => $response['data']->after_size,
-							'before_size' => $response['data']->before_size,
-							'bytes_saved' => $response['data']->bytes_saved,
-							'compression' => $response['data']->compression,
-							'time'        => $response['data']->time
-						);
+						$stats['sizes'][ $size_key ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $response['data'] );
 					}
 
-					/**
-					 * @todo move this code to a function
-					 */
 					//Total Stats, store all data in bytes
-					$size_before += ! empty( $response['data']->before_size ) ? (int) $response['data']->before_size : 0;
-					$size_after += ( ! empty( $response['data']->after_size ) && $response['data']->after_size > 0 ) ? (int) $response['data']->after_size : (int) $response['data']->before_size;
-					$total_time += ! empty( $response['data']->time ) ? (float) $response['data']->time : 0;
-					$compression += ( ! empty( $response['data']->compression ) && $response['data']->compression > 0 ) ? (float) $response['data']->compression : 0;
-					$bytes_saved += ( ! empty( $response['data']->bytes_saved ) && $response['data']->bytes_saved > 0 ) ? (float) $response['data']->bytes_saved : 0;
+					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
+						= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
 					if ( empty( $stats['stats']['api_version'] ) ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
@@ -326,42 +348,17 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 
-			if ( $smush_full && ( $force_resmush || $this->should_resmush( @$meta['wp_smushit'] ) ) ) {
+			if ( $smush_full && ( $force_resmush || $this->should_resmush( $meta['wp_smushit'] ) ) ) {
 
 				$full_image_response = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
 				if ( ! empty( $full_image_response['data'] ) ) {
-
-					/**
-					 * @todo move this code to a function
-					 */
-					$stats['sizes']['full'] = array(
-						'before_size' => $full_image_response['data']->before_size,
-						'after_size'  => $full_image_response['data']->after_size,
-						'compression' => $full_image_response['data']->compression,
-						'time'        => $full_image_response['data']->time,
-						'bytes_saved' => $full_image_response['data']->bytes_saved,
-					);
+					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
 				}
 
-				/**
-				 * @todo move this code to a function
-				 */
-				//Total Stats, store all data in bytes
-				$size_before += ! empty( $full_image_response['data']->before_size ) ? (int) $full_image_response['data']->before_size : 0;
-				$size_after += ( ! empty( $full_image_response['data']->after_size ) && $full_image_response['data']->after_size > 0 ) ? (int) $full_image_response['data']->after_size : (int) $full_image_response['data']->before_size;
-				$total_time += ! empty( $full_image_response['data']->time ) ? (float) $full_image_response['data']->time : 0;
-				$compression += ( ! empty( $full_image_response['data']->compression ) && $full_image_response['data']->compression > 0 ) ? (float) $full_image_response['data']->compression : 0;
-				$bytes_saved += ( ! empty( $full_image_response['data']->bytes_saved ) && $full_image_response['data']->bytes_saved > 0 ) ? (float) $full_image_response['data']->bytes_saved : 0;
-			}
+				list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], 	$stats['stats']['bytes_saved'] )
+					= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
-			/**
-			 * @todo move this code to a function
-			 */
-			$stats['stats']['before_size'] = $size_before;
-			$stats['stats']['after_size']  = $size_after;
-			$stats['stats']['compression'] = $compression;
-			$stats['stats']['time']        = $total_time;
-			$stats['stats']['bytes_saved'] = $bytes_saved;
+			}
 
 			//Set smush status for all the images
 			update_post_meta( $ID, WP_SMUSH_PREFIX . 'data', $stats );
@@ -771,6 +768,26 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			update_option( self::MIGRATED_VERSION , $this->version);
 
 		}
+
+		/**
+		 * @param Object $response_data
+		 * @param $size_before
+		 * @param $size_after
+		 * @param $total_time
+		 * @param $compression
+		 * @param $bytes_saved
+		 *
+		 * @return array
+		 */
+		private function _update_stats_data( $response_data, $size_before, $size_after, $total_time, $compression, $bytes_saved ) {
+			$size_before += ! empty( $response_data->before_size ) ? (int) $response_data->before_size : 0;
+			$size_after += ( ! empty( $response_data->after_size ) && $response_data->after_size > 0 ) ? (int) $response_data->after_size : (int) $response_data->before_size;
+			$total_time += ! empty( $response_data->time ) ? (float) $response_data->time : 0;
+			$compression += ( ! empty( $response_data->compression ) && $response_data->compression > 0 ) ? (float) $response_data->compression : 0;
+			$bytes_saved += ( ! empty( $response_data->bytes_saved ) && $response_data->bytes_saved > 0 ) ? (float) $response_data->bytes_saved : 0;
+
+			return array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
+		}
 	}
 
 	$WpSmush = new WpSmush();
@@ -795,5 +812,4 @@ if ( ! function_exists( 'wp_basename' ) ) {
 	}
 }
 
-$migrator = new WpSmushMigrate();
-$data = unserialize('a:6:{s:5:"width";i:990;s:6:"height";i:458;s:4:"file";s:17:"2014/11/home1.jpg";s:5:"sizes";a:3:{s:9:"thumbnail";a:5:{s:4:"file";s:17:"home1-150x150.jpg";s:5:"width";i:150;s:6:"height";i:150;s:9:"mime-type";s:10:"image/jpeg";s:10:"wp_smushit";s:27:"Reduced by 0.2% (22&nbsp;B)";}s:6:"medium";a:5:{s:4:"file";s:17:"home1-300x138.jpg";s:5:"width";i:300;s:6:"height";i:138;s:9:"mime-type";s:10:"image/jpeg";s:10:"wp_smushit";s:28:"Reduced by 0.7% (115&nbsp;B)";}s:14:"post-thumbnail";a:5:{s:4:"file";s:17:"home1-604x270.jpg";s:5:"width";i:604;s:6:"height";i:270;s:9:"mime-type";s:10:"image/jpeg";s:10:"wp_smushit";s:28:"Reduced by 1.3% (665&nbsp;B)";}}s:10:"image_meta";a:11:{s:8:"aperture";i:0;s:6:"credit";s:0:"";s:6:"camera";s:0:"";s:7:"caption";s:0:"";s:17:"created_timestamp";i:0;s:9:"copyright";s:0:"";s:12:"focal_length";i:0;s:3:"iso";i:0;s:13:"shutter_speed";i:0;s:5:"title";s:0:"";s:11:"orientation";i:0;}s:10:"wp_smushit";s:28:"Reduced by 0.2% (199&nbsp;B)";}');
+
