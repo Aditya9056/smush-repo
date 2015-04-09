@@ -24,6 +24,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $bulk;
 
+		var $total_count = '';
+		var $smushed_count = '';
+		var $stats = '';
+
 		/**
 		 * Constructor
 		 */
@@ -46,6 +50,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			add_action( "admin_enqueue_scripts", array( $this, "admin_enqueue_scripts" ) );
 
+			$this->total_count   = $this->total_count();
+			$this->smushed_count = $this->smushed_count();
+			$this->stats         = $this->global_stats();
+
 		}
 
 		/**
@@ -57,7 +65,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$this,
 				'ui'
 			) );
-			//Register Debug page only if WP_SMPRO_DEBUG is defined and true
+			//Register Debug page only if WP_SMUSH_DEBUG is defined and true
 			if ( defined( 'WP_SMUSHIT_DEBUG' ) && WP_SMUSHIT_DEBUG ) {
 				add_media_page( 'WP Smush Error Log', 'Error Log', 'edit_others_posts', 'wp-smushit-errorlog', array(
 					$this,
@@ -318,7 +326,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<?php wp_nonce_field( 'wp-smushit-bulk', '_wpnonce' ); ?>
 						<br/>
 						<?php $this->progress_ui(); ?>
-						<button type="submit" class="button-primary action" name="smush-all"><?php _e( 'Bulk Smush all my images', WP_SMUSH_DOMAIN ) ?></button>
+						<?php $this->setup_button(); ?>
 						<?php _e( "<p><em>N.B. If your server <tt>gzip</tt>s content you may not see the progress updates as your files are processed.</em></p>", WP_SMUSH_DOMAIN ); ?>
 						<?php
 						if ( WP_SMUSHIT_DEBUG ) {
@@ -356,7 +364,42 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		<?php
 		}
 
+		/**
+		 * Print out the progress bar
+		 */
 		function progress_ui() {
+
+			// calculate %ages
+			$smushed_pc = $this->smushed_count / $this->total_count * 100;
+
+			$progress_ui = '<div id="progress-ui">';
+
+			// display the progress bars
+			$progress_ui .= '<div id="wp-smush-progress-wrap">
+                                                <div id="wp-smush-fetched-progress" class="wp-smush-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
+                                                <p id="wp-smush-compression">'
+			                . __( "Reduced by ", WP_SMUSH_DOMAIN )
+			                . '<span id="human">' . $this->stats['human'] . '</span>( <span id="percent">' . number_format_i18n( $this->stats['percent'], 2, '.', '' ) . '</span>% )
+                                                </p>
+                                        </div>';
+
+			// status divs to show completed count/ total count
+			$progress_ui .= '<div id="wp-smush-progress-status">
+
+                            <p id="fetched-status">' .
+			                sprintf(
+				                __(
+					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> total attachments have been smushed', WP_SMUSH_DOMAIN
+				                ), $this->smushed_count, $this->total_count
+			                ) .
+			                '</p>
+                                        </div>
+				</div>';
+			// print it out
+			echo $progress_ui;
+		}
+
+		function aprogress_ui() {
 			$bulk  = new WpSmushitBulk;
 			$total = count( $bulk->get_attachments() );
 			$total = $total ? $total : 1; ?>
@@ -379,6 +422,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $WpSmush;
 
 			$should_continue = true;
+			$is_premium      = false;
 
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
 				wp_send_json_error( 'missing id' );
@@ -386,7 +430,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//if not premium
 			$is_premium = $WpSmush->is_premium();
-			$is_premium = false;
 
 			if ( ! $is_premium ) {
 				//Free version bulk smush, check the transient counter calue
@@ -407,11 +450,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
-			$meta = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id, false );
-
-			wp_update_attachment_metadata( $attachment_id, $meta );
-
-			wp_send_json_success( 'processed' );
+			$stats = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id, false );
+			exit;
+			wp_send_json_success( $stats );
 		}
 
 		/**
@@ -493,6 +534,231 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			return true;
+		}
+
+		/**
+		 * The UI for bulk smushing
+		 *
+		 * @return null
+		 */
+		function all_ui( $send_ids ) {
+
+			// if there are no images in the media library
+			if ( $this->total_count < 1 ) {
+				printf(
+					__(
+						'<p>Please <a href="%s">upload some images</a>.</p>', WP_SMUSH_DOMAIN
+					), admin_url( 'media-new.php' )
+				);
+
+				// no need to print out the rest of the UI
+				return;
+			}
+
+			// otherwise, start displaying the UI
+			?>
+			<div id="all-bulk" class="wp-smush-bulk-wrap">
+				<?php
+				// everything has been smushed, display a notice
+				if ( $this->smushed_count === $this->total_count ) {
+					?>
+					<p>
+						<?php
+						_e( 'All your images are already smushed!', WP_SMUSH_DOMAIN );
+						?>
+					</p>
+				<?php
+				} else {
+					$this->selected_ui( $send_ids, '' );
+					// we have some smushing to do! :)
+					// first some warnings
+					?>
+					<p>
+						<?php
+						// let the user know that there's an alternative
+						printf( __( 'You can also smush images individually from your <a href="%s">Media Library</a>.', WP_SMUSH_DOMAIN ), admin_url( 'upload.php' ) );
+						?>
+					</p>
+				<?php
+				}
+
+				// display the progress bar
+				$this->progress_ui();
+
+				// display the appropriate button
+				$this->setup_button();
+
+				?>
+			</div>
+		<?php
+		}
+
+		/**
+		 * Total Image count
+		 * @return int
+		 */
+		function total_count() {
+			$query   = array(
+				'fields'         => 'ids',
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'order'          => 'ASC',
+				'posts_per_page' => - 1
+			);
+			$results = new WP_Query( $query );
+			$count   = ! empty( $results->post_count ) ? $results->post_count : 0;
+
+			// send the count
+			return $count;
+		}
+
+		/**
+		 * Optimised images count
+		 *
+		 * @param bool $return_ids
+		 *
+		 * @return array|int
+		 */
+		function smushed_count( $return_ids = false ) {
+			$query = array(
+				'fields'         => 'ids',
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'order'          => 'ASC',
+				'posts_per_page' => - 1,
+				'meta_key'       => "wp-smush-data"
+			);
+
+			$results = new WP_Query( $query );
+			if ( ! $return_ids ) {
+				$count = ! empty( $results->post_count ) ? $results->post_count : 0;
+			} else {
+				return $results->posts;
+			}
+
+			// send the count
+			return $count;
+		}
+
+		/**
+		 * Display Thumbnails, if bulk action is choosen
+		 */
+		function selected_ui( $send_ids, $received_ids ) {
+			if ( empty( $received_ids ) ) {
+				return;
+			}
+
+			?>
+			<div id="select-bulk" class="wp-smush-bulk-wrap">
+				<p>
+					<?php
+					printf(
+						__(
+							'<strong>%d of %d images</strong> were sent for smushing:',
+							WP_SMUSH_DOMAIN
+						),
+						count( $send_ids ), count( $received_ids )
+					);
+					?>
+				</p>
+				<ul id="wp-smush-selected-images">
+					<?php
+					foreach ( $received_ids as $attachment_id ) {
+						$this->attachment_ui( $attachment_id );
+					}
+					?>
+				</ul>
+			</div>
+		<?php
+		}
+
+		/**
+		 * Display the bulk smushing button
+		 *
+		 * @todo Add the API status here, next to the button
+		 */
+		function setup_button() {
+			$button = $this->button_state();
+			?>
+			<button id="<?php echo $button['id']; ?>" class="button button-primary wp-smush-button" <?php echo $button['disabled']; ?> name="smush-all">
+				<span><?php echo $button['text'] ?></span>
+			</button>
+			<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
+				<span><?php _e( 'Cancel', WP_SMUSH_DOMAIN ); ?></span>
+			</button>
+		<?php
+		}
+
+		function global_stats() {
+
+			global $wpdb, $WpSmush;
+
+			$sql = "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s";
+
+			$global_data = $wpdb->get_col( $wpdb->prepare( $sql, WP_SMUSH_PREFIX . "data" ) );
+
+			$smush_data = array(
+				'size_before' => 0,
+				'size_after'  => 0,
+				'percent'     => 0,
+				'human'       => 0
+			);
+
+			if ( ! empty( $global_data ) ) {
+				foreach ( $global_data as $data ) {
+					$data = maybe_unserialize( $data );
+					if ( ! empty( $data['stats'] ) ) {
+						$smush_data['size_before'] += ! empty( $data['stats']['before_size'] ) ? (int) $data['stats']['before_size'] : 0;
+						$smush_data['size_after'] += ! empty( $data['stats']['after_size'] ) ? (int) $data['stats']['after_size'] : 0;
+					}
+				}
+			}
+
+			$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
+
+			if ( $smush_data['bytes'] < 0 ) {
+				$smush_data['bytes'] = 0;
+			}
+
+			if ( $smush_data['size_before'] > 0 ) {
+				$smush_data['percent'] = ( $smush_data['bytes'] / $smush_data['size_before'] ) * 100;
+			}
+
+			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
+
+			return $smush_data;
+		}
+
+		/**
+		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not
+		 *
+		 * @param $request_status
+		 *
+		 * @return array
+		 */
+		private function button_state() {
+			$button = array(
+				'cancel' => false,
+			);
+
+			// if we have nothing left to smush
+			// disable the buttons
+			if ( $this->smushed_count === $this->total_count ) {
+				$button['text']   = __( 'All done!', WP_SMPRO_DOMAIN );
+				$button['id']     = "wp-smush-finished";
+				$button['cancel'] = ' disabled="disabled"';
+
+			} else {
+
+				$button['text']   = __( 'Bulk Smush!', WP_SMPRO_DOMAIN );
+				$button['cancel'] = ' disabled="disabled"';
+				$button['id']     = "wp-smush-send";
+
+			}
+
+			return $button;
 		}
 	}
 
