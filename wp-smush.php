@@ -43,7 +43,7 @@ define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
 define( 'WP_SMUSH_VERSON',  "2.0" );
 
 define( 'WP_SMUSH_DOMAIN', 'wp_smush' );
-define( 'WP_SMUSH_UA', 'WP Smush PRO/' . $this->version . '(' . '+' . get_site_url() . ')' );;
+define( 'WP_SMUSH_UA', 'WP Smush PRO/' . WP_SMUSH_VERSON . '(' . '+' . get_site_url() . ')' );;
 define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_SMUSH_MAX_BYTES', 1000000 );
