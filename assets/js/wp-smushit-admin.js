@@ -193,7 +193,7 @@ jQuery('document').ready(function ($) {
 		}
 
 		//Send the ajax request
-		WP_Smush.smushitRequest($id, 0, true, current_elem).complete(function () {
+		return WP_Smush.smushitRequest($id, 0, true, current_elem).complete(function () {
 			"use strict";
 			current_elem.prop("disabled", false);
 		});

@@ -119,7 +119,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'progress'             => __( 'Smushing in Progress', WP_SMUSH_DOMAIN ),
 				'done'                 => __( 'All done!', WP_SMUSH_DOMAIN ),
 				'something_went_wrong' => __( 'Ops!... something went wrong', WP_SMUSH_DOMAIN ),
-				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN )
+				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN ),
+				'smush_it'              => __( 'Smush it', WP_SMUSH_DOMAIN ),
+				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN )
 			);
 
 			wp_localize_script( $handle, 'wp_smushit_msgs', $wp_smushit_msgs );
