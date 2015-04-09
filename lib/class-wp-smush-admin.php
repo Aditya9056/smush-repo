@@ -77,18 +77,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function register() {
 			global $WpSmush;
 			/* Register our script. */
-			wp_register_script( 'wp-smushit-admin-js', WP_SMUSHIT_URL . 'assets/js/wp-smushit-admin.js', array( 'jquery' ), $WpSmush->version );
+			wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array( 'jquery' ), $WpSmush->version );
 
 
 			/* Register Style. */
-			wp_register_style( 'wp-smushit-admin-css', WP_SMUSHIT_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
-			wp_register_style( 'wp-smushit-sweet-alert', WP_SMUSHIT_URL . 'assets/css/sweet-alert.css' );
+			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
+			wp_register_style( 'wp-smushit-sweet-alert', WP_SMUSH_URL . 'assets/css/sweet-alert.css' );
 
 			// localize translatable strings for js
 			$this->localize();
 
-			wp_enqueue_script( 'wp-smushit-admin-media-js', WP_SMUSHIT_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
-			wp_enqueue_script( 'wp-smushit-admin-sweetalert-js', WP_SMUSHIT_URL . 'assets/js/sweet-alert.min.js', array( 'jquery' ) );
+			wp_enqueue_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
+			wp_enqueue_script( 'wp-smushit-admin-sweetalert-js', WP_SMUSH_URL . 'assets/js/sweet-alert.min.js', array( 'jquery' ) );
 
 		}
 
@@ -435,7 +435,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			/**
 			 * Error Log Form
 			 */
-			require_once( WP_SMUSHIT_DIR . '/lib/error_log.php' );
+			require_once( WP_SMUSH_DIR . '/lib/error_log.php' );
 		}
 
 		/**
@@ -458,12 +458,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id );
 
-			$new_meta = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
+			$WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 
-			wp_update_attachment_metadata( $attachment_id, $new_meta );
+			$status = $WpSmush->set_status( $attachment_id, false, true );
 
 			/** Send stats **/
-			wp_send_json_success(  );
+			wp_send_json_success( $status );
 		}
 
 		/**

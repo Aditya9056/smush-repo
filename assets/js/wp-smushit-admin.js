@@ -91,6 +91,9 @@ jQuery('document').ready(function ($) {
 				if (typeof response.data != 'undefined') {
 					//Append the smush stats or error
 					var $status = current_elem.parent().find('.smush-status');
+					if ( response.success ) {
+						current_elem.remove();
+					}
 					$status.html(response.data);
 				}
 			}
@@ -192,7 +195,7 @@ jQuery('document').ready(function ($) {
 		//Send the ajax request
 		WP_Smush.smushitRequest($id, 0, true, current_elem).complete(function () {
 			"use strict";
-			$this.prop("disabled", false);
+			current_elem.prop("disabled", false);
 		});
 	};
 
