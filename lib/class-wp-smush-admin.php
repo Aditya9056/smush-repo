@@ -682,11 +682,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function setup_button() {
 			$button = $this->button_state();
 			?>
-			<button id="<?php echo $button['id']; ?>" class="button button-primary wp-smush-button" <?php echo $button['disabled']; ?> name="smush-all">
+			<button id="<?php echo $button['id']; ?>" class="button button-primary wp-smush-button" name="smush-all">
 				<span><?php echo $button['text'] ?></span>
-			</button>
-			<button id="wp-smpro-cancel" class="button button-secondary disabled" <?php echo $button['cancel']; ?>>
-				<span><?php _e( 'Cancel', WP_SMUSH_DOMAIN ); ?></span>
 			</button>
 		<?php
 		}
@@ -746,13 +743,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// if we have nothing left to smush
 			// disable the buttons
 			if ( $this->smushed_count === $this->total_count ) {
-				$button['text']   = __( 'All done!', WP_SMPRO_DOMAIN );
+				$button['text']   = __( 'All done!', WP_SMUSH_DOMAIN );
 				$button['id']     = "wp-smush-finished";
 				$button['cancel'] = ' disabled="disabled"';
 
 			} else {
 
-				$button['text']   = __( 'Bulk Smush!', WP_SMPRO_DOMAIN );
+				$button['text']   = __( 'Bulk Smush!', WP_SMUSH_DOMAIN );
 				$button['cancel'] = ' disabled="disabled"';
 				$button['id']     = "wp-smush-send";
 

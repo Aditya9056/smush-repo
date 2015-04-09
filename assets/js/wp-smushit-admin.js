@@ -214,7 +214,11 @@ jQuery('document').ready(function ($) {
 		// prevent the default action
 		e.preventDefault();
 
+		//Disable bulk smush button
 		$(this).attr('disabled', 'disabled');
+
+		//Enable Cancel button
+		$('#wp-smush-cancel').removeAttr('disabled');
 
 		wp_smushit_bulk_smush();
 
@@ -239,5 +243,24 @@ jQuery('document').ready(function ($) {
 		$this.prop("disabled", true);
 
 		return;
+	});
+
+	/**
+	 * Handle cancel button click
+	 */
+	$('#wp-smush-cancel').on('click', function (e) {
+		// prevent the default action
+		e.preventDefault();
+
+		//Disable bulk smush button
+		$(this).attr('disabled', 'disabled');
+
+		//Enable Cancel button
+		$('#wp-smush-cancel').removeAttr('disabled');
+
+		wp_smushit_bulk_smush();
+
+		return;
+
 	});
 });

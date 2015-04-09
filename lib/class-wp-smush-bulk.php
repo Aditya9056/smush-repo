@@ -18,22 +18,37 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 	class WpSmushitBulk {
 
 		/**
-		 * Fetch all the attachments
+		 * Fetch all the unsmushed attachments
 		 * @return array $attachments
 		 */
 		function get_attachments() {
 			if ( ! isset( $_REQUEST['ids'] ) ) {
-				$attachments = get_posts( array(
-					'numberposts'    => - 1,
+				$args            = array(
+					'fields'         => 'ids',
 					'post_type'      => 'attachment',
-					'post_mime_type' => 'image',
-					'fields'         => 'ids'
-				) );
+					'post_status'    => 'any',
+					'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+					'order'          => 'ASC',
+					'posts_per_page' => - 1,
+					'meta_query'     => array(
+						'relation' => 'AND',
+						array(
+							'key'     => 'wp-smpro-smush-data',
+							'compare' => 'NOT EXISTS'
+						),
+						array(
+							'key'     => 'wp-smush-data',
+							'compare' => 'NOT EXISTS'
+						)
+					),
+				);
+				$query           = new WP_Query( $args );
+				$unsmushed_posts = $query->posts;
 			} else {
 				return explode( ',', $_REQUEST['ids'] );
 			}
 
-			return $attachments;
+			return $unsmushed_posts;
 		}
 
 	}
