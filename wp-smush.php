@@ -753,8 +753,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$size_before += ! empty( $response_data->before_size ) ? (int) $response_data->before_size : 0;
 			$size_after += ( ! empty( $response_data->after_size ) && $response_data->after_size > 0 ) ? (int) $response_data->after_size : (int) $response_data->before_size;
 			$total_time += ! empty( $response_data->time ) ? (float) $response_data->time : 0;
-			$compression += ( ! empty( $response_data->compression ) && $response_data->compression > 0 ) ? (float) $response_data->compression : 0;
 			$bytes_saved += ( ! empty( $response_data->bytes_saved ) && $response_data->bytes_saved > 0 ) ? (float) $response_data->bytes_saved : 0;
+			$compression = ( $bytes_saved > 0 && $size_before > 0 ) ? ( ( $bytes_saved / $size_before ) * 100 ) : 0;
 
 			return array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 		}
