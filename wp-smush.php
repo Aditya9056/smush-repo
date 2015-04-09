@@ -340,7 +340,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 					//Total Stats, store all data in bytes
 					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-						= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $compression, $bytes_saved );
+						= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 
 					if ( empty( $stats['stats']['api_version'] ) ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
@@ -359,9 +359,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				//Update stats
 				list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-					= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $compression, $bytes_saved );
+					= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 
-		}
+			}
 
 			//Store stats
 			list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], $stats['stats']['bytes_saved'] ) =
@@ -758,7 +758,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$size_before += ! empty( $response_data->before_size ) ? (int) $response_data->before_size : 0;
 			$size_after += ( ! empty( $response_data->after_size ) && $response_data->after_size > 0 ) ? (int) $response_data->after_size : (int) $response_data->before_size;
 			$total_time += ! empty( $response_data->time ) ? (float) $response_data->time : 0;
-			$bytes_saved += ( ! empty( $response_data->bytes_saved ) && $response_data->bytes_saved > 0 ) ? (float) $response_data->bytes_saved : 0;
+			$bytes_saved += ( ! empty( $response_data->bytes_saved ) && $response_data->bytes_saved > 0 ) ? $response_data->bytes_saved : 0;
 			$compression = ( $bytes_saved > 0 && $size_before > 0 ) ? ( ( $bytes_saved / $size_before ) * 100 ) : 0;
 
 			return array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
