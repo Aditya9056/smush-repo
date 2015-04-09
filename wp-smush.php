@@ -31,48 +31,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if ( ! function_exists( 'download_url' ) ) {
-	require_once( ABSPATH . 'wp-admin/includes/file.php' );
-}
 
 
 /**
  * Constants
  */
-define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
 define( 'WP_SMUSH_VERSON', "2.0" );
 
+define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
 define( 'WP_SMUSH_DOMAIN', 'wp_smush' );
-define( 'WP_SMUSH_UA', 'WP Smush PRO/' . WP_SMUSH_VERSON . '(' . '+' . get_site_url() . ')' );;
+define( 'WP_SMUSH_UA', 'WP Smush/' . WP_SMUSH_VERSON . '; ' . network_home_url() );
 define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_SMUSH_MAX_BYTES', 1000000 );
 define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 8000000 );
 define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
-
-// The number of images (including generated sizes) that can return errors before abandoning all hope.
-// N.B. this doesn't work with the bulk uploader, since it creates a new HTTP request
-// for each image.  It does work with the bulk smusher, though.
-define( 'WP_SMUSHIT_ERRORS_BEFORE_QUITTING', 3 * count( get_intermediate_image_sizes() ) );
-
-define( 'WP_SMUSHIT_AUTO', intval( get_option( 'wp_smushit_smushit_auto', 0 ) ) );
-define( 'WP_SMUSHIT_TIMEOUT', intval( get_option( 'wp_smushit_smushit_timeout', 60 ) ) );
-
-define( 'WP_SMUSHIT_DEBUG', get_option( 'wp_smushit_smushit_debug', '' ) );
-
-/*
-Each service has a setting specifying whether it should be used automatically on upload.
-Values are:
-	-1  Don't use (until manually enabled via Media > Settings)
-	0   Use automatically
-	n   Any other number is a Unix timestamp indicating when the service can be used again
-*/
-
-define( 'WP_SMUSHIT_AUTO_OK', 0 );
-define( 'WP_SMUSHIT_AUTO_NEVER', - 1 );
+if ( defined( 'WP_SMUSH_TIMEOUT' ) ) define( 'WP_SMUSH_TIMEOUT', 30 );
 
 require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
 
+if ( ! function_exists( 'download_url' ) ) {
+	require_once( ABSPATH . 'wp-admin/includes/file.php' );
+}
 
 if ( ! class_exists( 'WpSmush' ) ) {
 
@@ -167,12 +147,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return __( "File URL is empty", WP_SMUSH_DOMAIN );
 			}
 
-			static $error_count = 0;
-
-			if ( $error_count >= WP_SMUSHIT_ERRORS_BEFORE_QUITTING ) {
-				return __( "Did not Smush due to previous errors", WP_SMUSH_DOMAIN );
-			}
-
 			// check that the file exists
 			if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
 				return sprintf( __( "ERROR: Could not find <span class='code'>%s</span>", WP_SMUSH_DOMAIN ), $file_path );
@@ -186,9 +160,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$file_size = filesize( $file_path );
 
 			//Check if premium user
-			$api_key = $this->_get_api_key();
-
-			$max_size = ! empty( $api_key ) ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
+			$max_size = $this->is_premium() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
@@ -200,11 +172,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			/** Send image for smushing, and fetch the response */
-			$response = $this->_post( $file_path, $file_size, $api_key );
+			$response = $this->_post( $file_path, $file_size );
 
 			if ( false === $response ) {
-				$error_count ++;
-
 				return __( 'ERROR: posting to Smush', WP_SMUSH_DOMAIN );
 			}
 			//If there is no data
@@ -382,7 +352,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return  array  Returns array containing success status, and stats
 		 */
-		function _post( $file_path, $file_size, $api_key ) {
+		function _post( $file_path, $file_size ) {
 			global $log;
 
 			$data = false;
@@ -395,6 +365,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				);
 
 				//Check if premium member, add API key
+				$api_key = $this->_get_api_key();
 				if ( ! empty( $api_key ) ) {
 					$headers['apikey'] = $api_key;
 				}
@@ -411,7 +382,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$args   = array(
 					'headers' => $headers,
 					'body'    => $file_data,
-					'timeout' => 30
+					'timeout' => WP_SMUSH_TIMEOUT,
+					'user-agent' => WP_SMUSH_UA
 				);
 				$result = wp_remote_post( WP_SMUSH_API, $args );
 
