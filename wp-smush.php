@@ -42,7 +42,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		var $version = "1.7.1";
 
 		const VALIDITY_KEY = "wp-smush-valid";
-		const API_SERVER  = 'https://premium.wpmudev.org/wdp-un.php?action=smushit_check';
+		const API_SERVER = 'https://premium.wpmudev.org/wdp-un.php?action=smushit_check';
 
 		/**
 		 * Constructor
@@ -52,15 +52,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			/**
 			 * Constants
 			 */
-			define( 'SMUSHIT_REQ_URL', 'https://smushpro.wpmudev.org/' );
-			define( 'SMUSHIT_BASE_URL', 'https://smushpro.wpmudev.org/' );
+			define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
 
-			define( 'WP_SMUSHIT_DOMAIN', 'wp_smushit' );
-			define( 'WP_SMUSHIT_UA', "WP Smush/{$this->version} (+http://wordpress.org/extend/plugins/wp-smushit/)" );
+			define( 'WP_SMUSH_DOMAIN', 'wp_smush' );
+			define( 'WP_SMUSH_UA', 'WP Smush PRO/' . $this->version . '(' . '+' . get_site_url() . ')' );;
 			define( 'WP_SMUSHIT_DIR', plugin_dir_path( __FILE__ ) );
 			define( 'WP_SMUSHIT_URL', plugin_dir_url( __FILE__ ) );
 			define( 'WP_SMUSHIT_MAX_BYTES', 1048576 );
 			define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 630000 );
+			define( 'WP_SMUSH_PREFIX', 'wp-smush' );
 
 			// The number of images (including generated sizes) that can return errors before abandoning all hope.
 			// N.B. this doesn't work with the bulk uploader, since it creates a new HTTP request
@@ -69,7 +69,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			define( 'WP_SMUSHIT_AUTO', intval( get_option( 'wp_smushit_smushit_auto', 0 ) ) );
 			define( 'WP_SMUSHIT_TIMEOUT', intval( get_option( 'wp_smushit_smushit_timeout', 60 ) ) );
-			define( 'WP_SMUSHIT_ENFORCE_SAME_URL', get_option( 'wp_smushit_smushit_enforce_same_url', 'on' ) );
 
 			define( 'WP_SMUSHIT_DEBUG', get_option( 'wp_smushit_smushit_debug', '' ) );
 
@@ -105,7 +104,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		function admin_init() {
-			load_plugin_textdomain( WP_SMUSHIT_DOMAIN, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+			load_plugin_textdomain( WP_SMUSH_DOMAIN, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 			wp_enqueue_script( 'common' );
 		}
 
@@ -123,27 +122,27 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			global $log;
 
 			if ( empty( $file_path ) ) {
-				return __( "File path is empty", WP_SMUSHIT_DOMAIN );
+				return __( "File path is empty", WP_SMUSH_DOMAIN );
 			}
 
 			if ( empty( $file_url ) ) {
-				return __( "File URL is empty", WP_SMUSHIT_DOMAIN );
+				return __( "File URL is empty", WP_SMUSH_DOMAIN );
 			}
 
 			static $error_count = 0;
 
 			if ( $error_count >= WP_SMUSHIT_ERRORS_BEFORE_QUITTING ) {
-				return __( "Did not Smush.it due to previous errors", WP_SMUSHIT_DOMAIN );
+				return __( "Did not Smush.it due to previous errors", WP_SMUSH_DOMAIN );
 			}
 
 			// check that the file exists
 			if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
-				return sprintf( __( "ERROR: Could not find <span class='code'>%s</span>", WP_SMUSHIT_DOMAIN ), $file_path );
+				return sprintf( __( "ERROR: Could not find <span class='code'>%s</span>", WP_SMUSH_DOMAIN ), $file_path );
 			}
 
 			// check that the file is writable
 			if ( ! is_writable( dirname( $file_path ) ) ) {
-				return sprintf( __( "ERROR: <span class='code'>%s</span> is not writable", WP_SMUSHIT_DOMAIN ), dirname( $file_path ) );
+				return sprintf( __( "ERROR: <span class='code'>%s</span> is not writable", WP_SMUSH_DOMAIN ), dirname( $file_path ) );
 			}
 
 			$file_size = filesize( $file_path );
@@ -155,25 +154,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
-				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), image not found.</span>', WP_SMUSHIT_DOMAIN ), $this->format_bytes( $file_size ) );
+				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), image not found.</span>', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) );
 			}
 			//Check size limit
 			if ( $file_size > $max_size ) {
-				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), size limit exceeded.</span>', WP_SMUSHIT_DOMAIN ), $this->format_bytes( $file_size ) );
-			}
-
-			// File URL check disabled 2013-10-11 - The assumption here is the URL may not be the local site URL. The image may be served via a sub-domain pointed
-			// to this same host or may be an external CDN. In either case the image would be the same. So we let the Yahoo! Smush.it service use the image URL with
-			// the assumption the remote image and the local file are the same. Also with the assumption that the CDN service will somehow be updated when the image
-			// is changed.
-			if ( ( defined( 'WP_SMUSHIT_ENFORCE_SAME_URL' ) ) && ( WP_SMUSHIT_ENFORCE_SAME_URL == 'on' ) ) {
-				$home_url      = str_replace( 'https://', 'http://', get_option( 'home' ) );
-				$error_message = "<b>Home URL: </b>" . $home_url . " <br />";
-
-				if ( stripos( $file_url, $home_url ) !== 0 ) {
-					return sprintf( __( "ERROR: <span class='code'>%s</span> must be within the website home URL (<span class='code'>%s</span>)", WP_SMUSHIT_DOMAIN ),
-						htmlentities( $file_url ), $home_url );
-				}
+				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), size limit exceeded.</span>', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) );
 			}
 
 			/** Send image for smushing, and fetch the response */
@@ -182,18 +167,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( false === $response ) {
 				$error_count ++;
 
-				return __( 'ERROR: posting to Smush.it', WP_SMUSHIT_DOMAIN );
+				return __( 'ERROR: posting to Smush.it', WP_SMUSH_DOMAIN );
 			}
 			//If there is no data
 			if ( empty( $response['data'] ) ) {
-				return __( 'Bad response from server', WP_SMUSHIT_DOMAIN );
+				return __( 'Bad response from server', WP_SMUSH_DOMAIN );
 			}
 
 			//If there are no savings, or image returned is bigger in size
 			if ( ( ! empty( $response['data']->bytes_saved ) && intval( $response['data']->bytes_saved ) <= 0 )
 			     || empty( $response['data']->image )
 			) {
-				return __( 'No savings', WP_SMUSHIT_DOMAIN );
+				return __( 'No savings', WP_SMUSH_DOMAIN );
 			}
 
 			$tempfile = $file_path . ".tmp";
@@ -218,7 +203,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$savings_str = $this->format_bytes( $response['data']->bytes_saved, 1 );
 			$savings_str = str_replace( ' ', '&nbsp;', $savings_str );
 
-			$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSHIT_DOMAIN ), $response['data']->compression, $savings_str );
+			$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSH_DOMAIN ), $response['data']->compression, $savings_str );
 
 			return $results_msg;
 		}
@@ -328,7 +313,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					'body'    => $file_data,
 					'timeout' => 10
 				);
-				$result = wp_remote_post( SMUSHIT_REQ_URL, $args );
+				$result = wp_remote_post( WP_SMUSH_API, $args );
 
 				//Close file connection
 				fclose( $file );
@@ -336,7 +321,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				if ( is_wp_error( $result ) ) {
 					//Handle error
-					$data['message'] = __( 'Error posting to server', WP_SMUSHIT_DOMAIN );
+					$data['message'] = __( 'Error posting to server', WP_SMUSH_DOMAIN );
 					$data['success'] = false;
 
 					return $data;
@@ -352,7 +337,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$image_md5 = md5( $response->data->image );
 						if ( $response->data->image_md5 != $image_md5 ) {
 							//Handle error
-							$data['message'] = __( 'Image data corrupted', WP_SMUSHIT_DOMAIN );
+							$data['message'] = __( 'Image data corrupted', WP_SMUSH_DOMAIN );
 							$data['success'] = false;
 						} else {
 							$data['success']     = true;
@@ -366,11 +351,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					}
 				} else {
 					//Server side error, get message from response
-					$data['message'] = ! empty( $response->data->message ) ? $response->data->message : __( "Image couldn't be smushed", WP_SMUSHIT_DOMAIN );
+					$data['message'] = ! empty( $response->data->message ) ? $response->data->message : __( "Image couldn't be smushed", WP_SMUSH_DOMAIN );
 					$data['success'] = false;
 				}
 			} else {
-				wp_die( __( 'WP Smush requires WordPress 2.8 or greater', WP_SMUSHIT_DOMAIN ) );
+				wp_die( __( 'WP Smush requires WordPress 2.8 or greater', WP_SMUSH_DOMAIN ) );
 			}
 
 			return $data;
@@ -407,23 +392,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function custom_column( $column_name, $id ) {
 			if ( 'smushit' == $column_name ) {
-				$data = wp_get_attachment_metadata( $id );
-
-				$is_smushed        = $this->is_smushed( $id, $data );
-				$compression_stats = $this->get_smush_stats( $id, $data );
-
-				if ( $is_smushed ) {
-					echo "<p class='wp-smush-status-title'>" . __( 'Compression stats:', WP_SMUSHIT_DOMAIN ) . "</p>";
-					echo "<div class='smush-status'>";
-					echo $compression_stats;
-					echo "</div>";
-					printf( "<button  class='button wp-smush-image' data-id='%d'>%s</button>", $id, __( 'Re-smush', WP_SMUSHIT_DOMAIN ) );
-				} else {
-					if ( wp_attachment_is_image( $id ) ) {
-						echo "<div class='smush-status'>" . __( 'Not processed', WP_SMUSHIT_DOMAIN ) . "</div>";
-						printf( "<button href='#' class='button button wp-smush-image' data-id='%d'>%s</button>", $id, __( 'Smush.it now!', WP_SMUSHIT_DOMAIN ) );
-					}
-				}
+				$this->set_status( $id );
 			}
 		}
 
@@ -478,33 +447,36 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function is_premium() {
 
-			$transient = get_site_transient( self::VALIDITY_KEY);
-			$valid = false;
-			if( empty( $transient ) ){
+			$transient = get_site_transient( self::VALIDITY_KEY );
+			$valid     = false;
+			if ( empty( $transient ) ) {
 				// call api
 				$url = self::API_SERVER . '&key=' . urlencode( $this->_get_api_key() );
 
-				$request = wp_remote_get($url, array(
-					"timeout" => 3
+				$request = wp_remote_get( $url, array(
+						"timeout" => 3
 					)
 				);
 
-				if( !is_wp_error( $request ) ){
-					$result =  wp_remote_retrieve_body( $request );
-					if ( $result['success'] )
-						$valid =  true;
+				if ( ! is_wp_error( $request ) ) {
+					$result = wp_remote_retrieve_body( $request );
+					if ( $result['success'] ) {
+						$valid = true;
+					}
 
 					set_site_transient( self::VALIDITY_KEY, true, 12 * HOUR_IN_SECONDS );
+
 					return $valid;
 
-				}else{
+				} else {
 					return $request;
 				}
 
 			}
 
-			if( !empty( $transient ) )
+			if ( ! empty( $transient ) ) {
 				return (bool) $transient;
+			}
 		}
 
 		/**
@@ -512,12 +484,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return mixed
 		 */
-		private function _get_api_key(){
+		private function _get_api_key() {
 			if ( defined( 'WPMUDEV_APIKEY' ) ) {
 				$api_key = WPMUDEV_APIKEY;
 			} else {
 				$api_key = get_site_option( 'wpmudev_apikey' );
 			}
+
 			return $api_key;
 		}
 
@@ -540,42 +513,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
-		 * Return the stats for each image size
-		 *
-		 * @param $id
-		 * @param $meta
-		 */
-		function get_smush_stats( $id, $meta ) {
-
-			$compression = "";
-			//stats for full size image if any
-
-			if ( ! empty( $meta['wp_smushit'] ) ) {
-				$compression .= "<b>Full:</b> " . $meta['wp_smushit'];
-			}
-			//Add the stats for each size
-			if ( ! empty( $meta['sizes'] ) ) {
-				foreach ( $meta['sizes'] as $size_name => $size_meta ) {
-					if ( ! empty( $size_meta['wp_smushit'] ) ) {
-						$compression .= "<br><b>" . ucfirst( $size_name ) . "</b>: " . $size_meta['wp_smushit'];
-					}
-				}
-			}
-
-			return $compression;
-		}
-
-
-		/**
 		 * Returns percent saved from the api call response
 		 *
 		 * @param string $message
 		 *
 		 * @return string|bool
 		 */
-		function get_saved_percentage( $message ){
-			if ( preg_match('/\d+(\.\d+)?%/', $message, $matches) )
+		function get_saved_percentage( $message ) {
+			if ( preg_match( '/\d+(\.\d+)?%/', $message, $matches ) ) {
 				return isset( $matches[0] ) ? $matches[0] : false;
+			}
 
 			return false;
 		}
@@ -588,10 +535,114 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return string|bool
 		 */
 		function get_saved_size( $message ) {
-			if ( preg_match( '/\((.*)\)/', $message, $matches ) )
+			if ( preg_match( '/\((.*)\)/', $message, $matches ) ) {
 				return isset( $matches[1] ) ? $matches[1] : false;
+			}
 
 			return false;
+		}
+
+		/**
+		 * Set send button status
+		 *
+		 * @param $id
+		 * @param bool $echo
+		 * @param bool $text_only
+		 *
+		 * @return string|void
+		 */
+		function set_status( $id, $echo = true, $text_only = false ) {
+			$is_smushed = get_post_meta( $id, "wp-smpro-is-smushed", true );
+
+			// if the image is smushed
+			if ( ! empty( $is_smushed ) ) {
+				// the status
+				$data = get_post_meta( $id, WP_SMPRO_PREFIX . 'smush-data', true );
+
+				$bytes   = isset( $data['stats']['bytes'] ) ? $data['stats']['bytes'] : 0;
+				$percent = isset( $data['stats']['percent'] ) ? $data['stats']['percent'] : 0;
+				$percent = $percent < 0 ? 0 : $percent;
+
+				if ( $bytes == 0 || $percent == 0 ) {
+					$status_txt = __( 'Already Optimized', WP_SMPRO_DOMAIN );
+				} elseif ( ! empty( $percent ) && ! empty( $data['stats']['human'] ) ) {
+					$status_txt = sprintf( __( "Reduced by %s (  %01.1f%% )", WP_SMPRO_DOMAIN ), $data['stats']['human'], number_format_i18n( $percent, 2, '.', '' ) );
+				}
+
+				// the button text
+				$button_txt = __( 'Re-smush', WP_SMPRO_DOMAIN );
+			} else {
+
+				// the status
+				$status_txt = __( 'Not processed', WP_SMPRO_DOMAIN );
+
+				// we need to show the smush button
+				$show_button = true;
+
+				// the button text
+				$button_txt = __( 'Smush now!', WP_SMPRO_DOMAIN );
+			}
+			if ( $text_only ) {
+				return $status_txt;
+			}
+			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $is_smushed, $echo );
+			if ( ! $echo ) {
+				return $text;
+			}
+		}
+
+		/**
+		 * Print the column html
+		 *
+		 * @param string $id Media id
+		 * @param string $status_txt Status text
+		 * @param string $button_txt Button label
+		 * @param boolean $show_button Whether to shoe the button
+		 *
+		 * @return null
+		 */
+		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true ) {
+			$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
+			// don't proceed if attachment is not image, or if image is not a jpg, png or gif
+			if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
+				return;
+			}
+			$html = '
+			<p class="smush-status">' . $status_txt . '</p>';
+			// if we aren't showing the button
+			if ( ! $show_button ) {
+				if ( $echo ) {
+					echo $html;
+
+					return;
+				} else {
+					if ( ! $smushed ) {
+						$class = ' currently-smushing';
+					} else {
+						$class = ' smushed';
+					}
+
+					return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+				}
+			}
+			if ( ! $echo ) {
+				$html .= '
+				<button id="wp-smush-send" class="button button-primary" data-id="' . $id . '">
+	                <span>' . $button_txt . '</span>
+				</button>';
+				if ( ! $smushed ) {
+					$class = ' unsmushed';
+				} else {
+					$class = ' smushed';
+				}
+
+				return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+			} else {
+				$html .= '<button id="wp-smush-send" class="button" data-id="' . $id . '">
+                    <span>' . $button_txt . '</span>
+				</button>';
+				echo $html;
+			}
 		}
 	}
 

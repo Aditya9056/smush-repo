@@ -82,7 +82,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSHIT_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
-			wp_register_style( 'wp-smushit-sweet-alert', WP_SMUSHIT_URL . 'assets/css/sweet-alert.css');
+			wp_register_style( 'wp-smushit-sweet-alert', WP_SMUSHIT_URL . 'assets/css/sweet-alert.css' );
 
 			// localize translatable strings for js
 			$this->localize();
@@ -106,10 +106,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$handle = 'wp-smushit-admin-js';
 
 			$wp_smushit_msgs = array(
-				'progress' => __( 'Smushing in Progress', WP_SMUSHIT_DOMAIN ),
-				'done'     => __( 'All done!', WP_SMUSHIT_DOMAIN ),
-				'something_went_wrong'     => __( 'Ops!... something went wrong', WP_SMUSHIT_DOMAIN ),
-				'resmush'     => __( 'Re-smush', WP_SMUSHIT_DOMAIN )
+				'progress'             => __( 'Smushing in Progress', WP_SMUSH_DOMAIN ),
+				'done'                 => __( 'All done!', WP_SMUSH_DOMAIN ),
+				'something_went_wrong' => __( 'Ops!... something went wrong', WP_SMUSH_DOMAIN ),
+				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN )
 			);
 
 			wp_localize_script( $handle, 'wp_smushit_msgs', $wp_smushit_msgs );
@@ -120,9 +120,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		}
 
-		function admin_enqueue_scripts(){
-			wp_enqueue_script('wp-smushit-admin-media-js');
-			wp_enqueue_script('wp-smushit-admin-sweetalert-js');
+		function admin_enqueue_scripts() {
+			wp_enqueue_script( 'wp-smushit-admin-media-js' );
+			wp_enqueue_script( 'wp-smushit-admin-sweetalert-js' );
 		}
 
 		/**
@@ -134,12 +134,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<div id="icon-upload" class="icon32"><br/></div>
 
 				<h2>
-					<?php _e( 'WP Smush', WP_SMUSHIT_DOMAIN ) ?>
+					<?php _e( 'WP Smush', WP_SMUSH_DOMAIN ) ?>
 				</h2>
 
 				<div class="wp-smpushit-container">
 					<h3>
-						<?php _e( 'Settings', WP_SMUSHIT_DOMAIN ) ?>
+						<?php _e( 'Settings', WP_SMUSH_DOMAIN ) ?>
 					</h3>
 					<?php
 					// display the options
@@ -167,15 +167,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Auto Smushing
 				$auto     = 'wp_smushit_smushit_auto';
 				$auto_val = intval( get_option( $auto, WP_SMUSHIT_AUTO_OK ) );
-				$disabled = sprintf( __( 'Temporarily disabled until %s', WP_SMUSHIT_DOMAIN ), date( 'M j, Y \a\t H:i', $auto_val ) );
+				$disabled = sprintf( __( 'Temporarily disabled until %s', WP_SMUSH_DOMAIN ), date( 'M j, Y \a\t H:i', $auto_val ) );
 
 				//Timeout
 				$timeout     = 'wp_smushit_smushit_timeout';
 				$timeout_val = intval( get_option( $timeout, WP_SMUSHIT_AUTO_OK ) );
-
-				//Enforce Same URL
-				$enforce_same_url     = 'wp_smushit_smushit_enforce_same_url';
-				$enforce_same_url_val = get_option( $enforce_same_url, WP_SMUSHIT_ENFORCE_SAME_URL );
 
 				//Debug
 				$smushit_debug     = 'wp_smushit_smushit_debug';
@@ -184,11 +180,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<table class="form-table">
 					<tbody>
 					<tr>
-						<th><label><?php echo __( 'Smush images on upload', WP_SMUSHIT_DOMAIN ); ?></label></th>
+						<th><label><?php echo __( 'Smush images on upload', WP_SMUSH_DOMAIN ); ?></label></th>
 						<td>
 							<select name='<?php echo $auto; ?>' id='<?php echo $auto; ?>'>
-								<option value='<?php echo WP_SMUSHIT_AUTO_OK; ?>' <?php selected( WP_SMUSHIT_AUTO_OK, $auto_val ); ?>><?php echo __( 'Automatically process on upload', WP_SMUSHIT_DOMAIN ); ?></option>
-								<option value='<?php echo WP_SMUSHIT_AUTO_NEVER; ?>' <?php selected( WP_SMUSHIT_AUTO_NEVER, $auto_val ); ?>><?php echo __( 'Do not process on upload', WP_SMUSHIT_DOMAIN ); ?></option> <?php
+								<option value='<?php echo WP_SMUSHIT_AUTO_OK; ?>' <?php selected( WP_SMUSHIT_AUTO_OK, $auto_val ); ?>><?php echo __( 'Automatically process on upload', WP_SMUSH_DOMAIN ); ?></option>
+								<option value='<?php echo WP_SMUSHIT_AUTO_NEVER; ?>' <?php selected( WP_SMUSHIT_AUTO_NEVER, $auto_val ); ?>><?php echo __( 'Do not process on upload', WP_SMUSH_DOMAIN ); ?></option> <?php
 
 								if ( $auto_val > 0 ) {
 									?>
@@ -198,23 +194,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						</td>
 					</tr>
 					<tr>
-						<th><?php _e( 'API Timeout', WP_SMUSHIT_DOMAIN ); ?></th>
+						<th><?php _e( 'API Timeout', WP_SMUSH_DOMAIN ); ?></th>
 						<td>
 							<input type='text' name='<?php echo esc_attr( $timeout ); ?>' id='<?php echo esc_attr( $timeout ); ?>' value='<?php echo intval( get_option( $timeout, 60 ) ); ?>' size="2">
 						</td>
 					</tr>
 					<tr>
-						<th><?php _e( 'Enforce home URL', WP_SMUSHIT_DOMAIN ); ?></th>
-						<td>
-							<input type="checkbox" name="<?php echo $enforce_same_url ?>" <?php echo checked( $enforce_same_url_val, 'on' ); ?>/> <?php
-							echo '<strong>' . get_option( 'home' ) . '</strong><br />' . __( 'By default the plugin will enforce that the image URL is the same domain as the home. If you are using a sub-domain pointed to this same host or an external Content Delivery Network (CDN) you want to unset this option.', WP_SMUSHIT_DOMAIN ); ?>
-						</td>
-					</tr>
-					<tr>
-						<th><?php _e( 'Smushit Debug', WP_SMUSHIT_DOMAIN ); ?></th>
+						<th><?php _e( 'Smushit Debug', WP_SMUSH_DOMAIN ); ?></th>
 						<td>
 							<input type="checkbox" name="<?php echo $smushit_debug ?>" <?php echo checked( $smushit_debug_val, 'on' ); ?>/>
-							<?php _e( 'If you are having trouble with the plugin enable this option can reveal some information about your system needed for support.', WP_SMUSHIT_DOMAIN ); ?>
+							<?php _e( 'If you are having trouble with the plugin enable this option can reveal some information about your system needed for support.', WP_SMUSH_DOMAIN ); ?>
 						</td>
 					</tr>
 					</tbody>
@@ -222,7 +211,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				// nonce
 				wp_nonce_field( 'save_wp_smushit_options', 'wp_smushit_options_nonce' );
 				?>
-				<input type="submit" id="wp-smushit-save-settings" class="button button-primary" value="<?php _e( 'Save Changes', WP_SMUSHIT_DOMAIN ); ?>">
+				<input type="submit" id="wp-smushit-save-settings" class="button button-primary" value="<?php _e( 'Save Changes', WP_SMUSH_DOMAIN ); ?>">
 			</form>
 		<?php
 		}
@@ -293,17 +282,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$exceed_mb = '';
 			$text      = $count > 1 ? 'are' : 'is';
 			if ( $count ) {
-				$exceed_mb = sprintf( __( " %d of those images %s <b>over 1Mb</b> and <b>can not be compressed using the free version of the plugin.</b>", WP_SMUSHIT_DOMAIN ), $count, $text );
+				$exceed_mb = sprintf( __( " %d of those images %s <b>over 1Mb</b> and <b>can not be compressed using the free version of the plugin.</b>", WP_SMUSH_DOMAIN ), $count, $text );
 			}
 			$media_lib = get_admin_url( '', 'upload.php' );
 			?>
 			<div class="wrap">
 				<div id="icon-upload" class="icon32"><br/></div>
-				<h3><?php _e( 'Smush in Bulk', WP_SMUSHIT_DOMAIN ) ?></h3>
+				<h3><?php _e( 'Smush in Bulk', WP_SMUSH_DOMAIN ) ?></h3>
 				<?php
 
 				if ( sizeof( $attachments ) < 1 ) {
-					_e( "<p>You don't appear to have uploaded any images yet.</p>", WP_SMUSHIT_DOMAIN );
+					_e( "<p>You don't appear to have uploaded any images yet.</p>", WP_SMUSH_DOMAIN );
 				} else {
 					if ( ! isset( $_POST['smush-all'] ) && ! $auto_start ) { // instructions page ?>
 
@@ -316,24 +305,24 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							}
 						</style>
 						<div class="smush-instructions" style="line-height: 1;">
-							<?php printf( __( "<p>We found %d images in your media library. %s </p>", WP_SMUSHIT_DOMAIN ), sizeof( $attachments ), $exceed_mb ); ?>
+							<?php printf( __( "<p>We found %d images in your media library. %s </p>", WP_SMUSH_DOMAIN ), sizeof( $attachments ), $exceed_mb ); ?>
 
-							<?php _e( "<p><b style='color: red;'>Please beware</b>, <b>smushing a large number of images can take a long time.</b></p>", WP_SMUSHIT_DOMAIN ); ?>
+							<?php _e( "<p><b style='color: red;'>Please beware</b>, <b>smushing a large number of images can take a long time.</b></p>", WP_SMUSH_DOMAIN ); ?>
 
-							<?php _e( "<p><b>You can not leave this page, until all images have been received back, and you see a success message.</b></p>", WP_SMUSHIT_DOMAIN ); ?>
+							<?php _e( "<p><b>You can not leave this page, until all images have been received back, and you see a success message.</b></p>", WP_SMUSH_DOMAIN ); ?>
 							<br/>
-							<?php printf( __( "Click below to smush all your images. Alternatively, you can smush your images individually or as a bulk action from your <a href='%s'>Media Library</a>", WP_SMUSHIT_DOMAIN ), $media_lib ); ?>
+							<?php printf( __( "Click below to smush all your images. Alternatively, you can smush your images individually or as a bulk action from your <a href='%s'>Media Library</a>", WP_SMUSH_DOMAIN ), $media_lib ); ?>
 						</div>
 
 						<!-- Bulk Smushing -->
 						<?php wp_nonce_field( 'wp-smushit-bulk', '_wpnonce' ); ?>
 						<br/>
 						<?php $this->progress_ui(); ?>
-						<button type="submit" class="button-primary action" name="smush-all"><?php _e( 'Bulk Smush all my images', WP_SMUSHIT_DOMAIN ) ?></button>
-						<?php _e( "<p><em>N.B. If your server <tt>gzip</tt>s content you may not see the progress updates as your files are processed.</em></p>", WP_SMUSHIT_DOMAIN ); ?>
+						<button type="submit" class="button-primary action" name="smush-all"><?php _e( 'Bulk Smush all my images', WP_SMUSH_DOMAIN ) ?></button>
+						<?php _e( "<p><em>N.B. If your server <tt>gzip</tt>s content you may not see the progress updates as your files are processed.</em></p>", WP_SMUSH_DOMAIN ); ?>
 						<?php
 						if ( WP_SMUSHIT_DEBUG ) {
-							_e( "<p>DEBUG mode is currently enabled. To disable uncheck the smushit debug option.</p>", WP_SMUSHIT_DOMAIN );
+							_e( "<p>DEBUG mode is currently enabled. To disable uncheck the smushit debug option.</p>", WP_SMUSH_DOMAIN );
 						}
 					}
 				}
@@ -373,7 +362,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$total = $total ? $total : 1; ?>
 
 			<div id="progress-ui">
-				<div id="smush-status" style="margin: 0 0 5px;"><?php printf( __( 'Smushing <span id="smushed-count">1</span> of <span id="smushing-total">%d</span>', WP_SMUSHIT_DOMAIN ), $total ); ?></div>
+				<div id="smush-status" style="margin: 0 0 5px;"><?php printf( __( 'Smushing <span id="smushed-count">1</span> of <span id="smushing-total">%d</span>', WP_SMUSH_DOMAIN ), $total ); ?></div>
 				<div id="wp-smushit-progress-wrap">
 					<div id="wp-smushit-smush-progress" class="wp-smushit-progressbar">
 						<div></div>
@@ -389,8 +378,29 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $WpSmush;
 
+			$should_continue = true;
+
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
 				wp_send_json_error( 'missing id' );
+			}
+
+			//if not premium
+			$is_premium = $WpSmush->is_premium();
+			$is_premium = false;
+
+			if ( ! $is_premium ) {
+				//Free version bulk smush, check the transient counter calue
+				$should_continue = $this->check_bulk_limit();
+			}
+
+			//If the bulk smush needs to be stopped
+			if ( ! $should_continue ) {
+				wp_send_json_error(
+					array(
+						'error'    => 'bulk_request_image_limit_exceeded',
+						'continue' => false
+					)
+				);
 			}
 
 			$attachment_id = $_REQUEST['attachment_id'];
@@ -414,7 +424,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! empty( $_GET['action'] ) && 'purge' == @$_GET['action'] ) {
 				//Check Nonce
 				if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'purge_log' ) ) {
-					echo '<div class="error"><p>' . __( 'Nonce verification failed', WP_SMUSHIT_DOMAIN ) . '</p></div>';
+					echo '<div class="error"><p>' . __( 'Nonce verification failed', WP_SMUSH_DOMAIN ) . '</p></div>';
 				} else {
 					$log->purge_errors();
 					$log->purge_notices();
@@ -435,11 +445,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function smush_single() {
 			if ( ! current_user_can( 'upload_files' ) ) {
-				wp_die( __( "You don't have permission to work with uploaded files.", WP_SMUSHIT_DOMAIN ) );
+				wp_die( __( "You don't have permission to work with uploaded files.", WP_SMUSH_DOMAIN ) );
 			}
 
 			if ( ! isset( $_GET['attachment_id'] ) ) {
-				wp_die( __( 'No attachment ID was provided.', WP_SMUSHIT_DOMAIN ) );
+				wp_die( __( 'No attachment ID was provided.', WP_SMUSH_DOMAIN ) );
 			}
 
 			global $WpSmush;
@@ -452,9 +462,37 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_update_attachment_metadata( $attachment_id, $new_meta );
 
-			$stats = $WpSmush->get_smush_stats($attachment_id, $new_meta );
+			/** Send stats **/
+			wp_send_json_success(  );
+		}
 
-			wp_send_json_success( $stats );
+		/**
+		 * Check bulk sent count, whether to allow further smushing or not
+		 *
+		 * @return bool
+		 */
+		function check_bulk_limit() {
+
+			$bulk_sent_count = get_transient( 'bulk_sent_count' );
+
+			//If bulk sent count is not set
+			if ( empty( $bulk_sent_count ) ) {
+
+				set_transient( $bulk_sent_count, 1, 120 );
+
+			} elseif ( $bulk_sent_count < 50 ) {
+
+				//If less than 50 images are sent
+				set_transient( $bulk_sent_count, $bulk_sent_count + 1, 120 );
+
+			} else {
+
+				//Bulk sent count is set and greater than 50
+				return false;
+
+			}
+
+			return true;
 		}
 	}
 

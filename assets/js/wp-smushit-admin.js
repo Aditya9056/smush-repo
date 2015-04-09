@@ -4,7 +4,7 @@
  * @author Saurabh Shukla <saurabh@incsub.com>
  *
  */
-
+var WP_Smush = WP_Smush || {};
 jQuery('document').ready(function ($) {
 
 	// url for smushing
@@ -12,7 +12,7 @@ jQuery('document').ready(function ($) {
 	$manual_smush_url = ajaxurl + '?action=wp_smushit_manual';
 	$remaining = '';
 	$smush_done = 1;
-    WP_Smush.timeout = 60000;
+	WP_Smush.timeout = 60000;
 	/**
 	 * Checks for the specified param in URL
 	 * @param sParam
@@ -55,16 +55,16 @@ jQuery('document').ready(function ($) {
 	}
 
 
-    WP_Smush.ajax = function($id, $send_url, $getnxt){
-        "use strict";
-        return $.ajax({
-            type: "GET",
-            data: {attachment_id: $id, get_next: $getnxt},
-            url: $send_url,
-            timeout: WP_Smush.timeout,
-            dataType: 'json'
-        });
-    };
+	WP_Smush.ajax = function ($id, $send_url, $getnxt) {
+		"use strict";
+		return $.ajax({
+			type: "GET",
+			data: {attachment_id: $id, get_next: $getnxt},
+			url: $send_url,
+			timeout: WP_Smush.timeout,
+			dataType: 'json'
+		});
+	};
 
 	/**
 	 * Send ajax request for smushing
@@ -73,13 +73,13 @@ jQuery('document').ready(function ($) {
 	 * @param {type} $getnxt
 	 * @returns {unresolved}
 	 */
-	WP_Smush.smushitRequest = function($id, $getnxt, $is_single, current_elem) {
+	WP_Smush.smushitRequest = function ($id, $getnxt, $is_single, current_elem) {
 
 		//Specify the smush URL, for single or bulk smush
 		var $send_url = $is_single ? $manual_smush_url : $bulk_send_url;
 
 		// make request
-        return WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
+		return WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
 
 			//Handle bulk smush progress
 			if (!$is_single) {
@@ -90,22 +90,13 @@ jQuery('document').ready(function ($) {
 				//Check for response message
 				if (typeof response.data != 'undefined') {
 					//Append the smush stats or error
-                    var $status = current_elem.parent().find('.smush-status');
-                    $status.html(response.data);
-                    $status.addClass("smush-status-error");
+					var $status = current_elem.parent().find('.smush-status');
+					$status.html(response.data);
 				}
 			}
-
-            //if( response && response.success ){
-            //    sweetAlert(wp_smushit_msgs.done, response.data, "success");
-            //}
-            //
-            //if( response && !response.success ){
-            //    sweetAlert(wp_smushit_msgs.something_went_wrong, response.data, "error");
-            //}
-		}).error(function(res){
-            sweetAlert(wp_smushit_msgs.something_went_wrong, res.data, "error");
-        });
+		}).error(function (res) {
+			sweetAlert(wp_smushit_msgs.something_went_wrong, res.data, "error");
+		});
 	};
 
 	/**
@@ -198,10 +189,11 @@ jQuery('document').ready(function ($) {
 			return false;
 		}
 
-		//disable link
-
 		//Send the ajax request
-		return WP_Smush.smushitRequest($id, 0, true, current_elem);
+		WP_Smush.smushitRequest($id, 0, true, current_elem).complete(function () {
+			"use strict";
+			$this.prop("disabled", false);
+		});
 	};
 
 	//If ids are set in url, click over bulk smush button
@@ -228,21 +220,20 @@ jQuery('document').ready(function ($) {
 	});
 
 	//Handle smush button click
-	$('body').on('click', '.wp-smush-image', function (e) {
+	$('body').on('click', '#wp-smush-send', function (e) {
+
 		// prevent the default action
 		e.preventDefault();
-		var $this = jQuery(this),
-            $loader = $('<span class="wp-smush-loader"></span>');
+
+		var $this = jQuery(this);
+
 		//remove all smush notices
 		$('.smush-notices').remove();
 
-        $this.after( $loader );
-        $this.prop("disabled", true);
-        WP_Smush.sendRequest($this).complete(function(){
-            "use strict";
-            $loader.remove();
-            $this.prop("disabled", false);
-        });
+		//Send Smush request
+		WP_Smush.sendRequest($this);
+
+		$this.prop("disabled", true);
 
 		return;
 	});

@@ -6,26 +6,26 @@ $time_fmt        = $time_fmt ? $time_fmt : 'H:i:s';
 $datetime_format = "{$date_fmt} {$time_fmt}";
 ?>
 <div class="wrap">
-	<h2><?php _e( 'Error Log', WP_SMUSHIT_DOMAIN ); ?></h2>
+	<h2><?php _e( 'Error Log', WP_SMUSH_DOMAIN ); ?></h2>
 
 	<h3>Errors</h3>
 	<?php if ( $errors ) { ?>
-		<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=wp-smushit-errorlog&action=purge' ), 'purge_log' ); ?>"><?php _e( 'Purge log', WP_SMUSHIT_DOMAIN ); ?></a>
+		<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=wp-smushit-errorlog&action=purge' ), 'purge_log' ); ?>"><?php _e( 'Purge log', WP_SMUSH_DOMAIN ); ?></a>
 		<table class="widefat">
 			<thead>
 			<tr>
-				<th><?php _e( 'Date', WP_SMUSHIT_DOMAIN ) ?></th>
-				<th><?php _e( 'Function', WP_SMUSHIT_DOMAIN ) ?></th>
-				<th><?php _e( 'Image', WP_SMUSHIT_DOMAIN ) ?></th>
-				<th><?php _e( 'Info', WP_SMUSHIT_DOMAIN ) ?></th>
+				<th><?php _e( 'Date', WP_SMUSH_DOMAIN ) ?></th>
+				<th><?php _e( 'Function', WP_SMUSH_DOMAIN ) ?></th>
+				<th><?php _e( 'Image', WP_SMUSH_DOMAIN ) ?></th>
+				<th><?php _e( 'Info', WP_SMUSH_DOMAIN ) ?></th>
 			</tr>
 			</thead>
 			<tfoot>
 			<tr>
-				<th><?php _e( 'Date', WP_SMUSHIT_DOMAIN ) ?></th>
-				<th><?php _e( 'Function', WP_SMUSHIT_DOMAIN ) ?></th>
-				<th><?php _e( 'Image', WP_SMUSHIT_DOMAIN ) ?></th>
-				<th><?php _e( 'Info', WP_SMUSHIT_DOMAIN ) ?></th>
+				<th><?php _e( 'Date', WP_SMUSH_DOMAIN ) ?></th>
+				<th><?php _e( 'Function', WP_SMUSH_DOMAIN ) ?></th>
+				<th><?php _e( 'Image', WP_SMUSH_DOMAIN ) ?></th>
+				<th><?php _e( 'Info', WP_SMUSH_DOMAIN ) ?></th>
 			</tr>
 			</tfoot>
 			<tbody>
@@ -52,16 +52,16 @@ $datetime_format = "{$date_fmt} {$time_fmt}";
 				<table class="widefat">
 					<thead>
 					<tr>
-						<th><?php _e( 'Date', WP_SMUSHIT_DOMAIN ) ?></th>
-						<th><?php _e( 'User', WP_SMUSHIT_DOMAIN ) ?></th>
-						<th><?php _e( 'Message', WP_SMUSHIT_DOMAIN ) ?></th>
+						<th><?php _e( 'Date', WP_SMUSH_DOMAIN ) ?></th>
+						<th><?php _e( 'User', WP_SMUSH_DOMAIN ) ?></th>
+						<th><?php _e( 'Message', WP_SMUSH_DOMAIN ) ?></th>
 					</tr>
 					</thead>
 					<tfoot>
 					<tr>
-						<th><?php _e( 'Date', WP_SMUSHIT_DOMAIN ) ?></th>
-						<th><?php _e( 'User', WP_SMUSHIT_DOMAIN ) ?></th>
-						<th><?php _e( 'Message', WP_SMUSHIT_DOMAIN ) ?></th>
+						<th><?php _e( 'Date', WP_SMUSH_DOMAIN ) ?></th>
+						<th><?php _e( 'User', WP_SMUSH_DOMAIN ) ?></th>
+						<th><?php _e( 'Message', WP_SMUSH_DOMAIN ) ?></th>
 					</tr>
 					</tfoot>
 					<tbody>
@@ -69,7 +69,7 @@ $datetime_format = "{$date_fmt} {$time_fmt}";
 						<?php $user = get_userdata( @$notice['user_id'] ); ?>
 						<tr>
 							<td><?php echo date( $datetime_format, $notice['date'] ); ?></td>
-							<td><?php echo( ( isset( $user->user_login ) && $user->user_login ) ? $user->user_login : __( 'Unknown', WP_SMUSHIT_DOMAIN ) ); ?></td>
+							<td><?php echo( ( isset( $user->user_login ) && $user->user_login ) ? $user->user_login : __( 'Unknown', WP_SMUSH_DOMAIN ) ); ?></td>
 							<td><?php echo $notice['message']; ?></td>
 						</tr>
 					<?php } ?>
