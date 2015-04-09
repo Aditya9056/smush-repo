@@ -358,6 +358,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 
 				//Update stats
+				if( isset( $full_image_response['data'] ) )
 				list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 					= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 
