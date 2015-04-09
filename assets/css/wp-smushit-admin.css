@@ -318,3 +318,10 @@ p#wp-smush-compression span {
     margin: 10px;
     float: left;
 }
+#wp-smush-send span.wp-smushing {
+    display: inline-block;
+    vertical-align: top;
+}
+#wp-smush-send #wp-smush-loader-wrap {
+    display: inline-block;
+}

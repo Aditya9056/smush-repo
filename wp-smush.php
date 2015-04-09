@@ -40,7 +40,7 @@ if ( ! function_exists( 'download_url' ) ) {
  * Constants
  */
 define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
-define( 'WP_SMUSH_VERSON',  "2.0" );
+define( 'WP_SMUSH_VERSON', "2.0" );
 
 define( 'WP_SMUSH_DOMAIN', 'wp_smush' );
 define( 'WP_SMUSH_UA', 'WP Smush PRO/' . WP_SMUSH_VERSON . '(' . '+' . get_site_url() . ')' );;
@@ -71,7 +71,7 @@ Values are:
 define( 'WP_SMUSHIT_AUTO_OK', 0 );
 define( 'WP_SMUSHIT_AUTO_NEVER', - 1 );
 
-require_once WP_SMUSH_DIR ."/lib/class-wp-smush-migrate.php";
+require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
 
 
 if ( ! class_exists( 'WpSmush' ) ) {
@@ -109,7 +109,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		/**
 		 * Instance of WpSmushMigrate class
 		 *
-		 * @var WpSmushMigrate  $_migrator
+		 * @var WpSmushMigrate $_migrator
 		 */
 		private $_migrator;
 
@@ -130,7 +130,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
 			add_action( 'admin_action_bulk_smushit', array( $this, 'bulk_action_handler' ) );
-			add_action("admin_init", array( $this, "migrate" ));
+			add_action( "admin_init", array( $this, "migrate" ) );
 
 		}
 
@@ -261,8 +261,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array
 		 */
-		private function _array_fill_placeholders(array $placeholders, array $data){
-			return array_merge($placeholders, array_intersect_key($data, $placeholders));
+		private function _array_fill_placeholders( array $placeholders, array $data ) {
+			return array_merge( $placeholders, array_intersect_key( $data, $placeholders ) );
 		}
 
 		/**
@@ -270,13 +270,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array
 		 */
-		private function _get_size_signature(){
+		private function _get_size_signature() {
 			return array(
-				'compression' => -1,
-				'bytes_saved' => -1,
-				'before_size' => -1,
-				'after_size' => -1,
-				'time' => -1
+				'compression' => - 1,
+				'bytes_saved' => - 1,
+				'before_size' => - 1,
+				'after_size'  => - 1,
+				'time'        => - 1
 			);
 		}
 
@@ -297,18 +297,20 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Flag to check, if full image needs to be smushed or not
 			$smush_full = true;
-			$stats = array(
+			$stats      = array(
 				"stats" => array_merge( $this->_get_size_signature(), array(
-						'api_version' => -1,
-						'lossy' => -1
+						'api_version' => - 1,
+						'lossy'       => - 1
 					)
 				),
 				'sizes' => array()
 			);
 
-			$size_before    = $size_after = $compression = $total_time = $bytes_saved = 0;
+			$size_before = $size_after = $compression = $total_time = $bytes_saved = 0;
 
-			if ( $ID && wp_attachment_is_image( $ID ) === false ) return $meta;
+			if ( $ID && wp_attachment_is_image( $ID ) === false ) {
+				return $meta;
+			}
 
 			//File path and URL for original image
 			$attachment_file_path = get_attached_file( $ID );
@@ -319,16 +321,20 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
-					if ( $size_key == 'large' ) $smush_full = false;
+					if ( $size_key == 'large' ) {
+						$smush_full = false;
+					}
 
 					//Check if size is already smushed
-					if ( ! $force_resmush && $this->should_resmush( @$meta['sizes'][ $size_key ]['wp_smushit'] ) === false ) continue;
+					if ( ! $force_resmush && $this->should_resmush( @$meta['sizes'][ $size_key ]['wp_smushit'] ) === false ) {
+						continue;
+					}
 
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and rpelace the filename.
 
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
-					$attachment_file_url_size = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
+					$attachment_file_url_size  = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
 
 					//Store details for each size key
 					$response = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
@@ -348,14 +354,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 
-			if ( $smush_full && ( $force_resmush || $this->should_resmush( $meta['wp_smushit'] ) ) ) {
+			//If full size is suppose to be smushed
+			if ( $smush_full ) {
 
 				$full_image_response = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
 				if ( ! empty( $full_image_response['data'] ) ) {
 					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
 				}
 
-				list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], 	$stats['stats']['bytes_saved'] )
+				list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], $stats['stats']['bytes_saved'] )
 					= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
 			}
@@ -742,30 +749,36 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return void
 		 */
-		function migrate(){
+		function migrate() {
 
-			if( !version_compare( $this->version, "1.7.1", "lte" ) ) return;
+			if ( ! version_compare( $this->version, "1.7.1", "lte" ) ) {
+				return;
+			}
 
 			$migrated_version = get_option( self::MIGRATED_VERSION );
 
-			if( $migrated_version === $this->version ) return;
+			if ( $migrated_version === $this->version ) {
+				return;
+			}
 
 			global $wpdb;
 
-			$q = $wpdb->prepare( "SELECT * FROM `" . $wpdb->postmeta . "` WHERE `meta_key`=%s AND `meta_value` LIKE %s ", "_wp_attachment_metadata", "%wp_smushit%"   );
+			$q       = $wpdb->prepare( "SELECT * FROM `" . $wpdb->postmeta . "` WHERE `meta_key`=%s AND `meta_value` LIKE %s ", "_wp_attachment_metadata", "%wp_smushit%" );
 			$results = $wpdb->get_results( $q );
 
-			if( count( $results ) < 1 ) return;
+			if ( count( $results ) < 1 ) {
+				return;
+			}
 
 			$migrator = new WpSmushMigrate();
-			foreach( $results as $attachment_meta){
+			foreach ( $results as $attachment_meta ) {
 				$migrated_message = $this->_migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
-				if( $migrated_message !== array() ){
-					update_post_meta( $attachment_meta->post_id, self::SMUSHED_META_KEY,  $migrated_message);
+				if ( $migrated_message !== array() ) {
+					update_post_meta( $attachment_meta->post_id, self::SMUSHED_META_KEY, $migrated_message );
 				}
 			}
 
-			update_option( self::MIGRATED_VERSION , $this->version);
+			update_option( self::MIGRATED_VERSION, $this->version );
 
 		}
 

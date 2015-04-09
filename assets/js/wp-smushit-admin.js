@@ -33,9 +33,7 @@ jQuery('document').ready(function ($) {
 	/**
 	 * Show progress of smushing
 	 */
-	function smushit_progress() {
-
-		$total = $smush_done + $remaining;
+	function smushit_progress(stats) {
 
 		// calculate %
 		if ($remaining != 0) {
@@ -43,14 +41,16 @@ jQuery('document').ready(function ($) {
 			// increase progress count
 			$smush_done++;
 
-			$progress = ( $smush_done / $total) * 100;
+			$progress = ( stats.data.smushed / stats.data.total) * 100;
 		} else {
 			jQuery('#smush-status').html(wp_smushit_msgs['done']);
 		}
-		jQuery('#smushing-total').html($total);
 
+		//Update stats
+		jQuery('#wp-smush-compression #human').html(stats.data.human);
+		jQuery('#wp-smush-compression #percent').html(stats.data.percent );
 		// increase the progress bar
-		wp_smushit_change_progress_status($smush_done, $progress);
+		wp_smushit_change_progress_status(stats.data.smushed, $progress);
 
 	}
 
@@ -84,14 +84,14 @@ jQuery('document').ready(function ($) {
 			//Handle bulk smush progress
 			if (!$is_single) {
 				// increase progressbar
-				smushit_progress($is_single);
+				smushit_progress(response);
 				return;
 			} else {
 				//Check for response message
 				if (typeof response.data != 'undefined') {
 					//Append the smush stats or error
 					var $status = current_elem.parent().find('.smush-status');
-					if ( response.success ) {
+					if (response.success) {
 						current_elem.remove();
 					}
 					$status.html(response.data);
@@ -138,11 +138,11 @@ jQuery('document').ready(function ($) {
 	 */
 	function wp_smushit_change_progress_status($count, $width) {
 		// get the progress bar
-		var $progress_bar = jQuery('#wp-smushit-progress-wrap #wp-smushit-smush-progress div');
+		var $progress_bar = jQuery('#wp-smush-progress-wrap #wp-smush-fetched-progress div');
 		if ($progress_bar.length < 1) {
 			return;
 		}
-		$('#smushed-count').html($count);
+		$('.done-count').html($count);
 		// increase progress
 		$progress_bar.css('width', $width + '%');
 
@@ -159,7 +159,6 @@ jQuery('document').ready(function ($) {
 		startingpoint.resolve();
 
 		//Show progress bar
-		$('#wp-smushit-progress-wrap #wp-smushit-smush-progress div').css('width', 0);
 		$('#progress-ui').show();
 
 		// if we have a definite number of ids
@@ -220,6 +219,7 @@ jQuery('document').ready(function ($) {
 		//Enable Cancel button
 		$('#wp-smush-cancel').removeAttr('disabled');
 
+		buttonProgress(jQuery(this), wp_smushit_msgs.progress);
 		wp_smushit_bulk_smush();
 
 		return;
@@ -245,22 +245,30 @@ jQuery('document').ready(function ($) {
 		return;
 	});
 
-	/**
-	 * Handle cancel button click
-	 */
-	$('#wp-smush-cancel').on('click', function (e) {
-		// prevent the default action
-		e.preventDefault();
+	var buttonProgress = function ($button, $text) {
 
-		//Disable bulk smush button
-		$(this).attr('disabled', 'disabled');
+		// copy the spinner into an object
+		$spinner = jQuery('#wp-smush-loader-wrap').clone();
 
-		//Enable Cancel button
-		$('#wp-smush-cancel').removeAttr('disabled');
+		// empty the current text
+		$button.find('span').html('').addClass('wp-smushing');
 
-		wp_smushit_bulk_smush();
+		// add new class for css adjustment
+		$button.addClass('wp-smpro-started');
 
+		// prepend the spinner html
+		$button.prepend($spinner);
+
+		//Show spinner
+		$button.find('#wp-smush-loader-wrap').removeClass('hidden');
+
+		// add the progress text
+		$button.find('span').html($text);
+
+		// disable the button
+		$button.prop('disabled', true);
+
+		// done
 		return;
-
-	});
+	};
 });

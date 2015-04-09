@@ -39,8 +39,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// hook custom screen
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 
-			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
-
 			//Handle Smush Bulk Ajax
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
 
@@ -158,7 +156,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					?>
 				</div>
 			</div>
-		<?php
+			<?php
+			$this->print_loader();
 		}
 
 		/**
@@ -341,7 +340,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		function print_loader() {
 			?>
-			<div id="wp-smushit-loader-wrap">
+			<div id="wp-smush-loader-wrap" class="hidden">
 				<div class="floatingCirclesG">
 					<div class="f_circleG" id="frotateG_01">
 					</div>
@@ -450,8 +449,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
-			$stats = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id, false );
-			exit;
+			$WpSmush->resize_from_meta_data( $original_meta, $attachment_id, false );
+
+			$stats = $this->global_stats();
+
+			$stats['smushed'] = $this->smushed_count();
+			$stats['total']   = $this->total_count;
+
 			wp_send_json_success( $stats );
 		}
 
@@ -723,7 +727,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$smush_data['percent'] = ( $smush_data['bytes'] / $smush_data['size_before'] ) * 100;
 			}
 
-			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
+			//Round off precentage
+			$smush_data['percent'] = round( $smush_data['percent'],2 );
+
+			$smush_data['human']   = $WpSmush->format_bytes( $smush_data['bytes'] );
 
 			return $smush_data;
 		}
@@ -749,7 +756,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			} else {
 
-				$button['text']   = __( 'Bulk Smush!', WP_SMUSH_DOMAIN );
+				$button['text']   = __( 'Bulk Smush all my images', WP_SMUSH_DOMAIN );
 				$button['cancel'] = ' disabled="disabled"';
 				$button['id']     = "wp-smush-send";
 
