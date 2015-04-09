@@ -84,8 +84,8 @@ class WpSmushMigrate {
 					$new_size->time = -1;
 
 					if( $new_size->compression !== -1 && $new_size->bytes_saved !== -1){
-						$new_size->before_size = ( $new_size->compression * 100 ) / $new_size->bytes_saved;
-						$new_size->after_size = ( 1 - $new_size->compression ) * $new_size->before_size;
+						$new_size->before_size = ( $new_size->bytes_saved * 100 ) / $new_size->compression;
+						$new_size->after_size = ( 100 - $new_size->compression ) * $new_size->before_size / 100;
 					}
 
 					$new_message['sizes'][$key] = $new_size;
@@ -97,8 +97,8 @@ class WpSmushMigrate {
 		$new_message["stats"]['bytes_saved'] = $this->_get_saved_bytes( $message['wp_smushit'] );
 
 		if( $new_message["stats"]['compression'] !== -1 && $new_message["stats"]['bytes_saved'] !== -1){
-			$new_message["stats"]['before_size'] = ( $new_message["stats"]['compression'] * 100 ) / $new_message["stats"]['bytes_saved'];
-			$new_message["stats"]['after_size'] = ( 1 - $new_message["stats"]['compression']  ) * $new_message["stats"]['bytes_saved'];
+			$new_message["stats"]['before_size'] = ( $new_message["stats"]['bytes_saved'] * 100 ) / $new_message["stats"]['compression'];
+			$new_message["stats"]['after_size'] = ( 100 - $new_message["stats"]['compression']  ) * $new_message["stats"]['before_size'] / 100;
 		}
 
 		return $new_message;
