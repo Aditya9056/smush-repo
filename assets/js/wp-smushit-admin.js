@@ -35,22 +35,23 @@ jQuery('document').ready(function ($) {
 	 */
 	function smushit_progress(stats) {
 
+		$progress = ( stats.data.smushed / stats.data.total) * 100;
+
 		// calculate %
 		if ($remaining != 0) {
 
-			// increase progress count
-			$smush_done++;
-
-			$progress = ( stats.data.smushed / stats.data.total) * 100;
-		} else {
-			jQuery('#smush-status').html(wp_smushit_msgs['done']);
+			$remaining--;
 		}
 
 		//Update stats
 		jQuery('#wp-smush-compression #human').html(stats.data.human);
-		jQuery('#wp-smush-compression #percent').html(stats.data.percent );
+		jQuery('#wp-smush-compression #percent').html(stats.data.percent);
+
 		// increase the progress bar
 		wp_smushit_change_progress_status(stats.data.smushed, $progress);
+		if ($remaining == 0) {
+			wp_smushit_all_done();
+		}
 
 	}
 
@@ -97,8 +98,6 @@ jQuery('document').ready(function ($) {
 					$status.html(response.data);
 				}
 			}
-		}).error(function (res) {
-			sweetAlert(wp_smushit_msgs.something_went_wrong, res.data, "error");
 		});
 	};
 
@@ -108,7 +107,7 @@ jQuery('document').ready(function ($) {
 	 * @returns {undefined}
 	 */
 	function wp_smushit_all_done() {
-		$button = jQuery('.wp-smushit-bulk-wrap #wp-smushit-begin');
+		$button = jQuery('.wp-smpushit-container #wp-smush-send');
 
 		// copy the loader into an object
 		$loader = $button.find('.floatingCirclesG');
@@ -120,11 +119,13 @@ jQuery('document').ready(function ($) {
 		$button.find('span').html('');
 
 		// add new class for css adjustment
-		$button.removeClass('wp-smushit-started');
-		$button.addClass('wp-smushit-finished');
+		$button.removeClass('wp-smush-started');
+		$button.addClass('wp-smush-finished');
 
 		// add the progress text
 		$button.find('span').html(wp_smushit_msgs.done);
+
+		$button.removeAttr('disabled');
 
 		return;
 	}
