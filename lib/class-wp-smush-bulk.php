@@ -33,7 +33,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 					'meta_query'     => array(
 						'relation' => 'AND',
 						array(
-							'key'     => 'SMUSHED_META_KEY',
+							'key'     => 'wp-smpro-smush-data',
 							'compare' => 'NOT EXISTS'
 						),
 						array(

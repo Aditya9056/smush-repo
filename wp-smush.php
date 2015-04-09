@@ -130,8 +130,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
 			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
-			add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
-			add_action( 'admin_action_bulk_smushit', array( $this, 'bulk_action_handler' ) );
 			add_action( "admin_init", array( $this, "migrate" ) );
 
 		}
@@ -327,11 +325,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$smush_full = false;
 					}
 
-					//Check if size is already smushed
-					if ( ! $force_resmush && $this->should_resmush( @$meta['sizes'][ $size_key ]['wp_smushit'] ) === false ) {
-						continue;
-					}
-
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and rpelace the filename.
 
@@ -370,7 +363,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Set smush status for all the images, store it in wp-smpro-smush-data
-			update_post_meta( $ID, SMUSHED_META_KEY, $stats );
+			update_post_meta( $ID, 'wp-smpro-smush-data', $stats );
 
 			//return stats
 			return $stats['stats'];
@@ -615,7 +608,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function set_status( $id, $echo = true, $text_only = false ) {
 			$status_txt    = $button_txt = '';
 			$show_button   = false;
-			$wp_smush_data = get_post_meta( $id, WP_SMUSH_PREFIX . "data", true );
+			$wp_smush_data = get_post_meta( $id, "wp-smpro-smush-data", true );
 
 			// if the image is smushed
 			if ( ! empty( $wp_smush_data ) ) {

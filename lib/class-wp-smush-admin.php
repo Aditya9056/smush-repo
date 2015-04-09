@@ -275,7 +275,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<h3><?php _e( 'Smush in Bulk', WP_SMUSH_DOMAIN ) ?></h3>
 				<?php
 
-				if ( sizeof( $attachments ) < 1 ) {
+				if ( $this->total_count < 1 ) {
 					_e( "<p>You don't appear to have uploaded any images yet.</p>", WP_SMUSH_DOMAIN );
 				} else {
 					if ( ! isset( $_POST['smush-all'] ) && ! $auto_start ) { // instructions page ?>
@@ -607,7 +607,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
-				'meta_key'       => "SMUSHED_META_KEY"
+				'meta_key'       => 'wp-smpro-smush-data'
 			);
 
 			$results = new WP_Query( $query );
@@ -673,7 +673,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$sql = "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s";
 
-			$global_data = $wpdb->get_col( $wpdb->prepare( $sql, WP_SMUSH_PREFIX . "data" ) );
+			$global_data = $wpdb->get_col( $wpdb->prepare( $sql, "wp-smpro-smush-data" ) );
 
 			$smush_data = array(
 				'size_before' => 0,
@@ -751,11 +751,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// the key for options table
 			$opt_name = WP_SMUSH_PREFIX . $key;
 
-			// the defined constant
-			$const_name = strtoupper( 'WP_SMUSH' . $key );
-
 			// default value
-			$opt_val = intval( get_site_option( $opt_name, constant( $const_name ) ) );
+			$opt_val = intval( get_site_option( $opt_name, false ) );
 
 			// return html
 			return sprintf(
