@@ -24,9 +24,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $bulk;
 
-		var $total_count = '';
-		var $smushed_count = '';
-		var $stats = '';
+		public $total_count;
+
+		public $smushed_count;
+
+		public $stats;
 
 		/**
 		 * Constructor
@@ -52,6 +54,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->smushed_count = $this->smushed_count();
 			$this->stats         = $this->global_stats();
 
+			$this->init_settings();
+
 		}
 
 		/**
@@ -59,7 +63,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function screen() {
 			global $hook_suffix;
-			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smushit-bulk', array(
+			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smush-bulk', array(
 				$this,
 				'ui'
 			) );
@@ -132,6 +136,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
+		 * Translation ready settings
+		 */
+		function init_settings() {
+			$this->settings = array(
+				'auto'  => __( 'Auto-Smush images on upload', WP_SMUSH_DOMAIN ),
+				'lossy' => __( 'Allow lossy optimization', WP_SMUSH_DOMAIN )
+			);
+		}
+
+		/**
 		 * Display the ui
 		 */
 		function ui() {
@@ -169,56 +183,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->process_options();
 
 			?>
-			<form action="" method="post"><?php
+			<form action="" method="post">
 
-				//Auto Smushing
-				$auto     = 'wp_smushit_smushit_auto';
-				$auto_val = intval( get_option( $auto, WP_SMUSHIT_AUTO_OK ) );
-				$disabled = sprintf( __( 'Temporarily disabled until %s', WP_SMUSH_DOMAIN ), date( 'M j, Y \a\t H:i', $auto_val ) );
-
-				//Timeout
-				$timeout     = 'wp_smushit_smushit_timeout';
-				$timeout_val = intval( get_option( $timeout, WP_SMUSHIT_AUTO_OK ) );
-
-				//Debug
-				$smushit_debug     = 'wp_smushit_smushit_debug';
-				$smushit_debug_val = get_option( $smushit_debug, WP_SMUSHIT_DEBUG );
-				?>
-				<table class="form-table">
-					<tbody>
-					<tr>
-						<th><label><?php echo __( 'Smush images on upload', WP_SMUSH_DOMAIN ); ?></label></th>
-						<td>
-							<select name='<?php echo $auto; ?>' id='<?php echo $auto; ?>'>
-								<option value='<?php echo WP_SMUSHIT_AUTO_OK; ?>' <?php selected( WP_SMUSHIT_AUTO_OK, $auto_val ); ?>><?php echo __( 'Automatically process on upload', WP_SMUSH_DOMAIN ); ?></option>
-								<option value='<?php echo WP_SMUSHIT_AUTO_NEVER; ?>' <?php selected( WP_SMUSHIT_AUTO_NEVER, $auto_val ); ?>><?php echo __( 'Do not process on upload', WP_SMUSH_DOMAIN ); ?></option> <?php
-
-								if ( $auto_val > 0 ) {
-									?>
-									<option value="<?php echo $auto_val; ?>" selected="selected"><?php echo $disabled; ?></option><?php
-								} ?>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th><?php _e( 'API Timeout', WP_SMUSH_DOMAIN ); ?></th>
-						<td>
-							<input type='text' name='<?php echo esc_attr( $timeout ); ?>' id='<?php echo esc_attr( $timeout ); ?>' value='<?php echo intval( get_option( $timeout, 60 ) ); ?>' size="2">
-						</td>
-					</tr>
-					<tr>
-						<th><?php _e( 'Smushit Debug', WP_SMUSH_DOMAIN ); ?></th>
-						<td>
-							<input type="checkbox" name="<?php echo $smushit_debug ?>" <?php echo checked( $smushit_debug_val, 'on' ); ?>/>
-							<?php _e( 'If you are having trouble with the plugin enable this option can reveal some information about your system needed for support.', WP_SMUSH_DOMAIN ); ?>
-						</td>
-					</tr>
-					</tbody>
-				</table><?php
+				<ul id="wp-smush-options-wrap">
+					<?php
+					// display each setting
+					foreach ( $this->settings as $name => $text ) {
+						echo $this->render_checked( $name, $text );
+					}
+					?>
+				</ul><?php
 				// nonce
-				wp_nonce_field( 'save_wp_smushit_options', 'wp_smushit_options_nonce' );
+				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 				?>
-				<input type="submit" id="wp-smushit-save-settings" class="button button-primary" value="<?php _e( 'Save Changes', WP_SMUSH_DOMAIN ); ?>">
+				<input type="submit" id="wp-smush-save-settings" class="button button-primary" value="<?php _e( 'Save Changes', WP_SMUSH_DOMAIN ); ?>">
 			</form>
 		<?php
 		}
@@ -230,30 +208,29 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function process_options() {
 			// we aren't saving options
-			if ( ! isset( $_POST['wp_smushit_options_nonce'] ) ) {
+			if ( ! isset( $_POST['wp_smush_options_nonce'] ) ) {
 				return;
 			}
-			echo "here";
 			// the nonce doesn't pan out
-			if ( ! wp_verify_nonce( $_POST['wp_smushit_options_nonce'], 'save_wp_smushit_options' ) ) {
+			if ( ! wp_verify_nonce( $_POST['wp_smush_options_nonce'], 'save_wp_smush_options' ) ) {
 				return;
 			}
-			echo "there";
+			// var to temporarily assign the option value
+			$setting = null;
 
-			//Array of options
-			$smushit_settings = array(
-				'wp_smushit_smushit_auto',
-				'wp_smushit_smushit_timeout',
-				'wp_smushit_smushit_enforce_same_url',
-				'wp_smushit_smushit_debug'
-			);
-			//Save All the options
-			foreach ( $smushit_settings as $setting ) {
-				if ( empty( $_POST[ $setting ] ) ) {
-					update_option( $setting, '' );
-					continue;
-				}
-				update_option( $setting, $_POST[ $setting ] );
+			// process each setting and update options
+			foreach ( $this->settings as $name => $text ) {
+				// formulate the index of option
+				$opt_name = WP_SMUSH_PREFIX . $name;
+
+				// get the value to be saved
+				$setting = isset( $_POST[ $opt_name ] ) ? 1 : 0;
+
+				// update the new value
+				update_site_option( $opt_name, $setting );
+
+				// unset the var for next loop
+				unset( $setting );
 			}
 
 		}
@@ -322,12 +299,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						</div>
 
 						<!-- Bulk Smushing -->
-						<?php wp_nonce_field( 'wp-smushit-bulk', '_wpnonce' ); ?>
-						<br/>
-						<?php $this->progress_ui(); ?>
-						<?php $this->setup_button(); ?>
-						<?php _e( "<p><em>N.B. If your server <tt>gzip</tt>s content you may not see the progress updates as your files are processed.</em></p>", WP_SMUSH_DOMAIN ); ?>
-						<?php
+						<?php wp_nonce_field( 'wp-smush-bulk', '_wpnonce' ); ?>
+						<br/><?php
+						$this->progress_ui();
+						$this->setup_button();
+						_e( "<p><em>N.B. If your server <tt>gzip</tt>s content you may not see the progress updates as your files are processed.</em></p>", WP_SMUSH_DOMAIN );
 						if ( WP_SMUSHIT_DEBUG ) {
 							_e( "<p>DEBUG mode is currently enabled. To disable uncheck the smushit debug option.</p>", WP_SMUSH_DOMAIN );
 						}
@@ -728,9 +704,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Round off precentage
-			$smush_data['percent'] = round( $smush_data['percent'],2 );
+			$smush_data['percent'] = round( $smush_data['percent'], 2 );
 
-			$smush_data['human']   = $WpSmush->format_bytes( $smush_data['bytes'] );
+			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
 
 			return $smush_data;
 		}
@@ -763,6 +739,29 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			return $button;
+		}
+
+		/**
+		 * Render a checkbox
+		 *
+		 * @param string $key The setting's name
+		 *
+		 * @return string checkbox html
+		 */
+		function render_checked( $key, $text ) {
+			// the key for options table
+			$opt_name = WP_SMUSH_PREFIX . $key;
+
+			// the defined constant
+			$const_name = strtoupper( 'WP_SMUSH' . $key );
+
+			// default value
+			$opt_val = intval( get_site_option( $opt_name, constant( $const_name ) ) );
+
+			// return html
+			return sprintf(
+				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, 1, false ), $text
+			);
 		}
 	}
 

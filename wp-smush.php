@@ -122,7 +122,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			/**
 			 * Hooks
 			 */
-			if ( WP_SMUSHIT_AUTO == WP_SMUSHIT_AUTO_OK ) {
+			//Check if lossy compression allowed and add it to headers
+			$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
+			if ( $auto_smush ) {
 				add_filter( 'wp_generate_attachment_metadata', array( $this, 'resize_from_meta_data' ), 10, 2 );
 			}
 			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
@@ -399,7 +401,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 
 				//Check if lossy compression allowed and add it to headers
-				$lossy = get_site_option( 'wp_smushit_lossy' ); //TODO this setting does not exist at the moment
+				$lossy = get_site_option( WP_SMUSH_PREFIX . 'lossy' );
+
 				if ( $lossy && $this->is_premium() ) {
 					$headers['lossy'] = 'true';
 				} else {

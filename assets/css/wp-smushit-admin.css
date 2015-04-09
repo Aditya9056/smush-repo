@@ -325,3 +325,21 @@ p#wp-smush-compression span {
 #wp-smush-send #wp-smush-loader-wrap {
     display: inline-block;
 }
+/** Settings Page **/
+ul#wp-smush-options-wrap {
+    display: block;
+    overflow: auto;
+    margin: 0;
+}
+
+ul#wp-smush-options-wrap li {
+    display: inline-block;
+    list-style: none;
+    float: left;
+    margin: 5px 20px 5px 0;
+    padding: 5px 5px 5px 0;
+}
+
+input#wp-smush-save-settings {
+    margin: 15px 0;
+}
