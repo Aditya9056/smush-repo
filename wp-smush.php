@@ -228,12 +228,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				unlink( $tempfile );
 			}
 
-			$savings_str = $this->format_bytes( $response['data']->bytes_saved, 1 );
-			$savings_str = str_replace( ' ', '&nbsp;', $savings_str );
-
-			$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSH_DOMAIN ), $response['data']->compression, $savings_str );
-
-			return $results_msg;
+			return $response;
 		}
 
 		function should_resmush( $previous_status ) {
