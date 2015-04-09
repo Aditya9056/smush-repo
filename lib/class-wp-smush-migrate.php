@@ -66,7 +66,9 @@ class WpSmushMigrate {
 				'before_size' => -1,
 				'after_size' => -1,
 				'compression' => -1,
-				'time' => -1
+				'time' => -1,
+				'api_version' => -1,
+				'lossy' => -1
 			),
 			'sizes' => array()
 		);
