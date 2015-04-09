@@ -35,6 +35,7 @@ if ( ! function_exists( 'download_url' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
 }
 
+
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
@@ -95,6 +96,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_action( 'admin_init', array( &$this, 'admin_init' ) );
 			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
 			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
+
+			require_once WP_SMUSHIT_DIR ."/lib/class-wp-smush-migrate.php";
 		}
 
 		function WpSmush() {
@@ -529,34 +532,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			return $wp_is_smushed;
 		}
 
-		/**
-		 * Returns percent saved from the api call response
-		 *
-		 * @param string $message
-		 *
-		 * @return string|bool
-		 */
-		function get_saved_percentage( $message ) {
-			if ( preg_match( '/\d+(\.\d+)?%/', $message, $matches ) )
-				return isset( $matches[0] ) ? $matches[0] : false;
-
-				return false;
-		}
-
-		/**
-		 * Returns size saved from the api call response
-		 *
-		 * @param string $message
-		 *
-		 * @return string|bool
-		 */
-		function get_saved_size( $message ) {
-			if ( preg_match( '/\((.*)\)/', $message, $matches ) ) {
-				return isset( $matches[1] ) ? $matches[1] : false;
-			}
-
-			return false;
-		}
 
 		/**
 		 * Set send button status
