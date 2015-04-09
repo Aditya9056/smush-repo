@@ -94,6 +94,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_action( 'admin_init', array( &$this, 'admin_init' ) );
 			add_action( 'admin_head-upload.php', array( &$this, 'add_bulk_actions_via_javascript' ) );
 			add_action( 'admin_action_bulk_smushit', array( &$this, 'bulk_action_handler' ) );
+
+			require_once WP_SMUSHIT_DIR . "/lib/class-wp-smush-migrate.php";
 		}
 
 		function WpSmush() {
@@ -199,7 +201,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				unlink( $tempfile );
 			}
 
-			return $response;
+			$savings_str = $this->format_bytes( $response['data']->bytes_saved, 1 );
+			$savings_str = str_replace( ' ', '&nbsp;', $savings_str );
+
+			$results_msg = sprintf( __( "Reduced by %01.1f%% (%s)", WP_SMUSH_DOMAIN ), $response['data']->compression, $savings_str );
+
+			return $results_msg;
 		}
 
 		function should_resmush( $previous_status ) {
@@ -567,8 +574,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			return $api_key;
 		}
 
+
 		/**
-		 * Check if image is already smushed
+		 * Checks if image is already smushed
+		 *
+		 * @param int $id
+		 * @param array $data
+		 *
+		 * @return bool|mixed
 		 */
 		function is_smushed( $id, $data ) {
 
@@ -583,22 +596,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			return $wp_is_smushed;
-		}
-
-		/**
-		 * Returns percent saved from the api call response
-		 *
-		 * @param string $message
-		 *
-		 * @return string|bool
-		 */
-		function get_saved_percentage( $message ) {
-			if ( preg_match( '/\d+(\.\d+)?%/', $message, $matches ) ) {
-				return isset( $matches[0] ) ? $matches[0] : false;
-
-				return false;
-			}
-
 		}
 
 		/**
