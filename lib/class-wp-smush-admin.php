@@ -14,7 +14,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	 * Show settings in Media settings and add column to media library
 	 *
 	 */
-	class WpSmushitAdmin {
+	class WpSmushitAdmin  extends WpSmush{
 
 		/**
 		 *
@@ -121,6 +121,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'something_went_wrong' => __( 'Ops!... something went wrong', WP_SMUSH_DOMAIN ),
 				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN ),
 				'smush_it'              => __( 'Smush it', WP_SMUSH_DOMAIN ),
+				'smush_now'              => __( 'Smush Now', WP_SMUSH_DOMAIN ),
 				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN )
 			);
 
@@ -128,7 +129,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Localize smushit_ids variable, if there are fix number of ids
 			$ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $bulk->get_attachments();
-			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_ids', $ids );
+
+			$data = array(
+				'smushed' => $this->get_smushed_image_ids(),
+				'unsmushed' => $ids
+			);
+
+			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
 
 		}
 
@@ -760,6 +767,25 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			return sprintf(
 				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, 1, false ), $text
 			);
+		}
+
+		function get_smushed_image_ids(){
+			$args = array(
+				'fields'         => 'ids',
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'order'          => 'ASC',
+				'posts_per_page' => - 1,
+				'meta_query'     => array(
+					array(
+						'key'     => 'wp-is-smushed',
+						'value'   => '1',
+					)
+				),
+			);
+			$query = new WP_Query( $args );
+			return $query->posts;
 		}
 	}
 

@@ -9,33 +9,49 @@ jQuery(function ($) {
         className: "media-lib-wp-smush-el",
         tagName: "div",
         events: {
-            "click .media-lib-wp-smush-button": "click"
+            "click .media-lib-wp-smush-icon": "click"
         },
-        template : _.template('<button class="button button-primary media-lib-wp-smush-button"><%= label %></button>'),
+        template : _.template('<span class="dashicons dashicons-media-archive media-lib-wp-smush-icon"></span>'),
         initialize: function () {
             this.render();
         },
+        is_smushed: function(){
+            var self = this,
+                arr = _.filter(wp_smushit_data.smushed, function(id){ return id == self.model.get("id").toString(); });
+            return typeof arr == "object" ? arr.length : false;
+        },
         render: function () {
             var data = this.model.toJSON();
-            this.$el.html( this.template( { label: wp_smushit_msgs.smush_it} ) );
 
-            this.$button = this.$(".button");
+
+            this.$el.html( this.template() );
+            this.$button = this.$(".media-lib-wp-smush-icon");
+
+            if( this.is_smushed() ){
+                this.$el.addClass("is_smushed");
+            }else{
+                this.$el.addClass("active");
+                this.$button.prop("title", wp_smushit_msgs.smush_now)
+            }
 
             this.$button.data("id", data.id);
         },
         click: function (e) {
-            var ajax = WP_Smush.sendRequest(this.$button),
+            var ajax = WP_Smush.ajax(this.model.get("id"), manualUrl, 0),
                 self = this;
 
             e.preventDefault();
             e.stopPropagation();
 
-            this.$el.css({display: "block"});
+            this.$button.css({display: "block"});
             this.$button.prop("disabled", true);
-            this.$button.text( wp_smushit_msgs.sending );
+            this.$button.addClass("active spinner");
             ajax.complete(function (res) {
                 self.$button.prop("disabled", false);
-                self.$button.text( wp_smushit_msgs.smush_it );
+                self.$button.removeClass("spinner");
+                self.$button.removeClass("active");
+                self.$el.removeClass("active");
+                self.$el.addClass("is_smushed");
             });
         }
     });

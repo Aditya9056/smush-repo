@@ -298,12 +298,15 @@ p#wp-smush-compression span {
 
 .media-lib-wp-smush-el{
     position: absolute;
-    top: 40%;
-    left: 25%;
-    height: 20%;
-    width: 50%;
-    cursor: pointer;
-    display: none;
+    display: block;
+    width: 90%;
+    height: 90%;
+    left: 5%;
+    top: 5%;
+    background: transparent;
+}
+.media-lib-wp-smush-el.is_smushed{
+    background: rgba(255, 255, 255, 0.5);
 }
 .media-lib-wp-smush-el .spinner{
     display: block;
@@ -342,4 +345,39 @@ ul#wp-smush-options-wrap li {
 
 input#wp-smush-save-settings {
     margin: 15px 0;
+}
+.media-lib-wp-smush-icon{
+    position: absolute;
+    left: -10%;
+    bottom: -3%;
+    display: none;
+}
+.is_smushed .media-lib-wp-smush-icon{
+    display: block;
+    cursor: auto;
+}
+
+.active:hover .media-lib-wp-smush-icon{
+    display: block;
+}
+.active:hover .media-lib-wp-smush-icon:hover:before{
+    color: #0074a2;
+}
+
+.active .media-lib-wp-smush-icon{
+    cursor: pointer;
+}
+.media-lib-wp-smush-icon.active{
+    display: block;
+    color: #0074a2;
+}
+.media-lib-wp-smush-icon:before{
+    font-size: 30px;
+}
+.media-lib-wp-smush-icon.spinner{
+    left: -7%;
+    bottom: -7%;
+}
+.media-lib-wp-smush-icon.spinner:before{
+    content: "";
 }
