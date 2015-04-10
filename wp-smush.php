@@ -424,7 +424,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			unset( $result );//free memory
 			unset( $response );//free memory
-			var_dump($data);die;
 			return $data;
 		}
 
