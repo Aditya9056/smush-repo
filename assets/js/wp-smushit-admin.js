@@ -11,7 +11,7 @@ jQuery('document').ready(function ($) {
 	$bulk_send_url = ajaxurl + '?action=wp_smushit_bulk';
 	$manual_smush_url = ajaxurl + '?action=wp_smushit_manual';
 	$remaining = '';
-	$smush_done = 1;
+	$smush_done = false;
 	timeout = 60000;
 	/**
 	 * Checks for the specified param in URL
@@ -39,7 +39,6 @@ jQuery('document').ready(function ($) {
 
 		// calculate %
 		if ($remaining != 0) {
-
 			$remaining--;
 		}
 
@@ -88,8 +87,13 @@ jQuery('document').ready(function ($) {
 
 			//Handle bulk smush progress
 			if (!$is_single) {
-				// increase progressbar
-				smushit_progress(response);
+				if (response.success) {
+					// increase progressbar
+					smushit_progress(response);
+				} else if (response.data.error == 'bulk_request_image_limit_exceeded') {
+					wp_smushit_free_done();
+
+				}
 				return;
 			} else {
 				//Check for response message
@@ -143,6 +147,33 @@ jQuery('document').ready(function ($) {
 
 		// add the progress text
 		$button.find('span').html(wp_smush_msgs.done);
+
+		return;
+	}
+
+	/**
+	 * Change the button status on bulk smush free pause
+	 *
+	 * @returns {undefined}
+	 */
+	function wp_smushit_free_done() {
+		$button = jQuery('.wp-smpushit-container #wp-smush-send');
+
+		// copy the loader into an object
+		$loader = $button.find('.floatingCirclesG');
+
+		// remove the loader
+		$loader.remove();
+
+		// empty the current text
+		$button.find('span').html('');
+
+		// add new class for css adjustment
+		$button.removeClass('wp-smush-started');
+		//$button.addClass('wp-smush-finished');
+
+		// add the progress text
+		$button.find('span').html(wp_smush_msgs.bulk_now);
 
 		return;
 	}

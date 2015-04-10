@@ -162,10 +162,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
+			if ( $this->is_premium() ) {
+				$bulk_now = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
+			} else {
+				$bulk_now = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ), $this->max_free_bulk );
+			}
 
 			$wp_smush_msgs = array(
 				'progress'             => __( 'Smushing in Progress', WP_SMUSH_DOMAIN ),
 				'done'                 => __( 'All done!', WP_SMUSH_DOMAIN ),
+				'bulk_now'             => $bulk_now,
 				'something_went_wrong' => __( 'Ops!... something went wrong', WP_SMUSH_DOMAIN ),
 				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN ),
 				'smush_it'             => __( 'Smush it', WP_SMUSH_DOMAIN ),
@@ -345,7 +351,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<strong>You must keep this page open while the bulk smush is processing</strong>, but you can leave at any time and come back to continue where it left off.", WP_SMUSH_DOMAIN ); ?></p>
 
 						<?php if ( ! $this->is_premium() ) { ?>
-							<p><?php printf( __( "NOTE: Free accounts are limited to bulk smushing %d attachments per request. You will need to click to start a new bulk job after each 50 attachments.", WP_SMUSH_DOMAIN ), $this->max_free_bulk ); ?></p>
+							<p><?php printf( __( "NOTE: Free accounts are limited to bulk smushing %d attachments per request. You will need to click to start a new bulk job after each %d attachments.", WP_SMUSH_DOMAIN ), $this->max_free_bulk, $this->max_free_bulk ); ?></p>
 						<?php } ?>
 
 
@@ -496,10 +502,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$stats['smushed'] = $this->smushed_count();
 			$stats['total']   = $this->total_count;
 
-			if( is_wp_error($smush) ){
+			if( is_wp_error( $smush ) ) {
 				wp_send_json_error( $stats );
-			}else{
-			wp_send_json_success( $stats );
+			} else {
+				wp_send_json_success( $stats );
 			}
 		}
 
