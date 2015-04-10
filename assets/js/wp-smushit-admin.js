@@ -318,7 +318,7 @@ jQuery('document').ready(function ($) {
 
         // prevent the default action
         e.preventDefault();
-
+        var $this = $(this);
         //if item view
         if (jQuery('.attachment-info .attachment-compat').length > 0) {
             /**
@@ -330,20 +330,21 @@ jQuery('document').ready(function ($) {
                 'isSingle': true
             });
         }
+
+        var deffered = WP_Smush.sendRequest($this);
         //Add loader
-        buttonProgress(jQuery(this), wp_smush_msgs.progress);
+        buttonProgress(jQuery(this), wp_smush_msgs.progress, deffered);
 
 
-        var $this = jQuery(this);
 
         //remove all smush notices
         $('.smush-notices').remove();
         $this.text(wp_smush_msgs.sending);
         //Send Smush request
-        WP_Smush.sendRequest($this)
-            .complete(function () {
-                $this.text(wp_smush_msgs.smush_now);
-            });
+
+        deffered.complete(function () {
+            $this.text(wp_smush_msgs.smush_now);
+        });
         $this.prop("disabled", true);
 
         return;
@@ -376,7 +377,7 @@ jQuery('document').ready(function ($) {
         deferred.done(function(){
             $spinner.remove();
             $button.removeClass("wp-smushing");
-            if( deferred.errors.length ){
+            if( deferred.errors && deferred.errors.length ){
                 $button.text( wp_smush_msgs.bulk_now );
             }else{
                 $button.text( wp_smush_msgs.done );
