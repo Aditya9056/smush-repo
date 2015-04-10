@@ -46,7 +46,7 @@ define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_SMUSH_MAX_BYTES', 1000000 );
 define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 8000000 );
 define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
-if ( defined( 'WP_SMUSH_TIMEOUT' ) ) define( 'WP_SMUSH_TIMEOUT', 30 );
+if ( !defined( 'WP_SMUSH_TIMEOUT' ) ) define( 'WP_SMUSH_TIMEOUT', 30 );
 
 require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
 
@@ -275,6 +275,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					}
 
 					//Total Stats, store all data in bytes
+					if( isset( $response['data'] ) )
 					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 						= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 
@@ -510,13 +511,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return bool|mixed
 		 */
-		function is_smushed( $id, $data ) {
+		function is_smushed( $id, $data = null ) {
 
 			//For new images
 			$wp_is_smushed = get_post_meta( $id, 'wp-is-smushed', true );
 
 			//Not smushed, backward compatibility, check attachment metadata
-			if ( ! $wp_is_smushed ) {
+			if ( ! $wp_is_smushed && $data !== null ) {
 				if ( isset( $data['wp_smushit'] ) && ! empty( $data['wp_smushit'] ) ) {
 					$wp_is_smushed = true;
 				}

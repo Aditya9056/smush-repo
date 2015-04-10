@@ -163,17 +163,17 @@ jQuery('document').ready(function ($) {
 		$('#progress-ui').show();
 
 		// if we have a definite number of ids
-		if (wp_smushit_ids.length > 0) {
+		if (wp_smushit_data.unsmushed.length > 0) {
 
-			$remaining = wp_smushit_ids.length;
+			$remaining = wp_smushit_data.unsmushed.length;
 
 			// loop and pipe into deferred object
-			jQuery.each(wp_smushit_ids, function (ix, $id) {
+			jQuery.each(wp_smushit_data.unsmushed, function (ix, id) {
 				startingpoint = startingpoint.then(function () {
 					var $remaining = $remaining - 1;
 
 					// call the ajax requestor
-					return WP_Smush.smushitRequest($id, 0, false);
+					return WP_Smush.smushitRequest(id, 0, false);
 				});
 			});
 		}
