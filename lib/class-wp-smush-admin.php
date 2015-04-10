@@ -555,7 +555,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/** Send stats **/
 			if ( is_wp_error( $smush ) ) {
-				wp_send_json_error( $status );
+				/**
+				 * @param WP_Error $smush
+				 */
+				wp_send_json_error( $smush->get_error_message() );
 			} else {
 				wp_send_json_success( $status );
 			}

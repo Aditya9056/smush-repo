@@ -129,21 +129,21 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function do_smushit( $attachment_id, $file_path = '', $file_url = '' ) {
 			$errors = new WP_Error();
 			if ( empty( $file_path ) ) {
-				return __( "File path is empty", WP_SMUSH_DOMAIN );
+				$errors->add("empty_path",  __( "File path is empty", WP_SMUSH_DOMAIN ) );
 			}
 
 			if ( empty( $file_url ) ) {
-				return __( "File URL is empty", WP_SMUSH_DOMAIN );
+				$errors->add("empty_url", __( "File URL is empty", WP_SMUSH_DOMAIN ) );
 			}
 
 			// check that the file exists
 			if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
-				return sprintf( __( "ERROR: Could not find <span class='code'>%s</span>", WP_SMUSH_DOMAIN ), $file_path );
+				$errors->add("file_not_found", sprintf( __( "ERROR: Could not find <span class='code'>%s</span>", WP_SMUSH_DOMAIN ), $file_path ));
 			}
 
 			// check that the file is writable
 			if ( ! is_writable( dirname( $file_path ) ) ) {
-				return sprintf( __( "ERROR: <span class='code'>%s</span> is not writable", WP_SMUSH_DOMAIN ), dirname( $file_path ) );
+				$errors->add("not_writable", sprintf( __( "ERROR: <span class='code'>%s</span> is not writable", WP_SMUSH_DOMAIN ), dirname( $file_path ) ) );
 			}
 
 			$file_size = filesize( $file_path );
@@ -153,11 +153,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
-				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), image not found.</span>', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) );
+				$errors->add("image_not_found", sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), image not found.</span>', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ));
 			}
 			//Check size limit
 			if ( $file_size > $max_size ) {
-				return sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), size limit exceeded.</span>', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) );
+				$errors->add("size_limit", sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), size limit exceeded.</span>', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ));
 			}
 
 			/** Send image for smushing, and fetch the response */
@@ -249,7 +249,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Flag to check, if full image needs to be smushed or not
 			$smush_full = true;
-			$error      = false;
+			$errors    = new WP_Error();
 			$stats      = array(
 				"stats" => array_merge( $this->_get_size_signature(), array(
 						'api_version' => - 1,
@@ -298,7 +298,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 							= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 					} else {
-						$error = true;
+						$errors->add("image_size_error".$size_key , sprintf(__("Size '%s' not processed correctly" ), $size_key ) );
 					}
 
 					if ( empty( $stats['stats']['api_version'] ) ) {
@@ -318,7 +318,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				if ( ! empty( $full_image_response['data'] ) ) {
 					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
 				}else{
-					$error = true;
+					$errors->add("image_size_error", __("Size 'full' not processed correctly")  );
 				}
 
 				//Update stats
@@ -326,26 +326,26 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 						= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 				} else {
-					$error = true;
+					$errors->add("image_size_error", __("Size 'full' not processed correctly")  );
 				}
 
 			}
+
+			$has_errors = (bool) count( $errors->get_error_messages() ) ;
 
 			//Store stats
 
 			list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], $stats['stats']['bytes_saved'] ) =
 				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
-			if( empty( $stats['stats']['before_size'] ) )
-				$error = true;
 
 			//Set smush status for all the images, store it in wp-smpro-smush-data
-			if ( ! $error  ) {
+			if ( ! $has_errors  ) {
 				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
 			}
 
 			//return stats
-			return $error ? new WP_Error() : $stats['stats'];
+			return $has_errors ? $errors : $stats['stats'];
 		}
 
 		/**
