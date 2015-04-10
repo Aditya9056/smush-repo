@@ -50,10 +50,6 @@ if ( defined( 'WP_SMUSH_TIMEOUT' ) ) define( 'WP_SMUSH_TIMEOUT', 30 );
 
 require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
 
-if ( ! function_exists( 'download_url' ) ) {
-	require_once( ABSPATH . 'wp-admin/includes/file.php' );
-}
-
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
@@ -85,24 +81,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		const MIGRATED_VERSION = "wp-smush-migrated-version";
 
-
-		/**
-		 * Instance of WpSmushMigrate class
-		 *
-		 * @var WpSmushMigrate $_migrator
-		 */
-		private $_migrator;
-
 		/**
 		 * Constructor
 		 */
 		function __construct() {
-			$this->_migrator = new WpSmushMigrate();
-
 			/**
 			 * Hooks
 			 */
-			//Check if lossy compression allowed and add it to headers
+			//Check if auto is enabled
 			$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
 			if ( $auto_smush ) {
 				add_filter( 'wp_generate_attachment_metadata', array( $this, 'resize_from_meta_data' ), 10, 2 );
@@ -112,13 +98,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			add_action( "admin_init", array( $this, "migrate" ) );
 
-		}
-
-		function WpSmush() {
-			$this->__construct();
-		}
-
-		function settings_cb() {
 		}
 
 		function admin_init() {
@@ -208,19 +187,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			return $response;
-		}
-
-		function should_resmush( $previous_status ) {
-			if ( ! $previous_status || empty( $previous_status ) ) {
-				return true;
-			}
-
-			if ( stripos( $previous_status, 'no savings' ) !== false || stripos( $previous_status, 'reduced' ) !== false ) {
-				return false;
-			}
-
-			// otherwise an error
-			return true;
 		}
 
 		/**
@@ -707,7 +673,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$migrator = new WpSmushMigrate();
 			foreach ( $results as $attachment_meta ) {
-				$migrated_message = $this->_migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
+				$migrated_message = $migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
 				if ( $migrated_message !== array() ) {
 					update_post_meta( $attachment_meta->post_id, self::SMUSHED_META_KEY, $migrated_message );
 				}
@@ -742,22 +708,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 	global $WpSmush;
 
 }
-//Include Admin class
+
+//Include Admin classes
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-admin.php' );
+
 /**
- * Error Log
+ * Error Logging
  */
 require_once( WP_SMUSH_DIR . '/lib/error/class-wp-smush-errorlog.php' );
 require_once( WP_SMUSH_DIR . '/lib/error/class-wp-smush-errorregistry.php' );
-
-if ( ! function_exists( 'wp_basename' ) ) {
-	/**
-	 * Introduced in WP 3.1... this is copied verbatim from wp-includes/formatting.php.
-	 */
-	function wp_basename( $path, $suffix = '' ) {
-		return urldecode( basename( str_replace( '%2F', '/', urlencode( $path ) ), $suffix ) );
-	}
-}
-
-

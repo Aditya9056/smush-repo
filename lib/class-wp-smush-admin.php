@@ -68,7 +68,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'ui'
 			) );
 			//Register Debug page only if WP_SMUSH_DEBUG is defined and true
-			if ( defined( 'WP_SMUSHIT_DEBUG' ) && WP_SMUSHIT_DEBUG ) {
+			if ( defined( 'WP_SMUSH_DEBUG' ) && WP_SMUSH_DEBUG ) {
 				add_media_page( 'WP Smush Error Log', 'Error Log', 'edit_others_posts', 'wp-smushit-errorlog', array(
 					$this,
 					'create_admin_error_log_page'
@@ -243,12 +243,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function bulk_preview() {
 
 			$bulk = new WpSmushitBulk();
-			if ( function_exists( 'apache_setenv' ) ) {
-				@apache_setenv( 'no-gzip', 1 );
-			}
-			@ini_set( 'output_buffering', 'on' );
-			@ini_set( 'zlib.output_compression', 0 );
-			@ini_set( 'implicit_flush', 1 );
 
 			$attachments = null;
 			$auto_start  = false;
@@ -260,7 +254,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( file_exists( get_attached_file( $attachment ) ) ) {
 					$size = filesize( get_attached_file( $attachment ) );
 				}
-				if ( empty( $size ) || ! ( ( $size / 1048576 ) > 1 ) ) {
+				if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
 					continue;
 				}
 				$count ++;
@@ -268,7 +262,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$exceed_mb = '';
 			$text      = $count > 1 ? 'are' : 'is';
 			if ( $count ) {
-				$exceed_mb = sprintf( __( " %d of those images %s <b>over 1Mb</b> and <b>can not be compressed using the free version of the plugin.</b>", WP_SMUSH_DOMAIN ), $count, $text );
+				$exceed_mb = sprintf( __( " %d of those images %s <b>over 1MB</b> and <b>can not be compressed using the free version of the plugin.</b>", WP_SMUSH_DOMAIN ), $count, $text );
 			}
 			$media_lib = get_admin_url( '', 'upload.php' );
 			?>
@@ -278,7 +272,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<?php
 
 				if ( $this->total_count < 1 ) {
-					_e( "<p>You don't appear to have uploaded any images yet.</p>", WP_SMUSH_DOMAIN );
+					?>
+					<p><?php _e( "Congratulations, all your images are currently Smushed!", WP_SMUSH_DOMAIN ); ?></p>
+					<?php
 				} else {
 					if ( ! isset( $_POST['smush-all'] ) && ! $auto_start ) { // instructions page ?>
 
@@ -304,9 +300,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<br/><?php
 						$this->progress_ui();
 						$this->setup_button();
-						_e( "<p><em>N.B. If your server <tt>gzip</tt>s content you may not see the progress updates as your files are processed.</em></p>", WP_SMUSH_DOMAIN );
-						if ( WP_SMUSHIT_DEBUG ) {
-							_e( "<p>DEBUG mode is currently enabled. To disable uncheck the smushit debug option.</p>", WP_SMUSH_DOMAIN );
+
+						if ( WP_SMUSH_DEBUG ) {
+							_e( "<p>DEBUG mode is currently enabled. To disable remove WP_SMUSH_DEBUG from wp-config.php.</p>", WP_SMUSH_DOMAIN );
 						}
 					}
 				}
