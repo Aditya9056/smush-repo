@@ -302,7 +302,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<?php } ?>
 
 						<p><?php _e( "Please be aware, smushing a large number of images can take a long time depending on your server and network speed.
-						You must keep this page open while the bulk smush is processing, but you can leave at any time and come back to continue where it left off.", WP_SMUSH_DOMAIN ); ?></p>
+						<strong>You must keep this page open while the bulk smush is processing</strong>, but you can leave at any time and come back to continue where it left off.", WP_SMUSH_DOMAIN ); ?></p>
 
 						<?php if ( ! $this->is_premium() ) { ?>
 						<p><?php _e( "NOTE: Free accounts are limited to bulk smushing 50 attachments at a time. You will need to click to start a new bulk job after each 50 attachments.", WP_SMUSH_DOMAIN ); ?></p>
