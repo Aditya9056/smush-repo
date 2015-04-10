@@ -251,66 +251,81 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$bulk = new WpSmushitBulk();
 
-			$attachments = null;
-			$auto_start  = false;
-
 			$attachments = $bulk->get_attachments();
-			$count       = 0;
-			//Check images bigger than 1Mb, used to display the count of images that can't be smushed
-			foreach ( $attachments as $attachment ) {
-				if ( file_exists( get_attached_file( $attachment ) ) ) {
-					$size = filesize( get_attached_file( $attachment ) );
-				}
-				if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
-					continue;
-				}
-				$count ++;
-			}
+
 			$exceed_mb = '';
-			$text      = $count > 1 ? 'are' : 'is';
-			if ( $count ) {
-				$exceed_mb = sprintf( __( " %d of those images %s <b>over 1MB</b> and <b>can not be compressed using the free version of the plugin.</b>", WP_SMUSH_DOMAIN ), $count, $text );
+			if ( ! $this->is_premium() ) {
+				$count = 0;
+				//Check images bigger than 1Mb, used to display the count of images that can't be smushed
+				foreach ( $attachments as $attachment ) {
+					if ( file_exists( get_attached_file( $attachment ) ) ) {
+						$size = filesize( get_attached_file( $attachment ) );
+					}
+					if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
+						continue;
+					}
+					$count ++;
+				}
+
+				if ( $count ) {
+					$exceed_mb = sprintf(
+						_n( "%d image is over 1MB so will be skipped using the free version of the plugin.",
+							"%d images are over 1MB so will be skipped using the free version of the plugin.", $count, WP_SMUSH_DOMAIN ),
+						$count
+					);
+				}
 			}
-			$media_lib = get_admin_url( '', 'upload.php' );
 			?>
-			<div class="wrap">
-				<div id="icon-upload" class="icon32"><br/></div>
+			<hr>
+			<div class="bulk-smush">
 				<h3><?php _e( 'Smush in Bulk', WP_SMUSH_DOMAIN ) ?></h3>
 				<?php
 
-				if ( $this->total_count < 1 ) {
+				if ( ! count( $attachments ) ) {
 					?>
 					<p><?php _e( "Congratulations, all your images are currently Smushed!", WP_SMUSH_DOMAIN ); ?></p>
 					<?php
+					$this->progress_ui();
+
+					$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
+					if ( ! $auto_smush ) {
+						?>
+						<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to Smush here.', WP_SMUSH_DOMAIN), admin_url( 'media-new.php' ) ); ?></p>
+						<?php
+					}
 				} else {
-					if ( ! isset( $_POST['smush-all'] ) && ! $auto_start ) { // instructions page ?>
+					?>
+					<div class="smush-instructions">
+						<h4><?php printf( _n( "%d attachment in your media library has not been smushed.", "%d attachments in your media library have not been smushed.", count( $attachments ), WP_SMUSH_DOMAIN ), count( $attachments ) ); ?></h4>
+						<?php if ( $exceed_mb ) { ?>
+							<p><?php echo $exceed_mb; ?></p>
+						<?php } ?>
 
-						<hr style="clear: left;"/>
+						<p><?php _e( "Please be aware, smushing a large number of images can take a long time depending on your server and network speed.
+						You must keep this page open while the bulk smush is processing, but you can leave at any time and come back to continue where it left off.", WP_SMUSH_DOMAIN ); ?></p>
 
-						<style type="text/css">
-							.smush-instructions p {
-								line-height: 1.2;
-								margin: 0 0 4px;
-							}
-						</style>
-						<div class="smush-instructions" style="line-height: 1;">
-							<?php printf( __( "<p>We found %d images in your media library. %s </p>", WP_SMUSH_DOMAIN ), sizeof( $attachments ), $exceed_mb ); ?>
+						<?php if ( ! $this->is_premium() ) { ?>
+						<p><?php _e( "NOTE: Free accounts are limited to bulk smushing 50 attachments at a time. You will need to click to start a new bulk job after each 50 attachments.", WP_SMUSH_DOMAIN ); ?></p>
+						<?php } ?>
 
-							<?php _e( "<p><b style='color: red;'>Please beware</b>, <b>smushing a large number of images can take a long time.</b></p>", WP_SMUSH_DOMAIN ); ?>
 
-							<?php _e( "<p><b>You can not leave this page, until all images have been received back, and you see a success message.</b></p>", WP_SMUSH_DOMAIN ); ?>
-							<br/>
-						</div>
+					</div>
 
-						<!-- Bulk Smushing -->
-						<?php wp_nonce_field( 'wp-smush-bulk', '_wpnonce' ); ?>
-						<br/><?php
-						$this->progress_ui();
-						$this->setup_button();
-
-						if ( defined( 'WP_SMUSH_DEBUG' ) && WP_SMUSH_DEBUG ) {
-							_e( "<p>DEBUG mode is currently enabled. To disable remove WP_SMUSH_DEBUG from wp-config.php.</p>", WP_SMUSH_DOMAIN );
-						}
+					<!-- Bulk Smushing -->
+					<?php wp_nonce_field( 'wp-smush-bulk', '_wpnonce' ); ?>
+					<br/><?php
+					$this->progress_ui();
+					$this->setup_button();
+					?>
+					<p>
+						<?php
+						// let the user know that there's an alternative
+						printf( __( 'You can also smush images individually from your <a href="%s">Media Library</a>.', WP_SMUSH_DOMAIN ), admin_url( 'upload.php' ) );
+						?>
+					</p>
+					<?php
+					if ( defined( 'WP_SMUSH_DEBUG' ) && WP_SMUSH_DEBUG ) {
+						_e( "<p>DEBUG mode is currently enabled. To disable remove WP_SMUSH_DEBUG from wp-config.php.</p>", WP_SMUSH_DOMAIN );
 					}
 				}
 				?>
