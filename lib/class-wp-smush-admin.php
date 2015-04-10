@@ -38,6 +38,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $stats;
 
+		public $max_free_bulk = 50; //this is enforced at api level too
+
 		/**
 		 * Constructor
 		 */
@@ -344,7 +346,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<strong>You must keep this page open while the bulk smush is processing</strong>, but you can leave at any time and come back to continue where it left off.", WP_SMUSH_DOMAIN ); ?></p>
 
 						<?php if ( ! $this->is_premium() ) { ?>
-							<p><?php _e( "NOTE: Free accounts are limited to bulk smushing 50 attachments per request. You will need to click to start a new bulk job after each 50 attachments.", WP_SMUSH_DOMAIN ); ?></p>
+							<p><?php printf( __( "NOTE: Free accounts are limited to bulk smushing %d attachments per request. You will need to click to start a new bulk job after each 50 attachments.", WP_SMUSH_DOMAIN ), $this->max_free_bulk ); ?></p>
 						<?php } ?>
 
 
@@ -542,14 +544,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				set_transient( $bulk_sent_count, 1, 120 );
 
-			} elseif ( $bulk_sent_count < 50 ) {
+			} elseif ( $bulk_sent_count < $this->max_free_bulk ) {
 
-				//If less than 50 images are sent
+				//If less than $this->max_free_bulk images are sent
 				set_transient( $bulk_sent_count, $bulk_sent_count + 1, 120 );
 
 			} else {
 
-				//Bulk sent count is set and greater than 50
+				//Bulk sent count is set and greater than $this->max_free_bulk
 				return false;
 
 			}
@@ -774,6 +776,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'cancel' => false,
 			);
 
+			$remaining_count = $this->total_count - $this->smushed_count;
+
 			// if we have nothing left to smush
 			// disable the buttons
 			if ( $this->smushed_count === $this->total_count ) {
@@ -782,9 +786,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$button['class']    = 'wp-smush-finished disabled';
 				$button['disabled'] = 'disabled';
 
-			} else {
+			} else if ( $this->is_premium() || $remaining_count <= $this->max_free_bulk ) { //if premium or under limit
 
-				$button['text']  = __( 'Bulk Smush all my images', WP_SMUSH_DOMAIN );
+				$button['text']  = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
+				$button['id']    = "wp-smush-send";
+				$button['class'] = 'wp-smush-button';
+
+			} else { //if not premium and over limit
+
+				$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ), $this->max_free_bulk );
 				$button['id']    = "wp-smush-send";
 				$button['class'] = 'wp-smush-button';
 
