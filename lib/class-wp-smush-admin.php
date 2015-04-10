@@ -14,6 +14,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	 * Show settings in Media settings and add column to media library
 	 *
 	 */
+
+	/**
+	 * Class WpSmushitAdmin
+	 *
+	 * @property int $remaining_count
+	 * @property int $total_count
+	 * @property int $smushed_count
+	 */
 	class WpSmushitAdmin extends WpSmush {
 
 		/**
@@ -70,6 +78,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$this->init_settings();
 
+		}
+
+		function __get($prop){
+
+			if( method_exists("WpSmushitAdmin", $prop ) ){
+				return $this->$prop();
+			}
+
+			$method_name = "get_" . $prop;
+			if( method_exists("WpSmushitAdmin", $method_name  ) ){
+				return $this->$method_name();
+			}
 		}
 
 		/**
@@ -142,9 +162,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_enqueue_style( 'wp-smushit-sweet-alert' );
 		}
 
+
 		function localize() {
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
+
 
 			$wp_smush_msgs = array(
 				'progress'             => __( 'Smushing in Progress', WP_SMUSH_DOMAIN ),
@@ -312,7 +334,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<h3><?php _e( 'Smush in Bulk', WP_SMUSH_DOMAIN ) ?></h3>
 				<?php
 
-				if ( ! count( $attachments ) ) {
+				if ( $this->remaining_count == 0  ) {
 					?>
 					<p><?php _e( "Congratulations, all your images are currently Smushed!", WP_SMUSH_DOMAIN ); ?></p>
 					<?php
@@ -320,7 +342,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				} else {
 					?>
 					<div class="smush-instructions">
-						<h4><?php printf( _n( "%d attachment in your media library has not been smushed.", "%d attachments in your media library have not been smushed.", count( $attachments ), WP_SMUSH_DOMAIN ), count( $attachments ) ); ?></h4>
+						<h4><?php printf( _n( "%d attachment in your media library has not been smushed.", "%d image attachments in your media library have not been smushed yet.", $this->remaining_count, WP_SMUSH_DOMAIN ), $this->remaining_count ); ?></h4>
 						<?php if ( $exceed_mb ) { ?>
 							<p><?php echo $exceed_mb; ?></p>
 						<?php } ?>
@@ -673,6 +695,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// send the count
 			return $count;
+		}
+
+		/**
+		 * Returns remaining count
+		 *
+		 * @return int
+		 */
+		function remaining_count(){
+			return $this->total_count - $this->smushed_count;
 		}
 
 		/**
