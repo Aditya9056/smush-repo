@@ -107,7 +107,12 @@ jQuery('document').ready(function ($) {
 					}else{
 						$status.addClass("error");
 					}
+                    $status.html(response.data);
 				}
+                //For grid View
+                if (jQuery('.smush-wrap.unsmushed').length > 0) {
+                    jQuery('.smush-wrap.unsmushed').removeClass('unsmushed').addClass('smushed');
+            }
 			}
 		}).error(function(response){
 			$status.html(response.data);
@@ -168,7 +173,10 @@ jQuery('document').ready(function ($) {
 	 */
 	function wp_smushit_bulk_smush() {
 		// instantiate our deferred object for piping
-		var startingpoint = jQuery.Deferred();
+        var startingpoint = jQuery.Deferred(),
+            errors = [],
+            $log = $(".smush-final-log");
+
 		startingpoint.resolve();
 
 		//Show progress bar
@@ -182,12 +190,28 @@ jQuery('document').ready(function ($) {
 			// loop and pipe into deferred object
 			jQuery.each(wp_smushit_data.unsmushed, function (ix, id) {
 				startingpoint = startingpoint.then(function () {
-					var $remaining = $remaining - 1;
+                    var $remaining = $remaining - 1,
+                        ajax = WP_Smush.smushitRequest(id, 0, false)
+                            .error(function(){
+                                errors.push(id);
+
+                            }).done(function(res){
+                                if( typeof res.success === "undefined" || ( typeof res.success !== "undefined" &&  res.success === false ) ){
+                                    errors.push(id);
+                                }
+                            });
 
 					// call the ajax requestor
-					return WP_Smush.smushitRequest(id, 0, false);
+                    return ajax;
+                });
 				});
+
+            startingpoint.done(function(){
+                if( errors.length ){
+                    $log.append("<p>Bulk smush finished with" + errors.length + " error(s), please retry for the remaining files</p>" );
+                }
 			});
+
 		}
 
 	}
@@ -228,7 +252,7 @@ jQuery('document').ready(function ($) {
 
 		//Disable bulk smush button
 		$(this).attr('disabled', 'disabled');
-
+        $(".smush-remaining-images-notice").remove();
 		//Enable Cancel button
 		$('#wp-smush-cancel').removeAttr('disabled');
 
@@ -258,6 +282,7 @@ jQuery('document').ready(function ($) {
 		}
 		//Add loader
 		buttonProgress(jQuery(this), wp_smush_msgs.progress);
+
 
 		var $this = jQuery(this);
 

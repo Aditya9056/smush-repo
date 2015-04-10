@@ -336,7 +336,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				} else {
 					?>
 					<div class="smush-instructions">
-						<h4><?php printf( _n( "%d attachment in your media library has not been smushed.", "%d image attachments in your media library have not been smushed yet.", $this->remaining_count, WP_SMUSH_DOMAIN ), $this->remaining_count ); ?></h4>
+						<h4 class="smush-remaining-images-notice"><?php printf( _n( "%d attachment in your media library has not been smushed.", "%d image attachments in your media library have not been smushed yet.", $this->remaining_count, WP_SMUSH_DOMAIN ), $this->remaining_count ); ?></h4>
 						<?php if ( $exceed_mb ) { ?>
 							<p><?php echo $exceed_mb; ?></p>
 						<?php } ?>
@@ -354,12 +354,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<!-- Bulk Smushing -->
 					<?php wp_nonce_field( 'wp-smush-bulk', '_wpnonce' ); ?>
 					<br/><?php
-				}
-				if( $this->total_count > 0 ) {
 					$this->progress_ui();
-					$this->setup_button();
 				}
-				$auto_smush = get_option( WP_SMUSH_PREFIX . 'auto' );
+				?>
+				<div class="smush-final-log"></div>
+				<?php
+					$this->setup_button();
+				$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
 				if ( ! $auto_smush ) {
 					?>
 					<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to Smush here.', WP_SMUSH_DOMAIN ), admin_url( 'media-new.php' ) ); ?></p>
@@ -488,14 +489,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
-			$WpSmush->resize_from_meta_data( $original_meta, $attachment_id, false );
+			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id, false );
 
 			$stats = $this->global_stats();
 
 			$stats['smushed'] = $this->smushed_count();
 			$stats['total']   = $this->total_count;
 
+			if( is_wp_error($smush) ){
+				wp_send_json_error( $stats );
+			}else{
 			wp_send_json_success( $stats );
+			}
 		}
 
 		/**
