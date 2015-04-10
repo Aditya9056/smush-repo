@@ -133,7 +133,7 @@ jQuery('document').ready(function ($) {
         $loader = $button.find('.floatingCirclesG');
 
         // remove the loader
-        $loader.remove();
+        $loader.hide();
 
         // empty the current text
         $button.find('span').html('');
@@ -160,7 +160,7 @@ jQuery('document').ready(function ($) {
         $loader = $button.find('.floatingCirclesG');
 
         // remove the loader
-        $loader.remove();
+        $loader.hide();
 
         // empty the current text
         $button.find('span').html('');
@@ -236,15 +236,15 @@ jQuery('document').ready(function ($) {
                                 errors.push(id);
 
                             }).done(function (res) {
-                                if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && res.success === false )) {
+                                if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && res.success === false && res.data.error !== 'bulk_request_image_limit_exceeded' )) {
                                     errors.push(id);
                                 }
 
                                 if (  typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded') {
                                     wp_smushit_free_exceeded();
-                                    startingpoint.reject();
+                                    return $.Deferred().reject();
                                 }
-		                            wp_smushit_data.unsmushed.shift(); //remove from array while processing so we can continue where left off
+                                wp_smushit_data.unsmushed.shift(); //remove from array while processing so we can continue where left off
                             });
 
                     // call the ajax requestor

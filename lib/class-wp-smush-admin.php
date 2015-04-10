@@ -177,7 +177,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'smush_it'             => __( 'Smush it', WP_SMUSH_DOMAIN ),
 				'smush_now'            => __( 'Smush Now', WP_SMUSH_DOMAIN ),
 				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN ),
-				"error_in_bulk"        => __( 'Bulk smush finished with {{errors}} error(s), please retry for the remaining images.', WP_SMUSH_DOMAIN)
+				"error_in_bulk"        => __( 'Bulk smush finished with {{errors}} error(s).', WP_SMUSH_DOMAIN)
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
