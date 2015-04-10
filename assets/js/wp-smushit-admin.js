@@ -168,11 +168,12 @@ jQuery('document').ready(function ($) {
         // add new class for css adjustment
         $button.removeClass('wp-smush-started');
         //$button.addClass('wp-smush-finished');
+        $button.prop("disabled", false);
 
         // add the progress text
         $button.find('span').html(wp_smush_msgs.bulk_now);
 
-        return ;
+        return;
     }
 
     /**
@@ -227,6 +228,7 @@ jQuery('document').ready(function ($) {
 
             // loop and pipe into deferred object
             jQuery.each(wp_smushit_data.unsmushed, function (ix, id) {
+
                 startingpoint = startingpoint.then(function () {
                     var $remaining = $remaining - 1,
                         ajax = WP_Smush.smushitRequest(id, 0, false)
@@ -242,6 +244,7 @@ jQuery('document').ready(function ($) {
                                     wp_smushit_free_exceeded();
                                     startingpoint.reject();
                                 }
+		                            wp_smushit_data.unsmushed.shift(); //remove from array while processing so we can continue where left off
                             });
 
                     // call the ajax requestor

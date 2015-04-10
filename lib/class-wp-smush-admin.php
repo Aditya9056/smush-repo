@@ -365,12 +365,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				?>
 				<p class="smush-final-log"></p>
 				<?php
-					$this->setup_button();
+				$this->setup_button();
+
 				$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
-				if ( ! $auto_smush ) {
+				if ( ! $auto_smush && $this->remaining_count == 0 ) {
 					?>
-					<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to Smush here.', WP_SMUSH_DOMAIN ), admin_url( 'media-new.php' ) ); ?></p>
-				<?php
+					<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to smush here.', WP_SMUSH_DOMAIN ), admin_url( 'media-new.php' ) ); ?></p>
+					<?php
 				} else { ?>
 					<p>
 					<?php
@@ -556,7 +557,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( false === $bulk_sent_count ) {
 
 				//start transient at 0
-				set_transient( $transient_name, 0, 60 );
+				set_transient( $transient_name, 1, 60 );
 				return true;
 
 			} else if ( $bulk_sent_count < $this->max_free_bulk ) {
@@ -568,7 +569,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			} else { //Bulk sent count is set and greater than $this->max_free_bulk
 
 				//clear it and return false to stop the process
-				delete_transient( $transient_name );
+				set_transient( $transient_name, 0, 60 );
 				return false;
 
 			}
