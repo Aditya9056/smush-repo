@@ -78,9 +78,11 @@ jQuery('document').ready(function ($) {
 
 		//Specify the smush URL, for single or bulk smush
 		var $send_url = $is_single ? $manual_smush_url : $bulk_send_url;
-		var $status = current_elem.parent().find('.smush-status');
+		if( typeof current_elem != 'undefined' ) {
+			var $status = current_elem.parent().find('.smush-status');
 
-		$status.removeClass("error");
+			$status.removeClass("error");
+		}
 		// make request
 		return WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
 
