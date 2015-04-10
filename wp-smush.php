@@ -743,9 +743,3 @@ if ( ! class_exists( 'WpSmush' ) ) {
 //Include Admin classes
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-admin.php' );
-
-/**
- * Error Logging
- */
-require_once( WP_SMUSH_DIR . '/lib/error/class-wp-smush-errorlog.php' );
-require_once( WP_SMUSH_DIR . '/lib/error/class-wp-smush-errorregistry.php' );

@@ -101,13 +101,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$this,
 				'ui'
 			) );
-			//Register Debug page only if WP_SMUSH_DEBUG is defined and true
-			if ( defined( 'WP_SMUSH_DEBUG' ) && WP_SMUSH_DEBUG ) {
-				add_media_page( 'WP Smush Error Log', 'Error Log', 'edit_others_posts', 'wp-smushit-errorlog', array(
-					$this,
-					'create_admin_error_log_page'
-				) );
-			}
 			// enqueue js only on this screen
 			add_action( 'admin_print_scripts-' . $admin_page_suffix, array( $this, 'enqueue' ) );
 
@@ -376,9 +369,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					?>
 					</p><?php
 				}
-				if ( defined( 'WP_SMUSH_DEBUG' ) && WP_SMUSH_DEBUG ) {
-					_e( "<p>DEBUG mode is currently enabled. To disable remove WP_SMUSH_DEBUG from wp-config.php.</p>", WP_SMUSH_DOMAIN );
-				}
 				?>
 			</div>
 		<?php
@@ -503,30 +493,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$stats['total']   = $this->total_count;
 
 			wp_send_json_success( $stats );
-		}
-
-		/**
-		 * Creates Admin Error Log info page.
-		 *
-		 * @access private.
-		 */
-		function create_admin_error_log_page() {
-			global $log;
-			if ( ! empty( $_GET['action'] ) && 'purge' == @$_GET['action'] ) {
-				//Check Nonce
-				if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'purge_log' ) ) {
-					echo '<div class="error"><p>' . __( 'Nonce verification failed', WP_SMUSH_DOMAIN ) . '</p></div>';
-				} else {
-					$log->purge_errors();
-					$log->purge_notices();
-				}
-			}
-			$errors  = $log->get_all_errors();
-			$notices = $log->get_all_notices();
-			/**
-			 * Error Log Form
-			 */
-			require_once( WP_SMUSH_DIR . '/lib/error_log.php' );
 		}
 
 		/**
