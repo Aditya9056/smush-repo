@@ -38,7 +38,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $stats;
 
-		public $max_free_bulk = 50; //this is enforced at api level too
+		public $max_free_bulk = 5; //this is enforced at api level too
 
 		/**
 		 * Constructor
@@ -538,26 +538,29 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function check_bulk_limit() {
 
-			$bulk_sent_count = get_transient( 'bulk_sent_count' );
+			$transient_name = WP_SMUSH_PREFIX . 'bulk_sent_count';
+			$bulk_sent_count = get_transient( $transient_name );
 
 			//If bulk sent count is not set
-			if ( empty( $bulk_sent_count ) ) {
+			if ( false === $bulk_sent_count ) {
 
-				set_transient( $bulk_sent_count, 1, 120 );
+				//start transient at 0
+				set_transient( $transient_name, 0, 60 );
+				return true;
 
-			} elseif ( $bulk_sent_count < $this->max_free_bulk ) {
+			} else if ( $bulk_sent_count < $this->max_free_bulk ) {
 
-				//If less than $this->max_free_bulk images are sent
-				set_transient( $bulk_sent_count, $bulk_sent_count + 1, 120 );
+				//If lte $this->max_free_bulk images are sent, increment
+				set_transient( $transient_name, $bulk_sent_count + 1, 60 );
+				return true;
 
-			} else {
+			} else { //Bulk sent count is set and greater than $this->max_free_bulk
 
-				//Bulk sent count is set and greater than $this->max_free_bulk
+				//clear it and return false to stop the process
+				delete_transient( $transient_name );
 				return false;
 
 			}
-
-			return true;
 		}
 
 		/**
