@@ -308,7 +308,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$this->progress_ui();
 						$this->setup_button();
 
-						if ( WP_SMUSH_DEBUG ) {
+						if ( defined( 'WP_SMUSH_DEBUG' ) && WP_SMUSH_DEBUG ) {
 							_e( "<p>DEBUG mode is currently enabled. To disable remove WP_SMUSH_DEBUG from wp-config.php.</p>", WP_SMUSH_DOMAIN );
 						}
 					}
