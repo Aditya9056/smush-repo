@@ -94,7 +94,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			 * Hooks
 			 */
 			//Check if auto is enabled
-			$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
+			$auto_smush = get_option( WP_SMUSH_PREFIX . 'auto' );
 
 			//Keep the uto smush on by default
 			if ( $auto_smush === false ) {
@@ -363,7 +363,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 
 				//Check if lossy compression allowed and add it to headers
-				$lossy = get_site_option( WP_SMUSH_PREFIX . 'lossy' );
+				$lossy = get_option( WP_SMUSH_PREFIX . 'lossy' );
 
 				if ( $lossy && $this->is_premium() ) {
 					$headers['lossy'] = 'true';

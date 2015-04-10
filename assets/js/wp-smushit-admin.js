@@ -95,17 +95,18 @@ jQuery('document').ready(function ($) {
 				//Check for response message
 				if (typeof response.data != 'undefined') {
 					//Append the smush stats or error
-					
+
+					$status.html(response.data);
+
 					if (response.success && response.data !== "Not processed") {
+						//For grid View
+						if (jQuery('.smush-wrap.unsmushed').length > 0) {
+							current_elem.parent().removeClass('unsmushed').addClass('smushed');
+						}
 						current_elem.remove();
 					}else{
 						$status.addClass("error");
 					}
-					$status.html(response.data);
-				}
-				//For grid View
-				if (jQuery('.smush-wrap.unsmushed').length > 0) {
-					jQuery('.smush-wrap.unsmushed').removeClass('unsmushed').addClass('smushed');
 				}
 			}
 		}).error(function(response){
