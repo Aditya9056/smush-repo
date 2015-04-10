@@ -121,7 +121,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'something_went_wrong' => __( 'Ops!... something went wrong', WP_SMUSH_DOMAIN ),
 				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN ),
 				'smush_it'              => __( 'Smush it', WP_SMUSH_DOMAIN ),
-				'smush_now'              => __( 'Smush Now', WP_SMUSH_DOMAIN ),
+				'smush_now'              => __( 'Smush now!', WP_SMUSH_DOMAIN ),
 				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN )
 			);
 

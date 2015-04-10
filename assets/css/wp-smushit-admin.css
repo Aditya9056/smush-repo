@@ -381,3 +381,6 @@ input#wp-smush-save-settings {
 .media-lib-wp-smush-icon.spinner:before{
     content: "";
 }
+.smush-status.error{
+	color:red;
+}
