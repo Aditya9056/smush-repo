@@ -162,10 +162,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
-			if ( $this->is_premium() ) {
+			if ( $this->is_premium() ||  $this->remaining_count <= $this->max_free_bulk ) {
 				$bulk_now = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
 			} else {
-				$bulk_now = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ), $this->max_free_bulk );
+				$bulk_now = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ),  $this->max_free_bulk);
 			}
 
 			$wp_smush_msgs = array(
@@ -176,7 +176,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN ),
 				'smush_it'             => __( 'Smush it', WP_SMUSH_DOMAIN ),
 				'smush_now'            => __( 'Smush Now', WP_SMUSH_DOMAIN ),
-				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN )
+				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN ),
+				"error_in_bulk"        => __( 'Bulk smush finished with {{errors}} error(s), please retry for the remaining images.', WP_SMUSH_DOMAIN)
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -363,7 +364,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$this->progress_ui();
 				}
 				?>
-				<div class="smush-final-log"></div>
+				<p class="smush-final-log"></p>
 				<?php
 					$this->setup_button();
 				$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
@@ -782,16 +783,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not
 		 *
-		 * @param $request_status
-		 *
 		 * @return array
 		 */
+
 		private function button_state() {
 			$button = array(
 				'cancel' => false,
 			);
 
-			$remaining_count = $this->total_count - $this->smushed_count;
 
 			// if we have nothing left to smush
 			// disable the buttons
@@ -801,15 +800,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$button['class']    = 'wp-smush-finished disabled';
 				$button['disabled'] = 'disabled';
 
-			} else if ( $this->is_premium() || $remaining_count <= $this->max_free_bulk ) { //if premium or under limit
+			} else if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
 
 				$button['text']  = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
 				$button['id']    = "wp-smush-send";
 				$button['class'] = 'wp-smush-button';
 
 			} else { //if not premium and over limit
-
-				$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ), $this->max_free_bulk );
+				$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ),  $this->max_free_bulk );
 				$button['id']    = "wp-smush-send";
 				$button['class'] = 'wp-smush-button';
 

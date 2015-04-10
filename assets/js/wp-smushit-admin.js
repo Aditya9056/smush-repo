@@ -175,7 +175,7 @@ jQuery('document').ready(function ($) {
 		// add the progress text
 		$button.find('span').html(wp_smush_msgs.bulk_now);
 
-		return;
+		return ;
 	}
 
 	/**
@@ -239,11 +239,14 @@ jQuery('document').ready(function ($) {
 
 			startingpoint.done(function () {
 				if (errors.length) {
-					$log.append("<p>Bulk smush finished with" + errors.length + " error(s), please retry for the remaining files</p>");
+                    var error_message = wp_smush_msgs.error_in_bulk.replace("{{errors}}", errors.length);
+					$log.append( error_message );
 				}
 			});
 
 		}
+        startingpoint.errors = errors;
+        return startingpoint;
 
 	}
 
@@ -287,8 +290,9 @@ jQuery('document').ready(function ($) {
 		//Enable Cancel button
 		$('#wp-smush-cancel').removeAttr('disabled');
 
-		buttonProgress(jQuery(this), wp_smush_msgs.progress);
-		wp_smushit_bulk_smush();
+        buttonProgress(jQuery(this), wp_smush_msgs.progress, wp_smushit_bulk_smush());
+
+
 
 		return;
 
@@ -330,7 +334,7 @@ jQuery('document').ready(function ($) {
 		return;
 	});
 
-	var buttonProgress = function ($button, $text) {
+	var buttonProgress = function ($button, $text, deferred) {
 
 		// copy the spinner into an object
 		$spinner = jQuery('#wp-smush-loader-wrap').clone();
@@ -354,7 +358,13 @@ jQuery('document').ready(function ($) {
 		$button.prop('disabled', true);
 
 		// done
-		return;
+        deferred.done(function(){
+            $spinner.remove();
+            $button.removeClass("wp-smushing");
+            $button.text( wp_smush_msgs.bulk_now );
+        });
+
+		return [$spinner, $button];
 	};
 });
 (function ($) {
