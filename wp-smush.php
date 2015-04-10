@@ -323,7 +323,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
 			//Set smush status for all the images, store it in wp-smpro-smush-data
-			update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
+			if(!$error){
+				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
+			}
 
 			//return stats
 			return $error ? new WP_Error() : $stats['stats'];
@@ -571,7 +573,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt    = $button_txt = '';
 			$show_button   = false;
 			$wp_smush_data = get_post_meta( $id, self::SMUSHED_META_KEY, true );
-
 			// if the image is smushed
 			if ( ! empty( $wp_smush_data ) ) {
 
@@ -580,7 +581,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$percent        = isset( $wp_smush_data['stats']['compression'] ) ? $wp_smush_data['stats']['compression'] : 0;
 				$percent        = $percent < 0 ? 0 : $percent;
 
-				if( isset($wp_smush_data['stats']['api_version']) && $wp_smush_data['stats']['api_version'] == -1 ){
+				if( isset($wp_smush_data['stats']['before_size']) && $wp_smush_data['stats']['before_size'] == 0 ){
 					$status_txt = __( 'Error processing request', WP_SMUSH_DOMAIN );
 					$show_button = true;
 				}else{
