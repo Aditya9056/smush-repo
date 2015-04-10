@@ -46,7 +46,7 @@ define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_SMUSH_MAX_BYTES', 1000000 );
 define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 8000000 );
 define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
-if ( defined( 'WP_SMUSH_TIMEOUT' ) ) define( 'WP_SMUSH_TIMEOUT', 30 );
+if ( !defined( 'WP_SMUSH_TIMEOUT' ) ) define( 'WP_SMUSH_TIMEOUT', 30 );
 
 require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
 
