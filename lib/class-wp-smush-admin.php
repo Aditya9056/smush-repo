@@ -339,11 +339,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							<p><?php echo $exceed_mb; ?></p>
 						<?php } ?>
 
-						<p><?php _e( "Please be aware, smushing a large number of images can take a long time depending on your server and network speed.
+						<p><?php _e( "Please be aware, smushing a large number of images can take a while depending on your server and network speed.
 						<strong>You must keep this page open while the bulk smush is processing</strong>, but you can leave at any time and come back to continue where it left off.", WP_SMUSH_DOMAIN ); ?></p>
 
 						<?php if ( ! $this->is_premium() ) { ?>
-							<p><?php _e( "NOTE: Free accounts are limited to bulk smushing 50 attachments at a time. You will need to click to start a new bulk job after each 50 attachments.", WP_SMUSH_DOMAIN ); ?></p>
+							<p><?php _e( "NOTE: Free accounts are limited to bulk smushing 50 attachments per request. You will need to click to start a new bulk job after each 50 attachments.", WP_SMUSH_DOMAIN ); ?></p>
 						<?php } ?>
 
 
@@ -415,7 +415,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
                                                 <div id="wp-smush-fetched-progress" class="wp-smush-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
                                                 <p id="wp-smush-compression">'
 			                . __( "Reduced by ", WP_SMUSH_DOMAIN )
-			                . '<span id="human">' . $this->stats['human'] . '</span>( <span id="percent">' . number_format_i18n( $this->stats['percent'], 2, '.', '' ) . '</span>% )
+			                . '<span id="human">' . $this->stats['human'] . '</span> ( <span id="percent">' . number_format_i18n( $this->stats['percent'], 2, '.', '' ) . '</span>% )
                                                 </p>
                                         </div>';
 
