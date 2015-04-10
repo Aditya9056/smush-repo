@@ -12,7 +12,7 @@ jQuery('document').ready(function ($) {
 	$manual_smush_url = ajaxurl + '?action=wp_smushit_manual';
 	$remaining = '';
 	$smush_done = 1;
-	WP_Smush.timeout = 60000;
+	timeout = 60000;
 	/**
 	 * Checks for the specified param in URL
 	 * @param sParam
@@ -97,6 +97,10 @@ jQuery('document').ready(function ($) {
 					}
 					$status.html(response.data);
 				}
+				//For grid View
+				if (jQuery('.smush-wrap.unsmushed').length > 0) {
+					jQuery('.smush-wrap.unsmushed').removeClass('unsmushed').addClass('smushed');
+				}
 			}
 		});
 	};
@@ -123,7 +127,7 @@ jQuery('document').ready(function ($) {
 		$button.addClass('wp-smush-finished');
 
 		// add the progress text
-		$button.find('span').html(wp_smushit_msgs.done);
+		$button.find('span').html(wp_smush_msgs.done);
 
 		$button.removeAttr('disabled');
 
@@ -220,7 +224,7 @@ jQuery('document').ready(function ($) {
 		//Enable Cancel button
 		$('#wp-smush-cancel').removeAttr('disabled');
 
-		buttonProgress(jQuery(this), wp_smushit_msgs.progress);
+		buttonProgress(jQuery(this), wp_smush_msgs.progress);
 		wp_smushit_bulk_smush();
 
 		return;
@@ -232,6 +236,20 @@ jQuery('document').ready(function ($) {
 
 		// prevent the default action
 		e.preventDefault();
+
+		//if item view
+		if (jQuery('.attachment-info .attachment-compat').length > 0) {
+			/**
+			 * Handle the media library button click
+			 */
+			jQuery('.attachment-info .attachment-compat').wpsmush({
+				'msgs': wp_smush_msgs,
+				'ajaxurl': ajaxurl,
+				'isSingle': true
+			});
+		}
+		//Add loader
+		buttonProgress(jQuery(this), wp_smush_msgs.progress);
 
 		var $this = jQuery(this);
 
@@ -273,3 +291,44 @@ jQuery('document').ready(function ($) {
 		return;
 	};
 });
+(function ($) {
+	var Smush = function (element, options) {
+		var elem = $(element);
+
+		var defaults = {
+			isSingle: false,
+			ajaxurl: '',
+			msgs: {},
+			msgClass: 'wp-smush-msg',
+			ids: []
+		};
+	};
+	$.fn.wpsmush = function (options) {
+		return this.each(function () {
+			var element = $(this);
+
+			// Return early if this element already has a plugin instance
+			if (element.data('wpsmush'))
+				return;
+
+			// pass options to plugin constructor and create a new instance
+			var wpsmush = new Smush(this, options);
+
+			// Store plugin object in this element's data
+			element.data('wpsmush', wpsmush);
+		});
+	};
+	if (typeof wp !== 'undefined') {
+		_.extend(wp.media.view.AttachmentCompat.prototype, {
+			render: function () {
+				$view = this;
+				//Dirty hack, as there is no way around to get updated status of attachment
+				$html = jQuery.get(ajaxurl + '?action=attachment_status', {'id': this.model.get('id')}, function (res) {
+					$view.$el.html(res.data);
+					$view.views.render();
+					return $view;
+				});
+			}
+		});
+	}
+})(jQuery, _);

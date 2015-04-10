@@ -381,3 +381,33 @@ input#wp-smush-save-settings {
 .media-lib-wp-smush-icon.spinner:before{
     content: "";
 }
+/** Grid view button **/
+.smush-wrap {
+    margin-left: 14%;
+    max-width: 60%;
+}
+
+.smush-wrap.unsmushed .smush-status {
+    display: none;
+}
+
+.currently-smushing .smush-status {
+    color: #0074a2;
+}
+
+.smush-wrap #wp-smush-send {
+    display: none;
+}
+
+.smush-wrap.unsmushed #wp-smush-send {
+    display: block;
+    margin-top: 15px;
+}
+
+.smush-status.fail {
+    color: #dd3d36;
+}
+
+.smush-status.success {
+    color: #0074a2;
+}

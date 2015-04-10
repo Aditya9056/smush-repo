@@ -31,7 +31,7 @@ jQuery(function ($) {
                 this.$el.addClass("is_smushed");
             }else{
                 this.$el.addClass("active");
-                this.$button.prop("title", wp_smushit_msgs.smush_now)
+                this.$button.prop("title", wp_smush_msgs.smush_now)
             }
 
             this.$button.data("id", data.id);
@@ -74,5 +74,5 @@ jQuery(function ($) {
             return view;
         }
     });
-    wp.media.view.Attachments = WP_Smush.Attachments;
+    //wp.media.view.Attachments = WP_Smush.Attachments;
 });

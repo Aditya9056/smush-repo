@@ -14,7 +14,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	 * Show settings in Media settings and add column to media library
 	 *
 	 */
-	class WpSmushitAdmin  extends WpSmush{
+	class WpSmushitAdmin extends WpSmush {
 
 		/**
 		 *
@@ -49,6 +49,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
 
 			add_action( "admin_enqueue_scripts", array( $this, "admin_enqueue_scripts" ) );
+
+			//Attachment status, Grid view
+			add_action( 'wp_ajax_attachment_status', array( $this, 'attachment_status' ) );
+
+			// hook into admin footer to load a hidden html/css spinner
+			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
 
 			$this->total_count   = $this->total_count();
 			$this->smushed_count = $this->smushed_count();
@@ -86,8 +92,26 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function register() {
 			global $WpSmush;
-			/* Register our script. */
-			wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array( 'jquery' ), $WpSmush->version );
+
+			// Register js for smush utton in grid view
+			$current_blog_id       = get_current_blog_id();
+			$meta_key              = $current_blog_id == 1 ? 'wp_media_library_mode' : 'wp_' . $current_blog_id . '_media_library_mode';
+			$wp_media_library_mode = get_user_meta( get_current_user_id(), $meta_key, true );
+
+			//Either request variable is not empty and grid mode is set, or if request empty then view is as per user choice, or no view is set
+			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) ||
+			     ( empty( $_REQUEST['mode'] ) && $wp_media_library_mode != 'list' )
+			) {
+				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
+					'jquery',
+					'media-views'
+				), WP_SMUSH_VERSON );
+			} else {
+				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
+					'jquery',
+					'underscore'
+				), WP_SMUSH_VERSON );
+			}
 
 
 			/* Register Style. */
@@ -115,23 +139,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
-			$wp_smushit_msgs = array(
+			$wp_smush_msgs = array(
 				'progress'             => __( 'Smushing in Progress', WP_SMUSH_DOMAIN ),
 				'done'                 => __( 'All done!', WP_SMUSH_DOMAIN ),
 				'something_went_wrong' => __( 'Ops!... something went wrong', WP_SMUSH_DOMAIN ),
 				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN ),
-				'smush_it'              => __( 'Smush it', WP_SMUSH_DOMAIN ),
-				'smush_now'              => __( 'Smush Now', WP_SMUSH_DOMAIN ),
+				'smush_it'             => __( 'Smush it', WP_SMUSH_DOMAIN ),
+				'smush_now'            => __( 'Smush Now', WP_SMUSH_DOMAIN ),
 				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN )
 			);
 
-			wp_localize_script( $handle, 'wp_smushit_msgs', $wp_smushit_msgs );
+			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
 			//Localize smushit_ids variable, if there are fix number of ids
 			$ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $bulk->get_attachments();
 
 			$data = array(
-				'smushed' => $this->get_smushed_image_ids(),
+				'smushed'   => $this->get_smushed_image_ids(),
 				'unsmushed' => $ids
 			);
 
@@ -290,8 +314,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
 					if ( ! $auto_smush ) {
 						?>
-						<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to Smush here.', WP_SMUSH_DOMAIN), admin_url( 'media-new.php' ) ); ?></p>
-						<?php
+						<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to Smush here.', WP_SMUSH_DOMAIN ), admin_url( 'media-new.php' ) ); ?></p>
+					<?php
 					}
 				} else {
 					?>
@@ -305,7 +329,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<strong>You must keep this page open while the bulk smush is processing</strong>, but you can leave at any time and come back to continue where it left off.", WP_SMUSH_DOMAIN ); ?></p>
 
 						<?php if ( ! $this->is_premium() ) { ?>
-						<p><?php _e( "NOTE: Free accounts are limited to bulk smushing 50 attachments at a time. You will need to click to start a new bulk job after each 50 attachments.", WP_SMUSH_DOMAIN ); ?></p>
+							<p><?php _e( "NOTE: Free accounts are limited to bulk smushing 50 attachments at a time. You will need to click to start a new bulk job after each 50 attachments.", WP_SMUSH_DOMAIN ); ?></p>
 						<?php } ?>
 
 
@@ -780,8 +804,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			);
 		}
 
-		function get_smushed_image_ids(){
-			$args = array(
+		function get_smushed_image_ids() {
+			$args  = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
 				'post_status'    => 'any',
@@ -790,13 +814,33 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'posts_per_page' => - 1,
 				'meta_query'     => array(
 					array(
-						'key'     => 'wp-is-smushed',
-						'value'   => '1',
+						'key'   => 'wp-is-smushed',
+						'value' => '1',
 					)
 				),
 			);
 			$query = new WP_Query( $args );
+
 			return $query->posts;
+		}
+
+		/**
+		 * Get the smush button text for attachment
+		 */
+		function smush_status( $id ) {
+			$response = trim( $this->set_status( $id, false ) );
+
+			return $response;
+		}
+
+		/**
+		 * Returns the image smush status, called by grid view ajax
+		 */
+		function attachment_status() {
+			$id          = $_REQUEST['id'];
+			$status_text = $this->smush_status( $id );
+			wp_send_json_success( $status_text );
+			die();
 		}
 	}
 

@@ -32,7 +32,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 
-
 /**
  * Constants
  */
@@ -46,7 +45,9 @@ define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_SMUSH_MAX_BYTES', 1000000 );
 define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 8000000 );
 define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
-if ( !defined( 'WP_SMUSH_TIMEOUT' ) ) define( 'WP_SMUSH_TIMEOUT', 30 );
+if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
+	define( 'WP_SMUSH_TIMEOUT', 30 );
+}
 
 require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
 
@@ -275,9 +276,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					}
 
 					//Total Stats, store all data in bytes
-					if( isset( $response['data'] ) )
-					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-						= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
+					if ( isset( $response['data'] ) ) {
+						list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
+							= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
+					}
 
 					if ( empty( $stats['stats']['api_version'] ) ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
@@ -295,9 +297,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 
 				//Update stats
-				if( isset( $full_image_response['data'] ) )
-				list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-					= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
+				if ( isset( $full_image_response['data'] ) ) {
+					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
+						= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
+				}
 
 			}
 
@@ -347,9 +350,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 
 				$args   = array(
-					'headers' => $headers,
-					'body'    => $file_data,
-					'timeout' => WP_SMUSH_TIMEOUT,
+					'headers'    => $headers,
+					'body'       => $file_data,
+					'timeout'    => WP_SMUSH_TIMEOUT,
 					'user-agent' => WP_SMUSH_UA
 				);
 				$result = wp_remote_post( WP_SMUSH_API, $args );
@@ -705,8 +708,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 	}
 
-	$WpSmush = new WpSmush();
 	global $WpSmush;
+	$WpSmush = new WpSmush();
 
 }
 
