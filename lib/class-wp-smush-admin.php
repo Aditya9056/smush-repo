@@ -38,7 +38,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $stats;
 
-		public $max_free_bulk = 5; //this is enforced at api level too
+		public $max_free_bulk = 20; //this is enforced at api level too
 
 		/**
 		 * Constructor
@@ -205,7 +205,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function init_settings() {
 			$this->settings = array(
 				'auto'  => __( 'Auto-Smush images on upload', WP_SMUSH_DOMAIN ),
-				'lossy' => __( 'Allow lossy optimization', WP_SMUSH_DOMAIN )
+				'lossy' => __( 'Super-Smush images (lossy optimization)', WP_SMUSH_DOMAIN )
 			);
 		}
 
@@ -835,9 +835,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$opt_val = 1;
 			}
 
+			//disable lossy for non-premium members
+			$disabled = '';
+			if ( 'lossy' == $key && ! $this->is_premium() ) {
+				$disabled = ' disabled';
+				$opt_val = 0;
+			}
+
 			// return html
 			return sprintf(
-				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, 1, false ), $text
+				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, 1, false ), $disabled, $text
 			);
 		}
 
