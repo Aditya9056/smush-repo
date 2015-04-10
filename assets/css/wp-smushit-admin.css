@@ -8,7 +8,7 @@ Smush button transformation
 	float:left;
 }
 
-.button.wp-smushit-finished,.button.wp-smushit-finished:disabled,.button.wp-smushit-finished[disabled]{
+.button.wp-smush-finished.disabled,.button.wp-smush-finished:disabled,.button.wp-smush-finished[disabled]{
         color:#fff!important;
         background: #00cf21!important;
         border-color: #619f6b!important;

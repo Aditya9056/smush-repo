@@ -138,8 +138,6 @@ jQuery('document').ready(function ($) {
 		// add the progress text
 		$button.find('span').html(wp_smush_msgs.done);
 
-		$button.removeAttr('disabled');
-
 		return;
 	}
 

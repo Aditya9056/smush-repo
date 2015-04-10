@@ -317,13 +317,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<p><?php _e( "Congratulations, all your images are currently Smushed!", WP_SMUSH_DOMAIN ); ?></p>
 					<?php
 					$this->progress_ui();
-
-					$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
-					if ( ! $auto_smush ) {
-						?>
-						<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to Smush here.', WP_SMUSH_DOMAIN ), admin_url( 'media-new.php' ) ); ?></p>
-					<?php
-					}
 				} else {
 					?>
 					<div class="smush-instructions">
@@ -346,18 +339,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<?php wp_nonce_field( 'wp-smush-bulk', '_wpnonce' ); ?>
 					<br/><?php
 					$this->progress_ui();
-					$this->setup_button();
+				}
+				$this->setup_button();
+				$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
+				if ( ! $auto_smush ) {
 					?>
+					<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to Smush here.', WP_SMUSH_DOMAIN ), admin_url( 'media-new.php' ) ); ?></p>
+				<?php
+				} else { ?>
 					<p>
-						<?php
-						// let the user know that there's an alternative
-						printf( __( 'You can also smush images individually from your <a href="%s">Media Library</a>.', WP_SMUSH_DOMAIN ), admin_url( 'upload.php' ) );
-						?>
-					</p>
 					<?php
-					if ( defined( 'WP_SMUSH_DEBUG' ) && WP_SMUSH_DEBUG ) {
-						_e( "<p>DEBUG mode is currently enabled. To disable remove WP_SMUSH_DEBUG from wp-config.php.</p>", WP_SMUSH_DOMAIN );
-					}
+					// let the user know that there's an alternative
+					printf( __( 'You can also smush images individually from your <a href="%s">Media Library</a>.', WP_SMUSH_DOMAIN ), admin_url( 'upload.php' ) );
+					?>
+					</p><?php
+				}
+				if ( defined( 'WP_SMUSH_DEBUG' ) && WP_SMUSH_DEBUG ) {
+					_e( "<p>DEBUG mode is currently enabled. To disable remove WP_SMUSH_DEBUG from wp-config.php.</p>", WP_SMUSH_DOMAIN );
 				}
 				?>
 			</div>
@@ -716,8 +714,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function setup_button() {
 			$button = $this->button_state();
+			$disabled = !empty($button['disabled']) ? ' disabled="disabled"' : '';
 			?>
-			<button id="<?php echo $button['id']; ?>" class="button button-primary wp-smush-button" name="smush-all">
+			<button id="<?php echo $button['id']; ?>" class="button button-primary<?php echo ' ' . $button['class']; ?>" name="smush-all" <?php echo $disabled; ?>>
 				<span><?php echo $button['text'] ?></span>
 			</button>
 		<?php
@@ -781,15 +780,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// if we have nothing left to smush
 			// disable the buttons
 			if ( $this->smushed_count === $this->total_count ) {
-				$button['text']   = __( 'All done!', WP_SMUSH_DOMAIN );
-				$button['id']     = "wp-smush-finished";
-				$button['cancel'] = ' disabled="disabled"';
+				$button['text']     = __( 'All done!', WP_SMUSH_DOMAIN );
+				$button['id']       = "wp-smush-finished";
+				$button['class']    = 'wp-smush-finished disabled';
+				$button['disabled'] = 'disabled';
 
 			} else {
 
-				$button['text']   = __( 'Bulk Smush all my images', WP_SMUSH_DOMAIN );
-				$button['cancel'] = ' disabled="disabled"';
-				$button['id']     = "wp-smush-send";
+				$button['text']  = __( 'Bulk Smush all my images', WP_SMUSH_DOMAIN );
+				$button['id']    = "wp-smush-send";
+				$button['class'] = 'wp-smush-button';
 
 			}
 
