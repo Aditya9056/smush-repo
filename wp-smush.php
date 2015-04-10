@@ -95,6 +95,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			 */
 			//Check if auto is enabled
 			$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
+
+			//Keep the uto smush on by default
+			if ( $auto_smush === false ) {
+				$auto_smush = 1;
+			}
+
 			if ( $auto_smush ) {
 				add_filter( 'wp_generate_attachment_metadata', array( $this, 'resize_from_meta_data' ), 10, 2 );
 			}
@@ -242,7 +248,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Flag to check, if full image needs to be smushed or not
 			$smush_full = true;
-			$error = false;
+			$error      = false;
 			$stats      = array(
 				"stats" => array_merge( $this->_get_size_signature(), array(
 						'api_version' => - 1,
@@ -288,7 +294,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					if ( isset( $response['data'] ) ) {
 						list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 							= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
-					}else{
+					} else {
 						$error = true;
 					}
 
@@ -311,7 +317,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				if ( isset( $full_image_response['data'] ) ) {
 					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 						= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
-				}else{
+				} else {
 					$error = true;
 				}
 
@@ -323,7 +329,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
 			//Set smush status for all the images, store it in wp-smpro-smush-data
-			if(!$error){
+			if ( ! $error ) {
 				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
 			}
 
@@ -581,10 +587,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$percent        = isset( $wp_smush_data['stats']['compression'] ) ? $wp_smush_data['stats']['compression'] : 0;
 				$percent        = $percent < 0 ? 0 : $percent;
 
-				if( isset($wp_smush_data['stats']['before_size']) && $wp_smush_data['stats']['before_size'] == 0 ){
-					$status_txt = __( 'Error processing request', WP_SMUSH_DOMAIN );
+				if ( isset( $wp_smush_data['stats']['before_size'] ) && $wp_smush_data['stats']['before_size'] == 0 ) {
+					$status_txt  = __( 'Error processing request', WP_SMUSH_DOMAIN );
 					$show_button = true;
-				}else{
+				} else {
 					if ( $bytes == 0 || $percent == 0 ) {
 						$status_txt = __( 'Already Optimized', WP_SMUSH_DOMAIN );
 					} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {

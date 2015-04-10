@@ -512,9 +512,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$status = $WpSmush->set_status( $attachment_id, false, true );
 
 			/** Send stats **/
-			if( is_wp_error( $smush ) ){
-				wp_send_json_error($status);
-			}else{
+			if ( is_wp_error( $smush ) ) {
+				wp_send_json_error( $status );
+			} else {
 				wp_send_json_success( $status );
 			}
 
@@ -788,6 +788,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// default value
 			$opt_val = intval( get_site_option( $opt_name, false ) );
 
+			//If value is not set for auto smushing set it to 1
+			if ( $key == 'auto' && ! $opt_val ) {
+				$opt_val = 1;
+			}
+
 			// return html
 			return sprintf(
 				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s>%3\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, 1, false ), $text
@@ -804,8 +809,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'posts_per_page' => - 1,
 				'meta_query'     => array(
 					array(
-						'key'     => 'wp-is-smushed',
-						'value'   => '1',
+						'key'   => 'wp-is-smushed',
+						'value' => '1',
 					)
 				),
 			);
@@ -832,6 +837,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_send_json_success( $status_text );
 			die();
 		}
+
 		/**
 		 * Adds a smushit pro settings link on plugin page
 		 *
