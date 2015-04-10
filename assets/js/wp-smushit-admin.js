@@ -361,7 +361,13 @@ jQuery('document').ready(function ($) {
         deferred.done(function(){
             $spinner.remove();
             $button.removeClass("wp-smushing");
-            $button.text( wp_smush_msgs.bulk_now );
+            if( deferred.errors.length ){
+                $button.text( wp_smush_msgs.bulk_now );
+            }else{
+                $button.text( wp_smush_msgs.done );
+            }
+
+
         });
 
 		return [$spinner, $button];

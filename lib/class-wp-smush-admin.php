@@ -478,7 +478,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$is_premium = $WpSmush->is_premium();
 
 			if ( ! $is_premium ) {
-				//Free version bulk smush, check the transient counter calue
+				//Free version bulk smush, check the transient counter value
 				$should_continue = $this->check_bulk_limit();
 			}
 
