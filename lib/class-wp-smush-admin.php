@@ -336,7 +336,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				} else {
 					?>
 					<div class="smush-instructions">
-						<h4><?php printf( _n( "%d attachment in your media library has not been smushed.", "%d image attachments in your media library have not been smushed yet.", $this->remaining_count, WP_SMUSH_DOMAIN ), $this->remaining_count ); ?></h4>
+						<h4 class="smush-remaining-images-notice"><?php printf( _n( "%d attachment in your media library has not been smushed.", "%d image attachments in your media library have not been smushed yet.", $this->remaining_count, WP_SMUSH_DOMAIN ), $this->remaining_count ); ?></h4>
 						<?php if ( $exceed_mb ) { ?>
 							<p><?php echo $exceed_mb; ?></p>
 						<?php } ?>

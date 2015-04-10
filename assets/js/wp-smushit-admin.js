@@ -228,7 +228,7 @@ jQuery('document').ready(function ($) {
 
 		//Disable bulk smush button
 		$(this).attr('disabled', 'disabled');
-
+        $(".smush-remaining-images-notice").remove();
 		//Enable Cancel button
 		$('#wp-smush-cancel').removeAttr('disabled');
 
@@ -258,6 +258,7 @@ jQuery('document').ready(function ($) {
 		}
 		//Add loader
 		buttonProgress(jQuery(this), wp_smush_msgs.progress);
+
 
 		var $this = jQuery(this);
 
