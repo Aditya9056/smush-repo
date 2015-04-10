@@ -78,7 +78,7 @@ jQuery('document').ready(function ($) {
 
 		//Specify the smush URL, for single or bulk smush
 		var $send_url = $is_single ? $manual_smush_url : $bulk_send_url;
-		if( typeof current_elem != 'undefined' ) {
+		if (typeof current_elem != 'undefined') {
 			var $status = current_elem.parent().find('.smush-status');
 
 			$status.removeClass("error");
@@ -104,17 +104,17 @@ jQuery('document').ready(function ($) {
 							current_elem.parent().removeClass('unsmushed').addClass('smushed');
 						}
 						current_elem.remove();
-					}else{
+					} else {
 						$status.addClass("error");
 					}
-                    $status.html(response.data);
+					$status.html(response.data);
 				}
-                //For grid View
-                if (jQuery('.smush-wrap.unsmushed').length > 0) {
-                    jQuery('.smush-wrap.unsmushed').removeClass('unsmushed').addClass('smushed');
-            }
+				//For grid View
+				if (jQuery('.smush-wrap.unsmushed').length > 0) {
+					jQuery('.smush-wrap.unsmushed').removeClass('unsmushed').addClass('smushed');
+				}
 			}
-		}).error(function(response){
+		}).error(function (response) {
 			$status.html(response.data);
 			$status.addClass("error");
 		});
@@ -173,9 +173,9 @@ jQuery('document').ready(function ($) {
 	 */
 	function wp_smushit_bulk_smush() {
 		// instantiate our deferred object for piping
-        var startingpoint = jQuery.Deferred(),
-            errors = [],
-            $log = $(".smush-final-log");
+		var startingpoint = jQuery.Deferred(),
+			errors = [],
+			$log = $(".smush-final-log");
 
 		startingpoint.resolve();
 
@@ -190,26 +190,26 @@ jQuery('document').ready(function ($) {
 			// loop and pipe into deferred object
 			jQuery.each(wp_smushit_data.unsmushed, function (ix, id) {
 				startingpoint = startingpoint.then(function () {
-                    var $remaining = $remaining - 1,
-                        ajax = WP_Smush.smushitRequest(id, 0, false)
-                            .error(function(){
-                                errors.push(id);
+					var $remaining = $remaining - 1,
+						ajax = WP_Smush.smushitRequest(id, 0, false)
+							.error(function () {
+								errors.push(id);
 
-                            }).done(function(res){
-                                if( typeof res.success === "undefined" || ( typeof res.success !== "undefined" &&  res.success === false ) ){
-                                    errors.push(id);
-                                }
-                            });
+							}).done(function (res) {
+								if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && res.success === false )) {
+									errors.push(id);
+								}
+							});
 
 					// call the ajax requestor
-                    return ajax;
-                });
+					return ajax;
 				});
+			});
 
-            startingpoint.done(function(){
-                if( errors.length ){
-                    $log.append("<p>Bulk smush finished with" + errors.length + " error(s), please retry for the remaining files</p>" );
-                }
+			startingpoint.done(function () {
+				if (errors.length) {
+					$log.append("<p>Bulk smush finished with" + errors.length + " error(s), please retry for the remaining files</p>");
+				}
 			});
 
 		}
@@ -252,7 +252,7 @@ jQuery('document').ready(function ($) {
 
 		//Disable bulk smush button
 		$(this).attr('disabled', 'disabled');
-        $(".smush-remaining-images-notice").remove();
+		$(".smush-remaining-images-notice").remove();
 		//Enable Cancel button
 		$('#wp-smush-cancel').removeAttr('disabled');
 
@@ -291,9 +291,9 @@ jQuery('document').ready(function ($) {
 		$this.text(wp_smush_msgs.sending);
 		//Send Smush request
 		WP_Smush.sendRequest($this)
-		.complete(function(){
-			$this.text(wp_smush_msgs.smush_now);
-		});
+			.complete(function () {
+				$this.text(wp_smush_msgs.smush_now);
+			});
 		$this.prop("disabled", true);
 
 		return;
