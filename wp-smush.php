@@ -311,6 +311,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$full_image_response = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
 				if ( ! empty( $full_image_response['data'] ) ) {
 					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
+				}else{
+					$error = true;
 				}
 
 				//Update stats
@@ -328,8 +330,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], $stats['stats']['bytes_saved'] ) =
 				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
+			if( empty( $stats['stats']['before_size'] ) )
+				$error = true;
+
 			//Set smush status for all the images, store it in wp-smpro-smush-data
-			if ( ! $error ) {
+			if ( ! $error  ) {
 				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
 			}
 
@@ -719,7 +724,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @param $size_before
 		 * @param $size_after
 		 * @param $total_time
-		 * @param $compression
 		 * @param $bytes_saved
 		 *
 		 * @return array
@@ -743,9 +747,3 @@ if ( ! class_exists( 'WpSmush' ) ) {
 //Include Admin classes
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-admin.php' );
-
-/**
- * Error Logging
- */
-require_once( WP_SMUSH_DIR . '/lib/error/class-wp-smush-errorlog.php' );
-require_once( WP_SMUSH_DIR . '/lib/error/class-wp-smush-errorregistry.php' );
