@@ -214,7 +214,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function ui() {
 			?>
 			<div class="wrap">
-				<div id="icon-upload" class="icon32"><br/></div>
 
 				<h2>
 					<?php _e( 'WP Smush', WP_SMUSH_DOMAIN ) ?>
