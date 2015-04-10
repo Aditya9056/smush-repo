@@ -40,6 +40,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $max_free_bulk = 20; //this is enforced at api level too
 
+		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade';
+
 		/**
 		 * Constructor
 		 */
@@ -217,8 +219,24 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			<div class="wrap">
 
 				<h2>
-					<?php _e( 'WP Smush', WP_SMUSH_DOMAIN ) ?>
+					<?php
+					if ( $this->is_premium() ) {
+						_e( 'WP Smush Pro', WP_SMUSH_DOMAIN );
+					} else {
+						_e( 'WP Smush', WP_SMUSH_DOMAIN );
+					} ?>
 				</h2>
+
+				<?php if ( $this->is_premium() ) { ?>
+					<div class="wp-smpushit-features notice">
+						Here are your pro features
+					</div>
+				<?php } else { ?>
+					<div class="wp-smpushit-features error">
+						Pro features
+					</div>
+				<?php } ?>
+
 
 				<div class="wp-smpushit-container">
 					<h3>
@@ -339,6 +357,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					?>
 					<p><?php _e( "Congratulations, all your images are currently Smushed!", WP_SMUSH_DOMAIN ); ?></p>
 					<?php
+					$this->progress_ui();
 				} else {
 					?>
 					<div class="smush-instructions">
@@ -361,11 +380,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<?php wp_nonce_field( 'wp-smush-bulk', '_wpnonce' ); ?>
 					<br/><?php
 					$this->progress_ui();
+					?>
+					<p class="smush-final-log"></p>
+					<?php
+					$this->setup_button();
 				}
-				?>
-				<p class="smush-final-log"></p>
-				<?php
-				$this->setup_button();
 
 				$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
 				if ( ! $auto_smush && $this->remaining_count == 0 ) {
@@ -897,7 +916,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function settings_link( $links ) {
 
 			$settings_page = admin_url( 'upload.php?page=wp-smush-bulk' );
-			$settings      = '<a href="' . $settings_page . '">Settings</a>';
+			$settings      = '<a href="' . $settings_page . '">' . __( 'Settings', WP_SMUSH_DOMAIN ) . '</a>';
 
 			array_unshift( $links, $settings );
 
@@ -905,6 +924,5 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 	}
 
-//Add js variables for smushing
 	$wpsmushit_admin = new WpSmushitAdmin();
 }
