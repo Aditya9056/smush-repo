@@ -166,6 +166,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return __( 'Bad response from server', WP_SMUSH_DOMAIN );
 			}
 
+			if ( isset( $response['success'] ) && $response['success'] == false ) {
+				return __( 'Error connecting to server', WP_SMUSH_DOMAIN );
+			}
+
 			//If there are no savings, or image returned is bigger in size
 			if ( ( ! empty( $response['data']->bytes_saved ) && intval( $response['data']->bytes_saved ) <= 0 )
 			     || empty( $response['data']->image )
@@ -238,6 +242,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Flag to check, if full image needs to be smushed or not
 			$smush_full = true;
+			$error = false;
 			$stats      = array(
 				"stats" => array_merge( $this->_get_size_signature(), array(
 						'api_version' => - 1,
@@ -283,6 +288,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					if ( isset( $response['data'] ) ) {
 						list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 							= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
+					}else{
+						$error = true;
 					}
 
 					if ( empty( $stats['stats']['api_version'] ) ) {
@@ -304,11 +311,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				if ( isset( $full_image_response['data'] ) ) {
 					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 						= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
+				}else{
+					$error = true;
 				}
 
 			}
 
 			//Store stats
+
 			list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], $stats['stats']['bytes_saved'] ) =
 				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
@@ -316,7 +326,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
 
 			//return stats
-			return $stats['stats'];
+			return $error ? new WP_Error() : $stats['stats'];
 		}
 
 		/**
@@ -364,7 +374,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//Close file connection
 				fclose( $file );
 				unset( $file_data );//free memory
-
 				if ( is_wp_error( $result ) ) {
 					//Handle error
 					$data['message'] = sprintf( __( 'Error posting to server: %s', WP_SMUSH_DOMAIN ), $result->get_error_message() );
@@ -376,6 +385,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$data['message'] = sprintf( __( 'Error posting to server: %s %s', WP_SMUSHIT_DOMAIN ), wp_remote_retrieve_response_code( $result ), wp_remote_retrieve_response_message( $result ) );
 					$data['success'] = false;
 					unset( $result ); //free memory
+
 					return $data;
 				}
 
@@ -414,6 +424,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			unset( $result );//free memory
 			unset( $response );//free memory
+			var_dump($data);die;
 			return $data;
 		}
 
@@ -570,10 +581,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$percent        = isset( $wp_smush_data['stats']['compression'] ) ? $wp_smush_data['stats']['compression'] : 0;
 				$percent        = $percent < 0 ? 0 : $percent;
 
-				if ( $bytes == 0 || $percent == 0 ) {
-					$status_txt = __( 'Already Optimized', WP_SMUSH_DOMAIN );
-				} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
-					$status_txt = sprintf( __( "Reduced by %s (  %01.1f%% )", WP_SMUSH_DOMAIN ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
+				if( isset($wp_smush_data['stats']['api_version']) && $wp_smush_data['stats']['api_version'] == -1 ){
+					$status_txt = __( 'Error processing request', WP_SMUSH_DOMAIN );
+					$show_button = true;
+				}else{
+					if ( $bytes == 0 || $percent == 0 ) {
+						$status_txt = __( 'Already Optimized', WP_SMUSH_DOMAIN );
+					} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
+						$status_txt = sprintf( __( "Reduced by %s (  %01.1f%% )", WP_SMUSH_DOMAIN ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
+					}
 				}
 
 				// the button text
@@ -592,6 +608,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( $text_only ) {
 				return $status_txt;
 			}
+
 			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $wp_smush_data, $echo );
 			if ( ! $echo ) {
 				return $text;

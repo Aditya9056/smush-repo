@@ -507,12 +507,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id );
 
-			$WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
+			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 
 			$status = $WpSmush->set_status( $attachment_id, false, true );
 
 			/** Send stats **/
-			wp_send_json_success( $status );
+			if( is_wp_error( $smush ) ){
+				wp_send_json_error($status);
+			}else{
+				wp_send_json_success( $status );
+			}
+
 		}
 
 		/**

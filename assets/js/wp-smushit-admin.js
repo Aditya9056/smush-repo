@@ -262,11 +262,11 @@ jQuery('document').ready(function ($) {
 
 		//remove all smush notices
 		$('.smush-notices').remove();
-		$this.text(wp_smushit_msgs.sending);
+		$this.text(wp_smush_msgs.sending);
 		//Send Smush request
 		WP_Smush.sendRequest($this)
 		.complete(function(){
-			$this.text(wp_smushit_msgs.smush_now);
+			$this.text(wp_smush_msgs.smush_now);
 		});
 		$this.prop("disabled", true);
 
@@ -340,4 +340,4 @@ jQuery('document').ready(function ($) {
 			}
 		});
 	}
-})(jQuery, _);
+})(jQuery);
