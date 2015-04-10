@@ -411,3 +411,6 @@ input#wp-smush-save-settings {
 .smush-status.success {
     color: #0074a2;
 }
+.smush-status.error{
+	color:red;
+}

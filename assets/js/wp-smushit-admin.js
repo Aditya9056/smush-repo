@@ -78,7 +78,9 @@ jQuery('document').ready(function ($) {
 
 		//Specify the smush URL, for single or bulk smush
 		var $send_url = $is_single ? $manual_smush_url : $bulk_send_url;
+		var $status = current_elem.parent().find('.smush-status');
 
+		$status.removeClass("error");
 		// make request
 		return WP_Smush.ajax($id, $send_url, $getnxt).done(function (response) {
 
@@ -91,9 +93,11 @@ jQuery('document').ready(function ($) {
 				//Check for response message
 				if (typeof response.data != 'undefined') {
 					//Append the smush stats or error
-					var $status = current_elem.parent().find('.smush-status');
-					if (response.success) {
+					
+					if (response.success && response.data !== "Not processed") {
 						current_elem.remove();
+					}else{
+						$status.addClass("error");
 					}
 					$status.html(response.data);
 				}
@@ -102,6 +106,9 @@ jQuery('document').ready(function ($) {
 					jQuery('.smush-wrap.unsmushed').removeClass('unsmushed').addClass('smushed');
 				}
 			}
+		}).error(function(response){
+			$status.html(response.data);
+			$status.addClass("error");
 		});
 	};
 
@@ -255,10 +262,12 @@ jQuery('document').ready(function ($) {
 
 		//remove all smush notices
 		$('.smush-notices').remove();
-
+		$this.text(wp_smushit_msgs.sending);
 		//Send Smush request
-		WP_Smush.sendRequest($this);
-
+		WP_Smush.sendRequest($this)
+		.complete(function(){
+			$this.text(wp_smushit_msgs.smush_now);
+		});
 		$this.prop("disabled", true);
 
 		return;
