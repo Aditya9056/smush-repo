@@ -127,8 +127,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @returns array
 		 */
 		function do_smushit( $attachment_id, $file_path = '', $file_url = '' ) {
-			global $log;
-
+			$errors = new WP_Error();
 			if ( empty( $file_path ) ) {
 				return __( "File path is empty", WP_SMUSH_DOMAIN );
 			}
@@ -165,16 +164,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$response = $this->_post( $file_path, $file_size );
 
 			if ( false === $response ) {
-				return __( 'ERROR: posting to Smush', WP_SMUSH_DOMAIN );
+				$errors->add("false_response", __( 'ERROR: posting to Smush', WP_SMUSH_DOMAIN ));
 			}
 			//If there is no data
 			if ( empty( $response['data'] ) ) {
-				return __( 'Bad response from server', WP_SMUSH_DOMAIN );
+				$errors->add("no_data", __( 'Bad response from server', WP_SMUSH_DOMAIN ) );
 			}
 
 			if ( isset( $response['success'] ) && $response['success'] == false ) {
-				return __( 'Error connecting to server', WP_SMUSH_DOMAIN );
+				$errors->add("false_success", __( 'Error connecting to server', WP_SMUSH_DOMAIN ));
 			}
+
+			if( count($errors->get_error_messages() ) ) return $errors;
 
 			//If there are no savings, or image returned is bigger in size
 			if ( ( ! empty( $response['data']->bytes_saved ) && intval( $response['data']->bytes_saved ) <= 0 )
@@ -201,7 +202,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				unlink( $tempfile );
 			}
 
-			return $response;
+			return  $response;
 		}
 
 		/**
@@ -286,6 +287,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					//Store details for each size key
 					$response = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
 
+					if( is_wp_error($response) ) return $response;
+
 					if ( ! empty( $response['data'] ) ) {
 						$stats['sizes'][ $size_key ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $response['data'] );
 					}
@@ -309,6 +312,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( $smush_full ) {
 
 				$full_image_response = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
+
+				if( is_wp_error($full_image_response) ) return $full_image_response;
+
 				if ( ! empty( $full_image_response['data'] ) ) {
 					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
 				}else{
