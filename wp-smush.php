@@ -36,6 +36,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 define( 'WP_SMUSH_VERSON', "2.0" );
+/**
+ * Plugin base name
+ */
+define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
 
 define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
 define( 'WP_SMUSH_DOMAIN', 'wp_smush' );
@@ -102,7 +106,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		function admin_init() {
-			load_plugin_textdomain( WP_SMUSH_DOMAIN, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+			load_plugin_textdomain( WP_SMUSH_DOMAIN, false, dirname( WP_SMUSH_BASENAME ) . '/languages/' );
 			wp_enqueue_script( 'common' );
 		}
 

@@ -50,6 +50,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			add_action( "admin_enqueue_scripts", array( $this, "admin_enqueue_scripts" ) );
 
+			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
+				$this,
+				'settings_link'
+			) );
+			add_filter( 'network_admin_plugin_action_links_' . WP_SMUSH_BASENAME, array(
+				$this,
+				'settings_link'
+			) );
+
 			$this->total_count   = $this->total_count();
 			$this->smushed_count = $this->smushed_count();
 			$this->stats         = $this->global_stats();
@@ -817,6 +826,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$status_text = $this->smush_status( $id );
 			wp_send_json_success( $status_text );
 			die();
+		}
+		/**
+		 * Adds a smushit pro settings link on plugin page
+		 *
+		 * @param $links
+		 *
+		 * @return array
+		 */
+		function settings_link( $links ) {
+
+			$settings_page = admin_url( 'upload.php?page=wp-smush-bulk' );
+			$settings      = '<a href="' . $settings_page . '">Settings</a>';
+
+			array_unshift( $links, $settings );
+
+			return $links;
 		}
 	}
 
