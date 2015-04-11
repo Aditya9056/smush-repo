@@ -130,21 +130,21 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function do_smushit( $attachment_id, $file_path = '', $file_url = '' ) {
 			$errors = new WP_Error();
 			if ( empty( $file_path ) ) {
-				$errors->add("empty_path",  __( "File path is empty", WP_SMUSH_DOMAIN ) );
+				$errors->add( "empty_path", __( "File path is empty", WP_SMUSH_DOMAIN ) );
 			}
 
 			if ( empty( $file_url ) ) {
-				$errors->add("empty_url", __( "File URL is empty", WP_SMUSH_DOMAIN ) );
+				$errors->add( "empty_url", __( "File URL is empty", WP_SMUSH_DOMAIN ) );
 			}
 
 			// check that the file exists
 			if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
-				$errors->add("file_not_found", sprintf( __( "Could not find %s", WP_SMUSH_DOMAIN ), $file_path ));
+				$errors->add( "file_not_found", sprintf( __( "Could not find %s", WP_SMUSH_DOMAIN ), $file_path ) );
 			}
 
 			// check that the file is writable
 			if ( ! is_writable( dirname( $file_path ) ) ) {
-				$errors->add("not_writable", sprintf( __( "%s is not writable", WP_SMUSH_DOMAIN ), dirname( $file_path ) ) );
+				$errors->add( "not_writable", sprintf( __( "%s is not writable", WP_SMUSH_DOMAIN ), dirname( $file_path ) ) );
 			}
 
 			$file_size = filesize( $file_path );
@@ -154,28 +154,32 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
-				$errors->add("image_not_found", sprintf( __( 'Skipped (%s), image not found.', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ));
+				$errors->add( "image_not_found", sprintf( __( 'Skipped (%s), image not found.', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ) );
 			}
 
 			//Check size limit
 			if ( $file_size > $max_size ) {
-				$errors->add("size_limit", sprintf( __( 'Skipped (%s), size limit exceeded.', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ));
+				$errors->add( "size_limit", sprintf( __( 'Skipped (%s), size limit exceeded.', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ) );
 			}
 
-			if ( count( $errors->get_error_messages() ) ) return $errors;
+			if ( count( $errors->get_error_messages() ) ) {
+				return $errors;
+			}
 
 			/** Send image for smushing, and fetch the response */
 			$response = $this->_post( $file_path, $file_size );
 
 			if ( ! $response['success'] ) {
-				$errors->add("false_response", $response['message'] );
+				$errors->add( "false_response", $response['message'] );
 			}
 			//If there is no data
 			if ( empty( $response['data'] ) ) {
-				$errors->add("no_data", __( 'Unknown API error', WP_SMUSH_DOMAIN ) );
+				$errors->add( "no_data", __( 'Unknown API error', WP_SMUSH_DOMAIN ) );
 			}
 
-			if ( count( $errors->get_error_messages() ) ) return $errors;
+			if ( count( $errors->get_error_messages() ) ) {
+				return $errors;
+			}
 
 			//If there are no savings, or image returned is bigger in size
 			if ( ( ! empty( $response['data']->bytes_saved ) && intval( $response['data']->bytes_saved ) <= 0 )
@@ -191,7 +195,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//handle backups if enabled
 			$backup = get_option( WP_SMUSH_PREFIX . 'backup' );
 			if ( $backup && $this->is_premium() ) {
-				$path = pathinfo( $file_path );
+				$path        = pathinfo( $file_path );
 				$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . ".bak." . $path['extension'];
 				@copy( $file_path, $backup_name );
 			}
@@ -257,7 +261,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Flag to check, if original size image needs to be smushed or not
 			$smush_full = true;
-			$errors    = new WP_Error();
+			$errors     = new WP_Error();
 			$stats      = array(
 				"stats" => array_merge( $this->_get_size_signature(), array(
 						'api_version' => - 1,
@@ -296,7 +300,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					//Store details for each size key
 					$response = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
 
-					if( is_wp_error($response) ) return $response;
+					if ( is_wp_error( $response ) ) {
+						return $response;
+					}
 
 					if ( ! empty( $response['data'] ) ) {
 						$stats['sizes'][ $size_key ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $response['data'] );
@@ -307,7 +313,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 							= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 					} else {
-						$errors->add("image_size_error".$size_key , sprintf( __("Size '%s' not processed correctly", WP_SMUSH_DOMAIN ), $size_key ) );
+						$errors->add( "image_size_error" . $size_key, sprintf( __( "Size '%s' not processed correctly", WP_SMUSH_DOMAIN ), $size_key ) );
 					}
 
 					if ( empty( $stats['stats']['api_version'] ) ) {
@@ -322,7 +328,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				$full_image_response = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
 
-				if ( is_wp_error($full_image_response) ) return $full_image_response;
+				if ( is_wp_error( $full_image_response ) ) {
+					return $full_image_response;
+				}
 
 				if ( ! empty( $full_image_response['data'] ) ) {
 					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
@@ -340,7 +348,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			}
 
-			$has_errors = (bool) count( $errors->get_error_messages() ) ;
+			$has_errors = (bool) count( $errors->get_error_messages() );
 
 			//Store stats
 

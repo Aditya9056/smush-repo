@@ -39,7 +39,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $stats;
 
-		public $max_free_bulk = 50; //this is enforced at api level too
+		public $max_free_bulk = 5; //this is enforced at api level too
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade';
 
