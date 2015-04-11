@@ -187,6 +187,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Add the file as tmp
 			file_put_contents( $tempfile, $response['data']->image );
 
+			//handle backups if enabled
+			$backup = get_option( WP_SMUSH_PREFIX . 'backup' );
+			if ( $backup && $this->is_premium() ) {
+				$path = pathinfo( $file_path );
+				$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . ".bak." . $path['extension'];
+				@copy( $file_path, $backup_name );
+			}
+
 			//replace the file
 			$success = @rename( $tempfile, $file_path );
 

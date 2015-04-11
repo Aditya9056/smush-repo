@@ -207,8 +207,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function init_settings() {
 			$this->settings = array(
-				'auto'  => __( 'Auto-Smush images on upload', WP_SMUSH_DOMAIN ),
-				'lossy' => __( 'Super-Smush images (lossy optimization)', WP_SMUSH_DOMAIN )
+				'auto'   => __( 'Auto-Smush images on upload', WP_SMUSH_DOMAIN ),
+				'lossy'  => __( 'Super-Smush images', WP_SMUSH_DOMAIN ) . ' <small>(' . __( 'lossy optimization', WP_SMUSH_DOMAIN ) . ')</small>',
+				'backup' => __( 'Backup original images', WP_SMUSH_DOMAIN ) . ' <small>(' . __( 'this will nearly double the size of your uploads directory', WP_SMUSH_DOMAIN ) . ')</small>'
 			);
 		}
 
@@ -229,12 +230,27 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				</h2>
 
 				<?php if ( $this->is_premium() ) { ?>
-					<div class="wp-smpushit-features notice">
-						Here are your pro features
+					<div class="wp-smpushit-features updated">
+						<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', WP_SMUSH_DOMAIN ) ?></h3>
+						<ol>
+							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get &gt;60% average compression with almost no noticeable quality loss!', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( 'Smush images up to 8MB.', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( 'Bulk smush ALL your images with one click!', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', WP_SMUSH_DOMAIN ); ?></li>
+						</ol>
 					</div>
 				<?php } else { ?>
 					<div class="wp-smpushit-features error">
-						Pro features
+						<h3><?php _e( 'Upgrade to WP Smush Pro to:', WP_SMUSH_DOMAIN ) ?></h3>
+						<ol>
+							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get &gt;60% average compression with almost no noticeable quality loss!', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( 'Smush images greater than 1MB.', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( 'Bulk smush ALL your images with one click! No more rate limiting.', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', WP_SMUSH_DOMAIN ); ?></li>
+						</ol>
+						<p><a class="button-primary" href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', WP_SMUSH_DOMAIN ); ?></a></p>
 					</div>
 				<?php } ?>
 
@@ -372,14 +388,21 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<div class="smush-instructions">
 						<h4 class="smush-remaining-images-notice"><?php printf( _n( "%d attachment in your media library has not been smushed.", "%d image attachments in your media library have not been smushed yet.", $this->remaining_count, WP_SMUSH_DOMAIN ), $this->remaining_count ); ?></h4>
 						<?php if ( $exceed_mb ) { ?>
-							<p><?php echo $exceed_mb; ?></p>
+							<p class="error">
+								<?php echo $exceed_mb; ?>
+								<a href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Remove size limit &raquo;', WP_SMUSH_DOMAIN ); ?></a>
+							</p>
+
 						<?php } ?>
 
 						<p><?php _e( "Please be aware, smushing a large number of images can take a while depending on your server and network speed.
 						<strong>You must keep this page open while the bulk smush is processing</strong>, but you can leave at any time and come back to continue where it left off.", WP_SMUSH_DOMAIN ); ?></p>
 
 						<?php if ( ! $this->is_premium() ) { ?>
-							<p><?php printf( __( "NOTE: Free accounts are limited to bulk smushing %d attachments per request. You will need to click to start a new bulk job after each %d attachments.", WP_SMUSH_DOMAIN ), $this->max_free_bulk, $this->max_free_bulk ); ?></p>
+							<p class="error">
+								<?php printf( __( "Free accounts are limited to bulk smushing %d attachments per request. You will need to click to start a new bulk job after each %d attachments.", WP_SMUSH_DOMAIN ), $this->max_free_bulk, $this->max_free_bulk ); ?>
+								<a href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Remove limits &raquo;', WP_SMUSH_DOMAIN ); ?></a>
+							</p>
 						<?php } ?>
 
 
@@ -868,7 +891,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//disable lossy for non-premium members
 			$disabled = '';
-			if ( 'lossy' == $key && ! $this->is_premium() ) {
+			if ( ( 'lossy' == $key || 'backup' == $key ) && ! $this->is_premium() ) {
 				$disabled = ' disabled';
 				$opt_val = 0;
 			}
