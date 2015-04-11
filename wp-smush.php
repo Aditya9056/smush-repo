@@ -6,7 +6,8 @@ Description: Reduce image file sizes and improve performance using the <a href="
 Author: WPMU DEV
 Version: 2.0
 Author URI: http://premium.wpmudev.org/
-Textdomain: wp_smushit
+Textdomain: wp_smush
+WDP ID: 912164
 */
 
 /*
@@ -758,3 +759,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 //Include Admin classes
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-admin.php' );
+
+//register items for the dashboard plugin
+global $wpmudev_notices;
+$wpmudev_notices[] = array(
+	'id'      => 912164,
+	'name'    => 'WP Smush Pro',
+	'screens' => array(
+		'media_page_wp-smush-bulk',
+		'upload'
+	)
+);
