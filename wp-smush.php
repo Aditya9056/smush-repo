@@ -138,12 +138,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			// check that the file exists
 			if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
-				$errors->add("file_not_found", sprintf( __( "ERROR: Could not find <span class='code'>%s</span>", WP_SMUSH_DOMAIN ), $file_path ));
+				$errors->add("file_not_found", sprintf( __( "Could not find %s", WP_SMUSH_DOMAIN ), $file_path ));
 			}
 
 			// check that the file is writable
 			if ( ! is_writable( dirname( $file_path ) ) ) {
-				$errors->add("not_writable", sprintf( __( "ERROR: <span class='code'>%s</span> is not writable", WP_SMUSH_DOMAIN ), dirname( $file_path ) ) );
+				$errors->add("not_writable", sprintf( __( "%s is not writable", WP_SMUSH_DOMAIN ), dirname( $file_path ) ) );
 			}
 
 			$file_size = filesize( $file_path );
@@ -153,29 +153,28 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
-				$errors->add("image_not_found", sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), image not found.</span>', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ));
+				$errors->add("image_not_found", sprintf( __( 'Skipped (%s), image not found.', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ));
 			}
+
 			//Check size limit
 			if ( $file_size > $max_size ) {
-				$errors->add("size_limit", sprintf( __( 'ERROR: <span style="color:#FF0000;">Skipped (%s), size limit exceeded.</span>', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ));
+				$errors->add("size_limit", sprintf( __( 'Skipped (%s), size limit exceeded.', WP_SMUSH_DOMAIN ), $this->format_bytes( $file_size ) ));
 			}
+
+			if ( count( $errors->get_error_messages() ) ) return $errors;
 
 			/** Send image for smushing, and fetch the response */
 			$response = $this->_post( $file_path, $file_size );
 
-			if ( false === $response ) {
-				$errors->add("false_response", __( 'ERROR: posting to Smush', WP_SMUSH_DOMAIN ));
+			if ( ! $response['success'] ) {
+				$errors->add("false_response", $response['message'] );
 			}
 			//If there is no data
 			if ( empty( $response['data'] ) ) {
-				$errors->add("no_data", __( 'Bad response from server', WP_SMUSH_DOMAIN ) );
+				$errors->add("no_data", __( 'Unknown API error', WP_SMUSH_DOMAIN ) );
 			}
 
-			if ( isset( $response['success'] ) && $response['success'] == false ) {
-				$errors->add("false_success", __( 'Error connecting to server', WP_SMUSH_DOMAIN ));
-			}
-
-			if( count($errors->get_error_messages() ) ) return $errors;
+			if ( count( $errors->get_error_messages() ) ) return $errors;
 
 			//If there are no savings, or image returned is bigger in size
 			if ( ( ! empty( $response['data']->bytes_saved ) && intval( $response['data']->bytes_saved ) <= 0 )
@@ -202,7 +201,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				unlink( $tempfile );
 			}
 
-			return  $response;
+			return $response;
 		}
 
 		/**
@@ -247,7 +246,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function resize_from_meta_data( $meta, $ID = null, $force_resmush = true ) {
 
-			//Flag to check, if full image needs to be smushed or not
+			//Flag to check, if original size image needs to be smushed or not
 			$smush_full = true;
 			$errors    = new WP_Error();
 			$stats      = array(
@@ -274,12 +273,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
+					//if there is a large size, then we will set a flag to leave the original untouched
 					if ( $size_key == 'large' ) {
 						$smush_full = false;
 					}
 
 					// We take the original image. The 'sizes' will all match the same URL and
-					// path. So just get the dirname and rpelace the filename.
+					// path. So just get the dirname and replace the filename.
 
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
 					$attachment_file_url_size  = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
@@ -298,7 +298,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 							= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 					} else {
-						$errors->add("image_size_error".$size_key , sprintf(__("Size '%s' not processed correctly" ), $size_key ) );
+						$errors->add("image_size_error".$size_key , sprintf( __("Size '%s' not processed correctly", WP_SMUSH_DOMAIN ), $size_key ) );
 					}
 
 					if ( empty( $stats['stats']['api_version'] ) ) {
@@ -308,17 +308,17 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 
-			//If full size is suppose to be smushed
+			//If original size is supposed to be smushed
 			if ( $smush_full ) {
 
 				$full_image_response = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
 
-				if( is_wp_error($full_image_response) ) return $full_image_response;
+				if ( is_wp_error($full_image_response) ) return $full_image_response;
 
 				if ( ! empty( $full_image_response['data'] ) ) {
 					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
-				}else{
-					$errors->add("image_size_error", __("Size 'full' not processed correctly")  );
+				} else {
+					$errors->add( "image_size_error", __( "Size 'full' not processed correctly", WP_SMUSH_DOMAIN ) );
 				}
 
 				//Update stats
@@ -326,7 +326,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 						= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 				} else {
-					$errors->add("image_size_error", __("Size 'full' not processed correctly")  );
+					$errors->add( "image_size_error", __( "Size 'full' not processed correctly", WP_SMUSH_DOMAIN ) );
 				}
 
 			}
@@ -340,7 +340,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 
 			//Set smush status for all the images, store it in wp-smpro-smush-data
-			if ( ! $has_errors  ) {
+			if ( ! $has_errors ) {
 				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
 			}
 
@@ -359,86 +359,83 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			global $log;
 
 			$data = false;
-			if ( function_exists( 'wp_remote_post' ) ) {
-				$file      = @fopen( $file_path, 'r' );
-				$file_data = fread( $file, $file_size );
-				$headers   = array(
-					'accept'       => 'application/json', // The API returns JSON
-					'content-type' => 'application/binary', // Set content type to binary
-				);
 
-				//Check if premium member, add API key
-				$api_key = $this->_get_api_key();
-				if ( ! empty( $api_key ) ) {
-					$headers['apikey'] = $api_key;
-				}
+			$file      = @fopen( $file_path, 'r' );
+			$file_data = fread( $file, $file_size );
+			$headers   = array(
+				'accept'       => 'application/json', // The API returns JSON
+				'content-type' => 'application/binary', // Set content type to binary
+			);
 
-				//Check if lossy compression allowed and add it to headers
-				$lossy = get_option( WP_SMUSH_PREFIX . 'lossy' );
+			//Check if premium member, add API key
+			$api_key = $this->_get_api_key();
+			if ( ! empty( $api_key ) ) {
+				$headers['apikey'] = $api_key;
+			}
 
-				if ( $lossy && $this->is_premium() ) {
-					$headers['lossy'] = 'true';
-				} else {
-					$headers['lossy'] = 'false';
-				}
+			//Check if lossy compression allowed and add it to headers
+			$lossy = get_option( WP_SMUSH_PREFIX . 'lossy' );
 
-				$args   = array(
-					'headers'    => $headers,
-					'body'       => $file_data,
-					'timeout'    => WP_SMUSH_TIMEOUT,
-					'user-agent' => WP_SMUSH_UA
-				);
-				$result = wp_remote_post( WP_SMUSH_API, $args );
+			if ( $lossy && $this->is_premium() ) {
+				$headers['lossy'] = 'true';
+			} else {
+				$headers['lossy'] = 'false';
+			}
 
-				//Close file connection
-				fclose( $file );
-				unset( $file_data );//free memory
-				if ( is_wp_error( $result ) ) {
-					//Handle error
-					$data['message'] = sprintf( __( 'Error posting to server: %s', WP_SMUSH_DOMAIN ), $result->get_error_message() );
-					$data['success'] = false;
-					unset( $result ); //free memory
-					return $data;
-				} else if ( '200' != wp_remote_retrieve_response_code( $result ) ) {
-					//Handle error
-					$data['message'] = sprintf( __( 'Error posting to server: %s %s', WP_SMUSHIT_DOMAIN ), wp_remote_retrieve_response_code( $result ), wp_remote_retrieve_response_message( $result ) );
-					$data['success'] = false;
-					unset( $result ); //free memory
+			$args   = array(
+				'headers'    => $headers,
+				'body'       => $file_data,
+				'timeout'    => WP_SMUSH_TIMEOUT,
+				'user-agent' => WP_SMUSH_UA
+			);
+			$result = wp_remote_post( WP_SMUSH_API, $args );
 
-					return $data;
-				}
+			//Close file connection
+			fclose( $file );
+			unset( $file_data );//free memory
+			if ( is_wp_error( $result ) ) {
+				//Handle error
+				$data['message'] = sprintf( __( 'Error posting to API: %s', WP_SMUSH_DOMAIN ), $result->get_error_message() );
+				$data['success'] = false;
+				unset( $result ); //free memory
+				return $data;
+			} else if ( '200' != wp_remote_retrieve_response_code( $result ) ) {
+				//Handle error
+				$data['message'] = sprintf( __( 'Error posting to API: %s %s', WP_SMUSHIT_DOMAIN ), wp_remote_retrieve_response_code( $result ), wp_remote_retrieve_response_message( $result ) );
+				$data['success'] = false;
+				unset( $result ); //free memory
 
-				//If there is a response and image was successfully optimised
-				$response = json_decode( $result['body'] );
-				if ( $response && $response->success == true ) {
+				return $data;
+			}
 
-					//If there is any savings
-					if ( $response->data->bytes_saved > 0 ) {
-						$image     = base64_decode( $response->data->image ); //base64_decode is necessary to send binary img over JSON, no security problems here!
-						$image_md5 = md5( $response->data->image );
-						if ( $response->data->image_md5 != $image_md5 ) {
-							//Handle error
-							$data['message'] = __( 'Image data corrupted during download, try again.', WP_SMUSH_DOMAIN );
-							$data['success'] = false;
-							unset( $image );//free memory
-						} else {
-							$data['success']     = true;
-							$data['data']        = $response->data;
-							$data['data']->image = $image;
-							unset( $image );//free memory
-						}
+			//If there is a response and image was successfully optimised
+			$response = json_decode( $result['body'] );
+			if ( $response && $response->success == true ) {
+
+				//If there is any savings
+				if ( $response->data->bytes_saved > 0 ) {
+					$image     = base64_decode( $response->data->image ); //base64_decode is necessary to send binary img over JSON, no security problems here!
+					$image_md5 = md5( $response->data->image );
+					if ( $response->data->image_md5 != $image_md5 ) {
+						//Handle error
+						$data['message'] = __( 'Smush data corrupted, try again.', WP_SMUSH_DOMAIN );
+						$data['success'] = false;
+						unset( $image );//free memory
 					} else {
-						//just return the data
-						$data['success'] = true;
-						$data['data']    = $response->data;
+						$data['success']     = true;
+						$data['data']        = $response->data;
+						$data['data']->image = $image;
+						unset( $image );//free memory
 					}
 				} else {
-					//Server side error, get message from response
-					$data['message'] = ! empty( $response->data->message ) ? $response->data->message : __( "Image couldn't be smushed", WP_SMUSH_DOMAIN );
-					$data['success'] = false;
+					//just return the data
+					$data['success'] = true;
+					$data['data']    = $response->data;
 				}
 			} else {
-				wp_die( __( 'WP Smush requires WordPress 2.8 or greater', WP_SMUSH_DOMAIN ) );
+				//Server side error, get message from response
+				$data['message'] = ! empty( $response->data ) ? $response->data : __( "Image couldn't be smushed", WP_SMUSH_DOMAIN );
+				$data['success'] = false;
 			}
 
 			unset( $result );//free memory
