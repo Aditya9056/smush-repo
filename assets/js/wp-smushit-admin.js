@@ -242,7 +242,8 @@ jQuery('document').ready(function ($) {
 
                                 if (  typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded') {
                                     wp_smushit_free_exceeded();
-                                    return $.Deferred().reject();
+	                                  startingpoint.reject();
+                                    //jQuery.Deferred().reject();
                                 }
                                 wp_smushit_data.unsmushed.shift(); //remove from array while processing so we can continue where left off
                             });
