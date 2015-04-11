@@ -21,6 +21,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	 * @property int $remaining_count
 	 * @property int $total_count
 	 * @property int $smushed_count
+	 * @property int $exceeding_items_count
 	 */
 	class WpSmushitAdmin extends WpSmush {
 
@@ -317,33 +318,41 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
+		 * Returns number of images of larger than 1Mb size
+		 *
+		 * @return int
+		 */
+		function get_exceeding_items_count(){
+			$count = 0;
+			$bulk = new WpSmushitBulk();
+			$attachments = $bulk->get_attachments();
+			//Check images bigger than 1Mb, used to display the count of images that can't be smushed
+			foreach ( $attachments as $attachment ) {
+				if ( file_exists( get_attached_file( $attachment ) ) ) {
+					$size = filesize( get_attached_file( $attachment ) );
+				}
+				if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
+					continue;
+				}
+				$count ++;
+			}
+
+			return $count;
+		}
+
+		/**
 		 * Bulk Smushing UI
 		 */
 		function bulk_preview() {
 
-			$bulk = new WpSmushitBulk();
-
-			$attachments = $bulk->get_attachments();
-
 			$exceed_mb = '';
 			if ( ! $this->is_premium() ) {
-				$count = 0;
-				//Check images bigger than 1Mb, used to display the count of images that can't be smushed
-				foreach ( $attachments as $attachment ) {
-					if ( file_exists( get_attached_file( $attachment ) ) ) {
-						$size = filesize( get_attached_file( $attachment ) );
-					}
-					if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
-						continue;
-					}
-					$count ++;
-				}
 
-				if ( $count ) {
+				if ( $this->exceeding_items_count ) {
 					$exceed_mb = sprintf(
 						_n( "%d image is over 1MB so will be skipped using the free version of the plugin.",
-							"%d images are over 1MB so will be skipped using the free version of the plugin.", $count, WP_SMUSH_DOMAIN ),
-						$count
+							"%d images are over 1MB so will be skipped using the free version of the plugin.", $this->exceeding_items_count, WP_SMUSH_DOMAIN ),
+						$this->exceeding_items_count
 					);
 				}
 			}
