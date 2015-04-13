@@ -39,7 +39,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $stats;
 
-		public $max_free_bulk = 5; //this is enforced at api level too
+		public $max_free_bulk = 50; //this is enforced at api level too
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade';
 
@@ -463,7 +463,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function progress_ui() {
 
 			// calculate %ages
-			$smushed_pc = $this->smushed_count / $this->total_count * 100;
+			if ( $this->total_count > 0 ) //avoid divide by zero error with no attachments
+				$smushed_pc = $this->smushed_count / $this->total_count * 100;
+			else
+				$smushed_pc = 0;
 
 			$progress_ui = '<div id="progress-ui">';
 
