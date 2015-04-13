@@ -25,7 +25,7 @@ msgid "Smushing in Progress"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:176 lib/class-wp-smush-admin.php:852
-msgid "All done!"
+msgid "All Done!"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:178

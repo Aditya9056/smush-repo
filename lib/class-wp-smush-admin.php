@@ -170,7 +170,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$wp_smush_msgs = array(
 				'progress'             => __( 'Smushing in Progress', WP_SMUSH_DOMAIN ),
-				'done'                 => __( 'All done!', WP_SMUSH_DOMAIN ),
+				'done'                 => __( 'All Done!', WP_SMUSH_DOMAIN ),
 				'bulk_now'             => $bulk_now,
 				'something_went_wrong' => __( 'Ops!... something went wrong', WP_SMUSH_DOMAIN ),
 				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN ),
