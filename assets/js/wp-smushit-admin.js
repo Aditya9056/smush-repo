@@ -5,30 +5,26 @@
  *
  */
 var WP_Smush = WP_Smush || {};
-jQuery('document').ready(function ($) {
+jQuery(function ($) {
     // url for smushing
     WP_Smush.errors = [];
-    $bulk_send_url = ajaxurl + '?action=wp_smushit_bulk';
-    $manual_smush_url = ajaxurl + '?action=wp_smushit_manual';
-    $remaining = '';
-    $smush_done = false;
-    timeout = 60000;
+    WP_Smush.timeout = 60000;
     /**
      * Checks for the specified param in URL
      * @param sParam
      * @returns {*}
      */
-    function geturlparam(arg) {
-        $sPageURL = window.location.search.substring(1);
-        $sURLVariables = $sPageURL.split('&');
+    WP_Smush.geturlparam = function(arg) {
+        var $sPageURL = window.location.search.substring(1);
+        var $sURLVariables = $sPageURL.split('&');
 
         for (var i = 0; i < $sURLVariables.length; i++) {
-            $sParameterName = $sURLVariables[i].split('=');
+            var $sParameterName = $sURLVariables[i].split('=');
             if ($sParameterName[0] == arg) {
                 return $sParameterName[1];
             }
         }
-    }
+    };
 
     WP_Smush.ajax = function ($id, $send_url, $getnxt) {
         "use strict";
@@ -47,7 +43,8 @@ jQuery('document').ready(function ($) {
         this.init = function( arguments ){
             this.$button = $($button[0]);
             this.is_bulk = typeof bulk ? bulk : false;
-            this.url = this.is_bulk ? $bulk_send_url : $manual_smush_url;
+            this.url = ajaxurl;
+            this.url += this.is_bulk ? '?action=wp_smushit_bulk' : '?action=wp_smushit_manual';
             this.button_text = this.is_bulk ? wp_smush_msgs.bulk_now : wp_smush_msgs.smush_now;
             this.$log = $(".smush-final-log");
             this.$button_span = this.$button.find("span");
