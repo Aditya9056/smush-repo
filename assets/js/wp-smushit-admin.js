@@ -225,7 +225,9 @@ jQuery(function ($) {
                     self.update_progress(res);
 
                     if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && res.success === false && res.data.error !== 'bulk_request_image_limit_exceeded' )) {
-                       self.increment_errors();
+	                    self.increment_errors();
+	                    var error_message = wp_smush_msgs.error_in_bulk.replace("{{errors}}", WP_Smush.errors.length);
+	                    self.$log.html(error_message);
                     }
 
                     if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved() ) {
@@ -255,10 +257,6 @@ jQuery(function ($) {
         this.bind_deferred_events = function(){
 
             this.deferred.done(function(){
-                if (WP_Smush.errors.length) {
-                    var error_message = wp_smush_msgs.error_in_bulk.replace("{{errors}}", WP_Smush.errors.length);
-                    self.$log.append(error_message);
-                }
                 self.bulk_done();
             });
 
