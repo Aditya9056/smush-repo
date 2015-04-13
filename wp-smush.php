@@ -722,9 +722,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt    = $button_txt = '';
 			$show_button   = false;
 			$wp_smush_data = get_post_meta( $id, self::SMUSHED_META_KEY, true );
-			echo "<pre>";
-			print_r( $wp_smush_data );
-			echo "</pre>";
 			// if the image is smushed
 			if ( ! empty( $wp_smush_data ) ) {
 
