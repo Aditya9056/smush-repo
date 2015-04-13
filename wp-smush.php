@@ -634,7 +634,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$show_button = true;
 
 				// the button text
-				$button_txt = __( 'Smush now!', WP_SMUSH_DOMAIN );
+				$button_txt = __( 'Smush Now!', WP_SMUSH_DOMAIN );
 			}
 			if ( $text_only ) {
 				return $status_txt;
@@ -682,7 +682,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 			if ( ! $echo ) {
 				$html .= '
-				<button id="wp-smush-send" class="button button-primary" data-id="' . $id . '">
+				<button  class="button button-primary wp-smush-send" data-id="' . $id . '">
 	                <span>' . $button_txt . '</span>
 				</button>';
 				if ( ! $smushed ) {
@@ -693,7 +693,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
 			} else {
-				$html .= '<button id="wp-smush-send" class="button" data-id="' . $id . '">
+				$html .= '<button class="button wp-smush-send" data-id="' . $id . '">
                     <span>' . $button_txt . '</span>
 				</button>';
 				echo $html;

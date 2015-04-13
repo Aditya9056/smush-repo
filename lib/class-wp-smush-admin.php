@@ -438,7 +438,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		function print_loader() {
 			?>
-			<div id="wp-smush-loader-wrap" class="hidden">
+			<div class="wp-smush-loader-wrap hidden" >
 				<div class="floatingCirclesG">
 					<div class="f_circleG" id="frotateG_01">
 					</div>
@@ -785,7 +785,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$button = $this->button_state();
 			$disabled = !empty($button['disabled']) ? ' disabled="disabled"' : '';
 			?>
-			<button id="<?php echo $button['id']; ?>" class="button button-primary<?php echo ' ' . $button['class']; ?>" name="smush-all" <?php echo $disabled; ?>>
+			<button class="button button-primary<?php echo ' ' . $button['class']; ?>" name="smush-all" <?php echo $disabled; ?>>
 				<span><?php echo $button['text'] ?></span>
 			</button>
 		<?php
@@ -850,20 +850,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// disable the buttons
 			if ( $this->smushed_count === $this->total_count ) {
 				$button['text']     = __( 'All done!', WP_SMUSH_DOMAIN );
-				$button['id']       = "wp-smush-finished";
-				$button['class']    = 'wp-smush-finished disabled';
+				$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
 				$button['disabled'] = 'disabled';
 
 			} else if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
 
 				$button['text']  = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
-				$button['id']    = "wp-smush-send";
-				$button['class'] = 'wp-smush-button';
+				$button['class'] = 'wp-smush-button wp-smush-send';
 
 			} else { //if not premium and over limit
 				$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ),  $this->max_free_bulk );
-				$button['id']    = "wp-smush-send";
-				$button['class'] = 'wp-smush-button';
+				$button['class'] = 'wp-smush-button wp-smush-send';
 
 			}
 

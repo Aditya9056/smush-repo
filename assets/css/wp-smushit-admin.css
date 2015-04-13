@@ -18,7 +18,7 @@ Smush button transformation
 /*
 Loader
 */
-#wp-smushit-loader-wrap{
+.wp-smushit-loader-wrap{
 	display:none;
 }
 .floatingCirclesG{
@@ -325,7 +325,10 @@ p#wp-smush-compression span {
     display: inline-block;
     vertical-align: top;
 }
-#wp-smush-send #wp-smush-loader-wrap {
+#wp-smush-send .wp-smush-loader-wrap {
+    display: inline-block;
+}
+button .wp-smush-loader-wrap {
     display: inline-block;
 }
 /** Settings Page **/
