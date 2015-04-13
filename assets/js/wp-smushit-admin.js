@@ -50,7 +50,7 @@ jQuery('document').ready(function ($) {
             this.button_text = this.is_bulk ? wp_smush_msgs.bulk_now : wp_smush_msgs.smush_now;
             this.$log = $(".smush-final-log");
             this.$button_span = this.$button.find("span");
-            this.$loader = $(".wp-smush-loader-wrap").clone();
+            this.$loader = $(".wp-smush-loader-wrap").eq(0).clone();
             this.deferred = jQuery.Deferred();
             this.deferred.errors = [];
             this.ids = wp_smushit_data.unsmushed;
@@ -61,8 +61,12 @@ jQuery('document').ready(function ($) {
 
             this.$button.attr('disabled', 'disabled');
             this.$button.addClass('wp-smush-started');
-            if( !this.$button.find(".wp-smush-loader-wrap").length )
+            if( !this.$button.find(".wp-smush-loader-wrap").length ){
                 this.$button.prepend(this.$loader);
+            }else{
+                this.$loader = this.$button.find(".wp-smush-loader-wrap");
+            }
+
 
             this.show_loader();
             this.bulk_start();
@@ -73,6 +77,7 @@ jQuery('document').ready(function ($) {
             if( !this.is_bulk ) return;
             $('#progress-ui').show();
             this.$button_span.text(wp_smush_msgs.progress);
+            this.show_loader();
 
         };
 
