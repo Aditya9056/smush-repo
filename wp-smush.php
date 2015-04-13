@@ -625,7 +625,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			if ( false === ( $valid = get_site_transient( self::VALIDITY_KEY ) ) ) {
+			$key = "wp-smush-valid-$api_key"; //add apikey to transient key in case it changes
+
+			if ( false === ( $valid = get_site_transient( $key ) ) ) {
 				// call api
 				$url = self::API_SERVER . '&key=' . urlencode( $api_key );
 
@@ -638,15 +640,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$result = json_decode( wp_remote_retrieve_body( $request ) );
 					if ( $result && $result->success ) {
 						$valid = true;
-						set_site_transient( self::VALIDITY_KEY, 1, 12 * HOUR_IN_SECONDS );
+						set_site_transient( $key, 1, 12 * HOUR_IN_SECONDS );
 					} else {
 						$valid = false;
-						set_site_transient( self::VALIDITY_KEY, 0, 30 * MINUTE_IN_SECONDS ); //cache failure much shorter
+						set_site_transient( $key, 0, 30 * MINUTE_IN_SECONDS ); //cache failure much shorter
 					}
 
 				} else {
 					$valid = false;
-					set_site_transient( self::VALIDITY_KEY, 0, 5 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
+					set_site_transient( $key, 0, 5 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
 				}
 
 			}
