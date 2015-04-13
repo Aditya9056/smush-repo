@@ -40,18 +40,6 @@ jQuery(function ($) {
     WP_Smush.Smush = function( $button, bulk ){
         var self = this;
 
-	    this.getId = function (is_bulk, button) {
-		    var id = [];
-
-		    if (is_bulk) {
-			    id = wp_smushit_data.unsmushed
-		    } else {
-			    id.push(button.data('id'));
-		    }
-
-		    return id;
-	    };
-
         this.init = function( arguments ){
             this.$button = $($button[0]);
             this.is_bulk = typeof bulk ? bulk : false;
@@ -63,7 +51,7 @@ jQuery(function ($) {
             this.$loader = $(".wp-smush-loader-wrap").eq(0).clone();
             this.deferred = jQuery.Deferred();
             this.deferred.errors = [];
-            this.ids = this.getId( this.is_bulk, $button );
+            this.ids = wp_smushit_data.unsmushed;
             this.$status = this.$button.parent().find('.smush-status');
         };
 
@@ -142,9 +130,9 @@ jQuery(function ($) {
         };
 
         this.bulk_done = function(){
-           if( !this.is_bulk ) return;
+            if( !this.is_bulk ) return;
 
-           this.hide_loader();
+            this.hide_loader();
 
             // Add finished class
             this.$button.addClass('wp-smush-finished');
@@ -211,7 +199,7 @@ jQuery(function ($) {
 
         this.call_ajax = function(){
 
-            this.current_id = this.ids.shift(); //remove from array while processing so we can continue where left off
+            this.current_id = this.is_bulk ? this.ids.shift() : this.$button.data("id"); //remove from array while processing so we can continue where left off
 
             this.request = WP_Smush.ajax(this.current_id, this.url , 0)
                 .complete(function(){
@@ -225,9 +213,7 @@ jQuery(function ($) {
                     self.update_progress(res);
 
                     if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && res.success === false && res.data.error !== 'bulk_request_image_limit_exceeded' )) {
-	                    self.increment_errors();
-	                    var error_message = wp_smush_msgs.error_in_bulk.replace("{{errors}}", WP_Smush.errors.length);
-	                    self.$log.html(error_message);
+                        self.increment_errors();
                     }
 
                     if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved() ) {
@@ -248,15 +234,22 @@ jQuery(function ($) {
         this.run = function(){
 
             // if we have a definite number of ids
-            if (this.ids.length > 0) {
+            if ( this.is_bulk && this.ids.length > 0) {
                 this.call_ajax();
             }
+
+            if( !this.is_bulk )
+                this.call_ajax();
 
         };
 
         this.bind_deferred_events = function(){
 
             this.deferred.done(function(){
+                if (WP_Smush.errors.length) {
+                    var error_message = wp_smush_msgs.error_in_bulk.replace("{{errors}}", WP_Smush.errors.length);
+                    self.$log.append(error_message);
+                }
                 self.bulk_done();
             });
 
