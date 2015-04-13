@@ -826,8 +826,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				foreach ( $global_data as $data ) {
 					$data = maybe_unserialize( $data );
 					if ( ! empty( $data['stats'] ) ) {
-						$smush_data['size_before'] += ! empty( $data['stats']['before_size'] ) ? (int) $data['stats']['before_size'] : 0;
-						$smush_data['size_after'] += ! empty( $data['stats']['after_size'] ) ? (int) $data['stats']['after_size'] : 0;
+						$smush_data['size_before'] += ! empty( $data['stats']['size_before'] ) ? (int) $data['stats']['size_before'] : 0;
+						$smush_data['size_after'] += ! empty( $data['stats']['size_after'] ) ? (int) $data['stats']['size_after'] : 0;
 					}
 				}
 			}

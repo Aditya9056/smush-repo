@@ -7,7 +7,6 @@ Author: WPMU DEV
 Version: 2.0
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp_smush
-WDP ID: 912164
 */
 
 /*
@@ -236,10 +235,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		private function _get_size_signature() {
 			return array(
-				'compression' => - 1,
-				'bytes_saved' => - 1,
-				'before_size' => - 1,
-				'after_size'  => - 1,
+				'percent' => - 1,
+				'bytes' => - 1,
+				'size_before' => - 1,
+				'size_after'  => - 1,
 				'time'        => - 1
 			);
 		}
@@ -352,7 +351,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Store stats
 
-			list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], $stats['stats']['bytes_saved'] ) =
+			list( $stats['stats']['size_before'], $stats['stats']['size_after'], $stats['stats']['time'], $stats['stats']['percent'], $stats['stats']['bytes'] ) =
 				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
 
@@ -469,7 +468,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Store stats
 
-			list( $stats['stats']['before_size'], $stats['stats']['after_size'], $stats['stats']['time'], $stats['stats']['compression'], $stats['stats']['bytes_saved'] ) =
+			list( $stats['stats']['size_before'], $stats['stats']['size_after'], $stats['stats']['time'], $stats['stats']['percent'], $stats['stats']['bytes'] ) =
 				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 
 
@@ -723,15 +722,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt    = $button_txt = '';
 			$show_button   = false;
 			$wp_smush_data = get_post_meta( $id, self::SMUSHED_META_KEY, true );
+			echo "<pre>";
+			print_r( $wp_smush_data );
+			echo "</pre>";
 			// if the image is smushed
 			if ( ! empty( $wp_smush_data ) ) {
 
-				$bytes          = isset( $wp_smush_data['stats']['bytes_saved'] ) ? $wp_smush_data['stats']['bytes_saved'] : 0;
+				$bytes          = isset( $wp_smush_data['stats']['bytes'] ) ? $wp_smush_data['stats']['bytes'] : 0;
 				$bytes_readable = ! empty( $bytes ) ? $this->format_bytes( $bytes ) : '';
-				$percent        = isset( $wp_smush_data['stats']['compression'] ) ? $wp_smush_data['stats']['compression'] : 0;
+				$percent        = isset( $wp_smush_data['stats']['percent'] ) ? $wp_smush_data['stats']['percent'] : 0;
 				$percent        = $percent < 0 ? 0 : $percent;
 
-				if ( isset( $wp_smush_data['stats']['before_size'] ) && $wp_smush_data['stats']['before_size'] == 0 ) {
+				if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 ) {
 					$status_txt  = __( 'Error processing request', WP_SMUSH_DOMAIN );
 					$show_button = true;
 				} else {

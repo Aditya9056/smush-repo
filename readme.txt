@@ -1,13 +1,13 @@
 === WP Smush ===
 Plugin Name: WP Smush
-Version: 1.7
+Version: 2.0
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org
 Contributors: WPMUDEV, alexdunae, umeshsingla
 Tags: Attachment,Attachments,Compress,Compress Image File,Compress Image Size,Compress JPG,Compressed JPG, Compression Image,Image,Images,JPG,Optimise,Optimize,Photo,Photos,Pictures,PNG,Reduce Image Size,Smush,Smush.it,Upload,WordPress Compression,WordPress Image Tool,Yahoo, Yahoo Smush.it
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 1.7
+Stable tag: 2.0
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 == Description ==
@@ -67,6 +67,9 @@ This will give us a good foundation to start adding some new features!
 
 
 == Changelog ==
+= 2.0 =
+* Added WPMU Dev servers for testing
+* UX/UI updated
 
 = 1.7 =
 * Use Ajax for Bulk Smush to avoid timeouts and internal server error

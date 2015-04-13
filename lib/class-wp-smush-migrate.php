@@ -63,9 +63,9 @@ class WpSmushMigrate {
 
 		$new_message = array(
 			"stats" => array(
-				'before_size' => -1,
-				'after_size' => -1,
-				'compression' => -1,
+				'size_before' => -1,
+				'size_after' => -1,
+				'percent' => -1,
 				'time' => -1,
 				'api_version' => -1,
 				'lossy' => -1
@@ -95,12 +95,12 @@ class WpSmushMigrate {
 			}
 		}
 
-		$new_message["stats"]['compression'] = $this->_get_saved_percentage( $message['wp_smushit'] );
-		$new_message["stats"]['bytes_saved'] = $this->_get_saved_bytes( $message['wp_smushit'] );
+		$new_message["stats"]['percent'] = $this->_get_saved_percentage( $message['wp_smushit'] );
+		$new_message["stats"]['bytes'] = $this->_get_saved_bytes( $message['wp_smushit'] );
 
-		if( $new_message["stats"]['compression'] !== -1 && $new_message["stats"]['bytes_saved'] !== -1){
-			$new_message["stats"]['before_size'] = ( $new_message["stats"]['bytes_saved'] * 100 ) / $new_message["stats"]['compression'];
-			$new_message["stats"]['after_size'] = ( 100 - $new_message["stats"]['compression']  ) * $new_message["stats"]['before_size'] / 100;
+		if( $new_message["stats"]['percent'] !== -1 && $new_message["stats"]['bytes'] !== -1){
+			$new_message["stats"]['size_before'] = ( $new_message["stats"]['bytes'] * 100 ) / $new_message["stats"]['percent'];
+			$new_message["stats"]['size_after'] = ( 100 - $new_message["stats"]['percent']  ) * $new_message["stats"]['size_before'] / 100;
 		}
 
 		return $new_message;
