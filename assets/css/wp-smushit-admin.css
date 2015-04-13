@@ -330,6 +330,7 @@ p#wp-smush-compression span {
 }
 button .wp-smush-loader-wrap {
     display: inline-block;
+    float: left;
 }
 /** Settings Page **/
 ul#wp-smush-options-wrap {
