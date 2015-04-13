@@ -44,6 +44,18 @@ jQuery('document').ready(function ($) {
     WP_Smush.Smush = function( $button, bulk ){
         var self = this;
 
+	    this.getId = function (is_bulk, button) {
+		    var id = [];
+
+		    if (is_bulk) {
+			    id = wp_smushit_data.unsmushed
+		    } else {
+			    id.push(button.data('id'));
+		    }
+
+		    return id;
+	    };
+
         this.init = function( arguments ){
             this.$button = $($button[0]);
             this.is_bulk = typeof bulk ? bulk : false;
@@ -54,7 +66,7 @@ jQuery('document').ready(function ($) {
             this.$loader = $(".wp-smush-loader-wrap").eq(0).clone();
             this.deferred = jQuery.Deferred();
             this.deferred.errors = [];
-            this.ids = wp_smushit_data.unsmushed;
+            this.ids = this.getId( this.is_bulk, $button );
             this.$status = this.$button.parent().find('.smush-status');
         };
 
