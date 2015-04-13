@@ -141,13 +141,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
-			wp_register_style( 'wp-smushit-sweet-alert', WP_SMUSH_URL . 'assets/css/sweet-alert.css' );
 
 			// localize translatable strings for js
 			$this->localize();
 
 			wp_enqueue_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
-			wp_enqueue_script( 'wp-smushit-admin-sweetalert-js', WP_SMUSH_URL . 'assets/js/sweet-alert.min.js', array( 'jquery' ) );
 
 		}
 
@@ -157,7 +155,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function enqueue() {
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 			wp_enqueue_style( 'wp-smushit-admin-css' );
-			wp_enqueue_style( 'wp-smushit-sweet-alert' );
 		}
 
 
@@ -199,7 +196,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		function admin_enqueue_scripts() {
 			wp_enqueue_script( 'wp-smushit-admin-media-js' );
-			wp_enqueue_script( 'wp-smushit-admin-sweetalert-js' );
 		}
 
 		/**
@@ -849,7 +845,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// if we have nothing left to smush
 			// disable the buttons
 			if ( $this->smushed_count === $this->total_count ) {
-				$button['text']     = __( 'All done!', WP_SMUSH_DOMAIN );
+				$button['text']     = __( 'All Done!', WP_SMUSH_DOMAIN );
 				$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
 				$button['disabled'] = 'disabled';
 
