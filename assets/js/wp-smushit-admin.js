@@ -7,6 +7,7 @@
 var WP_Smush = WP_Smush || {};
 jQuery('document').ready(function ($) {
     // url for smushing
+    WP_Smush.errors = [];
     $bulk_send_url = ajaxurl + '?action=wp_smushit_bulk';
     $manual_smush_url = ajaxurl + '?action=wp_smushit_manual';
     $remaining = '';
@@ -149,6 +150,11 @@ jQuery('document').ready(function ($) {
             self.$button_span.text( wp_smush_msgs.done );
         };
 
+        this.is_resolved = function(){
+            "use strict";
+            return this.deferred.state() === "resolved";
+        };
+
         this.free_exceeded = function(){
             this.hide_loader();
 
@@ -191,7 +197,7 @@ jQuery('document').ready(function ($) {
         };
 
         this.increment_errors = function(){
-            this.deferred.errors.push(this.current_id);
+            WP_Smush.errors.push(this.current_id);
         };
 
         this.call_ajax = function(){
@@ -213,18 +219,18 @@ jQuery('document').ready(function ($) {
                        self.increment_errors();
                     }
 
-                    if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded') {
+                    if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved() ) {
                         self.free_exceeded();
                     }else{
                         if( self.continue() ){
                             self.call_ajax();
-                        }else{
-                            self.bulk_done();
                         }
                     }
                     self.single_done();
                 });
 
+            self.deferred.errors = WP_Smush.errors;
+            return self.deferred;
         };
 
         this.init( arguments );
@@ -240,8 +246,8 @@ jQuery('document').ready(function ($) {
         this.bind_deferred_events = function(){
 
             this.deferred.done(function(){
-                if (self.deferred.errors.length) {
-                    var error_message = wp_smush_msgs.error_in_bulk.replace("{{errors}}", self.deferred.errors.length);
+                if (WP_Smush.errors.length) {
+                    var error_message = wp_smush_msgs.error_in_bulk.replace("{{errors}}", WP_Smush.errors.length);
                     self.$log.append(error_message);
                 }
                 self.bulk_done();
