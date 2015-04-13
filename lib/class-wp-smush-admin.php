@@ -247,6 +247,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', WP_SMUSH_DOMAIN ); ?></li>
 						</ol>
 						<p><a class="button-primary" href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', WP_SMUSH_DOMAIN ); ?></a></p>
+
+						<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', WP_SMUSH_DOMAIN ); ?></p>
+						<p>
+							<?php
+							if ( ! class_exists( 'WPMUDEV_Dashboard' ) ) {
+								if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
+									$function = is_multisite() ? 'network_admin_url' : 'admin_url';
+									$url      = wp_nonce_url( $function( 'plugins.php?action=activate&plugin=wpmudev-updates%2Fupdate-notifications.php' ), 'activate-plugin_wpmudev-updates/update-notifications.php' );
+									?><a class="button-secondary"
+									     href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', WP_SMUSH_DOMAIN ); ?></a><?php
+								} else { //dashboard not installed at all
+									?><a class="button-secondary" target="_blank"
+									     href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', WP_SMUSH_DOMAIN ); ?></a><?php
+								}
+							}
+							?>
+						</p>
 					</div>
 				<?php } ?>
 
