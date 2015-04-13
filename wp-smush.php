@@ -767,7 +767,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 //Include Admin classes
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-admin.php' );
-
+include_once( WP_SMUSH_DIR . '/extras/dash-notice/wpmudev-dash-notification.php' );
 //register items for the dashboard plugin
 global $wpmudev_notices;
 $wpmudev_notices[] = array(
