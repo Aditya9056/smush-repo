@@ -77,6 +77,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// hook into admin footer to load a hidden html/css spinner
 			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
 
+			/// Smush Upgrade
+			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
+
 			$this->total_count   = $this->total_count();
 			$this->smushed_count = $this->smushed_count();
 			$this->stats         = $this->global_stats();
@@ -85,14 +88,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		}
 
-		function __get($prop){
+		function __get( $prop ) {
 
-			if( method_exists("WpSmushitAdmin", $prop ) ){
+			if ( method_exists( "WpSmushitAdmin", $prop ) ) {
 				return $this->$prop();
 			}
 
 			$method_name = "get_" . $prop;
-			if( method_exists("WpSmushitAdmin", $method_name  ) ){
+			if ( method_exists( "WpSmushitAdmin", $method_name ) ) {
 				return $this->$method_name();
 			}
 		}
@@ -162,10 +165,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
-			if ( $this->is_premium() ||  $this->remaining_count <= $this->max_free_bulk ) {
+			if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) {
 				$bulk_now = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
 			} else {
-				$bulk_now = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ),  $this->max_free_bulk);
+				$bulk_now = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ), $this->max_free_bulk );
 			}
 
 			$wp_smush_msgs = array(
@@ -177,7 +180,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'smush_it'             => __( 'Smush it', WP_SMUSH_DOMAIN ),
 				'smush_now'            => __( 'Smush Now', WP_SMUSH_DOMAIN ),
 				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN ),
-				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', WP_SMUSH_DOMAIN)
+				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', WP_SMUSH_DOMAIN )
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -248,9 +251,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							<li><?php _e( 'Access 24/7/365 support from <a href="https://premium.wpmudev.org/support/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">the best WordPress support team on the planet</a>.', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Download <a href="https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">350+ other premium plugins and themes</a> included in your membership.', WP_SMUSH_DOMAIN ); ?></li>
 						</ol>
-						<p><a class="button-primary" href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', WP_SMUSH_DOMAIN ); ?></a></p>
+						<p>
+							<a class="button-primary" href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', WP_SMUSH_DOMAIN ); ?></a>
+						</p>
 
 						<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', WP_SMUSH_DOMAIN ); ?></p>
+
 						<p>
 							<?php
 							if ( ! class_exists( 'WPMUDEV_Dashboard' ) ) {
@@ -258,10 +264,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 									$function = is_multisite() ? 'network_admin_url' : 'admin_url';
 									$url      = wp_nonce_url( $function( 'plugins.php?action=activate&plugin=wpmudev-updates%2Fupdate-notifications.php' ), 'activate-plugin_wpmudev-updates/update-notifications.php' );
 									?><a class="button-secondary"
-									     href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', WP_SMUSH_DOMAIN ); ?></a><?php
+									href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', WP_SMUSH_DOMAIN ); ?></a><?php
 								} else { //dashboard not installed at all
 									?><a class="button-secondary" target="_blank"
-									     href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', WP_SMUSH_DOMAIN ); ?></a><?php
+										href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', WP_SMUSH_DOMAIN ); ?></a><?php
 								}
 							}
 							?>
@@ -353,9 +359,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return int
 		 */
-		function get_exceeding_items_count(){
-			$count = 0;
-			$bulk = new WpSmushitBulk();
+		function get_exceeding_items_count() {
+			$count       = 0;
+			$bulk        = new WpSmushitBulk();
 			$attachments = $bulk->get_attachments();
 			//Check images bigger than 1Mb, used to display the count of images that can't be smushed
 			foreach ( $attachments as $attachment ) {
@@ -393,7 +399,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<h3><?php _e( 'Smush in Bulk', WP_SMUSH_DOMAIN ) ?></h3>
 				<?php
 
-				if ( $this->remaining_count == 0  ) {
+				if ( $this->remaining_count == 0 ) {
 					?>
 					<p><?php _e( "Congratulations, all your images are currently Smushed!", WP_SMUSH_DOMAIN ); ?></p>
 					<?php
@@ -437,7 +443,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( ! $auto_smush && $this->remaining_count == 0 ) {
 					?>
 					<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to smush here.', WP_SMUSH_DOMAIN ), admin_url( 'media-new.php' ) ); ?></p>
-					<?php
+				<?php
 				} else { ?>
 					<p>
 					<?php
@@ -453,7 +459,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		function print_loader() {
 			?>
-			<div class="wp-smush-loader-wrap hidden" >
+			<div class="wp-smush-loader-wrap hidden">
 				<div class="floatingCirclesG">
 					<div class="f_circleG" id="frotateG_01">
 					</div>
@@ -483,9 +489,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// calculate %ages
 			if ( $this->total_count > 0 ) //avoid divide by zero error with no attachments
+			{
 				$smushed_pc = $this->smushed_count / $this->total_count * 100;
-			else
+			} else {
 				$smushed_pc = 0;
+			}
 
 			$progress_ui = '<div id="progress-ui">';
 
@@ -572,7 +580,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$stats['smushed'] = $this->smushed_count();
 			$stats['total']   = $this->total_count;
 
-			if( is_wp_error( $smush ) ) {
+			if ( is_wp_error( $smush ) ) {
 				wp_send_json_error( $stats );
 			} else {
 				wp_send_json_success( $stats );
@@ -622,7 +630,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function check_bulk_limit() {
 
-			$transient_name = WP_SMUSH_PREFIX . 'bulk_sent_count';
+			$transient_name  = WP_SMUSH_PREFIX . 'bulk_sent_count';
 			$bulk_sent_count = get_transient( $transient_name );
 
 			//If bulk sent count is not set
@@ -630,18 +638,21 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				//start transient at 0
 				set_transient( $transient_name, 1, 60 );
+
 				return true;
 
 			} else if ( $bulk_sent_count < $this->max_free_bulk ) {
 
 				//If lte $this->max_free_bulk images are sent, increment
 				set_transient( $transient_name, $bulk_sent_count + 1, 60 );
+
 				return true;
 
 			} else { //Bulk sent count is set and greater than $this->max_free_bulk
 
 				//clear it and return false to stop the process
 				set_transient( $transient_name, 0, 60 );
+
 				return false;
 
 			}
@@ -758,7 +769,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return int
 		 */
-		function remaining_count(){
+		function remaining_count() {
 			return $this->total_count - $this->smushed_count;
 		}
 
@@ -800,8 +811,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @todo Add the API status here, next to the button
 		 */
 		function setup_button() {
-			$button = $this->button_state();
-			$disabled = !empty($button['disabled']) ? ' disabled="disabled"' : '';
+			$button   = $this->button_state();
+			$disabled = ! empty( $button['disabled'] ) ? ' disabled="disabled"' : '';
 			?>
 			<button class="button button-primary<?php echo ' ' . $button['class']; ?>" name="smush-all" <?php echo $disabled; ?>>
 				<span><?php echo $button['text'] ?></span>
@@ -877,7 +888,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$button['class'] = 'wp-smush-button wp-smush-send';
 
 			} else { //if not premium and over limit
-				$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ),  $this->max_free_bulk );
+				$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ), $this->max_free_bulk );
 				$button['class'] = 'wp-smush-button wp-smush-send';
 
 			}
@@ -908,7 +919,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$disabled = '';
 			if ( ( 'lossy' == $key || 'backup' == $key ) && ! $this->is_premium() ) {
 				$disabled = ' disabled';
-				$opt_val = 0;
+				$opt_val  = 0;
 			}
 
 			// return html
@@ -971,6 +982,41 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			array_unshift( $links, $settings );
 
 			return $links;
+		}
+
+		function smush_upgrade() {
+			if ( ! current_user_can( 'edit_others_posts' ) ) {
+				return;
+			}
+
+			if ( isset( $_GET['page'] ) && 'wp-smush-bulk' == $_GET['page'] ) {
+				return;
+			}
+
+			if ( isset( $_GET['dismiss_smush_upgrade'] ) ) {
+				update_option( 'dismiss_smush_upgrade', 1 );
+			}
+
+			if ( get_option( 'dismiss_smush_upgrade' ) || $this->is_premium() ) {
+				return;
+			}
+			?>
+			<div class="error">
+				<a href="<?php echo admin_url( 'index.php' ); ?>?dismiss_smush_upgrade=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
+
+				<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Happy Smushing!</h3>
+
+				<p>Welcome to the all new WP Smush, now running on the WPMU DEV Smush infrastructure!</p>
+
+				<p>That means that you can continue smushing your images for free, now with added https support, speed,
+					and reliability... enjoy!</p>
+
+				<p>And now, if you'd like to upgrade to the WP Smush Pro plugin you can smush images up to 8MB in size,
+					get 'Super Smushing' of, on average, 60% reduction, backup all non smushed images and bulk smush an
+					unlimited number of images at once.
+					<a href="https://premium.wpmudev.org/?coupon=SMUSH50OFF#pricing"> Click here to upgrade with a 50% discount</a>.</p>
+			</div>
+		<?php
 		}
 	}
 
