@@ -4,14 +4,14 @@ Plugin Name: WP Smush Pro
 Plugin URI: http://premium.wpmudev.org/projects/wp-smush-pro/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.0.2
+Version: 2.0.3
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp_smush
 WDP ID: 912164
 */
 
 /*
-  Copyright 2009-2014 Incsub (http://incsub.com)
+  Copyright 2009-2015 Incsub (http://incsub.com)
   Author - Aaron Edwards, Sam Najian, Umesh Kumar
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -27,7 +27,7 @@ WDP ID: 912164
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 $prefix          = 'WP_SMUSH_';
-$version         = '2.0.2';
+$version         = '2.0.3';
 $smush_constatns = array(
 	'VERSON'            => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
@@ -346,18 +346,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$has_errors = (bool) count( $errors->get_error_messages() );
 
 			//Store stats
-
 			list( $stats['stats']['size_before'], $stats['stats']['size_after'], $stats['stats']['time'], $stats['stats']['percent'], $stats['stats']['bytes'] ) =
 				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
-
 
 			//Set smush status for all the images, store it in wp-smpro-smush-data
 			if ( ! $has_errors ) {
 				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
 			}
 
-			//return stats
-			return $has_errors ? $errors : $stats['stats'];
+			return $meta;
 		}
 
 		/**
