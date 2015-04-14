@@ -486,8 +486,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
 			}
 
-			//return stats
-			return $has_errors ? $meta : $stats['stats'];
+			return $meta;
 		}
 
 		/**
