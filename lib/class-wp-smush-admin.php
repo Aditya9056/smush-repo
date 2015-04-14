@@ -571,21 +571,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			echo $progress_ui;
 		}
 
-		function aprogress_ui() {
-			$bulk  = new WpSmushitBulk;
-			$total = count( $bulk->get_attachments() );
-			$total = $total ? $total : 1; ?>
-
-			<div id="progress-ui">
-				<div id="smush-status" style="margin: 0 0 5px;"><?php printf( __( 'Smushing <span id="smushed-count">1</span> of <span id="smushing-total">%d</span>', WP_SMUSH_DOMAIN ), $total ); ?></div>
-				<div id="wp-smushit-progress-wrap">
-					<div id="wp-smushit-smush-progress" class="wp-smushit-progressbar">
-						<div></div>
-					</div>
-				</div>
-			</div> <?php
-		}
-
 		/**
 		 * Processes the Smush request and sends back the next id for smushing
 		 */
