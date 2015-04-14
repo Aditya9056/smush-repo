@@ -304,14 +304,62 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			?>
 			<form action="" method="post">
 
-				<ul id="wp-smush-options-wrap">
+				<div id="wp-smush-options-wrap">
 					<?php
-					// display each setting
-					foreach ( $this->settings as $name => $text ) {
-						echo $this->render_checked( $name, $text );
+					//Smush auto key
+					$opt_auto = WP_SMUSH_PREFIX . 'auto';
+					//Auto value
+					$opt_auto_val = get_option( $opt_auto, false );
+
+					//If value is not set for auto smushing set it to 1
+					if ( $opt_auto_val === false ) {
+						//default to checked
+						$opt_auto_val = 1;
 					}
+
+					//Smush auto key
+					$opt_lossy = WP_SMUSH_PREFIX . 'lossy';
+					//Auto value
+					$opt_lossy_val = get_option( $opt_lossy, false );
+
+					//Smush auto key
+					$opt_backup = WP_SMUSH_PREFIX . 'backup';
+					//Auto value
+					$opt_backup_val = get_option( $opt_backup, false );
+
+					//disable lossy for non-premium members
+					$disabled = $class = '';
+					if ( ! $this->is_premium() ) {
+						$disabled      = ' disabled';
+						$opt_lossy_val = $opt_backup_val = 0;
+						$class         = ' inactive inactive-anim';
+					}
+
+					// return html
+					printf(
+						"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_auto ), checked( $opt_auto_val, 1, false ), '', $this->settings['auto']
+					);
 					?>
-				</ul><?php
+					<div class="pro-only <?php echo $class; ?>"><?php
+
+						//Lossy
+						printf(
+							"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_lossy ), checked( $opt_lossy_val, 1, false ), $disabled, $this->settings['lossy']
+						);
+
+						//Backup
+						printf(
+							"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup']
+						);
+						?>
+						<div class="pro-note">
+							<div style="padding:14px 0 14px;">
+								Pro feature only.
+								<a href="http://premium.wpmudev.org/project/wp-smush-pro/" target="_blank">Find out
+									more »</a></div>
+						</div>
+					</div>
+				</div><?php
 				// nonce
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 				?>
@@ -896,38 +944,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			return $button;
 		}
 
-		/**
-		 * Render a checkbox
-		 *
-		 * @param string $key The setting's name
-		 *
-		 * @return string checkbox html
-		 */
-		function render_checked( $key, $text ) {
-			// the key for options table
-			$opt_name = WP_SMUSH_PREFIX . $key;
-
-			// default value
-			$opt_val = get_option( $opt_name, false );
-
-			//If value is not set for auto smushing set it to 1
-			if ( $key == 'auto' && $opt_val === false ) {
-				$opt_val = 1;
-			}
-
-			//disable lossy for non-premium members
-			$disabled = '';
-			if ( ( 'lossy' == $key || 'backup' == $key ) && ! $this->is_premium() ) {
-				$disabled = ' disabled';
-				$opt_val  = 0;
-			}
-
-			// return html
-			return sprintf(
-				"<li><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></li>", esc_attr( $opt_name ), checked( $opt_val, 1, false ), $disabled, $text
-			);
-		}
-
 		function get_smushed_image_ids() {
 			$args  = array(
 				'fields'         => 'ids',
@@ -1014,7 +1030,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<p>And now, if you'd like to upgrade to the WP Smush Pro plugin you can smush images up to 8MB in size,
 					get 'Super Smushing' of, on average, 60% reduction, backup all non smushed images and bulk smush an
 					unlimited number of images at once.
-					<a href="https://premium.wpmudev.org/?coupon=SMUSH50OFF#pricing"> Click here to upgrade with a 50% discount</a>.</p>
+					<a href="https://premium.wpmudev.org/?coupon=SMUSH50OFF#pricing"> Click here to upgrade with a 50%
+						discount</a>.</p>
 			</div>
 		<?php
 		}
