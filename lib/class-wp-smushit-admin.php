@@ -39,6 +39,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Handle Smush Ajax
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
+
+
+			add_action( 'admin_notices', array( $this, 'depreciated_warning' ) );
 		}
 
 		/**
@@ -111,6 +114,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<h2>
 					<?php _e( 'WP Smush.it', WP_SMUSHIT_DOMAIN ) ?>
 				</h2>
+
+				<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Urgent Smush.it Notice</h3>
+				<div class="error">
+					<p>Yahoo appears to be either discontinuing or not supporting their free Smush.it service - bah!</p>
+					<p>So, WPMU DEV is looking into how we can provide a free service to you that replaces this... but it's going to take some time.</p>
+					<p>So, in the interim, we're providing a (very temporary) <strong>90% discount on any new WPMU DEV membership</strong> to WP Smush.It users so you can use our dedicated <a href="https://premium.wpmudev.org/project/wp-smush-pro/">Smush Pro</a> servers - <a href="https://premium.wpmudev.org/?coupon=SMUSHEMERGENCY#pricing">click here to take that up</a> (and please don't share it around).</p>
+					<p>We will update the plugin as soon as we have it in place. Thanks, WPMU DEV</p>
+				</div>
 
 				<div class="wp-smpushit-container">
 					<h3>
@@ -412,6 +423,30 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 * Error Log Form
 			 */
 			require_once( WP_SMUSHIT_DIR . '/lib/error_log.php' );
+		}
+
+		function depreciated_warning() {
+			if ( ! current_user_can('edit_others_posts') ) return;
+
+			if ( isset( $_GET['page']) && 'wp-smushit-bulk' == $_GET['page'] ) {
+				return;
+			}
+
+			if ( isset( $_GET['dismiss_smush_warning'] ) ) {
+				update_option('dismiss_smush_warning', 1);
+			}
+
+			if ( get_option('dismiss_smush_warning') ) return;
+			?>
+			<div class="error">
+				<a href="<?php echo admin_url('index.php'); ?>?dismiss_smush_warning=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
+				<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Urgent Smush.it Notice</h3>
+				<p>Yahoo appears to be either discontinuing or not supporting their free Smush.it service - bah!</p>
+				<p>So, WPMU DEV is looking into how we can provide a free service to you that replaces this... but it's going to take some time.</p>
+				<p>So, in the interim, we're providing a (very temporary) <strong>90% discount on any new WPMU DEV membership</strong> to WP Smush.It users so you can use our dedicated <a href="https://premium.wpmudev.org/project/wp-smush-pro/">Smush Pro</a> servers - <a href="https://premium.wpmudev.org/?coupon=SMUSHEMERGENCY#pricing">click here to take that up</a> (and please don't share it around).</p>
+				<p>We will update the plugin as soon as we have it in place. Thanks, WPMU DEV</p>
+			</div>
+		<?php
 		}
 	}
 

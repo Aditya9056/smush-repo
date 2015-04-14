@@ -8,7 +8,7 @@ Smush button transformation
 	float:left;
 }
 
-.button.wp-smushit-finished,.button.wp-smushit-finished:disabled,.button.wp-smushit-finished[disabled]{
+.button.wp-smush-finished.disabled,.button.wp-smush-finished:disabled,.button.wp-smush-finished[disabled]{
         color:#fff!important;
         background: #00cf21!important;
         border-color: #619f6b!important;
@@ -18,7 +18,7 @@ Smush button transformation
 /*
 Loader
 */
-#wp-smushit-loader-wrap{
+.wp-smushit-loader-wrap{
 	display:none;
 }
 .floatingCirclesG{
@@ -223,4 +223,198 @@ Progressbar ui
 
 #progress-ui p#check-status{
 	display:none;
+}
+/*
+Progressbar ui
+*/
+#progress-ui {
+    display: block;
+    width: 80%;
+    margin-bottom: 20px;
+}
+
+#progress-ui #wp-smush-progress-wrap {
+    height: 20px;
+    border: 1px solid #0074a2;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+#progress-ui #wp-smush-progress-wrap .wp-smush-progressbar {
+    height: 20px;
+    position: absolute;
+    width: 100%;
+}
+
+#progress-ui #wp-smush-progress-wrap .wp-smush-progressbar div {
+    height: 20px;
+    border-radius: 10px;
+}
+
+#progress-ui #wp-smush-progress-wrap #wp-smush-fetched-progress div {
+    background-color: #7ad03a;
+}
+
+#progress-ui #wp-smush-progress-wrap #wp-smush-sent-progress div {
+    background-color: #2ea2cc;
+}
+
+div#wp-smush-progress-status {
+    overflow: hidden;
+}
+
+#wp-smush-progress-status p {
+    float: left;
+    width: 50%;
+}
+
+div#wp-smush-progress-status p::before {
+    content: "c";
+    background-color: #7ad03a;
+    color: #7ad03a;
+    display: inline-block;
+    width: 20px;
+    margin-right: 10px;
+}
+
+div#wp-smush-progress-status p#sent-status::before {
+    background-color: #2ea2cc;
+    color: #2ea2cc;
+}
+
+p#wp-smush-compression {
+    text-align: center;
+    font-size: 1.1em;
+    line-height: 20px;
+    position: absolute;
+    margin: 0;
+    width: 100%;
+}
+
+p#wp-smush-compression span {
+    font-weight: bold;
+}
+
+.media-lib-wp-smush-el{
+    position: absolute;
+    display: block;
+    width: 90%;
+    height: 90%;
+    left: 5%;
+    top: 5%;
+    background: transparent;
+}
+.media-lib-wp-smush-el.is_smushed{
+    background: rgba(255, 255, 255, 0.5);
+}
+.media-lib-wp-smush-el .spinner{
+    display: block;
+}
+.media-lib-wp-smush-button{
+    margin-bottom: 5% !important;
+}
+.has-smush-button:hover .media-lib-wp-smush-el{
+    display: block;
+}
+.column-smushit .wp-smush-loader{
+    margin: 10px;
+    float: left;
+}
+#wp-smush-send span.wp-smushing {
+    display: inline-block;
+    vertical-align: top;
+}
+#wp-smush-send .wp-smush-loader-wrap {
+    display: inline-block;
+}
+button .wp-smush-loader-wrap {
+    display: inline-block;
+    float: left;
+}
+/** Settings Page **/
+ul#wp-smush-options-wrap {
+    display: block;
+    overflow: auto;
+    margin: 0;
+}
+
+ul#wp-smush-options-wrap li {
+    display: inline-block;
+    list-style: none;
+    float: left;
+    margin: 5px 20px 5px 0;
+    padding: 5px 5px 5px 0;
+}
+
+input#wp-smush-save-settings {
+    margin: 15px 0;
+}
+.media-lib-wp-smush-icon{
+    position: absolute;
+    left: -10%;
+    bottom: -3%;
+    display: none;
+}
+.is_smushed .media-lib-wp-smush-icon{
+    display: block;
+    cursor: auto;
+}
+
+.active:hover .media-lib-wp-smush-icon{
+    display: block;
+}
+.active:hover .media-lib-wp-smush-icon:hover:before{
+    color: #0074a2;
+}
+
+.active .media-lib-wp-smush-icon{
+    cursor: pointer;
+}
+.media-lib-wp-smush-icon.active{
+    display: block;
+    color: #0074a2;
+}
+.media-lib-wp-smush-icon:before{
+    font-size: 30px;
+}
+.media-lib-wp-smush-icon.spinner{
+    left: -7%;
+    bottom: -7%;
+}
+.media-lib-wp-smush-icon.spinner:before{
+    content: "";
+}
+/** Grid view button **/
+.smush-wrap {
+    margin-left: 14%;
+    max-width: 60%;
+}
+
+.smush-wrap.unsmushed .smush-status {
+    display: block;
+}
+
+.currently-smushing .smush-status {
+    color: #0074a2;
+}
+
+.smush-wrap #wp-smush-send {
+    display: none;
+}
+
+.smush-wrap.unsmushed #wp-smush-send {
+    display: block;
+    margin-top: 15px;
+}
+
+.smush-status.fail {
+    color: #dd3d36;
+}
+
+.smush-status.success {
+    color: #0074a2;
+}
+.smush-status.error{
+	color:red;
 }

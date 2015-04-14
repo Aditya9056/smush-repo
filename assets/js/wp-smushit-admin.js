@@ -4,173 +4,325 @@
  * @author Saurabh Shukla <saurabh@incsub.com>
  *
  */
-jQuery('document').ready(function () {
-
+var WP_Smush = WP_Smush || {};
+jQuery(function ($) {
     // url for smushing
-    $send_url = ajaxurl + '?action=wp_smushit_bulk';
-    $remaining = '';
-    $smush_done = 1;
-
+    WP_Smush.errors = [];
+    WP_Smush.timeout = 60000;
     /**
      * Checks for the specified param in URL
      * @param sParam
      * @returns {*}
      */
-    function geturlparam ( arg ) {
-        $sPageURL = window.location.search.substring(1);
-        $sURLVariables = $sPageURL.split('&');
+    WP_Smush.geturlparam = function(arg) {
+        var $sPageURL = window.location.search.substring(1);
+        var $sURLVariables = $sPageURL.split('&');
 
         for (var i = 0; i < $sURLVariables.length; i++) {
-            $sParameterName = $sURLVariables[i].split('=');
+            var $sParameterName = $sURLVariables[i].split('=');
             if ($sParameterName[0] == arg) {
                 return $sParameterName[1];
             }
         }
-    }
+    };
 
-    /**
-     * Show progress of smushing
-     */
-    function smushit_progress() {
-
-        $total = $smush_done + $remaining;
-
-        // calculate %
-        if ($remaining != 0) {
-
-            // increase progress count
-            $smush_done++;
-
-            $progress = ( $smush_done / $total) * 100;
-        }else{
-            jQuery('#smush-status').html(wp_smushit_msgs['done']);
-        }
-        jQuery('#smushing-total').html($total);
-
-        // increase the progress bar
-        wp_smushit_change_progress_status($smush_done, $progress);
-
-    }
-
-    /**
-     * Send ajax request for smushing
-     *
-     * @param {type} $id
-     * @param {type} $getnxt
-     * @returns {unresolved}
-     */
-    function smushitRequest($id, $getnxt) {
-        // make request
-        return jQuery.ajax({
+    WP_Smush.ajax = function ($id, $send_url, $getnxt) {
+        "use strict";
+        return $.ajax({
             type: "GET",
             data: {attachment_id: $id, get_next: $getnxt},
             url: $send_url,
-            timeout: 60000,
+            timeout: WP_Smush.timeout,
             dataType: 'json'
-        }).done(function (response) {
-
-            // increase progressbar
-            smushit_progress();
         });
-    }
+    };
 
-    /**
-     * Change the button status on bulk smush completion
-     *
-     * @returns {undefined}
-     */
-    function wp_smushit_all_done() {
-        $button = jQuery('.wp-smushit-bulk-wrap #wp-smushit-begin');
+    WP_Smush.Smush = function( $button, bulk ){
+        var self = this;
 
-        // copy the loader into an object
-        $loader = $button.find('.floatingCirclesG');
+        this.init = function( arguments ){
+            this.$button = $($button[0]);
+            this.is_bulk = typeof bulk ? bulk : false;
+            this.url = ajaxurl;
+            this.url += this.is_bulk ? '?action=wp_smushit_bulk' : '?action=wp_smushit_manual';
+            this.button_text = this.is_bulk ? wp_smush_msgs.bulk_now : wp_smush_msgs.smush_now;
+            this.$log = $(".smush-final-log");
+            this.$button_span = this.$button.find("span");
+            this.$loader = $(".wp-smush-loader-wrap").eq(0).clone();
+            this.deferred = jQuery.Deferred();
+            this.deferred.errors = [];
+            this.ids = wp_smushit_data.unsmushed;
+            this.$status = this.$button.parent().find('.smush-status');
+        };
 
-        // remove the loader
-        $loader.remove();
+        this.start = function(){
 
-        // empty the current text
-        $button.find('span').html('');
+            this.$button.attr('disabled', 'disabled');
+            this.$button.addClass('wp-smush-started');
+            if( !this.$button.find(".wp-smush-loader-wrap").length ){
+                this.$button.prepend(this.$loader);
+            }else{
+                this.$loader = this.$button.find(".wp-smush-loader-wrap");
+            }
 
-        // add new class for css adjustment
-        $button.removeClass('wp-smushit-started');
-        $button.addClass('wp-smushit-finished');
 
-        // add the progress text
-        $button.find('span').html(wp_smushit_msgs.done);
+            this.show_loader();
+            this.bulk_start();
+            this.single_start();
+        };
 
-        return;
-    }
+        this.bulk_start = function(){
+            if( !this.is_bulk ) return;
+            $('#progress-ui').show();
+            this.$button_span.text(wp_smush_msgs.progress);
+            this.show_loader();
 
-    /**
-     * Change progress bar and status
-     *
-     * @param {type} $count
-     * @param {type} $width
-     * @returns {undefined}
-     */
-    function wp_smushit_change_progress_status($count, $width) {
-        // get the progress bar
-        $progress_bar = jQuery('#wp-smushit-progress-wrap #wp-smushit-smush-progress div');
-        if ($progress_bar.length < 1) {
-            return;
-        }
-        jQuery('#smushed-count').html($count);
-        // increase progress
-        $progress_bar.css('width', $width + '%');
+        };
 
-    }
+        this.single_start = function(){
+            if( this.is_bulk ) return;
+            this.$button_span.text(wp_smush_msgs.sending);
+            this.$status.removeClass("error");
+        };
 
-    /**
-     * Send for bulk smushing
-     *
-     * @returns {undefined}
-     */
-    function wp_smushit_bulk_smush() {
-        // instantiate our deferred object for piping
-        var startingpoint = jQuery.Deferred();
-        startingpoint.resolve();
+        this.enable_button = function(){
+            this.$button.prop("disabled", false);
+        };
 
-        //Show progress bar
-        jQuery('#wp-smushit-progress-wrap #wp-smushit-smush-progress div').css('width', 0);
-        jQuery('#progress-ui').show();
 
-        // if we have a definite number of ids
-        if (wp_smushit_ids.length > 0) {
+        this.disable_button = function(){
+            this.$button.prop("disabled", true);
+        };
 
-            $remaining = wp_smushit_ids.length;
+        this.show_loader = function(){
+            this.$loader.removeClass("hidden");
+            this.$loader.show();
+        };
 
-            // loop and pipe into deferred object
-            jQuery.each(wp_smushit_ids, function (ix, $id) {
-                startingpoint = startingpoint.then(function () {
-                    $remaining = $remaining - 1;
+        this.hide_loader = function(){
+            this.$loader.hide();
+        };
 
-                    // call the ajax requestor
-                    return smushitRequest($id, 0);
-                });
+        this.single_done = function(){
+            if( this.is_bulk ) return;
+
+            this.hide_loader();
+            this.request.done(function(response){
+                if (typeof response.data != 'undefined') {
+                    //Append the smush stats or error
+                    self.$status.html(response.data);
+                    if (response.success && response.data !== "Not processed") {
+                        self.$button.remove();
+                    } else {
+                        self.$status.addClass("error");
+                    }
+                    self.$status.html(response.data);
+                }
+                self.$button_span.text( self.button_text );
+                self.enable_button();
+            }).error(function (response) {
+                self.$status.html(response.data);
+                self.$status.addClass("error");
+                self.enable_button();
+                self.$button_span.text( self.button_text );
             });
-        }
 
-    }
-    //If ids are set in url, click over bulk smush button
-    $ids = geturlparam('ids');
-    if ($ids && $ids != '') {
-        wp_smushit_bulk_smush();
+        };
 
-        return;
-    }
+        this.bulk_done = function(){
+            if( !this.is_bulk ) return;
 
+            this.hide_loader();
+
+            // Add finished class
+            this.$button.addClass('wp-smush-finished');
+
+            // Remove started class
+            this.$button.removeClass('wp-smush-started');
+
+            //Enable the button
+            this.disable_button();
+
+            // Update button text
+            self.$button_span.text( wp_smush_msgs.done );
+        };
+
+        this.is_resolved = function(){
+            "use strict";
+            return this.deferred.state() === "resolved";
+        };
+
+        this.free_exceeded = function(){
+            this.hide_loader();
+
+            // Add new class for css adjustment
+            this.$button.removeClass('wp-smush-started');
+
+            //Enable button
+            this.$button.prop("disabled", false);
+
+            // Update text
+            this.$button.find('span').html(wp_smush_msgs.bulk_now);
+        };
+
+        this.update_progress = function(stats){
+            var progress = ( stats.data.smushed / stats.data.total) * 100;
+
+            //Update stats
+            $('#wp-smush-compression #human').html(stats.data.human);
+            $('#wp-smush-compression #percent').html(stats.data.percent);
+
+            // increase the progress bar
+            this._update_progress(stats.data.smushed, progress);
+        };
+
+        this._update_progress = function( count, width ){
+            "use strict";
+            // get the progress bar
+            var $progress_bar = jQuery('#wp-smush-progress-wrap #wp-smush-fetched-progress div');
+            if ($progress_bar.length < 1) {
+                return;
+            }
+            $('.done-count').html(count);
+            // increase progress
+            $progress_bar.css('width', width + '%');
+
+        };
+
+        this.continue = function(){
+            return  this.ids.length > 0 && this.is_bulk;
+        };
+
+        this.increment_errors = function(){
+            WP_Smush.errors.push(this.current_id);
+        };
+
+        this.call_ajax = function(){
+
+            this.current_id = this.is_bulk ? this.ids.shift() : this.$button.data("id"); //remove from array while processing so we can continue where left off
+
+            this.request = WP_Smush.ajax(this.current_id, this.url , 0)
+                .complete(function(){
+                    if( !self.continue() || !self.is_bulk ){
+                        self.deferred.resolve();
+                    }
+                })
+                .error(function () {
+                    self.increment_errors();
+                }).done(function (res) {
+                    self.update_progress(res);
+
+                    if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && res.success === false && res.data.error !== 'bulk_request_image_limit_exceeded' )) {
+                        self.increment_errors();
+                    }
+
+                    if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved() ) {
+                        self.free_exceeded();
+                    }else{
+                        if( self.continue() ){
+                            self.call_ajax();
+                        }
+                    }
+                    self.single_done();
+                });
+
+            self.deferred.errors = WP_Smush.errors;
+            return self.deferred;
+        };
+
+        this.init( arguments );
+        this.run = function(){
+
+            // if we have a definite number of ids
+            if ( this.is_bulk && this.ids.length > 0) {
+                this.call_ajax();
+            }
+
+            if( !this.is_bulk )
+                this.call_ajax();
+
+        };
+
+        this.bind_deferred_events = function(){
+
+            this.deferred.done(function(){
+                if (WP_Smush.errors.length) {
+                    var error_message = wp_smush_msgs.error_in_bulk.replace("{{errors}}", WP_Smush.errors.length);
+                    self.$log.append(error_message);
+                }
+                self.bulk_done();
+            });
+
+        };
+
+        this.start();
+        this.run();
+        this.bind_deferred_events();
+        return this.deferred;
+    };
     /**
      * Handle the start button click
      */
-    jQuery('button[name="smush-all"]').on('click', function (e) {
+    $('button[name="smush-all"]').on('click', function (e) {
         // prevent the default action
         e.preventDefault();
 
-        jQuery(this).attr('disabled', 'disabled');
+        $(".smush-remaining-images-notice").remove();
+        //Enable Cancel button
+        $('#wp-smush-cancel').prop('disabled', false);
 
-        wp_smushit_bulk_smush();
+        new WP_Smush.Smush( $(this), true );
 
-        return;
-
+        //buttonProgress(jQuery(this), wp_smush_msgs.progress, wp_smushit_bulk_smush());
     });
+
+    //Handle smush button click
+    $('body').on('click', '.wp-smush-send', function (e) {
+
+        // prevent the default action
+        e.preventDefault();
+        new WP_Smush.Smush( $(this), false );
+    });
+
 });
+(function ($) {
+    var Smush = function (element, options) {
+        var elem = $(element);
+
+        var defaults = {
+            isSingle: false,
+            ajaxurl: '',
+            msgs: {},
+            msgClass: 'wp-smush-msg',
+            ids: []
+        };
+    };
+    $.fn.wpsmush = function (options) {
+        return this.each(function () {
+            var element = $(this);
+
+            // Return early if this element already has a plugin instance
+            if (element.data('wpsmush'))
+                return;
+
+            // pass options to plugin constructor and create a new instance
+            var wpsmush = new Smush(this, options);
+
+            // Store plugin object in this element's data
+            element.data('wpsmush', wpsmush);
+        });
+    };
+    if (typeof wp !== 'undefined') {
+        _.extend(wp.media.view.AttachmentCompat.prototype, {
+            render: function () {
+                $view = this;
+                //Dirty hack, as there is no way around to get updated status of attachment
+                $html = jQuery.get(ajaxurl + '?action=attachment_status', {'id': this.model.get('id')}, function (res) {
+                    $view.$el.html(res.data);
+                    $view.views.render();
+                    return $view;
+                });
+            }
+        });
+    }
+})(jQuery);
