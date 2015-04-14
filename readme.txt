@@ -81,6 +81,9 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.0.4 =
+* Fix: Fatal error conflict with some plugins on fronted of site
+
 = 2.0.3 =
 * Fixed (Important Update) - Image being corrupted while regenerating thumbnails
 
