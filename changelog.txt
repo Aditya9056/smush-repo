@@ -4,6 +4,13 @@ Author: Saurabh Shukla & Umesh Kumar
 Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
+2.0.1 - 2015-04-14 - Aaron Edwards, Sam Najian and Umesh Kumar
+----------------------------------------------------------------------
+
+- Complete rewrite to use WPMU DEV's new fast and reliable API service.
+- New: "Super-Smush" your images with our intelligent multi-pass lossy compression. Get >60% average compression with almost no noticeable quality loss!
+- New: Keep a backup of your original un-smushed images in case you want to restore later.
+- UX/UI updated with overall stats, progress bar.
 
 1.1.1 - 2015-03-27 - Umesh Kumar
 ----------------------------------------------------------------------
