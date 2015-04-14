@@ -471,12 +471,6 @@ input#wp-smush-save-settings {
     display: inline-block;
 }
 
-.pro-only:after {
-    content: ' ';
-    display: table;
-    clear: both;
-}
-
 .pro-only .pro-note {
     opacity: 0;
     position: absolute;
@@ -508,16 +502,6 @@ input#wp-smush-save-settings {
 
 .inactive .wp-smush-setting-row {
     opacity: .35;
-}
-
-.inactive:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10000;
 }
 
 .inactive-anim {

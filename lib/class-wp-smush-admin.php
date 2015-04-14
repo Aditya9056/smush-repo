@@ -340,7 +340,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_auto ), checked( $opt_auto_val, 1, false ), '', $this->settings['auto']
 					);
 					?>
-					<div class="pro-only <?php echo $class; ?>"><?php
+					<div class="pro-only<?php echo $class; ?>"><?php
 
 						//Lossy
 						printf(
@@ -351,15 +351,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						printf(
 							"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup']
 						);
+						if ( ! $this->is_premium() ) {
+							?>
+							<div class="pro-note">
+								<div style="padding:14px 0 14px;">Pro feature only. <a href="http://premium.wpmudev.org/project/wp-smush-pro/" target="_blank">Find out more »</a></div>
+							</div>
+						<?php
+						}
 						?>
-						<div class="pro-note">
-							<div style="padding:14px 0 14px;">
-								Pro feature only.
-								<a href="http://premium.wpmudev.org/project/wp-smush-pro/" target="_blank">Find out
-									more »</a></div>
-						</div>
-					</div>
-				</div><?php
+					</div><!-- End of pro-only -->
+				</div><!-- End of wrap --><?php
 				// nonce
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 				?>
