@@ -12,7 +12,7 @@ WDP ID: 912164
 
 /*
   Copyright 2009-2014 Incsub (http://incsub.com)
-  Author - Saurabh Shukla & Umesh Kumar
+  Author - Aaron Edwards, Sam Najian, Umesh Kumar
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
   the Free Software Foundation.
@@ -26,37 +26,12 @@ WDP ID: 912164
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/**
- * Constants
- */
-$smush_constatns = array(
-	'WP_SMUSH_VERSON'            => '2.0.1',
-	'WP_SMUSH_BASENAME'          => plugin_basename( __FILE__ ),
-	'WP_SMUSH_API'               => 'https://smushpro.wpmudev.org/1.0/',
-	'WP_SMUSH_DOMAIN'            => 'wp_smush',
-	'WP_SMUSH_UA'                => 'WP Smush/' . WP_SMUSH_VERSON . '; ' . network_home_url(),
-	'WP_SMUSH_DIR'               => plugin_dir_path( __FILE__ ),
-	'WP_SMUSH_URL'               => plugin_dir_url( __FILE__ ),
-	'WP_SMUSH_MAX_BYTES'         => 1000000,
-	'WP_SMUSH_PREMIUM_MAX_BYTES' => 8000000,
-	'WP_SMUSH_PREFIX'            => 'wp-smush-',
-	'WP_SMUSH_TIMEOUT'           => 30
-
-);
-
-foreach ( $smush_constatns as $const_name => $constant_val ) {
-	if ( ! defined( $const_name ) ) {
-		define( $const_name, $constant_val );
-	}
-}
-
-require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
 
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
 
-		var $version = WP_SMUSH_VERSON;
+		var $version = '2.0.1';
 
 		/**
 		 * Meta key for api validity
@@ -87,9 +62,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Constructor
 		 */
 		function __construct() {
-			/**
-			 * Hooks
-			 */
+
 			//Check if auto is enabled
 			$auto_smush = get_option( WP_SMUSH_PREFIX . 'auto' );
 
@@ -878,35 +851,45 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 	}
 
+	$prefix = 'WP_SMUSH_';
+	$smush_constatns = array(
+		'VERSON'            => '2.0.1',
+		'BASENAME'          => plugin_basename( __FILE__ ),
+		'API'               => 'https://smushpro.wpmudev.org/1.0/',
+		'DOMAIN'            => 'wp_smush',
+		'UA'                => 'WP Smush/2.0.1; ' . network_home_url(),
+		'DIR'               => plugin_dir_path( __FILE__ ),
+		'URL'               => plugin_dir_url( __FILE__ ),
+		'MAX_BYTES'         => 1000000,
+		'PREMIUM_MAX_BYTES' => 8000000,
+		'PREFIX'            => 'wp-smush-',
+		'TIMEOUT'           => 30
+
+	);
+
+	foreach ( $smush_constatns as $const_name => $constant_val ) {
+		if ( ! defined( $prefix . $const_name ) ) {
+			define( $prefix. $const_name, $constant_val );
+		}
+	}
+
 	global $WpSmush;
 	$WpSmush = new WpSmush();
 
-}
-function trigger_install_error( $message, $errno ) {
-	if ( isset( $_GET['action'] ) && $_GET['action'] == 'error_scrape' ) {
-		echo '' . $message . '';
-		exit;
-	} else {
-		trigger_error( $message, $errno );
-	}
-}
 
-if ( is_plugin_active( 'wp-smushit/wp-smush.php' ) ) {
-	$message = "You’ve already installed WP Smush, you don’t need to install WP Smush Pro, all the pro features are automatically available to you.";
-	trigger_install_error( $message, E_USER_ERROR );
-}
 //Include Admin classes
-require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-bulk.php' );
-require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-admin.php' );
-require_once( WP_SMUSH_DIR . 'wpmudev-dashboard-notification/wpmudev-dash-notification.php' );
+	require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-bulk.php' );
+	require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-admin.php' );
+	require_once( WP_SMUSH_DIR . 'wpmudev-dashboard-notification/wpmudev-dash-notification.php' );
 
 //register items for the dashboard plugin
-global $wpmudev_notices;
-$wpmudev_notices[] = array(
-	'id'      => 912164,
-	'name'    => 'WP Smush Pro',
-	'screens' => array(
-		'media_page_wp-smush-bulk',
-		'upload'
-	)
-);
+	global $wpmudev_notices;
+	$wpmudev_notices[] = array(
+		'id'      => 912164,
+		'name'    => 'WP Smush Pro',
+		'screens' => array(
+			'media_page_wp-smush-bulk',
+			'upload'
+		)
+	);
+}

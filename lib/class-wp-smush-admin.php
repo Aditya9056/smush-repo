@@ -78,7 +78,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
 
 			/// Smush Upgrade
-			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
+//			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
 			$this->total_count   = $this->total_count();
 			$this->smushed_count = $this->smushed_count();
