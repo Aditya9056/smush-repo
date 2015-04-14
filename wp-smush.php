@@ -4,7 +4,7 @@ Plugin Name: WP Smush Pro
 Plugin URI: http://premium.wpmudev.org/projects/wp-smush-pro/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.0.1
+Version: 2.0.2
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp_smush
 WDP ID: 912164
@@ -26,12 +26,35 @@ WDP ID: 912164
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+$prefix          = 'WP_SMUSH_';
+$version         = '2.0.2';
+$smush_constatns = array(
+	'VERSON'            => $version,
+	'BASENAME'          => plugin_basename( __FILE__ ),
+	'API'               => 'https://smushpro.wpmudev.org/1.0/',
+	'DOMAIN'            => 'wp_smush',
+	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),
+	'DIR'               => plugin_dir_path( __FILE__ ),
+	'URL'               => plugin_dir_url( __FILE__ ),
+	'MAX_BYTES'         => 1000000,
+	'PREMIUM_MAX_BYTES' => 8000000,
+	'PREFIX'            => 'wp-smush-',
+	'TIMEOUT'           => 30
+
+);
+
+foreach ( $smush_constatns as $const_name => $constant_val ) {
+	if ( ! defined( $prefix . $const_name ) ) {
+		define( $prefix . $const_name, $constant_val );
+	}
+}
+require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
 
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
 
-		var $version = '2.0.1';
+		var $version = '2.0.2';
 
 		/**
 		 * Meta key for api validity
@@ -848,28 +871,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$compression = ( $bytes_saved > 0 && $size_before > 0 ) ? ( ( $bytes_saved / $size_before ) * 100 ) : 0;
 
 			return array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
-		}
-	}
-
-	$prefix = 'WP_SMUSH_';
-	$smush_constatns = array(
-		'VERSON'            => '2.0.1',
-		'BASENAME'          => plugin_basename( __FILE__ ),
-		'API'               => 'https://smushpro.wpmudev.org/1.0/',
-		'DOMAIN'            => 'wp_smush',
-		'UA'                => 'WP Smush/2.0.1; ' . network_home_url(),
-		'DIR'               => plugin_dir_path( __FILE__ ),
-		'URL'               => plugin_dir_url( __FILE__ ),
-		'MAX_BYTES'         => 1000000,
-		'PREMIUM_MAX_BYTES' => 8000000,
-		'PREFIX'            => 'wp-smush-',
-		'TIMEOUT'           => 30
-
-	);
-
-	foreach ( $smush_constatns as $const_name => $constant_val ) {
-		if ( ! defined( $prefix . $const_name ) ) {
-			define( $prefix. $const_name, $constant_val );
 		}
 	}
 

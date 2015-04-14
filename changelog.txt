@@ -4,7 +4,7 @@ Author: Saurabh Shukla & Umesh Kumar
 Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-2.0.1 - 2015-04-14 - Aaron Edwards, Sam Najian and Umesh Kumar
+2.0.2 - 2015-04-14 - Aaron Edwards, Sam Najian and Umesh Kumar
 ----------------------------------------------------------------------
 
 - Complete rewrite to use WPMU DEV's new fast and reliable API service.
