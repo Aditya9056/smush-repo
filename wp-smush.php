@@ -54,7 +54,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
 
-		var $version = '2.0.2';
+		var $version = WP_SMUSH_VERSON;
 
 		/**
 		 * Meta key for api validity
