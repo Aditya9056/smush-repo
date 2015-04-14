@@ -4,7 +4,7 @@ Plugin Name: WP Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.0.1
+Version: 2.0.2
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp_smush
 */
@@ -35,23 +35,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /**
  * Constants
  */
-define( 'WP_SMUSH_VERSON', "2.0.1" );
+$prefix          = 'WP_SMUSH_';
+$version         = '2.0.2';
+$smush_constatns = array(
+	'VERSON'            => $version,
+	'BASENAME'          => plugin_basename( __FILE__ ),
+	'API'               => 'https://smushpro.wpmudev.org/1.0/',
+	'DOMAIN'            => 'wp_smush',
+	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),
+	'DIR'               => plugin_dir_path( __FILE__ ),
+	'URL'               => plugin_dir_url( __FILE__ ),
+	'MAX_BYTES'         => 1000000,
+	'PREMIUM_MAX_BYTES' => 8000000,
+	'PREFIX'            => 'wp-smush-',
+	'TIMEOUT'           => 30
 
-/**
- * Plugin base name
- */
-define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
+);
 
-define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
-define( 'WP_SMUSH_DOMAIN', 'wp_smush' );
-define( 'WP_SMUSH_UA', 'WP Smush/' . WP_SMUSH_VERSON . '; ' . network_home_url() );
-define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
-define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
-define( 'WP_SMUSH_MAX_BYTES', 1000000 );
-define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 8000000 );
-define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
-if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
-	define( 'WP_SMUSH_TIMEOUT', 30 );
+foreach ( $smush_constatns as $const_name => $constant_val ) {
+	if ( ! defined( $prefix . $const_name ) ) {
+		define( $prefix . $const_name, $constant_val );
+	}
 }
 
 require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
@@ -103,7 +107,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			if ( $auto_smush ) {
-				add_filter( 'wp_generate_attachment_metadata', array( $this, 'filter_generate_attachment_metadata' ), 10, 2 );
+				add_filter( 'wp_generate_attachment_metadata', array(
+					$this,
+					'filter_generate_attachment_metadata'
+				), 10, 2 );
 			}
 			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
 			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
@@ -236,8 +243,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		private function _get_size_signature() {
 			return array(
-				'percent' => - 1,
-				'bytes' => - 1,
+				'percent'     => - 1,
+				'bytes'       => - 1,
 				'size_before' => - 1,
 				'size_after'  => - 1,
 				'time'        => - 1
@@ -370,12 +377,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * with wp_smushit()
 		 *
 		 * Filters  wp_generate_attachment_metadata
+		 *
 		 * @param $meta
 		 * @param null $ID
 		 *
 		 * @return mixed
 		 */
-		function filter_generate_attachment_metadata( $meta, $ID = null  ){
+		function filter_generate_attachment_metadata( $meta, $ID = null ) {
 			//Flag to check, if original size image needs to be smushed or not
 			$smush_full = true;
 			$errors     = new WP_Error();
