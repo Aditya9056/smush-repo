@@ -23,7 +23,7 @@ Try now for a completely new, incredibly powerful, and 100% free image smushing 
 
 WP Smush strips hidden, bulky information from your images, reducing the file size without losing quality. The faster your site loads, the more Google, Bing, Yahoo and other search engines will like it.
 
-[youtube https://www.youtube.com/watch?v=_74QFoRb230]
+[youtube https://www.youtube.com/watch?v=GCzH7z05s5U]
 
 Heavy image files may be slowing down your site without you even knowing it. WP Smush meticulously scans every image you upload – or have already added to your site – and cuts all the unnecessary data for you.
 
