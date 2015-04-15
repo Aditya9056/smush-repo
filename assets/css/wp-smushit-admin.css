@@ -501,7 +501,7 @@ input#wp-smush-save-settings {
 }
 
 .inactive .wp-smush-setting-row {
-    opacity: .35;
+    opacity: .75;
 }
 
 .inactive-anim {
