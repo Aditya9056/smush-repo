@@ -62,7 +62,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
 
 			add_action( "admin_enqueue_scripts", array( $this, "admin_enqueue_scripts" ) );
-
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
 				'settings_link'
@@ -72,7 +71,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'settings_link'
 			) );
 			//Attachment status, Grid view
-			add_action( 'wp_ajax_attachment_status', array( $this, 'attachment_status' ) );
+			add_filter( 'attachment_fields_to_edit', array( $this, 'filter_attachment_fields_to_edit' ), 10, 2 );
 
 			// hook into admin footer to load a hidden html/css spinner
 			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
@@ -81,9 +80,29 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
 
-
 			$this->init_settings();
 
+		}
+
+		/**
+		 * Adds smush button and status to attachment modal and edit page if it's an image
+		 *
+		 *
+		 * @param array $form_fields
+		 * @param WP_Post $post
+		 *
+		 * @return array $form_fields
+		 */
+		function filter_attachment_fields_to_edit($form_fields, $post){
+			if( !wp_attachment_is_image($post->ID) ) return;
+			$form_fields['wp_smush'] = array(
+				'label' => __( 'WP Smush', WP_SMUSH_DOMAIN),
+				'input' => 'html',
+				'html' => $this->smush_status( $post->ID ),
+				'show_in_edit'  => true,
+				'show_in_modal' => true,
+			);
+			return $form_fields;
 		}
 
 		function __get( $prop ) {
@@ -196,6 +215,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		function admin_enqueue_scripts() {
+			global $pagenow;
+
+			if( !isset( $pagenow ) || !in_array($pagenow, array("post.php", "upload.php")) ) return;
+
+			wp_enqueue_script( 'wp-smushit-admin-js' );
 			wp_enqueue_script( 'wp-smushit-admin-media-js' );
 		}
 
@@ -969,15 +993,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			return $response;
 		}
 
-		/**
-		 * Returns the image smush status, called by grid view ajax
-		 */
-		function attachment_status() {
-			$id          = $_REQUEST['id'];
-			$status_text = $this->smush_status( $id );
-			wp_send_json_success( $status_text );
-			die();
-		}
 
 		/**
 		 * Adds a smushit pro settings link on plugin page

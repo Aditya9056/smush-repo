@@ -312,17 +312,5 @@ jQuery(function ($) {
             element.data('wpsmush', wpsmush);
         });
     };
-    if (typeof wp !== 'undefined') {
-        _.extend(wp.media.view.AttachmentCompat.prototype, {
-            render: function () {
-                $view = this;
-                //Dirty hack, as there is no way around to get updated status of attachment
-                $html = jQuery.get(ajaxurl + '?action=attachment_status', {'id': this.model.get('id')}, function (res) {
-                    $view.$el.html(res.data);
-                    $view.views.render();
-                    return $view;
-                });
-            }
-        });
-    }
+
 })(jQuery);
