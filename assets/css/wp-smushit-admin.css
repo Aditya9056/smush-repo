@@ -458,6 +458,24 @@ input#wp-smush-save-settings {
     color: red;
 }
 
+.smush_attachment_detail_loader{
+    float: left;
+}
+.compat-field-wp_smush{
+    margin-top: 10px;
+}
+.compat-field-wp_smush .smush-wrap .smush-status{
+    margin: -10px 0 0 0;
+    padding: 0;
+    line-height: 29px;
+}
+.compat-field-wp_smush button{
+    float: left;
+}
+.compat-field-wp_smush  .smush-wrap{
+    margin: 0;
+    max-width: 100%;
+}
 /*===================================*\
 =======================================
 ==                                   ==
