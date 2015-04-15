@@ -94,7 +94,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return array $form_fields
 		 */
 		function filter_attachment_fields_to_edit($form_fields, $post){
-			if( !wp_attachment_is_image($post->ID) ) return;
+			if( !wp_attachment_is_image($post->ID) ) return $form_fields;
 			$form_fields['wp_smush'] = array(
 				'label' => __( 'WP Smush', WP_SMUSH_DOMAIN),
 				'input' => 'html',
