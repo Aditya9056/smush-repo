@@ -4,7 +4,7 @@ Plugin Name: WP Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.0.4
+Version: 2.0.5
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp_smush
 */
@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix          = 'WP_SMUSH_';
-$version         = '2.0.4';
+$version         = '2.0.5';
 $smush_constatns = array(
 	'VERSON'            => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
@@ -323,7 +323,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$errors->add( "image_size_error" . $size_key, sprintf( __( "Size '%s' not processed correctly", WP_SMUSH_DOMAIN ), $size_key ) );
 					}
 
-					if ( empty( $stats['stats']['api_version'] ) ) {
+					if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
 						$stats['stats']['lossy']       = $response['data']->lossy;
 					}
@@ -648,8 +648,25 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					}
 				}
 
-				// the button text
-				$button_txt = __( 'Re-smush', WP_SMUSH_DOMAIN );
+				//IF current compression is lossy
+				if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
+					$lossy    = $wp_smush_data['stats']['lossy'];
+					$is_lossy = $lossy == 1 ? true : false;
+				}
+
+				//Check if Lossy enabled
+				$opt_lossy     = WP_SMUSH_PREFIX . 'lossy';
+				$opt_lossy_val = get_option( $opt_lossy, false );
+
+				//Check image type
+				$image_type = get_post_mime_type( $id );
+
+				//Check if premium user, compression was lossless, and lossy compression is enabled
+				if ( $this->is_premium() && ! $is_lossy && $opt_lossy_val && $image_type != 'image/gif' ) {
+					// the button text
+					$button_txt  = __( 'Re-smush', WP_SMUSH_DOMAIN );
+					$show_button = true;
+				}
 			} else {
 
 				// the status
@@ -683,10 +700,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true ) {
 			$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
+
 			// don't proceed if attachment is not image, or if image is not a jpg, png or gif
 			if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
 				return;
 			}
+
 			$class = $smushed ? '' : ' hidden';
 			$html  = '
 			<p class="smush-status' . $class . '">' . $status_txt . '</p>';
