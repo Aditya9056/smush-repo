@@ -374,126 +374,28 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * Filters  wp_generate_attachment_metadata
 		 *
+		 * @uses WpSmush::resize_from_meta_data
+		 *
 		 * @param $meta
 		 * @param null $ID
 		 *
 		 * @return mixed
 		 */
 		function filter_generate_attachment_metadata( $meta, $ID = null ) {
-			//Flag to check, if original size image needs to be smushed or not
-			$smush_full = true;
-			$errors     = new WP_Error();
-			$stats      = array(
-				"stats" => array_merge( $this->_get_size_signature(), array(
-						'api_version' => - 1,
-						'lossy'       => - 1
-					)
-				),
-				'sizes' => array()
-			);
-
-			$size_before = $size_after = $compression = $total_time = $bytes_saved = 0;
-
-			if ( $ID && wp_attachment_is_image( $ID ) === false ) {
-				return $meta;
-			}
-
-			//File path and URL for original image
-			$attachment_file_path = get_attached_file( $ID );
-			$attachment_file_url  = wp_get_attachment_url( $ID );
-
-			// If images has other registered size, smush them first
-			if ( ! empty( $meta['sizes'] ) ) {
-
-				foreach ( $meta['sizes'] as $size_key => $size_data ) {
-
-					//if there is a large size, then we will set a flag to leave the original untouched
-					if ( $size_key == 'large' ) {
-						$smush_full = false;
-					}
-
-					// We take the original image. The 'sizes' will all match the same URL and
-					// path. So just get the dirname and replace the filename.
-
-					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
-					$attachment_file_url_size  = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
-
-					//Store details for each size key
-					$response = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
-
-					if ( is_wp_error( $response ) ) {
-						return $meta;
-					}
-
-					if ( ! empty( $response['data'] ) ) {
-						$stats['sizes'][ $size_key ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $response['data'] );
-					}
-
-					//Total Stats, store all data in bytes
-					if ( isset( $response['data'] ) ) {
-						list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-							= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
-					} else {
-						$errors->add( "image_size_error" . $size_key, sprintf( __( "Size '%s' not processed correctly", WP_SMUSH_DOMAIN ), $size_key ) );
-					}
-
-					if ( empty( $stats['stats']['api_version'] ) ) {
-						$stats['stats']['api_version'] = $response['data']->api_version;
-						$stats['stats']['lossy']       = $response['data']->lossy;
-					}
-				}
-			}
-
-			//If original size is supposed to be smushed
-			if ( $smush_full ) {
-
-				$full_image_response = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
-
-				if ( is_wp_error( $full_image_response ) ) {
-					return $meta;
-				}
-
-				if ( ! empty( $full_image_response['data'] ) ) {
-					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
-				} else {
-					$errors->add( "image_size_error", __( "Size 'full' not processed correctly", WP_SMUSH_DOMAIN ) );
-				}
-
-				//Update stats
-				if ( isset( $full_image_response['data'] ) ) {
-					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-						= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
-				} else {
-					$errors->add( "image_size_error", __( "Size 'full' not processed correctly", WP_SMUSH_DOMAIN ) );
-				}
-
-			}
-
-			$has_errors = (bool) count( $errors->get_error_messages() );
-
-			//Store stats
-
-			list( $stats['stats']['size_before'], $stats['stats']['size_after'], $stats['stats']['time'], $stats['stats']['percent'], $stats['stats']['bytes'] ) =
-				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
-
-
-			//Set smush status for all the images, store it in wp-smpro-smush-data
-			if ( ! $has_errors ) {
-				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
-			}
-
+			$this->resize_from_meta_data( $meta, $ID );
 			return $meta;
 		}
 
+
 		/**
-		 * Post an image to Smush.
+		 * Posts an image to Smush.
 		 *
-		 * @param   string $file_url URL of the file to send to Smush
+		 * @param $file_path path of file to send to Smush
+		 * @param $file_size
 		 *
-		 * @return  array  Returns array containing success status, and stats
+		 * @return bool|array array containing success status, and stats
 		 */
 		function _post( $file_path, $file_size ) {
-			global $log;
 
 			$data = false;
 
