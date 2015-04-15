@@ -383,6 +383,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function filter_generate_attachment_metadata( $meta, $ID = null ) {
 			$this->resize_from_meta_data( $meta, $ID );
+
 			return $meta;
 		}
 
@@ -686,8 +687,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
 				return;
 			}
-			$html = '
-			<p class="smush-status">' . $status_txt . '</p>';
+			$class = $smushed ? '' : ' hidden';
+			$html  = '
+			<p class="smush-status' . $class . '">' . $status_txt . '</p>';
 			// if we aren't showing the button
 			if ( ! $show_button ) {
 				if ( $echo ) {

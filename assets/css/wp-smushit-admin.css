@@ -429,10 +429,6 @@ input#wp-smush-save-settings {
     max-width: 60%;
 }
 
-.smush-wrap.unsmushed .smush-status {
-    display: block;
-}
-
 .currently-smushing .smush-status {
     color: #0074a2;
 }
@@ -458,24 +454,36 @@ input#wp-smush-save-settings {
     color: red;
 }
 
-.smush_attachment_detail_loader{
+.smush_attachment_detail_loader {
     float: left;
 }
-.compat-field-wp_smush{
+
+.compat-field-wp_smush {
     margin-top: 10px;
 }
-.compat-field-wp_smush .smush-wrap .smush-status{
-    margin: -10px 0 0 0;
+
+.attachment-info .smush-status {
+    margin: 1px 0 0;
     padding: 0;
     line-height: 29px;
 }
-.compat-field-wp_smush button{
+
+#post-body-content .wp-smush-send {
+    margin: 4px 0 0;
+}
+#post-body-content .smush-status {
+    margin: 4px 0;
+}
+
+.compat-field-wp_smush button {
     float: left;
 }
-.compat-field-wp_smush  .smush-wrap{
+
+.compat-field-wp_smush .smush-wrap {
     margin: 0;
     max-width: 100%;
 }
+
 /*===================================*\
 =======================================
 ==                                   ==

@@ -93,15 +93,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return array $form_fields
 		 */
-		function filter_attachment_fields_to_edit($form_fields, $post){
-			if( !wp_attachment_is_image($post->ID) ) return $form_fields;
+		function filter_attachment_fields_to_edit( $form_fields, $post ) {
+			if ( ! wp_attachment_is_image( $post->ID ) ) {
+				return $form_fields;
+			}
 			$form_fields['wp_smush'] = array(
-				'label' => __( 'WP Smush', WP_SMUSH_DOMAIN),
-				'input' => 'html',
-				'html' => $this->smush_status( $post->ID ),
+				'label'         => __( 'WP Smush', WP_SMUSH_DOMAIN ),
+				'input'         => 'html',
+				'html'          => $this->smush_status( $post->ID ),
 				'show_in_edit'  => true,
 				'show_in_modal' => true,
 			);
+
 			return $form_fields;
 		}
 
@@ -217,10 +220,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function admin_enqueue_scripts() {
 			global $pagenow;
 
-			if( !isset( $pagenow ) || !in_array($pagenow, array("post.php", "upload.php")) ) return;
+			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php" ) ) ) {
+				return;
+			}
 
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 			wp_enqueue_script( 'wp-smushit-admin-media-js' );
+			wp_enqueue_style( 'wp-smushit-admin-css' );
 		}
 
 		/**
@@ -386,13 +392,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						if ( ! $this->is_premium() ) {
 							?>
 							<div class="pro-note">
-								<div style="padding:14px 0 14px;">Pro feature only. <a href="<?php echo $this->upgrade_url; ?>" target="_blank">Find out more »</a></div>
+								<div style="padding:14px 0 14px;">Pro feature only.
+									<a href="<?php echo $this->upgrade_url; ?>" target="_blank">Find out more »</a>
+								</div>
 							</div>
 						<?php
 						}
 						?>
-					</div><!-- End of pro-only -->
-				</div><!-- End of wrap --><?php
+					</div>
+					<!-- End of pro-only -->
+				</div>
+				<!-- End of wrap --><?php
 				// nonce
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 				?>

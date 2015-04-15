@@ -112,7 +112,9 @@ jQuery(function ($) {
                     //Append the smush stats or error
                     self.$status.html(response.data);
                     if (response.success && response.data !== "Not processed") {
-                        self.$button.remove();
+	                    self.$status.removeClass('hidden');
+	                    self.$button.parent().removeClass('unsmushed').addClass('smushed');
+	                    self.$button.remove();
                     } else {
                         self.$status.addClass("error");
                     }
