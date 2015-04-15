@@ -77,13 +77,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// hook into admin footer to load a hidden html/css spinner
 			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
 
-			/// Smush Upgrade
-//			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
-
-			$this->total_count   = $this->total_count();
-			$this->smushed_count = $this->smushed_count();
-			$this->stats         = $this->global_stats();
-
 			$this->init_settings();
 
 		}
@@ -213,9 +206,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
+		 * Runs the expensive queries to get our global smush stats
+		 */
+		function setup_global_stats() {
+			$this->total_count   = $this->total_count();
+			$this->smushed_count = $this->smushed_count();
+			$this->stats         = $this->global_stats();
+		}
+
+		/**
 		 * Display the ui
 		 */
 		function ui() {
+			$this->setup_global_stats();
 			?>
 			<div class="wrap">
 
@@ -354,7 +357,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						if ( ! $this->is_premium() ) {
 							?>
 							<div class="pro-note">
-								<div style="padding:14px 0 14px;">Pro feature only. <a href="http://premium.wpmudev.org/project/wp-smush-pro/" target="_blank">Find out more »</a></div>
+								<div style="padding:14px 0 14px;">Pro feature only. <a href="<?php echo $this->upgrade_url; ?>" target="_blank">Find out more Â»</a></div>
 							</div>
 						<?php
 						}
@@ -609,9 +612,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id, false );
 
-			$stats = $this->global_stats();
+			$this->setup_global_stats();
 
-			$stats['smushed'] = $this->smushed_count();
+			$stats = $this->stats;
+
+			$stats['smushed'] = $this->smushed_count;
 			$stats['total']   = $this->total_count;
 
 			if ( is_wp_error( $smush ) ) {
@@ -984,42 +989,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			array_unshift( $links, $settings );
 
 			return $links;
-		}
-
-		function smush_upgrade() {
-			if ( ! current_user_can( 'edit_others_posts' ) ) {
-				return;
-			}
-
-			if ( isset( $_GET['page'] ) && 'wp-smush-bulk' == $_GET['page'] ) {
-				return;
-			}
-
-			if ( isset( $_GET['dismiss_smush_upgrade'] ) ) {
-				update_option( 'dismiss_smush_upgrade', 1 );
-			}
-
-			if ( get_option( 'dismiss_smush_upgrade' ) || $this->is_premium() ) {
-				return;
-			}
-			?>
-			<div class="error">
-				<a href="<?php echo admin_url( 'index.php' ); ?>?dismiss_smush_upgrade=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
-
-				<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Happy Smushing!</h3>
-
-				<p>Welcome to the all new WP Smush, now running on the WPMU DEV Smush infrastructure!</p>
-
-				<p>That means that you can continue smushing your images for free, now with added https support, speed,
-					and reliability... enjoy!</p>
-
-				<p>And now, if you'd like to upgrade to the WP Smush Pro plugin you can smush images up to 8MB in size,
-					get 'Super Smushing' of, on average, 60% reduction, backup all non smushed images and bulk smush an
-					unlimited number of images at once.
-					<a href="https://premium.wpmudev.org/?coupon=SMUSH50OFF#pricing"> Click here to upgrade with a 50%
-						discount</a>.</p>
-			</div>
-		<?php
 		}
 	}
 
