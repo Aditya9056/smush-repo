@@ -13,17 +13,13 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 global $wpdb;
 
 $smushit_keys = array(
-	'smushit_auto',
-	'smushit_timeout',
-	'smushit_enforce_same_url',
-	'smushit_debug',
-	'error_log',
-	'notice_log'
+	'auto',
+
 );
 foreach ( $smushit_keys as $key ) {
-	$key = 'wp_smushit_' . $key;
+	$key = 'wp-smush-' . $key;
 	if ( is_multisite() ) {
-		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
+		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs} LIMIT 100", ARRAY_A );
 		if ( $blogs ) {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog['blog_id'] );
