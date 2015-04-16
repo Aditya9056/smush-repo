@@ -1105,17 +1105,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/png' )";
 
-			// get the attachment id, attachment metadata and full size's path
+			// get the attachment id, smush data
 			$sql     = "SELECT p.ID as attachment_id, p.post_mime_type as type, ms.meta_value as smush_data"
 			           . " FROM $wpdb->posts as p"
-			           // to check if attachment isn't already smushed, Single smush Check
 			           . " LEFT JOIN $wpdb->postmeta as ms"
 			           . " ON (p.ID= ms.post_id AND ms.meta_key='wp-smpro-smush-data')"
 			           . " WHERE"
 			           . " p.post_type='attachment'"
 			           . " AND p.post_mime_type IN " . $allowed_images
 			           . " ORDER BY p . ID DESC"
-			           // get only 100 at a time
+			           // add a limit
 			           . " LIMIT " . $this->total_count();
 			$results = $wpdb->get_results( $sql );
 			unset( $sql );
@@ -1175,7 +1174,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			$ss_progress_ui = '<h4>' . __( 'Super-Smush Images', WP_SMUSH_DOMAIN ) . '</h4>';
-			$ss_progress_ui .= '<p>' . __( 'We found attachments that were previously smushed losslessly. If desired you can Super-Smush them now for more savings with almost no noticeable quality loss.' , WP_SMUSH_DOMAIN ) . '</p>';
+			$ss_progress_ui .= '<p>' . __( 'We found attachments that were previously smushed losslessly. If desired you can Super-Smush them now for more savings with almost no noticeable quality loss.', WP_SMUSH_DOMAIN ) . '</p>';
 			$ss_progress_ui .= '<div id="progress-ui" class="super-smush">';
 
 			// display the progress bars
