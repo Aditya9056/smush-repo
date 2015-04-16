@@ -251,12 +251,15 @@ Progressbar ui
     margin-bottom: 20px;
 }
 
-#progress-ui #wp-smush-progress-wrap {
+#progress-ui #wp-smush-progress-wrap, #progress-ui #wp-smush-ss-progress-wrap {
     height: 20px;
     border: 1px solid #0074a2;
     border-radius: 10px;
     overflow: hidden;
     position: relative;
+}
+#progress-ui #wp-smush-ss-progress-wrap {
+    /*background-color: #2ea2cc;*/
 }
 
 #progress-ui #wp-smush-progress-wrap .wp-smush-progressbar {

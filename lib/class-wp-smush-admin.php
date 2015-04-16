@@ -43,7 +43,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade';
 
+		//Stores unsmushed ids
 		private $ids = '';
+
+		//Stores all lossless smushed ids
+		private $lossless_ids = '';
 
 		/**
 		 * Constructor
@@ -217,21 +221,26 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Localize smushit_ids variable, if there are fix number of ids
 			$this->ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $bulk->get_attachments();
 
-			//If premium, lossy compression allowed, all images are smushed, localize lossless smushed ids for bulk compression
+			//If premium, Super smush allowed, all images are smushed, localize lossless smushed ids for bulk compression
 			if ( $this->is_premium() &&
 			     ( $this->total_count == $this->smushed_count && empty( $this->ids ) )
 			) {
 
-				//Check if Lossy enabled
-				$lossy = get_option( WP_SMUSH_PREFIX . 'lossy', false );
+				//Check if Super smush enabled
+				$super_smush = get_option( WP_SMUSH_PREFIX . 'lossy', false );
 
-				if ( $lossy ) {
-					//get the attachments, and get lossy count
-					$data['lossless'] = $this->get_lossless_attachments();
+				if ( $super_smush ) {
+					//get the attachments, and get lossless count
+					$this->lossless_ids = $this->get_lossless_attachments();
 				}
 			}
-			$data['smushed']   = $this->get_smushed_image_ids();
-			$data['unsmushed'] = $this->ids;
+
+			//Array of all smushed, unsmushed and lossless ids
+			$data = array(
+				'smushed'   => $this->get_smushed_image_ids(),
+				'unsmushed' => $this->ids,
+				'lossless'  => $this->lossless_ids
+			);
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
 
@@ -515,6 +524,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<p><?php _e( "Congratulations, all your images are currently Smushed!", WP_SMUSH_DOMAIN ); ?></p>
 					<?php
 					$this->progress_ui();
+
+					//Display Super smush bulk progress bar
+					$this->super_smush_bulk_ui();
 				} else {
 					?>
 					<div class="smush-instructions">
@@ -598,9 +610,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function progress_ui() {
 
-			// calculate %ages
-			if ( $this->total_count > 0 ) //avoid divide by zero error with no attachments
-			{
+			// calculate %ages, avoid divide by zero error with no attachments
+			if ( $this->total_count > 0 ) {
 				$smushed_pc = $this->smushed_count / $this->total_count * 100;
 			} else {
 				$smushed_pc = 0;
@@ -908,8 +919,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @todo Add the API status here, next to the button
 		 */
-		function setup_button() {
-			$button   = $this->button_state();
+		function setup_button( $super_smush = false ) {
+			$button   = $this->button_state( $super_smush );
 			$disabled = ! empty( $button['disabled'] ) ? ' disabled="disabled"' : '';
 			?>
 			<button class="button button-primary<?php echo ' ' . $button['class']; ?>" name="smush-all" <?php echo $disabled; ?>>
@@ -967,28 +978,37 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return array
 		 */
 
-		private function button_state() {
+		private function button_state( $super_smush ) {
 			$button = array(
 				'cancel' => false,
 			);
+			if( $super_smush ) {
+				if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
 
+					$button['text']  = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
+					$button['class'] = 'wp-smush-button wp-smush-send';
+				}else{
+					return array();
+				}
 
-			// if we have nothing left to smush
-			// disable the buttons
-			if ( $this->smushed_count === $this->total_count ) {
-				$button['text']     = __( 'All Done!', WP_SMUSH_DOMAIN );
-				$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
-				$button['disabled'] = 'disabled';
+			}else {
 
-			} else if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
+				// if we have nothing left to smush, disable the buttons
+				if ( $this->smushed_count === $this->total_count ) {
+					$button['text']     = __( 'All Done!', WP_SMUSH_DOMAIN );
+					$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
+					$button['disabled'] = 'disabled';
 
-				$button['text']  = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
-				$button['class'] = 'wp-smush-button wp-smush-send';
+				} else if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
 
-			} else { //if not premium and over limit
-				$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ), $this->max_free_bulk );
-				$button['class'] = 'wp-smush-button wp-smush-send';
+					$button['text']  = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
+					$button['class'] = 'wp-smush-button wp-smush-send';
 
+				} else { //if not premium and over limit
+					$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ), $this->max_free_bulk );
+					$button['class'] = 'wp-smush-button wp-smush-send';
+
+				}
 			}
 
 			return $button;
@@ -1146,6 +1166,32 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			unset( $attachments );
 
 			return $lossless_attachments;
+		}
+
+		/**
+		 * Adds progress bar for Super Smush bulk, if there are any lossless smushed images
+		 */
+		function super_smush_bulk_ui() {
+
+			//Need to check, if there are any lossless ids, no need to check any other condition
+			if ( count( $this->lossless_ids ) <= 0 ) {
+				return;
+			}
+
+			$ss_progress_ui = __( '<h4>Super Smush images</h4>', WP_SMUSH_DOMAIN );
+
+			$ss_progress_ui .= '<div id="progress-ui" class="super-smush">';
+
+			// display the progress bars
+			$ss_progress_ui .= '<div id="wp-smush-ss-progress-wrap">
+			<div id="wp-smush-ss-progress" class="wp-smush-progressbar"><div style="width:0%"></div></div>
+			<p id="wp-smush-compression">'
+                . sprintf( __( '<span class="remaining-count">%d</span> attachments can be Super smushed', WP_SMUSH_DOMAIN ), count( $this->lossless_ids ) )
+            . '</p>
+            </div>
+			</div><!-- End of progress ui -->';
+			echo $ss_progress_ui;
+			$this->setup_button( true );
 		}
 	}
 
