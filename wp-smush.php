@@ -312,9 +312,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					//Store details for each size key
 					$response = $this->do_smushit( $attachment_file_path_size, $attachment_file_url_size );
 
-					echo "<pre>";
-					print_r( $response );
-					echo "</pre>";
 					if ( is_wp_error( $response ) ) {
 						return $response;
 					}
