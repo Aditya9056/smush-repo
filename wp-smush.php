@@ -709,7 +709,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//Check if premium user, compression was lossless, and lossy compression is enabled
 				if ( $this->is_pro() && ! $is_lossy && $opt_lossy_val && $image_type != 'image/gif' ) {
 					// the button text
-					$button_txt  = __( 'Re-smush', WP_SMUSH_DOMAIN );
+					$button_txt  = __( 'Super-Smush', WP_SMUSH_DOMAIN );
 					$show_button = true;
 				}
 			} else {
