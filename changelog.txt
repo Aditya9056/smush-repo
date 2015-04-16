@@ -5,6 +5,13 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
+2.0.5 - 2015-04-17 - Aaron Edwards, Sam Najian, Umesh Kumar
+
+- New:   Allow Super-smush for existing smushed images
+- Fixed: IMPORTANT - broken transient caching for is_pro
+- Fixed: Fixed conflict with wp gallery link plugin in grid view
+- Fixed: Other small fixes
+
 2.0.4 - 2015-04-14 - Aaron Edwards, Umesh Kumar
 
 - Fix: Fatal error conflict with some plugins on fronted of site
