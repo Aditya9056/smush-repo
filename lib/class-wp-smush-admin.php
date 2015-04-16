@@ -67,7 +67,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle Smush Single Ajax
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
 
-			add_action( "admin_enqueue_scripts", array( $this, "admin_enqueue_scripts" ) );
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
 				'settings_link'
@@ -140,6 +139,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Enqueue js on media screen
 			add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );
+
+			// Enqueue js on Post screen (Edit screen for media )
+			add_action( 'admin_print_scripts-post.php', array( $this, 'enqueue' ) );
 		}
 
 		/**
@@ -177,9 +179,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
 
-			// localize translatable strings for js
-			$this->localize();
-
 		}
 
 		/**
@@ -191,6 +190,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
+
+			// localize translatable strings for js
+			$this->localize();
 		}
 
 
@@ -250,18 +252,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
 
-		}
-
-		function admin_enqueue_scripts() {
-			global $pagenow;
-
-			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php" ) ) ) {
-				return;
-			}
-
-			wp_enqueue_script( 'wp-smushit-admin-js' );
-			wp_enqueue_script( 'wp-smushit-admin-media-js' );
-			wp_enqueue_style( 'wp-smushit-admin-css' );
 		}
 
 		/**
