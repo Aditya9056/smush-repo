@@ -178,7 +178,10 @@ jQuery(function ($) {
 				//Handle progress for Super smush progress bar
 				if( wp_smushit_data.lossless.length > 0 ) {
 					$('#wp-smush-ss-progress-wrap .remaining-count').html(wp_smushit_data.lossless.length);
+				}else if( wp_smushit_data.lossless.length == 0 ){
+					$('#wp-smush-ss-progress-wrap #wp-smush-compression').html( wp_smush_msgs.all_supersmushed );
 				}
+
 			}
 
 			//Update stats

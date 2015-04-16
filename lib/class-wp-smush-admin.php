@@ -218,7 +218,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'smush_it'             => __( 'Smush it', WP_SMUSH_DOMAIN ),
 				'smush_now'            => __( 'Smush Now', WP_SMUSH_DOMAIN ),
 				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN ),
-				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', WP_SMUSH_DOMAIN )
+				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', WP_SMUSH_DOMAIN ),
+				"all_supersmushed"     => __( 'All images are Super-Smushed.', WP_SMUSH_DOMAIN )
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -653,7 +654,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $WpSmush;
 
 			$should_continue = true;
-			$is_pro      = false;
+			$is_pro          = false;
 
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
 				wp_send_json_error( 'missing id' );
@@ -1090,7 +1091,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					and reliability... enjoy!</p>
 
 				<p>And now, if you'd like to upgrade to the WP Smush Pro plugin you can smush images up to 8MB in size,
-					get 'Super Smushing' of, on average, 2&times; more reduction than lossless, backup all non smushed images and bulk smush an
+					get 'Super Smushing' of, on average, 2&times; more reduction than lossless, backup all non smushed
+					images and bulk smush an
 					unlimited number of images at once.
 					<a href="https://premium.wpmudev.org/?coupon=SMUSH50OFF#pricing"> Click here to upgrade with a 50%
 						discount</a>.</p>
@@ -1155,7 +1157,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 
 				//if stats not set or lossy is not set for attachment, return
-				if ( empty( $smush_data['stats'] ) || !isset( $smush_data['stats']['lossy'] ) ) {
+				if ( empty( $smush_data['stats'] ) || ! isset( $smush_data['stats']['lossy'] ) ) {
 					continue;
 				}
 				//Add to array if lossy is not 1
