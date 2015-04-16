@@ -1122,7 +1122,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			           . " WHERE"
 			           . " p.post_type='attachment'"
 			           . " AND p.post_mime_type IN " . $allowed_images
-			           . " ORDER BY p . post_date DESC"
+			           . " ORDER BY p . ID DESC"
 			           // get only 100 at a time
 			           . " LIMIT " . $this->total_count();
 			$results = $wpdb->get_results( $sql );
@@ -1155,7 +1155,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 
 				//if stats not set or lossy is not set for attachment, return
-				if ( empty( $smush_data['stats'] ) || empty( $smush_data['stats']['lossy'] ) ) {
+				if ( empty( $smush_data['stats'] ) || !isset( $smush_data['stats']['lossy'] ) ) {
 					continue;
 				}
 				//Add to array if lossy is not 1

@@ -312,6 +312,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					//Store details for each size key
 					$response = $this->do_smushit( $attachment_file_path_size, $attachment_file_url_size );
 
+					echo "<pre>";
+					print_r( $response );
+					echo "</pre>";
 					if ( is_wp_error( $response ) ) {
 						return $response;
 					}
@@ -357,6 +360,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				} else {
 					$errors->add( "image_size_error", __( "Size 'full' not processed correctly", WP_SMUSH_DOMAIN ) );
 				}
+
+				//Api version and lossy, for some images, full image i skipped and for other images only full exists
+				//so have to add code again
+				if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
+					$stats['stats']['api_version'] = $full_image_response['data']->api_version;
+					$stats['stats']['lossy']       = $full_image_response['data']->lossy;
+				}
+
 
 			}
 
