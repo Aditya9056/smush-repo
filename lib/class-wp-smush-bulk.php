@@ -31,16 +31,11 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 					'order'          => 'ASC',
 					'posts_per_page' => - 1,
 					'meta_query'     => array(
-						'relation' => 'AND',
 						array(
 							'key'     => 'wp-smpro-smush-data',
 							'compare' => 'NOT EXISTS'
-						),
-						array(
-							'key'     => 'wp-smush-data',
-							'compare' => 'NOT EXISTS'
 						)
-					),
+					)
 				);
 				$query           = new WP_Query( $args );
 				$unsmushed_posts = $query->posts;

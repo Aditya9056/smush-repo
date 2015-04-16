@@ -43,6 +43,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade';
 
+		private $ids = '';
+
 		/**
 		 * Constructor
 		 */
@@ -160,6 +162,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'underscore'
 				), WP_SMUSH_VERSON );
 			}
+			wp_register_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
 
 
 			/* Register Style. */
@@ -168,8 +171,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// localize translatable strings for js
 			$this->localize();
 
-			wp_enqueue_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
-
 		}
 
 		/**
@@ -177,11 +178,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function enqueue() {
 			wp_enqueue_script( 'wp-smushit-admin-js' );
+			wp_enqueue_script( 'wp-smushit-admin-media-js' );
+
+			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 		}
 
 
 		function localize() {
+			global $pagenow;
+			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php" ) ) ) {
+				return;
+			}
+
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
@@ -206,12 +215,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
 			//Localize smushit_ids variable, if there are fix number of ids
-			$ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $bulk->get_attachments();
+			$this->ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $bulk->get_attachments();
 
-			$data = array(
-				'smushed'   => $this->get_smushed_image_ids(),
-				'unsmushed' => $ids
-			);
+			//If premium, lossy compression allowed, all images are smushed, localize lossless smushed ids for bulk compression
+			if ( $this->is_premium() &&
+			     ( $this->total_count == $this->smushed_count && empty( $this->ids ) )
+			) {
+
+				//Check if Lossy enabled
+				$lossy = get_option( WP_SMUSH_PREFIX . 'lossy', false );
+
+				if ( $lossy ) {
+					//get the attachments, and get lossy count
+					$data['lossless'] = $this->get_lossless_attachments();
+				}
+			}
+			$data['smushed']   = $this->get_smushed_image_ids();
+			$data['unsmushed'] = $this->ids;
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
 
@@ -1055,6 +1075,77 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						discount</a>.</p>
 			</div>
 		<?php
+		}
+
+		/**
+		 * Get the smushed attachments from the database, except gif
+		 *
+		 * @global object $wpdb
+		 *
+		 * @param int|bool|array $attachment_id
+		 *
+		 * @return object query results
+		 */
+		function get_attachments() {
+
+			global $wpdb;
+
+			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/png' )";
+
+			// get the attachment id, attachment metadata and full size's path
+			$sql     = "SELECT p.ID as attachment_id, p.post_mime_type as type, ms.meta_value as smush_data"
+			           . " FROM $wpdb->posts as p"
+			           // to check if attachment isn't already smushed, Single smush Check
+			           . " LEFT JOIN $wpdb->postmeta as ms"
+			           . " ON (p.ID= ms.post_id AND ms.meta_key='wp-smpro-smush-data')"
+			           . " WHERE"
+			           . " p.post_type='attachment'"
+			           . " AND p.post_mime_type IN " . $allowed_images
+			           . " ORDER BY p . post_date DESC"
+			           // get only 100 at a time
+			           . " LIMIT " . $this->total_count();
+			$results = $wpdb->get_results( $sql );
+			unset( $sql );
+
+			return $results;
+		}
+
+		/**
+		 * Returns the ids and meta which are losslessly compressed
+		 *
+		 * @return array
+		 */
+		function get_lossless_attachments() {
+
+			$lossless_attachments = array();
+
+			//Fetch all the smushed attachment ids
+			$attachments = $this->get_attachments();
+
+			//Check if image is lossless or lossy
+			foreach ( $attachments as $attachment ) {
+
+				//Check meta for lossy value
+				$smush_data = ! empty( $attachment->smush_data ) ? maybe_unserialize( $attachment->smush_data ) : '';
+
+				//Return if not smushed
+				if ( empty( $smush_data ) ) {
+					continue;
+				}
+
+				//if stats not set or lossy is not set for attachment, return
+				if ( empty( $smush_data['stats'] ) || empty( $smush_data['stats']['lossy'] ) ) {
+					continue;
+				}
+				//Add to array if lossy is not 1
+				if ( $smush_data['stats']['lossy'] != 1 ) {
+					$lossless_attachments[] = $attachment->attachment_id;
+				}
+
+			}
+			unset( $attachments );
+
+			return $lossless_attachments;
 		}
 	}
 
