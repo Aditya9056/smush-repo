@@ -154,7 +154,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$errors->add( "not_writable", sprintf( __( "%s is not writable", WP_SMUSH_DOMAIN ), dirname( $file_path ) ) );
 			}
 
-			$file_size = filesize( $file_path );
+			$file_size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
 
 			//Check if premium user
 			$max_size = $this->is_premium() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
@@ -375,6 +375,29 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Set smush status for all the images, store it in wp-smpro-smush-data
 			if ( ! $has_errors ) {
+
+				$existing_stats = get_post_meta( $ID, self::SMUSHED_META_KEY, true );
+
+				if ( ! empty( $existing_stats ) ) {
+					//Update total bytes saved, and compression percent
+					$stats['stats']['bytes']   = isset( $existing_stats['stats']['bytes'] ) ? $existing_stats['stats']['bytes'] + $stats['stats']['bytes'] : $stats['stats']['bytes'];
+					$stats['stats']['percent'] = isset( $existing_stats['stats']['percent'] ) ? $existing_stats['stats']['percent'] + $stats['stats']['percent'] : $stats['stats']['percent'];
+
+					//Update stats for each size
+					if ( ! empty( $existing_stats['sizes'] ) && ! empty( $stats['sizes'] ) ) {
+
+						foreach ( $existing_stats['sizes'] as $size_name => $size_stats ) {
+							//if stats for a particular size doesn't exists
+							if ( empty( $stats['sizes'][$size_name] ) ) {
+								$stats['sizes'][$size_name] = $existing_stats['sizes'][$size_name];
+							} else {
+								//Update compression percent and bytes saved for each size
+								$stats['sizes'][$size_name]->bytes   = $stats['sizes'][$size_name]->bytes + $existing_stats['sizes'][$size_name]->bytes;
+								$stats['sizes'][$size_name]->percent = $stats['sizes'][$size_name]->percent + $existing_stats['sizes'][$size_name]->percent;
+							}
+						}
+					}
+				}
 				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
 			}
 
@@ -454,7 +477,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $data;
 			} else if ( '200' != wp_remote_retrieve_response_code( $result ) ) {
 				//Handle error
-				$data['message'] = sprintf( __( 'Error posting to API: %s %s', WP_SMUSHIT_DOMAIN ), wp_remote_retrieve_response_code( $result ), wp_remote_retrieve_response_message( $result ) );
+				$data['message'] = sprintf( __( 'Error posting to API: %s %s', WP_SMUSH_DOMAIN ), wp_remote_retrieve_response_code( $result ), wp_remote_retrieve_response_message( $result ) );
 				$data['success'] = false;
 				unset( $result ); //free memory
 
@@ -639,8 +662,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return string|void
 		 */
 		function set_status( $id, $echo = true, $text_only = false ) {
-			$status_txt    = $button_txt = '';
-			$show_button   = false;
+			$status_txt  = $button_txt = '';
+			$show_button = false;
 
 			//Stats are not received properly, otherwise
 			wp_cache_delete( $id, 'post_meta' );
