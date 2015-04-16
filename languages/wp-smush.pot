@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP Smush 2.0.5\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wp-smush\n"
-"POT-Creation-Date: 2015-04-16 19:20:52+00:00\n"
+"POT-Creation-Date: 2015-04-16 19:27:10+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -235,9 +235,11 @@ msgstr ""
 msgid "We found attachments that were previously smushed losslessly. If desired you can Super-Smush them now for more savings with almost no noticeable quality loss."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1184
-msgid "<span class=\"remaining-count\">%d</span> attachments left to Super-Smush"
-msgstr ""
+#: lib/class-wp-smush-admin.php:1185
+msgid "<span class=\"remaining-count\">%d</span> attachment left to Super-Smush"
+msgid_plural "<span class=\"remaining-count\">%d</span> attachments left to Super-Smush"
+msgstr[0] ""
+msgstr[1] ""
 
 #: wp-smush.php:142
 msgid "File path is empty"

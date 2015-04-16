@@ -1181,7 +1181,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$ss_progress_ui .= '<div id="wp-smush-ss-progress-wrap">
 			<div id="wp-smush-ss-progress" class="wp-smush-progressbar"><div style="width:0%"></div></div>
 			<p id="wp-smush-compression">'
-			                   . sprintf( __( '<span class="remaining-count">%d</span> attachments left to Super-Smush', WP_SMUSH_DOMAIN ), count( $this->lossless_ids ) )
+			                   . sprintf(
+					_n( '<span class="remaining-count">%d</span> attachment left to Super-Smush',
+						'<span class="remaining-count">%d</span> attachments left to Super-Smush',
+						count( $this->lossless_ids ),
+						WP_SMUSH_DOMAIN ), count( $this->lossless_ids ), count( $this->lossless_ids ) )
 			                   . '</p>
             </div>
 			</div><!-- End of progress ui -->';
