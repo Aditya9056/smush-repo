@@ -134,7 +134,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @returns array
 		 */
-		function do_smushit( $attachment_id, $file_path = '', $file_url = '' ) {
+		function do_smushit( $file_path = '', $file_url = '' ) {
 			$errors = new WP_Error();
 			if ( empty( $file_path ) ) {
 				$errors->add( "empty_path", __( "File path is empty", WP_SMUSH_DOMAIN ) );
@@ -225,7 +225,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
-		 * Fills $placeholder array with values from $data array without creating new keys
+		 * Fills $placeholder array with values from $data array
 		 *
 		 * @param array $placeholders
 		 * @param array $data
@@ -233,7 +233,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return array
 		 */
 		private function _array_fill_placeholders( array $placeholders, array $data ) {
-			return array_merge( $placeholders, array_intersect_key( $data, $placeholders ) );
+			$placeholders['percent']     = $data['compression'];
+			$placeholders['bytes']       = $data['bytes_saved'];
+			$placeholders['size_before'] = $data['before_size'];
+			$placeholders['size_after']  = $data['after_size'];
+			$placeholders['time']        = $data['time'];
+
+			return $placeholders;
 		}
 
 		/**
@@ -260,11 +266,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @param $meta
 		 * @param null $ID
-		 * @param bool $force_resmush
 		 *
 		 * @return mixed
 		 */
-		function resize_from_meta_data( $meta, $ID = null, $force_resmush = true ) {
+		function resize_from_meta_data( $meta, $ID = null ) {
 
 			//Flag to check, if original size image needs to be smushed or not
 			$smush_full = true;
@@ -305,7 +310,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$attachment_file_url_size  = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
 
 					//Store details for each size key
-					$response = $this->do_smushit( $ID, $attachment_file_path_size, $attachment_file_url_size );
+					$response = $this->do_smushit( $attachment_file_path_size, $attachment_file_url_size );
 
 					if ( is_wp_error( $response ) ) {
 						return $response;
@@ -333,7 +338,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//If original size is supposed to be smushed
 			if ( $smush_full ) {
 
-				$full_image_response = $this->do_smushit( $ID, $attachment_file_path, $attachment_file_url );
+				$full_image_response = $this->do_smushit( $attachment_file_path, $attachment_file_url );
 
 				if ( is_wp_error( $full_image_response ) ) {
 					return $full_image_response;
@@ -628,6 +633,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function set_status( $id, $echo = true, $text_only = false ) {
 			$status_txt    = $button_txt = '';
 			$show_button   = false;
+
+			//Stats are not received properly, otherwise
+			wp_cache_delete( $id, 'post_meta' );
+
 			$wp_smush_data = get_post_meta( $id, self::SMUSHED_META_KEY, true );
 			// if the image is smushed
 			if ( ! empty( $wp_smush_data ) ) {

@@ -146,7 +146,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Register js and css
 		 */
 		function register() {
+
 			global $WpSmush;
+
+			// Save settings, if needed
+			$this->process_options();
+
 			// Register js for smush utton in grid view
 			$current_blog_id       = get_current_blog_id();
 			$meta_key              = $current_blog_id == 1 ? 'wp_media_library_mode' : 'wp_' . $current_blog_id . '_media_library_mode';
@@ -364,10 +369,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Process and display the options form
 		 */
 		function options_ui() {
-
-			// Save settings, if needed
-			$this->process_options();
-
 			?>
 			<form action="" method="post">
 
@@ -680,7 +681,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
-			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id, false );
+			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 
 			$this->setup_global_stats();
 
@@ -982,16 +983,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$button = array(
 				'cancel' => false,
 			);
-			if( $super_smush ) {
+			if ( $super_smush ) {
 				if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
 
 					$button['text']  = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
 					$button['class'] = 'wp-smush-button wp-smush-send';
-				}else{
+				} else {
 					return array();
 				}
 
-			}else {
+			} else {
 
 				// if we have nothing left to smush, disable the buttons
 				if ( $this->smushed_count === $this->total_count ) {
@@ -1173,8 +1174,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function super_smush_bulk_ui() {
 
-			//Need to check, if there are any lossless ids, no need to check any other condition
-			if ( count( $this->lossless_ids ) <= 0 ) {
+			//Check if Super smush enabled
+			$super_smush = get_option( WP_SMUSH_PREFIX . 'lossy', false );
+
+			//Need to check, if there are any lossless ids
+			if ( ! $super_smush || empty( $this->lossless_ids ) || count( $this->lossless_ids ) <= 0 ) {
 				return;
 			}
 
@@ -1186,8 +1190,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$ss_progress_ui .= '<div id="wp-smush-ss-progress-wrap">
 			<div id="wp-smush-ss-progress" class="wp-smush-progressbar"><div style="width:0%"></div></div>
 			<p id="wp-smush-compression">'
-                . sprintf( __( '<span class="remaining-count">%d</span> attachments can be Super smushed', WP_SMUSH_DOMAIN ), count( $this->lossless_ids ) )
-            . '</p>
+			                   . sprintf( __( '<span class="remaining-count">%d</span> attachments can be Super smushed', WP_SMUSH_DOMAIN ), count( $this->lossless_ids ) )
+			                   . '</p>
             </div>
 			</div><!-- End of progress ui -->';
 			echo $ss_progress_ui;
