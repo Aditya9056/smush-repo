@@ -5,10 +5,11 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
-2.0.3 - 2015-04-14 - Aaron Edwards, Sam Najian and Umesh Kumar
-- Fixed: Image being corrupted on regenerate thumbnails
+2.0.4 - 2015-04-14 - Aaron Edwards, Umesh Kumar
 
-2.0.2 - 2015-04-14 - Aaron Edwards, Sam Najian and Umesh Kumar
+- Fix: Fatal error conflict with some plugins on fronted of site
+
+2.0.3 - 2015-04-14 - Aaron Edwards, Sam Najian and Umesh Kumar
 ----------------------------------------------------------------------
 
 - Complete rewrite to use WPMU DEV's new fast and reliable API service.
