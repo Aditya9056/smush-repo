@@ -174,14 +174,16 @@ jQuery(function ($) {
 			if( !this.is_bulk_super_smush ) {
 				//handle progress for normal bulk smush
 				var progress = ( stats.data.smushed / stats.data.total) * 100;
-
-				//Update stats
-				$('#wp-smush-compression #human').html(stats.data.human);
-				$('#wp-smush-compression #percent').html(stats.data.percent);
 			}else{
 				//Handle progress for Super smush progress bar
-				$('#wp-smush-ss-progress-wrap .remaining-count').html(wp_smushit_data.lossless.length);
+				if( wp_smushit_data.lossless.length > 0 ) {
+					$('#wp-smush-ss-progress-wrap .remaining-count').html(wp_smushit_data.lossless.length);
+				}
 			}
+
+			//Update stats
+			$('#wp-smush-compression #human').html(stats.data.human);
+			$('#wp-smush-compression #percent').html(stats.data.percent);
 
 			// increase the progress bar
 			this._update_progress(stats.data.smushed, progress);
