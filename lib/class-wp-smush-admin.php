@@ -304,7 +304,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<div class="wp-smpushit-features updated">
 						<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', WP_SMUSH_DOMAIN ) ?></h3>
 						<ol>
-							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get &gt;60% average compression with almost no noticeable quality loss!', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Smush images up to 8MB.', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Bulk smush ALL your images with one click!', WP_SMUSH_DOMAIN ); ?></li>
@@ -315,7 +315,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<div class="wp-smpushit-features error">
 						<h3><?php _e( 'Upgrade to WP Smush Pro to:', WP_SMUSH_DOMAIN ) ?></h3>
 						<ol>
-							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get &gt;60% average compression with almost no noticeable quality loss!', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Smush images greater than 1MB.', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Bulk smush ALL your images with one click! No more rate limiting.', WP_SMUSH_DOMAIN ); ?></li>
@@ -1090,7 +1090,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					and reliability... enjoy!</p>
 
 				<p>And now, if you'd like to upgrade to the WP Smush Pro plugin you can smush images up to 8MB in size,
-					get 'Super Smushing' of, on average, 60% reduction, backup all non smushed images and bulk smush an
+					get 'Super Smushing' of, on average, 2&times; more reduction than lossless, backup all non smushed images and bulk smush an
 					unlimited number of images at once.
 					<a href="https://premium.wpmudev.org/?coupon=SMUSH50OFF#pricing"> Click here to upgrade with a 50%
 						discount</a>.</p>
