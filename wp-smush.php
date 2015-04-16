@@ -66,6 +66,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		var $version = WP_SMUSH_VERSON;
 
+		var $is_pro;
+
 		/**
 		 * Meta key for api validity
 		 *
@@ -157,7 +159,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$file_size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
 
 			//Check if premium user
-			$max_size = $this->is_premium() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
+			$max_size = $this->is_pro() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
@@ -201,7 +203,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//handle backups if enabled
 			$backup = get_option( WP_SMUSH_PREFIX . 'backup' );
-			if ( $backup && $this->is_premium() ) {
+			if ( $backup && $this->is_pro() ) {
 				$path        = pathinfo( $file_path );
 				$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . ".bak." . $path['extension'];
 				@copy( $file_path, $backup_name );
@@ -452,7 +454,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Check if lossy compression allowed and add it to headers
 			$lossy = get_option( WP_SMUSH_PREFIX . 'lossy' );
 
-			if ( $lossy && $this->is_premium() ) {
+			if ( $lossy && $this->is_pro() ) {
 				$headers['lossy'] = 'true';
 			} else {
 				$headers['lossy'] = 'false';
@@ -559,7 +561,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return mixed|string
 		 */
-		function is_premium() {
+		function is_pro() {
+
+			if ( isset( $this->is_pro ) ) return $this->is_pro;
 
 			//no api key set, always false
 			$api_key = $this->_get_api_key();
@@ -567,13 +571,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			$key = "wp-smush-valid-$api_key"; //add apikey to transient key in case it changes
-
+			$key = "wp-smush-premium-" . substr( $api_key, -10, 10); //add last 10 chars of apikey to transient key in case it changes
 			if ( false === ( $valid = get_site_transient( $key ) ) ) {
 				// call api
 				$url = self::API_SERVER . '&key=' . urlencode( $api_key );
 
 				$request = wp_remote_get( $url, array(
+						"user-agent" => WP_SMUSH_UA,
 						"timeout" => 3
 					)
 				);
@@ -595,7 +599,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			}
 
-			return (bool) $valid;
+			$this->is_pro = (bool) $valid;
+			return $this->is_pro;
 		}
 
 		/**
@@ -702,7 +707,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$image_type = get_post_mime_type( $id );
 
 				//Check if premium user, compression was lossless, and lossy compression is enabled
-				if ( $this->is_premium() && ! $is_lossy && $opt_lossy_val && $image_type != 'image/gif' ) {
+				if ( $this->is_pro() && ! $is_lossy && $opt_lossy_val && $image_type != 'image/gif' ) {
 					// the button text
 					$button_txt  = __( 'Re-smush', WP_SMUSH_DOMAIN );
 					$show_button = true;

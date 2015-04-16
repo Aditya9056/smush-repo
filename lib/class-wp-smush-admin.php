@@ -203,7 +203,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
-			if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) {
+			if ( $this->is_pro() || $this->remaining_count <= $this->max_free_bulk ) {
 				$bulk_now = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
 			} else {
 				$bulk_now = sprintf( __( 'Bulk Smush %d Attachments', WP_SMUSH_DOMAIN ), $this->max_free_bulk );
@@ -227,7 +227,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $bulk->get_attachments();
 
 			//If premium, Super smush allowed, all images are smushed, localize lossless smushed ids for bulk compression
-			if ( $this->is_premium() &&
+			if ( $this->is_pro() &&
 			     ( $this->total_count == $this->smushed_count && empty( $this->ids ) )
 			) {
 
@@ -293,14 +293,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				<h2>
 					<?php
-					if ( $this->is_premium() ) {
+					if ( $this->is_pro() ) {
 						_e( 'WP Smush Pro', WP_SMUSH_DOMAIN );
 					} else {
 						_e( 'WP Smush', WP_SMUSH_DOMAIN );
 					} ?>
 				</h2>
 
-				<?php if ( $this->is_premium() ) { ?>
+				<?php if ( $this->is_pro() ) { ?>
 					<div class="wp-smpushit-features updated">
 						<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', WP_SMUSH_DOMAIN ) ?></h3>
 						<ol>
@@ -397,7 +397,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 					//disable lossy for non-premium members
 					$disabled = $class = '';
-					if ( ! $this->is_premium() ) {
+					if ( ! $this->is_pro() ) {
 						$disabled      = ' disabled';
 						$opt_lossy_val = $opt_backup_val = 0;
 						$class         = ' inactive inactive-anim';
@@ -419,7 +419,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						printf(
 							"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup']
 						);
-						if ( ! $this->is_premium() ) {
+						if ( ! $this->is_pro() ) {
 							?>
 							<div class="pro-note">
 								<div style="padding:14px 0 14px;">Pro feature only.
@@ -504,7 +504,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function bulk_preview() {
 
 			$exceed_mb = '';
-			if ( ! $this->is_premium() ) {
+			if ( ! $this->is_pro() ) {
 
 				if ( $this->exceeding_items_count ) {
 					$exceed_mb = sprintf(
@@ -543,7 +543,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<p><?php _e( "Please be aware, smushing a large number of images can take a while depending on your server and network speed.
 						<strong>You must keep this page open while the bulk smush is processing</strong>, but you can leave at any time and come back to continue where it left off.", WP_SMUSH_DOMAIN ); ?></p>
 
-						<?php if ( ! $this->is_premium() ) { ?>
+						<?php if ( ! $this->is_pro() ) { ?>
 							<p class="error">
 								<?php printf( __( "Free accounts are limited to bulk smushing %d attachments per request. You will need to click to start a new bulk job after each %d attachments.", WP_SMUSH_DOMAIN ), $this->max_free_bulk, $this->max_free_bulk ); ?>
 								<a href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Remove limits &raquo;', WP_SMUSH_DOMAIN ); ?></a>
@@ -653,16 +653,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $WpSmush;
 
 			$should_continue = true;
-			$is_premium      = false;
+			$is_pro      = false;
 
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
 				wp_send_json_error( 'missing id' );
 			}
 
 			//if not premium
-			$is_premium = $WpSmush->is_premium();
+			$is_pro = $WpSmush->is_pro();
 
-			if ( ! $is_premium ) {
+			if ( ! $is_pro ) {
 				//Free version bulk smush, check the transient counter value
 				$should_continue = $this->check_bulk_limit();
 			}
@@ -984,7 +984,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'cancel' => false,
 			);
 			if ( $super_smush ) {
-				if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
+				if ( $this->is_pro() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
 
 					$button['text']  = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
 					$button['class'] = 'wp-smush-button wp-smush-send';
@@ -1000,7 +1000,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
 					$button['disabled'] = 'disabled';
 
-				} else if ( $this->is_premium() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
+				} else if ( $this->is_pro() || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
 
 					$button['text']  = __( 'Bulk Smush Now', WP_SMUSH_DOMAIN );
 					$button['class'] = 'wp-smush-button wp-smush-send';
@@ -1075,7 +1075,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				update_option( 'dismiss_smush_upgrade', 1 );
 			}
 
-			if ( get_option( 'dismiss_smush_upgrade' ) || $this->is_premium() ) {
+			if ( get_option( 'dismiss_smush_upgrade' ) || $this->is_pro() ) {
 				return;
 			}
 			?>

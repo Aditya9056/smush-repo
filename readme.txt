@@ -83,7 +83,8 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.0.5 =
 
-* New:   Allow resmush for existing smushed images (Pro Only)
+* New:   Allow Super-smush for existing smushed images (Pro Only)
+* Fixed: IMPORTANT - broken transient caching for is_pro
 * Fixed: Fixed conflict with wp gallery link plugin in grid view
 * Fixed: Other small fixes
 
