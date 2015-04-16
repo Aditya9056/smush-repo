@@ -214,7 +214,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'done'                 => __( 'All Done!', WP_SMUSH_DOMAIN ),
 				'bulk_now'             => $bulk_now,
 				'something_went_wrong' => __( 'Ops!... something went wrong', WP_SMUSH_DOMAIN ),
-				'resmush'              => __( 'Re-smush', WP_SMUSH_DOMAIN ),
+				'resmush'              => __( 'Super-Smush', WP_SMUSH_DOMAIN ),
 				'smush_it'             => __( 'Smush it', WP_SMUSH_DOMAIN ),
 				'smush_now'            => __( 'Smush Now', WP_SMUSH_DOMAIN ),
 				'sending'              => __( 'Sending ...', WP_SMUSH_DOMAIN ),
@@ -1184,15 +1184,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 
-			$ss_progress_ui = __( '<h4>Super Smush images</h4>', WP_SMUSH_DOMAIN );
-
+			$ss_progress_ui = '<h4>' . __( 'Super-Smush Images', WP_SMUSH_DOMAIN ) . '</h4>';
+			$ss_progress_ui .= '<p>' . __( 'We found attachments that were previously smushed losslessly. If desired you can Super-Smush them now for more savings with almost no noticeable quality loss.' , WP_SMUSH_DOMAIN ) . '</p>';
 			$ss_progress_ui .= '<div id="progress-ui" class="super-smush">';
 
 			// display the progress bars
 			$ss_progress_ui .= '<div id="wp-smush-ss-progress-wrap">
 			<div id="wp-smush-ss-progress" class="wp-smush-progressbar"><div style="width:0%"></div></div>
 			<p id="wp-smush-compression">'
-			                   . sprintf( __( '<span class="remaining-count">%d</span> attachments can be Super smushed', WP_SMUSH_DOMAIN ), count( $this->lossless_ids ) )
+			                   . sprintf( __( '<span class="remaining-count">%d</span> attachments can be Super-Smushed', WP_SMUSH_DOMAIN ), count( $this->lossless_ids ) )
 			                   . '</p>
             </div>
 			</div><!-- End of progress ui -->';
