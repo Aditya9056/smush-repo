@@ -98,7 +98,7 @@ msgid "Get the best lossless compression. We try multiple methods to squeeze eve
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:300
-msgid "Smush images up to 8MB."
+msgid "Smush images up to 32MB."
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:301
