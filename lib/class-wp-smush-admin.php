@@ -185,6 +185,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * enqueue js and css
 		 */
 		function enqueue() {
+			//Do not load any style or js on post types other than attachment
+			$post_type = get_post_type();
+			if ( empty( $post_type ) || $post_type !== 'attachment' ) {
+				return;
+			}
+
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 			wp_enqueue_script( 'wp-smushit-admin-media-js' );
 

@@ -4,7 +4,7 @@ Plugin Name: WP Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.0.5
+Version: 2.0.6
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp_smush
 */
@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix          = 'WP_SMUSH_';
-$version         = '2.0.5';
+$version         = '2.0.6';
 $smush_constatns = array(
 	'VERSON'            => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
@@ -695,7 +695,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				//IF current compression is lossy
 				if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
-					$lossy    = $wp_smush_data['stats']['lossy'];
+					$lossy    = !empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
 					$is_lossy = $lossy == 1 ? true : false;
 				}
 
