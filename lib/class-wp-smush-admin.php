@@ -301,7 +301,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<ol>
 							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', WP_SMUSH_DOMAIN ); ?></li>
-							<li><?php _e( 'Smush images up to 8MB.', WP_SMUSH_DOMAIN ); ?></li>
+							<li><?php _e( 'Smush images up to 32MB.', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Bulk smush ALL your images with one click!', WP_SMUSH_DOMAIN ); ?></li>
 							<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', WP_SMUSH_DOMAIN ); ?></li>
 						</ol>
