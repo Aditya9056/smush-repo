@@ -28,6 +28,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 					'post_type'      => 'attachment',
 					'post_status'    => 'any',
 					'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+					'orderby'        => 'ID',
 					'order'          => 'DESC',
 					'posts_per_page' => - 1,
 					'meta_query'     => array(
