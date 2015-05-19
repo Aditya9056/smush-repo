@@ -37,7 +37,7 @@ Install WP Smush and find out why it's the most popular image optimization plugi
 <br>
 <a href="https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme">WP Smush Pro</a> gives you everything you'll find in WP Smush and more:
 <ul>
-	<li>"Super-Smush" your images with our intelligent multi-pass lossy compression. Get over 2x more compression than lossless with almost no noticeable quality loss!</li>
+  <li>"Super-Smush" your images with our intelligent multi-pass lossy compression. Get over 2x more compression than lossless with almost no noticeable quality loss!</li>
   <li>Get even better lossless compression. We try multiple methods to squeeze every last byte out of your images.</li>
   <li>Smush images up to 8MB (WP Smush is limited to 1MB)</li>
   <li>Bulk smush ALL your images with one click! No more rate limiting.</li>
