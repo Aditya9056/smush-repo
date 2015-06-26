@@ -1089,7 +1089,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<p>That means that you can continue smushing your images for free, now with added https support, speed,
 					and reliability... enjoy!</p>
 
-				<p>And now, if you'd like to upgrade to the WP Smush Pro plugin you can smush images up to 8MB in size,
+				<p>And now, if you'd like to upgrade to the WP Smush Pro plugin you can smush images up to 32MB in size,
 					get 'Super Smushing' of, on average, 2&times; more reduction than lossless, backup all non smushed
 					images and bulk smush an
 					unlimited number of images at once.
