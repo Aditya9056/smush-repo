@@ -47,5 +47,35 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 			return $unsmushed_posts;
 		}
 
+		/**
+		 * Fetches the ids of unsmushed images for NextGen Gallery
+		 * @return array
+		 */
+		function get_nextgen_attachments() {
+			if ( ! isset( $_REQUEST['ids'] ) ) {
+				$args            = array(
+					'fields'         => 'ids',
+					'post_type'      => 'attachment',
+					'post_status'    => 'any',
+					'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+					'orderby'        => 'ID',
+					'order'          => 'DESC',
+					'posts_per_page' => - 1,
+					'meta_query'     => array(
+						array(
+							'key'     => 'wp-smpro-smush-data',
+							'compare' => 'NOT EXISTS'
+						)
+					)
+				);
+				$query           = new WP_Query( $args );
+				$unsmushed_posts = $query->posts;
+			} else {
+				return explode( ',', $_REQUEST['ids'] );
+			}
+
+			return $unsmushed_posts;
+		}
+
 	}
 }

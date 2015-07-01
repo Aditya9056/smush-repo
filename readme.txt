@@ -81,9 +81,10 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.0.6.1 =
+= 2.0.7 =
 
 * Updated: Max image size limit to 32Mb for Pro Version
+* Performance: Do not load plugin in frontend
 
 = 2.0.6 =
 

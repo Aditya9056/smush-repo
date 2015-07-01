@@ -31,6 +31,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+//Do not load plugin if not in backend, as we do nothing in frontend, directly ;)
+//Skip this if it is nextgen gallery ajax image upload request
+if ( ! is_admin() && empty( $_GET['photocrati_ajax'] ) ) {
+	return;
+}
 
 /**
  * Constants
@@ -119,6 +124,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			add_action( "admin_init", array( $this, "migrate" ) );
 
+			//Include Admin classes
+			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
+			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-admin.php' );
+			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
+
+			//Initialize Nextgen support
+			new WpSmushNextGen();
+
 		}
 
 		function admin_init() {
@@ -136,14 +149,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @returns array
 		 */
-		function do_smushit( $file_path = '', $file_url = '' ) {
+		function do_smushit( $file_path = '' ) {
 			$errors = new WP_Error();
 			if ( empty( $file_path ) ) {
 				$errors->add( "empty_path", __( "File path is empty", WP_SMUSH_DOMAIN ) );
-			}
-
-			if ( empty( $file_url ) ) {
-				$errors->add( "empty_url", __( "File URL is empty", WP_SMUSH_DOMAIN ) );
 			}
 
 			// check that the file exists
@@ -234,7 +243,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array
 		 */
-		private function _array_fill_placeholders( array $placeholders, array $data ) {
+		function _array_fill_placeholders( array $placeholders, array $data ) {
 			$placeholders['percent']     = $data['compression'];
 			$placeholders['bytes']       = $data['bytes_saved'];
 			$placeholders['size_before'] = $data['before_size'];
@@ -249,7 +258,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array
 		 */
-		private function _get_size_signature() {
+		function _get_size_signature() {
 			return array(
 				'percent'     => - 1,
 				'bytes'       => - 1,
@@ -293,7 +302,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//File path and URL for original image
 			$attachment_file_path = get_attached_file( $ID );
-			$attachment_file_url  = wp_get_attachment_url( $ID );
 
 			// If images has other registered size, smush them first
 			if ( ! empty( $meta['sizes'] ) ) {
@@ -309,10 +317,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					// path. So just get the dirname and replace the filename.
 
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
-					$attachment_file_url_size  = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
 
 					//Store details for each size key
-					$response = $this->do_smushit( $attachment_file_path_size, $attachment_file_url_size );
+					$response = $this->do_smushit( $attachment_file_path_size );
 
 					if ( is_wp_error( $response ) ) {
 						return $response;
@@ -340,7 +347,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//If original size is supposed to be smushed
 			if ( $smush_full ) {
 
-				$full_image_response = $this->do_smushit( $attachment_file_path, $attachment_file_url );
+				$full_image_response = $this->do_smushit( $attachment_file_path );
 
 				if ( is_wp_error( $full_image_response ) ) {
 					return $full_image_response;
@@ -367,7 +374,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$stats['stats']['lossy']       = $full_image_response['data']->lossy;
 				}
 
-
 			}
 
 			$has_errors = (bool) count( $errors->get_error_messages() );
@@ -390,12 +396,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 						foreach ( $existing_stats['sizes'] as $size_name => $size_stats ) {
 							//if stats for a particular size doesn't exists
-							if ( empty( $stats['sizes'][$size_name] ) ) {
-								$stats['sizes'][$size_name] = $existing_stats['sizes'][$size_name];
+							if ( empty( $stats['sizes'][ $size_name ] ) ) {
+								$stats['sizes'][ $size_name ] = $existing_stats['sizes'][ $size_name ];
 							} else {
 								//Update compression percent and bytes saved for each size
-								$stats['sizes'][$size_name]->bytes   = $stats['sizes'][$size_name]->bytes + $existing_stats['sizes'][$size_name]->bytes;
-								$stats['sizes'][$size_name]->percent = $stats['sizes'][$size_name]->percent + $existing_stats['sizes'][$size_name]->percent;
+								$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats['sizes'][ $size_name ]->bytes;
+								$stats['sizes'][ $size_name ]->percent = $stats['sizes'][ $size_name ]->percent + $existing_stats['sizes'][ $size_name ]->percent;
 							}
 						}
 					}
@@ -563,7 +569,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function is_pro() {
 
-			if ( isset( $this->is_pro ) ) return $this->is_pro;
+			if ( isset( $this->is_pro ) ) {
+				return $this->is_pro;
+			}
 
 			//no api key set, always false
 			$api_key = $this->_get_api_key();
@@ -571,14 +579,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			$key = "wp-smush-premium-" . substr( $api_key, -10, 10); //add last 10 chars of apikey to transient key in case it changes
+			$key = "wp-smush-premium-" . substr( $api_key, - 10, 10 ); //add last 10 chars of apikey to transient key in case it changes
 			if ( false === ( $valid = get_site_transient( $key ) ) ) {
 				// call api
 				$url = self::API_SERVER . '&key=' . urlencode( $api_key );
 
 				$request = wp_remote_get( $url, array(
 						"user-agent" => WP_SMUSH_UA,
-						"timeout" => 3
+						"timeout"    => 3
 					)
 				);
 
@@ -600,6 +608,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			$this->is_pro = (bool) $valid;
+
 			return $this->is_pro;
 		}
 
@@ -666,14 +675,17 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return string|void
 		 */
-		function set_status( $id, $echo = true, $text_only = false ) {
+		function set_status( $id, $echo = true, $text_only = false, $wp_smush_data = false ) {
 			$status_txt  = $button_txt = '';
 			$show_button = false;
 
-			//Stats are not received properly, otherwise
-			wp_cache_delete( $id, 'post_meta' );
+			if ( ! $wp_smush_data || empty( $wp_smush_data ) ) {
+				//Stats are not received properly, otherwise
+				wp_cache_delete( $id, 'post_meta' );
 
-			$wp_smush_data = get_post_meta( $id, self::SMUSHED_META_KEY, true );
+				$wp_smush_data = get_post_meta( $id, self::SMUSHED_META_KEY, true );
+			}
+
 			// if the image is smushed
 			if ( ! empty( $wp_smush_data ) ) {
 
@@ -695,7 +707,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				//IF current compression is lossy
 				if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
-					$lossy    = !empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
+					$lossy    = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
 					$is_lossy = $lossy == 1 ? true : false;
 				}
 
@@ -752,8 +764,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			$class = $smushed ? '' : ' hidden';
-			$html  = '
-			<p class="smush-status' . $class . '">' . $status_txt . '</p>';
+			$html  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
+			$html .= wp_nonce_field( 'wp_smush_nextgen_' . $id, '_wp_smush_nonce', '', false );
 			// if we aren't showing the button
 			if ( ! $show_button ) {
 				if ( $echo ) {
@@ -838,7 +850,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array
 		 */
-		private function _update_stats_data( $response_data, $size_before, $size_after, $total_time, $bytes_saved ) {
+		function _update_stats_data( $response_data, $size_before, $size_after, $total_time, $bytes_saved ) {
 			$size_before += ! empty( $response_data->before_size ) ? (int) $response_data->before_size : 0;
 			$size_after += ( ! empty( $response_data->after_size ) && $response_data->after_size > 0 ) ? (int) $response_data->after_size : (int) $response_data->before_size;
 			$total_time += ! empty( $response_data->time ) ? (float) $response_data->time : 0;
@@ -853,11 +865,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 	$WpSmush = new WpSmush();
 
 }
-
-//Include Admin classes
-require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
-require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-admin.php' );
-//include_once( WP_SMUSH_DIR . '/extras/dash-notice/wpmudev-dash-notification.php' );
 
 //register items for the dashboard plugin
 global $wpmudev_notices;
