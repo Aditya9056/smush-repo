@@ -33,12 +33,24 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $bulk;
 
+		/**
+		 * @var Total count of Attachments for Smushing
+		 */
 		public $total_count;
 
+		/**
+		 * @var Smushed attachments out of total attachments
+		 */
 		public $smushed_count;
 
+		/**
+		 * @array Stores the stats for all the images
+		 */
 		public $stats;
 
+		/**
+		 * @var int Limit for allowed number of images per bulk request
+		 */
 		public $max_free_bulk = 50; //this is enforced at api level too
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade';
@@ -49,6 +61,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		//Stores all lossless smushed ids
 		private $lossless_ids = '';
 
+		/**
+		 * @var int Number of attachments exceeding free limit
+		 */
 		public $exceeding_items_count = 0;
 
 		/**
@@ -84,7 +99,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
-
 
 			$this->init_settings();
 
@@ -194,7 +208,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$current_page   = $current_screen->base;
 
 			//Do not enqueue, unless it is one of the required screen
-			if ( $current_page != 'nggallery-manage-images' && $pagenow != 'post.php' && $pagenow != 'upload.php' ) {
+			if ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'upload.php' ) {
 				return;
 			}
 
@@ -321,6 +335,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->print_loader();
 		}
 
+		/**
+		 * Prints the text content for Free and Pro version
+		 */
 		function smush_promo_content() {
 			$is_pro = $this->is_pro(); ?>
 			<h2>
@@ -599,6 +616,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		<?php
 		}
 
+		/**
+		 * Loading Image
+		 */
 		function print_loader() {
 			?>
 			<div class="wp-smush-loader-wrap hidden">
@@ -854,7 +874,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'post_status'    => 'any',
 				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
 				'order'          => 'ASC',
-				'posts_per_page' => - 1
+				'posts_per_page' => - 1,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'no_found_rows'  => true
 			);
 			$results = new WP_Query( $query );
 			$count   = ! empty( $results->post_count ) ? $results->post_count : 0;
@@ -878,7 +901,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
-				'meta_key'       => 'wp-smpro-smush-data'
+				'meta_key'       => 'wp-smpro-smush-data',
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'no_found_rows'  => true
 			);
 
 			$results = new WP_Query( $query );
@@ -1033,8 +1059,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			return $button;
 		}
 
+		/**
+		 * Queries all the attachments which have smushe meta
+		 *
+		 * @return array
+		 */
 		function get_smushed_image_ids() {
-			$args  = array(
+			$args = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
 				'post_status'    => 'any',
@@ -1047,6 +1078,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						'value' => '1',
 					)
 				),
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'no_found_rows'  => true
 			);
 			$query = new WP_Query( $args );
 
@@ -1080,6 +1114,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			return $links;
 		}
 
+		/**
+		 * Shows Notice for free users, displays a discount coupon
+		 */
 		function smush_upgrade() {
 			if ( ! current_user_can( 'edit_others_posts' ) ) {
 				return;

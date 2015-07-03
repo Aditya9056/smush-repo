@@ -123,14 +123,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			add_action( "admin_init", array( $this, "migrate" ) );
+			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ) );
 
 			//Include Admin classes
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-admin.php' );
-			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
-
-			//Initialize Nextgen support
-			new WpSmushNextGen();
 
 		}
 
@@ -145,11 +142,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Returns an array of the $file $results.
 		 *
 		 * @param   string $file Full absolute path to the image file
-		 * @param   string $file_url Optional full URL to the image file
+		 * @param   string $type media_lib => Media Library, 'nextgen', Used in do action, after smushing is completed
 		 *
 		 * @returns array
 		 */
-		function do_smushit( $file_path = '' ) {
+		function do_smushit( $file_path = '', $image_id, $type = 'media_lib' ) {
 			$errors = new WP_Error();
 			if ( empty( $file_path ) ) {
 				$errors->add( "empty_path", __( "File path is empty", WP_SMUSH_DOMAIN ) );
@@ -231,6 +228,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				copy( $tempfile, $file_path );
 				unlink( $tempfile );
 			}
+
+			/**
+			 * Fired after the Smushing is successfully completed for a image id
+			 * @var $image_id
+			 */
+			do_action( 'wp_smush_completed_' . $type, $image_id );
 
 			return $response;
 		}
@@ -319,7 +322,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
 
 					//Store details for each size key
-					$response = $this->do_smushit( $attachment_file_path_size );
+					$response = $this->do_smushit( $attachment_file_path_size, $ID );
 
 					if ( is_wp_error( $response ) ) {
 						return $response;
@@ -347,7 +350,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//If original size is supposed to be smushed
 			if ( $smush_full ) {
 
-				$full_image_response = $this->do_smushit( $attachment_file_path );
+				$full_image_response = $this->do_smushit( $attachment_file_path, $ID );
 
 				if ( is_wp_error( $full_image_response ) ) {
 					return $full_image_response;
@@ -859,12 +862,31 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			return array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 		}
+
+		/**
+		 * Check if NextGen is active or not
+		 * Include and instantiate classes
+		 */
+		function load_nextgen() {
+			if ( ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
+				return;
+			}
+			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
+			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-admin.php' );
+			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-stats.php' );
+
+			//Initialize Nextgen support
+			new WpSmushNextGen();
+			new WpSmushNextGenAdmin();
+			new WpSmushNextGenStats();
+		}
 	}
 
-	global $WpSmush;
-	$WpSmush = new WpSmush();
-
 }
+
+global $WpSmush;
+$WpSmush = new WpSmush();
+
 
 //register items for the dashboard plugin
 global $wpmudev_notices;
