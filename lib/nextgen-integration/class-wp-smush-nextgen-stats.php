@@ -112,7 +112,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 * @return bool|null|string|void
 		 */
 		function show_stats( $pid, $wp_smush_data = false, $image_type = '', $text_only = false, $echo = true ) {
-			global $WpSmush;
+			global $WpSmush, $wpsmushnextgenadmin;
 			if ( empty( $wp_smush_data ) ) {
 				return false;
 			}
@@ -156,7 +156,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			}
 
 			//If show button is true for some reason, column html can print out the button for us
-			$text = $this->column_html( $pid, $status_txt, $button_txt, $show_button, true, $echo );
+			$text = $wpsmushnextgenadmin->column_html( $pid, $status_txt, $button_txt, $show_button, true, $echo );
 			if ( ! $echo ) {
 				return $text;
 			}

@@ -25,6 +25,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			//Add a bulk smush option for NextGen gallery
 			add_action( 'admin_menu', array( &$this, 'wp_smush_bulk_menu' ) );
+
 		}
 
 		/**
@@ -64,6 +65,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @param $id
 		 */
 		function wp_smush_column_options( $column_name, $id ) {
+			global $wpsmushnextgenstats;
 
 			//NExtGen Doesn't returns Column name, weird? yeah, right, it is proper because hook is called for the particular column
 			if ( $column_name == 'wp_smush_image' || $column_name == '' ) {
@@ -98,7 +100,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				//Check Image metadata, if smushed, print the stats or super smush button
 				if ( ! empty( $image->meta_data['wp_smush'] ) ) {
 					//Echo the smush stats
-					WpSmushNextGenStats::show_stats( $image->pid, $image->meta_data['wp_smush'], $image_type, false, true );
+					$wpsmushnextgenstats->show_stats( $image->pid, $image->meta_data['wp_smush'], $image_type, false, true );
 
 					return;
 				}

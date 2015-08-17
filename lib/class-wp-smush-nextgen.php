@@ -255,6 +255,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @param $return Whether to return the stats or not, false for auto smush
 		 */
 		function smush_image( $pid, $storage, $image, $return = true ) {
+			global $wpsmushnextgenstats;
 			$metadata = ! empty( $image ) ? $image->meta_data : '';
 
 			if ( empty( $metadata ) ) {
@@ -265,7 +266,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			$smush = $this->resize_from_meta_data( $storage, $image, $pid );
 
 			if( !is_wp_error( $smush ) ) {
-				$status = WpSmushNextGenStats::show_stats( $pid, $smush, false, true );
+				$status = $wpsmushnextgenstats->show_stats( $pid, $smush, false, true );
 			}
 
 			//If we are suppose to send the stats, not required for auto smush

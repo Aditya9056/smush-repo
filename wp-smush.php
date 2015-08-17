@@ -877,8 +877,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Initialize Nextgen support
 			new WpSmushNextGen();
-			new WpSmushNextGenAdmin();
-			new WpSmushNextGenStats();
+
+			global $wpsmushnextgenadmin;
+			$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
+
+			global $wpsmushnextgenstats;
+			$wpsmushnextgenstats = new WpSmushNextGenStats();
 		}
 	}
 
