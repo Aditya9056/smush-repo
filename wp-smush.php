@@ -122,8 +122,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			add_action( "admin_init", array( $this, "migrate" ) );
-			//Load Nextgen module after NextGen gallery has been loaded
-			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ) );
+			//Load Nextgen module
+			add_action( 'init', array( $this, 'load_nextgen' ) );
 
 			//Include Admin classes
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
@@ -872,6 +872,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
 				return;
 			}
+			error_log("File loaded Smush");
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
 			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-admin.php' );
 			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-stats.php' );
