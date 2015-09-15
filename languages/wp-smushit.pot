@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the WP Smush package.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Smush 2.0.6.1\n"
+"Project-Id-Version: WP Smush 2.0.6.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-smushit\n"
-"POT-Creation-Date: 2015-06-13 04:02:52+00:00\n"
+"POT-Creation-Date: 2015-09-15 07:04:21+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#. #-#-#-#-#  plugin.pot (WP Smush 2.0.6.1)  #-#-#-#-#
+#. #-#-#-#-#  plugin.pot (WP Smush 2.0.6.2)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: lib/class-wp-smush-admin.php:106 lib/class-wp-smush-admin.php:299
 msgid "WP Smush"
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Ops!... something went wrong"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:228 wp-smush.php:712
+#: lib/class-wp-smush-admin.php:228 wp-smush.php:711
 msgid "Super-Smush"
 msgstr ""
 
@@ -105,7 +105,7 @@ msgid ""
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:309
-msgid "Smush images up to 8MB."
+msgid "Smush images up to 32MB."
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:310
@@ -278,76 +278,80 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-smush.php:142
+#: wp-smush.php:141
 msgid "File path is empty"
 msgstr ""
 
-#: wp-smush.php:146
+#: wp-smush.php:145
 msgid "File URL is empty"
 msgstr ""
 
-#: wp-smush.php:151
+#: wp-smush.php:150
 msgid "Could not find %s"
 msgstr ""
 
-#: wp-smush.php:156
+#: wp-smush.php:155
 msgid "%s is not writable"
 msgstr ""
 
-#: wp-smush.php:166
+#: wp-smush.php:165
 msgid "Skipped (%s), image not found."
 msgstr ""
 
-#: wp-smush.php:171
+#: wp-smush.php:170
 msgid "Skipped (%s), size limit exceeded."
 msgstr ""
 
-#: wp-smush.php:186
+#: wp-smush.php:185
 msgid "Unknown API error"
 msgstr ""
 
-#: wp-smush.php:330
+#: wp-smush.php:329
 msgid "Size '%s' not processed correctly"
 msgstr ""
 
-#: wp-smush.php:352 wp-smush.php:360
+#: wp-smush.php:351 wp-smush.php:359
 msgid "Size 'full' not processed correctly"
 msgstr ""
 
-#: wp-smush.php:476
+#: wp-smush.php:475
 msgid "Error posting to API: %s"
 msgstr ""
 
-#: wp-smush.php:482
+#: wp-smush.php:481
 msgid "Error posting to API: %s %s"
 msgstr ""
 
-#: wp-smush.php:499
+#: wp-smush.php:498
 msgid "Smush data corrupted, try again."
 msgstr ""
 
-#: wp-smush.php:515
+#: wp-smush.php:514
 msgid "Image couldn't be smushed"
 msgstr ""
 
-#: wp-smush.php:686
+#: wp-smush.php:685
 msgid "Error processing request"
 msgstr ""
 
-#: wp-smush.php:690
+#: wp-smush.php:689
 msgid "Already Optimized"
 msgstr ""
 
-#: wp-smush.php:692
+#: wp-smush.php:691
 msgid "Reduced by %s (  %01.1f%% )"
 msgstr ""
 
-#: wp-smush.php:718
+#: wp-smush.php:717
 msgid "Not processed"
 msgstr ""
 
-#: wp-smush.php:724
+#: wp-smush.php:723
 msgid "Smush Now!"
+msgstr ""
+
+#: wp-smush.php:869
+msgid "Get Fast"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
