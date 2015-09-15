@@ -866,8 +866,8 @@ do_action(
 	/* 1             Plugin ID */ plugin_basename( __FILE__ ), /* Plugin ID */
 	/* 2          Plugin Title */ 'WP Smush',
 	/* 3 https://wordpress.org */ '/plugins/wp-smushit/',
-	/* 4      Email Button CTA */ '',
-	/* 5  getdrip Plugin param */ ''
+	/* 4      Email Button CTA */ __( 'Get Fast', 'wp-smushit' ),
+	/* 5  getdrip Plugin param */ 'Smush'
 );
 
 // The rating message contains 2 variables: user-name, plugin-name
@@ -902,4 +902,15 @@ function wp_smush_rating_message( $message ) {
 	$message .= " We've spent countless hours developing this free plugin for you, and we would really appreciate it if you dropped us a quick rating!";
 
 	return $message;
-}// All done!
+}
+
+// The email message contains 1 variable: plugin-name
+add_filter(
+	'wdev-email-message-' . plugin_basename( __FILE__ ),
+	'wp_smush_email_message'
+);
+function wp_smush_email_message( $message ) {
+	$message = "You're awesome for installing %s! Site speed isn't all image optimization though, so we've collected all the best speed resources we know in a single email - just for users of WP Smush!";
+	return $message;
+}
+// All done!
