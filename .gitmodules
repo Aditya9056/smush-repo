@@ -2,3 +2,6 @@
 	path = extras/dash-notice
 	url = git@bitbucket.org:incsub/wpmudev-dashboard-notification.git
 	branch = master
+[submodule "extras/free-dashboard"]
+	path = extras/free-dashboard
+	url = git@bitbucket.org:incsub/free-dashboard.git
