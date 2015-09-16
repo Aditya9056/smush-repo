@@ -858,7 +858,7 @@ require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-bulk.php' );
 require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-admin.php' );
 
 //require_once( WP_SMUSH_DIR . '/extras/dash-notice/wpmudev-dash-notification.php' );
-require_once( WP_SMUSH_DIR . '/extras/free-dashboard/module.php' );
+require_once( WP_SMUSH_DIR . 'extras/free-dashboard/module.php' );
 
 // Register the current plugin.
 do_action(
