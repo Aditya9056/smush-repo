@@ -330,12 +330,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 						foreach ( $existing_stats['sizes'] as $size_name => $size_stats ) {
 							//if stats for a particular size doesn't exists
-							if ( empty( $stats['sizes'][$size_name] ) ) {
-								$stats['sizes'][$size_name] = $existing_stats['sizes'][$size_name];
+							if ( empty( $stats['sizes'][ $size_name ] ) ) {
+								$stats['sizes'][ $size_name ] = $existing_stats['sizes'][ $size_name ];
 							} else {
 								//Update compression percent and bytes saved for each size
-								$stats['sizes'][$size_name]->bytes   = $stats['sizes'][$size_name]->bytes + $existing_stats['sizes'][$size_name]->bytes;
-								$stats['sizes'][$size_name]->percent = $stats['sizes'][$size_name]->percent + $existing_stats['sizes'][$size_name]->percent;
+								$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats['sizes'][ $size_name ]->bytes;
+								$stats['sizes'][ $size_name ]->percent = $stats['sizes'][ $size_name ]->percent + $existing_stats['sizes'][ $size_name ]->percent;
 							}
 						}
 					}
@@ -503,7 +503,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function is_pro() {
 
-			if ( isset( $this->is_pro ) ) return $this->is_pro;
+			if ( isset( $this->is_pro ) ) {
+				return $this->is_pro;
+			}
 
 			//no api key set, always false
 			$api_key = $this->_get_api_key();
@@ -511,14 +513,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			$key = "wp-smush-premium-" . substr( $api_key, -10, 10); //add last 10 chars of apikey to transient key in case it changes
+			$key = "wp-smush-premium-" . substr( $api_key, - 10, 10 ); //add last 10 chars of apikey to transient key in case it changes
 			if ( false === ( $valid = get_site_transient( $key ) ) ) {
 				// call api
 				$url = self::API_SERVER . '&key=' . urlencode( $api_key );
 
 				$request = wp_remote_get( $url, array(
 						"user-agent" => WP_SMUSH_UA,
-						"timeout" => 3
+						"timeout"    => 3
 					)
 				);
 
@@ -540,6 +542,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			$this->is_pro = (bool) $valid;
+
 			return $this->is_pro;
 		}
 
@@ -635,7 +638,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				//IF current compression is lossy
 				if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
-					$lossy    = !empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
+					$lossy    = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
 					$is_lossy = $lossy == 1 ? true : false;
 				}
 
