@@ -251,26 +251,29 @@ Progressbar ui
     margin-bottom: 20px;
 }
 
-#progress-ui #wp-smush-progress-wrap {
+#progress-ui #wp-smush-progress-wrap, #progress-ui #wp-smush-ss-progress-wrap {
     height: 20px;
     border: 1px solid #0074a2;
     border-radius: 10px;
     overflow: hidden;
     position: relative;
 }
+#progress-ui #wp-smush-ss-progress-wrap {
+    /*background-color: #2ea2cc;*/
+}
 
-#progress-ui #wp-smush-progress-wrap .wp-smush-progressbar {
+#progress-ui #wp-smush-progress-wrap .wp-smush-progressbar, #progress-ui #wp-smush-ss-progress-wrap .wp-smush-progressbar {
     height: 20px;
     position: absolute;
     width: 100%;
 }
 
-#progress-ui #wp-smush-progress-wrap .wp-smush-progressbar div {
+#progress-ui #wp-smush-progress-wrap .wp-smush-progressbar div, #progress-ui #wp-smush-ss-progress-wrap .wp-smush-progressbar div {
     height: 20px;
     border-radius: 10px;
 }
 
-#progress-ui #wp-smush-progress-wrap #wp-smush-fetched-progress div {
+#progress-ui #wp-smush-progress-wrap #wp-smush-fetched-progress div, #progress-ui #wp-smush-ss-progress-wrap #wp-smush-ss-progress div {
     background-color: #7ad03a;
 }
 
@@ -429,10 +432,6 @@ input#wp-smush-save-settings {
     max-width: 60%;
 }
 
-.smush-wrap.unsmushed .smush-status {
-    display: block;
-}
-
 .currently-smushing .smush-status {
     color: #0074a2;
 }
@@ -456,6 +455,36 @@ input#wp-smush-save-settings {
 
 .smush-status.error {
     color: red;
+}
+
+.smush_attachment_detail_loader {
+    float: left;
+}
+
+.compat-field-wp_smush {
+    margin-top: 10px;
+}
+
+.attachment-info .smush-status {
+    margin: 1px 0 0;
+    padding: 0;
+    line-height: 29px;
+}
+
+#post-body-content .wp-smush-send {
+    margin: 4px 0 0;
+}
+#post-body-content .smush-status {
+    margin: 4px 0;
+}
+
+.compat-field-wp_smush button {
+    float: left;
+}
+
+.compat-field-wp_smush .smush-wrap {
+    margin: 0;
+    max-width: 100%;
 }
 
 /*===================================*\

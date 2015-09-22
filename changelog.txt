@@ -4,6 +4,22 @@ Author: Saurabh Shukla & Umesh Kumar
 Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
+2.0.6.1 - 2015-05-20 - Umesh Kumar
+
+- Updated: Max image size set to 32Mb for Pro Version
+
+2.0.6 - 2015-05-20 - Umesh Kumar
+
+- Fixed: Conflict with various themes while editing post and page
+- Fixed: Word Count not working
+- Fixed: Notice and Warnings
+
+2.0.5 - 2015-04-17 - Aaron Edwards, Sam Najian, Umesh Kumar
+
+- New:   Allow Super-smush for existing smushed images
+- Fixed: IMPORTANT - broken transient caching for is_pro
+- Fixed: Fixed conflict with wp gallery link plugin in grid view
+- Fixed: Other small fixes
 
 2.0.4 - 2015-04-14 - Aaron Edwards, Umesh Kumar
 
