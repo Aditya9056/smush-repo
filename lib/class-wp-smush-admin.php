@@ -1,6 +1,6 @@
 <?php
 /**
- * @package WP SmushIt
+ * @package WP Smush
  * @subpackage Admin
  * @version 1.0
  *
