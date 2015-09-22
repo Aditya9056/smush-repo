@@ -157,11 +157,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				unlink( $tempfile );
 			}
 
-			//If file renaming was successful
+			//If file renaming failed
 			if ( ! $success ) {
 				copy( $tempfile, $file_path );
 				unlink( $tempfile );
 			}
+
+			//Some servers are having issue with file permission, this should fix it
+			chmod($file_path, 0644);
 
 			return $response;
 		}
