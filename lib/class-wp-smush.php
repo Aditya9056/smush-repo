@@ -1,26 +1,4 @@
 <?php
-$prefix          = 'WP_SMUSH_';
-$version         = '2.0.4';
-$smush_constatns = array(
-	'VERSON'            => $version,
-	'BASENAME'          => plugin_basename( __FILE__ ),
-	'API'               => 'https://smushpro.wpmudev.org/1.0/',
-	'DOMAIN'            => 'wp_smush',
-	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),
-	'DIR'               => plugin_dir_path( __FILE__ ),
-	'URL'               => plugin_dir_url( __FILE__ ),
-	'MAX_BYTES'         => 1000000,
-	'PREMIUM_MAX_BYTES' => 8000000,
-	'PREFIX'            => 'wp-smush-',
-	'TIMEOUT'           => 30
-
-);
-
-foreach ( $smush_constatns as $const_name => $constant_val ) {
-	if ( ! defined( $prefix . $const_name ) ) {
-		define( $prefix . $const_name, $constant_val );
-	}
-}
 require_once WP_SMUSH_DIR . "/lib/class-wp-smush-migrate.php";
 if ( ! class_exists( 'WpSmush' ) ) {
 
@@ -117,7 +95,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$file_size = filesize( $file_path );
 
 			//Check if premium user
-			$max_size = $this->is_premium() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
+			$max_size = $this->is_pro() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
@@ -161,7 +139,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//handle backups if enabled
 			$backup = get_option( WP_SMUSH_PREFIX . 'backup' );
-			if ( $backup && $this->is_premium() ) {
+			if ( $backup && $this->is_pro() ) {
 				$path        = pathinfo( $file_path );
 				$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . ".bak." . $path['extension'];
 				@copy( $file_path, $backup_name );
@@ -474,7 +452,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Check if lossy compression allowed and add it to headers
 			$lossy = get_option( WP_SMUSH_PREFIX . 'lossy' );
 
-			if ( $lossy && $this->is_premium() ) {
+			if ( $lossy && $this->is_pro() ) {
 				$headers['lossy'] = 'true';
 			} else {
 				$headers['lossy'] = 'false';
@@ -581,7 +559,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return mixed|string
 		 */
-		function is_premium() {
+		function is_pro() {
+
+			if ( isset( $this->is_pro ) ) return $this->is_pro;
 
 			//no api key set, always false
 			$api_key = $this->_get_api_key();
@@ -589,13 +569,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			$key = "wp-smush-valid-$api_key"; //add apikey to transient key in case it changes
-
+			$key = "wp-smush-premium-" . substr( $api_key, -10, 10); //add last 10 chars of apikey to transient key in case it changes
 			if ( false === ( $valid = get_site_transient( $key ) ) ) {
 				// call api
 				$url = self::API_SERVER . '&key=' . urlencode( $api_key );
 
 				$request = wp_remote_get( $url, array(
+						"user-agent" => WP_SMUSH_UA,
 						"timeout" => 3
 					)
 				);
@@ -617,7 +597,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			}
 
-			return (bool) $valid;
+			$this->is_pro = (bool) $valid;
+			return $this->is_pro;
 		}
 
 		/**
