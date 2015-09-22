@@ -31,12 +31,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-//Do not load plugin if not in backend, as we do nothing in frontend, directly ;)
-//Skip this if it is nextgen gallery ajax image upload request
-if ( ! is_admin() && empty( $_GET['photocrati_ajax'] ) ) {
-	return;
-}
-
 /**
  * Constants
  */
@@ -872,7 +866,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
 				return;
 			}
-			error_log("File loaded Smush");
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
 			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-admin.php' );
 			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-stats.php' );
