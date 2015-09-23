@@ -37,8 +37,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 $prefix          = 'WP_SMUSH_';
 $version         = '2.0.6.3';
-$smush_constatns = array(
-	'VERSON'            => $version,
+$smush_constants = array(
+	'VERSION'            => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
 	'API'               => 'https://smushpro.wpmudev.org/1.0/',
 	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),
@@ -51,13 +51,14 @@ $smush_constatns = array(
 
 );
 
-foreach ( $smush_constatns as $const_name => $constant_val ) {
+foreach ( $smush_constants as $const_name => $constant_val ) {
 	if ( ! defined( $prefix . $const_name ) ) {
 		define( $prefix . $const_name, $constant_val );
 	}
 }
 //Include main class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
+
 //Only for wordpress.org members
 $plugin = basename( plugin_dir_path( __FILE__ ) );
 if ( $plugin == 'wp-smushit' ) {

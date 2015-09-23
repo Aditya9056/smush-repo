@@ -4,7 +4,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
 
-		var $version = WP_SMUSH_VERSON;
+		var $version = WP_SMUSH_VERSION;
 
 		var $is_pro;
 
@@ -48,15 +48,25 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$auto_smush = 1;
 			}
 
+			//Auto Smush the new image
 			if ( $auto_smush ) {
 				add_filter( 'wp_generate_attachment_metadata', array(
 					$this,
 					'filter_generate_attachment_metadata'
-				), 10, 2 );
+				), 20, 2 );
 			}
+
+			//Optimise WP Retina 2x images
+			add_action( 'wr2x_retina_file_added', array( $this, 'smush_retina_image' ), 20, 2 );
+
+			//Add Smush Columns
 			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
 			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
+
+			//Enqueue Scripts
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
+
+			//Old Smush stats migration
 			add_action( "admin_init", array( $this, "migrate" ) );
 
 		}
@@ -216,10 +226,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function resize_from_meta_data( $meta, $ID = null ) {
 
-			//Flag to check, if original size image needs to be smushed or not
-			$smush_full = true;
-			$errors     = new WP_Error();
-			$stats      = array(
+			//Flag to check, if original size image should be smushed or not
+			$original   = get_option( WP_SMUSH_PREFIX . 'original' );
+			$smush_full = ( $this->is_pro() && $original == 1 ) ? true : false;
+
+			$errors = new WP_Error();
+			$stats  = array(
 				"stats" => array_merge( $this->_get_size_signature(), array(
 						'api_version' => - 1,
 						'lossy'       => - 1
@@ -241,12 +253,17 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			// If images has other registered size, smush them first
 			if ( ! empty( $meta['sizes'] ) ) {
 
-				foreach ( $meta['sizes'] as $size_key => $size_data ) {
-
-					//if there is a large size, then we will set a flag to leave the original untouched
-					if ( $size_key == 'large' ) {
+				//if smush original is set to false, otherwise smush
+				//Check for large size, we will set a flag to leave the original untouched
+				if ( ! $smush_full ) {
+					if ( array_key_exists( 'large', $meta['sizes'] ) ) {
 						$smush_full = false;
+					} else {
+						$smush_full = true;
 					}
+				}
+
+				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and replace the filename.
@@ -792,6 +809,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$compression = ( $bytes_saved > 0 && $size_before > 0 ) ? ( ( $bytes_saved / $size_before ) * 100 ) : 0;
 
 			return array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
+		}
+
+		function smush_retina_image( $id, $retina_file ) {
+
 		}
 	}
 

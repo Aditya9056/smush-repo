@@ -166,12 +166,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'media-views'
-				), WP_SMUSH_VERSON );
+				), WP_SMUSH_VERSION );
 			} else {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'underscore'
-				), WP_SMUSH_VERSON );
+				), WP_SMUSH_VERSION );
 			}
 			wp_register_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
 
@@ -268,9 +268,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function init_settings() {
 			$this->settings = array(
-				'auto'   => __( 'Auto-Smush images on upload', 'wp-smushit' ),
-				'lossy'  => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'lossy optimization', 'wp-smushit' ) . ')</small>',
-				'backup' => __( 'Backup original images', 'wp-smushit' ) . ' <small>(' . __( 'this will nearly double the size of your uploads directory', 'wp-smushit' ) . ')</small>'
+				'auto'     => __( 'Auto-Smush images on upload', 'wp-smushit' ),
+				'original' => __( 'Smush original image', 'wp-smushit' ) . ' <small>(' . __( 'Skipped by default', 'wp-smushit' ) . ')</small>',
+				'lossy'    => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'lossy optimization', 'wp-smushit' ) . ')</small>',
+				'backup'   => __( 'Backup original images', 'wp-smushit' ) . ' <small>(' . __( 'this will nearly double the size of your uploads directory', 'wp-smushit' ) . ')</small>'
 			);
 		}
 
@@ -386,6 +387,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					}
 
 					//Smush auto key
+					$opt_original = WP_SMUSH_PREFIX . 'original';
+					//Auto value
+					$opt_original_val = get_option( $opt_original, false );
+
+					//Smush auto key
 					$opt_lossy = WP_SMUSH_PREFIX . 'lossy';
 					//Auto value
 					$opt_lossy_val = get_option( $opt_lossy, false );
@@ -409,6 +415,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					);
 					?>
 					<div class="pro-only<?php echo $class; ?>"><?php
+
+						//Smush Original
+						printf(
+							"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_original ), checked( $opt_original_val, 1, false ), $disabled, $this->settings['original']
+						);
 
 						//Lossy
 						printf(

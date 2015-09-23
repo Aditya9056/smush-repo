@@ -84,6 +84,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 = 2.0.6.3 =
 
 * Added: Support for WP Retina 2x Plugin
+* Added: Smush original image option (Pro Only)
 * Fixed: File permission error for few servers
 * Fixed: Directory path for files
 
