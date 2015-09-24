@@ -142,6 +142,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Enqueue js on Post screen (Edit screen for media )
 			add_action( 'admin_print_scripts-post.php', array( $this, 'enqueue' ) );
+
+			// Enqueue js on Post screen (Edit screen for media )
+			add_action( 'admin_print_scripts-post-new.php', array( $this, 'enqueue' ) );
 		}
 
 		/**
@@ -207,7 +210,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		function localize() {
 			global $pagenow;
-			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php" ) ) ) {
+			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php", "post-new.php" ) ) ) {
 				return;
 			}
 

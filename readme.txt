@@ -87,6 +87,8 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Added: Smush original image option (Pro Only)
 * Fixed: File permission error for few servers
 * Fixed: Directory path for files
+* Fixed: Smush button doesn't works in media library dialog on post screen, when add media is clicked
+		 (https://wordpress.org/support/topic/like-wp-smush-a-lot)
 
 = 2.0.6.2 =
 
