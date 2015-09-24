@@ -2,6 +2,7 @@
  * Processes bulk smushing
  *
  * @author Saurabh Shukla <saurabh@incsub.com>
+ * @author Umesh Kumar
  *
  */
 var WP_Smush = WP_Smush || {};
@@ -322,6 +323,17 @@ jQuery(function ($) {
 		return;
 	});
 
+	/**
+	 * Handle the Smush Stats link click
+	 */
+	$('a.smush-stats-details').on('click', function (e) {
+
+		// prevent the default action
+		e.preventDefault();
+
+		return;
+	});
+
 	//Handle smush button click
 	$('body').on('click', '.wp-smush-send', function (e) {
 
@@ -329,6 +341,8 @@ jQuery(function ($) {
 		e.preventDefault();
 		new WP_Smush.Smush($(this), false);
 	});
+	//Stats Button Click
+
 
 });
 (function ($) {

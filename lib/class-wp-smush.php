@@ -655,6 +655,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
 						$status_txt = $image_count > 1 ? sprintf( __( "%d images reduced ", 'wp-smushit' ), $image_count ) : __( "Reduced ", 'wp-smushit' );
 						$status_txt .= sprintf( __( "by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
+
+						//Detailed Stats Link
+						$status_txt .= '<br /><a href="#" class="smush-stats-details">' . esc_html__( "Smush stats", 'wp-smushit' ) .' [<span class="show">+</span><span class="hide hidden">-</span>]</a>';
+
+						//Stats
+						$status_txt .= $this->get_detailed_stats( $id, $wp_smush_data );
 					}
 				}
 
@@ -815,6 +821,44 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		function smush_retina_image( $id, $retina_file ) {
 
+		}
+
+		function get_detailed_stats( $image_id, $wp_smush_data ) {
+			$stats = '<div id="smush-stats-'. $image_id . '" class="smush-stats-wrapper">
+				<table>
+					<thead>
+					<tr>
+						<th>' . esc_html__( 'Image size', 'wp-smushit' ) . '</th>
+						<th>' . esc_html__( 'Savings', 'wp-smushit' ) . '</th>
+					</tr>
+					</thead>
+					<tbody>';
+			$size_stats = $wp_smush_data['sizes'];
+
+			//Reorder Sizes as per the maximum savings
+			uasort($size_stats, array( $this, "cmp") );
+
+			foreach ($size_stats as $size_key => $size_stats ) {
+				$stats .= '<tr>
+					<td>' . $size_key . '</td>
+					<td>' . $this->format_bytes( $size_stats->bytes ) .'</td>
+				</tr>';
+			}
+			$stats .='</tbody>
+				</table>
+			</div>';
+			return $stats;
+		}
+
+		/**
+		 * Compare Values
+		 * @param $a
+		 * @param $b
+		 *
+		 * @return int
+		 */
+		function cmp($a, $b) {
+			return $a->bytes < $b->bytes;
 		}
 	}
 
