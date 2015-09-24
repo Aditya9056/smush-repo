@@ -330,6 +330,9 @@ jQuery(function ($) {
 
 		// prevent the default action
 		e.preventDefault();
+		var slide_symbol = $(this).find('.stats-toggle');
+		$(this).parents().eq(1).find('.smush-stats-wrapper').slideToggle();
+		slide_symbol.text( slide_symbol.text() == '+' ? '-' : '+' );
 
 		return;
 	});

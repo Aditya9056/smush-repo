@@ -657,7 +657,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$status_txt .= sprintf( __( "by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
 
 						//Detailed Stats Link
-						$status_txt .= '<br /><a href="#" class="smush-stats-details">' . esc_html__( "Smush stats", 'wp-smushit' ) .' [<span class="show">+</span><span class="hide hidden">-</span>]</a>';
+						$status_txt .= '<br /><a href="#" class="smush-stats-details">' . esc_html__( "Smush stats", 'wp-smushit' ) .' [<span class="stats-toggle">+</span>]</a>';
 
 						//Stats
 						$status_txt .= $this->get_detailed_stats( $id, $wp_smush_data );
@@ -824,7 +824,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		function get_detailed_stats( $image_id, $wp_smush_data ) {
-			$stats = '<div id="smush-stats-'. $image_id . '" class="smush-stats-wrapper">
+			$stats = '<div id="smush-stats-'. $image_id . '" class="smush-stats-wrapper hidden">
 				<table>
 					<thead>
 					<tr>
