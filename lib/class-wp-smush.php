@@ -640,6 +640,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			// if the image is smushed
 			if ( ! empty( $wp_smush_data ) ) {
 
+				$image_count =  count( $wp_smush_data['sizes'] );
 				$bytes          = isset( $wp_smush_data['stats']['bytes'] ) ? $wp_smush_data['stats']['bytes'] : 0;
 				$bytes_readable = ! empty( $bytes ) ? $this->format_bytes( $bytes ) : '';
 				$percent        = isset( $wp_smush_data['stats']['percent'] ) ? $wp_smush_data['stats']['percent'] : 0;
@@ -652,7 +653,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					if ( $bytes == 0 || $percent == 0 ) {
 						$status_txt = __( 'Already Optimized', 'wp-smushit' );
 					} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
-						$status_txt = sprintf( __( "Reduced by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
+						$status_txt = $image_count > 1 ? sprintf( __( "%d images reduced ", 'wp-smushit' ), $image_count ) : __( "Reduced ", 'wp-smushit' );
+						$status_txt .= sprintf( __( "by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
 					}
 				}
 
