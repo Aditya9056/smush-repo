@@ -326,7 +326,7 @@ jQuery(function ($) {
 	/**
 	 * Handle the Smush Stats link click
 	 */
-	$('a.smush-stats-details').on('click', function (e) {
+	$('body').on('click', 'a.smush-stats-details', function (e) {
 
 		// prevent the default action
 		e.preventDefault();
