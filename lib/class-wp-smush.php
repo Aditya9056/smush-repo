@@ -57,7 +57,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Optimise WP Retina 2x images
-			add_action( 'wr2x_retina_file_added', array( $this, 'smush_retina_image' ), 20, 2 );
+			add_action( 'wr2x_retina_file_added', array( $this, 'smush_retina_image' ), 20, 3 );
 
 			//Add Smush Columns
 			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
@@ -86,14 +86,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @returns array
 		 */
-		function do_smushit( $file_path = '', $file_url = '' ) {
+		function do_smushit( $file_path = '' ) {
 			$errors = new WP_Error();
 			if ( empty( $file_path ) ) {
 				$errors->add( "empty_path", __( "File path is empty", 'wp-smushit' ) );
-			}
-
-			if ( empty( $file_url ) ) {
-				$errors->add( "empty_url", __( "File URL is empty", 'wp-smushit' ) );
 			}
 
 			// check that the file exists
@@ -272,7 +268,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$attachment_file_url_size  = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
 
 					//Store details for each size key
-					$response = $this->do_smushit( $attachment_file_path_size, $attachment_file_url_size );
+					$response = $this->do_smushit( $attachment_file_path_size );
 
 					if ( is_wp_error( $response ) ) {
 						return $response;
@@ -300,7 +296,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//If original size is supposed to be smushed
 			if ( $smush_full ) {
 
-				$full_image_response = $this->do_smushit( $attachment_file_path, $attachment_file_url );
+				$full_image_response = $this->do_smushit( $attachment_file_path );
 
 				if ( is_wp_error( $full_image_response ) ) {
 					return $full_image_response;
@@ -346,7 +342,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$stats['stats']['percent'] = isset( $existing_stats['stats']['percent'] ) ? $existing_stats['stats']['percent'] + $stats['stats']['percent'] : $stats['stats']['percent'];
 
 					//Update stats for each size
-					if ( ! empty( $existing_stats['sizes'] ) && ! empty( $stats['sizes'] ) ) {
+					if ( isset( $existing_stats['sizes'] ) && ! empty( $stats['sizes'] ) ) {
 
 						foreach ( $existing_stats['sizes'] as $size_name => $size_stats ) {
 							//if stats for a particular size doesn't exists
@@ -821,8 +817,72 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			return array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 		}
 
-		function smush_retina_image( $id, $retina_file ) {
+		/**
+		 * Updates the smush stats for a single image size
+		 * @param $id
+		 * @param $stats
+		 * @param $image_size
+		 */
+		function update_smush_stats_single( $id, $smush_stats, $image_size = '' ) {
+			//Return, if we don't have image id or stats for it
+			if ( empty( $id ) || empty( $smush_stats ) || empty( $image_size ) ) {
+				return false;
+			}
+			$image_size = $image_size . '@2x';
+			$data       = $smush_stats['data'];
+			//Get existing Stats
+			$stats = get_post_meta( $id, self::SMUSHED_META_KEY, true );
+			//Update existing Stats
+			if ( ! empty( $stats ) ) {
+				//Update total bytes saved, and compression percent
+				//Update Main Stats
+				list( $stats['stats']['size_before'], $stats['stats']['size_after'], $stats['stats']['time'], $stats['stats']['percent'], $stats['stats']['bytes'] ) =
+					$this->_update_stats_data( $data, $stats['stats']['size_before'], $stats['stats']['size_after'], $stats['stats']['time'], $stats['stats']['bytes'] );
 
+
+				//Update stats for each size
+				if ( isset( $stats['sizes'] ) ) {
+
+					//if stats for a particular size doesn't exists
+					if ( empty( $stats['sizes'][ $image_size ] ) ) {
+						//Update size wise details
+						$stats['sizes'][ $image_size ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $data );
+					} else {
+						//Update compression percent and bytes saved for each size
+						$stats['sizes'][ $image_size ]->bytes   = $stats['sizes'][ $image_size ]->bytes + $data->bytes_saved;
+						$stats['sizes'][ $image_size ]->percent = $stats['sizes'][ $image_size ]->percent + $data->compression;
+					}
+				}
+			} else {
+				//Create new stats
+				$stats                         = array(
+					"stats" => array_merge( $this->_get_size_signature(), array(
+							'api_version' => - 1,
+							'lossy'       => - 1
+						)
+					),
+					'sizes' => array()
+				);
+				$stats['stats']['api_version'] = $data->api_version;
+				$stats['stats']['lossy']       = $data->lossy;
+				//Update Main Stats
+				list( $stats['stats']['size_before'], $stats['stats']['size_after'], $stats['stats']['time'], $stats['stats']['percent'], $stats['stats']['bytes'] ) =
+					array( $data->before_size, $data->after_size, $data->time, $data->compression, $data->bytes_saved );
+				//Update size wise details
+				$stats['sizes'][ $image_size ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $data );
+			}
+			//Calculate Percent
+			update_post_meta( $id, self::SMUSHED_META_KEY, $stats );
+
+		}
+
+		function smush_retina_image( $id, $retina_file, $image_size ) {
+
+			$stats = $this->do_smushit( $retina_file );
+			//If we squeezed out something, Update stats
+			if ( ! empty( $stats['data'] ) && isset( $stats['data'] ) && $stats['data']->bytes_saved > 0 ) {
+				$this->update_smush_stats_single( $id, $stats, $image_size );
+			}
 		}
 
 		/**
