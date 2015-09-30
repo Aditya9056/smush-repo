@@ -572,8 +572,38 @@ input#wp-smush-save-settings {
 }
 
 .smush-stats-wrapper {
-    border: 1px solid;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
+    border: 1px solid lightgray;
+}
+table.wp-smush-stats-holder {
+    border-collapse: collapse;
+    width: 100%;
+}
+table.wp-smush-stats-holder th {
+    background-color: #E4E4E4;
+}
+table.wp-smush-stats-holder td, table.wp-smush-stats-holder th {
+    border: 1px solid #CECECE;
+}
+table.wp-smush-stats-holder tr:first-child th {
+    border-top: 0;
+}
+table.wp-smush-stats-holder tr:last-child td {
+    border-bottom: 0;
+}
+table.wp-smush-stats-holder tr td:first-child,
+table.wp-smush-stats-holder tr th:first-child {
+    border-left: 0;
+}
+table.wp-smush-stats-holder tr td:last-child,
+table.wp-smush-stats-holder tr th:last-child {
+    border-right: 0;
+}
+table.wp-smush-stats-holder tr td:first-child {
+    text-align: right;
+}
+.smush-skipped.error {
+    color: #C41921;
+}
+.smush-skipped .dashicons-editor-help {
+    cursor: pointer;
 }

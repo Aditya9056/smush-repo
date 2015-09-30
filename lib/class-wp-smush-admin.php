@@ -272,7 +272,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function init_settings() {
 			$this->settings = array(
 				'auto'     => __( 'Smush images on upload', 'wp-smushit' ),
-				'original' => __( 'Smush Original Image', 'wp-smushit' ) . ' <small>(' . __( 'Skipped by default', 'wp-smushit' ) . ')</small>',
+				'original' => __( 'Smush Original Image', 'wp-smushit' ) . ' <small>(' . __( 'Skipped if Large size is available', 'wp-smushit' ) . ')</small>',
 				'lossy'    => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
 				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>'
 			);
@@ -308,6 +308,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<div class="wp-smpushit-features updated">
 						<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', 'wp-smushit' ) ?></h3>
 						<ol>
+							<li><?php _e( 'Smush Full size Image, It is skipped by default, if large size is available for a image', 'wp-smushit' ); ?></li>
 							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
 							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
 							<li><?php _e( 'Smush images up to 32MB.', 'wp-smushit' ); ?></li>

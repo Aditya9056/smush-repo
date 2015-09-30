@@ -953,9 +953,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function skip_reason( $msg_id ) {
 			$skip_msg = array(
 				'large_size' => esc_html__('Large size available for the image.', 'wp-smushit'),
-				'size_limit' => esc_html__('Image size exceeded the 1 Mb size limit.')
+				'size_limit' => esc_html__('Image exceeded the 1Mb size limit.')
 			);
-			$skip_rsn = !empty( $skip_msg[$msg_id ] ) ? sprintf( esc_html__(" Skipped: %s", 'wp-smushit'), $skip_msg[ $msg_id ] ) : '';
+			$skip_rsn = !empty( $skip_msg[$msg_id ] ) ? esc_html__(" Skipped", 'wp-smushit', 'wp-smushit'): '';
+			$skip_rsn = ! empty( $skip_rsn ) ? $skip_rsn . '<span class="dashicons dashicons-editor-help" title="' . $skip_msg[ $msg_id ] . '"></span>' : '';
 			return $skip_rsn;
 		}
 
@@ -968,11 +969,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata ) {
 			$stats      = '<div id="smush-stats-' . $image_id . '" class="smush-stats-wrapper hidden">
-				<table>
+				<table class="wp-smush-stats-holder">
 					<thead>
 					<tr>
-						<th>' . esc_html__( 'Image size', 'wp-smushit' ) . '</th>
-						<th>' . esc_html__( 'Savings', 'wp-smushit' ) . '</th>
+						<th><strong>' . esc_html__( 'Image size', 'wp-smushit' ) . '</strong></th>
+						<th><strong>' . esc_html__( 'Savings', 'wp-smushit' ) . '</strong></th>
 					</tr>
 					</thead>
 					<tbody>';
@@ -987,8 +988,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( ! empty( $skipped ) ) {
 				foreach ( $skipped as $img_data ) {
 					$stats .= '<tr>
-					<td>' . $img_data['size'] . '</td>
-					<td class="smush-skipped">' . $this->skip_reason( $img_data['reason'] ) . '</td>
+					<td>' . strtoupper( $img_data['size'] ) . '</td>
+					<td class="smush-skipped error">' . $this->skip_reason( $img_data['reason'] ) . '</td>
 				</tr>';
 				}
 
@@ -997,7 +998,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			foreach ( $size_stats as $size_key => $size_stats ) {
 				if ( $size_stats->bytes > 0 ) {
 					$stats .= '<tr>
-					<td>' . $size_key . '</td>
+					<td>' . strtoupper( $size_key ) . '</td>
 					<td>' . $this->format_bytes( $size_stats->bytes ) . '</td>
 				</tr>';
 				}

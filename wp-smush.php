@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix          = 'WP_SMUSH_';
-$version         = '2.0.6.3-betb7';
+$version         = '2.0.6.3-betc7';
 $smush_constants = array(
 	'VERSION'            => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
