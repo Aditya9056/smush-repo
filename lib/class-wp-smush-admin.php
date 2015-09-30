@@ -320,6 +320,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<div class="wp-smpushit-features error">
 						<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
 						<ol>
+							<li><?php _e( 'Smush Full size Image, It is skipped by default, if large size is available for a image', 'wp-smushit' ); ?></li>
 							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
 							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
 							<li><?php _e( 'Smush images greater than 1MB.', 'wp-smushit' ); ?></li>

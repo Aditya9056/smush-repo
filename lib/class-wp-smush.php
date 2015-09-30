@@ -913,6 +913,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							'size'   => 'full',
 							'reason' => 'size_limit'
 						);
+					}else{
+						$skipped[] = array(
+							'size'   => 'full',
+							'reason' => 'large_size'
+						);
 					}
 				} else {
 					//Paid version, Check if we have large size
