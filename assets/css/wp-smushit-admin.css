@@ -258,6 +258,7 @@ Progressbar ui
     overflow: hidden;
     position: relative;
 }
+
 #progress-ui #wp-smush-ss-progress-wrap {
     /*background-color: #2ea2cc;*/
 }
@@ -376,8 +377,21 @@ button .wp-smush-loader-wrap {
     padding: 5px 5px 5px 0;
 }
 
+/*Pro rows*/
+#wp-smush-options-wrap .wp-smush-pro-features .wp-smush-setting-row {
+    margin: 5px 20px 5px 25px;
+}
+
+#wp-smush-options-wrap .wp-smush-pro-features .pro-note {
+    margin: 0 0 0 25px;
+}
+
 .wp-smush-pro-features {
+    border: 1px solid lightgray;
     display: inline-block;
+    padding: 0 0 10px 0;
+    margin: 10px 0 0;
+    width: 85%;
 }
 
 input#wp-smush-save-settings {
@@ -424,6 +438,25 @@ input#wp-smush-save-settings {
 
 .media-lib-wp-smush-icon.spinner:before {
     content: "";
+}
+
+.wp-smush-pro-features legend {
+    margin-left: 15px;
+    padding: 0 10px;
+}
+
+.pro-note .dashicons-info {
+    color: gray;
+    margin: 0 5px 0 0;
+}
+
+.pro-note .find-out-link {
+    margin: -5px 0 0 10px;
+}
+
+.wp-smush-setting-row.disabled label, .wp-smush-setting-row.disabled input {
+    color: gray;
+    cursor: default;
 }
 
 /** Grid view button **/
@@ -474,6 +507,7 @@ input#wp-smush-save-settings {
 #post-body-content .wp-smush-send {
     margin: 4px 0 0;
 }
+
 #post-body-content .smush-status {
     margin: 4px 0;
 }
@@ -536,6 +570,7 @@ input#wp-smush-save-settings {
 .inactive-anim {
     transition: opacity .3s;
 }
+
 .smush-stats-wrapper {
     border: 1px solid;
     -webkit-border-radius: 4px;
