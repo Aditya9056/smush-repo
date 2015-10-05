@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 $prefix          = 'WP_SMUSH_';
 $version         = '2.0.6.3-1';
 $smush_constants = array(
-	'VERSION'            => $version,
+	'VERSION'           => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
 	'API'               => 'https://smushpro.wpmudev.org/1.0/',
 	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),

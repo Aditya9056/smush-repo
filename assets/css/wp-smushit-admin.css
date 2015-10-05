@@ -607,3 +607,10 @@ table.wp-smush-stats-holder tr td:first-child {
 .smush-skipped .dashicons-editor-help {
     cursor: pointer;
 }
+/*Media Modal Styling*/
+.compat-field-wp_smush .wp-smush-stats-holder tr {
+    display: table-row;
+}
+.compat-field-wp_smush .wp-smush-stats-holder td {
+    padding: 8px 10px
+}
