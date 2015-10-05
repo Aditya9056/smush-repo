@@ -123,7 +123,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			?>
 			<div class="wrap"><?php
 			//Promotional Text
-			$wpsmushit_admin->smush_promo_content();
+			$wpsmushit_admin->smush_pro_features();
 
 			//Bulk Smush UI, calls progress UI, Super Smush UI
 			$this->bulk_smush_ui(); ?>
