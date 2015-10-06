@@ -306,7 +306,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			} else {
 				?>
 				<div class="smush-instructions">
-					<h4 class="smush-remaining-images-notice"><?php printf( _n( "%d attachment in your media library has not been smushed.", "%d image attachments in your media library have not been smushed yet.", $this->remaining_count, 'wp-smushit' ), $this->remaining_count ); ?></h4>
+					<h4 class="smush-remaining-images-notice"><?php printf( _n( "%d attachment in NextGen Gallery has not been smushed yet.", "%d image attachments in NextGen Gallery have not been smushed yet.", $this->remaining_count, 'wp-smushit' ), $this->remaining_count ); ?></h4>
 					<p><?php _e( "Please be aware, smushing a large number of images can take a while depending on your server and network speed.
 						<strong>You must keep this page open while the bulk smush is processing</strong>, but you can leave at any time and come back to continue where it left off.", 'wp-smushit' ); ?></p>
 

@@ -71,6 +71,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public function __construct() {
 
+			// Save Settings, Process Option, Need to process it early, so the pages are loaded accordingly
+			add_action( 'init', array( $this, 'process_options' ) );
+
 			// hook scripts and styles
 			add_action( 'admin_init', array( $this, 'register' ) );
 
@@ -171,9 +174,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function register() {
 
 			global $WpSmush;
-
-			// Save settings, if needed
-			$this->process_options();
 
 			// Register js for smush utton in grid view
 			$current_blog_id       = get_current_blog_id();
@@ -305,7 +305,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'auto'     => __( 'Smush images on upload', 'wp-smushit' ),
 				'original' => __( 'Smush Original Image', 'wp-smushit' ) . ' <small>(' . __( 'Skipped if Large size is available', 'wp-smushit' ) . ')</small>',
 				'lossy'    => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
-				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>'
+				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>',
+				'nextgen'   => __( 'Enable NextGen Gallery integration', 'wp-smushit' )
 			);
 		}
 
@@ -389,6 +390,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					//Auto value
 					$opt_backup_val = get_option( $opt_backup, false );
 
+					//Smush NextGen key
+					$opt_nextgen = WP_SMUSH_PREFIX . 'nextgen';
+					//Auto value
+					$opt_nextgen_val = get_option( $opt_nextgen, 1 );
+
 					//disable lossy for non-premium members
 					$disabled = $class = $feature_class = '';
 					if ( ! $this->is_pro() ) {
@@ -420,6 +426,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 						//Lossy
 						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_lossy ), checked( $opt_lossy_val, 1, false ), $disabled, $this->settings['lossy'], $feature_class );
+
+						//NextGen Gallery
+						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_nextgen ), checked( $opt_nextgen_val, 1, false ), $disabled, $this->settings['nextgen'], $feature_class );
 
 						//Backup
 						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup'], $feature_class ); ?>
@@ -1231,6 +1240,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', 'wp-smushit' ) ?></h3>
 					<ol>
 						<li><?php _e( 'Smush Full size Image, It is skipped by default, if large size is available for a image', 'wp-smushit' ); ?></li>
+						<li><?php _e( 'NextGen Gallery integration', 'wp-smushit' ); ?></li>
 						<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
 						<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
 						<li><?php _e( 'Smush images up to 32MB.', 'wp-smushit' ); ?></li>
@@ -1243,6 +1253,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
 					<ol>
 						<li><?php _e( 'Smush Full size Image, It is skipped by default, if large size is available for a image', 'wp-smushit' ); ?></li>
+						<li><?php _e( 'NextGen Gallery integration', 'wp-smushit' ); ?></li>
 						<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
 						<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
 						<li><?php _e( 'Smush images greater than 1MB.', 'wp-smushit' ); ?></li>
