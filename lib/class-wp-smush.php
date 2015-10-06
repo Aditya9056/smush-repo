@@ -879,7 +879,28 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		}
 
+		/**
+		 * Smush Retina images for WP Retina 2x, Update Stats
+		 *
+		 * @param $id
+		 * @param $retina_file
+		 * @param $image_size
+		 */
 		function smush_retina_image( $id, $retina_file, $image_size ) {
+
+			/**
+			 * Allows to Enable/Disable WP Retina 2x Integration
+			 */
+			$smush_retina_images = apply_filters( 'smush_retina_images', true );
+
+			//Check if Smush retina images is enbled
+			if ( ! $smush_retina_images ) {
+				return;
+			}
+			//Check for Empty fields
+			if ( empty( $id ) || empty( $retina_file ) || empty( $image_size ) ) {
+				return;
+			}
 
 			$stats = $this->do_smushit( $retina_file );
 			//If we squeezed out something, Update stats

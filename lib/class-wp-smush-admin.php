@@ -1232,7 +1232,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Displays the features available in Smush pro
 		 */
 		function smush_pro_features() {
-			if ( ! is_super_admin() ) {
+			/**
+			 * Allows to filter whether to display or not, features divison
+			 */
+			$show_features = apply_filters( 'smush_pro_features', true );
+
+			if ( ! is_super_admin() || ! $show_features ) {
 				return;
 			}
 			if ( $this->is_pro() ) { ?>
