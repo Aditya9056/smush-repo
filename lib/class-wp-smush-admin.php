@@ -7,7 +7,7 @@
  * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umesh@incsub.com>
  *
- * @copyright (c) 2014, Incsub (http://incsub.com)
+ * @copyright (c) 2015, Incsub (http://incsub.com)
  */
 if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	/**
@@ -187,18 +187,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'media-views'
-				), WP_SMUSH_VERSION );
+				), WP_SMUSH_VERSION . 5 );
 			} else {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'underscore'
-				), WP_SMUSH_VERSION );
+				), WP_SMUSH_VERSION . 5 );
 			}
 			wp_register_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
 
 
 			/* Register Style. */
-			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version .time() );
+			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version . 5 );
 
 		}
 
@@ -932,8 +932,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Display the bulk smushing button
-		 *
-		 * @todo Add the API status here, next to the button
 		 */
 		function setup_button( $super_smush = false ) {
 			$button   = $this->button_state( $super_smush );

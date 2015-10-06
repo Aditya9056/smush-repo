@@ -109,7 +109,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 *
 		 * @return int|mixed|void Returns the images ids or the count
 		 */
-		function get_smushed_images_count( $return_ids = false ) {
+		function get_smushed_images( $count = false ) {
 			// Check for the  wp_smush_images_smushed in the 'nextgen' group.
 			$smushed_images = wp_cache_get( 'wp_smush_images_smushed', 'nextgen' );
 
@@ -124,7 +124,31 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				}
 			}
 
-			return $return_ids ? $smushed_images : count( $smushed_images );
+			return $count ? count( $smushed_images ) : $smushed_images ;
+		}
+
+		/**
+		 * Returns the unsmushed images list or count for NextGen Gallery
+		 *
+		 * @param bool $count Whether to return the ids array, set to false by default
+		 *
+		 * @return int|mixed|void Returns the images ids or the count
+		 */
+		function get_unsmushed_images( $count = false ) {
+			//Get all the images
+			$nextgen_imgs = $this->get_nextgen_attachments();
+
+			//Smushed Images
+			$nextgen_smshd_imgs = $this->get_smushed_images();
+
+			if ( is_array( $nextgen_imgs ) && is_array( $nextgen_smshd_imgs ) ) {
+				$unsmushed = array_values( array_diff( $nextgen_imgs, $nextgen_smshd_imgs ) );
+
+				return $count ? count( $unsmushed ) : $unsmushed;
+			}
+
+			return false;
+
 		}
 
 		/**

@@ -47,6 +47,11 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				$auto_smush = 1;
 			}
 
+			/**
+			 * Allows to filter the Auto Smush status for NextGen galery
+			 */
+			$auto_smush = apply_filters('smush_nextgen_auto', $auto_smush );
+
 			return $auto_smush;
 		}
 

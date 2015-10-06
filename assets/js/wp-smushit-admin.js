@@ -2,7 +2,7 @@
  * Processes bulk smushing
  *
  * @author Saurabh Shukla <saurabh@incsub.com>
- * @author Umesh Kumar
+ * @author Umesh Kumar <umeshsingla05@gmail.com>
  *
  */
 var WP_Smush = WP_Smush || {};
@@ -58,7 +58,8 @@ jQuery(function ($) {
 			//Added for NextGen support
 			this.smush_type = typeof smush_type ? smush_type : false;
 			this.single_ajax_suffix = this.smush_type ? 'smush_manual_nextgen' : 'wp_smushit_manual';
-			this.url += this.bulk ? '?action=wp_smushit_bulk' : '?action=' + this.single_ajax_suffix;
+			this.bulk_ajax_suffix = this.smush_type ? 'wp_smushit_nextgen_bulk' : 'wp_smushit_bulk';
+			this.url += this.is_bulk ? '?action=' + this.bulk_ajax_suffix : '?action=' + this.single_ajax_suffix;
 		};
 
 		//Show loader in button for single and bulk smush
@@ -366,7 +367,27 @@ jQuery(function ($) {
 		// prevent the default action
 		e.preventDefault();
 		new WP_Smush.Smush($(this), false, 'nextgen');
-	})
+	});
+
+	//Handle NextGen Gallery Bulk smush button click
+	$('body').on('click', '.wp-smush-nextgen-bulk', function (e) {
+
+		// prevent the default action
+		e.preventDefault();
+
+		//Check for ids, if there is none (Unsmushed or lossless), don't call smush function
+		if (typeof wp_smushit_data == 'undefined' ||
+			( wp_smushit_data.unsmushed.length == 0 && wp_smushit_data.lossless.length == 0 )
+		) {
+
+			return false;
+
+		}
+
+		$(".smush-remaining-images-notice").remove();
+		new WP_Smush.Smush($(this), true, 'nextgen');
+		return;
+	});
 
 });
 (function ($) {

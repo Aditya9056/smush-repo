@@ -8,7 +8,7 @@
  * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umesh@incsub.com>
  *
- * @copyright (c) 2014, Incsub (http://incsub.com)
+ * @copyright (c) 2015, Incsub (http://incsub.com)
  */
 if ( ! class_exists( 'WpSmushitBulk' ) ) {
 

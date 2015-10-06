@@ -186,7 +186,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array
 		 */
-		private function _array_fill_placeholders( array $placeholders, array $data ) {
+		function _array_fill_placeholders( array $placeholders, array $data ) {
 			$placeholders['percent']     = $data['compression'];
 			$placeholders['bytes']       = $data['bytes_saved'];
 			$placeholders['size_before'] = $data['before_size'];
@@ -201,7 +201,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array
 		 */
-		private function _get_size_signature() {
+		function _get_size_signature() {
 			return array(
 				'percent'     => - 1,
 				'bytes'       => - 1,
@@ -810,7 +810,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array
 		 */
-		private function _update_stats_data( $response_data, $size_before, $size_after, $total_time, $bytes_saved ) {
+		function _update_stats_data( $response_data, $size_before, $size_after, $total_time, $bytes_saved ) {
 			$size_before += ! empty( $response_data->before_size ) ? (int) $response_data->before_size : 0;
 			$size_after += ( ! empty( $response_data->after_size ) && $response_data->after_size > 0 ) ? (int) $response_data->after_size : (int) $response_data->before_size;
 			$total_time += ! empty( $response_data->time ) ? (float) $response_data->time : 0;

@@ -17,6 +17,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 		var $total_count = 0;
 		var $smushed_count = 0;
+		var $remaining_count = 0;
+		var $bulk_page_handle;
 
 		function __construct() {
 
@@ -36,10 +38,12 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function wp_smush_bulk_menu() {
 			if ( defined( 'NGGFOLDER' ) ) {
-				add_submenu_page( NGGFOLDER, esc_html__( 'WP Bulk Smush', 'wp-smushit' ), esc_html__( 'WP Smush', 'wp-smushit' ), 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
+				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, esc_html__( 'WP Bulk Smush', 'wp-smushit' ), esc_html__( 'WP Smush', 'wp-smushit' ), 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
 					&$this,
 					'wp_smush_bulk'
 				) );
+				// Enqueue js on Post screen (Edit screen for media )
+				add_action( 'admin_print_scripts-' . $this->bulk_page_handle, array( $this, 'localize' ) );
 			}
 		}
 
@@ -112,6 +116,56 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				$this->set_status( $image->pid, true, false );
 
 			}
+		}
+		/**
+		 * Localize Translations And Stats
+		 */
+		function localize() {
+			global $wpsmushnextgenstats;
+			$handle = 'wp-smushit-admin-js';
+
+			$bulk_now = __( 'Bulk Smush Now', 'wp-smushit' );
+
+			$wp_smush_msgs = array(
+				'progress'             => __( 'Smushing in Progress', 'wp-smushit' ),
+				'done'                 => __( 'All Done!', 'wp-smushit' ),
+				'bulk_now'             => $bulk_now,
+				'something_went_wrong' => __( 'Ops!... something went wrong', 'wp-smushit' ),
+				'resmush'              => __( 'Super-Smush', 'wp-smushit' ),
+				'smush_it'             => __( 'Smush it', 'wp-smushit' ),
+				'smush_now'            => __( 'Smush Now', 'wp-smushit' ),
+				'sending'              => __( 'Sending ...', 'wp-smushit' ),
+				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				"all_supersmushed"     => __( 'All images are Super-Smushed.', 'wp-smushit' )
+			);
+
+			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
+
+			//Localize smushit_ids variable, if there are fix number of ids
+			$this->ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $wpsmushnextgenstats->get_unsmushed_images();
+
+			//If premium, Super smush allowed, all images are smushed, localize lossless smushed ids for bulk compression
+			if ( ( $this->total_count == $this->smushed_count && empty( $this->ids ) ) ) {
+
+				//Check if Super smush enabled
+				$super_smush = get_option( WP_SMUSH_PREFIX . 'lossy', false );
+
+				if ( $super_smush ) {
+					//get the attachments, and get lossless count
+					echo "Supersmush pending";
+//					$this->lossless_ids = $this->get_lossless_attachments();
+				}
+			}
+
+			//Array of all smushed, unsmushed and lossless ids
+			$data = array(
+				'smushed'   => $wpsmushnextgenstats->get_smushed_images(),
+				'unsmushed' => $wpsmushnextgenstats->get_unsmushed_images(),
+				'lossless'  => 0
+			);
+
+			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
+
 		}
 
 		/**
@@ -279,6 +333,49 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			// print it out
 			echo $progress_ui;
 		}
+		/**
+		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not
+		 *
+		 * @return array
+		 */
+
+		private function button_state( $super_smush ) {
+			$button = array(
+				'cancel' => false,
+			);
+			if ( $super_smush ) {
+				$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
+				$button['class'] = 'wp-smush-button wp-smush-nextgen-bulk';
+			} else {
+
+				// if we have nothing left to smush, disable the buttons
+				if ( $this->smushed_count === $this->total_count ) {
+					$button['text']     = __( 'All Done!', 'wp-smushit' );
+					$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
+					$button['disabled'] = 'disabled';
+
+				} else {
+
+					$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
+					$button['class'] = 'wp-smush-button wp-smush-nextgen-bulk';
+				}
+			}
+
+			return $button;
+		}
+
+		/**
+		 * Display the bulk smushing button
+		 */
+		function setup_button( $super_smush = false ) {
+			$button   = $this->button_state( $super_smush );
+			$disabled = ! empty( $button['disabled'] ) ? ' disabled="disabled"' : '';
+			?>
+			<button class="button button-primary<?php echo ' ' . $button['class']; ?>" name="smush-all-nextgen" <?php echo $disabled; ?>>
+				<span><?php echo $button['text'] ?></span>
+			</button>
+			<?php
+		}
 
 		/**
 		 *
@@ -288,8 +385,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			//Set the counts
 			$this->total_count     = $wpsmushnextgenstats->total_count();
-			$this->smushed_count   = $wpsmushnextgenstats->get_smushed_images_count();
-			$this->remaining_count = $this->total_count > 0 ? $this->total_count - $this->smushed_count : 0;
+			$this->smushed_count   = $wpsmushnextgenstats->get_smushed_images( true );
+			$this->remaining_count = $wpsmushnextgenstats->get_unsmushed_images( true );
 
 			?>
 			<div class="bulk-smush">
@@ -326,7 +423,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				?>
 				<p class="smush-final-log"></p>
 				<?php
-//				$this->setup_button();
+				$this->setup_button();
 			}
 
 			$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
