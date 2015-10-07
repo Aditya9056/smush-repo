@@ -102,7 +102,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$errors->add( "not_writable", sprintf( __( "%s is not writable", 'wp-smushit' ), dirname( $file_path ) ) );
 			}
 
-			$file_size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
+			$file_size = filesize( $file_path );
 
 			//Check if premium user
 			$max_size = $this->is_pro() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
@@ -244,7 +244,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//File path and URL for original image
 			$attachment_file_path = get_attached_file( $ID );
-			$attachment_file_url  = wp_get_attachment_url( $ID );
 
 			// If images has other registered size, smush them first
 			if ( ! empty( $meta['sizes'] ) ) {
@@ -263,9 +262,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and replace the filename.
-
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
-					$attachment_file_url_size  = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
 
 					//Store details for each size key
 					$response = $this->do_smushit( $attachment_file_path_size );
@@ -587,10 +584,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed
 		 */
 		private function _get_api_key() {
-			if ( defined( 'WPMUDEV_APIKEY' ) ) {
-				$api_key = WPMUDEV_APIKEY;
-			} else {
-				$api_key = get_site_option( 'wpmudev_apikey' );
+			//Try to fetch it from Cache
+			$api_key = wp_cache_get( 'wpmudev_apikey', 'smush' );
+
+			//If not available, get it from other means, and set it in cache
+			if ( ! $api_key ) {
+				if ( defined( 'WPMUDEV_APIKEY' ) ) {
+					$api_key = WPMUDEV_APIKEY;
+				} else {
+					$api_key = get_site_option( 'wpmudev_apikey' );
+				}
+				if ( $api_key ) {
+					wp_cache_add( "wpmudev_apikey", $api_key, 'smush', 6000 );
+				}
 			}
 
 			return $api_key;
