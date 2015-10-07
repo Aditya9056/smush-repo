@@ -90,6 +90,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 		 (https://wordpress.org/support/topic/like-wp-smush-a-lot)
 * New:   Show number of images smushed in stats column
 * Added: Support for WP Retina 2x Plugin
+* Added: Filter `WP_SMUSH_API_TIMEOUT` to change the default time out value from 60s
 * Added: Smush original image option (Pro Only)
 
 = 2.0.6.2 =

@@ -84,6 +84,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			/// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
+
 			$this->init_settings();
 
 		}
@@ -141,9 +142,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Enqueue js on Post screen (Edit screen for media )
 			add_action( 'admin_print_scripts-post.php', array( $this, 'enqueue' ) );
-
-			// Enqueue js on Post screen (Edit screen for media )
-			add_action( 'admin_print_scripts-post-new.php', array( $this, 'enqueue' ) );
 		}
 
 		/**
@@ -168,18 +166,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'media-views'
-				), WP_SMUSH_VERSION );
+				), WP_SMUSH_VERSON );
 			} else {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'underscore'
-				), WP_SMUSH_VERSION );
+				), WP_SMUSH_VERSON );
 			}
 			wp_register_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
 
 
 			/* Register Style. */
-			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version .time() );
+			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
 
 		}
 
@@ -209,7 +207,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		function localize() {
 			global $pagenow;
-			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php", "post-new.php" ) ) ) {
+			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php" ) ) ) {
 				return;
 			}
 
@@ -258,7 +256,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$data = array(
 				'smushed'   => $this->get_smushed_image_ids(),
 				'unsmushed' => $this->ids,
-				'lossless'  => $this->lossless_ids
+				'lossless'  => $this->lossless_ids,
+				'timeout'   => WP_SMUSH_TIMEOUT * 100 //Convert it into ms
 			);
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
@@ -270,10 +269,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function init_settings() {
 			$this->settings = array(
-				'auto'     => __( 'Smush images on upload', 'wp-smushit' ),
-				'original' => __( 'Smush Original Image', 'wp-smushit' ) . ' <small>(' . __( 'Skipped if Large size is available', 'wp-smushit' ) . ')</small>',
-				'lossy'    => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
-				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>'
+				'auto'   => __( 'Auto-Smush images on upload', 'wp-smushit' ),
+				'lossy'  => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'lossy optimization', 'wp-smushit' ) . ')</small>',
+				'backup' => __( 'Backup original images', 'wp-smushit' ) . ' <small>(' . __( 'this will nearly double the size of your uploads directory', 'wp-smushit' ) . ')</small>'
 			);
 		}
 
@@ -301,9 +299,55 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					} else {
 						_e( 'WP Smush', 'wp-smushit' );
 					} ?>
-				</h2><?php
-				$this->smush_pro_features();
-				?>
+				</h2>
+
+				<?php if ( $this->is_pro() ) { ?>
+					<div class="wp-smpushit-features updated">
+						<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', 'wp-smushit' ) ?></h3>
+						<ol>
+							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Smush images up to 32MB.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Bulk smush ALL your images with one click!', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
+						</ol>
+					</div>
+				<?php } else { ?>
+					<div class="wp-smpushit-features error">
+						<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
+						<ol>
+							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Smush images greater than 1MB.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Bulk smush ALL your images with one click! No more rate limiting.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Access 24/7/365 support from <a href="https://premium.wpmudev.org/support/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">the best WordPress support team on the planet</a>.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Download <a href="https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">350+ other premium plugins and themes</a> included in your membership.', 'wp-smushit' ); ?></li>
+						</ol>
+						<p>
+							<a class="button-primary" href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', 'wp-smushit' ); ?></a>
+						</p>
+
+						<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p>
+
+						<p>
+							<?php
+							if ( ! class_exists( 'WPMUDEV_Dashboard' ) ) {
+								if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
+									$function = is_multisite() ? 'network_admin_url' : 'admin_url';
+									$url      = wp_nonce_url( $function( 'plugins.php?action=activate&plugin=wpmudev-updates%2Fupdate-notifications.php' ), 'activate-plugin_wpmudev-updates/update-notifications.php' );
+									?><a class="button-secondary"
+									href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								} else { //dashboard not installed at all
+									?><a class="button-secondary" target="_blank"
+										href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								}
+							}
+							?>
+						</p>
+					</div>
+				<?php } ?>
+
 
 				<div class="wp-smpushit-container">
 					<h3>
@@ -343,11 +387,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					}
 
 					//Smush auto key
-					$opt_original = WP_SMUSH_PREFIX . 'original';
-					//Auto value
-					$opt_original_val = get_option( $opt_original, false );
-
-					//Smush auto key
 					$opt_lossy = WP_SMUSH_PREFIX . 'lossy';
 					//Auto value
 					$opt_lossy_val = get_option( $opt_lossy, false );
@@ -358,41 +397,41 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$opt_backup_val = get_option( $opt_backup, false );
 
 					//disable lossy for non-premium members
-					$disabled = $class = $feature_class = '';
+					$disabled = $class = '';
 					if ( ! $this->is_pro() ) {
 						$disabled      = ' disabled';
 						$opt_lossy_val = $opt_backup_val = 0;
 						$class         = ' inactive inactive-anim';
-					} ?>
-					<div class='wp-smush-setting-row'><?php
-						// return html
-						printf( "<label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label>", esc_attr( $opt_auto ), checked( $opt_auto_val, 1, false ), '', $this->settings['auto'] );
-						?>
-					</div>
-					<fieldset class="wp-smush-pro-features">
-						<legend><strong><?php esc_html_e( "PRO FEATURES", "wp-smushit" ); ?></strong></legend><?php
+					}
 
+					// return html
+					printf(
+						"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_auto ), checked( $opt_auto_val, 1, false ), '', $this->settings['auto']
+					);
+					?>
+					<div class="pro-only<?php echo $class; ?>"><?php
+
+						//Lossy
+						printf(
+							"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_lossy ), checked( $opt_lossy_val, 1, false ), $disabled, $this->settings['lossy']
+						);
+
+						//Backup
+						printf(
+							"<div class='wp-smush-setting-row'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup']
+						);
 						if ( ! $this->is_pro() ) {
 							?>
 							<div class="pro-note">
-								<div style="padding:14px 0 14px;"><span class="dashicons dashicons-info"></span><?php esc_html_e( "These features are available in Pro Version of the plugin.", "wp-smushit" ); ?>
-									<a href="<?php echo $this->upgrade_url; ?>" target="_blank" class="button find-out-link">Find out more »</a>
+								<div style="padding:14px 0 14px;">Pro feature only.
+									<a href="<?php echo $this->upgrade_url; ?>" target="_blank">Find out more »</a>
 								</div>
 							</div>
-							<?php
-							$feature_class = ' disabled';
+						<?php
 						}
-
-						//Smush Original
-						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_original ), checked( $opt_original_val, 1, false ), $disabled, $this->settings['original'], $feature_class );
-
-						//Lossy
-						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_lossy ), checked( $opt_lossy_val, 1, false ), $disabled, $this->settings['lossy'], $feature_class );
-
-						//Backup
-						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup'], $feature_class ); ?>
-						<!-- End of pro-only -->
-					</fieldset>
+						?>
+					</div>
+					<!-- End of pro-only -->
 				</div>
 				<!-- End of wrap --><?php
 				// nonce
@@ -1025,7 +1064,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		function smush_upgrade() {
-			if ( ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
+			if ( ! current_user_can( 'edit_others_posts' ) ) {
 				return;
 			}
 
@@ -1041,7 +1080,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 			?>
-			<div class="updated">
+			<div class="error">
 				<a href="<?php echo admin_url( 'index.php' ); ?>?dismiss_smush_upgrade=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
 
 				<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Happy Smushing!</h3>
@@ -1162,63 +1201,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			</div><!-- End of progress ui -->';
 			echo $ss_progress_ui;
 			$this->setup_button( true );
-		}
-
-		/**
-		 * Displays the features available in Smush pro
-		 */
-		function smush_pro_features() {
-			if ( ! is_super_admin() ) {
-				return;
-			}
-			if ( $this->is_pro() ) { ?>
-				<div class="wp-smpushit-features updated">
-					<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', 'wp-smushit' ) ?></h3>
-					<ol>
-						<li><?php _e( 'Smush Full size Image, It is skipped by default, if large size is available for a image', 'wp-smushit' ); ?></li>
-						<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Smush images up to 32MB.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Bulk smush ALL your images with one click!', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
-					</ol>
-				</div>
-			<?php } else { ?>
-				<div class="wp-smpushit-features error">
-					<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
-					<ol>
-						<li><?php _e( 'Smush Full size Image, It is skipped by default, if large size is available for a image', 'wp-smushit' ); ?></li>
-						<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Smush images greater than 1MB.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Bulk smush ALL your images with one click! No more rate limiting.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Access 24/7/365 support from <a href="https://premium.wpmudev.org/support/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">the best WordPress support team on the planet</a>.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Download <a href="https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">350+ other premium plugins and themes</a> included in your membership.', 'wp-smushit' ); ?></li>
-					</ol>
-					<p>
-						<a class="button-primary" href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', 'wp-smushit' ); ?></a>
-					</p>
-
-					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p>
-
-					<p>
-						<?php
-						if ( ! class_exists( 'WPMUDEV_Dashboard' ) ) {
-							if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
-								$function = is_multisite() ? 'network_admin_url' : 'admin_url';
-								$url      = wp_nonce_url( $function( 'plugins.php?action=activate&plugin=wpmudev-updates%2Fupdate-notifications.php' ), 'activate-plugin_wpmudev-updates/update-notifications.php' );
-								?><a class="button-secondary"
-								href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
-							} else { //dashboard not installed at all
-								?><a class="button-secondary" target="_blank"
-									href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
-							}
-						}
-						?>
-					</p>
-				</div>
-			<?php }
 		}
 	}
 

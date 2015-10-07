@@ -2,14 +2,13 @@
  * Processes bulk smushing
  *
  * @author Saurabh Shukla <saurabh@incsub.com>
- * @author Umesh Kumar
  *
  */
 var WP_Smush = WP_Smush || {};
 jQuery(function ($) {
     // url for smushing
     WP_Smush.errors = [];
-    WP_Smush.timeout = 60000;
+	WP_Smush.timeout = wp_smushit_data.timeout;
     /**
      * Checks for the specified param in URL
      * @param sParam
@@ -323,20 +322,6 @@ jQuery(function ($) {
 		return;
 	});
 
-	/**
-	 * Handle the Smush Stats link click
-	 */
-	$('body').on('click', 'a.smush-stats-details', function (e) {
-
-		// prevent the default action
-		e.preventDefault();
-		var slide_symbol = $(this).find('.stats-toggle');
-		$(this).parents().eq(1).find('.smush-stats-wrapper').slideToggle();
-		slide_symbol.text( slide_symbol.text() == '+' ? '-' : '+' );
-
-		return;
-	});
-
 	//Handle smush button click
 	$('body').on('click', '.wp-smush-send', function (e) {
 
@@ -344,8 +329,6 @@ jQuery(function ($) {
 		e.preventDefault();
 		new WP_Smush.Smush($(this), false);
 	});
-	//Stats Button Click
-
 
 });
 (function ($) {

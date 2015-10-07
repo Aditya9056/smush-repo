@@ -37,8 +37,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 $prefix          = 'WP_SMUSH_';
 $version         = '2.0.6.3-1';
-$smush_constants = array(
-	'VERSION'           => $version,
+/**
+ * Set the default timeout for API request and AJAX timeout
+ */
+$timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 60 );
+
+$smush_constatns = array(
+	'VERSON'            => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
 	'API'               => 'https://smushpro.wpmudev.org/1.0/',
 	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),
@@ -47,7 +52,7 @@ $smush_constants = array(
 	'MAX_BYTES'         => 1000000,
 	'PREMIUM_MAX_BYTES' => 32000000,
 	'PREFIX'            => 'wp-smush-',
-	'TIMEOUT'           => 60
+	'TIMEOUT'           => $timeout
 );
 
 foreach ( $smush_constants as $const_name => $constant_val ) {
