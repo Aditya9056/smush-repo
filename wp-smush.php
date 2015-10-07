@@ -29,15 +29,16 @@ WDP ID: 912164
 /**
  * Constants
  */
-$prefix  = 'WP_SMUSH_';
-$version = '2.0.6.3';
+$prefix          = 'WP_SMUSH_';
+$version         = '2.0.6.3';
+
 /**
  * Set the default timeout for API request and AJAX timeout
  */
 $timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 60 );
 
-$smush_constatns = array(
-	'VERSON'            => $version,
+$smush_constants = array(
+	'VERSION'           => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
 	'API'               => 'https://smushpro.wpmudev.org/1.0/',
 	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),
