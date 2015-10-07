@@ -258,7 +258,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$data = array(
 				'smushed'   => $this->get_smushed_image_ids(),
 				'unsmushed' => $this->ids,
-				'lossless'  => $this->lossless_ids
+				'lossless'  => $this->lossless_ids,
+				'timeout'   => WP_SMUSH_TIMEOUT * 100 //Convert it into ms
 			);
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );

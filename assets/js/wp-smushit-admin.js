@@ -9,7 +9,7 @@ var WP_Smush = WP_Smush || {};
 jQuery(function ($) {
     // url for smushing
     WP_Smush.errors = [];
-    WP_Smush.timeout = 60000;
+    WP_Smush.timeout = wp_smushit_data.timeout;
     /**
      * Checks for the specified param in URL
      * @param sParam
