@@ -42,16 +42,16 @@ $smush_constatns = array(
 	'PREMIUM_MAX_BYTES' => 32000000,
 	'PREFIX'            => 'wp-smush-',
 	'TIMEOUT'           => 60
-
 );
 
-foreach ( $smush_constatns as $const_name => $constant_val ) {
+foreach ( $smush_constants as $const_name => $constant_val ) {
 	if ( ! defined( $prefix . $const_name ) ) {
 		define( $prefix . $const_name, $constant_val );
 	}
 }
 //Include main class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
+
 //Only for wordpress.org members
 $plugin = basename( plugin_dir_path( __FILE__ ) );
 if ( $plugin == 'wp-smushit' ) {
