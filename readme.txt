@@ -83,12 +83,13 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.0.6.3 =
 
-* Added: Support for WP Retina 2x Plugin
-* New:   Show number of images smushed in stats column
 * Fixed: File permission error for few servers
 * Fixed: Directory path for files
+* Fixed: Workaround for Auto Smush issue on Hostgator
 * Fixed: Smush button doesn't works in media library dialog on post screen, when add media is clicked
 		 (https://wordpress.org/support/topic/like-wp-smush-a-lot)
+* New:   Show number of images smushed in stats column
+* Added: Support for WP Retina 2x Plugin
 * Added: Smush original image option (Pro Only)
 
 = 2.0.6.2 =

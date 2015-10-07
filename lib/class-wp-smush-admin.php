@@ -1041,7 +1041,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 			?>
-			<div class="error">
+			<div class="updated">
 				<a href="<?php echo admin_url( 'index.php' ); ?>?dismiss_smush_upgrade=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
 
 				<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Happy Smushing!</h3>

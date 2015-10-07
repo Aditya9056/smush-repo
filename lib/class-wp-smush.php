@@ -50,7 +50,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Auto Smush the new image
 			if ( $auto_smush ) {
-				add_filter( 'wp_generate_attachment_metadata', array(
+				add_filter( 'wp_update_attachment_metadata', array(
 					$this,
 					'filter_generate_attachment_metadata'
 				), 20, 2 );
@@ -376,6 +376,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed
 		 */
 		function filter_generate_attachment_metadata( $meta, $ID = null ) {
+			//Update API url for Hostgator
+
+			//Check for use of http url, (Hostgator mostly)
+			$use_http = wp_cache_get( WP_SMUSH_PREFIX.'use_http', 'smush' );
+			if( !$use_http ) {
+				$use_http = get_option( WP_SMUSH_PREFIX.'use_http' );
+				wp_cache_add( WP_SMUSH_PREFIX.'use_http', $use_http, 'smush' );
+			}
+			$use_http ? define( 'WP_SMUSH_API_HTTP', 'http://smushpro.wpmudev.org/1.0/') : '';
+
 			$this->resize_from_meta_data( $meta, $ID );
 
 			return $meta;
@@ -416,18 +426,27 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$headers['lossy'] = 'false';
 			}
 
+			$api_url = defined( 'WP_SMUSH_API_HTTP' ) ? WP_SMUSH_API_HTTP : WP_SMUSH_API;
 			$args   = array(
 				'headers'    => $headers,
 				'body'       => $file_data,
 				'timeout'    => WP_SMUSH_TIMEOUT,
-				'user-agent' => WP_SMUSH_UA
+				'user-agent' => WP_SMUSH_UA,
 			);
-			$result = wp_remote_post( WP_SMUSH_API, $args );
+			$result = wp_remote_post( $api_url, $args );
 
 			//Close file connection
 			fclose( $file );
 			unset( $file_data );//free memory
 			if ( is_wp_error( $result ) ) {
+
+				$er_msg = $result->get_error_message();
+
+				//Hostgator Issue
+				if ( ! empty( $er_msg ) && strpos( $er_msg, 'SSL CA cert' ) !== false ) {
+					//Update DB for using http protocol
+					update_option( WP_SMUSH_PREFIX . 'use_http', 1 );
+				}
 				//Handle error
 				$data['message'] = sprintf( __( 'Error posting to API: %s', 'wp-smushit' ), $result->get_error_message() );
 				$data['success'] = false;

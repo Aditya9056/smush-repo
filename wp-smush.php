@@ -48,7 +48,6 @@ $smush_constants = array(
 	'PREMIUM_MAX_BYTES' => 32000000,
 	'PREFIX'            => 'wp-smush-',
 	'TIMEOUT'           => 60
-
 );
 
 foreach ( $smush_constants as $const_name => $constant_val ) {
