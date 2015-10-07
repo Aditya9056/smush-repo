@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP Smush Pro\n"
-"POT-Creation-Date: 2015-10-08 00:26+0530\n"
+"POT-Creation-Date: 2015-10-08 01:05+0530\n"
 "PO-Revision-Date: 2015-10-08 00:17+0530\n"
 "Last-Translator: Umesh <umeshsingla05@gmail.com>\n"
 "Language-Team: Umesh <umeshsingla05@gmail.com>\n"
@@ -464,7 +464,7 @@ msgstr ""
 msgid "Savings"
 msgstr ""
 
-#: wp-smush.php:75
+#: wp-smush.php:76
 msgid "Get Fast"
 msgstr ""
 
