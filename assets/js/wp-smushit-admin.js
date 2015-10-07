@@ -2,40 +2,41 @@
  * Processes bulk smushing
  *
  * @author Saurabh Shukla <saurabh@incsub.com>
+ * @author Umesh Kumar
  *
  */
 var WP_Smush = WP_Smush || {};
 jQuery(function ($) {
-    // url for smushing
-    WP_Smush.errors = [];
-	WP_Smush.timeout = wp_smushit_data.timeout;
-    /**
-     * Checks for the specified param in URL
-     * @param sParam
-     * @returns {*}
-     */
-    WP_Smush.geturlparam = function(arg) {
-        var $sPageURL = window.location.search.substring(1);
-        var $sURLVariables = $sPageURL.split('&');
+	// url for smushing
+	WP_Smush.errors = [];
+	WP_Smush.timeout = wp_smushit_data.timeout;;
+	/**
+	 * Checks for the specified param in URL
+	 * @param sParam
+	 * @returns {*}
+	 */
+	WP_Smush.geturlparam = function (arg) {
+		var $sPageURL = window.location.search.substring(1);
+		var $sURLVariables = $sPageURL.split('&');
 
-        for (var i = 0; i < $sURLVariables.length; i++) {
-            var $sParameterName = $sURLVariables[i].split('=');
-            if ($sParameterName[0] == arg) {
-                return $sParameterName[1];
-            }
-        }
-    };
+		for (var i = 0; i < $sURLVariables.length; i++) {
+			var $sParameterName = $sURLVariables[i].split('=');
+			if ($sParameterName[0] == arg) {
+				return $sParameterName[1];
+			}
+		}
+	};
 
-    WP_Smush.ajax = function ($id, $send_url, $getnxt) {
-        "use strict";
-        return $.ajax({
-            type: "GET",
-            data: {attachment_id: $id, get_next: $getnxt},
-            url: $send_url,
-            timeout: WP_Smush.timeout,
-            dataType: 'json'
-        });
-    };
+	WP_Smush.ajax = function ($id, $send_url, $getnxt) {
+		"use strict";
+		return $.ajax({
+			type: "GET",
+			data: {attachment_id: $id, get_next: $getnxt},
+			url: $send_url,
+			timeout: WP_Smush.timeout,
+			dataType: 'json'
+		});
+	};
 
 	WP_Smush.Smush = function ($button, bulk) {
 		var self = this;
@@ -171,15 +172,15 @@ jQuery(function ($) {
 		};
 
 		this.update_progress = function (stats) {
-			if( !this.is_bulk_super_smush ) {
+			if (!this.is_bulk_super_smush) {
 				//handle progress for normal bulk smush
 				var progress = ( stats.data.smushed / stats.data.total) * 100;
-			}else{
+			} else {
 				//Handle progress for Super smush progress bar
-				if( wp_smushit_data.lossless.length > 0 ) {
+				if (wp_smushit_data.lossless.length > 0) {
 					$('#wp-smush-ss-progress-wrap .remaining-count').html(wp_smushit_data.lossless.length);
-				}else if( wp_smushit_data.lossless.length == 0 ){
-					$('#wp-smush-ss-progress-wrap #wp-smush-compression').html( wp_smush_msgs.all_supersmushed );
+				} else if (wp_smushit_data.lossless.length == 0) {
+					$('#wp-smush-ss-progress-wrap #wp-smush-compression').html(wp_smush_msgs.all_supersmushed);
 				}
 
 			}
@@ -194,11 +195,11 @@ jQuery(function ($) {
 
 		this._update_progress = function (count, width) {
 			"use strict";
-			if( !this.is_bulk ) {
+			if (!this.is_bulk) {
 				return;
 			}
 
-			if( !this.is_bulk_super_smush ) {
+			if (!this.is_bulk_super_smush) {
 				// get the progress bar
 				var $progress_bar = jQuery('#wp-smush-progress-wrap #wp-smush-fetched-progress div');
 				if ($progress_bar.length < 1) {
@@ -207,9 +208,9 @@ jQuery(function ($) {
 				$('.done-count').html(count);
 				// increase progress
 				$progress_bar.css('width', width + '%');
-			}else{
+			} else {
 
-				if( this.lossless_count > 0 ) {
+				if (this.lossless_count > 0) {
 					var remaining_lossless = this.lossless_count - wp_smushit_data.lossless.length;
 					var progress_width = ( remaining_lossless / this.lossless_count * 100 );
 					var $progress_bar = jQuery('#wp-smush-ss-progress-wrap #wp-smush-ss-progress div');
@@ -322,6 +323,20 @@ jQuery(function ($) {
 		return;
 	});
 
+	/**
+	 * Handle the Smush Stats link click
+	 */
+	$('body').on('click', 'a.smush-stats-details', function (e) {
+
+		// prevent the default action
+		e.preventDefault();
+		var slide_symbol = $(this).find('.stats-toggle');
+		$(this).parents().eq(1).find('.smush-stats-wrapper').slideToggle();
+		slide_symbol.text(slide_symbol.text() == '+' ? '-' : '+');
+
+		return;
+	});
+
 	//Handle smush button click
 	$('body').on('click', '.wp-smush-send', function (e) {
 
@@ -329,6 +344,8 @@ jQuery(function ($) {
 		e.preventDefault();
 		new WP_Smush.Smush($(this), false);
 	});
+	//Stats Button Click
+
 
 });
 (function ($) {
