@@ -26,10 +26,10 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			add_action( 'ngg_added_new_image', array( $this, 'image_count' ), 10 );
 
 			//Update smushed images list
-			add_action( 'wp_smush_completed_nextgen', array( $this, 'update_smushed_count' ) );
+			add_action( 'wp_smush_nextgen_image_stats', array( $this, 'update_smushed_count' ) );
 
 			//Get the stats for single image, update the global stats
-			add_action( 'wp_smush_nextgen_image_stats', array( $this, 'update_stats' ) );
+			add_action( 'wp_smush_nextgen_image_stats', array( $this, 'update_stats' ), '', 2 );
 		}
 
 		/**
@@ -219,7 +219,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 * @param $stats Compression stats fo respective image
 		 *
 		 */
-		function update_stats( $stats ) {
+		function update_stats( $image_id, $stats ) {
 			global $WpSmush;
 
 			$stats = ! empty( $stats['stats'] ) ? $stats['stats'] : '';

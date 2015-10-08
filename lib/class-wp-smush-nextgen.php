@@ -229,12 +229,16 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 						foreach ( $existing_stats['sizes'] as $size_name => $size_stats ) {
 							//if stats for a particular size doesn't exists
-							if ( empty( $stats['sizes'][ $size_name ] ) ) {
-								$stats['sizes'][ $size_name ] = $existing_stats['sizes'][ $size_name ];
+							if ( empty( $stats->sizes ) || empty( $stats->sizes->$size_name ) ) {
+								$stats = empty( $stats ) ? [ ] : $stats;
+								if ( empty( $stats->sizes ) ) {
+									$stats->sizes = [ ];
+								}
+								$stats->sizes->$size_name = $existing_stats['sizes'][ $size_name ];
 							} else {
 								//Update compression percent and bytes saved for each size
-								$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats['sizes'][ $size_name ]->bytes;
-								$stats['sizes'][ $size_name ]->percent = $stats['sizes'][ $size_name ]->percent + $existing_stats['sizes'][ $size_name ]->percent;
+								$stats->sizes->$size_name->bytes   = $stats->sizes->$size_name->bytes + $existing_stats['sizes'][ $size_name ]->bytes;
+								$stats->sizes->$size_name->percent = $stats->sizes->$size_name->percent + $existing_stats['sizes'][ $size_name ]->percent;
 							}
 						}
 					}
@@ -243,7 +247,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				nggdb::update_image_meta( $image->pid, $image->meta_data );
 
 				//Allows To get the stats for each image, after the image is smushed
-				do_action( 'wp_smush_nextgen_image_stats', $stats, $image->pid );
+				do_action( 'wp_smush_nextgen_image_stats', $image->pid, $stats );
 			}
 
 			return $image->meta_data['wp_smush'];
@@ -252,13 +256,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		/**
 		 * Performs the actual smush process
 		 *
-		 * @usedby: `smush_manual_nextgen`, `auto_smush`
+		 * @usedby: `manual_nextgen`, `auto_smush`, `smush_bulk`
 		 *
 		 * @param string $pid , NextGen Gallery Image id
 		 * @param string $image , Nextgen gallery image object
-		 * @param bool|true $return, Whether to return the stats or not, false for auto smush
+		 * @param bool|true $echo, Whether to echo the stats or not, false for auto smush
 		 */
-		function smush_image( $pid = '', $image = '', $return = true ) {
+		function smush_image( $pid = '', $image = '', $echo = true ) {
 			global $wpsmushnextgenstats;
 
 			//Get metadata For the image
@@ -289,7 +293,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 
 			//If we are suppose to send the stats, not required for auto smush
-			if ( $return ) {
+			if ( $echo ) {
 				/** Send stats **/
 				if ( is_wp_error( $smush ) ) {
 					/**
@@ -298,6 +302,12 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 					wp_send_json_error( $smush->get_error_message() );
 				} else {
 					wp_send_json_success( $status );
+				}
+			}else{
+				if ( is_wp_error( $smush ) ) {
+					return $smush;
+				}else{
+					return true;
 				}
 			}
 		}
@@ -308,10 +318,10 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 */
 		function manual_nextgen() {
 			$pid   = ! empty( $_GET['attachment_id'] ) ? $_GET['attachment_id'] : '';
-			$nonce = ! empty( $_GET['_wp_smush_nonce'] ) ? $_GET['_wp_smush_nonce'] : '';
+			$nonce = ! empty( $_GET['_nonce'] ) ? $_GET['_nonce'] : '';
 
 			//Verify Nonce
-			if ( ! wp_verify_nonce( $nonce, 'wp_smush_nextgen_' . $pid ) ) {
+			if ( ! wp_verify_nonce( $nonce, 'wp_smush_nextgen' ) ) {
 				wp_send_json_error( array( 'error' => 'nonce_verification_failed' ) );
 			}
 

@@ -187,18 +187,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'media-views'
-				), WP_SMUSH_VERSION . 5 );
+				), WP_SMUSH_VERSION . time() );
 			} else {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'underscore'
-				), WP_SMUSH_VERSION . 5 );
+				), WP_SMUSH_VERSION . time() );
 			}
 			wp_register_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
 
 
 			/* Register Style. */
-			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version . 5 );
+			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version . time() );
 
 		}
 
@@ -701,9 +701,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$stats['total']   = $this->total_count;
 
 			if ( is_wp_error( $smush ) ) {
-				wp_send_json_error( $stats );
+				$error = $smush->get_error_message();
+				//Check for timeout error and suggest to filter timeout
+				if( strpos( $error, 'timed out') ) {
+					$msg = esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" );
+				}
+				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $msg ) );
 			} else {
-				wp_send_json_success( $stats );
+				wp_send_json_success( array( 'stats' => $stats ) );
 			}
 		}
 

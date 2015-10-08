@@ -8,7 +8,9 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 
 		function smush_bulk() {
 
-			global $WpSmush;
+			global $wpsmushnextgenstats;
+
+			$stats = array();
 
 			if ( empty( $_GET['attachment_id'] ) ) {
 				wp_send_json_error( 'missing id' );
@@ -16,15 +18,22 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 
 			$atchmnt_id = sanitize_key( $_GET['attachment_id'] );
 
-			$this->smush_image( $atchmnt_id );
+			$smush  = $this->smush_image( $atchmnt_id, '', false );
 
-			$stats['smushed'] = $this->smushed_count;
-			$stats['total']   = $this->total_count;
+			$stats = $wpsmushnextgenstats->get_smush_stats();
+
+			$stats['smushed'] = $wpsmushnextgenstats->get_smushed_images( true );
+			$stats['total']   = $wpsmushnextgenstats->total_count();
 
 			if ( is_wp_error( $smush ) ) {
-				wp_send_json_error( $stats );
+				$error = $smush->get_error_message();
+				//Check for timeout error and suggest to filter timeout
+				if( strpos( $error, 'timed out') ) {
+					$msg = esc_html__( "Smush request timed out, You can try setting a higher value ( > 60 ) for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" );
+				}
+				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $msg ) );
 			} else {
-				wp_send_json_success( $stats );
+				wp_send_json_success( array( 'stats' => $stats ) );
 			}
 		}
 

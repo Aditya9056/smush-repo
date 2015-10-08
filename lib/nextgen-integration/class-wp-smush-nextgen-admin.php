@@ -265,7 +265,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			$class = $smushed ? '' : ' hidden';
 			$html  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
-			$html .= wp_nonce_field( 'wp_smush_nextgen_' . $pid, '_wp_smush_nonce', '', false );
+			$html .= wp_nonce_field( 'wp_smush_nextgen', '_wp_smush_nonce', '', false );
 			// if we aren't showing the button
 			if ( ! $show_button ) {
 				if ( $echo ) {
@@ -345,6 +345,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				</div>';
 			// print it out
 			echo $progress_ui;
+			wp_nonce_field( 'wp_smush_nextgen', '_wp_smush_nonce', '', true );
 		}
 		/**
 		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not

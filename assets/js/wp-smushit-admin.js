@@ -27,11 +27,11 @@ jQuery(function ($) {
 		}
 	};
 
-	WP_Smush.ajax = function ($id, $send_url, $getnxt) {
+	WP_Smush.ajax = function ($id, $send_url, $getnxt, nonce ) {
 		"use strict";
 		return $.ajax({
 			type: "GET",
-			data: {attachment_id: $id, get_next: $getnxt},
+			data: {attachment_id: $id, get_next: $getnxt, _nonce: nonce },
 			url: $send_url,
 			timeout: WP_Smush.timeout,
 			dataType: 'json'
@@ -175,10 +175,10 @@ jQuery(function ($) {
 			this.$button.find('span').html(wp_smush_msgs.bulk_now);
 		};
 
-		this.update_progress = function (stats) {
+		this.update_progress = function (_res) {
 			if (!this.is_bulk_super_smush) {
 				//handle progress for normal bulk smush
-				var progress = ( stats.data.smushed / stats.data.total) * 100;
+				var progress = ( _res.data.stats.smushed / _res.data.stats.total) * 100;
 			} else {
 				//Handle progress for Super smush progress bar
 				if (wp_smushit_data.lossless.length > 0) {
@@ -190,11 +190,11 @@ jQuery(function ($) {
 			}
 
 			//Update stats
-			$('#wp-smush-compression #human').html(stats.data.human);
-			$('#wp-smush-compression #percent').html(stats.data.percent);
+			$('#wp-smush-compression #human').html(_res.data.stats.human);
+			$('#wp-smush-compression #percent').html(_res.data.stats.percent);
 
 			// increase the progress bar
-			this._update_progress(stats.data.smushed, progress);
+			this._update_progress(_res.data.stats.smushed, progress);
 		};
 
 		this._update_progress = function (count, width) {
@@ -258,6 +258,14 @@ jQuery(function ($) {
 				}).done(function (res) {
 					//If no response or success is false, do not process further
 					if (typeof res == 'undefined' || !res || !res.success ) {
+						if( typeof res.data.error_msg !== 'undefined' ) {
+							//Print the error on screen
+							self.$log.append(res.data.error_msg);
+							//We can proceed to next image
+							if (self.continue()) {
+								self.call_ajax();
+							}
+						}
 						return false;
 					}
 					self.update_progress(res);
