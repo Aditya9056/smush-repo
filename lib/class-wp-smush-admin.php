@@ -290,7 +290,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$data = array(
 				'smushed'   => $this->get_smushed_image_ids(),
 				'unsmushed' => $this->ids,
-				'lossless'  => $this->lossless_ids
+				'lossless'  => $this->lossless_ids,
+				'timeout'   => WP_SMUSH_TIMEOUT * 1000 //Convert it into ms
 			);
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
@@ -441,7 +442,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				?>
 				<input type="submit" id="wp-smush-save-settings" class="button button-primary" value="<?php _e( 'Save Changes', 'wp-smushit' ); ?>">
 			</form>
-		<?php
+			<?php
 		}
 
 		/**
@@ -573,7 +574,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( ! $auto_smush && $this->remaining_count == 0 ) {
 					?>
 					<p><?php printf( __( 'When you <a href="%s">upload some images</a> they will be available to smush here.', 'wp-smushit' ), admin_url( 'media-new.php' ) ); ?></p>
-				<?php
+					<?php
 				} else { ?>
 					<p>
 					<?php
@@ -584,7 +585,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 				?>
 			</div>
-		<?php
+			<?php
 		}
 
 		/**
@@ -612,7 +613,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					</div>
 				</div>
 			</div>
-		<?php
+			<?php
 		}
 
 		/**
@@ -808,7 +809,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						_e( 'All your images are already smushed!', 'wp-smushit' );
 						?>
 					</p>
-				<?php
+					<?php
 				} else {
 					$this->selected_ui( $send_ids, '' );
 					// we have some smushing to do! :)
@@ -820,7 +821,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						printf( __( 'You can also smush images individually from your <a href="%s">Media Library</a>.', 'wp-smushit' ), admin_url( 'upload.php' ) );
 						?>
 					</p>
-				<?php
+					<?php
 				}
 
 				// display the progress bar
@@ -831,7 +832,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				?>
 			</div>
-		<?php
+			<?php
 		}
 
 		/**
@@ -927,7 +928,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					?>
 				</ul>
 			</div>
-		<?php
+			<?php
 		}
 
 		/**
@@ -940,7 +941,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			<button class="button button-primary<?php echo ' ' . $button['class']; ?>" name="smush-all" <?php echo $disabled; ?>>
 				<span><?php echo $button['text'] ?></span>
 			</button>
-		<?php
+			<?php
 		}
 
 		function global_stats() {
@@ -1103,7 +1104,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 			?>
-			<div class="error">
+			<div class="updated">
 				<a href="<?php echo admin_url( 'index.php' ); ?>?dismiss_smush_upgrade=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
 
 				<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Happy Smushing!</h3>
@@ -1120,7 +1121,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<a href="https://premium.wpmudev.org/?coupon=SMUSH50OFF#pricing"> Click here to upgrade with a 50%
 						discount</a>.</p>
 			</div>
-		<?php
+			<?php
 		}
 
 		/**
@@ -1215,10 +1216,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			<div id="wp-smush-ss-progress" class="wp-smush-progressbar"><div style="width:0%"></div></div>
 			<p id="wp-smush-compression">'
 			                   . sprintf(
-					_n( '<span class="remaining-count">%d</span> attachment left to Super-Smush',
-						'<span class="remaining-count">%d</span> attachments left to Super-Smush',
-						count( $this->lossless_ids ),
-						'wp-smushit' ), count( $this->lossless_ids ), count( $this->lossless_ids ) )
+				                   _n( '<span class="remaining-count">%d</span> attachment left to Super-Smush',
+					                   '<span class="remaining-count">%d</span> attachments left to Super-Smush',
+					                   count( $this->lossless_ids ),
+					                   'wp-smushit' ), count( $this->lossless_ids ), count( $this->lossless_ids ) )
 			                   . '</p>
             </div>
 			</div><!-- End of progress ui -->';

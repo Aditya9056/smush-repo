@@ -50,7 +50,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Auto Smush the new image
 			if ( $auto_smush ) {
-				add_filter( 'wp_generate_attachment_metadata', array(
+				add_filter( 'wp_update_attachment_metadata', array(
 					$this,
 					'filter_generate_attachment_metadata'
 				), 20, 2 );
@@ -105,7 +105,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$errors->add( "not_writable", sprintf( __( "%s is not writable", 'wp-smushit' ), dirname( $file_path ) ) );
 			}
 
-			$file_size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
+			$file_size = filesize( $file_path );
 
 			//Check if premium user
 			$max_size = $this->is_pro() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
@@ -247,7 +247,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//File path and URL for original image
 			$attachment_file_path = get_attached_file( $ID );
-			$attachment_file_url  = wp_get_attachment_url( $ID );
 
 			// If images has other registered size, smush them first
 			if ( ! empty( $meta['sizes'] ) ) {
@@ -266,9 +265,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and replace the filename.
-
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
-					$attachment_file_url_size  = trailingslashit( dirname( $attachment_file_url ) ) . $size_data['file'];
 
 					//Store details for each size key
 					$response = $this->do_smushit( $attachment_file_path_size );
@@ -379,6 +376,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed
 		 */
 		function filter_generate_attachment_metadata( $meta, $ID = null ) {
+			//Update API url for Hostgator
+
+			//Check for use of http url, (Hostgator mostly)
+			$use_http = wp_cache_get( WP_SMUSH_PREFIX.'use_http', 'smush' );
+			if( !$use_http ) {
+				$use_http = get_option( WP_SMUSH_PREFIX.'use_http' );
+				wp_cache_add( WP_SMUSH_PREFIX.'use_http', $use_http, 'smush' );
+			}
+			$use_http ? define( 'WP_SMUSH_API_HTTP', 'http://smushpro.wpmudev.org/1.0/') : '';
+
 			$this->resize_from_meta_data( $meta, $ID );
 
 			return $meta;
@@ -419,18 +426,27 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$headers['lossy'] = 'false';
 			}
 
+			$api_url = defined( 'WP_SMUSH_API_HTTP' ) ? WP_SMUSH_API_HTTP : WP_SMUSH_API;
 			$args   = array(
 				'headers'    => $headers,
 				'body'       => $file_data,
 				'timeout'    => WP_SMUSH_TIMEOUT,
-				'user-agent' => WP_SMUSH_UA
+				'user-agent' => WP_SMUSH_UA,
 			);
-			$result = wp_remote_post( WP_SMUSH_API, $args );
+			$result = wp_remote_post( $api_url, $args );
 
 			//Close file connection
 			fclose( $file );
 			unset( $file_data );//free memory
 			if ( is_wp_error( $result ) ) {
+
+				$er_msg = $result->get_error_message();
+
+				//Hostgator Issue
+				if ( ! empty( $er_msg ) && strpos( $er_msg, 'SSL CA cert' ) !== false ) {
+					//Update DB for using http protocol
+					update_option( WP_SMUSH_PREFIX . 'use_http', 1 );
+				}
 				//Handle error
 				$data['message'] = sprintf( __( 'Error posting to API: %s', 'wp-smushit' ), $result->get_error_message() );
 				$data['success'] = false;
@@ -571,10 +587,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed
 		 */
 		private function _get_api_key() {
-			if ( defined( 'WPMUDEV_APIKEY' ) ) {
-				$api_key = WPMUDEV_APIKEY;
-			} else {
-				$api_key = get_site_option( 'wpmudev_apikey' );
+			//Try to fetch it from Cache
+			$api_key = wp_cache_get( 'wpmudev_apikey', 'smush' );
+
+			//If not available, get it from other means, and set it in cache
+			if ( ! $api_key ) {
+				if ( defined( 'WPMUDEV_APIKEY' ) ) {
+					$api_key = WPMUDEV_APIKEY;
+				} else {
+					$api_key = get_site_option( 'wpmudev_apikey' );
+				}
+				if ( $api_key ) {
+					wp_cache_add( "wpmudev_apikey", $api_key, 'smush', 6000 );
+				}
 			}
 
 			return $api_key;

@@ -9,7 +9,7 @@ var WP_Smush = WP_Smush || {};
 jQuery(function ($) {
 	// url for smushing
 	WP_Smush.errors = [];
-	WP_Smush.timeout = 60000;
+	WP_Smush.timeout = wp_smushit_data.timeout;
 	/**
 	 * Checks for the specified param in URL
 	 * @param sParam
@@ -27,11 +27,11 @@ jQuery(function ($) {
 		}
 	};
 
-	WP_Smush.ajax = function ($id, $send_url, $getnxt, $nonce) {
+	WP_Smush.ajax = function ($id, $send_url, $getnxt) {
 		"use strict";
 		return $.ajax({
 			type: "GET",
-			data: {attachment_id: $id, get_next: $getnxt, _wp_smush_nonce: $nonce},
+			data: {attachment_id: $id, get_next: $getnxt},
 			url: $send_url,
 			timeout: WP_Smush.timeout,
 			dataType: 'json'
@@ -346,7 +346,7 @@ jQuery(function ($) {
 		e.preventDefault();
 		var slide_symbol = $(this).find('.stats-toggle');
 		$(this).parents().eq(1).find('.smush-stats-wrapper').slideToggle();
-		slide_symbol.text( slide_symbol.text() == '+' ? '-' : '+' );
+		slide_symbol.text(slide_symbol.text() == '+' ? '-' : '+');
 
 		return;
 	});

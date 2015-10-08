@@ -35,7 +35,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix          = 'WP_SMUSH_';
-$version         = '2.0.6.3-1';
+$version         = '2.0.6.3';
+
+/**
+ * Set the default timeout for API request and AJAX timeout
+ */
+$timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 60 );
+
 $smush_constants = array(
 	'VERSION'           => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
@@ -46,8 +52,7 @@ $smush_constants = array(
 	'MAX_BYTES'         => 1000000,
 	'PREMIUM_MAX_BYTES' => 32000000,
 	'PREFIX'            => 'wp-smush-',
-	'TIMEOUT'           => 60
-
+	'TIMEOUT'           => $timeout
 );
 
 foreach ( $smush_constants as $const_name => $constant_val ) {
