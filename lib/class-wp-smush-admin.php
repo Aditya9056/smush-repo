@@ -687,7 +687,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			}
 
-			$attachment_id = $_REQUEST['attachment_id'];
+			$attachment_id = sanitize_key( $_REQUEST['attachment_id'] );
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 

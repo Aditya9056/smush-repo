@@ -1095,12 +1095,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
 			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-admin.php' );
 			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-stats.php' );
+			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-bulk.php' );
 
 			global $wpsmushnextgen, $wpsmushnextgenadmin, $wpsmushnextgenstats;
 			//Initialize Nextgen support
 			$wpsmushnextgen      = new WpSmushNextGen();
 			$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 			$wpsmushnextgenstats = new WpSmushNextGenStats();
+			new WPSmushNextGenBulk();
 		}
 	}
 

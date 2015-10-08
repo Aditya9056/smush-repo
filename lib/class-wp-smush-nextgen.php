@@ -254,13 +254,27 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 *
 		 * @usedby: `smush_manual_nextgen`, `auto_smush`
 		 *
-		 * @param $pid , NextGen Gallery Image id
-		 * @param $storage
-		 * @param $image , Nextgen gallery image object
-		 * @param $return Whether to return the stats or not, false for auto smush
+		 * @param string $pid , NextGen Gallery Image id
+		 * @param string $image , Nextgen gallery image object
+		 * @param bool|true $return, Whether to return the stats or not, false for auto smush
 		 */
-		function smush_image( $pid, $storage, $image, $return = true ) {
+		function smush_image( $pid = '', $image = '', $return = true ) {
 			global $wpsmushnextgenstats;
+
+			//Get metadata For the image
+			// Registry Object for NextGen Gallery
+			$registry = C_Component_Registry::get_instance();
+
+			//Gallery Storage Object
+			$storage = $registry->get_utility( 'I_Gallery_Storage' );
+
+			//Get image, if we have image id
+			if ( ! empty( $pid ) ) {
+				$image = $storage->object->_image_mapper->find( $pid );
+			} elseif ( ! empty( $image ) ) {
+				$pid = $storage->object->_get_image_id( $image );
+			}
+
 			$metadata = ! empty( $image ) ? $image->meta_data : '';
 
 			if ( empty( $metadata ) ) {
@@ -310,16 +324,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				wp_die( __( 'No attachment ID was provided.', 'wp-smushit' ) );
 			}
 
-			//Get metadata For the image
-			// Registry Object for NextGen Gallery
-			$registry = C_Component_Registry::get_instance();
-
-			//Gallery Storage Object
-			$storage = $registry->get_utility( 'I_Gallery_Storage' );
-
-			$image = $storage->object->_image_mapper->find( $pid );
-
-			$this->smush_image( $pid, $storage, $image );
+			$this->smush_image( $pid, '' );
 
 		}
 
@@ -330,14 +335,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 */
 		function auto_smush( $image ) {
 
-			// creating the 'registry' object for working with nextgen
-			$registry = C_Component_Registry::get_instance();
-			// creating a database storage object from the 'registry' object
-			$storage = $registry->get_utility( 'I_Gallery_Storage' );
-
-			$image_id = $storage->object->_get_image_id( $image );
-
-			$this->smush_image( $image_id, $storage, $image, false );
+			$this->smush_image( '', $image, false );
 
 		}
 

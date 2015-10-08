@@ -31,6 +31,19 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//Add a bulk smush option for NextGen gallery
 			add_action( 'admin_menu', array( &$this, 'wp_smush_bulk_menu' ) );
 
+			//Localize variables for NextGen Mnaeg gallery page
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+
+		}
+
+		/**
+		 * Enqueue Scripts on Manage Gallery page
+		 */
+		function enqueue() {
+			$current_screen = get_current_screen();
+			if ( ! empty( $current_screen ) && $current_screen->base == 'nggallery-manage-images' ) {
+				$this->localize();
+			}
 		}
 
 		/**
