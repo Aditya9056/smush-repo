@@ -83,7 +83,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.0.6.3 =
 
-* Fixed: File permission error for few servers
+* Fixed: Change File permission after replacing image
 * Fixed: Directory path for files
 * Fixed: Workaround for Auto Smush issue on Hostgator
 * Fixed: Smush button doesn't works in media library dialog on post screen, when add media is clicked

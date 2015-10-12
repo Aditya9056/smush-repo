@@ -187,18 +187,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'media-views'
-				), WP_SMUSH_VERSION . time() );
+				), WP_SMUSH_VERSION );
 			} else {
 				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 					'jquery',
 					'underscore'
-				), WP_SMUSH_VERSION . time() );
+				), WP_SMUSH_VERSION );
 			}
 			wp_register_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
 
 
 			/* Register Style. */
-			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version . time() );
+			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
 
 		}
 
