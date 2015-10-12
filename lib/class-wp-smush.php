@@ -53,7 +53,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				add_filter( 'wp_update_attachment_metadata', array(
 					$this,
 					'filter_generate_attachment_metadata'
-				), 20, 2 );
+				), 12, 2 );
 			}
 
 			//Optimise WP Retina 2x images
@@ -258,11 +258,38 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					}
 				}
 
+				if( class_exists('finfo') ) {
+					$finfo = new finfo( FILEINFO_MIME_TYPE );
+				}else{
+					$finfo = false;
+				}
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and replace the filename.
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
+
+					if ( $finfo ) {
+						$ext = $finfo->file( $attachment_file_path_size );
+					} elseif ( function_exists( 'mime_content_type' ) ) {
+						$ext = mime_content_type( $attachment_file_path_size );
+					} else {
+						$ext = false;
+					}
+					if( $ext ) {
+						$valid_mime = array_search(
+							$ext,
+							array(
+								'jpg' => 'image/jpeg',
+								'png' => 'image/png',
+								'gif' => 'image/gif',
+							),
+							true
+						);
+						if ( false === $valid_mime ) {
+							continue;
+						}
+					}
 
 					//Store details for each size key
 					$response = $this->do_smushit( $attachment_file_path_size );

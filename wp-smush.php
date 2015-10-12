@@ -41,7 +41,7 @@ $version         = '2.0.6.3';
 /**
  * Set the default timeout for API request and AJAX timeout
  */
-$timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 60 );
+$timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 90 );
 
 $smush_constants = array(
 	'VERSION'           => $version,
