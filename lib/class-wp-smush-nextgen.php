@@ -229,16 +229,23 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 						foreach ( $existing_stats['sizes'] as $size_name => $size_stats ) {
 							//if stats for a particular size doesn't exists
-							if ( empty( $stats->sizes ) || empty( $stats->sizes->$size_name ) ) {
-								$stats = empty( $stats ) ? [ ] : $stats;
-								if ( empty( $stats->sizes ) ) {
-									$stats->sizes = [ ];
+							if ( empty( $stats['sizes'] ) || empty( $stats['sizes'][$size_name] ) ) {
+								$stats = empty( $stats ) ? array() : $stats;
+								echo "<pre>";
+								var_dump( $stats );
+								var_dump( $stats->sizes );
+								echo "</pre>";
+								if ( empty( $stats['sizes'] ) ) {
+									$stats['sizes'] = array();
 								}
-								$stats->sizes->$size_name = $existing_stats['sizes'][ $size_name ];
+								$stats['sizes'][$size_name] = $existing_stats['sizes'][ $size_name ];
 							} else {
 								//Update compression percent and bytes saved for each size
-								$stats->sizes->$size_name->bytes   = $stats->sizes->$size_name->bytes + $existing_stats['sizes'][ $size_name ]->bytes;
-								$stats->sizes->$size_name->percent = $stats->sizes->$size_name->percent + $existing_stats['sizes'][ $size_name ]->percent;
+								echo "<pre>244";
+								print_r( $stats );
+								echo "</pre>";
+								$stats['sizes'][$size_name]->bytes   = $stats['sizes'][$size_name]->bytes + $existing_stats['sizes'][ $size_name ]->bytes;
+								$stats['sizes'][$size_name]->percent = $stats['sizes'][$size_name]->bytes + $existing_stats['sizes'][ $size_name ]->percent;
 							}
 						}
 					}
