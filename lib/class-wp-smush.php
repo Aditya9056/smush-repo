@@ -1043,18 +1043,20 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Reorder Sizes as per the maximum savings
 			uasort( $size_stats, array( $this, "cmp" ) );
 
-			//Get skipped images
-			$skipped = $this->get_skipped_images($image_id, $size_stats, $attachment_metadata );
+			if ( ! empty( $attachment_metadata['sizes'] ) ) {
+				//Get skipped images
+				$skipped = $this->get_skipped_images( $image_id, $size_stats, $attachment_metadata );
 
-			if ( ! empty( $skipped ) ) {
-				foreach ( $skipped as $img_data ) {
-					$skip_class = $img_data['reason'] == 'size_limit' ? ' error' : '';
-					$stats .= '<tr>
+				if ( ! empty( $skipped ) ) {
+					foreach ( $skipped as $img_data ) {
+						$skip_class = $img_data['reason'] == 'size_limit' ? ' error' : '';
+						$stats .= '<tr>
 					<td>' . strtoupper( $img_data['size'] ) . '</td>
-					<td class="smush-skipped' . $skip_class .'">' . $this->skip_reason( $img_data['reason'] ) . '</td>
+					<td class="smush-skipped' . $skip_class . '">' . $this->skip_reason( $img_data['reason'] ) . '</td>
 				</tr>';
-				}
+					}
 
+				}
 			}
 			//Show Sizes and their compression
 			foreach ( $size_stats as $size_key => $size_stats ) {
