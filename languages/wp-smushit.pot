@@ -1,26 +1,16 @@
-#, fuzzy
+# Copyright (C) 2015 WP Smush
+# This file is distributed under the same license as the WP Smush package.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Smush\n"
-"POT-Creation-Date: 2015-10-08 00:56+0530\n"
-"PO-Revision-Date: 2015-10-07 23:49+0530\n"
-"Last-Translator: Umesh <umeshsingla05@gmail.com>\n"
-"Language-Team: Umesh <umeshsingla05@gmail.com>\n"
+"Project-Id-Version: WP Smush 2.0.6.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-smushit\n"
+"POT-Creation-Date: 2015-10-12 09:44:25+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.1\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-WPHeader: wp-smush.php\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
-"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: *.js\n"
+"PO-Revision-Date: 2015-10-12 HO:MI+ZONE\n"
 
 #: extras/free-dashboard/module.php:388
-#, php-format
 msgid ""
 "We're happy that you've chosen to install %s! Are you interested in how to "
 "make the most of this plugin? How would you like a quick 5 day email crash "
@@ -41,7 +31,6 @@ msgid "No thanks"
 msgstr ""
 
 #: extras/free-dashboard/module.php:423
-#, php-format
 msgid ""
 "Hey %s, you've been using %s for a while now, and we hope you're happy with "
 "it."
@@ -54,10 +43,10 @@ msgid ""
 msgstr ""
 
 #: extras/free-dashboard/module.php:441
-#, php-format
 msgid "Rate %s"
 msgstr ""
 
+#. #-#-#-#-#  plugin.pot (WP Smush 2.0.6.3)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: lib/class-wp-smush-admin.php:105 lib/class-wp-smush-admin.php:303
 msgid "WP Smush"
@@ -69,7 +58,6 @@ msgid "Bulk Smush Now"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:222 lib/class-wp-smush-admin.php:972
-#, php-format
 msgid "Bulk Smush %d Attachments"
 msgstr ""
 
@@ -158,7 +146,6 @@ msgid "Save Changes"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:474
-#, php-format
 msgid ""
 "%d image is over 1MB so will be skipped using the free version of the plugin."
 msgid_plural ""
@@ -176,7 +163,6 @@ msgid "Congratulations, all your images are currently Smushed!"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:497
-#, php-format
 msgid "%d attachment in your media library has not been smushed."
 msgid_plural ""
 "%d image attachments in your media library have not been smushed yet."
@@ -197,7 +183,6 @@ msgid ""
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:511
-#, php-format
 msgid ""
 "Free accounts are limited to bulk smushing %d attachments per request. You "
 "will need to click to start a new bulk job after each %d attachments."
@@ -208,14 +193,12 @@ msgid "Remove limits &raquo;"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:532
-#, php-format
 msgid ""
 "When you <a href=\"%s\">upload some images</a> they will be available to "
 "smush here."
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:538 lib/class-wp-smush-admin.php:774
-#, php-format
 msgid ""
 "You can also smush images individually from your <a href=\"%s\">Media "
 "Library</a>."
@@ -225,8 +208,7 @@ msgstr ""
 msgid "Reduced by "
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:601
-#, php-format
+#: lib/class-wp-smush-admin.php:600
 msgid ""
 "<span class=\"done-count\">%d</span> of <span class=\"total-count\">%d</"
 "span> total attachments have been smushed"
@@ -240,8 +222,7 @@ msgstr ""
 msgid "No attachment ID was provided."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:745
-#, php-format
+#: lib/class-wp-smush-admin.php:744
 msgid "<p>Please <a href=\"%s\">upload some images</a>.</p>"
 msgstr ""
 
@@ -249,8 +230,7 @@ msgstr ""
 msgid "All your images are already smushed!"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:863
-#, php-format
+#: lib/class-wp-smush-admin.php:862
 msgid "<strong>%d of %d images</strong> were sent for smushing:"
 msgstr ""
 
@@ -266,7 +246,6 @@ msgid ""
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:1157
-#, php-format
 msgid ""
 "<span class=\"remaining-count\">%d</span> attachment left to Super-Smush"
 msgid_plural ""
@@ -360,22 +339,18 @@ msgid "File path is empty"
 msgstr ""
 
 #: lib/class-wp-smush.php:97
-#, php-format
 msgid "Could not find %s"
 msgstr ""
 
 #: lib/class-wp-smush.php:102
-#, php-format
 msgid "%s is not writable"
 msgstr ""
 
 #: lib/class-wp-smush.php:112
-#, php-format
 msgid "Skipped (%s), image not found."
 msgstr ""
 
 #: lib/class-wp-smush.php:117
-#, php-format
 msgid "Skipped (%s), size limit exceeded."
 msgstr ""
 
@@ -384,7 +359,6 @@ msgid "Unknown API error"
 msgstr ""
 
 #: lib/class-wp-smush.php:283
-#, php-format
 msgid "Size '%s' not processed correctly"
 msgstr ""
 
@@ -393,12 +367,10 @@ msgid "Size 'full' not processed correctly"
 msgstr ""
 
 #: lib/class-wp-smush.php:448
-#, php-format
 msgid "Error posting to API: %s"
 msgstr ""
 
 #: lib/class-wp-smush.php:454
-#, php-format
 msgid "Error posting to API: %s %s"
 msgstr ""
 
@@ -419,7 +391,6 @@ msgid "Already Optimized"
 msgstr ""
 
 #: lib/class-wp-smush.php:679
-#, php-format
 msgid "%d images reduced "
 msgstr ""
 
@@ -428,7 +399,6 @@ msgid "Reduced "
 msgstr ""
 
 #: lib/class-wp-smush.php:680
-#, php-format
 msgid "by %s (  %01.1f%% )"
 msgstr ""
 

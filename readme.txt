@@ -81,6 +81,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.0.6.4 =
+
+* Updated: Skip webp images
+* Added: Detailed text for stats and settings
+
 = 2.0.6.3 =
 
 * Fixed: Change File permission after replacing image

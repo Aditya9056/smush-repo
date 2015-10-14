@@ -53,7 +53,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				add_filter( 'wp_update_attachment_metadata', array(
 					$this,
 					'filter_generate_attachment_metadata'
-				), 20, 2 );
+				), 12, 2 );
 			}
 
 			//Optimise WP Retina 2x images
@@ -261,11 +261,38 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					}
 				}
 
+				if( class_exists('finfo') ) {
+					$finfo = new finfo( FILEINFO_MIME_TYPE );
+				}else{
+					$finfo = false;
+				}
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and replace the filename.
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
+
+					if ( $finfo ) {
+						$ext = $finfo->file( $attachment_file_path_size );
+					} elseif ( function_exists( 'mime_content_type' ) ) {
+						$ext = mime_content_type( $attachment_file_path_size );
+					} else {
+						$ext = false;
+					}
+					if( $ext ) {
+						$valid_mime = array_search(
+							$ext,
+							array(
+								'jpg' => 'image/jpeg',
+								'png' => 'image/png',
+								'gif' => 'image/gif',
+							),
+							true
+						);
+						if ( false === $valid_mime ) {
+							continue;
+						}
+					}
 
 					//Store details for each size key
 					$response = $this->do_smushit( $attachment_file_path_size );
@@ -682,11 +709,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$status_txt = $image_count > 1 ? sprintf( __( "%d images reduced ", 'wp-smushit' ), $image_count ) : __( "Reduced ", 'wp-smushit' );
 						$status_txt .= sprintf( __( "by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
 
-						//Detailed Stats Link
-						$status_txt .= '<br /><a href="#" class="smush-stats-details">' . esc_html__( "Smush stats", 'wp-smushit' ) . ' [<span class="stats-toggle">+</span>]</a>';
+						//Show detailed stats if available
+						if ( ! empty( $wp_smush_data['sizes'] ) ) {
+							//Detailed Stats Link
+							$status_txt .= '<br /><a href="#" class="smush-stats-details">' . esc_html__( "Smush stats", 'wp-smushit' ) . ' [<span class="stats-toggle">+</span>]</a>';
 
-						//Stats
-						$status_txt .= $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
+							//Stats
+							$status_txt .= $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
+						}
 					}
 				}
 
@@ -1006,8 +1036,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function skip_reason( $msg_id ) {
 			$skip_msg = array(
-				'large_size' => esc_html__('Large size available for the image.', 'wp-smushit'),
-				'size_limit' => esc_html__('Image exceeded the 1Mb size limit.')
+				'large_size' => esc_html__( "For very large dimension images like those taken with a digital camera, the original full size image is almost never embedded (and really shouldn't be). Because of this WP Smush preserves it unaltered by default. Pro users can change this setting.", 'wp-smushit' ),
+				'size_limit' => esc_html__( "Image couldn't be smushed as it exceeded the 1Mb size limit, Pro users can smush images with size upto 32Mb.", "wp-smushit" )
 			);
 			$skip_rsn = !empty( $skip_msg[$msg_id ] ) ? esc_html__(" Skipped", 'wp-smushit', 'wp-smushit'): '';
 			$skip_rsn = ! empty( $skip_rsn ) ? $skip_rsn . '<span class="dashicons dashicons-editor-help" title="' . $skip_msg[ $msg_id ] . '"></span>' : '';
@@ -1022,13 +1052,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return string
 		 */
 		function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata ) {
+
 			$stats      = '<div id="smush-stats-' . $image_id . '" class="smush-stats-wrapper hidden">
 				<table class="wp-smush-stats-holder">
 					<thead>
-					<tr>
-						<th><strong>' . esc_html__( 'Image size', 'wp-smushit' ) . '</strong></th>
-						<th><strong>' . esc_html__( 'Savings', 'wp-smushit' ) . '</strong></th>
-					</tr>
+						<tr>
+							<th><strong>' . esc_html__( 'Image size', 'wp-smushit' ) . '</strong></th>
+							<th><strong>' . esc_html__( 'Savings', 'wp-smushit' ) . '</strong></th>
+						</tr>
 					</thead>
 					<tbody>';
 			$size_stats = $wp_smush_data['sizes'];
@@ -1036,24 +1067,27 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Reorder Sizes as per the maximum savings
 			uasort( $size_stats, array( $this, "cmp" ) );
 
-			//Get skipped images
-			$skipped = $this->get_skipped_images($image_id, $size_stats, $attachment_metadata );
+			if ( ! empty( $attachment_metadata['sizes'] ) ) {
+				//Get skipped images
+				$skipped = $this->get_skipped_images( $image_id, $size_stats, $attachment_metadata );
 
-			if ( ! empty( $skipped ) ) {
-				foreach ( $skipped as $img_data ) {
-					$stats .= '<tr>
+				if ( ! empty( $skipped ) ) {
+					foreach ( $skipped as $img_data ) {
+						$skip_class = $img_data['reason'] == 'size_limit' ? ' error' : '';
+						$stats .= '<tr>
 					<td>' . strtoupper( $img_data['size'] ) . '</td>
-					<td class="smush-skipped error">' . $this->skip_reason( $img_data['reason'] ) . '</td>
+					<td class="smush-skipped' . $skip_class . '">' . $this->skip_reason( $img_data['reason'] ) . '</td>
 				</tr>';
-				}
+					}
 
+				}
 			}
 			//Show Sizes and their compression
 			foreach ( $size_stats as $size_key => $size_stats ) {
 				if ( $size_stats->bytes > 0 ) {
 					$stats .= '<tr>
 					<td>' . strtoupper( $size_key ) . '</td>
-					<td>' . $this->format_bytes( $size_stats->bytes ) . '</td>
+					<td>' . $size_stats->percent . '%</td>
 				</tr>';
 				}
 			}
