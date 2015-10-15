@@ -25,8 +25,8 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			//Update Total Image count
 			add_action( 'ngg_added_new_image', array( $this, 'image_count' ), 10 );
 
-			//Update smushed images list
-			add_action( 'wp_smush_nextgen_image_stats', array( $this, 'update_smushed_count' ) );
+			//Update images list in cache
+			add_action( 'wp_smush_nextgen_image_stats', array( $this, 'update_cache' ) );
 
 			//Get the stats for single image, update the global stats
 			add_action( 'wp_smush_nextgen_image_stats', array( $this, 'update_stats' ), '', 2 );
@@ -70,85 +70,66 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		}
 
 		/**
-		 * Stores the smushed image ids for NextGen Gallery
 		 *
-		 * @param $image_id
-		 */
-		function update_smushed_count( $image_id ) {
-
-			if ( ! $image_id ) {
-				return;
-			}
-
-			// Check for the  wp_smush_images_smushed in the 'nextgen' group.
-			$smushed_images = wp_cache_get( 'wp_smush_images_smushed', 'nextgen' );
-
-			// If nothing is found, build the object.
-			if ( false === $smushed_images ) {
-				// Check for the  wp_smush_images in the 'nextgen' group.
-				$smushed_images = get_option( 'wp_smush_images_smushed', array() );
-			}
-
-			if ( is_array( $smushed_images ) && ! in_array( $image_id, $smushed_images ) ) {
-				$smushed_images[] = $image_id;
-			} elseif ( empty( $smushed_images ) ) {
-				$smushed_images = array( $image_id );
-			}
-
-			update_option( 'wp_smush_images_smushed', $smushed_images );
-
-			//Update Cache Value, No expiration required
-			wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen' );
-
-		}
-
-		/**
-		 * Returns the smushed images list or count
 		 *
 		 * @param bool $return_ids Whether to return the ids array, set to false by default
 		 *
 		 * @return int|mixed|void Returns the images ids or the count
 		 */
-		function get_smushed_images( $count = false ) {
+		/**
+		 * Returns the ngg images list(id and meta ) or count
+		 *
+		 * @param string $type Whether to return smushed images or unsmushed images
+		 * @param bool|false $count Return count only
+		 * @param bool|false $force_update true/false to update the cache or not
+		 *
+		 * @return bool|mixed Returns assoc array of image ids and meta or Image count
+		 */
+		function get_ngg_images( $type = 'smushed', $count = false, $force_update = false ) {
+
+			global $wpdb;
+
+			//Check type of images being queried
+			if ( ! in_array( $type, array( 'smushed', 'unsmushed' ) ) ) {
+				return false;
+			}
+
 			// Check for the  wp_smush_images_smushed in the 'nextgen' group.
-			$smushed_images = wp_cache_get( 'wp_smush_images_smushed', 'nextgen' );
+			$images = wp_cache_get( 'wp_smush_images_' . $type, 'nextgen' );
 
 			// If nothing is found, build the object.
-			if ( false === $smushed_images ) {
-				// Check for the  wp_smush_images in the 'nextgen' group.
-				$smushed_images = get_option( 'wp_smush_images_smushed', array() );
-
-				if ( ! is_wp_error( $smushed_images ) ) {
-					// In this case we don't need a timed cache expiration.
-					wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen' );
+			if ( false === $images || $force_update ) {
+				// Query Attachments for meta key
+				$attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures" );
+				foreach ( $attachments as $attachment ) {
+					//Check if it has `wp_smush` key
+					if ( class_exists( 'Ngg_Serializable' ) ) {
+						$serializer = new Ngg_Serializable();
+						$meta       = $serializer->unserialize( $attachment->meta_data );
+					} else {
+						$meta = unserialize( $attachment->meta_data );
+					}
+					//Check meta for wp_smush
+					if ( ! is_array( $meta ) || empty( $meta['wp_smush'] ) ) {
+						$unsmsuhed_images[ $attachment->pid ] = $meta;
+						continue;
+					}
+					$smushed_images[ $attachment->pid ] = $meta;
 				}
+				// In this case we don't need a timed cache expiration.
+				wp_cache_set( 'wp_smush_images_unsmushed', $unsmsuhed_images, 'nextgen' );
+				wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen' );
 			}
 
-			return $count ? count( $smushed_images ) : $smushed_images ;
-		}
+			if ( $type == 'smushed' ) {
+				$smushed_images = ! empty( $smushed_images ) ? $smushed_images : $images;
 
-		/**
-		 * Returns the unsmushed images list or count for NextGen Gallery
-		 *
-		 * @param bool $count Whether to return the ids array, set to false by default
-		 *
-		 * @return int|mixed|void Returns the images ids or the count
-		 */
-		function get_unsmushed_images( $count = false ) {
-			//Get all the images
-			$nextgen_imgs = $this->get_nextgen_attachments();
+				return $count ? count( $smushed_images ) : $smushed_images;
+			} else {
+				$unsmushed_images = ! empty( $unsmushed_images ) ? $unsmushed_images : $images;
 
-			//Smushed Images
-			$nextgen_smshd_imgs = $this->get_smushed_images();
-
-			if ( is_array( $nextgen_imgs ) && is_array( $nextgen_smshd_imgs ) ) {
-				$unsmushed = array_values( array_diff( $nextgen_imgs, $nextgen_smshd_imgs ) );
-
-				return $count ? count( $unsmushed ) : $unsmushed;
+				return $count ? count( $unsmushed_images ) : $unsmushed_images;
 			}
-
-			return false;
-
 		}
 
 		/**
@@ -282,6 +263,13 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$smushed_stats['human'] = $WpSmush->format_bytes( $smushed_stats['bytes'] );
 
 			return $smushed_stats;
+		}
+
+		/**
+		 * Updates the cache for Smushed and Unsmushed images
+		 */
+		function update_cache() {
+			$this->get_ngg_images('smushed', '', true );
 		}
 
 	}//End of Class

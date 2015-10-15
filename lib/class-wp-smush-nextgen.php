@@ -231,19 +231,12 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 							//if stats for a particular size doesn't exists
 							if ( empty( $stats['sizes'] ) || empty( $stats['sizes'][$size_name] ) ) {
 								$stats = empty( $stats ) ? array() : $stats;
-								echo "<pre>";
-								var_dump( $stats );
-								var_dump( $stats->sizes );
-								echo "</pre>";
 								if ( empty( $stats['sizes'] ) ) {
 									$stats['sizes'] = array();
 								}
 								$stats['sizes'][$size_name] = $existing_stats['sizes'][ $size_name ];
 							} else {
 								//Update compression percent and bytes saved for each size
-								echo "<pre>244";
-								print_r( $stats );
-								echo "</pre>";
 								$stats['sizes'][$size_name]->bytes   = $stats['sizes'][$size_name]->bytes + $existing_stats['sizes'][ $size_name ]->bytes;
 								$stats['sizes'][$size_name]->percent = $stats['sizes'][$size_name]->bytes + $existing_stats['sizes'][ $size_name ]->percent;
 							}

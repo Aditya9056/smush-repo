@@ -307,7 +307,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'original' => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original" title="' . __( "For very large dimension images like those taken with a digital camera, the original full size image is almost never embedded (and really shouldn't be). Because of this WP Smush preserves it unaltered by default. Check this box to smush every image size.", 'wp-smushit' ) . '"></span>',
 				'lossy'    => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
 				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>',
-				'nextgen'   => __( 'Enable NextGen Gallery integration', 'wp-smushit' )
+				'nextgen'  => __( 'Enable NextGen Gallery integration', 'wp-smushit' )
 			);
 		}
 
@@ -429,7 +429,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_lossy ), checked( $opt_lossy_val, 1, false ), $disabled, $this->settings['lossy'], $feature_class );
 
 						//NextGen Gallery
-						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_nextgen ), checked( $opt_nextgen_val, 1, false ), $disabled, $this->settings['nextgen'], $feature_class );
+						printf( "<div class=    'wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_nextgen ), checked( $opt_nextgen_val, 1, false ), $disabled, $this->settings['nextgen'], $feature_class );
 
 						//Backup
 						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup'], $feature_class ); ?>

@@ -22,7 +22,7 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 
 			$stats = $wpsmushnextgenstats->get_smush_stats();
 
-			$stats['smushed'] = $wpsmushnextgenstats->get_smushed_images( true );
+			$stats['smushed'] = $wpsmushnextgenstats->get_ngg_images('smushed', true );
 			$stats['total']   = $wpsmushnextgenstats->total_count();
 
 			if ( is_wp_error( $smush ) ) {

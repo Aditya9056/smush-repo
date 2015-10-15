@@ -154,9 +154,18 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
-			//Localize smushit_ids variable, if there are fix number of ids
-			$this->ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $wpsmushnextgenstats->get_unsmushed_images();
+			//Get the unsmushed ids, used for localized stats as well as normal localization
+			$unsmushed = $wpsmushnextgenstats->get_ngg_images( 'unsmushed' );
+			$unsmushed = ( ! empty( $unsmushed ) && is_array( $unsmushed ) ) ? array_keys( $unsmushed ) : '';
 
+			$smushed = $wpsmushnextgenstats->get_ngg_images();
+			$smushed = ( ! empty( $smushed ) && is_array( $smushed ) ) ? array_keys( $smushed ) : '';
+
+			if ( ! empty( $_REQUEST['ids'] ) ) {
+				$this->ids = explode( ',', $_REQUEST['ids'] );
+			} else {
+				$this->ids = $unsmushed;
+			}
 			//If premium, Super smush allowed, all images are smushed, localize lossless smushed ids for bulk compression
 			if ( ( $this->total_count == $this->smushed_count && empty( $this->ids ) ) ) {
 
@@ -172,8 +181,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			//Array of all smushed, unsmushed and lossless ids
 			$data = array(
-				'smushed'   => $wpsmushnextgenstats->get_smushed_images(),
-				'unsmushed' => $wpsmushnextgenstats->get_unsmushed_images(),
+				'smushed'   => $smushed,
+				'unsmushed' => $unsmushed,
 				'lossless'  => 0
 			);
 
@@ -309,7 +318,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			global $WpSmush, $wpsmushnextgenstats;
 			$this->stats     = $wpsmushnextgenstats->get_smush_stats();
 
-
 			// calculate %ages, avoid divide by zero error with no attachments
 			if ( $this->total_count > 0 ) {
 				$smushed_pc = $this->smushed_count / $this->total_count * 100;
@@ -399,8 +407,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			//Set the counts
 			$this->total_count     = $wpsmushnextgenstats->total_count();
-			$this->smushed_count   = $wpsmushnextgenstats->get_smushed_images( true );
-			$this->remaining_count = $wpsmushnextgenstats->get_unsmushed_images( true );
+			$this->smushed_count   = $wpsmushnextgenstats->get_ngg_images( 'smushed', true );
+			$this->remaining_count = $wpsmushnextgenstats->get_ngg_images( 'unsmushed', true );
 
 			?>
 			<div class="bulk-smush">
@@ -409,11 +417,15 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				$this->get_nextgen_attachments();
 
 			//Nothing to smush
-			if ( $this->remaining_count == 0 ) {
+			if ( $this->total_count == 0 ) {
+				// if there are no images in the media library ?>
+				<p><?php _e( "We didn't find any images in NextGen gallery, please upload some images.", 'wp-smushit'); ?></p><?php
+
+				// no need to print out the rest of the UI
+				return;
+			}else if ( $this->remaining_count == 0 ) {
 				?>
-				<p><?php _e( "Congratulations, all your images are currently Smushed!", 'wp-smushit' ); ?></p>
-				<?php
-				$this->progress_ui();
+				<p><?php _e( "Congratulations, all your images are currently Smushed!", 'wp-smushit' ); ?></p><?php
 			} else {
 				?>
 				<div class="smush-instructions">
