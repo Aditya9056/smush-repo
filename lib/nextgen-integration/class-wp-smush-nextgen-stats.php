@@ -98,7 +98,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$images = wp_cache_get( 'wp_smush_images_' . $type, 'nextgen' );
 
 			// If nothing is found, build the object.
-			if ( false === $images || $force_update ) {
+			if ( !$images || $force_update ) {
 				// Query Attachments for meta key
 				$attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures" );
 				foreach ( $attachments as $attachment ) {
@@ -111,13 +111,13 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					}
 					//Check meta for wp_smush
 					if ( ! is_array( $meta ) || empty( $meta['wp_smush'] ) ) {
-						$unsmsuhed_images[ $attachment->pid ] = $meta;
+						$unsmushed_images[ $attachment->pid ] = $meta;
 						continue;
 					}
 					$smushed_images[ $attachment->pid ] = $meta;
 				}
 				// In this case we don't need a timed cache expiration.
-				wp_cache_set( 'wp_smush_images_unsmushed', $unsmsuhed_images, 'nextgen' );
+				wp_cache_set( 'wp_smush_images_unsmushed', $unsmushed_images, 'nextgen' );
 				wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen' );
 			}
 
@@ -126,8 +126,8 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 				return $count ? count( $smushed_images ) : $smushed_images;
 			} else {
-				$unsmushed_images = ! empty( $unsmushed_images ) ? $unsmushed_images : $images;
 
+				$unsmushed_images = ! empty( $unsmushed_images ) ? $unsmushed_images : $images;
 				return $count ? count( $unsmushed_images ) : $unsmushed_images;
 			}
 		}
