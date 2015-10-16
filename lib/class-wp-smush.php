@@ -62,6 +62,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Add Smush Columns
 			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
 			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
+			add_filter( 'manage_upload_sortable_columns', array( $this, 'sortable_column' ) );
+			//Manage column sorting
+			add_action( 'pre_get_posts', array( $this, 'smushit_orderby' ) );
 
 			//Enqueue Scripts
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
@@ -1137,6 +1140,48 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 			$wpsmushnextgenstats = new WpSmushNextGenStats();
 			new WPSmushNextGenBulk();
+		}
+
+		/**
+		 * Add the Smushit Column to sortable list
+		 * @param $columns
+		 *
+		 * @return mixed
+		 */
+		function sortable_column( $columns ) {
+			$columns['smushit'] = 'smushit';
+			return $columns;
+		}
+		/**
+		 * Orderby query for smush columns
+		 */
+		function smushit_orderby( $query ) {
+
+			global $current_screen, $wpdb;
+
+			//Filter only media screen
+			if ( ! is_admin() || ( !empty( $current_screen) && $current_screen->base != 'upload' ) ) {
+				return;
+			}
+
+			$orderby = $query->get( 'orderby' );
+
+			if ( isset( $orderby ) && 'smushit' == $orderby ) {
+				$query->set( 'meta_query', array(
+					'relation' => 'OR',
+					array(
+						'key'     => self::SMUSHED_META_KEY,
+						'compare' => 'EXISTS'
+					),
+					array(
+						'key'     => self::SMUSHED_META_KEY,
+						'compare' => 'NOT EXISTS'
+					)
+				) );
+				$query->set( 'orderby', 'meta_value_num' );
+			}
+			return $query;
+
 		}
 	}
 
