@@ -852,8 +852,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
 				'no_found_rows'  => true
 			);
 			$results = new WP_Query( $query );
@@ -879,8 +877,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
 				'meta_key'       => 'wp-smpro-smush-data',
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
 				'no_found_rows'  => true
 			);
 
@@ -1053,8 +1049,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						'value' => '1',
 					)
 				),
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
 				'no_found_rows'  => true
 			);
 			$query = new WP_Query( $args );

@@ -249,16 +249,16 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					wp_cache_set( 'wp_smush_stats_nextgen', $smushed_stats, 'nextgen' );
 				}
 			}
-			if ( $smushed_stats['bytes'] < 0 ) {
+			if ( empty( $smushed_stats['bytes'] ) || $smushed_stats['bytes'] < 0 ) {
 				$smushed_stats['bytes'] = 0;
 			}
 
-			if ( $smushed_stats['size_before'] > 0 ) {
+			if ( ! empty( $smushed_stats['size_before'] ) && $smushed_stats['size_before'] > 0 ) {
 				$smushed_stats['percent'] = ( $smushed_stats['bytes'] / $smushed_stats['size_before'] ) * 100;
 			}
 
 			//Round off precentage
-			$smushed_stats['percent'] = round( $smushed_stats['percent'], 2 );
+			$smushed_stats['percent'] = ! empty( $smushed_stats['percent'] ) ? round( $smushed_stats['percent'], 2 ) : 0;
 
 			$smushed_stats['human'] = $WpSmush->format_bytes( $smushed_stats['bytes'] );
 

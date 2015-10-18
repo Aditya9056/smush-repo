@@ -176,6 +176,11 @@ jQuery(function ($) {
 		};
 
 		this.update_progress = function (_res) {
+			//If not bulk
+			if( !this.is_bulk_super_smush && !this.is_bulk ) {
+				return;
+			}
+
 			if (!this.is_bulk_super_smush) {
 				//handle progress for normal bulk smush
 				var progress = ( _res.data.stats.smushed / _res.data.stats.total) * 100;

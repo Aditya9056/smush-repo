@@ -6,9 +6,10 @@ Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: Attachment,Attachments,Compress,Compress Image File,Compress Image Size,Compress JPG,Compressed JPG, Compression Image,Image,Images,JPG,Optimise,Optimize,Photo,Photos,Pictures,PNG,Reduce Image Size,Smush,Smush.it,Upload,WordPress Compression,WordPress Image Tool,Yahoo, Yahoo Smush.it
 Requires at least: 3.5
-Tested up to: 4.3
+Tested up to: 4.3.1
 Stable tag: 2.0.6.3
-License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 
@@ -37,6 +38,8 @@ Install WP Smush and find out why it's the most popular image optimization plugi
 <br>
 <a href="https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme">WP Smush Pro</a> gives you everything you'll find in WP Smush and more:
 <ul>
+  <li>Smush the original Full image sizes that are normally skipped by default.</li>
+  <li>NextGen Gallery integration.</li>
   <li>"Super-Smush" your images with our intelligent multi-pass lossy compression. Get over 2x more compression than lossless with almost no noticeable quality loss!</li>
   <li>Get even better lossless compression. We try multiple methods to squeeze every last byte out of your images.</li>
   <li>Smush images up to 32MB (WP Smush is limited to 1MB)</li>
@@ -85,6 +88,9 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 * Updated: Skip webp images
 * Added: Detailed text for stats and settings
+* Added: Option to sort `WP Smush` column in media library for checking smushed and unsmushed images
+* Added: NextGen Gallery support (PRO Only)
+* Updated: Do not set `update_post_meta_cache` to false, as it seems to slow down the meta queries
 
 = 2.0.6.3 =
 
