@@ -72,8 +72,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Old Smush stats migration
 			add_action( "admin_init", array( $this, "migrate" ) );
 
-			//Load NextGen Gallery, Load after settings have been saved on init action
-			add_action( 'wp_loaded', array( $this, 'load_nextgen' ), 90 );
+			//Load NextGen Gallery, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
+			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ), 90 );
 
 		}
 
