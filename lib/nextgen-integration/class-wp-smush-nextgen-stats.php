@@ -116,9 +116,12 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					}
 					$smushed_images[ $attachment->pid ] = $meta;
 				}
-				// In this case we don't need a timed cache expiration.
-				wp_cache_set( 'wp_smush_images_unsmushed', $unsmushed_images, 'nextgen' );
-				wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen' );
+				if( !empty( $smushed_images ) ) {
+					wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen', 300 );
+				}
+				if( !empty( $unsmushed_images ) ) {
+					wp_cache_set( 'wp_smush_images_smushed', $unsmushed_images, 'nextgen', 300 );
+				}
 			}
 
 			if ( $type == 'smushed' ) {
