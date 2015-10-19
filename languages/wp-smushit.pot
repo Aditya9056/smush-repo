@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP Smush Pro\n"
-"POT-Creation-Date: 2015-10-08 01:05+0530\n"
+"POT-Creation-Date: 2015-10-20 00:50+0530\n"
 "PO-Revision-Date: 2015-10-08 00:17+0530\n"
 "Last-Translator: Umesh <umeshsingla05@gmail.com>\n"
 "Language-Team: Umesh <umeshsingla05@gmail.com>\n"
@@ -84,7 +84,7 @@ msgstr ""
 msgid "Ops!... something went wrong"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:230 lib/class-wp-smush.php:706
+#: lib/class-wp-smush-admin.php:230 lib/class-wp-smush.php:738
 msgid "Super-Smush"
 msgstr ""
 
@@ -117,7 +117,11 @@ msgid "Smush Original Image"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:275
-msgid "Skipped if Large size is available"
+msgid ""
+"For very large dimension images like those taken with a digital camera, the "
+"original full size image is almost never embedded (and really shouldn't be). "
+"Because of this WP Smush preserves it unaltered by default. Check this box "
+"to smush every image size."
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:276
@@ -280,8 +284,7 @@ msgstr ""
 
 #: lib/class-wp-smush-admin.php:1179 lib/class-wp-smush-admin.php:1191
 msgid ""
-"Smush Full size Image, It is skipped by default, if large size is available "
-"for a image"
+"Smush the original Full image sizes that are normally skipped by default."
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:1180 lib/class-wp-smush-admin.php:1192
@@ -383,84 +386,90 @@ msgstr ""
 msgid "Unknown API error"
 msgstr ""
 
-#: lib/class-wp-smush.php:283
+#: lib/class-wp-smush.php:310
 #, php-format
 msgid "Size '%s' not processed correctly"
 msgstr ""
 
-#: lib/class-wp-smush.php:305 lib/class-wp-smush.php:313
+#: lib/class-wp-smush.php:334 lib/class-wp-smush.php:342
 msgid "Size 'full' not processed correctly"
 msgstr ""
 
-#: lib/class-wp-smush.php:448
+#: lib/class-wp-smush.php:477
 #, php-format
 msgid "Error posting to API: %s"
 msgstr ""
 
-#: lib/class-wp-smush.php:454
+#: lib/class-wp-smush.php:483
 #, php-format
 msgid "Error posting to API: %s %s"
 msgstr ""
 
-#: lib/class-wp-smush.php:471
+#: lib/class-wp-smush.php:500
 msgid "Smush data corrupted, try again."
 msgstr ""
 
-#: lib/class-wp-smush.php:487
+#: lib/class-wp-smush.php:516
 msgid "Image couldn't be smushed"
 msgstr ""
 
-#: lib/class-wp-smush.php:673
+#: lib/class-wp-smush.php:702
 msgid "Error processing request"
 msgstr ""
 
-#: lib/class-wp-smush.php:677
+#: lib/class-wp-smush.php:706
 msgid "Already Optimized"
 msgstr ""
 
-#: lib/class-wp-smush.php:679
+#: lib/class-wp-smush.php:708
 #, php-format
 msgid "%d images reduced "
 msgstr ""
 
-#: lib/class-wp-smush.php:679
+#: lib/class-wp-smush.php:708
 msgid "Reduced "
 msgstr ""
 
-#: lib/class-wp-smush.php:680
+#: lib/class-wp-smush.php:709
 #, php-format
 msgid "by %s (  %01.1f%% )"
 msgstr ""
 
-#: lib/class-wp-smush.php:683
+#: lib/class-wp-smush.php:714
 msgid "Smush stats"
 msgstr ""
 
-#: lib/class-wp-smush.php:712
+#: lib/class-wp-smush.php:744
 msgid "Not processed"
 msgstr ""
 
-#: lib/class-wp-smush.php:718
+#: lib/class-wp-smush.php:750
 msgid "Smush Now!"
 msgstr ""
 
-#: lib/class-wp-smush.php:985
-msgid "Large size available for the image."
+#: lib/class-wp-smush.php:1017
+msgid ""
+"For very large dimension images like those taken with a digital camera, the "
+"original full size image is almost never embedded (and really shouldn't be). "
+"Because of this WP Smush preserves it unaltered by default. Pro users can "
+"change this setting."
 msgstr ""
 
-#: lib/class-wp-smush.php:986
-msgid "Image exceeded the 1Mb size limit."
+#: lib/class-wp-smush.php:1018
+msgid ""
+"Image couldn't be smushed as it exceeded the 1Mb size limit, Pro users can "
+"smush images with size upto 32Mb."
 msgstr ""
 
-#: lib/class-wp-smush.php:988
+#: lib/class-wp-smush.php:1020
 msgid " Skipped"
 msgstr ""
 
-#: lib/class-wp-smush.php:1005
+#: lib/class-wp-smush.php:1038
 msgid "Image size"
 msgstr ""
 
-#: lib/class-wp-smush.php:1006
+#: lib/class-wp-smush.php:1039
 msgid "Savings"
 msgstr ""
 
