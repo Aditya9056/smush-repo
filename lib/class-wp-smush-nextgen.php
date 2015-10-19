@@ -389,18 +389,37 @@ if( class_exists('WpSmushNextGen') ) {
 				if ( $success ) {
 					$filename = $success->fileName;
 					//Smush it, if it exists
-					if( file_exists( $filename ) ) {
+					if ( file_exists( $filename ) ) {
 						$response = $WpSmush->do_smushit( $filename, $image->pid, 'nextgen' );
 
 						//If the image was smushed
-						if( !is_wp_error( $response ) && !empty( $response['data'] ) ) {
-							foreach( $response as $data_k => $data_v ){
-								error_log( $data_k );
-								error_log( print_r( $data_v, true ) );
+						if ( ! is_wp_error( $response ) && ! empty( $response['data'] ) ) {
+							//Check for existing stats
+							if ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) {
+								$stats = $image->meta_data['wp_smush'];
+							} else {
+								//Initialize stats array
+								$stats                = array(
+									"stats" => array_merge( $WpSmush->_get_size_signature(), array(
+											'api_version' => - 1,
+											'lossy'       => - 1
+										)
+									),
+									'sizes' => array()
+								);
+								$stats['bytes']       = $response['data']->bytes_saved;
+								$stats['percent']     = $response['data']->compression;
+								$stats['size_after']  = $response['data']->after_size;
+								$stats['size_before'] = $response['data']->before_size;
+								$stats['time']        = $response['data']->time;
 							}
+							$stats['sizes'][ $size ]      = (object) $WpSmush->_array_fill_placeholders( $WpSmush->_get_size_signature(), (array) $response['data'] );
+							$image->meta_data['wp_smush'] = $stats;
+							nggdb::update_image_meta( $image->pid, $image->meta_data );
+
+							//Allows To get the stats for each image, after the image is smushed
+							do_action( 'wp_smush_nextgen_image_stats', $image->pid, $stats );
 						}
-						//Update Stats for Dynamic Thumbnails
-//						$this->update_stats( $response, $image );
 					}
 				}
 
