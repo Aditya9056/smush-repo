@@ -385,6 +385,11 @@ button .wp-smush-loader-wrap {
 #wp-smush-options-wrap .wp-smush-pro-features .pro-note {
     margin: 0 0 0 25px;
 }
+.wp-smush-setting-row .dashicons-info.smush-original{
+    top: 2px;
+    position: relative;
+    color: gray;
+}
 
 .wp-smush-pro-features {
     border: 1px solid lightgray;
