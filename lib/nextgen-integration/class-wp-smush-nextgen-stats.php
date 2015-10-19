@@ -120,7 +120,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen', 300 );
 				}
 				if( !empty( $unsmushed_images ) ) {
-					wp_cache_set( 'wp_smush_images_smushed', $unsmushed_images, 'nextgen', 300 );
+					wp_cache_set( 'wp_smush_images_unsmushed', $unsmushed_images, 'nextgen', 300 );
 				}
 			}
 
