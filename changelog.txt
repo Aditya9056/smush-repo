@@ -4,6 +4,14 @@ Author: Saurabh Shukla & Umesh Kumar
 Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
+
+= 2.0.6.4 =
+
+* Updated: Skip webp images, causing ajax error for few sites
+* Fixed: Warning and Notices (Media Library not loading)
+* Fixed: Smush full size image if no other sizes are available
+* Added: Detailed text for stats and settings
+
 = 2.0.6.3 =
 
 * Fixed: Change File permission after replacing image
