@@ -5,7 +5,7 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
-= 2.0.6.4 =
+= 2.0.6.5 =
 
 * Updated: Skip webp images ( causing ajax error for few sites )
 * Fixed: Warning and Notices ( Media Library not loading )
