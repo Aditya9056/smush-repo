@@ -263,7 +263,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}else{
 					$finfo = false;
 				}
-				var_dump( $smush_full );exit;
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					// We take the original image. The 'sizes' will all match the same URL and
