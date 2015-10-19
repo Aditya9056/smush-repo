@@ -113,7 +113,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			global $WpSmush;
 
 			//Flag to check, if original size image needs to be smushed or not
-			$smush_full = true;
+			$smush_full = ( $this->is_pro() && $original == 1 ) ? true : false;
 			$errors     = new WP_Error();
 			$stats      = array(
 				"stats" => array_merge( $WpSmush->_get_size_signature(), array(
@@ -136,21 +136,49 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			// If images has other registered size, smush them first
 			if ( ! empty( $sizes ) ) {
 
-				foreach ( $sizes as $size ) {
-
-					//if there is a large size, then we will set a flag to leave the original untouched
-					if ( $size == 'large' ) {
+				//if smush original is set to false, otherwise smush
+				//Check for large size, we will set a flag to leave the original untouched
+				if ( ! $smush_full ) {
+					if ( array_key_exists( 'large', $meta['sizes'] ) ) {
 						$smush_full = false;
+					} else {
+						$smush_full = true;
 					}
-					//Skip Full Size image
-					if ( $size == 'full' ) {
-						continue;
-					}
+				}
+
+				if( class_exists('finfo') ) {
+					$finfo = new finfo( FILEINFO_MIME_TYPE );
+				}else{
+					$finfo = false;
+				}
+
+				foreach ( $sizes as $size ) {
 
 					// We take the original image. Get the absolute path using the storage object
 
 					$attachment_file_path_size = $storage->get_image_abspath( $image, $size );
 
+					if ( $finfo ) {
+						$ext = $finfo->file( $attachment_file_path_size );
+					} elseif ( function_exists( 'mime_content_type' ) ) {
+						$ext = mime_content_type( $attachment_file_path_size );
+					} else {
+						$ext = false;
+					}
+					if( $ext ) {
+						$valid_mime = array_search(
+							$ext,
+							array(
+								'jpg' => 'image/jpeg',
+								'png' => 'image/png',
+								'gif' => 'image/gif',
+							),
+							true
+						);
+						if ( false === $valid_mime ) {
+							continue;
+						}
+					}
 					//Store details for each size key
 					$response = $WpSmush->do_smushit( $attachment_file_path_size, $image->pid, 'nextgen' );
 

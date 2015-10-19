@@ -687,9 +687,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt  = $button_txt = '';
 			$show_button = false;
 
-			//Stats are not received properly, otherwise
-//			wp_cache_delete( $id, 'post_meta' );
-
 			$wp_smush_data = get_post_meta( $id, self::SMUSHED_META_KEY, true );
 			$attachment_data = wp_get_attachment_metadata( $id );
 //
