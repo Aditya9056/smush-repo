@@ -84,13 +84,18 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.0.6.4 =
+= 2.0.6.5 =
 
-* Updated: Skip webp images
-* Added: Detailed text for stats and settings
 * Added: Option to sort `WP Smush` column in media library for checking smushed and unsmushed images
 * Added: NextGen Gallery support (PRO Only)
 * Updated: Do not set `update_post_meta_cache` to false, as it seems to slow down the meta queries
+
+= 2.0.6.4 =
+
+* Updated: Skip webp images
+* Fixed: Warning and Notices (Media Library not loading)
+* Fixed: Smush full size image if no other sizes are available
+* Added: Detailed text for stats and settings
 
 = 2.0.6.3 =
 
