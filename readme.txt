@@ -84,7 +84,8 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 = 2.0.6.4 =
 
 * Updated: Skip webp images
-* Fixed: Warning and Notices
+* Fixed: Warning and Notices (Media Library not loading)
+* Fixed: Smush full size image if no other sizes are available
 * Added: Detailed text for stats and settings
 
 = 2.0.6.3 =

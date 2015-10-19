@@ -263,6 +263,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}else{
 					$finfo = false;
 				}
+				var_dump( $smush_full );exit;
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					// We take the original image. The 'sizes' will all match the same URL and
@@ -315,6 +316,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$stats['stats']['lossy']       = $response['data']->lossy;
 					}
 				}
+			}else{
+				$smush_full = true;
 			}
 
 			//If original size is supposed to be smushed
@@ -696,7 +699,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$percent        = isset( $wp_smush_data['stats']['percent'] ) ? $wp_smush_data['stats']['percent'] : 0;
 				$percent        = $percent < 0 ? 0 : $percent;
 
-				if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 ) {
+				if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
 					$status_txt  = __( 'Error processing request', 'wp-smushit' );
 					$show_button = true;
 				} else {
