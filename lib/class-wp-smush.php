@@ -961,7 +961,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$stats = $this->do_smushit( $retina_file );
 			//If we squeezed out something, Update stats
-			if ( ! empty( $stats['data'] ) && isset( $stats['data'] ) && $stats['data']->bytes_saved > 0 ) {
+			if ( !is_wp_error( $stats ) && ! empty( $stats['data'] ) && isset( $stats['data'] ) && $stats['data']->bytes_saved > 0 ) {
 				$this->update_smush_stats_single( $id, $stats, $image_size );
 			}
 		}
@@ -1014,11 +1014,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//For other sizes, check if the image was generated and not available in stats
 			if ( is_array( $media_size ) ) {
 				foreach ( $media_size as $size ) {
-					if ( array_key_exists( $size, $attachment_metadata['sizes'] ) && ! array_key_exists( $size, $size_stats ) ) {
+					if ( array_key_exists( $size, $attachment_metadata['sizes'] ) && ! array_key_exists( $size, $size_stats ) && ! empty( $size['file'] ) ) {
 						//Image Path
 						$img_path   = trailingslashit( dirname( $full_image ) ) . $size['file'];
-						$image_size = filesize( $img_path );
-						if ( ( $image_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
+						$image_size = file_exists( $img_path ) ? filesize( $img_path ) : '';
+						if ( ! empty( $image_size ) && ( $image_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
 							$skipped[] = array(
 								'size'   => 'full',
 								'reason' => 'size_limit'
@@ -1089,7 +1089,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				if ( $size_stats->bytes > 0 ) {
 					$stats .= '<tr>
 					<td>' . strtoupper( $size_key ) . '</td>
-					<td>' . $size_stats->percent . '%</td>
+					<td>' . $this->format_bytes( $size_stats->bytes ) . ' ( ' . $size_stats->percent . '% )</td>
 				</tr>';
 				}
 			}
