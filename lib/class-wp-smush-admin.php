@@ -949,10 +949,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $wpdb, $WpSmush;
 
-			$sql = "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s";
-
-			$global_data = $wpdb->get_col( $wpdb->prepare( $sql, "wp-smpro-smush-data" ) );
-
 			$smush_data = array(
 				'size_before' => 0,
 				'size_after'  => 0,
@@ -960,17 +956,30 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'human'       => 0
 			);
 
-			if ( ! empty( $global_data ) ) {
-				foreach ( $global_data as $data ) {
-					$data = maybe_unserialize( $data );
-					if ( ! empty( $data['stats'] ) ) {
-						$smush_data['size_before'] += ! empty( $data['stats']['size_before'] ) ? (int) $data['stats']['size_before'] : 0;
-						$smush_data['size_after'] += ! empty( $data['stats']['size_after'] ) ? (int) $data['stats']['size_after'] : 0;
+			/**
+			 * Allows to set a limit of mysql query
+			 * Default value is 2000
+			 */
+			$limit = apply_filters('wp_smush_media_query_limit', 2000 );
+			$limit = intval( $limit );
+			$offset = 0;
+
+			while ( $global_data = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
+				var_dump( $offset );
+
+				if ( ! empty( $global_data ) ) {
+					foreach ( $global_data as $data ) {
+						$data = maybe_unserialize( $data );
+						if ( ! empty( $data['stats'] ) ) {
+							$smush_data['size_before'] += ! empty( $data['stats']['size_before'] ) ? (int) $data['stats']['size_before'] : 0;
+							$smush_data['size_after'] += ! empty( $data['stats']['size_after'] ) ? (int) $data['stats']['size_after'] : 0;
+						}
 					}
 				}
-			}
 
-			$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
+				$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
+				$offset += $limit;
+			}
 
 			if ( $smush_data['bytes'] < 0 ) {
 				$smush_data['bytes'] = 0;

@@ -88,6 +88,13 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		function get_ngg_images( $type = 'smushed', $count = false, $force_update = false ) {
 
 			global $wpdb;
+			/**
+			 * Allows to set a limit of mysql query
+			 * Default value is 2000
+			 */
+			$limit = apply_filters('wp_smush_nextgen_query_limit', 2000 );
+			$limit = intval( $limit );
+			$offset = 0;
 
 			//Check type of images being queried
 			if ( ! in_array( $type, array( 'smushed', 'unsmushed' ) ) ) {
@@ -100,21 +107,24 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			// If nothing is found, build the object.
 			if ( !$images || $force_update ) {
 				// Query Attachments for meta key
-				$attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures" );
-				foreach ( $attachments as $attachment ) {
-					//Check if it has `wp_smush` key
-					if ( class_exists( 'Ngg_Serializable' ) ) {
-						$serializer = new Ngg_Serializable();
-						$meta       = $serializer->unserialize( $attachment->meta_data );
-					} else {
-						$meta = unserialize( $attachment->meta_data );
+				while( $attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures LIMIT $offset, $limit"  ) ) {
+					foreach ( $attachments as $attachment ) {
+						//Check if it has `wp_smush` key
+						if ( class_exists( 'Ngg_Serializable' ) ) {
+							$serializer = new Ngg_Serializable();
+							$meta       = $serializer->unserialize( $attachment->meta_data );
+						} else {
+							$meta = unserialize( $attachment->meta_data );
+						}
+						//Check meta for wp_smush
+						if ( ! is_array( $meta ) || empty( $meta['wp_smush'] ) ) {
+							$unsmushed_images[ $attachment->pid ] = $meta;
+							continue;
+						}
+						$smushed_images[ $attachment->pid ] = $meta;
 					}
-					//Check meta for wp_smush
-					if ( ! is_array( $meta ) || empty( $meta['wp_smush'] ) ) {
-						$unsmushed_images[ $attachment->pid ] = $meta;
-						continue;
-					}
-					$smushed_images[ $attachment->pid ] = $meta;
+					//Set the offset
+					$offset += $limit;
 				}
 				if( !empty( $smushed_images ) ) {
 					wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen', 300 );
