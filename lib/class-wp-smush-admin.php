@@ -965,7 +965,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$offset = 0;
 
 			while ( $global_data = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
-				var_dump( $offset );
 
 				if ( ! empty( $global_data ) ) {
 					foreach ( $global_data as $data ) {
