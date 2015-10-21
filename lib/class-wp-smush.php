@@ -296,6 +296,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							continue;
 						}
 					}
+					/**
+					 * Allows to skip a image from smushing
+					 *
+					 * @param bool , Smush image or not
+					 * @$size string, Size of image being smushed
+					 */
+					$smush_image = apply_filters( 'wp_smush_media_image', true, $size_key );
+					if ( ! $smush_image ) {
+						continue;
+					}
 
 					//Store details for each size key
 					$response = $this->do_smushit( $attachment_file_path_size );
@@ -325,8 +335,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$smush_full = true;
 			}
 
+			/**
+			 * Allows to skip a image from smushing
+			 *
+			 * @param bool , Smush image or not
+			 * @$size string, Size of image being smushed
+			 */
+			$smush_full_image = apply_filters( 'wp_smush_media_image', true, 'full' );
+
 			//If original size is supposed to be smushed
-			if ( $smush_full ) {
+			if ( $smush_full && $smush_full_image ) {
 
 				$full_image_response = $this->do_smushit( $attachment_file_path );
 
@@ -956,6 +974,17 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 			//Check for Empty fields
 			if ( empty( $id ) || empty( $retina_file ) || empty( $image_size ) ) {
+				return;
+			}
+
+			/**
+			 * Allows to skip a image from smushing
+			 *
+			 * @param bool , Smush image or not
+			 * @$size string, Size of image being smushed
+			 */
+			$smush_image = apply_filters( 'wp_smush_media_image', true, $image_size );
+			if ( ! $smush_image ) {
 				return;
 			}
 

@@ -331,7 +331,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			}
 			//Show Sizes and their compression
 			foreach ( $size_stats as $size_key => $size_value ) {
-				$size_value = (object) $size_value;
+				$size_value = !is_object( $size_value ) ? (object) $size_value : $size_value;
 				if ( $size_value->bytes > 0 ) {
 					$stats .= '<tr>
 					<td>' . strtoupper( $size_key ) . '</td>

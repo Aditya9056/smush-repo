@@ -112,9 +112,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		function resize_from_meta_data( $storage, $image ) {
 			global $WpSmush;
 
-			//Flag to check, if original size image needs to be smushed or not
-			$original   = get_option( WP_SMUSH_PREFIX . 'original' );
-			$smush_full = ( $WpSmush->is_pro() && $original == 1 ) ? true : false;
 			$errors     = new WP_Error();
 			$stats      = array(
 				"stats" => array_merge( $WpSmush->_get_size_signature(), array(
@@ -128,24 +125,11 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			$size_before = $size_after = $compression = $total_time = $bytes_saved = 0;
 
 			//File path and URL for original image
-			// get the absolute path
-			$attachment_file_path = $storage->get_image_abspath( $image, 'full' );
-
 			// get an array of sizes available for the $image
 			$sizes = $storage->get_image_sizes();
 
 			// If images has other registered size, smush them first
 			if ( ! empty( $sizes ) ) {
-
-				//if smush original is set to false, otherwise smush
-				//Check for large size, we will set a flag to leave the original untouched
-				if ( ! $smush_full ) {
-					if ( array_key_exists( 'large', $sizes ) ) {
-						$smush_full = false;
-					} else {
-						$smush_full = true;
-					}
-				}
 
 				if( class_exists('finfo') ) {
 					$finfo = new finfo( FILEINFO_MIME_TYPE );
@@ -180,6 +164,16 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 							continue;
 						}
 					}
+					/**
+					 * Allows to skip a image from smushing
+					 *
+					 * @param bool , Smush image or not
+					 * @$size string, Size of image being smushed
+					 */
+					$smush_image = apply_filters( 'wp_smush_nextgen_image', true, $size );
+					if ( ! $smush_image ) {
+						continue;
+					}
 					//Store details for each size key
 					$response = $WpSmush->do_smushit( $attachment_file_path_size, $image->pid, 'nextgen' );
 
@@ -204,38 +198,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 						$stats['stats']['lossy']       = $response['data']->lossy;
 					}
 				}
-			}
-
-			//If original size is supposed to be smushed
-			if ( $smush_full ) {
-
-				$full_image_response = $WpSmush->do_smushit( $attachment_file_path, $image->pid, 'nextgen' );
-
-				if ( is_wp_error( $full_image_response ) ) {
-					return $full_image_response;
-				}
-
-				if ( ! empty( $full_image_response['data'] ) ) {
-					$stats['sizes']['full'] = (object) $WpSmush->_array_fill_placeholders( $WpSmush->_get_size_signature(), (array) $full_image_response['data'] );
-				} else {
-					$errors->add( "image_size_error", __( "Size 'full' not processed correctly", 'wp-smushit' ) );
-				}
-
-				//Update stats
-				if ( isset( $full_image_response['data'] ) ) {
-					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-						= $WpSmush->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
-				} else {
-					$errors->add( "image_size_error", __( "Size 'full' not processed correctly", 'wp-smushit' ) );
-				}
-
-				//Api version and lossy, for some images, full image i skipped and for other images only full exists
-				//so have to add code again
-				if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
-					$stats['stats']['api_version'] = $full_image_response['data']->api_version;
-					$stats['stats']['lossy']       = $full_image_response['data']->lossy;
-				}
-
 			}
 
 			$has_errors = (bool) count( $errors->get_error_messages() );

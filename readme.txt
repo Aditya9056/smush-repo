@@ -59,7 +59,7 @@ Features available to both WP Smush and Pro users include:
 	<li>Use of WPMU DEV's fast and reliable Smush API service.</li>
 	<li>View advanced compression stats per-attachment and library totals.</li>
 </ul>
-Discover for yourself why WP Smush is the most popular free image optimization plugin with more than a million downloads.
+Discover for yourself why WP Smush is the most popular free image optimization plugin with almost two million downloads.
 
 
 == Screenshots ==
@@ -83,7 +83,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.0.7 =
 
--Fixed: Invalid header issue
+* Fixed: Invalid header issue
+* Fixed: Warnings in file functions
+* Added: Filters `wp_smush_media_image` for Media Gallery, `wp_smush_nextgen_image` For NextGen gallery,
+          allows to skip a particular image size from smushing
+* Added: NextGen Gallery support (Pro only)
 
 = 2.0.6.5 =
 
