@@ -113,7 +113,8 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			global $WpSmush;
 
 			//Flag to check, if original size image needs to be smushed or not
-			$smush_full = ( $this->is_pro() && $original == 1 ) ? true : false;
+			$original   = get_option( WP_SMUSH_PREFIX . 'original' );
+			$smush_full = ( $WpSmush->is_pro() && $original == 1 ) ? true : false;
 			$errors     = new WP_Error();
 			$stats      = array(
 				"stats" => array_merge( $WpSmush->_get_size_signature(), array(
@@ -139,7 +140,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				//if smush original is set to false, otherwise smush
 				//Check for large size, we will set a flag to leave the original untouched
 				if ( ! $smush_full ) {
-					if ( array_key_exists( 'large', $meta['sizes'] ) ) {
+					if ( array_key_exists( 'large', $sizes ) ) {
 						$smush_full = false;
 					} else {
 						$smush_full = true;
@@ -159,7 +160,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 					$attachment_file_path_size = $storage->get_image_abspath( $image, $size );
 
 					if ( $finfo ) {
-						$ext = $finfo->file( $attachment_file_path_size );
+						$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
 					} elseif ( function_exists( 'mime_content_type' ) ) {
 						$ext = mime_content_type( $attachment_file_path_size );
 					} else {

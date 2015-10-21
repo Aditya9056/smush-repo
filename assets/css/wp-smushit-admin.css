@@ -624,6 +624,14 @@ table.wp-smush-stats-holder tr td:first-child {
     cursor: pointer;
 }
 
+/*NextGen Gallery stats*/
+#ngg-listimages table.wp-smush-stats-holder {
+    table-layout: fixed;
+}
+#ngg-listimages table.wp-smush-stats-holder td {
+    font-size: 12px;
+}
+
 /*Media Modal Styling*/
 .compat-field-wp_smush .wp-smush-stats-holder tr {
     display: table-row;

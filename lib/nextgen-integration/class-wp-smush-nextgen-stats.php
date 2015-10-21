@@ -159,7 +159,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$percent        = isset( $wp_smush_data['stats']['percent'] ) ? $wp_smush_data['stats']['percent'] : 0;
 			$percent        = $percent < 0 ? 0 : $percent;
 
-			if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 ) {
+			if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
 				$status_txt  = __( 'Error processing request', 'wp-smushit' );
 				$show_button = true;
 			} else {
@@ -167,6 +167,28 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					$status_txt = __( 'Already Optimized', 'wp-smushit' );
 				} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
 					$status_txt = sprintf( __( "Reduced by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
+					//Show detailed stats if available
+					if ( ! empty( $wp_smush_data['sizes'] ) ) {
+						//Detailed Stats Link
+						$status_txt .= '<br /><a href="#" class="smush-stats-details">' . esc_html__( "Smush stats", 'wp-smushit' ) . ' [<span class="stats-toggle">+</span>]</a>';
+
+						//Get metadata For the image
+						// Registry Object for NextGen Gallery
+						$registry = C_Component_Registry::get_instance();
+
+						//Gallery Storage Object
+						$storage = $registry->get_utility( 'I_Gallery_Storage' );
+
+						// get an array of sizes available for the $image
+						$sizes = $storage->get_image_sizes();
+
+						$image = $storage->object->_image_mapper->find( $pid );
+
+						$full_image = $storage->get_image_abspath( $image, 'full' );
+
+						//Stats
+						$status_txt .= $this->get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
+					}
 				}
 			}
 
@@ -273,6 +295,111 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 */
 		function update_cache() {
 			$this->get_ngg_images('smushed', '', true );
+		}
+
+		function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata, $full_image ) {
+			global $WpSmush;
+
+			$stats      = '<div id="smush-stats-' . $image_id . '" class="smush-stats-wrapper hidden">
+				<table class="wp-smush-stats-holder">
+					<thead>
+						<tr>
+							<th><strong>' . esc_html__( 'Image size', 'wp-smushit' ) . '</strong></th>
+							<th><strong>' . esc_html__( 'Savings', 'wp-smushit' ) . '</strong></th>
+						</tr>
+					</thead>
+					<tbody>';
+			$size_stats = $wp_smush_data['sizes'];
+
+			//Reorder Sizes as per the maximum savings
+			uasort( $size_stats, array( $this, "cmp" ) );
+
+			if ( ! empty( $attachment_metadata['sizes'] ) ) {
+				//Get skipped images
+				$skipped = $this->get_skipped_images( $size_stats, $full_image );
+
+				if ( ! empty( $skipped ) ) {
+					foreach ( $skipped as $img_data ) {
+						$skip_class = $img_data['reason'] == 'size_limit' ? ' error' : '';
+						$stats .= '<tr>
+					<td>' . strtoupper( $img_data['size'] ) . '</td>
+					<td class="smush-skipped' . $skip_class . '">' . $WpSmush->skip_reason( $img_data['reason'] ) . '</td>
+				</tr>';
+					}
+
+				}
+			}
+			//Show Sizes and their compression
+			foreach ( $size_stats as $size_key => $size_value ) {
+				$size_value = (object) $size_value;
+				if ( $size_value->bytes > 0 ) {
+					$stats .= '<tr>
+					<td>' . strtoupper( $size_key ) . '</td>
+					<td>' . $WpSmush->format_bytes( $size_value->bytes ) . ' ( ' . $size_value->percent . '% )</td>
+				</tr>';
+				}
+			}
+			$stats .= '</tbody>
+				</table>
+			</div>';
+
+			return $stats;
+		}
+		/**
+		 * Compare Values
+		 *
+		 * @param $a
+		 * @param $b
+		 *
+		 * @return int
+		 */
+		function cmp( $a, $b ) {
+			if ( is_object( $a ) ) {
+				return $a->bytes < $b->bytes;
+			} else if ( is_array( $a ) ) {
+				return $a['bytes'] < $b['bytes'];
+			}
+		}
+		/**
+		 * Return a list of images not smushed and reason
+		 * @param $image_id
+		 * @param $size_stats
+		 * @param $attachment_metadata
+		 *
+		 * @return array
+		 */
+		function get_skipped_images( $size_stats, $full_image ) {
+			$skipped = array();
+
+			//If full image was not smushed, reason 1. Large Size logic, 2. Free and greater than 1Mb
+			if ( ! array_key_exists( 'full', $size_stats ) ) {
+				//For free version, Check the image size
+				if ( ! $this->is_pro() ) {
+					//For free version, check if full size is greater than 1 Mb, show the skipped status
+					$file_size = file_exists( $full_image ) ? filesize( $full_image ) : '';
+					if ( !empty( $file_size ) && ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
+						$skipped[] = array(
+							'size'   => 'full',
+							'reason' => 'size_limit'
+						);
+					}else{
+						$skipped[] = array(
+							'size'   => 'full',
+							'reason' => 'large_size'
+						);
+					}
+				} else {
+					//Paid version, Check if we have large size
+					if ( array_key_exists( 'large', $size_stats ) ) {
+						$skipped[] = array(
+							'size'   => 'full',
+							'reason' => 'large_size'
+						);
+					}
+
+				}
+			}
+			return $skipped;
 		}
 
 	}//End of Class

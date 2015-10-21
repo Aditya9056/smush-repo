@@ -108,7 +108,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$errors->add( "not_writable", sprintf( __( "%s is not writable", 'wp-smushit' ), dirname( $file_path ) ) );
 			}
 
-			$file_size = filesize( $file_path );
+			$file_size = file_exists( $file_path ) ? filesize( $file_path ) : '';
 
 			//Check if premium user
 			$max_size = $this->is_pro() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
@@ -276,7 +276,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
 
 					if ( $finfo ) {
-						$ext = $finfo->file( $attachment_file_path_size );
+						$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
 					} elseif ( function_exists( 'mime_content_type' ) ) {
 						$ext = mime_content_type( $attachment_file_path_size );
 					} else {
@@ -988,8 +988,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//For free version, Check the image size
 				if ( ! $this->is_pro() ) {
 					//For free version, check if full size is greater than 1 Mb, show the skipped status
-					$file_size = filesize( $full_image );
-					if ( ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
+					$file_size = file_exists( $full_image ) ? filesize( $full_image ) : '';
+					if ( !empty( $file_size ) && ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
 						$skipped[] = array(
 							'size'   => 'full',
 							'reason' => 'size_limit'
@@ -1085,11 +1085,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 			//Show Sizes and their compression
-			foreach ( $size_stats as $size_key => $size_stats ) {
-				if ( $size_stats->bytes > 0 ) {
+			foreach ( $size_stats as $size_key => $size_value ) {
+				if ( $size_value->bytes > 0 ) {
 					$stats .= '<tr>
 					<td>' . strtoupper( $size_key ) . '</td>
-					<td>' . $this->format_bytes( $size_stats->bytes ) . ' ( ' . $size_stats->percent . '% )</td>
+					<td>' . $this->format_bytes( $size_value->bytes ) . ' ( ' . $size_value->percent . '% )</td>
 				</tr>';
 				}
 			}
