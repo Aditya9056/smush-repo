@@ -81,6 +81,10 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.0.7 =
+
+-Fixed: Invalid header issue
+
 = 2.0.6.5 =
 
 * Updated: Skip webp images ( causing ajax error for few sites )
