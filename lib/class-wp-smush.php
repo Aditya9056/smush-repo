@@ -78,7 +78,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		function admin_init() {
-			load_plugin_textdomain( 'wp-smushit', false, dirname( WP_SMUSH_BASENAME ) . '/languages/' );
+			load_plugin_textdomain( 'wp-smushit', false, WP_SMUSH_DIR . '/languages/' );
 			wp_enqueue_script( 'common' );
 		}
 
@@ -94,6 +94,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function do_smushit( $file_path = '' ) {
 			$errors = new WP_Error();
+			$dir_name = dirname( $file_path );
 			if ( empty( $file_path ) ) {
 				$errors->add( "empty_path", __( "File path is empty", 'wp-smushit' ) );
 			}
@@ -104,8 +105,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			// check that the file is writable
-			if ( ! is_writable( dirname( $file_path ) ) ) {
-				$errors->add( "not_writable", sprintf( __( "%s is not writable", 'wp-smushit' ), dirname( $file_path ) ) );
+			if ( ! is_writable( $dir_name ) ) {
+				$errors->add( "not_writable", sprintf( __( "%s is not writable", 'wp-smushit' ), $dir_name ) );
 			}
 
 			$file_size = file_exists( $file_path ) ? filesize( $file_path ) : '';
@@ -269,11 +270,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}else{
 					$finfo = false;
 				}
+				$image_path = trailingslashit( dirname( $attachment_file_path ) );
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and replace the filename.
-					$attachment_file_path_size = trailingslashit( dirname( $attachment_file_path ) ) . $size_data['file'];
+					$attachment_file_path_size =  $image_path . $size_data['file'];
 
 					if ( $finfo ) {
 						$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
@@ -1042,10 +1044,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 			//For other sizes, check if the image was generated and not available in stats
 			if ( is_array( $media_size ) ) {
+				$dir_path = trailingslashit( dirname( $full_image ) );
 				foreach ( $media_size as $size ) {
 					if ( array_key_exists( $size, $attachment_metadata['sizes'] ) && ! array_key_exists( $size, $size_stats ) && ! empty( $size['file'] ) ) {
 						//Image Path
-						$img_path   = trailingslashit( dirname( $full_image ) ) . $size['file'];
+						$img_path   =  $dir_path . $size['file'];
 						$image_size = file_exists( $img_path ) ? filesize( $img_path ) : '';
 						if ( ! empty( $image_size ) && ( $image_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
 							$skipped[] = array(

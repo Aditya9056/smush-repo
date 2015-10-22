@@ -37,6 +37,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 							'compare' => 'NOT EXISTS'
 						)
 					),
+					'update_post_term_cache' => false,
 					'no_found_rows'  => true
 				);
 				$query           = new WP_Query( $args );

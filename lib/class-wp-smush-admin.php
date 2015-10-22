@@ -484,19 +484,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return int
 		 */
-		function get_exceeding_items_count() {
-			$count       = 0;
-			$bulk        = new WpSmushitBulk();
-			$attachments = $bulk->get_attachments();
-			//Check images bigger than 1Mb, used to display the count of images that can't be smushed
-			foreach ( $attachments as $attachment ) {
-				if ( file_exists( get_attached_file( $attachment ) ) ) {
-					$size = filesize( get_attached_file( $attachment ) );
+		function get_exceeding_items_count( $force_update = false ) {
+			$count = wp_cache_get('exceeding_items', 'wp_smush');
+			if( !$count || $force_update ) {
+				$count       = 0;
+				$bulk        = new WpSmushitBulk();
+				$attachments = $bulk->get_attachments();
+				//Check images bigger than 1Mb, used to display the count of images that can't be smushed
+				foreach ( $attachments as $attachment ) {
+					if ( file_exists( get_attached_file( $attachment ) ) ) {
+						$size = filesize( get_attached_file( $attachment ) );
+					}
+					if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
+						continue;
+					}
+					$count ++;
 				}
-				if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
-					continue;
-				}
-				$count ++;
+				wp_cache_set( 'exceeding_items', $count, 'wp_smush', 3000 );
 			}
 
 			return $count;
