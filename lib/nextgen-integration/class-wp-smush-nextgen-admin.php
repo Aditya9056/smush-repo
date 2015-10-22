@@ -426,6 +426,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			}else if ( $this->remaining_count == 0 ) {
 				?>
 				<p><?php _e( "Congratulations, all your images are currently Smushed!", 'wp-smushit' ); ?></p><?php
+				$this->progress_ui();
 			} else {
 				?>
 				<div class="smush-instructions">

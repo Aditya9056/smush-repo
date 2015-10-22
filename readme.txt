@@ -86,6 +86,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Fixed: Invalid header issue
 * Fixed: Warnings in file functions
 * Updated: Added limit on query results, for sites with higher image count, Use filter `wp_smush_media_query_limit` to adjust values
+* Added: Sortable WP Smush column in Media Library
 * Added: Filters `wp_smush_media_image` for Media Gallery, `wp_smush_nextgen_image` For NextGen gallery,
           allows to skip a particular image size from smushing
 * Added: NextGen Gallery support (Pro only)
