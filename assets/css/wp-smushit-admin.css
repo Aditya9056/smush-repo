@@ -376,6 +376,7 @@ button .wp-smush-loader-wrap {
     margin: 5px 20px 5px 0;
     padding: 5px 5px 5px 0;
     min-width: 323px;
+    position: relative;
 }
 
 /*Pro rows*/
@@ -386,7 +387,8 @@ button .wp-smush-loader-wrap {
 #wp-smush-options-wrap .wp-smush-pro-features .pro-note {
     margin: 0 0 0 25px;
 }
-.wp-smush-setting-row .dashicons-info.smush-original{
+
+.wp-smush-setting-row .dashicons-info.smush-original {
     top: 2px;
     position: relative;
     color: gray;
@@ -616,6 +618,10 @@ table.wp-smush-stats-holder tr td:first-child {
     text-align: right;
 }
 
+td.smush-skipped {
+    position: relative;
+}
+
 .smush-skipped.error {
     color: #C41921;
 }
@@ -628,6 +634,7 @@ table.wp-smush-stats-holder tr td:first-child {
 #ngg-listimages table.wp-smush-stats-holder {
     table-layout: fixed;
 }
+
 #ngg-listimages table.wp-smush-stats-holder td {
     font-size: 12px;
 }
@@ -639,4 +646,9 @@ table.wp-smush-stats-holder tr td:first-child {
 
 .compat-field-wp_smush .wp-smush-stats-holder td {
     padding: 8px 10px
+}
+
+/** Help Tip **/
+.ui-tooltip-content {
+    font-size: 12px;
 }

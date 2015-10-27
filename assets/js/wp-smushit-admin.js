@@ -401,6 +401,8 @@ jQuery(function ($) {
 		new WP_Smush.Smush($(this), true, 'nextgen');
 		return;
 	});
+	/** Show help text on help image hover **/
+	$( document ).tooltip();
 
 });
 (function ($) {

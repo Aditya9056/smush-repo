@@ -1069,8 +1069,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return bool
 		 */
 		function skip_reason( $msg_id ) {
+			$count = count( get_intermediate_image_sizes() );
+			$smush_orgnl_txt = sprintf( esc_html__("When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this.", 'wp_smushit'), $count );
 			$skip_msg = array(
-				'large_size' => esc_html__( "For very large dimension images like those taken with a digital camera, the original full size image is almost never embedded (and really shouldn't be). Because of this WP Smush preserves it unaltered by default. Pro users can change this setting.", 'wp-smushit' ),
+				'large_size' => $smush_orgnl_txt,
 				'size_limit' => esc_html__( "Image couldn't be smushed as it exceeded the 1Mb size limit, Pro users can smush images with size upto 32Mb.", "wp-smushit" )
 			);
 			$skip_rsn = !empty( $skip_msg[$msg_id ] ) ? esc_html__(" Skipped", 'wp-smushit', 'wp-smushit'): '';
@@ -1213,6 +1215,22 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 			return $query;
 
+		}
+
+		/**
+		 * Outputs a help text with icon
+		 *
+		 * @param string $message
+		 * @param string $class
+		 *
+		 * @return bool|string
+		 */
+		function help_text( $message = '', $class = 'period-desc' ) {
+			if ( empty( $message ) ) {
+				return false;
+			}
+
+			return '<img width="16" height="16" src="' . WP_SMUSH_URL . 'assets/images/help.png" class="help_tip"><div class="wp-smush-help-text-wrapper ' . $class . '"><div class="wp-smush-help-arrow-wrapper"><div class="wp-smush-help-arrow"></div></div><div class="wp-smush-help-text">' . $message . '</div></div>';
 		}
 	}
 

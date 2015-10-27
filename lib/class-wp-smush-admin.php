@@ -199,6 +199,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
+			wp_register_style( 'jquery-ui', WP_SMUSH_URL . 'assets/css/jquery-ui.css', array() );
 
 		}
 
@@ -224,6 +225,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			wp_enqueue_script( 'wp-smushit-admin-js' );
+			wp_enqueue_script( 'jquery-ui-tooltip' );
 			if ( $pagenow == 'post.php' || $pagenow == 'upload.php' ) {
 				//For grid view, Need not load it anywhere else
 				wp_enqueue_script( 'wp-smushit-admin-media-js' );
@@ -231,6 +233,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
+			wp_enqueue_style( 'jquery-ui' );
 
 			// localize translatable strings for js
 			$this->localize();
@@ -302,9 +305,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Translation ready settings
 		 */
 		function init_settings() {
+			if( $this->is_pro() ) {
+				$smush_orgnl_txt = esc_html__('Smush all images, including originals.', 'wp_smushit');
+			}else{
+				$count = count( get_intermediate_image_sizes() );
+				$smush_orgnl_txt = sprintf( esc_html__("When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this.", 'wp_smushit'), $count );
+			}
 			$this->settings = array(
 				'auto'     => __( 'Smush images on upload', 'wp-smushit' ),
-				'original' => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original" title="' . __( "For very large dimension images like those taken with a digital camera, the original full size image is almost never embedded (and really shouldn't be). Because of this WP Smush preserves it unaltered by default. Check this box to smush every image size.", 'wp-smushit' ) . '"></span>',
+				'original' => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original" title="' . $smush_orgnl_txt . '"></span>',
 				'lossy'    => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
 				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>',
 				'nextgen'  => __( 'Enable NextGen Gallery integration', 'wp-smushit' )
@@ -380,21 +389,40 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$opt_original = WP_SMUSH_PREFIX . 'original';
 					//Auto value
 					$opt_original_val = get_option( $opt_original, false );
+					//For free version, show unchecked
+					if ( ! $this->is_pro() ) {
+						$opt_original_val = 0;
+					}
 
 					//Smush auto key
 					$opt_lossy = WP_SMUSH_PREFIX . 'lossy';
 					//Auto value
 					$opt_lossy_val = get_option( $opt_lossy, false );
 
+					//For free version, show unchecked
+					if ( ! $this->is_pro() ) {
+						$opt_lossy_val = 0;
+					}
+
 					//Smush auto key
 					$opt_backup = WP_SMUSH_PREFIX . 'backup';
 					//Auto value
 					$opt_backup_val = get_option( $opt_backup, false );
 
+					//For free version, show unchecked
+					if ( ! $this->is_pro() ) {
+						$opt_backup_val = 0;
+					}
+
 					//Smush NextGen key
 					$opt_nextgen = WP_SMUSH_PREFIX . 'nextgen';
 					//Auto value
 					$opt_nextgen_val = get_option( $opt_nextgen, 1 );
+
+					//For free version, show unchecked
+					if ( ! $this->is_pro() ) {
+						$opt_nextgen_val = 0;
+					}
 
 					//disable lossy for non-premium members
 					$disabled = $class = $feature_class = '';
@@ -429,7 +457,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_lossy ), checked( $opt_lossy_val, 1, false ), $disabled, $this->settings['lossy'], $feature_class );
 
 						//NextGen Gallery
-						printf( "<div class=    'wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_nextgen ), checked( $opt_nextgen_val, 1, false ), $disabled, $this->settings['nextgen'], $feature_class );
+						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_nextgen ), checked( $opt_nextgen_val, 1, false ), $disabled, $this->settings['nextgen'], $feature_class );
 
 						//Backup
 						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup'], $feature_class ); ?>
