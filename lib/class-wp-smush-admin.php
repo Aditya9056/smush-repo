@@ -7,7 +7,7 @@
  * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umesh@incsub.com>
  *
- * @copyright (c) 2014, Incsub (http://incsub.com)
+ * @copyright (c) 2015, Incsub (http://incsub.com)
  */
 if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	/**
@@ -33,12 +33,24 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $bulk;
 
+		/**
+		 * @var Total count of Attachments for Smushing
+		 */
 		public $total_count;
 
+		/**
+		 * @var Smushed attachments out of total attachments
+		 */
 		public $smushed_count;
 
+		/**
+		 * @array Stores the stats for all the images
+		 */
 		public $stats;
 
+		/**
+		 * @var int Limit for allowed number of images per bulk request
+		 */
 		public $max_free_bulk = 50; //this is enforced at api level too
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade';
@@ -50,9 +62,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		private $lossless_ids = '';
 
 		/**
+		 * @var int Number of attachments exceeding free limit
+		 */
+		public $exceeding_items_count = 0;
+
+		/**
 		 * Constructor
 		 */
 		public function __construct() {
+
+			// Save Settings, Process Option, Need to process it early, so the pages are loaded accordingly, nextgen gallery integration is loaded at same action
+			add_action( 'plugins_loaded', array( $this, 'process_options' ) );
 
 			// hook scripts and styles
 			add_action( 'admin_init', array( $this, 'register' ) );
@@ -62,7 +82,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Handle Smush Bulk Ajax
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
-
 
 			//Handle Smush Single Ajax
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
@@ -144,6 +163,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Enqueue js on Post screen (Edit screen for media )
 			add_action( 'admin_print_scripts-post-new.php', array( $this, 'enqueue' ) );
+
+			//For Nextgen gallery Pages, check later in enqueue function
+			add_action( 'admin_print_scripts', array( $this, 'enqueue' ) );
 		}
 
 		/**
@@ -152,9 +174,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function register() {
 
 			global $WpSmush;
-
-			// Save settings, if needed
-			$this->process_options();
 
 			// Register js for smush utton in grid view
 			$current_blog_id       = get_current_blog_id();
@@ -180,6 +199,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
+			wp_register_style( 'jquery-ui', WP_SMUSH_URL . 'assets/css/jquery-ui.css', array() );
 
 		}
 
@@ -188,6 +208,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function enqueue() {
 			global $pagenow;
+			$current_screen = get_current_screen();
+			$current_page   = $current_screen->base;
+
+			//Do not enqueue, unless it is one of the required screen
+			if ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'upload.php' ) {
+				return;
+			}
+
 			if ( $pagenow == 'post.php' ) {
 				//Do not load any style or js on post types other than attachment
 				$post_type = get_post_type();
@@ -197,16 +225,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			wp_enqueue_script( 'wp-smushit-admin-js' );
-			wp_enqueue_script( 'wp-smushit-admin-media-js' );
+			wp_enqueue_script( 'jquery-ui-tooltip' );
+			if ( $pagenow == 'post.php' || $pagenow == 'upload.php' ) {
+				//For grid view, Need not load it anywhere else
+				wp_enqueue_script( 'wp-smushit-admin-media-js' );
+			}
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
+			wp_enqueue_style( 'jquery-ui' );
 
 			// localize translatable strings for js
 			$this->localize();
 		}
 
-
+		/**
+		 * Localize Translations
+		 */
 		function localize() {
 			global $pagenow;
 			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php", "post-new.php" ) ) ) {
@@ -270,11 +305,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Translation ready settings
 		 */
 		function init_settings() {
+			if( $this->is_pro() ) {
+				$smush_orgnl_txt = esc_html__('Smush all images, including originals.', 'wp_smushit');
+			}else{
+				$count = count( get_intermediate_image_sizes() );
+				$smush_orgnl_txt = sprintf( esc_html__("When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this.", 'wp_smushit'), $count );
+			}
 			$this->settings = array(
 				'auto'     => __( 'Smush images on upload', 'wp-smushit' ),
-				'original' => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original" title="' . __( "For very large dimension images like those taken with a digital camera, the original full size image is almost never embedded (and really shouldn't be). Because of this WP Smush preserves it unaltered by default. Check this box to smush every image size.", 'wp-smushit' ) . '"></span>',
+				'original' => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original" title="' . $smush_orgnl_txt . '"></span>',
 				'lossy'    => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
-				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>'
+				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>',
+				'nextgen'  => __( 'Enable NextGen Gallery integration', 'wp-smushit' )
 			);
 		}
 
@@ -347,16 +389,40 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$opt_original = WP_SMUSH_PREFIX . 'original';
 					//Auto value
 					$opt_original_val = get_option( $opt_original, false );
+					//For free version, show unchecked
+					if ( ! $this->is_pro() ) {
+						$opt_original_val = 0;
+					}
 
 					//Smush auto key
 					$opt_lossy = WP_SMUSH_PREFIX . 'lossy';
 					//Auto value
 					$opt_lossy_val = get_option( $opt_lossy, false );
 
+					//For free version, show unchecked
+					if ( ! $this->is_pro() ) {
+						$opt_lossy_val = 0;
+					}
+
 					//Smush auto key
 					$opt_backup = WP_SMUSH_PREFIX . 'backup';
 					//Auto value
 					$opt_backup_val = get_option( $opt_backup, false );
+
+					//For free version, show unchecked
+					if ( ! $this->is_pro() ) {
+						$opt_backup_val = 0;
+					}
+
+					//Smush NextGen key
+					$opt_nextgen = WP_SMUSH_PREFIX . 'nextgen';
+					//Auto value
+					$opt_nextgen_val = get_option( $opt_nextgen, 1 );
+
+					//For free version, show unchecked
+					if ( ! $this->is_pro() ) {
+						$opt_nextgen_val = 0;
+					}
 
 					//disable lossy for non-premium members
 					$disabled = $class = $feature_class = '';
@@ -389,6 +455,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 						//Lossy
 						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_lossy ), checked( $opt_lossy_val, 1, false ), $disabled, $this->settings['lossy'], $feature_class );
+
+						//NextGen Gallery
+						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_nextgen ), checked( $opt_nextgen_val, 1, false ), $disabled, $this->settings['nextgen'], $feature_class );
 
 						//Backup
 						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup'], $feature_class ); ?>
@@ -443,19 +512,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return int
 		 */
-		function get_exceeding_items_count() {
-			$count       = 0;
-			$bulk        = new WpSmushitBulk();
-			$attachments = $bulk->get_attachments();
-			//Check images bigger than 1Mb, used to display the count of images that can't be smushed
-			foreach ( $attachments as $attachment ) {
-				if ( file_exists( get_attached_file( $attachment ) ) ) {
-					$size = filesize( get_attached_file( $attachment ) );
+		function get_exceeding_items_count( $force_update = false ) {
+			$count = wp_cache_get('exceeding_items', 'wp_smush');
+			if( !$count || $force_update ) {
+				$count       = 0;
+				$bulk        = new WpSmushitBulk();
+				$attachments = $bulk->get_attachments();
+				//Check images bigger than 1Mb, used to display the count of images that can't be smushed
+				foreach ( $attachments as $attachment ) {
+					if ( file_exists( get_attached_file( $attachment ) ) ) {
+						$size = filesize( get_attached_file( $attachment ) );
+					}
+					if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
+						continue;
+					}
+					$count ++;
 				}
-				if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
-					continue;
-				}
-				$count ++;
+				wp_cache_set( 'exceeding_items', $count, 'wp_smush', 3000 );
 			}
 
 			return $count;
@@ -469,7 +542,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$exceed_mb = '';
 			if ( ! $this->is_pro() ) {
 
-				if ( $this->exceeding_items_count ) {
+				//Initialize exceeding item Count
+				$this->exceeding_items_count = $this->get_exceeding_items_count();
+
+				if ( $this->exceeding_items_count && $this->exceeding_items_count !== 0 ) {
 					$exceed_mb = sprintf(
 						_n( "%d image is over 1MB so will be skipped using the free version of the plugin.",
 							"%d images are over 1MB so will be skipped using the free version of the plugin.", $this->exceeding_items_count, 'wp-smushit' ),
@@ -544,6 +620,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			<?php
 		}
 
+		/**
+		 * Loading Image
+		 */
 		function print_loader() {
 			?>
 			<div class="wp-smush-loader-wrap hidden">
@@ -640,7 +719,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			}
 
-			$attachment_id = $_REQUEST['attachment_id'];
+			$attachment_id = sanitize_key( $_REQUEST['attachment_id'] );
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
@@ -654,9 +733,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$stats['total']   = $this->total_count;
 
 			if ( is_wp_error( $smush ) ) {
-				wp_send_json_error( $stats );
+				$error = $smush->get_error_message();
+				//Check for timeout error and suggest to filter timeout
+				if( strpos( $error, 'timed out') ) {
+					$msg = esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" );
+				}
+				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $msg ) );
 			} else {
-				wp_send_json_success( $stats );
+				wp_send_json_success( array( 'stats' => $stats ) );
 			}
 		}
 
@@ -799,7 +883,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'post_status'    => 'any',
 				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
 				'order'          => 'ASC',
-				'posts_per_page' => - 1
+				'posts_per_page' => - 1,
+				'no_found_rows'  => true
 			);
 			$results = new WP_Query( $query );
 			$count   = ! empty( $results->post_count ) ? $results->post_count : 0;
@@ -823,7 +908,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
-				'meta_key'       => 'wp-smpro-smush-data'
+				'meta_key'       => 'wp-smpro-smush-data',
+				'no_found_rows'  => true
 			);
 
 			$results = new WP_Query( $query );
@@ -880,8 +966,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Display the bulk smushing button
-		 *
-		 * @todo Add the API status here, next to the button
 		 */
 		function setup_button( $super_smush = false ) {
 			$button   = $this->button_state( $super_smush );
@@ -897,10 +981,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $wpdb, $WpSmush;
 
-			$sql = "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s";
-
-			$global_data = $wpdb->get_col( $wpdb->prepare( $sql, "wp-smpro-smush-data" ) );
-
 			$smush_data = array(
 				'size_before' => 0,
 				'size_after'  => 0,
@@ -908,17 +988,29 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'human'       => 0
 			);
 
-			if ( ! empty( $global_data ) ) {
-				foreach ( $global_data as $data ) {
-					$data = maybe_unserialize( $data );
-					if ( ! empty( $data['stats'] ) ) {
-						$smush_data['size_before'] += ! empty( $data['stats']['size_before'] ) ? (int) $data['stats']['size_before'] : 0;
-						$smush_data['size_after'] += ! empty( $data['stats']['size_after'] ) ? (int) $data['stats']['size_after'] : 0;
+			/**
+			 * Allows to set a limit of mysql query
+			 * Default value is 2000
+			 */
+			$limit = apply_filters('wp_smush_media_query_limit', 2000 );
+			$limit = intval( $limit );
+			$offset = 0;
+
+			while ( $global_data = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
+
+				if ( ! empty( $global_data ) ) {
+					foreach ( $global_data as $data ) {
+						$data = maybe_unserialize( $data );
+						if ( ! empty( $data['stats'] ) ) {
+							$smush_data['size_before'] += ! empty( $data['stats']['size_before'] ) ? (int) $data['stats']['size_before'] : 0;
+							$smush_data['size_after'] += ! empty( $data['stats']['size_after'] ) ? (int) $data['stats']['size_after'] : 0;
+						}
 					}
 				}
-			}
 
-			$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
+				$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
+				$offset += $limit;
+			}
 
 			if ( $smush_data['bytes'] < 0 ) {
 				$smush_data['bytes'] = 0;
@@ -978,8 +1070,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			return $button;
 		}
 
+		/**
+		 * Queries all the attachments which have smushe meta
+		 *
+		 * @return array
+		 */
 		function get_smushed_image_ids() {
-			$args  = array(
+			$args = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
 				'post_status'    => 'any',
@@ -992,6 +1089,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						'value' => '1',
 					)
 				),
+				'no_found_rows'  => true
 			);
 			$query = new WP_Query( $args );
 
@@ -1025,6 +1123,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			return $links;
 		}
 
+		/**
+		 * Shows Notice for free users, displays a discount coupon
+		 */
 		function smush_upgrade() {
 			if ( ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
 				return;
@@ -1169,7 +1270,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Displays the features available in Smush pro
 		 */
 		function smush_pro_features() {
-			if ( ! is_super_admin() ) {
+			/**
+			 * Allows to filter whether to display or not, features divison
+			 */
+			$show_features = apply_filters( 'smush_pro_features', true );
+
+			if ( ! is_super_admin() || ! $show_features ) {
 				return;
 			}
 			if ( $this->is_pro() ) { ?>
@@ -1177,6 +1283,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', 'wp-smushit' ) ?></h3>
 					<ol>
 						<li><?php _e( 'Smush the original Full image sizes that are normally skipped by default.', 'wp-smushit' ); ?></li>
+						<li><?php _e( 'NextGen Gallery integration', 'wp-smushit' ); ?></li>
 						<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
 						<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
 						<li><?php _e( 'Smush images up to 32MB.', 'wp-smushit' ); ?></li>
@@ -1189,6 +1296,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
 					<ol>
 						<li><?php _e( 'Smush the original Full image sizes that are normally skipped by default.', 'wp-smushit' ); ?></li>
+						<li><?php _e( 'NextGen Gallery integration', 'wp-smushit' ); ?></li>
 						<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
 						<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
 						<li><?php _e( 'Smush images greater than 1MB.', 'wp-smushit' ); ?></li>
@@ -1223,5 +1331,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 	}
 
+	global $wpsmushit_admin;
 	$wpsmushit_admin = new WpSmushitAdmin();
 }
