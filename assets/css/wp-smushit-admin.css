@@ -376,7 +376,6 @@ button .wp-smush-loader-wrap {
     margin: 5px 20px 5px 0;
     padding: 5px 5px 5px 0;
     min-width: 323px;
-    position: relative;
 }
 
 /*Pro rows*/
@@ -616,10 +615,6 @@ table.wp-smush-stats-holder tr th:last-child {
 
 table.wp-smush-stats-holder tr td:first-child {
     text-align: right;
-}
-
-td.smush-skipped {
-    position: relative;
 }
 
 .smush-skipped.error {

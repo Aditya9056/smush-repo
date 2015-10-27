@@ -1216,22 +1216,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			return $query;
 
 		}
-
-		/**
-		 * Outputs a help text with icon
-		 *
-		 * @param string $message
-		 * @param string $class
-		 *
-		 * @return bool|string
-		 */
-		function help_text( $message = '', $class = 'period-desc' ) {
-			if ( empty( $message ) ) {
-				return false;
-			}
-
-			return '<img width="16" height="16" src="' . WP_SMUSH_URL . 'assets/images/help.png" class="help_tip"><div class="wp-smush-help-text-wrapper ' . $class . '"><div class="wp-smush-help-arrow-wrapper"><div class="wp-smush-help-arrow"></div></div><div class="wp-smush-help-text">' . $message . '</div></div>';
-		}
 	}
 
 	global $WpSmush;
