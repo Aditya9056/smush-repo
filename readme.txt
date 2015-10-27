@@ -59,7 +59,7 @@ Features available to both WP Smush and Pro users include:
 	<li>Use of WPMU DEV's fast and reliable Smush API service.</li>
 	<li>View advanced compression stats per-attachment and library totals.</li>
 </ul>
-Discover for yourself why WP Smush is the most popular free image optimization plugin with almost two million downloads.
+Discover for yourself why WP Smush is the most popular free image optimization plugin with more than two million downloads.
 
 
 == Screenshots ==
