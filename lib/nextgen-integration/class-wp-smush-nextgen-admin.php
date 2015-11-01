@@ -174,7 +174,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 				if ( $super_smush ) {
 					//get the attachments, and get lossless count
-					echo "Supersmush pending";
+//					echo "Supersmush pending";
 //					$this->lossless_ids = $this->get_lossless_attachments();
 				}
 			}
