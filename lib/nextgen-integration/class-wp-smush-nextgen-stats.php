@@ -144,11 +144,10 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				}
 			} else {
 
-				if( !$unsmushed_images ) {
+				$unsmushed_images = ! empty( $unsmushed_images ) ? $unsmushed_images : $images;
+				if ( ! $unsmushed_images ) {
 					return 0;
-				}else {
-					$unsmushed_images = ! empty( $unsmushed_images ) ? $unsmushed_images : $images;
-
+				} else {
 					return $count ? count( $unsmushed_images ) : $unsmushed_images;
 				}
 			}
