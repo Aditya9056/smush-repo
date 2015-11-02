@@ -271,10 +271,7 @@ jQuery(function ($) {
 								self.call_ajax();
 							}
 						}
-						return false;
 					}
-					self.update_progress(res);
-
 					if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && res.success === false && res.data.error !== 'bulk_request_image_limit_exceeded' )) {
 						self.increment_errors();
 					}
@@ -282,6 +279,11 @@ jQuery(function ($) {
 					if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved()) {
 						self.free_exceeded();
 					} else {
+
+						if( self.is_bulk ) {
+							self.update_progress(res);
+						}
+
 						if (self.continue()) {
 							self.call_ajax();
 						}
