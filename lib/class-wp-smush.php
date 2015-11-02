@@ -75,10 +75,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Load NextGen Gallery, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
 			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ), 90 );
 
+			add_action( 'plugins_loaded', array( $this, 'i18n' ) );
+		}
+
+		function i18n() {
+			load_plugin_textdomain( 'wp-smushit', false, WP_SMUSH_DIR . '/languages/' );
 		}
 
 		function admin_init() {
-			load_plugin_textdomain( 'wp-smushit', false, WP_SMUSH_DIR . '/languages/' );
 			wp_enqueue_script( 'common' );
 		}
 
@@ -607,7 +611,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				$request = wp_remote_get( $url, array(
 						"user-agent" => WP_SMUSH_UA,
-						"timeout"    => 3
+						"timeout"    => 10
 					)
 				);
 
@@ -639,19 +643,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed
 		 */
 		private function _get_api_key() {
-			//Try to fetch it from Cache
-			$api_key = wp_cache_get( 'wpmudev_apikey', 'smush' );
 
-			//If not available, get it from other means, and set it in cache
-			if ( ! $api_key ) {
-				if ( defined( 'WPMUDEV_APIKEY' ) ) {
-					$api_key = WPMUDEV_APIKEY;
-				} else {
-					$api_key = get_site_option( 'wpmudev_apikey' );
-				}
-				if ( $api_key ) {
-					wp_cache_add( "wpmudev_apikey", $api_key, 'smush', 6000 );
-				}
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$api_key = WPMUDEV_APIKEY;
+			} else {
+				$api_key = get_site_option( 'wpmudev_apikey' );
 			}
 
 			return $api_key;

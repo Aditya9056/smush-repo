@@ -81,6 +81,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.0.7.2 =
+* Fixed: Untranslatable strings in settings
+* Fixed: Increased is_pro() API timeouts
+* Fixed: Remove redundant _get_api_key() cache check
+
 = 2.0.7.1 =
 
 * Fixed: Bulk Smush button keeps spinning after 50 images for free version

@@ -103,8 +103,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			/// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
-			$this->init_settings();
-
+			add_action( "admin_init", array( $this, "init_settings" ) );
 		}
 
 		/**
