@@ -79,7 +79,7 @@ msgstr ""
 
 #: lib/class-wp-smush-admin.php:265 lib/class-wp-smush.php:761
 #: lib/nextgen-integration/class-wp-smush-nextgen-admin.php:147
-#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:227
+#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:226
 msgid "Super-Smush"
 msgstr ""
 
@@ -382,12 +382,12 @@ msgid "Image couldn't be smushed"
 msgstr ""
 
 #: lib/class-wp-smush.php:725
-#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:182
+#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:181
 msgid "Error processing request"
 msgstr ""
 
 #: lib/class-wp-smush.php:729
-#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:186
+#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:185
 msgid "Already Optimized"
 msgstr ""
 
@@ -404,7 +404,7 @@ msgid "by %s (  %01.1f%% )"
 msgstr ""
 
 #: lib/class-wp-smush.php:737
-#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:192
+#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:191
 msgid "Smush stats"
 msgstr ""
 
@@ -427,12 +427,12 @@ msgid " Skipped"
 msgstr ""
 
 #: lib/class-wp-smush.php:1096
-#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:326
+#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:325
 msgid "Image size"
 msgstr ""
 
 #: lib/class-wp-smush.php:1097
-#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:327
+#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:326
 msgid "Savings"
 msgstr ""
 
@@ -454,7 +454,7 @@ msgstr[1] ""
 msgid "Smush request timed out, You can try setting a higher value ( > 60 ) for `WP_SMUSH_API_TIMEOUT`."
 msgstr ""
 
-#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:188
+#: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:187
 msgid "Reduced by %s (  %01.1f%% )"
 msgstr ""
 
