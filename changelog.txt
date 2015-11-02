@@ -5,6 +5,11 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
+= 2.0.7.1 =
+
+* Fixed: Bulk Smush button keeps spinning after 50 images for free version
+* Fixed: NextGen Bulk Smush button issue
+
 = 2.0.7 =
 
 * Fixed: Invalid header issue
