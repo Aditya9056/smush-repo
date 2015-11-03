@@ -686,16 +686,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $WpSmush;
 
 			$should_continue = true;
-			$is_pro          = false;
 
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
 				wp_send_json_error( 'missing id' );
 			}
 
-			//if not premium
-			$is_pro = $WpSmush->is_pro();
-
-			if ( ! $is_pro ) {
+			if ( ! $this->is_pro_user ) {
 				//Free version bulk smush, check the transient counter value
 				$should_continue = $this->check_bulk_limit();
 			}
