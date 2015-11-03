@@ -1304,7 +1304,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					</p>
 
 					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p>
-					<p><?php _e( 'Unable to access Pro Features? Try to <a href="#" id="wp-smush-refresh-status">Refresh Status</a>', 'wp-smushit' ); ?></p>
+					<p><?php _e( 'Unable to access Pro Features? <a href="#" id="wp-smush-refresh-status">Refresh Status</a>', 'wp-smushit' ); ?></p>
 
 					<p>
 						<?php

@@ -410,7 +410,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						}
 					}
 				}
-				update_post_meta( $ID, $this->SMUSHED_META_KEY, $stats );
+				update_post_meta( $ID, $this->smushed_meta_key, $stats );
 			}
 
 			return $meta;
