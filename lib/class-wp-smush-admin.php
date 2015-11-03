@@ -90,9 +90,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle Smush Single Ajax
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
 
-			//Handle Smush Single Ajax
-			add_action( 'wp_ajax_refresh_api_status', array( $this, 'refresh_status' ) );
-
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
 				'settings_link'
@@ -475,6 +472,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->is_pro_user = $this->is_pro();
 
 			$this->init_settings();
+
+			//If refresh is set in URL
+			if ( isset( $_GET['refresh'] ) && $_GET['refresh'] ) {
+				$this->refresh_status();
+			}
 
 			// we aren't saving options
 			if ( ! isset( $_POST['wp_smush_options_nonce'] ) ) {
@@ -1285,7 +1287,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
 					</ol>
 				</div>
-			<?php } else { ?>
+			<?php } else {
+				$refresh_url = add_query_arg( array('refresh' => 1 ) ); ?>
 				<div class="wp-smpushit-features error">
 					<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
 					<ol>
@@ -1304,7 +1307,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					</p>
 
 					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p>
-					<p><?php _e( 'Unable to access Pro Features? <a href="#" id="wp-smush-refresh-status">Refresh Status</a>', 'wp-smushit' ); ?></p>
+					<p><?php echo sprintf( __( 'Unable to access Pro Features? <a href="%s">Refresh Status</a>', 'wp-smushit' ), $refresh_url ); ?></p>
 
 					<p>
 						<?php
@@ -1335,8 +1338,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$key     = "wp-smush-premium-" . substr( $api_key, - 5, 5 );
 
 			delete_site_transient( $key );
-
-			wp_send_json_success();
 		}
 	}
 

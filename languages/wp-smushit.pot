@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP Smush 2.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wp-smush\n"
-"POT-Creation-Date: 2015-11-03 17:23:11+00:00\n"
+"POT-Creation-Date: 2015-11-03 17:40:36+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -324,7 +324,7 @@ msgid "Already upgraded to a WPMU DEV membership? Install and Login to our Dashb
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:1307
-msgid "Unable to access Pro Features? Try to <a href=\"#\" id=\"wp-smush-refresh-status\">Refresh Status</a>"
+msgid "Unable to access Pro Features? <a href=\"#\" id=\"wp-smush-refresh-status\">Refresh Status</a>"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:1316

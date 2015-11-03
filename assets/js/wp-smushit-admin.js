@@ -405,19 +405,6 @@ jQuery(function ($) {
 	});
 	/** Show help text on help image hover **/
 	$( document ).tooltip();
-	//Refresh Transients
-	$('#wp-smush-refresh-status').on('click', function(e){
-		e.preventDefault();
-		var status_url = ajaxurl + '?action=refresh_api_status'
-		var status = $.ajax({
-			type: "GET",
-			url: status_url
-		});
-		//Reload a page after deleting transient
-		if( status ) {
-			location.reload();
-		}
-	})
 
 });
 (function ($) {
