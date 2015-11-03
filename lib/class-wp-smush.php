@@ -12,29 +12,23 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		private $is_pro;
 
 		/**
-		 * Meta key for api validity
-		 *
-		 */
-		const VALIDITY_KEY = "wp-smush-valid";
-
-		/**
 		 * Api server url to check api key validity
 		 *
 		 */
-		const API_SERVER = 'https://premium.wpmudev.org/wdp-un.php?action=smushit_check';
+		var $api_server = 'https://premium.wpmudev.org/wdp-un.php?action=smushit_check';
 
 		/**
 		 * Meta key to save smush result to db
 		 *
 		 *
 		 */
-		const SMUSHED_META_KEY = 'wp-smpro-smush-data';
+		var $smushed_meta_key = 'wp-smpro-smush-data';
 
 		/**
 		 * Meta key to save migrated version
 		 *
 		 */
-		const MIGRATED_VERSION = "wp-smush-migrated-version";
+		var $migrated_version_key = "wp-smush-migrated-version";
 
 		/**
 		 * Constructor
@@ -75,10 +69,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Old Smush stats migration
 			add_action( "admin_init", array( $this, "migrate" ) );
 
+			//Load Translation files
+			add_action( 'plugins_loaded', array( $this, 'i18n' ), 12 );
+
 			//Load NextGen Gallery, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
 			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ), 90 );
-
-			add_action( 'plugins_loaded', array( $this, 'i18n' ) );
 		}
 
 		function i18n() {
@@ -393,7 +388,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Set smush status for all the images, store it in wp-smpro-smush-data
 			if ( ! $has_errors ) {
 
-				$existing_stats = get_post_meta( $ID, self::SMUSHED_META_KEY, true );
+				$existing_stats = get_post_meta( $ID, $this->smushed_meta_key, true );
 
 				if ( ! empty( $existing_stats ) ) {
 					//Update total bytes saved, and compression percent
@@ -415,7 +410,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						}
 					}
 				}
-				update_post_meta( $ID, self::SMUSHED_META_KEY, $stats );
+				update_post_meta( $ID, $this->smushed_meta_key, $stats );
 			}
 
 			return $meta;
@@ -427,7 +422,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * Filters  wp_generate_attachment_metadata
 		 *
-		 * @uses WpSmush::resize_from_meta_data
+		 * @uses resize_from_meta_data
 		 *
 		 * @param $meta
 		 * @param null $ID
@@ -610,7 +605,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$key = "wp-smush-premium-" . substr( $api_key, - 5, 5 ); //add last 5 chars of apikey to transient key in case it changes
 			if ( false === ( $valid = get_site_transient( $key ) ) ) {
 				// call api
-				$url = self::API_SERVER . '&key=' . urlencode( $api_key );
+				$url = $this->api_server . '&key=' . urlencode( $api_key );
 
 				$request = wp_remote_get( $url, array(
 						"user-agent" => WP_SMUSH_UA,
@@ -625,12 +620,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						set_site_transient( $key, 1, 12 * HOUR_IN_SECONDS );
 					} else {
 						$valid = false;
-						set_site_transient( $key, 0, 30 * MINUTE_IN_SECONDS ); //cache failure much shorter
+						set_site_transient( $key, 0, 24 * HOUR_IN_SECONDS ); //cache failure much shorter
 					}
 
 				} else {
 					$valid = false;
-					set_site_transient( $key, 0, 5 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
+					set_site_transient( $key, 0, 30 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
 				}
 
 			}
@@ -645,7 +640,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return mixed
 		 */
-		private function _get_api_key() {
+		function _get_api_key() {
 
 			if ( defined( 'WPMUDEV_APIKEY' ) ) {
 				$api_key = WPMUDEV_APIKEY;
@@ -708,7 +703,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt  = $button_txt = '';
 			$show_button = false;
 
-			$wp_smush_data = get_post_meta( $id, self::SMUSHED_META_KEY, true );
+			$wp_smush_data = get_post_meta( $id, $this->smushed_meta_key, true );
 			$attachment_data = wp_get_attachment_metadata( $id );
 //
 			// if the image is smushed
@@ -850,7 +845,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
-			$migrated_version = get_option( self::MIGRATED_VERSION );
+			$migrated_version = get_option( $this->migrated_version_key );
 
 			if ( $migrated_version === $this->version ) {
 				return;
@@ -869,11 +864,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			foreach ( $results as $attachment_meta ) {
 				$migrated_message = $migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
 				if ( $migrated_message !== array() ) {
-					update_post_meta( $attachment_meta->post_id, self::SMUSHED_META_KEY, $migrated_message );
+					update_post_meta( $attachment_meta->post_id, $this->smushed_meta_key, $migrated_message );
 				}
 			}
 
-			update_option( self::MIGRATED_VERSION, $this->version );
+			update_option( $this->migrated_version_key, $this->version );
 
 		}
 
@@ -910,7 +905,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$image_size = $image_size . '@2x';
 			$data       = $smush_stats['data'];
 			//Get existing Stats
-			$stats = get_post_meta( $id, self::SMUSHED_META_KEY, true );
+			$stats = get_post_meta( $id, $this->smushed_meta_key, true );
 			//Update existing Stats
 			if ( ! empty( $stats ) ) {
 				//Update total bytes saved, and compression percent
@@ -951,7 +946,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$stats['sizes'][ $image_size ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $data );
 			}
 			//Calculate Percent
-			update_post_meta( $id, self::SMUSHED_META_KEY, $stats );
+			update_post_meta( $id, $this->smushed_meta_key, $stats );
 
 		}
 
@@ -1202,11 +1197,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$query->set( 'meta_query', array(
 					'relation' => 'OR',
 					array(
-						'key'     => self::SMUSHED_META_KEY,
+						'key'     => $this->smushed_meta_key,
 						'compare' => 'EXISTS'
 					),
 					array(
-						'key'     => self::SMUSHED_META_KEY,
+						'key'     => $this->smushed_meta_key,
 						'compare' => 'NOT EXISTS'
 					)
 				) );

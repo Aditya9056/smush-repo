@@ -76,7 +76,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public function __construct() {
 
 			// Save Settings, Process Option, Need to process it early, so the pages are loaded accordingly, nextgen gallery integration is loaded at same action
-			add_action( 'plugins_loaded', array( $this, 'process_options' ) );
+			add_action( 'plugins_loaded', array( $this, 'process_options' ), 20 );
 
 			// hook scripts and styles
 			add_action( 'admin_init', array( $this, 'register' ) );
@@ -472,6 +472,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->is_pro_user = $this->is_pro();
 
 			$this->init_settings();
+
+			//If refresh is set in URL
+			if ( isset( $_GET['refresh'] ) && $_GET['refresh'] ) {
+				$this->refresh_status();
+			}
 
 			// we aren't saving options
 			if ( ! isset( $_POST['wp_smush_options_nonce'] ) ) {
@@ -1282,7 +1287,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
 					</ol>
 				</div>
-			<?php } else { ?>
+			<?php } else {
+				if( $this->_get_api_key() ) {
+					$refresh_url = add_query_arg( array( 'refresh' => 1 ) );
+				}else{
+					$refresh_url = '';
+				}?>
 				<div class="wp-smpushit-features error">
 					<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
 					<ol>
@@ -1300,7 +1310,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<a class="button-primary" href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', 'wp-smushit' ); ?></a>
 					</p>
 
-					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p>
+					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p><?php
+					if ( ! empty( $refresh_url ) ) {?>
+						<p><?php echo sprintf( __( 'Unable to access Pro Features? <a href="%s">Refresh Status</a>', 'wp-smushit' ), $refresh_url ); ?></p><?php }
+					?>
 
 					<p>
 						<?php
@@ -1308,17 +1321,29 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
 								$function = is_multisite() ? 'network_admin_url' : 'admin_url';
 								$url      = wp_nonce_url( $function( 'plugins.php?action=activate&plugin=wpmudev-updates%2Fupdate-notifications.php' ), 'activate-plugin_wpmudev-updates/update-notifications.php' );
-								?><a class="button-secondary"
-								href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								?>
+								<a class="button-secondary" href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
 							} else { //dashboard not installed at all
-								?><a class="button-secondary" target="_blank"
-									href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								?>
+								<a class="button-secondary" target="_blank" href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
 							}
 						}
 						?>
 					</p>
 				</div>
 			<?php }
+		}
+
+		/**
+		 * Delete Site transient, stored for api status
+		 */
+		function refresh_status() {
+			global $WpSmush;
+
+			$api_key = $WpSmush->_get_api_key();
+			$key     = "wp-smush-premium-" . substr( $api_key, - 5, 5 );
+
+			delete_site_transient( $key );
 		}
 	}
 
