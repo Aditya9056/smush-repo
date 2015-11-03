@@ -90,6 +90,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle Smush Single Ajax
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
 
+			//Handle Smush Single Ajax
+			add_action( 'wp_ajax_refresh_api_status', array( $this, 'refresh_status' ) );
+
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
 				'settings_link'
@@ -1301,6 +1304,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					</p>
 
 					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p>
+					<p><?php _e( 'Unable to access Pro Features? Try to <a href="#" id="wp-smush-refresh-status">Refresh Status</a>', 'wp-smushit' ); ?></p>
 
 					<p>
 						<?php
@@ -1308,17 +1312,31 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
 								$function = is_multisite() ? 'network_admin_url' : 'admin_url';
 								$url      = wp_nonce_url( $function( 'plugins.php?action=activate&plugin=wpmudev-updates%2Fupdate-notifications.php' ), 'activate-plugin_wpmudev-updates/update-notifications.php' );
-								?><a class="button-secondary"
-								href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								?>
+								<a class="button-secondary" href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
 							} else { //dashboard not installed at all
-								?><a class="button-secondary" target="_blank"
-									href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								?>
+								<a class="button-secondary" target="_blank" href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
 							}
 						}
 						?>
 					</p>
 				</div>
 			<?php }
+		}
+
+		/**
+		 * Delete Site transient, stored for api status
+		 */
+		function refresh_status() {
+			global $WpSmush;
+
+			$api_key = $WpSmush->_get_api_key();
+			$key     = "wp-smush-premium-" . substr( $api_key, - 5, 5 );
+
+			delete_site_transient( $key );
+
+			wp_send_json_success();
 		}
 	}
 

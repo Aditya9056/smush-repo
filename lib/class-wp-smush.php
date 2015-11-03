@@ -620,12 +620,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						set_site_transient( $key, 1, 12 * HOUR_IN_SECONDS );
 					} else {
 						$valid = false;
-						set_site_transient( $key, 0, 30 * MINUTE_IN_SECONDS ); //cache failure much shorter
+						set_site_transient( $key, 0, 24 * HOUR_IN_SECONDS ); //cache failure much shorter
 					}
 
 				} else {
 					$valid = false;
-					set_site_transient( $key, 0, 5 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
+					set_site_transient( $key, 0, 30 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
 				}
 
 			}
@@ -640,7 +640,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return mixed
 		 */
-		private function _get_api_key() {
+		function _get_api_key() {
 
 			if ( defined( 'WPMUDEV_APIKEY' ) ) {
 				$api_key = WPMUDEV_APIKEY;
