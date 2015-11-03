@@ -6,7 +6,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		var $version = WP_SMUSH_VERSION;
 
-		var $is_pro;
+		/**
+		 * @var Stores the value of is_pro function
+		 */
+		private $is_pro;
 
 		/**
 		 * Meta key for api validity
@@ -75,10 +78,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Load NextGen Gallery, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
 			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ), 90 );
 
+			add_action( 'plugins_loaded', array( $this, 'i18n' ) );
+		}
+
+		function i18n() {
+			load_plugin_textdomain( 'wp-smushit', false, WP_SMUSH_DIR . '/languages/' );
 		}
 
 		function admin_init() {
-			load_plugin_textdomain( 'wp-smushit', false, WP_SMUSH_DIR . '/languages/' );
 			wp_enqueue_script( 'common' );
 		}
 
@@ -600,14 +607,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			$key = "wp-smush-premium-" . substr( $api_key, - 10, 10 ); //add last 10 chars of apikey to transient key in case it changes
+			$key = "wp-smush-premium-" . substr( $api_key, - 5, 5 ); //add last 5 chars of apikey to transient key in case it changes
 			if ( false === ( $valid = get_site_transient( $key ) ) ) {
 				// call api
 				$url = self::API_SERVER . '&key=' . urlencode( $api_key );
 
 				$request = wp_remote_get( $url, array(
 						"user-agent" => WP_SMUSH_UA,
-						"timeout"    => 3
+						"timeout"    => 10
 					)
 				);
 
@@ -639,19 +646,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed
 		 */
 		private function _get_api_key() {
-			//Try to fetch it from Cache
-			$api_key = wp_cache_get( 'wpmudev_apikey', 'smush' );
 
-			//If not available, get it from other means, and set it in cache
-			if ( ! $api_key ) {
-				if ( defined( 'WPMUDEV_APIKEY' ) ) {
-					$api_key = WPMUDEV_APIKEY;
-				} else {
-					$api_key = get_site_option( 'wpmudev_apikey' );
-				}
-				if ( $api_key ) {
-					wp_cache_add( "wpmudev_apikey", $api_key, 'smush', 6000 );
-				}
+			if ( defined( 'WPMUDEV_APIKEY' ) ) {
+				$api_key = WPMUDEV_APIKEY;
+			} else {
+				$api_key = get_site_option( 'wpmudev_apikey' );
 			}
 
 			return $api_key;

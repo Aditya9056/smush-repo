@@ -19,8 +19,12 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 * @var array Contains the total Stats, for displaying it on bulk page
 		 */
 		var $stats = array();
+		private $is_pro_user;
 
 		function __construct() {
+
+			global $WpSmush;
+			$this->is_pro_user = $WpSmush->is_pro();
 
 			//Update Total Image count
 			add_action( 'ngg_added_new_image', array( $this, 'image_count' ), 10 );
@@ -92,8 +96,8 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			 * Allows to set a limit of mysql query
 			 * Default value is 2000
 			 */
-			$limit = apply_filters('wp_smush_nextgen_query_limit', 2000 );
-			$limit = intval( $limit );
+			$limit  = apply_filters( 'wp_smush_nextgen_query_limit', 2000 );
+			$limit  = intval( $limit );
 			$offset = 0;
 
 			//Check type of images being queried
@@ -105,9 +109,9 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$images = wp_cache_get( 'wp_smush_images_' . $type, 'nextgen' );
 
 			// If nothing is found, build the object.
-			if ( !$images || $force_update ) {
+			if ( ! $images || $force_update ) {
 				// Query Attachments for meta key
-				while( $attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures LIMIT $offset, $limit"  ) ) {
+				while ( $attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures LIMIT $offset, $limit" ) ) {
 					foreach ( $attachments as $attachment ) {
 						//Check if it has `wp_smush` key
 						if ( class_exists( 'Ngg_Serializable' ) ) {
@@ -126,10 +130,10 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					//Set the offset
 					$offset += $limit;
 				};
-				if( !empty( $smushed_images ) ) {
+				if ( ! empty( $smushed_images ) ) {
 					wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen', 300 );
 				}
-				if( !empty( $unsmushed_images ) ) {
+				if ( ! empty( $unsmushed_images ) ) {
 					wp_cache_set( 'wp_smush_images_unsmushed', $unsmushed_images, 'nextgen', 300 );
 				}
 			}
@@ -137,9 +141,9 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			if ( $type == 'smushed' ) {
 				$smushed_images = ! empty( $smushed_images ) ? $smushed_images : $images;
 
-				if( !$smushed_images ) {
+				if ( ! $smushed_images ) {
 					return 0;
-				}else {
+				} else {
 					return $count ? count( $smushed_images ) : $smushed_images;
 				}
 			} else {
@@ -221,7 +225,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$opt_lossy_val = get_option( $opt_lossy, false );
 
 			//Check if premium user, compression was lossless, and lossy compression is enabled
-			if ( $WpSmush->is_pro() && ! $is_lossy && $opt_lossy_val && $image_type != 'image/gif' && ! empty( $image_type ) ) {
+			if ( $this->is_pro_user && ! $is_lossy && $opt_lossy_val && $image_type != 'image/gif' && ! empty( $image_type ) ) {
 				// the button text
 				$button_txt  = __( 'Super-Smush', 'wp-smushit' );
 				$show_button = true;
@@ -258,7 +262,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				$smush_stats['bytes'] = ! empty( $smush_stats['bytes'] ) ? ( $smush_stats['bytes'] + $stats['bytes'] ) : $stats['bytes'];
 
 				//Human Readable
-				$smush_stats['human'] = !empty( $smush_stats['bytes'] ) ? $WpSmush->format_bytes( $smush_stats['bytes'] )  : '';
+				$smush_stats['human'] = ! empty( $smush_stats['bytes'] ) ? $WpSmush->format_bytes( $smush_stats['bytes'] ) : '';
 
 				//Size of images before the compression
 				$smush_stats['size_before'] = ! empty( $smush_stats['size_before'] ) ? ( $smush_stats['size_before'] + $stats['size_before'] ) : $stats['size_before'];
@@ -312,7 +316,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 * Updates the cache for Smushed and Unsmushed images
 		 */
 		function update_cache() {
-			$this->get_ngg_images('smushed', '', true );
+			$this->get_ngg_images( 'smushed', '', true );
 		}
 
 		function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata, $full_image ) {
@@ -349,7 +353,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			}
 			//Show Sizes and their compression
 			foreach ( $size_stats as $size_key => $size_value ) {
-				$size_value = !is_object( $size_value ) ? (object) $size_value : $size_value;
+				$size_value = ! is_object( $size_value ) ? (object) $size_value : $size_value;
 				if ( $size_value->bytes > 0 ) {
 					$stats .= '<tr>
 					<td>' . strtoupper( $size_key ) . '</td>
@@ -363,6 +367,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 			return $stats;
 		}
+
 		/**
 		 * Compare Values
 		 *
@@ -378,8 +383,10 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				return $a['bytes'] < $b['bytes'];
 			}
 		}
+
 		/**
 		 * Return a list of images not smushed and reason
+		 *
 		 * @param $image_id
 		 * @param $size_stats
 		 * @param $attachment_metadata
@@ -392,15 +399,15 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			//If full image was not smushed, reason 1. Large Size logic, 2. Free and greater than 1Mb
 			if ( ! array_key_exists( 'full', $size_stats ) ) {
 				//For free version, Check the image size
-				if ( ! $this->is_pro() ) {
+				if ( ! $this->is_pro_user ) {
 					//For free version, check if full size is greater than 1 Mb, show the skipped status
 					$file_size = file_exists( $full_image ) ? filesize( $full_image ) : '';
-					if ( !empty( $file_size ) && ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
+					if ( ! empty( $file_size ) && ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
 						$skipped[] = array(
 							'size'   => 'full',
 							'reason' => 'size_limit'
 						);
-					}else{
+					} else {
 						$skipped[] = array(
 							'size'   => 'full',
 							'reason' => 'large_size'
@@ -417,6 +424,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 				}
 			}
+
 			return $skipped;
 		}
 
