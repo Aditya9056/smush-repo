@@ -602,8 +602,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
+			//W3TC disk cache is buggy and always converts 0 to false, so we have to store as string
 			$key = "wp-smush-premium-" . substr( $api_key, - 5, 5 ); //add last 5 chars of apikey to transient key in case it changes
-			if ( false === ( $valid = get_site_transient( $key ) ) ) {
+			$valid = get_site_transient( $key );
+			if ( empty( $valid ) ) {
 				// call api
 				$url = $this->api_server . '&key=' . urlencode( $api_key );
 
@@ -616,21 +618,21 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				if ( ! is_wp_error( $request ) && '200' == wp_remote_retrieve_response_code( $request ) ) {
 					$result = json_decode( wp_remote_retrieve_body( $request ) );
 					if ( $result && $result->success ) {
-						$valid = true;
-						set_site_transient( $key, 1, 12 * HOUR_IN_SECONDS );
+						$valid = 'true';
+						set_site_transient( $key, 'true', 12 * HOUR_IN_SECONDS );
 					} else {
-						$valid = false;
-						set_site_transient( $key, 0, 24 * HOUR_IN_SECONDS ); //cache failure much shorter
+						$valid = 'false';
+						set_site_transient( $key, 'false', DAY_IN_SECONDS );
 					}
 
 				} else {
-					$valid = false;
-					set_site_transient( $key, 0, 30 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
+					$valid = 'false';
+					set_site_transient( $key, 'false', 5 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
 				}
 
 			}
 
-			$this->is_pro = (bool) $valid;
+			$this->is_pro = ( 'true' == $valid );
 
 			return $this->is_pro;
 		}
