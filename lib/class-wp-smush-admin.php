@@ -1011,7 +1011,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$offset += $limit;
 			}
 
-			if ( $smush_data['bytes'] < 0 ) {
+			if ( ! isset( $smush_data['bytes'] ) || $smush_data['bytes'] < 0 ) {
 				$smush_data['bytes'] = 0;
 			}
 
