@@ -86,7 +86,6 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Fixed: Increased is_pro() API timeouts
 * Fixed: Remove redundant _get_api_key() cache check
 * Fixed: Some PHP notices on fresh installs
-* Fixed: PHP 5.2 compatibility
 
 = 2.0.7.1 =
 
