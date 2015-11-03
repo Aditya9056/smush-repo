@@ -76,7 +76,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public function __construct() {
 
 			// Save Settings, Process Option, Need to process it early, so the pages are loaded accordingly, nextgen gallery integration is loaded at same action
-			add_action( 'plugins_loaded', array( $this, 'process_options' ) );
+			add_action( 'plugins_loaded', array( $this, 'process_options' ), 20 );
 
 			// hook scripts and styles
 			add_action( 'admin_init', array( $this, 'register' ) );
