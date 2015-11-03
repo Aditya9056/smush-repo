@@ -618,6 +618,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					)
 				);
 
+				echo "<pre>Shouldn't be here";
+				print_r( $request );
+				echo "</pre>";
 				if ( ! is_wp_error( $request ) && '200' == wp_remote_retrieve_response_code( $request ) ) {
 					$result = json_decode( wp_remote_retrieve_body( $request ) );
 					if ( $result && $result->success ) {

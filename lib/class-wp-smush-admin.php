@@ -84,8 +84,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// hook custom screen
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 
-			$this->is_pro_user = $this->is_pro();
-
 			//Handle Smush Bulk Ajax
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
 
@@ -470,6 +468,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return null
 		 */
 		function process_options() {
+
+			$this->is_pro_user = $this->is_pro();
 
 			$this->init_settings();
 
