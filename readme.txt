@@ -81,10 +81,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.0.7.2 =
+= 2.1 =
 * Fixed: Untranslatable strings in settings
 * Fixed: Increased is_pro() API timeouts
 * Fixed: Remove redundant _get_api_key() cache check
+* Fixed: Some PHP notices on fresh installs
 
 = 2.0.7.1 =
 
