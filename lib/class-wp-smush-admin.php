@@ -1288,7 +1288,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					</ol>
 				</div>
 			<?php } else {
-				$refresh_url = add_query_arg( array('refresh' => 1 ) ); ?>
+				if( $this->_get_api_key() ) {
+					$refresh_url = add_query_arg( array( 'refresh' => 1 ) );
+				}else{
+					$refresh_url = '';
+				}?>
 				<div class="wp-smpushit-features error">
 					<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
 					<ol>
@@ -1306,8 +1310,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<a class="button-primary" href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', 'wp-smushit' ); ?></a>
 					</p>
 
-					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p>
-					<p><?php echo sprintf( __( 'Unable to access Pro Features? <a href="%s">Refresh Status</a>', 'wp-smushit' ), $refresh_url ); ?></p>
+					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p><?php
+					if ( ! empty( $refresh_url ) ) {?>
+						<p><?php echo sprintf( __( 'Unable to access Pro Features? <a href="%s">Refresh Status</a>', 'wp-smushit' ), $refresh_url ); ?></p><?php }
+					?>
 
 					<p>
 						<?php
