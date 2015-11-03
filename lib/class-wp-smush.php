@@ -6,7 +6,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		var $version = WP_SMUSH_VERSION;
 
-		var $is_pro;
+		/**
+		 * @var Stores the value of is_pro function
+		 */
+		private $is_pro;
 
 		/**
 		 * Meta key for api validity

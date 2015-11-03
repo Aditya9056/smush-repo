@@ -19,7 +19,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 * @var array Contains the total Stats, for displaying it on bulk page
 		 */
 		var $stats = array();
-		var $is_pro_user;
+		private $is_pro_user;
 
 		function __construct() {
 
