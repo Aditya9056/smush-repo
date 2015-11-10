@@ -1340,9 +1340,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function refresh_status() {
 			global $WpSmush;
 
-			$api_key = $WpSmush->_get_api_key();
-			$api_key = substr( $api_key, - 5, 5 );
-			$key_valid     = "wp-smush-valid-" . $api_key;
+			$api_key          = $WpSmush->_get_api_key();
+			$api_key          = substr( $api_key, - 5, 5 );
+			$key_valid        = "wp-smush-valid-" . $api_key;
 			$key_last_checked = "wp-smush-timestamp-" . $api_key;
 
 			delete_site_option( $key_valid );

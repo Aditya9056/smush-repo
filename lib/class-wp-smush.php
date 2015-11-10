@@ -649,6 +649,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 			if ( $revalidate ) {
+				echo "<pre>";
+				print_r("In here");
+				echo "</pre>";
 				// call api
 				$url = $this->api_server . '&key=' . urlencode( $api_key );
 
