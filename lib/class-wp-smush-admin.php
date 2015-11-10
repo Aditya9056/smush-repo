@@ -1341,9 +1341,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $WpSmush;
 
 			$api_key = $WpSmush->_get_api_key();
-			$key     = "wp-smush-premium-" . substr( $api_key, - 5, 5 );
+			$api_key = substr( $api_key, - 5, 5 );
+			$key_valid     = "wp-smush-valid-" . $api_key;
+			$key_last_checked = "wp-smush-timestamp-" . $api_key;
 
-			delete_site_transient( $key );
+			delete_site_option( $key_valid );
+			delete_site_option( $key_last_checked );
 		}
 	}
 
