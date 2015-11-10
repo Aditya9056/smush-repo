@@ -602,37 +602,84 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			//W3TC disk cache is buggy and always converts 0 to false, so we have to store as string
-			$key = "wp-smush-premium-" . substr( $api_key, - 5, 5 ); //add last 5 chars of apikey to transient key in case it changes
-			$valid = get_site_transient( $key );
-			if ( empty( $valid ) ) {
+			//Flag to check if we need to revalidate the key
+			$revalidate = false;
+
+			//Last 5 digits of key
+			$key5 = substr( $api_key, - 5, 5 );
+
+			//add last 5 chars of apikey to options key in case it changes
+			$key_valid        = "wp-smush-valid-" . $key5;
+			$key_last_checked = "wp-smush-timestamp-" . $key5;
+
+			$valid        = get_site_option( $key_valid );
+			$last_checked = get_site_option( $key_last_checked );
+
+			//Check if need to revalidate
+			if ( empty( $valid ) || empty( $last_checked ) ) {
+				$revalidate = true;
+			} else {
+				$diff = $last_checked - current_time( 'timestamp' );
+
+				//Difference in hours
+				$diff_h = $diff / 3600;
+
+				//Difference in minutes
+				$diff_m = $diff / 60;
+
+				switch ( $valid ) {
+					case 'valid':
+						//if last checked was more than 12 hours
+						if ( $diff_h > 12 ) {
+							$revalidate = true;
+						}
+						break;
+					case 'invalid':
+						//if last checked was more than 24 hours
+						if ( $diff_h > 24 ) {
+							$revalidate = true;
+						}
+						break;
+					case 'network_failure':
+						//if last checked was more than 5 minutes
+						if ( $diff_m > 5 ) {
+							$revalidate = true;
+						}
+						break;
+				}
+			}
+			if ( $revalidate ) {
 				// call api
 				$url = $this->api_server . '&key=' . urlencode( $api_key );
 
 				$request = wp_remote_get( $url, array(
-						"user-agent" => WP_SMUSH_UA,
-						"timeout"    => 10
-					)
+								"user-agent" => WP_SMUSH_UA,
+								"timeout"    => 10
+						)
 				);
 
 				if ( ! is_wp_error( $request ) && '200' == wp_remote_retrieve_response_code( $request ) ) {
 					$result = json_decode( wp_remote_retrieve_body( $request ) );
 					if ( $result && $result->success ) {
-						$valid = 'true';
-						set_site_transient( $key, 'true', 12 * HOUR_IN_SECONDS );
+						$valid = 'valid';
 					} else {
-						$valid = 'false';
-						set_site_transient( $key, 'false', DAY_IN_SECONDS );
+						$valid = 'invalid';
 					}
 
 				} else {
-					$valid = 'false';
-					set_site_transient( $key, 'false', 5 * MINUTE_IN_SECONDS ); //cache network failure even shorter, we don't want a request every pageload
+					$valid = 'network_failure';
 				}
+
+				//Update if key if valid or not
+				update_site_option( $key_valid, $valid );
+
+				//Update Timestamp
+				$timestamp = current_time( 'timestamp' );
+				update_site_option( $key_last_checked, $timestamp );
 
 			}
 
-			$this->is_pro = ( 'true' == $valid );
+			$this->is_pro = ( 'valid' == $valid );
 
 			return $this->is_pro;
 		}
@@ -1148,6 +1195,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function load_nextgen() {
 			if ( ! class_exists( 'C_NextGEN_Bootstrap' ) || ! $this->is_pro() ) {
+				echo "Go back";exit;
 				return;
 			}
 			//Check if integration is Enabled or not
