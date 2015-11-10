@@ -598,6 +598,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//no api key set, always false
 			$api_key = $this->_get_api_key();
+
 			if ( empty( $api_key ) ) {
 				return false;
 			}
@@ -605,20 +606,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Flag to check if we need to revalidate the key
 			$revalidate = false;
 
-			//Last 5 digits of key
-			$key5 = substr( $api_key, - 5, 5 );
-
-			//add last 5 chars of apikey to options key in case it changes
-			$key_valid        = "wp-smush-valid-" . $key5;
-			$key_last_checked = "wp-smush-timestamp-" . $key5;
-
-			$valid        = get_site_option( $key_valid );
-			$last_checked = get_site_option( $key_last_checked );
+			$api_auth = get_site_option('wp_smush_api_auth');
 
 			//Check if need to revalidate
-			if ( empty( $valid ) || empty( $last_checked ) ) {
+			if ( ! $api_auth || empty( $api_auth ) || empty( $api_auth[ $api_key ] ) ) {
 				$revalidate = true;
 			} else {
+				$last_checked = $api_auth[ $api_key ]['timestamp'];
+				$valid        = $api_auth[ $api_key ]['validity'];
+
 				$diff = $last_checked - current_time( 'timestamp' );
 
 				//Difference in hours
@@ -648,6 +644,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						break;
 				}
 			}
+			//If we are suppose to validate api, update the results in options table
 			if ( $revalidate ) {
 				// call api
 				$url = $this->api_server . '&key=' . urlencode( $api_key );
@@ -670,12 +667,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$valid = 'network_failure';
 				}
 
-				//Update if key if valid or not
-				update_site_option( $key_valid, $valid );
+				//Reset Value
+				$api_auth = array();
 
 				//Update Timestamp
-				$timestamp = current_time( 'timestamp' );
-				update_site_option( $key_last_checked, $timestamp );
+				$timestamp              = current_time( 'timestamp' );
+				$api_auth[ $api_key ] = array( 'validity' => $valid, 'timestamp' => $timestamp );
+
+				//Update API validity
+				update_site_option( 'wp_smush_api_auth', $api_auth );
 
 			}
 
