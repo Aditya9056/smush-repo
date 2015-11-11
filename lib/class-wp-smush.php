@@ -646,6 +646,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 			//If we are suppose to validate api, update the results in options table
 			if ( $revalidate ) {
+
+				if ( empty( $api_auth[ $api_key ] ) ) {
+					//For api key resets
+					$api_auth[ $api_key ] = array();
+
+					//Storing it as valid, unless we really get to know from api call
+					$api_auth[ $api_key ]['validity'] = 'valid';
+				}
+
+				//Aaron suggested to Update timestamp before making the api call, to avoid any concurrent calls, clever ;)
+				$api_auth[ $api_key ]['timestamp'] = current_time( 'timestamp' );
+				update_site_option( 'wp_smush_api_auth', $api_auth );
+
 				// call api
 				$url = $this->api_server . '&key=' . urlencode( $api_key );
 
@@ -670,7 +683,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//Reset Value
 				$api_auth = array();
 
-				//Update Timestamp
+				//Add a fresh Timestamp
 				$timestamp              = current_time( 'timestamp' );
 				$api_auth[ $api_key ] = array( 'validity' => $valid, 'timestamp' => $timestamp );
 
