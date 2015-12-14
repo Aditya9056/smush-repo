@@ -81,8 +81,12 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.2 =
+* Fixed: Styles plugin compatibility
+* Fixed: Warning in Network admin for settings link
+
 = 2.1.2 =
-* Fixed: Important fix for transient issue leading to mutliple api requests
+* Fixed: Important fix for transient issue leading to multiple api requests
 
 = 2.1.1 =
 * Fixed: Workaround for terrible bug in W3TC file based object caching

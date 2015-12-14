@@ -76,7 +76,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public function __construct() {
 
 			// Save Settings, Process Option, Need to process it early, so the pages are loaded accordingly, nextgen gallery integration is loaded at same action
-			add_action( 'plugins_loaded', array( $this, 'process_options' ), 20 );
+			add_action( 'plugins_loaded', array( $this, 'process_options' ), 16 );
 
 			// hook scripts and styles
 			add_action( 'admin_init', array( $this, 'register' ) );
@@ -1113,7 +1113,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$settings_page = admin_url( 'upload.php?page=wp-smush-bulk' );
 			$settings      = '<a href="' . $settings_page . '">' . __( 'Settings', 'wp-smushit' ) . '</a>';
 
-			array_unshift( $links, $settings );
+			//Added a fix for weird warning in multisite, "array_unshift() expects parameter 1 to be array, null given"
+			!empty( $links ) ? array_unshift( $links, $settings ) : array_push( $settings );
 
 			return $links;
 		}
@@ -1340,6 +1341,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function refresh_status() {
 
 			delete_site_option('wp_smush_api_auth');
+		}
+
+		function get_image_backup_path( $attachment_id ) {
+			//If attachment id is not available, return false
+			if( empty( $attachment_id ) ){
+				return false;
+			}
+			//Get path details for the image
+			$attachment_file_path = get_attached_file( $attachment_id );
 		}
 	}
 
