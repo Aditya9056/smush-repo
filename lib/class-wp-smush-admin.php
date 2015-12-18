@@ -416,7 +416,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$opt_backup_val   = 0;
 						$opt_nextgen_val  = 0;
 
-						$disabled      = ' disabled';
+						$disabled = ' disabled';
 					} ?>
 					<div class='wp-smush-setting-row'><?php
 						// return html
@@ -430,8 +430,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							?>
 							<div class="pro-note">
 								<div style="padding:14px 0 14px;">
-									<span class="dashicons dashicons-info"></span><?php esc_html_e( "These features are available in Pro Version of the plugin.", "wp-smushit" ); ?>
-									<a href="<?php echo $this->upgrade_url; ?>" target="_blank" class="button find-out-link">Find
+									<span
+										class="dashicons dashicons-info"></span><?php esc_html_e( "These features are available in Pro Version of the plugin.", "wp-smushit" ); ?>
+									<a href="<?php echo $this->upgrade_url; ?>" target="_blank"
+									   class="button find-out-link">Find
 										out more »</a>
 								</div>
 							</div>
@@ -457,7 +459,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				// nonce
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 				?>
-				<input type="submit" id="wp-smush-save-settings" class="button button-primary" value="<?php _e( 'Save Changes', 'wp-smushit' ); ?>">
+				<input type="submit" id="wp-smush-save-settings" class="button button-primary"
+				       value="<?php _e( 'Save Changes', 'wp-smushit' ); ?>">
 			</form>
 			<?php
 		}
@@ -468,6 +471,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return null
 		 */
 		function process_options() {
+			if ( ! is_admin() ) {
+				return;
+			}
 
 			$this->is_pro_user = $this->is_pro();
 
@@ -966,7 +972,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$button   = $this->button_state( $super_smush );
 			$disabled = ! empty( $button['disabled'] ) ? ' disabled="disabled"' : '';
 			?>
-			<button class="button button-primary<?php echo ' ' . $button['class']; ?>" name="smush-all" <?php echo $disabled; ?>>
+			<button class="button button-primary<?php echo ' ' . $button['class']; ?>"
+			        name="smush-all" <?php echo $disabled; ?>>
 				<span><?php echo $button['text'] ?></span>
 			</button>
 			<?php
@@ -1114,7 +1121,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$settings      = '<a href="' . $settings_page . '">' . __( 'Settings', 'wp-smushit' ) . '</a>';
 
 			//Added a fix for weird warning in multisite, "array_unshift() expects parameter 1 to be array, null given"
-			!empty( $links ) ? array_unshift( $links, $settings ) : array_push( $settings );
+			! empty( $links ) ? array_unshift( $links, $settings ) : array_push( $settings );
 
 			return $links;
 		}
@@ -1141,7 +1148,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 			?>
 			<div class="updated">
-				<a href="<?php echo admin_url( 'index.php' ); ?>?dismiss_smush_upgrade=1" style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss" style="color:gray;"></span>Dismiss</a>
+				<a href="<?php echo admin_url( 'index.php' ); ?>?dismiss_smush_upgrade=1"
+				   style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss"
+				                                                                     style="color:gray;"></span>Dismiss</a>
 
 				<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Happy Smushing!</h3>
 
@@ -1289,11 +1298,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					</ol>
 				</div>
 			<?php } else {
-				if( $this->_get_api_key() ) {
+				if ( $this->_get_api_key() ) {
 					$refresh_url = add_query_arg( array( 'refresh' => 1 ) );
-				}else{
+				} else {
 					$refresh_url = '';
-				}?>
+				} ?>
 				<div class="wp-smpushit-features error">
 					<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
 					<ol>
@@ -1308,11 +1317,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<li><?php _e( 'Download <a href="https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">350+ other premium plugins and themes</a> included in your membership.', 'wp-smushit' ); ?></li>
 					</ol>
 					<p>
-						<a class="button-primary" href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', 'wp-smushit' ); ?></a>
+						<a class="button-primary"
+						   href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', 'wp-smushit' ); ?></a>
 					</p>
 
 					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p><?php
-					if ( ! empty( $refresh_url ) ) {?>
+					if ( ! empty( $refresh_url ) ) { ?>
 						<p><?php echo sprintf( __( 'Unable to access Pro Features? <a href="%s">Refresh Status</a>', 'wp-smushit' ), $refresh_url ); ?></p><?php }
 					?>
 
@@ -1323,10 +1333,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 								$function = is_multisite() ? 'network_admin_url' : 'admin_url';
 								$url      = wp_nonce_url( $function( 'plugins.php?action=activate&plugin=wpmudev-updates%2Fupdate-notifications.php' ), 'activate-plugin_wpmudev-updates/update-notifications.php' );
 								?>
-								<a class="button-secondary" href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								<a class="button-secondary"
+								   href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
 							} else { //dashboard not installed at all
 								?>
-								<a class="button-secondary" target="_blank" href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								<a class="button-secondary" target="_blank"
+								   href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
 							}
 						}
 						?>
@@ -1340,16 +1352,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function refresh_status() {
 
-			delete_site_option('wp_smush_api_auth');
+			delete_site_option( 'wp_smush_api_auth' );
 		}
 
-		function get_image_backup_path( $attachment_id ) {
+		function get_image_backup_path( $attachment_path ) {
 			//If attachment id is not available, return false
-			if( empty( $attachment_id ) ){
+			if ( empty( $attachment_path ) ) {
 				return false;
 			}
-			//Get path details for the image
-			$attachment_file_path = get_attached_file( $attachment_id );
+			$path        = pathinfo( $attachment_path );
+			$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . ".bak." . $path['extension'];
+
+			return $backup_name;
 		}
 	}
 

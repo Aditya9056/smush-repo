@@ -4,7 +4,7 @@ Plugin Name: WP Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.1.2
+Version: 2.2
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit
 */
@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix          = 'WP_SMUSH_';
-$version         = '2.1.2';
+$version         = '2.1.570';
 
 /**
  * Set the default timeout for API request and AJAX timeout
@@ -105,50 +105,52 @@ function wp_smush_email_message( $message ) {
 	return $message;
 }
 
+if( is_admin() ) {
 //Only for wordpress.org members
-$dir_path = plugin_dir_path( __FILE__ );
+	$dir_path = plugin_dir_path( __FILE__ );
 
-if ( strpos( $dir_path, 'wp-smushit' ) !== false ) {
-	require_once( WP_SMUSH_DIR . 'extras/free-dashboard/module.php' );
+	if ( strpos( $dir_path, 'wp-smushit' ) !== false ) {
+		require_once( WP_SMUSH_DIR . 'extras/free-dashboard/module.php' );
 
 // Register the current plugin.
-	do_action(
-		'wdev-register-plugin',
-		/* 1             Plugin ID */
-		plugin_basename( __FILE__ ), /* Plugin ID */
-		/* 2          Plugin Title */
-		'WP Smush',
-		/* 3 https://wordpress.org */
-		'/plugins/wp-smushit/',
-		/* 4      Email Button CTA */
-		__( 'Get Fast', 'wp-smushit' ),
-		/* 5  getdrip Plugin param */
-		'Smush'
-	);
+		do_action(
+			'wdev-register-plugin',
+			/* 1             Plugin ID */
+			plugin_basename( __FILE__ ), /* Plugin ID */
+			/* 2          Plugin Title */
+			'WP Smush',
+			/* 3 https://wordpress.org */
+			'/plugins/wp-smushit/',
+			/* 4      Email Button CTA */
+			__( 'Get Fast', 'wp-smushit' ),
+			/* 5  getdrip Plugin param */
+			'Smush'
+		);
 
 // The rating message contains 2 variables: user-name, plugin-name
-	add_filter(
-		'wdev-rating-message-' . plugin_basename( __FILE__ ),
-		'wp_smush_rating_message'
-	);
+		add_filter(
+			'wdev-rating-message-' . plugin_basename( __FILE__ ),
+			'wp_smush_rating_message'
+		);
 
 // The email message contains 1 variable: plugin-name
-	add_filter(
-		'wdev-email-message-' . plugin_basename( __FILE__ ),
-		'wp_smush_email_message'
-	);
-} elseif ( strpos( $dir_path, 'wp-smush-pro' ) !== false ) {
+		add_filter(
+			'wdev-email-message-' . plugin_basename( __FILE__ ),
+			'wp_smush_email_message'
+		);
+	} elseif ( strpos( $dir_path, 'wp-smush-pro' ) !== false ) {
 
 //Only for WPMU DEV Members
-	require_once( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' );
+		require_once( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' );
 //register items for the dashboard plugin
-	global $wpmudev_notices;
-	$wpmudev_notices[] = array(
-		'id'      => 912164,
-		'name'    => 'WP Smush Pro',
-		'screens' => array(
-			'media_page_wp-smush-bulk',
-			'upload'
-		)
-	);
+		global $wpmudev_notices;
+		$wpmudev_notices[] = array(
+			'id'      => 912164,
+			'name'    => 'WP Smush Pro',
+			'screens' => array(
+				'media_page_wp-smush-bulk',
+				'upload'
+			)
+		);
+	}
 }
