@@ -589,6 +589,7 @@ input#wp-smush-save-settings {
 .smush-stats-wrapper td, .smush-stats-wrapper th {
     font-size: 11px;
 }
+
 table.wp-smush-stats-holder {
     border: 1px solid lightgray;
     border-collapse: collapse;
@@ -654,4 +655,60 @@ table.wp-smush-stats-holder tr td:first-child {
 /** Help Tip **/
 .ui-tooltip-content {
     font-size: 12px;
+}
+
+/** Progress Bar **/
+.wp-smush-progress {
+    width: 150px;
+    height: 20px;
+    background-color: #14485F;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    padding: 2px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.wp-smush-progress span {
+    color: #14485F;
+    text-align: right;
+    font-size: 12px;
+    font-weight: bolder;
+    line-height: 14px;
+    box-sizing: border-box;
+    padding-right: 22px;
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    border-radius: 1px;
+    transition: width .4s ease-in-out;
+    background-color: #FECF2F;
+    background-size: 12px 10px;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, .15) 25%, transparent 25%,
+    transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%,
+    transparent 75%, transparent);
+    vertical-align: top;
+
+}
+
+.wp-smush-progress.animate span {
+    animation: animate-stripes 3s linear infinite;
+}
+
+@keyframes animate-stripes {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 60px 0;
+    }
+}
+/** Disabled Hyperlinks **/
+.smush-stats a[disabled] {
+    cursor: default;
+    color: grey;
+}
+.wp-smush-error {
+    color: #ffb900;
 }

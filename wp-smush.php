@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix          = 'WP_SMUSH_';
-$version         = '2.1.570';
+$version         = '2.1.57121q4q325we434q55ass556';
 
 /**
  * Set the default timeout for API request and AJAX timeout

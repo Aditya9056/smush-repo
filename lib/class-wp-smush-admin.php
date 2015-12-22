@@ -90,6 +90,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle Smush Single Ajax
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
 
+			//Handle Restore operation
+			add_action( 'wp_ajax_wp_smush_restore_image', array( $this, 'restore_image' ) );
+
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
 				'settings_link'
@@ -267,8 +270,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'smush_it'             => __( 'Smush it', 'wp-smushit' ),
 				'smush_now'            => __( 'Smush Now', 'wp-smushit' ),
 				'sending'              => __( 'Sending ...', 'wp-smushit' ),
-				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				"all_supersmushed"     => __( 'All images are Super-Smushed.', 'wp-smushit' )
+				'error_in_bulk'        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				'all_supersmushed'     => __( 'All images are Super-Smushed.', 'wp-smushit' ),
+				'restore'              => esc_html__( "Restoring image..", "wp-smushit" ),
+
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -295,7 +300,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'smushed'   => $this->get_smushed_image_ids(),
 				'unsmushed' => $this->ids,
 				'lossless'  => $this->lossless_ids,
-				'timeout'   => WP_SMUSH_TIMEOUT * 1000 //Convert it into ms
+				'timeout'   => WP_SMUSH_TIMEOUT * 1000, //Convert it into ms
 			);
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
@@ -1355,6 +1360,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			delete_site_option( 'wp_smush_api_auth' );
 		}
 
+		/**
+		 * Returns the backup path for attachment
+		 *
+		 * @param $attachment_path
+		 *
+		 * @return bool|string
+		 *
+		 */
 		function get_image_backup_path( $attachment_path ) {
 			//If attachment id is not available, return false
 			if ( empty( $attachment_path ) ) {
@@ -1364,6 +1377,85 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . ".bak." . $path['extension'];
 
 			return $backup_name;
+		}
+
+		/**
+		 * Restore the image and its sizes from backup
+		 */
+		function restore_image() {
+
+			//Check Empty fields
+			if ( empty( $_POST['image_id'] ) || empty( $_POST['_nonce'] ) ) {
+				wp_send_json_error( array(
+					'error'   => 'empty_fields',
+					'message' => esc_html__( "Error in sending Ajax request, Fields empty.", "wp-smushit" )
+				) );
+			}
+			//Check Nonce
+			if ( ! wp_verify_nonce( $_POST['_nonce'], "wp-smush-restore-" . $_POST['image_id'] ) ) {
+				wp_send_json_error( array(
+					'error'   => 'empty_fields',
+					'message' => esc_html__( "Image not restored, Nonce verification failed.", "wp-smushit" )
+				) );
+			}
+
+			//Store the restore success/failure for all the sizes
+			$restored = array();
+
+			//Process Now
+			$image_id = $_POST['image_id'];
+			//Restore Full size -> get other image sizes -> restore other images
+
+			//Get the Original Path
+			$file_path = get_attached_file( $image_id );
+
+			//Get the backup path
+			$backup_name = $this->get_image_backup_path( $file_path );
+
+			//Restore
+			$restored[] = @copy( $backup_name, $file_path );
+
+			//Delete the backup
+			file_exists( $backup_name ) ? unlink( $backup_name ) : '';
+
+			//Get the path details
+			$image_path = trailingslashit( dirname( $file_path ) );
+
+			//Get other sizes and restore
+			//Get attachment data
+			$attachment_data = wp_get_attachment_metadata( $image_id );
+
+			//Get the sizes
+			$sizes = ! empty( $attachment_data['sizes'] ) ? $attachment_data['sizes'] : '';
+
+			//Loop on images to restore them
+			foreach ( $sizes as $size ) {
+				//Get the file path
+				if ( empty( $size['file'] ) ) {
+					continue;
+				}
+
+				//Image Path and Backup path
+				$image_size_path  = $image_path . $size['file'];
+				$image_bckup_path = $this->get_image_backup_path( $image_size_path );
+
+				//Restore
+				$restored[] = @copy( $image_bckup_path, $image_size_path );
+				//Delete the backup
+				file_exists( $image_bckup_path ) ? unlink( $image_bckup_path ) : '';
+			}
+			//If any of the image is restored, we count it as success
+			if ( in_array( true, $restored ) ) {
+
+				//Remove the Meta, And send json success
+				delete_post_meta( $image_id, $this->smushed_meta_key );
+
+				//Get the Button html without wrapper
+				$button_html = $this->set_status( $image_id, false, false, false );
+
+				wp_send_json_success( array('button' => $button_html ) );
+			}
+			wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to restore image", "wp-smushit" ) . '</div>' ) );
 		}
 	}
 

@@ -757,11 +757,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @param $id
 		 * @param bool $echo
-		 * @param bool $text_only
+		 * @param bool $text_only Returns the stats text instead of button
+		 * @param bool $wrapper required for `column_html`, to include the wrapper div or not
 		 *
 		 * @return string|void
 		 */
-		function set_status( $id, $echo = true, $text_only = false ) {
+		function set_status( $id, $echo = true, $text_only = false, $wrapper = true ) {
 			$status_txt  = $button_txt = '';
 			$show_button = false;
 
@@ -811,6 +812,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							//Stats
 							$status_txt .= $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
 						}
+						$status_txt .= $this->progress_bar();
 					}
 				}
 
@@ -848,7 +850,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $status_txt;
 			}
 
-			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $wp_smush_data, $echo );
+			$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $wp_smush_data, $echo, $wrapper );
 			if ( ! $echo ) {
 				return $text;
 			}
@@ -861,10 +863,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @param string $status_txt Status text
 		 * @param string $button_txt Button label
 		 * @param boolean $show_button Whether to shoe the button
+		 * @param bool $smushed Whether image is smushed or not
+		 * @param bool $echo If true, it directly outputs the HTML
+		 * @param bool $wrapper Whether to return the button with wrapper div or not
 		 *
-		 * @return null
+		 * @return string|void
 		 */
-		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true ) {
+		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
 			$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
 
 			// don't proceed if attachment is not image, or if image is not a jpg, png or gif
@@ -888,12 +893,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$class = ' smushed';
 					}
 
-					return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+					return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 				}
 			}
 			if ( ! $echo ) {
+				$button_class = $wrapper ? 'button button-primary wp-smush-send' : 'button wp-smush-send';
 				$html .= '
-				<button  class="button button-primary wp-smush-send" data-id="' . $id . '">
+				<button  class="' . $button_class . '" data-id="' . $id . '">
 	                <span>' . $button_txt . '</span>
 				</button>';
 				if ( ! $smushed ) {
@@ -902,7 +908,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$class = ' smushed';
 				}
 
-				return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+				return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 			} else {
 				$html .= '<button class="button wp-smush-send" data-id="' . $id . '">
                     <span>' . $button_txt . '</span>
@@ -1336,13 +1342,28 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			return false;
 		}
 
+		/**
+		 * Returns a restore link for given image id
+		 * @param $image_id
+		 *
+		 * @return bool|string
+		 */
 		function get_restore_link( $image_id ) {
 			if( empty( $image_id ) ) {
 				return false;
 			}
 
 			$ajax_nonce = wp_create_nonce("wp-smush-restore-" . $image_id );
-			return sprintf('<a href="#" title="%s" data-id="%d" class="wp-smush-action wp-smush-restore">%s</a>', esc_html__("Restore original image.", "wp-smush"), $image_id, esc_html__("Restore image", "wp-smush") );
+			return sprintf('<a href="#" title="%s" data-id="%d" data-nonce="%s" class="wp-smush-action wp-smush-restore">%s</a>', esc_html__("Restore original image.", "wp-smushit"), $image_id, $ajax_nonce, esc_html__("Restore image", "wp-smush") );
+		}
+
+		/**
+		 * Returns the HTML for progress bar
+		 *
+		 * @return string
+		 */
+		function progress_bar() {
+			return '<div class="wp-smush-progress animate hidden"><span></span></div>';
 		}
 	}
 
