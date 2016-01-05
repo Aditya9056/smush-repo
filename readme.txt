@@ -81,9 +81,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.2 =
+= 2.1.3 =
 * Fixed: Styles plugin compatibility
 * Fixed: Warning in Network admin for settings link
+* Added: Remove Smush meta, if images are regenerated and auto smush is off, to allow manually smush them later
+* 
 
 = 2.1.2 =
 * Fixed: Important fix for transient issue leading to multiple api requests

@@ -37,21 +37,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			/**
 			 * Hooks
 			 */
-			//Check if auto is enabled
-			$auto_smush = get_option( WP_SMUSH_PREFIX . 'auto' );
+			add_filter( 'wp_update_attachment_metadata', array(
+				$this,
+				'filter_generate_attachment_metadata'
+			), 12, 2 );
 
-			//Keep the uto smush on by default
-			if ( $auto_smush === false ) {
-				$auto_smush = 1;
-			}
-
-			//Auto Smush the new image
-			if ( $auto_smush ) {
-				add_filter( 'wp_update_attachment_metadata', array(
-					$this,
-					'filter_generate_attachment_metadata'
-				), 12, 2 );
-			}
 
 			//Optimise WP Retina 2x images
 			add_action( 'wr2x_retina_file_added', array( $this, 'smush_retina_image' ), 20, 3 );
@@ -430,17 +420,32 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed
 		 */
 		function filter_generate_attachment_metadata( $meta, $ID = null ) {
-			//Update API url for Hostgator
+			//Check if auto is enabled
+			$auto_smush = get_option( WP_SMUSH_PREFIX . 'auto' );
 
-			//Check for use of http url, (Hostgator mostly)
-			$use_http = wp_cache_get( WP_SMUSH_PREFIX . 'use_http', 'smush' );
-			if ( ! $use_http ) {
-				$use_http = get_option( WP_SMUSH_PREFIX . 'use_http' );
-				wp_cache_add( WP_SMUSH_PREFIX . 'use_http', $use_http, 'smush' );
+			//Keep the uto smush on by default
+			if ( $auto_smush === false ) {
+				$auto_smush = 1;
 			}
-			$use_http ? define( 'WP_SMUSH_API_HTTP', 'http://smushpro.wpmudev.org/1.0/' ) : '';
 
-			$this->resize_from_meta_data( $meta, $ID );
+			//Auto Smush the new image
+			if ( $auto_smush ) {
+				//Update API url for Hostgator
+
+				//Check for use of http url, (Hostgator mostly)
+				$use_http = wp_cache_get( WP_SMUSH_PREFIX . 'use_http', 'smush' );
+				if ( ! $use_http ) {
+					$use_http = get_option( WP_SMUSH_PREFIX . 'use_http' );
+					wp_cache_add( WP_SMUSH_PREFIX . 'use_http', $use_http, 'smush' );
+				}
+				$use_http ? define( 'WP_SMUSH_API_HTTP', 'http://smushpro.wpmudev.org/1.0/' ) : '';
+
+				$this->resize_from_meta_data( $meta, $ID );
+
+			}else{
+				//remove the smush metadata
+				delete_post_meta($ID, $this->smushed_meta_key);
+			}
 
 			return $meta;
 		}

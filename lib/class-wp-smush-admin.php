@@ -704,6 +704,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $WpSmush;
 
+			// turn off errors for ajax result
+			@error_reporting( 0 );
+
 			$should_continue = true;
 
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
@@ -742,9 +745,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$error = $smush->get_error_message();
 				//Check for timeout error and suggest to filter timeout
 				if ( strpos( $error, 'timed out' ) ) {
-					$msg = esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" );
+					$error = esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" );
 				}
-				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $msg ) );
+				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $error ) );
 			} else {
 				wp_send_json_success( array( 'stats' => $stats ) );
 			}
@@ -756,6 +759,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return mixed
 		 */
 		function smush_single() {
+
+			// turn off errors for ajax result
+			@error_reporting( 0 );
+
 			if ( ! current_user_can( 'upload_files' ) ) {
 				wp_die( __( "You don't have permission to work with uploaded files.", 'wp-smushit' ) );
 			}
