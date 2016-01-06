@@ -43,7 +43,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 				$query           = new WP_Query( $args );
 				$unsmushed_posts = $query->posts;
 			} else {
-				return explode( ',', $_REQUEST['ids'] );
+				return array_map('intval', explode(',', $_REQUEST['ids']));
 			}
 
 			return $unsmushed_posts;
@@ -74,7 +74,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 				$query           = new WP_Query( $args );
 				$unsmushed_posts = $query->posts;
 			} else {
-				return explode( ',', $_REQUEST['ids'] );
+				return array_map( 'intval', explode( ',', $_REQUEST['ids'] ) );
 			}
 
 			return $unsmushed_posts;

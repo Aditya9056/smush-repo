@@ -162,7 +162,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$smushed = ( ! empty( $smushed ) && is_array( $smushed ) ) ? array_keys( $smushed ) : '';
 
 			if ( ! empty( $_REQUEST['ids'] ) ) {
-				$this->ids = explode( ',', $_REQUEST['ids'] );
+				$this->ids = array_map( 'intval', explode( ',', $_REQUEST['ids'] ) );
 			} else {
 				$this->ids = $unsmushed;
 			}

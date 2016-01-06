@@ -21,7 +21,7 @@ Try now for a completely new, incredibly powerful, and 100% free image smushing 
 <br>
 </blockquote>
 
-WP Smush strips hidden, bulky information from your images, reducing the file size without losing quality. The faster your site loads, the more Google, Bing, Yahoo and other search engines will like it.
+WP Smush strips hidden, bulky information ( EXIF, IPTC ) from your images, reducing the file size without losing quality. The faster your site loads, the more Google, Bing, Yahoo and other search engines will like it.
 
 [youtube https://www.youtube.com/watch?v=GCzH7z05s5U]
 
@@ -82,10 +82,14 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 == Changelog ==
 
 = 2.1.3 =
+** Pro Only **
+* Added: Manual and Bulk restore image option
+
 * Fixed: Styles plugin compatibility
 * Fixed: Warning in Network admin for settings link
+* Fixed: Warning in support thread https://goo.gl/HAfhaF, Thank you @Maks3w for the fix
 * Added: Remove Smush meta, if images are regenerated and auto smush is off, to allow manually smush them later
-* 
+* Updated: Use jQuery tooltip for Smush only
 
 = 2.1.2 =
 * Fixed: Important fix for transient issue leading to multiple api requests

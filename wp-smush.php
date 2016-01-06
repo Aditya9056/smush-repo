@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix          = 'WP_SMUSH_';
-$version         = '2.1.57121q4q325we434q55ass556';
+$version         = '2.1.57121q4q325we434q55ass556w';
 
 /**
  * Set the default timeout for API request and AJAX timeout
@@ -60,8 +60,12 @@ foreach ( $smush_constants as $const_name => $constant_val ) {
 		define( $prefix . $const_name, $constant_val );
 	}
 }
+
+//Check User login for any smush functionality
+if ( is_user_logged_in() ) {
 //Include main class
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
+	require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
+}
 
 /**
  * Filters the rating message, include stats if greater than 1Mb

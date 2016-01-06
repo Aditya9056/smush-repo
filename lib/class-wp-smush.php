@@ -64,6 +64,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Load NextGen Gallery, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
 			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ), 90 );
+
+			//Extend WP_Image_Editor Class, allows to optimize the modified images
+			add_filter( 'wp_image_editors', array( $this, 'wp_smush_image_editors' ), 20 );
 		}
 
 		function i18n() {
@@ -169,7 +172,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Some servers are having issue with file permission, this should fix it
-			chmod( $file_path, 0644 );
+			//Source: WordPress Core
+			$stat = stat( dirname( $file_path ) );
+			$perms = $stat['mode'] & 0000666; //same permissions as parent folder, strip off the executable bits
+			@ chmod( $file_path, $perms );
 
 			return $response;
 		}
@@ -421,12 +427,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function filter_generate_attachment_metadata( $meta, $ID = null ) {
 			//Check if auto is enabled
-			$auto_smush = get_option( WP_SMUSH_PREFIX . 'auto' );
-
-			//Keep the uto smush on by default
-			if ( $auto_smush === false ) {
-				$auto_smush = 1;
-			}
+			$auto_smush = $this->is_auto_smush_enabled();
 
 			//Auto Smush the new image
 			if ( $auto_smush ) {
@@ -812,7 +813,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							}
 
 							//Detailed Stats Link
-							$status_txt .= '<a href="#" class="wp-smush-action smush-stats-details">' . esc_html__( "Smush stats", 'wp-smushit' ) . ' [<span class="stats-toggle">+</span>]</a>';
+							$status_txt .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" title="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__("Detailed stats for all the image sizes", "wp-smushit"), esc_html__( "Smush stats", 'wp-smushit' ) );
 
 							//Stats
 							$status_txt .= $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
@@ -1359,7 +1360,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			$ajax_nonce = wp_create_nonce("wp-smush-restore-" . $image_id );
-			return sprintf('<a href="#" title="%s" data-id="%d" data-nonce="%s" class="wp-smush-action wp-smush-restore">%s</a>', esc_html__("Restore original image.", "wp-smushit"), $image_id, $ajax_nonce, esc_html__("Restore image", "wp-smush") );
+			return sprintf('<a href="#" title="%s" data-id="%d" data-nonce="%s" class="wp-smush-action wp-smush-restore wp-smush-title">%s</a>', esc_html__("Restore original image.", "wp-smushit"), $image_id, $ajax_nonce, esc_html__("Restore image", "wp-smush") );
 		}
 
 		/**
@@ -1369,6 +1370,37 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function progress_bar() {
 			return '<div class="wp-smush-progress animate hidden"><span></span></div>';
+		}
+		/**
+		 * If auto smush is set to true or not, default is true
+		 *
+		 * @return int|mixed|void
+		 */
+		function is_auto_smush_enabled() {
+			$auto_smush = get_option( WP_SMUSH_PREFIX . 'auto' );
+
+			//Keep the auto smush on by default
+			if ( $auto_smush === false ) {
+				$auto_smush = 1;
+			}
+
+			return $auto_smush;
+		}
+
+		/**
+		 * Prepends the WP Smush image editors to allow the optimization of edited images
+		 *
+		 * @param $editors
+		 *
+		 * @return mixed
+		 */
+		function wp_smush_image_editors( $editors ) {
+			if(file_exists(WP_SMUSH_DIR . 'lib/class-wp-smush-wpimageditor.php') ) {
+				require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-wpimageditor.php' );
+				array_unshift( $editors, 'WpSmush_WPImageEditorImagick');
+				array_unshift( $editors, 'WpSmush_WPImageEditorGD');
+			}
+			return $editors;
 		}
 	}
 

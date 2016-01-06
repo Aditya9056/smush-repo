@@ -16,7 +16,7 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 				wp_send_json_error( 'missing id' );
 			}
 
-			$atchmnt_id = sanitize_key( $_GET['attachment_id'] );
+			$atchmnt_id = absint( (int) $_GET['attachment_id'] );
 
 			$smush  = $this->smush_image( $atchmnt_id, '', false );
 

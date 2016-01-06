@@ -476,7 +476,7 @@ jQuery(function ($) {
         })
     });
     /** Show help text on help image hover **/
-    $(document).tooltip();
+    $('.wp-smush-title').tooltip();
 
 });
 (function ($) {

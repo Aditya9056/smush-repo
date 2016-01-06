@@ -279,7 +279,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
 			//Localize smushit_ids variable, if there are fix number of ids
-			$this->ids = ! empty( $_REQUEST['ids'] ) ? explode( ',', $_REQUEST['ids'] ) : $bulk->get_attachments();
+			$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $bulk->get_attachments();
 
 			//If premium, Super smush allowed, all images are smushed, localize lossless smushed ids for bulk compression
 			if ( $this->is_pro_user &&
@@ -319,7 +319,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 			$this->settings = array(
 				'auto'     => __( 'Smush images on upload', 'wp-smushit' ),
-				'original' => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original" title="' . $smush_orgnl_txt . '"></span>',
+				'original' => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original wp-smush-title" title="' . $smush_orgnl_txt . '"></span>',
 				'lossy'    => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
 				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>',
 				'nextgen'  => __( 'Enable NextGen Gallery integration', 'wp-smushit' )
@@ -728,7 +728,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			}
 
-			$attachment_id = sanitize_key( $_REQUEST['attachment_id'] );
+			$attachment_id = absint( (int)( $_REQUEST['attachment_id'] ) );
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
@@ -773,7 +773,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $WpSmush;
 
-			$attachment_id = intval( $_GET['attachment_id'] );
+			$attachment_id = absint( (int)( $_GET['attachment_id'] ) );
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id );
 
@@ -1410,7 +1410,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$restored = array();
 
 			//Process Now
-			$image_id = $_POST['image_id'];
+			$image_id = absint( (int) $_POST['image_id'] );
 			//Restore Full size -> get other image sizes -> restore other images
 
 			//Get the Original Path
