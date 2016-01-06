@@ -61,11 +61,8 @@ foreach ( $smush_constants as $const_name => $constant_val ) {
 	}
 }
 
-//Check User login for any smush functionality
-if ( is_user_logged_in() ) {
 //Include main class
 	require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
-}
 
 /**
  * Filters the rating message, include stats if greater than 1Mb
