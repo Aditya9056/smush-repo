@@ -65,8 +65,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Load NextGen Gallery, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
 			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ), 90 );
 
-			//Extend WP_Image_Editor Class, allows to optimize the modified images
-			add_filter( 'wp_image_editors', array( $this, 'wp_smush_image_editors' ), 20 );
 		}
 
 		function i18n() {
@@ -963,13 +961,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
-		 * @param Object $response_data
+		 * Update the Given array by adding to existing values and returns a array of variables
+		 * @param Object $response_data, Object containing the latest stats (before_size, after_size, time, bytes_saved)
 		 * @param $size_before
 		 * @param $size_after
 		 * @param $total_time
 		 * @param $bytes_saved
 		 *
-		 * @return array
+		 * @return array('size_before', 'size_after', 'total_time', 'compression', 'bytes_saved' )
 		 */
 		function _update_stats_data( $response_data, $size_before, $size_after, $total_time, $bytes_saved ) {
 			$size_before += ! empty( $response_data->before_size ) ? (int) $response_data->before_size : 0;
@@ -993,7 +992,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( empty( $id ) || empty( $smush_stats ) || empty( $image_size ) ) {
 				return false;
 			}
-			$image_size = $image_size . '@2x';
 			$data       = $smush_stats['data'];
 			//Get existing Stats
 			$stats = get_post_meta( $id, $this->smushed_meta_key, true );
@@ -1036,7 +1034,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//Update size wise details
 				$stats['sizes'][ $image_size ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $data );
 			}
-			//Calculate Percent
 			update_post_meta( $id, $this->smushed_meta_key, $stats );
 
 		}
@@ -1078,6 +1075,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$stats = $this->do_smushit( $retina_file );
 			//If we squeezed out something, Update stats
 			if ( ! is_wp_error( $stats ) && ! empty( $stats['data'] ) && isset( $stats['data'] ) && $stats['data']->bytes_saved > 0 ) {
+
+				$image_size = $image_size . '@2x';
+
 				$this->update_smush_stats_single( $id, $stats, $image_size );
 			}
 		}
@@ -1385,22 +1385,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			return $auto_smush;
-		}
-
-		/**
-		 * Prepends the WP Smush image editors to allow the optimization of edited images
-		 *
-		 * @param $editors
-		 *
-		 * @return mixed
-		 */
-		function wp_smush_image_editors( $editors ) {
-			if(file_exists(WP_SMUSH_DIR . 'lib/class-wp-smush-wpimageditor.php') ) {
-				require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-wpimageditor.php' );
-				array_unshift( $editors, 'WpSmush_WPImageEditorImagick');
-				array_unshift( $editors, 'WpSmush_WPImageEditorGD');
-			}
-			return $editors;
 		}
 	}
 

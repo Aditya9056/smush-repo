@@ -15,7 +15,7 @@ http://dialect.ca/
 */
 
 /*
-Copyright 2007-2015 Incsub (http://incsub.com)
+Copyright 2007-2016 Incsub (http://incsub.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -34,8 +34,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /**
  * Constants
  */
-$prefix          = 'WP_SMUSH_';
-$version         = '2.1.57121q4q325we434q55ass556w';
+$prefix  = 'WP_SMUSH_';
+$version = '2.1.57121q4q325we434q55ass556w';
 
 /**
  * Set the default timeout for API request and AJAX timeout
@@ -62,7 +62,7 @@ foreach ( $smush_constants as $const_name => $constant_val ) {
 }
 
 //Include main class
-	require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
 
 /**
  * Filters the rating message, include stats if greater than 1Mb
@@ -106,14 +106,14 @@ function wp_smush_email_message( $message ) {
 	return $message;
 }
 
-if( is_admin() ) {
-//Only for wordpress.org members
+if ( is_admin() ) {
+	//Only for wordpress.org members
 	$dir_path = plugin_dir_path( __FILE__ );
 
 	if ( strpos( $dir_path, 'wp-smushit' ) !== false ) {
 		require_once( WP_SMUSH_DIR . 'extras/free-dashboard/module.php' );
 
-// Register the current plugin.
+		// Register the current plugin.
 		do_action(
 			'wdev-register-plugin',
 			/* 1             Plugin ID */
@@ -128,22 +128,23 @@ if( is_admin() ) {
 			'Smush'
 		);
 
-// The rating message contains 2 variables: user-name, plugin-name
+		// The rating message contains 2 variables: user-name, plugin-name
 		add_filter(
 			'wdev-rating-message-' . plugin_basename( __FILE__ ),
 			'wp_smush_rating_message'
 		);
 
-// The email message contains 1 variable: plugin-name
+		// The email message contains 1 variable: plugin-name
 		add_filter(
 			'wdev-email-message-' . plugin_basename( __FILE__ ),
 			'wp_smush_email_message'
 		);
 	} elseif ( strpos( $dir_path, 'wp-smush-pro' ) !== false ) {
 
-//Only for WPMU DEV Members
+		//Only for WPMU DEV Members
 		require_once( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' );
-//register items for the dashboard plugin
+
+		//register items for the dashboard plugin
 		global $wpmudev_notices;
 		$wpmudev_notices[] = array(
 			'id'      => 912164,

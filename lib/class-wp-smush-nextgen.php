@@ -7,7 +7,7 @@
  *
  * @author Umesh Kumar <umesh@incsub.com>
  *
- * @copyright (c) 2015, Incsub (http://incsub.com)
+ * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
