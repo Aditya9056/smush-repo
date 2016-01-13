@@ -5,6 +5,9 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
+= 2.1.3 =
+* Fixed: Compatibility with v4.0 of our Dashboard plugin, was not detecting pro status
+
 = 2.1.2 =
 * Fixed: Important fix for transient issue leading to mutliple api requests
 
