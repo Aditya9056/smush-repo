@@ -88,10 +88,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
 
 			//Handle Smush Single Ajax
-			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_single' ) );
+			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_manual' ) );
 
 			//Handle Restore operation
 			add_action( 'wp_ajax_wp_smush_restore_image', array( $this, 'restore_image' ) );
+
+			//Handle Restore operation
+			add_action( 'wp_ajax_wp_smush_resmush_image', array( $this, 'resmush_image' ) );
 
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
@@ -273,6 +276,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'error_in_bulk'        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
 				'all_supersmushed'     => __( 'All images are Super-Smushed.', 'wp-smushit' ),
 				'restore'              => esc_html__( "Restoring image..", "wp-smushit" ),
+				'smushing'             => esc_html__( "Smushing image..", "wp-smushit" ),
 
 			);
 
@@ -754,12 +758,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Smush single images
+		 * Handle the Ajax request for smushing single image
 		 *
-		 * @return mixed
+		 * @uses smush_single()
 		 */
-		function smush_single() {
-
+		function smush_manual() {
 			// turn off errors for ajax result
 			@error_reporting( 0 );
 
@@ -771,24 +774,44 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_die( __( 'No attachment ID was provided.', 'wp-smushit' ) );
 			}
 
+			//Pass on the attachment id to smush single function
+			$this->smush_single( $_GET['attachment_id'] );
+		}
+
+		/**
+		 * Smush single images
+		 *
+		 * @return mixed
+		 */
+		function smush_single( $attachment_id, $return = false ) {
+
 			global $WpSmush;
 
-			$attachment_id = absint( (int)( $_GET['attachment_id'] ) );
+			$attachment_id = absint( (int)( $attachment_id ) );
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id );
 
+			//Smush the image
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 
+			//Get the button status
 			$status = $WpSmush->set_status( $attachment_id, false, true );
+
+			//Send Json response if we are not suppose to return the results
 
 			/** Send stats **/
 			if ( is_wp_error( $smush ) ) {
-				/**
-				 * @param WP_Error $smush
-				 */
-				wp_send_json_error( $smush->get_error_message() );
+				if ( $return ) {
+					return array( 'error' => $smush->get_error_message() );
+				} else {
+					wp_send_json_error( $smush->get_error_message() );
+				}
 			} else {
-				wp_send_json_success( $status );
+				if ( $return ) {
+					return array( 'status' => $status );
+				} else {
+					wp_send_json_success( $status );
+				}
 			}
 
 		}
@@ -1368,38 +1391,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Returns the backup path for attachment
-		 *
-		 * @param $attachment_path
-		 *
-		 * @return bool|string
-		 *
-		 */
-		function get_image_backup_path( $attachment_path ) {
-			//If attachment id is not available, return false
-			if ( empty( $attachment_path ) ) {
-				return false;
-			}
-			$path        = pathinfo( $attachment_path );
-			$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . ".bak." . $path['extension'];
-
-			return $backup_name;
-		}
-
-		/**
 		 * Restore the image and its sizes from backup
 		 */
 		function restore_image() {
 
 			//Check Empty fields
-			if ( empty( $_POST['image_id'] ) || empty( $_POST['_nonce'] ) ) {
+			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
 				wp_send_json_error( array(
 					'error'   => 'empty_fields',
 					'message' => esc_html__( "Error in sending Ajax request, Fields empty.", "wp-smushit" )
 				) );
 			}
 			//Check Nonce
-			if ( ! wp_verify_nonce( $_POST['_nonce'], "wp-smush-restore-" . $_POST['image_id'] ) ) {
+			if ( ! wp_verify_nonce( $_POST['_nonce'], "wp-smush-restore-" . $_POST['attachment_id'] ) ) {
 				wp_send_json_error( array(
 					'error'   => 'empty_fields',
 					'message' => esc_html__( "Image not restored, Nonce verification failed.", "wp-smushit" )
@@ -1410,7 +1414,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$restored = array();
 
 			//Process Now
-			$image_id = absint( (int) $_POST['image_id'] );
+			$image_id = absint( (int) $_POST['attachment_id'] );
 			//Restore Full size -> get other image sizes -> restore other images
 
 			//Get the Original Path
@@ -1419,11 +1423,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Get the backup path
 			$backup_name = $this->get_image_backup_path( $file_path );
 
-			//Restore
-			$restored[] = @copy( $backup_name, $file_path );
+			//If file exists, corresponding to our backup path
+			if ( file_exists( $backup_name ) ) {
+				//Restore
+				$restored[] = @copy( $backup_name, $file_path );
 
-			//Delete the backup
-			file_exists( $backup_name ) ? unlink( $backup_name ) : '';
+				//Delete the backup
+				unlink( $backup_name );
+			} elseif ( file_exists( $file_path . '_backup' ) ) {
+				//Restore from other backups
+				$restored[] = @copy( $file_path . '_backup', $file_path );
+			}
 
 			//Get the path details
 			$image_path = trailingslashit( dirname( $file_path ) );
@@ -1447,9 +1457,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$image_bckup_path = $this->get_image_backup_path( $image_size_path );
 
 				//Restore
-				$restored[] = @copy( $image_bckup_path, $image_size_path );
-				//Delete the backup
-				file_exists( $image_bckup_path ) ? unlink( $image_bckup_path ) : '';
+				if ( file_exists( $image_bckup_path ) ) {
+					$restored[] = @copy( $image_bckup_path, $image_size_path );
+					//Delete the backup
+					unlink( $image_bckup_path );
+				} elseif ( file_exists( $image_size_path . '_backup' ) ) {
+					$restored[] = @copy( $image_size_path . '_backup', $image_size_path );
+				}
 			}
 			//If any of the image is restored, we count it as success
 			if ( in_array( true, $restored ) ) {
@@ -1463,6 +1477,47 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_send_json_success( array('button' => $button_html ) );
 			}
 			wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to restore image", "wp-smushit" ) . '</div>' ) );
+		}
+
+		/**
+		 * Restore the image and its sizes from backup
+		 *
+		 * @uses smush_single()
+		 *
+		 */
+		function resmush_image() {
+
+			//Check Empty fields
+			if ( empty( $_GET['attachment_id'] ) || empty( $_GET['_nonce'] ) ) {
+				wp_send_json_error( array(
+					'error'   => 'empty_fields',
+					'message' => '<div class="wp-smush-error">' . esc_html__( "Image not smushed, fields empty.", "wp-smushit" ) . '</div>'
+				) );
+			}
+			//Check Nonce
+			if ( ! wp_verify_nonce( $_GET['_nonce'], "wp-smush-resmush-" . $_GET['attachment_id'] ) ) {
+				wp_send_json_error( array(
+					'error'   => 'empty_fields',
+					'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", "wp-smushit" ) . '</div>'
+				) );
+			}
+
+			$image_id = $_GET['attachment_id'];
+
+			$smushed = $this->smush_single( $image_id, true );
+
+			//If any of the image is restored, we count it as success
+			if ( ! empty( $smushed['status'] ) ) {
+
+				//Send button content
+				wp_send_json_success( array( 'button' => $smushed['status'] ) );
+
+			} elseif ( ! empty( $smushed['error'] ) ) {
+
+				//Send Error Message
+				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to smush image", "wp-smushit" ) . '</div>' ) );
+
+			}
 		}
 	}
 

@@ -348,6 +348,10 @@ p#wp-smush-compression span {
     font-size: 11px;
 }
 
+.column-smushit .wp-smush-send, .button.wp-smush-nextgen-send {
+    margin-bottom: 10px;
+}
+
 .column-smushit .wp-smush-loader {
     margin: 10px;
     float: left;
@@ -600,8 +604,13 @@ table.wp-smush-stats-holder th {
     background-color: #E4E4E4;
 }
 
-table.wp-smush-stats-holder td, table.wp-smush-stats-holder th {
+table.wp-smush-stats-holder td, table.wp-smush-stats-holder th,
+#ngg-listimages table.wp-smush-stats-holder td, #ngg-listimages table.wp-smush-stats-holder th {
     border: 1px solid #CECECE;
+}
+
+#ngg-listimages .column-7 {
+    width: 300px;
 }
 
 table.wp-smush-stats-holder tr:first-child th {
@@ -639,8 +648,8 @@ table.wp-smush-stats-holder tr td:first-child {
     table-layout: fixed;
 }
 
-#ngg-listimages table.wp-smush-stats-holder td {
-    font-size: 12px;
+.smush-status .wp-smush-action, .smush-status .smush-stats-details {
+    font-size: 11px;
 }
 
 /*Media Modal Styling*/
@@ -675,7 +684,7 @@ table.wp-smush-stats-holder tr td:first-child {
     text-align: right;
     font-size: 12px;
     font-weight: bolder;
-    line-height: 14px;
+    line-height: 15px;
     box-sizing: border-box;
     padding-right: 22px;
     display: inline-block;
@@ -704,11 +713,13 @@ table.wp-smush-stats-holder tr td:first-child {
         background-position: 60px 0;
     }
 }
+
 /** Disabled Hyperlinks **/
 .smush-stats a[disabled] {
     cursor: default;
     color: grey;
 }
+
 .wp-smush-error {
     color: #ffb900;
 }

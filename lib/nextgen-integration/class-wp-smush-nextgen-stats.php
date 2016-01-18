@@ -166,6 +166,8 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 * @param bool $text_only Return only text instead of button (Useful for Ajax)
 		 * @param bool $echo Whether to echo the stats or not
 		 *
+		 * @uses WpSmushNextGenAdmin::column_html(), WpSmush::get_restore_link(), WpSmush::get_resmush_link()
+		 *
 		 * @return bool|null|string|void
 		 */
 		function show_stats( $pid, $wp_smush_data = false, $image_type = '', $text_only = false, $echo = true ) {
@@ -174,7 +176,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				return false;
 			}
 			$button_txt  = '';
-			$show_button = false;
+			$show_button = $show_resmush = $show_restore = false;
 
 			$bytes          = isset( $wp_smush_data['stats']['bytes'] ) ? $wp_smush_data['stats']['bytes'] : 0;
 			$bytes_readable = ! empty( $bytes ) ? $WpSmush->format_bytes( $bytes ) : '';
@@ -189,10 +191,42 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					$status_txt = __( 'Already Optimized', 'wp-smushit' );
 				} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
 					$status_txt = sprintf( __( "Reduced by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
+
+					//Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
+					if( $WpSmush->smush_original ) {
+						//IF full image was not smushed
+						if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
+							$show_resmush = true;
+						}
+					}
+					if ( $show_resmush ) {
+						$status_txt .= '<br />' . $WpSmush->get_resmsuh_link( $pid, 'nextgen' );
+					}
+
+					//Restore Image: Check if we need to show the restore image option
+					$show_restore = $this->show_restore_option( $pid, $wp_smush_data );
+
+					if ( $show_restore ) {
+						if ( $show_resmush ) {
+							//Show Separator
+							$status_txt .= ' | ';
+						} else {
+							//Show the link in next line
+							$status_txt .= '<br />';
+						}
+						$status_txt .= $WpSmush->get_restore_link( $pid, 'nextgen' );
+					}
 					//Show detailed stats if available
 					if ( ! empty( $wp_smush_data['sizes'] ) ) {
+						if ( $show_resmush || $show_restore ) {
+							//Show Separator
+							$status_txt .= ' | ';
+						} else {
+							//Show the link in next line
+							$status_txt .= '<br />';
+						}
 						//Detailed Stats Link
-						$status_txt .= '<br /><a href="#" class="smush-stats-details">' . esc_html__( "Smush stats", 'wp-smushit' ) . ' [<span class="stats-toggle">+</span>]</a>';
+						$status_txt .= '<a href="#" class="smush-stats-details">' . esc_html__( "Smush stats", 'wp-smushit' ) . ' [<span class="stats-toggle">+</span>]</a>';
 
 						//Get metadata For the image
 						// Registry Object for NextGen Gallery

@@ -31,7 +31,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//Add a bulk smush option for NextGen gallery
 			add_action( 'admin_menu', array( &$this, 'wp_smush_bulk_menu' ) );
 
-			//Localize variables for NextGen Mnaeg gallery page
+			//Localize variables for NextGen Manage gallery page
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 
 		}
@@ -149,7 +149,9 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				'smush_now'            => __( 'Smush Now', 'wp-smushit' ),
 				'sending'              => __( 'Sending ...', 'wp-smushit' ),
 				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				"all_supersmushed"     => __( 'All images are Super-Smushed.', 'wp-smushit' )
+				"all_supersmushed"     => __( 'All images are Super-Smushed.', 'wp-smushit' ),
+				'restore'              => esc_html__( "Restoring image..", "wp-smushit" ),
+				'smushing'             => esc_html__( "Smushing image..", "wp-smushit" ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -240,6 +242,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @return string|void
 		 */
 		function set_status( $pid, $echo = true, $text_only = false ) {
+			global $WpSmush;
 			$button_txt = '';
 
 			// the status
@@ -252,6 +255,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$button_txt = __( 'Smush Now!', 'wp-smushit' );
 			if ( $text_only ) {
 				return $status_txt;
+			}
+
+			//If we are not showing smush button, append progree bar, else it is already there
+			if( !$show_button ) {
+				$status_txt .= $WpSmush->progress_bar();
 			}
 
 			$text = $this->column_html( $pid, $status_txt, $button_txt, $show_button, false, $echo );
@@ -271,6 +279,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @return null
 		 */
 		function column_html( $pid, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true ) {
+			global $WpSmush;
 
 			$class = $smushed ? '' : ' hidden';
 			$html  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
@@ -278,7 +287,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			// if we aren't showing the button
 			if ( ! $show_button ) {
 				if ( $echo ) {
-					echo $html;
+					echo $html . $WpSmush->progress_bar();
 
 					return;
 				} else {
@@ -288,7 +297,10 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 						$class = ' smushed';
 					}
 
-					return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+					$html = '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+					$html .= $WpSmush->progress_bar();
+
+					return $html;
 				}
 			}
 			if ( ! $echo ) {
@@ -301,13 +313,15 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				} else {
 					$class = ' smushed';
 				}
+				$html = '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+				$html .= $WpSmush->progress_bar();
 
-				return '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+				return $html;
 			} else {
 				$html .= '<button class="button wp-smush-nextgen-send" data-id="' . $pid . '">
                     <span>' . $button_txt . '</span>
 				</button>';
-				echo $html;
+				echo $html . $WpSmush->progress_bar();
 			}
 		}
 

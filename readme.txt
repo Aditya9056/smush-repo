@@ -1,13 +1,13 @@
 === WP Smush ===
 Plugin Name: WP Smush
-Version: 2.1.2
+Version: 2.1.3
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: Attachment,Attachments,Compress,Compress Image File,Compress Image Size,Compress JPG,Compressed JPG, Compression Image,Image,Images,JPG,Optimise,Optimize,Photo,Photos,Pictures,PNG,Reduce Image Size,Smush,Smush.it,Upload,WordPress Compression,WordPress Image Tool,Yahoo, Yahoo Smush.it
 Requires at least: 3.5
-Tested up to: 4.3.1
-Stable tag: 2.1.2
+Tested up to: 4.4.1
+Stable tag: 2.1.3
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
@@ -81,15 +81,20 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.1.3 =
-** Pro Only **
-* Added: Manual and Bulk restore image option
+= 2.1.4 =
+
+* New: Single and Bulk restore image option ( Pro Only )
+* New: Allow to resmush image if Smush original is checked and Original image was skipped earlier ( Pro Only )
 
 * Fixed: Styles plugin compatibility
 * Fixed: Warning in Network admin for settings link
 * Fixed: Warning in support thread https://goo.gl/HAfhaF, Thank you @Maks3w for the fix
-* Added: Remove Smush meta, if images are regenerated and auto smush is off, to allow manually smush them later
+* New: Remove Smush meta, if images are regenerated and auto smush is off,
+       to allow manually smush them later ( WP Image Editor support )
 * Updated: Use jQuery tooltip for Smush only
+
+= 2.1.3 =
+* Fixed: Compatibility with WPMU DEV Dashboard plugin v4.0, was not detecting pro status
 
 = 2.1.2 =
 * Fixed: Important fix for transient issue leading to multiple api requests
