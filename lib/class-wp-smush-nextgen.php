@@ -30,8 +30,14 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				add_action( 'ngg_added_new_image', array( &$this, 'auto_smush' ) );
 			}
 
-			//Handle Manual Smush request for Nextgen gallery images
+			//Single Smush/Manual Smush: Handles the Single/Manual smush request for Nextgen Gallery
 			add_action( 'wp_ajax_smush_manual_nextgen', array( $this, 'manual_nextgen' ) );
+
+			//Restore Image: Handles the single/Manual restore image request for NextGen Gallery
+			add_action( 'wp_ajax_smush_restore_nextgen_image', array( $this, 'restore_image' ) );
+
+			//Resmush Image: Handles the single/Manual resmush image request for NextGen Gallery
+			add_action( 'wp_ajax_smush_resmush_nextgen_image', array( $this, 'resmush_image' ) );
 
 		}
 
@@ -51,6 +57,46 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 
 			return $images;
+		}
+
+		/**
+		 * Get the NextGen Image object from attachment id
+		 *
+		 * @param $pid
+		 *
+		 * @return mixed
+		 */
+		function get_nextgen_image_from_id( $pid ) {
+
+			// Registry Object for NextGen Gallery
+			$registry = C_Component_Registry::get_instance();
+
+			//Gallery Storage Object
+			$storage = $registry->get_utility( 'I_Gallery_Storage' );
+
+			$image = $storage->object->_image_mapper->find( $pid );
+
+			return $image;
+		}
+
+		/**
+		 * Get the NextGen attachment id from image object
+		 *
+		 * @param $image
+		 *
+		 * @return mixed
+		 */
+		function get_nextgen_id_from_image( $image ) {
+
+			// Registry Object for NextGen Gallery
+			$registry = C_Component_Registry::get_instance();
+
+			//Gallery Storage Object
+			$storage = $registry->get_utility( 'I_Gallery_Storage' );
+
+			$pid = $storage->object->_get_image_id( $image );
+
+			return $pid;
 		}
 
 		/**
@@ -89,7 +135,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 *
 		 * @return mixed
 		 */
-		function resize_from_meta_data( $storage, $image ) {
+		function resize_from_meta_data( $image ) {
 			global $WpSmush;
 
 			$errors = new WP_Error();
@@ -103,6 +149,12 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			);
 
 			$size_before = $size_after = $compression = $total_time = $bytes_saved = 0;
+
+			// Registry Object for NextGen Gallery
+			$registry = C_Component_Registry::get_instance();
+
+			//Gallery Storage Object
+			$storage = $registry->get_utility( 'I_Gallery_Storage' );
 
 			//File path and URL for original image
 			// get an array of sizes available for the $image
@@ -235,18 +287,11 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		function smush_image( $pid = '', $image = '', $echo = true ) {
 			global $wpsmushnextgenstats;
 
-			//Get metadata For the image
-			// Registry Object for NextGen Gallery
-			$registry = C_Component_Registry::get_instance();
-
-			//Gallery Storage Object
-			$storage = $registry->get_utility( 'I_Gallery_Storage' );
-
 			//Get image, if we have image id
 			if ( ! empty( $pid ) ) {
-				$image = $storage->object->_image_mapper->find( $pid );
+				$image = $this->get_nextgen_image_from_id( $pid );
 			} elseif ( ! empty( $image ) ) {
-				$pid = $storage->object->_get_image_id( $image );
+				$pid = $this->get_nextgen_id_from_image( $image );
 			}
 
 			$metadata = ! empty( $image ) ? $image->meta_data : '';
@@ -256,7 +301,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 
 			//smush the main image and its sizes
-			$smush = $this->resize_from_meta_data( $storage, $image, $pid );
+			$smush = $this->resize_from_meta_data( $image );
 
 			if ( ! is_wp_error( $smush ) ) {
 				$status = $wpsmushnextgenstats->show_stats( $pid, $smush, false, true );
@@ -319,6 +364,15 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 		}
 
+		/**
+		 * Checks for file backup, if available for any of the size,
+		 * Function returns true
+		 *
+		 * @param $pid
+		 * @param $attachment_data
+		 *
+		 * @return bool
+		 */
 		function show_restore_option( $pid, $attachment_data ) {
 			global $WpSmush;
 
@@ -361,6 +415,103 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				}
 			}
 
+		}
+
+		/**
+		 * Handles the ajax request to restore a image from backup and return button HTML
+		 *
+		 * @uses WpSmushNextGenAdmin::wp_smush_column_options()
+		 */
+		function restore_image() {
+			global $WpSmush, $wpsmushnextgenadmin;
+
+			//Check Empty fields
+			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
+				wp_send_json_error( array(
+					'error'   => 'empty_fields',
+					'message' => esc_html__( "Error in processing restore action, Fields empty.", "wp-smushit" )
+				) );
+			}
+			//Check Nonce
+			if ( ! wp_verify_nonce( $_POST['_nonce'], "wp-smush-restore-" . $_POST['attachment_id'] ) ) {
+				wp_send_json_error( array(
+					'error'   => 'empty_fields',
+					'message' => esc_html__( "Image not restored, Nonce verification failed.", "wp-smushit" )
+				) );
+			}
+
+			//Store the restore success/failure for all the sizes
+			$restored = array();
+
+			// Registry Object for NextGen Gallery
+			$registry = C_Component_Registry::get_instance();
+
+			//Gallery Storage Object
+			$storage = $registry->get_utility( 'I_Gallery_Storage' );
+
+			//Process Now
+			$image_id = absint( (int) $_POST['attachment_id'] );
+
+			//Get the absolute path for original image
+			$image = $this->get_nextgen_image_from_id( $image_id );
+
+			//Get image full path
+			$attachment_file_path = $storage->get_image_abspath( $image, 'full' );
+
+			//Get the backup path
+			$backup_path = $WpSmush->get_image_backup_path( $attachment_file_path );
+
+			//Restoring the full image
+			//If file exists, corresponding to our backup path
+			if ( file_exists( $backup_path ) ) {
+				//Restore
+				$restored[] = @copy( $backup_path, $attachment_file_path );
+
+				//Delete the backup
+				unlink( $backup_path );
+			} elseif ( file_exists( $attachment_file_path . '_backup' ) ) {
+				//Restore from other backups
+				$restored[] = @copy( $attachment_file_path . '_backup', $attachment_file_path );
+			}
+			//Restoring the other sizes
+			$attachment_data = !empty( $image->meta_data['wp_smush'] ) ? $image->meta_data['wp_smush'] : '';
+			if( !empty( $attachment_data['sizes'] ) ) {
+				foreach ( $attachment_data['sizes'] as $size => $size_data ) {
+					if ( 'full' == $size ) {
+						continue;
+					}
+					//Get file path
+					$attachment_size_file_path = $storage->get_image_abspath( $image, $size );
+
+					//Get the backup path
+					$backup_path = $WpSmush->get_image_backup_path( $attachment_size_file_path );
+
+					//If file exists, corresponding to our backup path
+					if ( file_exists( $backup_path ) ) {
+						//Restore
+						$restored[] = @copy( $backup_path, $attachment_size_file_path );
+
+						//Delete the backup
+						unlink( $backup_path );
+					} elseif ( file_exists( $attachment_size_file_path . '_backup' ) ) {
+						//Restore from other backups
+						$restored[] = @copy( $attachment_size_file_path . '_backup', $attachment_size_file_path );
+					}
+				}
+			}
+			//If any of the image is restored, we count it as success
+			if ( in_array( true, $restored ) ) {
+
+				//Remove the Meta, And send json success
+				$image->meta_data['wp_smush'] = '';
+				nggdb::update_image_meta( $image->pid, $image->meta_data );
+
+				//Get the Button html without wrapper
+				$button_html = $wpsmushnextgenadmin->wp_smush_column_options( '', $image_id, false );
+
+				wp_send_json_success( array('button' => $button_html ) );
+			}
+			wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to restore image", "wp-smushit" ) . '</div>' ) );
 		}
 
 	}//End of Class

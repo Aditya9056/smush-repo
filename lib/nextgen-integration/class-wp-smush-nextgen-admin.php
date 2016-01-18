@@ -84,7 +84,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @param $column_name
 		 * @param $id
 		 */
-		function wp_smush_column_options( $column_name, $id ) {
+		function wp_smush_column_options( $column_name, $id, $echo = false ) {
 			global $wpsmushnextgenstats;
 
 			//NExtGen Doesn't returns Column name, weird? yeah, right, it is proper because hook is called for the particular column
@@ -120,13 +120,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				//Check Image metadata, if smushed, print the stats or super smush button
 				if ( ! empty( $image->meta_data['wp_smush'] ) ) {
 					//Echo the smush stats
-					$wpsmushnextgenstats->show_stats( $image->pid, $image->meta_data['wp_smush'], $image_type, false, true );
-
-					return;
+					return $wpsmushnextgenstats->show_stats( $image->pid, $image->meta_data['wp_smush'], $image_type, false, $echo );
 				}
 
 				//Print the status of image, if Not smushed
-				$this->set_status( $image->pid, true, false );
+				return $this->set_status( $image->pid, $echo, false );
 
 			}
 		}
@@ -243,7 +241,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function set_status( $pid, $echo = true, $text_only = false ) {
 			global $WpSmush;
-			$button_txt = '';
 
 			// the status
 			$status_txt = __( 'Not processed', 'wp-smushit' );
@@ -278,7 +275,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 *
 		 * @return null
 		 */
-		function column_html( $pid, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true ) {
+		function column_html( $pid, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true, $wrapper = false  ) {
 			global $WpSmush;
 
 			$class = $smushed ? '' : ' hidden';
@@ -297,15 +294,12 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 						$class = ' smushed';
 					}
 
-					$html = '<div class="smush-wrap' . $class . '">' . $html . '</div>';
-					$html .= $WpSmush->progress_bar();
-
-					return $html;
+					return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 				}
 			}
 			if ( ! $echo ) {
 				$html .= '
-				<button  class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
+				<button  class="button wp-smush-nextgen-send" data-id="' . $pid . '">
 	                <span>' . $button_txt . '</span>
 				</button>';
 				if ( ! $smushed ) {
@@ -313,7 +307,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				} else {
 					$class = ' smushed';
 				}
-				$html = '<div class="smush-wrap' . $class . '">' . $html . '</div>';
+				$html = $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 				$html .= $WpSmush->progress_bar();
 
 				return $html;

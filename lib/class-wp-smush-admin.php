@@ -91,10 +91,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_manual' ) );
 
 			//Handle Restore operation
-			add_action( 'wp_ajax_wp_smush_restore_image', array( $this, 'restore_image' ) );
+			add_action( 'wp_ajax_smush_restore_image', array( $this, 'restore_image' ) );
 
 			//Handle Restore operation
-			add_action( 'wp_ajax_wp_smush_resmush_image', array( $this, 'resmush_image' ) );
+			add_action( 'wp_ajax_smush_resmush_image', array( $this, 'resmush_image' ) );
 
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
@@ -1399,7 +1399,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
 				wp_send_json_error( array(
 					'error'   => 'empty_fields',
-					'message' => esc_html__( "Error in sending Ajax request, Fields empty.", "wp-smushit" )
+					'message' => esc_html__( "Error in processing restore action, Fields empty.", "wp-smushit" )
 				) );
 			}
 			//Check Nonce
@@ -1488,21 +1488,21 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function resmush_image() {
 
 			//Check Empty fields
-			if ( empty( $_GET['attachment_id'] ) || empty( $_GET['_nonce'] ) ) {
+			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
 				wp_send_json_error( array(
 					'error'   => 'empty_fields',
 					'message' => '<div class="wp-smush-error">' . esc_html__( "Image not smushed, fields empty.", "wp-smushit" ) . '</div>'
 				) );
 			}
 			//Check Nonce
-			if ( ! wp_verify_nonce( $_GET['_nonce'], "wp-smush-resmush-" . $_GET['attachment_id'] ) ) {
+			if ( ! wp_verify_nonce( $_POST['_nonce'], "wp-smush-resmush-" . $_POST['attachment_id'] ) ) {
 				wp_send_json_error( array(
 					'error'   => 'empty_fields',
 					'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", "wp-smushit" ) . '</div>'
 				) );
 			}
 
-			$image_id = $_GET['attachment_id'];
+			$image_id = intval( $_POST['attachment_id'] );
 
 			$smushed = $this->smush_single( $image_id, true );
 
