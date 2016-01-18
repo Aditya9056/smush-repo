@@ -327,7 +327,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				}
 			} else {
 				if ( is_wp_error( $smush ) ) {
-					return $smush->get_error_message();
+					return $smush;
 				} else {
 					return $status;
 				}
@@ -520,6 +520,10 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 			wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to restore image", "wp-smushit" ) . '</div>' ) );
 		}
+
+		/**
+		 * Handles the Ajax request to resmush a image, if the full image wasn't smushed earlier
+		 */
 		function resmush_image() {
 			//Check Empty fields
 			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
@@ -541,15 +545,15 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			$smushed = $this->smush_image( $image_id, '', false );
 
 			//If any of the image is restored, we count it as success
-			if ( ! empty( $smushed ) ) {
+			if ( ! empty( $smushed ) && !is_wp_error( $smushed ) ) {
 
 				//Send button content
 				wp_send_json_success( array( 'button' => $smushed ) );
 
-			} elseif ( ! empty( $smushed['error'] ) ) {
+			} elseif ( is_wp_error( $smushed ) ) {
 
 				//Send Error Message
-				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to smush image", "wp-smushit" ) . '</div>' ) );
+				wp_send_json_error( array( 'message' => sprintf( '<div class="wp-smush-error">' . __( "Unable to smush image, %s", "wp-smushit" ) . '</div>', $smushed->get_error_message() ) ) );
 
 			}
 		}
