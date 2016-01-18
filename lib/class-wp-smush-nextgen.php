@@ -171,6 +171,11 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 				foreach ( $sizes as $size ) {
 
+					//Skip Full size, if smush original is not checked
+					if( 'full' == $size && !$WpSmush->smush_original ) {
+						continue;
+					}
+
 					// We take the original image. Get the absolute path using the storage object
 					$attachment_file_path_size = $storage->get_image_abspath( $image, $size );
 
@@ -258,9 +263,11 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 								}
 								$stats['sizes'][ $size_name ] = $existing_stats['sizes'][ $size_name ];
 							} else {
+								$existing_stats_size = (object)$existing_stats['sizes'][ $size_name ];
+
 								//Update compression percent and bytes saved for each size
-								$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats['sizes'][ $size_name ]->bytes;
-								$stats['sizes'][ $size_name ]->percent = $stats['sizes'][ $size_name ]->bytes + $existing_stats['sizes'][ $size_name ]->percent;
+								$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->bytes;
+								$stats['sizes'][ $size_name ]->percent = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->percent;
 							}
 						}
 					}
@@ -320,9 +327,9 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				}
 			} else {
 				if ( is_wp_error( $smush ) ) {
-					return $smush;
+					return $smush->get_error_message();
 				} else {
-					return true;
+					return $status;
 				}
 			}
 		}
@@ -512,6 +519,39 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				wp_send_json_success( array('button' => $button_html ) );
 			}
 			wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to restore image", "wp-smushit" ) . '</div>' ) );
+		}
+		function resmush_image() {
+			//Check Empty fields
+			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
+				wp_send_json_error( array(
+					'error'   => 'empty_fields',
+					'message' => '<div class="wp-smush-error">' . esc_html__( "We couldn't process the image, fields empty.", "wp-smushit" ) . '</div>'
+				) );
+			}
+			//Check Nonce
+			if ( ! wp_verify_nonce( $_POST['_nonce'], "wp-smush-resmush-" . $_POST['attachment_id'] ) ) {
+				wp_send_json_error( array(
+					'error'   => 'empty_fields',
+					'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", "wp-smushit" ) . '</div>'
+				) );
+			}
+
+			$image_id = intval( $_POST['attachment_id'] );
+
+			$smushed = $this->smush_image( $image_id, '', false );
+
+			//If any of the image is restored, we count it as success
+			if ( ! empty( $smushed ) ) {
+
+				//Send button content
+				wp_send_json_success( array( 'button' => $smushed ) );
+
+			} elseif ( ! empty( $smushed['error'] ) ) {
+
+				//Send Error Message
+				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to smush image", "wp-smushit" ) . '</div>' ) );
+
+			}
 		}
 
 	}//End of Class

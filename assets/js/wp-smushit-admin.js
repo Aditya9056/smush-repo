@@ -527,7 +527,7 @@ jQuery(function ($) {
     });
 
     /** Resmush: NextGen Gallery **/
-    jQuery('body').on('click', '.wp-smush-action.wp-smush-resmush-nextgen', function (e) {
+    jQuery('body').on('click', '.wp-smush-action.wp-smush-nextgen-resmush', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_resmush_nextgen_image';
         process_smush_action( e, current_button, smush_action );

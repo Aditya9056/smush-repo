@@ -1447,7 +1447,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 			$class = 'wp-smush-action wp-smush-title';
-			$class .= 'wp' == $type ? ' wp-smush-resmush' : 'wp-smush-nextgen-resmush';
+			$class .= 'wp' == $type ? ' wp-smush-resmush' : ' wp-smush-nextgen-resmush';
 
 			$ajax_nonce = wp_create_nonce("wp-smush-resmush-" . $image_id );
 			return sprintf('<a href="#" title="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__("Smush image including original file.", "wp-smushit"), $image_id, $ajax_nonce, $class, esc_html__("Resmush image", "wp-smush") );
