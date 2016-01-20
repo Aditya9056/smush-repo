@@ -199,6 +199,13 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 							$show_resmush = true;
 						}
 					}
+					if ( ! $WpSmush->keep_exif ) {
+						//If Keep Exif was set to tru initially, and since it is set to false now
+						if ( ! empty( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
+							$show_resmush = true;
+						}
+					}
+
 					if ( $show_resmush ) {
 						$status_txt .= '<br />' . $WpSmush->get_resmsuh_link( $pid, 'nextgen' );
 					}

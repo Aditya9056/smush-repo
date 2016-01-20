@@ -385,6 +385,9 @@ button .wp-smush-loader-wrap {
     padding: 5px 5px 5px 0;
     min-width: 323px;
 }
+#wp-smush-options-wrap .wp-smush-setting-row.wp-smush-basic {
+    min-width: 0;
+}
 
 /*Pro rows*/
 #wp-smush-options-wrap .wp-smush-pro-features .wp-smush-setting-row {

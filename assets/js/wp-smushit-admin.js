@@ -289,7 +289,7 @@ jQuery(function ($) {
                 }).done(function (res) {
                     //If no response or success is false, do not process further
                     if (typeof res == 'undefined' || !res || !res.success) {
-                        if (typeof res.data.error_msg !== 'undefined') {
+                        if ('undefined' !== typeof res.data || typeof res.data.error_msg !== 'undefined') {
                             //Print the error on screen
                             self.$log.append(res.data.error_msg);
                             //We can proceed to next image

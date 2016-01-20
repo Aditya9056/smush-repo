@@ -322,11 +322,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$smush_orgnl_txt = sprintf( esc_html__( "When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this.", 'wp_smushit' ), $count );
 			}
 			$this->settings = array(
-				'auto'     => __( 'Smush images on upload', 'wp-smushit' ),
-				'original' => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original wp-smush-title" title="' . $smush_orgnl_txt . '"></span>',
-				'lossy'    => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
-				'backup'   => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>',
-				'nextgen'  => __( 'Enable NextGen Gallery integration', 'wp-smushit' )
+				'auto'      => __( 'Smush images on upload', 'wp-smushit' ),
+				'keep_exif' => __( 'Preserve Image EXIF', 'wp-smushit' ),
+				'original'  => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original wp-smush-title" title="' . $smush_orgnl_txt . '"></span>',
+				'lossy'     => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
+				'backup'    => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>',
+				'nextgen'   => __( 'Enable NextGen Gallery integration', 'wp-smushit' )
 			);
 		}
 
@@ -395,17 +396,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$opt_auto_val = 1;
 					}
 
-					//Smush auto key
+					//Smush Original key
+					$opt_keep_exif = WP_SMUSH_PREFIX . 'keep_exif';
+					//Keep Exif
+					$opt_keep_exif_val = get_option( $opt_keep_exif, false );
+
+					//Smush Original key
 					$opt_original = WP_SMUSH_PREFIX . 'original';
 					//Auto value
 					$opt_original_val = get_option( $opt_original, false );
 
-					//Smush auto key
+					//Super Smush key
 					$opt_lossy = WP_SMUSH_PREFIX . 'lossy';
 					//Auto value
 					$opt_lossy_val = get_option( $opt_lossy, false );
 
-					//Smush auto key
+					//Backup original key
 					$opt_backup = WP_SMUSH_PREFIX . 'backup';
 					//Auto value
 					$opt_backup_val = get_option( $opt_backup, false );
@@ -427,9 +433,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 						$disabled = ' disabled';
 					} ?>
-					<div class='wp-smush-setting-row'><?php
+					<div class='wp-smush-setting-row wp-smush-basic'><?php
 						// return html
 						printf( "<label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label>", esc_attr( $opt_auto ), checked( $opt_auto_val, 1, false ), '', $this->settings['auto'] );
+						?>
+					</div>
+					<div class='wp-smush-setting-row wp-smush-basic'><?php
+						printf( "<label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label>", esc_attr( $opt_keep_exif ), checked( $opt_keep_exif_val, 1, false ), '', $this->settings['keep_exif'] );
 						?>
 					</div>
 					<fieldset class="wp-smush-pro-features">

@@ -85,7 +85,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 * New: Manual Image restore option for Media Library and NextGen Gallery, if "Backup Original Images" was kept on while smushing ( Pro Only )
 * New: Option to resmush image if Smush original is checked and Original image was skipped earlier ( Pro Only )
-
+* New: Added an option to preserve EXIF
 * New: Remove Smush meta on image regeneration,
        This allows user to manually smush them later, if auto smush is off ( WP Image Editor support )
 * Updated: Use jQuery tooltip for Smush elements only
