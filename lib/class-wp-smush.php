@@ -53,13 +53,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function __construct() {
 			/**
-			 * Hooks
+			 * Smush image (Auto Smush ) when `wp_update_attachment_metadata` filter is fired
 			 */
 			add_filter( 'wp_update_attachment_metadata', array(
 				$this,
 				'filter_generate_attachment_metadata'
 			), 12, 2 );
 
+			//Delete Backup files
+			add_action( 'delete_attachment', array(
+				$this,
+				'delete_images'
+			), 12 );
 
 			//Optimise WP Retina 2x images
 			add_action( 'wr2x_retina_file_added', array( $this, 'smush_retina_image' ), 20, 3 );
@@ -300,12 +305,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				} else {
 					$finfo = false;
 				}
-				$image_path = trailingslashit( dirname( $attachment_file_path ) );
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and replace the filename.
-					$attachment_file_path_size = $image_path . $size_data['file'];
+					$attachment_file_path_size = path_join( dirname( $attachment_file_path ), $size_data['file'] );
 
 					if ( $finfo ) {
 						$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
@@ -835,9 +839,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 								$show_resmush = true;
 							}
 						}
-						if ( ! $this->keep_exif ) {
+						if ( !$this->keep_exif ) {
 							//If Keep Exif was set to tru initially, and since it is set to false now
-							if ( ! empty( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
+							if ( isset( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
 								$show_resmush = true;
 							}
 						}
@@ -872,7 +876,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							}
 
 							//Detailed Stats Link
-							$status_txt .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" title="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
+							$status_txt .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" data-toggle="tooltip" title="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
 
 							//Stats
 							$status_txt .= $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
@@ -1198,11 +1202,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 			//For other sizes, check if the image was generated and not available in stats
 			if ( is_array( $media_size ) ) {
-				$dir_path = trailingslashit( dirname( $full_image ) );
 				foreach ( $media_size as $size ) {
 					if ( array_key_exists( $size, $attachment_metadata['sizes'] ) && ! array_key_exists( $size, $size_stats ) && ! empty( $size['file'] ) ) {
 						//Image Path
-						$img_path   = $dir_path . $size['file'];
+						$img_path   = path_join( dirname( $full_image ), $size['file'] );
 						$image_size = file_exists( $img_path ) ? filesize( $img_path ) : '';
 						if ( ! empty( $image_size ) && ( $image_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
 							$skipped[] = array(
@@ -1380,7 +1383,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
-		 * If any of the image size have a backup file, show the restore oprion
+		 * If any of the image size have a backup file, show the restore option
 		 *
 		 * @param $attachment_data
 		 *
@@ -1397,19 +1400,17 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Get the image path for all sizes
 			$file = get_attached_file( $image_id );
 
-			$image_path = trailingslashit( dirname( $file ) );
-
 			//Check backup for Full size
 			$backup = $wpsmushit_admin->get_image_backup_path( $file );
 
 			//Check for backup of full image
-			if ( file_exists( $image_path . $backup ) ) {
+			if ( file_exists( $backup ) ) {
 				return true;
 			}
 
 			//Check for backup of image sizes
 			foreach ( $attachment_data['sizes'] as $image_size ) {
-				$size_path        = $image_path . $image_size['file'];
+				$size_path        = path_join( dirname( $file ), $image_size['file'] );
 				$size_backup_path = $wpsmushit_admin->get_image_backup_path( $size_path );
 				if ( file_exists( $size_backup_path ) ) {
 					return true;
@@ -1436,7 +1437,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$ajax_nonce = wp_create_nonce( "wp-smush-restore-" . $image_id );
 
-			return sprintf( '<a href="#" title="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Restore original image.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Restore image", "wp-smush" ) );
+			return sprintf( '<a href="#" title="%s" data-id="%d" data-nonce="%s" class="%s" data-toggle="tooltip">%s</a>', esc_html__( "Restore original image.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Restore image", "wp-smush" ) );
 		}
 
 		/**
@@ -1481,7 +1482,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$ajax_nonce = wp_create_nonce( "wp-smush-resmush-" . $image_id );
 
-			return sprintf( '<a href="#" title="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Smush image including original file.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Resmush image", "wp-smush" ) );
+			return sprintf( '<a href="#" title="%s" data-id="%d" data-nonce="%s" class="%s" data-toggle="tooltip">%s</a>', esc_html__( "Smush image including original file.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Resmush image", "wp-smush" ) );
 		}
 
 		/**
@@ -1501,6 +1502,46 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . ".bak." . $path['extension'];
 
 			return $backup_name;
+		}
+
+		/**
+		 * Deletes all the backup files when an attachment is deleted
+		 *
+		 * @param $image_id
+		 */
+		function delete_images( $image_id ) {
+			//Check if we have any smush data for image
+			$smush_meta = get_post_meta( $image_id, $this->smushed_meta_key, true );
+			if ( empty( $smush_meta ) ) {
+				//Return if we don't have any details
+				return;
+			}
+			//Get the attachment details
+			$meta = wp_get_attachment_metadata( $image_id );
+
+			//Attachment file path
+			$file = get_attached_file( $image_id );
+
+			//Get the backup path
+			$backup_name = $this->get_image_backup_path( $file );
+
+			//If file exists, corresponding to our backup path, delete it
+			@ unlink( $backup_name );
+
+			//Check meta for rest of the sizes
+			if ( ! empty( $meta ) && ! empty( $meta['sizes'] ) ) {
+				foreach ( $meta['sizes'] as $size ) {
+					//Get the file path
+					if ( empty( $size['file'] ) ) {
+						continue;
+					}
+
+					//Image Path and Backup path
+					$image_size_path  = path_join( dirname( $file ), $size['file'] );
+					$image_bckup_path = $this->get_image_backup_path( $image_size_path );
+					@unlink( $image_bckup_path );
+				}
+			}
 		}
 	}
 

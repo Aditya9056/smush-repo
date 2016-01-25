@@ -348,10 +348,6 @@ p#wp-smush-compression span {
     font-size: 11px;
 }
 
-.column-smushit .wp-smush-send, .button.wp-smush-nextgen-send {
-    margin-bottom: 10px;
-}
-
 .column-smushit .wp-smush-loader {
     margin: 10px;
     float: left;
@@ -385,6 +381,7 @@ button .wp-smush-loader-wrap {
     padding: 5px 5px 5px 0;
     min-width: 323px;
 }
+
 #wp-smush-options-wrap .wp-smush-setting-row.wp-smush-basic {
     min-width: 0;
 }
@@ -532,11 +529,30 @@ input#wp-smush-save-settings {
 
 .compat-field-wp_smush button {
     float: left;
+    margin-bottom: 5px;
+}
+/** If we have button-primary class, this style will be loaded already **/
+.compat-field-wp_smush button:not(.button-primary) {
+    background: #0085ba;
+    border-color: #0073aa #006799 #006799;
+    -webkit-box-shadow: 0 1px 0 #006799;
+    box-shadow: 0 1px 0 #006799;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799, -1px 0 1px #006799;
+    margin-bottom: 10px;
+}
+
+.compat-field-wp_smush button:not( .button-primary ):hover {
+    background: #008ec2;
+    border-color: #006799;
+    color: #fff;
 }
 
 .compat-field-wp_smush .smush-wrap {
-    margin: 0;
+    margin: 0 0 5px 0;
     max-width: 100%;
+    overflow: hidden;
 }
 
 /*===================================*\
@@ -680,6 +696,8 @@ table.wp-smush-stats-holder tr td:first-child {
     padding: 2px;
     box-sizing: border-box;
     text-align: left;
+    clear: left;
+    margin-top: 10px;
 }
 
 .wp-smush-progress span {

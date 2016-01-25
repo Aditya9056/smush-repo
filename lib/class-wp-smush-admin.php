@@ -1445,9 +1445,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$restored[] = @copy( $file_path . '_backup', $file_path );
 			}
 
-			//Get the path details
-			$image_path = trailingslashit( dirname( $file_path ) );
-
 			//Get other sizes and restore
 			//Get attachment data
 			$attachment_data = wp_get_attachment_metadata( $image_id );
@@ -1463,7 +1460,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 
 				//Image Path and Backup path
-				$image_size_path  = $image_path . $size['file'];
+				$image_size_path  = path_join( dirname( $file_path ), $size['file'] );
 				$image_bckup_path = $this->get_image_backup_path( $image_size_path );
 
 				//Restore
