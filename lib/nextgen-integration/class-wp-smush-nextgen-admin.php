@@ -307,8 +307,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				} else {
 					$class = ' smushed';
 				}
-				$html = $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 				$html .= $WpSmush->progress_bar();
+				$html = $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 
 				return $html;
 			} else {

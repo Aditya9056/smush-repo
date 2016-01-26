@@ -978,9 +978,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$class = ' smushed';
 				}
 
+				$html .= $this->progress_bar();
 				$html = $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 
-				return $html . $this->progress_bar();
+				return $html;
 			} else {
 				$html .= '<button class="button wp-smush-send" data-id="' . $id . '">
                     <span>' . $button_txt . '</span>
