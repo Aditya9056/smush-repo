@@ -1046,9 +1046,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			while ( $global_data = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
 
 				if ( ! empty( $global_data ) ) {
+					$smush_data['count'] = 0;
 					foreach ( $global_data as $data ) {
 						$data = maybe_unserialize( $data );
 						if ( ! empty( $data['stats'] ) ) {
+							$smush_data['count'] += 1;
 							$smush_data['size_before'] += ! empty( $data['stats']['size_before'] ) ? (int) $data['stats']['size_before'] : 0;
 							$smush_data['size_after'] += ! empty( $data['stats']['size_after'] ) ? (int) $data['stats']['size_after'] : 0;
 						}

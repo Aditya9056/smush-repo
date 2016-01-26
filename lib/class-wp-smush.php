@@ -88,6 +88,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Load NextGen Gallery, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
 			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ), 90 );
 
+			//Send Smush Stats for pro members
+			add_filter( 'wpmudev_api_project_extra_data-912164', array( $this, 'send_smush_stats') );
+
 		}
 
 		function i18n() {
@@ -1543,6 +1546,28 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					@unlink( $image_bckup_path );
 				}
 			}
+		}
+
+		/**
+		 * Return Global stats
+		 *
+		 * @return array|bool|mixed
+		 */
+		function send_smush_stats() {
+			global $wpsmushit_admin;
+
+			//If set in Cache
+			$stats = wp_cache_get( 'global_stats', 'wp_smush' );
+
+			//Else calculate and Store in cache
+			if ( ! $stats || empty( $stats ) ) {
+				//Get the stats
+				$stats = $wpsmushit_admin->global_stats();
+				wp_cache_set( 'global_stats', $stats, 'wp_smush', DAY_IN_SECONDS );
+			}
+
+			return $stats;
+
 		}
 	}
 
