@@ -95,6 +95,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Fixed: Preserve file permission after smushing ( Fix for Images disappearing in Media library on some hosts )
 * Fixed: Styles plugin compatibility
 * Fixed: Warning: For settings link in Network admin, Warning: https://goo.gl/HAfhaF ( Thank you @Maks3w for suggestions )
+* Fixed: Smush button in Add Media dialog while editing a post
 
 = 2.1.3 =
 * Fixed: Compatibility with WPMU DEV Dashboard plugin v4.0, was not detecting pro status

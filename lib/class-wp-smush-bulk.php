@@ -22,6 +22,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 		 * @return array $attachments
 		 */
 		function get_attachments() {
+			global $wpsmushit_admin;
 
 			if ( ! isset( $_REQUEST['ids'] ) ) {
 				$limit           = apply_filters( 'wp_smush_nextgen_query_limit', 2000 );
@@ -46,46 +47,25 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 					'update_post_term_cache' => false,
 					'no_found_rows'          => true,
 				);
+				//Loop Over to get all the attachments
 				while ( $get_posts ) {
+
 					$query = new WP_Query( $args );
+
+					//Update the offset
 					$args['offset'] += $limit;
-					if ( ! $query->have_posts() ) {
+
+					//If total Count is set, and it is alread lesser than offset, don't query
+					if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $args['offset'] ) {
+						$get_posts = false;
+					} elseif ( 0 == $query->post_count ) {
+						//If we didn't get any posts from query, set $get_posts to false
 						$get_posts = false;
 					} else {
+						//Merge the results
 						$unsmushed_posts = array_merge( $unsmushed_posts, $query->posts );
 					}
 				}
-			} else {
-				return array_map( 'intval', explode( ',', $_REQUEST['ids'] ) );
-			}
-
-			return $unsmushed_posts;
-		}
-
-		/**
-		 * Fetches the ids of unsmushed images for NextGen Gallery
-		 * @return array
-		 */
-		function get_nextgen_attachments() {
-			if ( ! isset( $_REQUEST['ids'] ) ) {
-				$args            = array(
-					'fields'         => 'ids',
-					'post_type'      => 'attachment',
-					'post_status'    => 'any',
-					'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
-					'orderby'        => 'ID',
-					'order'          => 'DESC',
-					'posts_per_page' => - 1,
-					'meta_query'     => array(
-						array(
-							'key'     => 'wp-smpro-smush-data',
-							'compare' => 'NOT EXISTS'
-						)
-					),
-					'no_found_rows'  => true
-				);
-				$query           = new WP_Query( $args );
-				$unsmushed_posts = $query->posts;
 			} else {
 				return array_map( 'intval', explode( ',', $_REQUEST['ids'] ) );
 			}

@@ -209,25 +209,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$current_screen = get_current_screen();
 			$current_page   = $current_screen->base;
 
-			//Do not enqueue, unless it is one of the required screen
-			if ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'upload.php' ) {
-				return;
-			}
+			/**
+			 * Allows to disable enqueuing smush files on a particular page
+			 */
+			$enqueue_smush = apply_filters('wp_smush_enqueue', true );
 
-			if ( $pagenow == 'post.php' ) {
-				//Do not load any style or js on post types other than attachment
-				$post_type = get_post_type();
-				if ( empty( $post_type ) || $post_type !== 'attachment' ) {
-					return;
-				}
+			//Do not enqueue, unless it is one of the required screen
+			if ( !$enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'upload.php' ) ) {
+				return;
 			}
 
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 			wp_enqueue_script( 'jquery-ui-tooltip' );
-			if ( $pagenow == 'post.php' || $pagenow == 'upload.php' ) {
-				//For grid view, Need not load it anywhere else
-				wp_enqueue_script( 'wp-smushit-admin-media-js' );
-			}
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
@@ -248,6 +241,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
+
+			//Setup Total Attachments count
+			$this->total_count = $this->total_count();
 
 			if ( $this->is_pro_user || $this->remaining_count <= $this->max_free_bulk ) {
 				$bulk_now = __( 'Bulk Smush Now', 'wp-smushit' );
@@ -294,7 +290,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Array of all smushed, unsmushed and lossless ids
 			$data = array(
-				'smushed'   => $this->get_smushed_image_ids(),
 				'unsmushed' => $this->ids,
 				'lossless'  => $this->lossless_ids,
 				'timeout'   => WP_SMUSH_TIMEOUT * 1000, //Convert it into ms
@@ -327,10 +322,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Runs the expensive queries to get our global smush stats
 		 */
-		function setup_global_stats() {
-			$this->total_count   = $this->total_count();
+		function setup_global_stats( $force_update = false ) {
 			$this->smushed_count = $this->smushed_count();
-			$this->stats         = $this->global_stats();
+			$this->stats         = $this->global_stats( $force_update );
 		}
 
 		/**
@@ -740,7 +734,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 
-			$this->setup_global_stats();
+			//Get the updated Global Stats
+			$this->setup_global_stats( true );
 
 			$stats = $this->stats;
 
@@ -915,7 +910,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return int
 		 */
 		function total_count() {
-			return 1000;
+
+			//Don't query again, if the variable is already set
+			if( !empty( $this->total_count ) && $this->total_count > 0 ) {
+				return $this->total_count;
+			}
+
 			$query   = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
@@ -940,7 +940,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return array|int
 		 */
 		function smushed_count( $return_ids = false ) {
-			return 100;
+
 			$query = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
@@ -1018,11 +1018,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			<?php
 		}
 
-		function global_stats() {
+		/**
+		 * Get all the attachment meta, sum up the stats and return
+		 *
+		 * @param bool $force_update, Whether to forcefully update the Cache
+		 *
+		 * @return array|bool|mixed
+		 */
+		function global_stats( $force_update = false ) {
+
+			if( !$force_update && $stats = wp_cache_get( 'global_stats', 'wp_smush' ) ) {
+				if( !empty( $stats ) ) {
+					return $stats;
+				}
+			}
 
 			global $wpdb, $WpSmush;
 
-			return false;
 			$smush_data = array(
 				'size_before' => 0,
 				'size_after'  => 0,
@@ -1034,11 +1046,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 * Allows to set a limit of mysql query
 			 * Default value is 2000
 			 */
-			$limit  = apply_filters( 'wp_smush_media_query_limit', 2000 );
-			$limit  = intval( $limit );
-			$offset = 0;
+			$limit      = apply_filters( 'wp_smush_media_query_limit', 2000 );
+			$limit      = intval( $limit );
+			$offset     = 0;
+			$query_next = true;
 
-			while ( $global_data = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
+			while ( $query_next ) {
+
+				$global_data = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) );
 
 				if ( ! empty( $global_data ) ) {
 					$smush_data['count'] = 0;
@@ -1053,7 +1068,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 
 				$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
+
+				//Update the offset
 				$offset += $limit;
+
+				//Compare the Offset value to total images
+				if ( ! empty( $this->total_count ) && $this->total_count < $offset ) {
+					$query_next = false;
+				} elseif ( ! $global_data ) {
+					//If we didn' got any results
+					$query_next = false;
+				}
+
 			}
 
 			if ( ! isset( $smush_data['bytes'] ) || $smush_data['bytes'] < 0 ) {
@@ -1068,6 +1094,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smush_data['percent'] = round( $smush_data['percent'], 2 );
 
 			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
+
+			//Update Cache
+			wp_cache_set( 'smush_global_stats', $smush_data, '', DAY_IN_SECONDS );
 
 			return $smush_data;
 		}
@@ -1120,7 +1149,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return array
 		 */
 		function get_smushed_image_ids() {
-			return null;
 			$args  = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
@@ -1221,7 +1249,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return object query results
 		 */
-		function get_attachments() {
+		function get_smushed_attachments() {
 
 			global $wpdb;
 
@@ -1237,7 +1265,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			           . " AND p.post_mime_type IN " . $allowed_images
 			           . " ORDER BY p . ID DESC"
 			           // add a limit
-			           . " LIMIT " . $this->total_count();
+			           . " LIMIT " . $this->total_count;
 			$results = $wpdb->get_results( $sql );
 			unset( $sql );
 
@@ -1254,7 +1282,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$lossless_attachments = array();
 
 			//Fetch all the smushed attachment ids
-			$attachments = $this->get_attachments();
+			$attachments = $this->get_smushed_attachments();
 
 			//Check if image is lossless or lossy
 			foreach ( $attachments as $attachment ) {

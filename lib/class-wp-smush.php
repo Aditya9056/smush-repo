@@ -759,30 +759,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			return $api_key;
 		}
 
-
-		/**
-		 * Checks if image is already smushed
-		 *
-		 * @param int $id
-		 * @param array $data
-		 *
-		 * @return bool|mixed
-		 */
-		function is_smushed( $id, $data = null ) {
-
-			//For new images
-			$wp_is_smushed = get_post_meta( $id, 'wp-is-smushed', true );
-
-			//Not smushed, backward compatibility, check attachment metadata
-			if ( ! $wp_is_smushed && $data !== null ) {
-				if ( isset( $data['wp_smushit'] ) && ! empty( $data['wp_smushit'] ) ) {
-					$wp_is_smushed = true;
-				}
-			}
-
-			return $wp_is_smushed;
-		}
-
 		/**
 		 * Returns size saved from the api call response
 		 *
@@ -1556,15 +1532,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function send_smush_stats() {
 			global $wpsmushit_admin;
 
-			//If set in Cache
-			$stats = wp_cache_get( 'global_stats', 'wp_smush' );
-
-			//Else calculate and Store in cache
-			if ( ! $stats || empty( $stats ) ) {
-				//Get the stats
-				$stats = $wpsmushit_admin->global_stats();
-				wp_cache_set( 'global_stats', $stats, 'wp_smush', DAY_IN_SECONDS );
-			}
+			$stats = $wpsmushit_admin->global_stats();
 
 			return $stats;
 
