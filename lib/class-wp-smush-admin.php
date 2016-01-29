@@ -70,6 +70,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		private $is_pro_user;
 
+		private $attachments = '';
+
 		/**
 		 * Constructor
 		 */
@@ -159,17 +161,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$this,
 				'ui'
 			) );
-			// enqueue js only on this screen
-			add_action( 'admin_print_scripts-' . $admin_page_suffix, array( $this, 'enqueue' ) );
-
-			// Enqueue js on media screen
-			add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );
-
-			// Enqueue js on Post screen (Edit screen for media )
-			add_action( 'admin_print_scripts-post.php', array( $this, 'enqueue' ) );
-
-			// Enqueue js on Post screen (Edit screen for media )
-			add_action( 'admin_print_scripts-post-new.php', array( $this, 'enqueue' ) );
 
 			//For Nextgen gallery Pages, check later in enqueue function
 			add_action( 'admin_print_scripts', array( $this, 'enqueue' ) );
@@ -282,8 +273,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
+			$this->attachments = $bulk->get_attachments();
+
 			//Localize smushit_ids variable, if there are fix number of ids
-			$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $bulk->get_attachments();
+			$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments ;
 
 			//If premium, Super smush allowed, all images are smushed, localize lossless smushed ids for bulk compression
 			if ( $this->is_pro_user &&
@@ -541,9 +534,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! $count || $force_update ) {
 				$count       = 0;
 				$bulk        = new WpSmushitBulk();
-				$attachments = $bulk->get_attachments();
 				//Check images bigger than 1Mb, used to display the count of images that can't be smushed
-				foreach ( $attachments as $attachment ) {
+				foreach ( $this->attachments as $attachment ) {
 					if ( file_exists( get_attached_file( $attachment ) ) ) {
 						$size = filesize( get_attached_file( $attachment ) );
 					}
@@ -923,6 +915,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return int
 		 */
 		function total_count() {
+			return 1000;
 			$query   = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
@@ -947,6 +940,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return array|int
 		 */
 		function smushed_count( $return_ids = false ) {
+			return 100;
 			$query = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
@@ -1028,6 +1022,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $wpdb, $WpSmush;
 
+			return false;
 			$smush_data = array(
 				'size_before' => 0,
 				'size_after'  => 0,
@@ -1125,6 +1120,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return array
 		 */
 		function get_smushed_image_ids() {
+			return null;
 			$args  = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
