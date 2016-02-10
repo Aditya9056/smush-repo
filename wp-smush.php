@@ -4,7 +4,7 @@ Plugin Name: WP Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.1.3
+Version: 2.1.4
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit
 */
@@ -30,6 +30,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+//Deactivate the .org version, if pro version is active
+add_action('admin_init', 'deactivate_smush_org');
+function deactivate_smush_org() {
+	$dir_path = plugin_dir_path( __FILE__ );
+	if ( strpos( $dir_path, 'wp-smush-pro' ) !== false ) {
+		deactivate_plugins('wp-smushit', true);
+	}
+}
 
 /**
  * Constants
@@ -71,26 +80,28 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
  *
  * @return string
  */
-function wp_smush_rating_message( $message ) {
-	global $wpsmushit_admin;
-	$savings     = $wpsmushit_admin->global_stats();
-	$image_count = $wpsmushit_admin->total_count();
-	$show_stats  = false;
+if ( ! function_exists( 'wp_smush_rating_message' ) ) {
+	function wp_smush_rating_message( $message ) {
+		global $wpsmushit_admin;
+		$savings     = $wpsmushit_admin->global_stats();
+		$image_count = $wpsmushit_admin->total_count();
+		$show_stats  = false;
 
-	//If there is any saving, greater than 1Mb, show stats
-	if ( ! empty( $savings ) && ! empty( $savings['bytes'] ) && $savings['bytes'] > 1048576 ) {
-		$show_stats = true;
+		//If there is any saving, greater than 1Mb, show stats
+		if ( ! empty( $savings ) && ! empty( $savings['bytes'] ) && $savings['bytes'] > 1048576 ) {
+			$show_stats = true;
+		}
+
+		$message = "Hey %s, you've been using %s for a while now, and we hope you're happy with it.";
+
+		//Conditionally Show stats in rating message
+		if ( $show_stats ) {
+			$message .= sprintf( " You've smushed <strong>%s</strong> from %d images already, improving the speed and SEO ranking of this site!", $savings['human'], $image_count );
+		}
+		$message .= " We've spent countless hours developing this free plugin for you, and we would really appreciate it if you dropped us a quick rating!";
+
+		return $message;
 	}
-
-	$message = "Hey %s, you've been using %s for a while now, and we hope you're happy with it.";
-
-	//Conditionally Show stats in rating message
-	if ( $show_stats ) {
-		$message .= sprintf( " You've smushed <strong>%s</strong> from %d images already, improving the speed and SEO ranking of this site!", $savings['human'], $image_count );
-	}
-	$message .= " We've spent countless hours developing this free plugin for you, and we would really appreciate it if you dropped us a quick rating!";
-
-	return $message;
 }
 
 /**
@@ -100,16 +111,18 @@ function wp_smush_rating_message( $message ) {
  *
  * @return string
  */
-function wp_smush_email_message( $message ) {
-	$message = "You're awesome for installing %s! Site speed isn't all image optimization though, so we've collected all the best speed resources we know in a single email - just for users of WP Smush!";
+if ( ! function_exists( 'wp_smush_email_message' ) ) {
+	function wp_smush_email_message( $message ) {
+		$message = "You're awesome for installing %s! Site speed isn't all image optimization though, so we've collected all the best speed resources we know in a single email - just for users of WP Smush!";
 
-	return $message;
+		return $message;
+	}
 }
 
 if ( is_admin() ) {
-	//Only for wordpress.org members
-	$dir_path = plugin_dir_path( __FILE__ );
 
+	$dir_path = plugin_dir_path( __FILE__ );
+	//Only for wordpress.org members
 	if ( strpos( $dir_path, 'wp-smushit' ) !== false ) {
 		require_once( WP_SMUSH_DIR . 'extras/free-dashboard/module.php' );
 

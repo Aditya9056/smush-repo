@@ -113,7 +113,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				$image_type = $this->get_file_type( $file_path );
 
 				//If image type not supported
-				if ( ! in_array( $image_type, $supported_image ) ) {
+				if ( !$image_type || ! in_array( $image_type, $supported_image ) ) {
 					return;
 				}
 

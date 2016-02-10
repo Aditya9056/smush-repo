@@ -201,13 +201,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//if tempfile still exists, unlink it
 			if ( file_exists( $tempfile ) ) {
-				unlink( $tempfile );
+				@unlink( $tempfile );
 			}
 
 			//If file renaming failed
 			if ( ! $success ) {
-				copy( $tempfile, $file_path );
-				unlink( $tempfile );
+				@copy( $tempfile, $file_path );
+				@unlink( $tempfile );
 			}
 
 			//Some servers are having issue with file permission, this should fix it

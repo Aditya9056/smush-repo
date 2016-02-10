@@ -107,7 +107,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @return bool|string
 		 */
 		function get_file_type( $file_path ) {
-			if ( empty( $file_path ) ) {
+			if ( empty( $file_path ) || !file_exists( $file_path ) ) {
 				return false;
 			}
 			if ( function_exists( 'exif_imagetype' ) ) {
