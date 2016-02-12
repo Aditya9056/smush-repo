@@ -27,6 +27,13 @@ var progress_bar = function( cur_ele, txt, state ) {
         progress_button.hide();
     }
 };
+var smushAddParams = function (url, data) {
+    if (!$.isEmptyObject(data)) {
+        url += ( url.indexOf('?') >= 0 ? '&' : '?' ) + $.param(data);
+    }
+
+    return url;
+}
 jQuery(function ($) {
     // url for smushing
     WP_Smush.errors = [];
@@ -81,7 +88,7 @@ jQuery(function ($) {
             this.smush_type = typeof smush_type ? smush_type : false;
             this.single_ajax_suffix = this.smush_type ? 'smush_manual_nextgen' : 'wp_smushit_manual';
             this.bulk_ajax_suffix = this.smush_type ? 'wp_smushit_nextgen_bulk' : 'wp_smushit_bulk';
-            this.url += this.is_bulk ? '?action=' + this.bulk_ajax_suffix : '?action=' + this.single_ajax_suffix;
+            this.url = this.is_bulk ? smushAddParams(this.url, {action: this.bulk_ajax_suffix}) : smushAddParams(this.url, {action: this.single_ajax_suffix});
         };
 
         //Show loader in button for single and bulk smush
