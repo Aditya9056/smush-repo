@@ -289,9 +289,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//File path and URL for original image
 			$attachment_file_path = get_attached_file( $ID );
-			echo "<pre>";
-			print_r( $attachment_file_path );
-			echo "</pre>";
 
 			// If images has other registered size, smush them first
 			if ( ! empty( $meta['sizes'] ) ) {

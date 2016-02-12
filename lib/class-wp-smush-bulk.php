@@ -52,18 +52,20 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 
 					$query = new WP_Query( $args );
 
-					//Update the offset
-					$args['offset'] += $limit;
+					if( !empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
+						//Merge the results
+						$unsmushed_posts = array_merge( $unsmushed_posts, $query->posts );
+
+						//Update the offset
+						$args['offset'] += $limit;
+					}else{
+						//If we didn't get any posts from query, set $get_posts to false
+						$get_posts = false;
+					}
 
 					//If total Count is set, and it is alread lesser than offset, don't query
 					if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $args['offset'] ) {
 						$get_posts = false;
-					} elseif ( 0 == $query->post_count ) {
-						//If we didn't get any posts from query, set $get_posts to false
-						$get_posts = false;
-					} else {
-						//Merge the results
-						$unsmushed_posts = array_merge( $unsmushed_posts, $query->posts );
 					}
 				}
 			} else {
