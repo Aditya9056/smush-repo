@@ -27,14 +27,14 @@ var progress_bar = function( cur_ele, txt, state ) {
         progress_button.hide();
     }
 };
-var smushAddParams = function (url, data) {
-    if (!$.isEmptyObject(data)) {
-        url += ( url.indexOf('?') >= 0 ? '&' : '?' ) + $.param(data);
-    }
-
-    return url;
-}
 jQuery(function ($) {
+    var smushAddParams = function (url, data) {
+        if (!$.isEmptyObject(data)) {
+            url += ( url.indexOf('?') >= 0 ? '&' : '?' ) + $.param(data);
+        }
+
+        return url;
+    }
     // url for smushing
     WP_Smush.errors = [];
     WP_Smush.timeout = wp_smushit_data.timeout;
