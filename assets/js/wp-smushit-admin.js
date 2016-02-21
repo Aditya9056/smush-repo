@@ -80,9 +80,9 @@ jQuery(function ($) {
             this.$loader = $(".wp-smush-loader-wrap").eq(0).clone();
             this.deferred = jQuery.Deferred();
             this.deferred.errors = [];
-            this.ids = wp_smushit_data.unsmushed.length > 0 ? wp_smushit_data.unsmushed : wp_smushit_data.lossless;
+            this.ids = wp_smushit_data.unsmushed.length > 0 ? wp_smushit_data.unsmushed : wp_smushit_data.resmush;
             this.is_bulk_super_smush = wp_smushit_data.unsmushed.length > 0 ? false : true;
-            this.lossless_count = wp_smushit_data.lossless.length;
+            this.resmush_count = wp_smushit_data.resmush.length;
             this.$status = this.$button.parent().find('.smush-status');
             //Added for NextGen support
             this.smush_type = typeof smush_type ? smush_type : false;
@@ -255,9 +255,9 @@ jQuery(function ($) {
                 $progress_bar.css('width', width + '%');
             } else {
 
-                if (this.lossless_count > 0) {
-                    var remaining_lossless = this.lossless_count - wp_smushit_data.lossless.length;
-                    var progress_width = ( remaining_lossless / this.lossless_count * 100 );
+                if (this.resmush_count > 0) {
+                    var remaining_resmush = this.resmush_count - wp_smushit_data.lossless.length;
+                    var progress_width = ( remaining_resmush / this.resmush_count * 100 );
                     var $progress_bar = jQuery('#wp-smush-ss-progress-wrap #wp-smush-ss-progress div');
                     if ($progress_bar.length < 1) {
                         return;
@@ -556,29 +556,15 @@ jQuery(function ($) {
 
         //Send ajax request and get ids if any
         $.get(ajaxurl, params, function (r) {
+            //Check if we have the ids,  initialize the local variable
+            if( 'undefined' != r.data.resmush_ids ) {
+                wp_smushit_data.resmush = r.data.resmush_ids;
+            }
             jQuery('#wp-smush-resmush').html(r.data.content);
         });
         //Enable the Bulk Smush Button
         jQuery('.wp-smush-button.wp-smush-send').removeAttr('disabled');
 
-
-    });
-    //Resmush Images
-    jQuery('body').on('click', '.wp-resmush.wp-smush-action', function(e) {
-        e.preventDefault();
-        //Disable Bulk smush button
-        jQuery('.wp-smush-button.wp-smush-send, .wp-smush-scan').attr('disabled', 'disabled');
-        params = {
-            action: 'wp_resmush_images',
-            nonce: jQuery(this).data('nonce')
-        };
-
-        //@todo: Send ajax request bulk smushing and update the progress bar
-        $.get(ajaxurl, params, function (r) {
-
-        });
-        //Enable the Bulk Smush and scan Button
-        jQuery('.wp-smush-button.wp-smush-send, .wp-smush-scan').removeAttr('disabled');
 
     });
 
