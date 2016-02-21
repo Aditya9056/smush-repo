@@ -188,6 +188,9 @@ jQuery(function ($) {
 
             // Update button text
             self.$button_span.text(wp_smush_msgs.done);
+
+            //Enable Resmush and scan button
+            jQuery('.wp-resmush.wp-smush-action, .wp-smush-scan').removeAttr('disabled');
         };
 
         this.is_resolved = function () {
@@ -368,6 +371,8 @@ jQuery(function ($) {
 
         // prevent the default action
         e.preventDefault();
+        //Disable Resmush and scan button
+        jQuery('.wp-resmush.wp-smush-action, .wp-smush-scan').attr('disabled', 'disabled');
 
         //Check for ids, if there is none (Unsmushed or lossless), don't call smush function
         if (typeof wp_smushit_data == 'undefined' ||
@@ -538,6 +543,43 @@ jQuery(function ($) {
         var current_button = $(this);
         var smush_action = 'smush_resmush_nextgen_image';
         process_smush_action( e, current_button, smush_action );
+    });
+    //Scan For resmushing images
+    jQuery('body').on('click', '.wp-smush-scan', function(e) {
+        e.preventDefault();
+        //Disable Bulk smush button
+        jQuery('.wp-smush-button.wp-smush-send').attr('disabled', 'disabled');
+        params = {
+            action: 'scan_for_resmush',
+            nonce: jQuery(this).data('nonce')
+        };
+
+        //Send ajax request and get ids if any
+        $.get(ajaxurl, params, function (r) {
+            jQuery('#wp-smush-resmush').html(r.data.content);
+        });
+        //Enable the Bulk Smush Button
+        jQuery('.wp-smush-button.wp-smush-send').removeAttr('disabled');
+
+
+    });
+    //Resmush Images
+    jQuery('body').on('click', '.wp-resmush.wp-smush-action', function(e) {
+        e.preventDefault();
+        //Disable Bulk smush button
+        jQuery('.wp-smush-button.wp-smush-send, .wp-smush-scan').attr('disabled', 'disabled');
+        params = {
+            action: 'wp_resmush_images',
+            nonce: jQuery(this).data('nonce')
+        };
+
+        //@todo: Send ajax request bulk smushing and update the progress bar
+        $.get(ajaxurl, params, function (r) {
+
+        });
+        //Enable the Bulk Smush and scan Button
+        jQuery('.wp-smush-button.wp-smush-send, .wp-smush-scan').removeAttr('disabled');
+
     });
 
     /** Modify Title style using jQuery tooltip, Show help text on help image hover **/

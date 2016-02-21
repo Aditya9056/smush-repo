@@ -749,3 +749,11 @@ table.wp-smush-stats-holder tr td:first-child {
 .wp-smush-error {
     color: #ffb900;
 }
+
+.resmush-scan {
+    vertical-align: middle;
+    line-height: 28px;
+}
+#wp-smush-resmush fieldset {
+    border: 1px solid;
+}

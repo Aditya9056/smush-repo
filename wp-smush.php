@@ -44,7 +44,7 @@ function deactivate_smush_org() {
  * Constants
  */
 $prefix  = 'WP_SMUSH_';
-$version = '2.1.322er';
+$version = '2.1.322dsr';
 
 /**
  * Set the default timeout for API request and AJAX timeout
