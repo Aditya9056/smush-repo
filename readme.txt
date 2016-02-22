@@ -6,7 +6,7 @@ Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: Attachment,Attachments,Compress,Compress Image File,Compress Image Size,Compress JPG,Compressed JPG, Compression Image,Image,Images,JPG,Optimise,Optimize,Photo,Photos,Pictures,PNG,Reduce Image Size,Smush,Smush.it,Upload,WordPress Compression,WordPress Image Tool,Yahoo, Yahoo Smush.it
 Requires at least: 3.5
-Tested up to: 4.4.1
+Tested up to: 4.4.2
 Stable tag: 2.1.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -14,18 +14,17 @@ Reduce image file sizes, improve performance and boost your SEO using the free <
 
 == Description ==
 
-<blockquote>
-<h4>All new massively improved smushing!</h4>
-<br />
-Try now for a completely new, incredibly powerful, and 100% free image smushing process, brought to you by the team at WPMU DEV!
-<br>
-</blockquote>
+<strong>Optimize unlimited images</strong> with our <strong>incredibly powerful</strong> and <strong>100% free image Smusher</strong>, brought to you by the superheroes at WPMU DEV!
 
-WP Smush strips hidden, bulky information ( EXIF, IPTC ) from your images, reducing the file size without losing quality. The faster your site loads, the more Google, Bing, Yahoo and other search engines will like it.
+We'll do all the heavy lifting with our superhero servers, your site will be loading quicker in no time at all, leaving you to concentrate on making your content great!
+
+WP Smush strips hidden, bulky information from your images, reducing the file size without losing quality. The faster your site loads, the more Google, Bing, Yahoo and other search engines will like it.
 
 [youtube https://www.youtube.com/watch?v=GCzH7z05s5U]
 
 Heavy image files may be slowing down your site without you even knowing it. WP Smush meticulously scans every image you upload – or have already added to your site – and cuts all the unnecessary data for you.
+
+<a href="https://garage.godaddy.com/wordpress-plugin-partner-program/directory/?cvosrc=advocacy.evangelism.WP3" rel="nofollow"><img src="https://garage.godaddy.com/wp-content/uploads/badges/godaddy-plugin-partner-program-badge.svg" title="GoDaddy Plugin Program Partner" alt="GoDaddy Plugin Program Partner"/></a>
 
 ★★★★★ <br>
 “I had no idea that my page load time was being dragged down by the images. The plugin nearly halved the time it took.” - <a href="http://profiles.wordpress.org/karlcw">karlcw</a>

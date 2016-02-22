@@ -1114,7 +1114,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$settings      = '<a href="' . $settings_page . '">' . __( 'Settings', 'wp-smushit' ) . '</a>';
 
 			//Added a fix for weird warning in multisite, "array_unshift() expects parameter 1 to be array, null given"
-			+			!empty( $links ) ? array_unshift( $links, $settings ) : array_push( $settings );
++			!empty( $links ) ? array_unshift( $links, $settings ) : array_push( $settings );
 
 			return $links;
 		}
