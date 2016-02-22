@@ -24,4 +24,4 @@ Don't forget to create a tag for the release and push it on bitbucket.
 
 ### Who do I talk to? ###
 
-* You can contact Umesh Kumar<umesh@incsub.com> or Aaron Edwards
+* You can contact Umesh Kumar <umesh@incsub.com> or Aaron Edwards
