@@ -1,13 +1,12 @@
 <?php
 /*
 Plugin Name: WP Smush
-Plugin URI: http://premium.wpmudev.org/projects/wp-smush-pro/
-Description: Reduce image file sizes, improve performance and boost your SEO using the <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
+Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
+Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
 Version: 2.1.4
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit
-WDP ID: 912164
 */
 
 /*
@@ -16,21 +15,21 @@ http://dialect.ca/
 */
 
 /*
-  Copyright 2009-2016 Incsub (http://incsub.com)
-  Author - Aaron Edwards, Sam Najian, Umesh Kumar
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
-  the Free Software Foundation.
+Copyright 2007-2016 Incsub (http://incsub.com)
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
+the Free Software Foundation.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 
 //Deactivate the .org version, if pro version is active
 add_action('admin_init', 'deactivate_smush_org');
@@ -44,8 +43,8 @@ function deactivate_smush_org() {
 /**
  * Constants
  */
-$prefix          = 'WP_SMUSH_';
-$version         = '2.1.4';
+$prefix  = 'WP_SMUSH_';
+$version = '2.1.322detwr';
 
 /**
  * Set the default timeout for API request and AJAX timeout
