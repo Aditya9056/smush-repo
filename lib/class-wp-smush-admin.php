@@ -58,7 +58,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		private $ids = '';
 
 		//Stores all lossless smushed ids
-		private $lossless_ids = '';
+		private $resmush_ids = '';
 
 		/**
 		 * @var int Number of attachments exceeding free limit
@@ -280,13 +280,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//If premium, And we have a resmush list already, localize those ids
 			if ( $this->is_pro_user && $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
 					//get the attachments, and get lossless count
-					$this->lossless_ids = $resmush_ids;
+					$this->resmush_ids = $resmush_ids;
 			}
 
 			//Array of all smushed, unsmushed and lossless ids
 			$data = array(
 				'unsmushed' => $this->ids,
-				'resmush'  => $this->lossless_ids,
+				'resmush'  => $this->resmush_ids,
 				'timeout'   => WP_SMUSH_TIMEOUT * 1000, //Convert it into ms
 			);
 
@@ -614,7 +614,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						</span>
 					<!-- Check if we already have a resmush list --><?php
 					//If any of the image needs resmushing, show the bulk progress bar and UI
-					if( !empty( $this->lossless_ids ) ) {
+					if( !empty( $this->resmush_ids ) ) {
 						//Display Resmush bulk progress bar
 						$this->resmush_bulk_ui();
 					} ?>
@@ -1323,10 +1323,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function resmush_bulk_ui( $return = false ) {
 
-			$ss_progress_ui = '<h4>' . esc_html__( 'Re-Smush Images', 'wp-smushit' ) . '</h4>';
+			$ss_progress_ui = '<div class="wp-resmush-wrapper"><h4>' . esc_html__( 'Re-Smush Images', 'wp-smushit' ) . '</h4>';
 			$ss_progress_ui .= '<p>' . esc_html__( 'We found attachments that were previously optimised. With the current settings they can be further smushed for more savings.', 'wp-smushit' ) . '</p>';
 			$ss_progress_ui .= '<div id="progress-ui" class="super-smush">';
 
+			$count = count( $this->resmush_ids );
 			// display the progress bars
 			$ss_progress_ui .= '<div id="wp-smush-ss-progress-wrap">
 			<div id="wp-smush-ss-progress" class="wp-smush-progressbar"><div style="width:0%"></div></div>
@@ -1334,19 +1335,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			                   . sprintf(
 				                   _n( '<span class="remaining-count">%d</span> attachment left to Re-Smush',
 					                   '<span class="remaining-count">%d</span> attachments left to Re-Smush',
-					                   count( $this->lossless_ids ),
-					                   'wp-smushit' ), count( $this->lossless_ids ), count( $this->lossless_ids ) )
+					                   $count,
+					                   'wp-smushit' ), $count, $count )
 			                   . '</p>
-            </div>
-			</div><!-- End of progress ui -->';
+                </div>
+                </div><!-- End of progress ui -->';
 
+			$ss_progress_ui .= $this->setup_button( true, true ) . '</div>';
 			//If need to return the content
 			if ( $return ) {
-				return $ss_progress_ui . $this->setup_button( true, true );
+				return $ss_progress_ui;
 			}
 
 			echo $ss_progress_ui;
-			$this->setup_button( true );
 		}
 
 		/**
@@ -1609,7 +1610,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 				//Store the list in Options table
 				update_option( 'wp-smush-resmush-list', $resmush_list );
-				$this->lossless_ids = $resmush_list;
+				$this->resmush_ids = $resmush_list;
 
 				if ( ( $count = count( $resmush_list ) ) > 0 ) {
 					$ajax_response = $this->resmush_bulk_ui( true );

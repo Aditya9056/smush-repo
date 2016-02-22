@@ -754,6 +754,10 @@ table.wp-smush-stats-holder tr td:first-child {
     vertical-align: middle;
     line-height: 28px;
 }
+/** Resmush Button **/
 #wp-smush-resmush fieldset {
     border: 1px solid;
+}
+#wp-smush-resmush {
+    margin: 20px 0;
 }

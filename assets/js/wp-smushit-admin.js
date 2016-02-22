@@ -460,6 +460,17 @@ jQuery(function ($) {
             }
         })
     };
+    var bulk_loader = function( $button ) {
+        var loader = $(".wp-smush-loader-wrap").eq(0).clone();
+        //Loader
+        if (!$button.find(".wp-smush-loader-wrap").length) {
+            $button.prepend(loader);
+        } else {
+            loader = $button.find(".wp-smush-loader-wrap");
+        }
+        loader.removeClass("hidden");
+        loader.show();
+    }
 
     /**
      * Handle the Smush Stats link click
@@ -546,9 +557,19 @@ jQuery(function ($) {
     });
     //Scan For resmushing images
     jQuery('body').on('click', '.wp-smush-scan', function(e) {
+
         e.preventDefault();
-        //Disable Bulk smush button
-        jQuery('.wp-smush-button.wp-smush-send').attr('disabled', 'disabled');
+
+        var button = jQuery(this);
+
+        //Disable Bulk smush button and itself
+        button.attr('disabled', 'disabled');
+        jQuery('.wp-smush-button.wp-smush-send' ).attr('disabled', 'disabled');
+
+        //Show Loader animation
+        bulk_loader(button);
+
+        //Ajax Params
         params = {
             action: 'scan_for_resmush',
             nonce: jQuery(this).data('nonce')
@@ -556,13 +577,28 @@ jQuery(function ($) {
 
         //Send ajax request and get ids if any
         $.get(ajaxurl, params, function (r) {
+            setTimeout(
+                function()
+                {
+                    //do something special
+                }, 5000);
             //Check if we have the ids,  initialize the local variable
             if( 'undefined' != r.data.resmush_ids ) {
                 wp_smushit_data.resmush = r.data.resmush_ids;
             }
-            jQuery('#wp-smush-resmush').html(r.data.content);
+            //If the div already exists, just replace the content, else append it
+            if( jQuery('.wp-resmush-wrapper').length > 0 ) {
+                jQuery('.wp-resmush-wrapper').replaceWith(r.data.content);
+            }else{
+                jQuery('#wp-smush-resmush').append(r.data.content);
+            }
         });
-        //Enable the Bulk Smush Button
+
+        //Remove Loader
+        button.find(".wp-smush-loader-wrap").hide();
+
+        //Enable the Bulk Smush Button and itself
+        button.removeAttr('disabled');
         jQuery('.wp-smush-button.wp-smush-send').removeAttr('disabled');
 
 
