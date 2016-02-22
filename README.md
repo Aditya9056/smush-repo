@@ -2,6 +2,8 @@
 
 This README would normally document whatever steps are necessary to get your application up and running.
 
+** Make sure to remove README from release, this is for Bitbucket usage only **
+
 ### WP Smush - .org version and PRO version ###
 
 * There isn't much difference between the .org version and the WPMU DEV version. So don't be confused, it's just few headers are different like, the Plugin Name, WDP ID is only stated in Pro version and the copyright text.
