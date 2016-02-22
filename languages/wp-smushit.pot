@@ -1,10 +1,12 @@
-# Copyright (C) 2015 WP Smush
-# This file is distributed under the same license as the WP Smush package.
+# Copyright (C) 2015 WP Smush Pro
+# This file is distributed under the same license as the WP Smush Pro package.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Smush 2.1\n"
-"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wp-smush\n"
-"POT-Creation-Date: 2015-11-03 18:29:00+00:00\n"
+"Project-Id-Version: WP Smush Pro 2.1.2\n"
+"POT-Creation-Date: 2015-10-20 01:23+0530\n"
+"PO-Revision-Date: 2015-11-10 00:17+0530\n"
+"Last-Translator: Umesh <umeshsingla05@gmail.com>\n"
+"Language-Team: Umesh <umeshsingla05@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -75,7 +77,7 @@ msgstr ""
 msgid "Ops!... something went wrong"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:266 lib/class-wp-smush.php:755
+#: lib/class-wp-smush-admin.php:266 lib/class-wp-smush.php:804
 #: lib/nextgen-integration/class-wp-smush-nextgen-admin.php:147
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:230
 msgid "Super-Smush"
@@ -110,7 +112,7 @@ msgstr ""
 msgid "Smush all images, including originals."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:313 lib/class-wp-smush.php:1067
+#: lib/class-wp-smush-admin.php:313 lib/class-wp-smush.php:1116
 msgid "When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this."
 msgstr ""
 
@@ -383,57 +385,57 @@ msgstr ""
 msgid "Image couldn't be smushed"
 msgstr ""
 
-#: lib/class-wp-smush.php:719
+#: lib/class-wp-smush.php:768
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:185
 msgid "Error processing request"
 msgstr ""
 
-#: lib/class-wp-smush.php:723
+#: lib/class-wp-smush.php:772
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:189
 msgid "Already Optimized"
 msgstr ""
 
-#: lib/class-wp-smush.php:725
+#: lib/class-wp-smush.php:774
 msgid "%d images reduced "
 msgstr ""
 
-#: lib/class-wp-smush.php:725
+#: lib/class-wp-smush.php:774
 msgid "Reduced "
 msgstr ""
 
-#: lib/class-wp-smush.php:726
+#: lib/class-wp-smush.php:775
 msgid "by %s (  %01.1f%% )"
 msgstr ""
 
-#: lib/class-wp-smush.php:731
+#: lib/class-wp-smush.php:780
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:195
 msgid "Smush stats"
 msgstr ""
 
-#: lib/class-wp-smush.php:761
+#: lib/class-wp-smush.php:810
 #: lib/nextgen-integration/class-wp-smush-nextgen-admin.php:246
 msgid "Not processed"
 msgstr ""
 
-#: lib/class-wp-smush.php:767
+#: lib/class-wp-smush.php:816
 #: lib/nextgen-integration/class-wp-smush-nextgen-admin.php:252
 msgid "Smush Now!"
 msgstr ""
 
-#: lib/class-wp-smush.php:1070
+#: lib/class-wp-smush.php:1119
 msgid "Image couldn't be smushed as it exceeded the 1Mb size limit, Pro users can smush images with size upto 32Mb."
 msgstr ""
 
-#: lib/class-wp-smush.php:1072
+#: lib/class-wp-smush.php:1121
 msgid " Skipped"
 msgstr ""
 
-#: lib/class-wp-smush.php:1090
+#: lib/class-wp-smush.php:1139
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:329
 msgid "Image size"
 msgstr ""
 
-#: lib/class-wp-smush.php:1091
+#: lib/class-wp-smush.php:1140
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:330
 msgid "Savings"
 msgstr ""
@@ -460,19 +462,19 @@ msgstr ""
 msgid "Reduced by %s (  %01.1f%% )"
 msgstr ""
 
-#: wp-smush.php:124
+#: wp-smush.php:119
 msgid "Get Fast"
 msgstr ""
 #. Plugin Name of the plugin/theme
-msgid "WP Smush"
+msgid "WP Smush Pro"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "http://wordpress.org/extend/plugins/wp-smushit/"
+msgid "http://premium.wpmudev.org/projects/wp-smush-pro/"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid "Reduce image file sizes, improve performance and boost your SEO using the free <a href=\"https://premium.wpmudev.org/\">WPMU DEV</a> WordPress Smush API."
+msgid "Reduce image file sizes, improve performance and boost your SEO using the <a href=\"https://premium.wpmudev.org/\">WPMU DEV</a> WordPress Smush API."
 msgstr ""
 
 #. Author of the plugin/theme

@@ -7,17 +7,17 @@
  */
 var WP_Smush = WP_Smush || {};
 jQuery(function ($) {
-	// url for smushing
-	WP_Smush.errors = [];
-	WP_Smush.timeout = wp_smushit_data.timeout;
-	/**
-	 * Checks for the specified param in URL
-	 * @param sParam
-	 * @returns {*}
-	 */
-	WP_Smush.geturlparam = function (arg) {
-		var $sPageURL = window.location.search.substring(1);
-		var $sURLVariables = $sPageURL.split('&');
+    // url for smushing
+    WP_Smush.errors = [];
+    WP_Smush.timeout = wp_smushit_data.timeout;
+    /**
+     * Checks for the specified param in URL
+     * @param sParam
+     * @returns {*}
+     */
+    WP_Smush.geturlparam = function(arg) {
+        var $sPageURL = window.location.search.substring(1);
+        var $sURLVariables = $sPageURL.split('&');
 
 		for (var i = 0; i < $sURLVariables.length; i++) {
 			var $sParameterName = $sURLVariables[i].split('=');
@@ -436,3 +436,4 @@ jQuery(function ($) {
 	};
 
 })(jQuery);
+

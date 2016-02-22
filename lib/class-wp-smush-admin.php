@@ -1335,15 +1335,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Delete Site transient, stored for api status
+		 * Delete Site Option, stored for api status
 		 */
 		function refresh_status() {
-			global $WpSmush;
 
-			$api_key = $WpSmush->_get_api_key();
-			$key     = "wp-smush-premium-" . substr( $api_key, - 5, 5 );
-
-			delete_site_transient( $key );
+			delete_site_option('wp_smush_api_auth');
 		}
 	}
 
