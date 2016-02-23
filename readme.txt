@@ -81,8 +81,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.1.4 =
-
+= 2.1.5 =
 * New: Manual Image restore option for Media Library and NextGen Gallery, if "Backup Original Images" was kept on while smushing ( Pro Only )
 * New: Option to resmush image if Smush original is checked and Original image was skipped earlier ( Pro Only )
 * New: Delete Backup Files (Pro Only) on attachment deletion
@@ -91,12 +90,15 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * New: Remove Smush meta on image regeneration,
        This allows user to manually smush them later, if auto smush is off ( WP Image Editor support )
 * Updated: Use jQuery tooltip for Smush elements only
+* Code Optimisation
+
+= 2.1.4 =
+
 * Fixed: Preserve file permission after smushing ( Fix for Images disappearing in Media library on some hosts )
 * Fixed: Styles plugin compatibility
 * Fixed: Append URL params considering the existing arguments ( WPML Compatibility )
 * Fixed: Warning: For settings link in Network admin, Warning: https://goo.gl/HAfhaF ( Thank you @Maks3w for suggestions )
 * Fixed: Fatal error if both pro version and free version are activated
-* Code Optimisation
 
 = 2.1.3 =
 * Fixed: Compatibility with WPMU DEV Dashboard plugin v4.0, was not detecting pro status

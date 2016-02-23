@@ -60,7 +60,7 @@ jQuery(function ($) {
         "use strict";
         return $.ajax({
             type: "GET",
-            data: {attachment_id: $id, get_next: $getnxt, _nonce: nonce},
+            data: {'attachment_id': $id, 'get_next': $getnxt, '_nonce': nonce, 'is_bulk_resmush' : this.is_bulk_resmush },
             url: $send_url,
             timeout: WP_Smush.timeout,
             dataType: 'json'
@@ -80,8 +80,10 @@ jQuery(function ($) {
             this.$loader = $(".wp-smush-loader-wrap").eq(0).clone();
             this.deferred = jQuery.Deferred();
             this.deferred.errors = [];
-            this.ids = wp_smushit_data.unsmushed.length > 0 ? wp_smushit_data.unsmushed : wp_smushit_data.resmush;
-            this.is_bulk_super_smush = wp_smushit_data.unsmushed.length > 0 ? false : true;
+            //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
+            this.ids = $button.hasClass('wp-smush-resmush') && wp_smushit_data.resmush.length > 0 ? wp_smushit_data.resmush: wp_smushit_data.unsmushed ;
+
+            this.is_bulk_resmush = $button.hasClass('wp-smush-resmush') && wp_smushit_data.resmush.length > 0 ? true : false;
             this.resmush_count = wp_smushit_data.resmush.length;
             this.$status = this.$button.parent().find('.smush-status');
             //Added for NextGen support
@@ -118,11 +120,17 @@ jQuery(function ($) {
 
         this.enable_button = function () {
             this.$button.prop("disabled", false);
+            //For Bulk process, Enable other buttons
+            $(button[name = "smush-all"]).removeAttr('disabled');
+            $('button.wp-smush-scan').removeAttribute('disabled');
         };
 
 
         this.disable_button = function () {
             this.$button.prop("disabled", true);
+            //For Bulk process, disable other buttons
+            $(button[name = "smush-all"]).attr('disabled', 'disabled');
+            $('button.wp-smush-scan').attr('disabled', 'disabled');
         };
 
         this.show_loader = function () {
@@ -213,18 +221,18 @@ jQuery(function ($) {
 
         this.update_progress = function (_res) {
             //If not bulk
-            if (!this.is_bulk_super_smush && !this.is_bulk) {
+            if (!this.is_bulk_resmush && !this.is_bulk) {
                 return;
             }
 
-            if (!this.is_bulk_super_smush) {
+            if (!this.is_bulk_resmush) {
                 //handle progress for normal bulk smush
                 var progress = ( _res.data.stats.smushed / _res.data.stats.total) * 100;
             } else {
                 //Handle progress for Super smush progress bar
-                if (wp_smushit_data.lossless.length > 0) {
-                    $('#wp-smush-ss-progress-wrap .remaining-count').html(wp_smushit_data.lossless.length);
-                } else if (wp_smushit_data.lossless.length == 0) {
+                if (wp_smushit_data.resmush.length > 0) {
+                    $('#wp-smush-ss-progress-wrap .remaining-count').html(wp_smushit_data.resmush.length);
+                } else if (wp_smushit_data.resmush.length == 0) {
                     $('#wp-smush-ss-progress-wrap #wp-smush-compression').html(wp_smush_msgs.all_supersmushed);
                 }
 
@@ -244,7 +252,7 @@ jQuery(function ($) {
                 return;
             }
 
-            if (!this.is_bulk_super_smush) {
+            if (!this.is_bulk_resmush) {
                 // get the progress bar
                 var $progress_bar = jQuery('#wp-smush-progress-wrap #wp-smush-fetched-progress div');
                 if ($progress_bar.length < 1) {
@@ -256,7 +264,7 @@ jQuery(function ($) {
             } else {
 
                 if (this.resmush_count > 0) {
-                    var remaining_resmush = this.resmush_count - wp_smushit_data.lossless.length;
+                    var remaining_resmush = this.resmush_count - wp_smushit_data.resmush.length;
                     var progress_width = ( remaining_resmush / this.resmush_count * 100 );
                     var $progress_bar = jQuery('#wp-smush-ss-progress-wrap #wp-smush-ss-progress div');
                     if ($progress_bar.length < 1) {
@@ -376,7 +384,7 @@ jQuery(function ($) {
 
         //Check for ids, if there is none (Unsmushed or lossless), don't call smush function
         if (typeof wp_smushit_data == 'undefined' ||
-            ( wp_smushit_data.unsmushed.length == 0 && wp_smushit_data.lossless.length == 0 )
+            ( wp_smushit_data.unsmushed.length == 0 && wp_smushit_data.resmush.length == 0 )
         ) {
 
             return false;
@@ -516,7 +524,7 @@ jQuery(function ($) {
 
         //Check for ids, if there is none (Unsmushed or lossless), don't call smush function
         if (typeof wp_smushit_data == 'undefined' ||
-            ( wp_smushit_data.unsmushed.length == 0 && wp_smushit_data.lossless.length == 0 )
+            ( wp_smushit_data.unsmushed.length == 0 && wp_smushit_data.resmush.length == 0 )
         ) {
 
             return false;
@@ -577,11 +585,6 @@ jQuery(function ($) {
 
         //Send ajax request and get ids if any
         $.get(ajaxurl, params, function (r) {
-            setTimeout(
-                function()
-                {
-                    //do something special
-                }, 5000);
             //Check if we have the ids,  initialize the local variable
             if( 'undefined' != r.data.resmush_ids ) {
                 wp_smushit_data.resmush = r.data.resmush_ids;

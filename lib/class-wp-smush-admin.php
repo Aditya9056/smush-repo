@@ -603,10 +603,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					<?php
 					$this->setup_button();
 				}
-				?>
-				<div id="wp-smush-resmush">
+				//Show the resmush UI only if any of the images have been smuhed earlier
+				if( $this->smushed_count > 0 ) {
+					?>
+					<div id="wp-smush-resmush">
 					<!-- Button For Scanning images for required resmush -->
-						<span class="resmush-scan">
+					<span class="resmush-scan">
 						<button class="button-secondary wp-smush-scan"
 						        data-nonce="<?php echo wp_create_nonce( 'smush-scan-images' ); ?>">
 							<strong><?php esc_html_e( "Scan Now", "wp-smush" ); ?></strong>
@@ -614,11 +616,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						</span>
 					<!-- Check if we already have a resmush list --><?php
 					//If any of the image needs resmushing, show the bulk progress bar and UI
-					if( !empty( $this->resmush_ids ) ) {
+					if ( ! empty( $this->resmush_ids ) ) {
 						//Display Resmush bulk progress bar
 						$this->resmush_bulk_ui();
 					} ?>
-				</div><?php
+					</div><?php
+				}
 
 				$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
 				if ( ! $auto_smush && $this->remaining_count == 0 ) {
@@ -1138,7 +1141,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( $this->is_pro_user && $resmush ) {
 
 				$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-				$button['class'] = 'wp-smush-button wp-smush-send';
+				$button['class'] = 'wp-smush-button wp-smush-send wp-smush-resmush';
 
 			} else {
 
@@ -1323,11 +1326,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function resmush_bulk_ui( $return = false ) {
 
+			$count = count( $this->resmush_ids );
+
 			$ss_progress_ui = '<div class="wp-resmush-wrapper"><h4>' . esc_html__( 'Re-Smush Images', 'wp-smushit' ) . '</h4>';
-			$ss_progress_ui .= '<p>' . esc_html__( 'We found attachments that were previously optimised. With the current settings they can be further smushed for more savings.', 'wp-smushit' ) . '</p>';
+			$ss_progress_ui .= '<p>' . sprintf( esc_html__( 'We found %d attachments that were previously optimised. With the current settings they can be further smushed for more savings.', 'wp-smushit' ), $count ) . '</p>';
 			$ss_progress_ui .= '<div id="progress-ui" class="super-smush">';
 
-			$count = count( $this->resmush_ids );
 			// display the progress bars
 			$ss_progress_ui .= '<div id="wp-smush-ss-progress-wrap">
 			<div id="wp-smush-ss-progress" class="wp-smush-progressbar"><div style="width:0%"></div></div>
@@ -1577,6 +1581,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				die();
 			}
 
+			//Default response
+			$ajax_response = "<p class='wp-resmush-wrapper'>" . esc_html__( "Hurray! None of the image needs to be optimised back.", "wp-smush" ) . "</p>";
+
 			//Logic: If none of the required settings is on, don't need to resmush any of the images
 			//We need at least one of these settings to be on, to check if any of the image needs resmush
 			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif ) {
@@ -1614,12 +1621,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				if ( ( $count = count( $resmush_list ) ) > 0 ) {
 					$ajax_response = $this->resmush_bulk_ui( true );
-				} else {
-					$ajax_response = "<p>" . esc_html__( "Hurray! All images are optimised.", "wp-smush" ) . "</p>";
 				}
-
-				wp_send_json_success( array( "resmush_ids" => $resmush_list, "content" => $ajax_response ) );
 			}
+			wp_send_json_success( array( "resmush_ids" => $resmush_list, "content" => $ajax_response ) );
 		}
 	}
 

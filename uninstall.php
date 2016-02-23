@@ -14,7 +14,7 @@ global $wpdb;
 
 $smushit_keys = array(
 	'auto',
-
+	'resmush-list'
 );
 foreach ( $smushit_keys as $key ) {
 	$key = 'wp-smush-' . $key;
