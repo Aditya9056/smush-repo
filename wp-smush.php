@@ -33,10 +33,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 //Deactivate the .org version, if pro version is active
 add_action('admin_init', 'deactivate_smush_org');
-function deactivate_smush_org() {
-	$dir_path = plugin_dir_path( __FILE__ );
-	if ( strpos( $dir_path, 'wp-smush-pro' ) !== false ) {
-		deactivate_plugins('wp-smushit', true);
+if ( ! function_exists( 'deactivate_smush_org' ) ) {
+	function deactivate_smush_org() {
+		if ( is_plugin_active('wp-smush-pro/wp-smush.php') ) {
+			deactivate_plugins( 'wp-smushit', true );
+		}
 	}
 }
 
