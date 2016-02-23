@@ -36,7 +36,7 @@ add_action('admin_init', 'deactivate_smush_org');
 if ( ! function_exists( 'deactivate_smush_org' ) ) {
 	function deactivate_smush_org() {
 		if ( is_plugin_active('wp-smush-pro/wp-smush.php') ) {
-			deactivate_plugins( 'wp-smushit', true );
+			deactivate_plugins( 'wp-smushit/wp-smush.php' );
 		}
 	}
 }
