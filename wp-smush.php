@@ -31,26 +31,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-//Deactivate the .org version, if pro version is active
-add_action( 'admin_init', 'deactivate_smush_org' );
-if ( ! function_exists( 'deactivate_smush_org' ) ) {
-	function deactivate_smush_org() {
-		if ( is_plugin_active( 'wp-smush-pro/wp-smush.php' ) ) {
-			deactivate_plugins( 'wp-smushit/wp-smush.php' );
-			add_action( 'admin_notices', 'smush_deactivated' );
-			add_action( 'network_admin_notices', 'smush_deactivated' );
-		}
-	}
-}
-//Display a admin Notice about plugin deactivation
-if ( ! function_exists( 'smush_deactivated' ) ) {
-	function smush_deactivated() { ?>
-		<div class="updated">
-			<p><?php esc_html_e( 'WP Smush Free was deactivated. You have WP Smush Pro active!', 'wp-smushit' ); ?></p>
-		</div> <?php
-	}
-}
-
 /**
  * Constants
  */
@@ -178,5 +158,32 @@ if ( is_admin() ) {
 				'upload'
 			)
 		);
+	}
+}
+//Deactivate the .org version, if pro version is active
+add_action( 'admin_init', 'deactivate_smush_org' );
+
+if ( ! function_exists( 'deactivate_smush_org' ) ) {
+	function deactivate_smush_org() {
+		if ( is_plugin_active( 'wp-smush-pro/wp-smush.php' ) && is_plugin_active( 'wp-smushit/wp-smush.php' ) ) {
+			deactivate_plugins( 'wp-smushit/wp-smush.php' );
+			//Store in database, in order to show a notice on page load
+			update_option( 'smush_deactivated', 1 );
+		}
+	}
+}
+
+//Show the required notice
+add_action( 'network_admin_notices', 'smush_deactivated' );
+add_action( 'admin_notices', 'smush_deactivated' );
+//Display a admin Notice about plugin deactivation
+if ( ! function_exists( 'smush_deactivated' ) ) {
+	function smush_deactivated() {
+		if ( get_option( 'smush_deactivated' ) ) { ?>
+			<div class="updated">
+				<p><?php esc_html_e( 'WP Smush Free was deactivated. You have WP Smush Pro active!', 'wp-smushit' ); ?></p>
+			</div> <?php
+			delete_option( 'smush_deactivated' );
+		}
 	}
 }
