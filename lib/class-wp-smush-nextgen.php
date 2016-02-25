@@ -602,7 +602,7 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 					$filename = $success->fileName;
 					//Smush it, if it exists
 					if ( file_exists( $filename ) ) {
-						$response = $WpSmush->do_smushit( $filename, $image->pid, 'nextgen' );
+						$response = $WpSmush->do_smushit( $filename, $image_id, 'nextgen' );
 
 						//If the image was smushed
 						if ( ! is_wp_error( $response ) && ! empty( $response['data'] ) ) {
@@ -627,11 +627,14 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 								$stats['time']        = $response['data']->time;
 							}
 							$stats['sizes'][ $size ]      = (object) $WpSmush->_array_fill_placeholders( $WpSmush->_get_size_signature(), (array) $response['data'] );
-							$image->meta_data['wp_smush'] = $stats;
-							nggdb::update_image_meta( $image->pid, $image->meta_data );
+
+							if ( isset( $image->metadata ) ) {
+								$image->meta_data['wp_smush'] = $stats;
+								nggdb::update_image_meta( $image->pid, $image->meta_data );
+							}
 
 							//Allows To get the stats for each image, after the image is smushed
-							do_action( 'wp_smush_nextgen_image_stats', $image->pid, $stats );
+							do_action( 'wp_smush_nextgen_image_stats', $image_id, $stats );
 						}
 					}
 				}
@@ -650,9 +653,12 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 				}
 			}
 		}
-
-		//Add
-		$storage = C_Gallery_Storage::get_instance();
-		$storage->get_wrapped_instance()->add_mixin( 'WpSmushNextGenDynamicThumbs' );
 	}
+}
+if ( class_exists('WpSmushNextGenDynamicThumbs') ) {
+	if(! get_option('ngg_options') ) {
+		return;
+	}
+	$storage = C_Gallery_Storage::get_instance();
+	$storage->get_wrapped_instance()->add_mixin( 'WpSmushNextGenDynamicThumbs' );
 }

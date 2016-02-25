@@ -1086,6 +1086,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//Update size wise details
 				$stats['sizes'][ $image_size ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $data );
 			}
+			//Calculate Percent
 			update_post_meta( $id, $this->smushed_meta_key, $stats );
 
 		}
