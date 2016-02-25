@@ -102,11 +102,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Initialize variables
 			//Check if Lossy enabled
 			$opt_lossy           = WP_SMUSH_PREFIX . 'lossy';
-			$this->lossy_enabled = get_option( $opt_lossy, false );
+			$this->lossy_enabled = $this->is_pro() && get_option( $opt_lossy, false );
 
 			//Check if Smush Original enabled
 			$opt_original         = WP_SMUSH_PREFIX . 'original';
-			$this->smush_original = get_option( $opt_original, false );
+			$this->smush_original = $this->is_pro() && get_option( $opt_original, false );
 
 			//Check Whether to keep exif or not
 			$opt_keep_exif   = WP_SMUSH_PREFIX . 'keep_exif';

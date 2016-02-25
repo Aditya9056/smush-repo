@@ -121,7 +121,7 @@ jQuery(function ($) {
         this.enable_button = function () {
             this.$button.prop("disabled", false);
             //For Bulk process, Enable other buttons
-            $(button[name = "smush-all"]).removeAttr('disabled');
+            $('button[name = "smush-all"]').removeAttr('disabled');
             $('button.wp-smush-scan').removeAttribute('disabled');
         };
 
@@ -129,7 +129,7 @@ jQuery(function ($) {
         this.disable_button = function () {
             this.$button.prop("disabled", true);
             //For Bulk process, disable other buttons
-            $(button[name = "smush-all"]).attr('disabled', 'disabled');
+            $('button[name = "smush-all"]').attr('disabled', 'disabled');
             $('button.wp-smush-scan').attr('disabled', 'disabled');
         };
 
@@ -437,6 +437,9 @@ jQuery(function ($) {
         //Remove Error
         jQuery('.wp-smush-error').remove();
 
+        //Hide stats
+        jQuery('.smush-stats-wrapper').hide();
+
         //Get the image ID and nonce
         var params = {
             action: smush_action,
@@ -457,7 +460,7 @@ jQuery(function ($) {
             //reset all functionality
             enable_links( current_button );
 
-            if (r.success) {
+            if (r.success && 'undefined' != typeof( r.data.button ) ) {
                 //Show the smush button, and remove stats and restore option
                 current_button.parents().eq(1).html(r.data.button);
             } else {
