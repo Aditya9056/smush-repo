@@ -42,7 +42,7 @@ Install WP Smush and find out why it's the most popular image optimization plugi
   <li>Bulk smush ALL your images with one click! No more rate limiting.</li>
   <li>Keep a backup of your original un-smushed images in case you want to restore later.</li>
 	<li>24/7/365 support from <a href="https://premium.wpmudev.org/support/?utm_source=wordpress.org&utm_medium=readme">the best WordPress support team on the planet</a>.</li>
-	<li><a href="https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme">350+ other premium plugins and themes</a> included in your membership.</li>
+	<li><a href="https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme">100+ other premium plugins and themes</a> included in your membership.</li>
 </ul>
 
 Upgrade to <a href="https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme">WP Smush Pro</a> and optimize more and larger image files faster to increase your site’s performance.
@@ -86,6 +86,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Fixed: Append URL params considering the existing arguments ( WPML Compatibility )
 * Fixed: Warning: For settings link in Network admin, Warning: https://goo.gl/HAfhaF ( Thank you @Maks3w for suggestions )
 * Fixed: Fatal error if both pro version and free version are activated
+* Fixed: NextGen-Smush conflict on plugin activation on a fresh install
 
 = 2.1.3 =
 * Fixed: Compatibility with WPMU DEV Dashboard plugin v4.0, was not detecting pro status
