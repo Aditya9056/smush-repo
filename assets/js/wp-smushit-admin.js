@@ -55,18 +55,6 @@ jQuery(function ($) {
         }
     };
 
-    /** Send Ajax request for smushing the image **/
-    WP_Smush.ajax = function ($id, $send_url, $getnxt, nonce) {
-        "use strict";
-        return $.ajax({
-            type: "GET",
-            data: {'attachment_id': $id, 'get_next': $getnxt, '_nonce': nonce, 'is_bulk_resmush' : this.is_bulk_resmush },
-            url: $send_url,
-            timeout: WP_Smush.timeout,
-            dataType: 'json'
-        });
-    };
-
     WP_Smush.Smush = function ($button, bulk, smush_type) {
         var self = this;
 
@@ -91,6 +79,25 @@ jQuery(function ($) {
             this.single_ajax_suffix = this.smush_type ? 'smush_manual_nextgen' : 'wp_smushit_manual';
             this.bulk_ajax_suffix = this.smush_type ? 'wp_smushit_nextgen_bulk' : 'wp_smushit_bulk';
             this.url = this.is_bulk ? smushAddParams(this.url, {action: this.bulk_ajax_suffix}) : smushAddParams(this.url, {action: this.single_ajax_suffix});
+        };
+
+        /** Send Ajax request for smushing the image **/
+        WP_Smush.ajax = function (is_bulk_resmush, $id, $send_url, $getnxt, nonce) {
+            "use strict";
+            var param = {
+                is_bulk_resmush: is_bulk_resmush,
+                attachment_id: $id,
+                get_next: $getnxt,
+                _nonce: nonce,
+            };
+            param = jQuery.param(param);
+            return $.ajax({
+                type: "GET",
+                data: param,
+                url: $send_url,
+                timeout: WP_Smush.timeout,
+                dataType: 'json'
+            });
         };
 
         //Show loader in button for single and bulk smush
@@ -134,10 +141,10 @@ jQuery(function ($) {
         };
 
         this.show_loader = function () {
-            progress_bar( this.$button, wp_smush_msgs.smushing, 'show');
+            progress_bar(this.$button, wp_smush_msgs.smushing, 'show');
         };
 
-        this.show_bulk_loader = function() {
+        this.show_bulk_loader = function () {
             //Loader
             if (!this.$button.find(".wp-smush-loader-wrap").length) {
                 this.$button.prepend(this.$loader);
@@ -149,7 +156,7 @@ jQuery(function ($) {
         }
 
         this.hide_loader = function () {
-            progress_bar( this.$button, wp_smush_msgs.smushing, 'hide');
+            progress_bar(this.$button, wp_smush_msgs.smushing, 'hide');
         };
 
         this.single_done = function () {
@@ -233,7 +240,7 @@ jQuery(function ($) {
                 if (wp_smushit_data.resmush.length > 0) {
                     $('#wp-smush-ss-progress-wrap .remaining-count').html(wp_smushit_data.resmush.length);
                 } else if (wp_smushit_data.resmush.length == 0) {
-                    $('#wp-smush-ss-progress-wrap #wp-smush-compression').html(wp_smush_msgs.all_supersmushed);
+                    $('#wp-smush-ss-progress-wrap #wp-smush-compression').html(wp_smush_msgs.all_resmushed);
                 }
 
             }
@@ -296,7 +303,7 @@ jQuery(function ($) {
                 nonce_value = nonce_field.val();
             }
 
-            this.request = WP_Smush.ajax(this.current_id, this.url, 0, nonce_value)
+            this.request = WP_Smush.ajax(this.is_bulk_resmush, this.current_id, this.url, 0, nonce_value)
                 .complete(function () {
                     if (!self.continue() || !self.is_bulk) {
                         self.deferred.resolve();
@@ -399,22 +406,22 @@ jQuery(function ($) {
     });
 
     /** Disable the action links **/
-    var disable_links = function( c_element ) {
+    var disable_links = function (c_element) {
 
         var parent = c_element.parent();
         //reduce parent opacity
-        parent.css({'opacity' : '0.5' });
+        parent.css({'opacity': '0.5'});
         //Disable Links
         parent.find('a').attr('disabled', 'disabled');
     };
 
     /** Enable the Action Links **/
-    var enable_links = function( c_element ) {
+    var enable_links = function (c_element) {
 
         var parent = c_element.parent();
 
         //reduce parent opacity
-        parent.css({'opacity' : '1' });
+        parent.css({'opacity': '1'});
         //Disable Links
         parent.find('a').removeAttr('disabled');
     };

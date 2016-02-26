@@ -264,7 +264,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'smush_now'            => __( 'Smush Now', 'wp-smushit' ),
 				'sending'              => __( 'Sending ...', 'wp-smushit' ),
 				'error_in_bulk'        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				'all_supersmushed'     => __( 'All images are Super-Smushed.', 'wp-smushit' ),
+				'all_resmushed'        => __( 'All images are fully optimised.', 'wp-smushit' ),
 				'restore'              => esc_html__( "Restoring image..", "wp-smushit" ),
 				'smushing'             => esc_html__( "Smushing image..", "wp-smushit" ),
 
@@ -612,7 +612,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						<button class="button-secondary wp-smush-scan"
 						        data-nonce="<?php echo wp_create_nonce( 'smush-scan-images' ); ?>">
 							<strong><?php esc_html_e( "Scan Now", "wp-smush" ); ?></strong>
-						</button> <?php esc_html_e( "to check if any of the optimised images needs to be smushed again." ); ?>
+						</button> <?php esc_html_e( "to check if any already optimized images can be further smushed with your current settings." ); ?>
 						</span>
 					<!-- Check if we already have a resmush list --><?php
 					//If any of the image needs resmushing, show the bulk progress bar and UI
@@ -739,7 +739,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			}
 
-			$attachment_id = absint( (int) ( $_REQUEST['attachment_id'] ) );
+			$attachment_id = (int) ( $_REQUEST['attachment_id'] );
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
@@ -761,6 +761,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $error ) );
 			} else {
+				//Check if a resmush request, update the resmush list
+				if( !empty( $_REQUEST['is_bulk_resmush']) && $_REQUEST['is_bulk_resmush'] ) {
+					$this->update_resmush_list( $attachment_id );
+				}
 				wp_send_json_success( array( 'stats' => $stats ) );
 			}
 		}
@@ -1582,7 +1586,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Default response
-			$ajax_response = "<p class='wp-resmush-wrapper'>" . esc_html__( "Hurray! None of the image needs to be optimised back.", "wp-smush" ) . "</p>";
+			$ajax_response = "<p class='wp-resmush-wrapper'>" . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smush" ) . "</p>";
 
 			//Logic: If none of the required settings is on, don't need to resmush any of the images
 			//We need at least one of these settings to be on, to check if any of the image needs resmush
@@ -1624,6 +1628,21 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 			wp_send_json_success( array( "resmush_ids" => $resmush_list, "content" => $ajax_response ) );
+		}
+
+		/**
+		 * Remove the given attachment id from resmush list and updates it to db
+		 *
+		 * @param $attachment_id
+		 */
+		function update_resmush_list( $attachment_id ) {
+			$resmush_list = get_option( 'wp-smush-resmush-list' );
+			$key          = array_search( $attachment_id, $resmush_list );
+			if ( $resmush_list ) {
+				unset( $resmush_list[ $key ] );
+			}
+			$resmush_list = array_values( $resmush_list );
+			update_option( 'wp-smush-resmush-list', $resmush_list );
 		}
 	}
 

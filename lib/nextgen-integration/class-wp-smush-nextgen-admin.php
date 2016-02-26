@@ -147,7 +147,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				'smush_now'            => __( 'Smush Now', 'wp-smushit' ),
 				'sending'              => __( 'Sending ...', 'wp-smushit' ),
 				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				"all_supersmushed"     => __( 'All images are Super-Smushed.', 'wp-smushit' ),
+				"all_resmushed"        => __( 'All images are fully optimised.', 'wp-smushit' ),
 				'restore'              => esc_html__( "Restoring image..", "wp-smushit" ),
 				'smushing'             => esc_html__( "Smushing image..", "wp-smushit" ),
 			);
