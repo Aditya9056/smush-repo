@@ -1590,7 +1590,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Logic: If none of the required settings is on, don't need to resmush any of the images
 			//We need at least one of these settings to be on, to check if any of the image needs resmush
-			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif ) {
+			//Allow to smush Upfront images as well
+			$upfront_active = class_exists('Upfront');
+			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && !$upfront_active ) {
 				$response = array( "content" => esc_html__( "Hurray! All images are optimised.", "wp-smush" ) );
 				wp_send_json_success( $response );
 			}
@@ -1619,6 +1621,29 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						}
 					}
 				}
+				//Check for Upfront images that needs to be smushed
+				if ( $upfront_active ) {
+					$upfront_attachments = $this->get_upfront_images( $resmush_list );
+					if ( ! empty( $upfront_attachments ) && is_array( $upfront_attachments ) ) {
+						foreach ( $upfront_attachments as $u_attachment_id ) {
+							if ( ! in_array( $u_attachment_id, $resmush_list ) ) {
+								//Check if not smushed
+								$upfront_images = get_post_meta( $u_attachment_id, 'upfront_used_image_sizes', true );
+								if ( ! empty( $upfront_images ) && is_array( $upfront_images ) ) {
+									//Iterate over all the images
+									foreach ( $upfront_images as $image ) {
+										//If any of the element image is not smushed, add the id to resmush list
+										//and skip to next image
+										if ( empty( $image['is_smushed'] ) || 1 != $image['is_smushed'] ) {
+											$resmush_list[] = $u_attachment_id;
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
+				}//End Of Upfront loop
 				//Store the list in Options table
 				update_option( 'wp-smush-resmush-list', $resmush_list );
 				$this->resmush_ids = $resmush_list;
@@ -1643,6 +1668,38 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 			$resmush_list = array_values( $resmush_list );
 			update_option( 'wp-smush-resmush-list', $resmush_list );
+		}
+
+		/**
+		 * Get the attachment ids with Upfront images
+		 *
+		 * @return array|int
+		 */
+		function get_upfront_images( $skip_ids = array() ) {
+
+			$query = array(
+				'fields'         => 'ids',
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'order'          => 'ASC',
+				'posts_per_page' => - 1,
+				'meta_key'       => 'upfront_used_image_sizes',
+				'no_found_rows'  => true
+			);
+
+			//Skip all the ids which are already in resmush list
+			if ( ! empty( $skip_ids ) && is_array( $skip_ids ) ) {
+				$query['post__not_in'] = $skip_ids;
+			}
+
+			$results = new WP_Query( $query );
+
+			if ( ! is_wp_error( $results ) && $results->post_count > 0 ) {
+				return $results->posts;
+			} else {
+				return false;
+			}
 		}
 	}
 

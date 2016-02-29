@@ -89,6 +89,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * New: Added an option to preserve EXIF
 * New: Remove Smush meta on image regeneration,
        This allows user to manually smush them later, if auto smush is off ( WP Image Editor support )
+* Updated: Upfront Integration
 * Updated: Use jQuery tooltip for Smush elements only
 * Code Optimisation
 

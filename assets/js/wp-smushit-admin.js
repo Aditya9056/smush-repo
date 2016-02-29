@@ -129,7 +129,7 @@ jQuery(function ($) {
             this.$button.prop("disabled", false);
             //For Bulk process, Enable other buttons
             $('button[name = "smush-all"]').removeAttr('disabled');
-            $('button.wp-smush-scan').removeAttribute('disabled');
+            $('button.wp-smush-scan').removeAttr('disabled');
         };
 
 
@@ -382,7 +382,7 @@ jQuery(function ($) {
     /**
      * Handle the start button click
      */
-    $('button[name="smush-all"]').on('click', function (e) {
+    $('body').on('click', 'button[name="smush-all"]', function (e) {
 
         // prevent the default action
         e.preventDefault();
@@ -511,7 +511,7 @@ jQuery(function ($) {
     });
 
     /** Handle smush button click **/
-    $('body').on('click', '.wp-smush-send', function (e) {
+    $('body').on('click', '.wp-smush-send:not(.wp-smush-resmush)', function (e) {
 
         // prevent the default action
         e.preventDefault();
