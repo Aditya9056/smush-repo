@@ -183,7 +183,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$data = array(
 				'smushed'   => $smushed,
 				'unsmushed' => $unsmushed,
-				'lossless'  => 0
+				'lossless'  => 0,
+				'resmush'   => ''
 			);
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );

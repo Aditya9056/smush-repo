@@ -807,25 +807,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$show_button = true;
 				} else {
 					if ( $bytes == 0 || $percent == 0 ) {
-						$status_txt = __( 'Already Optimized', 'wp-smushit' );
+						$status_txt   = __( 'Already Optimized', 'wp-smushit' );
+
+						//Show resmush link, if the settings were changed
+						$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
+						if ( $show_resmush ) {
+							$status_txt .= '<br />' . $this->get_resmsuh_link( $id );
+						}
+
 					} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
 						$status_txt = $image_count > 1 ? sprintf( __( "%d images reduced ", 'wp-smushit' ), $image_count ) : __( "Reduced ", 'wp-smushit' );
 						$status_txt .= sprintf( __( "by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
 
-						//Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
-						//Or: If keep exif is unchecked and the smushed image have exif
-						if ( $this->smush_original ) {
-							//IF full image was not smushed
-							if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
-								$show_resmush = true;
-							}
-						}
-						if ( !$this->keep_exif ) {
-							//If Keep Exif was set to tru initially, and since it is set to false now
-							if ( isset( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
-								$show_resmush = true;
-							}
-						}
+						$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
 
 						if ( $show_resmush ) {
 							$status_txt .= '<br />' . $this->get_resmsuh_link( $id );
@@ -1589,6 +1583,31 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			return $stats;
 
+		}
+
+		/**
+		 * Checks the current settings and returns the value whether to enable or not the resmush option
+		 * @param $show_resmush
+		 * @param $wp_smush_data
+		 *
+		 * @return bool
+		 */
+		function show_resmush( $show_resmush, $wp_smush_data ) {
+			//Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
+			//Or: If keep exif is unchecked and the smushed image have exif
+			if ( $this->smush_original ) {
+				//IF full image was not smushed
+				if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
+					$show_resmush = true;
+				}
+			}
+			if ( !$this->keep_exif ) {
+				//If Keep Exif was set to tru initially, and since it is set to false now
+				if ( isset( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
+					$show_resmush = true;
+				}
+			}
+			return $show_resmush;
 		}
 	}
 

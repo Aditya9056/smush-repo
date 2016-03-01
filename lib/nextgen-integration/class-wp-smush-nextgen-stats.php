@@ -189,22 +189,17 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			} else {
 				if ( $bytes == 0 || $percent == 0 ) {
 					$status_txt = __( 'Already Optimized', 'wp-smushit' );
+
+					//Add resmush option if needed
+					$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
+					if ( $show_resmush ) {
+						$status_txt .= '<br />' . $WpSmush->get_resmsuh_link( $pid, 'nextgen' );
+					}
+
 				} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
 					$status_txt = sprintf( __( "Reduced by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
 
-					//Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
-					if( $WpSmush->smush_original ) {
-						//IF full image was not smushed
-						if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
-							$show_resmush = true;
-						}
-					}
-					if ( ! $WpSmush->keep_exif ) {
-						//If Keep Exif was set to tru initially, and since it is set to false now
-						if ( ! empty( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
-							$show_resmush = true;
-						}
-					}
+					$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
 
 					if ( $show_resmush ) {
 						$status_txt .= '<br />' . $WpSmush->get_resmsuh_link( $pid, 'nextgen' );
@@ -467,6 +462,31 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			}
 
 			return $skipped;
+		}
+
+		/**
+		 * Check if image can be resmushed
+		 * @param $status_txt
+		 *
+		 * @return string
+		 */
+		function show_resmush( $show_resmush, $wp_smush_data ) {
+			global $WpSmush;
+			//Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
+			if ( $WpSmush->smush_original ) {
+				//IF full image was not smushed
+				if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
+					$show_resmush = true;
+				}
+			}
+			if ( ! $WpSmush->keep_exif ) {
+				//If Keep Exif was set to tru initially, and since it is set to false now
+				if ( ! empty( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
+					$show_resmush = true;
+				}
+			}
+
+			return $show_resmush;
 		}
 
 	}//End of Class

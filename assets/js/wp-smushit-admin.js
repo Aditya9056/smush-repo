@@ -605,15 +605,14 @@ jQuery(function ($) {
             }else{
                 jQuery('#wp-smush-resmush').append(r.data.content);
             }
+        }).always( function() {
+            //Remove Loader
+            button.find(".wp-smush-loader-wrap").hide();
+
+            //Enable the Bulk Smush Button and itself
+            button.removeAttr('disabled');
+            jQuery('.wp-smush-button.wp-smush-send').removeAttr('disabled');
         });
-
-        //Remove Loader
-        button.find(".wp-smush-loader-wrap").hide();
-
-        //Enable the Bulk Smush Button and itself
-        button.removeAttr('disabled');
-        jQuery('.wp-smush-button.wp-smush-send').removeAttr('disabled');
-
 
     });
 

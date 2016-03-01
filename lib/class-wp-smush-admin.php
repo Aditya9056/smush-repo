@@ -1579,6 +1579,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			check_ajax_referer( 'smush-scan-images', 'nonce' );
 
 			$resmush_list = array();
+			sleep('100');
 
 			//Check for Pro membership
 			if ( ! $this->is_pro() ) {
