@@ -604,7 +604,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$this->setup_button();
 				}
 				//Show the resmush UI only if any of the images have been smuhed earlier
-				if( $this->smushed_count > 0 && $this->is_pro() ) {
+				if( $this->smushed_count > 0 ) {
 					?>
 					<div id="wp-smush-resmush">
 					<!-- Button For Scanning images for required resmush -->

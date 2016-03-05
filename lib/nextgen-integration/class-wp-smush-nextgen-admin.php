@@ -20,6 +20,9 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		var $remaining_count = 0;
 		var $bulk_page_handle;
 
+		//Stores all lossless smushed ids
+		private $resmush_ids = '';
+
 		function __construct() {
 
 			//Update the number of columns
@@ -51,7 +54,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function wp_smush_bulk_menu() {
 			if ( defined( 'NGGFOLDER' ) ) {
-				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, esc_html__( 'WP Bulk Smush', 'wp-smushit' ), esc_html__( 'WP Smush', 'wp-smushit' ), 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
+				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, esc_html__( 'Bulk WP Smush', 'wp-smushit' ), esc_html__( 'WP Smush', 'wp-smushit' ), 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
 					&$this,
 					'wp_smush_bulk'
 				) );
@@ -460,6 +463,25 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				<p class="smush-final-log"></p>
 				<?php
 				$this->setup_button();
+			}
+			//Show the resmush UI only if any of the images have been smuhed earlier
+			if( $this->smushed_count > 0 ) {
+				?>
+				<div id="wp-smush-resmush">
+				<!-- Button For Scanning images for required resmush -->
+				<span class="resmush-scan">
+						<button class="button-secondary wp-smush-scan"
+						        data-nonce="<?php echo wp_create_nonce( 'smush-scan-images' ); ?>">
+							<strong><?php esc_html_e( "Scan Now", "wp-smush" ); ?></strong>
+						</button> <?php esc_html_e( "to check if any already optimized images can be further smushed with your current settings." ); ?>
+						</span>
+				<!-- Check if we already have a resmush list --><?php
+				//If any of the image needs resmushing, show the bulk progress bar and UI
+				if ( ! empty( $this->resmush_ids ) ) {
+					//Display Resmush bulk progress bar
+					$this->resmush_bulk_ui();
+				} ?>
+				</div><?php
 			}
 
 			$auto_smush = get_site_option( WP_SMUSH_PREFIX . 'auto' );
