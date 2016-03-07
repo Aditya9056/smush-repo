@@ -881,6 +881,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'posts_per_page' => - 1,
 				'no_found_rows'  => true
 			);
+			//Remove the Filters added by WP Media Folder
+			$this->remove_wmf_filters();
+
 			$results = new WP_Query( $query );
 			$count   = ! empty( $results->post_count ) ? $results->post_count : 0;
 
@@ -906,6 +909,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'meta_key'       => 'wp-smpro-smush-data',
 				'no_found_rows'  => true
 			);
+
+			//Remove the Filters added by WP Media Folder
+			$this->remove_wmf_filters();
 
 			$results = new WP_Query( $query );
 			if ( ! $return_ids ) {
@@ -1086,6 +1092,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				),
 				'no_found_rows'  => true
 			);
+			//Remove the Filters added by WP Media Folder
+			$this->remove_wmf_filters();
+
 			$query = new WP_Query( $args );
 
 			return $query->posts;
@@ -1345,6 +1354,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function refresh_status() {
 
 			delete_site_option('wp_smush_api_auth');
+		}
+
+		/**
+		 * Remove any pre_get_posts_filters added by WP Media Folder plugin
+		 */
+		function remove_wmf_filters() {
+			//remove any filters added b WP media Folder plugin to get the all attachments
+			if( class_exists('Wp_Media_Folder') ) {
+				global $wp_media_folder;
+				if( is_object( $wp_media_folder ) ) {
+					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts1' ) );
+					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts' ), 0, 1 );
+				}
+			}
 		}
 	}
 
