@@ -288,7 +288,7 @@ div#wp-smush-progress-status {
 
 #wp-smush-progress-status p {
     float: left;
-    width: 50%;
+    max-width: 100%;
 }
 
 div#wp-smush-progress-status p::before {
@@ -377,7 +377,29 @@ button .wp-smush-loader-wrap {
     padding: 5px 5px 5px 0;
     min-width: 323px;
 }
+.wp-smushit-container-wrap {
+    display: inline-block;
+    max-width: 790px;
+    padding: 0 10px 0 0;
+}
+.wp-smushit-features-wrap{
+    display: inline-block;
+    width: 270px;
+    vertical-align: top;
+}
 
+/** Media Query for screen size smaller than 800px **/
+@media screen and (max-width: 800px) {
+    .wp-smushit-features-wrap {
+        display: block;
+        width: 100%;
+    }
+}
+
+.wp-smushit-features-inner{
+    border: 0;
+    padding: 1px 10px;
+}
 /*Pro rows*/
 #wp-smush-options-wrap .wp-smush-pro-features .wp-smush-setting-row {
     margin: 5px 20px 5px 25px;
