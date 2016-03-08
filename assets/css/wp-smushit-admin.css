@@ -382,6 +382,9 @@ button .wp-smush-loader-wrap {
     max-width: 790px;
     padding: 0 10px 0 0;
 }
+.wp-smushit-container-wrap.smush-full-width {
+    max-width: 100%;
+}
 .wp-smushit-features-wrap{
     display: inline-block;
     width: 270px;
@@ -398,7 +401,16 @@ button .wp-smush-loader-wrap {
 
 .wp-smushit-features-inner{
     border: 0;
-    padding: 1px 10px;
+    padding: 1px 15px;
+    position: relative;
+}
+/** Pro Version **/
+.wp-smush-pro-user.wp-smushit-features-inner {
+    padding: 1px 20px 1px 10px;
+}
+.wp-smushit-features-inner .notice-dismiss {
+    padding: 3px 1px 9px 9px;
+    text-decoration: none;
 }
 /*Pro rows*/
 #wp-smush-options-wrap .wp-smush-pro-features .wp-smush-setting-row {

@@ -106,6 +106,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
+
+			//Handle the smush pro dismiss features notice ajax
+			add_action( 'wp_ajax_dismiss_smush_notice', array( $this, 'dismiss_smush_notice' ) );
 		}
 
 		/**
@@ -336,10 +339,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function ui() {
 			$this->setup_global_stats();
 			$page_heading = $this->is_pro_user ? esc_html__( 'WP Smush Pro', 'wp-smushit' ) : esc_html__( 'WP Smush', 'wp-smushit' );
+			$full_width = ( 1 == get_option( 'hide_smush_features' ) && $this->is_pro() ) ? ' smush-full-width' : '';
 			?>
 			<div class="wrap">
 				<h1><?php echo $page_heading; ?></h1>
-				<div class="wp-smushit-container-wrap">
+				<div class="wp-smushit-container-wrap<?php echo $full_width; ?>">
 					<div class="wp-smushit-container">
 						<h3><?php _e( 'Settings', 'wp-smushit' ) ?></h3><?php
 						// display the options
@@ -868,6 +872,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'posts_per_page' => - 1,
 				'no_found_rows'  => true
 			);
+			//Remove the Filters added by WP Media Folder
+			$this->remove_wmf_filters();
+
 			$results = new WP_Query( $query );
 			$count   = ! empty( $results->post_count ) ? $results->post_count : 0;
 
@@ -893,6 +900,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'meta_key'       => 'wp-smpro-smush-data',
 				'no_found_rows'  => true
 			);
+
+			//Remove the Filters added by WP Media Folder
+			$this->remove_wmf_filters();
 
 			$results = new WP_Query( $query );
 			if ( ! $return_ids ) {
@@ -1073,6 +1083,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				),
 				'no_found_rows'  => true
 			);
+			//Remove the Filters added by WP Media Folder
+			$this->remove_wmf_filters();
+
 			$query = new WP_Query( $args );
 
 			return $query->posts;
@@ -1266,9 +1279,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! is_super_admin() || ! $show_features ) {
 				return;
 			}
-			if ( $this->is_pro_user ) { ?>
+			if ( $this->is_pro_user ) {
+				//If User choose to hide the notice
+				if ( 1 == get_option( 'hide_smush_features' ) ) {
+					return;
+				} ?>
 				<div class="wp-smushit-features-wrap">
-					<div class="wp-smushit-features-inner notice inline">
+					<div class="wp-smushit-features-inner notice inline wp-smush-pro-user">
+						<a href="#" class="wp-smush-pro-feature-dismiss notice-dismiss"></a>
 						<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', 'wp-smushit' ) ?></h3>
 						<ol>
 							<li><?php _e( 'Smush the original Full image sizes that are normally skipped by default.', 'wp-smushit' ); ?></li>
@@ -1339,6 +1357,28 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function refresh_status() {
 
 			delete_site_option('wp_smush_api_auth');
+		}
+
+		/**
+		 * Remove any pre_get_posts_filters added by WP Media Folder plugin
+		 */
+		function remove_wmf_filters() {
+			//remove any filters added b WP media Folder plugin to get the all attachments
+			if( class_exists('Wp_Media_Folder') ) {
+				global $wp_media_folder;
+				if( is_object( $wp_media_folder ) ) {
+					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts1' ) );
+					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts' ), 0, 1 );
+				}
+			}
+		}
+
+		/**
+		 * Store a key/value to hide the smush features on bulk page
+		 */
+		function dismiss_smush_notice() {
+			update_option( 'hide_smush_features', 1 );
+			wp_send_json_success();
 		}
 	}
 
