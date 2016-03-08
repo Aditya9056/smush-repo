@@ -373,26 +373,18 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @return array
 		 */
 
-		private function button_state( $super_smush ) {
-			$button = array(
+		private function button_state( $resmush ) {
+			$button          = array(
 				'cancel' => false,
 			);
-			if ( $super_smush ) {
-				$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-				$button['class'] = 'wp-smush-button wp-smush-nextgen-bulk';
-			} else {
+			$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
+			$button['class'] = 'wp-smush-button wp-smush-nextgen-bulk';
 
-				// if we have nothing left to smush, disable the buttons
-				if ( $this->smushed_count === $this->total_count ) {
-					$button['text']     = __( 'All Done!', 'wp-smushit' );
-					$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
-					$button['disabled'] = 'disabled';
-
-				} else {
-
-					$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-					$button['class'] = 'wp-smush-button wp-smush-nextgen-bulk';
-				}
+			//If not resmush and All the images are already smushed
+			if ( ! $resmush && $this->smushed_count === $this->total_count ) {
+				$button['text']     = __( 'All Done!', 'wp-smushit' );
+				$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
+				$button['disabled'] = 'disabled';
 			}
 
 			return $button;
@@ -400,15 +392,24 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 		/**
 		 * Display the bulk smushing button
+		 *
+		 * @param bool $resmush
+		 * @param bool $return Whether to echo the button content or echo it
+		 *
+		 * @return string If return is set to true, return the button content,
+		 * else echo it
+		 *
 		 */
-		function setup_button( $super_smush = false ) {
-			$button   = $this->button_state( $super_smush );
+		function setup_button( $resmush = false, $return = false ) {
+			$button   = $this->button_state( $resmush );
 			$disabled = ! empty( $button['disabled'] ) ? ' disabled="disabled"' : '';
-			?>
-			<button class="button button-primary<?php echo ' ' . $button['class']; ?>" name="smush-all-nextgen" <?php echo $disabled; ?>>
-				<span><?php echo $button['text'] ?></span>
-			</button>
-			<?php
+			$content = '<button class="button button-primary ' . $button['class'] .'" name="smush-all-nextgen" ' . $disabled .'>
+				<span>' . $button['text'] . '</span>
+			</button>';
+			if( $return ) {
+				return $content;
+			}
+			echo $content;
 		}
 
 		/**
@@ -500,6 +501,40 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			?>
 			</div><?php
 		}
+
+		/**
+		 * Adds progress bar for ReSmush bulk, if there are any images, that needs to be resmushed
+		 */
+		function resmush_bulk_ui( $return = false ) {
+
+			$count = count( $this->resmush_ids );
+
+			$ss_progress_ui = '<div class="wp-resmush-wrapper"><h4>' . esc_html__( 'Re-Smush Images', 'wp-smushit' ) . '</h4>';
+			$ss_progress_ui .= '<p>' . sprintf( esc_html__( 'We found %d attachments that were previously optimised. With the current settings they can be further smushed for more savings.', 'wp-smushit' ), $count ) . '</p>';
+			$ss_progress_ui .= '<div id="progress-ui" class="super-smush">';
+
+			// display the progress bars
+			$ss_progress_ui .= '<div id="wp-smush-ss-progress-wrap">
+			<div id="wp-smush-ss-progress" class="wp-smush-progressbar"><div style="width:0%"></div></div>
+			<p id="wp-smush-compression">'
+			                   . sprintf(
+				                   _n( '<span class="remaining-count">%d</span> attachment left to Re-Smush',
+					                   '<span class="remaining-count">%d</span> attachments left to Re-Smush',
+					                   $count,
+					                   'wp-smushit' ), $count, $count )
+			                   . '</p>
+                </div>
+                </div><!-- End of progress ui -->';
+
+			$ss_progress_ui .= $this->setup_button( true, true ) . '</div>';
+			//If need to return the content
+			if ( $return ) {
+				return $ss_progress_ui;
+			}
+
+			echo $ss_progress_ui;
+		}
+
 	}//End of Class
 
 }//End Of if class not exists
