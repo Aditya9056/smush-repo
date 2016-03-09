@@ -14,6 +14,11 @@ global $wpdb;
 
 $smushit_keys = array(
 	'auto',
+	'original',
+	'lossy',
+	'backup',
+	'nextgen',
+	'keep_exif',
 	'resmush-list'
 );
 foreach ( $smushit_keys as $key ) {

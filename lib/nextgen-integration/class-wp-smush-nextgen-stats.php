@@ -129,7 +129,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					}
 					//Set the offset
 					$offset += $limit;
-				};
+				}
 				if ( ! empty( $smushed_images ) ) {
 					wp_cache_set( 'wp_smush_images_smushed', $smushed_images, 'nextgen', 300 );
 				}
@@ -245,7 +245,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 						$full_image = $storage->get_image_abspath( $image, 'full' );
 
 						//Stats
-						$status_txt .= $this->get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
+						$status_txt .= $this->  get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
 					}
 				}
 			}

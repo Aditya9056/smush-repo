@@ -8,7 +8,7 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 
 		function smush_bulk() {
 
-			global $wpsmushnextgenstats;
+			global $wpsmushnextgenstats, $wpsmushit_admin;
 
 			$stats = array();
 
@@ -33,6 +33,10 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 				}
 				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $msg ) );
 			} else {
+				//Check if a resmush request, update the resmush list
+				if( !empty( $_REQUEST['is_bulk_resmush']) && $_REQUEST['is_bulk_resmush'] ) {
+					$wpsmushit_admin->update_resmush_list( $atchmnt_id, 'wp-smush-nextgen-resmush-list' );
+				}
 				wp_send_json_success( array( 'stats' => $stats ) );
 			}
 		}

@@ -65,6 +65,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$this,
 				'delete_images'
 			), 12 );
+			//Update resmush list, if a NextGen image is deleted
+			add_action( 'ngg_delete_picture', array( $this, 'update_resmush_list' ) );
 
 			//Optimise WP Retina 2x images
 			add_action( 'wr2x_retina_file_added', array( $this, 'smush_retina_image' ), 20, 3 );
@@ -1487,6 +1489,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @param $image_id
 		 */
 		function delete_images( $image_id ) {
+
+			//Check and Update resmush list
+			if ( $resmush_list = get_option( 'wp-smush-resmush-list' ) ) {
+				global $wpsmushit_admin;
+				$wpsmushit_admin->update_resmush_list( $image_id, 'wp-smush-resmush-list' );
+			}
+
 			//Check if we have any smush data for image
 			$smush_meta = get_post_meta( $image_id, $this->smushed_meta_key, true );
 			if ( empty( $smush_meta ) ) {
@@ -1608,6 +1617,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 			return $show_resmush;
+		}
+
+		/**
+		 * Updates the resmush list for NextGen gallery, remove the given id
+		 *
+		 * @param $attachment_id
+		 */
+		function update_resmush_list( $attachment_id ) {
+			global $wpsmushit_admin;
+			$wpsmushit_admin->update_resmush_list( $attachment_id, 'wp-smush-nextgen-resmush-list' );
 		}
 	}
 

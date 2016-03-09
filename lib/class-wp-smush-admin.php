@@ -278,7 +278,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments;
 
 			//If premium, And we have a resmush list already, localize those ids
-			if ( $this->is_pro_user && $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
+			if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
 					//get the attachments, and get lossless count
 					$this->resmush_ids = $resmush_ids;
 			}
@@ -1578,17 +1578,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function scan_images() {
 
-			global $WpSmush;
+			global $WpSmush, $wpsmushnextgenadmin;
 
 			check_ajax_referer( 'smush-scan-images', 'nonce' );
 
 			$resmush_list = array();
-			sleep('100');
 
 			//Check for Pro membership
 			if ( ! $this->is_pro() ) {
 				die();
 			}
+
+			//Scanning for NextGen or Media Library
+			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
 
 			//Default response
 			$ajax_response = "<p class='wp-resmush-wrapper'>" . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smush" ) . "</p>";
@@ -1602,12 +1604,28 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_send_json_success( $response );
 			}
 
-			//Get list of Smushed images
-			$attachments = $this->smushed_count( true );
+			if( 'nextgen' != $type ) {
+
+				//Get list of Smushed images
+				$attachments = $this->smushed_count( true );
+			}else{
+				global $wpsmushnextgenstats;
+
+				//Get smushed attachments list from nextgen class, We get the meta as well
+				$attachments = $wpsmushnextgenstats->get_ngg_images();
+
+			}
+
 			if ( ! empty( $attachments ) && is_array( $attachments ) ) {
-				foreach ( $attachments as $attachment ) {
-					//Check the current settings, and smush data for the image
-					$smush_data = get_post_meta( $attachment, $this->smushed_meta_key, true );
+				foreach ( $attachments as $attachment_k => $attachment ) {
+
+					//For NextGen we get the metadata in the attachment data itself
+					if( !empty( $attachment['wp_smush'] ) ) {
+						$smush_data = $attachment['wp_smush'];
+					}else {
+						//Check the current settings, and smush data for the image
+						$smush_data = get_post_meta( $attachment, $this->smushed_meta_key, true );
+					}
 
 					if ( ! empty( $smush_data['stats'] ) ) {
 
@@ -1621,13 +1639,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$smush_original = $WpSmush->smush_original && empty( $smush_data['sizes']['full'] );
 
 						if ( $smush_lossy || $strip_exif || $smush_original ) {
-							$resmush_list[] = $attachment;
+							$resmush_list[] = 'nextgen' == $type ? $attachment_k : $attachment;
 							continue;
 						}
 					}
 				}
+
 				//Check for Upfront images that needs to be smushed
-				if ( $upfront_active ) {
+				if ( $upfront_active && 'nextgen' != $type ) {
 					$upfront_attachments = $this->get_upfront_images( $resmush_list );
 					if ( ! empty( $upfront_attachments ) && is_array( $upfront_attachments ) ) {
 						foreach ( $upfront_attachments as $u_attachment_id ) {
@@ -1649,12 +1668,21 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						}
 					}
 				}//End Of Upfront loop
+				$key = 'nextgen' == $type ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
+
 				//Store the list in Options table
-				update_option( 'wp-smush-resmush-list', $resmush_list );
-				$this->resmush_ids = $resmush_list;
+				update_option( $key, $resmush_list );
+
+				if ( 'nextgen' != $type ) {
+					//Set the variables
+					$this->resmush_ids = $resmush_list;
+				} else {
+					//To avoid the php warning
+					$wpsmushnextgenadmin->resmush_ids = $resmush_list;
+				}
 
 				if ( ( $count = count( $resmush_list ) ) > 0 ) {
-					$ajax_response = $this->resmush_bulk_ui( true );
+					$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->resmush_bulk_ui( true );
 				}
 			}
 			wp_send_json_success( array( "resmush_ids" => $resmush_list, "content" => $ajax_response ) );
@@ -1665,14 +1693,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @param $attachment_id
 		 */
-		function update_resmush_list( $attachment_id ) {
-			$resmush_list = get_option( 'wp-smush-resmush-list' );
+		function update_resmush_list( $attachment_id, $mkey = 'wp-smush-resmush-list' ) {
+			$resmush_list = get_option( $mkey );
 			$key          = array_search( $attachment_id, $resmush_list );
 			if ( $resmush_list ) {
 				unset( $resmush_list[ $key ] );
 			}
 			$resmush_list = array_values( $resmush_list );
-			update_option( 'wp-smush-resmush-list', $resmush_list );
+			update_option( $mkey, $resmush_list );
 		}
 
 		/**

@@ -21,7 +21,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		var $bulk_page_handle;
 
 		//Stores all lossless smushed ids
-		private $resmush_ids = '';
+		public $resmush_ids = '';
 
 		function __construct() {
 
@@ -165,29 +165,22 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$smushed = ( ! empty( $smushed ) && is_array( $smushed ) ) ? array_keys( $smushed ) : '';
 
 			if ( ! empty( $_REQUEST['ids'] ) ) {
+				//Sanitize the ids and assign it to a variable
 				$this->ids = array_map( 'intval', explode( ',', $_REQUEST['ids'] ) );
 			} else {
 				$this->ids = $unsmushed;
 			}
 			//If premium, Super smush allowed, all images are smushed, localize lossless smushed ids for bulk compression
-			if ( ( $this->total_count == $this->smushed_count && empty( $this->ids ) ) ) {
+			if ( $resmush_ids = get_option('wp-smush-nextgen-resmush-list') ) {
 
-				//Check if Super smush enabled
-				$super_smush = get_option( WP_SMUSH_PREFIX . 'lossy', false );
-
-				if ( $super_smush ) {
-					//get the attachments, and get lossless count
-//					echo "Supersmush pending";
-//					$this->lossless_ids = $this->get_lossless_attachments();
-				}
+				$this->resmush_ids = $resmush_ids;
 			}
 
 			//Array of all smushed, unsmushed and lossless ids
 			$data = array(
 				'smushed'   => $smushed,
 				'unsmushed' => $unsmushed,
-				'lossless'  => 0,
-				'resmush'   => ''
+				'resmush'   => $this->resmush_ids
 			);
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
@@ -377,14 +370,18 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$button          = array(
 				'cancel' => false,
 			);
+
 			$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-			$button['class'] = 'wp-smush-button wp-smush-nextgen-bulk';
 
 			//If not resmush and All the images are already smushed
 			if ( ! $resmush && $this->smushed_count === $this->total_count ) {
 				$button['text']     = __( 'All Done!', 'wp-smushit' );
 				$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
 				$button['disabled'] = 'disabled';
+			} elseif ( $resmush ) {
+				$button['class'] = 'wp-smush-button wp-smush-resmush wp-smush-nextgen-bulk';
+			} else {
+				$button['class'] = 'wp-smush-button wp-smush-nextgen-bulk';
 			}
 
 			return $button;
@@ -471,7 +468,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				<div id="wp-smush-resmush">
 				<!-- Button For Scanning images for required resmush -->
 				<span class="resmush-scan">
-						<button class="button-secondary wp-smush-scan"
+						<button class="button-secondary wp-smush-scan" data-type = "nextgen"
 						        data-nonce="<?php echo wp_create_nonce( 'smush-scan-images' ); ?>">
 							<strong><?php esc_html_e( "Scan Now", "wp-smush" ); ?></strong>
 						</button> <?php esc_html_e( "to check if any already optimized images can be further smushed with your current settings." ); ?>
