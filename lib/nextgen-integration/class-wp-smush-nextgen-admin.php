@@ -21,7 +21,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		var $bulk_page_handle;
 
 		//Stores all lossless smushed ids
-		public $resmush_ids = '';
+		public $resmush_ids = array();
 
 		function __construct() {
 
@@ -195,13 +195,13 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			global $wpsmushit_admin;
 			?>
 			<div class="wrap"><?php
-			//Promotional Text
-			$wpsmushit_admin->smush_pro_features();
+				//Promotional Text
+				$wpsmushit_admin->smush_pro_features();
 
-			//Bulk Smush UI, calls progress UI, Super Smush UI
-			$this->bulk_smush_ui(); ?>
+				//Bulk Smush UI, calls progress UI, Super Smush UI
+				$this->bulk_smush_ui(); ?>
 			</div><?php
-
+			$wpsmushit_admin->print_loader();
 			return;
 		}
 
@@ -503,6 +503,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Adds progress bar for ReSmush bulk, if there are any images, that needs to be resmushed
 		 */
 		function resmush_bulk_ui( $return = false ) {
+			global $WpSmush;
+			//Check if we need to show it as per the curent settings
+			if( !$WpSmush->smush_original && $WpSmush->keep_exif && !$WpSmush->lossy_enabled ) {
+				return;
+			}
 
 			$count = count( $this->resmush_ids );
 

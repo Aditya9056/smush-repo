@@ -58,7 +58,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		private $ids = '';
 
 		//Stores all lossless smushed ids
-		private $resmush_ids = '';
+		public $resmush_ids = array();
 
 		/**
 		 * @var int Number of attachments exceeding free limit
@@ -328,7 +328,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function ui() {
 			$this->setup_global_stats();
 			?>
-			<div class="wrap" xmlns="http://www.w3.org/1999/html">
+			<div class="wrap">
 
 				<h1>
 					<?php
@@ -342,9 +342,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				?>
 
 				<div class="wp-smpushit-container">
-					<h3>
-						<?php _e( 'Settings', 'wp-smushit' ) ?>
-					</h3>
+					<h3><?php _e( 'Settings', 'wp-smushit' ) ?></h3>
 					<?php
 					// display the options
 					$this->options_ui();
@@ -644,8 +642,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Loading Image
 		 */
-		function print_loader() {
-			?>
+		function print_loader() {?>
 			<div class="wp-smush-loader-wrap hidden">
 				<div class="floatingCirclesG">
 					<div class="f_circleG" id="frotateG_01">
@@ -1145,7 +1142,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( $this->is_pro_user && $resmush ) {
 
 				$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-				$button['class'] = 'wp-smush-button wp-smush-send wp-smush-resmush';
+				$button['class'] = 'wp-smush-button wp-smush-resmush';
 
 			} else {
 
@@ -1158,11 +1155,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				} else if ( $this->is_pro_user || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
 
 					$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-					$button['class'] = 'wp-smush-button wp-smush-send';
+					$button['class'] = 'wp-smush-button';
 
 				} else { //if not premium and over limit
 					$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', 'wp-smushit' ), $this->max_free_bulk );
-					$button['class'] = 'wp-smush-button wp-smush-send';
+					$button['class'] = 'wp-smush-button';
 
 				}
 			}
@@ -1334,6 +1331,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function resmush_bulk_ui( $return = false ) {
 
+			global $WpSmush;
+			//Check if we need to show it as per the curent settings
+			if( !$WpSmush->smush_original && $WpSmush->keep_exif && !$WpSmush->lossy_enabled ) {
+				return;
+			}
 			$count = count( $this->resmush_ids );
 
 			$ss_progress_ui = '<div class="wp-resmush-wrapper"><h4>' . esc_html__( 'Re-Smush Images', 'wp-smushit' ) . '</h4>';
@@ -1593,14 +1595,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
 
 			//Default response
-			$ajax_response = "<p class='wp-resmush-wrapper'>" . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smush" ) . "</p>";
+			$ajax_response = "<p class='wp-resmush-wrapper notice notice-success inline'>" . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smush" ) . "</p>";
 
 			//Logic: If none of the required settings is on, don't need to resmush any of the images
 			//We need at least one of these settings to be on, to check if any of the image needs resmush
 			//Allow to smush Upfront images as well
 			$upfront_active = class_exists('Upfront');
 			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && !$upfront_active ) {
-				$response = array( "content" => esc_html__( "Hurray! All images are optimised.", "wp-smush" ) );
+				$response = array( "content" => "<p class='wp-resmush-wrapper notice notice-success inline'>" . esc_html__( "Hurray! All images are optimised.", "wp-smush" ) . "</p>" );
 				wp_send_json_success( $response );
 			}
 

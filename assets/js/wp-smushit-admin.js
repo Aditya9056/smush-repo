@@ -72,7 +72,7 @@ jQuery(function ($) {
             this.ids = $button.hasClass('wp-smush-resmush') && wp_smushit_data.resmush.length > 0 ? wp_smushit_data.resmush: wp_smushit_data.unsmushed ;
 
             this.is_bulk_resmush = $button.hasClass('wp-smush-resmush') && wp_smushit_data.resmush.length > 0 ? true : false;
-            this.resmush_count = wp_smushit_data.resmush.length;
+            this.resmush_count = 'undefined' == typeof wp_smushit_data.resmush ? 0 : wp_smushit_data.resmush.length;
             this.$status = this.$button.parent().find('.smush-status');
             //Added for NextGen support
             this.smush_type = typeof smush_type ? smush_type : false;
