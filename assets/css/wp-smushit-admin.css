@@ -391,8 +391,8 @@ button .wp-smush-loader-wrap {
     vertical-align: top;
 }
 
-/** Media Query for screen size smaller than 800px **/
-@media screen and (max-width: 800px) {
+/** Media Query for screen size smaller than 1275px **/
+@media screen and (max-width: 1275px) {
     .wp-smushit-features-wrap {
         display: block;
         width: 100%;
