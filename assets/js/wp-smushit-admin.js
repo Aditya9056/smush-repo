@@ -174,7 +174,15 @@ jQuery(function ($) {
                     } else {
                         self.$status.addClass("error");
                     }
-                    self.$status.html(response.data);
+                    self.$status.html( response.data.status );
+                    //Check if stats div exists
+                    var parent = self.$status.parent();
+                    var stats_div = parent.find('.smush-stats-wrapper');
+                    if( 'undefined' != stats_div && stats_div.length ) {
+                        stats_div.replaceWith( response.data.stats );
+                    }else{
+                        parent.append( response.data.stats );
+                    }
                 }
                 self.$button_span.text(self.button_text);
                 self.enable_button();

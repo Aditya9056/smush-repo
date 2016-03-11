@@ -794,7 +794,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$wp_smush_data   = get_post_meta( $id, $this->smushed_meta_key, true );
 			$attachment_data = wp_get_attachment_metadata( $id );
-//
+
 			// if the image is smushed
 			if ( ! empty( $wp_smush_data ) ) {
 
@@ -856,7 +856,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							$status_txt .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" data-toggle="tooltip" title="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
 
 							//Stats
-							$status_txt .= $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
+							$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
+							if( !$text_only ) {
+								$status_txt = $text_only ? $status_txt : $status_txt . $stats;
+							}
 						}
 					}
 				}
@@ -890,7 +893,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$button_txt = __( 'Smush Now!', 'wp-smushit' );
 			}
 			if ( $text_only ) {
-				return $status_txt;
+				//For ajax response
+				return array(
+					'status' => $status_txt,
+					'stats'  => $stats
+				);
 			}
 
 			//If we are not showing smush button, append progree bar, else it is already there

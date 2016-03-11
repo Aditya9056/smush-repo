@@ -810,7 +810,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			} else {
 				if ( $return ) {
-					return array( 'status' => $status );
+					return $status;
 				} else {
 					wp_send_json_success( $status );
 				}
@@ -1594,7 +1594,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! empty( $smushed['status'] ) ) {
 
 				//Send button content
-				wp_send_json_success( array( 'button' => $smushed['status'] ) );
+				wp_send_json_success( array( 'button' => $smushed['status'] . $smushed['stats'] ) );
 
 			} elseif ( ! empty( $smushed['error'] ) ) {
 
