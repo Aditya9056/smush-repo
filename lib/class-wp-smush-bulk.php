@@ -50,6 +50,9 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 				//Loop Over to get all the attachments
 				while ( $get_posts ) {
 
+					//Remove the Filters added by WP Media Folder
+					$wpsmushit_admin->remove_wmf_filters();
+
 					$query = new WP_Query( $args );
 
 					if( !empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {

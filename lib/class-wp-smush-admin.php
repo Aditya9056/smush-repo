@@ -117,6 +117,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
+
+			//Handle the smush pro dismiss features notice ajax
+			add_action( 'wp_ajax_dismiss_smush_notice', array( $this, 'dismiss_smush_notice' ) );
 		}
 
 		/**
@@ -327,30 +330,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function ui() {
 			$this->setup_global_stats();
+			$page_heading = $this->is_pro_user ? esc_html__( 'WP Smush Pro', 'wp-smushit' ) : esc_html__( 'WP Smush', 'wp-smushit' );
+			$full_width = ( 1 == get_option( 'hide_smush_features' ) && $this->is_pro() ) ? ' smush-full-width' : '';
 			?>
 			<div class="wrap">
-
-				<h1>
-					<?php
-					if ( $this->is_pro_user ) {
-						_e( 'WP Smush Pro', 'wp-smushit' );
-					} else {
-						_e( 'WP Smush', 'wp-smushit' );
-					} ?>
-				</h1><?php
-				$this->smush_pro_features();
-				?>
-
-				<div class="wp-smpushit-container">
-					<h3><?php _e( 'Settings', 'wp-smushit' ) ?></h3>
-					<?php
-					// display the options
-					$this->options_ui();
-
-					//Bulk Smushing
-					$this->bulk_preview();
-					?>
+				<h1><?php echo $page_heading; ?></h1>
+				<div class="wp-smushit-container-wrap<?php echo $full_width; ?>">
+					<div class="wp-smushit-container">
+						<h3><?php _e( 'Settings', 'wp-smushit' ) ?></h3><?php
+						// display the options
+						$this->options_ui();
+						//Bulk Smushing
+						$this->bulk_preview();
+						?>
+					</div>
 				</div>
+				<?php //Smush Pro Features
+				$this->smush_pro_features();    ?>
 			</div>
 			<?php
 			$this->print_loader();
@@ -359,12 +355,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Process and display the options form
 		 */
-		function options_ui() {
-			?>
+		function options_ui() { ?>
 			<form action="" method="post">
-
-				<div id="wp-smush-options-wrap">
-					<?php
+				<div id="wp-smush-options-wrap"><?php
 					//Smush auto key
 					$opt_auto = WP_SMUSH_PREFIX . 'auto';
 					//Auto value
@@ -937,6 +930,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'posts_per_page' => - 1,
 				'no_found_rows'  => true
 			);
+			//Remove the Filters added by WP Media Folder
+			$this->remove_wmf_filters();
+
 			$results = new WP_Query( $query );
 			$count   = ! empty( $results->post_count ) ? $results->post_count : 0;
 
@@ -968,6 +964,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'meta_key'       => 'wp-smpro-smush-data',
 				'no_found_rows'  => true
 			);
+
+			//Remove the Filters added by WP Media Folder
+			$this->remove_wmf_filters();
 
 			$results = new WP_Query( $query );
 
@@ -1376,65 +1375,74 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! is_super_admin() || ! $show_features ) {
 				return;
 			}
-			if ( $this->is_pro_user ) { ?>
-				<div class="wp-smpushit-features updated">
-					<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', 'wp-smushit' ) ?></h3>
-					<ol>
-						<li><?php _e( 'Smush the original Full image sizes that are normally skipped by default.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'NextGen Gallery integration', 'wp-smushit' ); ?></li>
-						<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Smush images up to 32MB.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Bulk smush ALL your images with one click!', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
-					</ol>
+			if ( $this->is_pro_user ) {
+				//If User choose to hide the notice
+				if ( 1 == get_option( 'hide_smush_features' ) ) {
+					return;
+				} ?>
+				<div class="wp-smushit-features-wrap">
+					<div class="wp-smushit-features-inner notice inline wp-smush-pro-user">
+						<a href="#" class="wp-smush-pro-feature-dismiss notice-dismiss"></a>
+						<h3><?php _e( 'Thanks for using WP Smush Pro! You now can:', 'wp-smushit' ) ?></h3>
+						<ol>
+							<li><?php _e( 'Smush the original Full image sizes that are normally skipped by default.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'NextGen Gallery integration', 'wp-smushit' ); ?></li>
+							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Smush images up to 32MB.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Bulk smush ALL your images with one click!', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
+						</ol>
+					</div>
 				</div>
 			<?php } else {
 				if ( $this->_get_api_key() ) {
 					$refresh_url = add_query_arg( array( 'refresh' => 1 ) );
 				} else {
 					$refresh_url = '';
-				} ?>
-				<div class="wp-smpushit-features error">
-					<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
-					<ol>
-						<li><?php _e( 'Smush the original Full image sizes that are normally skipped by default.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'NextGen Gallery integration', 'wp-smushit' ); ?></li>
-						<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Smush images greater than 1MB.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Bulk smush ALL your images with one click! No more rate limiting.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Access 24/7/365 support from <a href="https://premium.wpmudev.org/support/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">the best WordPress support team on the planet</a>.', 'wp-smushit' ); ?></li>
-						<li><?php _e( 'Download <a href="https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">350+ other premium plugins and themes</a> included in your membership.', 'wp-smushit' ); ?></li>
-					</ol>
-					<p>
-						<a class="button-primary"
-						   href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', 'wp-smushit' ); ?></a>
-					</p>
+				}?>
+				<div class="wp-smushit-features-wrap">
+					<div class="wp-smushit-features-inner notice inline">
+						<h3><?php _e( 'Upgrade to WP Smush Pro to:', 'wp-smushit' ) ?></h3>
+						<ol>
+							<li><?php _e( 'Smush the original Full image sizes that are normally skipped by default.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'NextGen Gallery integration', 'wp-smushit' ); ?></li>
+							<li><?php _e( '"Super-Smush" your images with our intelligent multi-pass lossy compression. Get 2&times; more compression than lossless with almost no noticeable quality loss!', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Get the best lossless compression. We try multiple methods to squeeze every last byte out of your images.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Smush images greater than 1MB.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Bulk smush ALL your images with one click! No more rate limiting.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Keep a backup of your original un-smushed images in case you want to restore later.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Access 24/7/365 support from <a href="https://premium.wpmudev.org/support/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">the best WordPress support team on the planet</a>.', 'wp-smushit' ); ?></li>
+							<li><?php _e( 'Download <a href="https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=plugin&utm_campaign=WP%20Smush%20Upgrade">100+ other premium plugins and themes</a> included in your membership.', 'wp-smushit' ); ?></li>
+						</ol>
+						<p>
+							<a class="button-primary"
+							   href="<?php echo $this->upgrade_url; ?>"><?php _e( 'Upgrade Now &raquo;', 'wp-smushit' ); ?></a>
+						</p>
 
-					<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p><?php
-					if ( ! empty( $refresh_url ) ) { ?>
-						<p><?php echo sprintf( __( 'Unable to access Pro Features? <a href="%s">Refresh Status</a>', 'wp-smushit' ), $refresh_url ); ?></p><?php }
-					?>
-
-					<p>
-						<?php
-						if ( ! class_exists( 'WPMUDEV_Dashboard' ) ) {
-							if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
-								$function = is_multisite() ? 'network_admin_url' : 'admin_url';
-								$url      = wp_nonce_url( $function( 'plugins.php?action=activate&plugin=wpmudev-updates%2Fupdate-notifications.php' ), 'activate-plugin_wpmudev-updates/update-notifications.php' );
-								?>
-								<a class="button-secondary"
-								   href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
-							} else { //dashboard not installed at all
-								?>
-								<a class="button-secondary" target="_blank"
-								   href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
-							}
-						}
+						<p><?php _e( 'Already upgraded to a WPMU DEV membership? Install and Login to our Dashboard plugin to enable Smush Pro features.', 'wp-smushit' ); ?></p><?php
+						if ( ! empty( $refresh_url ) ) { ?>
+							<p><?php echo sprintf( __( 'Unable to access Pro Features? <a href="%s">Refresh Status</a>', 'wp-smushit' ), $refresh_url ); ?></p><?php }
 						?>
-					</p>
+
+						<p>
+							<?php
+							if ( ! class_exists( 'WPMUDEV_Dashboard' ) ) {
+								if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
+									$function = is_multisite() ? 'network_admin_url' : 'admin_url';
+									$url      = wp_nonce_url( $function( 'plugins.php?action=activate&plugin=wpmudev-updates%2Fupdate-notifications.php' ), 'activate-plugin_wpmudev-updates/update-notifications.php' );
+									?>
+									<a class="button-secondary"
+									   href="<?php echo $url; ?>"><?php _e( 'Activate WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								} else { //dashboard not installed at all
+									?>
+									<a class="button-secondary" target="_blank"
+									   href="https://premium.wpmudev.org/project/wpmu-dev-dashboard/"><?php _e( 'Install WPMU DEV Dashboard', 'wp-smushit' ); ?></a><?php
+								}
+							}
+							?>
+						</p>
+					</div>
 				</div>
 			<?php }
 		}
@@ -1445,6 +1453,28 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function refresh_status() {
 
 			delete_site_option( 'wp_smush_api_auth' );
+		}
+
+		/**
+		 * Remove any pre_get_posts_filters added by WP Media Folder plugin
+		 */
+		function remove_wmf_filters() {
+			//remove any filters added b WP media Folder plugin to get the all attachments
+			if( class_exists('Wp_Media_Folder') ) {
+				global $wp_media_folder;
+				if( is_object( $wp_media_folder ) ) {
+					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts1' ) );
+					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts' ), 0, 1 );
+				}
+			}
+		}
+
+		/**
+		 * Store a key/value to hide the smush features on bulk page
+		 */
+		function dismiss_smush_notice() {
+			update_option( 'hide_smush_features', 1 );
+			wp_send_json_success();
 		}
 
 		/**
