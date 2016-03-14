@@ -714,7 +714,7 @@ table.wp-smush-stats-holder tr td:first-child {
     z-index: 2;
 }
 
-.smush-status .wp-smush-action, .smush-status .smush-stats-details {
+.iedit .wp-smush-action, .iedit .smush-stats-details {
     font-size: 11px;
 }
 

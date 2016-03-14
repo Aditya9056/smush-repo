@@ -168,7 +168,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			/** Send image for smushing, and fetch the response */
 			$response = $this->_post( $file_path, $file_size );
-			echo "Time Taken for $file_size : " .  $response['data']->time . PHP_EOL;
 
 			if ( ! $response['success'] ) {
 				$errors->add( "false_response", $response['message'] );
@@ -425,7 +424,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$stats['stats']['keep_exif']   = !empty( $full_image_response['data']->keep_exif ) ? $full_image_response['data']->keep_exif : false;
 				}
 
-
 			}
 
 			$has_errors = (bool) count( $errors->get_error_messages() );
@@ -439,9 +437,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$existing_stats = get_post_meta( $ID, $this->smushed_meta_key, true );
 
 				if ( ! empty( $existing_stats ) ) {
+					//Store Original size before
+					$stats['stats']['size_before'] = isset( $existing_stats['stats']['size_before'] ) ? $existing_stats['stats']['size_before'] : $stats['stats']['size_before'];
+
 					//Update total bytes saved, and compression percent
 					$stats['stats']['bytes']   = isset( $existing_stats['stats']['bytes'] ) ? $existing_stats['stats']['bytes'] + $stats['stats']['bytes'] : $stats['stats']['bytes'];
-					$stats['stats']['percent'] = isset( $existing_stats['stats']['percent'] ) ? $existing_stats['stats']['percent'] + $stats['stats']['percent'] : $stats['stats']['percent'];
+					$stats['stats']['percent'] = $this->calculate_percentage( (object) $stats['stats'], (object) $existing_stats['stats'] );
 
 					//Update stats for each size
 					if ( isset( $existing_stats['sizes'] ) && ! empty( $stats['sizes'] ) ) {
@@ -451,9 +452,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							if ( empty( $stats['sizes'][ $size_name ] ) ) {
 								$stats['sizes'][ $size_name ] = $existing_stats['sizes'][ $size_name ];
 							} else {
+
+								$existing_stats_size = (object)$existing_stats['sizes'][ $size_name ];
+
+								//store the original image size
+								$stats['sizes'][ $size_name ]->size_before = !empty( $existing_stats_size->size_before ) ? $existing_stats_size->size_before : $stats['sizes'][ $size_name ]->size_before;
+
 								//Update compression percent and bytes saved for each size
-								$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats['sizes'][ $size_name ]->bytes;
-								$stats['sizes'][ $size_name ]->percent = $stats['sizes'][ $size_name ]->percent + $existing_stats['sizes'][ $size_name ]->percent;
+								$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->bytes;
+								$stats['sizes'][ $size_name ]->percent = $this->calculate_percentage( $stats['sizes'][ $size_name ], $existing_stats_size );
 							}
 						}
 					}
@@ -1641,6 +1648,30 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function update_resmush_list( $attachment_id ) {
 			global $wpsmushit_admin;
 			$wpsmushit_admin->update_resmush_list( $attachment_id, 'wp-smush-nextgen-resmush-list' );
+		}
+
+		/**
+		 * Calculate saving percentage from existing and current stats
+		 *
+		 * @param $stats
+		 * @param $existing_stats
+		 *
+		 * @return float
+		 */
+		function calculate_percentage( $stats = '', $existing_stats = '' ) {
+			if ( empty( $stats ) || empty( $existing_stats ) ) {
+				return 0;
+			}
+			$size_before = ! empty( $existing_stats->size_before ) ? $existing_stats->size_before : $stats->size_before;
+			$savings     = $size_before - $stats->size_after;
+			if ( $savings > 0 ) {
+				$percentage = ( $savings / $size_before ) * 100;
+				$percentage = $percentage > 0 ? round( $percentage, 2 ) : $percentage;
+
+				return $percentage;
+			}
+
+			return 0;
 		}
 	}
 

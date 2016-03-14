@@ -248,9 +248,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				$existing_stats = ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) ? $image->meta_data['wp_smush'] : '';
 
 				if ( ! empty( $existing_stats ) ) {
+					//Store Original size before
+					$stats['stats']['size_before'] = isset( $existing_stats['stats']['size_before'] ) ? $existing_stats['stats']['size_before'] : $stats['stats']['size_before'];
+
 					//Update total bytes saved, and compression percent
 					$stats['stats']['bytes']   = isset( $existing_stats['stats']['bytes'] ) ? $existing_stats['stats']['bytes'] + $stats['stats']['bytes'] : $stats['stats']['bytes'];
-					$stats['stats']['percent'] = isset( $existing_stats['stats']['percent'] ) ? $existing_stats['stats']['percent'] + $stats['stats']['percent'] : $stats['stats']['percent'];
+
+					$stats['stats']['percent'] = $WpSmush->calculate_percentage( (object) $stats['stats'], (object) $existing_stats['stats'] );
 
 					//Update stats for each size
 					if ( ! empty( $existing_stats['sizes'] ) && ! empty( $stats['sizes'] ) ) {
@@ -266,9 +270,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 							} else {
 								$existing_stats_size = (object)$existing_stats['sizes'][ $size_name ];
 
+								//store the original image size
+								$stats['sizes'][ $size_name ]->size_before = !empty( $existing_stats_size->size_before ) ? $existing_stats_size->size_before : $stats['sizes'][ $size_name ]->size_before;
+
 								//Update compression percent and bytes saved for each size
 								$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->bytes;
-								$stats['sizes'][ $size_name ]->percent = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->percent;
+								//Calculate percentage
+								$stats['sizes'][ $size_name ]->percent = $WpSmush->calculate_percentage( $stats['sizes'][ $size_name ], $existing_stats_size );
 							}
 						}
 					}
@@ -549,7 +557,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			if ( ! empty( $smushed ) && !is_wp_error( $smushed ) ) {
 
 				//Send button content
-				wp_send_json_success( array( 'button' => $smushed ) );
+				wp_send_json_success( array( 'button' => $smushed['status'] . $smushed['stats'] ) );
 
 			} elseif ( is_wp_error( $smushed ) ) {
 
