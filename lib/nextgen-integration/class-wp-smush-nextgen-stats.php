@@ -245,7 +245,10 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 						$full_image = $storage->get_image_abspath( $image, 'full' );
 
 						//Stats
-						$status_txt .= $this->  get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
+						$stats = $this->get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
+						if ( ! $text_only ) {
+							$status_txt = $text_only ? $status_txt : $status_txt . $stats;
+						}
 					}
 				}
 			}
@@ -261,13 +264,17 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$opt_lossy_val = get_option( $opt_lossy, false );
 
 			//Check if premium user, compression was lossless, and lossy compression is enabled
-			if ( $this->is_pro_user && ! $is_lossy && $opt_lossy_val && $image_type != 'image/gif' && ! empty( $image_type ) ) {
+			if ( !$show_resmush && $this->is_pro_user && ! $is_lossy && $opt_lossy_val && ! empty( $image_type ) && $image_type != 'image/gif' ) {
 				// the button text
 				$button_txt  = __( 'Super-Smush', 'wp-smushit' );
 				$show_button = true;
 			}
 			if ( $text_only ) {
-				return $status_txt;
+				//For ajax response
+				return array(
+					'status' => $status_txt,
+					'stats'  => $stats
+				);
 			}
 
 			//If show button is true for some reason, column html can print out the button for us

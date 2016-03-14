@@ -704,6 +704,15 @@ table.wp-smush-stats-holder tr td:first-child {
 #ngg-listimages table.wp-smush-stats-holder {
     table-layout: fixed;
 }
+/** NextGen Gallery tr height, to show the progress bar properly for alternate rows **/
+.alternate.iedit {
+    height: 120px;
+}
+/** Allows to click on button, otherwise row-actions from NextGen interferes **/
+.wp-smush-nextgen-send {
+    position: relative;
+    z-index: 2;
+}
 
 .smush-status .wp-smush-action, .smush-status .smush-stats-details {
     font-size: 11px;

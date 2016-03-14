@@ -162,8 +162,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $errors;
 			}
 
+			// save original file permissions
+			clearstatcache();
+			$perms = fileperms($file_path) & 0777;
+
 			/** Send image for smushing, and fetch the response */
 			$response = $this->_post( $file_path, $file_size );
+			echo "Time Taken for $file_size : " .  $response['data']->time . PHP_EOL;
 
 			if ( ! $response['success'] ) {
 				$errors->add( "false_response", $response['message'] );
@@ -213,9 +218,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Some servers are having issue with file permission, this should fix it
-			//Source: WordPress Core
-			$stat  = stat( dirname( $file_path ) );
-			$perms = $stat['mode'] & 0000666; //same permissions as parent folder, strip off the executable bits
+			if( empty( $perms ) || !$perms ) {
+				//Source: WordPress Core
+				$stat  = stat( dirname( $file_path ) );
+				$perms = $stat['mode'] & 0000666; //same permissions as parent folder, strip off the executable bits
+			}
 			@ chmod( $file_path, $perms );
 
 			return $response;
