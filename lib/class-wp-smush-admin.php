@@ -1625,14 +1625,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
 
 			//Default response
-			$ajax_response = "<p class='wp-resmush-wrapper notice notice-success inline'>" . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smush" ) . "</p>";
+			$ajax_response = "<p class='wp-resmush-wrapper notice inline'>" . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smush" ) . "</p>";
 
 			//Logic: If none of the required settings is on, don't need to resmush any of the images
 			//We need at least one of these settings to be on, to check if any of the image needs resmush
 			//Allow to smush Upfront images as well
 			$upfront_active = class_exists('Upfront');
 			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && !$upfront_active ) {
-				$response = array( "content" => "<p class='wp-resmush-wrapper notice notice-success inline'>" . esc_html__( "Hurray! All images are optimised.", "wp-smush" ) . "</p>" );
+				$response = array( "content" => "<p class='wp-resmush-wrapper notice inline'>" . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smush" ) . "</p>" );
 				wp_send_json_success( $response );
 			}
 

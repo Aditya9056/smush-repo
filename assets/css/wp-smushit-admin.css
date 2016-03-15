@@ -803,3 +803,7 @@ table.wp-smush-stats-holder tr td:first-child {
 #wp-smush-resmush {
     margin: 20px 0;
 }
+.wp-resmush-wrapper.notice {
+    padding: 5px;
+    max-width: 400px;
+}

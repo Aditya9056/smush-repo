@@ -437,8 +437,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$existing_stats = get_post_meta( $ID, $this->smushed_meta_key, true );
 
 				if ( ! empty( $existing_stats ) ) {
+					$e_size_before = isset( $existing_stats['stats']['size_before'] ) ? $existing_stats['stats']['size_before'] : '';
 					//Store Original size before
-					$stats['stats']['size_before'] = isset( $existing_stats['stats']['size_before'] ) ? $existing_stats['stats']['size_before'] : $stats['stats']['size_before'];
+					$stats['stats']['size_before'] = ! empty( $e_size_before ) && $e_size_before > $stats['stats']['size_before'] ? $e_size_before : $stats['stats']['size_before'];
 
 					//Update total bytes saved, and compression percent
 					$stats['stats']['bytes']   = isset( $existing_stats['stats']['bytes'] ) ? $existing_stats['stats']['bytes'] + $stats['stats']['bytes'] : $stats['stats']['bytes'];
@@ -456,7 +457,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 								$existing_stats_size = (object)$existing_stats['sizes'][ $size_name ];
 
 								//store the original image size
-								$stats['sizes'][ $size_name ]->size_before = !empty( $existing_stats_size->size_before ) ? $existing_stats_size->size_before : $stats['sizes'][ $size_name ]->size_before;
+								$stats['sizes'][ $size_name ]->size_before = ( !empty( $existing_stats_size->size_before ) && $existing_stats_size->size_before > $stats['sizes'][ $size_name ]->size_before )  ? $existing_stats_size->size_before : $stats['sizes'][ $size_name ]->size_before;
 
 								//Update compression percent and bytes saved for each size
 								$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->bytes;
