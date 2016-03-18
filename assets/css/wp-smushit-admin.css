@@ -383,10 +383,6 @@ button .wp-smush-loader-wrap {
     padding: 0 10px 0 0;
 }
 
-.wp-smushit-container-wrap.smush-full-width {
-    max-width: 100%;
-}
-
 .wp-smushit-features-wrap {
     display: inline-block;
     width: 270px;
