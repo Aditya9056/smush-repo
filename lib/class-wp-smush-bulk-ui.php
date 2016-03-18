@@ -370,7 +370,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="box-content">
 				<p class="wp-smush-promo-content">Get access to not only WP Smush, but 100+ premium plugins, Upfront themes, security & performance solutions and 24/7 expert support to make you fly – best of all, it’s <strong>absolutely FREE to try!</strong></p>
 				<p class="wp-smush-promo-content-smaller">Join 389,434 happy members today with no lock in and 100% GPL, cancel any time and use forever on unlimited sites for only $49 p/m</p>
-			</div><?php
+				<span class="wp-smush-pro-cta"><a href="#" class="button button-cta button-green">START 14 DAY FREE TRIAL</a></span>
+			</div>
+			<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-pro.png'; ?>"
+					     alt="<?php esc_html_e( "TRY WP SMUSH PRO - DEV TEAM", "wp-smushit" ); ?>"><?php
 			echo "</section>";
 		}
 	}

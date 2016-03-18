@@ -922,6 +922,23 @@ table.wp-smush-stats-holder tr td:first-child {
 .wpmud .row .col-third.wp-smushit-container-right {
     width: 38%;
 }
+.wpmud .wp-smushit-container-right .dev-box {
+    max-width: 380px;
+}
+
+.wpmud .wp-smushit-container-right .wp-smush-pro-adv {
+    padding-bottom: 0;
+}
+.wp-smushit-container-right .wp-smush-pro-adv > img {
+    margin-left: -30px;
+    display: block;
+}
+.wp-smush-pro-cta {
+    overflow: hidden;
+    display: block;
+    padding: 20px;
+    text-align: center;
+}
 .wpmud .wp-smush-stats-label {
     padding-top: 7px;
 }
