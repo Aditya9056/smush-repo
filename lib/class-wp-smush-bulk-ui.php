@@ -26,7 +26,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 	class WpSmushBulkUi {
 
 		function __construct() {
+			//Add a container for Smush Pro promo
 			add_action('wp_smush_after_stats_box', array($this, 'wp_smush_promo') );
+			//Add a Container for Hummingbird Promo
+			add_action('wp_smush_after_stats_box', array($this, 'wp_smush_hummingbird_promo') );
 		}
 
 		/**
@@ -374,6 +377,21 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			</div>
 			<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-pro.png'; ?>"
 					     alt="<?php esc_html_e( "TRY WP SMUSH PRO - DEV TEAM", "wp-smushit" ); ?>"><?php
+			echo "</section>";
+		}
+		/**
+		* Pro Version and HummingBird
+		*/
+		function wp_smush_hummingbird_promo() {
+			$this->container_header( 'wp-smush-hb-adv', "BOOST YOUR PERFORMANCE" ); ?>
+			<div class="box-content">
+				<span class="wp-smush-hummingbird-image">
+					<img src="<?php echo WP_SMUSH_URL . 'assets/images/hummingbird.png'; ?>"
+					     alt="<?php esc_html_e( "BOOST YOUR PERFORMANCE - HUMMINGBIRD", "wp-smushit" ); ?>">
+		        </span>
+				<p class="wp-smush-promo-content">Hummingbird enables file compression and browser caching, file minification and performance reports – because when it comes to pagespeed, every millisecond counts.</strong></p>
+				<span class="wp-smush-hb-cta"><a href="#" class="button button-cta button-yellow">TRY HUMMINGBIRD</a></span>
+			</div><?php
 			echo "</section>";
 		}
 	}
