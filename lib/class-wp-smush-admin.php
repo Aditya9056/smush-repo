@@ -43,6 +43,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $smushed_count;
 
 		/**
+		 * @var Smushed attachments out of total attachments
+		 */
+		public $super_smushed;
+
+		/**
 		 * @array Stores the stats for all the images
 		 */
 		public $stats;
@@ -315,12 +320,30 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$smush_orgnl_txt = sprintf( esc_html__( "When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this.", 'wp_smushit' ), $count );
 			}
 			$this->settings = array(
-				'auto'      => __( 'Smush images on upload', 'wp-smushit' ),
-				'keep_exif' => __( 'Preserve Image EXIF', 'wp-smushit' ),
-				'original'  => __( 'Smush Original Image', 'wp-smushit' ) . '<span class="dashicons dashicons-info smush-original wp-smush-title" title="' . $smush_orgnl_txt . '"></span>',
-				'lossy'     => __( 'Super-Smush images', 'wp-smushit' ) . ' <small>(' . __( 'Lossy Image Compression', 'wp-smushit' ) . ')</small>',
-				'backup'    => __( 'Backup Original Images', 'wp-smushit' ) . ' <small>(' . __( 'Will nearly double the size of your Uploads Directory', 'wp-smushit' ) . ')</small>',
-				'nextgen'   => __( 'Enable NextGen Gallery integration', 'wp-smushit' )
+				'auto'      => array(
+					'label' => esc_html__( 'Automatically Smush my images on upload', 'wp-smushit' ),
+					'desc'  => esc_html__( 'When you upload images to your media library, we’ll automatically compress them instantly.', 'wp-smushit' )
+				),
+				'keep_exif' => array(
+					'label' => esc_html__( 'Preserve Image EXIF', 'wp-smushit' ),
+					'desc'  => esc_html__( 'EXIF data stores image information like ISO speed, shutter speed, camera model, dates, focal length and much more.', 'wp-smushit' )
+				),
+				'original'  => array(
+					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'By default we smush thumbnail, medium and large files. This will smush your original uploads too.', 'wp-smushit' )
+				),
+				'lossy'     => array(
+					'label' => esc_html__( 'Super-smush  my images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Reduce your images further with our intelligent multi-pass lossy compression.', 'wp-smushit' )
+				),
+				'backup'    => array(
+					'label' => esc_html__( 'Backup my originals', 'wp-smushit' ),
+					'desc'  => esc_html__( 'We’ll keep your original images you upload, as well as your newly compressed images. This will significantly increase your uploads folder size - nearly double.', 'wp-smushit' )
+				),
+				'nextgen'   => array(
+					'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
+				)
 			);
 		}
 
@@ -348,7 +371,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$full_width = ( 1 == get_option( 'hide_smush_features' ) && $this->is_pro() ) ? ' smush-full-width' : '';
 			$auto_smush_message = $this->is_auto_smush_enabled() ? sprintf( esc_html__( "Automatic smushing is %senabled%s. Newly uploaded images will be automagically compressed." ), '<span class="wp-smush-auto-enabled">', '</span>' ) : sprintf( esc_html__( "Automatic smushing is %sdisabled%s. Newly uploaded images will need to be manually smushed." ), '<span class="wp-smush-auto-disabled">', '</span>' );
 			?>
-			<div class="wrap" xmlns="http://www.w3.org/1999/html">
+			<div class="wrap">
 				<div class="wp-smush-page-header">
 					<h1 class="wp-smush-page-heading"><?php echo $page_heading; ?></h1>
 					<div class="wp-smush-auto-message"><?php echo $auto_smush_message; ?></div>
@@ -386,9 +409,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Process and display the options form
 		 */
-		function options_ui() { ?>
-			<form action="" method="post">
-				<div id="wp-smush-options-wrap"><?php
+		function options_ui() {
+			echo '<div class="box-container">
+				<form action="" method="post">';
 					//Smush auto key
 					$opt_auto = WP_SMUSH_PREFIX . 'auto';
 					//Auto value
@@ -400,92 +423,39 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$opt_auto_val = 1;
 					}
 
-					//Smush Original key
+					//Keep Exif
 					$opt_keep_exif = WP_SMUSH_PREFIX . 'keep_exif';
 					//Keep Exif
-					$opt_keep_exif_val = get_option( $opt_keep_exif, false );
-
-					//Smush Original key
-					$opt_original = WP_SMUSH_PREFIX . 'original';
-					//Auto value
-					$opt_original_val = get_option( $opt_original, false );
-
-					//Super Smush key
-					$opt_lossy = WP_SMUSH_PREFIX . 'lossy';
-					//Auto value
-					$opt_lossy_val = get_option( $opt_lossy, false );
-
-					//Backup original key
-					$opt_backup = WP_SMUSH_PREFIX . 'backup';
-					//Auto value
-					$opt_backup_val = get_option( $opt_backup, false );
-
-					//Smush NextGen key
-					$opt_nextgen = WP_SMUSH_PREFIX . 'nextgen';
-					//Auto value
-					$opt_nextgen_val = get_option( $opt_nextgen, 1 );
-
-					//disable lossy for non-premium members
-					$disabled = $feature_class = '';
-
-					//For free version, show unchecked
-					if ( ! $this->is_pro_user ) {
-						$opt_original_val = 0;
-						$opt_lossy_val    = 0;
-						$opt_backup_val   = 0;
-						$opt_nextgen_val  = 0;
-
-						$disabled = ' disabled';
-					} ?>
-					<div class='wp-smush-setting-row wp-smush-basic'><?php
-						// return html
-						printf( "<label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label>", esc_attr( $opt_auto ), checked( $opt_auto_val, 1, false ), '', $this->settings['auto'] );
-						?>
+					$opt_keep_exif_val = get_option( $opt_keep_exif, false ); ?>
+					<div class='wp-smush-setting-row wp-smush-basic'>
+						<label class="inline-label"
+						       for="<?php echo $opt_auto; ?>"><span class="wp-smush-setting-label"><?php echo $this->settings['auto']['label']; ?></span><br/>
+							<small
+								class="smush-setting-description"><?php echo $this->settings['auto']['desc']; ?></small>
+						</label>
+					<span class="toggle float-r">
+						<input type="checkbox" class="toggle-checkbox"
+						       id="<?php echo $opt_auto; ?>" name="<?php echo $opt_auto; ?>" <?php checked( $opt_auto_val, 1, true ); ?> value="1">
+						<label class="toggle-label" for="<?php echo $opt_auto; ?>"></label>
+					</span>
 					</div>
-					<div class='wp-smush-setting-row wp-smush-basic'><?php
-						printf( "<label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label>", esc_attr( $opt_keep_exif ), checked( $opt_keep_exif_val, 1, false ), '', $this->settings['keep_exif'] );
-						?>
-					</div>
-					<fieldset class="wp-smush-pro-features">
-						<legend><strong><?php esc_html_e( "PRO FEATURES", "wp-smushit" ); ?></strong></legend><?php
+					<hr />
+					<div class='wp-smush-setting-row wp-smush-basic'>
+						<label class="inline-label" for="<?php echo $opt_keep_exif; ?>"><span class="wp-smush-setting-label"><?php echo $this->settings['keep_exif']['label'];?></span>
+							<br/>
+							<small class="smush-setting-description">
+								<?php echo $this->settings['keep_exif']['desc']; ?>
+							</small>
+						</label>
+						<span class="toggle float-r">
+							<input type="checkbox" class="toggle-checkbox"
+							       id="<?php echo $opt_keep_exif; ?>" <?php checked( $opt_keep_exif_val, 1, true ); ?> value="1" name="<?php echo $opt_keep_exif; ?>" >
+							<label class="toggle-label" for="<?php echo $opt_keep_exif; ?>"></label>
+						</span>
+					</div> <!-- End of Basic Settings --><?php
 
-						if ( ! $this->is_pro_user ) {
-							?>
-							<div class="pro-note">
-								<div style="padding:14px 0 14px;">
-									<span
-										class="dashicons dashicons-info"></span><?php esc_html_e( "These features are available in Pro Version of the plugin.", "wp-smushit" ); ?>
-									<a href="<?php echo $this->upgrade_url; ?>" target="_blank"
-									   class="button find-out-link">Find
-										out more »</a>
-								</div>
-							</div>
-							<?php
-							$feature_class = ' disabled';
-						}
-
-						//Smush Original
-						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_original ), checked( $opt_original_val, 1, false ), $disabled, $this->settings['original'], $feature_class );
-
-						//Lossy
-						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_lossy ), checked( $opt_lossy_val, 1, false ), $disabled, $this->settings['lossy'], $feature_class );
-
-						//NextGen Gallery
-						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_nextgen ), checked( $opt_nextgen_val, 1, false ), $disabled, $this->settings['nextgen'], $feature_class );
-
-						//Backup
-						printf( "<div class='wp-smush-setting-row%5\$s'><label><input type='checkbox' name='%1\$s' id='%1\$s' value='1' %2\$s %3\$s>%4\$s</label></div>", esc_attr( $opt_backup ), checked( $opt_backup_val, 1, false ), $disabled, $this->settings['backup'], $feature_class ); ?>
-						<!-- End of pro-only -->
-					</fieldset>
-				</div>
-				<!-- End of wrap --><?php
-				// nonce
-				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce' );
-				?>
-				<input type="submit" id="wp-smush-save-settings" class="button button-primary"
-				       value="<?php _e( 'Save Changes', 'wp-smushit' ); ?>">
-			</form>
-			<?php
+					do_action( 'wp_smush_after_basic_settings' );
+					$this->advanced_settings();
 		}
 
 		/**
@@ -1053,7 +1023,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Display the bulk smushing button
-		 * @param bool $resmush
+		 *
+*@param bool $resmush
 		 * @param bool $return Whether to return the button content or print it
 		 */
 		function setup_button( $resmush = false, $return = false ) {
@@ -1543,7 +1514,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$restored[] = @copy( $backup_name, $file_path );
 
 				//Delete the backup
-				unlink( $backup_name );
+				@unlink( $backup_name );
 			} elseif ( file_exists( $file_path . '_backup' ) ) {
 				//Restore from other backups
 				$restored[] = @copy( $file_path . '_backup', $file_path );
@@ -1571,7 +1542,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( file_exists( $image_bckup_path ) ) {
 					$restored[] = @copy( $image_bckup_path, $image_size_path );
 					//Delete the backup
-					unlink( $image_bckup_path );
+					@unlink( $image_bckup_path );
 				} elseif ( file_exists( $image_size_path . '_backup' ) ) {
 					$restored[] = @copy( $image_size_path . '_backup', $image_size_path );
 				}
@@ -1802,36 +1773,55 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		function settings_ui() {
 
-			$this->container_header('smush-settings-wrapper', esc_html__("SETTINGS", "wp-smushit"), '' ); ?>
-			<div class="box-container"><?php
-				// display the options
-				$this->options_ui(); ?>
-			</div><?php
+			$this->container_header('smush-settings-wrapper', esc_html__("SETTINGS", "wp-smushit"), '' );
+			// display the options
+			$this->options_ui();
 		}
 
+		/**
+		 * Outputs the Smush stats for the site
+		 */
 		function smush_stats_container() {
 			$this->container_header('smush-stats-wrapper', esc_html__("STATS", "wp-smushit"), '' ); ?>
 			<div class="box-content">
 				<div class="row smush-total-reduction-percent">
-					<span class="float-l"><strong><?php esc_html_e( "TOTAL % REDUCTIONS", "wp-smushit" ); ?></strong></span>
-					<span class="float-r"><strong><?php echo $this->stats['percent'] > 0  ? number_format_i18n( $this->stats['percent'], 2, '.', '' ) : 0; ?>%</strong></span>
+					<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "TOTAL % REDUCTIONS", "wp-smushit" ); ?></strong></span>
+					<span class="float-r wp-smush-stats"><strong><?php echo $this->stats['percent'] > 0  ? number_format_i18n( $this->stats['percent'], 2, '.', '' ) : 0; ?>%</strong></span>
 				</div>
 				<hr>
 				<div class="row smush-total-reduction-bytes">
-					<span class="float-l"><strong><?php esc_html_e( "TOTAL FILE SIZE REDUCTIONS", "wp-smushit" ); ?></strong></span>
-					<span class="float-r"><strong><?php echo $this->stats['human'] > 0  ? $this->stats['human'] : "0MB"; ?></strong></span>
+					<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "TOTAL SIZE REDUCTIONS", "wp-smushit" ); ?></strong></span>
+					<span class="float-r wp-smush-stats"><strong><?php echo $this->stats['human'] > 0  ? $this->stats['human'] : "0MB"; ?></strong></span>
 				</div>
 				<hr>
 				<div class="row smush-attachments">
-					<span class="float-l"><strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong></span>
-					<span class="float-r"><strong><?php echo intval( $this->smushed_count ) . '/' . $this->total_count; ?></strong></span>
+					<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong></span>
+					<span class="float-r wp-smush-stats"><strong><?php echo intval( $this->smushed_count ) . '/' . $this->total_count; ?></strong></span>
 				</div><?php
-				//Bulk Smushing
-				$this->bulk_preview(); ?>
+				if( $this->is_pro() ) {?>
+					<hr>
+					<div class="row smush-attachments">
+						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
+						<span class="float-r wp-smush-stats"><strong><?php echo intval( $this->super_smushed ) . '/' . $this->total_count; ?></strong></span>
+					</div><?php
+				}
+				/**
+				 * Allows you to output any content within the stats box at the end
+				 */
+				do_action('wp_smush_after_stats');
+				?>
 			</div>
 			</section><?php
 		}
-
+		/**
+        * Prints the Header Section for a container as per the Shared UI
+		* @param string $classes Any additional classes that needs to be added to section
+		* @param string $heading Box Heading
+		* @param string $sub_heading Any additional text to be shown by the side of Heading
+		* @param bool $dismissible If the Box is dimissible
+		*
+		* @return string
+        */
 		function container_header( $classes = '', $heading = '', $sub_heading = '', $dismissible = false ) {
 			if( empty( $heading ) ) {
 				return '';
@@ -1873,6 +1863,57 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				</div>
 			</div>
 			</section><?php
+		}
+		/**
+*
+ */
+		function advanced_settings() {
+			$div_end =
+					wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', false ) .
+					'<input type="submit" id="wp-smush-save-settings" class="button button-primary"
+					       value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) .'">
+					</form>
+				</div><!-- Box Content -->
+			</section><!-- Main Section -->';
+			if( !$this->is_pro() ) {
+				echo $div_end;
+				$this->container_header( 'wp-smush-premium', esc_html__( "ADVANCED SETTINGS", "wp-smushit" ), esc_html__( 'PRO ONLY', 'wp-smushit' ), false );?>
+				<div class="box-content"><?php
+			}
+			$pro_settings = array(
+				'original',
+				'lossy',
+				'backup',
+				'nextgen'
+			);
+			if( $this->is_pro() ) {
+				echo "<hr />";
+			}
+			$numItems = count( $pro_settings );
+			$i = 0;
+			foreach( $pro_settings as $setting_key ) {
+				$setting_m_key = WP_SMUSH_PREFIX. $setting_key;
+				$setting_val = $this->is_pro() ? get_option( $setting_m_key, false ) : 0;?>
+				<div class='wp-smush-setting-row wp-smush-advanced'>
+					<label class="inline-label"for="<?php echo $setting_m_key; ?>">
+					<span class="wp-smush-setting-label"><?php echo $this->settings[$setting_key]['label']; ?></span>
+					       <br/>
+					       <small class="smush-setting-description">
+					        <?php echo $this->settings[$setting_key]['desc']; ?>
+					       </small>
+			        </label>
+					<span class="toggle float-r">
+						<input type="checkbox" class="toggle-checkbox"
+						       id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1" name="<?php echo $setting_m_key; ?>">
+						<label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
+					</span>
+				</div><?php
+				if(++$i != $numItems) {
+					echo "<hr />";
+				}
+			}
+			echo "</div><!-- Box Content -->
+			</section><!-- Main Section -->";
 		}
 
 	}

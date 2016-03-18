@@ -486,7 +486,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				$restored[] = @copy( $backup_path, $attachment_file_path );
 
 				//Delete the backup
-				unlink( $backup_path );
+				@unlink( $backup_path );
 			} elseif ( file_exists( $attachment_file_path . '_backup' ) ) {
 				//Restore from other backups
 				$restored[] = @copy( $attachment_file_path . '_backup', $attachment_file_path );
@@ -510,7 +510,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 						$restored[] = @copy( $backup_path, $attachment_size_file_path );
 
 						//Delete the backup
-						unlink( $backup_path );
+						@unlink( $backup_path );
 					} elseif ( file_exists( $attachment_size_file_path . '_backup' ) ) {
 						//Restore from other backups
 						$restored[] = @copy( $attachment_size_file_path . '_backup', $attachment_size_file_path );
