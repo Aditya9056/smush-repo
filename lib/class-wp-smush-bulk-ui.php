@@ -25,6 +25,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 	 */
 	class WpSmushBulkUi {
 
+		function __construct() {
+			add_action('wp_smush_after_stats_box', array($this, 'wp_smush_promo') );
+		}
+
 		/**
         * Prints the Header Section for a container as per the Shared UI
 		*
@@ -326,7 +330,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="row wp-smushit-container-wrap"><?php
 
 					//Show welcome message for only a new installation and for only network admins
-					if( 1 != get_option('hide_smush_welcome') && 1 != get_option('hide_smush_features') && 0 >= $wpsmushit_admin->smushed_count && is_network_admin() ) {?>
+					if( 1 != get_option('hide_smush_welcome') && 1 != get_option('hide_smush_features') && 0 >= $wpsmushit_admin->smushed_count && is_super_admin() ) {?>
 						<div class="block float-l smush-welcome-wrapper">
 							<?php $this->welcome_screen(); ?>
 						</div><?php
@@ -345,12 +349,29 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<div class="wp-smushit-container-right col-third float-l"><?php
 						//Stats
 						$this->smush_stats_container();
-						?>
+						if( !$WpSmush->is_pro() ) {
+							/**
+                            * Allows to Hook in Additional Containers after Stats Box for free version
+                            * Pro Version has a full width settings box, so we don't want to do it there
+							*/
+							do_action('wp_smush_after_stats_box');
+						} ?>
 					</div>
 				</div>
 			</div>
 			<?php
 			$wpsmushit_admin->print_loader();
+		}
+		/**
+		* Pro Version and HummingBird
+		*/
+		function wp_smush_promo() {
+			$this->container_header( 'wp-smush-pro-adv', "TRY WP SMUSH PRO - FREE!" ); ?>
+			<div class="box-content">
+				<p class="wp-smush-promo-content">Get access to not only WP Smush, but 100+ premium plugins, Upfront themes, security & performance solutions and 24/7 expert support to make you fly – best of all, it’s <strong>absolutely FREE to try!</strong></p>
+				<p class="wp-smush-promo-content-smaller">Join 389,434 happy members today with no lock in and 100% GPL, cancel any time and use forever on unlimited sites for only $49 p/m</p>
+			</div><?php
+			echo "</section>";
 		}
 	}
 }

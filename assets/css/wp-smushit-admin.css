@@ -940,3 +940,16 @@ small.smush-setting-description {
     margin-top: 10px;
     display: block;
 }
+.wpmud .wp-smush-promo-content, .wpmud .wp-smush-promo-content-smaller {
+    color: #555555;
+    font-family: 'Roboto-Regular', sans-serif;
+    line-height: 1.7;
+    margin: auto;
+    max-width: 320px;
+    text-align: center;
+}
+.wpmud .wp-smush-promo-content-smaller {
+    color: #9b9b9b;
+    font-size: 13px;
+    margin-top: 20px;
+}
