@@ -936,8 +936,9 @@ small.smush-setting-description {
 .wpmud .wp-smush-stats {
     color: #555555;
     font-family: 'RobotoCondensed-Regular', sans-serif;
-    font-size: 30px;
+    font-size: 20px;
     line-height: 1;
+    padding: 5px 0;
 }
 
 .wpmud .row .col-third.wp-smushit-container-right {
