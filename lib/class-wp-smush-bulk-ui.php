@@ -16,13 +16,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 	 */
 
 	/**
-	 * Class WpSmushBulkUi
-	 *
-	 * @property int $remaining_count
-	 * @property int $total_count
-	 * @property int $smushed_count
-	 * @property int $exceeding_items_count
-	 */
+	* Class WpSmushBulkUi
+    */
 	class WpSmushBulkUi {
 
 		function __construct() {
@@ -398,6 +393,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		}
 		function bulk_smush_content() {
 			global $WpSmush, $wpsmushit_admin;
+
 			//If there are no images in Media Library
 			if( 0 >= $wpsmushit_admin->total_count) {?>
 				<span class="wp-smush-no-image tc"><img src="<?php echo WP_SMUSH_URL . 'assets/images/upload-images.png'; ?>"
@@ -405,8 +401,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		        </span>
 		        <p class="wp-smush-no-images-content tc"><?php printf( esc_html__("We haven’t found any images in your %smedia library%s yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit"), '<a href="'. esc_url( admin_url('upload.php') ).'">', '</a>'); ?></p>
 		        <span class="wp-smush-upload-images tc"><a class="button button-cta" href="<?php echo esc_url( admin_url('media-new.php') ); ?>"><?php esc_html_e("UPLOAD IMAGES", "wp-smushit"); ?></a></span><?php
-			}else{
-
+			}elseif( $wpsmushit_admin->smushed_count == $wpsmushit_admin->total_count ){
+				//If all the images in media library are smushed ?>
+				<div class="wp-smush-notice wp-smush-all-done"><i class="dev-icon dev-icon-tick"></i><?php esc_html_e("You have 0 attachments that need smushing, awesome!", "wp-smushit"); ?></div><?php
 			}
 
 		}

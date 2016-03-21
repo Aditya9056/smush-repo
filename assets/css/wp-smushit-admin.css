@@ -926,6 +926,21 @@ table.wp-smush-stats-holder tr td:first-child {
     overflow: hidden;
     padding: 10px 0;
 }
+/** All Smushed **/
+.wp-smush-notice {
+    background-color: #1abc9c;
+    border-radius: 5px;
+    color: white;
+    font-family: 'Roboto-Regular', sans-serif;
+    font-size: 15px;
+    padding: 20px 50px;
+}
+.wp-smush-all-done .dev-icon-tick {
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 10px;
+    vertical-align: bottom;
+}
 
 /** Settings Styling **/
 .wpmud .wp-smush-setting-row label.inline-label {
