@@ -933,6 +933,7 @@ table.wp-smush-stats-holder tr td:first-child {
     color: white;
     font-family: 'Roboto-Regular', sans-serif;
     font-size: 15px;
+    margin-bottom: 20px;
     padding: 20px 50px;
 }
 .wp-smush-all-done .dev-icon-tick {
@@ -940,6 +941,23 @@ table.wp-smush-stats-holder tr td:first-child {
     font-size: 16px;
     margin-right: 10px;
     vertical-align: bottom;
+}
+
+/** Image Remaining **/
+.wp-smush-remaining {
+    background-color: #fee696;
+    color: #514a30;
+}
+.wp-smush-remaining .dev-icon img {
+    margin-right: 10px;
+    width: 14px;
+    vertical-align: bottom;
+}
+.bulk-smush-wrapper .wp-smush-all {
+    margin: 20px 0;
+}
+.wp-smush-pro-trial {
+    color: #9b9b9b;
 }
 
 /** Settings Styling **/

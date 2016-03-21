@@ -1541,6 +1541,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 		}
 
+		/**
+		 * Returns current user name to be displayed
+		 * @return string
+		 */
+		function get_user_name() {
+			//Get username
+			$current_user = wp_get_current_user();
+			$name = !empty( $current_user->first_name ) ? $current_user->first_name : $current_user->display_name;
+			return $name;
+		}
+
 	}
 
 	global $wpsmushit_admin;
