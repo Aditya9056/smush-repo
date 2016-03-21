@@ -101,7 +101,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function bulk_smush_container() {
 			$smush_individual_msg = sprintf( esc_html__("Smush individual images via your %sMedia Library%s", "wp-smushit"), '<a href="' . esc_url( admin_url('upload.php') ) . '" title="' . esc_html__( 'Media Library', 'wp-smushit') .'">', '</a>' );
 			$this->container_header('bulk-smush-wrapper', esc_html__("BULK SMUSH", "wp-smushit"), $smush_individual_msg ); ?>
-			<div class="box-container"></div><?php
+			<div class="box-container"><?php
+				$this->bulk_smush_content(); ?>
+			</div><?php
 			echo "</section>";
 		}
 		/**
@@ -372,8 +374,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$this->container_header( 'wp-smush-pro-adv', "TRY WP SMUSH PRO - FREE!" ); ?>
 			<div class="box-content">
 				<p class="wp-smush-promo-content">Get access to not only WP Smush, but 100+ premium plugins, Upfront themes, security & performance solutions and 24/7 expert support to make you fly – best of all, it’s <strong>absolutely FREE to try!</strong></p>
-				<p class="wp-smush-promo-content-smaller">Join 389,434 happy members today with no lock in and 100% GPL, cancel any time and use forever on unlimited sites for only $49 p/m</p>
-				<span class="wp-smush-pro-cta"><a href="#" class="button button-cta button-green">START 14 DAY FREE TRIAL</a></span>
+				<p class="wp-smush-promo-content-smaller tc">Join 389,434 happy members today with no lock in and 100% GPL, cancel any time and use forever on unlimited sites for only $49 p/m</p>
+				<span class="wp-smush-pro-cta tc"><a href="#" class="button button-cta button-green">START 14 DAY FREE TRIAL</a></span>
 			</div>
 			<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-pro.png'; ?>"
 					     alt="<?php esc_html_e( "TRY WP SMUSH PRO - DEV TEAM", "wp-smushit" ); ?>"><?php
@@ -385,14 +387,28 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function wp_smush_hummingbird_promo() {
 			$this->container_header( 'wp-smush-hb-adv', "BOOST YOUR PERFORMANCE" ); ?>
 			<div class="box-content">
-				<span class="wp-smush-hummingbird-image">
+				<span class="wp-smush-hummingbird-image tc">
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/hummingbird.png'; ?>"
 					     alt="<?php esc_html_e( "BOOST YOUR PERFORMANCE - HUMMINGBIRD", "wp-smushit" ); ?>">
 		        </span>
-				<p class="wp-smush-promo-content">Hummingbird enables file compression and browser caching, file minification and performance reports – because when it comes to pagespeed, every millisecond counts.</strong></p>
-				<span class="wp-smush-hb-cta"><a href="#" class="button button-cta button-yellow">TRY HUMMINGBIRD</a></span>
+				<p class="wp-smush-promo-content tc">Hummingbird enables file compression and browser caching, file minification and performance reports – because when it comes to pagespeed, every millisecond counts.</strong></p>
+				<span class="wp-smush-hb-cta tc"><a href="#" class="button button-cta button-yellow">TRY HUMMINGBIRD</a></span>
 			</div><?php
 			echo "</section>";
+		}
+		function bulk_smush_content() {
+			global $WpSmush, $wpsmushit_admin;
+			//If there are no images in Media Library
+			if( 0 >= $wpsmushit_admin->total_count) {?>
+				<span class="wp-smush-no-image tc"><img src="<?php echo WP_SMUSH_URL . 'assets/images/upload-images.png'; ?>"
+					     alt="<?php esc_html_e( "No attachments found - Upload some images", "wp-smushit" ); ?>">
+		        </span>
+		        <p class="wp-smush-no-images-content tc"><?php printf( esc_html__("We haven’t found any images in your %smedia library%s yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit"), '<a href="'. esc_url( admin_url('upload.php') ).'">', '</a>'); ?></p>
+		        <span class="wp-smush-upload-images tc"><a class="button button-cta" href="<?php echo esc_url( admin_url('media-new.php') ); ?>"><?php esc_html_e("UPLOAD IMAGES", "wp-smushit"); ?></a></span><?php
+			}else{
+
+			}
+
 		}
 	}
 }
