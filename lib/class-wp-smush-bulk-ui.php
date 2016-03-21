@@ -451,12 +451,18 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		*
         */
 		function progress_bar() {
-			global $wpsmushit_admin; ?>
+			global $wpsmushit_admin;
+			// calculate %ages, avoid divide by zero error with no attachments
+			if ( $wpsmushit_admin->total_count > 0 && $wpsmushit_admin->smushed_count > 0 ) {
+				$smushed_pc = $wpsmushit_admin->smushed_count / $wpsmushit_admin->total_count * 100;
+			} else {
+				$smushed_pc = 0;
+			}?>
 			<p class="wp-smush-bulk-active"><?php printf( esc_html__("%sBulk smush is currently running.%s You don’t need to keep this page open, smush will continue to run until all images are smushed.", "wp-smushit"), '<strong>', '</strong>' ); ?></p>
 			<div class="wp-smush-progress-wrap">
 				<div class="wp-smush-progress-bar-wrap">
 					<div class="wp-smush-progress-bar">
-						<div class="wp-smush-progress-inner"></div>
+						<div class="wp-smush-progress-inner" style="width: <?php echo $smushed_pc; ?>%;"></div>
 					</div>
 				</div>
 				<div class="wp-smush-count tc"><?php printf( esc_html__("%s%d%s of %d attachments have been smushed."), '<span class="wp-smush-smushed-count">', $wpsmushit_admin->smushed_count, '</span>', $wpsmushit_admin->total_count ); ?></div>
