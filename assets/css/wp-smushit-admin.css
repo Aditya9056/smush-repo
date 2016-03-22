@@ -1003,6 +1003,7 @@ table.wp-smush-stats-holder tr td:first-child {
     -ms-animation: movement 1s infinite linear;
     -moz-animation: movement 1s infinite linear;
     -webkit-animation: movement 1s infinite linear;
+    overflow: hidden;
 }
 @keyframes movement {
     from { background-position: 0 0; }
@@ -1016,6 +1017,13 @@ table.wp-smush-stats-holder tr td:first-child {
 }
 .wp-smush-progress-cancel-sep {
     margin: 20px 0;
+}
+.wp-smush-progress-count {
+    color: #14485F;
+    font-weight: bold;
+    font-size: 14px;
+    margin: 11px auto;
+    text-align: center;
 }
 
 /** Settings Styling **/

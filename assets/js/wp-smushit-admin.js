@@ -112,10 +112,12 @@ jQuery(function ($) {
 
         this.bulk_start = function () {
             if (!this.is_bulk) return;
-            $('#progress-ui').show();
-            this.$button_span.text(wp_smush_msgs.progress);
 
-            this.show_bulk_loader();
+            //Hide the Bulk Div
+            $('.wp-smush-bulk-wrapper').hide();
+
+            //Show the Progress Bar
+            $('.wp-smush-bulk-progress-bar-wrapper').show();
 
         };
 
@@ -128,32 +130,13 @@ jQuery(function ($) {
         this.enable_button = function () {
             this.$button.prop("disabled", false);
             //For Bulk process, Enable other buttons
-            $('button[name = "smush-all"]').removeAttr('disabled');
+            $('button.wp-smush-all').removeAttr('disabled');
             $('button.wp-smush-scan').removeAttr('disabled');
-        };
-
-
-        this.disable_button = function () {
-            this.$button.prop("disabled", true);
-            //For Bulk process, disable other buttons
-            $('button[name = "smush-all"]').attr('disabled', 'disabled');
-            $('button.wp-smush-scan').attr('disabled', 'disabled');
         };
 
         this.show_loader = function () {
             progress_bar(this.$button, wp_smush_msgs.smushing, 'show');
         };
-
-        this.show_bulk_loader = function () {
-            //Loader
-            if (!this.$button.find(".wp-smush-loader-wrap").length) {
-                this.$button.prepend(this.$loader);
-            } else {
-                this.$loader = this.$button.find(".wp-smush-loader-wrap");
-            }
-            this.$loader.removeClass("hidden");
-            this.$loader.show();
-        }
 
         this.hide_loader = function () {
             progress_bar(this.$button, wp_smush_msgs.smushing, 'hide');
@@ -195,6 +178,7 @@ jQuery(function ($) {
 
         };
 
+        /** After the Bulk Smushing has been Finished **/
         this.bulk_done = function () {
             if (!this.is_bulk) return;
 
@@ -260,8 +244,9 @@ jQuery(function ($) {
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
                 //Update stats
-                $('#wp-smush-compression #human').html(_res.data.stats.human);
-                $('#wp-smush-compression #percent').html(_res.data.stats.percent);
+                $('.smush-total-reduction-percent .wp-smush-stats').html(_res.data.stats.percent);
+                $('.smush-total-reduction-bytes .wp-smush-stats').html(_res.data.stats.human);
+                $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(_res.data.stats.smushed);
 
                 // increase the progress bar
                 this._update_progress(_res.data.stats.smushed, progress);
@@ -275,12 +260,12 @@ jQuery(function ($) {
             }
 
             if (!this.is_bulk_resmush) {
+                //Update the Progress Bar Width
                 // get the progress bar
-                var $progress_bar = jQuery('#wp-smush-progress-wrap #wp-smush-fetched-progress div');
+                var $progress_bar = jQuery('.wp-smush-progress-inner');
                 if ($progress_bar.length < 1) {
                     return;
                 }
-                $('.done-count').html(count);
                 // increase progress
                 $progress_bar.css('width', width + '%');
             } else {
@@ -405,7 +390,7 @@ jQuery(function ($) {
     /**
      * Handle the start button click
      */
-    $('body').on('click', 'button[name="smush-all"]', function (e) {
+    $('body').on('click', 'button.wp-smush-all', function (e) {
 
         // prevent the default action
         e.preventDefault();

@@ -651,7 +651,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $error ) );
 			} else {
 				//Check if a resmush request, update the resmush list
-				if ( ! empty( $_REQUEST['is_bulk_resmush'] ) && $_REQUEST['is_bulk_resmush'] ) {
+				if ( ! empty( $_REQUEST['is_bulk_resmush'] ) && 'false' != $_REQUEST['is_bulk_resmush'] && $_REQUEST['is_bulk_resmush'] ) {
 					$this->update_resmush_list( $attachment_id );
 				}
 				wp_send_json_success( array( 'stats' => $stats ) );
@@ -1550,6 +1550,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$current_user = wp_get_current_user();
 			$name = !empty( $current_user->first_name ) ? $current_user->first_name : $current_user->display_name;
 			return $name;
+		}
+
+		/**
+		 * Format Numbers to short form 1000 -> 1k
+		 *
+		 * @param $number
+		 *
+		 * @return string
+		 */
+		function format_number($number) {
+			if($number >= 1000) {
+				return $number/1000 . "k";   // NB: you will want to round this
+			}
+			else {
+				return $number;
+			}
 		}
 
 	}
