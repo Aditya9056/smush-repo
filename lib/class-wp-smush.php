@@ -150,12 +150,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
-				$errors->add( "image_not_found", sprintf( __( 'Skipped (%s), image not found.', 'wp-smushit' ), $this->format_bytes( $file_size ) ) );
+				$errors->add( "image_not_found", '<p>' . sprintf( __( 'Skipped (%s), image not found. Attachment: %s', 'wp-smushit' ), $this->format_bytes( $file_size ), basename( $file_path ) ) . '</p>' );
 			}
 
 			//Check size limit
 			if ( $file_size > $max_size ) {
-				$errors->add( "size_limit", sprintf( __( 'Skipped (%s), size limit exceeded.', 'wp-smushit' ), $this->format_bytes( $file_size ) ) );
+				$errors->add( "size_limit", '<p>' . sprintf( __( 'Skipped (%s), size limit exceeded. Attachment: %s', 'wp-smushit' ), $this->format_bytes( $file_size ), basename( $file_path ) ) . '</p>' );
 			}
 
 			if ( count( $errors->get_error_messages() ) ) {

@@ -1025,6 +1025,15 @@ table.wp-smush-stats-holder tr td:first-child {
     margin: 11px auto;
     text-align: center;
 }
+.smush-final-log {
+    padding: 10px;
+}
+.wp-smush-ajax-error {
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
 
 /** Settings Styling **/
 .wpmud .wp-smush-setting-row label.inline-label {

@@ -182,20 +182,17 @@ jQuery(function ($) {
         this.bulk_done = function () {
             if (!this.is_bulk) return;
 
-            this.$loader.hide();
-
             // Remove started class
             this.$button.removeClass('wp-smush-started');
 
             //Enable the button
             this.enable_button();
 
-            // Add finished class
-            this.$button.addClass('wp-smush-finished');
-            this.$button.attr('disabled', 'disabled');
+            //Show Bulk Wrapper
+            $('.wp-smush-bulk-wrapper').show();
 
-            // Update button text
-            self.$button_span.text(wp_smush_msgs.done);
+            //Hide the Progress Bar
+            $('.wp-smush-bulk-progress-bar-wrapper').hide();
 
             //Enable Resmush and scan button
             jQuery('.wp-resmush.wp-smush-action, .wp-smush-scan').removeAttr('disabled');
@@ -288,8 +285,8 @@ jQuery(function ($) {
             return this.ids.length > 0 && this.is_bulk;
         };
 
-        this.increment_errors = function () {
-            WP_Smush.errors.push(this.current_id);
+        this.increment_errors = function ( id ) {
+            WP_Smush.errors.push(id);
         };
 
         //Send ajax request for smushing single and bulk, call update_progress on ajax response
@@ -304,27 +301,20 @@ jQuery(function ($) {
             }
 
             this.request = WP_Smush.ajax(this.is_bulk_resmush, this.current_id, this.url, 0, nonce_value)
-                .complete(function () {
-                    if (!self.continue() || !self.is_bulk) {
-                        self.deferred.resolve();
-                    }
-                })
                 .error(function () {
-                    self.increment_errors();
-                }).done(function (res) {
+                    self.increment_errors( self.current_id );
+                }).done(function (res ) {
+                    //Increase the error count if any
+                    if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && res.success === false && res.data.error !== 'bulk_request_image_limit_exceeded' )) {
+                        self.increment_errors( self.current_id );
+                    }
                     //If no response or success is false, do not process further
                     if (typeof res == 'undefined' || !res || !res.success) {
                         if ('undefined' !== typeof res.data || typeof res.data.error_msg !== 'undefined') {
                             //Print the error on screen
                             self.$log.append(res.data.error_msg);
-                            //We can proceed to next image
-                            if (self.continue()) {
-                                self.call_ajax();
-                            }
+                            self.$log.removeClass('hidden');
                         }
-                    }
-                    if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && res.success === false && res.data.error !== 'bulk_request_image_limit_exceeded' )) {
-                        self.increment_errors();
                     }
 
                     if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved()) {
@@ -334,12 +324,15 @@ jQuery(function ($) {
                         if (self.is_bulk) {
                             self.update_progress(res);
                         }
-
-                        if (self.continue()) {
-                            self.call_ajax();
-                        }
                     }
                     self.single_done();
+                }).complete(function () {
+                    if (!self.continue() || !self.is_bulk) {
+                        //Calls deferred.done()
+                        self.deferred.resolve();
+                    }else{
+                        self.call_ajax();
+                    }
                 });
 
             self.deferred.errors = WP_Smush.errors;
@@ -366,8 +359,8 @@ jQuery(function ($) {
 
             this.deferred.done(function () {
                 if (WP_Smush.errors.length) {
-                    var error_message = wp_smush_msgs.error_in_bulk.replace("{{errors}}", WP_Smush.errors.length);
-                    self.$log.append(error_message);
+                    var error_message = '<div class="wp-smush-ajax-error">' + wp_smush_msgs.error_in_bulk.replace("{{errors}}", WP_Smush.errors.length) + '</div>';
+                    self.$log.prepend(error_message);
                 }
                 var bulk_done = true;
                 if( this.is_bulk_resmush && WP_Smush.errors.length > 0 ) {
@@ -381,6 +374,11 @@ jQuery(function ($) {
             });
 
         };
+        /** Handles the Cancel button Click
+         *
+         * Update the UI, and enables the bulk smush button
+         *
+         **/
         this.cancel_ajax = function () {
             jQuery('.wp-smush-cancel-bulk').on('click', function () {
                 self.request.abort();
