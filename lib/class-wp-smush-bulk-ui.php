@@ -472,7 +472,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<div class="wp-smush-count tc"><?php printf( esc_html__("%s%d%s of %d attachments have been smushed."), '<span class="wp-smush-images-smushed">', $wpsmushit_admin->smushed_count, '</span>', $wpsmushit_admin->total_count ); ?></div>
 				</div>
 				<hr class="wp-smush-progress-cancel-sep">
-				<button type="button" class="button button-grey"><?php esc_html_e("CANCEL", "wp-smushit"); ?></button>
+				<button type="button" class="button button-grey wp-smush-cancel-bulk"><?php esc_html_e("CANCEL", "wp-smushit"); ?></button>
 			</div><?php
 		}
 	}

@@ -381,10 +381,22 @@ jQuery(function ($) {
             });
 
         };
+        this.cancel_ajax = function () {
+            jQuery('.wp-smush-cancel-bulk').on('click', function () {
+                self.request.abort();
+                self.enable_button();
+                self.$button.removeClass('wp-smush-started');
+                $('.wp-smush-bulk-wrapper').show();
+
+                //Show the Progress Bar
+                $('.wp-smush-bulk-progress-bar-wrapper').hide();
+            });
+        };
 
         this.start();
         this.run();
         this.bind_deferred_events();
+        this.cancel_ajax();
         return this.deferred;
     };
     /**
