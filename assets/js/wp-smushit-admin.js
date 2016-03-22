@@ -189,7 +189,7 @@ jQuery(function ($) {
             this.enable_button();
 
             //Show Bulk Wrapper
-            $('.wp-smush-bulk-wrapper').show();
+            $('.wp-smush-all-done').show();
 
             //Hide the Progress Bar
             $('.wp-smush-bulk-progress-bar-wrapper').hide();
