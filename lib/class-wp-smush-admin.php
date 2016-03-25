@@ -973,7 +973,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( $this->is_pro_user && $resmush ) {
 
 				$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-				$button['class'] = 'wp-smush-button wp-smush-resmush';
+				$button['class'] = 'wp-smush-button wp-smush-resmush wp-smush-all';
 
 			} else {
 
@@ -1437,12 +1437,24 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function update_resmush_list( $attachment_id, $mkey = 'wp-smush-resmush-list' ) {
 			$resmush_list = get_option( $mkey );
-			$key          = array_search( $attachment_id, $resmush_list );
-			if ( $resmush_list ) {
-				unset( $resmush_list[ $key ] );
+
+			//If there are any items in the resmush list, Unset the Key
+			if( !empty( $resmush_list ) && count( $resmush_list ) > 0 ) {
+				$key = array_search( $attachment_id, $resmush_list );
+				if ( $resmush_list ) {
+					unset( $resmush_list[ $key ] );
+				}
+				$resmush_list = array_values( $resmush_list );
 			}
-			$resmush_list = array_values( $resmush_list );
-			update_option( $mkey, $resmush_list );
+
+			//If Resmush List is empty
+			if ( empty( $resmush_list ) || 0 == count( $resmush_list ) ) {
+				//Remove the two options
+				delete_option( 'wp_smush_show_resmush' );
+				delete_option( 'wp-smush-resmush-list' );
+			}else {
+				update_option( $mkey, $resmush_list );
+			}
 		}
 
 		/**

@@ -1107,7 +1107,7 @@ small.smush-setting-description {
     font-family: 'RobotoCondensed-Bold', sans-serif;
 }
 
-.wpmud .wp-smush-stats {
+.wpmud .wp-smush-stats, .wp-smush-stats-wrap {
     color: #555555;
     font-family: 'RobotoCondensed-Regular', sans-serif;
     font-size: 20px;

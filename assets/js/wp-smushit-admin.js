@@ -113,11 +113,19 @@ jQuery(function ($) {
         this.bulk_start = function () {
             if (!this.is_bulk) return;
 
-            //Hide the Bulk Div
-            $('.wp-smush-bulk-wrapper').hide();
+            //Hide the resmush Div wrapper and show the loader
+            if( self.is_bulk_resmush ) {
+                //Hide the Notice Div
+                $('.wp-smush-resmush-wrap').hide();
+                //Show the progress bar
+                $('.bulk-resmush-wrapper .wp-smush-bulk-progress-bar-wrapper').removeClass('hidden');
+            }else {
+                //Hide the Bulk Div
+                $('.wp-smush-bulk-wrapper').hide();
 
-            //Show the Progress Bar
-            $('.wp-smush-bulk-progress-bar-wrapper').show();
+                //Show the Progress Bar
+                $('.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper').show();
+            }
 
         };
 
@@ -230,9 +238,16 @@ jQuery(function ($) {
                 if (_res.success) {
                     //Handle progress for Super smush progress bar
                     if (wp_smushit_data.resmush.length > 0) {
-                        $('#wp-smush-ss-progress-wrap .remaining-count').html(wp_smushit_data.resmush.length);
+                        //Update the Count
+                        $('.wp-smush-images-remaining').html(wp_smushit_data.resmush.length);
                     } else if (wp_smushit_data.resmush.length == 0) {
-                        $('#wp-smush-ss-progress-wrap #wp-smush-compression').html(wp_smush_msgs.all_resmushed);
+                        //If all images are resmushed, show the All Smushed message
+
+                        //Show All Smushed
+                        $('.bulk-resmush-wrapper .wp-smush-all-done').removeClass('hidden');
+
+                        //Hide Everything else
+                        $('.wp-smush-resmush-wrap, .wp-smush-bulk-progress-bar-wrapper').hide();
                     }
 
                 }
@@ -269,13 +284,6 @@ jQuery(function ($) {
 
                 if (this.resmush_count > 0) {
                     var remaining_resmush = this.resmush_count - wp_smushit_data.resmush.length;
-                    var progress_width = ( remaining_resmush / this.resmush_count * 100 );
-                    var $progress_bar = jQuery('#wp-smush-ss-progress-wrap #wp-smush-ss-progress div');
-                    if ($progress_bar.length < 1) {
-                        return;
-                    }
-                    // increase progress
-                    $progress_bar.css('width', progress_width + '%');
                 }
             }
 
@@ -398,7 +406,7 @@ jQuery(function ($) {
         return this.deferred;
     };
     /**
-     * Handle the start button click
+     * Handle the Bulk Smush/ Bulk Resmush button click
      */
     $('body').on('click', 'button.wp-smush-all', function (e) {
 
@@ -627,7 +635,7 @@ jQuery(function ($) {
         }).always( function() {
 
             //Hide the progress bar
-            jQuery('.bulk-resmush-wrapper .wp-smush-progress-bar-wrap').hide();
+            jQuery('.bulk-resmush-wrapper .wp-smush-bulk-progress-bar-wrapper').hide();
 
             //Enable the Bulk Smush Button and itself
             button.removeAttr('disabled');
