@@ -499,7 +499,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$use_http = get_option( WP_SMUSH_PREFIX . 'use_http' );
 					wp_cache_add( WP_SMUSH_PREFIX . 'use_http', $use_http, 'smush' );
 				}
-				$use_http ? define( 'WP_SMUSH_API_HTTP', 'http://smushpro.wpmudev.org/1.0/' ) : '';
+				if( $use_http ) {
+					//HTTP Url
+					define( 'WP_SMUSH_API_HTTP', 'http://smushpro.wpmudev.org/1.0/' );
+				}
 
 				$this->resize_from_meta_data( $meta, $ID );
 
@@ -1355,7 +1358,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function smushit_orderby( $query ) {
 
-			global $current_screen, $wpdb;
+			global $current_screen;
 
 			//Filter only media screen
 			if ( ! is_admin() || ( ! empty( $current_screen ) && $current_screen->base != 'upload' ) ) {
