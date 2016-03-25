@@ -358,15 +358,6 @@ p#wp-smush-compression span {
     vertical-align: top;
 }
 
-#wp-smush-send .wp-smush-loader-wrap {
-    display: inline-block;
-}
-
-button .wp-smush-loader-wrap {
-    display: inline-block;
-    float: left;
-}
-
 /** Settings Page **/
 #wp-smush-options-wrap {
     display: block;

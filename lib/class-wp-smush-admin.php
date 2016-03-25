@@ -9,7 +9,9 @@
  *
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
+//Include Bulk UI
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-bulk-ui.php';
+
 if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	/**
 	 * Show settings in Media settings and add column to media library
@@ -119,10 +121,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			) );
 			//Attachment status, Grid view
 			add_filter( 'attachment_fields_to_edit', array( $this, 'filter_attachment_fields_to_edit' ), 10, 2 );
-
-			// hook into admin footer to load a hidden html/css spinner
-			add_action( 'admin_footer-upload.php', array( $this, 'print_loader' ) );
-
 			/// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
@@ -154,18 +152,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			);
 
 			return $form_fields;
-		}
-
-		function __get( $prop ) {
-
-			if ( method_exists( "WpSmushitAdmin", $prop ) ) {
-				return $this->$prop();
-			}
-
-			$method_name = "get_" . $prop;
-			if ( method_exists( "WpSmushitAdmin", $method_name ) ) {
-				return $this->$method_name();
-			}
 		}
 
 		/**
@@ -257,7 +243,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Localize Translations
 		 */
 		function localize() {
-			global $pagenow, $WpSmush;
+			global $pagenow;
 			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php", "post-new.php" ) ) ) {
 				return;
 			}
@@ -318,12 +304,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Translation ready settings
 		 */
 		function init_settings() {
-			if ( $this->is_pro_user ) {
-				$smush_orgnl_txt = esc_html__( 'Smush all images, including originals.', 'wp_smushit' );
-			} else {
-				$count           = count( get_intermediate_image_sizes() );
-				$smush_orgnl_txt = sprintf( esc_html__( "When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this.", 'wp_smushit' ), $count );
-			}
+
 			$this->settings = array(
 				'auto'      => array(
 					'label' => esc_html__( 'Automatically Smush my images on upload', 'wp-smushit' ),
@@ -354,6 +335,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Runs the expensive queries to get our global smush stats
+		 *
+		 * @param bool $force_update Whether to Force update the Global Stats or not
+		 *
 		 */
 		function setup_global_stats( $force_update = false ) {
 			$this->smushed_count = $this->smushed_count();
@@ -442,13 +426,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Returns number of images of larger than 1Mb size
 		 *
+		 * @param bool $force_update Whether to Force update the Global Stats or not
+		 *
 		 * @return int
 		 */
 		function get_exceeding_items_count( $force_update = false ) {
 			$count = wp_cache_get( 'exceeding_items', 'wp_smush' );
 			if ( ! $count || $force_update ) {
 				$count = 0;
-				$bulk  = new WpSmushitBulk();
 				//Check images bigger than 1Mb, used to display the count of images that can't be smushed
 				foreach ( $this->attachments as $attachment ) {
 					if ( file_exists( get_attached_file( $attachment ) ) ) {
@@ -463,72 +448,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			return $count;
-		}
-
-		/**
-		 * Loading Image
-		 */
-		function print_loader() { ?>
-			<div class="wp-smush-loader-wrap hidden">
-				<div class="floatingCirclesG">
-					<div class="f_circleG" id="frotateG_01">
-					</div>
-					<div class="f_circleG" id="frotateG_02">
-					</div>
-					<div class="f_circleG" id="frotateG_03">
-					</div>
-					<div class="f_circleG" id="frotateG_04">
-					</div>
-					<div class="f_circleG" id="frotateG_05">
-					</div>
-					<div class="f_circleG" id="frotateG_06">
-					</div>
-					<div class="f_circleG" id="frotateG_07">
-					</div>
-					<div class="f_circleG" id="frotateG_08">
-					</div>
-				</div>
-			</div>
-			<?php
-		}
-
-		/**
-		 * Print out the progress bar
-		 */
-		function progress_ui() {
-
-			// calculate %ages, avoid divide by zero error with no attachments
-			if ( $this->total_count > 0 ) {
-				$smushed_pc = $this->smushed_count / $this->total_count * 100;
-			} else {
-				$smushed_pc = 0;
-			}
-
-			$progress_ui = '<div id="progress-ui">';
-
-			// display the progress bars
-			$progress_ui .= '<div id="wp-smush-progress-wrap">
-                                                <div id="wp-smush-fetched-progress" class="wp-smush-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
-                                                <p id="wp-smush-compression">'
-			                . __( "Reduced by ", 'wp-smushit' )
-			                . '<span id="human">' . $this->stats['human'] . '</span> ( <span id="percent">' . number_format_i18n( $this->stats['percent'], 2, '.', '' ) . '</span>% )
-                                                </p>
-                                        </div>';
-
-			// status divs to show completed count/ total count
-			$progress_ui .= '<div id="wp-smush-progress-status">
-
-                            <p id="fetched-status">' .
-			                sprintf(
-				                __(
-					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> total attachments have been smushed', 'wp-smushit'
-				                ), $this->smushed_count, $this->total_count
-			                ) .
-			                '</p>
-                                        </div>
-				</div>';
-			// print it out
-			echo $progress_ui;
 		}
 
 		/**
@@ -615,8 +534,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Smush single images
+		 * @param $attachment_id
+		 * @param bool $return Return/Echo the stats
 		 *
-		 * @return mixed
+		 * @return array|string|void
 		 */
 		function smush_single( $attachment_id, $return = false ) {
 
@@ -648,7 +569,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					wp_send_json_success( $status );
 				}
 			}
-
 		}
 
 		/**
@@ -684,61 +604,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return false;
 
 			}
-		}
-
-		/**
-		 * The UI for bulk smushing
-		 *
-		 * @return null
-		 */
-		function all_ui( $send_ids ) {
-
-			// if there are no images in the media library
-			if ( $this->total_count < 1 ) {
-				printf(
-					__(
-						'<p>Please <a href="%s">upload some images</a>.</p>', 'wp-smushit'
-					), admin_url( 'media-new.php' )
-				);
-
-				// no need to print out the rest of the UI
-				return;
-			}
-
-			// otherwise, start displaying the UI
-			?>
-			<div id="all-bulk" class="wp-smush-bulk-wrap">
-				<?php
-				// everything has been smushed, display a notice
-				if ( $this->smushed_count === $this->total_count ) {
-					?>
-					<p>
-						<?php
-						_e( 'All your images are already smushed!', 'wp-smushit' );
-						?>
-					</p>
-					<?php
-				} else {
-					$this->selected_ui( $send_ids, '' );
-					// we have some smushing to do! :)
-					// first some warnings
-					?>
-					<p>
-						<?php
-						// let the user know that there's an alternative
-						printf( __( 'You can also smush images individually from your <a href="%s">Media Library</a>.', 'wp-smushit' ), admin_url( 'upload.php' ) );
-						?>
-					</p>
-					<?php
-				}
-
-				// display the progress bar
-				$this->progress_ui();
-
-				// display the appropriate button
-				$this->setup_button(); ?>
-			</div>
-			<?php
 		}
 
 		/**
@@ -825,6 +690,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Display Thumbnails, if bulk action is choosen
+		 *
+		 * @Note: Not in use right now, Will use it in future for Media Bulk action
+		 *
 		 */
 		function selected_ui( $send_ids, $received_ids ) {
 			if ( empty( $received_ids ) ) {
@@ -859,7 +727,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Display the bulk smushing button
 		 *
 		 * @param bool $resmush
+		 *
 		 * @param bool $return Whether to return the button content or print it
+		 *
+		 * @return Returns or Echo the content
 		 */
 		function setup_button( $resmush = false, $return = false ) {
 			$button   = $this->button_state( $resmush );
@@ -962,6 +833,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not
+		 * @param $resmush
 		 *
 		 * @return array
 		 */
@@ -1000,6 +872,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Get the smush button text for attachment
+		 *
+		 * @param $id Attachment ID for which the Status has to be set
+		 *
+		 * @return string
 		 */
 		function smush_status( $id ) {
 			$response = trim( $this->set_status( $id, false ) );
@@ -1075,8 +951,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Get the smushed attachments from the database, except gif
 		 *
 		 * @global object $wpdb
-		 *
-		 * @param int|bool|array $attachment_id
 		 *
 		 * @return object query results
 		 */
@@ -1434,6 +1308,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Remove the given attachment id from resmush list and updates it to db
 		 *
 		 * @param $attachment_id
+		 * @param string $mkey
+		 *
 		 */
 		function update_resmush_list( $attachment_id, $mkey = 'wp-smush-resmush-list' ) {
 			$resmush_list = get_option( $mkey );
@@ -1460,7 +1336,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Get the attachment ids with Upfront images
 		 *
-		 * @return array|int
+		 * @param array $skip_ids
+		 *
+		 * @return array|bool
 		 */
 		function get_upfront_images( $skip_ids = array() ) {
 

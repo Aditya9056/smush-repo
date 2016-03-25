@@ -361,7 +361,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 			</div>
 			<?php
-			$wpsmushit_admin->print_loader();
 		}
 
 		/**

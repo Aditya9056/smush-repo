@@ -34,7 +34,7 @@ jQuery(function ($) {
         }
 
         return url;
-    }
+    };
     // url for smushing
     WP_Smush.errors = [];
     WP_Smush.timeout = wp_smushit_data.timeout;
@@ -65,7 +65,6 @@ jQuery(function ($) {
             this.button_text = this.is_bulk ? wp_smush_msgs.bulk_now : wp_smush_msgs.smush_now;
             this.$log = $(".smush-final-log");
             this.$button_span = this.$button.find("span");
-            this.$loader = $(".wp-smush-loader-wrap").eq(0).clone();
             this.deferred = jQuery.Deferred();
             this.deferred.errors = [];
             //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
@@ -212,7 +211,6 @@ jQuery(function ($) {
         };
 
         this.free_exceeded = function () {
-            this.$loader.hide();
 
             // Add new class for css adjustment
             this.$button.removeClass('wp-smush-started');
@@ -428,7 +426,7 @@ jQuery(function ($) {
 
         new WP_Smush.Smush($(this), true);
 
-        return;
+        
     });
 
     /** Disable the action links **/
@@ -478,7 +476,7 @@ jQuery(function ($) {
             action: smush_action,
             attachment_id: current_button.data('id'),
             _nonce: current_button.data('nonce')
-        }
+        };
 
         //Reduce the opacity of stats and disable the click
         disable_links( current_button );
@@ -522,7 +520,7 @@ jQuery(function ($) {
         $(this).parents().eq(1).find('.smush-stats-wrapper').slideToggle();
         slide_symbol.text(slide_symbol.text() == '+' ? '-' : '+');
 
-        return;
+        
     });
 
     /** Handle smush button click **/
@@ -559,7 +557,7 @@ jQuery(function ($) {
         jQuery('.wp-smush-button, .wp-smush-scan').attr('disabled', 'disabled');
         $(".smush-remaining-images-notice").remove();
         new WP_Smush.Smush($(this), true, 'nextgen');
-        return;
+        
     });
 
     /** Restore: Media Library **/

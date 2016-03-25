@@ -146,7 +146,7 @@ jQuery(function() {
 
 	// Parses the hash-tag in the current address bar.
 	function checkLocalRoutes() {
-		var route = window.location.hash.substr(1)
+		var route = window.location.hash.substr(1);
 			parts = route.split("=");
 
 		WDP.localRoutes = {
@@ -1044,7 +1044,7 @@ WDP.showMessage = function(action) {
 			'<span class="extra-text" style="display:none"></span></p>' +
 			'<span class="close">&times;</span>' +
 			'</div>'
-		)
+		);
 
 		jQuery("body").append(
 			'<div class="update-notice err" id="wdp-error" style="display:none">' +
@@ -1111,7 +1111,7 @@ WDP.showMessage = function(action) {
 	}
 
 	return WDP;
-}
+};
 
 /**
  * Displays the "Changes saved" message in the top of the window.
@@ -1200,4 +1200,4 @@ WDP.updateHash = function(newHash) {
 		fx.remove();
 		node.attr('id', newHash);
 	}
-}
+};
