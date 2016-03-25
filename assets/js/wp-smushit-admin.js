@@ -40,7 +40,7 @@ jQuery(function ($) {
     WP_Smush.timeout = wp_smushit_data.timeout;
     /**
      * Checks for the specified param in URL
-     * @param sParam
+     * @param arg
      * @returns {*}
      */
     WP_Smush.geturlparam = function (arg) {
@@ -58,7 +58,7 @@ jQuery(function ($) {
     WP_Smush.Smush = function ($button, bulk, smush_type) {
         var self = this;
 
-        this.init = function (arguments) {
+        this.init = function () {
             this.$button = $($button[0]);
             this.is_bulk = typeof bulk ? bulk : false;
             this.url = ajaxurl;
@@ -87,7 +87,7 @@ jQuery(function ($) {
                 is_bulk_resmush: is_bulk_resmush,
                 attachment_id: $id,
                 get_next: $getnxt,
-                _nonce: nonce,
+                _nonce: nonce
             };
             param = jQuery.param(param);
             return $.ajax({
@@ -278,11 +278,6 @@ jQuery(function ($) {
                 }
                 // increase progress
                 $progress_bar.css('width', width + '%');
-            } else {
-
-                if (this.resmush_count > 0) {
-                    var remaining_resmush = this.resmush_count - wp_smushit_data.resmush.length;
-                }
             }
 
         };
@@ -297,11 +292,9 @@ jQuery(function ($) {
 
         //Send ajax request for smushing single and bulk, call update_progress on ajax response
         this.call_ajax = function () {
-
-            var nonce_field = false;
             var nonce_value = '';
             this.current_id = this.is_bulk ? this.ids.shift() : this.$button.data("id"); //remove from array while processing so we can continue where left off
-            nonce_field = this.$button.parent().find('#_wp_smush_nonce');
+            var nonce_field = this.$button.parent().find('#_wp_smush_nonce');
             if (nonce_field) {
                 nonce_value = nonce_field.val();
             }
@@ -369,7 +362,7 @@ jQuery(function ($) {
                     self.$log.prepend(error_message);
                 }
                 var bulk_done = true;
-                if( this.is_bulk_resmush && WP_Smush.errors.length > 0 ) {
+                if( self.is_bulk_resmush && WP_Smush.errors.length > 0 ) {
                     bulk_done = false;
                 }
                 if( bulk_done ) {
@@ -609,7 +602,7 @@ jQuery(function ($) {
         jQuery('.bulk-resmush-wrapper .wp-smush-progress-bar-wrap').removeClass('hidden');
 
         //Ajax Params
-        params = {
+        var params = {
             action: 'scan_for_resmush',
             type: scan_type,
             nonce: jQuery(this).data('nonce')
@@ -648,7 +641,7 @@ jQuery(function ($) {
     //Dismiss Welcome notice
     jQuery('.smush-dismiss-welcome').on('click', function(e) {
         e.preventDefault();
-        $el = $(this).parents().eq(1);
+        var $el = $(this).parents().eq(1);
         $el.fadeTo( 100, 0, function() {
             $el.slideUp( 100, function() {
                 $el.remove();
