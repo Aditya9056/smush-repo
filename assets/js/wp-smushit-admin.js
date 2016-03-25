@@ -259,7 +259,7 @@ jQuery(function ($) {
             if (!this.is_bulk_resmush) {
                 //Update the Progress Bar Width
                 // get the progress bar
-                var $progress_bar = jQuery('.wp-smush-progress-inner');
+                var $progress_bar = jQuery('.bulk-smush-wrapper .wp-smush-progress-inner');
                 if ($progress_bar.length < 1) {
                     return;
                 }
@@ -496,17 +496,6 @@ jQuery(function ($) {
             }
         })
     };
-    var bulk_loader = function( $button ) {
-        var loader = $(".wp-smush-loader-wrap").eq(0).clone();
-        //Loader
-        if (!$button.find(".wp-smush-loader-wrap").length) {
-            $button.prepend(loader);
-        } else {
-            loader = $button.find(".wp-smush-loader-wrap");
-        }
-        loader.removeClass("hidden");
-        loader.show();
-    }
 
     /**
      * Handle the Smush Stats link click
@@ -607,8 +596,11 @@ jQuery(function ($) {
         button.attr('disabled', 'disabled');
         jQuery('.wp-smush-button' ).attr('disabled', 'disabled');
 
-        //Show Loader animation
-        bulk_loader(button);
+        //Hide Settings changed Notice
+        jQuery('.wp-smush-settings-changed').hide();
+
+        //Show Loading Animation
+        jQuery('.bulk-resmush-wrapper .wp-smush-progress-bar-wrap').removeClass('hidden');
 
         //Ajax Params
         params = {
@@ -623,15 +615,19 @@ jQuery(function ($) {
             if( 'undefined' != r.data.resmush_ids ) {
                 wp_smushit_data.resmush = r.data.resmush_ids;
             }
-            //If the div already exists, just replace the content, else append it
-            if( jQuery('.wp-resmush-wrapper').length > 0 ) {
-                jQuery('.wp-resmush-wrapper').replaceWith(r.data.content);
-            }else{
-                jQuery('#wp-smush-resmush').append(r.data.content);
+            //Hide the Existing wrapper
+            var resmush_wrap = $('.wp-smush-resmush-wrapper');
+            if (resmush_wrap.length > 0) {
+                resmush_wrap.hide();
             }
+
+            //Prepend the response
+            jQuery('.bulk-resmush-wrapper .box-container').prepend(r.data.content);
+
         }).always( function() {
-            //Remove Loader
-            button.find(".wp-smush-loader-wrap").hide();
+
+            //Hide the progress bar
+            jQuery('.bulk-resmush-wrapper .wp-smush-progress-bar-wrap').hide();
 
             //Enable the Bulk Smush Button and itself
             button.removeAttr('disabled');

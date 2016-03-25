@@ -390,6 +390,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// var to temporarily assign the option value
 			$setting = null;
 
+			//Save option for resmush UI
+			$possible_options = array(
+				'keep_exif',
+				'original',
+				'lossy'
+			);
+			//Whether to Show resmush UI on settings page or not
+			$show_resmush_saved = false;
+
+			//Store Option Name and their values in an array
+			$settings = array();
+
 			// process each setting and update options
 			foreach ( $this->settings as $name => $text ) {
 				// formulate the index of option
@@ -398,11 +410,31 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				// get the value to be saved
 				$setting = isset( $_POST[ $opt_name ] ) ? 1 : 0;
 
+				$settings[ $opt_name ] = $setting;
 				// update the new value
-				update_option( $opt_name, $setting );
+				$updated = update_option( $opt_name, $setting );
+
+				//Save or delete option to show resmush UI, depending upon the current settings
+				if ( in_array( $name, $possible_options ) && $updated ) {
+					//If preserve exif is turned off, Or if Lossy/Smush original is turned on, and the setting isn't saved recently
+					if ( ( 'keep_exif' == $name && ! $setting ) ||
+					     ( in_array( $name, array(
+								'original',
+								'lossy'
+							) ) && $setting
+					     ) && ! $show_resmush_saved
+					) {
+						$show_resmush_saved = update_option( 'wp_smush_show_resmush', 1 );
+					}
+				}
 
 				// unset the var for next loop
 				unset( $setting );
+			}
+
+			//Delete Show Resmush option
+			if ( isset( $_POST['wp-smush-keep_exif'] ) && ! isset( $_POST['wp-smush-original'] ) && ! isset( $_POST['wp-smush-lossy'] ) ) {
+				delete_option('wp_smush_show_resmush');
 			}
 
 		}
@@ -1301,14 +1333,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
 
 			//Default response
-			$ajax_response = "<p class='wp-resmush-wrapper notice inline'>" . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smush" ) . "</p>";
+			$ajax_response = '<div class="wp-smush-notice wp-smush-all-done">
+					<i class="dev-icon dev-icon-tick"></i>' . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smushit" ) . '</div>';
 
 			//Logic: If none of the required settings is on, don't need to resmush any of the images
 			//We need at least one of these settings to be on, to check if any of the image needs resmush
 			//Allow to smush Upfront images as well
 			$upfront_active = class_exists( 'Upfront' );
 			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
-				$response = array( "content" => "<p class='wp-resmush-wrapper notice inline'>" . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smush" ) . "</p>" );
+				$response = array( "content" => $ajax_response );
 				wp_send_json_success( $response );
 			}
 
@@ -1324,6 +1357,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			}
 
+			//Check if any of the smushed image needs to be resmushed
 			if ( ! empty( $attachments ) && is_array( $attachments ) ) {
 				foreach ( $attachments as $attachment_k => $attachment ) {
 
@@ -1390,7 +1424,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 
 				if ( ( $count = count( $resmush_list ) ) > 0 ) {
-					$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->resmush_bulk_ui( true );
+					$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->bulk_ui->resmush_bulk_ui( true );
 				}
 			}
 			wp_send_json_success( array( "resmush_ids" => $resmush_list, "content" => $ajax_response ) );
