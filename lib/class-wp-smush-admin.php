@@ -229,7 +229,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_enqueue_style( 'jquery-ui' );
 
 			//If class method exists, load shared UI
-			if ( 'media_page_wp-smush-bulk' == $current_page && class_exists( 'WDEV_Plugin_Ui' ) ) {
+			if ( ( 'media_page_wp-smush-bulk' == $current_page || 'gallery_page_wp-smush-nextgen-bulk' == $current_page ) && class_exists( 'WDEV_Plugin_Ui' ) ) {
 				if ( method_exists( 'WDEV_Plugin_Ui', 'load' ) ) {
 					WDEV_Plugin_Ui::load( WP_SMUSH_URL . '/assets/shared-ui/', false );
 				}
@@ -341,6 +341,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function setup_global_stats( $force_update = false ) {
 			$this->smushed_count = $this->smushed_count();
+			$this->remaining_count = $this->total_count - $this->smushed_count;
 			$this->stats         = $this->global_stats( $force_update );
 		}
 
