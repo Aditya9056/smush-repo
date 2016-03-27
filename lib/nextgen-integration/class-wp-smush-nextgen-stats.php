@@ -298,8 +298,6 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$smush_stats = get_option( 'wp_smush_stats_nextgen', array() );
 
 			if ( ! empty( $stats ) ) {
-				//Compression Percentage
-				$smush_stats['percent'] = ! empty( $smush_stats['percent'] ) ? ( $smush_stats['percent'] + $stats['percent'] ) : $stats['percent'];
 
 				//Compression Bytes
 				$smush_stats['bytes'] = ! empty( $smush_stats['bytes'] ) ? ( $smush_stats['bytes'] + $stats['bytes'] ) : $stats['bytes'];
@@ -312,6 +310,9 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 				//Size of image after compression
 				$smush_stats['size_after'] = ! empty( $smush_stats['size_after'] ) ? ( $smush_stats['size_after'] + $stats['size_after'] ) : $stats['size_after'];
+
+				//Compression Percentage
+				$smush_stats['percent'] = ! empty( $smush_stats['size_before'] ) && !empty( $smush_stats['size_after'] ) && $smush_stats['size_before'] > 0 ? ( $smush_stats['bytes'] / $smush_stats['size_before'] ) * 100 : $stats['percent'];
 			}
 			update_option( 'wp_smush_stats_nextgen', $smush_stats );
 

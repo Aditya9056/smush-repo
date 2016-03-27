@@ -651,17 +651,6 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 
 				return $success;
 			}
-
-			function update_stats( $smush_stats, $image ) {
-				global $WpSmush;
-				if ( is_wp_error( $smush_stats ) ) {
-					return $smush_stats;
-				}
-
-				if ( ! empty( $smush_stats['data'] ) ) {
-					$image['sizes'][ $size ] = (object) $WpSmush->_array_fill_placeholders( $WpSmush->_get_size_signature(), (array) $smush_stats['data'] );
-				}
-			}
 		}
 	}
 }

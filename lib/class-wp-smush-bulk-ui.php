@@ -448,18 +448,18 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<p class="wp-smush-enable-lossy"><?php esc_html_e( "Enable Super-smush in the Settings area to get even more savings with almost no noticeable quality loss.", "wp-smushit" ); ?></p><?php
 				} ?>
 				</div><?php
-				$this->progress_bar();
+				$this->progress_bar( $wpsmushit_admin );
 			}
 		}
 
 		/**
 		 * Content for showing Progress Bar
 		 */
-		function progress_bar() {
+		function progress_bar( $count ) {
 			global $wpsmushit_admin;
 			// calculate %ages, avoid divide by zero error with no attachments
-			if ( $wpsmushit_admin->total_count > 0 && $wpsmushit_admin->smushed_count > 0 ) {
-				$smushed_pc = $wpsmushit_admin->smushed_count / $wpsmushit_admin->total_count * 100;
+			if ( $count->total_count > 0 && $count->smushed_count > 0 ) {
+				$smushed_pc = $count->smushed_count / $count->total_count * 100;
 			} else {
 				$smushed_pc = 0;
 			} ?>
@@ -470,16 +470,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<div class="wp-smush-progress-bar">
 						<div class="wp-smush-progress-inner" style="width: <?php echo $smushed_pc; ?>%;">
 							<div class="wp-smush-progress-count">
-								<span
-									class="wp-smush-images-smushed"><?php echo $wpsmushit_admin->format_number( $wpsmushit_admin->smushed_count ); ?></span>
-								<span
-									class="wp-smush-images-total"><?php echo $wpsmushit_admin->format_number( $wpsmushit_admin->total_count ); ?></span>
+								<span class="wp-smush-images-smushed"><?php echo $wpsmushit_admin->format_number( $count->smushed_count ); ?></span>/<span class="wp-smush-images-total"><?php echo $wpsmushit_admin->format_number( $count->total_count ); ?></span>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div
-					class="wp-smush-count tc"><?php printf( esc_html__( "%s%d%s of %d attachments have been smushed." ), '<span class="wp-smush-images-smushed">', $wpsmushit_admin->smushed_count, '</span>', $wpsmushit_admin->total_count ); ?></div>
+					class="wp-smush-count tc"><?php printf( esc_html__( "%s%d%s of %d attachments have been smushed." ), '<span class="wp-smush-images-smushed">', $count->smushed_count, '</span>', $count->total_count ); ?></div>
 			</div>
 			<div class="smush-final-log notice notice-warning inline hidden"></div>
 			<hr class="wp-smush-sep">

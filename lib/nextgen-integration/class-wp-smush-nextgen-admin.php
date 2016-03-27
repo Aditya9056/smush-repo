@@ -38,6 +38,12 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//Localize variables for NextGen Manage gallery page
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 
+			//Update resmush list, if a NextGen image is deleted
+			add_action( 'ngg_delete_picture', array( $this, 'update_resmush_list' ) );
+
+			//Update Stats, if a NextGen image is deleted
+			add_action( 'ngg_delete_picture', array( $this, 'update_nextgen_stats' ) );
+
 		}
 
 		/**
@@ -478,7 +484,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		/**
 		 * Outputs the Content for Bulk Smush Div
 		 */
-		function bulk_smush_content() {
+		function bulk_smush_content( $bulk_ui ) {
 			global $wpsmushit_admin;
 			$all_done = $this->smushed_count == $this->total_count;
 
@@ -507,16 +513,16 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 						<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
 					</i><?php printf( esc_html__( "%s, you have %s%d images%s that needs smushing!", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', $this->remaining_count, '</strong>' ); ?>
 				</div>
-				<hr>
+				<hr class="wp-smush-sep">
 				<div class="smush-final-log notice notice-warning inline hidden"></div>
-				<button type="button" class="wp-smush-all wp-smush-button"><?php echo $button_content; ?></button><?php
+				<button type="button" class="wp-smush-button wp-smush-nextgen-bulk"><?php echo $button_content; ?></button><?php
 
 				//Enable Super Smush
-				if ( $wpsmushit_admin->is_pro() && ! $wpsmushit_admin->lossy_enabled ) { ?>
+				if ( ! $wpsmushit_admin->lossy_enabled ) { ?>
 					<p class="wp-smush-enable-lossy"><?php esc_html_e( "Enable Super-smush in the Settings area to get even more savings with almost no noticeable quality loss.", "wp-smushit" ); ?></p><?php
 				} ?>
 				</div><?php
-				$wpsmushit_admin->progress_bar();
+				$bulk_ui->progress_bar( $this );
 			}
 		}
 
@@ -527,7 +533,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$smush_individual_msg = sprintf( esc_html__( "Smush individual images via your %sManage Galleries%s section", "wp-smushit" ), '<a href="' . esc_url( admin_url() . 'admin.php?page=nggallery-manage-gallery' ) . '" title="' . esc_html__( 'Manage Galleries', 'wp-smushit' ) . '">', '</a>' );
 			$bulk_ui->container_header( 'bulk-smush-wrapper', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
 			<div class="box-container"><?php
-				$this->bulk_smush_content(); ?>
+				$this->bulk_smush_content( $bulk_ui ); ?>
 			</div><?php
 			echo "</section>";
 		}
@@ -592,6 +598,58 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				?>
 			</div><?php
 			echo "</section>";
+		}
+		/**
+		 * Updates the resmush list for NextGen gallery, remove the given id
+		 *
+		 * @param $attachment_id
+		 */
+		function update_resmush_list( $attachment_id ) {
+			global $wpsmushit_admin;
+			$wpsmushit_admin->update_resmush_list( $attachment_id, 'wp-smush-nextgen-resmush-list' );
+		}
+
+		/**
+		 * Fetch the stats for the given attachment id, and subtract them from Global stats
+		 * @param $attachment_id
+		 */
+		function update_nextgen_stats( $attachment_id ) {
+			global $WpSmush;
+
+			if ( empty( $attachment_id ) ) {
+				return false;
+			}
+
+			$image_id = absint( (int) $attachment_id );
+
+			//Get the absolute path for original image
+			$image = $this->get_nextgen_image_from_id( $image_id );
+
+			//Image Meta data
+			$metadata = ! empty( $image ) ? $image->meta_data : '';
+
+			$smush_stats = ! empty( $metadata['wp_smush'] ) ? $metadata['wp_smush'] : '';
+
+			if ( empty( $smush_stats ) ) {
+				return false;
+			}
+
+			$nextgen_stats = get_option( 'wp_smush_stats_nextgen', false );
+			if ( ! $nextgen_stats ) {
+				return false;
+			}
+
+			if ( ! empty( $nextgen_stats['size_before'] ) && ! empty( $nextgen_stats['size_after'] ) && $nextgen_stats['size_before'] > 0 && $nextgen_stats['size_after'] > 0  && $nextgen_stats['size_before'] > $smush_stats['stats']['size_before'] ) {
+				$nextgen_stats['size_before'] = $nextgen_stats['size_before'] - $smush_stats['stats']['size_before'];
+				$nextgen_stats['size_after']  = $nextgen_stats['size_after'] - $smush_stats['stats']['size_after'];
+				$nextgen_stats['bytes']       = $nextgen_stats['size_before'] - $nextgen_stats['size_after'];
+				$nextgen_stats['percent']     = ( $nextgen_stats['bytes'] / $nextgen_stats['size_before'] ) * 100;
+				$nextgen_stats['human']       = $WpSmush->format_bytes( $nextgen_stats['bytes'] );
+			}
+
+			//Update Stats
+			update_option( 'wp_smush_stats_nextgen', $nextgen_stats );
+
 		}
 
 	}//End of Class
