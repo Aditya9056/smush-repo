@@ -128,9 +128,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle the smush pro dismiss features notice ajax
 			add_action( 'wp_ajax_dismiss_smush_notice', array( $this, 'dismiss_smush_notice' ) );
 
-			//Return Super Smush image count
-			add_action( 'wp_ajax_super_smushed_count', array( $this, 'super_smushed_count' ) );
-
 			$this->bulk_ui = new WpSmushBulkUi();
 		}
 
@@ -1003,18 +1000,30 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return array
 		 */
-		function get_lossless_attachments() {
+		function get_lossy_attachments( $attachments = '', $return_count = true ) {
 
-			$lossless_attachments = array();
+			$lossy_attachments = array();
+			$count = 0;
 
-			//Fetch all the smushed attachment ids
-			$attachments = $this->get_smushed_attachments();
+			if( empty( $attachments ) ) {
+				//Fetch all the smushed attachment ids
+				$attachments = $this->get_smushed_attachments();
+			}
+
+			//If we dont' have any attachments
+			if ( empty( $attachments ) || 0 == count( $attachments ) ) {
+				return 0;
+			}
 
 			//Check if image is lossless or lossy
 			foreach ( $attachments as $attachment ) {
 
 				//Check meta for lossy value
 				$smush_data = ! empty( $attachment->smush_data ) ? maybe_unserialize( $attachment->smush_data ) : '';
+				//For Nextgen Gallery images
+				if( empty( $smush_data ) ) {
+					$smush_data = ! empty( $attachment['wp_smush'] ) ? $attachment['wp_smush'] : '';
+				}
 
 				//Return if not smushed
 				if ( empty( $smush_data ) ) {
@@ -1025,15 +1034,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( empty( $smush_data['stats'] ) || ! isset( $smush_data['stats']['lossy'] ) ) {
 					continue;
 				}
-				//Add to array if lossy is not 1
-				if ( $smush_data['stats']['lossy'] != 1 ) {
-					$lossless_attachments[] = $attachment->attachment_id;
-				}
 
+				//Add to array if lossy is not 1
+				if ( $smush_data['stats']['lossy'] == 1 ) {
+					$count ++;
+					if ( ! empty( $attachment->attachment_id ) ) {
+						$lossy_attachments[] = $attachment->attachment_id;
+					}
+				}
 			}
 			unset( $attachments );
 
-			return $lossless_attachments;
+			if( $return_count ) {
+				return $count;
+			}
+
+			return $lossy_attachments;
 		}
 
 		/**
@@ -1306,6 +1322,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				if ( ( $count = count( $resmush_list ) ) > 0 ) {
 					$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->bulk_ui->resmush_bulk_ui( true );
+				}else{
+					//Other wise don't show the scan option
+					if( 'nextgen' == $type ) {
+						delete_option('wp_smush_show_resmush_nextgen');
+					}else{
+						delete_option('wp_smush_show_resmush');
+					}
 				}
 			}
 			wp_send_json_success( array( "resmush_ids" => $resmush_list, "content" => $ajax_response ) );
@@ -1438,8 +1461,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Need to scan all the image
 			if ( $revaluate ) {
 				//Get all the Smushed attachments
-				$super_smushed_images = $this->get_lossless_attachments();
-				$count                = ! empty( $super_smushed_images ) ? count( $super_smushed_images ) : 0;
+				$super_smushed_images = $this->get_lossy_attachments();
+				$count                = ! empty( $super_smushed_images ) ? intval( $super_smushed_images ) : 0;
 
 				$super_smushed['count']     = $count;
 				$super_smushed['timestamp'] = current_time( 'timestamp' );

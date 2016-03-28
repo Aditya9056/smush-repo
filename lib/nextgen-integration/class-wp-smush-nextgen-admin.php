@@ -616,21 +616,24 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 							<span class="smushed-count"><?php echo intval( $this->smushed_count ) . '</span>/' . $this->total_count; ?>
 						</strong>
 					</span>
-				</div>
-				<hr>
-				<div class="row super-smush-attachments">
+				</div><?php
+				if( apply_filters( 'wp_smush_show_nextgen_lossy_stats', true ) ) { ?>
+					<hr>
+					<div class="row super-smush-attachments">
 					<span class="float-l wp-smush-stats-label">
 						<strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong>
 					</span>
 					<span class="float-r wp-smush-stats">
 						<?php
 						if ( $WpSmush->lossy_enabled ) {
-							echo '<strong><span class="smushed-count">' . intval( $this->super_smushed ) . '</span>/' . $this->total_count .'</strong>';
+							$count = $this->super_smushed_count();
+							echo '<strong><span class="smushed-count">' . $count . '</span>/' . $this->total_count . '</strong>';
 						} else {
 							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
 						} ?>
 					</span>
-				</div><?php
+					</div><?php
+				}
 				/**
 				 * Allows you to output any content within the stats box at the end
 				 */
@@ -690,6 +693,22 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//Update Stats
 			update_option( 'wp_smush_stats_nextgen', $nextgen_stats );
 
+		}
+
+		/**
+		 * Returns count of Super SMushed images
+		 *
+		 */
+		function super_smushed_count() {
+
+			global $wpsmushit_admin, $wpsmushnextgenstats;
+
+			//Get Smushed images
+			$nextgen_images = $wpsmushnextgenstats->get_ngg_images( 'smushed' );
+
+			$super_smushed = $wpsmushit_admin->get_lossy_attachments( $nextgen_images );
+
+			return $super_smushed;
 		}
 
 	}//End of Class
