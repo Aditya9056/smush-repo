@@ -487,7 +487,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/upload-images.png'; ?>"
 						alt="<?php esc_html_e( "No attachments found - Upload some images", "wp-smushit" ); ?>">
 		        </span>
-				<p class="wp-smush-no-images-content tc"><?php printf( esc_html__( "We haven’t found any images in your %sgallery%s yet, so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" ), '<a href="' . esc_url( admin_url('admin.php?page=ngg_addgallery') ) . '">', '</a>' ); ?></p>
+				<p class="wp-smush-no-images-content tc roboto-regular"><?php printf( esc_html__( "We haven’t found any images in your %sgallery%s yet, so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" ), '<a href="' . esc_url( admin_url('admin.php?page=ngg_addgallery') ) . '">', '</a>' ); ?></p>
 				<span class="wp-smush-upload-images tc">
 					<a class="button button-cta" href="<?php echo esc_url( admin_url('admin.php?page=ngg_addgallery') ); ?>"><?php esc_html_e( "UPLOAD IMAGES", "wp-smushit" ); ?></a>
 				</span><?php
@@ -557,7 +557,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function bulk_resmush_content() { ?>
 			<div class="wp-smush-resmush-wrapper">
-			<div class="wp-smush-settings-changed">
+			<div class="wp-smush-settings-changed roboto-regular">
 				<?php esc_html_e( "You changed your settings recently. Let's run a quick check to see if any of your images can be further optimised to the new settings." ); ?>
 			</div>
 			<div class="wp-smush-progress-bar-wrap hidden">
@@ -578,7 +578,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Outputs the Smush stats for the site
 		 */
 		function smush_stats_container() {
-			global $wpsmushnextgenstats;
+			global $WpSmush, $wpsmushnextgenstats;
 
 			//NextGen Stats
 			$this->stats = $wpsmushnextgenstats->get_smush_stats();
@@ -622,9 +622,12 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 						<strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong>
 					</span>
 					<span class="float-r wp-smush-stats">
-						<strong>
-							<span class="smushed-count"><?php echo intval( $this->super_smushed ) . '</span>/' . $this->total_count; ?>
-						</strong>
+						<?php
+						if ( $WpSmush->lossy_enabled ) {
+							echo '<strong><span class="smushed-count">' . intval( $this->super_smushed ) . '</span>/' . $this->total_count .'</strong>';
+						} else {
+							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
+						} ?>
 					</span>
 				</div><?php
 				/**

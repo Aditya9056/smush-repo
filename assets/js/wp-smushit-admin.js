@@ -196,7 +196,9 @@ jQuery(function ($) {
             this.enable_button();
 
             //Show Bulk Wrapper
-            $('.wp-smush-all-done').show();
+            var notice_selector = self.is_bulk_resmush ? $('.bulk-resmush-wrapper .wp-smush-all-done') : $('.bulk-smush-wrapper .wp-smush-all-done');
+
+            notice_selector.show();
 
             //Hide the Progress Bar
             $('.wp-smush-bulk-progress-bar-wrapper').hide();
