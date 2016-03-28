@@ -76,8 +76,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<!-- Content -->
 			<div class="box-content">
 			<div class="col-third">
-				<img src="<?php echo WP_SMUSH_URL . 'assets/images/DEV-Man-Running.png'; ?>"
-				     alt="<?php esc_html_e( "Welcome Screen - DEV Man Running", "wp-smushit" ); ?>">
+				<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush.png'; ?>"
+				     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>">
 			</div>
 			<div class="col-half wp-smush-welcome-content">
 				<h4><?php esc_html_e( "OH YEAH, IT'S COMPRESSION TIME", "wp-smushit" ); ?></h4>

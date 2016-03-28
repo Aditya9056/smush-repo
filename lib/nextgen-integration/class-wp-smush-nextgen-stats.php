@@ -175,7 +175,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			if ( empty( $wp_smush_data ) ) {
 				return false;
 			}
-			$button_txt  = '';
+			$button_txt  = $stats = '';
 			$show_button = $show_resmush = $show_restore = false;
 
 			$bytes          = isset( $wp_smush_data['stats']['bytes'] ) ? $wp_smush_data['stats']['bytes'] : 0;
@@ -244,9 +244,10 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 						$full_image = $storage->get_image_abspath( $image, 'full' );
 
+						//Stats
+						$stats = $this->get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
+
 						if ( ! $text_only ) {
-							//Stats
-							$stats = $this->get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
 							$status_txt .= $stats;
 						}
 					}
@@ -431,8 +432,13 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 */
 		function cmp( $a, $b ) {
 			if ( is_object( $a ) ) {
+				//Check and typecast $b if required
+				$b = is_object( $b ) ? $b : (object) $b;
+
 				return $a->bytes < $b->bytes;
 			} else if ( is_array( $a ) ) {
+				$b = is_array( $b ) ? $b : (array) $b;
+
 				return $a['bytes'] < $b['bytes'];
 			}
 		}
