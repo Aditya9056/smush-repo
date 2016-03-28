@@ -871,10 +871,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							//Detailed Stats Link
 							$status_txt .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" data-toggle="tooltip" title="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
 
-							//Stats
-							$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
-							if( !$text_only ) {
-								$status_txt = $text_only ? $status_txt : $status_txt . $stats;
+							if ( ! $text_only ) {
+								//Stats
+								$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
+								$status_txt .= $stats;
 							}
 						}
 					}

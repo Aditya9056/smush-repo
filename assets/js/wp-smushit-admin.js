@@ -117,7 +117,7 @@ jQuery(function ($) {
                 //Hide the Notice Div
                 $('.wp-smush-resmush-wrap').hide();
                 //Show the progress bar
-                $('.bulk-resmush-wrapper .wp-smush-bulk-progress-bar-wrapper').removeClass('hidden');
+                $('.bulk-resmush-wrapper .wp-smush-bulk-progress-bar-wrapper').removeClass('hidden').show();
             }else {
                 //Hide the Bulk Div
                 $('.wp-smush-bulk-wrapper').hide();

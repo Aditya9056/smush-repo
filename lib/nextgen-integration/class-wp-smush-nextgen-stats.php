@@ -244,10 +244,10 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 						$full_image = $storage->get_image_abspath( $image, 'full' );
 
-						//Stats
-						$stats = $this->get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
 						if ( ! $text_only ) {
-							$status_txt = $text_only ? $status_txt : $status_txt . $stats;
+							//Stats
+							$stats = $this->get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
+							$status_txt .= $stats;
 						}
 					}
 				}
@@ -363,6 +363,15 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$this->get_ngg_images( 'smushed', '', true );
 		}
 
+		/**
+		 * Returns the Stats for a image formatted into a nice table
+		 * @param $image_id
+		 * @param $wp_smush_data
+		 * @param $attachment_metadata
+		 * @param $full_image
+		 *
+		 * @return string
+		 */
 		function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata, $full_image ) {
 			global $WpSmush;
 

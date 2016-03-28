@@ -410,6 +410,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					     ) && ! $show_resmush_saved
 					) {
 						$show_resmush_saved = update_option( 'wp_smush_show_resmush', 1 );
+						update_option( 'wp_smush_show_resmush_nextgen', 1 );
 					}
 				}
 
@@ -420,6 +421,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Delete Show Resmush option
 			if ( isset( $_POST['wp-smush-keep_exif'] ) && ! isset( $_POST['wp-smush-original'] ) && ! isset( $_POST['wp-smush-lossy'] ) ) {
 				delete_option('wp_smush_show_resmush');
+				delete_option('wp_smush_show_resmush_nextgen');
 			}
 
 		}
@@ -1326,9 +1328,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//If Resmush List is empty
 			if ( empty( $resmush_list ) || 0 == count( $resmush_list ) ) {
-				//Remove the two options
-				delete_option( 'wp_smush_show_resmush' );
-				delete_option( 'wp-smush-resmush-list' );
+				if( 'wp-smush-nextgen-resmush-list' == $mkey ) {
+					//Remove the two options
+					delete_option( 'wp_smush_show_resmush_nextgen' );
+				}else {
+					//Remove the two options
+					delete_option( 'wp_smush_show_resmush' );
+				}
+				//Delete resmush list
+				delete_option( $mkey );
 			}else {
 				update_option( $mkey, $resmush_list );
 			}

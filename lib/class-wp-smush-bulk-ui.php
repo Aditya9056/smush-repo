@@ -251,7 +251,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<hr  class="wp-smush-sep" />';
 
 			$ss_progress_ui .= $wpsmushit_admin->setup_button( true, true ) . '</div>';
-			$ss_progress_ui .= $this->resmush_progress_bar( true );
+			$ss_progress_ui .= $this->resmush_progress_bar( '', true );
 			//If need to return the content
 			if ( $return ) {
 				return $ss_progress_ui;
@@ -488,11 +488,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		/**
 		 * Progress Bar for Resmush UI
 		 */
-		function resmush_progress_bar( $return = false ) {
+		function resmush_progress_bar( $resmush_count = '', $return = false ) {
 			global $wpsmushit_admin;
-			//Get Resmush List
-			$resmush_list  = get_option( 'wp-smush-resmush-list' );
-			$resmush_count = ! empty( $resmush_list ) ? count( $resmush_list ) : 0;
+			if( empty( $resmush_count ) ) {
+				//Get Resmush List
+				$resmush_list  = get_option( 'wp-smush-resmush-list' );
+				$resmush_count = ! empty( $resmush_list ) ? count( $resmush_list ) : 0;
+			}
 
 			$content = '<div class="wp-smush-bulk-progress-bar-wrapper hidden">
 			<p class="wp-smush-bulk-active">' . sprintf( esc_html__( "%sBulk re-smush is currently running.%s You need to keep this page open.", "wp-smushit" ), '<strong>', '</strong>' ) . '</p>
@@ -547,8 +549,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				class="wp-smush-settings-changed"><?php esc_html_e( "You changed your settings recently. Let's run a quick check to see if any of your images can be further optimised to the new settings." ); ?></div>
 			<div class="wp-smush-progress-bar-wrap hidden">
 				<div class="wp-smush-progress-bar">
-					<div class="wp-smush-progress-inner" style="width: 100%;"><span
-							class="wp-scan-progress-text"><?php esc_html_e( "Scanning images..", "wp-smushit" ); ?></span>
+					<div class="wp-smush-progress-inner" style="width: 100%;">
+						<span class="wp-scan-progress-text"><?php esc_html_e( "Scanning images..", "wp-smushit" ); ?></span>
 					</div>
 				</div>
 			</div>
