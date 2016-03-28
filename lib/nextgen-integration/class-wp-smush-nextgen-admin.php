@@ -460,8 +460,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				</div>
 			<div class="wp-smush-resmush-wrap">
 				<div class="wp-smush-notice wp-smush-remaining">
-					<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i>' . sprintf( esc_html__( "%s, you have %s%d images%s that can be further optimised with current settings.", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', $count, '</strong>' )
-			                  . '</div>
+					<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i><span class="wp-smush-notice-text">' . sprintf( esc_html__( "%s, you have %s%d images%s that can be further optimised with current settings.", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', $count, '</strong>' )
+			                  . '</span></div>
 				<hr  class="wp-smush-sep" />';
 
 			$ss_progress_ui .= $this->setup_button( true, true ) . '</div>';
@@ -504,7 +504,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				<div class="wp-smush-notice wp-smush-remaining">
 					<i class="dev-icon">
 						<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
-					</i><?php printf( esc_html__( "%s, you have %s%d images%s that needs smushing!", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', $this->remaining_count, '</strong>' ); ?>
+					</i>
+					<span class="wp-smush-notice-text"><?php printf( esc_html__( "%s, you have %s%d images%s that needs smushing!", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', $this->remaining_count, '</strong>' ); ?></span>
 				</div>
 				<hr class="wp-smush-sep">
 				<div class="smush-final-log notice notice-warning inline hidden"></div>

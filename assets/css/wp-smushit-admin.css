@@ -985,9 +985,22 @@ table.wp-smush-stats-holder tr td:first-child {
 }
 
 .wp-smush-remaining .dev-icon img {
-    margin-right: 10px;
+    position: relative;
+    top: 6px;
     width: 14px;
-    vertical-align: bottom;
+}
+
+.wpmud .wp-smush-resmush-wrap .dev-icon {
+    margin-right: 10px;
+    vertical-align: top;
+}
+.wpmud .wp-smush-resmush-wrap .dev-icon img {
+    vertical-align: top;
+}
+
+.wp-smush-resmush-wrap .wp-smush-notice-text {
+    display: inline-block;
+    max-width: 95%;
 }
 
 .bulk-smush-wrapper .wp-smush-all {
