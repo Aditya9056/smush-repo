@@ -369,8 +369,9 @@ p#wp-smush-compression span {
     margin: 15px 20px 15px 0;
 }
 
-.wp-smushit-container-wrap {
+.wpmud .wp-smushit-container-wrap {
     display: inline-block;
+    margin-top: 30px;
     padding: 0 10px 0 0;
 }
 

@@ -139,7 +139,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						class="smushed-count"><?php echo intval( $wpsmushit_admin->smushed_count ) . '</span>/' . $wpsmushit_admin->total_count; ?>
 				</strong></span>
 			</div><?php
-			if ( $WpSmush->is_pro() ) { ?>
+			if ( $WpSmush->is_pro() ) {
+					$wpsmushit_admin->super_smushed = $wpsmushit_admin->super_smushed_count( true ); ?>
 				<hr>
 				<div class="row super-smush-attachments">
 					<span

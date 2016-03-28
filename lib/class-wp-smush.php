@@ -1509,6 +1509,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		/**
 		 * Deletes all the backup files when an attachment is deleted
+		 * Update Resmush List
+		 * Update Super Smush image count
 		 *
 		 * @param $image_id
 		 */

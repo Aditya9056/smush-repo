@@ -655,6 +655,20 @@ jQuery(function ($) {
         };
         $.post(ajaxurl, param );
     });
+    //Update Super Smush count
+    if( jQuery('.super-smush-attachments').length ) {
+        //Ajax Params
+        var params = {
+            action: 'super_smushed_count'
+        };
+        //Send ajax request and get ids if any
+        $.get(ajaxurl, params, function (r) {
+            //Check if we have the ids,  initialize the local variable
+            if( 'undefined' != r.data.count ) {
+                jQuery('.super-smush-attachments .smushed-count').html( r.data.count );
+            }
+        });
+    }
 
 });
 (function ($) {

@@ -121,11 +121,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			) );
 			//Attachment status, Grid view
 			add_filter( 'attachment_fields_to_edit', array( $this, 'filter_attachment_fields_to_edit' ), 10, 2 );
+
 			/// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
 			//Handle the smush pro dismiss features notice ajax
 			add_action( 'wp_ajax_dismiss_smush_notice', array( $this, 'dismiss_smush_notice' ) );
+
+			//Return Super Smush image count
+			add_action( 'wp_ajax_super_smushed_count', array( $this, 'super_smushed_count' ) );
 
 			$this->bulk_ui = new WpSmushBulkUi();
 		}
@@ -1401,6 +1405,82 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			else {
 				return $number;
 			}
+		}
+
+		/**
+		 * Returns/Updates the number of images Super Smushed
+		 * @return array|mixed|void
+		 */
+		function super_smushed_count( $return = false ) {
+
+			//Flag to check if we need to re-evaluate the count
+			$revaluate = false;
+
+			$super_smushed = get_option( 'wp_smush_super_smushed_count', false );
+
+			//Check if need to revalidate
+			if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['count'] ) ) {
+				$super_smushed = array();
+				$revaluate     = true;
+			} else {
+				$last_checked = $super_smushed['timestamp'];
+
+				$diff = $last_checked - current_time( 'timestamp' );
+
+				//Difference in minutes
+				$diff_m = $diff / 60;
+
+				//if last checked was more than 5 mins.
+				if ( $diff_m > 5 ) {
+					$revaluate = true;
+				}
+			}
+			//Need to scan all the image
+			if ( $revaluate ) {
+				//Get all the Smushed attachments
+				$super_smushed_images = $this->get_lossless_attachments();
+				$count                = ! empty( $super_smushed_images ) ? count( $super_smushed_images ) : 0;
+
+				$super_smushed['count']     = $count;
+				$super_smushed['timestamp'] = current_time( 'timestamp' );
+
+				update_option( 'wp_smush_super_smushed_count', $super_smushed );
+			}
+
+			if ( ! $return ) {
+				wp_send_json_success( array( 'count' => $super_smushed['count'] ) );
+			}
+			return $super_smushed['count'];
+		}
+
+		/**
+		 * Add/Subtract from Smushed images count
+		 *
+		 * @param string $op_type
+		 */
+		function update_super_smush_count( $op_type = 'add' ) {
+
+			//Get the existing count
+			$super_smushed = get_option( 'wp_smush_super_smushed_count', false );
+
+			//Initialize if it doesn't exists
+			if ( ! $super_smushed || empty( $super_smushed['count'] ) ) {
+				$super_smushed = array(
+					'count' => 0
+				);
+			}
+			//Increase if need to add
+			if ( 'add' == $op_type ) {
+				$super_smushed['count'] += 1;
+			} elseif ( 'sub' == $op_type && $super_smushed['count'] > 0 ) {
+				//Else if greater than 0, subtract 1
+				$super_smushed['count'] -= 1;
+			}
+			//Add the timestamp
+			$super_smushed['timestamp'] = current_time( 'timestamp' );
+
+			//Update to database
+			update_option( 'wp_smush_super_smushed_count', $super_smushed );
 		}
 
 	}
