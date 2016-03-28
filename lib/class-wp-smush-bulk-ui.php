@@ -387,6 +387,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * HummingBird Promo
 		 */
 		function wp_smush_hummingbird_promo() {
+			//Plugin Already Installed
+			if( class_exists('WP_Hummingbird')) {
+				return;
+			}
 			$this->container_header( 'wp-smush-hb-adv', "BOOST YOUR PERFORMANCE" ); ?>
 			<div class="box-content">
 			<span class="wp-smush-hummingbird-image tc">

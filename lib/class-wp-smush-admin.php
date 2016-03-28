@@ -254,6 +254,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Setup Total Attachments count
 			$this->total_count = $this->total_count();
+			$this->setup_global_stats();
 
 			if ( $this->is_pro_user || $this->remaining_count <= $this->max_free_bulk ) {
 				$bulk_now = __( 'Bulk Smush Now', 'wp-smushit' );
@@ -1220,11 +1221,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			check_ajax_referer( 'smush-scan-images', 'nonce' );
 
 			$resmush_list = array();
-
-			//Check for Pro membership
-			if ( ! $this->is_pro() ) {
-				die();
-			}
 
 			//Scanning for NextGen or Media Library
 			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
