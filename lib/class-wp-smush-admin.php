@@ -1026,8 +1026,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				//Check meta for lossy value
 				$smush_data = ! empty( $attachment->smush_data ) ? maybe_unserialize( $attachment->smush_data ) : '';
+
 				//For Nextgen Gallery images
-				if( empty( $smush_data ) && is_array( $attachment ) ) {
+				if ( empty( $smush_data ) && is_array( $attachment ) && ! empty( $attachment['wp_smush'] ) ) {
 					$smush_data = ! empty( $attachment['wp_smush'] ) ? $attachment['wp_smush'] : '';
 				}
 
