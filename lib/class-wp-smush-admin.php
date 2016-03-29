@@ -1027,7 +1027,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Check meta for lossy value
 				$smush_data = ! empty( $attachment->smush_data ) ? maybe_unserialize( $attachment->smush_data ) : '';
 				//For Nextgen Gallery images
-				if( empty( $smush_data ) ) {
+				if( empty( $smush_data ) && is_array( $attachment ) ) {
 					$smush_data = ! empty( $attachment['wp_smush'] ) ? $attachment['wp_smush'] : '';
 				}
 
@@ -1440,7 +1440,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Flag to check if we need to re-evaluate the count
 			$revaluate = false;
 
-			$super_smushed = get_option( 'wp_smush_super_smushed_count', false );
+			$super_smushed = get_option( 'wp-smush-super_smushed_count', false );
 
 			//Check if need to revalidate
 			if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['count'] ) ) {
@@ -1468,7 +1468,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$super_smushed['count']     = $count;
 				$super_smushed['timestamp'] = current_time( 'timestamp' );
 
-				update_option( 'wp_smush_super_smushed_count', $super_smushed );
+				update_option( 'wp-smush-super_smushed_count', $super_smushed );
 			}
 
 			if ( ! $return ) {
@@ -1485,7 +1485,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function update_super_smush_count( $op_type = 'add' ) {
 
 			//Get the existing count
-			$super_smushed = get_option( 'wp_smush_super_smushed_count', false );
+			$super_smushed = get_option( 'wp-smush-super_smushed_count', false );
 
 			//Initialize if it doesn't exists
 			if ( ! $super_smushed || empty( $super_smushed['count'] ) ) {
@@ -1504,7 +1504,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$super_smushed['timestamp'] = current_time( 'timestamp' );
 
 			//Update to database
-			update_option( 'wp_smush_super_smushed_count', $super_smushed );
+			update_option( 'wp-smush-super_smushed_count', $super_smushed );
 		}
 
 	}

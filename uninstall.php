@@ -19,7 +19,9 @@ $smushit_keys = array(
 	'backup',
 	'nextgen',
 	'keep_exif',
-	'resmush-list'
+	'resmush-list',
+	'nextgen-resmush-list',
+	'super_smushed_count'
 );
 delete_option('wp_smush_show_resmush');
 delete_option('wp_smush_show_resmush_nextgen');
