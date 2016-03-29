@@ -166,7 +166,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			) );
 
 			//For Nextgen gallery Pages, check later in enqueue function
-			add_action( 'admin_print_scripts', array( $this, 'enqueue' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 		}
 
 		/**
@@ -223,7 +223,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			wp_enqueue_script( 'wp-smushit-admin-js' );
-			wp_enqueue_script( 'jquery-ui-tooltip' );
+			wp_enqueue_script( 'jquery-ui-tooltip', '', array( 'jquery') );
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );

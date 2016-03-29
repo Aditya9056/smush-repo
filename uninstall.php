@@ -21,6 +21,8 @@ $smushit_keys = array(
 	'keep_exif',
 	'resmush-list'
 );
+delete_option('wp_smush_show_resmush');
+delete_option('wp_smush_show_resmush_nextgen');
 foreach ( $smushit_keys as $key ) {
 	$key = 'wp-smush-' . $key;
 	if ( is_multisite() ) {
