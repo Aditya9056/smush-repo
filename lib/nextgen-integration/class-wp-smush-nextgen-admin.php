@@ -320,51 +320,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		}
 
 		/**
-		 * Print out the progress bar
-		 */
-		function progress_ui() {
-			global $WpSmush, $wpsmushnextgenstats;
-			$this->stats = $wpsmushnextgenstats->get_smush_stats();
-
-			// calculate %ages, avoid divide by zero error with no attachments
-			if ( $this->total_count > 0 ) {
-				$smushed_pc = $this->smushed_count / $this->total_count * 100;
-			} else {
-				$smushed_pc = 0;
-			}
-			$bytes   = ! empty( $this->stats['bytes'] ) ? $this->stats['bytes'] : 0;
-			$human   = ! empty( $this->stats['human'] ) ? $this->stats['human'] : $WpSmush->format_bytes( $bytes );
-			$percent = ! empty( $this->stats['percent'] ) ? number_format_i18n( $this->stats['percent'], 2, '.', '' ) : '';
-
-			$progress_ui = '<div id="progress-ui">';
-
-			// display the progress bars
-			$progress_ui .= '<div id="wp-smush-progress-wrap">
-                                                <div id="wp-smush-fetched-progress" class="wp-smush-progressbar"><div style="width:' . $smushed_pc . '%"></div></div>
-                                                <p id="wp-smush-compression">'
-			                . __( "Reduced by ", 'wp-smushit' )
-			                . '<span id="human">' . $human . '</span> ( <span id="percent">' . $percent . '</span>% )
-                                                </p>
-                                        </div>';
-
-			// status divs to show completed count/ total count
-			$progress_ui .= '<div id="wp-smush-progress-status">
-
-                            <p id="fetched-status">' .
-			                sprintf(
-				                __(
-					                '<span class="done-count">%d</span> of <span class="total-count">%d</span> total attachments have been smushed', 'wp-smushit'
-				                ), $this->smushed_count, $this->total_count
-			                ) .
-			                '</p>
-                                        </div>
-				</div>';
-			// print it out
-			echo $progress_ui;
-			wp_nonce_field( 'wp_smush_nextgen', '_wp_smush_nonce', '', true );
-		}
-
-		/**
 		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not
 		 *
 		 * @return array
