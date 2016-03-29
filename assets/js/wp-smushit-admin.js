@@ -638,7 +638,10 @@ jQuery(function ($) {
     });
 
     /** Modify Title style using jQuery tooltip, Show help text on help image hover **/
-    $('.wp-smush-title').tooltip();
+    //If tooltip function exists
+    if( jQuery.isFunction(jQuery.fn.tooltip) ) {
+        $('.wp-smush-title').tooltip();
+    }
 
     //Dismiss Welcome notice
     jQuery('.smush-dismiss-welcome').on('click', function(e) {

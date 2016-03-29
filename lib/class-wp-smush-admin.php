@@ -223,7 +223,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			wp_enqueue_script( 'wp-smushit-admin-js' );
-			wp_enqueue_script( 'jquery-ui-tooltip', '', array( 'jquery') );
+			wp_enqueue_script( 'jquery-ui-tooltip');
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
