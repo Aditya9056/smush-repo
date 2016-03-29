@@ -1,13 +1,13 @@
 === WP Smush ===
 Plugin Name: WP Smush
-Version: 2.1.5
+Version: 2.1.6
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: Attachment,Attachments,Compress,Compress Image File,Compress Image Size,Compress JPG,Compressed JPG, Compression Image,Image,Images,JPG,Optimise,Optimize,Photo,Photos,Pictures,PNG,Reduce Image Size,Smush,Smush.it,Upload,WordPress Compression,WordPress Image Tool,Yahoo, Yahoo Smush.it
 Requires at least: 3.5
 Tested up to: 4.4.2
-Stable tag: 2.1.5
+Stable tag: 2.1.6
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
@@ -82,15 +82,14 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.1.6 =
 * New: Manual Image restore option for Media Library and NextGen Gallery, if "Backup Original Images" was kept on while smushing ( Pro Only )
-* New: Option to resmush image if Smush original is checked and Original image was skipped earlier ( Pro Only )
 * New: Delete Backup Files (Pro Only) on attachment deletion
-
+* New: Option to resmush image if settings are changed after optimising images
 * New: Added an option to preserve EXIF
 * New: Remove Smush meta on image regeneration,
        This allows user to manually smush them later, if auto smush is off ( WP Image Editor support )
 * Updated: Upfront Integration
 * Updated: Use jQuery tooltip for Smush elements only
-* Code Optimisation
+* Code Optimisation, Updated Settings page UI
 
 = 2.1.5 =
 

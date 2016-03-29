@@ -76,11 +76,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<!-- Content -->
 			<div class="box-content">
 			<div class="col-third">
-				<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush.png'; ?>"
+				<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-welcome.png'; ?>"
 				     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>">
 			</div>
-			<div class="col-half wp-smush-welcome-content">
-				<h4><?php esc_html_e( "OH YEAH, IT'S COMPRESSION TIME", "wp-smushit" ); ?></h4>
+			<div class="col-two-third wp-smush-welcome-content">
+				<h4 class="roboto-condensed-regular"><?php esc_html_e( "OH YEAH, IT'S COMPRESSION TIME", "wp-smushit" ); ?></h4>
 				<p class="wp-smush-welcome-message roboto-medium"><?php printf( esc_html__( ' %1$s Nice one, %3$s%2$s! You\'ve just installed %4$s, the hottest image compression plugin for WordPress that will reduce your image sizes significantly! We\'ve already applied recommended settings, which you can change anytime. %1$sGet started by running your first Smush!%2$s', "wp-smushit" ), '<strong>', '</strong>', $user_name, $plugin_name ); ?></p>
 			</div>
 			</div><?php
@@ -416,7 +416,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//If there are no images in Media Library
 			if ( 0 >= $wpsmushit_admin->total_count ) { ?>
 				<span class="wp-smush-no-image tc"><img
-						src="<?php echo WP_SMUSH_URL . 'assets/images/upload-images.png'; ?>"
+						src="<?php echo WP_SMUSH_URL . 'assets/images/smush-upload-images.png'; ?>"
 						alt="<?php esc_html_e( "No attachments found - Upload some images", "wp-smushit" ); ?>">
 		        </span>
 				<p class="wp-smush-no-images-content tc roboto-regular"><?php printf( esc_html__( "We haven’t found any images in your %smedia library%s yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ); ?></p>
