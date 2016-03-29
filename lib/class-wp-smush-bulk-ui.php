@@ -342,8 +342,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$this->bulk_smush_container();
 				//Bulk Re Smush Container
 				$this->bulk_re_smush_container();
-				//Settings
-				$this->settings_ui();
+
+				if( !$WpSmush->is_pro() ) {
+					//Settings
+					$this->settings_ui();
+				}
 				?>
 			</div>
 
@@ -359,6 +362,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					do_action( 'wp_smush_after_stats_box' );
 				} ?>
 			</div><!-- End Of Smushit Container right --><?php
+			if( $WpSmush->is_pro() ) {?>
+				<div class="row"><?php
+				 //Settings
+					$this->settings_ui(); ?>
+				</div><?php
+			}
 			$this->smush_page_footer();
 		}
 
