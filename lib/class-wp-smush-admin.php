@@ -1493,9 +1493,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( $revaluate ) {
 				//Get all the Smushed attachments ids
 				$super_smushed_images = $this->get_lossy_attachments( $attachments, false );
-				echo "<pre>Super Smushed Images";
-				print_r( $super_smushed_images );
-				echo "</pre>";
 
 				if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
 					//Iterate over all the attachments to check if it's already there in list, else add it
@@ -1536,15 +1533,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'ids' => array()
 				);
 			}
+
 			//Insert the id, if not in there already
 			if ( 'add' == $op_type && ! in_array( $id, $super_smushed['ids'] ) ) {
 
 				$super_smushed['ids'][] = $id;
 
-			} elseif ( 'remove' == $op_type && $key = array_search( $id, $super_smushed['ids'] ) ) {
+			} elseif ( 'remove' == $op_type && false !== ( $k = array_search( $id, $super_smushed['ids'] ) ) ) {
 
 				//Else remove the id from the list
-				unset( $super_smushed['ids'][ $key ] );
+				unset( $super_smushed['ids'][ $k ] );
+
+				//Reset all the indexes
+				$super_smushed['ids'] = array_values( $super_smushed['ids'] );
 
 			}
 
@@ -1567,7 +1568,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return bool
 		 */
-		function is_lossy_compression( $id, $stats, $key = '' ) {
+		function is_lossy_compression( $id, $stats, $key = 'wp-smush-super_smushed' ) {
 			//If Stats are empty or the image id is not provided, return
 			if ( empty( $stats ) || empty( $id ) || empty( $stats['stats'] ) || ! isset( $stats['stats']['lossy'] ) ) {
 				return false;

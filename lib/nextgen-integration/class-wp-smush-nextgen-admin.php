@@ -584,9 +584,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					<span class="float-r wp-smush-stats">
 						<?php
 						if ( $WpSmush->lossy_enabled ) {
-							//Get Smushed images
-							$nextgen_images = $wpsmushnextgenstats->get_ngg_images( 'smushed' );
-							$count          = $wpsmushit_admin->get_lossy_attachments( $nextgen_images, true );
+							$count          = $wpsmushit_admin->super_smushed_count('nextgen', $wpsmushnextgenstats->get_ngg_images('smushed' ) );
 							echo '<strong><span class="smushed-count">' . $count . '</span>/' . $this->total_count . '</strong>';
 						} else {
 							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
