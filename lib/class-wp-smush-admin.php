@@ -321,24 +321,24 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'desc'  => esc_html__( 'When you upload images to your media library, we’ll automatically compress them instantly.', 'wp-smushit' )
 				),
 				'keep_exif' => array(
-					'label' => esc_html__( 'Preserve Image EXIF', 'wp-smushit' ),
+					'label' => esc_html__( 'Preserve Image EXIF data', 'wp-smushit' ),
 					'desc'  => esc_html__( 'EXIF data stores image information like ISO speed, shutter speed, camera model, dates, focal length and much more.', 'wp-smushit' )
+				),
+				'lossy'     => array(
+					'label' => esc_html__( 'Super-smush  my images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Compress your images further with our intelligent multi-pass lossy compression.', 'wp-smushit' )
+				),
+				'nextgen'   => array(
+					'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
 				),
 				'original'  => array(
 					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'By default we smush thumbnail, medium and large files. This will smush your original uploads too.', 'wp-smushit' )
 				),
-				'lossy'     => array(
-					'label' => esc_html__( 'Super-smush  my images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Reduce your images further with our intelligent multi-pass lossy compression.', 'wp-smushit' )
-				),
 				'backup'    => array(
-					'label' => esc_html__( 'Backup my originals', 'wp-smushit' ),
-					'desc'  => esc_html__( 'We’ll keep your original images you upload, as well as your newly compressed images. This will significantly increase your uploads folder size - nearly double.', 'wp-smushit' )
-				),
-				'nextgen'   => array(
-					'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
+					'label' => esc_html__( 'Make a copy of my original images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'We’ll keep your original images so you can restore them at any point if you need to. Note: This setting significantly increase your uploads folder size - nearly double.', 'wp-smushit' )
 				)
 			);
 		}
