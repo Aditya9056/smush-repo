@@ -446,6 +446,8 @@ table.wp-smush-stats-holder tr td:first-child {
 
 .wp-smush-page-header {
     overflow: hidden;
+    padding: 10px 0 0;
+    margin: 0 0 20px;
 }
 
 .wpmud .wp-smush-welcome#wp-smush-container {
@@ -479,16 +481,13 @@ table.wp-smush-stats-holder tr td:first-child {
 }
 
 .wpmud .row .col-two-third.wp-smushit-container-left {
+    padding-left: 0;
     width: 62%;
 }
 
 .wp-smush-premium .box-content {
     opacity: 0.5;
     pointer-events: none;
-}
-
-.smush-welcome-wrapper {
-    padding: 0 0 0 15px;
 }
 
 .smush-dismiss-welcome {
@@ -684,10 +683,6 @@ table.wp-smush-stats-holder tr td:first-child {
     font-size: 15px;
     font-family: "Roboto", sans-serif;
     width: 85%;
-}
-
-span.wp-smush-setting-label {
-    font-weight: bold;
 }
 
 small.smush-setting-description {

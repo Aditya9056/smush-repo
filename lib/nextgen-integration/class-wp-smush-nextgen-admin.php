@@ -433,7 +433,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Outputs the Content for Bulk Smush Div
 		 */
 		function bulk_smush_content() {
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $WpSmush;
 			$all_done = $this->smushed_count == $this->total_count;
 
 			//If there are no images in Media Library
@@ -467,7 +467,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				<button type="button" class="wp-smush-button wp-smush-nextgen-bulk"><?php echo $button_content; ?></button><?php
 
 				//Enable Super Smush
-				if ( ! $wpsmushit_admin->lossy_enabled ) { ?>
+				if ( ! $WpSmush->lossy_enabled ) { ?>
 					<p class="wp-smush-enable-lossy"><?php esc_html_e( "Enable Super-smush in the Settings area to get even more savings with almost no noticeable quality loss.", "wp-smushit" ); ?></p><?php
 				} ?>
 				</div><?php

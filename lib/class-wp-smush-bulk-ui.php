@@ -103,8 +103,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * All the settings for Basic and Advanced Users
 		 */
 		function settings_ui() {
-			global $wpsmushit_admin;
-			$class = $wpsmushit_admin->is_pro() ? 'smush-settings-wrapper wp-smush-pro' : 'smush-settings-wrapper';
+			global $wpsmushit_admin, $WpSmush;
+			$class = $WpSmush->is_pro() ? 'smush-settings-wrapper wp-smush-pro' : 'smush-settings-wrapper';
 			$this->container_header( $class, esc_html__( "SETTINGS", "wp-smushit" ), '' );
 			// display the options
 			$this->options_ui();
@@ -464,7 +464,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				}
 
 				//Enable Super Smush
-				if ( $wpsmushit_admin->is_pro() && ! $wpsmushit_admin->lossy_enabled ) { ?>
+				if ( $WpSmush->is_pro() && ! $WpSmush->lossy_enabled ) { ?>
 					<p class="wp-smush-enable-lossy"><?php esc_html_e( "Enable Super-smush in the Settings area to get even more savings with almost no noticeable quality loss.", "wp-smushit" ); ?></p><?php
 				} ?>
 				</div><?php
