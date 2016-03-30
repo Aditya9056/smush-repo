@@ -133,6 +133,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle the smush pro dismiss features notice ajax
 			add_action( 'wp_ajax_dismiss_smush_notice', array( $this, 'dismiss_smush_notice' ) );
 
+			//Update the Super Smush count, after the smushing
+			add_action( 'wp_smush_image_optimised', array( $this, 'is_lossy_compression' ), '', 2 );
+
 			$this->bulk_ui = new WpSmushBulkUi();
 		}
 
@@ -228,7 +231,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			wp_enqueue_script( 'wp-smushit-admin-js' );
-			wp_enqueue_script( 'jquery-ui-tooltip');
+			wp_enqueue_script( 'jquery-ui-tooltip' );
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
@@ -347,9 +350,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function setup_global_stats( $force_update = false ) {
-			$this->smushed_count = $this->smushed_count();
+			$this->smushed_count   = $this->smushed_count();
 			$this->remaining_count = $this->total_count - $this->smushed_count;
-			$this->stats         = $this->global_stats( $force_update );
+			$this->stats           = $this->global_stats( $force_update );
 		}
 
 		/**
@@ -411,9 +414,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					//If preserve exif is turned off, Or if Lossy/Smush original is turned on, and the setting isn't saved recently
 					if ( ( 'keep_exif' == $name && ! $setting ) ||
 					     ( in_array( $name, array(
-								'original',
-								'lossy'
-							) ) && $setting
+							     'original',
+							     'lossy'
+						     ) ) && $setting
 					     ) && ! $show_resmush_saved
 					) {
 						$show_resmush_saved = update_option( 'wp_smush_show_resmush', 1 );
@@ -427,8 +430,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Delete Show Resmush option
 			if ( isset( $_POST['wp-smush-keep_exif'] ) && ! isset( $_POST['wp-smush-original'] ) && ! isset( $_POST['wp-smush-lossy'] ) ) {
-				delete_option('wp_smush_show_resmush');
-				delete_option('wp_smush_show_resmush_nextgen');
+				delete_option( 'wp_smush_show_resmush' );
+				delete_option( 'wp_smush_show_resmush_nextgen' );
 			}
 
 		}
@@ -503,7 +506,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$stats = $this->stats;
 
 			$stats['smushed'] = $this->smushed_count;
-			$stats['total']   = $this->total_count();
+
+			if ( $WpSmush->lossy_enabled ) {
+				$stats['super_smushed'] = $this->super_smushed_count();
+			}
+
+			$stats['total'] = $this->total_count();
 
 			if ( is_wp_error( $smush ) ) {
 				$error = $smush->get_error_message();
@@ -544,6 +552,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Smush single images
+		 *
 		 * @param $attachment_id
 		 * @param bool $return Return/Echo the stats
 		 *
@@ -843,6 +852,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not
+		 *
 		 * @param $resmush
 		 *
 		 * @return array
@@ -1009,9 +1019,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function get_lossy_attachments( $attachments = '', $return_count = true ) {
 
 			$lossy_attachments = array();
-			$count = 0;
+			$count             = 0;
 
-			if( empty( $attachments ) ) {
+			if ( empty( $attachments ) ) {
 				//Fetch all the smushed attachment ids
 				$attachments = $this->get_smushed_attachments();
 			}
@@ -1043,16 +1053,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 
 				//Add to array if lossy is not 1
-				if ( $smush_data['stats']['lossy'] == 1 ) {
+				if ( 1 == $smush_data['stats']['lossy'] ) {
 					$count ++;
 					if ( ! empty( $attachment->attachment_id ) ) {
 						$lossy_attachments[] = $attachment->attachment_id;
+					} elseif ( is_array( $attachment ) && ! empty( $attachment['pid'] ) ) {
+						$lossy_attachments[] = $attachment['pid'];
 					}
 				}
 			}
 			unset( $attachments );
 
-			if( $return_count ) {
+			if ( $return_count ) {
 				return $count;
 			}
 
@@ -1324,12 +1336,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				if ( ( $count = count( $resmush_list ) ) > 0 ) {
 					$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->bulk_ui->resmush_bulk_ui( true );
-				}else{
+				} else {
 					//Other wise don't show the scan option
-					if( 'nextgen' == $type ) {
-						delete_option('wp_smush_show_resmush_nextgen');
-					}else{
-						delete_option('wp_smush_show_resmush');
+					if ( 'nextgen' == $type ) {
+						delete_option( 'wp_smush_show_resmush_nextgen' );
+					} else {
+						delete_option( 'wp_smush_show_resmush' );
 					}
 				}
 			}
@@ -1347,7 +1359,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$resmush_list = get_option( $mkey );
 
 			//If there are any items in the resmush list, Unset the Key
-			if( !empty( $resmush_list ) && count( $resmush_list ) > 0 ) {
+			if ( ! empty( $resmush_list ) && count( $resmush_list ) > 0 ) {
 				$key = array_search( $attachment_id, $resmush_list );
 				if ( $resmush_list ) {
 					unset( $resmush_list[ $key ] );
@@ -1357,16 +1369,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//If Resmush List is empty
 			if ( empty( $resmush_list ) || 0 == count( $resmush_list ) ) {
-				if( 'wp-smush-nextgen-resmush-list' == $mkey ) {
+				if ( 'wp-smush-nextgen-resmush-list' == $mkey ) {
 					//Remove the two options
 					delete_option( 'wp_smush_show_resmush_nextgen' );
-				}else {
+				} else {
 					//Remove the two options
 					delete_option( 'wp_smush_show_resmush' );
 				}
 				//Delete resmush list
 				delete_option( $mkey );
-			}else {
+			} else {
 				update_option( $mkey, $resmush_list );
 			}
 		}
@@ -1412,7 +1424,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function get_user_name() {
 			//Get username
 			$current_user = wp_get_current_user();
-			$name = !empty( $current_user->first_name ) ? $current_user->first_name : $current_user->display_name;
+			$name         = ! empty( $current_user->first_name ) ? $current_user->first_name : $current_user->display_name;
+
 			return $name;
 		}
 
@@ -1423,89 +1436,146 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return string
 		 */
-		function format_number($number) {
-			if($number >= 1000) {
-				return $number/1000 . "k";   // NB: you will want to round this
-			}
-			else {
+		function format_number( $number ) {
+			if ( $number >= 1000 ) {
+				return $number / 1000 . "k";   // NB: you will want to round this
+			} else {
 				return $number;
 			}
 		}
 
 		/**
 		 * Returns/Updates the number of images Super Smushed
+		 *
+		 * @param string $type media/nextgen, Type of images to get/set the super smushed count for
+		 *
+		 * @param array $attachments Optional, By default Media attachments will be fetched
+		 *
 		 * @return array|mixed|void
+		 *
 		 */
-		function super_smushed_count( $return = false ) {
+		function super_smushed_count( $type = 'media', $attachments = '' ) {
+
+			$key = 'nextgen' == $type ? 'wp-smush-super_smushed_nextgen' : 'wp-smush-super_smushed';
 
 			//Flag to check if we need to re-evaluate the count
 			$revaluate = false;
 
-			$super_smushed = get_option( 'wp-smush-super_smushed_count', false );
+			$super_smushed = get_option( $key, false );
 
 			//Check if need to revalidate
-			if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['count'] ) ) {
-				$super_smushed = array();
-				$revaluate     = true;
+			if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['ids'] ) ) {
+
+				$super_smushed = array(
+					'ids' => array()
+				);
+
+				$revaluate = true;
 			} else {
 				$last_checked = $super_smushed['timestamp'];
 
 				$diff = $last_checked - current_time( 'timestamp' );
 
 				//Difference in minutes
-				$diff_m = $diff / 60;
+				$diff_h = $diff / 3600;
 
-				//if last checked was more than 5 mins.
-				if ( $diff_m > 5 ) {
+				//if last checked was more than 12 hours.
+				if ( $diff_h > 12 ) {
 					$revaluate = true;
 				}
 			}
+			//Do not Revaluate stats if nextgen attachments are not provided
+			if ( 'nextgen' == $type && empty( $attachments ) && $revaluate ) {
+				$revaluate = false;
+			}
+
 			//Need to scan all the image
 			if ( $revaluate ) {
-				//Get all the Smushed attachments
-				$super_smushed_images = $this->get_lossy_attachments();
-				$count                = ! empty( $super_smushed_images ) ? intval( $super_smushed_images ) : 0;
+				//Get all the Smushed attachments ids
+				$super_smushed_images = $this->get_lossy_attachments( $attachments, false );
+				echo "<pre>Super Smushed Images";
+				print_r( $super_smushed_images );
+				echo "</pre>";
 
-				$super_smushed['count']     = $count;
+				if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
+					//Iterate over all the attachments to check if it's already there in list, else add it
+					foreach ( $super_smushed_images as $id ) {
+						if ( ! in_array( $id, $super_smushed['ids'] ) ) {
+							$super_smushed['ids'][] = $id;
+						}
+					}
+				}
 				$super_smushed['timestamp'] = current_time( 'timestamp' );
 
-				update_option( 'wp-smush-super_smushed_count', $super_smushed );
+				update_option( $key, $super_smushed );
 			}
 
-			if ( ! $return ) {
-				wp_send_json_success( array( 'count' => $super_smushed['count'] ) );
-			}
-			return $super_smushed['count'];
+			$count = ! empty( $super_smushed['ids'] ) ? count( $super_smushed['ids'] ) : 0;
+
+			return $count;
 		}
 
 		/**
-		 * Add/Subtract from Smushed images count
+		 * Add/Remove image id from Super Smushed images count
 		 *
-		 * @param string $op_type
+		 * @param int $id Image id
+		 *
+		 * @param string $op_type Add/remove, whether to add the image id or remove it from the list
+		 *
+		 * @return bool Whether the Super Smushed option was update or not
+		 *
 		 */
-		function update_super_smush_count( $op_type = 'add' ) {
+		function update_super_smush_count( $id, $op_type = 'add', $key = 'wp-smush-super_smushed' ) {
 
 			//Get the existing count
-			$super_smushed = get_option( 'wp-smush-super_smushed_count', false );
+			$super_smushed = get_option( $key, false );
 
 			//Initialize if it doesn't exists
-			if ( ! $super_smushed || empty( $super_smushed['count'] ) ) {
+			if ( ! $super_smushed || empty( $super_smushed['ids'] ) ) {
 				$super_smushed = array(
-					'count' => 0
+					'ids' => array()
 				);
 			}
-			//Increase if need to add
-			if ( 'add' == $op_type ) {
-				$super_smushed['count'] += 1;
-			} elseif ( 'sub' == $op_type && $super_smushed['count'] > 0 ) {
-				//Else if greater than 0, subtract 1
-				$super_smushed['count'] -= 1;
+			//Insert the id, if not in there already
+			if ( 'add' == $op_type && ! in_array( $id, $super_smushed['ids'] ) ) {
+
+				$super_smushed['ids'][] = $id;
+
+			} elseif ( 'remove' == $op_type && $key = array_search( $id, $super_smushed['ids'] ) ) {
+
+				//Else remove the id from the list
+				unset( $super_smushed['ids'][ $key ] );
+
 			}
+
 			//Add the timestamp
 			$super_smushed['timestamp'] = current_time( 'timestamp' );
 
 			//Update to database
-			update_option( 'wp-smush-super_smushed_count', $super_smushed );
+			return update_option( $key, $super_smushed );
+		}
+
+		/**
+		 * Checks if the image compression is lossy, stores the image id in options table
+		 *
+		 * @param int $id Image Id
+		 *
+		 * @param array $stats Compression Stats
+		 *
+		 * @param string $key Meta Key for storing the Super Smushed ids (Optional for Media Library)
+		 *                    Need To be specified for NextGen
+		 *
+		 * @return bool
+		 */
+		function is_lossy_compression( $id, $stats, $key = '' ) {
+			//If Stats are empty or the image id is not provided, return
+			if ( empty( $stats ) || empty( $id ) || empty( $stats['stats'] ) || ! isset( $stats['stats']['lossy'] ) ) {
+				return false;
+			}
+			if ( 1 == $stats['stats']['lossy'] ) {
+				$this->update_super_smush_count( $id, 'add', $key );
+			}
+
 		}
 
 	}

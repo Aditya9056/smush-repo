@@ -464,6 +464,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						}
 					}
 				}
+				//If there was any compression and there was no error in smushing
+				if( isset( $stats['stats']['bytes'] ) && $stats['stats']['bytes'] >= 0 && !$has_errors ) {
+					/**
+					 * Runs if the image smushing was successful
+					 *
+					 * @param int    $ID   Image Id
+					 *
+					 * @param array $stats Smush Stats for the image
+					 * 
+					 */
+					do_action('wp_smush_image_optimised', $ID, $stats );
+				}
 				update_post_meta( $ID, $this->smushed_meta_key, $stats );
 			}
 
@@ -1516,11 +1528,21 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function delete_images( $image_id ) {
 
+			//If no image id provided
+			if ( empty( $image_id ) ) {
+				return false;
+			}
+
+			global $wpsmushit_admin;
+
 			//Check and Update resmush list
 			if ( $resmush_list = get_option( 'wp-smush-resmush-list' ) ) {
 				global $wpsmushit_admin;
 				$wpsmushit_admin->update_resmush_list( $image_id, 'wp-smush-resmush-list' );
 			}
+
+			//Removet he image from Super Smush list if it's in there
+			$wpsmushit_admin->update_super_smush_count( $image_id, 'remove');
 
 			//Check if we have any smush data for image
 			$smush_meta = get_post_meta( $image_id, $this->smushed_meta_key, true );

@@ -139,8 +139,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						class="smushed-count"><?php echo intval( $wpsmushit_admin->smushed_count ) . '</span>/' . $wpsmushit_admin->total_count; ?>
 				</strong></span>
 			</div><?php
+			/**
+			* Allows to hide the Super Smush stats as it might be heavy for some users
+            */
 			if ( $WpSmush->is_pro() && apply_filters( 'wp_smush_show_lossy_stats', true ) ) {
-					$wpsmushit_admin->super_smushed = $wpsmushit_admin->super_smushed_count( true ); ?>
+					$wpsmushit_admin->super_smushed = $wpsmushit_admin->super_smushed_count(); ?>
 				<hr>
 				<div class="row super-smush-attachments">
 					<span
@@ -251,7 +254,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 			<div class="wp-smush-resmush-wrap">
 				<div class="wp-smush-notice wp-smush-remaining">
-					<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i><span class="wp-smush-notice-text">' . sprintf( esc_html__( "%s, you have %s%d images%s that can be further optimised with current settings.", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', $count, '</strong>' )
+					<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i><span class="wp-smush-notice-text">' . sprintf( esc_html__( "%s, you have %s%s%d%s images%s that can be further optimised with current settings.", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' )
 			                  . '</span></div>
 				<hr  class="wp-smush-sep" />';
 
@@ -451,7 +454,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<i class="dev-icon">
 						<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
 					</i>
-					<span class="wp-smush-notice-text"><?php printf( esc_html__( "%s, you have %s%d images%s that needs smushing!", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', $wpsmushit_admin->remaining_count, '</strong>' ); ?></span>
+					<span class="wp-smush-notice-text"><?php printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that needs smushing!", $wpsmushit_admin->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' ); ?></span>
 				</div>
 				<hr>
 				<div class="smush-final-log notice notice-warning inline hidden"></div>

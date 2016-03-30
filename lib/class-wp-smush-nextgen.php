@@ -283,6 +283,18 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 						}
 					}
 				}
+				//If there was any compression and there was no error in smushing
+				if( isset( $stats['stats']['bytes'] ) && $stats['stats']['bytes'] >= 0 && !$has_errors ) {
+					/**
+					 * Runs if the image smushing was successful
+					 *
+					 * @param int    $ID   Image Id
+					 *
+					 * @param array $stats Smush Stats for the image
+					 *
+					 */
+					do_action('wp_smush_image_optimised_nextgen', $image->pid, $stats );
+				}
 				$image->meta_data['wp_smush'] = $stats;
 				nggdb::update_image_meta( $image->pid, $image->meta_data );
 

@@ -45,6 +45,9 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//Update Stats, if a NextGen image is deleted
 			add_action( 'ngg_delete_picture', array( $this, 'update_nextgen_stats' ) );
 
+			//Update the Super Smush count, after the smushing
+			add_action('wp_smush_image_optimised_nextgen', array( $this, 'is_lossy_compression'), '', 2 );
+
 			$this->bulk_ui = new WpSmushBulkUi();
 
 		}
@@ -415,7 +418,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				</div>
 			<div class="wp-smush-resmush-wrap">
 				<div class="wp-smush-notice wp-smush-remaining">
-					<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i><span class="wp-smush-notice-text">' . sprintf( esc_html__( "%s, you have %s%d images%s that can be further optimised with current settings.", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', $count, '</strong>' )
+					<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i><span class="wp-smush-notice-text">' . sprintf( esc_html__( "%s, you have %s%s%d%s images%s that can be further optimised with current settings.", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' )
 			                  . '</span></div>
 				<hr  class="wp-smush-sep" />';
 
@@ -460,7 +463,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					<i class="dev-icon">
 						<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
 					</i>
-					<span class="wp-smush-notice-text"><?php printf( esc_html__( "%s, you have %s%d images%s that needs smushing!", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', $this->remaining_count, '</strong>' ); ?></span>
+					<span class="wp-smush-notice-text"><?php printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that needs smushing!", $this->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $this->remaining_count, '</span>', '</strong>' ); ?></span>
 				</div>
 				<hr class="wp-smush-sep">
 				<div class="smush-final-log notice notice-warning inline hidden"></div>
@@ -534,7 +537,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Outputs the Smush stats for the site
 		 */
 		function smush_stats_container() {
-			global $WpSmush, $wpsmushnextgenstats;
+			global $WpSmush, $wpsmushnextgenstats, $wpsmushit_admin;
 
 			//NextGen Stats
 			$this->stats = $wpsmushnextgenstats->get_smush_stats();
@@ -581,7 +584,9 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					<span class="float-r wp-smush-stats">
 						<?php
 						if ( $WpSmush->lossy_enabled ) {
-							$count = $this->super_smushed_count();
+							//Get Smushed images
+							$nextgen_images = $wpsmushnextgenstats->get_ngg_images( 'smushed' );
+							$count          = $wpsmushit_admin->get_lossy_attachments( $nextgen_images, true );
 							echo '<strong><span class="smushed-count">' . $count . '</span>/' . $this->total_count . '</strong>';
 						} else {
 							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
@@ -612,7 +617,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @param $attachment_id
 		 */
 		function update_nextgen_stats( $attachment_id ) {
-			global $WpSmush;
+			global $WpSmush, $wpsmushit_admin;
 
 			if ( empty( $attachment_id ) ) {
 				return false;
@@ -648,22 +653,20 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//Update Stats
 			update_option( 'wp_smush_stats_nextgen', $nextgen_stats );
 
+			//Remove from Super Smush list
+			$wpsmushit_admin->update_super_smush_count( $attachment_id, 'remove', 'wp-smush-super_smushed_nextgen');
+
 		}
 
 		/**
-		 * Returns count of Super SMushed images
+		 * Update the Super Smush count for NextGen Gallery
 		 *
+		 * @param $image_id
+		 * @param $stats
 		 */
-		function super_smushed_count() {
-
-			global $wpsmushit_admin, $wpsmushnextgenstats;
-
-			//Get Smushed images
-			$nextgen_images = $wpsmushnextgenstats->get_ngg_images( 'smushed' );
-
-			$super_smushed = $wpsmushit_admin->get_lossy_attachments( $nextgen_images );
-
-			return $super_smushed;
+		function is_lossy_compression( $image_id, $stats ) {
+			global $wpsmushit_admin;
+			$wpsmushit_admin->is_lossy_compression( $image_id, $stats, 'wp-smush-super_smushed_nextgen' );
 		}
 
 	}//End of Class

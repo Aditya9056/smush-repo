@@ -259,6 +259,12 @@ jQuery(function ($) {
                 $('.smush-total-reduction-percent .wp-smush-stats').html(_res.data.stats.percent);
                 $('.smush-total-reduction-bytes .wp-smush-stats').html(_res.data.stats.human);
                 $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(_res.data.stats.smushed);
+                if( $('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed ) {
+                    $('.super-smush-attachments .smushed-count').html( _res.data.stats.super_smushed );
+                }
+                if( $('.smush-attachments .wp-smush-remaining-count').length && 'undefined' != typeof wp_smushit_data.unsmushed ) {
+                    $('.smush-attachments .wp-smush-remaining-count').html( wp_smushit_data.unsmushed.length );
+                }
 
                 // increase the progress bar
                 this._update_progress(_res.data.stats.smushed, progress);

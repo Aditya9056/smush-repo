@@ -120,6 +120,14 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 						} else {
 							$meta = unserialize( $attachment->meta_data );
 						}
+
+						//Store pid in image meta
+						if ( is_array( $meta ) && empty( $meta['pid'] ) ) {
+							$meta['pid'] = $attachment->pid;
+						} elseif ( is_object( $meta ) && empty( $meta->pid ) ) {
+							$meta->pid = $attachment->pid;
+						}
+
 						//Check meta for wp_smush
 						if ( ! is_array( $meta ) || empty( $meta['wp_smush'] ) ) {
 							$unsmushed_images[ $attachment->pid ] = $meta;
