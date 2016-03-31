@@ -479,6 +479,9 @@ table.wp-smush-stats-holder tr td:first-child {
     padding: 5px 8px;
     vertical-align: top;
 }
+.smush-stats-wrapper .smush-container-subheading {
+    margin: 1em 0;
+}
 
 .wpmud .row .col-two-third.wp-smushit-container-left {
     padding-left: 0;

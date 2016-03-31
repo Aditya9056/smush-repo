@@ -155,14 +155,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$bulk_now = __( 'Bulk Smush Now', 'wp-smushit' );
 
 			$wp_smush_msgs = array(
-				'progress'             => __( 'Smushing in Progress', 'wp-smushit' ),
-				'done'                 => __( 'All Done!', 'wp-smushit' ),
-				'bulk_now'             => $bulk_now,
-				'something_went_wrong' => __( 'Ops!... something went wrong', 'wp-smushit' ),
 				'resmush'              => __( 'Super-Smush', 'wp-smushit' ),
-				'smush_it'             => __( 'Smush it', 'wp-smushit' ),
 				'smush_now'            => __( 'Smush Now', 'wp-smushit' ),
-				'sending'              => __( 'Sending ...', 'wp-smushit' ),
 				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
 				"all_resmushed"        => __( 'All images are fully optimised.', 'wp-smushit' ),
 				'restore'              => esc_html__( "Restoring image..", "wp-smushit" ),

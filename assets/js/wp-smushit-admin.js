@@ -62,9 +62,7 @@ jQuery(function ($) {
             this.$button = $($button[0]);
             this.is_bulk = typeof bulk ? bulk : false;
             this.url = ajaxurl;
-            this.button_text = this.is_bulk ? wp_smush_msgs.bulk_now : wp_smush_msgs.smush_now;
             this.$log = $(".smush-final-log");
-            this.$button_span = this.$button.find("span");
             this.deferred = jQuery.Deferred();
             this.deferred.errors = [];
             //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
@@ -174,13 +172,11 @@ jQuery(function ($) {
                         parent.append( response.data.stats );
                     }
                 }
-                self.$button_span.text(self.button_text);
                 self.enable_button();
             }).error(function (response) {
                 self.$status.html(response.data);
                 self.$status.addClass("error");
                 self.enable_button();
-                self.$button_span.text(self.button_text);
             });
 
         };
@@ -219,9 +215,6 @@ jQuery(function ($) {
 
             //Enable button
             this.$button.prop("disabled", false);
-
-            // Update text
-            this.$button.find('span').html(wp_smush_msgs.bulk_now);
         };
 
         this.update_progress = function (_res) {
@@ -663,6 +656,32 @@ jQuery(function ($) {
             action: 'dismiss_smush_notice'
         };
         $.post(ajaxurl, param );
+    });
+
+    //On Click Update Settings. Check for change in settings
+    $('.wp-smush-save-settings').on('click', function(e) {
+        e.preventDefault();
+
+        var self = $(this);
+        //Update text
+
+        var keep_exif = document.getElementById('wp-smush-keep_exif');
+        var smush_original = document.getElementById('wp-smush-original');
+        var lossy = document.getElementById('wp-smush-lossy');
+        var run_scan = false;
+        //If any of the settings are changed, and it needs to run the Re-Smush check
+        var keep_exif_changed = keep_exif.checked != keep_exif.defaultChecked && !keep_exif.checked;
+        var smush_original_changed = smush_original.checked != smush_original.defaultChecked && smush_original.checked;
+        var lossy_changed = lossy.checked != lossy.defaultChecked && lossy.checked;
+
+        if( keep_exif_changed || smush_original_changed || lossy_changed ) {
+            run_scan = true;
+        }
+        //Send ajax
+        if( run_scan ) {
+
+        }
+
     });
 
 });
