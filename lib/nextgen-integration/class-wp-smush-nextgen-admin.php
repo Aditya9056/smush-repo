@@ -155,12 +155,13 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$bulk_now = __( 'Bulk Smush Now', 'wp-smushit' );
 
 			$wp_smush_msgs = array(
-				'resmush'              => __( 'Super-Smush', 'wp-smushit' ),
-				'smush_now'            => __( 'Smush Now', 'wp-smushit' ),
-				"error_in_bulk"        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				"all_resmushed"        => __( 'All images are fully optimised.', 'wp-smushit' ),
+				'resmush'              => esc_html__( 'Super-Smush', 'wp-smushit' ),
+				'smush_now'            => esc_html__( 'Smush Now', 'wp-smushit' ),
+				"error_in_bulk"        => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				"all_resmushed"        => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
 				'restore'              => esc_html__( "Restoring image..", "wp-smushit" ),
 				'smushing'             => esc_html__( "Smushing image..", "wp-smushit" ),
+				'checking'             => esc_html__( "Checking images..", "wp-smushit")
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -412,7 +413,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				</div>
 			<div class="wp-smush-resmush-wrap">
 				<div class="wp-smush-notice wp-smush-remaining">
-					<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i><span class="wp-smush-notice-text">' . sprintf( esc_html__( "%s, you have %s%s%d%s images%s that can be further optimised with current settings.", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' )
+					<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i>
+					<span class="wp-smush-notice-text">' . sprintf( esc_html__( "%s, you have %s%s%d%s images%s that can be further optimised with current settings.", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' )
 			                  . '</span></div>
 				<hr  class="wp-smush-sep" />';
 

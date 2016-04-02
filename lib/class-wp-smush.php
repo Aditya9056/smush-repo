@@ -97,9 +97,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			load_plugin_textdomain( 'wp-smushit', false, WP_SMUSH_DIR . '/languages/' );
 		}
 
-		function admin_init() {
-			wp_enqueue_script( 'common' );
-			//Initialize variables
+		/**
+		 * Initialise the setting variables
+		 */
+		function initialise() {
 			//Check if Lossy enabled
 			$opt_lossy           = WP_SMUSH_PREFIX . 'lossy';
 			$this->lossy_enabled = $this->is_pro() && get_option( $opt_lossy, false );
@@ -111,6 +112,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Check Whether to keep exif or not
 			$opt_keep_exif   = WP_SMUSH_PREFIX . 'keep_exif';
 			$this->keep_exif = get_option( $opt_keep_exif, false );
+		}
+
+		function admin_init() {
+			wp_enqueue_script( 'common' );
+			//Initialize variables
+			$this->initialise();
 		}
 
 		/**

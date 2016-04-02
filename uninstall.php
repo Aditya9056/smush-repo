@@ -22,7 +22,8 @@ $smushit_keys = array(
 	'resmush-list',
 	'nextgen-resmush-list',
 	'super_smushed',
-	'super_smushed_nextgen'
+	'super_smushed_nextgen',
+	'settings_updated'
 );
 delete_option('wp_smush_show_resmush');
 delete_option('wp_smush_show_resmush_nextgen');

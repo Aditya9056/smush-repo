@@ -57,6 +57,9 @@ jQuery(function ($) {
 
     WP_Smush.Smush = function ($button, bulk, smush_type) {
         var self = this;
+        var skip_resmush = $button.data('smush');
+        //If smush attribute is not defined, Need not skip resmush ids
+        skip_resmush = ( ( typeof skip_resmush == typeof undefined ) || skip_resmush == false ) ? false : true;
 
         this.init = function () {
             this.$button = $($button[0]);
@@ -65,12 +68,14 @@ jQuery(function ($) {
             this.$log = $(".smush-final-log");
             this.deferred = jQuery.Deferred();
             this.deferred.errors = [];
+
             //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
-            this.ids = $button.hasClass('wp-smush-resmush') && wp_smushit_data.resmush.length > 0 ? wp_smushit_data.resmush: wp_smushit_data.unsmushed ;
+            this.ids = wp_smushit_data.resmush.length > 0 && !skip_resmush ? wp_smushit_data.unsmushed.concat( wp_smushit_data.resmush ) : wp_smushit_data.unsmushed ;
 
             this.is_bulk_resmush = $button.hasClass('wp-smush-resmush') && wp_smushit_data.resmush.length > 0 ? true : false;
-            this.resmush_count = 'undefined' == typeof wp_smushit_data.resmush ? 0 : wp_smushit_data.resmush.length;
+
             this.$status = this.$button.parent().find('.smush-status');
+
             //Added for NextGen support
             this.smush_type = typeof smush_type ? smush_type : false;
             this.single_ajax_suffix = this.smush_type ? 'smush_manual_nextgen' : 'wp_smushit_manual';
@@ -394,9 +399,13 @@ jQuery(function ($) {
         this.start();
         this.run();
         this.bind_deferred_events();
+
+        //Handle Cancel Ajax
         this.cancel_ajax();
+
         return this.deferred;
     };
+
     /**
      * Handle the Bulk Smush/ Bulk Resmush button click
      */
@@ -581,6 +590,7 @@ jQuery(function ($) {
         var smush_action = 'smush_resmush_nextgen_image';
         process_smush_action( e, current_button, smush_action );
     });
+
     //Scan For resmushing images
     jQuery('body').on('click', '.wp-smush-scan', function(e) {
 
@@ -657,30 +667,68 @@ jQuery(function ($) {
         };
         $.post(ajaxurl, param );
     });
+    //Remove Notice
+    $('.wp-smush-settings-updated .dev-icon-cross').on('click', function(e) {
+        e.preventDefault();
+        var $el = $(this).parent();
+        $el.fadeTo( 100, 0, function() {
+            $el.slideUp( 100, function() {
+                $el.remove();
+            });
+        });
+    });
 
     //On Click Update Settings. Check for change in settings
-    $('.wp-smush-save-settings').on('click', function(e) {
+    $('#wp-smush-save-settings').on('click', function(e) {
         e.preventDefault();
 
         var self = $(this);
         //Update text
+        self.attr('disabled', 'disabled').addClass('button-grey').val( wp_smush_msgs.checking );
+        self.parent().find('.spinner').addClass('is-active');
 
-        var keep_exif = document.getElementById('wp-smush-keep_exif');
-        var smush_original = document.getElementById('wp-smush-original');
-        var lossy = document.getElementById('wp-smush-lossy');
-        var run_scan = false;
-        //If any of the settings are changed, and it needs to run the Re-Smush check
-        var keep_exif_changed = keep_exif.checked != keep_exif.defaultChecked && !keep_exif.checked;
-        var smush_original_changed = smush_original.checked != smush_original.defaultChecked && smush_original.checked;
-        var lossy_changed = lossy.checked != lossy.defaultChecked && lossy.checked;
+        //Check if type is set in data attributes
+        var scan_type = self.data('type');
+        scan_type = 'undefined' == typeof scan_type ? 'media' : scan_type;
 
-        if( keep_exif_changed || smush_original_changed || lossy_changed ) {
-            run_scan = true;
+        //Ajax param
+        var param = {
+            action: 'scan_for_resmush',
+            scan_type: scan_type
+        };
+
+        param = jQuery.param( param ) + '&' + jQuery('.smush-settings-wrapper form').serialize();
+        //Send ajax, Update Settings, And Check For resmush
+        jQuery.post(ajaxurl, param).done(function () {
+            return true;
+        });
+    });
+
+    //On Resmush click
+    jQuery('.wp-smush-skip-resmush').on('click', function (e) {
+        e.preventDefault();
+        var self = jQuery(this);
+        var container = self.parents().eq(1);
+
+        //Remove Parent div
+        var $el = self.parent();
+        $el.fadeTo( 100, 0, function() {
+            $el.slideUp( 100, function() {
+                $el.remove();
+            });
+        });
+
+        //Set button attribute to skip re-smush ids
+        container.find('.wp-smush-all').attr('data-smush', 'skip_resmush');
+
+        //Show the default bulk smush notice
+        jQuery('.wp-smush-bulk-wrapper .wp-smush-notice').removeClass('hidden');
+
+        var params = {
+            action  : 'delete_resmush_list'
         }
-        //Send ajax
-        if( run_scan ) {
-
-        }
+        //Delete resmush list
+        jQuery.post(ajaxurl, params);
 
     });
 

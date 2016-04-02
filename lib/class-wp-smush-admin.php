@@ -93,7 +93,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public function __construct() {
 
 			// Save Settings, Process Option, Need to process it early, so the pages are loaded accordingly, nextgen gallery integration is loaded at same action
-			add_action( 'plugins_loaded', array( $this, 'process_options' ), 16 );
+//			add_action( 'plugins_loaded', array( $this, 'process_options' ), 16 );
 
 			// hook scripts and styles
 			add_action( 'admin_init', array( $this, 'register' ) );
@@ -136,6 +136,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Update the Super Smush count, after the smushing
 			add_action( 'wp_smush_image_optimised', array( $this, 'is_lossy_compression' ), '', 2 );
 
+			//Delete ReSmush list
+			add_action( 'wp_ajax_delete_resmush_list', array( $this, 'delete_resmush_list' ), '', 2 );
+
 			$this->bulk_ui = new WpSmushBulkUi();
 		}
 
@@ -168,6 +171,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function screen() {
 			global $admin_page_suffix;
+
+			$this->is_pro_user = $this->is_pro();
+
+			$this->init_settings();
+
 			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smush-bulk', array(
 				$this->bulk_ui,
 				'ui'
@@ -264,20 +272,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->total_count = $this->total_count();
 			$this->setup_global_stats();
 
-			if ( $this->is_pro_user || $this->remaining_count <= $this->max_free_bulk ) {
-				$bulk_now = __( 'Bulk Smush Now', 'wp-smushit' );
-			} else {
-				$bulk_now = sprintf( __( 'Bulk Smush %d Attachments', 'wp-smushit' ), $this->max_free_bulk );
-			}
-
 			$wp_smush_msgs = array(
-				'resmush'              => __( 'Super-Smush', 'wp-smushit' ),
-				'smush_now'            => __( 'Smush Now', 'wp-smushit' ),
-				'error_in_bulk'        => __( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				'all_resmushed'        => __( 'All images are fully optimised.', 'wp-smushit' ),
+				'resmush'              => esc_html__( 'Super-Smush', 'wp-smushit' ),
+				'smush_now'            => esc_html__( 'Smush Now', 'wp-smushit' ),
+				'error_in_bulk'        => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				'all_resmushed'        => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
 				'restore'              => esc_html__( "Restoring image..", "wp-smushit" ),
 				'smushing'             => esc_html__( "Smushing image..", "wp-smushit" ),
-
+				'checking'             => esc_html__( "Checking images..", "wp-smushit")
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -356,12 +358,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function process_options() {
 			if ( ! is_admin() ) {
-				return;
+				return false;
 			}
-
-			$this->is_pro_user = $this->is_pro();
-
-			$this->init_settings();
 
 			//If refresh is set in URL
 			if ( isset( $_GET['refresh'] ) && $_GET['refresh'] ) {
@@ -370,29 +368,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// we aren't saving options
 			if ( ! isset( $_POST['wp_smush_options_nonce'] ) ) {
-				return;
+				return false;
 			}
+
 			// the nonce doesn't pan out
 			if ( ! wp_verify_nonce( $_POST['wp_smush_options_nonce'], 'save_wp_smush_options' ) ) {
-				return;
+				return false;
 			}
+
 			// var to temporarily assign the option value
 			$setting = null;
-
-			//Save option for resmush UI
-			$possible_options = array(
-				'keep_exif',
-				'original',
-				'lossy'
-			);
-			//Whether to Show resmush UI on settings page or not
-			$show_resmush_saved = false;
 
 			//Store Option Name and their values in an array
 			$settings = array();
 
 			// process each setting and update options
 			foreach ( $this->settings as $name => $text ) {
+
 				// formulate the index of option
 				$opt_name = WP_SMUSH_PREFIX . $name;
 
@@ -400,32 +392,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$setting = isset( $_POST[ $opt_name ] ) ? 1 : 0;
 
 				$settings[ $opt_name ] = $setting;
-				// update the new value
-				$updated = update_option( $opt_name, $setting );
 
-				//Save or delete option to show resmush UI, depending upon the current settings
-				if ( in_array( $name, $possible_options ) && $updated ) {
-					//If preserve exif is turned off, Or if Lossy/Smush original is turned on, and the setting isn't saved recently
-					if ( ( 'keep_exif' == $name && ! $setting ) ||
-					     ( in_array( $name, array(
-							     'original',
-							     'lossy'
-						     ) ) && $setting
-					     ) && ! $show_resmush_saved
-					) {
-						$show_resmush_saved = update_option( 'wp_smush_show_resmush', 1 );
-						update_option( 'wp_smush_show_resmush_nextgen', 1 );
-					}
-				}
+				// update the new value
+				update_option( $opt_name, $setting );
 
 				// unset the var for next loop
 				unset( $setting );
 			}
 
+			//Store the option in table
+			update_option('wp-smush-settings_updated', 1 );
+
 			//Delete Show Resmush option
 			if ( isset( $_POST['wp-smush-keep_exif'] ) && ! isset( $_POST['wp-smush-original'] ) && ! isset( $_POST['wp-smush-lossy'] ) ) {
-				delete_option( 'wp_smush_show_resmush' );
-				delete_option( 'wp_smush_show_resmush_nextgen' );
+				//@todo: Update Resmush ids
 			}
 
 		}
@@ -1066,14 +1046,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Delete Site Option, stored for api status
-		 */
-		function refresh_status() {
-
-			delete_site_option( 'wp_smush_api_auth' );
-		}
-
-		/**
 		 * Remove any pre_get_posts_filters added by WP Media Folder plugin
 		 */
 		function remove_wmf_filters() {
@@ -1230,26 +1202,35 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $WpSmush, $wpsmushnextgenadmin;
 
-			check_ajax_referer( 'smush-scan-images', 'nonce' );
+			check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
 			$resmush_list = array();
 
 			//Scanning for NextGen or Media Library
 			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
 
-			//Default response
-			$ajax_response = '<div class="wp-smush-notice wp-smush-all-done">
-					<i class="dev-icon dev-icon-tick"></i>' . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smushit" ) . '</div>';
+			//If a user manually runs smush check
+			$return_ui = isset( $_REQUEST['get_ui'] ) ? $_REQUEST['get_ui'] : '';
+
+			//Save Settings
+			$this->process_options();
+
+			//Update the variables
+			$WpSmush->initialise();
 
 			//Logic: If none of the required settings is on, don't need to resmush any of the images
 			//We need at least one of these settings to be on, to check if any of the image needs resmush
 			//Allow to smush Upfront images as well
 			$upfront_active = class_exists( 'Upfront' );
+
 			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
-				$response = array( "content" => $ajax_response );
-				wp_send_json_success( $response );
+				wp_send_json_success();
 			}
 
+			//Set to empty by default
+			$ajax_response = '';
+
+			//Get Smushed Attachments
 			if ( 'nextgen' != $type ) {
 
 				//Get list of Smushed images
@@ -1315,31 +1296,35 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						}
 					}
 				}//End Of Upfront loop
+
 				$key = 'nextgen' == $type ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
 
-				//Store the list in Options table
+				//Store the resmush list in Options table
 				update_option( $key, $resmush_list );
 
-				if ( 'nextgen' != $type ) {
-					//Set the variables
-					$this->resmush_ids = $resmush_list;
-				} else {
-					//To avoid the php warning
-					$wpsmushnextgenadmin->resmush_ids = $resmush_list;
-				}
-
-				if ( ( $count = count( $resmush_list ) ) > 0 ) {
-					$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->bulk_ui->resmush_bulk_ui( true );
-				} else {
-					//Other wise don't show the scan option
-					if ( 'nextgen' == $type ) {
-						delete_option( 'wp_smush_show_resmush_nextgen' );
+				//Return the Remsmush list and UI to be appended to Bulk Smush UI
+				if( $return_ui ) {
+					if ( 'nextgen' != $type ) {
+						//Set the variables
+						$this->resmush_ids = $resmush_list;
 					} else {
-						delete_option( 'wp_smush_show_resmush' );
+						//To avoid the php warning
+						$wpsmushnextgenadmin->resmush_ids = $resmush_list;
+					}
+
+					if ( ( $count = count( $resmush_list ) ) > 0 ) {
+						$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->bulk_ui->resmush_bulk_ui( true );
+					} else {
+						//Delete the resmush list
+						delete_option( $key );
 					}
 				}
 			}
-			wp_send_json_success( array( "resmush_ids" => $resmush_list, "content" => $ajax_response ) );
+
+			//If there is a Ajax response return it, else return null
+			$return = !empty( $ajax_response ) ? array( "resmush_ids" => $resmush_list, "content" => $ajax_response ) : '';
+			wp_send_json_success($return);
+
 		}
 
 		/**
@@ -1571,6 +1556,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$this->update_super_smush_count( $id, 'add', $key );
 			}
 
+		}
+
+		/**
+		 * Delete the resmush list for Nextgen or the Media Library
+		 */
+		function delete_resmush_list() {
+
+			$key = ! empty( $_POST['type'] ) && 'nextgen' == $_POST['type'] ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
+			//Delete the resmush list
+			delete_option( $key );
+			wp_send_json_success();
 		}
 
 	}
