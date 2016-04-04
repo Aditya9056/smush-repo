@@ -72,7 +72,7 @@ jQuery(function ($) {
             //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
             this.ids = wp_smushit_data.resmush.length > 0 && !skip_resmush ? wp_smushit_data.resmush.concat( wp_smushit_data.unsmushed ) : wp_smushit_data.unsmushed ;
 
-            this.is_bulk_resmush = $button.hasClass('wp-smush-resmush') && wp_smushit_data.resmush.length > 0 ? true : false;
+            this.is_bulk_resmush = wp_smushit_data.resmush.length > 0 && !skip_resmush ? true : false;
 
             this.$status = this.$button.parent().find('.smush-status');
 
@@ -115,19 +115,14 @@ jQuery(function ($) {
         this.bulk_start = function () {
             if (!this.is_bulk) return;
 
-            //Hide the resmush Div wrapper and show the loader
-            if( self.is_bulk_resmush ) {
-                //Hide the Notice Div
-                $('.wp-smush-resmush-wrap').hide();
-                //Show the progress bar
-                $('.bulk-resmush-wrapper .wp-smush-bulk-progress-bar-wrapper').removeClass('hidden').show();
-            }else {
-                //Hide the Bulk Div
-                $('.wp-smush-bulk-wrapper').hide();
+            //Hide Notice
+            $('.bulk-smush-wrapper .wp-smush-notice').hide();
 
-                //Show the Progress Bar
-                $('.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper').show();
-            }
+            //Hide the Bulk Div
+            $('.wp-smush-bulk-wrapper').hide();
+
+            //Show the Progress Bar
+            $('.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper').show();
 
         };
 
@@ -253,15 +248,18 @@ jQuery(function ($) {
 
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
+                var smushed_count = self.is_bulk_resmush ? ( _res.data.stats.total - _res.data.stats.resmush_count ) : _res.data.stats.smushed;
                 //Update stats
                 $('.smush-total-reduction-percent .wp-smush-stats').html(_res.data.stats.percent);
                 $('.smush-total-reduction-bytes .wp-smush-stats').html(_res.data.stats.human);
-                $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(_res.data.stats.smushed);
+
+                $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(smushed_count);
                 if( $('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed ) {
                     $('.super-smush-attachments .smushed-count').html( _res.data.stats.super_smushed );
                 }
-                if( $('.smush-attachments .wp-smush-remaining-count').length && 'undefined' != typeof wp_smushit_data.unsmushed ) {
-                    $('.smush-attachments .wp-smush-remaining-count').html( wp_smushit_data.unsmushed.length );
+
+                if( $('.smush-attachments .wp-smush-remaining-count').length && 'undefined' != typeof self.ids ) {
+                    $('.smush-attachments .wp-smush-remaining-count').html( self.ids.length );
                 }
 
                 // increase the progress bar
@@ -274,17 +272,14 @@ jQuery(function ($) {
             if (!this.is_bulk) {
                 return;
             }
-
-            if (!this.is_bulk_resmush) {
-                //Update the Progress Bar Width
-                // get the progress bar
-                var $progress_bar = jQuery('.bulk-smush-wrapper .wp-smush-progress-inner');
-                if ($progress_bar.length < 1) {
-                    return;
-                }
-                // increase progress
-                $progress_bar.css('width', width + '%');
+            //Update the Progress Bar Width
+            // get the progress bar
+            var $progress_bar = jQuery('.bulk-smush-wrapper .wp-smush-progress-inner');
+            if ($progress_bar.length < 1) {
+                return;
             }
+            // increase progress
+            $progress_bar.css('width', width + '%');
 
         };
 
@@ -367,13 +362,9 @@ jQuery(function ($) {
                     var error_message = '<div class="wp-smush-ajax-error">' + wp_smush_msgs.error_in_bulk.replace("{{errors}}", WP_Smush.errors.length) + '</div>';
                     self.$log.prepend(error_message);
                 }
-                var bulk_done = true;
-                if( self.is_bulk_resmush && WP_Smush.errors.length > 0 ) {
-                    bulk_done = false;
-                }
-                if( bulk_done ) {
-                    self.bulk_done();
-                }
+
+                self.bulk_done();
+
                 //Re enable the buttons
                 jQuery('.wp-smush-button:not(.wp-smush-finished), .wp-smush-scan').removeAttr('disabled');
             });
@@ -413,6 +404,7 @@ jQuery(function ($) {
 
         // prevent the default action
         e.preventDefault();
+
         //Disable Resmush and scan button
         jQuery('.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button').attr('disabled', 'disabled');
 
@@ -425,6 +417,7 @@ jQuery(function ($) {
 
         }
 
+        $(".wp-resmush-remaining").hide();
         $(".smush-remaining-images-notice").remove();
 
         new WP_Smush.Smush($(this), true);

@@ -243,6 +243,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
 			wp_register_style( 'jquery-ui', WP_SMUSH_URL . 'assets/css/jquery-ui.css', array() );
 
+			//Get resmush list
+			//If we have a resmush list already, localize those ids
+			if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
+				//get the attachments, and get lossless count
+				$this->resmush_ids = $resmush_ids;
+			}
 		}
 
 		/**
@@ -313,12 +319,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Localize smushit_ids variable, if there are fix number of ids
 			$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments;
-
-			//If premium, And we have a resmush list already, localize those ids
-			if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
-				//get the attachments, and get lossless count
-				$this->resmush_ids = $resmush_ids;
-			}
 
 			//Array of all smushed, unsmushed and lossless ids
 			$data = array(
@@ -479,6 +479,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( $WpSmush->lossy_enabled ) {
 				$stats['super_smushed'] = $this->super_smushed_count();
 			}
+
+			$stats['resmush_count'] = count( $this->resmush_ids );
 
 			$stats['total'] = $this->total_count();
 
