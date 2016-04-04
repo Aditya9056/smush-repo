@@ -119,7 +119,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
 			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? ( $wpsmushit_admin->total_count - $resmush_count ) : $wpsmushit_admin->smushed_count;
 
-			$button = '<button title="' . esc_html__("Allows to run a quick check if any of the smushed image can be further optimised to the new settings.", "wp-smushit") . '" data-toggle="tooltip" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__("RE-CHECK IMAGES", "wp-smushit"). '</button>';
+			$button = '<span class="spinner"></span><button title="' . esc_html__("Allows to run a quick check if any of the smushed image can be further optimised to the new settings.", "wp-smushit") . '" data-toggle="tooltip" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__("RE-CHECK IMAGES", "wp-smushit"). '</button>';
 			$this->container_header( 'smush-stats-wrapper', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
 			<div class="box-content">
 			<div class="row smush-total-reduction-percent">
@@ -399,7 +399,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			$all_done = ( $wpsmushit_admin->smushed_count == $wpsmushit_admin->total_count ) && 0 == count( $wpsmushit_admin->resmush_ids );
 
-			$this->bulk_resmush_content();
+			echo $this->bulk_resmush_content();
 
 			//If there are no images in Media Library
 			if ( 0 >= $wpsmushit_admin->total_count ) { ?>
@@ -538,12 +538,20 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				global $wpsmushit_admin;
 
 				$count = count( $wpsmushit_admin->resmush_ids );
+
+				//Whether to show the remaining re-smush notice
 				$show = $count > 0 ? true : false;
+
+				//Get the Actual remainaing count
+				if( !isset( $wpsmushit_admin->remaining_count ) ) {
+					$wpsmushit_admin->setup_global_stats();
+				}
+
 				$count += $wpsmushit_admin->remaining_count;
 			}
 			//Show only if we have any images to ber resmushed
 			if( $show ) {
-				echo '<div class="wp-smush-notice wp-smush-remaining wp-resmush-remaining">
+				return '<div class="wp-smush-notice wp-smush-remaining wp-resmush-remaining">
 						<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i>
 						<span class="wp-smush-notice-text">' . sprintf( _n( "%s, you have %s%s%d%s image%s that need re-compressing since changing your smush settings!", "%s, you have %s%s%d%s images%s that need re-compressing since changing your smush settings!", $count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' ) . '</span>
 						<button class="button button-grey button-small wp-smush-skip-resmush">' . esc_html__("Skip", "wp-smushit") . '</button>

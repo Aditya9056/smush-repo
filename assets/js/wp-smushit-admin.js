@@ -587,10 +587,14 @@ jQuery(function ($) {
         e.preventDefault();
 
         var button = jQuery(this);
+        var spinner = button.parent().find('.spinner');
 
         //Check if type is set in data attributes
         var scan_type = button.data('type');
-        scan_type = 'undefined' == typeof scan_type ? '' : scan_type;
+        scan_type = 'undefined' == typeof scan_type ? 'media' : scan_type;
+
+        //Show spinner
+        spinner.addClass('is-active');
 
         //Disable Bulk smush button and itself
         button.attr('disabled', 'disabled');
@@ -606,7 +610,8 @@ jQuery(function ($) {
         var params = {
             action: 'scan_for_resmush',
             type: scan_type,
-            nonce: jQuery(this).data('nonce')
+            get_ui: true,
+            wp_smush_options_nonce: jQuery('#wp_smush_options_nonce').val()
         };
 
         //Send ajax request and get ids if any
@@ -614,23 +619,33 @@ jQuery(function ($) {
             //Check if we have the ids,  initialize the local variable
             if( 'undefined' != r.data.resmush_ids ) {
                 wp_smushit_data.resmush = r.data.resmush_ids;
+                var smushed_count = wp_smushit_data.count_smushed - r.data.resmush_ids.length;
+                jQuery('.smush-attachments .smushed-count').html(smushed_count)
+
             }
             //Hide the Existing wrapper
-            var resmush_wrap = $('.wp-smush-resmush-wrapper');
-            if (resmush_wrap.length > 0) {
-                resmush_wrap.hide();
+            var notices = $('.bulk-smush-wrapper .wp-smush-notice');
+            if (notices.length > 0) {
+                notices.hide();
+            }
+            //If content is recieved, Prepend it
+            if( 'undefined' != typeof r.data.content ) {
+                $('.bulk-smush-wrapper .box-container').prepend( r.data.content );
             }
 
-            //Prepend the response
-            jQuery('.bulk-resmush-wrapper .box-container').prepend(r.data.content);
+            //Show Bulk wrapper
+            $('.wp-smush-bulk-wrapper').show();
 
         }).always( function() {
 
             //Hide the progress bar
-            jQuery('.bulk-resmush-wrapper .wp-smush-bulk-progress-bar-wrapper').hide();
+            jQuery('.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper').hide();
 
             //Enable the Bulk Smush Button and itself
             button.removeAttr('disabled');
+
+            //Hide Spinner
+            spinner.removeClass('is-active');
             jQuery('.wp-smush-button').removeAttr('disabled');
         });
 

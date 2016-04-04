@@ -139,8 +139,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Delete ReSmush list
 			add_action( 'wp_ajax_delete_resmush_list', array( $this, 'delete_resmush_list' ), '', 2 );
 
-			$this->bulk_ui = new WpSmushBulkUi();
+			add_action( 'admin_init', array( $this, 'init_settings' ) );
 
+			$this->bulk_ui = new WpSmushBulkUi();
+		}
+
+		function init_settings() {
 			$this->settings = array(
 				'auto'      => array(
 					'label' => esc_html__( 'Automatically Smush my images on upload', 'wp-smushit' ),
@@ -299,8 +303,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
-			//Setup Total Attachments count
-			$this->total_count = $this->total_count();
+			//Setup all the stats
 			$this->setup_global_stats();
 
 			$wp_smush_msgs = array(
@@ -340,6 +343,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function setup_global_stats( $force_update = false ) {
+			$this->total_count     = $this->total_count();
 			$this->smushed_count   = $this->smushed_count();
 			$this->remaining_count = $this->total_count - $this->smushed_count;
 			$this->stats           = $this->global_stats( $force_update );
@@ -1207,7 +1211,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
 
 			//If a user manually runs smush check
-			$return_ui = isset( $_REQUEST['get_ui'] ) ? $_REQUEST['get_ui'] : '';
+			$return_ui = isset( $_REQUEST['get_ui'] ) && 'true' == $_REQUEST['get_ui'] ? true : false;
 
 			//Save Settings
 			$this->process_options();
@@ -1310,7 +1314,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					}
 
 					if ( ( $count = count( $resmush_list ) ) > 0 ) {
-						$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->bulk_ui->resmush_bulk_ui( true );
+						$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->bulk_ui->bulk_resmush_content();
 					} else {
 						//Delete the resmush list
 						delete_option( $key );
