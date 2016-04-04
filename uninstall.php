@@ -25,8 +25,6 @@ $smushit_keys = array(
 	'super_smushed_nextgen',
 	'settings_updated'
 );
-delete_option('wp_smush_show_resmush');
-delete_option('wp_smush_show_resmush_nextgen');
 foreach ( $smushit_keys as $key ) {
 	$key = 'wp-smush-' . $key;
 	if ( is_multisite() ) {

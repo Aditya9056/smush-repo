@@ -46,7 +46,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			add_action( 'ngg_delete_picture', array( $this, 'update_nextgen_stats' ) );
 
 			//Update the Super Smush count, after the smushing
-			add_action('wp_smush_image_optimised_nextgen', array( $this, 'is_lossy_compression'), '', 2 );
+			add_action('wp_smush_image_optimised_nextgen', array( $this, 'update_lists'), '', 2 );
 
 			$this->bulk_ui = new WpSmushBulkUi();
 
@@ -658,9 +658,12 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @param $image_id
 		 * @param $stats
 		 */
-		function is_lossy_compression( $image_id, $stats ) {
+		function update_lists( $image_id, $stats ) {
 			global $wpsmushit_admin;
-			$wpsmushit_admin->is_lossy_compression( $image_id, $stats, 'wp-smush-super_smushed_nextgen' );
+			$wpsmushit_admin->update_lists( $image_id, $stats, 'wp-smush-super_smushed_nextgen' );
+			if( !empty( $this->resmush_ids ) && in_array( $image_id, $this->resmush_ids ) ) {
+				$this->update_resmush_list( $image_id );
+			}
 		}
 
 	}//End of Class

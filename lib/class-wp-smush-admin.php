@@ -134,12 +134,39 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_ajax_dismiss_smush_notice', array( $this, 'dismiss_smush_notice' ) );
 
 			//Update the Super Smush count, after the smushing
-			add_action( 'wp_smush_image_optimised', array( $this, 'is_lossy_compression' ), '', 2 );
+			add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
 
 			//Delete ReSmush list
 			add_action( 'wp_ajax_delete_resmush_list', array( $this, 'delete_resmush_list' ), '', 2 );
 
 			$this->bulk_ui = new WpSmushBulkUi();
+
+			$this->settings = array(
+				'auto'      => array(
+					'label' => esc_html__( 'Automatically Smush my images on upload', 'wp-smushit' ),
+					'desc'  => esc_html__( 'When you upload images to your media library, we’ll automatically compress them instantly.', 'wp-smushit' )
+				),
+				'keep_exif' => array(
+					'label' => esc_html__( 'Preserve Image EXIF data', 'wp-smushit' ),
+					'desc'  => esc_html__( 'EXIF data stores image information like ISO speed, shutter speed, camera model, dates, focal length and much more.', 'wp-smushit' )
+				),
+				'lossy'     => array(
+					'label' => esc_html__( 'Super-smush  my images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Compress your images further with our intelligent multi-pass lossy compression.', 'wp-smushit' )
+				),
+				'nextgen'   => array(
+					'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
+				),
+				'original'  => array(
+					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'By default we smush thumbnail, medium and large files. This will smush your original uploads too.', 'wp-smushit' )
+				),
+				'backup'    => array(
+					'label' => esc_html__( 'Make a copy of my original images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'We’ll keep your original images so you can restore them at any point if you need to. Note: This setting significantly increase your uploads folder size - nearly double.', 'wp-smushit' )
+				)
+			);
 		}
 
 		/**
@@ -173,8 +200,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $admin_page_suffix;
 
 			$this->is_pro_user = $this->is_pro();
-
-			$this->init_settings();
 
 			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smush-bulk', array(
 				$this->bulk_ui,
@@ -297,6 +322,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Array of all smushed, unsmushed and lossless ids
 			$data = array(
+				'count_smushed' => $this->smushed_count,
+				'count_total' => $this->total_count,
 				'unsmushed' => $this->ids,
 				'resmush'   => $this->resmush_ids,
 				'timeout'   => WP_SMUSH_TIMEOUT * 1000, //Convert it into ms
@@ -304,39 +331,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
 
-		}
-
-		/**
-		 * Translation ready settings
-		 */
-		function init_settings() {
-
-			$this->settings = array(
-				'auto'      => array(
-					'label' => esc_html__( 'Automatically Smush my images on upload', 'wp-smushit' ),
-					'desc'  => esc_html__( 'When you upload images to your media library, we’ll automatically compress them instantly.', 'wp-smushit' )
-				),
-				'keep_exif' => array(
-					'label' => esc_html__( 'Preserve Image EXIF data', 'wp-smushit' ),
-					'desc'  => esc_html__( 'EXIF data stores image information like ISO speed, shutter speed, camera model, dates, focal length and much more.', 'wp-smushit' )
-				),
-				'lossy'     => array(
-					'label' => esc_html__( 'Super-smush  my images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Compress your images further with our intelligent multi-pass lossy compression.', 'wp-smushit' )
-				),
-				'nextgen'   => array(
-					'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
-				),
-				'original'  => array(
-					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'By default we smush thumbnail, medium and large files. This will smush your original uploads too.', 'wp-smushit' )
-				),
-				'backup'    => array(
-					'label' => esc_html__( 'Make a copy of my original images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'We’ll keep your original images so you can restore them at any point if you need to. Note: This setting significantly increase your uploads folder size - nearly double.', 'wp-smushit' )
-				)
-			);
 		}
 
 		/**
@@ -381,6 +375,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Store Option Name and their values in an array
 			$settings = array();
+
 
 			// process each setting and update options
 			foreach ( $this->settings as $name => $text ) {
@@ -1348,13 +1343,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//If Resmush List is empty
 			if ( empty( $resmush_list ) || 0 == count( $resmush_list ) ) {
-				if ( 'wp-smush-nextgen-resmush-list' == $mkey ) {
-					//Remove the two options
-					delete_option( 'wp_smush_show_resmush_nextgen' );
-				} else {
-					//Remove the two options
-					delete_option( 'wp_smush_show_resmush' );
-				}
 				//Delete resmush list
 				delete_option( $mkey );
 			} else {
@@ -1547,13 +1535,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return bool
 		 */
-		function is_lossy_compression( $id, $stats, $key = 'wp-smush-super_smushed' ) {
+		function update_lists( $id, $stats, $key = 'wp-smush-super_smushed' ) {
 			//If Stats are empty or the image id is not provided, return
-			if ( empty( $stats ) || empty( $id ) || empty( $stats['stats'] ) || ! isset( $stats['stats']['lossy'] ) ) {
+			if ( empty( $stats ) || empty( $id ) || empty( $stats['stats'] ) ) {
 				return false;
 			}
-			if ( 1 == $stats['stats']['lossy'] ) {
+			//Update Super Smush count
+			if ( isset( $stats['stats']['lossy'] ) && 1 == $stats['stats']['lossy'] ) {
 				$this->update_super_smush_count( $id, 'add', $key );
+			}
+			//Check and update re-smush list for media gallery
+			if( 'wp-smush-super_smushed' && !empty( $this->resmush_ids ) && in_array( $id, $this->resmush_ids ) ) {
+				$this->update_resmush_list( $id );
 			}
 
 		}

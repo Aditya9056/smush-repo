@@ -70,7 +70,7 @@ jQuery(function ($) {
             this.deferred.errors = [];
 
             //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
-            this.ids = wp_smushit_data.resmush.length > 0 && !skip_resmush ? wp_smushit_data.unsmushed.concat( wp_smushit_data.resmush ) : wp_smushit_data.unsmushed ;
+            this.ids = wp_smushit_data.resmush.length > 0 && !skip_resmush ? wp_smushit_data.resmush.concat( wp_smushit_data.unsmushed ) : wp_smushit_data.unsmushed ;
 
             this.is_bulk_resmush = $button.hasClass('wp-smush-resmush') && wp_smushit_data.resmush.length > 0 ? true : false;
 
@@ -667,6 +667,7 @@ jQuery(function ($) {
         };
         $.post(ajaxurl, param );
     });
+
     //Remove Notice
     $('.wp-smush-settings-updated .dev-icon-cross').on('click', function(e) {
         e.preventDefault();
@@ -698,8 +699,10 @@ jQuery(function ($) {
         };
 
         param = jQuery.param( param ) + '&' + jQuery('.smush-settings-wrapper form').serialize();
+
         //Send ajax, Update Settings, And Check For resmush
         jQuery.post(ajaxurl, param).done(function () {
+            jQuery('.smush-settings-wrapper form').submit();
             return true;
         });
     });
@@ -717,15 +720,31 @@ jQuery(function ($) {
                 $el.remove();
             });
         });
+        //Remove Settings Notice
+        jQuery('.wp-smush-notice.wp-smush-settings-updated').remove();
 
         //Set button attribute to skip re-smush ids
         container.find('.wp-smush-all').attr('data-smush', 'skip_resmush');
+
+        //Update Stats
+        if( wp_smushit_data.count_smushed == wp_smushit_data.count_total ) {
+
+            //Show all done notice
+            jQuery('.wp-smush-notice.wp-smush-all-done').show();
+
+            //Hide Smush button
+            jQuery('.wp-smush-bulk-wrapper ').hide()
+
+        }
+
+        var smushed_count = 'undefined' != typeof wp_smushit_data.count_smushed ? wp_smushit_data.count_smushed : 0
+        jQuery('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(smushed_count);
 
         //Show the default bulk smush notice
         jQuery('.wp-smush-bulk-wrapper .wp-smush-notice').removeClass('hidden');
 
         var params = {
-            action  : 'delete_resmush_list'
+            action: 'delete_resmush_list'
         }
         //Delete resmush list
         jQuery.post(ajaxurl, params);

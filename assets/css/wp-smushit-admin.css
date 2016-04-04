@@ -545,6 +545,11 @@ table.wp-smush-stats-holder tr td:first-child {
     margin-bottom: 24px;
 }
 
+.wp-smush-bulk-active .spinner {
+    float: left;
+    margin-top: 0;
+}
+
 /** All Smushed **/
 .wp-smush-notice {
     background-color: #1abc9c;
@@ -748,7 +753,7 @@ small.smush-setting-description {
 .wpmud .wp-smush-stats, .wp-smush-stats-wrap {
     color: #555555;
     font-family: 'Roboto Condensed', sans-serif;
-    font-size: 20px;
+    font-size: 25px;
     line-height: 1;
     padding: 5px 0;
 }
