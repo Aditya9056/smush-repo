@@ -185,16 +185,11 @@ jQuery(function ($) {
         this.bulk_done = function () {
             if (!this.is_bulk) return;
 
-            // Remove started class
-            this.$button.removeClass('wp-smush-started');
-
             //Enable the button
             this.enable_button();
 
-            //Show Bulk Wrapper
-            var notice_selector = self.is_bulk_resmush ? $('.bulk-resmush-wrapper .wp-smush-all-done') : $('.bulk-smush-wrapper .wp-smush-all-done');
-
-            notice_selector.show();
+            //Show
+            $('.bulk-smush-wrapper .wp-smush-all-done').show();
 
             //Hide the Progress Bar
             $('.wp-smush-bulk-progress-bar-wrapper').hide();
@@ -404,6 +399,8 @@ jQuery(function ($) {
 
         // prevent the default action
         e.preventDefault();
+
+        jQuery('.wp-smush-notice.wp-smush-settings-updated').remove();
 
         //Disable Resmush and scan button
         jQuery('.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button').attr('disabled', 'disabled');
