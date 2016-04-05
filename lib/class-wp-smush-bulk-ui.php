@@ -62,11 +62,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 *  Prints the content of WelCome Screen for New Installation
 		 *  Dismissible by default
 		 */
-		function welcome_screen() {
+		function configure_screen() {
 			global $WpSmush, $wpsmushit_admin;
 
 			//Header Of the Box
-			$this->container_header( 'wp-smush-welcome', esc_html__( "WELCOME", "wp-smushit" ), '', true );
+			$this->container_header( 'wp-smush-welcome', esc_html__( "CONFIGURE", "wp-smushit" ) );
 
 			$user_name = $wpsmushit_admin->get_user_name();
 
@@ -76,12 +76,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<!-- Content -->
 			<div class="box-content">
 			<div class="col-third">
-				<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-welcome.png'; ?>"
-				     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>">
+				<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-tall.png'; ?>"
+				     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>" style="width: 300px;">
 			</div>
 			<div class="col-two-third wp-smush-welcome-content">
 				<h4 class="roboto-condensed-regular"><?php esc_html_e( "OH YEAH, IT'S COMPRESSION TIME", "wp-smushit" ); ?></h4>
-				<p class="wp-smush-welcome-message roboto-medium"><?php printf( esc_html__( ' %1$s Nice one, %3$s%2$s! You\'ve just installed %4$s, the hottest image compression plugin for WordPress that will reduce your image sizes significantly! We\'ve already applied recommended settings, which you can change anytime. %1$sGet started by running your first Smush!%2$s', "wp-smushit" ), '<strong>', '</strong>', $user_name, $plugin_name ); ?></p>
+				<p class="wp-smush-welcome-message roboto-medium"><?php printf( esc_html__( ' %1$s Nice one, %3$s%2$s! You\'ve just installed %4$s, the most popular image compression plugin for WordPress! %1$sGet started by choosing your desired settings below and let\'s get smushing!%2$s', "wp-smushit" ), '<strong>', '</strong>', $user_name, $plugin_name ); ?></p>
+				<hr class="wp-smush-sep"/><?php
+				$this->options_ui( true );
+			 ?>
 			</div>
 			</div><?php
 			echo "</section>";
@@ -174,7 +177,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		/**
 		 * Outputs the advanced settings for Pro users, Disabled for basic users by default
 		 */
-		function advanced_settings() {
+		function advanced_settings( $configure_screen = false ) {
 			global $WpSmush, $wpsmushit_admin;
 
 			//Content for the End of box container
@@ -185,9 +188,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					       value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
 			        <span class="spinner"></span>
 		        </div>
-				</form>
-				</div><!-- Box Content -->
-			</section><!-- Main Section -->';
+				</form>';
+			//For Configuration screen we need to show the advanced settings in single box
+			if( !$configure_screen ) {
+				$div_end .= '</div><!-- Box Content -->
+					</section><!-- Main Section -->';
+			}
 
 			//For Basic User, Show advanced settings in a separate box
 			if ( ! $WpSmush->is_pro() ) {
@@ -244,10 +250,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		/**
 		 * Process and display the options form
 		 */
-		function options_ui() {
+		function options_ui( $configure_screen = false ) {
 			global $wpsmushit_admin;
 			echo '<div class="box-container">
-				<form action="" method="post">';
+				<form id="wp-smush-settings-form" method="post">';
 			//Smush auto key
 			$opt_auto = WP_SMUSH_PREFIX . 'auto';
 			//Auto value
@@ -294,7 +300,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			</div> <!-- End of Basic Settings --><?php
 
 			do_action( 'wp_smush_after_basic_settings' );
-			$this->advanced_settings();
+			$this->advanced_settings( $configure_screen );
 		}
 
 		/**
@@ -304,42 +310,43 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $WpSmush, $wpsmushit_admin;
 			$this->smush_page_header();
 
-			//Show welcome message for only a new installation and for only network admins
+			//Show Configure screen for only a new installation and for only network admins
 			if ( 1 != get_option( 'hide_smush_welcome' ) && 1 != get_option( 'hide_smush_features' ) && 0 >= $wpsmushit_admin->smushed_count && is_super_admin() ) {
 				echo '<div class="block float-l smush-welcome-wrapper">';
-				$this->welcome_screen();
+				$this->configure_screen();
 				echo '</div>';
-			} ?>
+			}else{ ?>
 
-			<!-- Bulk Smush Progress Bar -->
-			<div class="wp-smushit-container-left col-two-third float-l"><?php
-				//Bulk Smush Container
-				$this->bulk_smush_container();
+				<!-- Bulk Smush Progress Bar -->
+				<div class="wp-smushit-container-left col-two-third float-l"><?php
+					//Bulk Smush Container
+					$this->bulk_smush_container();
 
-				if( !$WpSmush->is_pro() ) {
-					//Settings
-					$this->settings_ui();
+					if( !$WpSmush->is_pro() ) {
+						//Settings
+						$this->settings_ui();
+					}
+					?>
+				</div>
+
+				<!-- Stats -->
+				<div class="wp-smushit-container-right col-third float-l"><?php
+					//Stats
+					$this->smush_stats_container();
+					if ( ! $WpSmush->is_pro() ) {
+						/**
+						 * Allows to Hook in Additional Containers after Stats Box for free version
+						 * Pro Version has a full width settings box, so we don't want to do it there
+						 */
+						do_action( 'wp_smush_after_stats_box' );
+					} ?>
+				</div><!-- End Of Smushit Container right --><?php
+				if( $WpSmush->is_pro() ) {?>
+					<div class="row"><?php
+					 //Settings
+						$this->settings_ui(); ?>
+					</div><?php
 				}
-				?>
-			</div>
-
-			<!-- Stats -->
-			<div class="wp-smushit-container-right col-third float-l"><?php
-				//Stats
-				$this->smush_stats_container();
-				if ( ! $WpSmush->is_pro() ) {
-					/**
-					 * Allows to Hook in Additional Containers after Stats Box for free version
-					 * Pro Version has a full width settings box, so we don't want to do it there
-					 */
-					do_action( 'wp_smush_after_stats_box' );
-				} ?>
-			</div><!-- End Of Smushit Container right --><?php
-			if( $WpSmush->is_pro() ) {?>
-				<div class="row"><?php
-				 //Settings
-					$this->settings_ui(); ?>
-				</div><?php
 			}
 			$this->smush_page_footer();
 		}

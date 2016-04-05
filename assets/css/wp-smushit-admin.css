@@ -78,6 +78,9 @@ Smush button transformation
 input#wp-smush-save-settings {
     margin: 10px 0 5px;
 }
+.wp-smush-welcome #wp-smush-save-settings {
+    float: right;
+}
 
 .media-lib-wp-smush-icon {
     position: absolute;
@@ -467,10 +470,6 @@ table.wp-smush-stats-holder tr td:first-child {
     padding-bottom: 0;
 }
 
-.wpmud .wp-smush-welcome .box-content {
-    max-height: 230px;
-}
-
 .wpmud .dev-box .box-title h3 {
     display: inline-block;
 }
@@ -515,6 +514,19 @@ table.wp-smush-stats-holder tr td:first-child {
     color: #9b9b9b;
 }
 
+.wpmud .row .col-two-third.wp-smush-welcome-content {
+    padding-bottom: 20px;
+}
+.wpmud .wp-smush-welcome-content .wp-smush-premium {
+    box-shadow: none;
+    margin-top: 30px;
+    padding: 0
+}
+.wpmud .wp-smush-welcome-content .wp-smush-premium .wp-smush-container-header{
+    margin: 0;
+    padding: 0
+}
+
 .wpmud .wp-smush-welcome-content h4 {
     font-size: 30px;
     text-align: left;
@@ -523,6 +535,7 @@ table.wp-smush-stats-holder tr td:first-child {
 .wpmud .wp-smush-welcome-message {
     line-height: 1.7;
     margin-top: 20px;
+    margin-bottom: 30px;
 }
 
 /** Bulk Smush **/

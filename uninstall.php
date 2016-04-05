@@ -23,7 +23,8 @@ $smushit_keys = array(
 	'nextgen-resmush-list',
 	'super_smushed',
 	'super_smushed_nextgen',
-	'settings_updated'
+	'settings_updated',
+	'skip-redirect'
 );
 foreach ( $smushit_keys as $key ) {
 	$key = 'wp-smush-' . $key;

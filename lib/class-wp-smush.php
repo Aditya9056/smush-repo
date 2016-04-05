@@ -52,6 +52,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Constructor
 		 */
 		function __construct() {
+
+			//Redirect to Settings page
+			add_action( 'activated_plugin', array( $this, 'wp_smush_redirect' ) );
+
 			/**
 			 * Smush image (Auto Smush ) when `wp_update_attachment_metadata` filter is fired
 			 */
@@ -1712,6 +1716,46 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			return 0;
+		}
+
+		/**
+		 * Redirects the user to Plugin settings page on Plugin activation
+		 *
+		 * @param $plugin Plugin Name
+		 *
+		 * @return bool
+		 */
+		function wp_smush_redirect( $plugin ) {
+
+			global $wpsmushit_admin;
+
+			//Run for only our plugin
+			if( $plugin != WP_SMUSH_BASENAME ) {
+				return false;
+			}
+
+			//Skip if bulk activation, Or if we have to skip redirection
+			if ( isset( $_GET['activate-multi'] ) || get_site_option('wp-smush-skip-redirect') ) {
+				return false;
+			}
+
+			//If images are already smushed
+			if( $wpsmushit_admin->smushed_count() > 0 ) {
+				return false;
+			}
+
+			$url = admin_url( 'upload.php' );
+			$url = add_query_arg(
+				array(
+					'page'  => 'wp-smush-bulk'
+				),
+				$url
+			);
+
+			//Store that we need not redirect again
+			add_site_option('wp-smush-skip-redirect', true );
+
+			exit( wp_redirect( $url ) );
 		}
 	}
 

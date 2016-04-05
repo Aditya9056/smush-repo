@@ -359,13 +359,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return null
 		 */
 		function process_options() {
+
 			if ( ! is_admin() ) {
 				return false;
-			}
-
-			//If refresh is set in URL
-			if ( isset( $_GET['refresh'] ) && $_GET['refresh'] ) {
-				$this->refresh_status();
 			}
 
 			// we aren't saving options
@@ -377,6 +373,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! wp_verify_nonce( $_POST['wp_smush_options_nonce'], 'save_wp_smush_options' ) ) {
 				return false;
 			}
+
+			//Store that we need not redirect again on plugin activation
+			update_option('hide_smush_welcome', true );
 
 			// var to temporarily assign the option value
 			$setting = null;
@@ -1267,7 +1266,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						//If Original image needs to be smushed
 						$smush_original = $WpSmush->smush_original && empty( $smush_data['sizes']['full'] );
 
-						var_dump( $strip_exif);
 						if ( $smush_lossy || $strip_exif || $smush_original ) {
 							$resmush_list[] = 'nextgen' == $type ? $attachment_k : $attachment;
 							continue;

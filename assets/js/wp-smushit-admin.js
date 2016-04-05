@@ -707,11 +707,11 @@ jQuery(function ($) {
             scan_type: scan_type
         };
 
-        param = jQuery.param( param ) + '&' + jQuery('.smush-settings-wrapper form').serialize();
+        param = jQuery.param( param ) + '&' + jQuery('form#wp-smush-settings-form').serialize();
 
         //Send ajax, Update Settings, And Check For resmush
         jQuery.post(ajaxurl, param).done(function () {
-            jQuery('.smush-settings-wrapper form').submit();
+            jQuery('form#wp-smush-settings-form').submit();
             return true;
         });
     });
