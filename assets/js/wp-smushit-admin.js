@@ -617,24 +617,28 @@ jQuery(function ($) {
         //Send ajax request and get ids if any
         $.get(ajaxurl, params, function (r) {
             //Check if we have the ids,  initialize the local variable
-            if( 'undefined' != r.data.resmush_ids ) {
+            if( 'undefined' != typeof r.data.resmush_ids ) {
                 wp_smushit_data.resmush = r.data.resmush_ids;
+
+                //Get the SMushed image count
                 var smushed_count = wp_smushit_data.count_smushed - r.data.resmush_ids.length;
+
+                //Update it in stats bar
                 jQuery('.smush-attachments .smushed-count').html(smushed_count)
 
-            }
-            //Hide the Existing wrapper
-            var notices = $('.bulk-smush-wrapper .wp-smush-notice');
-            if (notices.length > 0) {
-                notices.hide();
-            }
-            //If content is recieved, Prepend it
-            if( 'undefined' != typeof r.data.content ) {
-                $('.bulk-smush-wrapper .box-container').prepend( r.data.content );
-            }
+                //Hide the Existing wrapper
+                var notices = $('.bulk-smush-wrapper .wp-smush-notice');
+                if (notices.length > 0) {
+                    notices.hide();
+                }
+                //If content is recieved, Prepend it
+                if ('undefined' != typeof r.data.content) {
+                    $('.bulk-smush-wrapper .box-container').prepend(r.data.content);
+                }
 
-            //Show Bulk wrapper
-            $('.wp-smush-bulk-wrapper').show();
+                //Show Bulk wrapper
+                $('.wp-smush-bulk-wrapper').show();
+            }
 
         }).always( function() {
 

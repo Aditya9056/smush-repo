@@ -148,15 +148,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->settings = array(
 				'auto'      => array(
 					'label' => esc_html__( 'Automatically Smush my images on upload', 'wp-smushit' ),
-					'desc'  => esc_html__( 'When you upload images to your media library, we’ll automatically compress them instantly.', 'wp-smushit' )
+					'desc'  => esc_html__( 'When you upload images to the media library, we’ll automatically optimize them.', 'wp-smushit' )
 				),
 				'keep_exif' => array(
 					'label' => esc_html__( 'Preserve Image EXIF data', 'wp-smushit' ),
-					'desc'  => esc_html__( 'EXIF data stores image information like ISO speed, shutter speed, camera model, dates, focal length and much more.', 'wp-smushit' )
+					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data does make image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
 				),
 				'lossy'     => array(
 					'label' => esc_html__( 'Super-smush  my images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Compress your images further with our intelligent multi-pass lossy compression.', 'wp-smushit' )
+					'desc'  => esc_html__( 'Compress images up to 10x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
 				),
 				'nextgen'   => array(
 					'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
@@ -164,11 +164,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				),
 				'original'  => array(
 					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'By default we smush thumbnail, medium and large files. This will smush your original uploads too.', 'wp-smushit' )
+					'desc'  => esc_html__( 'WordPress crops and resizes every image you upload for embedding in your site. By default we only smush the display images. To save space on your server you can choose to smush the original full-size images as well. This will not usually improve page speed.', 'wp-smushit' )
 				),
 				'backup'    => array(
 					'label' => esc_html__( 'Make a copy of my original images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'We’ll keep your original images so you can restore them at any point if you need to. Note: This setting significantly increase your uploads folder size - nearly double.', 'wp-smushit' )
+					'desc'  => esc_html__( 'Save your original images so you can restore them at any point. Note: keeping a copy of your original files can significantly increases your uploads folder size – nearly double.', 'wp-smushit' )
 				)
 			);
 		}
