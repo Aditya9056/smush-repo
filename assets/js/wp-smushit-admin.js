@@ -188,8 +188,12 @@ jQuery(function ($) {
             //Enable the button
             this.enable_button();
 
-            //Show
-            $('.bulk-smush-wrapper .wp-smush-all-done').show();
+            //Show Notice
+            if( wp_smushit_data.unsmushed.length == 0 ) {
+                $('.bulk-smush-wrapper .wp-smush-all-done').show();
+            }else{
+                $('.bulk-smush-wrapper .wp-smush-remaining').show();
+            }
 
             //Hide the Progress Bar
             $('.wp-smush-bulk-progress-bar-wrapper').hide();
@@ -240,6 +244,8 @@ jQuery(function ($) {
 
                 }
             }
+            //Update remaining count
+            jQuery('.bulk-smush-wrapper .wp-smush-remaining-count').html(wp_smushit_data.unsmushed.length );
 
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
@@ -253,8 +259,8 @@ jQuery(function ($) {
                     $('.super-smush-attachments .smushed-count').html( _res.data.stats.super_smushed );
                 }
 
-                if( $('.smush-attachments .wp-smush-remaining-count').length && 'undefined' != typeof self.ids ) {
-                    $('.smush-attachments .wp-smush-remaining-count').html( self.ids.length );
+                if( $('.bulk-smush-wrapper .wp-smush-remaining-count').length && 'undefined' != typeof self.ids ) {
+                    $('.bulk-smush-wrapper .wp-smush-remaining-count').html( self.ids.length );
                 }
 
                 // increase the progress bar
@@ -279,7 +285,11 @@ jQuery(function ($) {
         };
 
         this.continue = function () {
-            return this.ids.length > 0 && this.is_bulk;
+            var continue_smush = $('.wp-smush-all').data('continue-smush');
+            if( typeof continue_smush == typeof undefined ){
+                continue_smush = true;
+            }
+            return continue_smush && this.ids.length > 0 && this.is_bulk;
         };
 
         this.increment_errors = function ( id ) {
@@ -376,6 +386,9 @@ jQuery(function ($) {
                 self.enable_button();
                 self.$button.removeClass('wp-smush-started');
                 $('.wp-smush-bulk-wrapper').show();
+
+                //Add a data attribute to the smush button, to stop sending ajax
+                $('.wp-smush-all').attr('data-continue-smush', false );
 
                 //Show the Progress Bar
                 $('.wp-smush-bulk-progress-bar-wrapper').hide();
