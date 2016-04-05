@@ -375,7 +375,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Store that we need not redirect again on plugin activation
-			update_option('hide_smush_welcome', true );
+			update_option('wp-smush-hide_smush_welcome', true );
 
 			// var to temporarily assign the option value
 			$setting = null;
@@ -1063,7 +1063,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Store a key/value to hide the smush features on bulk page
 		 */
 		function dismiss_smush_notice() {
-			update_option( 'hide_smush_welcome', 1 );
+			update_option( 'wp-smush-hide_smush_welcome', 1 );
 			wp_send_json_success();
 		}
 
