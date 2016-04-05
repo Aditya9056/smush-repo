@@ -217,17 +217,21 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 						return $response;
 					}
 
-					if ( ! empty( $response['data'] ) ) {
-						$stats['sizes'][ $size ] = (object) $WpSmush->_array_fill_placeholders( $WpSmush->_get_size_signature(), (array) $response['data'] );
+					//If there are no stats
+					if( empty( $response['data'] ) ) {
+						continue;
 					}
 
-					//Total Stats, store all data in bytes
-					if ( isset( $response['data'] ) ) {
-						list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-							= $WpSmush->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
-					} else {
-						$errors->add( "image_size_error" . $size, sprintf( __( "Size '%s' not processed correctly", 'wp-smushit' ), $size ) );
+					//If the image size grew after smushing, skip it
+					if( $response['data']->after_size > $response['data']->before_size ) {
+						continue;
 					}
+
+					$stats['sizes'][ $size ] = (object) $WpSmush->_array_fill_placeholders( $WpSmush->_get_size_signature(), (array) $response['data'] );
+
+					//Total Stats, store all data in bytes
+					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
+						= $WpSmush->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 
 					if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
@@ -627,7 +631,7 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 						$response = $WpSmush->do_smushit( $filename, $image_id, 'nextgen' );
 
 						//If the image was smushed
-						if ( ! is_wp_error( $response ) && ! empty( $response['data'] ) ) {
+						if ( ! is_wp_error( $response ) && ! empty( $response['data'] ) && $response['data']->bytes_saved > 0 ) {
 							//Check for existing stats
 							if ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) {
 								$stats = $image->meta_data['wp_smush'];

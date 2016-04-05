@@ -366,17 +366,22 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						return $response;
 					}
 
-					if ( ! empty( $response['data'] ) ) {
-						$stats['sizes'][ $size_key ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $response['data'] );
+					//If there are no stats
+					if( empty( $response['data'] ) ) {
+						continue;
 					}
 
-					//Total Stats, store all data in bytes
-					if ( isset( $response['data'] ) ) {
-						list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-							= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
-					} else {
-						$errors->add( "image_size_error" . $size_key, sprintf( __( "Size '%s' not processed correctly", 'wp-smushit' ), $size_key ) );
+					//If the image size grew after smushing, skip it
+					if( $response['data']->after_size > $response['data']->before_size ) {
+						continue;
 					}
+
+					//All Clear, Store the stat
+					$stats['sizes'][ $size_key ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $response['data'] );
+
+					//Total Stats, store all data in bytes
+					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
+							= $this->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
 
 					if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
@@ -398,6 +403,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			 */
 			$smush_full_image = apply_filters( 'wp_smush_media_image', true, 'full' );
 
+			//Whether to update the image stats or not
+			$store_stats = true;
+
 			//If original size is supposed to be smushed
 			if ( $smush_full && $smush_full_image ) {
 
@@ -407,18 +415,24 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					return $full_image_response;
 				}
 
-				if ( ! empty( $full_image_response['data'] ) ) {
+				//If there are no stats
+				if( empty( $full_image_response['data'] ) ) {
+					$store_stats = false;
+				}
+
+				//If the image size grew after smushing, skip it
+				if( $full_image_response['data']->after_size > $full_image_response['data']->before_size ) {
+					$store_stats = false;
+				}
+
+				if ( $store_stats ) {
 					$stats['sizes']['full'] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $full_image_response['data'] );
-				} else {
-					$errors->add( "image_size_error", __( "Size 'full' not processed correctly", 'wp-smushit' ) );
 				}
 
 				//Update stats
-				if ( isset( $full_image_response['data'] ) ) {
+				if ( $store_stats ) {
 					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
 						= $this->_update_stats_data( $full_image_response['data'], $size_before, $size_after, $total_time, $bytes_saved );
-				} else {
-					$errors->add( "image_size_error", __( "Size 'full' not processed correctly", 'wp-smushit' ) );
 				}
 
 				//Api version and lossy, for some images, full image i skipped and for other images only full exists
@@ -1634,8 +1648,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 					//If the smushing was successful
 					if ( ! is_wp_error( $res ) && ! empty( $res['data'] ) ) {
-						//Update attachment stats
-						$stats['sizes'][ $element_id ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $res['data'] );
+						if( $res['data']->bytes_saved > 0 ) {
+							//Update attachment stats
+							$stats['sizes'][ $element_id ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $res['data'] );
+						}
 
 						//Update upfront stats for the element id
 						$upfront_images[ $element_id ]['is_smushed'] = 1;
