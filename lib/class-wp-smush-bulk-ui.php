@@ -418,12 +418,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' hidden' : ''; ?>"><?php
 				//If all the images in media library are smushed
 				//Button Text
-				if ( $WpSmush->is_pro() ) {
-					$button_content = esc_html__( "BULK SMUSH NOW", "wp-smushit" );
-				} else {
-					$count          = $wpsmushit_admin->remaining_count < 50 ? $wpsmushit_admin->remaining_count : 50;
-					$button_content = sprintf( esc_html__( "BULK SMUSH %d ATTACHMENTS", "wp-smushit" ), $count );
-				}
+				$button_content = esc_html__( "BULK SMUSH NOW", "wp-smushit" );
+
 				//Show the notice only if there are remaining images and if we aren't showing a notice for resmush
 				if( $wpsmushit_admin->remaining_count > 0 ) {
 					$class = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' hidden' : '';

@@ -381,7 +381,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
 						$stats['stats']['lossy']       = $response['data']->lossy;
-						$stats['stats']['keep_exif']   = !empty( $response['data']->keep_exif ) ? $response['data']->keep_exif : false;
+						$stats['stats']['keep_exif']   = !empty( $response['data']->keep_exif ) ? $response['data']->keep_exif : 0;
 					}
 				}
 				//Upfront Integration
@@ -426,7 +426,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 					$stats['stats']['api_version'] = $full_image_response['data']->api_version;
 					$stats['stats']['lossy']       = $full_image_response['data']->lossy;
-					$stats['stats']['keep_exif']   = !empty( $full_image_response['data']->keep_exif ) ? $full_image_response['data']->keep_exif : false;
+					$stats['stats']['keep_exif']   = !empty( $full_image_response['data']->keep_exif ) ? $full_image_response['data']->keep_exif : 0;
 				}
 
 			}
@@ -1119,7 +1119,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				);
 				$stats['stats']['api_version'] = $data->api_version;
 				$stats['stats']['lossy'] = $data->lossy;
-				$stats['stats']['keep_exif'] = ! empty( $data->keep_exif ) ? $data->keep_exif : false;
+				$stats['stats']['keep_exif'] = ! empty( $data->keep_exif ) ? $data->keep_exif : 0;
 
 				//Update Main Stats
 				list( $stats['stats']['size_before'], $stats['stats']['size_after'], $stats['stats']['time'], $stats['stats']['percent'], $stats['stats']['bytes'] ) =

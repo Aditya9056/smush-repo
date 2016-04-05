@@ -850,13 +850,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
 					$button['disabled'] = 'disabled';
 
-				} else if ( $this->is_pro_user || $this->remaining_count <= $this->max_free_bulk ) { //if premium or under limit
+				} else {
 
 					$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-					$button['class'] = 'wp-smush-button';
-
-				} else { //if not premium and over limit
-					$button['text']  = sprintf( __( 'Bulk Smush %d Attachments', 'wp-smushit' ), $this->max_free_bulk );
 					$button['class'] = 'wp-smush-button';
 
 				}
@@ -1267,6 +1263,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						//If Original image needs to be smushed
 						$smush_original = $WpSmush->smush_original && empty( $smush_data['sizes']['full'] );
 
+						var_dump( $strip_exif);
 						if ( $smush_lossy || $strip_exif || $smush_original ) {
 							$resmush_list[] = 'nextgen' == $type ? $attachment_k : $attachment;
 							continue;

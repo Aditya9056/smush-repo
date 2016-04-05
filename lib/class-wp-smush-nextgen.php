@@ -232,7 +232,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 					if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
 						$stats['stats']['lossy']       = $response['data']->lossy;
-						$stats['stats']['keep_exif']   = !empty( $response['data']->keep_exif ) ? $response['data']->keep_exif : false;
+						$stats['stats']['keep_exif']   = !empty( $response['data']->keep_exif ) ? $response['data']->keep_exif : 0;
 					}
 				}
 			}
