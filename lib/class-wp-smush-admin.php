@@ -158,10 +158,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'label' => esc_html__( 'Super-smush  my images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'Compress images up to 10x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
 				),
-				'nextgen'   => array(
-					'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
-				),
 				'original'  => array(
 					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'WordPress crops and resizes every image you upload for embedding in your site. By default we only smush the display images. To save space on your server you can choose to smush the original full-size images as well. This will not usually improve page speed.', 'wp-smushit' )
@@ -171,6 +167,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'desc'  => esc_html__( 'Save your original images so you can restore them at any point. Note: keeping a copy of your original files can significantly increases your uploads folder size – nearly double.', 'wp-smushit' )
 				)
 			);
+
+			//Show NextGen settings only if Nextgen is installed
+			if( class_exists( 'C_NextGEN_Bootstrap' ) ) {
+				$this->settings['nextgen'] = array(
+					'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
+				);
+			}
 		}
 
 		/**

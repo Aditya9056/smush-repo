@@ -208,31 +208,29 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				echo "<hr />";
 			}
 
-			//Used for printing separator
-			$numItems = count( $pro_settings );
-			$i        = 0;
-
 			//Iterate Over all the available settings, and print a row for each of them
 			foreach ( $pro_settings as $setting_key ) {
-				$setting_m_key = WP_SMUSH_PREFIX . $setting_key;
-				$setting_val   = $WpSmush->is_pro() ? get_option( $setting_m_key, false ) : 0; ?>
-				<div class='wp-smush-setting-row wp-smush-advanced'>
-				<label class="inline-label" for="<?php echo $setting_m_key; ?>">
-					<span
-						class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $setting_key ]['label']; ?></span>
-					<br/>
-					<small class="smush-setting-description">
-						<?php echo $wpsmushit_admin->settings[ $setting_key ]['desc']; ?>
-					</small>
-				</label>
-					<span class="toggle float-r">
-						<input type="checkbox" class="toggle-checkbox"
-						       id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1"
-						       name="<?php echo $setting_m_key; ?>">
-						<label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
-					</span>
-				</div>
-				<hr ><?php
+				if( isset($wpsmushit_admin->settings[ $setting_key ] ) ) {
+					$setting_m_key = WP_SMUSH_PREFIX . $setting_key;
+					$setting_val   = $WpSmush->is_pro() ? get_option( $setting_m_key, false ) : 0; ?>
+					<div class='wp-smush-setting-row wp-smush-advanced'>
+					<label class="inline-label" for="<?php echo $setting_m_key; ?>">
+						<span
+							class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $setting_key ]['label']; ?></span>
+						<br/>
+						<small class="smush-setting-description">
+							<?php echo $wpsmushit_admin->settings[ $setting_key ]['desc']; ?>
+						</small>
+					</label>
+						<span class="toggle float-r">
+							<input type="checkbox" class="toggle-checkbox"
+							       id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1"
+							       name="<?php echo $setting_m_key; ?>">
+							<label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
+						</span>
+					</div>
+					<hr ><?php
+				}
 			}
 			//Output Form end and Submit button for pro version
 			if ( $WpSmush->is_pro() ) {
