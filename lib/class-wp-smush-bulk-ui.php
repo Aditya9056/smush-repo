@@ -75,7 +75,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			?>
 			<!-- Content -->
 			<div class="box-content">
-			<div class="col-third">
+			<div class="col-third wp-smush-lady">
 				<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-tall.png'; ?>"
 				     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>" style="width: 300px;">
 			</div>

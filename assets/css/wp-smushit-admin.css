@@ -478,6 +478,7 @@ table.wp-smush-stats-holder tr td:first-child {
     display: inline-block;
     float: right;
     margin: 1.5em auto;
+    max-width: 60%;
 }
 
 .wp-smush-premium .smush-container-subheading {
@@ -848,4 +849,50 @@ small.smush-setting-description {
     padding: 10px;
     font-size: 14px;
     font-weight: bold;
+}
+/** Media Queries for resolution between 782px - 1024px **/
+@media screen and (max-width: 1024px) {
+    /** Stats Section **/
+    .wpmud .smush-stats-wrapper {
+        font-size: 12px;
+    }
+    .wpmud .wp-smush-stats, .wp-smush-stats-wrap {
+        font-size: 20px;
+    }
+    /** Sub Heading **/
+    .wpmud .smush-container-subheading {
+        font-size: 12px;
+    }
+    /** Configure screen **/
+    .wpmud .row .wp-smush-lady.col-third {
+        display: none;
+    }
+
+    /** Media Library Stats **/
+    .wp-list-table .smushit .wp-smush-stats-holder tr th {
+        display: inline-block;
+        width: 50%;
+        box-sizing: border-box;
+    }
+
+    .wp-list-table .smushit .wp-smush-stats-holder tr td:first-child {
+        border-right: none;
+        box-sizing: border-box;
+        display: inline-block !important;
+        width: 50% !important;
+    }
+
+    .wp-list-table .smushit .wp-smush-stats-holder tr td:last-child {
+        box-sizing: border-box;
+        display: inline-block !important;
+        float: none;
+        width: 50% !important;
+    }
+}
+/** Media Queries for resolution below 782px **/
+@media only screen and (max-width: 782px) {
+    .wpmud .wp-smushit-container-wrap .col-two-third.wp-smushit-container-left, .wpmud .wp-smushit-container-wrap .col-third.wp-smushit-container-right {
+        padding: 0;
+        width: 100%;
+    }
 }
