@@ -46,7 +46,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			add_action( 'ngg_delete_picture', array( $this, 'update_nextgen_stats' ) );
 
 			//Update the Super Smush count, after the smushing
-			add_action('wp_smush_image_optimised_nextgen', array( $this, 'update_lists'), '', 2 );
+			add_action( 'wp_smush_image_optimised_nextgen', array( $this, 'update_lists' ), '', 2 );
 
 			$this->bulk_ui = new WpSmushBulkUi();
 
@@ -150,18 +150,22 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function localize() {
 			global $wpsmushnextgenstats;
+
+			//Set the counts
+			$this->total_count     = $wpsmushnextgenstats->total_count();
+			$this->smushed_count   = $wpsmushnextgenstats->get_ngg_images( 'smushed', true );
+			$this->remaining_count = $wpsmushnextgenstats->get_ngg_images( 'unsmushed', true );
+
 			$handle = 'wp-smushit-admin-js';
 
-			$bulk_now = __( 'Bulk Smush Now', 'wp-smushit' );
-
 			$wp_smush_msgs = array(
-				'resmush'              => esc_html__( 'Super-Smush', 'wp-smushit' ),
-				'smush_now'            => esc_html__( 'Smush Now', 'wp-smushit' ),
-				"error_in_bulk"        => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				"all_resmushed"        => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
-				'restore'              => esc_html__( "Restoring image..", "wp-smushit" ),
-				'smushing'             => esc_html__( "Smushing image..", "wp-smushit" ),
-				'checking'             => esc_html__( "Checking images..", "wp-smushit")
+				'resmush'       => esc_html__( 'Super-Smush', 'wp-smushit' ),
+				'smush_now'     => esc_html__( 'Smush Now', 'wp-smushit' ),
+				"error_in_bulk" => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				"all_resmushed" => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
+				'restore'       => esc_html__( "Restoring image..", "wp-smushit" ),
+				'smushing'      => esc_html__( "Smushing image..", "wp-smushit" ),
+				'checking'      => esc_html__( "Checking images..", "wp-smushit" )
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -187,9 +191,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			//Array of all smushed, unsmushed and lossless ids
 			$data = array(
-				'smushed'   => $smushed,
-				'unsmushed' => $unsmushed,
-				'resmush'   => $this->resmush_ids
+				'count_smushed' => $this->smushed_count,
+				'count_total'   => $this->total_count,
+				'smushed'       => $smushed,
+				'unsmushed'     => $unsmushed,
+				'resmush'       => $this->resmush_ids
 			);
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
@@ -370,20 +376,12 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 *
 		 */
 		function bulk_smush_ui() {
-			global $wpsmushnextgenstats;
-
-			//Set the counts
-			$this->total_count     = $wpsmushnextgenstats->total_count();
-			$this->smushed_count   = $wpsmushnextgenstats->get_ngg_images( 'smushed', true );
-			$this->remaining_count = $wpsmushnextgenstats->get_ngg_images( 'unsmushed', true );
 			//Page Header
 			$this->bulk_ui->smush_page_header(); ?>
 			<!-- Bulk Smush Progress Bar -->
 			<div class="wp-smushit-container-left col-two-third float-l"><?php
 				//Bulk Smush Container
 				$this->bulk_smush_container();
-				//Bulk Re Smush Container
-				$this->bulk_re_smush_container();
 				?>
 			</div>
 
@@ -433,17 +431,34 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function bulk_smush_content() {
 			global $wpsmushit_admin, $WpSmush;
-			$all_done = $this->smushed_count == $this->total_count;
+
+			//If all the images are smushed
+			$all_done = ( $wpsmushit_admin->smushed_count == $wpsmushit_admin->total_count ) && 0 == count( $this->resmush_ids );
+
+			$resmush_ids = get_option( "wp-smush-nextgen-resmush-list", false );
+
+			$count = $resmush_ids ? count( $resmush_ids ) : 0;
+
+			//Whether to show the remaining re-smush notice
+			$show = $count > 0 ? true : false;
+
+			$count += $this->remaining_count;
+
+			//Get the counts
+			echo $this->bulk_ui->bulk_resmush_content( $count, $show );
+
+			/** End Of Re-Smush Notice */
 
 			//If there are no images in Media Library
 			if ( 0 >= $this->total_count ) { ?>
 				<span class="wp-smush-no-image tc">
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-upload-images.png'; ?>"
-						alt="<?php esc_html_e( "No attachments found - Upload some images", "wp-smushit" ); ?>">
+					     alt="<?php esc_html_e( "No attachments found - Upload some images", "wp-smushit" ); ?>">
 		        </span>
-				<p class="wp-smush-no-images-content tc roboto-regular"><?php printf( esc_html__( "We haven’t found any images in your %sgallery%s yet, so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" ), '<a href="' . esc_url( admin_url('admin.php?page=ngg_addgallery') ) . '">', '</a>' ); ?></p>
+				<p class="wp-smush-no-images-content tc roboto-regular"><?php printf( esc_html__( "We haven’t found any images in your %sgallery%s yet, so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" ), '<a href="' . esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ) . '">', '</a>' ); ?></p>
 				<span class="wp-smush-upload-images tc">
-					<a class="button button-cta" href="<?php echo esc_url( admin_url('admin.php?page=ngg_addgallery') ); ?>"><?php esc_html_e( "UPLOAD IMAGES", "wp-smushit" ); ?></a>
+				<a class="button button-cta"
+				   href="<?php echo esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ); ?>"><?php esc_html_e( "UPLOAD IMAGES", "wp-smushit" ); ?></a>
 				</span><?php
 			} else { ?>
 				<!-- Hide All done div if there are images pending -->
@@ -454,16 +469,19 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				//If all the images in media library are smushed
 				//Button Text
 				$button_content = esc_html__( "BULK SMUSH NOW", "wp-smushit" );
+				// DO not show the remaining notice if we have resmush ids
 				?>
-				<div class="wp-smush-notice wp-smush-remaining">
+				<div class="wp-smush-notice wp-smush-remaining  <?php echo count( $this->resmush_ids ) > 0 ? ' hidden' : ''; ?>">
 					<i class="dev-icon">
 						<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
 					</i>
-					<span class="wp-smush-notice-text"><?php printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that needs smushing!", $this->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $this->remaining_count, '</span>', '</strong>' ); ?></span>
+					<span
+						class="wp-smush-notice-text"><?php printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that needs smushing!", $this->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $this->remaining_count, '</span>', '</strong>' ); ?></span>
 				</div>
 				<hr class="wp-smush-sep">
 				<div class="smush-final-log notice notice-warning inline hidden"></div>
-				<button type="button" class="wp-smush-button wp-smush-nextgen-bulk"><?php echo $button_content; ?></button><?php
+				<button type="button"
+				        class="wp-smush-button wp-smush-nextgen-bulk"><?php echo $button_content; ?></button><?php
 
 				//Enable Super Smush
 				if ( ! $WpSmush->lossy_enabled ) { ?>
@@ -478,55 +496,17 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Bulk Smush UI and Progress bar
 		 */
 		function bulk_smush_container() {
+
+			//Subheading Content
 			$smush_individual_msg = sprintf( esc_html__( "Smush individual images via your %sManage Galleries%s section", "wp-smushit" ), '<a href="' . esc_url( admin_url() . 'admin.php?page=nggallery-manage-gallery' ) . '" title="' . esc_html__( 'Manage Galleries', 'wp-smushit' ) . '">', '</a>' );
+
+			//Container Header
 			$this->bulk_ui->container_header( 'bulk-smush-wrapper', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
+
 			<div class="box-container"><?php
 				$this->bulk_smush_content(); ?>
 			</div><?php
 			echo "</section>";
-		}
-
-		/**
-		 * Bulk resmush UI
-		 */
-		function bulk_re_smush_container() {
-			//If we are not suppose to show the resmush UI
-			if ( 1 != get_option( 'wp_smush_show_resmush_nextgen' ) ) {
-				return;
-			}
-
-			$this->bulk_ui->container_header( 'bulk-resmush-wrapper', esc_html__( "RE-SMUSH", "wp-smushit" ) ); ?>
-			<div class="box-container"><?php
-			//If we have the resmush ids list, Show Resmush notice and button
-			if ( $resmush_ids = get_option( "wp-smush-nextgen-resmush-list" ) ) {
-				$this->resmush_bulk_ui();
-			} else {
-				$this->bulk_resmush_content();
-			} ?>
-			</div><?php
-			echo "</section>";
-		}
-
-		/**
-		 * Bulk Resmush Content
-		 */
-		function bulk_resmush_content() { ?>
-			<div class="wp-smush-resmush-wrapper">
-			<div class="wp-smush-settings-changed roboto-regular">
-				<?php esc_html_e( "You changed your settings recently. Let's run a quick check to see if any of your images can be further optimised to the new settings." ); ?>
-			</div>
-			<div class="wp-smush-progress-bar-wrap hidden">
-				<div class="wp-smush-progress-bar">
-					<div class="wp-smush-progress-inner" style="width: 100%;">
-						<span class="wp-scan-progress-text"><?php esc_html_e( "Scanning images..", "wp-smushit" ); ?></span>
-					</div>
-				</div>
-			</div>
-			<hr class="wp-smush-sep">
-			<button class="wp-smush-scan button-grey" data-nonce="<?php echo wp_create_nonce( 'smush-scan-images' ); ?>" data-type="nextgen">
-				<?php esc_html_e( "RUN IMAGE CHECK", "wp-smushit" ); ?>
-			</button>
-			</div><?php
 		}
 
 		/**
@@ -535,67 +515,76 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		function smush_stats_container() {
 			global $WpSmush, $wpsmushnextgenstats, $wpsmushit_admin;
 
+			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
+			$smushed_count = ( $resmush_count = count( $this->resmush_ids ) ) > 0 ? ( $this->total_count - ( $resmush_count + $this->remaining_count ) ) : $this->smushed_count;
+
 			//NextGen Stats
 			$this->stats = $wpsmushnextgenstats->get_smush_stats();
 
-			$this->bulk_ui->container_header( 'smush-stats-wrapper', esc_html__( "STATS", "wp-smushit" ), '' ); ?>
+			$button = '<span class="spinner"></span><button title="' . esc_html__( "Allows to run a quick check if any of the smushed image can be further optimised to the new settings.", "wp-smushit" ) . '" data-toggle="tooltip" data-type="nextgen" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
+			$this->bulk_ui->container_header( 'smush-stats-wrapper', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
 
 			<div class="box-content">
-				<div class="row smush-total-reduction-percent">
+			<div class="row smush-total-reduction-percent">
 					<span class="float-l wp-smush-stats-label">
 						<strong><?php esc_html_e( "TOTAL % REDUCTIONS", "wp-smushit" ); ?></strong>
 					</span>
 					<span class="float-r wp-smush-stats-wrap">
 						<strong>
-							<span class="wp-smush-stats"><?php echo $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 2, '.', '' ) : 0; ?></span>%
+							<span
+								class="wp-smush-stats"><?php echo $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 2, '.', '' ) : 0; ?></span>%
 						</strong>
 					</span>
-				</div>
-				<hr>
-				<div class="row smush-total-reduction-bytes">
+			</div>
+			<hr>
+			<div class="row smush-total-reduction-bytes">
 					<span class="float-l wp-smush-stats-label">
 						<strong><?php esc_html_e( "TOTAL SIZE REDUCTIONS", "wp-smushit" ); ?></strong>
 					</span>
 					<span class="float-r wp-smush-stats">
 						<strong><?php echo $this->stats['human'] > 0 ? $this->stats['human'] : "0MB"; ?></strong>
 					</span>
-				</div>
-				<hr>
-				<div class="row smush-attachments">
-					<span class="float-l wp-smush-stats-label">
+			</div>
+			<hr>
+			<div class="row smush-attachments">
+			<span class="float-l wp-smush-stats-label">
 						<strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong>
 					</span>
 					<span class="float-r wp-smush-stats">
 						<strong>
-							<span class="smushed-count"><?php echo intval( $this->smushed_count ) . '</span>/' . $this->total_count; ?>
+							<span
+								class="smushed-count"><?php echo $smushed_count . '</span>/' . $this->total_count; ?>
 						</strong>
 					</span>
-				</div><?php
-				if( apply_filters( 'wp_smush_show_nextgen_lossy_stats', true ) ) { ?>
-					<hr>
-					<div class="row super-smush-attachments">
-					<span class="float-l wp-smush-stats-label">
+			</div><?php
+			//Nonce Field for Ajax requests
+			echo wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', false );
+			if ( apply_filters( 'wp_smush_show_nextgen_lossy_stats', true ) ) { ?>
+				<hr>
+				<div class="row super-smush-attachments">
+				<span class="float-l wp-smush-stats-label">
 						<strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong>
 					</span>
 					<span class="float-r wp-smush-stats">
 						<?php
 						if ( $WpSmush->lossy_enabled ) {
-							$count          = $wpsmushit_admin->super_smushed_count('nextgen', $wpsmushnextgenstats->get_ngg_images('smushed' ) );
+							$count = $wpsmushit_admin->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
 							echo '<strong><span class="smushed-count">' . $count . '</span>/' . $this->total_count . '</strong>';
 						} else {
 							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
 						} ?>
 					</span>
-					</div><?php
-				}
-				/**
-				 * Allows you to output any content within the stats box at the end
-				 */
-				do_action( 'wp_smush_after_stats' );
-				?>
+				</div><?php
+			}
+			/**
+			 * Allows you to output any content within the stats box at the end
+			 */
+			do_action( 'wp_smush_after_stats' );
+			?>
 			</div><?php
 			echo "</section>";
 		}
+
 		/**
 		 * Updates the resmush list for NextGen gallery, remove the given id
 		 *
@@ -608,6 +597,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 		/**
 		 * Fetch the stats for the given attachment id, and subtract them from Global stats
+		 *
 		 * @param $attachment_id
 		 */
 		function update_nextgen_stats( $attachment_id ) {
@@ -636,7 +626,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				return false;
 			}
 
-			if ( ! empty( $nextgen_stats['size_before'] ) && ! empty( $nextgen_stats['size_after'] ) && $nextgen_stats['size_before'] > 0 && $nextgen_stats['size_after'] > 0  && $nextgen_stats['size_before'] > $smush_stats['stats']['size_before'] ) {
+			if ( ! empty( $nextgen_stats['size_before'] ) && ! empty( $nextgen_stats['size_after'] ) && $nextgen_stats['size_before'] > 0 && $nextgen_stats['size_after'] > 0 && $nextgen_stats['size_before'] > $smush_stats['stats']['size_before'] ) {
 				$nextgen_stats['size_before'] = $nextgen_stats['size_before'] - $smush_stats['stats']['size_before'];
 				$nextgen_stats['size_after']  = $nextgen_stats['size_after'] - $smush_stats['stats']['size_after'];
 				$nextgen_stats['bytes']       = $nextgen_stats['size_before'] - $nextgen_stats['size_after'];
@@ -648,7 +638,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			update_option( 'wp_smush_stats_nextgen', $nextgen_stats );
 
 			//Remove from Super Smush list
-			$wpsmushit_admin->update_super_smush_count( $attachment_id, 'remove', 'wp-smush-super_smushed_nextgen');
+			$wpsmushit_admin->update_super_smush_count( $attachment_id, 'remove', 'wp-smush-super_smushed_nextgen' );
 
 		}
 
@@ -661,7 +651,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		function update_lists( $image_id, $stats ) {
 			global $wpsmushit_admin;
 			$wpsmushit_admin->update_lists( $image_id, $stats, 'wp-smush-super_smushed_nextgen' );
-			if( !empty( $this->resmush_ids ) && in_array( $image_id, $this->resmush_ids ) ) {
+			if ( ! empty( $this->resmush_ids ) && in_array( $image_id, $this->resmush_ids ) ) {
 				$this->update_resmush_list( $image_id );
 			}
 		}

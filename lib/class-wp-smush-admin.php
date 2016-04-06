@@ -349,7 +349,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function setup_global_stats( $force_update = false ) {
 			$this->total_count     = $this->total_count();
 			$this->smushed_count   = $this->smushed_count();
-			$this->remaining_count = $this->total_count - $this->smushed_count;
+			$this->remaining_count = $this->remaining_count();
 			$this->stats           = $this->global_stats( $force_update );
 		}
 
@@ -1313,7 +1313,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					}
 
 					if ( ( $count = count( $resmush_list ) ) > 0 ) {
-						$ajax_response = 'nextgen' == $type ? $wpsmushnextgenadmin->resmush_bulk_ui( true ) : $this->bulk_ui->bulk_resmush_content();
+						$show = true;
+
+						if( empty( $this->remaining_count ) ) {
+							$this->setup_global_stats();
+						}
+
+						$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
+
+						$ajax_response = $this->bulk_ui->bulk_resmush_content( $count, $show );
 					} else {
 						//Delete the resmush list
 						delete_option( $key );

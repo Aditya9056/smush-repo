@@ -199,7 +199,7 @@ jQuery(function ($) {
             $('.wp-smush-bulk-progress-bar-wrapper').hide();
 
             //Enable Resmush and scan button
-            jQuery('.wp-resmush.wp-smush-action, .wp-smush-scan').removeAttr('disabled');
+            $('.wp-resmush.wp-smush-action, .wp-smush-scan').removeAttr('disabled');
         };
 
         this.is_resolved = function () {
@@ -743,7 +743,7 @@ jQuery(function ($) {
             });
         });
         //Remove Settings Notice
-        jQuery('.wp-smush-notice.wp-smush-settings-updated').remove();
+        $('.wp-smush-notice.wp-smush-settings-updated').remove();
 
         //Set button attribute to skip re-smush ids
         container.find('.wp-smush-all').attr('data-smush', 'skip_resmush');
@@ -752,21 +752,24 @@ jQuery(function ($) {
         if( wp_smushit_data.count_smushed == wp_smushit_data.count_total ) {
 
             //Show all done notice
-            jQuery('.wp-smush-notice.wp-smush-all-done').show();
+            $('.wp-smush-notice.wp-smush-all-done').show();
 
             //Hide Smush button
-            jQuery('.wp-smush-bulk-wrapper ').hide()
+            $('.wp-smush-bulk-wrapper ').hide()
 
         }
+        var type = $('.wp-smush-scan').data('type');
+        type = 'undefined' == typeof type ? 'media' : type;
 
         var smushed_count = 'undefined' != typeof wp_smushit_data.count_smushed ? wp_smushit_data.count_smushed : 0
-        jQuery('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(smushed_count);
+        $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(smushed_count);
 
         //Show the default bulk smush notice
-        jQuery('.wp-smush-bulk-wrapper .wp-smush-notice').removeClass('hidden');
+        $('.wp-smush-bulk-wrapper .wp-smush-notice').removeClass('hidden');
 
         var params = {
-            action: 'delete_resmush_list'
+            action: 'delete_resmush_list',
+            type:   type
         }
         //Delete resmush list
         jQuery.post(ajaxurl, params);

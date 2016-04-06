@@ -94,10 +94,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Bulk Smush UI and Progress bar
 		 */
 		function bulk_smush_container() {
+
+			//Subheading content
 			$smush_individual_msg = sprintf( esc_html__( "Smush individual images via your %sMedia Library%s", "wp-smushit" ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '" title="' . esc_html__( 'Media Library', 'wp-smushit' ) . '">', '</a>' );
+
+			//Contianer Header
 			$this->container_header( 'bulk-smush-wrapper', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
+
 			<div class="box-container"><?php
-			$this->bulk_smush_content(); ?>
+				$this->bulk_smush_content(); ?>
 			</div><?php
 			echo "</section>";
 		}
@@ -120,7 +125,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $WpSmush, $wpsmushit_admin;
 
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
-			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? ( $wpsmushit_admin->total_count - $resmush_count ) : $wpsmushit_admin->smushed_count;
+			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? $wpsmushit_admin->total_count - ( $resmush_count + $wpsmushit_admin->remaining_count ) : $wpsmushit_admin->smushed_count;
+			$smushed_count = $smushed_count > 0 ? $smushed_count : 0;
 
 			$button = '<span class="spinner"></span><button title="' . esc_html__("Allows to run a quick check if any of the smushed image can be further optimised to the new settings.", "wp-smushit") . '" data-toggle="tooltip" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__("RE-CHECK IMAGES", "wp-smushit"). '</button>';
 			$this->container_header( 'smush-stats-wrapper', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
@@ -528,27 +534,27 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Shows a option to ignore the Image ids which can be resmushed while bulk smushing
          * @param int $count Resmush + Unsmushed Image count
 		 */
-		function bulk_resmush_content( $count = false ) {
+		function bulk_resmush_content( $count = false, $show = false ) {
 
-			$show = false;
+			global $wpsmushit_admin;
 
 			//If we already have count, don't fetch it
 			if( !$count ) {
 				//If we have the resmush ids list, Show Resmush notice and button
 				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
-				global $wpsmushit_admin;
 
-				$count = count( $wpsmushit_admin->resmush_ids );
+					$count = count( $resmush_ids );
 
-				//Whether to show the remaining re-smush notice
-				$show = $count > 0 ? true : false;
+					//Whether to show the remaining re-smush notice
+					$show = $count > 0 ? true : false;
 
-				//Get the Actual remainaing count
-				if( !isset( $wpsmushit_admin->remaining_count ) ) {
-					$wpsmushit_admin->setup_global_stats();
+					//Get the Actual remainaing count
+					if( !isset( $wpsmushit_admin->remaining_count ) ) {
+						$wpsmushit_admin->setup_global_stats();
+					}
+
+					$count += $wpsmushit_admin->remaining_count;
 				}
-
-				$count += $wpsmushit_admin->remaining_count;
 			}
 			//Show only if we have any images to ber resmushed
 			if( $show ) {
@@ -557,9 +563,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<span class="wp-smush-notice-text">' . sprintf( _n( "%s, you have %s%s%d%s image%s that need re-compressing since changing your smush settings!", "%s, you have %s%s%d%s images%s that need re-compressing since changing your smush settings!", $count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' ) . '</span>
 						<button class="button button-grey button-small wp-smush-skip-resmush">' . esc_html__("Skip", "wp-smushit") . '</button>
 	                </div>';
-				}
 			}
 		}
+
 		/**
 		* Displays a admin notice for settings update
 	    */
