@@ -273,7 +273,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
 
 			//Do not enqueue, unless it is one of the required screen
-			if ( ! $enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'upload.php' ) ) {
+			if ( ! $enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'post-new.php' && $pagenow != 'upload.php' ) ) {
 				return;
 			}
 
@@ -557,7 +557,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( $return ) {
 					return array( 'error' => $smush->get_error_message() );
 				} else {
-					wp_send_json_error( $smush->get_error_message() );
+					wp_send_json_error( array( 'error_msg' => $smush->get_error_message() ) );
 				}
 			} else {
 				if ( $return ) {

@@ -315,7 +315,7 @@ jQuery(function ($) {
                     }
                     //If no response or success is false, do not process further
                     if (typeof res == 'undefined' || !res || !res.success) {
-                        if ('undefined' !== typeof res.data || typeof res.data.error_msg !== 'undefined') {
+                        if ('undefined' !== typeof res && 'undefined' !== typeof res.data && typeof res.data.error_msg !== 'undefined') {
                             //Print the error on screen
                             self.$log.append(res.data.error_msg);
                             self.$log.removeClass('hidden');
