@@ -1315,10 +1315,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					if ( ( $count = count( $resmush_list ) ) > 0 ) {
 						$show = true;
 
-						if( empty( $this->remaining_count ) ) {
+						//Initialize stats
+						if( empty( $this->remaining_count ) && 'nextgen' == $type ) {
 							$this->setup_global_stats();
 						}
 
+						if( empty( $wpsmushnextgenadmin->remaining_count ) && 'nextgen' == $type ) {
+							$wpsmushnextgenadmin->setup_stats();
+						}
 						$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
 
 						$ajax_response = $this->bulk_ui->bulk_resmush_content( $count, $show );

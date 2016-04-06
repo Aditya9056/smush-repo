@@ -151,10 +151,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		function localize() {
 			global $wpsmushnextgenstats;
 
-			//Set the counts
-			$this->total_count     = $wpsmushnextgenstats->total_count();
-			$this->smushed_count   = $wpsmushnextgenstats->get_ngg_images( 'smushed', true );
-			$this->remaining_count = $wpsmushnextgenstats->get_ngg_images( 'unsmushed', true );
+			$this->setup_stats();
 
 			$handle = 'wp-smushit-admin-js';
 
@@ -654,6 +651,17 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			if ( ! empty( $this->resmush_ids ) && in_array( $image_id, $this->resmush_ids ) ) {
 				$this->update_resmush_list( $image_id );
 			}
+		}
+
+		/**
+		 * Initialize NextGen Gallery Stats
+		 */
+		function setup_stats() {
+			global $wpsmushnextgenstats;
+			//Set the counts
+			$this->total_count     = $wpsmushnextgenstats->total_count();
+			$this->smushed_count   = $wpsmushnextgenstats->get_ngg_images( 'smushed', true );
+			$this->remaining_count = $wpsmushnextgenstats->get_ngg_images( 'unsmushed', true );
 		}
 
 	}//End of Class
