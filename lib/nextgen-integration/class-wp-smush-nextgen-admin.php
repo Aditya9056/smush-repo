@@ -559,7 +559,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			if ( apply_filters( 'wp_smush_show_nextgen_lossy_stats', true ) ) { ?>
 				<hr>
 				<div class="row super-smush-attachments">
-				<span class="float-l wp-smush-stats-label">
+					<span class="float-l wp-smush-stats-label">
 						<strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong>
 					</span>
 					<span class="float-r wp-smush-stats">

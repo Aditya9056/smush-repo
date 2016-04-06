@@ -1486,6 +1486,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						}
 					}
 				}
+
 				$super_smushed['timestamp'] = current_time( 'timestamp' );
 
 				update_option( $key, $super_smushed );

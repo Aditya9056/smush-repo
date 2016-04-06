@@ -730,7 +730,7 @@ jQuery(function ($) {
     });
 
     //On Resmush click
-    jQuery('.wp-smush-skip-resmush').on('click', function (e) {
+    jQuery('body').on('click', '.wp-smush-skip-resmush', function (e) {
         e.preventDefault();
         var self = jQuery(this);
         var container = self.parents().eq(1);
