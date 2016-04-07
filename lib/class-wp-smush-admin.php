@@ -1440,59 +1440,64 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function super_smushed_count( $type = 'media', $attachments = '' ) {
 
-			$key = 'nextgen' == $type ? 'wp-smush-super_smushed_nextgen' : 'wp-smush-super_smushed';
-
-			//Flag to check if we need to re-evaluate the count
-			$revaluate = false;
-
-			$super_smushed = get_option( $key, false );
-
-			//Check if need to revalidate
-			if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['ids'] ) ) {
-
-				$super_smushed = array(
-					'ids' => array()
-				);
-
-				$revaluate = true;
-			} else {
-				$last_checked = $super_smushed['timestamp'];
-
-				$diff = $last_checked - current_time( 'timestamp' );
-
-				//Difference in minutes
-				$diff_h = $diff / 3600;
-
-				//if last checked was more than 12 hours.
-				if ( $diff_h > 12 ) {
-					$revaluate = true;
-				}
+			if( 'media' == $type ) {
+				$count = $this->media_super_smush_count();
 			}
-			//Do not Revaluate stats if nextgen attachments are not provided
-			if ( 'nextgen' == $type && empty( $attachments ) && $revaluate ) {
+			else{
+				$key = 'nextgen' == $type ? 'wp-smush-super_smushed_nextgen' : 'wp-smush-super_smushed';
+
+				//Flag to check if we need to re-evaluate the count
 				$revaluate = false;
-			}
 
-			//Need to scan all the image
-			if ( $revaluate ) {
-				//Get all the Smushed attachments ids
-				$super_smushed_images = $this->get_lossy_attachments( $attachments, false );
+				$super_smushed = get_option( $key, false );
 
-				if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
-					//Iterate over all the attachments to check if it's already there in list, else add it
-					foreach ( $super_smushed_images as $id ) {
-						if ( ! in_array( $id, $super_smushed['ids'] ) ) {
-							$super_smushed['ids'][] = $id;
-						}
+				//Check if need to revalidate
+				if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['ids'] ) ) {
+
+					$super_smushed = array(
+						'ids' => array()
+					);
+
+					$revaluate = true;
+				} else {
+					$last_checked = $super_smushed['timestamp'];
+
+					$diff = $last_checked - current_time( 'timestamp' );
+
+					//Difference in minutes
+					$diff_h = $diff / 3600;
+
+					//if last checked was more than 12 hours.
+					if ( $diff_h > 12 ) {
+						$revaluate = true;
 					}
 				}
+				//Do not Revaluate stats if nextgen attachments are not provided
+				if ( 'nextgen' == $type && empty( $attachments ) && $revaluate ) {
+					$revaluate = false;
+				}
 
-				$super_smushed['timestamp'] = current_time( 'timestamp' );
+				//Need to scan all the image
+				if ( $revaluate ) {
+					//Get all the Smushed attachments ids
+					$super_smushed_images = $this->get_lossy_attachments( $attachments, false );
 
-				update_option( $key, $super_smushed );
+					if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
+						//Iterate over all the attachments to check if it's already there in list, else add it
+						foreach ( $super_smushed_images as $id ) {
+							if ( ! in_array( $id, $super_smushed['ids'] ) ) {
+								$super_smushed['ids'][] = $id;
+							}
+						}
+					}
+
+					$super_smushed['timestamp'] = current_time( 'timestamp' );
+
+					update_option( $key, $super_smushed );
+				}
+
+				$count = ! empty( $super_smushed['ids'] ) ? count( $super_smushed['ids'] ) : 0;
 			}
-
-			$count = ! empty( $super_smushed['ids'] ) ? count( $super_smushed['ids'] ) : 0;
 
 			return $count;
 		}
@@ -1526,6 +1531,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			} elseif ( 'remove' == $op_type && false !== ( $k = array_search( $id, $super_smushed['ids'] ) ) ) {
 
+				error_log( "Attachment Id: $id " );
+				error_log( "Key $k");
 				//Else remove the id from the list
 				unset( $super_smushed['ids'][ $k ] );
 
@@ -1537,8 +1544,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Add the timestamp
 			$super_smushed['timestamp'] = current_time( 'timestamp' );
 
+			error_log( print_r( $super_smushed, true  ) );
+			error_log( update_option( $key, $super_smushed ) );
 			//Update to database
-			return update_option( $key, $super_smushed );
+			return true;
 		}
 
 		/**
@@ -1560,7 +1569,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 			//Update Super Smush count
 			if ( isset( $stats['stats']['lossy'] ) && 1 == $stats['stats']['lossy'] ) {
-				$this->update_super_smush_count( $id, 'add', $key );
+				update_post_meta( $id, 'wp-smush-lossy', 1 );
 			}
 			//Check and update re-smush list for media gallery
 			if( 'wp-smush-super_smushed' && !empty( $this->resmush_ids ) && in_array( $id, $this->resmush_ids ) ) {
@@ -1578,6 +1587,70 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Delete the resmush list
 			delete_option( $key );
 			wp_send_json_success();
+		}
+
+		/**
+		 *
+		 */
+		function media_super_smush_count() {
+			//Check if we have updated the stats for existing images
+			if( !get_option('wp-smush-lossy-updated') ) {
+
+				//Get all the smushed attachments
+				$attachments = $this->get_lossy_attachments('', false );
+				foreach( $attachments as $attachment ) {
+					update_post_meta( $attachment, 'wp-smush-lossy', 1 );
+				}
+			}
+			//Get all the attachments with wp-smush-lossy
+			$limit               = apply_filters( 'wp_smush_query_limit', 2000 );
+			$limit               = intval( $limit );
+			$get_posts           = true;
+			$super_smushed = array();
+			$args                = array(
+				'fields'                 => 'ids',
+				'post_type'              => 'attachment',
+				'post_status'            => 'any',
+				'post_mime_type'         => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'orderby'                => 'ID',
+				'order'                  => 'DESC',
+				'posts_per_page'         => $limit,
+				'offset'                 => 0,
+				'meta_query'             => array(
+					array(
+						'key'     => 'wp-smush-lossy',
+						'value'    => 1
+					)
+				),
+				'update_post_term_cache' => false,
+				'no_found_rows'          => true,
+			);
+			//Loop Over to get all the attachments
+			while ( $get_posts ) {
+
+				//Remove the Filters added by WP Media Folder
+				$this->remove_wmf_filters();
+
+				$query = new WP_Query( $args );
+
+				if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
+					//Merge the results
+					$super_smushed = array_merge( $super_smushed, $query->posts );
+
+					//Update the offset
+					$args['offset'] += $limit;
+				} else {
+					//If we didn't get any posts from query, set $get_posts to false
+					$get_posts = false;
+				}
+
+				//If total Count is set, and it is alread lesser than offset, don't query
+				if ( ! empty( $this->total_count ) && $this->total_count < $args['offset'] ) {
+					$get_posts = false;
+				}
+			}
+			update_option('wp-smush-lossy-updated', true);
+			return count( $super_smushed );
 		}
 
 	}

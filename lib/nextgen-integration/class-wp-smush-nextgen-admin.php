@@ -430,7 +430,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			global $wpsmushit_admin, $WpSmush;
 
 			//If all the images are smushed
-			$all_done = ( $wpsmushit_admin->smushed_count == $wpsmushit_admin->total_count ) && 0 == count( $this->resmush_ids );
+			$all_done = ( $this->smushed_count == $this->total_count ) && 0 == count( $this->resmush_ids );
 
 			$resmush_ids = get_option( "wp-smush-nextgen-resmush-list", false );
 

@@ -1566,8 +1566,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$wpsmushit_admin->update_resmush_list( $image_id, 'wp-smush-resmush-list' );
 			}
 
-			//Removet he image from Super Smush list if it's in there
-			$wpsmushit_admin->update_super_smush_count( $image_id, 'remove');
+			/** Delete Backups  **/
 
 			//Check if we have any smush data for image
 			$smush_meta = get_post_meta( $image_id, $this->smushed_meta_key, true );
@@ -1575,6 +1574,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//Return if we don't have any details
 				return;
 			}
+
 			//Get the attachment details
 			$meta = wp_get_attachment_metadata( $image_id );
 

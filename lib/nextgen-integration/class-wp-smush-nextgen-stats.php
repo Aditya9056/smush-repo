@@ -336,6 +336,12 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		function get_smush_stats() {
 			global $WpSmush;
 
+			//Clear up the stats
+			if( 0 == $this->total_count() ) {
+				delete_option('wp_smush_stats_nextgen');
+				wp_cache_delete( 'wp_smush_stats_nextgen', 'nextgen' );
+			}
+
 			// Check for the  wp_smush_images_smushed in the 'nextgen' group.
 			$smushed_stats = wp_cache_get( 'wp_smush_stats_nextgen', 'nextgen' );
 
