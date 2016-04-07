@@ -25,7 +25,8 @@ $smushit_keys = array(
 	'super_smushed_nextgen',
 	'settings_updated',
 	'skip-redirect',
-	'hide_smush_welcome'
+	'hide_smush_welcome',
+	'lossy-updated'
 );
 foreach ( $smushit_keys as $key ) {
 	$key = 'wp-smush-' . $key;
@@ -62,6 +63,7 @@ if ( is_multisite() ) {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog['blog_id'] );
 				delete_metadata( $meta_type, $user_id, $meta_key, $meta_value, $delete_all );
+				delete_metadata( $meta_type, $user_id, 'wp-smush-lossy', '', $delete_all );
 			}
 			restore_current_blog();
 		}
@@ -69,5 +71,7 @@ if ( is_multisite() ) {
 	}
 } else {
 	delete_metadata( $meta_type, $user_id, $meta_key, $meta_value, $delete_all );
+	delete_metadata( $meta_type, $user_id, 'wp-smush-lossy', '', $delete_all );
 }
+//@todo: Add procedure to delete backup files
 ?>

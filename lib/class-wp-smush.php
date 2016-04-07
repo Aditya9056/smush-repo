@@ -1558,8 +1558,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			global $wpsmushit_admin;
-
 			//Check and Update resmush list
 			if ( $resmush_list = get_option( 'wp-smush-resmush-list' ) ) {
 				global $wpsmushit_admin;
@@ -1569,38 +1567,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			/** Delete Backups  **/
 
 			//Check if we have any smush data for image
-			$smush_meta = get_post_meta( $image_id, $this->smushed_meta_key, true );
-			if ( empty( $smush_meta ) ) {
-				//Return if we don't have any details
-				return;
-			}
-
-			//Get the attachment details
-			$meta = wp_get_attachment_metadata( $image_id );
-
-			//Attachment file path
-			$file = get_attached_file( $image_id );
-
-			//Get the backup path
-			$backup_name = $this->get_image_backup_path( $file );
-
-			//If file exists, corresponding to our backup path, delete it
-			@ unlink( $backup_name );
-
-			//Check meta for rest of the sizes
-			if ( ! empty( $meta ) && ! empty( $meta['sizes'] ) ) {
-				foreach ( $meta['sizes'] as $size ) {
-					//Get the file path
-					if ( empty( $size['file'] ) ) {
-						continue;
-					}
-
-					//Image Path and Backup path
-					$image_size_path  = path_join( dirname( $file ), $size['file'] );
-					$image_bckup_path = $this->get_image_backup_path( $image_size_path );
-					@unlink( $image_bckup_path );
-				}
-			}
+			$this->delete_backup_files( $image_id );
 		}
 
 		/**
@@ -1756,6 +1723,45 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			add_site_option('wp-smush-skip-redirect', true );
 
 			exit( wp_redirect( $url ) );
+		}
+
+		/**
+		 * Clear up all the backup files for the image, if any
+		 * @param $image_id
+		 */
+		function delete_backup_files( $image_id ) {
+			$smush_meta = get_post_meta( $image_id, $this->smushed_meta_key, true );
+			if ( empty( $smush_meta ) ) {
+				//Return if we don't have any details
+				return;
+			}
+
+			//Get the attachment details
+			$meta = wp_get_attachment_metadata( $image_id );
+
+			//Attachment file path
+			$file = get_attached_file( $image_id );
+
+			//Get the backup path
+			$backup_name = $this->get_image_backup_path( $file );
+
+			//If file exists, corresponding to our backup path, delete it
+			@ unlink( $backup_name );
+
+			//Check meta for rest of the sizes
+			if ( ! empty( $meta ) && ! empty( $meta['sizes'] ) ) {
+				foreach ( $meta['sizes'] as $size ) {
+					//Get the file path
+					if ( empty( $size['file'] ) ) {
+						continue;
+					}
+
+					//Image Path and Backup path
+					$image_size_path  = path_join( dirname( $file ), $size['file'] );
+					$image_bckup_path = $this->get_image_backup_path( $image_size_path );
+					@unlink( $image_bckup_path );
+				}
+			}
 		}
 	}
 
