@@ -115,9 +115,6 @@ jQuery(function ($) {
         this.bulk_start = function () {
             if (!this.is_bulk) return;
 
-            //Hide Notice
-            $('.bulk-smush-wrapper .wp-smush-notice').hide();
-
             //Hide the Bulk Div
             $('.wp-smush-bulk-wrapper').hide();
 
@@ -193,6 +190,7 @@ jQuery(function ($) {
                 $('.bulk-smush-wrapper .wp-smush-all-done').show();
             }else{
                 $('.bulk-smush-wrapper .wp-smush-remaining').show();
+                $('.wp-smush-bulk-wrapper').show();
             }
 
             //Hide the Progress Bar
@@ -245,7 +243,13 @@ jQuery(function ($) {
                 }
             }
             //Update remaining count
-            jQuery('.bulk-smush-wrapper .wp-smush-remaining-count').html(wp_smushit_data.unsmushed.length );
+            if( wp_smushit_data.unsmushed.length == 0 ) {
+                //Hide the bulk wrapper
+                $('.wp-smush-bulk-wrapper').hide();
+                //Show All done notice
+                $('.wp-smush-notice.wp-smush-all-done').show();
+            }
+            $('.bulk-smush-wrapper .wp-smush-remaining-count').html(wp_smushit_data.unsmushed.length );
 
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
@@ -284,10 +288,13 @@ jQuery(function ($) {
 
         };
 
+        //Whether to send the ajax requests further or not
         this.continue = function () {
             var continue_smush = $('.wp-smush-all').data('continue-smush');
-            if( typeof continue_smush == typeof undefined ){
+            if (typeof continue_smush == typeof undefined) {
                 continue_smush = true;
+            } else {
+                $('.wp-smush-all').removeAttr('data-continue-smush');
             }
             return continue_smush && this.ids.length > 0 && this.is_bulk;
         };
@@ -371,7 +378,7 @@ jQuery(function ($) {
                 self.bulk_done();
 
                 //Re enable the buttons
-                jQuery('.wp-smush-button:not(.wp-smush-finished), .wp-smush-scan').removeAttr('disabled');
+                $('.wp-smush-button:not(.wp-smush-finished), .wp-smush-scan').removeAttr('disabled');
             });
 
         };
@@ -381,16 +388,16 @@ jQuery(function ($) {
          *
          **/
         this.cancel_ajax = function () {
-            jQuery('.wp-smush-cancel-bulk').on('click', function () {
+            $('.wp-smush-cancel-bulk').on('click', function () {
+                //Add a data attribute to the smush button, to stop sending ajax
+                $('.wp-smush-all').attr('data-continue-smush', false );
+
                 self.request.abort();
                 self.enable_button();
                 self.$button.removeClass('wp-smush-started');
                 $('.wp-smush-bulk-wrapper').show();
 
-                //Add a data attribute to the smush button, to stop sending ajax
-                $('.wp-smush-all').attr('data-continue-smush', false );
-
-                //Show the Progress Bar
+                //Hide the Progress Bar
                 $('.wp-smush-bulk-progress-bar-wrapper').hide();
             });
         };
@@ -413,10 +420,10 @@ jQuery(function ($) {
         // prevent the default action
         e.preventDefault();
 
-        jQuery('.wp-smush-notice.wp-smush-settings-updated').remove();
+        $('.wp-smush-notice.wp-smush-settings-updated').remove();
 
         //Disable Resmush and scan button
-        jQuery('.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button').attr('disabled', 'disabled');
+        $('.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button').attr('disabled', 'disabled');
 
         //Check for ids, if there is none (Unsmushed or lossless), don't call smush function
         if (typeof wp_smushit_data == 'undefined' ||
@@ -472,10 +479,10 @@ jQuery(function ($) {
         e.preventDefault();
 
         //Remove Error
-        jQuery('.wp-smush-error').remove();
+        $('.wp-smush-error').remove();
 
         //Hide stats
-        jQuery('.smush-stats-wrapper').hide();
+        $('.smush-stats-wrapper').hide();
 
         //Get the image ID and nonce
         var params = {
