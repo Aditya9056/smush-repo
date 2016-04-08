@@ -579,23 +579,23 @@ table.wp-smush-stats-holder tr td:first-child {
     padding: 20px 50px;
 }
 
-.wp-smush-settings-updated {
+.wp-smush-resmush-message, .wp-smush-settings-updated {
     border: none;
     margin-bottom: 25px;
     padding: 18px 50px;
     text-align: center;
 }
 
-.wp-smush-settings-updated .dev-icon {
+.wp-smush-resmush-message .dev-icon, .wp-smush-settings-updated .dev-icon {
     font-size: 16px;
 }
 
-.wp-smush-settings-updated .dev-icon-cross {
+.wp-smush-resmush-message .dev-icon-cross, .wp-smush-settings-updated .dev-icon-cross {
     cursor: pointer;
     float: right;
 }
 
-.wp-smush-settings-updated .dev-icon-tick:before {
+.wp-smush-notice .dev-icon-tick:before {
     line-height: 1.1;
     vertical-align: bottom;
 }

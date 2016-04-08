@@ -404,7 +404,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$ss_progress_ui = '
 			<!-- Hide All done div if there are images pending -->
 				<div class="wp-smush-notice wp-smush-all-done hidden">
-					<i class="dev-icon dev-icon-tick"></i>' . esc_html__( "Hurray! All images are optimised as per your current settings.", "wp-smushit" ) . '
+					<i class="dev-icon dev-icon-tick"></i>' . esc_html__( "Yay! All images are optimised as per your current settings.", "wp-smushit" ) . '
 				</div>
 			<div class="wp-smush-resmush-wrap">
 				<div class="wp-smush-notice wp-smush-remaining">

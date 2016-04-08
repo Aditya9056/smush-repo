@@ -616,6 +616,12 @@ jQuery(function ($) {
         //Show spinner
         spinner.addClass('is-active');
 
+        //remove notices
+        var el = $('.wp-smush-notice.wp-smush-resmush-message, .wp-smush-notice.wp-smush-settings-updated');
+        el.slideUp(100, function () {
+            el.remove();
+        });
+
         //Disable Bulk smush button and itself
         button.attr('disabled', 'disabled');
         jQuery('.wp-smush-button' ).attr('disabled', 'disabled');
@@ -637,23 +643,30 @@ jQuery(function ($) {
         //Send ajax request and get ids if any
         $.get(ajaxurl, params, function (r) {
             //Check if we have the ids,  initialize the local variable
-            if( 'undefined' != typeof r.data.resmush_ids ) {
-                wp_smushit_data.resmush = r.data.resmush_ids;
+            if( 'undefined' != typeof r.data ) {
+                //Update Resmush id list
+                if( 'undefined' != typeof r.data.resmush_ids ) {
+                    wp_smushit_data.resmush = r.data.resmush_ids;
 
-                //Get the SMushed image count
-                var smushed_count = wp_smushit_data.count_smushed - r.data.resmush_ids.length;
+                    //Get the SMushed image count
+                    var smushed_count = wp_smushit_data.count_smushed - r.data.resmush_ids.length;
 
-                //Update it in stats bar
-                jQuery('.smush-attachments .smushed-count').html(smushed_count)
+                    //Update it in stats bar
+                    jQuery('.smush-attachments .smushed-count').html(smushed_count)
 
-                //Hide the Existing wrapper
-                var notices = $('.bulk-smush-wrapper .wp-smush-notice');
-                if (notices.length > 0) {
-                    notices.hide();
+                    //Hide the Existing wrapper
+                    var notices = $('.bulk-smush-wrapper .wp-smush-notice');
+                    if (notices.length > 0) {
+                        notices.hide();
+                    }
                 }
-                //If content is recieved, Prepend it
+                //If content is received, Prepend it
                 if ('undefined' != typeof r.data.content) {
                     $('.bulk-smush-wrapper .box-container').prepend(r.data.content);
+                }
+                //If we have any notice to show
+                if ('undefined' != typeof r.data.notice ) {
+                    $('.wp-smush-page-header').after(r.data.notice);
                 }
 
                 //Show Bulk wrapper
@@ -698,7 +711,7 @@ jQuery(function ($) {
     });
 
     //Remove Notice
-    $('.wp-smush-settings-updated .dev-icon-cross').on('click', function(e) {
+    $('body').on('click', '.wp-smush-notice .dev-icon-cross', function(e) {
         e.preventDefault();
         var $el = $(this).parent();
         $el.fadeTo( 100, 0, function() {

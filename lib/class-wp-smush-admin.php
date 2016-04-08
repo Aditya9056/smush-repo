@@ -1216,6 +1216,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$resmush_list = array();
 
+			//Default Notice, to be displayed at the top of page
+			//Show a message, at the top
+			$message = esc_html__( 'Yay! All images are optimised as per your current settings.', 'wp-smushit' );
+			$resp = '<div class="wp-smush-notice wp-smush-resmush-message"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
+				<i class="dev-icon dev-icon-cross"></i>
+				</div>';
+
 			//Scanning for NextGen or Media Library
 			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
 
@@ -1234,7 +1241,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$upfront_active = class_exists( 'Upfront' );
 
 			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
-				wp_send_json_success();
+				wp_send_json_success( array( 'notice' => $resp ) );
 			}
 
 			//Set to empty by default
@@ -1326,7 +1333,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$show = true;
 
 						//Initialize stats
-						if ( empty( $this->remaining_count ) && 'nextgen' == $type ) {
+						if ( empty( $this->remaining_count ) && 'nextgen' != $type ) {
 							$this->setup_global_stats();
 						}
 
@@ -1336,6 +1343,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
 
 						$ajax_response = $this->bulk_ui->bulk_resmush_content( $count, $show );
+						$message = esc_html__( 'You have images that need smushing, Bulk Smush them below!', 'wp-smushit' );
+						$resp = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
+							<i class="dev-icon dev-icon-cross"></i>
+						</div>';
 					} else {
 						//Delete the resmush list
 						delete_option( $key );
@@ -1344,10 +1355,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//If there is a Ajax response return it, else return null
-			$return = ! empty( $ajax_response ) ? array(
+			$return           = ! empty( $ajax_response ) ? array(
 				"resmush_ids" => $resmush_list,
 				"content"     => $ajax_response
 			) : '';
+			$return['notice'] = $resp;
+
 			wp_send_json_success( $return );
 
 		}

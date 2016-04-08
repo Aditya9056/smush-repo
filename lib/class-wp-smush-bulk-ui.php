@@ -370,7 +370,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<p class="wp-smush-promo-content-smaller tc roboto-regular">Join 389,434 happy members today with no lock in and 100%
 					GPL, cancel any time and use forever on unlimited sites for only $49 p/m</p>
 				<span class="wp-smush-pro-cta tc">
-					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>" class="button button-cta button-green">START 14 DAY FREE TRIAL</a>
+					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>" class="button button-cta button-green">START FREE TRIAL</a>
 				</span>
 			</div>
 			<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-pro.png'; ?>"
