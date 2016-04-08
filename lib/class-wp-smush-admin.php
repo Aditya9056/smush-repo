@@ -216,6 +216,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//For Nextgen gallery Pages, check later in enqueue function
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+
+			//Reset Transient
+			$this->check_bulk_limit( true );
 		}
 
 		/**
@@ -578,33 +581,42 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return bool
 		 */
-		function check_bulk_limit() {
+		function check_bulk_limit( $reset = false ) {
 
 			$transient_name  = WP_SMUSH_PREFIX . 'bulk_sent_count';
-			$bulk_sent_count = get_transient( $transient_name );
 
-			//If bulk sent count is not set
-			if ( false === $bulk_sent_count ) {
+			//Do not go through this, if we need to reset
+			if( !$reset ) {
+				$bulk_sent_count = get_transient( $transient_name );
 
-				//start transient at 0
-				set_transient( $transient_name, 1, 60 );
+				//If bulk sent count is not set
+				if ( false === $bulk_sent_count ) {
 
-				return true;
+					//start transient at 0
+					set_transient( $transient_name, 1, 200 );
 
-			} else if ( $bulk_sent_count < $this->max_free_bulk ) {
+					return true;
 
-				//If lte $this->max_free_bulk images are sent, increment
-				set_transient( $transient_name, $bulk_sent_count + 1, 60 );
+				} else if ( $bulk_sent_count < $this->max_free_bulk ) {
 
-				return true;
+					//If lte $this->max_free_bulk images are sent, increment
+					set_transient( $transient_name, $bulk_sent_count + 1, 200 );
 
-			} else { //Bulk sent count is set and greater than $this->max_free_bulk
+					return true;
 
+				} else { //Bulk sent count is set and greater than $this->max_free_bulk
+
+					$reset = true;
+
+				}
+			}
+
+			//Reset the transient
+			if( $reset ) {
 				//clear it and return false to stop the process
 				set_transient( $transient_name, 0, 60 );
 
 				return false;
-
 			}
 		}
 
@@ -1561,8 +1573,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			} elseif ( 'remove' == $op_type && false !== ( $k = array_search( $id, $super_smushed['ids'] ) ) ) {
 
-				error_log( "Attachment Id: $id " );
-				error_log( "Key $k" );
 				//Else remove the id from the list
 				unset( $super_smushed['ids'][ $k ] );
 
@@ -1574,8 +1584,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Add the timestamp
 			$super_smushed['timestamp'] = current_time( 'timestamp' );
 
-			error_log( print_r( $super_smushed, true ) );
-			error_log( update_option( $key, $super_smushed ) );
+			update_option( $key, $super_smushed );
 
 			//Update to database
 			return true;
