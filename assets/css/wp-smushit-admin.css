@@ -833,6 +833,13 @@ small.smush-setting-description {
     width: 100%;
 }
 
+.wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:hover,
+.wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:active,
+.wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:focus {
+    box-shadow: none;
+    color: #4e4b10;
+}
+
 /** Re Smush **/
 .wp-smush-settings-changed {
     background: #dff6fa;

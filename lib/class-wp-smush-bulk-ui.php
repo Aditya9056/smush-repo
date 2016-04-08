@@ -370,7 +370,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<p class="wp-smush-promo-content-smaller tc roboto-regular">Join 389,434 happy members today with no lock in and 100%
 					GPL, cancel any time and use forever on unlimited sites for only $49 p/m</p>
 				<span class="wp-smush-pro-cta tc">
-					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>" class="button button-cta button-green">START FREE TRIAL</a>
+					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>" class="button button-cta button-green" target="_blank">START FREE TRIAL</a>
 				</span>
 			</div>
 			<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-pro.png'; ?>"
@@ -395,8 +395,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<p class="wp-smush-promo-content tc">Hummingbird enables file compression and browser caching, file
 				minification and performance reports – because when it comes to pagespeed, every millisecond
 				counts.</strong></p>
-			<span class="wp-smush-hb-cta tc roboto-medium"><a href="#" class="button button-cta button-yellow">TRY
-					HUMMINGBIRD</a></span>
+			<span class="wp-smush-hb-cta tc roboto-medium">
+				<a href="<?php echo esc_url("https://premium.wpmudev.org/project/wp-hummingbird/"); ?>" class="button button-cta button-yellow" target="_blank">TRY HUMMINGBIRD</a>
+			</span>
 			</div><?php
 			echo "</section>";
 		}
