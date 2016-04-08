@@ -906,7 +906,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							}
 
 							//Detailed Stats Link
-							$status_txt .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" data-toggle="tooltip" title="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
+							$status_txt .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" tooltip="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
 
 							//Stats
 							$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
@@ -1275,7 +1275,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				'size_limit' => esc_html__( "Image couldn't be smushed as it exceeded the 1Mb size limit, Pro users can smush images with size upto 32Mb.", "wp-smushit" )
 			);
 			$skip_rsn        = ! empty( $skip_msg[ $msg_id ] ) ? esc_html__( " Skipped", 'wp-smushit', 'wp-smushit' ) : '';
-			$skip_rsn        = ! empty( $skip_rsn ) ? $skip_rsn . '<span class="dashicons dashicons-editor-help" title="' . $skip_msg[ $msg_id ] . '"></span>' : '';
+			$skip_rsn        = ! empty( $skip_rsn ) ? $skip_rsn . '<span tooltip="' . $skip_msg[ $msg_id ] . '"><i class="dashicons dashicons-editor-help"></i></span>' : '';
 
 			return $skip_rsn;
 		}
@@ -1477,7 +1477,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$ajax_nonce = wp_create_nonce( "wp-smush-restore-" . $image_id );
 
-			return sprintf( '<a href="#" title="%s" data-id="%d" data-nonce="%s" class="%s" data-toggle="tooltip">%s</a>', esc_html__( "Restore original image.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Restore image", "wp-smush" ) );
+			return sprintf( '<a href="#" tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Restore original image.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Restore image", "wp-smush" ) );
 		}
 
 		/**
@@ -1522,7 +1522,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$ajax_nonce = wp_create_nonce( "wp-smush-resmush-" . $image_id );
 
-			return sprintf( '<a href="#" title="%s" data-id="%d" data-nonce="%s" class="%s" data-toggle="tooltip">%s</a>', esc_html__( "Smush image including original file.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Resmush image", "wp-smush" ) );
+			return sprintf( '<a href="#" tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Smush image including original file.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Resmush image", "wp-smush" ) );
 		}
 
 		/**

@@ -128,7 +128,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? $wpsmushit_admin->total_count - ( $resmush_count + $wpsmushit_admin->remaining_count ) : $wpsmushit_admin->smushed_count;
 			$smushed_count = $smushed_count > 0 ? $smushed_count : 0;
 
-			$button = '<span class="spinner"></span><button title="' . esc_html__("Allows to run a quick check if any of the smushed image can be further optimised to the new settings.", "wp-smushit") . '" data-toggle="tooltip" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__("RE-CHECK IMAGES", "wp-smushit"). '</button>';
+			$button = '<span class="spinner"></span><button tooltip="' . esc_html__("Allows to run a quick check if any of the smushed image can be further optimised to the new settings.", "wp-smushit") . '" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__("RE-CHECK IMAGES", "wp-smushit"). '</button>';
 			$this->container_header( 'smush-stats-wrapper', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
 			<div class="box-content">
 			<div class="row smush-total-reduction-percent">

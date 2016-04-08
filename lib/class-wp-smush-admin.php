@@ -249,8 +249,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
-			wp_register_style( 'jquery-ui', WP_SMUSH_URL . 'assets/css/jquery-ui.css', array() );
-
 			//Get resmush list
 			//If we have a resmush list already, localize those ids
 			if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
@@ -278,17 +276,24 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			wp_enqueue_script( 'wp-smushit-admin-js' );
-			wp_enqueue_script( 'jquery-ui-tooltip' );
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
-			wp_enqueue_style( 'jquery-ui' );
 
 			//If class method exists, load shared UI
 			if ( ( 'media_page_wp-smush-bulk' == $current_page || 'gallery_page_wp-smush-nextgen-bulk' == $current_page ) && class_exists( 'WDEV_Plugin_Ui' ) ) {
 				if ( method_exists( 'WDEV_Plugin_Ui', 'load' ) ) {
 					WDEV_Plugin_Ui::load( WP_SMUSH_URL . '/assets/shared-ui/', false );
 				}
+			}
+
+			//Enqueue Google Fonts for Tooltip On Media Pages, These are loaded by shared UI, but we
+			// aren't loading shared UI on media library pages
+			if ( ! wp_style_is( 'wdev-plugin-google_fonts', 'enqueued' ) ) {
+				wp_enqueue_style(
+					'wdev-plugin-google_fonts',
+					'https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,500,300,300italic'
+				);
 			}
 
 			// localize translatable strings for js

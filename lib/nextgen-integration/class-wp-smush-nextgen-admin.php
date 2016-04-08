@@ -518,7 +518,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//NextGen Stats
 			$this->stats = $wpsmushnextgenstats->get_smush_stats();
 
-			$button = '<span class="spinner"></span><button title="' . esc_html__( "Allows to run a quick check if any of the smushed image can be further optimised to the new settings.", "wp-smushit" ) . '" data-toggle="tooltip" data-type="nextgen" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
+			$button = '<span class="spinner"></span><button tooltip="' . esc_html__( "Allows to run a quick check if any of the smushed image can be further optimised to the new settings.", "wp-smushit" ) . '" data-type="nextgen" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
 			$this->bulk_ui->container_header( 'smush-stats-wrapper', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
 
 			<div class="box-content">
