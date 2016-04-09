@@ -1346,13 +1346,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$wpsmushnextgenadmin->resmush_ids = $resmush_list;
 					}
 
-					if ( ( $count = count( $resmush_list ) ) > 0 ) {
-						$show = true;
+					//Initialize stats
+					if ( empty( $this->remaining_count ) && 'nextgen' != $type ) {
+						$this->setup_global_stats();
+					}
 
-						//Initialize stats
-						if ( empty( $this->remaining_count ) && 'nextgen' != $type ) {
-							$this->setup_global_stats();
-						}
+					if ( ( $count = count( $resmush_list ) ) > 0 || $this->remaining_count > 0 ) {
+						$show = true;
 
 						if ( empty( $wpsmushnextgenadmin->remaining_count ) && 'nextgen' == $type ) {
 							$wpsmushnextgenadmin->setup_stats();
