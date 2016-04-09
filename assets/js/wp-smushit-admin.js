@@ -209,7 +209,7 @@ jQuery(function ($) {
             //Hide the Progress bar and show the Bulk smush wrapper
             $('.wp-smush-bulk-progress-bar-wrapper').hide();
 
-            if ( wp_smushit_data.unsmushed.length > 0 ) {
+            if ( self.ids.length > 0 ) {
                 //Show Bulk wrapper
                 $('.wp-smush-bulk-wrapper ').show();
             } else {
@@ -345,7 +345,7 @@ jQuery(function ($) {
                         wp_smushit_data.unsmushed.push(self.current_id);
 
                         //Update the remaining count to length of remaining ids + 1 (Current id)
-                        $('.bulk-smush-wrapper .wp-smush-remaining-count').html(wp_smushit_data.unsmushed.length );
+                        $('.bulk-smush-wrapper .wp-smush-remaining-count').html(self.ids.length );
                     } else {
 
                         if (self.is_bulk) {
@@ -671,7 +671,7 @@ jQuery(function ($) {
                 if( 'undefined' != typeof r.data.resmush_ids ) {
                     wp_smushit_data.resmush = r.data.resmush_ids;
 
-                    //Get the SMushed image count
+                    //Get the Smushed image count
                     var smushed_count = wp_smushit_data.count_smushed - r.data.resmush_ids.length;
 
                     //Update it in stats bar
@@ -682,6 +682,8 @@ jQuery(function ($) {
                     if (notices.length > 0) {
                         notices.hide();
                     }
+                    //Show Bulk wrapper
+                    $('.wp-smush-bulk-wrapper').show();
                 }
                 //If content is received, Prepend it
                 if ('undefined' != typeof r.data.content) {
@@ -691,9 +693,6 @@ jQuery(function ($) {
                 if ('undefined' != typeof r.data.notice ) {
                     $('.wp-smush-page-header').after(r.data.notice);
                 }
-
-                //Show Bulk wrapper
-                $('.wp-smush-bulk-wrapper').show();
             }
 
         }).always( function() {
