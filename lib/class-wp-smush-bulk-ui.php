@@ -367,8 +367,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<p class="wp-smush-promo-content roboto-regular">Get access to not only WP Smush, but 100+ premium plugins, Upfront
 					themes, security & performance solutions and 24/7 expert support to make you fly – best of all, it’s
 					<strong>absolutely FREE to try!</strong></p>
-				<p class="wp-smush-promo-content-smaller tc roboto-regular">Join 389,434 happy members today with no lock in and 100%
-					GPL, cancel any time and use forever on unlimited sites for only $49 p/m</p>
+				<p class="wp-smush-promo-content-smaller tc roboto-regular">Join all the happy members today with no lock in and 100%
+					GPL, cancel any time and use forever on unlimited sites.</p>
 				<span class="wp-smush-pro-cta tc">
 					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>" class="button button-cta button-green" target="_blank">START FREE TRIAL</a>
 				</span>

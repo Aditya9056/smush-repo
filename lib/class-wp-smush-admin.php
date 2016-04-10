@@ -207,8 +207,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function screen() {
 			global $admin_page_suffix;
 
-			$this->is_pro_user = $this->is_pro();
-
 			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smush-bulk', array(
 				$this->bulk_ui,
 				'ui'
@@ -463,7 +461,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_send_json_error( 'missing id' );
 			}
 
-			if ( ! $this->is_pro_user ) {
+			if ( ! $this->is_pro() ) {
 				//Free version bulk smush, check the transient counter value
 				$should_continue = $this->check_bulk_limit();
 			}
@@ -857,7 +855,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$button = array(
 				'cancel' => false,
 			);
-			if ( $this->is_pro_user && $resmush ) {
+			if ( $this->is_pro() && $resmush ) {
 
 				$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
 				$button['class'] = 'wp-smush-button wp-smush-resmush wp-smush-all';
@@ -934,7 +932,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				update_option( 'dismiss_smush_upgrade', 1 );
 			}
 
-			if ( get_option( 'dismiss_smush_upgrade' ) || $this->is_pro_user ) {
+			if ( get_option( 'dismiss_smush_upgrade' ) || $this->is_pro() ) {
 				return;
 			} ?>
 			<div class="updated">
