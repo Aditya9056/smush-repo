@@ -736,7 +736,7 @@ jQuery(function ($) {
     });
 
     //Dismiss Welcome notice
-    $('.smush-dismiss-welcome').on('click', function(e) {
+    $('#wp-smush-welcome-box .smush-dismiss-welcome').on('click', function(e) {
         e.preventDefault();
         var $el = $(this).parents().eq(1);
         $el.fadeTo( 100, 0, function() {
@@ -869,6 +869,22 @@ jQuery(function ($) {
                 //Induce Setting button save click
                 $('button.wp-smush-all').click();
             });
+    });
+
+    //Dismiss Install/Upgrade notice
+    $('#wp-smush-install-thanks .smush-dismiss-welcome').on('click', function(e) {
+        e.preventDefault();
+        var $el = $(this).parents().eq(2);
+        $el.fadeTo( 100, 0, function() {
+            $el.slideUp( 100, function() {
+                $el.remove();
+            });
+        });
+        //Send a ajax request to save the dismissed notice option
+        var param = {
+            action: 'dismiss_upgrade_notice'
+        };
+        $.post(ajaxurl, param );
     });
 
 });

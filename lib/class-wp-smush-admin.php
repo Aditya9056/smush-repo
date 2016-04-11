@@ -10,7 +10,7 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 //Include Bulk UI
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-bulk-ui.php';
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-ui.php';
 
 //Load Shared UI
 if ( ! class_exists( 'WDEV_Plugin_Ui' ) ) {
@@ -129,6 +129,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
+
+			//Handle the smush pro dismiss features notice ajax
+			add_action( 'wp_ajax_dismiss_upgrade_notice', array( $this, 'dismiss_upgrade_notice' ) );
 
 			//Handle the smush pro dismiss features notice ajax
 			add_action( 'wp_ajax_dismiss_welcome_notice', array( $this, 'dismiss_welcome_notice' ) );
@@ -282,9 +285,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
 			//If class method exists, load shared UI
-			if ( ( 'media_page_wp-smush-bulk' == $current_page || 'gallery_page_wp-smush-nextgen-bulk' == $current_page ) && class_exists( 'WDEV_Plugin_Ui' ) ) {
+			if ( class_exists( 'WDEV_Plugin_Ui' ) ) {
+
 				if ( method_exists( 'WDEV_Plugin_Ui', 'load' ) ) {
+
+					//Load Shared UI
 					WDEV_Plugin_Ui::load( WP_SMUSH_URL . '/assets/shared-ui/', false );
+
+					if ( ( 'media_page_wp-smush-bulk' != $current_page && 'gallery_page_wp-smush-nextgen-bulk' != $current_page ) ) {
+
+						//Don't add thhe WPMUD class to body to other admin pages
+						remove_filter(
+							'admin_body_class',
+							array( 'WDEV_Plugin_Ui', 'admin_body_class' )
+						);
+
+					}
 				}
 			}
 
@@ -920,39 +936,40 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function smush_upgrade() {
 
-			if ( ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
+			global $pagenow;
+			$current_screen = get_current_screen();
+			$current_page   = $current_screen->base;
+
+			//Do not enqueue, unless it is one of the required screen
+			if ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'upload.php' ) {
 				return;
 			}
 
+			//Return, If a pro user, or not super admin, or don't have the admin privilleges
+			if ( ! $this->is_pro() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
+				return;
+			}
+
+			//No need to show it on bulk smush
 			if ( isset( $_GET['page'] ) && 'wp-smush-bulk' == $_GET['page'] ) {
 				return;
 			}
 
-			if ( isset( $_GET['dismiss_smush_upgrade'] ) ) {
-				update_option( 'dismiss_smush_upgrade', 1 );
+			if ( isset( $_GET['dismiss_smush_welcome'] ) ) {
+				update_option( 'dismiss_smush_welcome', 1 );
 			}
 
-			if ( get_option( 'dismiss_smush_upgrade' ) || $this->is_pro() ) {
+			//Return if notice is already dismissed
+			if ( get_option( 'wp-smush-hide_upgrade_notice' ) ) {
 				return;
 			} ?>
-			<div class="updated">
-			<a href="<?php echo admin_url( 'index.php' ); ?>?dismiss_smush_upgrade=1"
-			   style="float:right;margin-top: 10px;text-decoration: none;"><span class="dashicons dashicons-dismiss"
-			                                                                     style="color:gray;"></span>Dismiss</a>
-
-			<h3><span class="dashicons dashicons-megaphone" style="color:red"></span> Happy Smushing!</h3>
-
-			<p>Welcome to the all new WP Smush, now running on the WPMU DEV Smush infrastructure!</p>
-
-			<p>That means that you can continue smushing your images for free, now with added https support, speed,
-				and reliability... enjoy!</p>
-
-			<p>And now, if you'd like to upgrade to the WP Smush Pro plugin you can smush images up to 32MB in size,
-				get 'Super Smushing' of, on average, 2&times; more reduction than lossless, backup all non smushed
-				images and bulk smush an
-				unlimited number of images at once.
-				<a href="https://premium.wpmudev.org/?coupon=SMUSH50OFF#pricing"> Click here to upgrade with a 50%
-					discount</a>.</p>
+			<div class="wpmud wp-smush-updated"><?php
+				//Whether New/Existing Installation
+				$box_heading = $this->smushed_count >= 0 ? esc_html__( "THANKS FOR UPGRADING SMUSH!", "wp-smushit" ) : esc_html__( "HAPPY SMUSHING!", "wp-smushit" );
+				//Container Header
+				echo $this->bulk_ui->container_header( 'wp-smush-install-thanks-box', 'wp-smush-install-thanks', $box_heading, '', true );
+				echo $this->bulk_ui->installation_notice();
+				?>
 			</div><?php
 		}
 
@@ -1079,6 +1096,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function dismiss_welcome_notice() {
 			update_option( 'wp-smush-hide_smush_welcome', 1 );
+			wp_send_json_success();
+		}
+
+		/**
+		 * Store a key/value to hide the smush features on bulk page
+		 */
+		function dismiss_upgrade_notice() {
+			update_option( 'wp-smush-hide_upgrade_notice', 1 );
 			wp_send_json_success();
 		}
 

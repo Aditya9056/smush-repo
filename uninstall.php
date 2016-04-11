@@ -26,6 +26,7 @@ $smushit_keys = array(
 	'settings_updated',
 	'skip-redirect',
 	'hide_smush_welcome',
+	'hide_upgrade_notice',
 	'lossy-updated'
 );
 foreach ( $smushit_keys as $key ) {

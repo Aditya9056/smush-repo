@@ -45,6 +45,40 @@ Smush button transformation
     float: left;
 }
 
+/** Installation/Upgrade message **/
+.wpmud.wp-smush-updated {
+    margin: 50px 20px 0 2px;
+}
+
+.wp-smush-install-image {
+    display: inline-block;
+    float: left;
+}
+
+.wp-smush-install-image > img {
+    float: left;
+}
+
+.wpmud .wp-smush-install-welcome {
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 38px;
+    max-width: 68%;
+}
+
+.wpmud .wp-smush-install-content {
+    margin-top: 24px;
+}
+
+.wpmud .wp-smush-install-welcome .button {
+    margin-top: 18px;
+}
+
+.wpmud .dev-box.wp-smush-install-thanks-box {
+    margin-bottom: 20px;
+    padding-bottom: 0;
+}
+
 /** Settings Page **/
 
 .wp-smush-setting-row {
@@ -78,6 +112,7 @@ Smush button transformation
 input#wp-smush-save-settings {
     margin: 10px 0 5px;
 }
+
 .wp-smush-welcome #wp-smush-save-settings {
     float: right;
 }
@@ -252,6 +287,7 @@ input#wp-smush-save-settings {
 .smush-stats-wrapper td, .smush-stats-wrapper th {
     font-size: 11px;
 }
+
 .smush-stats-wrapper .smush-container-subheading .spinner {
     float: left;
     margin: 7px 8px 0;
@@ -493,7 +529,7 @@ table.wp-smush-stats-holder tr td:first-child {
     vertical-align: top;
 }
 
-.wpmud .wp-smush-premium .smush-container-subheading a{
+.wpmud .wp-smush-premium .smush-container-subheading a {
     color: #ff6d6d;
 }
 
@@ -527,12 +563,14 @@ table.wp-smush-stats-holder tr td:first-child {
     max-width: 68%;
     margin: 0 30px 0px 60px;
 }
+
 .wpmud .wp-smush-welcome-content .wp-smush-premium {
     box-shadow: none;
     margin-top: 30px;
     padding: 0
 }
-.wpmud .wp-smush-welcome-content .wp-smush-premium .wp-smush-container-header{
+
+.wpmud .wp-smush-welcome-content .wp-smush-premium .wp-smush-container-header {
     margin: 0;
     padding: 0
 }
@@ -600,8 +638,9 @@ table.wp-smush-stats-holder tr td:first-child {
     padding: 18px 50px;
     text-align: center;
 }
+
 .wpmud a.wp-smush-trigger-bulk, .wpmud a.wp-smush-trigger-bulk:hover,
-.wpmud a.wp-smush-trigger-bulk:focus, .wpmud a.wp-smush-trigger-bulk:active{
+.wpmud a.wp-smush-trigger-bulk:focus, .wpmud a.wp-smush-trigger-bulk:active {
     color: white;
     text-decoration: underline;
 }
@@ -793,6 +832,7 @@ small.smush-setting-description {
     font: 500 11px/20px 'Roboto';
     padding: 10px;
 }
+
 .wp-smush-lossy-enable:hover, .wp-smush-lossy-enable:active, .wp-smush-lossy-enable:focus {
     background-color: #0093B1;
     color: #FFF;
@@ -819,8 +859,9 @@ small.smush-setting-description {
 /** For Smush Pro Promo and Humming Bird promo **/
 .wpmud .wp-smushit-container-right .wp-smush-pro-adv {
     overflow: hidden;
-    padding: 30px 0 0 ;
+    padding: 30px 0 0;
 }
+
 .wpmud .dev-box.wp-smush-pro-adv .wp-smush-container-header {
     margin: -30px 0 30px;
 }
@@ -853,7 +894,7 @@ small.smush-setting-description {
     overflow: hidden;
 }
 
-.wpmud .wp-smush-promo-content{
+.wpmud .wp-smush-promo-content {
     color: #555555;
     line-height: 1.7;
     margin: auto;
@@ -896,13 +937,16 @@ small.smush-setting-description {
     font-size: 14px;
     font-weight: bold;
 }
+
 @media screen and (max-width: 1024px) and ( min-width: 800px ) {
     .wpmud .wrap .dev-box:not(.wp-smush-pro-adv) {
         padding: 20px;
     }
+
     .wpmud .dev-box.wp-smush-pro-adv .box-title, .wpmud .wp-smush-pro-adv .box-content {
         padding: 0 20px;
     }
+
     /** Stats Section **/
     .wpmud .smush-stats-wrapper {
         font-size: 12px;
@@ -911,6 +955,7 @@ small.smush-setting-description {
     .smush-stats-wrapper h3 {
         padding: 6px 0;
     }
+
     .smush-stats-wrapper .smush-container-subheading {
         margin-top: 20px;
     }
@@ -924,6 +969,7 @@ small.smush-setting-description {
         font-size: 12px;
     }
 }
+
 /** Media Queries for resolution between 782px - 1024px **/
 @media screen and (max-width: 1024px) {
     /** Configure screen **/
@@ -956,6 +1002,7 @@ small.smush-setting-description {
         max-width: none;
     }
 }
+
 /** Media Queries for resolution below 782px **/
 @media only screen and (max-width: 800px) {
     .wpmud .wp-smushit-container-wrap .col-two-third.wp-smushit-container-left, .wpmud .wp-smushit-container-wrap .col-third.wp-smushit-container-right {
@@ -963,11 +1010,13 @@ small.smush-setting-description {
         width: 100%;
     }
 }
+
 /** For Media Gallery and Other WordPress pages **/
 .smushit [tooltip] {
     position: relative;
     overflow: visible;
 }
+
 .smushit [tooltip]:before {
     content: '';
     position: absolute;
@@ -982,6 +1031,7 @@ small.smush-setting-description {
     transition: margin .2s, opacity .2s, z-index .2s linear .2s;
     pointer-events: none;
 }
+
 .smushit [tooltip]:after {
     content: attr(tooltip);
     position: absolute;
@@ -1003,23 +1053,29 @@ small.smush-setting-description {
     white-space: pre-wrap;
     pointer-events: none;
 }
+
 .smushit [tooltip].tooltip-s:after {
     width: 150px;
     margin-left: -75px;
 }
+
 .smushit [tooltip].tooltip-l:after {
     width: 280px;
     margin-left: -140px;
 }
+
 .smushit [tooltip].tooltip-right:after {
     margin-left: -180px;
 }
+
 .smushit [tooltip].tooltip-s.tooltip-right:after {
     margin-left: -130px;
 }
+
 .smushit [tooltip].tooltip-l.tooltip-right:after {
     margin-left: -260px;
 }
+
 .smushit [tooltip].tooltip-bottom:before {
     border-color: transparent;
     border-bottom-color: #0B2F3F;
@@ -1028,24 +1084,28 @@ small.smush-setting-description {
     margin-top: -5px;
     margin-bottom: 0;
 }
+
 .smushit [tooltip].tooltip-bottom:after {
     bottom: auto;
     top: 100%;
     margin-top: 5px;
     margin-bottom: 0;
 }
+
 .smushit [tooltip]:hover:before {
     opacity: 1;
     z-index: 1;
     margin-bottom: 0;
     transition: margin .2s, opacity .2s;
 }
+
 .smushit [tooltip]:hover:after {
     opacity: 1;
     z-index: 1;
     margin-bottom: 10px;
     transition: margin .2s, opacity .2s;
 }
+
 .smushit .disabled[tooltip]:before,
 .smushit .disabled[tooltip]:after {
     display: none;
