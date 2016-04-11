@@ -147,24 +147,24 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function init_settings() {
 			$this->settings = array(
 				'auto'      => array(
-					'label' => esc_html__( 'Automatically Smush my images on upload', 'wp-smushit' ),
+					'label' => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
 					'desc'  => esc_html__( 'When you upload images to the media library, we’ll automatically optimize them.', 'wp-smushit' )
 				),
 				'keep_exif' => array(
-					'label' => esc_html__( 'Preserve Image EXIF data', 'wp-smushit' ),
-					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data does make image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
+					'label' => esc_html__( 'Preserve image EXIF data', 'wp-smushit' ),
+					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
 				),
 				'lossy'     => array(
-					'label' => esc_html__( 'Super-smush  my images', 'wp-smushit' ),
+					'label' => esc_html__( 'Super-smush my images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'Compress images up to 10x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
 				),
 				'original'  => array(
 					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'WordPress crops and resizes every image you upload for embedding in your site. By default we only smush the display images. To save space on your server you can choose to smush the original full-size images as well. This will not usually improve page speed.', 'wp-smushit' )
+					'desc'  => esc_html__( 'WordPress crops and resizes every image you upload for embedding on your site. By default, Smush only compresses these cropped and resized images, not your original full-size images. To save space on your server, activate this setting to smush your original images, too. Note: This doesn’t usually improve page speed.', 'wp-smushit' )
 				),
 				'backup'    => array(
 					'label' => esc_html__( 'Make a copy of my original images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Save your original images so you can restore them at any point. Note: keeping a copy of your original files can significantly increases your uploads folder size – nearly double.', 'wp-smushit' )
+					'desc'  => esc_html__( 'Save your original full-size images so you can restore them at any point. Note: Activating this setting will significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' )
 				)
 			);
 
