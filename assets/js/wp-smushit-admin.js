@@ -241,9 +241,14 @@ jQuery(function ($) {
                 return;
             }
 
+            var progress = '';
+
             if (!this.is_bulk_resmush) {
+                if (_res && ( 'undefined' == typeof _res.data || 'undefined' == typeof _res.data.stats )) {
+                    return;
+                }
                 //handle progress for normal bulk smush
-                var progress = ( _res.data.stats.smushed / _res.data.stats.total) * 100;
+                progress = ( _res.data.stats.smushed / _res.data.stats.total) * 100;
             } else {
                 //If the Request was successful, Update the progress bar
                 if (_res.success) {
@@ -263,7 +268,8 @@ jQuery(function ($) {
 
                 }
             }
-            //Update remaining count
+
+            //Show Bulk Wrapper and Smush Notice
             if( self.ids.length == 0 ) {
                 //Hide the bulk wrapper
                 $('.wp-smush-bulk-wrapper').hide();
@@ -271,6 +277,7 @@ jQuery(function ($) {
                 $('.wp-smush-notice.wp-smush-all-done').show();
             }
 
+            //Update remaining count
             self.update_remaining_count();
 
             //if we have received the progress data, update the stats else skip
@@ -364,7 +371,7 @@ jQuery(function ($) {
                         self.update_remaining_count();
                     } else {
 
-                        if (self.is_bulk) {
+                        if (self.is_bulk && res.success ) {
                             self.update_progress(res);
                         }
                     }
