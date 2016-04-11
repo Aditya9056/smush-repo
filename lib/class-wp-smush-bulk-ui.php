@@ -162,7 +162,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						if ( $WpSmush->lossy_enabled ) {
 							echo '<strong><span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count . '</strong>';
 						} else {
-							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
+							printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<span class="wp-smush-lossy-enable">', '</span>' );
 						} ?>
 					</span>
 				</div><?php

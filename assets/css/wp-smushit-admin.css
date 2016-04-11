@@ -780,11 +780,12 @@ small.smush-setting-description {
     font-weight: 700;
 }
 
-.wp-smush-lossy-disabled {
-    color: #adadad;
-    background: #fafafa;
+.wp-smush-lossy-enable {
+    background: #00ACCA;
     border-radius: 3px;
-    font-size: 11px;
+    color: #FFF;
+    cursor: pointer;
+    font: 500 11px/20px 'Roboto';
     padding: 10px;
 }
 

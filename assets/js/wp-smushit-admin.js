@@ -616,35 +616,35 @@ jQuery(function ($) {
     });
 
     /** Restore: Media Library **/
-    jQuery('body').on('click', '.wp-smush-action.wp-smush-restore', function (e) {
+    $('body').on('click', '.wp-smush-action.wp-smush-restore', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_restore_image';
         process_smush_action( e, current_button, smush_action );
     });
 
     /** Resmush: Media Library **/
-    jQuery('body').on('click', '.wp-smush-action.wp-smush-resmush', function (e) {
+    $('body').on('click', '.wp-smush-action.wp-smush-resmush', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_resmush_image';
         process_smush_action( e, current_button, smush_action );
     });
 
     /** Restore: NextGen Gallery **/
-    jQuery('body').on('click', '.wp-smush-action.wp-smush-nextgen-restore', function (e) {
+    $('body').on('click', '.wp-smush-action.wp-smush-nextgen-restore', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_restore_nextgen_image';
         process_smush_action( e, current_button, smush_action );
     });
 
     /** Resmush: NextGen Gallery **/
-    jQuery('body').on('click', '.wp-smush-action.wp-smush-nextgen-resmush', function (e) {
+    $('body').on('click', '.wp-smush-action.wp-smush-nextgen-resmush', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_resmush_nextgen_image';
         process_smush_action( e, current_button, smush_action );
     });
 
     //Scan For resmushing images
-    jQuery('body').on('click', '.wp-smush-scan', function(e) {
+    $('body').on('click', '.wp-smush-scan', function(e) {
 
         e.preventDefault();
 
@@ -669,10 +669,10 @@ jQuery(function ($) {
 
         //Disable Bulk smush button and itself
         button.attr('disabled', 'disabled');
-        jQuery('.wp-smush-button' ).attr('disabled', 'disabled');
+        $('.wp-smush-button' ).attr('disabled', 'disabled');
 
         //Hide Settings changed Notice
-        jQuery('.wp-smush-settings-changed').hide();
+        $('.wp-smush-settings-changed').hide();
 
         //Show Loading Animation
         jQuery('.bulk-resmush-wrapper .wp-smush-progress-bar-wrap').removeClass('hidden');
@@ -730,13 +730,13 @@ jQuery(function ($) {
 
             //Hide Spinner
             spinner.removeClass('is-active');
-            jQuery('.wp-smush-button').removeAttr('disabled');
+            $('.wp-smush-button').removeAttr('disabled');
         });
 
     });
 
     //Dismiss Welcome notice
-    jQuery('.smush-dismiss-welcome').on('click', function(e) {
+    $('.smush-dismiss-welcome').on('click', function(e) {
         e.preventDefault();
         var $el = $(this).parents().eq(1);
         $el.fadeTo( 100, 0, function() {
@@ -791,7 +791,7 @@ jQuery(function ($) {
     });
 
     //On Resmush click
-    jQuery('body').on('click', '.wp-smush-skip-resmush', function (e) {
+    $('body').on('click', '.wp-smush-skip-resmush', function (e) {
         e.preventDefault();
         var self = jQuery(this);
         var container = self.parents().eq(1);
@@ -837,8 +837,24 @@ jQuery(function ($) {
             type:   type
         }
         //Delete resmush list
-        jQuery.post(ajaxurl, params);
+        $.post(ajaxurl, params);
 
+    });
+
+    //Enable Super Smush
+    $('.wp-smush-lossy-enable').on('click', function(e){
+        e.preventDefault();
+
+        //Enable Super Smush
+        $('#wp-smush-lossy').prop('checked', true);
+
+        //Slide to Save settings button
+        $('html,body').animate({
+                scrollTop: $("#wp-smush-save-settings").offset().top},
+            1500, function() {
+                //Induce Setting button save click
+                $('#wp-smush-save-settings').click();
+            });
     });
 
 });
