@@ -50,12 +50,12 @@ Smush button transformation
     margin: 50px 20px 0 2px;
 }
 
-.wp-smush-install-image {
+.wp-smush-install-image, .wp-smush-image-wrap {
     display: inline-block;
     float: left;
 }
 
-.wp-smush-install-image > img {
+.wp-smush-install-image > img, .wp-smush-image-wrap > img {
     float: left;
 }
 
@@ -683,6 +683,10 @@ table.wp-smush-stats-holder tr td:first-child {
     width: 14px;
 }
 
+.wpmud .dev-box.bulk-smush-wrapper {
+    padding-bottom: 0;
+}
+
 .wpmud .bulk-smush-wrapper .dev-icon {
     margin-right: 10px;
     vertical-align: top;
@@ -1109,4 +1113,43 @@ small.smush-setting-description {
 .smushit .disabled[tooltip]:before,
 .smushit .disabled[tooltip]:after {
     display: none;
+}
+
+/** Super Smush Content **/
+
+.wp-smush-super-smush-promo {
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.wp-smush-super-smush-content {
+    background: #dff6fa;
+    border-radius: 5px;
+    display: inline-block;
+    margin-left: 20px;
+    margin-top: 10px;
+    padding: 20px 30px;
+    position: relative;
+    width: 58%;
+}
+/** Arrow **/
+.wp-smush-super-smush-content:after {
+    right: 100%;
+    top: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(223, 246, 250, 0);
+    border-right-color: #dff6fa;
+    border-width: 10px;
+    margin-top: -10px;
+}
+.wpmud .wp-smush-super-smush-content a,
+.wpmud .wp-smush-super-smush-content a:hover,
+.wpmud .wp-smush-super-smush-content a:visited {
+    color: black;
+    text-decoration: underline;
 }

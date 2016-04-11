@@ -921,7 +921,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function smush_upgrade() {
 
 			//Return, If a pro user, or not super admin, or don't have the admin privilleges
-			if ( ! $this->is_pro() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
+			if ( $this->is_pro() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
 				return;
 			}
 
