@@ -393,37 +393,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		}
 
 		/**
-		 * Adds progress bar for ReSmush bulk, if there are any images, that needs to be resmushed
-		 */
-		function resmush_bulk_ui( $return = false ) {
-			global $wpsmushit_admin;
-
-			$count = count( $this->resmush_ids );
-
-			//Notice: Number of images that can be smushed
-			$ss_progress_ui = '
-			<!-- Hide All done div if there are images pending -->
-				<div class="wp-smush-notice wp-smush-all-done hidden">
-					<i class="dev-icon dev-icon-tick"></i>' . esc_html__( "Yay! All images are optimised as per your current settings.", "wp-smushit" ) . '
-				</div>
-			<div class="wp-smush-resmush-wrap">
-				<div class="wp-smush-notice wp-smush-remaining">
-					<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i>
-					<span class="wp-smush-notice-text">' . sprintf( esc_html__( "%s, you have %s%s%d%s images%s that can be further optimised with current settings.", "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' )
-			                  . '</span></div>
-				<hr  class="wp-smush-sep" />';
-
-			$ss_progress_ui .= $this->setup_button( true, true ) . '</div>';
-			$ss_progress_ui .= $this->bulk_ui->resmush_progress_bar( $count, true );
-			//If need to return the content
-			if ( $return ) {
-				return $ss_progress_ui;
-			}
-
-			echo $ss_progress_ui;
-		}
-
-		/**
 		 * Outputs the Content for Bulk Smush Div
 		 */
 		function bulk_smush_content() {

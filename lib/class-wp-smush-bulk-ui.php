@@ -559,7 +559,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 			//Show only if we have any images to ber resmushed
 			if( $show ) {
-				return '<div class="wp-smush-notice wp-smush-remaining">
+				return '<div class="wp-smush-notice wp-smush-resmush-notice wp-smush-remaining">
 						<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i>
 						<span class="wp-smush-notice-text">' . sprintf( _n( "%s, you have %s%s%d%s image%s that need re-compressing since changing your smush settings!", "%s, you have %s%s%d%s images%s that need re-compressing since changing your smush settings!", $count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' ) . '</span>
 						<button class="button button-grey button-small wp-smush-skip-resmush">' . esc_html__("Skip", "wp-smushit") . '</button>
