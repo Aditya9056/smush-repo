@@ -62,29 +62,25 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 *  Prints the content of WelCome Screen for New Installation
 		 *  Dismissible by default
 		 */
-		function configure_screen() {
-			global $WpSmush, $wpsmushit_admin;
+		function welcome_screen() {
+			global $WpSmush;
 
 			//Header Of the Box
-			$this->container_header( 'wp-smush-welcome', 'wp-smush-configure', esc_html__( "CONFIGURE", "wp-smushit" ) );
-
-			$user_name = $wpsmushit_admin->get_user_name();
-
+			$this->container_header( 'wp-smush-welcome', 'wp-smush-welcome-box', esc_html__( "WELCOME", "wp-smushit" ), '', true );
 			//Settings Page heading
 			$plugin_name = $WpSmush->is_pro() ? "WP Smush Pro" : "WP Smush";
 			?>
 			<!-- Content -->
 			<div class="box-content">
-			<div class="col-third wp-smush-lady">
-				<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-tall.png'; ?>"
-				     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>" style="width: 300px;">
-			</div>
-			<div class="col-two-third wp-smush-welcome-content">
-				<h4 class="roboto-condensed-regular"><?php esc_html_e( "OH YEAH, IT'S COMPRESSION TIME", "wp-smushit" ); ?></h4>
-				<p class="wp-smush-welcome-message roboto-medium"><?php printf( esc_html__( ' %1$s Nice one, %3$s%2$s! You\'ve just installed %4$s, the most popular image compression plugin for WordPress! %1$sGet started by choosing your desired settings below and let\'s get smushing!%2$s', "wp-smushit" ), '<strong>', '</strong>', $user_name, $plugin_name ); ?></p>
-				<hr class="wp-smush-sep"/><?php
-				$this->options_ui( true );
-			 ?>
+			<div class="row">
+				<div class="wp-smush-welcome-image">
+					<img src="<?php echo WP_SMUSH_URL . 'assets/images/welcome-image.png'; ?>"
+				     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>">
+			    </div>
+		        <div class="wp-smush-welcome-content">
+					<h4 class="roboto-condensed-regular"><?php esc_html_e( "OH YEAH, IT'S COMPRESSION TIME!", "wp-smushit" ); ?></h4>
+					<p class="wp-smush-welcome-message roboto-medium"><?php printf( esc_html__( 'You\'ve just installed %3$s, the most popular image compression plugin for WordPress! %1$sChoose your desired settings%2$s and get smushing!', "wp-smushit" ), '<strong>', '</strong>', $plugin_name ); ?></p>
+				</div>
 			</div>
 			</div><?php
 			echo "</section>";
@@ -190,7 +186,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$div_end =
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', false ) .
 				'<div class="wp-smush-submit-wrap">
-					<input type="submit" id="wp-smush-save-settings" class="button"
+					<input type="submit" id="wp-smush-save-settings" class="button button-grey"
 					       value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
 			        <span class="spinner"></span>
 		        </div>
@@ -204,7 +200,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//For Basic User, Show advanced settings in a separate box
 			if ( ! $WpSmush->is_pro() ) {
 				echo $div_end;
-				$this->container_header( 'wp-smush-premium', 'wp-smush-pro-settings-box', esc_html__( "ADVANCED SETTINGS", "wp-smushit" ), esc_html__( 'PRO ONLY', 'wp-smushit' ), false ); ?>
+
+				$pro_only = sprintf( esc_html__('%sPRO ONLY%s', 'wp-smushit'), '<a href="'. esc_url( $wpsmushit_admin->upgrade_url ) .'" target="_blank">', '</a>' );
+
+				$this->container_header( 'wp-smush-premium', 'wp-smush-pro-settings-box', esc_html__( "ADVANCED SETTINGS", "wp-smushit" ), $pro_only, false ); ?>
 				<div class="box-content"><?php
 			}
 
@@ -319,40 +318,39 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//Show Configure screen for only a new installation and for only network admins
 			if ( 1 != get_option( 'wp-smush-hide_smush_welcome' ) && 1 != get_option( 'hide_smush_features' ) && 0 >= $wpsmushit_admin->smushed_count && is_super_admin() ) {
 				echo '<div class="block float-l smush-welcome-wrapper">';
-				$this->configure_screen();
+				$this->welcome_screen();
 				echo '</div>';
-			}else{ ?>
+			}?>
 
-				<!-- Bulk Smush Progress Bar -->
-				<div class="wp-smushit-container-left col-two-third float-l"><?php
-					//Bulk Smush Container
-					$this->bulk_smush_container();
+			<!-- Bulk Smush Progress Bar -->
+			<div class="wp-smushit-container-left col-two-third float-l"><?php
+				//Bulk Smush Container
+				$this->bulk_smush_container();
 
-					if( !$WpSmush->is_pro() ) {
-						//Settings
-						$this->settings_ui();
-					}
-					?>
-				</div>
-
-				<!-- Stats -->
-				<div class="wp-smushit-container-right col-third float-l"><?php
-					//Stats
-					$this->smush_stats_container();
-					if ( ! $WpSmush->is_pro() ) {
-						/**
-						 * Allows to Hook in Additional Containers after Stats Box for free version
-						 * Pro Version has a full width settings box, so we don't want to do it there
-						 */
-						do_action( 'wp_smush_after_stats_box' );
-					} ?>
-				</div><!-- End Of Smushit Container right --><?php
-				if( $WpSmush->is_pro() ) {?>
-					<div class="row"><?php
-					 //Settings
-						$this->settings_ui(); ?>
-					</div><?php
+				if( !$WpSmush->is_pro() ) {
+					//Settings
+					$this->settings_ui();
 				}
+				?>
+			</div>
+
+			<!-- Stats -->
+			<div class="wp-smushit-container-right col-third float-l"><?php
+				//Stats
+				$this->smush_stats_container();
+				if ( ! $WpSmush->is_pro() ) {
+					/**
+					 * Allows to Hook in Additional Containers after Stats Box for free version
+					 * Pro Version has a full width settings box, so we don't want to do it there
+					 */
+					do_action( 'wp_smush_after_stats_box' );
+				} ?>
+			</div><!-- End Of Smushit Container right --><?php
+			if( $WpSmush->is_pro() ) {?>
+				<div class="row"><?php
+				 //Settings
+					$this->settings_ui(); ?>
+				</div><?php
 			}
 			$this->smush_page_footer();
 		}

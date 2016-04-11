@@ -746,7 +746,7 @@ jQuery(function ($) {
         });
         //Send a ajax request to save the dismissed notice option
         var param = {
-            action: 'dismiss_smush_notice'
+            action: 'dismiss_welcome_notice'
         };
         $.post(ajaxurl, param );
     });

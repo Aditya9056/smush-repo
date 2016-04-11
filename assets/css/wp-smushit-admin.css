@@ -485,13 +485,16 @@ table.wp-smush-stats-holder tr td:first-child {
 .wp-smush-premium .smush-container-subheading {
     border: solid 1px #ff6d6d;
     border-radius: 4px;
-    color: #ff6d6d;
     float: none;
     font-size: 12px;
     line-height: 1.4;
     margin: 1.3em 10px;
     padding: 5px 8px;
     vertical-align: top;
+}
+
+.wpmud .wp-smush-premium .smush-container-subheading a{
+    color: #ff6d6d;
 }
 
 .smush-stats-wrapper .smush-container-subheading {
@@ -517,8 +520,12 @@ table.wp-smush-stats-holder tr td:first-child {
     color: #9b9b9b;
 }
 
-.wpmud .row .col-two-third.wp-smush-welcome-content {
+.wpmud .wp-smush-welcome-content {
     padding-bottom: 20px;
+    display: inline-block;
+    overflow: hidden;
+    max-width: 68%;
+    margin: 0 30px 0px 60px;
 }
 .wpmud .wp-smush-welcome-content .wp-smush-premium {
     box-shadow: none;
@@ -539,6 +546,12 @@ table.wp-smush-stats-holder tr td:first-child {
     line-height: 1.7;
     margin-top: 20px;
     margin-bottom: 30px;
+}
+
+.wp-smush-welcome-image {
+    display: inline-block;
+    float: left;
+    overflow: hidden;
 }
 
 /** Bulk Smush **/

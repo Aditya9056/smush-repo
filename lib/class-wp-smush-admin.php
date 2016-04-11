@@ -131,7 +131,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
 			//Handle the smush pro dismiss features notice ajax
-			add_action( 'wp_ajax_dismiss_smush_notice', array( $this, 'dismiss_smush_notice' ) );
+			add_action( 'wp_ajax_dismiss_welcome_notice', array( $this, 'dismiss_welcome_notice' ) );
 
 			//Update the Super Smush count, after the smushing
 			add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
@@ -1077,7 +1077,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Store a key/value to hide the smush features on bulk page
 		 */
-		function dismiss_smush_notice() {
+		function dismiss_welcome_notice() {
 			update_option( 'wp-smush-hide_smush_welcome', 1 );
 			wp_send_json_success();
 		}
