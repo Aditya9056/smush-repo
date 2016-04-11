@@ -369,7 +369,8 @@ table.wp-smush-stats-holder tr td:first-child {
 }
 
 .compat-field-wp_smush .wp-smush-stats-holder td {
-    padding: 8px 10px
+    padding: 8px 10px;
+    word-wrap: break-word;
 }
 
 /** Help Tip **/
@@ -683,7 +684,7 @@ table.wp-smush-stats-holder tr td:first-child {
     width: 14px;
 }
 
-.wpmud .dev-box.bulk-smush-wrapper {
+.wpmud .dev-box.bulk-smush-wrapper:not(.wp-smush-pro-install) {
     padding-bottom: 0;
 }
 

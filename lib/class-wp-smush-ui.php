@@ -90,12 +90,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Bulk Smush UI and Progress bar
 		 */
 		function bulk_smush_container() {
+			global $WpSmush;
 
 			//Subheading content
 			$smush_individual_msg = sprintf( esc_html__( "Smush individual images via your %sMedia Library%s", "wp-smushit" ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '" title="' . esc_html__( 'Media Library', 'wp-smushit' ) . '">', '</a>' );
 
+			$class = $WpSmush->is_pro() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
+
 			//Contianer Header
-			$this->container_header( 'bulk-smush-wrapper', 'wp-smush-bulk-wrap-box', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
+			$this->container_header( $class, 'wp-smush-bulk-wrap-box', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
 
 			<div class="box-container"><?php
 			$this->bulk_smush_content(); ?>

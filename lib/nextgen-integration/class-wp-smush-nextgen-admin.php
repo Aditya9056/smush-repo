@@ -470,11 +470,15 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function bulk_smush_container() {
 
+			global $WpSmush;
+
 			//Subheading Content
 			$smush_individual_msg = sprintf( esc_html__( "Smush individual images via your %sManage Galleries%s section", "wp-smushit" ), '<a href="' . esc_url( admin_url() . 'admin.php?page=nggallery-manage-gallery' ) . '" title="' . esc_html__( 'Manage Galleries', 'wp-smushit' ) . '">', '</a>' );
 
+			$class = $WpSmush->is_pro() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
+
 			//Container Header
-			$this->bulk_ui->container_header( 'bulk-smush-wrapper', 'wp-smush-bulk-wrap-box', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
+			$this->bulk_ui->container_header( $class, 'wp-smush-bulk-wrap-box', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
 
 			<div class="box-container"><?php
 				$this->bulk_smush_content(); ?>
