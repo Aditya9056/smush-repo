@@ -1251,7 +1251,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Allow to smush Upfront images as well
 			$upfront_active = class_exists( 'Upfront' );
 
+			$key = 'nextgen' == $type ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
+
 			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
+				delete_option( $key );
 				wp_send_json_success( array( 'notice' => $resp ) );
 			}
 
@@ -1325,8 +1328,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					}
 				}//End Of Upfront loop
 
-				$key = 'nextgen' == $type ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
-
 				//Store the resmush list in Options table
 				update_option( $key, $resmush_list );
 
@@ -1341,7 +1342,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					}
 
 					//Initialize stats
-					if ( empty( $this->remaining_count ) && 'nextgen' != $type ) {
+					if ( empty( $this->remaining_count ) ) {
 						$this->setup_global_stats();
 					}
 
@@ -1480,7 +1481,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( 'media' == $type ) {
 				$count = $this->media_super_smush_count();
 			} else {
-				$key = 'nextgen' == $type ? 'wp-smush-super_smushed_nextgen' : 'wp-smush-super_smushed';
+				$key = 'wp-smush-super_smushed_nextgen';
 
 				//Flag to check if we need to re-evaluate the count
 				$revaluate = false;
@@ -1500,11 +1501,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 					$diff = $last_checked - current_time( 'timestamp' );
 
-					//Difference in minutes
+					//Difference in hour
 					$diff_h = $diff / 3600;
 
-					//if last checked was more than 12 hours.
-					if ( $diff_h > 12 ) {
+					//if last checked was more than 1 hours.
+					if ( $diff_h > 1 ) {
 						$revaluate = true;
 					}
 				}
@@ -1596,17 +1597,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return bool
 		 */
-		function update_lists( $id, $stats, $key = 'wp-smush-super_smushed' ) {
+		function update_lists( $id, $stats, $key = '' ) {
 			//If Stats are empty or the image id is not provided, return
 			if ( empty( $stats ) || empty( $id ) || empty( $stats['stats'] ) ) {
 				return false;
 			}
+
 			//Update Super Smush count
 			if ( isset( $stats['stats']['lossy'] ) && 1 == $stats['stats']['lossy'] ) {
-				update_post_meta( $id, 'wp-smush-lossy', 1 );
+				if ( empty( $key ) ) {
+					update_post_meta( $id, 'wp-smush-lossy', 1 );
+				} else {
+					$this->update_super_smush_count( $id, 'add', $key );
+				}
 			}
+
 			//Check and update re-smush list for media gallery
-			if ( 'wp-smush-super_smushed' && ! empty( $this->resmush_ids ) && in_array( $id, $this->resmush_ids ) ) {
+			if ( ! empty( $this->resmush_ids ) && in_array( $id, $this->resmush_ids ) ) {
 				$this->update_resmush_list( $id );
 			}
 

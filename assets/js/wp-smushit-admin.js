@@ -282,14 +282,16 @@ jQuery(function ($) {
 
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
-                var smushed_count = self.is_bulk_resmush ? ( _res.data.stats.total - _res.data.stats.resmush_count ) : _res.data.stats.smushed;
+                //Temporary Workaround, @todo: Need to fix this jugaad
+                var smushed_count = self.is_bulk_resmush ? ( _res.data.stats.total - self.ids.length ) + 1 : _res.data.stats.smushed;
+                smushed_count = smushed_count > _res.data.stats.total ? _res.data.stats.total : smushed_count;
                 //Update stats
                 $('.smush-total-reduction-percent .wp-smush-stats').html(_res.data.stats.percent);
                 $('.smush-total-reduction-bytes .wp-smush-stats').html(_res.data.stats.human);
 
                 $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(smushed_count);
-                if( $('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed ) {
-                    $('.super-smush-attachments .smushed-count').html( _res.data.stats.super_smushed );
+                if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed) {
+                    $('.super-smush-attachments .smushed-count').html(_res.data.stats.super_smushed);
                 }
 
                 // increase the progress bar
@@ -845,14 +847,13 @@ jQuery(function ($) {
     $('.wp-smush-lossy-enable').on('click', function(e){
         e.preventDefault();
 
-        //Enable Super Smush
-        $('#wp-smush-lossy').prop('checked', true);
-
         //Slide to Save settings button
         $('html,body').animate({
-                scrollTop: $(".wp-smushit-container-wrap").offset().top
+                scrollTop: $("#wp-smush-save-settings").offset().top
             },
             1500, function () {
+                //Enable Super Smush
+                $('#wp-smush-lossy').prop('checked', true);
                 //Induce Setting button save click
                 $('#wp-smush-save-settings').click();
             });

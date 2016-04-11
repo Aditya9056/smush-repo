@@ -829,6 +829,14 @@ small.smush-setting-description {
     font-weight: 700;
 }
 
+.wp-smush-lossy-disabled {
+    color: #adadad;
+    background: #fafafa;
+    border-radius: 3px;
+    font-size: 11px;
+    padding: 10px;
+}
+
 .wp-smush-lossy-enable {
     background: #00ACCA;
     border-radius: 3px;
