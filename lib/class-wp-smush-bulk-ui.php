@@ -36,11 +36,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 *
 		 * @return string
 		 */
-		function container_header( $classes = '', $heading = '', $sub_heading = '', $dismissible = false ) {
+		function container_header( $classes = '', $id = '', $heading = '', $sub_heading = '', $dismissible = false ) {
 			if ( empty( $heading ) ) {
 				return '';
 			}
-			echo '<section class="dev-box ' . $classes . '" id="wp-smush-container">'; ?>
+			echo '<section class="dev-box ' . $classes . ' wp-smush-container" id="' . $id .'">'; ?>
 			<div class="wp-smush-container-header box-title">
 			<h3><?php echo $heading ?></h3><?php
 			//Sub Heading
@@ -66,7 +66,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $WpSmush, $wpsmushit_admin;
 
 			//Header Of the Box
-			$this->container_header( 'wp-smush-welcome', esc_html__( "CONFIGURE", "wp-smushit" ) );
+			$this->container_header( 'wp-smush-welcome', 'wp-smush-configure', esc_html__( "CONFIGURE", "wp-smushit" ) );
 
 			$user_name = $wpsmushit_admin->get_user_name();
 
@@ -99,7 +99,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$smush_individual_msg = sprintf( esc_html__( "Smush individual images via your %sMedia Library%s", "wp-smushit" ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '" title="' . esc_html__( 'Media Library', 'wp-smushit' ) . '">', '</a>' );
 
 			//Contianer Header
-			$this->container_header( 'bulk-smush-wrapper', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
+			$this->container_header( 'bulk-smush-wrapper', 'wp-smush-bulk-wrap-box', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
 
 			<div class="box-container"><?php
 				$this->bulk_smush_content(); ?>
@@ -113,7 +113,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function settings_ui() {
 			global $WpSmush;
 			$class = $WpSmush->is_pro() ? 'smush-settings-wrapper wp-smush-pro' : 'smush-settings-wrapper';
-			$this->container_header( $class, esc_html__( "SETTINGS", "wp-smushit" ), '' );
+			$this->container_header( $class, 'wp-smush-settings-box', esc_html__( "SETTINGS", "wp-smushit" ), '' );
 			// display the options
 			$this->options_ui();
 		}
@@ -129,7 +129,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$smushed_count = $smushed_count > 0 ? $smushed_count : 0;
 
 			$button = '<span class="spinner"></span><button tooltip="' . esc_html__("Lets you check if any images can be further optimised. Useful after changing settings.", "wp-smushit") . '" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__("RE-CHECK IMAGES", "wp-smushit"). '</button>';
-			$this->container_header( 'smush-stats-wrapper', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
+			$this->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
 			<div class="box-content">
 			<div class="row smush-total-reduction-percent">
 				<span
@@ -204,7 +204,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//For Basic User, Show advanced settings in a separate box
 			if ( ! $WpSmush->is_pro() ) {
 				echo $div_end;
-				$this->container_header( 'wp-smush-premium', esc_html__( "ADVANCED SETTINGS", "wp-smushit" ), esc_html__( 'PRO ONLY', 'wp-smushit' ), false ); ?>
+				$this->container_header( 'wp-smush-premium', 'wp-smush-pro-settings-box', esc_html__( "ADVANCED SETTINGS", "wp-smushit" ), esc_html__( 'PRO ONLY', 'wp-smushit' ), false ); ?>
 				<div class="box-content"><?php
 			}
 
@@ -362,7 +362,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function wp_smush_promo() {
 			global $wpsmushit_admin;
-			$this->container_header( 'wp-smush-pro-adv', "TRY WP SMUSH PRO - FREE!" ); ?>
+			$this->container_header( 'wp-smush-pro-adv', 'wp-smush-pro-promo', "TRY WP SMUSH PRO - FREE!" ); ?>
 			<div class="box-content">
 				<p class="wp-smush-promo-content roboto-regular">Get access to not only WP Smush, but 100+ premium plugins, Upfront
 					themes, security & performance solutions and 24/7 expert support to make you fly – best of all, it’s
@@ -386,7 +386,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if( class_exists('WP_Hummingbird')) {
 				return;
 			}
-			$this->container_header( 'wp-smush-hb-adv', "BOOST YOUR PERFORMANCE" ); ?>
+			$this->container_header( 'wp-smush-hb-adv', 'wp-smush-hb-promo', "BOOST YOUR PERFORMANCE" ); ?>
 			<div class="box-content">
 			<span class="wp-smush-hummingbird-image tc">
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/hummingbird.png'; ?>"
@@ -540,7 +540,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wpsmushit_admin;
 
 			//If we already have count, don't fetch it
-			if( !$count ) {
+			if( false === $count ) {
 				//If we have the resmush ids list, Show Resmush notice and button
 				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
 

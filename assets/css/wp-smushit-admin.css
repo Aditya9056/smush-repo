@@ -467,7 +467,7 @@ table.wp-smush-stats-holder tr td:first-child {
     margin: 0 0 20px;
 }
 
-.wpmud .wp-smush-welcome#wp-smush-container {
+.wpmud .wp-smush-welcome.wp-smush-container {
     padding-bottom: 0;
 }
 

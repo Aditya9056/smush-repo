@@ -481,8 +481,15 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				        class="wp-smush-button wp-smush-nextgen-bulk"><?php echo $button_content; ?></button><?php
 
 				//Enable Super Smush
-				if ( ! $WpSmush->lossy_enabled ) { ?>
-					<p class="wp-smush-enable-lossy"><?php esc_html_e( "Enable Super-smush in the Settings area to get even more savings with almost no noticeable quality loss.", "wp-smushit" ); ?></p><?php
+				if ( ! $WpSmush->lossy_enabled ) {
+					$url = admin_url( 'upload.php' );
+					$url = add_query_arg(
+						array(
+							'page'  => 'wp-smush-bulk#wp-smush-settings-box'
+						),
+						$url
+					); ?>
+					<p class="wp-smush-enable-lossy"><?php printf( esc_html__( "Enable Super-smush in the %sSettings%s area to get even more savings with almost no noticeable quality loss.", "wp-smushit" ), '<a href="' . $url .'" target="_blank">', "</a>"); ?></p><?php
 				} ?>
 				</div><?php
 				$this->bulk_ui->progress_bar( $this );
@@ -498,7 +505,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$smush_individual_msg = sprintf( esc_html__( "Smush individual images via your %sManage Galleries%s section", "wp-smushit" ), '<a href="' . esc_url( admin_url() . 'admin.php?page=nggallery-manage-gallery' ) . '" title="' . esc_html__( 'Manage Galleries', 'wp-smushit' ) . '">', '</a>' );
 
 			//Container Header
-			$this->bulk_ui->container_header( 'bulk-smush-wrapper', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
+			$this->bulk_ui->container_header( 'bulk-smush-wrapper', 'wp-smush-bulk-wrap-box', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
 
 			<div class="box-container"><?php
 				$this->bulk_smush_content(); ?>
@@ -519,7 +526,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$this->stats = $wpsmushnextgenstats->get_smush_stats();
 
 			$button = '<span class="spinner"></span><button tooltip="' . esc_html__( "Lets you check if any images can be further optimised. Useful after changing settings.", "wp-smushit" ) . '" data-type="nextgen" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
-			$this->bulk_ui->container_header( 'smush-stats-wrapper', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
+			$this->bulk_ui->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
 
 			<div class="box-content">
 			<div class="row smush-total-reduction-percent">
