@@ -67,7 +67,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		private $max_free_bulk = 50; //this is enforced at api level too
 
-		public $upgrade_url = 'https://premium.wpmudev.org/';
+		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
 
 		//Stores unsmushed ids
 		private $ids = '';

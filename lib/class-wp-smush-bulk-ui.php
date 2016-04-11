@@ -362,18 +362,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function wp_smush_promo() {
 			global $wpsmushit_admin;
-			$this->container_header( 'wp-smush-pro-adv', 'wp-smush-pro-promo', "TRY WP SMUSH PRO - FREE!" ); ?>
+			$this->container_header( 'wp-smush-pro-adv', 'wp-smush-pro-promo', "FANCY A FREE SUPER SMUSH?" ); ?>
 			<div class="box-content">
-				<p class="wp-smush-promo-content roboto-regular">Get access to not only WP Smush, but 100+ premium plugins, Upfront
-					themes, security & performance solutions and 24/7 expert support to make you fly – best of all, it’s
-					<strong>absolutely FREE to try!</strong></p>
-				<p class="wp-smush-promo-content-smaller tc roboto-regular">Join all the happy members today with no lock in and 100%
-					GPL, cancel any time and use forever on unlimited sites.</p>
+				<p class="wp-smush-promo-content roboto-medium">You can now get Smush Pro... for FREE!</p>
+				<p class="wp-smush-promo-content wp-smush-promo-content-2 roboto-medium">No obligation, no contracts, no catches. You'll get Smush Pro plus 100+ WPMU DEV plugins, Defender, Hummingbird & 24/7 WP support for absolutely nothing for 14 days.</p>
 				<span class="wp-smush-pro-cta tc">
-					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>" class="button button-cta button-green" target="_blank">START FREE TRIAL</a>
+					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>" class="button button-cta button-green" target="_blank">FIND OUT MORE</a>
 				</span>
 			</div>
-			<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-pro.png'; ?>"
+			<img src="<?php echo WP_SMUSH_URL . 'assets/images/dev-team.png'; ?>"
 			     alt="<?php esc_html_e( "TRY WP SMUSH PRO - DEV TEAM", "wp-smushit" ); ?>"><?php
 			echo "</section>";
 		}
@@ -386,17 +383,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if( class_exists('WP_Hummingbird')) {
 				return;
 			}
-			$this->container_header( 'wp-smush-hb-adv', 'wp-smush-hb-promo', "BOOST YOUR PERFORMANCE" ); ?>
+			$this->container_header( 'wp-smush-hb-adv', 'wp-smush-hb-promo', "OH YEAH, SMUSHING ON STERIODS!" ); ?>
 			<div class="box-content">
 			<span class="wp-smush-hummingbird-image tc">
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/hummingbird.png'; ?>"
 					     alt="<?php esc_html_e( "BOOST YOUR PERFORMANCE - HUMMINGBIRD", "wp-smushit" ); ?>">
 		        </span>
-			<p class="wp-smush-promo-content tc">Hummingbird enables file compression and browser caching, file
-				minification and performance reports – because when it comes to pagespeed, every millisecond
-				counts.</strong></p>
+			<p class="wp-smush-promo-content tc roboto-medium">Hummingbird goes beyond Smush compression with minification, caching, performance monitoring and more - every millisecond counts!</p>
 			<span class="wp-smush-hb-cta tc roboto-medium">
-				<a href="<?php echo esc_url("https://premium.wpmudev.org/project/wp-hummingbird/"); ?>" class="button button-cta button-yellow" target="_blank">TRY HUMMINGBIRD</a>
+				<a href="<?php echo esc_url("https://premium.wpmudev.org/project/wp-hummingbird/"); ?>" class="button button-cta button-yellow" target="_blank">TRY HUMMINGBIRD FOR FREE</a>
 			</span>
 			</div><?php
 			echo "</section>";
@@ -425,7 +420,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			} else { ?>
 				<!-- Hide All done div if there are images pending -->
 				<div class="wp-smush-notice wp-smush-all-done<?php echo $all_done ? '' : ' hidden' ?>">
-					<i class="dev-icon dev-icon-tick"></i><?php esc_html_e( "You have 0 attachments that need smushing, awesome!", "wp-smushit" ); ?>
+					<i class="dev-icon dev-icon-tick"></i><?php esc_html_e( "No attachments need smushing. Awesome!", "wp-smushit" ); ?>
 				</div>
 				<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' hidden' : ''; ?>"><?php
 				//If all the images in media library are smushed
@@ -576,7 +571,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if( 1 == get_option('wp-smush-settings_updated', false ) ) {
 
 				//Default message
-				$message = esc_html__("Your settings have been saved!", "wp-smushit");
+				$message = esc_html__("Your settings have been updated!", "wp-smushit");
 
 				//Additonal message if we got work to do!
 				$resmush_count = is_array( $wpsmushit_admin->resmush_ids ) && count( $wpsmushit_admin->resmush_ids ) > 0;

@@ -795,7 +795,14 @@ small.smush-setting-description {
 /** For Smush Pro Promo and Humming Bird promo **/
 .wpmud .wp-smushit-container-right .wp-smush-pro-adv {
     overflow: hidden;
-    padding-bottom: 0;
+    padding: 30px 0 0 ;
+}
+.wpmud .dev-box.wp-smush-pro-adv .wp-smush-container-header {
+    margin: -30px 0 30px;
+}
+
+.wpmud .wp-smush-pro-adv .box-content {
+    padding: 0 30px;
 }
 
 .wp-smushit-container-right .wp-smush-pro-adv > img {
@@ -822,7 +829,7 @@ small.smush-setting-description {
     overflow: hidden;
 }
 
-.wpmud .wp-smush-promo-content, .wpmud .wp-smush-promo-content-smaller {
+.wpmud .wp-smush-promo-content{
     color: #555555;
     line-height: 1.7;
     margin: auto;
@@ -830,10 +837,8 @@ small.smush-setting-description {
     text-align: center;
 }
 
-.wpmud .wp-smush-promo-content-smaller {
-    color: #9b9b9b;
-    font-size: 13px;
-    margin-top: 20px;
+.wpmud .wp-smush-promo-content-2 {
+    margin-top: 30px;
 }
 
 .wpmud .wp-smush-hb-cta .button.button-cta {
@@ -868,10 +873,12 @@ small.smush-setting-description {
     font-weight: bold;
 }
 @media screen and (max-width: 1024px) and ( min-width: 800px ) {
-    .wpmud .wrap .dev-box {
+    .wpmud .wrap .dev-box:not(.wp-smush-pro-adv) {
         padding: 20px;
     }
-
+    .wpmud .dev-box.wp-smush-pro-adv .box-title, .wpmud .wp-smush-pro-adv .box-content {
+        padding: 0 20px;
+    }
     /** Stats Section **/
     .wpmud .smush-stats-wrapper {
         font-size: 12px;
