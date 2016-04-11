@@ -576,7 +576,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$smush_count = is_array( $wpsmushit_admin->remaining_count ) && $wpsmushit_admin->remaining_count > 0;
 
 				if( $smush_count || $resmush_count ) {
-					$message .= ' ' . esc_html__("You have images that needs smushing.", "wp-smushit");
+					$message .= ' ' . sprintf( esc_html__("You have images that needs smushing. %sBulk smush now!%s", "wp-smushit"), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 				}
 				echo '<div class="wp-smush-notice wp-smush-settings-updated"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
 				<i class="dev-icon dev-icon-cross"></i>

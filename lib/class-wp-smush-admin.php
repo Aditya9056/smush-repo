@@ -1358,7 +1358,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
 
 						$ajax_response = $this->bulk_ui->bulk_resmush_content( $count, $show );
-						$message = esc_html__( 'You have images that need smushing, Bulk Smush them below!', 'wp-smushit' );
+						$message = sprintf( esc_html__("You have images that needs smushing. %sBulk smush now!%s", "wp-smushit"), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 						$resp = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
 							<i class="dev-icon dev-icon-cross"></i>
 						</div>';

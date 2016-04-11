@@ -600,6 +600,11 @@ table.wp-smush-stats-holder tr td:first-child {
     padding: 18px 50px;
     text-align: center;
 }
+.wpmud a.wp-smush-trigger-bulk, .wpmud a.wp-smush-trigger-bulk:hover,
+.wpmud a.wp-smush-trigger-bulk:focus, .wpmud a.wp-smush-trigger-bulk:active{
+    color: white;
+    text-decoration: underline;
+}
 
 .wp-smush-resmush-message .dev-icon, .wp-smush-settings-updated .dev-icon {
     font-size: 16px;
@@ -787,6 +792,11 @@ small.smush-setting-description {
     cursor: pointer;
     font: 500 11px/20px 'Roboto';
     padding: 10px;
+}
+.wp-smush-lossy-enable:hover, .wp-smush-lossy-enable:active, .wp-smush-lossy-enable:focus {
+    background-color: #0093B1;
+    color: #FFF;
+    box-shadow: none;
 }
 
 .wpmud .wp-smush-stats, .wp-smush-stats-wrap {

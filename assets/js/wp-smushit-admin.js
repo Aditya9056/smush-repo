@@ -850,10 +850,24 @@ jQuery(function ($) {
 
         //Slide to Save settings button
         $('html,body').animate({
-                scrollTop: $("#wp-smush-save-settings").offset().top},
-            1500, function() {
+                scrollTop: $(".wp-smushit-container-wrap").offset().top
+            },
+            1500, function () {
                 //Induce Setting button save click
                 $('#wp-smush-save-settings').click();
+            });
+    });
+
+    //Trigger Bulk
+    $('body').on('click', '.wp-smush-trigger-bulk', function(e){
+        e.preventDefault();
+        //Slide to Save settings button
+        $('html,body').animate({
+                scrollTop: $("#wp-smush-bulk-wrap-box").offset().top
+            },
+            1500, function () {
+                //Induce Setting button save click
+                $('button.wp-smush-all').click();
             });
     });
 
