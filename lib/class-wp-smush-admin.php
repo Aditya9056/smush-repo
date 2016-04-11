@@ -265,7 +265,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * enqueue js and css
 		 */
 		function enqueue() {
+
 			global $pagenow;
+
 			$current_screen = get_current_screen();
 			$current_page   = $current_screen->base;
 
@@ -274,9 +276,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
 
-			//Do not enqueue, unless it is one of the required screen
-			if ( ! $enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'post-new.php' && $pagenow != 'upload.php' ) ) {
-				return;
+			//If we upgrade/install message is dismissed
+			if( get_option( 'wp-smush-hide_upgrade_notice' ) ) {
+				//Do not enqueue, unless it is one of the required screen
+				if ( ! $enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'post-new.php' && $pagenow != 'upload.php' ) ) {
+
+					return;
+				}
 			}
 
 			wp_enqueue_script( 'wp-smushit-admin-js' );
@@ -284,25 +290,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
-			//If class method exists, load shared UI
-			if ( class_exists( 'WDEV_Plugin_Ui' ) ) {
-
-				if ( method_exists( 'WDEV_Plugin_Ui', 'load' ) ) {
-
-					//Load Shared UI
-					WDEV_Plugin_Ui::load( WP_SMUSH_URL . '/assets/shared-ui/', false );
-
-					if ( ( 'media_page_wp-smush-bulk' != $current_page && 'gallery_page_wp-smush-nextgen-bulk' != $current_page ) ) {
-
-						//Don't add thhe WPMUD class to body to other admin pages
-						remove_filter(
-							'admin_body_class',
-							array( 'WDEV_Plugin_Ui', 'admin_body_class' )
-						);
-
-					}
-				}
-			}
+			$this->load_shared_ui( $current_page );
 
 			//Enqueue Google Fonts for Tooltip On Media Pages, These are loaded by shared UI, but we
 			// aren't loading shared UI on media library pages
@@ -321,10 +309,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Localize Translations
 		 */
 		function localize() {
-			global $pagenow;
-			if ( ! isset( $pagenow ) || ! in_array( $pagenow, array( "post.php", "upload.php", "post-new.php" ) ) ) {
-				return;
-			}
 
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
@@ -936,15 +920,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function smush_upgrade() {
 
-			global $pagenow;
-			$current_screen = get_current_screen();
-			$current_page   = $current_screen->base;
-
-			//Do not enqueue, unless it is one of the required screen
-			if ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'upload.php' ) {
-				return;
-			}
-
 			//Return, If a pro user, or not super admin, or don't have the admin privilleges
 			if ( ! $this->is_pro() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
 				return;
@@ -953,10 +928,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//No need to show it on bulk smush
 			if ( isset( $_GET['page'] ) && 'wp-smush-bulk' == $_GET['page'] ) {
 				return;
-			}
-
-			if ( isset( $_GET['dismiss_smush_welcome'] ) ) {
-				update_option( 'dismiss_smush_welcome', 1 );
 			}
 
 			//Return if notice is already dismissed
@@ -1727,6 +1698,32 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smushed_attachments = $this->get_smushed_attachments();
 			foreach ( $smushed_attachments  as $attachment ) {
 				$this->restore_image( $attachment->attachment_id, false );
+			}
+		}
+
+		/**
+		 * Loads the Shared UI to on all admin pages
+		 * @param $current_page
+		 */
+		function load_shared_ui( $current_page ) {
+			//If class method exists, load shared UI
+			if ( class_exists( 'WDEV_Plugin_Ui' ) ) {
+
+				if ( method_exists( 'WDEV_Plugin_Ui', 'load' ) ) {
+
+					//Load Shared UI
+					WDEV_Plugin_Ui::load( WP_SMUSH_URL . '/assets/shared-ui/', false );
+
+					if ( ( 'media_page_wp-smush-bulk' != $current_page && 'gallery_page_wp-smush-nextgen-bulk' != $current_page ) ) {
+
+						//Don't add thhe WPMUD class to body to other admin pages
+						remove_filter(
+							'admin_body_class',
+							array( 'WDEV_Plugin_Ui', 'admin_body_class' )
+						);
+
+					}
+				}
 			}
 		}
 
