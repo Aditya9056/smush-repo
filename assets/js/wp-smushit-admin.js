@@ -277,7 +277,12 @@ jQuery(function ($) {
                         //Hide Everything else
                         $('.wp-smush-resmush-wrap, .wp-smush-bulk-progress-bar-wrapper').hide();
                     }
+                }
 
+                //handle progress for normal bulk smush
+                //Set Progress Bar width
+                if ('undefined' !== typeof self.ids && 'undefined' !== typeof wp_smushit_data.count_total && wp_smushit_data.count_total > 0) {
+                    progress = ( ( wp_smushit_data.count_total - self.ids.length ) / wp_smushit_data.count_total ) * 100;
                 }
             }
 
@@ -313,7 +318,7 @@ jQuery(function ($) {
 
         this._update_progress = function (count, width) {
             "use strict";
-            if (!this.is_bulk) {
+            if ( !this.is_bulk && !this.is_bulk_resmush ) {
                 return;
             }
             //Update the Progress Bar Width
