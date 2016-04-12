@@ -646,7 +646,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="wp-smush-install-welcome<?php echo 'new' == $install_type ? ' wp-smush-fresh' : ' wp-smush-existing'; ?>">
 					<p class="wp-smush-install-heading roboto-medium"><?php echo $notice_heading; ?></p>
 					<p class="wp-smush-install-content roboto-regular"><?php echo $notice_content; ?></p>
-					<button class="button button-green button-cta"><?php echo $button_content; ?></button>
+					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>" class="button button-green button-cta" target="_blank"><?php echo $button_content; ?></a>
 				</div>
 			</div>
 			</div><?php
