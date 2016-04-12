@@ -1041,7 +1041,7 @@ small.smush-setting-description {
 
 /** For Media Gallery and Other WordPress pages **/
 /** No Caps for the tooltips **/
-.wp-admin .wpmud [tooltip]:after {
+.wp-admin.wpmud [tooltip]:after {
     text-transform: none !important;
 }
 .smushit [tooltip] {
