@@ -1687,8 +1687,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( empty( $stats ) || empty( $existing_stats ) ) {
 				return 0;
 			}
-			$size_before = ! empty( $existing_stats->size_before ) ? $existing_stats->size_before : $stats->size_before;
-			$savings     = $size_before - $stats->size_after;
+			$size_before = ! empty( $stats->size_before ) ? $stats->size_before : $existing_stats->size_before;
+			$size_after = ! empty( $stats->size_after ) ? $stats->size_after : $existing_stats->size_after;
+			$savings     = $size_before - $size_after;
 			if ( $savings > 0 ) {
 				$percentage = ( $savings / $size_before ) * 100;
 				$percentage = $percentage > 0 ? round( $percentage, 2 ) : $percentage;
