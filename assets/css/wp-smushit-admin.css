@@ -510,6 +510,9 @@ table.wp-smush-stats-holder tr td:first-child {
     background-position: 30px bottom;
     padding-bottom: 0;
 }
+.wpmud .wp-smush-welcome.wp-smush-container .box-content {
+    min-height: 149px;
+}
 
 .wpmud .dev-box .box-title h3 {
     display: inline-block;
