@@ -811,6 +811,7 @@ table.wp-smush-stats-holder tr td:first-child {
 
 /** Settings Styling **/
 .wpmud .wp-smush-setting-row label.inline-label {
+    color: #555555;
     font-size: 15px;
     font-family: "Roboto", sans-serif;
     width: 85%;

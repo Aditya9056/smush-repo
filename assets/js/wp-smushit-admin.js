@@ -844,32 +844,21 @@ jQuery(function ($) {
     });
 
     //Enable Super Smush
-    $('.wp-smush-lossy-enable').on('click', function(e){
+    $('.wp-smush-lossy-enable').on('click', function (e) {
         e.preventDefault();
 
-        //Slide to Save settings button
-        $('html,body').animate({
-                scrollTop: $("#wp-smush-save-settings").offset().top
-            },
-            1500, function () {
-                //Enable Super Smush
-                $('#wp-smush-lossy').prop('checked', true);
-                //Induce Setting button save click
-                $('#wp-smush-save-settings').click();
-            });
+        //Enable Super Smush
+        $('#wp-smush-lossy').prop('checked', true);
+        //Induce Setting button save click
+        $('#wp-smush-save-settings').click();
     });
 
     //Trigger Bulk
-    $('body').on('click', '.wp-smush-trigger-bulk', function(e){
+    $('body').on('click', '.wp-smush-trigger-bulk', function (e) {
         e.preventDefault();
-        //Slide to Save settings button
-        $('html,body').animate({
-                scrollTop: $("#wp-smush-bulk-wrap-box").offset().top
-            },
-            1500, function () {
-                //Induce Setting button save click
-                $('button.wp-smush-all').click();
-            });
+        //Induce Setting button save click
+        $('button.wp-smush-all').click();
+
     });
 
     //Dismiss Install/Upgrade notice
