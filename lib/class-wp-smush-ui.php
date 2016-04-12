@@ -74,7 +74,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="box-content">
 			<div class="row">
 				<div class="wp-smush-welcome-image">
-					<img src="<?php echo WP_SMUSH_URL . 'assets/images/welcome-image.png'; ?>"
+					<img src="<?php echo WP_SMUSH_URL . 'assets/images/welcome-notice.png'; ?>"
 					     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>">
 				</div>
 				<div class="wp-smush-welcome-content">
@@ -671,7 +671,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			} ?>
 			<div class="wp-smush-super-smush-promo">
 				<div class="wp-smush-image-wrap">
-					<img src="<?php echo WP_SMUSH_URL . 'assets/images/welcome-image.png'; ?>"
+					<img src="<?php echo WP_SMUSH_URL . 'assets/images/welcome-notice.png'; ?>"
 					     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>">
 				</div>
 				<span class="left-arrow"></span>
