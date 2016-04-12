@@ -18,9 +18,11 @@ After you're done with the final changes and ready to release, push the code to 
 
 Push the code to pro branch. 
 
-After proper testing, follow the release process and release the pro plugin with same versioning as on .org
+After proper testing, follow the release process and release the pro plugin with same versioning as on .org.
+## Directory Naming ##
+**The pro version uses the wp-smush-pro directory name, it's important that is what is in the zip file!**
 
-For .org release, sync the code to your .org svn repo in local, and follow the release process for .org version
+For .org release, sync the code to your .org svn repo in local, and follow the release process for .org version. The .org version uses the wp-smushit directory slug that we can't change.
 
 Don't forget to create a tag for the release and push it on bitbucket.
 
