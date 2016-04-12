@@ -154,7 +154,6 @@ if ( is_admin() ) {
 			'id'      => 912164,
 			'name'    => 'WP Smush Pro',
 			'screens' => array(
-				'media_page_wp-smush-bulk',
 				'upload'
 			)
 		);
