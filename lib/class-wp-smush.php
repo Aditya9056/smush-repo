@@ -448,9 +448,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 
 			}
-			echo "<pre>Complete stats";
-			print_r( $stats );
-			echo "</pre>";
 
 			$has_errors = (bool) count( $errors->get_error_messages() );
 
@@ -509,9 +506,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					 */
 					do_action('wp_smush_image_optimised', $ID, $stats );
 				}
-				echo "<pre>Merged stats";
-				print_r( $stats );
-				echo "</pre>";
 				update_post_meta( $ID, $this->smushed_meta_key, $stats );
 			}
 
