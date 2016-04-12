@@ -73,10 +73,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<!-- Content -->
 			<div class="box-content">
 			<div class="row">
-				<div class="wp-smush-welcome-image">
-					<img src="<?php echo WP_SMUSH_URL . 'assets/images/welcome-notice.png'; ?>"
-					     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>">
-				</div>
 				<div class="wp-smush-welcome-content">
 					<h4 class="roboto-condensed-regular"><?php esc_html_e( "OH YEAH, IT'S COMPRESSION TIME!", "wp-smushit" ); ?></h4>
 					<p class="wp-smush-welcome-message roboto-medium"><?php printf( esc_html__( 'You\'ve just installed %3$s, the most popular image compression plugin for WordPress! %1$sChoose your desired settings%2$s and get smushing!', "wp-smushit" ), '<strong>', '</strong>', $plugin_name ); ?></p>
@@ -670,11 +666,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				return;
 			} ?>
 			<div class="wp-smush-super-smush-promo">
-				<div class="wp-smush-image-wrap">
-					<img src="<?php echo WP_SMUSH_URL . 'assets/images/welcome-notice.png'; ?>"
-					     alt="<?php esc_html_e( "Welcome Screen - Smush", "wp-smushit" ); ?>">
-				</div>
-				<span class="left-arrow"></span>
 				<div class="wp-smush-super-smush-content"><?php
 					printf( esc_html__("Did you know WP Smush Pro delivers up to 10x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s", "wp-smushit"), '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ). '" target="_blank">', '</a>' ); ?>
 				</div>

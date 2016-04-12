@@ -121,6 +121,16 @@ jQuery(function ($) {
             //Show the Progress Bar
             $('.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper').show();
 
+            //Set Progress Bar width
+            if( 'undefined' !== typeof this.ids && 'undefined' !== typeof wp_smushit_data.count_total && wp_smushit_data.count_total > 0 ) {
+                var progress = ( ( wp_smushit_data.count_total - this.ids.length ) / wp_smushit_data.count_total ) * 100;
+                var progress_bar = jQuery('.bulk-smush-wrapper .wp-smush-progress-inner');
+                if ( progress_bar.length < 1) {
+                    return;
+                }
+                // increase progress
+                progress_bar.css('width', progress + '%');
+            }
         };
 
         this.single_start = function () {

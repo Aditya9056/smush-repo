@@ -50,11 +50,6 @@ Smush button transformation
     margin: 50px 20px 0 2px;
 }
 
-.wp-smush-install-image, .wp-smush-image-wrap {
-    display: inline-block;
-    float: left;
-}
-
 .wp-smush-install-image > img, .wp-smush-image-wrap > img {
     float: left;
 }
@@ -505,6 +500,9 @@ table.wp-smush-stats-holder tr td:first-child {
 }
 
 .wpmud .wp-smush-welcome.wp-smush-container {
+    background-image: url(../images/welcome-notice.png);
+    background-repeat: no-repeat;
+    background-position: 30px bottom;
     padding-bottom: 0;
 }
 
@@ -562,7 +560,7 @@ table.wp-smush-stats-holder tr td:first-child {
     display: inline-block;
     overflow: hidden;
     max-width: 68%;
-    margin: 0 30px 0px 60px;
+    margin: 0 30px 0px 200px;
 }
 
 .wpmud .wp-smush-welcome-content .wp-smush-premium {
@@ -1023,6 +1021,17 @@ small.smush-setting-description {
         padding: 0;
         width: 100%;
     }
+    .wpmud .wp-smush-welcome-content {
+        margin: 0 30px 0px 160px;
+    }
+    .dev-box.bulk-smush-wrapper.wp-smush-container {
+        padding: 20px 10px;
+    }
+    .wpmud .wp-smush-super-smush-content {
+        font-size: 11px;
+        margin-left: 160px;
+        padding: 15px 20px;
+    }
 }
 
 /** For Media Gallery and Other WordPress pages **/
@@ -1128,6 +1137,10 @@ small.smush-setting-description {
 /** Super Smush Content **/
 
 .wp-smush-super-smush-promo {
+    background-image: url(../images/welcome-notice.png);
+    background-repeat: no-repeat;
+    background-position: 0 bottom;
+    height: 180px;
     margin-top: 8px;
     overflow: hidden;
 }
@@ -1136,7 +1149,7 @@ small.smush-setting-description {
     background: #dff6fa;
     border-radius: 5px;
     display: inline-block;
-    margin-left: 20px;
+    margin-left: 200px;
     margin-top: 10px;
     padding: 20px 30px;
     position: relative;
