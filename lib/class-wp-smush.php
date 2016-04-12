@@ -448,6 +448,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 
 			}
+			echo "<pre>Complete stats";
+			print_r( $stats );
+			echo "</pre>";
 
 			$has_errors = (bool) count( $errors->get_error_messages() );
 
@@ -461,8 +464,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				if ( ! empty( $existing_stats ) ) {
 					$e_size_before = isset( $existing_stats['stats']['size_before'] ) ? $existing_stats['stats']['size_before'] : '';
+					$e_size_after = isset( $existing_stats['stats']['size_after'] ) ? $existing_stats['stats']['size_after'] : '';
 					//Store Original size before
 					$stats['stats']['size_before'] = ! empty( $e_size_before ) && $e_size_before > $stats['stats']['size_before'] ? $e_size_before : $stats['stats']['size_before'];
+
+					if ( $size_after == 0 || empty( $stats['stats']['size_after'] ) || $stats['stats']['size_after'] == $stats['stats']['size_before'] ) {
+						$stats['stats']['size_after'] = $e_size_after < $stats['stats']['size_before'] ? $e_size_after : $stats['stats']['size_before'];
+					}
 
 					//Update total bytes saved, and compression percent
 					$stats['stats']['bytes']   = isset( $existing_stats['stats']['bytes'] ) ? $existing_stats['stats']['bytes'] + $stats['stats']['bytes'] : $stats['stats']['bytes'];
@@ -501,6 +509,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					 */
 					do_action('wp_smush_image_optimised', $ID, $stats );
 				}
+				echo "<pre>Merged stats";
+				print_r( $stats );
+				echo "</pre>";
 				update_post_meta( $ID, $this->smushed_meta_key, $stats );
 			}
 
@@ -858,8 +869,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$percent        = $percent < 0 ? 0 : $percent;
 
 				if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
-					$status_txt  = __( 'Error processing request', 'wp-smushit' );
-					$show_button = true;
+					$status_txt  = __( 'Already Optimized', 'wp-smushit' );
+					$show_button = false;
 				} else {
 					if ( $bytes == 0 || $percent == 0 ) {
 						$status_txt   = __( 'Already Optimized', 'wp-smushit' );
@@ -1083,7 +1094,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//If image is already optimised, do not add in stats
 			if( $response_data->before_size == $response_data->after_size ) {
+
 				$compression = ( $bytes_saved > 0 && $size_before > 0 ) ? ( ( $bytes_saved / $size_before ) * 100 ) : 0;
+
 				return array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
 			}
 

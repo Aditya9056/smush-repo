@@ -192,8 +192,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$percent        = $percent < 0 ? 0 : $percent;
 
 			if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
-				$status_txt  = __( 'Error processing request', 'wp-smushit' );
-				$show_button = true;
+				$status_txt  = __( 'Already Optimized', 'wp-smushit' );
 			} else {
 				if ( $bytes == 0 || $percent == 0 ) {
 					$status_txt = __( 'Already Optimized', 'wp-smushit' );

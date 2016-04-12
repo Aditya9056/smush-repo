@@ -935,12 +935,25 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			} ?>
 			<div class="wpmud wp-smush-updated"><?php
-				//Whether New/Existing Installation
-				$box_heading = $this->smushed_count > 0 ? esc_html__( "THANKS FOR UPGRADING SMUSH!", "wp-smushit" ) : esc_html__( "HAPPY SMUSHING!", "wp-smushit" );
-				//Container Header
-				echo $this->bulk_ui->container_header( 'wp-smush-install-thanks-box', 'wp-smush-install-thanks', $box_heading, '', true );
-				echo $this->bulk_ui->installation_notice();
-				?>
+
+			$install_type = get_option( 'wp-smush-install-type', false );
+
+			if ( ! $install_type ) {
+				if ( $this->smushed_count > 0 ) {
+					$install_type = 'existing';
+				} else {
+					$install_type = 'new';
+				}
+				update_option( 'wp-smush-install-type', $install_type );
+			}
+
+			//Whether New/Existing Installation
+			$box_heading = 'existing' == $install_type ? esc_html__( "THANKS FOR UPDATING SMUSH!", "wp-smushit" ) : esc_html__( "HAPPY SMUSHING!", "wp-smushit" );
+
+			//Container Header
+			echo $this->bulk_ui->container_header( 'wp-smush-install-thanks-box', 'wp-smush-install-thanks', $box_heading, '', true );
+			echo $this->bulk_ui->installation_notice();
+			?>
 			</div><?php
 		}
 

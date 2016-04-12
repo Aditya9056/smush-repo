@@ -623,9 +623,16 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function installation_notice() {
 			global $wpsmushit_admin;
+
 			//Whether New/Existing Installation
-			$new = $wpsmushit_admin->smushed_count > 0 ? false : true;
-			if ( $new ) {
+			$install_type = get_option('wp-smush-install-type', false );
+
+			if( !$install_type ) {
+				$install_type = $wpsmushit_admin->smushed_count > 0 ? 'existing' : 'new';
+				update_option( 'wp-smush-install-type', $install_type );
+			}
+
+			if ( 'new' == $install_type  ) {
 				$notice_heading = esc_html__( "Thanks for installing Smush. We hope you like it!", "wp-smushit" );
 				$notice_content = esc_html__( "And hey, if you do, you can now try out Smush Pro for double the smushy goodness (benchmarked), entirely for free!", "wp-smushit" );
 				$button_content = esc_html__( "FIND OUT MORE", "wp-smushit" );
@@ -636,7 +643,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			} ?>
 			<div class="box-content">
 			<div class="row">
-				<div class="wp-smush-install-welcome<?php echo $new ? ' wp-smush-fresh' : ' wp-smush-existing'; ?>">
+				<div class="wp-smush-install-welcome<?php echo 'new' == $install_type ? ' wp-smush-fresh' : ' wp-smush-existing'; ?>">
 					<p class="wp-smush-install-heading roboto-medium"><?php echo $notice_heading; ?></p>
 					<p class="wp-smush-install-content roboto-regular"><?php echo $notice_content; ?></p>
 					<button class="button button-green button-cta"><?php echo $button_content; ?></button>
