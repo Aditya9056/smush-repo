@@ -1080,6 +1080,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return array('size_before', 'size_after', 'total_time', 'compression', 'bytes_saved' )
 		 */
 		function _update_stats_data( $response_data, $size_before, $size_after, $total_time, $bytes_saved ) {
+
+			//If image is already optimised, do not add in stats
+			if( $response_data->before_size == $response_data->after_size ) {
+				$compression = ( $bytes_saved > 0 && $size_before > 0 ) ? ( ( $bytes_saved / $size_before ) * 100 ) : 0;
+				return array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
+			}
+
 			$size_before += ! empty( $response_data->before_size ) ? (int) $response_data->before_size : 0;
 			$size_after += ( ! empty( $response_data->after_size ) && $response_data->after_size > 0 ) ? (int) $response_data->after_size : (int) $response_data->before_size;
 			$total_time += ! empty( $response_data->time ) ? (float) $response_data->time : 0;
