@@ -131,6 +131,8 @@ jQuery(function ($) {
                 // increase progress
                 progress_bar.css('width', progress + '%');
             }
+            //Remove any Global Notices if there
+            $('.wp-smush-notice.wp-smush-resmush-message').remove();
         };
 
         this.single_start = function () {
