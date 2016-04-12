@@ -56,8 +56,7 @@ Smush button transformation
 
 .wpmud .wp-smush-install-welcome {
     display: inline-block;
-    margin-top: 10px;
-    margin-left: 38px;
+    margin: 10px 0 30px 250px;
     max-width: 68%;
 }
 
@@ -72,6 +71,12 @@ Smush button transformation
 .wpmud .dev-box.wp-smush-install-thanks-box {
     margin-bottom: 20px;
     padding-bottom: 0;
+}
+#wp-smush-install-thanks .row {
+    background-image: url(../images/install-welcome.png);
+    background-repeat: no-repeat;
+    background-position: 30px bottom;
+    min-height: 206px;
 }
 
 /** Settings Page **/

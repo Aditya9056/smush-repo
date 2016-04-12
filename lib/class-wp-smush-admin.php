@@ -936,7 +936,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			} ?>
 			<div class="wpmud wp-smush-updated"><?php
 				//Whether New/Existing Installation
-				$box_heading = $this->smushed_count >= 0 ? esc_html__( "THANKS FOR UPGRADING SMUSH!", "wp-smushit" ) : esc_html__( "HAPPY SMUSHING!", "wp-smushit" );
+				$box_heading = $this->smushed_count > 0 ? esc_html__( "THANKS FOR UPGRADING SMUSH!", "wp-smushit" ) : esc_html__( "HAPPY SMUSHING!", "wp-smushit" );
 				//Container Header
 				echo $this->bulk_ui->container_header( 'wp-smush-install-thanks-box', 'wp-smush-install-thanks', $box_heading, '', true );
 				echo $this->bulk_ui->installation_notice();
