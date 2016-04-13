@@ -88,6 +88,9 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.2.2 =
+
+
 = 2.2.1 =
 * New: Option to resmush image if settings are changed after optimising images
 * New: Added an option to preserve EXIF

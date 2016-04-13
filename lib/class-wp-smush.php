@@ -83,9 +83,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Enqueue Scripts
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 
-			//Old Smush stats migration
-			add_action( "admin_init", array( $this, "migrate" ) );
-
 			//Load Translation files
 			add_action( 'plugins_loaded', array( $this, 'i18n' ), 12 );
 
@@ -120,6 +117,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		function admin_init() {
 			wp_enqueue_script( 'common' );
+
+			//Handle Notice dismiss
+			$this->dismiss_smush_upgrade();
+
+			//Perform Migration if required
+			$this->migrate();
+
 			//Initialize variables
 			$this->initialise();
 		}
@@ -1776,6 +1780,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$image_bckup_path = $this->get_image_backup_path( $image_size_path );
 					@unlink( $image_bckup_path );
 				}
+			}
+		}
+
+		/**
+		 * Manually Dismiss Smush Upgrade notice
+		 */
+		function dismiss_smush_upgrade() {
+			if ( isset( $_GET['remove_smush_upgrade_notice'] ) && 1 == $_GET['remove_smush_upgrade_notice'] ) {
+				global $wpsmushit_admin;
+				$wpsmushit_admin->dismiss_upgrade_notice( false );
 			}
 		}
 	}

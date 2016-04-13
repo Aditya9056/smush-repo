@@ -1087,9 +1087,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Store a key/value to hide the smush features on bulk page
 		 */
-		function dismiss_upgrade_notice() {
+		function dismiss_upgrade_notice( $ajax = true ) {
 			update_option( 'wp-smush-hide_upgrade_notice', 1 );
-			wp_send_json_success();
+			//No Need to send json response for other requests
+			if ( $ajax ) {
+				wp_send_json_success();
+			}
 		}
 
 		/**
