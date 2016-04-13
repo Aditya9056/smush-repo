@@ -22,7 +22,7 @@ After proper testing, follow the release process and release the pro plugin with
 ## Directory Naming ##
 **The pro version uses the wp-smush-pro directory name, it's important that is what is in the zip file!**
 
-For .org release, sync the code to your .org svn repo in local, and follow the release process for .org version. The .org version uses the wp-smushit directory slug that we can't change.
+For .org release, first update the local svn repo from .org, as their might be changes in readme.txt file, Copy that to your git repo. Sync the code to your .org svn repo in local, and follow the release process for .org version. The .org version uses the wp-smushit directory slug that we can't change.
 
 Don't forget to create a tag for the release and push it on bitbucket.
 

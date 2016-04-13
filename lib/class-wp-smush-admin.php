@@ -53,6 +53,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * @var Smushed attachments out of total attachments
 		 */
+		public $remaining_count;
+
+		/**
+		 * @var Smushed attachments out of total attachments
+		 */
 		public $super_smushed;
 
 		/**
@@ -79,11 +84,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @var int Number of attachments exceeding free limit
 		 */
 		public $exceeding_items_count = 0;
-
-		/**
-		 * @var If the plugin is a pro version or not
-		 */
-		private $is_pro_user;
 
 		private $attachments = '';
 
@@ -145,6 +145,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'admin_init', array( $this, 'init_settings' ) );
 
 			$this->bulk_ui = new WpSmushBulkUi();
+
+			//Setup all the stats
+			$this->setup_global_stats();
+
 		}
 
 		function init_settings() {
@@ -313,9 +317,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
-			//Setup all the stats
-			$this->setup_global_stats();
-
 			$wp_smush_msgs = array(
 				'resmush'       => esc_html__( 'Super-Smush', 'wp-smushit' ),
 				'smush_now'     => esc_html__( 'Smush Now', 'wp-smushit' ),
@@ -354,7 +355,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function setup_global_stats( $force_update = false ) {
 			$this->total_count     = $this->total_count();
-			$this->smushed_count   = $this->smushed_count();
+			$this->smushed_count   = $this->smushed_count( false );
 			$this->remaining_count = $this->remaining_count();
 			$this->stats           = $this->global_stats( $force_update );
 		}
@@ -655,10 +656,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return array|int
 		 */
-		function smushed_count( $return_ids = false ) {
+		function smushed_count( $return_ids ) {
 
 			//Don't query again, if the variable is already set
-			if ( ! empty( $this->smushed_count ) && $this->smushed_count > 0 ) {
+			if ( ! $return_ids && ! empty( $this->smushed_count ) && $this->smushed_count > 0 ) {
 				return $this->smushed_count;
 			}
 
@@ -1266,7 +1267,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$key = 'nextgen' == $type ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
 
-			if ( ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
+			if ( $this->remaining_count == 0 && ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
 				delete_option( $key );
 				wp_send_json_success( array( 'notice' => $resp ) );
 			}
@@ -1343,23 +1344,27 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				//Store the resmush list in Options table
 				update_option( $key, $resmush_list );
+			}
 
-				//Return the Remsmush list and UI to be appended to Bulk Smush UI
-				if ( $return_ui ) {
-					if ( 'nextgen' != $type ) {
-						//Set the variables
-						$this->resmush_ids = $resmush_list;
-					} else {
-						//To avoid the php warning
-						$wpsmushnextgenadmin->resmush_ids = $resmush_list;
-					}
+			//Delete resmush list if empty
+			if ( empty( $resmush_list ) ) {
+				//Delete the resmush list
+				delete_option( $key );
+			}
 
-					//Initialize stats
-					if ( empty( $this->remaining_count ) ) {
-						$this->setup_global_stats();
-					}
+			//Return the Remsmush list and UI to be appended to Bulk Smush UI
+			if ( $return_ui ) {
+				if ( 'nextgen' != $type ) {
+					//Set the variables
+					$this->resmush_ids = $resmush_list;
+				} else {
+					//To avoid the php warning
+					$wpsmushnextgenadmin->resmush_ids = $resmush_list;
+				}
 
-					if ( ( $count = count( $resmush_list ) ) > 0 || $this->remaining_count > 0 ) {
+				if ( ( $count = count( $resmush_list ) ) > 0 || $this->remaining_count > 0 ) {
+
+					if ( $count ) {
 						$show = true;
 
 						if ( empty( $wpsmushnextgenadmin->remaining_count ) && 'nextgen' == $type ) {
@@ -1368,16 +1373,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
 
 						$ajax_response = $this->bulk_ui->bulk_resmush_content( $count, $show );
-						$message = sprintf( esc_html__("You have images that need smushing. %sBulk smush now!%s", "wp-smushit"), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
-						$resp = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
-							<i class="dev-icon dev-icon-cross"></i>
-						</div>';
-					} else {
-						//Delete the resmush list
-						delete_option( $key );
 					}
 				}
 			}
+
+			$message       = sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
+			$resp          = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
+							<i class="dev-icon dev-icon-cross"></i>
+						</div>';
 
 			//If there is a Ajax response return it, else return null
 			$return           = ! empty( $ajax_response ) ? array(

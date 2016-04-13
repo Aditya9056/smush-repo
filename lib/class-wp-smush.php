@@ -596,6 +596,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				'user-agent' => WP_SMUSH_UA,
 			);
 			$result  = wp_remote_post( $api_url, $args );
+			echo "<pre>";
+			print_r( $result );
+			echo "</pre>";
 
 			//Close file connection
 			fclose( $file );
@@ -1722,7 +1725,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//If images are already smushed
-			if( $wpsmushit_admin->smushed_count() > 0 ) {
+			if( $wpsmushit_admin->smushed_count( false ) > 0 ) {
 				return false;
 			}
 
