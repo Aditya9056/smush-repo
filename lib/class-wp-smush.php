@@ -15,7 +15,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Api server url to check api key validity
 		 *
 		 */
-		var $api_server = 'https://premium.wpmudev.org/wdp-un.php?action=smushit_check';
+		var $api_server = 'https://premium.wpmudev.org/api/smush/v1/check/';
 
 		/**
 		 * Meta key to save smush result to db
@@ -595,7 +595,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				'timeout'    => WP_SMUSH_TIMEOUT,
 				'user-agent' => WP_SMUSH_UA,
 			);
-			$result  = wp_remote_post( $api_url, $args );
+			$result  = wp_remote_get( $api_url, $args );
 
 			//Close file connection
 			fclose( $file );
@@ -768,7 +768,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				update_site_option( 'wp_smush_api_auth', $api_auth );
 
 				// call api
-				$url = $this->api_server . '&key=' . urlencode( $api_key );
+				$url = $this->api_server . $api_key;
 
 				$request = wp_remote_get( $url, array(
 						"user-agent" => WP_SMUSH_UA,
@@ -778,7 +778,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				if ( ! is_wp_error( $request ) && '200' == wp_remote_retrieve_response_code( $request ) ) {
 					$result = json_decode( wp_remote_retrieve_body( $request ) );
-					if ( $result && $result->success ) {
+					if ( !empty( $result->success ) && $result->success ) {
 						$valid = 'valid';
 					} else {
 						$valid = 'invalid';
@@ -796,7 +796,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$api_auth[ $api_key ] = array( 'validity' => $valid, 'timestamp' => $timestamp );
 
 				//Update API validity
-				update_site_option( 'wp_smush_api_auth', $api_auth );
+//				update_site_option( 'wp_smush_api_auth', $api_auth );
 
 			}
 
