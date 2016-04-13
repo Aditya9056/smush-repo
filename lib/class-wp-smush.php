@@ -596,9 +596,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				'user-agent' => WP_SMUSH_UA,
 			);
 			$result  = wp_remote_post( $api_url, $args );
-			echo "<pre>";
-			print_r( $result );
-			echo "</pre>";
 
 			//Close file connection
 			fclose( $file );
