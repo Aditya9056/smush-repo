@@ -116,7 +116,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		function admin_init() {
-			wp_enqueue_script( 'common' );
 
 			//Handle Notice dismiss
 			$this->dismiss_smush_upgrade();

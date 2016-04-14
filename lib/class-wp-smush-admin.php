@@ -252,16 +252,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'underscore'
 				), WP_SMUSH_VERSION );
 			}
-			wp_register_script( 'wp-smushit-admin-media-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin-media.js', array( 'jquery' ), $WpSmush->version );
-
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
-			//Get resmush list
-			//If we have a resmush list already, localize those ids
+
+			//Get resmush list, If we have a resmush list already, localize those ids
 			if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
+
 				//get the attachments, and get lossless count
 				$this->resmush_ids = $resmush_ids;
+
 			}
 		}
 
