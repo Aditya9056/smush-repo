@@ -91,7 +91,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 = 2.2.2 =
 
 - Fixed: Conflict with CoursePress plugin, JS error causing issue on some installs ( Clear All Caches after plugin upgrade, Cloudflare as well )
-- Fixed: ReSmush count
+- Fixed: ReSmush count for bulk smushing
 
 = 2.2.1 =
 * New: Option to resmush image if settings are changed after optimising images
