@@ -233,25 +233,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $WpSmush;
 
-			// Register js for smush utton in grid view
-			$current_blog_id       = get_current_blog_id();
-			$meta_key              = $current_blog_id == 1 ? 'wp_media_library_mode' : 'wp_' . $current_blog_id . '_media_library_mode';
-			$wp_media_library_mode = get_user_meta( get_current_user_id(), $meta_key, true );
-
-			//Either request variable is not empty and grid mode is set, or if request empty then view is as per user choice, or no view is set
-			if ( ( ! empty( $_REQUEST['mode'] ) && $_REQUEST['mode'] == 'grid' ) ||
-			     ( empty( $_REQUEST['mode'] ) && $wp_media_library_mode != 'list' )
-			) {
-				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
-					'jquery',
-					'media-views'
-				), WP_SMUSH_VERSION );
-			} else {
-				wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
-					'jquery',
-					'underscore'
-				), WP_SMUSH_VERSION );
-			}
+			wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
+				'jquery'
+			), WP_SMUSH_VERSION );
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
