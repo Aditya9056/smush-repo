@@ -1364,10 +1364,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 
-			$message       = sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
-			$resp          = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
+			if( !empty( $resmush_list ) || $this->remaining_count > 0 ) {
+				$message = sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
+				$resp    = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
 							<i class="dev-icon dev-icon-cross"></i>
 						</div>';
+			}
 
 			//If there is a Ajax response return it, else return null
 			$return           = ! empty( $ajax_response ) ? array(
