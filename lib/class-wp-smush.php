@@ -1388,8 +1388,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			global $wpsmushnextgen, $wpsmushnextgenadmin, $wpsmushnextgenstats;
 			//Initialize Nextgen support
 			$wpsmushnextgen      = new WpSmushNextGen();
-			$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 			$wpsmushnextgenstats = new WpSmushNextGenStats();
+			$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 			new WPSmushNextGenBulk();
 		}
 

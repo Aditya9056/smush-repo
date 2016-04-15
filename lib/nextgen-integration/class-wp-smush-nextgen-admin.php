@@ -50,6 +50,9 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			$this->bulk_ui = new WpSmushBulkUi();
 
+			//Initialize Stats
+			$this->setup_stats();
+
 		}
 
 		/**
@@ -150,8 +153,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function localize() {
 			global $wpsmushnextgenstats;
-
-			$this->setup_stats();
 
 			$handle = 'wp-smushit-admin-js';
 

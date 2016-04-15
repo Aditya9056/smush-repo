@@ -1254,7 +1254,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$key = 'nextgen' == $type ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
 
-			if ( $this->remaining_count == 0 && ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
+			$remaining_count = 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
+
+			if ( 0 == $remaining_count && ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
 				delete_option( $key );
 				wp_send_json_success( array( 'notice' => $resp ) );
 			}
@@ -1354,9 +1356,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					if ( $count ) {
 						$show = true;
 
-						if ( empty( $wpsmushnextgenadmin->remaining_count ) && 'nextgen' == $type ) {
-							$wpsmushnextgenadmin->setup_stats();
-						}
 						$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
 
 						$ajax_response = $this->bulk_ui->bulk_resmush_content( $count, $show );
@@ -1364,7 +1363,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 
-			if( !empty( $resmush_list ) || $this->remaining_count > 0 ) {
+			if( !empty( $resmush_list ) || $remaining_count > 0 ) {
 				$message = sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 				$resp    = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
 							<i class="dev-icon dev-icon-cross"></i>
