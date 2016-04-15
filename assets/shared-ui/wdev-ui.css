@@ -161,9 +161,10 @@
 	display: inline-block;
 	margin: 0;
 }
-#wpfooter {
+.wpmud #wpfooter {
 	display: none;
 }
+
 .wpmud a {
 	text-decoration: none;
 	color: #19B4CF;

@@ -50,9 +50,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			$this->bulk_ui = new WpSmushBulkUi();
 
-			//Initialize Stats
-			$this->setup_stats();
-
 		}
 
 		/**
@@ -167,6 +164,10 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
+
+			//@todo: Select load the stats on required pages, to avoid potential slow down of admin area
+			//Initialize Stats
+			$this->setup_stats();
 
 			//Get the unsmushed ids, used for localized stats as well as normal localization
 			$unsmushed = $wpsmushnextgenstats->get_ngg_images( 'unsmushed' );

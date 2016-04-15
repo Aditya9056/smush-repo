@@ -146,9 +146,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$this->bulk_ui = new WpSmushBulkUi();
 
-			//Setup all the stats
-			$this->setup_global_stats();
-
 		}
 
 		function init_settings() {
@@ -314,6 +311,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
 			$this->attachments = $bulk->get_attachments();
+
+			//@todo: Select load the stats, so that we don't slow down the whole admin area
+
+			//Setup all the stats
+			$this->setup_global_stats();
 
 			//Localize smushit_ids variable, if there are fix number of ids
 			$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments;
