@@ -42,7 +42,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 			echo '<section class="dev-box ' . $classes . ' wp-smush-container" id="' . $id . '">'; ?>
 			<div class="wp-smush-container-header box-title">
-			<h3><?php echo $heading ?></h3><?php
+			<h3 tabindex="0"><?php echo $heading ?></h3><?php
 			//Sub Heading
 			if ( ! empty( $sub_heading ) ) { ?>
 				<div class="smush-container-subheading roboto-medium"><?php echo $sub_heading ?></div><?php
@@ -231,6 +231,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							</small>
 						</label>
 						<span class="toggle float-r" tabindex= "0">
+							<span class="screen-reader-text"><?php esc_html_e( "Use spacebar to Enable/Disable this setting", "wp-smushit" ); ?></span>
 							<input type="checkbox" class="toggle-checkbox"
 							       id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?>
 							       value="1"
@@ -281,6 +282,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						class="smush-setting-description"><?php echo $wpsmushit_admin->settings['auto']['desc']; ?></small>
 				</label>
 				<span class="toggle float-r" tabindex="0">
+					<span class="screen-reader-text"><?php esc_html_e( "Use spacebar to Enable/Disable this setting", "wp-smushit" ); ?></span>
 					<input type="checkbox" class="toggle-checkbox"
 					       id="<?php echo $opt_auto; ?>"
 					       name="<?php echo $opt_auto; ?>" <?php checked( $opt_auto_val, 1, true ); ?> value="1">
@@ -297,6 +299,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</small>
 				</label>
 				<span class="toggle float-r" tabindex= "0">
+					<span class="screen-reader-text"><?php esc_html_e( "Use spacebar to Enable/Disable this setting", "wp-smushit" ); ?></span>
 					<input type="checkbox" class="toggle-checkbox"
 					       id="<?php echo $opt_keep_exif; ?>" <?php checked( $opt_keep_exif_val, 1, true ); ?>
 					       value="1" name="<?php echo $opt_keep_exif; ?>">
