@@ -786,8 +786,26 @@ jQuery(function ($) {
         e.preventDefault();
 
         var self = $(this);
+
+        //Get all the main settings
+        var keep_exif = document.getElementById("wp-smush-keep_exif");
+        var super_smush = document.getElementById("wp-smush-lossy");
+        var smush_original = document.getElementById("wp-smush-original");
+
+        var update_button_txt = true;
+
+        //If Preserve Exif is Checked, and all other settings are off, just save the settings
+        if ( keep_exif.checked && !super_smush.checked && !smush_original.checked ) {
+            update_button_txt = false;
+        }
+
         //Update text
-        self.attr('disabled', 'disabled').addClass('button-grey').val( wp_smush_msgs.checking );
+        self.attr('disabled', 'disabled').addClass('button-grey');
+
+        if( update_button_txt ) {
+            self.val( wp_smush_msgs.checking )
+        }
+
         self.parent().find('.spinner').addClass('is-active');
 
         //Check if type is set in data attributes
