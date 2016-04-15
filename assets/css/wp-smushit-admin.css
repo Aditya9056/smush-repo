@@ -492,7 +492,7 @@ table.wp-smush-stats-holder tr td:first-child {
     float: right;
     font-size: 15px;
     line-height: 1.7;
-    margin: 1.4em auto;
+    margin: 1em auto;
 }
 
 .wp-smush-auto-disabled {
@@ -507,6 +507,7 @@ table.wp-smush-stats-holder tr td:first-child {
     overflow: hidden;
     padding: 10px 0 0;
     margin: 0 0 20px;
+    width: 100%;
 }
 
 .wpmud .wp-smush-welcome.wp-smush-container {

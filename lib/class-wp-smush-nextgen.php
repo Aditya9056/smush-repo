@@ -331,7 +331,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			$metadata = ! empty( $image ) ? $image->meta_data : '';
 
 			if ( empty( $metadata ) ) {
-				wp_send_json_error( array( 'error_msg' => esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", "wp-smushit" ) ) );
+				wp_send_json_error( array( 'error_msg' => '<p class="wp-smush-error-message">' . esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", "wp-smushit" ) . '</p>' ) );
 			}
 
 			//smush the main image and its sizes

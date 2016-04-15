@@ -526,14 +526,14 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			<hr>
 			<div class="row smush-attachments">
 			<span class="float-l wp-smush-stats-label">
-						<strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong>
-					</span>
-					<span class="float-r wp-smush-stats">
-						<strong>
-							<span
-								class="smushed-count"><?php echo $smushed_count . '</span>/' . $this->total_count; ?>
-						</strong>
-					</span>
+				<strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong>
+			</span>
+			<span class="float-r wp-smush-stats">
+				<strong>
+					<span
+						class="smushed-count"><?php echo $smushed_count . '</span>/' . $this->total_count; ?>
+				</strong>
+			</span>
 			</div><?php
 			//Nonce Field for Ajax requests
 			echo wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', false );

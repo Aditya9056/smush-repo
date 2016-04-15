@@ -486,7 +486,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$error = $smush->get_error_message();
 				//Check for timeout error and suggest to filter timeout
 				if ( strpos( $error, 'timed out' ) ) {
-					$error = esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" );
+					$error = '<p class="wp-smush-error-message">' . esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" ) . '</p>';
 				}
 				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $error ) );
 			} else {
@@ -548,7 +548,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( $return ) {
 					return array( 'error' => $smush->get_error_message() );
 				} else {
-					wp_send_json_error( array( 'error_msg' => $smush->get_error_message() ) );
+					wp_send_json_error( array( 'error_msg' => '<p class="wp-smush-error-message">' . $smush->get_error_message() . '</p>' ) );
 				}
 			} else {
 				if ( $return ) {

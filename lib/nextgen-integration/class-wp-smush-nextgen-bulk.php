@@ -40,7 +40,7 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 				$error = $smush->get_error_message();
 				//Check for timeout error and suggest to filter timeout
 				if( strpos( $error, 'timed out') ) {
-					$msg = esc_html__( "Smush request timed out, You can try setting a higher value ( > 60 ) for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" );
+					$msg = '<p class="wp-smush-error-message">' . esc_html__( "Smush request timed out, You can try setting a higher value ( > 60 ) for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" ) . '</p>';
 				}
 				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $msg ) );
 			} else {
