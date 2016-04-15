@@ -155,15 +155,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$wpsmushit_admin->super_smushed = $wpsmushit_admin->super_smushed_count(); ?>
 				<hr>
 				<div class="row super-smush-attachments">
-				<span
-					class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
-					<span class="float-r wp-smush-stats"><?php
-						if ( $WpSmush->lossy_enabled ) {
-							echo '<strong><span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count . '</strong>';
-						} else {
-							printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<span class="wp-smush-lossy-enable">', '</span>' );
-						} ?>
-					</span>
+				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
+				<span class="float-r wp-smush-stats<?php echo $WpSmush->lossy_enabled ? '' : ' wp-smush-lossy-disabled-wrap' ?>"><?php
+					if ( $WpSmush->lossy_enabled ) {
+						echo '<strong><span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count . '</strong>';
+					} else {
+						printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
+					} ?>
+				</span>
 				</div><?php
 			}
 			/**
@@ -217,14 +216,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if ( $WpSmush->is_pro() ) {
 				echo "<hr />";
 			}
-
 			//Iterate Over all the available settings, and print a row for each of them
 			foreach ( $pro_settings as $setting_key ) {
 				if ( isset( $wpsmushit_admin->settings[ $setting_key ] ) ) {
 					$setting_m_key = WP_SMUSH_PREFIX . $setting_key;
 					$setting_val   = $WpSmush->is_pro() ? get_option( $setting_m_key, false ) : 0; ?>
 					<div class='wp-smush-setting-row wp-smush-advanced'>
-						<label class="inline-label" for="<?php echo $setting_m_key; ?>">
+						<label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
 						<span
 							class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $setting_key ]['label']; ?></span>
 							<br/>
@@ -232,7 +230,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 								<?php echo $wpsmushit_admin->settings[ $setting_key ]['desc']; ?>
 							</small>
 						</label>
-						<span class="toggle float-r">
+						<span class="toggle float-r" tabindex= "0">
 							<input type="checkbox" class="toggle-checkbox"
 							       id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?>
 							       value="1"
@@ -274,30 +272,31 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$opt_keep_exif = WP_SMUSH_PREFIX . 'keep_exif';
 			//Keep Exif
 			$opt_keep_exif_val = get_option( $opt_keep_exif, false ); ?>
+			<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 			<div class='wp-smush-setting-row wp-smush-basic'>
-				<label class="inline-label" for="<?php echo $opt_auto; ?>">
+				<label class="inline-label" for="<?php echo $opt_auto; ?>" tabindex="0">
 					<span
 						class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['auto']['label']; ?></span><br/>
 					<small
 						class="smush-setting-description"><?php echo $wpsmushit_admin->settings['auto']['desc']; ?></small>
 				</label>
-					<span class="toggle float-r">
-						<input type="checkbox" class="toggle-checkbox"
-						       id="<?php echo $opt_auto; ?>"
-						       name="<?php echo $opt_auto; ?>" <?php checked( $opt_auto_val, 1, true ); ?> value="1">
-						<label class="toggle-label" for="<?php echo $opt_auto; ?>"></label>
-					</span>
+				<span class="toggle float-r" tabindex="0">
+					<input type="checkbox" class="toggle-checkbox"
+					       id="<?php echo $opt_auto; ?>"
+					       name="<?php echo $opt_auto; ?>" <?php checked( $opt_auto_val, 1, true ); ?> value="1">
+					<label class="toggle-label" for="<?php echo $opt_auto; ?>"></label>
+				</span>
 			</div>
 			<hr/>
 			<div class='wp-smush-setting-row wp-smush-basic'>
-				<label class="inline-label" for="<?php echo $opt_keep_exif; ?>"><span
-						class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['keep_exif']['label']; ?></span>
+				<label class="inline-label" for="<?php echo $opt_keep_exif; ?>" tabindex="0">
+					<span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['keep_exif']['label']; ?></span>
 					<br/>
 					<small class="smush-setting-description">
 						<?php echo $wpsmushit_admin->settings['keep_exif']['desc']; ?>
 					</small>
 				</label>
-				<span class="toggle float-r">
+				<span class="toggle float-r" tabindex= "0">
 					<input type="checkbox" class="toggle-checkbox"
 					       id="<?php echo $opt_keep_exif; ?>" <?php checked( $opt_keep_exif_val, 1, true ); ?>
 					       value="1" name="<?php echo $opt_keep_exif; ?>">

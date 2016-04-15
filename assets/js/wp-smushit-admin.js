@@ -894,6 +894,18 @@ jQuery(function ($) {
         $.post(ajaxurl, param );
     });
 
+    //Allow the checkboxes to be Keyboard Accessible
+    $('.wp-smush-setting-row .toggle').focus(function () {
+        $('.toggle-checkbox').focus();
+        //If Space is pressed
+        $(this).keypress(function (e) {
+            if (e.keyCode == 32) {
+                e.preventDefault();
+                $(this).find('.toggle-checkbox').click();
+            }
+        });
+    });
+
 });
 (function ($) {
     var Smush = function (element, options) {

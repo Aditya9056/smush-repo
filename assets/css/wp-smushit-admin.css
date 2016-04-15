@@ -72,6 +72,7 @@ Smush button transformation
     margin-bottom: 20px;
     padding-bottom: 0;
 }
+
 #wp-smush-install-thanks .row {
     background-image: url(../images/install-welcome.png);
     background-repeat: no-repeat;
@@ -83,6 +84,10 @@ Smush button transformation
 
 .wp-smush-setting-row {
     margin: 15px 20px 15px 0;
+}
+
+.wp-smush-setting-row .toggle:focus .toggle-label{
+    box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.3);
 }
 
 .wpmud .wp-smushit-container-wrap {
@@ -510,6 +515,7 @@ table.wp-smush-stats-holder tr td:first-child {
     background-position: 30px bottom;
     padding-bottom: 0;
 }
+
 .wpmud .wp-smush-welcome.wp-smush-container .box-content {
     min-height: 149px;
 }
@@ -844,13 +850,11 @@ small.smush-setting-description {
     padding: 10px;
 }
 
-.wp-smush-lossy-enable {
-    background: #00ACCA;
+.wpmud .wp-smush-stats .button-small.wp-smush-lossy-enable {
     border-radius: 3px;
-    color: #FFF;
-    cursor: pointer;
     font: 500 11px/20px 'Roboto';
-    padding: 10px;
+    padding: 5px 8px;
+    vertical-align: top;
 }
 
 .wp-smush-lossy-enable:hover, .wp-smush-lossy-enable:active, .wp-smush-lossy-enable:focus {
@@ -865,6 +869,10 @@ small.smush-setting-description {
     font-size: 25px;
     line-height: 1;
     padding: 5px 0;
+}
+
+.wpmud .wp-smush-lossy-disabled-wrap {
+    padding: 0;
 }
 
 .wpmud .row .col-third.wp-smushit-container-right {
@@ -1029,12 +1037,15 @@ small.smush-setting-description {
         padding: 0;
         width: 100%;
     }
+
     .wpmud .wp-smush-welcome-content {
         margin: 0 30px 0px 160px;
     }
+
     .dev-box.bulk-smush-wrapper.wp-smush-container {
         padding: 20px 10px;
     }
+
     .wpmud .wp-smush-super-smush-content {
         font-size: 11px;
         margin-left: 160px;
@@ -1047,6 +1058,7 @@ small.smush-setting-description {
 .wp-admin.wpmud [tooltip]:after {
     text-transform: none !important;
 }
+
 .smushit [tooltip] {
     position: relative;
     overflow: visible;
@@ -1166,6 +1178,7 @@ small.smush-setting-description {
     position: relative;
     width: 58%;
 }
+
 /** Arrow **/
 .wp-smush-super-smush-content:after {
     right: 100%;
@@ -1181,6 +1194,7 @@ small.smush-setting-description {
     border-width: 10px;
     margin-top: -10px;
 }
+
 .wpmud .wp-smush-super-smush-content a,
 .wpmud .wp-smush-super-smush-content a:hover,
 .wpmud .wp-smush-super-smush-content a:visited {
