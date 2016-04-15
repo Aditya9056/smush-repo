@@ -895,8 +895,7 @@ jQuery(function ($) {
     });
 
     //Allow the checkboxes to be Keyboard Accessible
-    $('.wp-smush-setting-row .toggle').focus(function () {
-        $('.toggle-checkbox').focus();
+    $('.wp-smush-setting-row .toggle-checkbox').focus(function () {
         //If Space is pressed
         $(this).keypress(function (e) {
             if (e.keyCode == 32) {
@@ -905,6 +904,7 @@ jQuery(function ($) {
             }
         });
     });
+
 
 });
 (function ($) {
