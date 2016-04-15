@@ -1231,7 +1231,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Default Notice, to be displayed at the top of page
 			//Show a message, at the top
 			$message = esc_html__( 'Yay! All images are optimised as per your current settings.', 'wp-smushit' );
-			$resp = '<div class="wp-smush-notice wp-smush-resmush-message"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
+			$resp = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
 				<i class="dev-icon dev-icon-cross"></i>
 				</div>';
 
@@ -1366,7 +1366,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			if( !empty( $resmush_list ) || $this->remaining_count > 0 ) {
 				$message = sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
-				$resp    = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
+				$resp    = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
 							<i class="dev-icon dev-icon-cross"></i>
 						</div>';
 			}

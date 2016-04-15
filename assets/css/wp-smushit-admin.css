@@ -1201,3 +1201,7 @@ small.smush-setting-description {
     color: black;
     text-decoration: underline;
 }
+.wpmud .wp-smush-setting-row .toggle .toggle-checkbox {
+    display: inline-block;
+    opacity: 0;
+}
