@@ -1254,6 +1254,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Allow to smush Upfront images as well
 			$upfront_active = class_exists( 'Upfront' );
 
+			//Initialize Media Library Stats
+			if ( empty( $this->remaining_count ) ) {
+				$this->setup_global_stats();
+			}
+
+			//Intialize NextGen Stats
+			if ( empty( $wpsmushnextgenadmin->remaining_count ) ) {
+				$wpsmushnextgenadmin->setup_stats();
+			}
+
 			$key = 'nextgen' == $type ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
 
 			$remaining_count = 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;

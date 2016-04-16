@@ -548,6 +548,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					//Whether to show the remaining re-smush notice
 					$show = $count > 0 ? true : false;
 
+					//Get the Actual remainaing count
+					if ( ! isset( $wpsmushit_admin->remaining_count ) ) {
+						$wpsmushit_admin->setup_global_stats();
+					}
+
 					$count += $wpsmushit_admin->remaining_count;
 				}
 			}
@@ -592,9 +597,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Prints out the page header for Bulk Smush Page
 		 */
 		function smush_page_header() {
-			global $WpSmush;
+			global $WpSmush, $wpsmushit_admin;
 			//Include Shared UI
 			require_once WP_SMUSH_DIR . 'assets/shared-ui/plugin-ui.php';
+
+			if( $wpsmushit_admin->remaining_count == 0 || $wpsmushit_admin->smushed_count == 0 ) {
+				//Initialize global Stats
+				$wpsmushit_admin->setup_global_stats();
+			}
 
 			//Page Heading for Free and Pro Version
 			$page_heading = $WpSmush->is_pro() ? esc_html__( 'WP Smush Pro', 'wp-smushit' ) : esc_html__( 'WP Smush', 'wp-smushit' );
