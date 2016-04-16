@@ -314,7 +314,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Display the Whole page ui, Call all the other functions under this
 		 */
 		function ui() {
+
 			global $WpSmush, $wpsmushit_admin;
+
+			//Reset Transient
+			$wpsmushit_admin->check_bulk_limit( true );
+
 			$this->smush_page_header();
 
 			//Show Configure screen for only a new installation and for only network admins

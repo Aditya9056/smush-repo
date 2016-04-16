@@ -219,8 +219,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//For Nextgen gallery Pages, check later in enqueue function
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 
-			//Reset Transient
-			$this->check_bulk_limit( true );
 		}
 
 		/**
@@ -261,8 +259,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
 
-			//If we upgrade/install message is dismissed
-			if( get_option( 'wp-smush-hide_upgrade_notice' ) ) {
+			//If we upgrade/install message is dismissed and for pro users
+			if( get_option( 'wp-smush-hide_upgrade_notice' ) || $this->is_pro() ) {
 				//Do not enqueue, unless it is one of the required screen
 				if ( ! $enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'post-new.php' && $pagenow != 'upload.php' ) ) {
 
