@@ -1375,7 +1375,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Check if integration is Enabled or not
 			//Smush NextGen key
 			$opt_nextgen     = WP_SMUSH_PREFIX . 'nextgen';
-			$opt_nextgen_val = get_option( $opt_nextgen, 1 );
+			$opt_nextgen_val = get_option( $opt_nextgen, false );
 			if ( ! $opt_nextgen_val ) {
 				return;
 			}
