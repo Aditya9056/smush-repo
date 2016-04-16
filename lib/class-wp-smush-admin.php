@@ -234,14 +234,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
-
-			//Get resmush list, If we have a resmush list already, localize those ids
-			if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
-
-				//get the attachments, and get lossless count
-				$this->resmush_ids = $resmush_ids;
-
-			}
 		}
 
 		/**
@@ -292,6 +284,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Localize Translations
 		 */
 		function localize() {
+			global $current_screen;
+			$current_page = !empty( $current_screen ) ? $current_screen->base : '';
 
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
@@ -308,26 +302,46 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
-			$this->attachments = $bulk->get_attachments();
+			//Load the stats on selected screens only
+			if ( $current_page == 'media_page_wp-smush-bulk' ) {
 
-			//@todo: Select load the stats, so that we don't slow down the whole admin area
+				$this->attachments = $bulk->get_attachments();
 
-			//Setup all the stats
-			$this->setup_global_stats();
+				//Setup all the stats
+				$this->setup_global_stats();
 
-			//Localize smushit_ids variable, if there are fix number of ids
-			$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments;
+				//Localize smushit_ids variable, if there are fix number of ids
+				$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments;
 
-			//Array of all smushed, unsmushed and lossless ids
-			$data = array(
-				'count_smushed' => $this->smushed_count,
-				'count_total'   => $this->total_count,
-				'unsmushed'     => $this->ids,
-				'resmush'       => $this->resmush_ids,
-				'timeout'       => WP_SMUSH_TIMEOUT * 1000, //Convert it into ms
-			);
+				//Get resmush list, If we have a resmush list already, localize those ids
+				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
+
+					//get the attachments, and get lossless count
+					$this->resmush_ids = $resmush_ids;
+
+				}
+
+				//Array of all smushed, unsmushed and lossless ids
+				$data = array(
+					'count_smushed' => $this->smushed_count,
+					'count_total'   => $this->total_count,
+					'unsmushed'     => $this->ids,
+					'resmush'       => $this->resmush_ids,
+				);
+			}else{
+				$data = array(
+					'count_smushed' => '',
+					'count_total'   => '',
+					'unsmushed'     => '',
+					'resmush'       => '',
+				);
+
+			}
+
+			$data['timeout'] = WP_SMUSH_TIMEOUT * 1000; //Convert it into ms
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
+
 
 		}
 
@@ -1253,12 +1267,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$upfront_active = class_exists( 'Upfront' );
 
 			//Initialize Media Library Stats
-			if ( empty( $this->remaining_count ) ) {
+			if ( 'nextgen' != $type && empty( $this->remaining_count ) ) {
 				$this->setup_global_stats();
 			}
 
 			//Intialize NextGen Stats
-			if ( empty( $wpsmushnextgenadmin->remaining_count ) ) {
+			if ( 'nextgen' == $type && is_object( $wpsmushnextgenadmin ) && empty( $wpsmushnextgenadmin->remaining_count ) ) {
 				$wpsmushnextgenadmin->setup_stats();
 			}
 
