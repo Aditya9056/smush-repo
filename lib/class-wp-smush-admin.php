@@ -252,7 +252,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
 
 			//If we upgrade/install message is dismissed and for pro users
-			if( get_option( 'wp-smush-hide_upgrade_notice' ) || $this->is_pro() ) {
+			if( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->is_pro() ) {
 				//Do not enqueue, unless it is one of the required screen
 				if ( ! $enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'post-new.php' && $pagenow != 'upload.php' ) ) {
 
@@ -380,7 +380,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Store that we need not redirect again on plugin activation
-			update_option( 'wp-smush-hide_smush_welcome', true );
+			update_site_option( 'wp-smush-hide_smush_welcome', true );
 
 			// var to temporarily assign the option value
 			$setting = null;
@@ -930,12 +930,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Return if notice is already dismissed
-			if ( get_option( 'wp-smush-hide_upgrade_notice' ) ) {
+			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
 				return;
 			} ?>
 			<div class="wpmud wp-smush-updated"><?php
 
-			$install_type = get_option( 'wp-smush-install-type', false );
+			$install_type = get_site_option( 'wp-smush-install-type', false );
 
 			if ( ! $install_type ) {
 				if ( $this->smushed_count > 0 ) {
@@ -943,7 +943,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				} else {
 					$install_type = 'new';
 				}
-				update_option( 'wp-smush-install-type', $install_type );
+				update_site_option( 'wp-smush-install-type', $install_type );
 			}
 
 			//Whether New/Existing Installation
@@ -1078,7 +1078,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Store a key/value to hide the smush features on bulk page
 		 */
 		function dismiss_welcome_notice() {
-			update_option( 'wp-smush-hide_smush_welcome', 1 );
+			update_site_option( 'wp-smush-hide_smush_welcome', 1 );
 			wp_send_json_success();
 		}
 
@@ -1086,7 +1086,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Store a key/value to hide the smush features on bulk page
 		 */
 		function dismiss_upgrade_notice( $ajax = true ) {
-			update_option( 'wp-smush-hide_upgrade_notice', 1 );
+			update_site_option( 'wp-smush-hide_upgrade_notice', 1 );
 			//No Need to send json response for other requests
 			if ( $ajax ) {
 				wp_send_json_success();

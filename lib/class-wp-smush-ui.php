@@ -323,7 +323,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$this->smush_page_header();
 
 			//Show Configure screen for only a new installation and for only network admins
-			if ( 1 != get_option( 'wp-smush-hide_smush_welcome' ) && 1 != get_option( 'hide_smush_features' ) && 0 >= $wpsmushit_admin->smushed_count && is_super_admin() ) {
+			if ( ( 1 != get_site_option( 'wp-smush-hide_smush_welcome' ) || 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && 0 >= $wpsmushit_admin->smushed_count && is_super_admin() ) {
 				echo '<div class="block float-l smush-welcome-wrapper">';
 				$this->welcome_screen();
 				echo '</div>';
@@ -633,11 +633,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wpsmushit_admin;
 
 			//Whether New/Existing Installation
-			$install_type = get_option('wp-smush-install-type', false );
+			$install_type = get_site_option('wp-smush-install-type', false );
 
 			if( !$install_type ) {
 				$install_type = $wpsmushit_admin->smushed_count > 0 ? 'existing' : 'new';
-				update_option( 'wp-smush-install-type', $install_type );
+				update_site_option( 'wp-smush-install-type', $install_type );
 			}
 
 			if ( 'new' == $install_type  ) {
