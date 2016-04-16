@@ -1670,8 +1670,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				//Get all the smushed attachments
 				$attachments = $this->get_lossy_attachments( '', false );
-				foreach ( $attachments as $attachment ) {
-					update_post_meta( $attachment, 'wp-smush-lossy', 1 );
+				if( !empty( $attachments ) ) {
+					foreach ( $attachments as $attachment ) {
+						update_post_meta( $attachment, 'wp-smush-lossy', 1 );
+					}
 				}
 			}
 			//Get all the attachments with wp-smush-lossy
