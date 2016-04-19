@@ -1,5 +1,5 @@
 === WP Smush ===
-Plugin Name: WP Smush
+Plugin Name: WP Smush – Image Optimization
 Version: 2.2.2
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
