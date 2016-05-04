@@ -391,7 +391,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if ( class_exists( 'WP_Hummingbird' ) ) {
 				return;
 			}
-			$this->container_header( 'wp-smush-hb-adv', 'wp-smush-hb-promo', "OH YEAH, SMUSHING ON STERIODS!" ); ?>
+			$this->container_header( 'wp-smush-hb-adv', 'wp-smush-hb-promo', "OH YEAH, SMUSHING ON STEROIDS!" ); ?>
 			<div class="box-content">
 			<span class="wp-smush-hummingbird-image tc">
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/hummingbird.png'; ?>"
