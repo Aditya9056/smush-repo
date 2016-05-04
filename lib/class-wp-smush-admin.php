@@ -158,6 +158,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'label' => esc_html__( 'Preserve image EXIF data', 'wp-smushit' ),
 					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
 				),
+				'resize' => array(
+					'label' => esc_html__( 'Resize original images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'This setting takes your original images you upload and resizes them down to a size of your choice before storing them. For example, a high quality camera will take images around 5000px in width, but realistically you only need 2000px max for most websites. This will save you storing unnecessarily large images on your server.', 'wp-smushit' )
+				),
 				'lossy'     => array(
 					'label' => esc_html__( 'Super-smush my images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'Compress images up to 10x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
@@ -406,6 +410,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				// unset the var for next loop
 				unset( $setting );
 			}
+
+			//Update Resize width and height settings if set
+			$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0;
+			$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0;
+
+			// update the resize sizes
+			update_option( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
 
 			//Store the option in table
 			update_option( 'wp-smush-settings_updated', 1 );
@@ -1762,6 +1773,50 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					}
 				}
 			}
+		}
+
+		/** Get the Maximum Width and Height settings for WrodPress
+		 *
+		 * @return array, Array of Max. Width and Height for image
+		 *
+		 */
+		function get_max_image_dimensions() {
+			global $_wp_additional_image_sizes;
+
+			$width  = $height = 0;
+			$limit  = 9999;
+
+			$image_sizes = get_intermediate_image_sizes();
+
+			// Create the full array with sizes and crop info
+			foreach ( $image_sizes as $size ) {
+				if ( in_array( $size, array( 'thumbnail', 'medium', 'medium_large', 'large' ) ) ) {
+					$size_width  = get_option( "{$size}_size_w" );
+					$size_height = get_option( "{$size}_size_h" );
+				} elseif ( isset( $_wp_additional_image_sizes[ $size ] ) ) {
+					$size_width  = $_wp_additional_image_sizes[ $size ]['width'];
+					$size_height = $_wp_additional_image_sizes[ $size ]['height'];
+				}
+
+				//Skip if no width and height
+				if ( ! isset( $size_width, $size_height ) ) {
+					continue;
+				}
+
+				//If within te limit, check for a max value
+				if ( $size_width < $limit ) {
+					$width = max( $width, $size_width );
+				}
+
+				if ( $size_height < $limit ) {
+					$height = max( $height, $size_height );
+				}
+			}
+
+			return array(
+				'width'  => $width,
+				'height' => $height
+			);
 		}
 
 	}

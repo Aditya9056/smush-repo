@@ -257,6 +257,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wpsmushit_admin;
 			echo '<div class="box-container">
 				<form id="wp-smush-settings-form" method="post">';
+
+			//Get max. dimesnions
+			$max_sizes = $wpsmushit_admin->get_max_image_dimensions();
+
+			//Placeholder width and Height
+			$p_width = 2048 > $max_sizes['width'] ? 2048 : $max_sizes['width'];
+			$p_height = 2048 > $max_sizes['height'] ? 2048 : $max_sizes['height'];
+
 			//Smush auto key
 			$opt_auto = WP_SMUSH_PREFIX . 'auto';
 			//Auto value
@@ -270,8 +278,18 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			//Keep Exif
 			$opt_keep_exif = WP_SMUSH_PREFIX . 'keep_exif';
-			//Keep Exif
-			$opt_keep_exif_val = get_option( $opt_keep_exif, false ); ?>
+			$opt_keep_exif_val = get_option( $opt_keep_exif, false );
+
+			 //Resize images
+			$opt_resize = WP_SMUSH_PREFIX . 'resize';
+			$opt_resize_val = get_option( $opt_resize, false );
+
+			//Dimensions
+			$resize_sizes = get_option( WP_SMUSH_PREFIX . 'resize_sizes', array( 'width' => '', 'height' => '' ) );
+
+			//Fetch Max. width and height
+			?>
+
 			<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 			<div class='wp-smush-setting-row wp-smush-basic'>
 				<label class="inline-label" for="<?php echo $opt_auto; ?>" tabindex="0">
@@ -304,7 +322,32 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					       value="1" name="<?php echo $opt_keep_exif; ?>" tabindex="0">
 					<label class="toggle-label" for="<?php echo $opt_keep_exif; ?>"></label>
 				</span>
-			</div> <!-- End of Basic Settings --><?php
+			</div>
+			<hr/>
+			<div class='wp-smush-setting-row wp-smush-basic'>
+				<label class="inline-label" for="<?php echo $opt_resize; ?>" tabindex="0">
+					<span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['resize']['label']; ?></span>
+					<br/>
+					<small class="smush-setting-description">
+						<?php echo $wpsmushit_admin->settings['resize']['desc']; ?>
+					</small>
+				</label>
+				<span class="toggle float-r">
+					<input type="checkbox" class="toggle-checkbox"
+					       id="<?php echo $opt_resize; ?>" <?php checked( $opt_resize_val, 1, true ); ?>
+					       value="1" name="<?php echo $opt_resize; ?>" tabindex="0">
+					<label class="toggle-label" for="<?php echo $opt_resize; ?>"></label>
+				</span>
+				<div class="wp-smush-resize-settings-wrap">
+					<label><?php esc_html_e("Width", "wp-smushit"); ?>
+						<input type="text" id="<?php echo $opt_resize . '_width'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>" placeholder="<?php echo $p_width; ?>" name="<?php echo $opt_resize . '_width'; ?>" tabindex="0" width=100 /> px
+					</label>
+					<label><?php esc_html_e("Height", "wp-smushit"); ?>
+						<input type="text" id="<?php echo $opt_resize . '_height'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>" placeholder="<?php echo $p_height; ?>" name="<?php echo $opt_resize . '_height'; ?>" tabindex="0" width=100 /> px
+					</label>
+					<div class="wp-smush-resize-note"><?php printf( esc_html__("The specified width and heights should not be less than your large thumbnail size which is set at %s%dpx wide x %dpx high%s.", "wp-smushit"), '<strong>', $max_sizes['width'], $max_sizes['height'], '</strong>' ); ?></div>
+				</div>
+			</div><!-- End of Basic Settings --><?php
 
 			do_action( 'wp_smush_after_basic_settings' );
 			$this->advanced_settings( $configure_screen );

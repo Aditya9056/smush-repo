@@ -86,7 +86,7 @@ Smush button transformation
     margin: 15px 20px 15px 0;
 }
 
-.wp-smush-setting-row .toggle-checkbox:focus + .toggle-label{
+.wp-smush-setting-row .toggle-checkbox:focus + .toggle-label {
     box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.3);
 }
 
@@ -1202,7 +1202,35 @@ small.smush-setting-description {
     color: black;
     text-decoration: underline;
 }
+
 .wpmud .wp-smush-setting-row .toggle .toggle-checkbox {
     display: inline-block;
     opacity: 0;
+}
+
+.wp-smush-resize-settings-wrap {
+    padding: 20px 10px 5px 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    color: #555;
+    margin: 1.5em 0;
+    overflow: auto;
+    vertical-align: middle;
+}
+
+.wp-smush-resize-note {
+    margin-bottom: 20px;
+    margin-left: 10px;
+}
+
+.wpmud .wp-smush-resize-settings-wrap label {
+    display: inline-block;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.wpmud .wp-smush-resize-settings-wrap .wp-smush-resize-input {
+    display: inline-block;
+    margin-left: 10px;
+    width: 120px;
 }
