@@ -158,7 +158,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'label' => esc_html__( 'Preserve image EXIF data', 'wp-smushit' ),
 					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
 				),
-				'resize' => array(
+				'resize'    => array(
 					'label' => esc_html__( 'Resize original images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'This setting takes your original images you upload and resizes them down to a size of your choice before storing them. For example, a high quality camera will take images around 5000px in width, but realistically you only need 2000px max for most websites. This will save you storing unnecessarily large images on your server.', 'wp-smushit' )
 				),
@@ -256,7 +256,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
 
 			//If we upgrade/install message is dismissed and for pro users
-			if( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->is_pro() ) {
+			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->is_pro() ) {
 				//Do not enqueue, unless it is one of the required screen
 				if ( ! $enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'post-new.php' && $pagenow != 'upload.php' ) ) {
 
@@ -289,19 +289,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function localize() {
 			global $current_screen;
-			$current_page = !empty( $current_screen ) ? $current_screen->base : '';
+			$current_page = ! empty( $current_screen ) ? $current_screen->base : '';
 
 			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
 			$wp_smush_msgs = array(
-				'resmush'       => esc_html__( 'Super-Smush', 'wp-smushit' ),
-				'smush_now'     => esc_html__( 'Smush Now', 'wp-smushit' ),
-				'error_in_bulk' => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				'all_resmushed' => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
-				'restore'       => esc_html__( "Restoring image..", "wp-smushit" ),
-				'smushing'      => esc_html__( "Smushing image..", "wp-smushit" ),
-				'checking'      => esc_html__( "Checking images..", "wp-smushit" )
+				'resmush'             => esc_html__( 'Super-Smush', 'wp-smushit' ),
+				'smush_now'           => esc_html__( 'Smush Now', 'wp-smushit' ),
+				'error_in_bulk'       => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				'all_resmushed'       => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
+				'restore'             => esc_html__( "Restoring image..", "wp-smushit" ),
+				'smushing'            => esc_html__( "Smushing image..", "wp-smushit" ),
+				'checking'            => esc_html__( "Checking images..", "wp-smushit" ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -332,7 +332,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'unsmushed'     => $this->ids,
 					'resmush'       => $this->resmush_ids,
 				);
-			}else{
+			} else {
 				$data = array(
 					'count_smushed' => '',
 					'count_total'   => '',
@@ -341,6 +341,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 
 			}
+
+			$data['resize_sizes'] = $this->get_max_image_dimensions();
 
 			$data['timeout'] = WP_SMUSH_TIMEOUT * 1000; //Convert it into ms
 
@@ -415,8 +417,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0;
 			$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0;
 
-			// update the resize sizes
-			update_option( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+			$max_size = $this->get_max_image_dimensions();
+
+			//Make sure the specified width and height is greater than maximum registered image dimensions
+			if ( $resize_sizes['width'] >= $max_size['width'] && $resize_sizes['height'] >= $max_size['height'] ) {
+				// update the resize sizes
+				update_option( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+			}
 
 			//Store the option in table
 			update_option( 'wp-smush-settings_updated', 1 );
@@ -591,10 +598,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function check_bulk_limit( $reset = false ) {
 
-			$transient_name  = WP_SMUSH_PREFIX . 'bulk_sent_count';
+			$transient_name = WP_SMUSH_PREFIX . 'bulk_sent_count';
 
 			//Do not go through this, if we need to reset
-			if( !$reset ) {
+			if ( ! $reset ) {
 				$bulk_sent_count = get_transient( $transient_name );
 
 				//If bulk sent count is not set
@@ -620,7 +627,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Reset the transient
-			if( $reset ) {
+			if ( $reset ) {
 				//clear it and return false to stop the process
 				set_transient( $transient_name, 0, 60 );
 
@@ -1109,7 +1116,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function restore_image( $attachment = '', $resp = true ) {
 
-			if( empty( $attachment ) ) {
+			if ( empty( $attachment ) ) {
 				//Check Empty fields
 				if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
 					wp_send_json_error( array(
@@ -1188,15 +1195,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Get the Button html without wrapper
 				$button_html = $this->set_status( $image_id, false, false, false );
 
-				if( $resp ) {
+				if ( $resp ) {
 					wp_send_json_success( array( 'button' => $button_html ) );
-				}else{
+				} else {
 					return true;
 				}
 			}
-			if( $resp ) {
+			if ( $resp ) {
 				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to restore image", "wp-smushit" ) . '</div>' ) );
 			}
+
 			return false;
 		}
 
@@ -1256,7 +1264,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Default Notice, to be displayed at the top of page
 			//Show a message, at the top
 			$message = esc_html__( 'Yay! All images are optimised as per your current settings.', 'wp-smushit' );
-			$resp = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
+			$resp    = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
 				<i class="dev-icon dev-icon-cross"></i>
 				</div>';
 
@@ -1398,7 +1406,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 
-			if( !empty( $resmush_list ) || $remaining_count > 0 ) {
+			if ( ! empty( $resmush_list ) || $remaining_count > 0 ) {
 				$message = sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 				$resp    = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
 							<i class="dev-icon dev-icon-cross"></i>
@@ -1681,7 +1689,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				//Get all the smushed attachments
 				$attachments = $this->get_lossy_attachments( '', false );
-				if( !empty( $attachments ) ) {
+				if ( ! empty( $attachments ) ) {
 					foreach ( $attachments as $attachment ) {
 						update_post_meta( $attachment, 'wp-smush-lossy', 1 );
 					}
@@ -1744,13 +1752,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function bulk_restore() {
 			$smushed_attachments = $this->get_smushed_attachments();
-			foreach ( $smushed_attachments  as $attachment ) {
+			foreach ( $smushed_attachments as $attachment ) {
 				$this->restore_image( $attachment->attachment_id, false );
 			}
 		}
 
 		/**
 		 * Loads the Shared UI to on all admin pages
+		 *
 		 * @param $current_page
 		 */
 		function load_shared_ui( $current_page ) {
@@ -1783,8 +1792,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function get_max_image_dimensions() {
 			global $_wp_additional_image_sizes;
 
-			$width  = $height = 0;
-			$limit  = 9999;
+			$width = $height = 0;
+			$limit = 9999;
 
 			$image_sizes = get_intermediate_image_sizes();
 

@@ -1209,18 +1209,14 @@ small.smush-setting-description {
 }
 
 .wp-smush-resize-settings-wrap {
-    padding: 20px 10px 5px 10px;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 5px;
     color: #555;
+    font-family: "Roboto", sans-serif;
     margin: 1.5em 0;
     overflow: auto;
+    padding: 30px;
     vertical-align: middle;
-}
-
-.wp-smush-resize-note {
-    margin-bottom: 20px;
-    margin-left: 10px;
 }
 
 .wpmud .wp-smush-resize-settings-wrap label {
@@ -1229,8 +1225,22 @@ small.smush-setting-description {
     overflow: hidden;
 }
 
+.wpmud .wp-smush-resize-settings-wrap label:first-child {
+    padding-left: 0;
+}
+
 .wpmud .wp-smush-resize-settings-wrap .wp-smush-resize-input {
     display: inline-block;
     margin-left: 10px;
     width: 120px;
+}
+
+.wp-smush-size-error {
+    background: #ff6d6d;
+    border-radius: 5px;
+    color: white;
+    font-size: 15px;
+    line-height: 1.5;
+    margin-top: 20px;
+    padding: 20px 30px;
 }
