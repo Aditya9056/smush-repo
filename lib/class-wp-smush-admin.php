@@ -309,10 +309,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Load the stats on selected screens only
 			if ( $current_page == 'media_page_wp-smush-bulk' ) {
 
-				$this->attachments = $bulk->get_attachments();
-
 				//Setup all the stats
 				$this->setup_global_stats();
+
+				$this->attachments = $bulk->get_attachments();
 
 				//Localize smushit_ids variable, if there are fix number of ids
 				$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments;
@@ -641,26 +641,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function total_count() {
 
-			//Don't query again, if the variable is already set
-			if ( ! empty( $this->total_count ) && $this->total_count > 0 ) {
-				return $this->total_count;
-			}
-
-			$query = array(
-				'fields'         => 'ids',
-				'post_type'      => 'attachment',
-				'post_status'    => 'any',
-				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
-				'order'          => 'ASC',
-				'posts_per_page' => - 1,
-				'no_found_rows'  => true
-			);
 			//Remove the Filters added by WP Media Folder
 			$this->remove_wmf_filters();
 
-			$results = new WP_Query( $query );
-			$count   = ! empty( $results->post_count ) ? $results->post_count : 0;
+			$mime_types = array( 'image/jpeg', 'image/gif', 'image/png' );
+			$count = 0;
 
+			$counts = wp_count_attachments( $mime_types );
+			foreach ( $mime_types as $mime ) {
+				if( isset( $counts->$mime ) ) {
+					$count += $counts->$mime;
+				}
+			}
 			// send the count
 			return $count;
 		}

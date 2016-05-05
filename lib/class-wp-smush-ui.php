@@ -334,11 +334,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</label>
 				<span class="toggle float-r">
 					<input type="checkbox" class="toggle-checkbox"
-					       id="<?php echo $opt_resize; ?>" <?php checked( $opt_resize_val, 1, true ); ?>
+					       id="<?php echo $opt_resize; ?>" <?php echo $resize_checked = checked( $opt_resize_val, 1, false ); ?>
 					       value="1" name="<?php echo $opt_resize; ?>" tabindex="0">
 					<label class="toggle-label" for="<?php echo $opt_resize; ?>"></label>
 				</span>
-				<div class="wp-smush-resize-settings-wrap">
+				<div class="wp-smush-resize-settings-wrap<?php echo $resize_checked ? '' : ' hidden'?>">
 					<label><?php esc_html_e("Width", "wp-smushit"); ?>
 						<input type="text" id="<?php echo $opt_resize . '_width'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>" placeholder="<?php echo $p_width; ?>" name="<?php echo $opt_resize . '_width'; ?>" tabindex="0" width=100 /> px
 					</label>

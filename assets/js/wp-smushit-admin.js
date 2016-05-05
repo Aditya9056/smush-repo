@@ -614,14 +614,14 @@ jQuery(function ($) {
         //Check for width
         if ( !height_only && 'undefined' != typeof width_input && parseInt(wp_smushit_data.resize_sizes.width) > parseInt(width_input.val())) {
             width_input.addClass('error');
-            width_error_note.show();
+            width_error_note.show('slow');
             width_error = true;
         } else {
             //Remove error class
             width_input.removeClass('error');
             width_error_note.hide();
             if (height_input.hasClass('error')) {
-                height_error_note.show();
+                height_error_note.show('slow');
             }
         }
 
@@ -630,7 +630,7 @@ jQuery(function ($) {
             height_input.addClass('error');
             //If we are not showing the width error already
             if (!width_error) {
-                height_error_note.show();
+                height_error_note.show('slow');
             }
             height_error = true;
         } else {
@@ -638,7 +638,7 @@ jQuery(function ($) {
             height_input.removeClass('error');
             height_error_note.hide();
             if (width_input.hasClass('error')) {
-                width_error_note.show();
+                width_error_note.show('slow');
             }
         }
 
@@ -1015,6 +1015,17 @@ jQuery(function ($) {
         //Initiate the check
         validate_resize_settings(wrapper_div, false, false); // run the validation
 
+    });
+    //Handle Resize Checkbox toggle, to show/hide width, height settings
+    $('#wp-smush-resize').click(function() {
+        var self = $(this);
+        var settings_wrap = $('.wp-smush-resize-settings-wrap');
+
+        if (self.is(':checked')) {
+            settings_wrap.show();
+        } else {
+            settings_wrap.hide();
+        }
     });
 
 

@@ -27,6 +27,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 			if ( ! isset( $_REQUEST['ids'] ) ) {
 				$limit           = apply_filters( 'wp_smush_nextgen_query_limit', 2000 );
 				$limit           = intval( $limit );
+				$limit           = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
 				$get_posts       = true;
 				$unsmushed_posts = array();
 				$args            = array(
