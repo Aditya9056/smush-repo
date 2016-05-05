@@ -1235,6 +1235,10 @@ small.smush-setting-description {
     width: 120px;
 }
 
+.wpmud .wp-smush-resize-input.error {
+    border-color: #fd8b8b;
+}
+
 .wp-smush-size-error {
     background: #ff6d6d;
     border-radius: 5px;
