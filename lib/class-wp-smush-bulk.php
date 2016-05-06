@@ -34,7 +34,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 					'fields'                 => 'ids',
 					'post_type'              => 'attachment',
 					'post_status'            => 'any',
-					'post_mime_type'         => array( 'image/jpeg', 'image/gif', 'image/png' ),
+					'post_mime_type'         => $wpsmushit_admin->mime_types,
 					'orderby'                => 'ID',
 					'order'                  => 'DESC',
 					'posts_per_page'         => $limit,

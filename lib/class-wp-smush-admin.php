@@ -11,6 +11,8 @@
  */
 //Include Bulk UI
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-ui.php';
+//Include Resize class
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
 
 //Load Shared UI
 if ( ! class_exists( 'WDEV_Plugin_Ui' ) ) {
@@ -59,6 +61,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @var Smushed attachments out of total attachments
 		 */
 		public $super_smushed;
+
+		public $mime_types = array( 'image/jpeg', 'image/gif', 'image/png' );
 
 		/**
 		 * @array Stores the stats for all the images
@@ -644,11 +648,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Remove the Filters added by WP Media Folder
 			$this->remove_wmf_filters();
 
-			$mime_types = array( 'image/jpeg', 'image/gif', 'image/png' );
 			$count = 0;
 
-			$counts = wp_count_attachments( $mime_types );
-			foreach ( $mime_types as $mime ) {
+			$counts = wp_count_attachments( $this->mime_types );
+			foreach ( $this->mime_types as $mime ) {
 				if( isset( $counts->$mime ) ) {
 					$count += $counts->$mime;
 				}
@@ -675,7 +678,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
 				'post_status'    => 'any',
-				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'post_mime_type' => $this->mime_types,
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
 				'meta_key'       => 'wp-smpro-smush-data',
@@ -1457,7 +1460,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
 				'post_status'    => 'any',
-				'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'post_mime_type' => $this->mime_types,
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
 				'meta_key'       => 'upfront_used_image_sizes',
@@ -1696,7 +1699,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'fields'                 => 'ids',
 				'post_type'              => 'attachment',
 				'post_status'            => 'any',
-				'post_mime_type'         => array( 'image/jpeg', 'image/gif', 'image/png' ),
+				'post_mime_type'         => $this->mime_types,
 				'orderby'                => 'ID',
 				'order'                  => 'DESC',
 				'posts_per_page'         => $limit,

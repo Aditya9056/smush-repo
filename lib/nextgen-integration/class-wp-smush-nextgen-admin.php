@@ -101,11 +101,10 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @param $id
 		 */
 		function wp_smush_column_options( $column_name, $id, $echo = false ) {
-			global $wpsmushnextgenstats;
+			global $wpsmushnextgenstats, $wpsmushit_admin;
 
 			//NExtGen Doesn't returns Column name, weird? yeah, right, it is proper because hook is called for the particular column
 			if ( $column_name == 'wp_smush_image' || $column_name == '' ) {
-				$supported_image = array( 'image/jpeg', 'image/gif', 'image/png', 'image/jpg' );
 
 				// Registry Object for NextGen Gallery
 				$registry = C_Component_Registry::get_instance();
@@ -129,7 +128,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				$image_type = $this->get_file_type( $file_path );
 
 				//If image type not supported
-				if ( ! $image_type || ! in_array( $image_type, $supported_image ) ) {
+				if ( ! $image_type || ! in_array( $image_type, $wpsmushit_admin->mime_types ) ) {
 					return;
 				}
 
