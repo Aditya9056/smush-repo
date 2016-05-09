@@ -1788,7 +1788,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $_wp_additional_image_sizes;
 
 			$width = $height = 0;
-			$limit = 9999;
+			$limit = 9999; //Post-thumbnail
 
 			$image_sizes = get_intermediate_image_sizes();
 
@@ -1808,11 +1808,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 
 				//If within te limit, check for a max value
-				if ( $size_width < $limit ) {
+				if ( $size_width <= $limit ) {
 					$width = max( $width, $size_width );
 				}
 
-				if ( $size_height < $limit ) {
+				if ( $size_height <= $limit ) {
 					$height = max( $height, $size_height );
 				}
 			}
