@@ -38,11 +38,6 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			 */
 			add_action( 'wp_loaded', array( $this, 'initialize' ) );
 
-			/**
-			 * Resize images For the Latest uploads, Hook at the earliest
-			 */
-			add_filter( 'wp_handle_upload', array( $this, 'auto_resize' ), 10, 2 );
-
 		}
 
 		/**
@@ -67,41 +62,40 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 *
 		 * @return bool
 		 */
-		private function should_resize( $params = '', $action = '' ) {
+		private function should_resize( $id = '' ) {
 
 			//If resizing not enabled, or if both max width and height is set to 0, return
 			if ( ! $this->resize_enabled || ( $this->max_w == 0 && $this->max_h == 0 ) ) {
 				return false;
 			}
 
-			//If action is specified, and it's a sideload
-			if ( ! empty( $action ) && 'sideload' == $action ) {
-				return false;
-			}
+			$file_path = get_attached_file( $id );
 
-			if ( ! empty( $params ) && is_array( $params ) ) {
+			if ( ! empty( $file_path ) ) {
 
-				global $wpsmushit_admin;
-
-				if ( ! empty( $params['file'] ) ) {
-
-					// Skip: if "noresize" is included in the filename, Thanks to Imsanity
-					if ( strpos( $params['file'], 'noresize' ) !== false ) {
-						return false;
-					}
-
-					//If file doesn't exists, return
-					if ( ! file_exists( $params['file'] ) ) {
-						return false;
-					}
-
-				}
-
-				//If type of upload doesn't matches the criteria return
-				if ( ! empty( $params['type'] ) && ! in_array( $params['type'], $wpsmushit_admin->mime_types ) ) {
+				// Skip: if "noresize" is included in the filename, Thanks to Imsanity
+				if ( strpos( $file_path, 'noresize' ) !== false ) {
 					return false;
 				}
 
+				//If file doesn't exists, return
+				if ( ! file_exists( $file_path ) ) {
+					return false;
+				}
+
+			}
+
+			//Check for a supported mime type
+			global $wpsmushit_admin;
+
+			//Get image mime type
+			$mime = get_post_mime_type( $id );
+
+			$mime_supported = ! in_array( $mime, $wpsmushit_admin->mime_types );
+
+			//If type of upload doesn't matches the criteria return
+			if ( ! empty( $mime ) && ! apply_filters( 'wp_smush_resmush_mime_supported', $mime_supported, $mime ) ) {
+				return false;
 			}
 
 			return true;
@@ -115,17 +109,17 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 *
 		 * @return array $upload
 		 */
-		function auto_resize( $upload, $action ) {
+		function auto_resize( $id, $meta ) {
 
-			if ( empty( $upload['file'] ) || empty( $upload['type'] ) ) {
-				return $upload;
+			if ( empty( $id ) ) {
+				return false;
 			}
 
 			//Check if the image should be resized or not
-			$should_resize = $this->should_resize( $upload, $action );
+			$should_resize = $this->should_resize( $id );
 
 			/**
-			 * Filter whether the image should be resized or not
+			 * Filter whether the uploaded image should be resized or not
 			 *
 			 * @since 2.3
 			 *
@@ -142,30 +136,30 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			 * @param string $context The type of upload action. Values include 'upload' or 'sideload'.
 			 *
 			 */
-			if ( ! apply_filters( 'wp_smush_resize_image', $should_resize, $upload, $action ) ) {
-				return $upload;
+			if ( ! apply_filters( 'wp_smush_resize_uploaded_image', $should_resize, $id, $meta ) ) {
+				return false;
 			}
 
 			//Good to go
-			$file_path = $upload['file'];
+			$file_path = get_attached_file( $id );
 
 			$original_file_size = filesize( $file_path );
 
-			$resize = $this->perform_resize( $file_path, $original_file_size, $upload );
+			$resize = $this->perform_resize( $file_path, $original_file_size, $id );
 
 			//If resize wasn't successful
 			if ( ! $resize ) {
-				return $upload;
+				return false;
 			}
 
 			//Else Replace the Original file with resized file
-			$replaced = $this->replcae_original_image( $upload, $resize );
+			$replaced = $this->replcae_original_image( $file_path, $resize, $id );
 
 			if ( $replaced ) {
 				//@todo: Store stats
 			}
 
-			return $upload;
+			return true;
 
 		}
 
@@ -177,7 +171,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 *
 		 * @return bool, If the image generation was succesfull
 		 */
-		function perform_resize( $file_path, $original_file_size, $upload ) {
+		function perform_resize( $file_path, $original_file_size, $id ) {
 
 			/**
 			 * Filter the resize image dimensions
@@ -205,7 +199,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			$sizes = apply_filters( 'wp_smush_resize_sizes', array(
 				'width'  => $this->max_w,
 				'height' => $this->max_h
-			), $file_path, $upload );
+			), $file_path, $id );
 
 			$data = image_make_intermediate_size( $file_path, $sizes['width'], $sizes['height'] );
 
@@ -243,13 +237,13 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 * @param $resized
 		 *
 		 */
-		function replcae_original_image( $upload, $resized, $attachment_id = '' ) {
+		function replcae_original_image( $file_path, $resized, $attachment_id = '' ) {
 			$replaced = false;
 
 			//Take Backup, if we have to, off by default
-			$this->backup_image( $upload, $attachment_id );
+			$this->backup_image( $file_path, $attachment_id );
 
-			$replaced = @copy( $resized['file_path'], $upload['file'] );
+			$replaced = @copy( $resized['file_path'], $file_path );
 			@unlink( $resized['file_path'] );
 
 			return $replaced;
@@ -264,7 +258,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 *
 		 *
 		 */
-		function backup_image( $upload, $attachment_id ) {
+		function backup_image( $path, $attachment_id ) {
 
 			/**
 			 * Allows to turn on the backup for resized image
@@ -292,7 +286,6 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				return;
 			}
 			//Create a copy of original
-			$path = ! empty( $upload['file'] ) ? $upload['file'] : '';
 			if ( empty( $path ) ) {
 				$path = get_attached_file( $attachment_id );
 			}

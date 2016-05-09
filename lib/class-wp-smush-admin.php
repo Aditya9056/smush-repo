@@ -96,9 +96,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public function __construct() {
 
-			// Save Settings, Process Option, Need to process it early, so the pages are loaded accordingly, nextgen gallery integration is loaded at same action
-//			add_action( 'plugins_loaded', array( $this, 'process_options' ), 16 );
-
 			// hook scripts and styles
 			add_action( 'admin_init', array( $this, 'register' ) );
 
@@ -299,13 +296,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$handle = 'wp-smushit-admin-js';
 
 			$wp_smush_msgs = array(
-				'resmush'             => esc_html__( 'Super-Smush', 'wp-smushit' ),
-				'smush_now'           => esc_html__( 'Smush Now', 'wp-smushit' ),
-				'error_in_bulk'       => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				'all_resmushed'       => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
-				'restore'             => esc_html__( "Restoring image..", "wp-smushit" ),
-				'smushing'            => esc_html__( "Smushing image..", "wp-smushit" ),
-				'checking'            => esc_html__( "Checking images..", "wp-smushit" ),
+				'resmush'       => esc_html__( 'Super-Smush', 'wp-smushit' ),
+				'smush_now'     => esc_html__( 'Smush Now', 'wp-smushit' ),
+				'error_in_bulk' => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				'all_resmushed' => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
+				'restore'       => esc_html__( "Restoring image..", "wp-smushit" ),
+				'smushing'      => esc_html__( "Smushing image..", "wp-smushit" ),
+				'checking'      => esc_html__( "Checking images..", "wp-smushit" ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -501,6 +498,21 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
+			//Resize the dimensions of the image
+			/**
+			 * Filter whether the existing image should be resized or not
+			 *
+			 * @since 2.3
+			 *
+			 * @param bool $should_resize , Set to True by default
+			 *
+			 * @param $attachment_id Image Attachment ID
+			 *
+			 */
+			if ( $should_resize = apply_filters( 'wp_smush_resize_media_image', true, $attachment_id ) ) {
+				$this->resize_image( $attachment_id, $original_meta );
+			}
+
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 
 			//Get the updated Global Stats
@@ -540,6 +552,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @uses smush_single()
 		 */
 		function smush_manual() {
+
 			// turn off errors for ajax result
 			@error_reporting( 0 );
 
@@ -570,6 +583,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$attachment_id = absint( (int) ( $attachment_id ) );
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id );
+
+			//Send image for resizing
+			$this->resize_image( $attachment_id, $original_meta );
 
 			//Smush the image
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
@@ -652,10 +668,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$counts = wp_count_attachments( $this->mime_types );
 			foreach ( $this->mime_types as $mime ) {
-				if( isset( $counts->$mime ) ) {
+				if ( isset( $counts->$mime ) ) {
 					$count += $counts->$mime;
 				}
 			}
+
 			// send the count
 			return $count;
 		}
@@ -1821,6 +1838,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'width'  => $width,
 				'height' => $height
 			);
+		}
+
+		/**
+		 * Perform the resize operation for the image
+		 *
+		 * @param $attachment_id
+		 *
+		 * @param $meta
+		 *
+		 * @return mixed
+		 */
+		function resize_image( $attachment_id, $meta ) {
+			if ( empty( $attachment_id ) || empty( $meta ) ) {
+				return $meta;
+			}
+			global $wpsmush_resize;
+			$wpsmush_resize->auto_resize( $attachment_id, $meta );
 		}
 
 	}

@@ -273,6 +273,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
+		 * Optimises the image sizes
+		 *
 		 * Read the image paths from an attachment's meta data and process each image
 		 * with wp_smushit().
 		 *
@@ -529,6 +531,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed
 		 */
 		function filter_generate_attachment_metadata( $meta, $ID = null ) {
+
+			//Return directly if not a image
+			if ( ! wp_attachment_is_image( $ID ) ) {
+				return $meta;
+			}
+
+			global $wpsmush_resize;
+			$wpsmush_resize->auto_resize( $ID, $meta );
+
 			//Check if auto is enabled
 			$auto_smush = $this->is_auto_smush_enabled();
 
