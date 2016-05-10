@@ -9,10 +9,9 @@
  *
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
+
 //Include Bulk UI
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-ui.php';
-//Include Resize class
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
 
 //Load Shared UI
 if ( ! class_exists( 'WDEV_Plugin_Ui' ) ) {
@@ -62,7 +61,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public $super_smushed;
 
-		public $mime_types = array( 'image/jpeg', 'image/gif', 'image/png' );
+		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/gif', 'image/png' );
 
 		/**
 		 * @array Stores the stats for all the images
@@ -510,7 +509,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 *
 			 */
 			if ( $should_resize = apply_filters( 'wp_smush_resize_media_image', true, $attachment_id ) ) {
-				$this->resize_image( $attachment_id, $original_meta );
+				$updated_meta  = $this->resize_image( $attachment_id, $original_meta );
+				$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
+				wp_update_attachment_metadata( $attachment_id, $original_meta );
 			}
 
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
@@ -585,7 +586,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$original_meta = wp_get_attachment_metadata( $attachment_id );
 
 			//Send image for resizing
-			$this->resize_image( $attachment_id, $original_meta );
+			$updated_meta = $this->resize_image( $attachment_id, $original_meta );
+
+			$original_meta = !empty( $updated_meta ) ? $updated_meta : $original_meta;
+
+			//Update the details, as soon as we are done with resizing
+			wp_update_attachment_metadata( $attachment_id, $original_meta );
 
 			//Smush the image
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
@@ -1854,7 +1860,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return $meta;
 			}
 			global $wpsmush_resize;
-			$wpsmush_resize->auto_resize( $attachment_id, $meta );
+			return $wpsmush_resize->auto_resize( $attachment_id, $meta );
 		}
 
 	}

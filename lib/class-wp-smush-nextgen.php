@@ -127,9 +127,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * Read the image paths from an attachment's meta data and process each image
 		 * with wp_smushit().
 		 *
-		 * This method also adds a `wp_smushit` meta key for use in the media library.
-		 * Called after `wp_generate_attachment_metadata` is completed.
-		 *
 		 * @param $meta
 		 * @param null $ID
 		 *

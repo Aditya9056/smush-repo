@@ -1,5 +1,9 @@
 <?php
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-migrate.php";
+
+//Include Resize class
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
+
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
@@ -61,8 +65,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			 */
 			add_filter( 'wp_update_attachment_metadata', array(
 				$this,
-				'filter_generate_attachment_metadata'
-			), 12, 2 );
+				'smush_image'
+			), 15, 2 );
 
 			//Delete Backup files
 			add_action( 'delete_attachment', array(
@@ -277,9 +281,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * Read the image paths from an attachment's meta data and process each image
 		 * with wp_smushit().
-		 *
-		 * This method also adds a `wp_smushit` meta key for use in the media library.
-		 * Called after `wp_generate_attachment_metadata` is completed.
 		 *
 		 * @param $meta
 		 * @param null $ID
@@ -521,8 +522,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Read the image paths from an attachment's meta data and process each image
 		 * with wp_smushit()
 		 *
-		 * Filters  wp_generate_attachment_metadata
-		 *
 		 * @uses resize_from_meta_data
 		 *
 		 * @param $meta
@@ -530,7 +529,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return mixed
 		 */
-		function filter_generate_attachment_metadata( $meta, $ID = null ) {
+		function smush_image( $meta, $ID = null ) {
 
 			//Return directly if not a image
 			if ( ! wp_attachment_is_image( $ID ) ) {
@@ -538,7 +537,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			global $wpsmush_resize;
-			$wpsmush_resize->auto_resize( $ID, $meta );
+			$meta = $wpsmush_resize->auto_resize( $ID, $meta );
 
 			//Check if auto is enabled
 			$auto_smush = $this->is_auto_smush_enabled();
