@@ -794,9 +794,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			}
 
+			$resize_savings = $wpsmush_stats->resize_savings( false );
+
+			$smush_data['resize_savings'] = !empty( $resize_savings['savings'] ) ? $resize_savings['savings'] : 0;
+
 			if ( ! isset( $smush_data['bytes'] ) || $smush_data['bytes'] < 0 ) {
 				$smush_data['bytes'] = 0;
 			}
+
+			//Add the resize savings to bytes
+			$smush_data['bytes'] += $smush_data['resize_savings'];
+
+			//Add the size before and after
+
+			$smush_data['resize_savings'] = $this->format_bytes( $smush_data['resize_savings'] );
 
 			if ( $smush_data['size_before'] > 0 ) {
 				$smush_data['percent'] = ( $smush_data['bytes'] / $smush_data['size_before'] ) * 100;
@@ -806,8 +817,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smush_data['percent'] = round( $smush_data['percent'], 2 );
 
 			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
-
-			$smush_data['resize_savings'] = $wpsmush_stats->resize_savings( false );
 
 			//Update Cache
 			wp_cache_set( 'smush_global_stats', $smush_data, '', DAY_IN_SECONDS );

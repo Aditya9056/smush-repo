@@ -164,11 +164,15 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				//Updated File size
 				$u_file_size = filesize( $file_path );
 
-				$savings = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
+				$savings['savings']     = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
+				$savings['before_size'] = $original_file_size;
+				$savings['after_size']  = $u_file_size;
 
-				if ( $savings ) {
-					update_post_meta( $id, 'wp_smush_resize_savings', $savings );
+				//Store savings in meta data
+				if ( !empty( $savings ) ) {
+					update_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', $savings );
 				}
+
 				$meta['width']  = ! empty( $resize['width'] ) ? $resize['width'] : $meta['width'];
 				$meta['height'] = ! empty( $resize['height'] ) ? $resize['height'] : $meta['height'];
 

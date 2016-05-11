@@ -16,7 +16,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 	class WpSmushStats {
 		function __construct() {
 			//Update resize savings
-			add_action('wp_smush_image_resized', array( $this, 'resize_savings' ) );
+			add_action( 'wp_smush_image_resized', array( $this, 'resize_savings' ) );
 		}
 
 		/**
@@ -168,13 +168,13 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		function media_super_smush_count() {
 			global $wpsmushit_admin;
 			//Check if we have updated the stats for existing images, One time
-			if ( ! get_option( 'wp-smush-lossy-updated' ) ) {
+			if ( ! get_option( WP_SMUSH_PREFIX . 'lossy-updated' ) ) {
 
 				//Get all the smushed attachments
 				$attachments = $this->get_lossy_attachments( '', false );
 				if ( ! empty( $attachments ) ) {
 					foreach ( $attachments as $attachment ) {
-						update_post_meta( $attachment, 'wp-smush-lossy', 1 );
+						update_post_meta( $attachment, WP_SMUSH_PREFIX . 'lossy', 1 );
 					}
 				}
 			}
@@ -244,28 +244,52 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		}
 
 		/**
-		 * Get the savings from image resizing
+		 * Get the savings from image resizing, And force update if set to true
+		 *
+		 * @param bool $force_update , Whether to Re-Calculate all the stats or not
+		 *
+		 * @param bool $format Format the Bytes in readable format
+		 *
+		 * @return array|bool|mixed|string Array of {
+		 *      'savings',
+		 *      'before_size',
+		 *      'after_size'
+		 * }
+		 *
 		 */
-		function resize_savings( $force_update = true ) {
+		function resize_savings( $force_update = true, $format = false ) {
 			$savings = '';
 
 			if ( ! $force_update ) {
-				$savings = wp_cache_get( 'wp_smush_resize_savings', 'wp-smush' );
+				$savings = wp_cache_get( WP_SMUSH_PREFIX . 'resize_savings', 'wp-smush' );
 			}
 			//If nothing in cache, Calculate it
 			if ( empty( $savings ) || $force_update ) {
 				global $wpsmushit_admin;
-				$savings        = 0;
+				$savings = array(
+					'savings'     => 0,
+					'before_size' => 0,
+					'after_size'  => 0,
+				);
+
+				//Get the List of resized images
 				$resized_images = $this->resize_images();
+
+				//Iterate over them
 				foreach ( $resized_images as $id ) {
-					$meta = get_post_meta( $id, 'wp_smush_resize_savings', true );
-					if ( $meta > 0 ) {
-						$savings += intval( $meta );
+					$meta = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
+					if ( ! empty( $meta ) ) {
+						$savings['savings'] += intval( $meta['savings'] );
+						$savings['before_size'] += intval( $meta['before_size'] );
+						$savings['after_size'] += intval( $meta['after_size'] );
 					}
 				}
-				$savings = $wpsmushit_admin->format_bytes( $savings );
 
-				wp_cache_set( 'wp_smush_resize_savings', $savings, 'wp-smush' );
+				if ( $format ) {
+					$savings['savings'] = $wpsmushit_admin->format_bytes( $savings['savings'] );
+				}
+
+				wp_cache_set( WP_SMUSH_PREFIX . 'resize_savings', $savings, 'wp-smush' );
 			}
 
 			return $savings;
@@ -292,7 +316,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 				'order'                  => 'DESC',
 				'posts_per_page'         => $limit,
 				'offset'                 => 0,
-				'meta_key'               => 'wp_smush_resize_savings',
+				'meta_key'               => WP_SMUSH_PREFIX . 'resize_savings',
 				'update_post_term_cache' => false,
 				'no_found_rows'          => true,
 			);
