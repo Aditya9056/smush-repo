@@ -358,8 +358,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function setup_global_stats( $force_update = false ) {
-			$this->total_count     = $this->total_count();
-			$this->smushed_count   = $this->smushed_count( false );
+			global $wpsmush_stats;
+			$this->total_count     = $wpsmush_stats->total_count();
+			$this->smushed_count   = $wpsmush_stats->smushed_count( false );
 			$this->remaining_count = $this->remaining_count();
 			$this->stats           = $this->global_stats( $force_update );
 		}
@@ -467,7 +468,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function process_smush_request() {
 
-			global $WpSmush;
+			global $WpSmush, $wpsmush_stats;
 
 			// turn off errors for ajax result
 			@error_reporting( 0 );
@@ -524,12 +525,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$stats['smushed'] = $this->smushed_count;
 
 			if ( $WpSmush->lossy_enabled ) {
-				$stats['super_smushed'] = $this->super_smushed_count();
+				$stats['super_smushed'] = $wpsmush_stats->super_smushed_count();
 			}
 
 			$stats['resmush_count'] = count( $this->resmush_ids );
 
-			$stats['total'] = $this->total_count();
+			$stats['total'] = $wpsmush_stats->total_count();
 
 			if ( is_wp_error( $smush ) ) {
 				$error = $smush->get_error_message();
@@ -662,71 +663,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Total Image count
-		 * @return int
-		 */
-		function total_count() {
-
-			//Remove the Filters added by WP Media Folder
-			$this->remove_wmf_filters();
-
-			$count = 0;
-
-			$counts = wp_count_attachments( $this->mime_types );
-			foreach ( $this->mime_types as $mime ) {
-				if ( isset( $counts->$mime ) ) {
-					$count += $counts->$mime;
-				}
-			}
-
-			// send the count
-			return $count;
-		}
-
-		/**
-		 * Optimised images count
-		 *
-		 * @param bool $return_ids
-		 *
-		 * @return array|int
-		 */
-		function smushed_count( $return_ids ) {
-
-			//Don't query again, if the variable is already set
-			if ( ! $return_ids && ! empty( $this->smushed_count ) && $this->smushed_count > 0 ) {
-				return $this->smushed_count;
-			}
-
-			$query = array(
-				'fields'         => 'ids',
-				'post_type'      => 'attachment',
-				'post_status'    => 'any',
-				'post_mime_type' => $this->mime_types,
-				'order'          => 'ASC',
-				'posts_per_page' => - 1,
-				'meta_key'       => 'wp-smpro-smush-data',
-				'no_found_rows'  => true
-			);
-
-			//Remove the Filters added by WP Media Folder
-			$this->remove_wmf_filters();
-
-			$results = new WP_Query( $query );
-
-			if ( ! is_wp_error( $results ) && $results->post_count > 0 ) {
-				if ( ! $return_ids ) {
-					//return Post Count
-					return $results->post_count;
-				} else {
-					//Return post ids
-					return $results->posts;
-				}
-			} else {
-				return false;
-			}
-		}
-
-		/**
 		 * Returns remaining count
 		 *
 		 * @return int
@@ -810,7 +746,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 
-			global $wpdb, $WpSmush;
+			global $wpdb, $WpSmush, $wpsmush_stats;
 
 			$smush_data = array(
 				'size_before' => 0,
@@ -823,8 +759,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 * Allows to set a limit of mysql query
 			 * Default value is 2000
 			 */
-			$limit      = apply_filters( 'wp_smush_media_query_limit', 2000 );
-			$limit      = intval( $limit );
+			$limit      = $this->query_limit();
 			$offset     = 0;
 			$query_next = true;
 
@@ -871,6 +806,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smush_data['percent'] = round( $smush_data['percent'], 2 );
 
 			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
+
+			$smush_data['resize_savings'] = $wpsmush_stats->resize_savings( false );
 
 			//Update Cache
 			wp_cache_set( 'smush_global_stats', $smush_data, '', DAY_IN_SECONDS );
@@ -1001,12 +938,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function get_smushed_attachments() {
 
-			global $wpdb;
+			global $wpdb, $wpsmush_stats;
 
 			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/png' )";
 
-			$limit      = apply_filters( 'wp_smush_media_query_limit', 2000 );
-			$limit      = intval( $limit );
+			$limit      = $this->query_limit();
 			$offset     = 0;
 			$query_next = true;
 
@@ -1022,11 +958,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				           . " ORDER BY p . ID DESC"
 				           // add a limit
 				           . " LIMIT " . $limit;
+				var_dump( $sql );exit;
 				$results = $wpdb->get_results( $sql );
 
 				//Update the offset
 				$offset += $limit;
-				if ( $this->total_count() && $this->total_count() < $offset ) {
+				if ( $wpsmush_stats->total_count() && $wpsmush_stats->total_count() < $offset ) {
 					$query_next = false;
 				} else if ( ! $results || empty( $results ) ) {
 					$query_next = false;
@@ -1094,20 +1031,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			return $lossy_attachments;
-		}
-
-		/**
-		 * Remove any pre_get_posts_filters added by WP Media Folder plugin
-		 */
-		function remove_wmf_filters() {
-			//remove any filters added b WP media Folder plugin to get the all attachments
-			if ( class_exists( 'Wp_Media_Folder' ) ) {
-				global $wp_media_folder;
-				if ( is_object( $wp_media_folder ) ) {
-					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts1' ) );
-					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts' ), 0, 1 );
-				}
-			}
 		}
 
 		/**
@@ -1273,7 +1196,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function scan_images() {
 
-			global $WpSmush, $wpsmushnextgenadmin;
+			global $WpSmush, $wpsmushnextgenadmin, $wpsmush_stats;
 
 			check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
@@ -1329,7 +1252,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( 'nextgen' != $type ) {
 
 				//Get list of Smushed images
-				$attachments = $this->smushed_count( true );
+				$attachments = $wpsmush_stats->smushed_count( true );
 			} else {
 				global $wpsmushnextgenstats;
 
@@ -1532,79 +1455,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Returns/Updates the number of images Super Smushed
-		 *
-		 * @param string $type media/nextgen, Type of images to get/set the super smushed count for
-		 *
-		 * @param array $attachments Optional, By default Media attachments will be fetched
-		 *
-		 * @return array|mixed|void
-		 *
-		 */
-		function super_smushed_count( $type = 'media', $attachments = '' ) {
-
-			if ( 'media' == $type ) {
-				$count = $this->media_super_smush_count();
-			} else {
-				$key = 'wp-smush-super_smushed_nextgen';
-
-				//Flag to check if we need to re-evaluate the count
-				$revaluate = false;
-
-				$super_smushed = get_option( $key, false );
-
-				//Check if need to revalidate
-				if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['ids'] ) ) {
-
-					$super_smushed = array(
-						'ids' => array()
-					);
-
-					$revaluate = true;
-				} else {
-					$last_checked = $super_smushed['timestamp'];
-
-					$diff = $last_checked - current_time( 'timestamp' );
-
-					//Difference in hour
-					$diff_h = $diff / 3600;
-
-					//if last checked was more than 1 hours.
-					if ( $diff_h > 1 ) {
-						$revaluate = true;
-					}
-				}
-				//Do not Revaluate stats if nextgen attachments are not provided
-				if ( 'nextgen' == $type && empty( $attachments ) && $revaluate ) {
-					$revaluate = false;
-				}
-
-				//Need to scan all the image
-				if ( $revaluate ) {
-					//Get all the Smushed attachments ids
-					$super_smushed_images = $this->get_lossy_attachments( $attachments, false );
-
-					if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
-						//Iterate over all the attachments to check if it's already there in list, else add it
-						foreach ( $super_smushed_images as $id ) {
-							if ( ! in_array( $id, $super_smushed['ids'] ) ) {
-								$super_smushed['ids'][] = $id;
-							}
-						}
-					}
-
-					$super_smushed['timestamp'] = current_time( 'timestamp' );
-
-					update_option( $key, $super_smushed );
-				}
-
-				$count = ! empty( $super_smushed['ids'] ) ? count( $super_smushed['ids'] ) : 0;
-			}
-
-			return $count;
-		}
-
-		/**
 		 * Add/Remove image id from Super Smushed images count
 		 *
 		 * @param int $id Image id
@@ -1693,76 +1543,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Delete the resmush list
 			delete_option( $key );
 			wp_send_json_success();
-		}
-
-		/**
-		 * Updates the Meta for existing smushed images and retrieves the count of Super Smushed images
-		 *
-		 * @return int Count of Super Smushed images
-		 *
-		 */
-		function media_super_smush_count() {
-			//Check if we have updated the stats for existing images, One time
-			if ( ! get_option( 'wp-smush-lossy-updated' ) ) {
-
-				//Get all the smushed attachments
-				$attachments = $this->get_lossy_attachments( '', false );
-				if ( ! empty( $attachments ) ) {
-					foreach ( $attachments as $attachment ) {
-						update_post_meta( $attachment, 'wp-smush-lossy', 1 );
-					}
-				}
-			}
-			//Get all the attachments with wp-smush-lossy
-			$limit         = apply_filters( 'wp_smush_query_limit', 2000 );
-			$limit         = intval( $limit );
-			$get_posts     = true;
-			$super_smushed = array();
-			$args          = array(
-				'fields'                 => 'ids',
-				'post_type'              => 'attachment',
-				'post_status'            => 'any',
-				'post_mime_type'         => $this->mime_types,
-				'orderby'                => 'ID',
-				'order'                  => 'DESC',
-				'posts_per_page'         => $limit,
-				'offset'                 => 0,
-				'meta_query'             => array(
-					array(
-						'key'   => 'wp-smush-lossy',
-						'value' => 1
-					)
-				),
-				'update_post_term_cache' => false,
-				'no_found_rows'          => true,
-			);
-			//Loop Over to get all the attachments
-			while ( $get_posts ) {
-
-				//Remove the Filters added by WP Media Folder
-				$this->remove_wmf_filters();
-
-				$query = new WP_Query( $args );
-
-				if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
-					//Merge the results
-					$super_smushed = array_merge( $super_smushed, $query->posts );
-
-					//Update the offset
-					$args['offset'] += $limit;
-				} else {
-					//If we didn't get any posts from query, set $get_posts to false
-					$get_posts = false;
-				}
-
-				//If total Count is set, and it is alread lesser than offset, don't query
-				if ( ! empty( $this->total_count ) && $this->total_count < $args['offset'] ) {
-					$get_posts = false;
-				}
-			}
-			update_option( 'wp-smush-lossy-updated', true );
-
-			return count( $super_smushed );
 		}
 
 		/**
@@ -1861,6 +1641,32 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 			global $wpsmush_resize;
 			return $wpsmush_resize->auto_resize( $attachment_id, $meta );
+		}
+
+		/**
+		 * Limit for all the queries
+		 *
+		 * @return int|mixed|void
+		 *
+		 */
+		function query_limit() {
+			$limit = apply_filters( 'wp_smush_query_limit', 2000 );
+			$limit = intval( $limit );
+
+			return $limit;
+		}
+
+		/**
+		 * Filter the number of results fetched at once for NextGen queries
+		 *
+		 * @return int|mixed|void
+		 *
+		 */
+		function nextgen_query_limit() {
+			$limit = apply_filters( 'wp_smush_nextgen_query_limit', 2000 );
+			$limit = intval( $limit );
+
+			return $limit;
 		}
 
 	}

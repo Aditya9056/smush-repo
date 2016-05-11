@@ -22,11 +22,10 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 		 * @return array $attachments
 		 */
 		function get_attachments() {
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpsmush_stats;
 
 			if ( ! isset( $_REQUEST['ids'] ) ) {
-				$limit           = apply_filters( 'wp_smush_nextgen_query_limit', 2000 );
-				$limit           = intval( $limit );
+				$limit           = $wpsmushit_admin->query_limit();
 				$limit           = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
 				$get_posts       = true;
 				$unsmushed_posts = array();
@@ -52,17 +51,17 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 				while ( $get_posts ) {
 
 					//Remove the Filters added by WP Media Folder
-					$wpsmushit_admin->remove_wmf_filters();
+					$wpsmush_stats->remove_wmf_filters();
 
 					$query = new WP_Query( $args );
 
-					if( !empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
+					if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
 						//Merge the results
 						$unsmushed_posts = array_merge( $unsmushed_posts, $query->posts );
 
 						//Update the offset
 						$args['offset'] += $limit;
-					}else{
+					} else {
 						//If we didn't get any posts from query, set $get_posts to false
 						$get_posts = false;
 					}

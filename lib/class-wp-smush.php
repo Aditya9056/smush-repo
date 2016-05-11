@@ -1,5 +1,9 @@
 <?php
+//Migration Class
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-migrate.php";
+
+//Stats
+require_once WP_SMUSH_DIR . "lib/class-wp-smush-stats.php";
 
 //Include Resize class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
@@ -1579,6 +1583,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @param $image_id
 		 */
 		function delete_images( $image_id ) {
+			global $wpsmush_stats;
+
+			//Update the savings cache
+			$wpsmush_stats->resize_savings( true );
 
 			//If no image id provided
 			if ( empty( $image_id ) ) {

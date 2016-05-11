@@ -172,6 +172,12 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				$meta['width']  = ! empty( $resize['width'] ) ? $resize['width'] : $meta['width'];
 				$meta['height'] = ! empty( $resize['height'] ) ? $resize['height'] : $meta['height'];
 
+				/**
+				 * Called after the image have been successfully resized
+				 * Can be used to update the stored stats
+				 */
+				do_action('wp_smush_image_resized', $id, $savings );
+
 			}
 
 			return $meta;
