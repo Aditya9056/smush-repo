@@ -226,10 +226,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 					$stats['sizes'][ $size ] = (object) $WpSmush->_array_fill_placeholders( $WpSmush->_get_size_signature(), (array) $response['data'] );
 
-					//Total Stats, store all data in bytes
-					list( $size_before, $size_after, $total_time, $compression, $bytes_saved )
-						= $WpSmush->_update_stats_data( $response['data'], $size_before, $size_after, $total_time, $bytes_saved );
-
 					if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
 						$stats['stats']['lossy']       = $response['data']->lossy;
@@ -240,30 +236,12 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 			$has_errors = (bool) count( $errors->get_error_messages() );
 
-			list( $stats['stats']['size_before'], $stats['stats']['size_after'], $stats['stats']['time'], $stats['stats']['percent'], $stats['stats']['bytes'] ) =
-				array( $size_before, $size_after, $total_time, $compression, $bytes_saved );
-
 			//Set smush status for all the images, store it in wp-smpro-smush-data
 			if ( ! $has_errors ) {
 
 				$existing_stats = ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) ? $image->meta_data['wp_smush'] : '';
 
 				if ( ! empty( $existing_stats ) ) {
-					$e_size_before = !empty( $existing_stats['stats']['size_before'] ) ? $existing_stats['stats']['size_before'] : '';
-					$e_size_after = isset( $existing_stats['stats']['size_after'] ) ? $existing_stats['stats']['size_after'] : '';
-
-					//Store Original size before
-					$stats['stats']['size_before'] = ( !empty($e_size_before ) && $e_size_before > $stats['stats']['size_before'] ) ? $e_size_before : $stats['stats']['size_before'];
-
-					if ( $size_after == 0 || empty( $stats['stats']['size_after'] ) || $stats['stats']['size_after'] == $stats['stats']['size_before'] ) {
-						$stats['stats']['size_after'] = $e_size_after < $stats['stats']['size_before'] ? $e_size_after : $stats['stats']['size_before'];
-					}
-
-					//Update total bytes saved, and compression percent
-					$stats['stats']['bytes']   = isset( $existing_stats['stats']['bytes'] ) ? $existing_stats['stats']['bytes'] + $stats['stats']['bytes'] : $stats['stats']['bytes'];
-
-					$stats['stats']['percent'] = $WpSmush->calculate_percentage( (object) $stats['stats'], (object) $existing_stats['stats'] );
-
 					//Update stats for each size
 					if ( ! empty( $existing_stats['sizes'] ) && ! empty( $stats['sizes'] ) ) {
 
@@ -289,6 +267,9 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 						}
 					}
 				}
+				//Total Stats
+				$stats = $WpSmush->total_compression( $stats );
+
 				//If there was any compression and there was no error in smushing
 				if( isset( $stats['stats']['bytes'] ) && $stats['stats']['bytes'] >= 0 && !$has_errors ) {
 					/**
