@@ -1673,7 +1673,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function wp_smush_redirect( $plugin ) {
 
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpsmush_stats;
 
 			//Run for only our plugin
 			if( $plugin != WP_SMUSH_BASENAME ) {
@@ -1686,7 +1686,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//If images are already smushed
-			if( $wpsmushit_admin->smushed_count( false ) > 0 ) {
+			if( $wpsmush_stats->smushed_count( false ) > 0 ) {
 				return false;
 			}
 

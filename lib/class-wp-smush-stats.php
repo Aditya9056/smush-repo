@@ -137,7 +137,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 				//Need to scan all the image
 				if ( $revaluate ) {
 					//Get all the Smushed attachments ids
-					$super_smushed_images = $this->get_lossy_attachments( $attachments, false );
+					$super_smushed_images = $this->super_smushed_count( true );
 
 					if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
 						//Iterate over all the attachments to check if it's already there in list, else add it
@@ -165,7 +165,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		 * @return int Count of Super Smushed images
 		 *
 		 */
-		function media_super_smush_count() {
+		function media_super_smush_count( $return_ids = false ) {
 			global $wpsmushit_admin;
 			//Check if we have updated the stats for existing images, One time
 			if ( ! get_option( WP_SMUSH_PREFIX . 'lossy-updated' ) ) {
@@ -226,7 +226,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			}
 			update_option( 'wp-smush-lossy-updated', true );
 
-			return count( $super_smushed );
+			return $return_ids ? $super_smushed : count( $super_smushed );
 		}
 
 		/**
@@ -346,6 +346,65 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			}
 
 			return $resized_images;
+		}
+		/**
+		 * Returns the ids and meta which are losslessly compressed
+		 *
+		 * @return array
+		 */
+		function get_lossy_attachments( $attachments = '', $return_count = true ) {
+
+			$lossy_attachments = array();
+			$count             = 0;
+
+			if ( empty( $attachments ) ) {
+				//Fetch all the smushed attachment ids
+				$attachments = $this->smushed_count( true );
+			}
+
+			//If we dont' have any attachments
+			if ( empty( $attachments ) || 0 == count( $attachments ) ) {
+				return 0;
+			}
+
+			//Check if image is lossless or lossy
+			foreach ( $attachments as $attachment ) {
+
+				//Check meta for lossy value
+				$smush_data = ! empty( $attachment->smush_data ) ? maybe_unserialize( $attachment->smush_data ) : '';
+
+				//For Nextgen Gallery images
+				if ( empty( $smush_data ) && is_array( $attachment ) && ! empty( $attachment['wp_smush'] ) ) {
+					$smush_data = ! empty( $attachment['wp_smush'] ) ? $attachment['wp_smush'] : '';
+				}
+
+				//Return if not smushed
+				if ( empty( $smush_data ) ) {
+					continue;
+				}
+
+				//if stats not set or lossy is not set for attachment, return
+				if ( empty( $smush_data['stats'] ) || ! isset( $smush_data['stats']['lossy'] ) ) {
+					continue;
+				}
+
+				//Add to array if lossy is not 1
+				if ( 1 == $smush_data['stats']['lossy'] ) {
+					$count ++;
+					if ( ! empty( $attachment->attachment_id ) ) {
+						$lossy_attachments[] = $attachment->attachment_id;
+					} elseif ( is_array( $attachment ) && ! empty( $attachment['pid'] ) ) {
+						$lossy_attachments[] = $attachment['pid'];
+					}
+				}
+			}
+			unset( $attachments );
+
+			if ( $return_count ) {
+				return $count;
+			}
+
+			return $lossy_attachments;
 		}
 	}
 

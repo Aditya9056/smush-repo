@@ -976,66 +976,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Returns the ids and meta which are losslessly compressed
-		 *
-		 * @return array
-		 */
-		function get_lossy_attachments( $attachments = '', $return_count = true ) {
-
-			$lossy_attachments = array();
-			$count             = 0;
-
-			if ( empty( $attachments ) ) {
-				//Fetch all the smushed attachment ids
-				$attachments = $this->get_smushed_attachments();
-			}
-
-			//If we dont' have any attachments
-			if ( empty( $attachments ) || 0 == count( $attachments ) ) {
-				return 0;
-			}
-
-			//Check if image is lossless or lossy
-			foreach ( $attachments as $attachment ) {
-
-				//Check meta for lossy value
-				$smush_data = ! empty( $attachment->smush_data ) ? maybe_unserialize( $attachment->smush_data ) : '';
-
-				//For Nextgen Gallery images
-				if ( empty( $smush_data ) && is_array( $attachment ) && ! empty( $attachment['wp_smush'] ) ) {
-					$smush_data = ! empty( $attachment['wp_smush'] ) ? $attachment['wp_smush'] : '';
-				}
-
-				//Return if not smushed
-				if ( empty( $smush_data ) ) {
-					continue;
-				}
-
-				//if stats not set or lossy is not set for attachment, return
-				if ( empty( $smush_data['stats'] ) || ! isset( $smush_data['stats']['lossy'] ) ) {
-					continue;
-				}
-
-				//Add to array if lossy is not 1
-				if ( 1 == $smush_data['stats']['lossy'] ) {
-					$count ++;
-					if ( ! empty( $attachment->attachment_id ) ) {
-						$lossy_attachments[] = $attachment->attachment_id;
-					} elseif ( is_array( $attachment ) && ! empty( $attachment['pid'] ) ) {
-						$lossy_attachments[] = $attachment['pid'];
-					}
-				}
-			}
-			unset( $attachments );
-
-			if ( $return_count ) {
-				return $count;
-			}
-
-			return $lossy_attachments;
-		}
-
-		/**
 		 * Store a key/value to hide the smush features on bulk page
 		 */
 		function dismiss_welcome_notice() {
@@ -1551,7 +1491,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Allows to bulk restore the images, if there is any backup for them
 		 */
 		function bulk_restore() {
-			$smushed_attachments = $this->get_smushed_attachments();
+			global $wpsmush_stats;
+			$smushed_attachments = $wpsmush_stats->smushed_count( true );
 			foreach ( $smushed_attachments as $attachment ) {
 				$this->restore_image( $attachment->attachment_id, false );
 			}
