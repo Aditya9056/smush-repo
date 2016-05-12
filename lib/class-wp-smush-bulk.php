@@ -25,8 +25,13 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 			global $wpsmushit_admin, $wpsmush_stats;
 
 			if ( ! isset( $_REQUEST['ids'] ) ) {
-				$limit           = $wpsmushit_admin->query_limit();
-				$limit           = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
+				$limit = $wpsmushit_admin->query_limit();
+				$limit = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
+
+				//Do not fetch more than this, any time
+				//Localizing all rows at once increases the page load and sloes down everything
+				$r_limit = apply_filters( 'wp_smush_max_rows', 5000 );
+
 				$get_posts       = true;
 				$unsmushed_posts = array();
 				$args            = array(
@@ -63,6 +68,11 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 						$args['offset'] += $limit;
 					} else {
 						//If we didn't get any posts from query, set $get_posts to false
+						$get_posts = false;
+					}
+
+					//If we already got enough posts
+					if ( count( $unsmushed_posts ) >= $r_limit ) {
 						$get_posts = false;
 					}
 
