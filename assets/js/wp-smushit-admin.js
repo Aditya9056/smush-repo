@@ -974,22 +974,6 @@ jQuery(function ($) {
 
     });
 
-    //Dismiss Install/Upgrade notice
-    $('#wp-smush-install-thanks .smush-dismiss-welcome').on('click', function (e) {
-        e.preventDefault();
-        var $el = $(this).parents().eq(2);
-        $el.fadeTo(100, 0, function () {
-            $el.slideUp(100, function () {
-                $el.remove();
-            });
-        });
-        //Send a ajax request to save the dismissed notice option
-        var param = {
-            action: 'dismiss_upgrade_notice'
-        };
-        $.post(ajaxurl, param);
-    });
-
     //Allow the checkboxes to be Keyboard Accessible
     $('.wp-smush-setting-row .toggle-checkbox').focus(function () {
         //If Space is pressed

@@ -914,8 +914,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Return if notice is already dismissed
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
 				return;
-			} ?>
-			<div class="wpmud wp-smush-updated"><?php
+			} ?><?php
 
 			$install_type = get_site_option( 'wp-smush-install-type', false );
 
@@ -928,14 +927,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				update_site_option( 'wp-smush-install-type', $install_type );
 			}
 
-			//Whether New/Existing Installation
-			$box_heading = 'existing' == $install_type ? esc_html__( "THANKS FOR UPDATING SMUSH!", "wp-smushit" ) : esc_html__( "HAPPY SMUSHING!", "wp-smushit" );
-
 			//Container Header
-			echo $this->bulk_ui->container_header( 'wp-smush-install-thanks-box', 'wp-smush-install-thanks', $box_heading, '', true );
 			echo $this->bulk_ui->installation_notice();
-			?>
-			</div><?php
 		}
 
 		/**
