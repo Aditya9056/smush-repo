@@ -60,7 +60,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			$query = array(
 				'fields'         => 'ids',
 				'post_type'      => 'attachment',
-				'post_status'    => 'any',
+				'post_status'    => 'inherit',
 				'post_mime_type' => $wpsmushit_admin->mime_types,
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
@@ -310,7 +310,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			$args           = array(
 				'fields'                 => 'ids',
 				'post_type'              => 'attachment',
-				'post_status'            => 'any',
+				'post_status'            => 'inherit',
 				'post_mime_type'         => $wpsmushit_admin->mime_types,
 				'orderby'                => 'ID',
 				'order'                  => 'DESC',
@@ -349,6 +349,8 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		}
 		/**
 		 * Returns the ids and meta which are losslessly compressed
+		 *
+		 * Called only if the meta key isn't updated for old images, else it is not used
 		 *
 		 * @return array
 		 */

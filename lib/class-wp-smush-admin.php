@@ -61,6 +61,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public $super_smushed;
 
+		public $smushed_attachments = array();
+
 		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/gif', 'image/png' );
 
 		/**
@@ -359,10 +361,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function setup_global_stats( $force_update = false ) {
 			global $wpsmush_stats;
-			$this->total_count     = $wpsmush_stats->total_count();
-			$this->smushed_count   = $wpsmush_stats->smushed_count( false );
-			$this->remaining_count = $this->remaining_count();
-			$this->stats           = $this->global_stats( $force_update );
+			$this->total_count         = $wpsmush_stats->total_count();
+			$this->smushed_attachments = $wpsmush_stats->smushed_count( true );
+			$this->smushed_count       = count( $this->smushed_attachments );
+			$this->remaining_count     = $this->remaining_count();
+			$this->stats               = $this->global_stats( $force_update );
 		}
 
 		/**
@@ -589,7 +592,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Send image for resizing
 			$updated_meta = $this->resize_image( $attachment_id, $original_meta );
 
-			$original_meta = !empty( $updated_meta ) ? $updated_meta : $original_meta;
+			$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 
 			//Update the details, as soon as we are done with resizing
 			wp_update_attachment_metadata( $attachment_id, $original_meta );
@@ -796,7 +799,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$resize_savings = $wpsmush_stats->resize_savings( false );
 
-			$smush_data['resize_savings'] = !empty( $resize_savings['savings'] ) ? $resize_savings['savings'] : 0;
+			$smush_data['resize_savings'] = ! empty( $resize_savings['savings'] ) ? $resize_savings['savings'] : 0;
 
 			if ( ! isset( $smush_data['bytes'] ) || $smush_data['bytes'] < 0 ) {
 				$smush_data['bytes'] = 0;
@@ -950,17 +953,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			while ( $query_next ) {
 				// get the attachment id, smush data
-				$sql     = "SELECT p.ID as attachment_id, p.post_mime_type as type, ms.meta_value as smush_data"
-				           . " FROM $wpdb->posts as p"
-				           . " LEFT JOIN $wpdb->postmeta as ms"
-				           . " ON (p.ID= ms.post_id AND ms.meta_key='wp-smpro-smush-data')"
-				           . " WHERE"
-				           . " p.post_type='attachment'"
-				           . " AND p.post_mime_type IN " . $allowed_images
-				           . " ORDER BY p . ID DESC"
-				           // add a limit
-				           . " LIMIT " . $limit;
-				var_dump( $sql );exit;
+				$sql = "SELECT p.ID as attachment_id, p.post_mime_type as type, ms.meta_value as smush_data"
+				       . " FROM $wpdb->posts as p"
+				       . " LEFT JOIN $wpdb->postmeta as ms"
+				       . " ON (p.ID= ms.post_id AND ms.meta_key='wp-smpro-smush-data')"
+				       . " WHERE"
+				       . " p.post_type='attachment'"
+				       . " AND p.post_mime_type IN " . $allowed_images
+				       . " ORDER BY p . ID DESC"
+				       // add a limit
+				       . " LIMIT " . $limit;
+				var_dump( $sql );
+				exit;
 				$results = $wpdb->get_results( $sql );
 
 				//Update the offset
@@ -1194,7 +1198,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( 'nextgen' != $type ) {
 
 				//Get list of Smushed images
-				$attachments = $wpsmush_stats->smushed_count( true );
+				$attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $wpsmush_stats->smushed_count( true );
 			} else {
 				global $wpsmushnextgenstats;
 
@@ -1492,7 +1496,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function bulk_restore() {
 			global $wpsmush_stats;
-			$smushed_attachments = $wpsmush_stats->smushed_count( true );
+			$smushed_attachments = !empty( $this->smushed_attachments ) ? $this->smushed_attachments : $wpsmush_stats->smushed_count( true );
 			foreach ( $smushed_attachments as $attachment ) {
 				$this->restore_image( $attachment->attachment_id, false );
 			}
@@ -1583,6 +1587,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return $meta;
 			}
 			global $wpsmush_resize;
+
 			return $wpsmush_resize->auto_resize( $attachment_id, $meta );
 		}
 
