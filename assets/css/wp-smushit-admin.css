@@ -254,7 +254,6 @@ input#wp-smush-save-settings {
 .compat-field-wp_smush .smush-wrap {
     margin: 0 0 5px 0;
     max-width: 100%;
-    overflow: hidden;
 }
 
 .inactive {
@@ -1024,6 +1023,7 @@ small.smush-setting-description {
         box-sizing: border-box;
         display: inline-block !important;
         float: none;
+        overflow: visible;
         width: 50% !important;
     }
 
@@ -1060,12 +1060,16 @@ small.smush-setting-description {
     text-transform: none !important;
 }
 
-.smushit [tooltip] {
+.compat-item .compat-field-wp_smush {
+    overflow: visible;
+}
+
+.smushit [tooltip], .compat-field-wp_smush [tooltip] {
     position: relative;
     overflow: visible;
 }
 
-.smushit [tooltip]:before {
+.smushit [tooltip]:before, .compat-field-wp_smush [tooltip]:before {
     content: '';
     position: absolute;
     border: 5px solid transparent;
@@ -1080,14 +1084,14 @@ small.smush-setting-description {
     pointer-events: none;
 }
 
-.smushit [tooltip]:after {
+.smushit [tooltip]:after, .compat-field-wp_smush [tooltip]:after {
     content: attr(tooltip);
     position: absolute;
     background: #0B2F3F;
     color: #FFF;
     bottom: 100%;
     left: 50%;
-    width: 200px;
+    width: 180px;
     margin-left: -100px;
     margin-bottom: 5px;
     text-align: center;
@@ -1100,30 +1104,43 @@ small.smush-setting-description {
     white-space: pre-wrap;
     pointer-events: none;
 }
+.smushit .smush-skipped [tooltip]:before, .compat-field-wp_smush .smush-skipped [tooltip]:before{
+    border-top-color: transparent;
+    border-left-color: #0B2F3F;
+    bottom: 0;
+    left: 0;
+}
+.smushit .smush-skipped [tooltip]:after, .compat-field-wp_smush .smush-skipped [tooltip]:after{
+    margin-left: 0;
+    left: -195px;
+    top: -35px;
+    bottom: inherit;
+    margin-bottom: 5px;
+}
 
-.smushit [tooltip].tooltip-s:after {
+.smushit [tooltip].tooltip-s:after, .compat-field-wp_smush [tooltip].tooltip-s:after {
     width: 150px;
     margin-left: -75px;
 }
 
-.smushit [tooltip].tooltip-l:after {
+.smushit [tooltip].tooltip-l:after, .compat-field-wp_smush [tooltip].tooltip-l:after {
     width: 280px;
     margin-left: -140px;
 }
 
-.smushit [tooltip].tooltip-right:after {
+.smushit [tooltip].tooltip-right:after, .compat-field-wp_smush [tooltip].tooltip-right:after {
     margin-left: -180px;
 }
 
-.smushit [tooltip].tooltip-s.tooltip-right:after {
+.smushit [tooltip].tooltip-s.tooltip-right:after, .compat-field-wp_smush [tooltip].tooltip-s.tooltip-right:after {
     margin-left: -130px;
 }
 
-.smushit [tooltip].tooltip-l.tooltip-right:after {
+.smushit [tooltip].tooltip-l.tooltip-right:after, .compat-field-wp_smush [tooltip].tooltip-l.tooltip-right:after {
     margin-left: -260px;
 }
 
-.smushit [tooltip].tooltip-bottom:before {
+.smushit [tooltip].tooltip-bottom:before, .compat-field-wp_smush [tooltip].tooltip-bottom:before {
     border-color: transparent;
     border-bottom-color: #0B2F3F;
     top: 100%;
@@ -1132,21 +1149,21 @@ small.smush-setting-description {
     margin-bottom: 0;
 }
 
-.smushit [tooltip].tooltip-bottom:after {
+.smushit [tooltip].tooltip-bottom:after, .compat-field-wp_smush [tooltip].tooltip-bottom:after {
     bottom: auto;
     top: 100%;
     margin-top: 5px;
     margin-bottom: 0;
 }
 
-.smushit [tooltip]:hover:before {
-    opacity: 1;
+.smushit [tooltip]:hover:before, .compat-field-wp_smush [tooltip]:hover:before {
     z-index: 1;
     margin-bottom: 0;
+    opacity: 1;
     transition: margin .2s, opacity .2s;
 }
 
-.smushit [tooltip]:hover:after {
+.smushit [tooltip]:hover:after, .compat-field-wp_smush [tooltip]:hover:after {
     opacity: 1;
     z-index: 1;
     margin-bottom: 10px;
@@ -1154,7 +1171,9 @@ small.smush-setting-description {
 }
 
 .smushit .disabled[tooltip]:before,
-.smushit .disabled[tooltip]:after {
+.smushit .disabled[tooltip]:after,
+.compat-field-wp_smush .disabled[tooltip]:before,
+.compat-field-wp_smush .disabled[tooltip]:after {
     display: none;
 }
 
