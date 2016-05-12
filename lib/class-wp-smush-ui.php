@@ -448,7 +448,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<span class="wp-smush-hummingbird-image tc">
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/hummingbird.png'; ?>"
 					     alt="<?php esc_html_e( "BOOST YOUR PERFORMANCE - HUMMINGBIRD", "wp-smushit" ); ?>">
-		        </span>
+	        </span>
 			<p class="wp-smush-promo-content tc roboto-medium">Hummingbird goes beyond Smush compression with
 				minification, caching, performance monitoring and more - every millisecond counts!</p>
 			<span class="wp-smush-hb-cta tc roboto-medium">
@@ -495,12 +495,16 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				if ( $wpsmushit_admin->remaining_count > 0 ) {
 					$class = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' hidden' : '';
 					?>
-				<div class="wp-smush-notice wp-smush-remaining<?php echo $class; ?>" tabindex="0">
-					<i class="dev-icon">
-						<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
-					</i>
-						<span class="wp-smush-notice-text">
-							<?php printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that need smushing!", $wpsmushit_admin->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' ); ?>
+					<div class="wp-smush-notice wp-smush-remaining<?php echo $class; ?>" tabindex="0">
+						<i class="dev-icon">
+							<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
+						</i>
+						<span class="wp-smush-notice-text"><?php
+							printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that need smushing!", $wpsmushit_admin->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' );
+							if( !$WpSmush->is_pro() ) {
+								printf( '<br />' . esc_html__("You can %sUpgrade to Pro%s to bulk smush all your images with one click.", "wp-smushit") .'<br />', '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ). '" target="_blank" title="' . esc_html__("WP Smush Pro", "wp-smushit") . '">', '</a>' );
+								esc_html_e("Free users can smush 50 images with each click.", "wp-smushit");
+							 }?>
 						</span>
 					</div><?php
 				} ?>
