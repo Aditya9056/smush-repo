@@ -527,7 +527,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function progress_bar( $count ) {
 
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
-			$smushed_count = ( $resmush_count = count( $count->resmush_ids ) ) > 0 ? ( $count->total_count - $resmush_count ) : $count->smushed_count;
+			$smushed_count = ( $resmush_count = count( $count->resmush_ids ) ) > 0 ? ( $count->total_count - ( $count->remaining_count + $resmush_count ) ) : $count->smushed_count;
 			// calculate %ages, avoid divide by zero error with no attachments
 			if ( $count->total_count > 0 && $count->smushed_count > 0 ) {
 				$smushed_pc = $smushed_count / $count->total_count * 100;

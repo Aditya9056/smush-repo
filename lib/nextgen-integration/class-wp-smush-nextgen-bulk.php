@@ -32,7 +32,8 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 			if( empty( $wpsmushnextgenadmin->resmush_ids ) ) {
 				$wpsmushnextgenadmin->resmush_ids = get_option( 'wp-smush-nextgen-resmush-list' );
 			}
-			$stats['resmush_count'] = count( $wpsmushnextgenadmin->resmush_ids );
+
+			$stats['resmush_count'] = !empty( $wpsmushnextgenadmin->resmush_ids ) ? count( $wpsmushnextgenadmin->resmush_ids ) : count( $wpsmushnextgenadmin->resmush_ids = get_option( 'wp-smush-nextgen-resmush-list' ) );
 
 			$stats['total']   = $wpsmushnextgenstats->total_count();
 

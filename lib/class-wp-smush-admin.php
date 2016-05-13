@@ -498,6 +498,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			}
 
+			$send_error = false;
+
 			$attachment_id = (int) ( $_REQUEST['attachment_id'] );
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
@@ -526,30 +528,34 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$stats = $this->stats;
 
-			$stats['smushed'] = $this->smushed_count;
-
-			if ( $WpSmush->lossy_enabled ) {
-				$stats['super_smushed'] = $wpsmush_stats->super_smushed_count();
-			}
-
-			$stats['resmush_count'] = count( $this->resmush_ids );
-
 			$stats['total'] = $wpsmush_stats->total_count();
 
 			if ( is_wp_error( $smush ) ) {
+
+				$send_error = true;
+
 				$error = $smush->get_error_message();
 				//Check for timeout error and suggest to filter timeout
 				if ( strpos( $error, 'timed out' ) ) {
 					$error = '<p class="wp-smush-error-message">' . esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" ) . '</p>';
 				}
-				wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $error ) );
 			} else {
 				//Check if a resmush request, update the resmush list
 				if ( ! empty( $_REQUEST['is_bulk_resmush'] ) && 'false' != $_REQUEST['is_bulk_resmush'] && $_REQUEST['is_bulk_resmush'] ) {
 					$this->update_resmush_list( $attachment_id );
 				}
-				wp_send_json_success( array( 'stats' => $stats ) );
 			}
+			$stats['resmush_count'] = empty( $this->resmush_ids ) ? count( $this->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $this->resmush_ids );
+
+			$stats['smushed'] = !empty( $this->resmush_ids ) ? $this->smushed_count - $stats['resmush_count'] : $this->smushed_count;
+
+			if ( $WpSmush->lossy_enabled ) {
+				$stats['super_smushed'] = $wpsmush_stats->super_smushed_count();
+			}
+
+			//Send ajax response
+			$send_error ? wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $error ) ) : wp_send_json_success( array( 'stats' => $stats ) );
+
 		}
 
 		/**
@@ -1599,7 +1605,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function query_limit() {
-			$limit = apply_filters( 'wp_smush_query_limit', 10 );
+			$limit = apply_filters( 'wp_smush_query_limit', 1000 );
 			$limit = intval( $limit );
 
 			return $limit;

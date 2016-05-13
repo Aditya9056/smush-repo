@@ -289,14 +289,12 @@ jQuery(function ($) {
 
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
-                //Temporary Workaround, @todo: Need to fix this jugaad
-                var smushed_count = self.is_bulk_resmush ? ( _res.data.stats.total - self.ids.length ) + 1 : _res.data.stats.smushed;
-                smushed_count = smushed_count > _res.data.stats.total ? _res.data.stats.total : smushed_count;
+
                 //Update stats
                 $('.smush-total-reduction-percent .wp-smush-stats').html(_res.data.stats.percent);
                 $('.smush-total-reduction-bytes .wp-smush-stats').html(_res.data.stats.human);
 
-                $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(smushed_count);
+                $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(_res.data.stats.smushed);
                 if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed) {
                     $('.super-smush-attachments .smushed-count').html(_res.data.stats.super_smushed);
                 }
@@ -345,6 +343,10 @@ jQuery(function ($) {
         this.call_ajax = function () {
             var nonce_value = '';
             this.current_id = this.is_bulk ? this.ids.shift() : this.$button.data("id"); //remove from array while processing so we can continue where left off
+
+            //Remove the id from respective variable as well
+            this.update_smush_ids( this.current_id );
+
             var nonce_field = this.$button.parent().find('#_wp_smush_nonce');
             if (nonce_field) {
                 nonce_value = nonce_field.val();
@@ -453,6 +455,23 @@ jQuery(function ($) {
                 $('.wp-smush-bulk-progress-bar-wrapper').hide();
             });
         };
+        /**
+         * Remove the current id from unsmushed/resmush variable
+         * @param current_id
+         */
+        this.update_smush_ids = function( current_id ) {
+            if( 'undefined' !== typeof wp_smushit_data.unsmushed ) {
+                var index = wp_smushit_data.unsmushed.indexOf(current_id);
+                if (index > -1) {
+                    wp_smushit_data.unsmushed.splice(index, 1);
+                }
+            }else if(  'undefined' !== typeof wp_smushit_data.resmush ){
+                var index = wp_smushit_data.resmush.indexOf(current_id);
+                if (index > -1) {
+                    wp_smushit_data.resmush.splice(index, 1);
+                }
+            }
+        }
 
         this.start();
         this.run();
