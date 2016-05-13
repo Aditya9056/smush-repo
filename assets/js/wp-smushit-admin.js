@@ -818,6 +818,8 @@ jQuery(function ($) {
                 if ('undefined' != typeof r.data.notice) {
                     $('.wp-smush-page-header').after(r.data.notice);
                 }
+                //Hide errors
+                $('.smush-final-log').hide();
             }
 
         }).always(function () {

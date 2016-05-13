@@ -446,7 +446,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					</span>
 				</div>
 				<hr class="wp-smush-sep">
-				<div class="smush-final-log notice notice-warning inline hidden"></div>
 				<button type="button"
 				        class="wp-smush-button wp-smush-nextgen-bulk"><?php echo $button_content; ?></button><?php
 
@@ -461,7 +460,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					); ?>
 					<p class="wp-smush-enable-lossy"><?php printf( esc_html__( "Enable Super-smush in the %sSettings%s area to get even more savings with almost no noticeable quality loss.", "wp-smushit" ), '<a href="' . $url .'" target="_blank">', "</a>"); ?></p><?php
 				} ?>
-				</div><?php
+				</div>
+				<div class="smush-final-log notice notice-warning inline hidden"></div><?php
 				$this->bulk_ui->progress_bar( $this );
 			}
 		}

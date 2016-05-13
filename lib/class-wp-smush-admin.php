@@ -545,9 +545,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$this->update_resmush_list( $attachment_id );
 				}
 			}
-			$stats['resmush_count'] = empty( $this->resmush_ids ) ? count( $this->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $this->resmush_ids );
+			$resmush_count = empty( $this->resmush_ids ) ? count( $this->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $this->resmush_ids );
 
-			$stats['smushed'] = !empty( $this->resmush_ids ) ? $this->smushed_count - $stats['resmush_count'] : $this->smushed_count;
+			$stats['smushed'] = !empty( $this->resmush_ids ) ? $this->smushed_count - $resmush_count : $this->smushed_count;
 
 			if ( $WpSmush->lossy_enabled ) {
 				$stats['super_smushed'] = $wpsmush_stats->super_smushed_count();
@@ -970,8 +970,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				       . " ORDER BY p . ID DESC"
 				       // add a limit
 				       . " LIMIT " . $limit;
-				var_dump( $sql );
-				exit;
 				$results = $wpdb->get_results( $sql );
 
 				//Update the offset
@@ -1283,6 +1281,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( 'nextgen' != $type ) {
 					//Set the variables
 					$this->resmush_ids = $resmush_list;
+
+					$resmush_count =  count( $this->resmush_ids );
+
+					$smushed = !empty( $this->resmush_ids ) ? $this->smushed_count - $resmush_count : $this->smushed_count;
+
 				} else {
 					//To avoid the php warning
 					$wpsmushnextgenadmin->resmush_ids = $resmush_list;

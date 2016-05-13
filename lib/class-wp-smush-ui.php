@@ -509,7 +509,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</div><?php
 				} ?>
 				<hr>
-				<div class="smush-final-log notice notice-warning inline hidden"></div>
 				<button type="button" class="wp-smush-all wp-smush-button"><?php echo $button_content; ?></button><?php
 				//Enable Super Smush
 				if ( $WpSmush->is_pro() && ! $WpSmush->lossy_enabled ) { ?>
@@ -549,11 +548,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<?php printf( esc_html__( "%s%d%s of %d attachments have been smushed." ), '<span class="wp-smush-images-smushed">', $smushed_count, '</span>', $count->total_count ); ?>
 				</div>
 			</div>
-			<div class="smush-final-log notice notice-warning inline hidden"></div>
 			<hr class="wp-smush-sep">
 			<button type="button"
 			        class="button button-grey wp-smush-cancel-bulk"><?php esc_html_e( "CANCEL", "wp-smushit" ); ?></button>
-			</div><?php
+			</div>
+			<div class="smush-final-log notice notice-warning inline hidden"></div><?php
 		}
 
 		/**
@@ -579,11 +578,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</div>
 				</div>
 			</div>
-			<div class="smush-final-log notice notice-warning inline hidden"></div>
 			<hr class="wp-smush-sep">
 			<button type="button"
 			        class="button button-grey wp-smush-cancel-bulk">' . esc_html__( "CANCEL", "wp-smushit" ) . '</button>
-			</div>';
+			</div>
+			<div class="smush-final-log notice notice-warning inline hidden"></div>';
 			if ( $return ) {
 				return $content;
 			}
