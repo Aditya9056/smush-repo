@@ -149,11 +149,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<hr><?php
 				} ?>
 			<div class="row smush-attachments">
-			<span
-				class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong></span>
-			<span class="float-r wp-smush-stats"><strong><span
-						class="smushed-count"><?php echo intval( $smushed_count ) . '</span>/' . $wpsmushit_admin->total_count; ?>
-				</strong></span>
+			<span class="float-l wp-smush-stats-label">
+				<strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong>
+			</span>
+			<span class="float-r wp-smush-stats">
+				<strong>
+					<span class="smushed-count" tooltip="<?php printf( esc_html__("%d images", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ); ?>"><?php echo intval( $smushed_count ) . '</span>/' . $wpsmushit_admin->total_count; ?>
+				</strong>
+			</span>
 			</div><?php
 			/**
 			 * Allows to hide the Super Smush stats as it might be heavy for some users
@@ -165,7 +168,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
 				<span class="float-r wp-smush-stats<?php echo $WpSmush->lossy_enabled ? '' : ' wp-smush-lossy-disabled-wrap' ?>"><?php
 					if ( $WpSmush->lossy_enabled ) {
-						echo '<strong><span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count . '</strong>';
+						echo '<strong><span class="smushed-count"  tooltip="' . sprintf( esc_html__("%d images", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ) . '">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count . '</strong>';
 					} else {
 						printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
 					} ?>

@@ -167,8 +167,9 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		 */
 		function media_super_smush_count( $return_ids = false ) {
 			global $wpsmushit_admin;
+			$lossy_update = false;
 			//Check if we have updated the stats for existing images, One time
-			if ( ! get_option( WP_SMUSH_PREFIX . 'lossy-updated' ) ) {
+			if ( ! $lossy_updated = get_option( WP_SMUSH_PREFIX . 'lossy-updated' ) ) {
 
 				//Get all the smushed attachments
 				$attachments = $this->get_lossy_attachments( '', false );
@@ -224,7 +225,9 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 					$get_posts = false;
 				}
 			}
-			update_option( 'wp-smush-lossy-updated', true );
+			if ( ! $lossy_updated ) {
+				update_option( 'wp-smush-lossy-updated', true );
+			}
 
 			return $return_ids ? $super_smushed : count( $super_smushed );
 		}
@@ -347,6 +350,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 
 			return $resized_images;
 		}
+
 		/**
 		 * Returns the ids and meta which are losslessly compressed
 		 *

@@ -553,6 +553,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$stats['super_smushed'] = $wpsmush_stats->super_smushed_count();
 			}
 
+			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( esc_html__( "%d images", "wp-smushit" ), $stats['total_images'] ) : '';
+
 			//Send ajax response
 			$send_error ? wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $error ) ) : wp_send_json_success( array( 'stats' => $stats ) );
 
@@ -779,10 +781,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				if ( ! empty( $global_data ) ) {
 					$smush_data['count'] = 0;
+					$smush_data['total_images'] = 0;
 					foreach ( $global_data as $data ) {
 						$data = maybe_unserialize( $data );
 						if ( ! empty( $data['stats'] ) ) {
 							$smush_data['count'] += 1;
+							$smush_data['total_images'] += ! empty( $data['sizes'] ) ? count( $data['sizes'] ) : 0;
 							$smush_data['size_before'] += ! empty( $data['stats']['size_before'] ) ? (int) $data['stats']['size_before'] : 0;
 							$smush_data['size_after'] += ! empty( $data['stats']['size_after'] ) ? (int) $data['stats']['size_after'] : 0;
 						}

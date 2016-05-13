@@ -284,6 +284,11 @@ jQuery(function ($) {
                 $('.wp-smush-notice.wp-smush-all-done').show();
             }
 
+            //Update Total Images Tooltip
+            if( 'undefined' !== typeof _res.data.stats.tooltip_text && '' != _res.data.stats.tooltip_text ) {
+                $('.wp-smush-stats .smushed-count').attr('tooltip', _res.data.stats.tooltip_text );
+            }
+
             //Update remaining count
             self.update_remaining_count();
 
