@@ -1097,7 +1097,7 @@ small.smush-setting-description {
     text-align: center;
     padding: 5px;
     border-radius: 4px;
-    font: 600 13px/20px 'Roboto Condensed';
+    font: 400 13px/20px 'Roboto Condensed';
     opacity: 0;
     z-index: -1;
     transition: margin .2s, opacity .2s, z-index .2s linear .2s;

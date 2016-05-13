@@ -91,13 +91,8 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 */
 		function get_ngg_images( $type = 'smushed', $count = false, $force_update = false ) {
 
-			global $wpdb;
-			/**
-			 * Allows to set a limit of mysql query
-			 * Default value is 2000
-			 */
-			$limit  = apply_filters( 'wp_smush_nextgen_query_limit', 2000 );
-			$limit  = intval( $limit );
+			global $wpdb, $wpsmushit_admin;
+			$limit  = $wpsmushit_admin->nextgen_query_limit();
 			$offset = 0;
 
 			//Check type of images being queried

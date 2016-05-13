@@ -314,7 +314,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Setup all the stats
 				$this->setup_global_stats();
 
-				$this->attachments = $bulk->get_attachments();
+				//Get attachments if all the images are not smushed
+				$this->attachments = $this->remaining_count > 0 ? $bulk->get_attachments() : array();
 
 				//Localize smushit_ids variable, if there are fix number of ids
 				$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments;
@@ -1598,7 +1599,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function query_limit() {
-			$limit = apply_filters( 'wp_smush_query_limit', 1000 );
+			$limit = apply_filters( 'wp_smush_query_limit', 10 );
 			$limit = intval( $limit );
 
 			return $limit;

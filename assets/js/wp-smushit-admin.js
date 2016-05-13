@@ -121,16 +121,6 @@ jQuery(function ($) {
             //Show the Progress Bar
             $('.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper').show();
 
-            //Set Progress Bar width
-            if ('undefined' !== typeof this.ids && 'undefined' !== typeof wp_smushit_data.count_total && wp_smushit_data.count_total > 0) {
-                var progress = ( ( wp_smushit_data.count_total - this.ids.length ) / wp_smushit_data.count_total ) * 100;
-                var progress_bar = jQuery('.bulk-smush-wrapper .wp-smush-progress-inner');
-                if (progress_bar.length < 1) {
-                    return;
-                }
-                // increase progress
-                progress_bar.css('width', progress + '%');
-            }
             //Remove any Global Notices if there
             $('.wp-smush-notice.wp-smush-resmush-message').remove();
         };
@@ -943,6 +933,18 @@ jQuery(function ($) {
 
         var smushed_count = 'undefined' != typeof wp_smushit_data.count_smushed ? wp_smushit_data.count_smushed : 0
         $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(smushed_count);
+
+        //Update the Progress Bar Width
+        // get the progress bar
+        var $progress_bar = jQuery('.bulk-smush-wrapper .wp-smush-progress-inner');
+        if ($progress_bar.length < 1) {
+            return;
+        }
+
+        var width = ( smushed_count / wp_smushit_data.count_total ) * 100;
+
+        // increase progress
+        $progress_bar.css('width', width + '%');
 
         //Show the default bulk smush notice
         $('.wp-smush-bulk-wrapper .wp-smush-notice').removeClass('hidden');

@@ -498,6 +498,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				update_post_meta( $ID, $this->smushed_meta_key, $stats );
 			}
 
+			unset( $stats );
+
+			//Unset Response
+			if ( ! empty( $response ) ) {
+				unset( $response );
+			}
+
 			return $meta;
 		}
 

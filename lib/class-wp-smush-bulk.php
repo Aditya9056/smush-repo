@@ -30,7 +30,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 
 				//Do not fetch more than this, any time
 				//Localizing all rows at once increases the page load and sloes down everything
-				$r_limit = apply_filters( 'wp_smush_max_rows', 5000 );
+				$r_limit = apply_filters( 'wp_smush_max_rows', 50 );
 
 				$get_posts       = true;
 				$unsmushed_posts = array();
