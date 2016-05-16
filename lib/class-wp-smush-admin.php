@@ -818,6 +818,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Add the resize savings to bytes
 			$smush_data['bytes'] += $smush_data['resize_savings'];
+			$smush_data['size_before'] += $resize_savings['size_before'];
+			$smush_data['size_after'] += $resize_savings['size_after'];
 
 			//Add the size before and after
 
