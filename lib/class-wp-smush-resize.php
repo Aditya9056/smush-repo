@@ -120,8 +120,6 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				return $meta;
 			}
 
-			global $WpSmush;
-
 			//Check if the image should be resized or not
 			$should_resize = $this->should_resize( $id );
 

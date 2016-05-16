@@ -162,7 +162,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				),
 				'resize'    => array(
 					'label' => esc_html__( 'Resize original images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'This setting takes your original images you upload and resizes them down to a size of your choice before storing them. For example, a high quality camera will take images around 5000px in width, but realistically you only need 2000px max for most websites. This will save you storing unnecessarily large images on your server.', 'wp-smushit' )
+					'desc'  => esc_html__( 'Save a ton of space by not storing over-sized images on your server. Set image maximum width and height and large images will be automatically scaled before being added to the media library. ', 'wp-smushit' )
 				),
 				'lossy'     => array(
 					'label' => esc_html__( 'Super-smush my images', 'wp-smushit' ),
