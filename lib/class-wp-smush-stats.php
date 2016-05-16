@@ -271,8 +271,8 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 				global $wpsmushit_admin;
 				$savings = array(
 					'savings'     => 0,
-					'before_size' => 0,
-					'after_size'  => 0,
+					'size_before' => 0,
+					'size_after'  => 0,
 				);
 
 				//Get the List of resized images
@@ -283,8 +283,8 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 					$meta = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
 					if ( ! empty( $meta ) ) {
 						$savings['savings'] += intval( $meta['savings'] );
-						$savings['before_size'] += intval( $meta['before_size'] );
-						$savings['after_size'] += intval( $meta['after_size'] );
+						$savings['size_before'] += intval( $meta['size_before'] );
+						$savings['size_after'] += intval( $meta['size_after'] );
 					}
 				}
 

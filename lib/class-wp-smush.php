@@ -391,6 +391,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					}
 
 					//All Clear, Store the stat
+					//@todo: Move the existing stats code over here, we don't need to do the stats part twice
 					$stats['sizes'][ $size_key ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $response['data'] );
 
 					if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
@@ -550,6 +551,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$this->resize_from_meta_data( $meta, $ID );
 
 			} else {
+				//New Upload request, Do not delete resize data
+				if ( isset( $_REQUEST ) && empty( $_REQUEST['post_id'] ) ) {
+					return $meta;
+				}
 				//remove the smush metadata
 				delete_post_meta( $ID, $this->smushed_meta_key );
 			}
@@ -1768,9 +1773,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function total_compression( $stats ) {
 			foreach ( $stats['sizes'] as $size_stats ) {
-				$stats['stats']['size_before'] += $size_stats->size_before;
-				$stats['stats']['size_after'] += $size_stats->size_after;
-				$stats['stats']['time'] += $size_stats->time;
+				$stats['stats']['size_before'] += !empty( $size_stats->size_before ) ? $size_stats->size_before : 0;
+				$stats['stats']['size_after'] += !empty( $size_stats->size_after) ? $size_stats->size_after : 0;
+				$stats['stats']['time'] += !empty($size_stats->time ) ? $size_stats->time : 0;
 			}
 			$stats['stats']['bytes'] = ! empty( $stats['stats']['size_before'] ) && $stats['stats']['size_before'] > $stats['stats']['size_after'] ? $stats['stats']['size_before'] - $stats['stats']['size_after'] : 0;
 			if ( ! empty( $stats['stats']['bytes'] ) && ! empty( $stats['stats']['size_before'] ) ) {

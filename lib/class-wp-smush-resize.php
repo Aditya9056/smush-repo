@@ -120,6 +120,8 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				return $meta;
 			}
 
+			global $WpSmush;
+
 			//Check if the image should be resized or not
 			$should_resize = $this->should_resize( $id );
 
@@ -165,13 +167,16 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				$u_file_size = filesize( $file_path );
 
 				$savings['savings']     = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
-				$savings['before_size'] = $original_file_size;
-				$savings['after_size']  = $u_file_size;
+				$savings['size_before'] = $original_file_size;
+				$savings['size_after']  = $u_file_size;
 
 				//Store savings in meta data
-				if ( !empty( $savings ) ) {
+				if ( ! empty( $savings ) ) {
 					update_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', $savings );
 				}
+
+				//Get smush data, if any
+				$this->update_smush_resize_stats( $id, $savings );
 
 				$meta['width']  = ! empty( $resize['width'] ) ? $resize['width'] : $meta['width'];
 				$meta['height'] = ! empty( $resize['height'] ) ? $resize['height'] : $meta['height'];
@@ -180,7 +185,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				 * Called after the image have been successfully resized
 				 * Can be used to update the stored stats
 				 */
-				do_action('wp_smush_image_resized', $id, $savings );
+				do_action( 'wp_smush_image_resized', $id, $savings );
 
 			}
 
@@ -381,6 +386,62 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 
 			return true;
 
+		}
+
+		/**
+		 * Store the resize stats in smush stats
+		 *
+		 * @param string $attachment_id
+		 * @param string $resize_stats
+		 * @param string $img_size
+		 *
+		 * @return Null
+		 */
+		function update_smush_resize_stats( $attachment_id = '', $resize_stats = '', $img_size = 'full' ) {
+			if ( empty( $attachment_id ) || empty( $resize_stats ) ) {
+				return false;
+			}
+
+			global $WpSmush;
+
+			//Get the Smush stats
+			$smush_stats = get_post_meta( $attachment_id, $WpSmush->smushed_meta_key, true );
+
+			if ( empty( $smush_stats ) ) {
+				$smush_stats = array(
+					"stats" => array_merge( $WpSmush->_get_size_signature(), array(
+							'api_version' => - 1,
+							'lossy'       => - 1,
+							'keep_exif'   => false
+						)
+					),
+					'sizes' => array()
+				);
+			}
+
+			//Initialize full size
+			if ( empty( $smush_stats['sizes'][ $img_size ] ) ) {
+				$smush_stats['sizes'][ $img_size ] = new stdClass();
+			}
+			//Size Before
+			$smush_stats['sizes'][ $img_size ]->size_before = ! empty( $smush_stats['sizes'][ $img_size ]->size_before ) ? $smush_stats['sizes'][ $img_size ]->size_before + $resize_stats['size_before'] : $resize_stats['size_before'];
+
+			//Size After
+			$smush_stats['sizes'][ $img_size ]->size_after = ! empty( $smush_stats['sizes'][ $img_size ]->size_after ) ? $smush_stats['sizes'][ $img_size ]->size_after + $resize_stats['size_after'] : $resize_stats['size_after'];
+
+			//Bytes
+			$smush_stats['sizes'][ $img_size ]->bytes = $smush_stats['sizes'][ $img_size ]->size_before - $smush_stats['sizes'][ $img_size ]->size_after;
+
+			//Percent
+			if ( ! empty( $smush_stats['sizes'][ $img_size ]->size_after ) ) {
+				$smush_stats['sizes'][ $img_size ]->percent = ( $smush_stats['sizes'][ $img_size ]->bytes / $smush_stats['sizes'][ $img_size ]->size_before ) * 100;
+			} else {
+				$smush_stats['sizes'][ $img_size ]->percent = 0;
+			}
+
+			$smush_stats = $WpSmush->total_compression( $smush_stats );
+
+			update_post_meta( $attachment_id, $WpSmush->smushed_meta_key, $smush_stats );
 		}
 	}
 
