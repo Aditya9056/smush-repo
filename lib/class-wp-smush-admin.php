@@ -810,7 +810,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$resize_savings = $wpsmush_stats->resize_savings( false );
 
-			$smush_data['resize_savings'] = ! empty( $resize_savings['savings'] ) ? $resize_savings['savings'] : 0;
+			$smush_data['resize_savings'] = ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
 
 			if ( ! isset( $smush_data['bytes'] ) || $smush_data['bytes'] < 0 ) {
 				$smush_data['bytes'] = 0;

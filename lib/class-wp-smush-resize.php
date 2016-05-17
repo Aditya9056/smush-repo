@@ -164,7 +164,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				//Updated File size
 				$u_file_size = filesize( $file_path );
 
-				$savings['savings']     = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
+				$savings['bytes']     = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
 				$savings['size_before'] = $original_file_size;
 				$savings['size_after']  = $u_file_size;
 

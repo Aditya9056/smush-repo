@@ -254,7 +254,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		 * @param bool $format Format the Bytes in readable format
 		 *
 		 * @return array|bool|mixed|string Array of {
-		 *      'savings',
+		 *      'bytes',
 		 *      'before_size',
 		 *      'after_size'
 		 * }
@@ -270,7 +270,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			if ( empty( $savings ) || $force_update ) {
 				global $wpsmushit_admin;
 				$savings = array(
-					'savings'     => 0,
+					'bytes'     => 0,
 					'size_before' => 0,
 					'size_after'  => 0,
 				);
@@ -281,15 +281,15 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 				//Iterate over them
 				foreach ( $resized_images as $id ) {
 					$meta = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
-					if ( ! empty( $meta ) ) {
-						$savings['savings'] += intval( $meta['savings'] );
+					if ( ! empty( $meta ) && ! empty( $meta['bytes'] ) ) {
+						$savings['bytes'] += intval( $meta['bytes'] );
 						$savings['size_before'] += intval( $meta['size_before'] );
 						$savings['size_after'] += intval( $meta['size_after'] );
 					}
 				}
 
 				if ( $format ) {
-					$savings['savings'] = $wpsmushit_admin->format_bytes( $savings['savings'] );
+					$savings['bytes'] = $wpsmushit_admin->format_bytes( $savings['bytes'] );
 				}
 
 				wp_cache_set( WP_SMUSH_PREFIX . 'resize_savings', $savings, 'wp-smush' );

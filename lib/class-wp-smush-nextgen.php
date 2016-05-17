@@ -685,7 +685,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				//Updated File size
 				$u_file_size = filesize( $file_path );
 
-				$savings['savings']     = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
+				$savings['bytes']     = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
 				$savings['size_before'] = $original_file_size;
 				$savings['size_after']  = $u_file_size;
 
@@ -705,7 +705,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				 * Called after the image have been successfully resized
 				 * Can be used to update the stored stats
 				 */
-				do_action( 'wp_smush_image_nextgen_resized', $attachment_id, $savings );
+				do_action( 'wp_smush_image_nextgen_resized', $attachment_id, array( 'stats' => $savings ) );
+
+				/**
+				 * Called after the image have been successfully resized
+				 * Can be used to update the stored stats
+				 */
+				do_action( 'wp_smush_image_resized', $attachment_id, $savings );
 			}
 
 			return $meta;
