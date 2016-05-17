@@ -322,6 +322,10 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 			$metadata = $this->resize_image( $pid, $image, $metadata, $storage );
 
+			//Store Meta
+			$image->meta_data = $metadata;
+			nggdb::update_image_meta( $image->pid, $image->meta_data );
+
 			//smush the main image and its sizes
 			$smush = $this->resize_from_meta_data( $image, $registry, $storage );
 

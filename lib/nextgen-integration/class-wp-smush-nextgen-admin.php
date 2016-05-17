@@ -132,6 +132,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					return;
 				}
 
+				$image->meta_data = $this->get_combined_stats( $image->meta_data );
+
 				//Check Image metadata, if smushed, print the stats or super smush button
 				if ( ! empty( $image->meta_data['wp_smush'] ) ) {
 					//Echo the smush stats
@@ -491,7 +493,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Outputs the Smush stats for the site
 		 */
 		function smush_stats_container() {
-			global $WpSmush, $wpsmushnextgenstats, $wpsmushit_admin;
+			global $WpSmush, $wpsmushnextgenstats, $wpsmushit_admin, $wpsmush_stats;
 
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
 			$smushed_count = ( $resmush_count = count( $this->resmush_ids ) ) > 0 ? ( $this->total_count - ( $resmush_count + $this->remaining_count ) ) : $this->smushed_count;
@@ -546,7 +548,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					<span class="float-r wp-smush-stats">
 						<?php
 						if ( $WpSmush->lossy_enabled ) {
-							$count = $wpsmushit_admin->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
+							$count = $wpsmush_stats->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
 							echo '<strong><span class="smushed-count">' . $count . '</span>/' . $this->total_count . '</strong>';
 						} else {
 							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
@@ -643,6 +645,46 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$this->total_count     = $wpsmushnextgenstats->total_count();
 			$this->smushed_count   = $wpsmushnextgenstats->get_ngg_images( 'smushed', true );
 			$this->remaining_count = $wpsmushnextgenstats->get_ngg_images( 'unsmushed', true );
+		}
+
+		/**
+		 * Combine the resizing stats and smush stats
+		 *
+		 * @param $metadata
+		 *
+		 * @return bool|string
+		 */
+		function get_combined_stats( $metadata ) {
+			if ( empty( $metadata ) ) {
+				return $metadata;
+			}
+
+			$smush_stats    = ! empty( $metadata['wp_smush'] ) ? $metadata['wp_smush'] : '';
+			$resize_savings = ! empty( $metadata['wp_smush_resize_savings'] ) ? $metadata['wp_smush_resize_savings'] : '';
+
+			if ( empty( $resize_savings ) ) {
+				return $metadata;
+			}
+
+			$smush_stats['stats']['bytes']       = ! empty( $resize_savings['savings'] ) ? $smush_stats['stats']['bytes'] + $resize_savings['savings'] : $smush_stats['stats']['bytes'];
+			$smush_stats['stats']['size_before'] = ! empty( $resize_savings['size_before'] ) ? $smush_stats['stats']['size_before'] + $resize_savings['size_before'] : $smush_stats['stats']['size_before'];
+			$smush_stats['stats']['size_after']  = ! empty( $resize_savings['size_after'] ) ? $smush_stats['stats']['size_after'] + $resize_savings['size_after'] : $smush_stats['stats']['size_after'];
+			$smush_stats['stats']['percent']     = ! empty( $resize_savings['size_before'] ) ? ( $smush_stats['stats']['bytes'] / $smush_stats['stats']['size_before'] ) * 100 : $smush_stats['stats']['percent'];
+
+			//ROund off
+			$smush_stats['stats']['percent'] = round( $smush_stats['stats']['percent'], 2 );
+
+			//Full Image
+			$smush_stats['sizes']['full']['bytes']       = ! empty( $resize_savings['savings'] ) ? $smush_stats['sizes']['full']['bytes'] + $resize_savings['savings'] : $smush_stats['stats']['bytes'];
+			$smush_stats['sizes']['full']['size_before'] = ! empty( $resize_savings['size_before'] ) ? $smush_stats['sizes']['full']['size_before'] + $resize_savings['size_before'] : $smush_stats['sizes']['full']['size_before'];
+			$smush_stats['sizes']['full']['size_after']  = ! empty( $resize_savings['size_after'] ) ? $smush_stats['sizes']['full']['size_after'] + $resize_savings['size_after'] : $smush_stats['sizes']['full']['size_after'];
+			$smush_stats['sizes']['full']['percent']     = ! empty( $smush_stats['sizes']['full']['bytes'] && $smush_stats['sizes']['full']['size_before'] > 0 ) ? ( $smush_stats['sizes']['full']['bytes'] / $smush_stats['sizes']['full']['size_before'] ) * 100 : $smush_stats['sizes']['full']['percent'];
+
+			$smush_stats['sizes']['full']['percent'] = round( $smush_stats['sizes']['full']['percent'], 2 );
+
+			$metadata['wp_smush'] = $smush_stats;
+			return $metadata;
+
 		}
 
 	}//End of Class
