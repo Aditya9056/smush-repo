@@ -551,10 +551,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$this->resize_from_meta_data( $meta, $ID );
 
 			} else {
-				//New Upload request, Do not delete resize data
-				if ( isset( $_REQUEST ) && empty( $_REQUEST['post_id'] ) ) {
-					return $meta;
-				}
 				//remove the smush metadata
 				delete_post_meta( $ID, $this->smushed_meta_key );
 			}

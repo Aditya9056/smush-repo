@@ -19,18 +19,18 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 * @var int Specified width for resizing images
 		 *
 		 */
-		private $max_w = 0;
+		public $max_w = 0;
 
 		/**
 		 * @var int Specified Height for resizing images
 		 *
 		 */
-		private $max_h = 0;
+		public $max_h = 0;
 
 		/**
 		 * @var bool If resizing is enabled or not
 		 */
-		private $resize_enabled = false;
+		public $resize_enabled = false;
 
 		function __construct() {
 			/**
@@ -196,7 +196,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 *
 		 * @return bool, If the image generation was succesfull
 		 */
-		function perform_resize( $file_path, $original_file_size, $id, $meta = '' ) {
+		function perform_resize( $file_path, $original_file_size, $id, $meta = '', $unlink = true ) {
 
 			/**
 			 * Filter the resize image dimensions
@@ -243,7 +243,10 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 
 			$file_size = filesize( $resize_path );
 			if ( $file_size > $original_file_size ) {
-				$this->maybe_unlink( $resize_path, $meta );
+				//Don't Unlink for nextgen images
+				if( $unlink ) {
+					$this->maybe_unlink( $resize_path, $meta );
+				}
 
 				return false;
 			}
@@ -268,7 +271,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			//Take Backup, if we have to, off by default
 			$this->backup_image( $file_path, $attachment_id, $meta );
 
-			$replaced = copy( $resized['file_path'], $file_path );
+			$replaced = @copy( $resized['file_path'], $file_path );
 			$this->maybe_unlink( $resized['file_path'], $meta );
 
 			return $replaced;
