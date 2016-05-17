@@ -272,11 +272,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function _get_size_signature() {
 			return array(
-				'percent'     => - 1,
-				'bytes'       => - 1,
-				'size_before' => - 1,
-				'size_after'  => - 1,
-				'time'        => - 1
+				'percent'     => 0,
+				'bytes'       => 0,
+				'size_before' => 0,
+				'size_after'  => 0,
+				'time'        => 0
 			);
 		}
 
@@ -855,15 +855,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$show_button = $show_resmush = false;
 
 			$wp_smush_data   = get_post_meta( $id, $this->smushed_meta_key, true );
+			$wp_resize_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true  );
+
+			$combined_stats = $this->combined_stats( $wp_smush_data, $wp_resize_savings );
+
 			$attachment_data = wp_get_attachment_metadata( $id );
 
 			// if the image is smushed
 			if ( ! empty( $wp_smush_data ) ) {
 
 				$image_count    = count( $wp_smush_data['sizes'] );
-				$bytes          = isset( $wp_smush_data['stats']['bytes'] ) ? $wp_smush_data['stats']['bytes'] : 0;
+				$bytes          = isset( $combined_stats['stats']['bytes'] ) ? $combined_stats['stats']['bytes'] : 0;
 				$bytes_readable = ! empty( $bytes ) ? $this->format_bytes( $bytes ) : '';
-				$percent        = isset( $wp_smush_data['stats']['percent'] ) ? $wp_smush_data['stats']['percent'] : 0;
+				$percent        = isset( $combined_stats['stats']['percent'] ) ? $combined_stats['stats']['percent'] : 0;
 				$percent        = $percent < 0 ? 0 : $percent;
 
 				if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
@@ -1779,6 +1783,38 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			return $stats;
+		}
+
+		/**
+		 * Smush and Resizing Stats Combined together
+		 *
+		 * @param $smush_stats
+		 * @param $resize_savings
+		 *
+		 * @return array Array of all the stats
+		 */
+		function combined_stats( $smush_stats, $resize_savings ) {
+			if ( empty( $smush_stats ) || empty( $resize_savings ) ) {
+				return $smush_stats;
+			}
+
+			$smush_stats['stats']['bytes']       = ! empty( $resize_savings['bytes'] ) ? $smush_stats['stats']['bytes'] + $resize_savings['bytes'] : $smush_stats['stats']['bytes'];
+			$smush_stats['stats']['size_before'] = ! empty( $resize_savings['size_before'] ) ? $smush_stats['stats']['size_before'] + $resize_savings['size_before'] : $smush_stats['stats']['size_before'];
+			$smush_stats['stats']['size_after']  = ! empty( $resize_savings['size_after'] ) ? $smush_stats['stats']['size_after'] + $resize_savings['size_after'] : $smush_stats['stats']['size_after'];
+			$smush_stats['stats']['percent']     = ! empty( $smush_stats['stats']['bytes'] ) ? ( $smush_stats['stats']['bytes'] / $smush_stats['stats']['size_before'] ) * 100 : $smush_stats['stats']['percent'];
+
+			//Round off
+			$smush_stats['stats']['percent'] = round( $smush_stats['stats']['percent'], 2 );
+
+			//Full Image
+			$smush_stats['sizes']['full']->bytes       = ! empty( $resize_savings['bytes'] ) ? $smush_stats['sizes']['full']->bytes + $resize_savings['bytes'] : $smush_stats['sizes']['full']->bytes;
+			$smush_stats['sizes']['full']->size_before = ! empty( $resize_savings['size_before'] ) ? $smush_stats['sizes']['full']->size_before + $resize_savings['size_before'] : $smush_stats['sizes']['full']->size_before;
+			$smush_stats['sizes']['full']->size_after  = ! empty( $resize_savings['size_after'] ) ? $smush_stats['sizes']['full']->size_after + $resize_savings['size_after'] : $smush_stats['sizes']['full']->size_after;
+			$smush_stats['sizes']['full']->percent     = ! empty( $smush_stats['sizes']['full']->bytes && $smush_stats['sizes']['full']->size_before > 0 ) ? ( $smush_stats['sizes']['full']->bytes / $smush_stats['sizes']['full']->size_before ) * 100 : $smush_stats['sizes']['full']->percent;
+
+			$smush_stats['sizes']['full']->percent = round( $smush_stats['sizes']['full']->percent, 2 );
+
+			return $smush_stats;
 		}
 	}
 
