@@ -349,10 +349,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<label class="toggle-label" for="<?php echo $opt_resize; ?>"></label>
 				</span>
 				<div class="wp-smush-resize-settings-wrap<?php echo $resize_checked ? '' : ' hidden'?>">
-					<label><?php esc_html_e("Width", "wp-smushit"); ?>
+					<label for="<?php echo $opt_resize . '_width'; ?>"><?php esc_html_e("Width", "wp-smushit"); ?>
 						<input type="text" id="<?php echo $opt_resize . '_width'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>" placeholder="<?php echo $p_width; ?>" name="<?php echo $opt_resize . '_width'; ?>" tabindex="0" width=100 /> px
 					</label>
-					<label><?php esc_html_e("Height", "wp-smushit"); ?>
+					<label for"<?php echo $opt_resize . '_height'; ?>"><?php esc_html_e("Height", "wp-smushit"); ?>
 						<input type="text" id="<?php echo $opt_resize . '_height'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>" placeholder="<?php echo $p_height; ?>" name="<?php echo $opt_resize . '_height'; ?>" tabindex="0" width=100 /> px
 					</label>
 					<div class="wp-smush-resize-note"><?php printf( esc_html__("The specified width and heights should not be less than your largest thumbnail size which is set at %s%dpx wide x %dpx high%s. From now on, this will be the largest image size we will save your originals at.", "wp-smushit"), '<strong>', $max_sizes['width'], $max_sizes['height'], '</strong>' ); ?></div>
@@ -556,40 +556,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			        class="button button-grey wp-smush-cancel-bulk"><?php esc_html_e( "CANCEL", "wp-smushit" ); ?></button>
 			</div>
 			<div class="smush-final-log notice notice-warning inline hidden"></div><?php
-		}
-
-		/**
-		 * Progress Bar for Resmush UI
-		 */
-		function resmush_progress_bar( $resmush_count = '', $return = false ) {
-			global $wpsmushit_admin;
-			if ( empty( $resmush_count ) ) {
-				//Get Resmush List
-				$resmush_list  = get_option( 'wp-smush-resmush-list' );
-				$resmush_count = ! empty( $resmush_list ) ? count( $resmush_list ) : 0;
-			}
-
-			$content = '<div class="wp-smush-bulk-progress-bar-wrapper hidden">
-			<p class="wp-smush-bulk-active roboto-medium">' . sprintf( esc_html__( "%sBulk re-smush is currently running.%s You need to keep this page open.", "wp-smushit" ), '<strong>', '</strong>' ) . '</p>
-			<div class="wp-smush-progress-wrap">
-				<div class="wp-smush-progress-bar-wrap">
-					<div class="wp-smush-progress-bar">
-						<div class="wp-smush-progress-inner" style="width: 100%;">
-							<div class="wp-smush-progress-count">' . sprintf( _n( "%s%d%s image left to Re-Smush", "%s%d%s images left to Re-Smush", $resmush_count, "wp-smushit" ), '<span class="wp-smush-images-remaining">', $wpsmushit_admin->format_number( $resmush_count ), '</span>' ) . '
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<hr class="wp-smush-sep">
-			<button type="button"
-			        class="button button-grey wp-smush-cancel-bulk">' . esc_html__( "CANCEL", "wp-smushit" ) . '</button>
-			</div>
-			<div class="smush-final-log notice notice-warning inline hidden"></div>';
-			if ( $return ) {
-				return $content;
-			}
-			echo $content;
 		}
 
 		/**

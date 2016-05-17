@@ -1104,13 +1104,15 @@ small.smush-setting-description {
     white-space: pre-wrap;
     pointer-events: none;
 }
-.smushit .smush-skipped [tooltip]:before, .compat-field-wp_smush .smush-skipped [tooltip]:before{
+
+.smushit .smush-skipped [tooltip]:before, .compat-field-wp_smush .smush-skipped [tooltip]:before {
     border-top-color: transparent;
     border-left-color: #0B2F3F;
     bottom: 0;
     left: 0;
 }
-.smushit .smush-skipped [tooltip]:after, .compat-field-wp_smush .smush-skipped [tooltip]:after{
+
+.smushit .smush-skipped [tooltip]:after, .compat-field-wp_smush .smush-skipped [tooltip]:after {
     margin-left: 0;
     left: -195px;
     top: -35px;
@@ -1266,4 +1268,9 @@ small.smush-setting-description {
     line-height: 1.5;
     margin-top: 20px;
     padding: 20px 30px;
+}
+
+.smush-final-log.notice.notice-warning {
+    max-height: 200px;
+    overflow: scroll;
 }
