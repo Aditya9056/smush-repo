@@ -86,8 +86,12 @@ Smush button transformation
     margin: 15px 20px 15px 0;
 }
 
-.wp-smush-setting-row .toggle-checkbox:focus + .toggle-label {
-    box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.3);
+.wpmud .toggle .toggle-checkbox:focus+.toggle-label:before {
+    background: #c1c1c1;
+}
+
+.wpmud .wp-smush-setting-row .toggle-checkbox:checked:focus + .toggle-label {
+    box-shadow: 0 1px 1px rgba(26, 188, 156, 0.75);
 }
 
 .wpmud .wp-smushit-container-wrap {
