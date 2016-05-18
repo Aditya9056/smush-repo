@@ -884,6 +884,14 @@ small.smush-setting-description {
     padding-top: 7px;
 }
 
+.wp-smush-stats-label .wdv-icon.wdv-icon-question-sign {
+    margin-left: 3px;
+}
+
+.wp-smush-total-thumbnails .dashicons-editor-help {
+    margin-top: -2px;
+}
+
 /** For Smush Pro Promo and Humming Bird promo **/
 .wpmud .wp-smushit-container-right .wp-smush-pro-adv {
     overflow: hidden;

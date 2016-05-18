@@ -43,7 +43,7 @@ $version = '2.2.2';
 $timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 90 );
 
 $smush_constants = array(
-	'VERSION'           => $version . 'beta1',
+	'VERSION'           => $version . time(),
 	'BASENAME'          => plugin_basename( __FILE__ ),
 	'API'               => 'https://smushpro.wpmudev.org/1.0/',
 	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),
