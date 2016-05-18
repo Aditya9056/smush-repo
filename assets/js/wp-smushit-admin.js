@@ -876,11 +876,6 @@ jQuery(function ($) {
         var self = $(this);
         var wrapper_div = self.parents().eq(1);
 
-        //Check if resize width and height settings are proper
-        if (!validate_resize_settings(wrapper_div, false, false)) {
-            return false;
-        }
-
         //Get all the main settings
         var keep_exif = document.getElementById("wp-smush-keep_exif");
         var super_smush = document.getElementById("wp-smush-lossy");
@@ -1018,16 +1013,13 @@ jQuery(function ($) {
 
         var self = $(this);
 
-        //Need not Go ahead, if we don't have the error class yet
-        if (!self.hasClass('error')) {
-            return true;
-        }
         var wrapper_div = self.parents().eq(2);
 
         //Initiate the check
         validate_resize_settings(wrapper_div, false, false); // run the validation
 
     });
+
     //Handle Resize Checkbox toggle, to show/hide width, height settings
     $('#wp-smush-resize').click(function() {
         var self = $(this);

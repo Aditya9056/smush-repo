@@ -360,9 +360,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<label for"<?php echo $opt_resize . '_height'; ?>"><?php esc_html_e("Height", "wp-smushit"); ?>
 						<input type="text" id="<?php echo $opt_resize . '_height'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>" placeholder="<?php echo $p_height; ?>" name="<?php echo $opt_resize . '_height'; ?>" tabindex="0" width=100 /> px
 					</label>
-					<div class="wp-smush-resize-note"><?php printf( esc_html__("The specified width and heights should not be less than your largest thumbnail size which is set at %s%dpx wide x %dpx high%s. From now on, this will be the largest image size we will save your originals at.", "wp-smushit"), '<strong>', $max_sizes['width'], $max_sizes['height'], '</strong>' ); ?></div>
-					<div class="wp-smush-size-error wp-smush-update-width hidden"><?php printf( esc_html__( "The width you've entered must be greater than or equal to your largest thumbnail width which is set at %dpx", "wp-smushit" ), $max_sizes['width'] ); ?></div>
-					<div class="wp-smush-size-error wp-smush-update-height hidden"><?php printf( esc_html__( "The height you've entered must be greater than or equal to your largest thumbnail height which is set at %dpx", "wp-smushit" ), $max_sizes['height'] ); ?></div>
+					<div class="wp-smush-resize-note"><?php printf( esc_html__("The specified width and heights should not be less than your largest thumbnail size which is currently defined as %s%dpx wide x %dpx high%s. From now on, this will be the largest image size we will save your originals at.", "wp-smushit"), '<strong>', $max_sizes['width'], $max_sizes['height'], '</strong>' ); ?></div>
+					<div class="wp-smush-size-error wp-smush-update-width hidden"><?php printf( esc_html__( "The width you've entered must be greater than or equal to your largest thumbnail width which is currently defined as %dpx", "wp-smushit" ), $max_sizes['width'] ); ?></div>
+					<div class="wp-smush-size-error wp-smush-update-height hidden"><?php printf( esc_html__( "The height you've entered must be greater than or equal to your largest thumbnail height which is currently defined as %dpx", "wp-smushit" ), $max_sizes['height'] ); ?></div>
 				</div>
 			</div><!-- End of Basic Settings --><?php
 

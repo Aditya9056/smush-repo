@@ -422,13 +422,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0;
 			$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0;
 
-			$max_size = $this->get_max_image_dimensions();
-
-			//Make sure the specified width and height is greater than maximum registered image dimensions
-			if ( $resize_sizes['width'] >= $max_size['width'] && $resize_sizes['height'] >= $max_size['height'] ) {
-				// update the resize sizes
-				update_option( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
-			}
+			// update the resize sizes
+			update_option( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
 
 			//Store the option in table
 			update_option( 'wp-smush-settings_updated', 1 );

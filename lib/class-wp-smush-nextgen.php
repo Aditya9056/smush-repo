@@ -269,6 +269,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				}
 				//Total Stats
 				$stats = $WpSmush->total_compression( $stats );
+				$stats['total_images'] = !empty( $stats['sizes'] ) ? count( $stats['sizes'] ) : 0;
 
 				//If there was any compression and there was no error in smushing
 				if ( isset( $stats['stats']['bytes'] ) && $stats['stats']['bytes'] >= 0 && ! $has_errors ) {
