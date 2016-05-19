@@ -378,18 +378,17 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//Page Header
 			$this->bulk_ui->smush_page_header(); ?>
 			<!-- Bulk Smush Progress Bar -->
-			<div class="wp-smushit-container-left col-two-third float-l"><?php
-				//Bulk Smush Container
-				$this->bulk_smush_container();
-				?>
-			</div>
+				<div class="wp-smushit-container-left col-two-third float-l"><?php
+					//Bulk Smush Container
+					$this->bulk_smush_container();
+					?>
+				</div>
 
-			<!-- Stats -->
-			<div class="wp-smushit-container-right col-third float-l"><?php
-				//Stats
-				$this->smush_stats_container(); ?>
-			</div><!-- End Of Smushit Container right --><?php
-			$this->get_nextgen_attachments(); ?>
+				<!-- Stats -->
+				<div class="wp-smushit-container-right col-third float-l"><?php
+					//Stats
+					$this->smush_stats_container(); ?>
+				</div><!-- End Of Smushit Container right -->
 			</div><?php
 			$this->bulk_ui->smush_page_footer();
 		}

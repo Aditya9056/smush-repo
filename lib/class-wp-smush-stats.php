@@ -137,7 +137,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 				//Need to scan all the image
 				if ( $revaluate ) {
 					//Get all the Smushed attachments ids
-					$super_smushed_images = $this->super_smushed_count( true );
+					$super_smushed_images = $this->get_lossy_attachments( $attachments, false );
 
 					if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
 						//Iterate over all the attachments to check if it's already there in list, else add it

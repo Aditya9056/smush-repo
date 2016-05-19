@@ -1212,6 +1212,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$attachments = $wpsmushnextgenstats->get_ngg_images();
 
 			}
+			echo "<pre>Attachments";
+			print_r( $attachments );
+			echo "</pre>";
 
 			//Check if any of the smushed image needs to be resmushed
 			if ( ! empty( $attachments ) && is_array( $attachments ) ) {
