@@ -1272,10 +1272,9 @@ small.smush-setting-description {
     border-color: #fd8b8b;
 }
 
-.wp-smush-size-error {
-    background: #ff6d6d;
+.wp-smush-size-info {
+    background: #e0f6fa;
     border-radius: 5px;
-    color: white;
     font-size: 15px;
     line-height: 1.5;
     margin-top: 20px;

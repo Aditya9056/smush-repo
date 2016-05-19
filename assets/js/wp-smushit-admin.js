@@ -607,11 +607,11 @@ jQuery(function ($) {
         var resize_checkbox = wrapper_div.find('#wp-smush-resize');
         if (!height_only) {
             var width_input = wrapper_div.find('#wp-smush-resize_width');
-            var width_error_note = wrapper_div.find('.wp-smush-size-error.wp-smush-update-width');
+            var width_error_note = wrapper_div.find('.wp-smush-size-info.wp-smush-update-width');
         }
         if (!width_only) {
             var height_input = wrapper_div.find('#wp-smush-resize_height');
-            var height_error_note = wrapper_div.find('.wp-smush-size-error.wp-smush-update-height');
+            var height_error_note = wrapper_div.find('.wp-smush-size-info.wp-smush-update-height');
         }
 
         var width_error = false;
