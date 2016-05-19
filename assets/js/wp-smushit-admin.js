@@ -190,6 +190,7 @@ jQuery(function ($) {
             //Show Notice
             if (self.ids.length == 0) {
                 $('.bulk-smush-wrapper .wp-smush-all-done').show();
+                $('.wp-smush-bulk-wrapper').hide();
             } else {
                 if ($('.bulk-smush-wrapper .wp-smush-resmush-notice').length > 0) {
                     $('.bulk-smush-wrapper .wp-smush-resmush-notice').show();
@@ -466,11 +467,13 @@ jQuery(function ($) {
          */
         this.update_smush_ids = function( current_id ) {
             if( 'undefined' !== typeof wp_smushit_data.unsmushed ) {
-                var index = wp_smushit_data.unsmushed.indexOf(current_id);
-                if (index > -1) {
+                var u_index = wp_smushit_data.unsmushed.indexOf(current_id);
+                if (u_index > -1) {
                     wp_smushit_data.unsmushed.splice(index, 1);
                 }
-            }else if(  'undefined' !== typeof wp_smushit_data.resmush ){
+            }
+            //remove from the resmush list
+            if(  'undefined' !== typeof wp_smushit_data.resmush ){
                 var index = wp_smushit_data.resmush.indexOf(current_id);
                 if (index > -1) {
                     wp_smushit_data.resmush.splice(index, 1);

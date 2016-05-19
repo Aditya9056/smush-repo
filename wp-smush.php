@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix  = 'WP_SMUSH_';
-$version = '2.2.2';
+$version = '2.2.3-' .time();
 
 /**
  * Set the default timeout for API request and AJAX timeout
@@ -43,7 +43,7 @@ $version = '2.2.2';
 $timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 90 );
 
 $smush_constants = array(
-	'VERSION'           => $version . time(),
+	'VERSION'           => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
 	'API'               => 'https://smushpro.wpmudev.org/1.0/',
 	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),
@@ -73,9 +73,9 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
  */
 if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 	function wp_smush_rating_message( $message ) {
-		global $wpsmushit_admin;
+		global $wpsmushit_admin, $wpsmush_stats;
 		$savings     = $wpsmushit_admin->global_stats();
-		$image_count = $wpsmushit_admin->total_count();
+		$image_count = $wpsmush_stats->total_count();
 		$show_stats  = false;
 
 		//If there is any saving, greater than 1Mb, show stats
