@@ -25,9 +25,6 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 			if ( is_wp_error( $smush ) ) {
 				$send_error = true;
 				$msg = '';
-				echo "<pre>";
-				print_r( $smush );
-				echo "</pre>";
 				$error = $smush->get_error_message();
 				//Check for timeout error and suggest to filter timeout
 				if( strpos( $error, 'timed out') ) {
