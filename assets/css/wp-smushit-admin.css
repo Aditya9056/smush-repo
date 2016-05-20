@@ -1283,5 +1283,5 @@ small.smush-setting-description {
 
 .smush-final-log.notice.notice-warning {
     max-height: 200px;
-    overflow: scroll;
+    overflow: auto;
 }

@@ -90,6 +90,14 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.2.3 =
 
+* Fixed:
+    * Tooltip on image edit page
+    * Warning and Notices
+* Updated:
+    * Improved stats calculation
+* Added:
+    * Image Resizing option for Media, NextGen(Pro Only) images
+    * Total image count on stats page
 
 = 2.2.2 =
 
