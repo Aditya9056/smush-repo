@@ -70,7 +70,7 @@ jQuery(function ($) {
             this.deferred.errors = [];
 
             //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
-            this.ids = wp_smushit_data.resmush.length > 0 && !skip_resmush ? wp_smushit_data.resmush.concat(wp_smushit_data.unsmushed) : wp_smushit_data.unsmushed;
+            this.ids = wp_smushit_data.resmush.length > 0 && !skip_resmush ? ( wp_smushit_data.unsmushed.length > 0 ? wp_smushit_data.resmush.concat(wp_smushit_data.unsmushed) :  wp_smushit_data.resmush ): wp_smushit_data.unsmushed;
 
             this.is_bulk_resmush = wp_smushit_data.resmush.length > 0 && !skip_resmush ? true : false;
 
@@ -466,14 +466,14 @@ jQuery(function ($) {
          * @param current_id
          */
         this.update_smush_ids = function( current_id ) {
-            if( 'undefined' !== typeof wp_smushit_data.unsmushed ) {
+            if ('undefined' !== typeof wp_smushit_data.unsmushed && wp_smushit_data.unsmushed.length > 0) {
                 var u_index = wp_smushit_data.unsmushed.indexOf(current_id);
                 if (u_index > -1) {
-                    wp_smushit_data.unsmushed.splice(index, 1);
+                    wp_smushit_data.unsmushed.splice(u_index, 1);
                 }
             }
             //remove from the resmush list
-            if(  'undefined' !== typeof wp_smushit_data.resmush ){
+            if ('undefined' !== typeof wp_smushit_data.resmush && wp_smushit_data.resmush.length > 0) {
                 var index = wp_smushit_data.resmush.indexOf(current_id);
                 if (index > -1) {
                     wp_smushit_data.resmush.splice(index, 1);

@@ -22,20 +22,12 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 
 			$smush  = $this->smush_image( $atchmnt_id, '', false );
 
-			$stats = $wpsmushnextgenstats->get_smush_stats();
-
-			if ( $WpSmush->lossy_enabled ) {
-				//Most of the time the stats would be update and the function won't need to go thorugh all the
-				//images to get the count, but in case it has to, we provide the SMushed attachment list
-				$stats['super_smushed'] = $wpsmush_stats->super_smushed_count('nextgen', $wpsmushnextgenstats->get_ngg_images('smushed' ) );
-			}
-			if( empty( $wpsmushnextgenadmin->resmush_ids ) ) {
-				$wpsmushnextgenadmin->resmush_ids = get_option( 'wp-smush-nextgen-resmush-list' );
-			}
-
 			if ( is_wp_error( $smush ) ) {
 				$send_error = true;
-
+				$msg = '';
+				echo "<pre>";
+				print_r( $smush );
+				echo "</pre>";
 				$error = $smush->get_error_message();
 				//Check for timeout error and suggest to filter timeout
 				if( strpos( $error, 'timed out') ) {
@@ -46,6 +38,18 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 				if( !empty( $_REQUEST['is_bulk_resmush']) && $_REQUEST['is_bulk_resmush'] ) {
 					$wpsmushit_admin->update_resmush_list( $atchmnt_id, 'wp-smush-nextgen-resmush-list' );
 				}
+			}
+
+			//Get the Latest Stats
+			$stats = $wpsmushnextgenstats->get_smush_stats();
+
+			if ( $WpSmush->lossy_enabled ) {
+				//Most of the time the stats would be update and the function won't need to go thorugh all the
+				//images to get the count, but in case it has to, we provide the SMushed attachment list
+				$stats['super_smushed'] = $wpsmush_stats->super_smushed_count('nextgen', $wpsmushnextgenstats->get_ngg_images('smushed' ) );
+			}
+			if( empty( $wpsmushnextgenadmin->resmush_ids ) ) {
+				$wpsmushnextgenadmin->resmush_ids = get_option( 'wp-smush-nextgen-resmush-list' );
 			}
 
 			$resmush_count = ! empty( $wpsmushnextgenadmin->resmush_ids ) ? count( $wpsmushnextgenadmin->resmush_ids ) : count( $wpsmushnextgenadmin->resmush_ids = get_option( 'wp-smush-nextgen-resmush-list' ) );
