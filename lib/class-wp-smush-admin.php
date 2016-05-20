@@ -1316,6 +1316,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				"resmush_ids" => $resmush_list,
 				"content"     => $ajax_response
 			) : '';
+
+			//Include the count
+			if( $count ) {
+				$return['count'] = $count;
+			}
+
 			$return['notice'] = $resp;
 
 			wp_send_json_success( $return );

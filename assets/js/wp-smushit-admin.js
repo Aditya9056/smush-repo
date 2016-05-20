@@ -667,6 +667,32 @@ jQuery(function ($) {
     };
 
     /**
+     * Update the progress bar width if we have images that needs to be resmushed
+     * @param unsmushed_count
+     * @returns {boolean}
+     */
+    var update_progress_bar_resmush = function (unsmushed_count) {
+
+        if ('undefined' == typeof unsmushed_count) {
+            return false;
+        }
+
+        var smushed_count = wp_smushit_data.count_total - unsmushed_count;
+
+        //Update the Progress Bar Width
+        // get the progress bar
+        var $progress_bar = jQuery('.bulk-smush-wrapper .wp-smush-progress-inner');
+        if ($progress_bar.length < 1) {
+            return;
+        }
+
+        var width = ( smushed_count / wp_smushit_data.count_total ) * 100;
+
+        // increase progress
+        $progress_bar.css('width', width + '%');
+    };
+
+    /**
      * Handle the Smush Stats link click
      */
     $('body').on('click', 'a.smush-stats-details', function (e) {
@@ -817,6 +843,11 @@ jQuery(function ($) {
 
                     //Show Bulk wrapper
                     $('.wp-smush-bulk-wrapper').show();
+
+                    if( 'undefined' !== typeof r.data.count ) {
+                        //Update progress bar
+                        update_progress_bar_resmush( r.data.count );
+                    }
                 }
                 //If content is received, Prepend it
                 if ('undefined' != typeof r.data.content) {
