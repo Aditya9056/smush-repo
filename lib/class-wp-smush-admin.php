@@ -1318,11 +1318,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			) : '';
 
 			//Include the count
-			if( $count ) {
+			if( !empty( $count) && $count ) {
 				$return['count'] = $count;
 			}
 
-			$return['notice'] = $resp;
+			$return['notice']      = $resp;
+			$return['super_smush'] = $WpSmush->lossy_enabled;
+			if ( $WpSmush->lossy_enabled && 'nextgen' == $type ) {
+				$ss_count                    = $wpsmush_stats->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
+				$return['super_smush_stats'] = sprintf( '<strong><span class="smushed-count">%d</span>/%d</strong>', $ss_count, $wpsmushnextgenadmin->total_count );
+			}
 
 			wp_send_json_success( $return );
 

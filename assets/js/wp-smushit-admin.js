@@ -859,6 +859,17 @@ jQuery(function ($) {
                 }
                 //Hide errors
                 $('.smush-final-log').hide();
+
+                //Hide Super Smush notice if it's enabled in media settings
+                if ('undefined' != typeof r.data.super_smush && r.data.super_smush ) {
+                    var enable_lossy = jQuery('.wp-smush-enable-lossy');
+                    if( enable_lossy.length > 0 ) {
+                        enable_lossy.remove();
+                    }
+                    if( 'undefined' !== r.data.super_smush_stats ) {
+                        $('.super-smush-attachments .wp-smush-stats').html( r.data.super_smush_stats );
+                    }
+                }
             }
 
         }).always(function () {
@@ -1002,7 +1013,7 @@ jQuery(function ($) {
         $progress_bar.css('width', width + '%');
 
         //Show the default bulk smush notice
-        $('.wp-smush-bulk-wrapper .wp-smush-notice').removeClass('hidden');
+        $('.wp-smush-bulk-wrapper .wp-smush-notice').show();
 
         var params = {
             action: 'delete_resmush_list',
