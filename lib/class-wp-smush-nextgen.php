@@ -643,6 +643,11 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				return $meta;
 			}
 
+			//If already resized
+			if ( ! empty( $meta['wp_smush_resize_savings'] ) ) {
+				return $meta;
+			}
+
 			$sizes = $storage->get_image_sizes();
 
 			$should_resize = true;
