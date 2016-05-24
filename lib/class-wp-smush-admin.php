@@ -373,7 +373,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $wpsmush_stats;
 			$this->total_count         = $wpsmush_stats->total_count();
 			$this->smushed_attachments = $wpsmush_stats->smushed_count( true );
-			$this->smushed_count       = count( $this->smushed_attachments );
+			$this->smushed_count       = !empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
 			$this->remaining_count     = $this->remaining_count();
 			$this->stats               = $this->global_stats( $force_update );
 		}
@@ -1017,7 +1017,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Remove the Update info
 		 *
 		 * @param bool $remove_notice
-		 * 
+		 *
 		 */
 		function dismiss_update_info( $remove_notice = false ) {
 
@@ -1684,12 +1684,24 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$plugin_data = get_plugin_data( WP_SMUSH_DIR . 'wp-smush.php', false, false );
 			$version     = ! empty( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
 
+			//If Versions Do not match
 			if ( empty( $version ) || $version != WP_SMUSH_VERSION ) {
+				return true;
+			}
+
+			//Do not display it for other users
+			if ( ! is_super_admin() || ! current_user_can( 'manage_options' ) ) {
 				return true;
 			}
 
 			//If dismissed, Delete the option on Plugin Activation, For alter releases
 			if ( 1 == get_site_option( 'wp-smush-hide_update_info' ) ) {
+				return true;
+			}
+
+			//Do not show for new installations
+			$install_type = get_site_option( 'wp-smush-install-type', false );
+			if ( ! $install_type || 'new' == $install_type ) {
 				return true;
 			}
 
