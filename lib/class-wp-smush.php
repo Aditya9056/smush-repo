@@ -1692,6 +1692,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
+			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				return true;
+			}
+
 			//Skip if bulk activation, Or if we have to skip redirection
 			if ( isset( $_GET['activate-multi'] ) || get_site_option('wp-smush-skip-redirect') ) {
 				return false;
