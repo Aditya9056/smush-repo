@@ -96,6 +96,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Updated:
     * Improved stats calculation
     * Bulk Smush page optimised for Image heavy sites
+    * Cleanup on uninstall
 * Added:
     * Image Resizing option for Media, NextGen(Pro Only) images
     * Total image count on stats page

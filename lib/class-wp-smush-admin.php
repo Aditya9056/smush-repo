@@ -934,7 +934,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Return if notice is already dismissed
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
 				return;
-			} ?><?php
+			}
 
 			$install_type = get_site_option( 'wp-smush-install-type', false );
 
@@ -1679,7 +1679,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function smush_updated() {
 			//@todo: Update Smush Update Notice for next release
-
 			//Make sure to not display this message for next release
 			$plugin_data = get_plugin_data( WP_SMUSH_DIR . 'wp-smush.php', false, false );
 			$version     = ! empty( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
@@ -1701,6 +1700,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Do not show for new installations
 			$install_type = get_site_option( 'wp-smush-install-type', false );
+
 			if ( ! $install_type || 'new' == $install_type ) {
 				return true;
 			}
