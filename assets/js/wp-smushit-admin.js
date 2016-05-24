@@ -259,7 +259,7 @@ jQuery(function ($) {
                     if (wp_smushit_data.resmush.length > 0) {
                         //Update the Count
                         $('.wp-smush-images-remaining').html(wp_smushit_data.resmush.length);
-                    } else if (wp_smushit_data.resmush.length == 0) {
+                    } else if (wp_smushit_data.resmush.length == 0 && this.ids.length == 0 ) {
                         //If all images are resmushed, show the All Smushed message
 
                         //Show All Smushed

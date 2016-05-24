@@ -129,14 +129,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Attachment status, Grid view
 			add_filter( 'attachment_fields_to_edit', array( $this, 'filter_attachment_fields_to_edit' ), 10, 2 );
 
-			/// Smush Upgrade
+			// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
+
+			// New Features Notice
+			add_action( 'admin_notices', array( $this, 'smush_updated' ) );
 
 			//Handle the smush pro dismiss features notice ajax
 			add_action( 'wp_ajax_dismiss_upgrade_notice', array( $this, 'dismiss_upgrade_notice' ) );
 
 			//Handle the smush pro dismiss features notice ajax
 			add_action( 'wp_ajax_dismiss_welcome_notice', array( $this, 'dismiss_welcome_notice' ) );
+
+			//Handle the smush pro dismiss features notice ajax
+			add_action( 'wp_ajax_dismiss_update_info', array( $this, 'dismiss_update_info' ) );
 
 			//Update the Super Smush count, after the smushing
 			add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
@@ -240,6 +246,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
+
+			//Dismiss Update Info
+			$this->dismiss_update_info();
 		}
 
 		/**
@@ -1005,6 +1014,31 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
+		 * Remove the Update info
+		 *
+		 * @param bool $remove_notice
+		 * 
+		 */
+		function dismiss_update_info( $remove_notice = false ) {
+
+			//From URL arg
+			if ( isset( $_GET['dismiss_smush_update_info'] ) && 1 == $_GET['dismiss_smush_update_info'] ) {
+				$remove_notice = true;
+			}
+
+			//From Ajax
+			if( !empty( $_REQUEST['action'] ) && 'dismiss_update_info' == $_REQUEST['action']) {
+				$remove_notice = true;
+			}
+
+			//Update Db
+			if( $remove_notice ) {
+				update_site_option( 'wp-smush-hide_update_info', 1 );
+			}
+
+		}
+
+		/**
 		 * Restore the image and its sizes from backup
 		 */
 		function restore_image( $attachment = '', $resp = true ) {
@@ -1637,6 +1671,45 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$limit = intval( $limit );
 
 			return $limit;
+		}
+
+		/**
+		 * Show Update info in admin Notice
+		 *
+		 */
+		function smush_updated() {
+			//@todo: Update Smush Update Notice for next release
+
+			//Make sure to not display this message for next release
+			$plugin_data = get_plugin_data( WP_SMUSH_DIR . 'wp-smush.php', false, false );
+			$version     = ! empty( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
+
+			if ( empty( $version ) || $version != WP_SMUSH_VERSION ) {
+				return true;
+			}
+
+			//If dismissed, Delete the option on Plugin Activation, For alter releases
+			if ( 1 == get_site_option( 'wp-smush-hide_update_info' ) ) {
+				return true;
+			}
+
+			//Do not display the notice on Bulk Smush Screen
+			global $current_screen;
+			if ( ! empty( $current_screen->base ) && ( 'media_page_wp-smush-bulk' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base ) ) {
+				return true;
+			}
+
+			//Handles the dismiss action
+			$js_url = WP_SMUSH_URL . 'assets/js/notice.js';
+
+			$settings_link = '<a href="' . admin_url( 'upload.php?page=wp-smush-bulk#wp-smush-settings-box' ) . '" title="' . esc_html__( "Settings", "wp-smushit" ) . '">';
+			$upgrade_link  = '<a href="' . $this->upgrade_url . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
+			?>
+			<div class="notice notice-info is-dismissible wp-smush-update-info">
+				<p><?php printf( esc_html__( "Woohoo! Your latest Smush update %s allows you to %sauto resize%s all your images, how cool is that! %sFind out more here >>%s", 'wp-smushit' ), WP_SMUSH_VERSION, $settings_link, '</a>', $upgrade_link, '</a>' ); ?></p>
+			</div>
+
+			<script src="<?php echo esc_url( $js_url ) . '?v=' . WP_SMUSH_VERSION; ?>"></script><?php
 		}
 
 	}

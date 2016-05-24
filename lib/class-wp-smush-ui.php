@@ -151,7 +151,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="row smush-attachments">
 			<span class="float-l wp-smush-stats-label">
 				<strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong><?php
-				if( $wpsmushit_admin->stats['total_images'] > 0 ) {?>
+				if( !empty( $wpsmushit_admin->stats['total_images'] ) && $wpsmushit_admin->stats['total_images'] > 0 ) {?>
 					<span class="wp-smush-total-thumbnails" tooltip="<?php printf( esc_html__(" You've smushed %d images in total", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ); ?>">
 						<i class="dashicons dashicons-editor-help"></i>
 					</span><?php
@@ -694,7 +694,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<button class="smush-notice-dismiss smush-dismiss-welcome" data-msg="<?php esc_html_e( 'Saving', 'wp-smushit'); ?>"><?php esc_html_e( 'Dismiss', "wp-smushit" ); ?></button>
 				</div>
 			</div>
-			<script src="<?php echo esc_url( $js_url ) . '?2'; ?>"></script><?php
+			<script src="<?php echo esc_url( $js_url )  . '?v=' . WP_SMUSH_VERSION; ?>"></script><?php
 		}
 
 		/**
