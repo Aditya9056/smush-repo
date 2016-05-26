@@ -532,6 +532,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$stats = $this->stats;
 
+			error_log( "Stats" );
+			error_log( print_r( $stats, true ) );
+
 			$stats['total'] = $wpsmush_stats->total_count();
 
 			if ( is_wp_error( $smush ) ) {
@@ -1695,6 +1698,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//If dismissed, Delete the option on Plugin Activation, For alter releases
 			if ( 1 == get_site_option( 'wp-smush-hide_update_info' ) ) {
+				return true;
+			}
+
+			//Get Plugin dir, Return if it's WP Smush Pro installation
+			$dir_path = get_plugin_dir();
+			if ( ! empty( $dir_path ) && strpos( $dir_path, 'wp-smush-pro' ) !== false ) {
 				return true;
 			}
 

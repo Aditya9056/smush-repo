@@ -97,6 +97,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			if ( ! empty( $mime ) && ! $mime_supported = apply_filters( 'wp_smush_resmush_mime_supported', $mime_supported, $mime ) ) {
 				return false;
 			}
+
 			//Check if already resized
 			$resize_meta = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
 			if ( ! empty( $resize_meta ) ) {
@@ -128,6 +129,9 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			//Check if the image should be resized or not
 			$should_resize = $this->should_resize( $id );
 
+			echo "Should Resize";
+			var_dump( $should_resize );
+
 			/**
 			 * Filter whether the uploaded image should be resized or not
 			 *
@@ -156,6 +160,8 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			$original_file_size = filesize( $file_path );
 
 			$resize = $this->perform_resize( $file_path, $original_file_size, $id, $meta );
+			echo "Resized";
+			var_dump(  $resize );
 
 			//If resize wasn't successful
 			if ( ! $resize ) {
@@ -165,6 +171,9 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			//Else Replace the Original file with resized file
 			$replaced = $this->replcae_original_image( $file_path, $resize, $id, $meta );
 
+			echo "Replcaed";
+			var_dump( $replaced );
+
 			if ( $replaced ) {
 				//Updated File size
 				$u_file_size = filesize( $file_path );
@@ -172,6 +181,9 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				$savings['bytes']     = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
 				$savings['size_before'] = $original_file_size;
 				$savings['size_after']  = $u_file_size;
+
+				error_log( "Resize Savings" );
+				error_log( print_r( $savings, true ) );
 
 				//Store savings in meta data
 				if ( ! empty( $savings ) ) {
