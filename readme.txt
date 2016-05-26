@@ -14,7 +14,7 @@ Reduce image file sizes, improve performance and boost your SEO using the free <
 
 == Description ==
 
-<strong>Optimize all of your images</strong> with the <strong>incredibly powerful</strong> and <strong>100% free image smusher</strong>, brought to you by the superteam at WPMU DEV!
+<strong>Resize and optimize all of your images</strong> with the <strong>incredibly powerful</strong> and <strong>100% free image smusher</strong>, brought to you by the superteam at WPMU DEV!
 
 Our servers do all the heavy lifting. Strip hidden bulky information from your images and reduce file size without losing quality.
 
@@ -22,7 +22,7 @@ Large image files may be slowing down your site without you even knowing it. WP 
 
 [youtube https://www.youtube.com/watch?v=Bb905kWPohU&feature=youtu.be]
 
-Heavy image files may be slowing down your site without you even knowing it. WP Smush meticulously scans every image you upload – or have already added to your site – and cuts all the unnecessary data for you.
+WP Smush meticulously scans every image you upload – or have already added to your site – cuts all the unnecessary data and scales it for you before adding it to your media library.
 
 <a href="https://garage.godaddy.com/wordpress-plugin-partner-program/directory/?cvosrc=advocacy.evangelism.WP3" rel="nofollow"><img src="https://garage.godaddy.com/wp-content/uploads/badges/godaddy-plugin-partner-program-badge.svg" title="GoDaddy Plugin Program Partner" alt="GoDaddy Plugin Program Partner"/></a>
 
@@ -32,7 +32,7 @@ Heavy image files may be slowing down your site without you even knowing it. WP 
 ★★★★★ <br>
 “I optimize my photos in Photoshop, but Smush makes it so easy – it does it automatically. I can just sit back and enjoy the speed.” - <a href="https://profiles.wordpress.org/helen432">helen432</a>
 
-WP Smush is super easy to use – no confusing compression software settings! Smush images in your library one at a time or bulk smush up to 50 images at a time.  Plus, Smush can help keep your site running fast. Use automatic smush and compress every new image upload without thinking about.
+WP Smush is super easy to use – no confusing compression software settings! Smush images in your library one at a time or bulk smush up to 50 images at a time.  Plus, Smush can help keep your site running fast. Use automatic smush to scale and compress every new image upload without thinking about it.
 
 The faster your site loads, the more Google, Bing, Yahoo and other search engines will like it. Your site will load faster and rank higher.
 
@@ -41,12 +41,13 @@ The faster your site loads, the more Google, Bing, Yahoo and other search engine
 <br>
 <ul>
   <li>Optimize your images using advanced lossless compression techniques.</li>
+  <li>Set maximum width and height and large images will automatically scale before being added to your media library</li>
   <li>Process JPEG, GIF and PNG image files.</li>
   <li>Auto-smush your attachments on upload.</li>
   <li>Manually smush your attachments individually in the media library, or in bulk 50 attachments at a time.</li>
   <li>Smush all standard web-sized images 1MB or smaller. </li>
-	<li>Smush images with no slowdown using WPMU DEV's fast, reliable Smush API.</li>
-	<li>View advanced compression stats per-attachment and library totals.</li>
+  <li>Smush images with no slowdown using WPMU DEV's fast, reliable Smush API.</li>
+  <li>View advanced compression stats per-attachment and library totals.</li>
 </ul>
 
 Install WP Smush now and find out why it's the most popular image optimization plugin for WordPress available today with over 2.7 million downloads.
@@ -71,7 +72,7 @@ Upgrade to WP Smush Pro and optimize more and larger image files faster to incre
 == Screenshots ==
 
 1. Watch as your image library is processed – up to 50 images at a time.
-2. Set automatic smush and optomize every image as it is uploaded.
+2. Set automatic smush to resize and optomize every image as it is uploaded.
 3. Smush will find and optimize images for you.
 
 == Installation ==
