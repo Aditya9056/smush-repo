@@ -1719,12 +1719,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Handles the dismiss action
 			$js_url = WP_SMUSH_URL . 'assets/js/notice.js';
+			$upgrade_url = add_query_arg(
+				array(
+					'utm_source'   => 'Smush-Free',
+					'utm_medium'   => 'Banner',
+					'utm_campaign' => 'now-with-resizing'
+				),
+				$this->upgrade_url
+			);
 
 			$settings_link = '<a href="' . admin_url( 'upload.php?page=wp-smush-bulk#wp-smush-settings-box' ) . '" title="' . esc_html__( "Settings", "wp-smushit" ) . '">';
-			$upgrade_link  = '<a href="' . $this->upgrade_url . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
+			$upgrade_link  = '<a href="' . $upgrade_url . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
 			?>
 			<div class="notice notice-info is-dismissible wp-smush-update-info">
-				<p><?php printf( esc_html__( "Woohoo! Your latest Smush update %s allows you to %sauto resize%s all your images, how cool is that! %sFind out more here >>%s", 'wp-smushit' ), WP_SMUSH_VERSION, $settings_link, '</a>', $upgrade_link, '</a>' ); ?></p>
+				<p><?php printf( esc_html__( "Woohoo! Your latest Smush update %s allows you to %sauto resize%s all your images, how cool is that! %sFind out more here >>%s", 'wp-smushit' ), WP_SMUSH_VERSION, $settings_link, '</a>', esc_url( $upgrade_link ), '</a>' ); ?></p>
 			</div>
 
 			<script src="<?php echo esc_url( $js_url ) . '?v=' . WP_SMUSH_VERSION; ?>"></script><?php

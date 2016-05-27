@@ -213,8 +213,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//For Basic User, Show advanced settings in a separate box
 			if ( ! $WpSmush->is_pro() ) {
 				echo $div_end;
-
-				$pro_only = sprintf( esc_html__( '%sPRO ONLY%s', 'wp-smushit' ), '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ) . '" target="_blank">', '</a>' );
+				$upgrade_url = add_query_arg(
+					array(
+						'utm_source' => 'Smush-Free',
+						'utm_medium' => 'Banner',
+						'utm_campaign'=> 'pro-only-advanced-settings'
+					),
+					$wpsmushit_admin->upgrade_url
+				);
+				$pro_only = sprintf( esc_html__( '%sPRO ONLY%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' );
 
 				$this->container_header( 'wp-smush-premium', 'wp-smush-pro-settings-box', esc_html__( "ADVANCED SETTINGS", "wp-smushit" ), $pro_only, false ); ?>
 				<div class="box-content"><?php
@@ -426,14 +433,23 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function wp_smush_promo() {
 			global $wpsmushit_admin;
-			$this->container_header( 'wp-smush-pro-adv', 'wp-smush-pro-promo', "FANCY A FREE SUPER SMUSH?" ); ?>
+			$this->container_header( 'wp-smush-pro-adv', 'wp-smush-pro-promo', "FANCY A FREE SUPER SMUSH?" );
+			$upgrade_url = add_query_arg(
+				array(
+				'utm_source' => 'Smush-Free',
+				'utm_medium' => 'Banner',
+				'utm_campaign' => 'settings-sidebar'
+				),
+				$wpsmushit_admin->upgrade_url
+			);
+			?>
 			<div class="box-content">
 				<p class="wp-smush-promo-content roboto-medium">You can now get Smush Pro... for FREE!</p>
 				<p class="wp-smush-promo-content wp-smush-promo-content-2 roboto-medium">No obligation, no contracts, no
 					catches. You'll get Smush Pro plus 100+ WPMU DEV plugins, Defender, Hummingbird & 24/7 WP support
 					for absolutely nothing for 14 days.</p>
 				<span class="wp-smush-pro-cta tc">
-					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>"
+					<a href="<?php echo esc_url( $upgrade_url ); ?>"
 					   class="button button-cta button-green" target="_blank">FIND OUT MORE</a>
 				</span>
 			</div>
@@ -501,6 +517,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				//Show the notice only if there are remaining images and if we aren't showing a notice for resmush
 				if ( $wpsmushit_admin->remaining_count > 0 ) {
 					$class = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' hidden' : '';
+					$upgrade_url = add_query_arg(
+						array(
+						'utm_source' => 'Smush-Free',
+						'utm_medium' => 'Banner',
+						'utm_campaign' => 'yellow-bulk-smush-upsell'
+						),
+						$wpsmushit_admin->upgrade_url
+					);
 					?>
 					<div class="wp-smush-notice wp-smush-remaining<?php echo $class; ?>" tabindex="0">
 						<i class="dev-icon">
@@ -509,7 +533,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<span class="wp-smush-notice-text"><?php
 							printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that need smushing!", $wpsmushit_admin->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' );
 							if( !$WpSmush->is_pro() ) {
-								printf( '<br />' . esc_html__("You can %sUpgrade to Pro%s to bulk smush all your images with one click.", "wp-smushit") .'<br />', '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ). '" target="_blank" title="' . esc_html__("WP Smush Pro", "wp-smushit") . '">', '</a>' );
+								printf( '<br />' . esc_html__("You can %sUpgrade to Pro%s to bulk smush all your images with one click.", "wp-smushit") .'<br />', '<a href="' . esc_url( $upgrade_url ). '" target="_blank" title="' . esc_html__("WP Smush Pro", "wp-smushit") . '">', '</a>' );
 								esc_html_e("Free users can smush 50 images with each click.", "wp-smushit");
 							 }?>
 						</span>
@@ -675,10 +699,18 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$notice_content = esc_html__( "And hey, if you do, you can now try out Smush Pro for double the smushy goodness (benchmarked), entirely for free!", "wp-smushit" );
 				$button_content = esc_html__( "Try Smush Pro for Free", "wp-smushit" );
 			} else {
-				$notice_heading = sprintf( esc_html__( "Thanks for updating Smush. Did you know that you can now try the Smush Pro for FREE?!", "wp-smushit" ), '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ) . '" target="_blank">', '</a>' );
+				$notice_heading = esc_html__( "Thanks for updating Smush. Did you know that you can now try the Smush Pro for FREE?!", "wp-smushit" );
 				$notice_content = '<br />' . esc_html__( "Yep, Super Smush your images for double the savings, save originals and batch Smush thousands of images all at once.... no charge!", "wp-smushit" );
 				$button_content = esc_html__( "Try Smush Pro for Free", "wp-smushit" );
-			} ?>
+			}
+			$upgrade_url = add_query_arg(
+				array(
+				'utm_source' => 'Smush-Free',
+				'utm_medium' => 'Banner',
+				'utm_campaign' => 'try-pro-free'
+				),
+				$wpsmushit_admin->upgrade_url
+			);?>
 			<link rel="stylesheet" type="text/css" href="<?php echo esc_url( $css_url ); ?>" />
 			<div class="notice smush-notice" style="display: none;">
 				<div class="smush-notice-logo"><span></span></div>
@@ -688,7 +720,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<?php echo $notice_content; ?>
 				</div>
 				<div class="smush-notice-cta">
-					<a href="<?php echo esc_url( $wpsmushit_admin->upgrade_url ); ?>" class="smush-notice-act button-primary" target="_blank">
+					<a href="<?php echo esc_url( $upgrade_url ); ?>" class="smush-notice-act button-primary" target="_blank">
 					<?php echo $button_content; ?>
 					</a>
 					<button class="smush-notice-dismiss smush-dismiss-welcome" data-msg="<?php esc_html_e( 'Saving', 'wp-smushit'); ?>"><?php esc_html_e( 'Dismiss', "wp-smushit" ); ?></button>
@@ -704,10 +736,18 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $WpSmush, $wpsmushit_admin;
 			if ( $WpSmush->is_pro() ) {
 				return;
-			} ?>
+			}
+			$upgrade_url = add_query_arg(
+				array(
+				'utm_source' => 'Smush-Free',
+				'utm_medium' => 'Banner',
+				'utm_campaign' => 'smush-lady-upgrade'
+				),
+				$wpsmushit_admin->upgrade_url
+			); ?>
 			<div class="wp-smush-super-smush-promo">
 				<div class="wp-smush-super-smush-content"><?php
-					printf( esc_html__("Did you know WP Smush Pro delivers up to 10x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s", "wp-smushit"), '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ). '" target="_blank" title="' . esc_html__("Try WP Smush Pro for FREE", "wp-smushit") . '">', '</a>' ); ?>
+					printf( esc_html__("Did you know WP Smush Pro delivers up to 10x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s", "wp-smushit"), '<a href="' . esc_url( $upgrade_url ). '" target="_blank" title="' . esc_html__("Try WP Smush Pro for FREE", "wp-smushit") . '">', '</a>' ); ?>
 				</div>
 			</div>
 			<?php

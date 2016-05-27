@@ -91,6 +91,9 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.3.1 =
 
+* Fixed:
+    * Stats not updated on resizing images
+    * CSS conflict in Media Library
 
 = 2.3 =
 
