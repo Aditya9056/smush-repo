@@ -532,9 +532,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$stats = $this->stats;
 
-			error_log( "Stats" );
-			error_log( print_r( $stats, true ) );
-
 			$stats['total'] = $wpsmush_stats->total_count();
 
 			if ( is_wp_error( $smush ) ) {

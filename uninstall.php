@@ -32,7 +32,8 @@ $smushit_keys = array(
 	'hide_upgrade_notice',
 	'hide_update_info',
 	'install-type',
-	'lossy-updated'
+	'lossy-updated',
+	'version'
 );
 
 //Cache Keys
@@ -57,6 +58,7 @@ if ( ! is_multisite() ) {
 	foreach ( $smushit_keys as $key ) {
 		$key = 'wp-smush-' . $key;
 		delete_option( $key );
+		delete_site_option( $key );
 	}
 	//Delete Cache data
 	foreach ( $cache_keys as $key ) {

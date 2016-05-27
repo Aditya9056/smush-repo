@@ -4,7 +4,7 @@ Plugin Name: WP Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.3.1
+Version: 2.3.1-beta1
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit
 */
@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix  = 'WP_SMUSH_';
-$version = '2.3';
+$version = '2.3.1-beta1';
 
 /**
  * Set the default timeout for API request and AJAX timeout
@@ -200,17 +200,21 @@ if ( ! function_exists( 'smush_deactivated' ) ) {
 //Check if a existing install or new
 function smush_activated() {
 
-	global $wpdb;
+	$version = get_site_option( WP_SMUSH_PREFIX . 'version' );
 
-	//Store the plugin version in db
-	update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
+	//If the version is not saved or if the version is not same as the current version,
+	if ( ! $version || WP_SMUSH_VERSION != $version ) {
+		global $wpdb;
+		//Check if there are any existing smush stats
+		$query   = "SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT 1";
+		$results = $wpdb->get_var( $wpdb->prepare( $query, 'wp-smpro-smush-data' ) );
 
-	//Check if there are any existing smush stats
-	$query   = "SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT 1";
-	$results = $wpdb->get_var( $wpdb->prepare( $query, 'wp-smpro-smush-data' ) );
+		if ( $results ) {
+			update_option( 'wp-smush-install-type', 'existing' );
+		}
 
-	if ( $results ) {
-		update_option( 'wp-smush-install-type', 'existing' );
+		//Store the plugin version in db
+		update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
 	}
 
 }
