@@ -1729,10 +1729,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			);
 
 			$settings_link = '<a href="' . admin_url( 'upload.php?page=wp-smush-bulk#wp-smush-settings-box' ) . '" title="' . esc_html__( "Settings", "wp-smushit" ) . '">';
-			$upgrade_link  = '<a href="' . $upgrade_url . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
+			$upgrade_link  = '<a href="' . esc_url(   $upgrade_url ) . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
 			?>
 			<div class="notice notice-info is-dismissible wp-smush-update-info">
-				<p><?php printf( esc_html__( "Woohoo! Your latest Smush update %s allows you to %sauto resize%s all your images, how cool is that! %sFind out more here >>%s", 'wp-smushit' ), WP_SMUSH_VERSION, $settings_link, '</a>', esc_url( $upgrade_link ), '</a>' ); ?></p>
+				<p><?php printf( esc_html__( "Woohoo! Your latest Smush update %s allows you to %sauto resize%s all your images, how cool is that! %sFind out more here >>%s", 'wp-smushit' ), WP_SMUSH_VERSION, $settings_link, '</a>', $upgrade_link, '</a>' ); ?></p>
 			</div>
 
 			<script src="<?php echo esc_url( $js_url ) . '?v=' . WP_SMUSH_VERSION; ?>"></script><?php
