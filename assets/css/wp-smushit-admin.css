@@ -1245,7 +1245,7 @@ small.smush-setting-description {
     opacity: 0;
 }
 
-.wp-smush-resize-settings-wrap {
+.wp-smush-resize-settings-wrap, .wp-smush-png_to_jpg-wrap {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 5px;
     color: #555;
@@ -1262,14 +1262,22 @@ small.smush-setting-description {
     overflow: hidden;
 }
 
+.wpmud .wp-smush-png_to_jpg-wrap label {
+    font-weight: 400;
+}
+
 .wpmud .wp-smush-resize-settings-wrap label:first-child {
     padding-left: 0;
 }
 
-.wpmud .wp-smush-resize-settings-wrap .wp-smush-resize-input {
+.wpmud .wp-smush-resize-settings-wrap .wp-smush-resize-input, .wpmud .wp-smush-png_to_jpg-wrap .wp-smush-png_to_jpg_background {
     display: inline-block;
     margin-left: 10px;
     width: 120px;
+}
+
+.wpmud .wp-smush-png_to_jpg-wrap .wp-smush-png_to_jpg_background {
+    margin-left: 0;
 }
 
 .wpmud .wp-smush-resize-input.error {

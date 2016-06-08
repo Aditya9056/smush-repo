@@ -168,7 +168,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				),
 				'resize'    => array(
 					'label' => esc_html__( 'Resize original images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Save a ton of space by not storing over-sized images on your server. Set image maximum width and height and large images will be automatically scaled before being added to the media library. ', 'wp-smushit' )
+					'desc'  => esc_html__( 'Save a ton of space by not storing over-sized images on your server. Set image maximum width and height and large images will be automatically scaled before being added to the media library.', 'wp-smushit' )
+				),
+				'png_to_jpg'    => array(
+					'label' => esc_html__( 'Convert PNG to JPG', 'wp-smushit' ),
+					'desc'  => esc_html__( 'JPG is generally much better than PNG for photographic use because it compresses the image and is smaller in size. PNGs with transparency are not converted by default.', 'wp-smushit' )
 				),
 				'lossy'     => array(
 					'label' => esc_html__( 'Super-smush my images', 'wp-smushit' ),
@@ -408,7 +412,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Store Option Name and their values in an array
 			$settings = array();
 
-
 			// process each setting and update options
 			foreach ( $this->settings as $name => $text ) {
 
@@ -433,6 +436,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// update the resize sizes
 			update_option( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+
+			//Transparent PNG Conversion settings
+			$transparent_png['convert'] = isset( $_POST['wp-smush-png_to_jpg_transparent'] ) ? 1: 0;
+
+			//Validate Hexcode and Store it
+			$transparent_png['background'] = isset( $_POST['wp-smush-png_to_jpg_background'] ) && ctype_xdigit( $_POST['wp-smush-png_to_jpg_background'] ) ? $_POST['wp-smush-png_to_jpg_background'] : 'fff';
+
+			// update the Transparent PNG settings
+			update_option( WP_SMUSH_PREFIX . 'transparent_png', $transparent_png );
 
 			//Store the option in table
 			update_option( 'wp-smush-settings_updated', 1 );

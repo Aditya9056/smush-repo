@@ -533,6 +533,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Check if auto is enabled
 			$auto_smush = $this->is_auto_smush_enabled();
 
+			$this->png_to_jpg( $ID );
+
 			//Auto Smush the new image
 			if ( $auto_smush ) {
 				//Update API url for Hostgator

@@ -230,6 +230,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//Available advanced settings
 			$pro_settings = array(
 				'original',
+				'png_to_jpg',
 				'lossy',
 				'backup',
 				'nextgen'
@@ -238,6 +239,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if ( $WpSmush->is_pro() ) {
 				echo "<hr />";
 			}
+
+			$transparent_png = get_site_option( WP_SMUSH_PREFIX . 'transparent_png', array() );
+
 			//Iterate Over all the available settings, and print a row for each of them
 			foreach ( $pro_settings as $setting_key ) {
 				if ( isset( $wpsmushit_admin->settings[ $setting_key ] ) ) {
@@ -258,7 +262,18 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							       value="1"
 							       name="<?php echo $setting_m_key; ?>" tabindex= "0">
 							<label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
-						</span>
+						</span><?php
+						if( 'png_to_jpg' == $setting_key ) {
+						$bg_color = '#<input type="text" id="png_to_jpg_background" class="wp-smush-png_to_jpg_background" value="" placeholder="fff" name="' . $setting_m_key . '_background" tabindex="0" width=100 />';
+						?>
+							<div class="wp-smush-png_to_jpg-wrap<?php echo $setting_val ? '' : ' hidden'?>">
+								<label for="png_to_jpg_transparent">
+									<input type="checkbox" id="png_to_jpg_transparent" class="wp-smush-png_to_jpg_transparent" name="<?php echo $setting_m_key; ?>_transparent" tabindex="0" <?php checked( $transparent_png['convert'] ); ?>/>
+									<?php printf( esc_html__("Convert transparent images and use %s as background color.", "wp-smushit"), $bg_color ); ?>
+								</label>
+							</div><?php
+						}
+						?>
 					</div>
 					<hr><?php
 				}
