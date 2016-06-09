@@ -8,6 +8,9 @@ require_once WP_SMUSH_DIR . "lib/class-wp-smush-stats.php";
 //Include Resize class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
 
+//Include Resize class
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
+
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
@@ -527,13 +530,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $meta;
 			}
 
-			global $wpsmush_resize;
+			global $wpsmush_resize, $WpSmushPngtoJpg;
 			$meta = $wpsmush_resize->auto_resize( $ID, $meta );
 
 			//Check if auto is enabled
 			$auto_smush = $this->is_auto_smush_enabled();
 
-			$this->png_to_jpg( $ID );
+			$WpSmushPngtoJpg->png_to_jpg( $ID );
 
 			//Auto Smush the new image
 			if ( $auto_smush ) {
