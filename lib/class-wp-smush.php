@@ -536,7 +536,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Check if auto is enabled
 			$auto_smush = $this->is_auto_smush_enabled();
 
-			$WpSmushPngtoJpg->png_to_jpg( $ID );
+			$meta = $WpSmushPngtoJpg->png_to_jpg( $ID, $meta );
 
 			//Auto Smush the new image
 			if ( $auto_smush ) {
