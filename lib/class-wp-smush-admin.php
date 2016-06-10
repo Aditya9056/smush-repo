@@ -608,14 +608,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function smush_single( $attachment_id, $return = false ) {
 
-			global $WpSmush;
+			global $WpSmush, $wpsmush_pngjpg;
 
 			$attachment_id = absint( (int) ( $attachment_id ) );
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id );
 
+			//Convert PNGs to JPG
+			$updated_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
+
 			//Send image for resizing
-			$updated_meta = $this->resize_image( $attachment_id, $original_meta );
+			$updated_meta = $this->resize_image( $attachment_id, $updated_meta );
 
 			$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 

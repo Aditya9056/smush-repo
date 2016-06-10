@@ -530,13 +530,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $meta;
 			}
 
-			global $wpsmush_resize, $WpSmushPngtoJpg;
+			global $wpsmush_resize, $wpsmush_pngjpg;
+
+			//Optionally Convert PNGs to JPG
+			$meta = $wpsmush_pngjpg->png_to_jpg( $ID, $meta );
+
+			//Optionally Resize Images
 			$meta = $wpsmush_resize->auto_resize( $ID, $meta );
 
 			//Check if auto is enabled
 			$auto_smush = $this->is_auto_smush_enabled();
-
-			$meta = $WpSmushPngtoJpg->png_to_jpg( $ID, $meta );
 
 			//Auto Smush the new image
 			if ( $auto_smush ) {

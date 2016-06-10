@@ -121,7 +121,15 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			$should_convert = false;
 
 			//Get the Transparency conversion settings
-			$convert_transparent = get_site_option( WP_SMUSH_PREFIX . 'png_to_jpg', false );
+			$convert_png = get_site_option( WP_SMUSH_PREFIX . 'png_to_jpg', false );
+			if( !$convert_png ) {
+				return $should_convert;
+			}
+
+			//Whether to convert transparent images or not
+			$transparent_settings = get_site_option( WP_SMUSH_PREFIX . 'png_to_jpg_transparent', false );
+
+			$convert_transparent = $transparent_settings['convert'];
 
 			//If we are suppose to convert transaprent images, skip is transparent check
 			if ( $convert_transparent ) {
@@ -318,7 +326,13 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		 *
 		 * @param $meta
 		 */
-		function png_to_jpg( $id, $meta ) {
+		function png_to_jpg( $id = '', $meta = '' ) {
+
+			//If we don't have meta or ID
+			if( empty( $id ) || empty( $meta ) ) {
+				return $meta;
+			}
+
 			$file = get_attached_file( $id );
 
 			/* Return If not PNG */
@@ -329,8 +343,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return $meta;
 			}
 
-			/** Return if Imagick is not available **/
-			if ( ! class_exists( 'Imagick' ) || ! method_exists( 'Imagick', 'getImageAlphaChannel' ) ) {
+			/** Return if Imagick and GD is not available **/
+			if ( ! $this->supports_imagick() && ! $this->supports_GD() ) {
 				return $meta;
 			}
 
@@ -380,7 +394,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 					}
 				}
 
-				//Save the orignal File URL
+				//Save the original File URL
 				update_post_meta( $id, WP_SMUSH_PREFIX . 'orignal_file', $file );
 
 				//Update the Final Stats
@@ -397,6 +411,6 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		}
 	}
 
-	global $WpSmushPngtoJpg;
-	$WpSmushPngtoJpg = new WpSmushPngtoJpg();
+	global $wpsmush_pngjpg;
+	$wpsmush_pngjpg = new WpSmushPngtoJpg();
 }
