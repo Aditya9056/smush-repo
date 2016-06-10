@@ -173,7 +173,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			$o_url = wp_get_attachment_url( $id );
 
 			//Update URL for image size
-			if( 'full' != $size_k ) {
+			if ( 'full' != $size_k ) {
 				$base_url = dirname( $o_url );
 				$o_url    = $base_url . '/' . basename( $o_file );
 			}
@@ -183,8 +183,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			//Update File Path, Attached file, Mime Type for Image
 			if ( 'full' == $size_k ) {
-				if( ! empty( $meta ) ) {
-					$new_file = str_replace( $upload_path, '', $new_file );
+				if ( ! empty( $meta ) ) {
+					$new_file     = str_replace( $upload_path, '', $new_file );
 					$meta['file'] = $new_file;
 				}
 				//Update Attached File
@@ -196,15 +196,15 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 						'post_mime_type' => 'image/jpg'
 					)
 				);
-			}else{
-				$meta['sizes'][$size_k]['file'] = basename( $new_file ) ;
-				$meta['sizes'][$size_k]['mime-type'] = 'image/jpg';
+			} else {
+				$meta['sizes'][ $size_k ]['file']      = basename( $new_file );
+				$meta['sizes'][ $size_k ]['mime-type'] = 'image/jpg';
 			}
 
-			if( 'full' == $size_k ) {
+			if ( 'full' == $size_k ) {
 				//Get the updated image URL
 				$n_url = wp_get_attachment_url( $id );
-			}else{
+			} else {
 				$n_url = dirname( $o_url ) . '/' . basename( $new_file );
 			}
 
@@ -212,6 +212,11 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			global $wpdb;
 			$query = $wpdb->prepare( "UPDATE $wpdb->posts SET post_content = REPLACE(post_content, '%s', '%s');", $o_url, $n_url );
 			$wpdb->query( $query );
+
+			//Unlink Thumbnails
+			if ( 'full' !== $size_k ) {
+				@unlink( $o_file );
+			}
 
 			return $meta;
 		}
@@ -231,7 +236,11 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		 * @param $meta Attachment meta
 		 * @param $size Image size, default empty for full image
 		 *
-		 * @return array
+		 * @return array $result array(
+		 *  'meta'  => array Update Attachment metadata
+		 *  'savings'   => Reduction of Image size in bytes
+		 * )
+		 *
 		 */
 		function convert_to_jpg( $id = '', $file = '', $meta = '', $size = 'full' ) {
 
@@ -282,7 +291,6 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			//Get the savings
 			$savings = $o_file_size - $n_file_size;
 
-			//@todo: Update the code below as per the image size
 			//Update the File Details
 			$meta = $this->update_image_path( $id, $file, $n_file, $meta, $size );
 
@@ -366,13 +374,17 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 						$result = $this->convert_to_jpg( $id, $s_file, $result['meta'], $size_k );
 
 						//Add all the stats
-						array_walk_recursive($result['savings'], function($item, $key) use (&$savings){
-							$savings[$key] = isset($savings[$key]) ?  $item + $savings[$key] : $item;
-						});
+						array_walk_recursive( $result['savings'], function ( $item, $key ) use ( &$savings ) {
+							$savings[ $key ] = isset( $savings[ $key ] ) ? $item + $savings[ $key ] : $item;
+						} );
 					}
 				}
 
+				//Save the orignal File URL
+				update_post_meta( $id, WP_SMUSH_PREFIX . 'orignal_file', $file );
+
 				//Update the Final Stats
+				update_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', $savings );
 
 				/**
 				 * Do action, if the PNG to JPG conversion was successful
