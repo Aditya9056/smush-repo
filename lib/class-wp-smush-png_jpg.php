@@ -12,6 +12,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 	class WpSmushPngtoJpg {
 
+		var $is_transparent = false;
+
 		/**
 		 * Check if Imagick is available or not
 		 *
@@ -122,12 +124,12 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			//Get the Transparency conversion settings
 			$convert_png = get_site_option( WP_SMUSH_PREFIX . 'png_to_jpg', false );
-			if( !$convert_png ) {
+			if ( ! $convert_png ) {
 				return $should_convert;
 			}
 
 			//Whether to convert transparent images or not
-			$transparent_settings = get_site_option( WP_SMUSH_PREFIX . 'png_to_jpg_transparent', false );
+			$transparent_settings = get_option( WP_SMUSH_PREFIX . 'transparent_png', false );
 
 			$convert_transparent = $transparent_settings['convert'];
 
@@ -136,8 +138,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				$should_convert = true;
 			} else {
 				/** Transparency Check */
-				$is_transparent = $this->is_transparent( $id, $file );
-				if ( $is_transparent ) {
+				$this->is_transparent = $this->is_transparent( $id, $file );
+				if ( $this->is_transparent ) {
 					$should_convert = false;
 				} else {
 					//If image is not transparent
@@ -237,6 +239,50 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		}
 
 		/**
+		 * Replace the file if there are savings, and return savings
+		 *
+		 * @param string $file Original File Path
+		 * @param array $result Array structure
+		 * @param string $n_file Updated File path
+		 *
+		 * @return array
+		 */
+		function replace_file( $file = '', $result = array(), $n_file = '' ) {
+
+			if ( empty( $file ) || empty( $result ) || empty( $n_file ) ) {
+				return $result;
+			}
+
+			//Get the file size of original image
+			$o_file_size = filesize( $file );
+
+			$n_file      = path_join( dirname( $file ), $n_file );
+			$n_file_size = filesize( $n_file );
+
+			//If there aren't any savings return
+			if ( $n_file_size >= $o_file_size ) {
+				//Delete the JPG image and return
+				@unlink( $n_file );
+
+				return $result;
+			}
+
+			//Get the savings
+			$savings = $o_file_size - $n_file_size;
+
+			//Store Stats
+			$savings = array(
+				'bytes'       => $savings,
+				'size_before' => $o_file_size,
+				'size_after'  => $n_file_size
+			);
+
+			$result['savings'] = $savings;
+
+			return $result;
+		}
+
+		/**
 		 * Perform the conversion process, using WordPress Image Editor API
 		 *
 		 * @param $id Attachment Id
@@ -282,39 +328,16 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return $result;
 			}
 
-			//Get the file size of original image
-			$o_file_size = filesize( $file );
+			$n_file = ! empty( $new_image_info ) ? $new_image_info['file'] : '';
 
-			$n_file      = path_join( dirname( $file ), $new_image_info['file'] );
-			$n_file_size = filesize( $n_file );
-
-			//If there aren't any savings return
-			if ( $n_file_size >= $o_file_size ) {
-				//Delete the JPG image and return
-				@unlink( $n_file );
-
-				return $result;
-			}
-
-			//Get the savings
-			$savings = $o_file_size - $n_file_size;
-
-			//Update the File Details
-			$meta = $this->update_image_path( $id, $file, $n_file, $meta, $size );
-
-			//Store Stats
-			$savings = array(
-				'bytes'       => $savings,
-				'size_before' => $o_file_size,
-				'size_after'  => $n_file_size
-			);
-
-			$result['meta']    = $meta;
-			$result['savings'] = $savings;
-
-			if ( 'full' == $size ) {
+			//Replace file, and get savings
+			$result = $this->replace_file( $file, $result, $n_file );
+			if ( ! empty( $result['savings'] ) && 'full' == $size ) {
 				$result['converted'] = true;
 			}
+
+			//Update the File Details. and get updated meta
+			$result['meta'] = $this->update_image_path( $id, $file, $n_file, $meta, $size );
 
 			return $result;
 		}
@@ -329,7 +352,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		function png_to_jpg( $id = '', $meta = '' ) {
 
 			//If we don't have meta or ID
-			if( empty( $id ) || empty( $meta ) ) {
+			if ( empty( $id ) || empty( $meta ) ) {
 				return $meta;
 			}
 
@@ -369,8 +392,12 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return $meta;
 			}
 
-			//Perform the conversion, and update path
-			$result = $this->convert_to_jpg( $id, $file, $meta );
+			if ( ! $this->is_transparent ) {
+				//Perform the conversion, and update path
+				$result = $this->convert_to_jpg( $id, $file, $meta );
+			} else {
+				$result = $this->convert_tpng_to_jpg( $id, $file, $meta );
+			}
 
 			$savings = $result['savings'];
 
@@ -407,6 +434,119 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			}
 
 			return $result['meta'];
+
+		}
+
+		/**
+		 * Convert a transparent PNG to JPG, with specified background color
+		 *
+		 * @param string $id Attachment ID
+		 * @param string $file File Path Original Image
+		 * @param string $meta Attachment Meta
+		 * @param string $size Image size. set to 'full' by default
+		 *
+		 * @return array Savings and Updated Meta
+		 */
+		function convert_tpng_to_jpg( $id = '', $file = '', $meta = '', $size = 'full' ) {
+			$result = array(
+				'meta'    => $meta,
+				'savings' => ''
+			);
+
+			//Flag: Whether the image was converted or not
+			if ( 'full' == $size ) {
+				$result['converted'] = false;
+			}
+
+			//If any of the values is not set
+			if ( empty( $id ) || empty( $file ) || empty( $meta ) ) {
+				return $result;
+			}
+			//Updated file path
+			//Get the File name without ext
+			$n_file = substr( $file, 0, - 3 );
+
+			//Updated File name
+			$n_file = $n_file . 'jpg';
+
+			$transparent_png = get_option( WP_SMUSH_PREFIX . 'transparent_png' );
+			$bg              = $transparent_png['background'];
+			$quality         = $this->get_quality();
+
+			if ( $this->supports_imagick() ) {
+				try {
+					$imagick = new Imagick( $file );
+					$imagick->setImageBackgroundColor( new ImagickPixel( '#' . $bg ) );
+					$imagick->setImageAlphaChannel( 11 );
+					$imagick->setImageFormat( 'JPG' );
+					$imagick->setCompressionQuality( $quality );
+					$imagick->writeImage( $n_file );
+				} catch ( Exception $e ) {
+					error_log( "WP Smush PNG to JPG Conversion error in " . __FILE__ . "at" . __LINE__ . " " . $e->getMessage() );
+				}
+			} else {
+				//Use GD for conversion
+				//Get data from PNG
+				$input = imagecreatefrompng( $file );
+
+				//Width and Height of image
+				list( $width, $height ) = getimagesize( $file );
+
+				//Create New image
+				$output = imagecreatetruecolor( $width, $height );
+
+				// set background color for GD
+				$r = hexdec( '0x' . strtoupper( substr( $bg, 0, 2 ) ) );
+				$g = hexdec( '0x' . strtoupper( substr( $bg, 2, 2 ) ) );
+				$b = hexdec( '0x' . strtoupper( substr( $bg, 4, 2 ) ) );
+
+				//Set the Background color
+				$rgb = imagecolorallocate( $output, $r, $g, $b );
+
+				//Fill Background
+				imagefilledrectangle( $output, 0, 0, $width, $height, $rgb );
+
+				//Create New image
+				imagecopy( $output, $input, 0, 0, 0, 0, $width, $height );
+
+				//Create JPG
+				imagejpeg( $output, $n_file, $quality );
+			}
+
+			//Replace file, and get savings
+			$result = $this->replace_file( $file, $result, $n_file );
+			if ( ! empty( $result['savings'] ) && 'full' == $size ) {
+				$result['converted'] = true;
+			}
+
+			//Update the File Details. and get updated meta
+			$result['meta'] = $this->update_image_path( $id, $file, $n_file, $meta, $size );
+
+		}
+
+		/**
+		 * Get JPG quality from WordPress Image Editor
+		 *
+		 * @param $file
+		 *
+		 * @return int Quality for JPEG images
+		 *
+		 */
+		function get_quality( $file ) {
+			$editor = wp_get_image_editor( $file );
+
+			if ( ! is_wp_error( $editor ) ) {
+
+				$quality = WP_Image_Editor::get_quality();
+			}
+
+			//Choose the default quaity if we didn't get it
+			if ( ! $quality || $quality < 1 || $quality > 100 ) {
+				//The default quality
+				$quality = 82;
+			}
+
+			return $quality;
 
 		}
 	}
