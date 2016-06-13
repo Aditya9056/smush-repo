@@ -133,15 +133,14 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			$convert_transparent = $transparent_settings['convert'];
 
+			/** Transparency Check */
+			$this->is_transparent = $this->is_transparent( $id, $file );
+
 			//If we are suppose to convert transaprent images, skip is transparent check
 			if ( $convert_transparent ) {
 				$should_convert = true;
 			} else {
-				/** Transparency Check */
-				$this->is_transparent = $this->is_transparent( $id, $file );
-				if ( $this->is_transparent ) {
-					$should_convert = false;
-				} else {
+				if ( ! $this->is_transparent ) {
 					//If image is not transparent
 					$should_convert = true;
 				}
@@ -249,7 +248,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		 */
 		function replace_file( $file = '', $result = array(), $n_file = '' ) {
 
-			if ( empty( $file ) || empty( $result ) || empty( $n_file ) ) {
+			if ( empty( $file ) || empty( $n_file ) ) {
 				return $result;
 			}
 
@@ -332,12 +331,13 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			//Replace file, and get savings
 			$result = $this->replace_file( $file, $result, $n_file );
-			if ( ! empty( $result['savings'] ) && 'full' == $size ) {
-				$result['converted'] = true;
+			if ( ! empty( $result['savings'] ) ) {
+				if ( 'full' == $size ) {
+					$result['converted'] = true;
+				}
+				//Update the File Details. and get updated meta
+				$result['meta'] = $this->update_image_path( $id, $file, $n_file, $meta, $size );
 			}
-
-			//Update the File Details. and get updated meta
-			$result['meta'] = $this->update_image_path( $id, $file, $n_file, $meta, $size );
 
 			return $result;
 		}
@@ -412,7 +412,12 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 						$s_file = path_join( dirname( $file ), $data['file'] );
 
 						//Perform the conversion, and update path
-						$result = $this->convert_to_jpg( $id, $s_file, $result['meta'], $size_k );
+						if ( ! $this->is_transparent ) {
+							//Perform the conversion, and update path
+							$result = $this->convert_to_jpg( $id, $file, $meta );
+						} else {
+							$result = $this->convert_tpng_to_jpg( $id, $file, $meta );
+						}
 
 						//Add all the stats
 						array_walk_recursive( $result['savings'], function ( $item, $key ) use ( &$savings ) {
@@ -471,7 +476,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			$transparent_png = get_option( WP_SMUSH_PREFIX . 'transparent_png' );
 			$bg              = $transparent_png['background'];
-			$quality         = $this->get_quality();
+			$quality         = $this->get_quality( $file );
 
 			if ( $this->supports_imagick() ) {
 				try {
@@ -515,13 +520,16 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			//Replace file, and get savings
 			$result = $this->replace_file( $file, $result, $n_file );
-			if ( ! empty( $result['savings'] ) && 'full' == $size ) {
-				$result['converted'] = true;
+
+			if ( ! empty( $result['savings'] ) ) {
+				if ( 'full' == $size ) {
+					$result['converted'] = true;
+				}
+				//Update the File Details. and get updated meta
+				$result['meta'] = $this->update_image_path( $id, $file, $n_file, $meta, $size );
 			}
 
-			//Update the File Details. and get updated meta
-			$result['meta'] = $this->update_image_path( $id, $file, $n_file, $meta, $size );
-
+			return $result;
 		}
 
 		/**
@@ -533,11 +541,14 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		 *
 		 */
 		function get_quality( $file ) {
+			if ( empty( $file ) ) {
+				return 82;
+			}
 			$editor = wp_get_image_editor( $file );
 
 			if ( ! is_wp_error( $editor ) ) {
 
-				$quality = WP_Image_Editor::get_quality();
+				$quality = $editor->get_quality();
 			}
 
 			//Choose the default quaity if we didn't get it
