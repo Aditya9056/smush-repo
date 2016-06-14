@@ -414,9 +414,9 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 						//Perform the conversion, and update path
 						if ( ! $this->is_transparent ) {
 							//Perform the conversion, and update path
-							$result = $this->convert_to_jpg( $id, $file, $meta );
+							$result = $this->convert_to_jpg( $id, $s_file, $meta, $size_k );
 						} else {
-							$result = $this->convert_tpng_to_jpg( $id, $file, $meta );
+							$result = $this->convert_tpng_to_jpg( $id, $s_file, $meta, $size_k );
 						}
 
 						//Add all the stats
@@ -475,8 +475,13 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			$n_file = $n_file . 'jpg';
 
 			$transparent_png = get_option( WP_SMUSH_PREFIX . 'transparent_png' );
-			$bg              = $transparent_png['background'];
-			$quality         = $this->get_quality( $file );
+
+			/**
+			 * Filter Background Color for Transparent PNGs
+			 */
+			$bg = apply_filters( 'wp_smush_bg', $transparent_png['background'], $id, $size );
+
+			$quality = $this->get_quality( $file );
 
 			if ( $this->supports_imagick() ) {
 				try {
