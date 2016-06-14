@@ -399,7 +399,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				$result = $this->convert_tpng_to_jpg( $id, $file, $meta );
 			}
 
-			$savings = $result['savings'];
+			$savings['full'] = $result['savings'];
 
 			//If original image was converted and other sizes are there for the image, Convert all other image sizes
 			if ( $result['converted'] ) {
@@ -420,8 +420,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 						}
 
 						//Add all the stats
-						array_walk_recursive( $result['savings'], function ( $item, $key ) use ( &$savings ) {
-							$savings[ $key ] = isset( $savings[ $key ] ) ? $item + $savings[ $key ] : $item;
+						array_walk_recursive( $result['savings'], function ( $item, $key ) use ( &$savings, $size_k ) {
+							$savings[$size_k][ $key ] = isset( $savings[$size_k][ $key ] ) ? $item + $savings[$size_k][ $key ] : $item;
 						} );
 					}
 				}

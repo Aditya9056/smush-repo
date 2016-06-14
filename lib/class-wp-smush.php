@@ -864,8 +864,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$wp_smush_data   = get_post_meta( $id, $this->smushed_meta_key, true );
 			$wp_resize_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true  );
+			$conversion_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true  );
 
 			$combined_stats = $this->combined_stats( $wp_smush_data, $wp_resize_savings );
+
+			$combined_stats = $this->combine_conversion_stats( $combined_stats, $conversion_savings );
 
 			$attachment_data = wp_get_attachment_metadata( $id );
 
@@ -894,6 +897,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
 						$status_txt = $image_count > 1 ? sprintf( __( "%d images reduced ", 'wp-smushit' ), $image_count ) : __( "Reduced ", 'wp-smushit' );
 						$status_txt .= sprintf( __( "by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
+
+						$file_path = get_attached_file( $id );
+						$size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
+						if( $size > 0 ) {
+							$size       = $this->format_bytes( $size );
+							$image_size = sprintf( __( "<br /> Image Size: %s", "wp-smushit"), $size );
+							$status_txt .= $image_size;
+						}
 
 						$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
 
@@ -1810,25 +1821,44 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $smush_stats;
 			}
 
-			$smush_stats['stats']['bytes']       = ! empty( $resize_savings['bytes'] ) ? $smush_stats['stats']['bytes'] + $resize_savings['bytes'] : $smush_stats['stats']['bytes'];
-			$smush_stats['stats']['size_before'] = ! empty( $resize_savings['size_before'] ) ? $smush_stats['stats']['size_before'] + $resize_savings['size_before'] : $smush_stats['stats']['size_before'];
-			$smush_stats['stats']['size_after']  = ! empty( $resize_savings['size_after'] ) ? $smush_stats['stats']['size_after'] + $resize_savings['size_after'] : $smush_stats['stats']['size_after'];
-			$smush_stats['stats']['percent']     = ! empty( $smush_stats['stats']['bytes'] ) ? ( $smush_stats['stats']['bytes'] / $smush_stats['stats']['size_before'] ) * 100 : $smush_stats['stats']['percent'];
-
-			//Round off
-			$smush_stats['stats']['percent'] = round( $smush_stats['stats']['percent'], 2 );
-
 			//Full Image
 			if( !empty( $smush_stats['sizes']['full'] ) ) {
 				$smush_stats['sizes']['full']->bytes       = ! empty( $resize_savings['bytes'] ) ? $smush_stats['sizes']['full']->bytes + $resize_savings['bytes'] : $smush_stats['sizes']['full']->bytes;
-				$smush_stats['sizes']['full']->size_before = ! empty( $resize_savings['size_before'] ) ? $smush_stats['sizes']['full']->size_before + $resize_savings['size_before'] : $smush_stats['sizes']['full']->size_before;
-				$smush_stats['sizes']['full']->size_after  = ! empty( $resize_savings['size_after'] ) ? $smush_stats['sizes']['full']->size_after + $resize_savings['size_after'] : $smush_stats['sizes']['full']->size_after;
+				$smush_stats['sizes']['full']->size_before = ! empty( $resize_savings['size_before'] ) && ( $resize_savings['size_before'] > $smush_stats['sizes']['full']->size_before )  ? $resize_savings['size_before'] : $smush_stats['sizes']['full']->size_before;
 				$smush_stats['sizes']['full']->percent     = ! empty( $smush_stats['sizes']['full']->bytes ) && $smush_stats['sizes']['full']->size_before > 0 ? ( $smush_stats['sizes']['full']->bytes / $smush_stats['sizes']['full']->size_before ) * 100 : $smush_stats['sizes']['full']->percent;
 
 				$smush_stats['sizes']['full']->percent = round( $smush_stats['sizes']['full']->percent, 2 );
 			}
 
+			$smush_stats = $this->total_compression( $smush_stats );
+
 			return $smush_stats;
+		}
+
+		/**
+		 * Combine Savings from PNG to JPG conversion with smush stats
+		 *
+		 * @param $stats Savings from Smushing the image
+		 * @param $conversion_savings Savings from converting the PNG to JPG
+		 *
+		 * @return Object Total Savings
+		 */
+		function combine_conversion_stats( $stats, $conversion_savings ) {
+			if ( empty( $stats ) || empty( $conversion_savings ) ) {
+				return $stats;
+			}
+			foreach ( $conversion_savings as $size_k => $savings ) {
+				if ( ! empty( $stats['sizes'][ $size_k ] ) ) {
+					$stats['sizes'][ $size_k ]->bytes       = $stats['sizes'][ $size_k ]->bytes + $savings['bytes'];
+					$stats['sizes'][ $size_k ]->size_before = $stats['sizes'][ $size_k ]->size_before > $savings['size_before'] ? $stats['sizes'][ $size_k ]->size_before : $savings['size_before'];
+					$stats['sizes'][ $size_k ]->percent     = ! empty( $stats['sizes'][ $size_k ]->bytes ) && $stats['sizes'][ $size_k ]->size_before > 0 ? ( $stats['sizes'][ $size_k ]->bytes / $stats['sizes'][ $size_k ]->size_before ) * 100 : $stats['sizes'][ $size_k ]->percent;
+					$stats['sizes'][ $size_k ]->percent     = round( $stats['sizes'][ $size_k ]->percent, 2 );
+				}
+			}
+
+			$stats = $this->total_compression( $stats );
+
+			return $stats;
 		}
 	}
 
