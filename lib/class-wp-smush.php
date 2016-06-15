@@ -1562,6 +1562,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Update the savings cache
 			$wpsmush_stats->resize_savings( true );
 
+			//Update the savings cache
+			$wpsmush_stats->conversion_savings( true );
+
 			//If no image id provided
 			if ( empty( $image_id ) ) {
 				return false;
@@ -1587,7 +1590,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function send_smush_stats() {
 			global $wpsmushit_admin;
 
-			$stats = $wpsmushit_admin->global_stats();
+			$stats = $wpsmushit_admin->global_stats_from_ids();
 
 			return $stats;
 

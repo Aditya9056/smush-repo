@@ -147,6 +147,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<span class="float-r wp-smush-stats"><strong><?php echo $wpsmushit_admin->stats['resize_savings'] > 0 ? $wpsmushit_admin->stats['resize_savings'] : "0MB"; ?></strong></span>
 					</div>
 					<hr><?php
+				}
+				if( !empty( $wpsmushit_admin->stats['conversion_savings'] ) && $wpsmushit_admin->stats['conversion_savings'] > 0 ) { ?>
+					<div class="row smush-resize-savings">
+						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "TOTAL PNG TO JPG SAVINGS", "wp-smushit" ); ?></strong></span>
+						<span class="float-r wp-smush-stats"><strong><?php echo $wpsmushit_admin->stats['conversion_savings'] > 0 ? $wpsmushit_admin->stats['conversion_savings'] : "0MB"; ?></strong></span>
+					</div>
+					<hr><?php
 				} ?>
 			<div class="row smush-attachments">
 			<span class="float-l wp-smush-stats-label">
@@ -173,7 +180,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
 				<span class="float-r wp-smush-stats<?php echo $WpSmush->lossy_enabled ? '' : ' wp-smush-lossy-disabled-wrap' ?>"><?php
 					if ( $WpSmush->lossy_enabled ) {
-						echo '<strong><span class="smushed-count"  tooltip="' . sprintf( esc_html__("%d images", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ) . '">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count . '</strong>';
+						echo '<strong><span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count . '</strong>';
 					} else {
 						printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
 					} ?>
@@ -240,7 +247,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				echo "<hr />";
 			}
 
-			$transparent_png = get_site_option( WP_SMUSH_PREFIX . 'transparent_png', array() );
+			$transparent_png = get_site_option( WP_SMUSH_PREFIX . 'transparent_png', array('convert' => '', 'background' => '' ) );
 
 			//Iterate Over all the available settings, and print a row for each of them
 			foreach ( $pro_settings as $setting_key ) {
@@ -264,7 +271,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
 						</span><?php
 						if( 'png_to_jpg' == $setting_key ) {
-						$bg_color = '#<input type="text" id="png_to_jpg_background" class="wp-smush-png_to_jpg_background" value="" placeholder="fff" name="' . $setting_m_key . '_background" tabindex="0" width=100 />';
+						$bg_color = '#<input type="text" id="png_to_jpg_background" class="wp-smush-png_to_jpg_background" value="' . $transparent_png['background'] . '" placeholder="fff" name="' . $setting_m_key . '_background" tabindex="0" width=100 />';
 						?>
 							<div class="wp-smush-png_to_jpg-wrap<?php echo $setting_val ? '' : ' hidden'?>">
 								<label for="png_to_jpg_transparent">
@@ -398,8 +405,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			global $WpSmush, $wpsmushit_admin;
 
-			//Reset Transient
-			$wpsmushit_admin->check_bulk_limit( true );
+			if( !$WpSmush->is_pro() ) {
+				//Reset Transient
+				$wpsmushit_admin->check_bulk_limit( true );
+			}
 
 			$this->smush_page_header();
 
@@ -682,7 +691,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$page_heading = $WpSmush->is_pro() ? esc_html__( 'WP Smush Pro', 'wp-smushit' ) : esc_html__( 'WP Smush', 'wp-smushit' );
 
 			$auto_smush_message = $WpSmush->is_auto_smush_enabled() ? sprintf( esc_html__( "Automatic smushing is %senabled%s. Newly uploaded images will be automagically compressed." ), '<span class="wp-smush-auto-enabled">', '</span>' ) : sprintf( esc_html__( "Automatic smushing is %sdisabled%s. Newly uploaded images will need to be manually smushed." ), '<span class="wp-smush-auto-disabled">', '</span>' );
-			echo '<div class="wrap">
+			echo '<div class="smush-page-wrap">
 				<div class="wp-smush-page-header">
 					<h1 class="wp-smush-page-heading">' . $page_heading . '</h1>
 					<div class="wp-smush-auto-message roboto-regular">' . $auto_smush_message . '</div>

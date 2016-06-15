@@ -17,6 +17,8 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		function __construct() {
 			//Update resize savings
 			add_action( 'wp_smush_image_resized', array( $this, 'resize_savings' ) );
+			//Update Conversion savings
+			add_action( 'wp_smush_png_jpg_converted', array( $this, 'conversion_savings' ) );
 		}
 
 		/**
@@ -270,7 +272,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			if ( empty( $savings ) || $force_update ) {
 				global $wpsmushit_admin;
 				$savings = array(
-					'bytes'     => 0,
+					'bytes'       => 0,
 					'size_before' => 0,
 					'size_after'  => 0,
 				);
@@ -293,6 +295,58 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 				}
 
 				wp_cache_set( WP_SMUSH_PREFIX . 'resize_savings', $savings, 'wp-smush' );
+			}
+
+			return $savings;
+		}
+
+		/**
+		 * Return/Update PNG -> JPG Conversion savings
+		 *
+		 * @param bool $force_update Whether to force update the conversion savings or not
+		 * @param bool $format Optionally return formatted savings
+		 *
+		 * @return array Savings
+		 */
+		function conversion_savings( $force_update = true, $format = false ) {
+			$savings = '';
+
+			if ( ! $force_update ) {
+				$savings = wp_cache_get( WP_SMUSH_PREFIX . 'conversion_savings', 'wp-smush' );
+			}
+			//If nothing in cache, Calculate it
+			if ( empty( $savings ) || $force_update ) {
+				global $wpsmushit_admin;
+				$savings = array(
+					'bytes'       => 0,
+					'size_before' => 0,
+					'size_after'  => 0,
+				);
+
+				//Get the List of resized images
+				$png_jpg_images = $this->converted_images();
+
+				//Iterate over them
+				foreach ( $png_jpg_images as $id ) {
+					$meta = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+					if ( ! empty( $meta ) ) {
+						//Iterate Over
+						foreach ( $meta as $size_savings ) {
+							if ( ! is_array( $size_savings ) ) {
+								continue;
+							}
+							$savings['bytes'] += intval( $size_savings['bytes'] );
+							$savings['size_before'] += intval( $size_savings['size_before'] );
+							$savings['size_after'] += intval( $size_savings['size_after'] );
+						}
+					}
+				}
+
+				if ( $format ) {
+					$savings['bytes'] = $wpsmushit_admin->format_bytes( $savings['bytes'] );
+				}
+
+				wp_cache_set( WP_SMUSH_PREFIX . 'pngjpg_savings', $savings, 'wp-smush' );
 			}
 
 			return $savings;
@@ -349,6 +403,59 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			}
 
 			return $resized_images;
+		}
+
+		/**
+		 * Get all the PNGJPG Converted images
+		 *
+		 * @return array Array of post ids of all the converted images
+		 *
+		 */
+		function converted_images() {
+			global $wpsmushit_admin;
+			$limit          = $wpsmushit_admin->query_limit();
+			$limit          = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
+			$get_posts      = true;
+			$converted_images = array();
+			$args           = array(
+				'fields'                 => 'ids',
+				'post_type'              => 'attachment',
+				'post_status'            => 'inherit',
+				'post_mime_type'         => $wpsmushit_admin->mime_types,
+				'orderby'                => 'ID',
+				'order'                  => 'DESC',
+				'posts_per_page'         => $limit,
+				'offset'                 => 0,
+				'meta_key'               => WP_SMUSH_PREFIX . 'pngjpg_savings',
+				'update_post_term_cache' => false,
+				'no_found_rows'          => true,
+			);
+			//Loop Over to get all the attachments
+			while ( $get_posts ) {
+
+				//Remove the Filters added by WP Media Folder
+				$this->remove_wmf_filters();
+
+				$query = new WP_Query( $args );
+
+				if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
+					//Merge the results
+					$converted_images = array_merge( $converted_images, $query->posts );
+
+					//Update the offset
+					$args['offset'] += $limit;
+				} else {
+					//If we didn't get any posts from query, set $get_posts to false
+					$get_posts = false;
+				}
+
+				//If total Count is set, and it is alread lesser than offset, don't query
+				if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $args['offset'] ) {
+					$get_posts = false;
+				}
+			}
+
+			return $converted_images;
 		}
 
 		/**

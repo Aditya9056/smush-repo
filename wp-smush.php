@@ -74,7 +74,7 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
 if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 	function wp_smush_rating_message( $message ) {
 		global $wpsmushit_admin, $wpsmush_stats;
-		$savings     = $wpsmushit_admin->global_stats();
+		$savings     = $wpsmushit_admin->global_stats_from_ids();
 		$image_count = $wpsmush_stats->total_count();
 		$show_stats  = false;
 
@@ -177,7 +177,7 @@ if ( ! function_exists( 'deactivate_smush_org' ) ) {
 		if ( is_plugin_active( 'wp-smush-pro/wp-smush.php' ) && is_plugin_active( 'wp-smushit/wp-smush.php' ) ) {
 			deactivate_plugins( 'wp-smushit/wp-smush.php' );
 			//Store in database, in order to show a notice on page load
-			update_option( 'smush_deactivated', 1 );
+			update_site_option( 'smush_deactivated', 1 );
 		}
 	}
 }
@@ -188,11 +188,11 @@ add_action( 'admin_notices', 'smush_deactivated' );
 //Display a admin Notice about plugin deactivation
 if ( ! function_exists( 'smush_deactivated' ) ) {
 	function smush_deactivated() {
-		if ( get_option( 'smush_deactivated' ) && is_admin() ) { ?>
+		if ( get_site_option( 'smush_deactivated' ) && is_super_admin() ) { ?>
 			<div class="updated">
 				<p><?php esc_html_e( 'WP Smush Free was deactivated. You have WP Smush Pro active!', 'wp-smushit' ); ?></p>
 			</div> <?php
-			delete_option( 'smush_deactivated' );
+			delete_site_option( 'smush_deactivated' );
 		}
 	}
 }
