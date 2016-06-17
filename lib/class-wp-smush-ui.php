@@ -441,6 +441,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="row"><?php
 				//Settings
 				$this->settings_ui(); ?>
+					<div class="wp-smush-pro-for-free wp-smushit-container-left col-half float-l"><?php
+						$this->wp_smush_promo();?>
+					</div>
+					<div class="wp-smushit-container-left col-half float-l"><?php
+						$this->wp_smush_hummingbird_promo(); ?>
+					</div>
 				</div><?php
 			$this->smush_page_footer();
 		}
@@ -469,9 +475,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<a href="<?php echo esc_url( $upgrade_url ); ?>"
 					   class="button button-cta button-green" target="_blank">FIND OUT MORE</a>
 				</span>
-			</div>
-			<img src="<?php echo WP_SMUSH_URL . 'assets/images/dev-team.png'; ?>"
-			     alt="<?php esc_html_e( "TRY WP SMUSH PRO - DEV TEAM", "wp-smushit" ); ?>"><?php
+			</div><?php
 			echo "</section>";
 		}
 

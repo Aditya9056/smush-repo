@@ -544,6 +544,13 @@ table.wp-smush-stats-holder tr td:first-child {
     vertical-align: top;
 }
 
+.wpmud .row .col-half.wp-smush-pro-for-free {
+    padding-left: 0;
+}
+.wpmud .row .col-half.wp-smush-pro-for-free .dev-box {
+    padding: 30px 0;
+}
+
 .wpmud .wp-smush-premium .smush-container-subheading a {
     color: #ff6d6d;
 }
@@ -895,9 +902,14 @@ small.smush-setting-description {
 }
 
 /** For Smush Pro Promo and Humming Bird promo **/
-.wpmud .wp-smushit-container-right .wp-smush-pro-adv {
+.wpmud .wp-smush-pro-adv {
+    background-image: url(../images/dev-team.png);
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 90%;
+    height: 500px;
+    margin-top: 8px;
     overflow: hidden;
-    padding: 30px 0 0;
 }
 
 .wpmud .dev-box.wp-smush-pro-adv .wp-smush-container-header {
@@ -914,16 +926,19 @@ small.smush-setting-description {
     display: block;
 }
 
-.wp-smush-pro-cta, .wp-smush-hb-cta {
+.wp-smush-pro-cta{
     overflow: hidden;
     display: block;
     padding: 20px;
 }
 
 .wp-smush-hb-cta {
+    display: block;
+    margin: 0 auto;
+    overflow: hidden;
     padding-bottom: 0;
     padding-top: 30px;
-    width: 100%;
+    width: 242px;
 }
 
 .wp-smush-hummingbird-image {
@@ -936,7 +951,6 @@ small.smush-setting-description {
     color: #555555;
     line-height: 1.7;
     margin: auto;
-    max-width: 320px;
     text-align: center;
 }
 
