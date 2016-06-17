@@ -247,7 +247,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				echo "<hr />";
 			}
 
-			$transparent_png = get_site_option( WP_SMUSH_PREFIX . 'transparent_png', array('convert' => '', 'background' => '' ) );
+			$transparent_png = get_option( WP_SMUSH_PREFIX . 'transparent_png', array('convert' => '', 'background' => '' ) );
 
 			//Iterate Over all the available settings, and print a row for each of them
 			foreach ( $pro_settings as $setting_key ) {
@@ -692,10 +692,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			$auto_smush_message = $WpSmush->is_auto_smush_enabled() ? sprintf( esc_html__( "Automatic smushing is %senabled%s. Newly uploaded images will be automagically compressed." ), '<span class="wp-smush-auto-enabled">', '</span>' ) : sprintf( esc_html__( "Automatic smushing is %sdisabled%s. Newly uploaded images will need to be manually smushed." ), '<span class="wp-smush-auto-disabled">', '</span>' );
 			echo '<div class="smush-page-wrap">
-				<div class="wp-smush-page-header">
+				<section id="header"><div class="wp-smush-page-header">
 					<h1 class="wp-smush-page-heading">' . $page_heading . '</h1>
 					<div class="wp-smush-auto-message roboto-regular">' . $auto_smush_message . '</div>
-				</div>';
+				</div></section>';
 			//Check if settings were updated and shoe a notice
 			$this->settings_updated();
 
