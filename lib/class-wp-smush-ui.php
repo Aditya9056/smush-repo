@@ -20,10 +20,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 	class WpSmushBulkUi {
 
 		function __construct() {
-			//Add a container for Smush Pro promo
-			add_action( 'wp_smush_after_stats_box', array( $this, 'wp_smush_promo' ) );
+//			//Add a container for Smush Pro promo
+//			add_action( 'wp_smush_after_stats_box', array( $this, 'wp_smush_promo' ) );
 			//Add a Container for Hummingbird Promo
-			add_action( 'wp_smush_after_stats_box', array( $this, 'wp_smush_hummingbird_promo' ) );
+//			add_action( 'wp_smush_after_stats_box', array( $this, 'wp_smush_hummingbird_promo' ) );
 		}
 
 		/**
@@ -228,7 +228,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					),
 					$wpsmushit_admin->upgrade_url
 				);
-				$pro_only = sprintf( esc_html__( '%sPRO ONLY%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' );
+				$pro_only = sprintf( esc_html__( '%sTRY PRO FEATURES FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' );
 
 				$this->container_header( 'wp-smush-premium', 'wp-smush-pro-settings-box', esc_html__( "ADVANCED SETTINGS", "wp-smushit" ), $pro_only, false ); ?>
 				<div class="box-content"><?php
@@ -236,10 +236,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			//Available advanced settings
 			$pro_settings = array(
-				'original',
-				'png_to_jpg',
 				'lossy',
+				'original',
 				'backup',
+				'png_to_jpg',
 				'nextgen'
 			);
 
@@ -423,11 +423,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="wp-smushit-container-left col-two-third float-l"><?php
 				//Bulk Smush Container
 				$this->bulk_smush_container();
-
-				if ( ! $WpSmush->is_pro() ) {
-					//Settings
-					$this->settings_ui();
-				}
 				?>
 			</div>
 
@@ -442,13 +437,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					 */
 					do_action( 'wp_smush_after_stats_box' );
 				} ?>
-			</div><!-- End Of Smushit Container right --><?php
-			if ( $WpSmush->is_pro() ) { ?>
+			</div><!-- End Of Smushit Container right -->
 				<div class="row"><?php
 				//Settings
 				$this->settings_ui(); ?>
 				</div><?php
-			}
 			$this->smush_page_footer();
 		}
 
@@ -590,7 +583,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			} ?>
 			<div class="wp-smush-bulk-progress-bar-wrapper hidden">
 			<p class="wp-smush-bulk-active roboto-medium"><span
-					class="spinner is-active"></span><?php printf( esc_html__( "%sBulk smush is currently running.%s You need to keep this page open.", "wp-smushit" ), '<strong>', '</strong>' ); ?>
+					class="spinner is-active"></span><?php printf( esc_html__( "%sBulk smush is currently running.%s You need to keep this page open for the process to complete.", "wp-smushit" ), '<strong>', '</strong>' ); ?>
 			</p>
 			<div class="wp-smush-progress-wrap">
 				<div class="wp-smush-progress-bar-wrap">
@@ -692,10 +685,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			$auto_smush_message = $WpSmush->is_auto_smush_enabled() ? sprintf( esc_html__( "Automatic smushing is %senabled%s. Newly uploaded images will be automagically compressed." ), '<span class="wp-smush-auto-enabled">', '</span>' ) : sprintf( esc_html__( "Automatic smushing is %sdisabled%s. Newly uploaded images will need to be manually smushed." ), '<span class="wp-smush-auto-disabled">', '</span>' );
 			echo '<div class="smush-page-wrap">
-				<section id="header"><div class="wp-smush-page-header">
-					<h1 class="wp-smush-page-heading">' . $page_heading . '</h1>
-					<div class="wp-smush-auto-message roboto-regular">' . $auto_smush_message . '</div>
-				</div></section>';
+				<section id="header">
+					<div class="wp-smush-page-header">
+						<h1 class="wp-smush-page-heading">' . $page_heading . '</h1>
+						<div class="wp-smush-auto-message roboto-regular">' . $auto_smush_message . '</div>
+					</div>
+				</section>';
 			//Check if settings were updated and shoe a notice
 			$this->settings_updated();
 

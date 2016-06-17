@@ -537,7 +537,6 @@ table.wp-smush-stats-holder tr td:first-child {
 .wp-smush-premium .smush-container-subheading {
     border: solid 1px #ff6d6d;
     border-radius: 4px;
-    float: none;
     font-size: 12px;
     line-height: 1.4;
     margin: 1.3em 10px;

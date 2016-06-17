@@ -158,33 +158,33 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		function init_settings() {
 			$this->settings = array(
-				'auto'      => array(
+				'auto'       => array(
 					'label' => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
 					'desc'  => esc_html__( 'When you upload images to the media library, we’ll automatically optimize them.', 'wp-smushit' )
 				),
-				'keep_exif' => array(
+				'keep_exif'  => array(
 					'label' => esc_html__( 'Preserve image EXIF data', 'wp-smushit' ),
 					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
 				),
-				'resize'    => array(
+				'resize'     => array(
 					'label' => esc_html__( 'Resize original images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'Save a ton of space by not storing over-sized images on your server. Set image maximum width and height and large images will be automatically scaled before being added to the media library.', 'wp-smushit' )
 				),
-				'png_to_jpg'    => array(
-					'label' => esc_html__( 'Convert PNG to JPG', 'wp-smushit' ),
-					'desc'  => esc_html__( 'JPG is generally much better than PNG for photographic use because it compresses the image and is smaller in size. PNGs with transparency are not converted by default.', 'wp-smushit' )
-				),
-				'lossy'     => array(
+				'lossy'      => array(
 					'label' => esc_html__( 'Super-smush my images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'Compress images up to 10x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
 				),
-				'original'  => array(
+				'original'   => array(
 					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'WordPress crops and resizes every image you upload for embedding on your site. By default, Smush only compresses these cropped and resized images, not your original full-size images. To save space on your server, activate this setting to smush your original images, too. Note: This doesn’t usually improve page speed.', 'wp-smushit' )
 				),
-				'backup'    => array(
+				'backup'     => array(
 					'label' => esc_html__( 'Make a copy of my original images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'Save your original full-size images so you can restore them at any point. Note: Activating this setting will significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' )
+				),
+				'png_to_jpg' => array(
+					'label' => esc_html__( 'Auto-convert PNG to JPEG (lossy)', 'wp-smushit' ),
+					'desc'  => esc_html__( "When you optimise a PNG, Smush will check if converting it to a JPEG will reduce the file size, and if so it will automatically convert it. Note: Smush will only convert the file format if it results in smaller file size. This will change the file's name, any hardcoded URLs will need updating.", 'wp-smushit' )
 				)
 			);
 
@@ -377,7 +377,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $wpsmush_stats;
 			$this->total_count         = $wpsmush_stats->total_count();
 			$this->smushed_attachments = $wpsmush_stats->smushed_count( true );
-			$this->smushed_count       = !empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
+			$this->smushed_count       = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
 			$this->remaining_count     = $this->remaining_count();
 			$this->stats               = $this->global_stats_from_ids( $force_update );
 //			$this->stats               = $this->global_stats( $force_update );
@@ -439,7 +439,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			update_option( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
 
 			//Transparent PNG Conversion settings
-			$transparent_png['convert'] = isset( $_POST['wp-smush-png_to_jpg_transparent'] ) ? 1: 0;
+			$transparent_png['convert'] = isset( $_POST['wp-smush-png_to_jpg_transparent'] ) ? 1 : 0;
 
 			//Validate Hexcode and Store it
 			$transparent_png['background'] = isset( $_POST['wp-smush-png_to_jpg_background'] ) && ctype_xdigit( $_POST['wp-smush-png_to_jpg_background'] ) ? $_POST['wp-smush-png_to_jpg_background'] : 'fff';
@@ -564,7 +564,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 			$resmush_count = empty( $this->resmush_ids ) ? count( $this->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $this->resmush_ids );
 
-			$stats['smushed'] = !empty( $this->resmush_ids ) ? $this->smushed_count - $resmush_count : $this->smushed_count;
+			$stats['smushed'] = ! empty( $this->resmush_ids ) ? $this->smushed_count - $resmush_count : $this->smushed_count;
 
 			if ( $WpSmush->lossy_enabled ) {
 				$stats['super_smushed'] = $wpsmush_stats->super_smushed_count();
@@ -573,7 +573,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( esc_html__( "%d images", "wp-smushit" ), $stats['total_images'] ) : '';
 
 			//Send ajax response
-			$send_error ? wp_send_json_error( array( 'stats' => $stats, 'error_msg' => $error ) ) : wp_send_json_success( array( 'stats' => $stats ) );
+			$send_error ? wp_send_json_error( array( 'stats'     => $stats,
+			                                         'error_msg' => $error
+			) ) : wp_send_json_success( array( 'stats' => $stats ) );
 
 		}
 
@@ -800,7 +802,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$global_data = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) );
 
 				if ( ! empty( $global_data ) ) {
-					$smush_data['count'] = 0;
+					$smush_data['count']        = 0;
 					$smush_data['total_images'] = 0;
 					foreach ( $global_data as $data ) {
 						$data = maybe_unserialize( $data );
@@ -954,7 +956,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
 
 			//Update Cache
-			 wp_cache_set( 'smush_global_stats', $smush_data, '', DAY_IN_SECONDS );
+			wp_cache_set( 'smush_global_stats', $smush_data, '', DAY_IN_SECONDS );
 
 			return $smush_data;
 		}
@@ -1085,16 +1087,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			while ( $query_next ) {
 				// get the attachment id, smush data
-				$sql = "SELECT p.ID as attachment_id, p.post_mime_type as type, ms.meta_value as smush_data"
-				       . " FROM $wpdb->posts as p"
-				       . " LEFT JOIN $wpdb->postmeta as ms"
-				       . " ON (p.ID= ms.post_id AND ms.meta_key='wp-smpro-smush-data')"
-				       . " WHERE"
-				       . " p.post_type='attachment'"
-				       . " AND p.post_mime_type IN " . $allowed_images
-				       . " ORDER BY p . ID DESC"
-				       // add a limit
-				       . " LIMIT " . $limit;
+				$sql     = "SELECT p.ID as attachment_id, p.post_mime_type as type, ms.meta_value as smush_data"
+				           . " FROM $wpdb->posts as p"
+				           . " LEFT JOIN $wpdb->postmeta as ms"
+				           . " ON (p.ID= ms.post_id AND ms.meta_key='wp-smpro-smush-data')"
+				           . " WHERE"
+				           . " p.post_type='attachment'"
+				           . " AND p.post_mime_type IN " . $allowed_images
+				           . " ORDER BY p . ID DESC"
+				           // add a limit
+				           . " LIMIT " . $limit;
 				$results = $wpdb->get_results( $sql );
 
 				//Update the offset
@@ -1142,12 +1144,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//From Ajax
-			if( !empty( $_REQUEST['action'] ) && 'dismiss_update_info' == $_REQUEST['action']) {
+			if ( ! empty( $_REQUEST['action'] ) && 'dismiss_update_info' == $_REQUEST['action'] ) {
 				$remove_notice = true;
 			}
 
 			//Update Db
-			if( $remove_notice ) {
+			if ( $remove_notice ) {
 				update_site_option( 'wp-smush-hide_update_info', 1 );
 			}
 
@@ -1432,9 +1434,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					//Set the variables
 					$this->resmush_ids = $resmush_list;
 
-					$resmush_count =  count( $this->resmush_ids );
+					$resmush_count = count( $this->resmush_ids );
 
-					$smushed = !empty( $this->resmush_ids ) ? $this->smushed_count - $resmush_count : $this->smushed_count;
+					$smushed = ! empty( $this->resmush_ids ) ? $this->smushed_count - $resmush_count : $this->smushed_count;
 
 				} else {
 					//To avoid the php warning
@@ -1461,13 +1463,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//If there is a Ajax response return it, else return null
-			$return           = ! empty( $ajax_response ) ? array(
+			$return = ! empty( $ajax_response ) ? array(
 				"resmush_ids" => $resmush_list,
 				"content"     => $ajax_response
 			) : '';
 
 			//Include the count
-			if( !empty( $count) && $count ) {
+			if ( ! empty( $count ) && $count ) {
 				$return['count'] = $count;
 			}
 
@@ -1667,7 +1669,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function bulk_restore() {
 			global $wpsmush_stats;
-			$smushed_attachments = !empty( $this->smushed_attachments ) ? $this->smushed_attachments : $wpsmush_stats->smushed_count( true );
+			$smushed_attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $wpsmush_stats->smushed_count( true );
 			foreach ( $smushed_attachments as $attachment ) {
 				$this->restore_image( $attachment->attachment_id, false );
 			}
@@ -1833,7 +1835,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Handles the dismiss action
-			$js_url = WP_SMUSH_URL . 'assets/js/notice.js';
+			$js_url      = WP_SMUSH_URL . 'assets/js/notice.js';
 			$upgrade_url = add_query_arg(
 				array(
 					'utm_source'   => 'Smush-Free',
@@ -1844,7 +1846,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			);
 
 			$settings_link = '<a href="' . admin_url( 'upload.php?page=wp-smush-bulk#wp-smush-settings-box' ) . '" title="' . esc_html__( "Settings", "wp-smushit" ) . '">';
-			$upgrade_link  = '<a href="' . esc_url(   $upgrade_url ) . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
+			$upgrade_link  = '<a href="' . esc_url( $upgrade_url ) . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
 			?>
 			<div class="notice notice-info is-dismissible wp-smush-update-info">
 				<p><?php printf( esc_html__( "Woohoo! Your latest Smush update %s allows you to %sauto resize%s all your images, how cool is that! %sFind out more here >>%s", 'wp-smushit' ), WP_SMUSH_VERSION, $settings_link, '</a>', $upgrade_link, '</a>' ); ?></p>
