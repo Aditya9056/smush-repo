@@ -297,8 +297,8 @@ jQuery(function ($) {
             if ('undefined' != typeof _res.data.stats) {
 
                 //Update stats
-                $('.smush-total-reduction-percent .wp-smush-stats').html(_res.data.stats.percent);
-                $('.smush-total-reduction-bytes .wp-smush-stats').html(_res.data.stats.human);
+                $('.smush-total-savings .wp-smush-stats-percent').html(_res.data.stats.percent);
+                $('.smush-total-savings .wp-smush-stats-human').html(_res.data.stats.human);
 
                 $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(_res.data.stats.smushed);
                 if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed) {
@@ -1069,6 +1069,17 @@ jQuery(function ($) {
     $('#wp-smush-resize').click(function() {
         var self = $(this);
         var settings_wrap = $('.wp-smush-resize-settings-wrap');
+
+        if (self.is(':checked')) {
+            settings_wrap.show();
+        } else {
+            settings_wrap.hide();
+        }
+    });
+    //Handle PNG to JPG Checkbox toggle, to show/hide Transparent image conversion settings
+    $('#wp-smush-png_to_jpg').click(function() {
+        var self = $(this);
+        var settings_wrap = $('.wp-smush-png_to_jpg-wrap');
 
         if (self.is(':checked')) {
             settings_wrap.show();
