@@ -448,16 +448,23 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					do_action( 'wp_smush_after_stats_box' );
 				} ?>
 			</div><!-- End Of Smushit Container right -->
-				<div class="row"><?php
-				//Settings
+
+			<!-- Stats Share Widget -->
+			<div class="row"><?php
+				global $wpsmush_share;
+				$wpsmush_share->share_widget(); ?>
+			</div>
+
+			<!-- Settings -->
+			<div class="row"><?php
 				$this->settings_ui(); ?>
-					<div class="wp-smush-pro-for-free wp-smushit-container-left col-half float-l"><?php
-						$this->wp_smush_promo();?>
-					</div>
-					<div class="wp-smushit-container-left col-half float-l"><?php
-						$this->wp_smush_hummingbird_promo(); ?>
-					</div>
-				</div><?php
+				<div class="wp-smush-pro-for-free wp-smushit-container-left col-half float-l"><?php
+					$this->wp_smush_promo();?>
+				</div>
+				<div class="wp-smushit-container-left col-half float-l"><?php
+					$this->wp_smush_hummingbird_promo(); ?>
+				</div>
+			</div><?php
 			$this->smush_page_footer();
 		}
 

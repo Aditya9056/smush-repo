@@ -880,7 +880,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return array|bool|mixed Stats
 		 */
-		function global_stats_from_ids( $force_update ) {
+		function global_stats_from_ids( $force_update = false ) {
 
 			if ( ! $force_update && $stats = wp_cache_get( 'smush_global_stats' ) ) {
 				if ( ! empty( $stats ) ) {

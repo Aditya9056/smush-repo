@@ -29,7 +29,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			global $wpsmushit_admin;
 
 			//Remove the Filters added by WP Media Folder
-			$this->remove_wmf_filters();
+			$this->remove_filters();
 
 			$count = 0;
 
@@ -51,7 +51,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		 *
 		 * @return array|int
 		 */
-		function smushed_count( $return_ids ) {
+		function smushed_count( $return_ids = false ) {
 			global $wpsmushit_admin;
 
 			//Don't query again, if the variable is already set
@@ -71,7 +71,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			);
 
 			//Remove the Filters added by WP Media Folder
-			$this->remove_wmf_filters();
+			$this->remove_filters();
 
 			$results = new WP_Query( $query );
 
@@ -207,7 +207,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			while ( $get_posts ) {
 
 				//Remove the Filters added by WP Media Folder
-				$this->remove_wmf_filters();
+				$this->remove_filters();
 
 				$query = new WP_Query( $args );
 
@@ -237,7 +237,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		/**
 		 * Remove any pre_get_posts_filters added by WP Media Folder plugin
 		 */
-		function remove_wmf_filters() {
+		function remove_filters() {
 			//remove any filters added b WP media Folder plugin to get the all attachments
 			if ( class_exists( 'Wp_Media_Folder' ) ) {
 				global $wp_media_folder;
@@ -245,6 +245,17 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts1' ) );
 					remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts' ), 0, 1 );
 				}
+			}
+			global $wpml_query_filter;
+			//If WPML is not installed, return
+			if ( ! is_object( $wpml_query_filter ) ) {
+				return;
+			}
+
+			//Remove language filter and let all the images be smushed at once
+			if ( has_filter( 'posts_join', array( $wpml_query_filter, 'posts_join_filter' ) ) ) {
+				remove_filter( 'posts_join', array( $wpml_query_filter, 'posts_join_filter' ), 10, 2 );
+				remove_filter( 'posts_where', array( $wpml_query_filter, 'posts_where_filter' ), 10, 2 );
 			}
 		}
 
@@ -381,7 +392,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			while ( $get_posts ) {
 
 				//Remove the Filters added by WP Media Folder
-				$this->remove_wmf_filters();
+				$this->remove_filters();
 
 				$query = new WP_Query( $args );
 
@@ -434,7 +445,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			while ( $get_posts ) {
 
 				//Remove the Filters added by WP Media Folder
-				$this->remove_wmf_filters();
+				$this->remove_filters();
 
 				$query = new WP_Query( $args );
 

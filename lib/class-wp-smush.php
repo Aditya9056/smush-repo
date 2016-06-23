@@ -8,8 +8,11 @@ require_once WP_SMUSH_DIR . "lib/class-wp-smush-stats.php";
 //Include Resize class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
 
-//Include Resize class
+//Include PNG to JPG Converter
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
+
+//Include Social Sharing
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-share.php';
 
 if ( ! class_exists( 'WpSmush' ) ) {
 

@@ -70,7 +70,7 @@ jQuery(function ($) {
             this.deferred.errors = [];
 
             //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
-            this.ids = wp_smushit_data.resmush.length > 0 && !skip_resmush ? ( wp_smushit_data.unsmushed.length > 0 ? wp_smushit_data.resmush.concat(wp_smushit_data.unsmushed) :  wp_smushit_data.resmush ): wp_smushit_data.unsmushed;
+            this.ids = wp_smushit_data.resmush.length > 0 && !skip_resmush ? ( wp_smushit_data.unsmushed.length > 0 ? wp_smushit_data.resmush.concat(wp_smushit_data.unsmushed) : wp_smushit_data.resmush ) : wp_smushit_data.unsmushed;
 
             this.is_bulk_resmush = wp_smushit_data.resmush.length > 0 && !skip_resmush ? true : false;
 
@@ -259,7 +259,7 @@ jQuery(function ($) {
                     if (wp_smushit_data.resmush.length > 0) {
                         //Update the Count
                         $('.wp-smush-images-remaining').html(wp_smushit_data.resmush.length);
-                    } else if (wp_smushit_data.resmush.length == 0 && this.ids.length == 0 ) {
+                    } else if (wp_smushit_data.resmush.length == 0 && this.ids.length == 0) {
                         //If all images are resmushed, show the All Smushed message
 
                         //Show All Smushed
@@ -286,8 +286,8 @@ jQuery(function ($) {
             }
 
             //Update Total Images Tooltip
-            if( 'undefined' !== typeof _res.data.stats.tooltip_text && '' != _res.data.stats.tooltip_text ) {
-                $('.wp-smush-stats .smushed-count').attr('tooltip', _res.data.stats.tooltip_text );
+            if ('undefined' !== typeof _res.data.stats.tooltip_text && '' != _res.data.stats.tooltip_text) {
+                $('.wp-smush-stats .smushed-count').attr('tooltip', _res.data.stats.tooltip_text);
             }
 
             //Update remaining count
@@ -351,7 +351,7 @@ jQuery(function ($) {
             this.current_id = this.is_bulk ? this.ids.shift() : this.$button.data("id"); //remove from array while processing so we can continue where left off
 
             //Remove the id from respective variable as well
-            this.update_smush_ids( this.current_id );
+            this.update_smush_ids(this.current_id);
 
             var nonce_field = this.$button.parent().find('#_wp_smush_nonce');
             if (nonce_field) {
@@ -465,7 +465,7 @@ jQuery(function ($) {
          * Remove the current id from unsmushed/resmush variable
          * @param current_id
          */
-        this.update_smush_ids = function( current_id ) {
+        this.update_smush_ids = function (current_id) {
             if ('undefined' !== typeof wp_smushit_data.unsmushed && wp_smushit_data.unsmushed.length > 0) {
                 var u_index = wp_smushit_data.unsmushed.indexOf(current_id);
                 if (u_index > -1) {
@@ -629,7 +629,7 @@ jQuery(function ($) {
         }
 
         //Check for width
-        if ( !height_only && 'undefined' != typeof width_input && parseInt(wp_smushit_data.resize_sizes.width) > parseInt(width_input.val())) {
+        if (!height_only && 'undefined' != typeof width_input && parseInt(wp_smushit_data.resize_sizes.width) > parseInt(width_input.val())) {
             width_input.addClass('error');
             width_error_note.show('slow');
             width_error = true;
@@ -844,9 +844,9 @@ jQuery(function ($) {
                     //Show Bulk wrapper
                     $('.wp-smush-bulk-wrapper').show();
 
-                    if( 'undefined' !== typeof r.data.count ) {
+                    if ('undefined' !== typeof r.data.count) {
                         //Update progress bar
-                        update_progress_bar_resmush( r.data.count );
+                        update_progress_bar_resmush(r.data.count);
                     }
                 }
                 //If content is received, Prepend it
@@ -861,13 +861,13 @@ jQuery(function ($) {
                 $('.smush-final-log').hide();
 
                 //Hide Super Smush notice if it's enabled in media settings
-                if ('undefined' != typeof r.data.super_smush && r.data.super_smush ) {
+                if ('undefined' != typeof r.data.super_smush && r.data.super_smush) {
                     var enable_lossy = jQuery('.wp-smush-enable-lossy');
-                    if( enable_lossy.length > 0 ) {
+                    if (enable_lossy.length > 0) {
                         enable_lossy.remove();
                     }
-                    if( 'undefined' !== r.data.super_smush_stats ) {
-                        $('.super-smush-attachments .wp-smush-stats').html( r.data.super_smush_stats );
+                    if ('undefined' !== r.data.super_smush_stats) {
+                        $('.super-smush-attachments .wp-smush-stats').html(r.data.super_smush_stats);
                     }
                 }
             }
@@ -1066,7 +1066,7 @@ jQuery(function ($) {
     });
 
     //Handle Resize Checkbox toggle, to show/hide width, height settings
-    $('#wp-smush-resize').click(function() {
+    $('#wp-smush-resize').click(function () {
         var self = $(this);
         var settings_wrap = $('.wp-smush-resize-settings-wrap');
 
@@ -1077,7 +1077,7 @@ jQuery(function ($) {
         }
     });
     //Handle PNG to JPG Checkbox toggle, to show/hide Transparent image conversion settings
-    $('#wp-smush-png_to_jpg').click(function() {
+    $('#wp-smush-png_to_jpg').click(function () {
         var self = $(this);
         var settings_wrap = $('.wp-smush-png_to_jpg-wrap');
 
@@ -1086,6 +1086,23 @@ jQuery(function ($) {
         } else {
             settings_wrap.hide();
         }
+    });
+    $('#wp-smush-twitter-share').on('click', function (e) {
+        e.preventDefault();
+        var width  = 550,
+            height = 420,
+            left   = ($(window).width()  - width)  / 2,
+            top    = ($(window).height() - height) / 2,
+            url    = this.href,
+            opts   = 'status=1' +
+                ',width='  + width  +
+                ',height=' + height +
+                ',top='    + top    +
+                ',left='   + left;
+
+        window.open(url, 'twitter', opts);
+
+        return false;
     });
 
 
