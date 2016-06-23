@@ -289,7 +289,7 @@ input#wp-smush-save-settings {
 }
 
 .wpmud .wp-smushit-container-right .smush-stats-wrapper .wp-smush-container-header {
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
 .smush-stats-wrapper td, .smush-stats-wrapper th {
@@ -301,6 +301,32 @@ input#wp-smush-save-settings {
     margin: 7px 8px 0;
 }
 
+.smush-stats-wrapper .box-content {
+    margin-top: 20px;
+}
+
+.wp-smush-human-percent {
+    display: inline-block;
+    line-height: 1;
+    margin-left: 15px;
+    overflow: hidden;
+    text-align: left;
+}
+
+.wp-smush-smush-stats-wrapper {
+    color: #555555;
+    font-size: 25px;
+}
+
+.total-stats-label {
+    color: #b9b9b9;
+    font-size: 12px;
+}
+
+.smush-total-savings.smush-total-reduction-percent {
+    text-align: center;
+}
+
 .smush-total-savings.smush-total-reduction-percent .wp-smush-stats-wrap {
     display: inline-block;
     max-width: 200px;
@@ -308,10 +334,10 @@ input#wp-smush-save-settings {
     vertical-align: middle;
 }
 
-.wp-smush-current-progress, .wp-smushed-count {
+.wp-smushed-count {
     display: inline-block;
-    max-width: 130px;
     text-align: center;
+    vertical-align: bottom;
 }
 
 table.wp-smush-stats-holder {
@@ -1404,11 +1430,11 @@ small.smush-setting-description {
 }
 
 .wphb-score-result-grade-b {
-    color: #19B4CF;
+    color: #28B576;
 }
 
 .wphb-score-result-grade-b .wphb-score-type-circle .wphb-score-graph-result {
-    stroke: #19B4CF;
+    stroke: #28B576;
 }
 
 .wphb-score-result-grade-c {
@@ -1509,6 +1535,7 @@ small.smush-setting-description {
 .wpmud .button.wp-smush-share-button {
     font-weight: 400;
 }
+
 .wp-smush-share-button .dev-icon {
     margin-right: 12px;
 }

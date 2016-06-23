@@ -863,7 +863,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Round off precentage
-			$smush_data['percent'] = round( $smush_data['percent'], 2 );
+			$smush_data['percent'] = round( $smush_data['percent'], 1 );
 
 			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
 

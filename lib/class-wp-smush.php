@@ -688,7 +688,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Return the filesize in a humanly readable format.
 		 * Taken from http://www.php.net/manual/en/function.filesize.php#91477
 		 */
-		function format_bytes( $bytes, $precision = 2 ) {
+		function format_bytes( $bytes, $precision = 1 ) {
 			$units = array( 'B', 'KB', 'MB', 'GB', 'TB' );
 			$bytes = max( $bytes, 0 );
 			$pow   = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
