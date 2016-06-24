@@ -130,19 +130,19 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			<div class="wp-smush-current-progress" tooltip="<?php printf( esc_html__(" You've smushed %d images in total", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ); ?>">
 				<div class="wp-smushed-progress">
-					<div class="wp-smush-score wphb-score-have-label inside">
+					<div class="wp-smush-score inside">
 						<div class="tooltip-box">
-							<div class="wphb-score-result wphb-score-result-grade-b">
-								<div class="wphb-score-type wphb-score-type-circle">
-									<svg class="wphb-score-graph wphb-score-graph-svg" xmlns="http://www.w3.org/2000/svg" width="50" height="50">
-										<circle class="wphb-score-graph-circle" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="0" stroke-dashoffset="0"></circle>
-										<circle class="wphb-score-graph-circle wphb-score-graph-result" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="80" stroke-dashoffset="0" style="stroke-dashoffset: 16.4934px;"></circle>
+							<div class="wp-smush-optimisation-progress">
+								<div class="wp-smush-progress-circle">
+									<svg class="wp-smush-svg" xmlns="http://www.w3.org/2000/svg" width="50" height="50">
+										<circle class="wp-smush-svg-circle" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="0" stroke-dashoffset="0"></circle>
+										<circle class="wp-smush-svg-circle wp-smush-svg-circle-progress" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="80" stroke-dashoffset="0" style="stroke-dashoffset: 16.4934px;"></circle>
 									</svg>
-								</div><!-- end wphb-score-type -->
-							</div><!-- end wphb-score-result -->
+								</div>
+							</div>
 						</div><!-- end tooltip-box -->
-					</div><!-- end wphb-score -->
-				</div><!-- end wphb-performance-report-current-score -->
+					</div>
+				</div>
 
 				<div class="wp-smush-count-total">
 					<div class="wp-smush-smush-stats-wrapper">
@@ -454,13 +454,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			<!-- Settings -->
 			<div class="row"><?php
-				$this->settings_ui(); ?>
-				<div class="wp-smush-pro-for-free wp-smushit-container-left col-half float-l"><?php
-					$this->wp_smush_promo();?>
-				</div>
-				<div class="wp-smushit-container-left col-half float-l"><?php
-					$this->wp_smush_hummingbird_promo(); ?>
-				</div>
+				$this->settings_ui();
+				if( !$wpsmushit_admin->is_pro() ) {?>
+					<div class="wp-smush-pro-for-free wp-smushit-container-left col-half float-l"><?php
+						$this->wp_smush_promo();?>
+					</div>
+					<div class="wp-smushit-container-left col-half float-l"><?php
+						$this->wp_smush_hummingbird_promo(); ?>
+					</div><?php
+				} ?>
 			</div><?php
 			$this->smush_page_footer();
 		}

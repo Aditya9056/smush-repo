@@ -1378,23 +1378,15 @@ small.smush-setting-description {
     display: inline-block;
 }
 
-.wphb-score {
-    display: inline-block;
-    position: relative;
-}
-
-.wphb-score-type-circle {
+.wp-smush-progress-circle {
     border-radius: 100%;
+    display: block;
     height: 50px;
+    position: relative;
     width: 50px;
 }
 
-.wphb-score-type-circle.large {
-    height: 80px;
-    width: 80px;
-}
-
-.wphb-score-type-circle .wphb-score-graph-circle {
+.wp-smush-progress-circle .wp-smush-svg-circle {
     stroke: #E5E5E5;
     stroke-dashoffset: 80;
     stroke-width: 5px;
@@ -1404,111 +1396,20 @@ small.smush-setting-description {
     transition: stroke-dashoffset 1s linear;
 }
 
-.wphb-score-type-circle.large .wphb-score-graph-circle {
-    stroke-dashoffset: 219.8;
-    stroke-width: 10px;
-}
-
-.wphb-score-type-circle .wphb-score-graph-result {
+.wp-smush-progress-circle .wp-smush-svg-circle-progress {
     transform: rotate(-80deg) translateX(-45px) translateY(4px);
     -moz-transform: rotate(-80deg) translateX(-45px) translateY(4px);
     -webkit-transform: rotate(-80deg) translateX(-45px) translateY(4px);
 }
 
-.wphb-score-type-circle.large .wphb-score-graph-result {
-    transform: rotate(-80deg) translateX(-72.5px) translateY(6.5px);
-    -moz-transform: rotate(-80deg) translateX(-72.5px) translateY(6.5px);
-    -webkit-transform: rotate(-80deg) translateX(-72.5px) translateY(6.5px);
-}
-
-.wphb-score-result {
+.wp-smush-optimisation-progress {
+    color: #28B576;
     cursor: pointer;
     position: relative;
 }
 
-.wphb-score-result-grade-aplus,
-.wphb-score-result-grade-a {
-    color: #1ABC9C;
-}
-
-.wphb-score-result-grade-aplus .wphb-score-type-circle .wphb-score-graph-result,
-.wphb-score-result-grade-a .wphb-score-type-circle .wphb-score-graph-result {
-    stroke: #1ABC9C;
-}
-
-.wphb-score-result-grade-b {
-    color: #28B576;
-}
-
-.wphb-score-result-grade-b .wphb-score-type-circle .wphb-score-graph-result {
+.wp-smush-optimisation-progress .wp-smush-progress-circle .wp-smush-svg-circle-progress {
     stroke: #28B576;
-}
-
-.wphb-score-result-grade-c {
-    color: #FECF2F;
-}
-
-.wphb-score-result-grade-c .wphb-score-type-circle .wphb-score-graph-result {
-    stroke: #FECF2F;
-}
-
-.wphb-score-result-grade-d {
-    color: #FFAD5F;
-}
-
-.wphb-score-result-grade-d .wphb-score-type-circle .wphb-score-graph-result {
-    stroke: #FFAD5F;
-}
-
-.wphb-score-result-grade-e,
-.wphb-score-result-grade-f {
-    color: #FF6D6D;
-}
-
-.wphb-score-result-grade-e .wphb-score-type-circle .wphb-score-graph-result,
-.wphb-score-result-grade-f .wphb-score-type-circle .wphb-score-graph-result {
-    stroke: #FF6D6D;
-}
-
-.wphb-score-have-label .wphb-score-type {
-    float: left;
-    display: block;
-}
-
-.wphb-score-have-label.inside .wphb-score-type,
-.wphb-score-have-label.inside .wphb-score-result-label {
-    float: none;
-}
-
-.wphb-score-have-label .wphb-score-result-label {
-    font-family: 'Roboto', Arial, sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    /*/margin-left: 10px;*/
-    padding-left: 10px;
-}
-
-.wphb-score-have-label .wphb-score-type-circle + .wphb-score-result-label {
-    line-height: 30px;
-    min-width: 35px;
-    text-align: left;
-}
-
-.wphb-score-have-label.inside .wphb-score-type {
-    position: relative;
-}
-
-.wphb-score-have-label.inside .wphb-score-result-label {
-    font-size: 20px;
-    left: 0;
-    line-height: 34px;
-    margin: -17px 0 0;
-    min-width: 100%;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    text-align: center;
-    top: 50%;
 }
 
 #wp-smush-share-widget {
