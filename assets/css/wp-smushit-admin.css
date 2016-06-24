@@ -305,7 +305,7 @@ input#wp-smush-save-settings {
     margin-top: 20px;
 }
 
-.wp-smush-human-percent {
+.wp-smush-count-total {
     display: inline-block;
     line-height: 1;
     margin-left: 15px;
@@ -334,7 +334,13 @@ input#wp-smush-save-settings {
     vertical-align: middle;
 }
 
-.wp-smushed-count {
+.wp-smush-current-progress {
+    cursor: pointer;
+    margin: 0 auto;
+    width: 200px;
+}
+
+.wp-smushed-progress {
     display: inline-block;
     text-align: center;
     vertical-align: bottom;
@@ -916,6 +922,7 @@ small.smush-setting-description {
     color: #555555;
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 25px;
+    font-weight: 400;
     line-height: 1;
     padding: 5px 0;
 }

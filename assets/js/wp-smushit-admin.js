@@ -287,7 +287,7 @@ jQuery(function ($) {
 
             //Update Total Images Tooltip
             if ('undefined' !== typeof _res.data.stats.tooltip_text && '' != _res.data.stats.tooltip_text) {
-                $('.wp-smush-stats .smushed-count').attr('tooltip', _res.data.stats.tooltip_text);
+                $('.wp-smush-current-progress').attr('tooltip', _res.data.stats.tooltip_text);
             }
 
             //Update remaining count
@@ -297,10 +297,10 @@ jQuery(function ($) {
             if ('undefined' != typeof _res.data.stats) {
 
                 //Update stats
-                $('.smush-total-savings .wp-smush-stats-percent').html(_res.data.stats.percent);
-                $('.smush-total-savings .wp-smush-stats-human').html(_res.data.stats.human);
+                $('.wp-smush-savings .wp-smush-stats-percent').html(_res.data.stats.percent);
+                $('.wp-smush-savings .wp-smush-stats-human').html(_res.data.stats.human);
 
-                $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(_res.data.stats.smushed);
+                $('.wp-smush-images-smushed, .wp-smush-optimised').html(_res.data.stats.smushed);
                 if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed) {
                     $('.super-smush-attachments .smushed-count').html(_res.data.stats.super_smushed);
                 }
@@ -831,7 +831,7 @@ jQuery(function ($) {
                     var smushed_count = wp_smushit_data.count_smushed - r.data.resmush_ids.length;
 
                     //Update it in stats bar
-                    $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(smushed_count);
+                    $('.wp-smush-images-smushed, .wp-smush-optimised').html(smushed_count);
 
                     //Hide the Existing wrapper
                     var notices = $('.bulk-smush-wrapper .wp-smush-notice');
@@ -998,7 +998,7 @@ jQuery(function ($) {
         type = 'undefined' == typeof type ? 'media' : type;
 
         var smushed_count = 'undefined' != typeof wp_smushit_data.count_smushed ? wp_smushit_data.count_smushed : 0
-        $('.smush-attachments .wp-smush-stats .smushed-count, .wp-smush-images-smushed').html(smushed_count);
+        $('.wp-smush-images-smushed, .wp-smush-optimised').html(smushed_count);
 
         //Update the Progress Bar Width
         // get the progress bar

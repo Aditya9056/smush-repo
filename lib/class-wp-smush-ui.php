@@ -128,24 +128,23 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="box-content">
 			<div class="row smush-total-savings smush-total-reduction-percent">
 
-			<div class="wp-smush-current-progress">
-				<div class="wp-smushed-count">
+			<div class="wp-smush-current-progress" tooltip="<?php printf( esc_html__(" You've smushed %d images in total", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ); ?>">
+				<div class="wp-smushed-progress">
 					<div class="wp-smush-score wphb-score-have-label inside">
 						<div class="tooltip-box">
-							<div class="wphb-score-result wphb-score-result-grade-b" tooltip="<?php printf( esc_html__(" You've smushed %d images in total", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ); ?>">
+							<div class="wphb-score-result wphb-score-result-grade-b">
 								<div class="wphb-score-type wphb-score-type-circle">
 									<svg class="wphb-score-graph wphb-score-graph-svg" xmlns="http://www.w3.org/2000/svg" width="50" height="50">
 										<circle class="wphb-score-graph-circle" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="0" stroke-dashoffset="0"></circle>
 										<circle class="wphb-score-graph-circle wphb-score-graph-result" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="80" stroke-dashoffset="0" style="stroke-dashoffset: 16.4934px;"></circle>
 									</svg>
 								</div><!-- end wphb-score-type -->
-								<div class="wphb-score-result-label"><?php echo $smushed_count; ?></div>
 							</div><!-- end wphb-score-result -->
 						</div><!-- end tooltip-box -->
 					</div><!-- end wphb-score -->
 				</div><!-- end wphb-performance-report-current-score -->
 
-				<div class="wp-smush-human-percent">
+				<div class="wp-smush-count-total">
 					<div class="wp-smush-smush-stats-wrapper">
 						<span class="wp-smush-optimised"><?php echo $smushed_count; ?></span>/<span><?php echo $wpsmushit_admin->total_count; ?></span>
 					</div>
@@ -157,10 +156,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="row wp-smush-savings">
 				<span class="float-l wp-smush-stats-label"><?php esc_html_e("TOTAL SAVINGS", "wp-smushit");?></span>
 				<span class="float-r wp-smush-stats">
-				    <strong><span class="wp-smush-stats-percent"><?php echo $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0; ?></span>%</strong>
+				    <span class="wp-smush-stats-percent"><?php echo $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0; ?></span>%
 					<span class="wp-smush-stats-sep">/</span>
 					<span class="wp-smush-stats-human">
-						<strong><?php echo $wpsmushit_admin->stats['human'] > 0 ? $wpsmushit_admin->stats['human'] : "0MB"; ?></strong>
+						<?php echo $wpsmushit_admin->stats['human'] > 0 ? $wpsmushit_admin->stats['human'] : "0MB"; ?>
 					</span>
 				</span>
 			</div>
@@ -168,14 +167,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				if( !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) { ?>
 					<div class="row smush-resize-savings">
 						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "TOTAL RESIZE SAVINGS", "wp-smushit" ); ?></strong></span>
-						<span class="float-r wp-smush-stats"><strong><?php echo $wpsmushit_admin->stats['resize_savings'] > 0 ? $wpsmushit_admin->stats['resize_savings'] : "0MB"; ?></strong></span>
+						<span class="float-r wp-smush-stats"><?php echo $wpsmushit_admin->stats['resize_savings'] > 0 ? $wpsmushit_admin->stats['resize_savings'] : "0MB"; ?></span>
 					</div>
 					<hr><?php
 				}
 				if( !empty( $wpsmushit_admin->stats['conversion_savings'] ) && $wpsmushit_admin->stats['conversion_savings'] > 0 ) { ?>
 					<div class="row smush-conversion-savings">
 						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "TOTAL PNG TO JPG SAVINGS", "wp-smushit" ); ?></strong></span>
-						<span class="float-r wp-smush-stats"><strong><?php echo $wpsmushit_admin->stats['conversion_savings'] > 0 ? $wpsmushit_admin->stats['conversion_savings'] : "0MB"; ?></strong></span>
+						<span class="float-r wp-smush-stats"><?php echo $wpsmushit_admin->stats['conversion_savings'] > 0 ? $wpsmushit_admin->stats['conversion_savings'] : "0MB"; ?></span>
 					</div><?php
 				}
 			/**
@@ -188,7 +187,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
 				<span class="float-r wp-smush-stats<?php echo $WpSmush->lossy_enabled ? '' : ' wp-smush-lossy-disabled-wrap' ?>"><?php
 					if ( $WpSmush->lossy_enabled ) {
-						echo '<strong><span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count . '</strong>';
+						echo '<span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count;
 					} else {
 						printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
 					} ?>
