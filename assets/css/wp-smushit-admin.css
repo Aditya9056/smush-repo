@@ -1131,6 +1131,32 @@ small.smush-setting-description {
     }
 }
 
+@media screen and (max-width: 650px) {
+    .wpmud #wp-smush-share-widget {
+        background-image: none;
+    }
+
+    .wpmud #wp-smush-share-widget .box-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .wpmud .button.wp-smush-share-button,
+    .wpmud a+.button.wp-smush-share-button {
+        margin-bottom: 10px;
+        margin-left: 0;
+        text-align: center;
+        width: 100%;
+    }
+    .wpmud .button.wp-smush-share-button .dev-icon {
+        float: left;
+    }
+
+    .wpmud  #wp-smush-whatsapp-share {
+        display: inline-block;
+    }
+}
+
 /** For Media Gallery and Other WordPress pages **/
 /** No Caps for the tooltips **/
 .wp-admin.wpmud [tooltip]:after {
@@ -1435,6 +1461,15 @@ small.smush-setting-description {
     background: #3b5998;
 }
 
+#wp-smush-whatsapp-share {
+    background-color: #00ba00;
+    background-image: url(../images/whatsapp-button-16px.png);
+    background-repeat: no-repeat;
+    background-position: 20px 12px;
+    display: inline-block;
+    padding-left: 47px;
+}
+
 .wp-smush-share-buttons-wrapper {
     margin-top: 20px;
     overflow: hidden;
@@ -1446,4 +1481,8 @@ small.smush-setting-description {
 
 .wp-smush-share-button .dev-icon {
     margin-right: 12px;
+}
+
+.wpmud .wp-smush-share-message {
+    font-weight: 500;
 }

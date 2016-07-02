@@ -30,19 +30,22 @@ if ( ! class_exists( 'WpSmushShare' ) ) {
 			$share_msg = "I saved 6.5MB on my site with WP Smush ( " . urlencode( "https://wordpress.org/plugins/wp-smushit/" ) . ") - wanna make your website smaller and faster?";
 			$url       = urlencode( "http://wordpress.org/plugins/wp-smushit/" ); ?>
 			<section class="dev-box" id="wp-smush-share-widget">
-				<div class="box-content roboto-medium">
-					<div class="wp-smush-share-buttons-wrapper">
-						<!-- Twitter Button -->
-						<a href="https://twitter.com/intent/tweet?text=<?php echo $share_msg; ?>"
-						   class="button wp-smush-share-button" id="wp-smush-twitter-share">
-							<i class="dev-icon dev-icon-twitter"></i><?php esc_html_e( "SHARE", "wp-smushit" ); ?></a>
-						<!-- Facebook Button -->
-						<a href="http://www.facebook.com/sharer.php?s=100&p[title]=WP Smush&p[summary]=Custom Content&p[url]=http://wordpress.org/plugins/wp-smushit/" class="button wp-smush-share-button" id="wp-smush-facebook-share">
-							<i class="dev-icon dev-icon-facebook"></i><?php esc_html_e( "Facebook", "wp-smushit" ); ?></a>
-						<a href="whatsapp://send?text='<?php echo $share_msg; ?>'" class="wabtn button"><i
-								class="dev-icon dev-icon-facebook"></i><?php esc_html_e( "WhatsApp", "wp-smushit" ); ?></a>
-					</div>
+			<div class="box-content roboto-medium">
+				<p class="wp-smush-share-message"><?php echo $message; ?></p>
+				<div class="wp-smush-share-buttons-wrapper">
+					<!-- Twitter Button -->
+					<a href="https://twitter.com/intent/tweet?text=<?php echo $share_msg; ?>"
+					   class="button wp-smush-share-button" id="wp-smush-twitter-share">
+						<i class="dev-icon dev-icon-twitter"></i><?php esc_html_e( "SHARE", "wp-smushit" ); ?></a>
+					<!-- Facebook Button -->
+					<a href="http://www.facebook.com/sharer.php?s=100&p[title]=WP Smush&p[summary]=Custom Content&p[url]=http://wordpress.org/plugins/wp-smushit/"
+					   class="button wp-smush-share-button" id="wp-smush-facebook-share">
+						<i class="dev-icon dev-icon-facebook"></i><?php esc_html_e( "Facebook", "wp-smushit" ); ?></a>
+					<a href="whatsapp://send?text='<?php echo $share_msg; ?>'" class="button wp-smush-share-button"
+					   id="wp-smush-whatsapp-share">
+						<?php esc_html_e( "WhatsApp", "wp-smushit" ); ?></a>
 				</div>
+			</div>
 			</section><?php
 		}
 

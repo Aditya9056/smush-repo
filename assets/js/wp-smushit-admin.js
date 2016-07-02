@@ -27,6 +27,23 @@ var progress_bar = function (cur_ele, txt, state) {
         progress_button.hide();
     }
 };
+
+var dash_offset = function (percent) {
+    //Get the dasharray value
+    var dasharray = jQuery('.wp-smush-svg-circle-progress').attr('stroke-dasharray');
+    return dasharray - ( dasharray * percent );
+}
+
+var update_dashoffset = function (stats) {
+    if (stats.total > 0) {
+        var dash_offset = dash_offset(stats.smushed / stats.total);
+        var circle_progress = jQuery('.wp-smush-svg-circle-progress');
+        if (typeof dash_offset != 'undefined' && circle_progress.length) {
+            circle_progress.css({'stroke-dashoffset': dash_offset});
+        }
+    }
+}
+
 jQuery(function ($) {
     var smushAddParams = function (url, data) {
         if (!$.isEmptyObject(data)) {
@@ -295,6 +312,8 @@ jQuery(function ($) {
 
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
+
+                update_dashoffset(res.data.stats);
 
                 //Update stats
                 $('.wp-smush-savings .wp-smush-stats-percent').html(_res.data.stats.percent);
@@ -1089,16 +1108,16 @@ jQuery(function ($) {
     });
     $('#wp-smush-twitter-share').on('click', function (e) {
         e.preventDefault();
-        var width  = 550,
+        var width = 550,
             height = 420,
-            left   = ($(window).width()  - width)  / 2,
-            top    = ($(window).height() - height) / 2,
-            url    = this.href,
-            opts   = 'status=1' +
-                ',width='  + width  +
+            left = ($(window).width() - width) / 2,
+            top = ($(window).height() - height) / 2,
+            url = this.href,
+            opts = 'status=1' +
+                ',width=' + width +
                 ',height=' + height +
-                ',top='    + top    +
-                ',left='   + left;
+                ',top=' + top +
+                ',left=' + left;
 
         window.open(url, 'twitter', opts);
 

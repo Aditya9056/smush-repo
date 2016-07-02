@@ -124,7 +124,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$smushed_count = $smushed_count > 0 ? $smushed_count : 0;
 
 			$button = '<span class="spinner"></span><button tooltip="' . esc_html__( "Lets you check if any images can be further optimised. Useful after changing settings.", "wp-smushit" ) . '" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
-			$this->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button );?>
+			$this->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button );
+			$dasharray = 125.663706144;
+			$dash_offset = $wpsmushit_admin->total_count > 0 ? $dasharray - ( $dasharray * ( $smushed_count / $wpsmushit_admin->total_count) ) : $dasharray; ?>
 			<div class="box-content">
 			<div class="row smush-total-savings smush-total-reduction-percent">
 
@@ -136,7 +138,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 								<div class="wp-smush-progress-circle">
 									<svg class="wp-smush-svg" xmlns="http://www.w3.org/2000/svg" width="50" height="50">
 										<circle class="wp-smush-svg-circle" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="0" stroke-dashoffset="0"></circle>
-										<circle class="wp-smush-svg-circle wp-smush-svg-circle-progress" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="80" stroke-dashoffset="0" style="stroke-dashoffset: 16.4934px;"></circle>
+										<!-- Stroke Dasharray is 2 PI r -->
+										<circle class="wp-smush-svg-circle wp-smush-svg-circle-progress" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="<?php echo $dasharray; ?>" style="stroke-dashoffset: <?php echo $dash_offset; ?>px;"></circle>
 									</svg>
 								</div>
 							</div>
