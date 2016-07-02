@@ -1466,7 +1466,7 @@ small.smush-setting-description {
     background-image: url(../images/whatsapp-button-16px.png);
     background-repeat: no-repeat;
     background-position: 20px 12px;
-    display: inline-block;
+    display: none;
     padding-left: 47px;
 }
 
