@@ -891,8 +891,8 @@ small.smush-setting-description {
 
 /** Stats Container **/
 .wpmud .smush-stats-wrapper {
-    color: #777771;
-    font-size: 13px;
+    color: #555;
+    font-size: 15px;
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: 700;
 }
@@ -942,7 +942,7 @@ small.smush-setting-description {
 }
 
 .wpmud .wp-smush-stats-label {
-    padding-top: 7px;
+    padding-top: 9px;
 }
 
 .wp-smush-stats-label .wdv-icon.wdv-icon-question-sign {
@@ -1130,9 +1130,13 @@ small.smush-setting-description {
         padding: 15px 20px;
     }
 }
-
+@media screen and (max-width: 750px) {
+    .wpmud .dev-box#wp-smush-share-widget {
+        background-position: 30px 45px;
+    }
+}
 @media screen and (max-width: 650px) {
-    .wpmud #wp-smush-share-widget {
+    .wpmud .dev-box#wp-smush-share-widget {
         background-image: none;
     }
 
@@ -1438,11 +1442,12 @@ small.smush-setting-description {
     stroke: #28B576;
 }
 
-#wp-smush-share-widget {
-    background-image: url(../images/install-welcome.png);
+.wpmud #wp-smush-share-widget {
+    background-image: url(../images/share-bg-small.png);
     background-repeat: no-repeat;
-    background-position: 30px bottom;
-    min-height: 206px;
+    background-position: 30px 24px;
+    min-height: 144px;
+    padding: 21px;
 }
 
 #wp-smush-share-widget .box-content {
@@ -1450,7 +1455,7 @@ small.smush-setting-description {
     font-size: 15px;
     font-weight: 400;
     line-height: 1.5;
-    margin-left: 220px;
+    margin-left: 158px;
 }
 
 #wp-smush-twitter-share {
