@@ -36,10 +36,10 @@ var dash_offset = function (percent) {
 
 var update_dashoffset = function (stats) {
     if (stats.total > 0) {
-        var dash_offset = dash_offset(stats.smushed / stats.total);
+        var dashoffset = dash_offset(stats.smushed / stats.total);
         var circle_progress = jQuery('.wp-smush-svg-circle-progress');
-        if (typeof dash_offset != 'undefined' && circle_progress.length) {
-            circle_progress.css({'stroke-dashoffset': dash_offset});
+        if (typeof dashoffset != 'undefined' && circle_progress.length) {
+            circle_progress.css({'stroke-dashoffset': dashoffset});
         }
     }
 }
@@ -313,7 +313,7 @@ jQuery(function ($) {
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
 
-                update_dashoffset(res.data.stats);
+                update_dashoffset(_res.data.stats);
 
                 //Update stats
                 $('.wp-smush-savings .wp-smush-stats-percent').html(_res.data.stats.percent);

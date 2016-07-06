@@ -19,13 +19,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 	 */
 	class WpSmushBulkUi {
 
-		function __construct() {
-//			//Add a container for Smush Pro promo
-//			add_action( 'wp_smush_after_stats_box', array( $this, 'wp_smush_promo' ) );
-			//Add a Container for Hummingbird Promo
-//			add_action( 'wp_smush_after_stats_box', array( $this, 'wp_smush_hummingbird_promo' ) );
-		}
-
 		/**
 		 * Prints the Header Section for a container as per the Shared UI
 		 *
@@ -41,7 +34,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				return '';
 			}
 			echo '<section class="dev-box ' . $classes . ' wp-smush-container" id="' . $id . '">'; ?>
-			<div class="wp-smush-container-header box-title">
+<div class="wp-smush-container-header box-title" xmlns="http://www.w3.org/1999/html">
 			<h3 tabindex="0"><?php echo $heading ?></h3><?php
 			//Sub Heading
 			if ( ! empty( $sub_heading ) ) { ?>
@@ -183,14 +176,24 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</span>
 				</div>
 				<hr /><?php
-			}
-			if( !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) { ?>
-				<div class="row smush-resize-savings">
-					<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "RESIZE SAVINGS", "wp-smushit" ); ?></strong></span>
-					<span class="float-r wp-smush-stats"><?php echo $wpsmushit_admin->stats['resize_savings'] > 0 ? $wpsmushit_admin->stats['resize_savings'] : "0MB"; ?></span>
-				</div>
-				<hr><?php
-			}
+			} ?>
+			<hr />
+			<div class="row smush-resize-savings">
+				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "RESIZE SAVINGS", "wp-smushit" ); ?></strong></span>
+				<span class="float-r wp-smush-stats"><?php
+					if( !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) {
+						echo $wpsmushit_admin->stats['resize_savings'];
+					}else{
+						if( !get_option( WP_SMUSH_PREFIX . 'resize' ) ) {
+							//If Not enabled, Add a enable button
+							printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
+						}else{
+							echo "0MB";
+						}
+					} ?>
+				</span>
+			</div>
+			<hr><?php
 			if( !empty( $wpsmushit_admin->stats['conversion_savings'] ) && $wpsmushit_admin->stats['conversion_savings'] > 0 ) { ?>
 				<div class="row smush-conversion-savings">
 					<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PNG TO JPEG SAVINGS", "wp-smushit" ); ?></strong></span>

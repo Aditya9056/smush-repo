@@ -617,11 +617,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$original_meta = wp_get_attachment_metadata( $attachment_id );
 
-			//Convert PNGs to JPG
-			$updated_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
+			//Send image for resizing, if enabled resize first before any other operation
+			$updated_meta = $this->resize_image( $attachment_id, $original_meta );
 
-			//Send image for resizing
-			$updated_meta = $this->resize_image( $attachment_id, $updated_meta );
+			//Convert PNGs to JPG
+			$updated_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $updated_meta );
 
 			$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 

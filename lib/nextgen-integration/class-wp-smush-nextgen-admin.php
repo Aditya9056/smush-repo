@@ -507,7 +507,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			<div class="box-content">
 			<div class="row smush-total-savings smush-total-reduction-percent">
 
-				<div class="wp-smush-current-progress" tooltip="<?php printf( esc_html__(" You've smushed %d images in total", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ); ?>">
+				<div class="wp-smush-current-progress">
 					<div class="wp-smushed-progress">
 						<div class="wp-smush-score inside">
 							<div class="tooltip-box">
@@ -543,15 +543,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					</span>
 				</span>
 			</div>
-			<hr>
-			<div class="row smush-attachments">
-			<span class="float-l wp-smush-stats-label">
-				<strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong>
-			</span>
-			<span class="float-r wp-smush-stats">
-				<span class="smushed-count"><?php echo $smushed_count . '</span>/' . $this->total_count; ?>
-			</span>
-			</div><?php
+			<?php
 			//Nonce Field for Ajax requests
 			echo wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', false );
 			if ( apply_filters( 'wp_smush_show_nextgen_lossy_stats', true ) ) { ?>
