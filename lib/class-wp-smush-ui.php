@@ -430,14 +430,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			} ?>
 
 			<!-- Bulk Smush Progress Bar -->
-			<div class="wp-smushit-container-left col-two-third float-l"><?php
+			<div class="wp-smushit-container-left col-half float-l"><?php
 				//Bulk Smush Container
 				$this->bulk_smush_container();
 				?>
 			</div>
 
 			<!-- Stats -->
-			<div class="wp-smushit-container-right col-third float-l"><?php
+			<div class="wp-smushit-container-right col-half float-l"><?php
 				//Stats
 				$this->smush_stats_container();
 				if ( ! $WpSmush->is_pro() ) {

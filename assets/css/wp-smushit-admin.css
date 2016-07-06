@@ -606,9 +606,8 @@ table.wp-smush-stats-holder tr td:first-child {
     max-width: 90%;
 }
 
-.wpmud .row .col-two-third.wp-smushit-container-left {
+.wpmud .row .col-half.wp-smushit-container-left {
     padding-left: 0;
-    width: 62%;
 }
 
 .wp-smush-premium .box-content {
@@ -751,10 +750,6 @@ table.wp-smush-stats-holder tr td:first-child {
     width: 14px;
 }
 
-.wpmud .dev-box.bulk-smush-wrapper:not(.wp-smush-pro-install) {
-    padding-bottom: 0;
-}
-
 .wpmud .bulk-smush-wrapper .dev-icon {
     margin-right: 10px;
     vertical-align: top;
@@ -766,11 +761,11 @@ table.wp-smush-stats-holder tr td:first-child {
 
 .bulk-smush-wrapper .wp-smush-notice-text {
     display: inline-block;
-    max-width: 90%;
+    max-width: 88%;
 }
 
 .bulk-smush-wrapper .wp-smush-all {
-    margin: 20px 0;
+    margin: 20px 0 0;
 }
 
 .bulk-smush-wrapper .wp-smush-remaining .wp-smush-skip-resmush {
@@ -874,6 +869,7 @@ table.wp-smush-stats-holder tr td:first-child {
 .wpmud .wp-smush-enable-lossy {
     color: #adadad;
     font-size: 13px;
+    margin-top: 20px;
 }
 
 /** Settings Styling **/
@@ -1111,7 +1107,7 @@ small.smush-setting-description {
 
 /** Media Queries for resolution below 782px **/
 @media only screen and (max-width: 800px) {
-    .wpmud .wp-smushit-container-wrap .col-two-third.wp-smushit-container-left, .wpmud .wp-smushit-container-wrap .col-third.wp-smushit-container-right {
+    .wpmud .wp-smushit-container-wrap .col-half.wp-smushit-container-left, .wpmud .wp-smushit-container-wrap .col-half.wp-smushit-container-right {
         padding: 0;
         width: 100%;
     }

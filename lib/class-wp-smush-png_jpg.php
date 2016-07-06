@@ -492,7 +492,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 					$imagick->setCompressionQuality( $quality );
 					$imagick->writeImage( $n_file );
 				} catch ( Exception $e ) {
-					error_log( "WP Smush PNG to JPG Conversion error in " . __FILE__ . "at" . __LINE__ . " " . $e->getMessage() );
+					error_log( "WP Smush PNG to JPG Conversion error in " . __FILE__ . " at " . __LINE__ . " " . $e->getMessage() );
 				}
 			} else {
 				//Use GD for conversion

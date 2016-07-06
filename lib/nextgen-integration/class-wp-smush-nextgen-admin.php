@@ -378,14 +378,14 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//Page Header
 			$this->bulk_ui->smush_page_header(); ?>
 			<!-- Bulk Smush Progress Bar -->
-				<div class="wp-smushit-container-left col-two-third float-l"><?php
+				<div class="wp-smushit-container-left col-half float-l"><?php
 					//Bulk Smush Container
 					$this->bulk_smush_container();
 					?>
 				</div>
 
 				<!-- Stats -->
-				<div class="wp-smushit-container-right col-third float-l"><?php
+				<div class="wp-smushit-container-right col-half float-l"><?php
 					//Stats
 					$this->smush_stats_container(); ?>
 				</div><!-- End Of Smushit Container right -->
@@ -500,28 +500,48 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$this->stats = $wpsmushnextgenstats->get_smush_stats();
 
 			$button = '<span class="spinner"></span><button tooltip="' . esc_html__( "Lets you check if any images can be further optimised. Useful after changing settings.", "wp-smushit" ) . '" data-type="nextgen" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
-			$this->bulk_ui->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button ); ?>
+			$this->bulk_ui->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button );
+			$dasharray = 125.663706144;
+			$dash_offset = $this->total_count > 0 ? $dasharray - ( $dasharray * ( $smushed_count / $this->total_count ) ) : $dasharray; ?>
 
 			<div class="box-content">
-			<div class="row smush-total-reduction-percent">
-					<span class="float-l wp-smush-stats-label">
-						<strong><?php esc_html_e( "TOTAL % REDUCTIONS", "wp-smushit" ); ?></strong>
-					</span>
-					<span class="float-r wp-smush-stats-wrap">
-						<strong>
-							<span
-								class="wp-smush-stats"><?php echo $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 2, '.', '' ) : 0; ?></span>%
-						</strong>
-					</span>
+			<div class="row smush-total-savings smush-total-reduction-percent">
+
+				<div class="wp-smush-current-progress" tooltip="<?php printf( esc_html__(" You've smushed %d images in total", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ); ?>">
+					<div class="wp-smushed-progress">
+						<div class="wp-smush-score inside">
+							<div class="tooltip-box">
+								<div class="wp-smush-optimisation-progress">
+									<div class="wp-smush-progress-circle">
+										<svg class="wp-smush-svg" xmlns="http://www.w3.org/2000/svg" width="50" height="50">
+											<circle class="wp-smush-svg-circle" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="0" stroke-dashoffset="0"></circle>
+											<!-- Stroke Dasharray is 2 PI r -->
+											<circle class="wp-smush-svg-circle wp-smush-svg-circle-progress" r="20" cx="25" cy="25" fill="transparent" stroke-dasharray="<?php echo $dasharray; ?>" style="stroke-dashoffset: <?php echo $dash_offset; ?>px;"></circle>
+										</svg>
+									</div>
+								</div>
+							</div><!-- end tooltip-box -->
+						</div>
+					</div>
+
+					<div class="wp-smush-count-total">
+						<div class="wp-smush-smush-stats-wrapper">
+							<span class="wp-smush-optimised"><?php echo $smushed_count; ?></span>/<span><?php echo $this->total_count; ?></span>
+						</div>
+						<span class="total-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong></span>
+					</div>
+				</div>
 			</div>
-			<hr>
-			<div class="row smush-total-reduction-bytes">
-					<span class="float-l wp-smush-stats-label">
-						<strong><?php esc_html_e( "TOTAL SIZE REDUCTIONS", "wp-smushit" ); ?></strong>
+			<hr />
+			<div class="row wp-smush-savings">
+				<span class="float-l wp-smush-stats-label"><?php esc_html_e("TOTAL SAVINGS", "wp-smushit");?></span>
+				<span class="float-r wp-smush-stats">
+				    <span class="wp-smush-stats-percent"><?php echo $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0; ?></span>%
+					<span class="wp-smush-stats-sep">/</span>
+					<span class="wp-smush-stats-human">
+						<?php echo $this->stats['human'] > 0 ? $this->stats['human'] : "0MB"; ?>
 					</span>
-					<span class="float-r wp-smush-stats">
-						<strong><?php echo $this->stats['human'] > 0 ? $this->stats['human'] : "0MB"; ?></strong>
-					</span>
+				</span>
 			</div>
 			<hr>
 			<div class="row smush-attachments">
@@ -529,10 +549,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				<strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong>
 			</span>
 			<span class="float-r wp-smush-stats">
-				<strong>
-					<span
-						class="smushed-count"><?php echo $smushed_count . '</span>/' . $this->total_count; ?>
-				</strong>
+				<span class="smushed-count"><?php echo $smushed_count . '</span>/' . $this->total_count; ?>
 			</span>
 			</div><?php
 			//Nonce Field for Ajax requests
@@ -547,7 +564,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 						<?php
 						if ( $WpSmush->lossy_enabled ) {
 							$count = $wpsmush_stats->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
-							echo '<strong><span class="smushed-count">' . $count . '</span>/' . $this->total_count . '</strong>';
+							echo '<span class="smushed-count">' . $count . '</span>/' . $this->total_count;
 						} else {
 							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
 						} ?>
