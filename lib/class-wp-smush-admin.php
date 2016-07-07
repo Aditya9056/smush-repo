@@ -271,7 +271,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
 
 			//If we upgrade/install message is dismissed and for pro users
-			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->is_pro() ) {
+			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->validate_install() ) {
 				//Do not enqueue, unless it is one of the required screen
 				if ( ! $enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'post-new.php' && $pagenow != 'upload.php' ) ) {
 
@@ -500,7 +500,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_send_json_error( 'missing id' );
 			}
 
-			if ( ! $this->is_pro() ) {
+			if ( ! $this->validate_install() ) {
 				//Free version bulk smush, check the transient counter value
 				$should_continue = $this->check_bulk_limit();
 			}
@@ -973,7 +973,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$button = array(
 				'cancel' => false,
 			);
-			if ( $this->is_pro() && $resmush ) {
+			if ( $this->validate_install() && $resmush ) {
 
 				$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
 				$button['class'] = 'wp-smush-button wp-smush-resmush wp-smush-all';
@@ -1039,7 +1039,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function smush_upgrade() {
 
 			//Return, If a pro user, or not super admin, or don't have the admin privilleges
-			if ( $this->is_pro() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
+			if ( $this->validate_install() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
 				return;
 			}
 

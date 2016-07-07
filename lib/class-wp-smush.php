@@ -14,6 +14,9 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
 //Include Social Sharing
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-share.php';
 
+//Include Image backup class
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-backup.php';
+
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
@@ -94,7 +97,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Manage column sorting
 			add_action( 'pre_get_posts', array( $this, 'smushit_orderby' ) );
 
-			//Enqueue Scripts
+			//Enqueue Scripts, And Initialize variables
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 
 			//Load Translation files
@@ -118,11 +121,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function initialise() {
 			//Check if Lossy enabled
 			$opt_lossy           = WP_SMUSH_PREFIX . 'lossy';
-			$this->lossy_enabled = $this->is_pro() && get_option( $opt_lossy, false );
+			$this->lossy_enabled = $this->validate_install() && get_option( $opt_lossy, false );
 
 			//Check if Smush Original enabled
 			$opt_original         = WP_SMUSH_PREFIX . 'original';
-			$this->smush_original = $this->is_pro() && get_option( $opt_original, false );
+			$this->smush_original = $this->validate_install() && get_option( $opt_original, false );
 
 			//Check Whether to keep exif or not
 			$opt_keep_exif   = WP_SMUSH_PREFIX . 'keep_exif';
@@ -172,7 +175,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$file_size = file_exists( $file_path ) ? filesize( $file_path ) : '';
 
 			//Check if premium user
-			$max_size = $this->is_pro() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
+			$max_size = $this->validate_install() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
@@ -220,11 +223,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//handle backups if enabled
 			$backup = get_option( WP_SMUSH_PREFIX . 'backup' );
-			if ( $backup && $this->is_pro() ) {
+			if ( $backup && $this->validate_install() ) {
+				$backup_path = $wpsmushit_admin->get_image_backup_path( $file_path );
 				//Check for backup from other plugins, like nextgen, if it doesn't exists, create our own
-				if ( ! file_exists( $file_path . '_backup' ) ) {
-					$backup_name = $wpsmushit_admin->get_image_backup_path( $file_path );
-					@copy( $file_path, $backup_name );
+				if ( ! file_exists( $file_path . '_backup' ) || ! file_exists( $backup_path ) ) {
+					@copy( $file_path, $backup_path );
 				}
 			}
 
@@ -301,7 +304,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Flag to check, if original size image should be smushed or not
 			$original   = get_option( WP_SMUSH_PREFIX . 'original' );
-			$smush_full = ( $this->is_pro() && $original == 1 ) ? true : false;
+			$smush_full = ( $this->validate_install() && $original == 1 ) ? true : false;
 
 			$errors = new WP_Error();
 			$stats  = array(
@@ -595,7 +598,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$headers['apikey'] = $api_key;
 			}
 
-			if ( $this->lossy_enabled && $this->is_pro() ) {
+			if ( $this->lossy_enabled && $this->validate_install() ) {
 				$headers['lossy'] = 'true';
 			} else {
 				$headers['lossy'] = 'false';
@@ -713,7 +716,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return mixed|string
 		 */
-		function is_pro() {
+		function validate_install() {
 
 			if ( isset( $this->is_pro ) ) {
 				return $this->is_pro;
@@ -964,7 +967,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				//Check if premium user, compression was lossless, and lossy compression is enabled
 				//If we are displaying the resmush option already, no need to show the Super Smush button
-				if ( ! $show_resmush && $this->is_pro() && ! $is_lossy && $this->lossy_enabled && $image_type != 'image/gif' ) {
+				if ( ! $show_resmush && $this->validate_install() && ! $is_lossy && $this->lossy_enabled && $image_type != 'image/gif' ) {
 					// the button text
 					$button_txt  = __( 'Super-Smush', 'wp-smushit' );
 					$show_button = true;
@@ -1223,7 +1226,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//If full image was not smushed, reason 1. Large Size logic, 2. Free and greater than 1Mb
 			if ( ! array_key_exists( 'full', $size_stats ) ) {
 				//For free version, Check the image size
-				if ( ! $this->is_pro() ) {
+				if ( ! $this->validate_install() ) {
 					//For free version, check if full size is greater than 1 Mb, show the skipped status
 					$file_size = file_exists( $full_image ) ? filesize( $full_image ) : '';
 					if ( ! empty( $file_size ) && ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
@@ -1360,7 +1363,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Include and instantiate classes
 		 */
 		function load_nextgen() {
-			if ( ! class_exists( 'C_NextGEN_Bootstrap' ) || ! $this->is_pro() ) {
+			if ( ! class_exists( 'C_NextGEN_Bootstrap' ) || ! $this->validate_install() ) {
 				return;
 			}
 			//Check if integration is Enabled or not

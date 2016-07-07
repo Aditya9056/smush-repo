@@ -24,7 +24,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		function __construct() {
 
 			global $WpSmush;
-			$this->is_pro_user = $WpSmush->is_pro();
+			$this->is_pro_user = $WpSmush->validate_install();
 
 			//Update Total Image count
 			add_action( 'ngg_added_new_image', array( $this, 'image_count' ), 10 );
