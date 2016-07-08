@@ -110,9 +110,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_manual' ) );
 
 			//Handle Restore operation
-			add_action( 'wp_ajax_smush_restore_image', array( $this, 'restore_image' ) );
-
-			//Handle Restore operation
 			add_action( 'wp_ajax_smush_resmush_image', array( $this, 'resmush_image' ) );
 
 			//Handle Restore operation
@@ -1156,104 +1153,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Restore the image and its sizes from backup
-		 */
-		function restore_image( $attachment = '', $resp = true ) {
-
-			if ( empty( $attachment ) ) {
-				//Check Empty fields
-				if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
-					wp_send_json_error( array(
-						'error'   => 'empty_fields',
-						'message' => esc_html__( "Error in processing restore action, Fields empty.", "wp-smushit" )
-					) );
-				}
-				//Check Nonce
-				if ( ! wp_verify_nonce( $_POST['_nonce'], "wp-smush-restore-" . $_POST['attachment_id'] ) ) {
-					wp_send_json_error( array(
-						'error'   => 'empty_fields',
-						'message' => esc_html__( "Image not restored, Nonce verification failed.", "wp-smushit" )
-					) );
-				}
-			}
-
-			//Store the restore success/failure for all the sizes
-			$restored = array();
-
-			//Process Now
-			$image_id = empty( $attachment ) ? absint( (int) $_POST['attachment_id'] ) : $attachment;
-
-			//Restore Full size -> get other image sizes -> restore other images
-
-			//Get the Original Path
-			$file_path = get_attached_file( $image_id );
-
-			//Get the backup path
-			$backup_name = $this->get_image_backup_path( $file_path );
-
-			//If file exists, corresponding to our backup path
-			if ( file_exists( $backup_name ) ) {
-				//Restore
-				$restored[] = @copy( $backup_name, $file_path );
-
-				//Delete the backup
-				@unlink( $backup_name );
-			} elseif ( file_exists( $file_path . '_backup' ) ) {
-				//Restore from other backups
-				$restored[] = @copy( $file_path . '_backup', $file_path );
-			}
-
-			//Get other sizes and restore
-			//Get attachment data
-			$attachment_data = wp_get_attachment_metadata( $image_id );
-
-			//Get the sizes
-			$sizes = ! empty( $attachment_data['sizes'] ) ? $attachment_data['sizes'] : '';
-
-			//Loop on images to restore them
-			foreach ( $sizes as $size ) {
-				//Get the file path
-				if ( empty( $size['file'] ) ) {
-					continue;
-				}
-
-				//Image Path and Backup path
-				$image_size_path  = path_join( dirname( $file_path ), $size['file'] );
-				$image_bckup_path = $this->get_image_backup_path( $image_size_path );
-
-				//Restore
-				if ( file_exists( $image_bckup_path ) ) {
-					$restored[] = @copy( $image_bckup_path, $image_size_path );
-					//Delete the backup
-					@unlink( $image_bckup_path );
-				} elseif ( file_exists( $image_size_path . '_backup' ) ) {
-					$restored[] = @copy( $image_size_path . '_backup', $image_size_path );
-				}
-			}
-			//If any of the image is restored, we count it as success
-			if ( in_array( true, $restored ) ) {
-
-				//Remove the Meta, And send json success
-				delete_post_meta( $image_id, $this->smushed_meta_key );
-
-				//Get the Button html without wrapper
-				$button_html = $this->set_status( $image_id, false, false, false );
-
-				if ( $resp ) {
-					wp_send_json_success( array( 'button' => $button_html ) );
-				} else {
-					return true;
-				}
-			}
-			if ( $resp ) {
-				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to restore image", "wp-smushit" ) . '</div>' ) );
-			}
-
-			return false;
-		}
-
-		/**
-		 * Restore the image and its sizes from backup
+		 * Resmush the image
 		 *
 		 * @uses smush_single()
 		 *
@@ -1668,10 +1568,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Allows to bulk restore the images, if there is any backup for them
 		 */
 		function bulk_restore() {
-			global $wpsmush_stats;
+			global $wpsmush_stats, $wpsmush_backup;
 			$smushed_attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $wpsmush_stats->smushed_count( true );
 			foreach ( $smushed_attachments as $attachment ) {
-				$this->restore_image( $attachment->attachment_id, false );
+				$wpsmush_backup->restore_image( $attachment->attachment_id, false );
 			}
 		}
 

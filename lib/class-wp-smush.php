@@ -221,15 +221,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Add the file as tmp
 			file_put_contents( $tempfile, $response['data']->image );
 
-			//handle backups if enabled
-			$backup = get_option( WP_SMUSH_PREFIX . 'backup' );
-			if ( $backup && $this->validate_install() ) {
-				$backup_path = $wpsmushit_admin->get_image_backup_path( $file_path );
-				//Check for backup from other plugins, like nextgen, if it doesn't exists, create our own
-				if ( ! file_exists( $file_path . '_backup' ) || ! file_exists( $backup_path ) ) {
-					@copy( $file_path, $backup_path );
-				}
-			}
+			//Take Backup
+			global $wpsmush_backup;
+			$wpsmush_backup->create_backup( $file_path );
 
 			//replace the file
 			$success = @rename( $tempfile, $file_path );
@@ -536,7 +530,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $meta;
 			}
 
-			global $wpsmush_resize, $wpsmush_pngjpg;
+			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_backup;
 
 			//Optionally Convert PNGs to JPG
 			$meta = $wpsmush_pngjpg->png_to_jpg( $ID, $meta );
@@ -1459,6 +1453,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return true;
 			}
 
+			//Additional Backup Check for JPEGs converted from PNG
+			$pngjpg_savings = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+			if ( ! empty( $pngjpg_savings ) ) {
+				//Get the original File path and check if it exists
+				$backup = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
+				$backup = $this->original_file( $backup );
+
+				if ( !empty( $backup ) && file_exists( $backup ) ) {
+					return true;
+				}
+			}
+
 			//Check for backup of image sizes
 			foreach ( $attachment_data['sizes'] as $image_size ) {
 				$size_path        = path_join( dirname( $file ), $image_size['file'] );
@@ -1868,6 +1874,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$stats = $this->total_compression( $stats );
 
 			return $stats;
+		}
+
+		/**
+		 * Original File path
+		 *
+		 * @param string $original_file
+		 *
+		 */
+		function original_file( $original_file = '' ) {
+			$uploads     = wp_get_upload_dir();
+			$upload_path = $uploads['basedir'];
+
+			return path_join( $upload_path, $original_file );
 		}
 	}
 

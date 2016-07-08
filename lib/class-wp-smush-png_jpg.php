@@ -153,8 +153,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		 * Update the image URL, MIME Type, Attached File, file path in Meta, URL in post content
 		 *
 		 * @param $id Attachment ID
-		 * @param $o_file Original File Path
-		 * @param $n_file New File Path
+		 * @param $o_file Original File Path that has to be replaced
+		 * @param $n_file New File Path which replaces the old file
 		 * @param $meta Attachment Meta
 		 * @param $size_k Image Size
 		 *
@@ -169,14 +169,14 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			//Upload Path
 			$upload_path = trailingslashit( $upload_dir['basedir'] );
 
-			//Get the File name without ext
-			$new_file = substr( $o_file, 0, - 3 );
-
-			// change extension
-			$new_ext = substr( $n_file, - 3 );
-
-			//Updated File name
-			$new_file = $new_file . $new_ext;
+//			//Get the File name without ext
+//			$new_file = substr( $o_file, 0, - 3 );
+//
+//			// change extension
+//			$new_ext = substr( $n_file, - 3 );
+//
+//			//Updated File name
+//			$new_file = $new_file . $new_ext;
 
 			//Current URL for image
 			$o_url = wp_get_attachment_url( $id );
@@ -190,10 +190,12 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			//Update File path, Attached File, GUID
 			$meta = empty( $meta ) ? wp_get_attachment_metadata( $id ) : $meta;
 
+			$mime = mime_content_type( $n_file );
+
 			//Update File Path, Attached file, Mime Type for Image
 			if ( 'full' == $size_k ) {
 				if ( ! empty( $meta ) ) {
-					$new_file     = str_replace( $upload_path, '', $new_file );
+					$new_file     = str_replace( $upload_path, '', $n_file );
 					$meta['file'] = $new_file;
 				}
 				//Update Attached File
@@ -202,19 +204,19 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				//Update Mime type
 				wp_update_post( array(
 						'ID'             => $id,
-						'post_mime_type' => 'image/jpg'
+						'post_mime_type' => $mime
 					)
 				);
 			} else {
-				$meta['sizes'][ $size_k ]['file']      = basename( $new_file );
-				$meta['sizes'][ $size_k ]['mime-type'] = 'image/jpg';
+				$meta['sizes'][ $size_k ]['file']      = basename( $n_file );
+				$meta['sizes'][ $size_k ]['mime-type'] = $mime;
 			}
 
 			if ( 'full' == $size_k ) {
 				//Get the updated image URL
 				$n_url = wp_get_attachment_url( $id );
 			} else {
-				$n_url = dirname( $o_url ) . '/' . basename( $new_file );
+				$n_url = dirname( $o_url ) . '/' . basename( $n_file );
 			}
 
 			//Update In Post Content
@@ -222,8 +224,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			$query = $wpdb->prepare( "UPDATE $wpdb->posts SET post_content = REPLACE(post_content, '%s', '%s');", $o_url, $n_url );
 			$wpdb->query( $query );
 
-			//Unlink Thumbnails
-			if ( 'full' !== $size_k ) {
+			//Delete the Original files if backup not enabled
+			if ( ! get_option( WP_SMUSH_PREFIX . 'backup' ) ) {
 				@unlink( $o_file );
 			}
 
@@ -338,6 +340,10 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				//Update the File Details. and get updated meta
 				$result['meta'] = $this->update_image_path( $id, $file, $n_file, $meta, $size );
 			}
+			/**
+			 *  Perform a action after the image URL is updated in post content
+			 */
+			do_action('wp_smush_image_url_changed', $id, $file, $n_file, $size );
 
 			return $result;
 		}
@@ -392,6 +398,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return $meta;
 			}
 
+			var_dump(  $this->is_transparent );
 			if ( ! $this->is_transparent ) {
 				//Perform the conversion, and update path
 				$result = $this->convert_to_jpg( $id, $file, $meta );
@@ -427,7 +434,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				}
 
 				//Save the original File URL
-				update_post_meta( $id, WP_SMUSH_PREFIX . 'orignal_file', $file );
+				$o_file = ! empty( $meta['file'] ) ? $meta['file'] : get_post_meta( $id, '_wp_attached_file', true );
+				update_post_meta( $id, WP_SMUSH_PREFIX . 'original_file', $o_file );
 
 				//Update the Final Stats
 				update_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', $savings );
@@ -532,7 +540,15 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				}
 				//Update the File Details. and get updated meta
 				$result['meta'] = $this->update_image_path( $id, $file, $n_file, $meta, $size );
+
+				/**
+				 *  Perform a action after the image URL is updated in post content
+				 */
+				do_action('wp_smush_image_url_changed', $id, $file, $n_file, $size );
 			}
+			echo "<pre>";
+			print_r( $result );
+			echo "</pre>";
 
 			return $result;
 		}
