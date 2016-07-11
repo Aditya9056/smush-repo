@@ -157,11 +157,12 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		 * @param $n_file New File Path which replaces the old file
 		 * @param $meta Attachment Meta
 		 * @param $size_k Image Size
+		 * @param $o_type Operation Type "conversion", "restore"
 		 *
 		 * @return mixed Attachment Meta with updated file path
 		 *
 		 */
-		function update_image_path( $id, $o_file, $n_file, $meta, $size_k ) {
+		function update_image_path( $id, $o_file, $n_file, $meta, $size_k, $o_type = 'conversion' ) {
 
 			//Upload Directory
 			$upload_dir = wp_upload_dir();
@@ -169,14 +170,10 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			//Upload Path
 			$upload_path = trailingslashit( $upload_dir['basedir'] );
 
-//			//Get the File name without ext
-//			$new_file = substr( $o_file, 0, - 3 );
-//
-//			// change extension
-//			$new_ext = substr( $n_file, - 3 );
-//
-//			//Updated File name
-//			$new_file = $new_file . $new_ext;
+			$dir_name = pathinfo( $o_file, PATHINFO_DIRNAME );
+
+			//Full Path to new file
+			$n_file_path = path_join( $dir_name, $n_file );
 
 			//Current URL for image
 			$o_url = wp_get_attachment_url( $id );
@@ -190,12 +187,12 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			//Update File path, Attached File, GUID
 			$meta = empty( $meta ) ? wp_get_attachment_metadata( $id ) : $meta;
 
-			$mime = mime_content_type( $n_file );
+			$mime = mime_content_type( $n_file_path );
 
 			//Update File Path, Attached file, Mime Type for Image
 			if ( 'full' == $size_k ) {
 				if ( ! empty( $meta ) ) {
-					$new_file     = str_replace( $upload_path, '', $n_file );
+					$new_file     = str_replace( $upload_path, '', $n_file_path );
 					$meta['file'] = $new_file;
 				}
 				//Update Attached File
@@ -225,7 +222,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			$wpdb->query( $query );
 
 			//Delete the Original files if backup not enabled
-			if ( ! get_option( WP_SMUSH_PREFIX . 'backup' ) ) {
+			if ( 'conversion' == $o_type && ! get_option( WP_SMUSH_PREFIX . 'backup' ) ) {
 				@unlink( $o_file );
 			}
 
@@ -257,7 +254,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			//Get the file size of original image
 			$o_file_size = filesize( $file );
 
-			$n_file      = path_join( dirname( $file ), $n_file );
+			$n_file = path_join( dirname( $file ), $n_file );
+
 			$n_file_size = filesize( $n_file );
 
 			//If there aren't any savings return
@@ -343,7 +341,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			/**
 			 *  Perform a action after the image URL is updated in post content
 			 */
-			do_action('wp_smush_image_url_changed', $id, $file, $n_file, $size );
+			do_action( 'wp_smush_image_url_changed', $id, $file, $n_file, $size );
 
 			return $result;
 		}
@@ -398,12 +396,13 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return $meta;
 			}
 
-			var_dump(  $this->is_transparent );
+			$result['meta'] = $meta;
+
 			if ( ! $this->is_transparent ) {
 				//Perform the conversion, and update path
-				$result = $this->convert_to_jpg( $id, $file, $meta );
+				$result = $this->convert_to_jpg( $id, $file, $result['meta'] );
 			} else {
-				$result = $this->convert_tpng_to_jpg( $id, $file, $meta );
+				$result = $this->convert_tpng_to_jpg( $id, $file, $result['meta'] );
 			}
 
 			$savings['full'] = $result['savings'];
@@ -421,14 +420,14 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 						//Perform the conversion, and update path
 						if ( ! $this->is_transparent ) {
 							//Perform the conversion, and update path
-							$result = $this->convert_to_jpg( $id, $s_file, $meta, $size_k );
+							$result = $this->convert_to_jpg( $id, $s_file, $result['meta'], $size_k );
 						} else {
-							$result = $this->convert_tpng_to_jpg( $id, $s_file, $meta, $size_k );
+							$result = $this->convert_tpng_to_jpg( $id, $s_file, $result['meta'], $size_k );
 						}
 
 						//Add all the stats
 						array_walk_recursive( $result['savings'], function ( $item, $key ) use ( &$savings, $size_k ) {
-							$savings[$size_k][ $key ] = isset( $savings[$size_k][ $key ] ) ? $item + $savings[$size_k][ $key ] : $item;
+							$savings[ $size_k ][ $key ] = isset( $savings[ $size_k ][ $key ] ) ? $item + $savings[ $size_k ][ $key ] : $item;
 						} );
 					}
 				}
@@ -475,12 +474,16 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			if ( empty( $id ) || empty( $file ) || empty( $meta ) ) {
 				return $result;
 			}
-			//Updated file path
+
 			//Get the File name without ext
-			$n_file = substr( $file, 0, - 3 );
+			$n_file = pathinfo( $file );
+
+			if ( empty( $n_file['dirname'] ) || empty( $n_file['filename'] ) ) {
+				return $result;
+			}
 
 			//Updated File name
-			$n_file = $n_file . 'jpg';
+			$n_file = path_join( $n_file['dirname'], $n_file['filename'] ) . '.jpg';
 
 			$transparent_png = get_option( WP_SMUSH_PREFIX . 'transparent_png' );
 
@@ -544,11 +547,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				/**
 				 *  Perform a action after the image URL is updated in post content
 				 */
-				do_action('wp_smush_image_url_changed', $id, $file, $n_file, $size );
+				do_action( 'wp_smush_image_url_changed', $id, $file, $n_file, $size );
 			}
-			echo "<pre>";
-			print_r( $result );
-			echo "</pre>";
 
 			return $result;
 		}
@@ -580,6 +580,39 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			return $quality;
 
+		}
+
+		/**
+		 * Check whether the given attachment was converted from PNG to JPG
+		 *
+		 * @param string $id
+		 *
+		 * @return bool True/False Whether the image was converted from PNG or not
+		 *
+		 */
+		function is_converted( $id = '' ) {
+			if ( empty( $id ) ) {
+				return false;
+			}
+			//Get the original file path and check if it exists
+			$original_file = get_post_meta( $id, WP_SMUSH_PREFIX . 'original_file', true );
+
+			//If original file path is not stored, then it wasn't converted or was restored to original
+			if ( empty( $original_file ) ) {
+				return false;
+			}
+			//Upload Directory
+			$upload_dir = wp_upload_dir();
+
+			//Upload Path
+			$upload_path = trailingslashit( $upload_dir['basedir'] );
+
+			//If file exists return true
+			if ( file_exists( path_join( $upload_path, $original_file ) ) ) {
+				return true;
+			}
+
+			return false;
 		}
 	}
 

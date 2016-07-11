@@ -33,7 +33,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 		}
 
 		function create_backup( $file_path = '', $backup_path = '' ) {
-			global $WpSmush, $wpsmushit_admin;
+			global $WpSmush, $wpsmush_pngjpg;
 
 			if ( empty( $file_path ) ) {
 				return '';
@@ -46,7 +46,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 
 			//Get a backup path if empty
 			if ( empty( $backup_path ) ) {
-				$backup_path = $wpsmushit_admin->get_image_backup_path( $file_path );
+				$backup_path = $WpSmush->get_image_backup_path( $file_path );
 			}
 
 			//If we don't have any backup path yet, bail!
@@ -54,7 +54,11 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				return $file_path;
 			}
 
-			//@todo: Check for PNG => JPG backups, and don't create a new backup if it already exists
+			if ( ! empty( $WpSmush->attachment_id ) && $wpsmush_pngjpg->is_converted( $WpSmush->attachment_id ) ) {
+				//No need to create a backup, we already have one if enabled
+				return $file_path;
+			}
+
 			//Check for backup from other plugins, like nextgen, if it doesn't exists, create our own
 			if ( ! file_exists( $file_path . '_backup' ) || ! file_exists( $backup_path ) ) {
 				@copy( $file_path, $backup_path );
@@ -98,10 +102,21 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			$file_path = get_attached_file( $image_id );
 
 			//Get the backup path
-			$backup_name = $this->get_image_backup_path( $file_path );
+			$backup_name = $WpSmush->get_image_backup_path( $file_path );
 
-			//If file exists, corresponding to our backup path
-			if ( file_exists( $backup_name ) ) {
+			//Check if it's a jpg converted from png, and restore the jpg to png
+			$original_file      = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
+			$original_file_path = $WpSmush->original_file( $original_file );
+
+			//Flag used to restore other sizes
+			$restore_png = false;
+
+			if ( file_exists( $original_file_path ) ) {
+				//restore PNG full size and all other image sizes
+				$restored[]  = $this->restore_png( $image_id, 'full', $original_file, $file_path );
+				$restore_png = true;
+			} elseif ( file_exists( $backup_name ) ) {
+				//If file exists, corresponding to our backup path
 				//Restore
 				$restored[] = @copy( $backup_name, $file_path );
 
@@ -110,15 +125,6 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			} elseif ( file_exists( $file_path . '_backup' ) ) {
 				//Restore from other backups
 				$restored[] = @copy( $file_path . '_backup', $file_path );
-			} else {
-				//Check if it's a jpg converted from png, and restore the jpg to png
-				$original_file = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
-				$original_file = $WpSmush->original_file( $original_file );
-
-				if ( file_exists( $original_file ) ) {
-					//restore PNG full size and all other image sizes
-					$restored[] = $this->restore_png( $image_id, 'full', $original_file, $file_path );
-				}
 			}
 
 			//Get other sizes and restore
@@ -137,17 +143,17 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 
 				//Image Path and Backup path
 				$image_size_path  = path_join( dirname( $file_path ), $size['file'] );
-				$image_bckup_path = $this->get_image_backup_path( $image_size_path );
+				$image_bckup_path = $WpSmush->get_image_backup_path( $image_size_path );
 
 				//Restore
-				if ( file_exists( $image_bckup_path ) ) {
+				if ( $restore_png ) {
+					$restored[] = $this->restore_png( $image_id, $size_k, $original_file, $image_size_path );
+				} elseif ( file_exists( $image_bckup_path ) ) {
 					$restored[] = @copy( $image_bckup_path, $image_size_path );
 					//Delete the backup
 					@unlink( $image_bckup_path );
 				} elseif ( file_exists( $image_size_path . '_backup' ) ) {
 					$restored[] = @copy( $image_size_path . '_backup', $image_size_path );
-				} else {
-					$restored[] = $this->restore_png( $image_id, $size_k, $original_file, $image_size_path );
 				}
 			}
 
@@ -155,10 +161,16 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			if ( in_array( true, $restored ) ) {
 
 				//Remove the Meta, And send json success
-				delete_post_meta( $image_id, $this->smushed_meta_key );
+				delete_post_meta( $image_id, $WpSmush->smushed_meta_key );
+
+				//Remove PNG to JPG conversion savings
+				delete_post_meta( $image_id, WP_SMUSH_PREFIX . 'pngjpg_savings' );
+
+				//Remove Original File
+				delete_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file' );
 
 				//Get the Button html without wrapper
-				$button_html = $this->set_status( $image_id, false, false, false );
+				$button_html = $WpSmush->set_status( $image_id, false, false, false );
 
 				if ( $resp ) {
 					wp_send_json_success( array( 'button' => $button_html ) );
@@ -194,22 +206,22 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			 * 4. And we're done
 			 * 5. Add a action after updating the URLs, that'd allow the users to perform a additional search, replace action
 			 **/
+			if ( empty( $original_file ) ) {
+				$original_file = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
+			}
+			$original_file_path = $WpSmush->original_file( $original_file );
 			if ( 'full' == $size ) {
-				if ( empty( $original_file ) ) {
-					$original_file      = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
-					$original_file_path = $WpSmush->original_file( $original_file );
-					if ( file_exists( $original_file ) ) {
-						//Update the path details in meta and attached file, replace the image
-						$meta = $wpsmush_pngjpg->update_image_path( $image_id, $file_path, $original_file_path, $meta, $size );
-						//@todo: Add a check in meta if file was updated or not, before unlinking jpg
-						if ( ! empty( $meta['file'] ) && $original_file == $meta['file'] ) {
-							@unlink( $file_path );
-						}
-						/**
-						 *  Perform a action after the image URL is updated in post content
-						 */
-						do_action( 'wp_smush_image_url_updated', $image_id, $file_path, $original_file, $size );
+				if ( file_exists( $original_file_path ) ) {
+					//Update the path details in meta and attached file, replace the image
+					$meta = $wpsmush_pngjpg->update_image_path( $image_id, $file_path, $original_file_path, $meta, $size, 'restore' );
+					//@todo: Add a check in meta if file was updated or not, before unlinking jpg
+					if ( ! empty( $meta['file'] ) && $original_file == $meta['file'] ) {
+						@unlink( $file_path );
 					}
+					/**
+					 *  Perform a action after the image URL is updated in post content
+					 */
+					do_action( 'wp_smush_image_url_updated', $image_id, $file_path, $original_file, $size );
 				}
 			} else {
 				/**
@@ -221,18 +233,12 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				 *  5. Add a action after updating the URLs, that'd allow the users to perform a additional search, replace action
 				 **/
 				//Get the file path for the specific size
-				$n_file = dirname( $original_file ) . '/' . basename( $file_path );
-				echo "<pre>Existing file name";
-				print_r( $n_file );
-				echo "</pre>";
-				$n_file = pathinfo( $n_file, PATHINFO_FILENAME ) . '.png';
-				echo "<pre>Updated file name";
-				print_r( $n_file );
-				echo "</pre>";
+				$n_file      = dirname( $original_file_path ) . '/' . basename( $file_path );
+				$n_file_path = pathinfo( $n_file, PATHINFO_FILENAME ) . '.png';
 				if ( file_exists( $n_file ) ) {
 					//Update the path details in meta and attached file, replace the image
-					$meta = $wpsmush_pngjpg->update_image_path( $image_id, $file_path, $n_file, $meta, $size );
-					if ( ! empty( $meta['sizes'] ) && ! empty( $meta['sizes'][ $size ] ) && ! empty( $meta['sizes'][ $size ]['file'] ) && $n_file != $meta['sizes'][ $size ]['file'] ) {
+					$meta = $wpsmush_pngjpg->update_image_path( $image_id, $file_path, $n_file_path, $meta, $size, 'restore' );
+					if ( ! empty( $meta['sizes'] ) && ! empty( $meta['sizes'][ $size ] ) && ! empty( $meta['sizes'][ $size ]['file'] ) && $n_file_path != $meta['sizes'][ $size ]['file'] ) {
 						@unlink( $file_path );
 					}
 					/**
@@ -241,7 +247,14 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 					do_action( 'wp_smush_image_url_updated', $image_id, $file_path, $n_file, $size );
 				}
 			}
-			wp_update_attachment_metadata( $image_id, $meta );
+			//Update Meta
+			if ( ! empty( $meta ) ) {
+				//Remove Smushing, while attachment data is updated for the image
+				remove_filter( 'wp_update_attachment_metadata', array( $WpSmush, 'smush_image' ), 15 );
+				wp_update_attachment_metadata( $image_id, $meta );
+				return true;
+			}
+			return false;
 
 		}
 	}

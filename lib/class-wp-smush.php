@@ -65,6 +65,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		var $keep_exif = false;
 
+		/** @var  Attachment id for the Image being smushed currently */
+		var $attachment_id;
+		/**
+		 * Attachment type, being smushed currently
+		 *
+		 * @var string Possible values, "wp", "nextgen"
+		 *
+		 */
+		var $media_type = 'wp';
+
 		/**
 		 * Constructor
 		 */
@@ -316,6 +326,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( $ID && wp_attachment_is_image( $ID ) === false ) {
 				return $meta;
 			}
+
+			//Set attachment id and Media type
+			$this->attachment_id = $ID;
+			$this->media_type = "wp";
 
 			//File path and URL for original image
 			$attachment_file_path = get_attached_file( $ID );
@@ -1164,6 +1178,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function smush_retina_image( $id, $retina_file, $image_size ) {
 
+			//Initialize attachment id and media type
+			$this->attachment_id = $id;
+			$this->media_type = "wp";
+
 			/**
 			 * Allows to Enable/Disable WP Retina 2x Integration
 			 */
@@ -1621,6 +1639,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( empty( $attachment_id ) || ! class_exists( 'Upfront' ) ) {
 				return $stats;
 			}
+
+			//Set attachment id and Media type
+			$this->attachment_id = $attachment_id;
+			$this->media_type = "upfront";
+
 			//Get post meta to check for Upfront images
 			$upfront_images = get_post_meta( $attachment_id, 'upfront_used_image_sizes', true );
 
