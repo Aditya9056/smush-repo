@@ -903,7 +903,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$status_txt   = __( 'Already Optimized', 'wp-smushit' );
 
 						//Show resmush link, if the settings were changed
-						$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
+						$show_resmush = $this->show_resmush( $id, $wp_smush_data );
 						if ( $show_resmush ) {
 							$status_txt .= '<br />' . $this->get_resmsuh_link( $id );
 						}
@@ -920,7 +920,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							$status_txt .= $image_size;
 						}
 
-						$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
+						$show_resmush = $this->show_resmush( $id, $wp_smush_data );
 
 						if ( $show_resmush ) {
 							$status_txt .= '<br />' . $this->get_resmsuh_link( $id );
@@ -1690,22 +1690,33 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return bool
 		 */
-		function show_resmush( $show_resmush, $wp_smush_data ) {
+		function show_resmush( $id = '', $wp_smush_data ) {
 			//Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
 			//Or: If keep exif is unchecked and the smushed image have exif
+			//PNG To JPEG
 			if ( $this->smush_original ) {
 				//IF full image was not smushed
 				if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
-					$show_resmush = true;
+					return true;
 				}
 			}
-			if ( !$this->keep_exif ) {
-				//If Keep Exif was set to tru initially, and since it is set to false now
+
+			//EXIF Check
+			if ( ! $this->keep_exif ) {
+				//If Keep Exif was set to true initially, and since it is set to false now
 				if ( isset( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
-					$show_resmush = true;
+					return true;
 				}
 			}
-			return $show_resmush;
+
+			//PNG to JPEG
+			global $wpsmush_pngjpg;
+			if ( $wpsmush_pngjpg->can_be_converted( $id ) ) {
+				return true;
+			}
+
+			return false;
+
 		}
 
 		/**

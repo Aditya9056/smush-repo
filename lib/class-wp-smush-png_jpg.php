@@ -150,6 +150,56 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		}
 
 		/**
+		 * Check if given attachment id can be converted to JPEG or not
+		 *
+		 * @param string $id Atachment id
+		 *
+		 * @return bool True/False Can be converted or not
+		 *
+		 */
+		function can_be_converted( $id = '', $size = 'full' ) {
+
+			if ( empty( $id ) ) {
+				return false;
+			}
+
+			//False if not a PNG
+			$mime = get_post_mime_type( $id );
+			if ( 'image/png' != $mime ) {
+				return false;
+			}
+
+			/** Return if Imagick and GD is not available **/
+			if ( ! $this->supports_imagick() && ! $this->supports_GD() ) {
+				return false;
+			}
+
+			$file = get_attached_file( $id );
+
+			/** Whether to convert to jpg or not **/
+			$should_convert = $this->should_convert( $id, $file );
+
+			/**
+			 * Filter whether to convert the PNG to JPG or not
+			 *
+			 * @since 2.4
+			 *
+			 * @param bool $should_convert Current choice for image conversion
+			 *
+			 * @param int $id Attachment id
+			 *
+			 * @param string $file File path for the image
+			 *
+			 * @param string $size Image size being converted
+			 *
+			 */
+			$should_convert = apply_filters( 'wp_smush_convert_to_jpg', $should_convert, $id, $file, $size );
+
+			return $should_convert;
+
+		}
+
+		/**
 		 * Update the image URL, MIME Type, Attached File, file path in Meta, URL in post content
 		 *
 		 * @param $id Attachment ID
@@ -360,41 +410,14 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return $meta;
 			}
 
-			$file = get_attached_file( $id );
-
-			/* Return If not PNG */
-
-			//Get image mime type
-			$mime = get_post_mime_type( $id );
-			if ( 'image/png' != $mime ) {
-				return $meta;
-			}
-
-			/** Return if Imagick and GD is not available **/
-			if ( ! $this->supports_imagick() && ! $this->supports_GD() ) {
-				return $meta;
-			}
-
 			/** Whether to convert to jpg or not **/
-			$should_convert = $this->should_convert( $id, $file );
+			$should_convert = $this->can_be_converted( $id );
 
-			/**
-			 * Filter whether to convert the PNG to JPG or not
-			 *
-			 * @since 2.4
-			 *
-			 * @param bool $should_convert Current choice for image conversion
-			 *
-			 * @param int $id Attachment id
-			 *
-			 * @param string $file File path for the image
-			 *
-			 * @param string $size Image size beign converted
-			 *
-			 */
-			if ( ! $should_convert = apply_filters( 'wp_smush_convert_to_jpg', $should_convert, $id, $file, 'full' ) ) {
+			if ( ! $should_convert ) {
 				return $meta;
 			}
+
+			$file = get_attached_file( $id );
 
 			$result['meta'] = $meta;
 

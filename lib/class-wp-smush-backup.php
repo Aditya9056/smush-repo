@@ -111,7 +111,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			//Flag used to restore other sizes
 			$restore_png = false;
 
-			if ( file_exists( $original_file_path ) ) {
+			if ( !empty( $original_file) && file_exists( $original_file_path ) ) {
 				//restore PNG full size and all other image sizes
 				$restored[]  = $this->restore_png( $image_id, 'full', $original_file, $file_path );
 				$restore_png = true;

@@ -177,7 +177,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 				<hr /><?php
 			} ?>
-			<hr />
 			<div class="row smush-resize-savings">
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "RESIZE SAVINGS", "wp-smushit" ); ?></strong></span>
 				<span class="float-r wp-smush-stats"><?php

@@ -177,8 +177,12 @@ jQuery(function ($) {
                         self.$button.remove();
                     } else {
                         self.$status.addClass("error");
+                        self.$status.html(response.data.error_msg );
+                        self.$status.show();
                     }
-                    self.$status.html(response.data.status);
+                    if( response.data.status ) {
+                        self.$status.html(response.data.status);
+                    }
                     //Check if stats div exists
                     var parent = self.$status.parent();
                     var stats_div = parent.find('.smush-stats-wrapper');
@@ -566,7 +570,7 @@ jQuery(function ($) {
      * @param smush_action
      * @returns {boolean}
      */
-    var process_smush_action = function (e, current_button, smush_action) {
+    var process_smush_action = function (e, current_button, smush_action, action ) {
 
         //If disabled
         if ('disabled' == current_button.attr('disabled')) {
@@ -591,12 +595,12 @@ jQuery(function ($) {
         //Reduce the opacity of stats and disable the click
         disable_links(current_button);
 
-        progress_bar(current_button, wp_smush_msgs.smushing, 'show');
+        progress_bar(current_button, wp_smush_msgs[action], 'show');
 
         //Restore the image
         $.post(ajaxurl, params, function (r) {
 
-            progress_bar(current_button, wp_smush_msgs.smushing, 'hide');
+            progress_bar(current_button, wp_smush_msgs[action], 'hide');
 
             //reset all functionality
             enable_links(current_button);
@@ -772,28 +776,28 @@ jQuery(function ($) {
     $('body').on('click', '.wp-smush-action.wp-smush-restore', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_restore_image';
-        process_smush_action(e, current_button, smush_action);
+        process_smush_action(e, current_button, smush_action, 'restore' );
     });
 
     /** Resmush: Media Library **/
     $('body').on('click', '.wp-smush-action.wp-smush-resmush', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_resmush_image';
-        process_smush_action(e, current_button, smush_action);
+        process_smush_action(e, current_button, smush_action, 'smushing');
     });
 
     /** Restore: NextGen Gallery **/
     $('body').on('click', '.wp-smush-action.wp-smush-nextgen-restore', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_restore_nextgen_image';
-        process_smush_action(e, current_button, smush_action);
+        process_smush_action(e, current_button, smush_action, 'restore');
     });
 
     /** Resmush: NextGen Gallery **/
     $('body').on('click', '.wp-smush-action.wp-smush-nextgen-resmush', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_resmush_nextgen_image';
-        process_smush_action(e, current_button, smush_action);
+        process_smush_action(e, current_button, smush_action, 'smushing');
     });
 
     //Scan For resmushing images
