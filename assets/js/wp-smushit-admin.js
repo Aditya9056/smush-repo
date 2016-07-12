@@ -177,10 +177,10 @@ jQuery(function ($) {
                         self.$button.remove();
                     } else {
                         self.$status.addClass("error");
-                        self.$status.html(response.data.error_msg );
+                        self.$status.html(response.data.error_msg);
                         self.$status.show();
                     }
-                    if( response.data.status ) {
+                    if (response.data.status) {
                         self.$status.html(response.data.status);
                     }
                     //Check if stats div exists
@@ -328,6 +328,22 @@ jQuery(function ($) {
                     $('.super-smush-attachments .smushed-count').html(_res.data.stats.super_smushed);
                 }
 
+                var smush_conversion_savings = $('.smush-conversion-savings');
+                //Update Conversion Savings
+                if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.conversion_savings )) {
+                    var conversion_savings = smush_conversion_savings.find('.wp-smush-stats');
+                    if (conversion_savings.length > 0) {
+                        conversion_savings.html(_res.data.stats.conversion_savings);
+                    }
+                }
+                var smush_resize_savings = $('.smush-resize-savings');
+                //Update Resize Savings
+                if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings )) {
+                    var resize_savings = smush_resize_savings.find('.wp-smush-stats');
+                    if (resize_savings.length > 0) {
+                        resize_savings.html(_res.data.stats.resize_savings);
+                    }
+                }
                 // increase the progress bar
                 this._update_progress(_res.data.stats.smushed, progress);
             }
@@ -570,7 +586,7 @@ jQuery(function ($) {
      * @param smush_action
      * @returns {boolean}
      */
-    var process_smush_action = function (e, current_button, smush_action, action ) {
+    var process_smush_action = function (e, current_button, smush_action, action) {
 
         //If disabled
         if ('disabled' == current_button.attr('disabled')) {
@@ -776,7 +792,7 @@ jQuery(function ($) {
     $('body').on('click', '.wp-smush-action.wp-smush-restore', function (e) {
         var current_button = $(this);
         var smush_action = 'smush_restore_image';
-        process_smush_action(e, current_button, smush_action, 'restore' );
+        process_smush_action(e, current_button, smush_action, 'restore');
     });
 
     /** Resmush: Media Library **/
@@ -948,11 +964,13 @@ jQuery(function ($) {
         var keep_exif = document.getElementById("wp-smush-keep_exif");
         var super_smush = document.getElementById("wp-smush-lossy");
         var smush_original = document.getElementById("wp-smush-original");
+        var resize_images = document.getElementById("wp-smush-resize");
+        var smush_pngjpg = document.getElementById("wp-smush-png_to_jpg");
 
         var update_button_txt = true;
 
         //If Preserve Exif is Checked, and all other settings are off, just save the settings
-        if (keep_exif.checked && !super_smush.checked && !smush_original.checked) {
+        if (keep_exif.checked && !super_smush.checked && !smush_original.checked && !resize_images.checked && !smush_pngjpg.checked) {
             update_button_txt = false;
         }
 

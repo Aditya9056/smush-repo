@@ -62,7 +62,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 *
 		 * @return bool
 		 */
-		private function should_resize( $id = '' ) {
+		public function should_resize( $id = '' ) {
 
 			//If resizing not enabled, or if both max width and height is set to 0, return
 			if ( ! $this->resize_enabled || ( $this->max_w == 0 && $this->max_h == 0 ) ) {

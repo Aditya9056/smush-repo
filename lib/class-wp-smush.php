@@ -1876,7 +1876,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$smush_stats['sizes']['full']->size_before = ! empty( $resize_savings['size_before'] ) && ( $resize_savings['size_before'] > $smush_stats['sizes']['full']->size_before )  ? $resize_savings['size_before'] : $smush_stats['sizes']['full']->size_before;
 				$smush_stats['sizes']['full']->percent     = ! empty( $smush_stats['sizes']['full']->bytes ) && $smush_stats['sizes']['full']->size_before > 0 ? ( $smush_stats['sizes']['full']->bytes / $smush_stats['sizes']['full']->size_before ) * 100 : $smush_stats['sizes']['full']->percent;
 
-				$smush_stats['sizes']['full']->percent = round( $smush_stats['sizes']['full']->percent, 2 );
+				$smush_stats['sizes']['full']->percent = round( $smush_stats['sizes']['full']->percent, 1 );
 			}
 
 			$smush_stats = $this->total_compression( $smush_stats );
@@ -1901,7 +1901,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$stats['sizes'][ $size_k ]->bytes       = $stats['sizes'][ $size_k ]->bytes + $savings['bytes'];
 					$stats['sizes'][ $size_k ]->size_before = $stats['sizes'][ $size_k ]->size_before > $savings['size_before'] ? $stats['sizes'][ $size_k ]->size_before : $savings['size_before'];
 					$stats['sizes'][ $size_k ]->percent     = ! empty( $stats['sizes'][ $size_k ]->bytes ) && $stats['sizes'][ $size_k ]->size_before > 0 ? ( $stats['sizes'][ $size_k ]->bytes / $stats['sizes'][ $size_k ]->size_before ) * 100 : $stats['sizes'][ $size_k ]->percent;
-					$stats['sizes'][ $size_k ]->percent     = round( $stats['sizes'][ $size_k ]->percent, 2 );
+					$stats['sizes'][ $size_k ]->percent     = round( $stats['sizes'][ $size_k ]->percent, 1 );
 				}
 			}
 

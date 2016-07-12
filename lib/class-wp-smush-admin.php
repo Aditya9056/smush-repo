@@ -551,8 +551,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$error = $smush->get_error_message();
 				//Check for timeout error and suggest to filter timeout
 				if ( strpos( $error, 'timed out' ) ) {
-					$error = '<p class="wp-smush-error-message">' . esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" ) . '</p>';
+					$error = esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" );
 				}
+				$error = '<p class="wp-smush-error-message">' . $error . '</p>';
 			} else {
 				//Check if a resmush request, update the resmush list
 				if ( ! empty( $_REQUEST['is_bulk_resmush'] ) && 'false' != $_REQUEST['is_bulk_resmush'] && $_REQUEST['is_bulk_resmush'] ) {
@@ -567,7 +568,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$stats['super_smushed'] = $wpsmush_stats->super_smushed_count();
 			}
 
-			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( esc_html__( "%d images", "wp-smushit" ), $stats['total_images'] ) : '';
+			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( esc_html__( "You've smushed %d images in total.", "wp-smushit" ), $stats['total_images'] ) : '';
 
 			//Send ajax response
 			$send_error ? wp_send_json_error( array( 'stats'     => $stats,
@@ -948,7 +949,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Round off precentage
-			$smush_data['percent'] = round( $smush_data['percent'], 2 );
+			$smush_data['percent'] = round( $smush_data['percent'], 1 );
 
 			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
 
@@ -1268,6 +1269,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! empty( $attachments ) && is_array( $attachments ) ) {
 				foreach ( $attachments as $attachment_k => $attachment ) {
 
+					$should_resmush = false;
+
 					//For NextGen we get the metadata in the attachment data itself
 					if ( ! empty( $attachment['wp_smush'] ) ) {
 						$smush_data = $attachment['wp_smush'];
@@ -1276,6 +1279,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$smush_data = get_post_meta( $attachment, $this->smushed_meta_key, true );
 					}
 
+					//If the image is already smushed
 					if ( ! empty( $smush_data['stats'] ) ) {
 
 						//If we need to optmise losslessly, add to resmush list
@@ -1288,6 +1292,27 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$smush_original = $WpSmush->smush_original && empty( $smush_data['sizes']['full'] );
 
 						if ( $smush_lossy || $strip_exif || $smush_original ) {
+							$should_resmush = true;
+						}
+
+						//If Image needs to be resized
+						if( !$should_resmush ) {
+							/**
+							 * Get the resize settings, get the image dimensions, and check if it needs to be resized
+							 *
+							 */
+							global $wpsmush_resize;
+							$should_resmush = $wpsmush_resize->should_resize( $attachment );
+						}
+		
+						//If image can be converted
+						if( !$should_resmush ) {
+							global $wpsmush_pngjpg;
+							$should_resmush = $wpsmush_pngjpg->can_be_converted( $attachment );
+						}
+
+						//If the image needs to be resmushed add it to the list
+						if ( $should_resmush ) {
 							$resmush_list[] = 'nextgen' == $type ? $attachment_k : $attachment;
 							continue;
 						}

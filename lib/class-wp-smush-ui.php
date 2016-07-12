@@ -152,11 +152,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="row wp-smush-savings">
 				<span class="float-l wp-smush-stats-label"><?php esc_html_e("TOTAL SAVINGS", "wp-smushit");?></span>
 				<span class="float-r wp-smush-stats">
-				    <span class="wp-smush-stats-percent"><?php echo $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0; ?></span>%
-					<span class="wp-smush-stats-sep">/</span>
 					<span class="wp-smush-stats-human">
 						<?php echo $wpsmushit_admin->stats['human'] > 0 ? $wpsmushit_admin->stats['human'] : "0MB"; ?>
 					</span>
+					<span class="wp-smush-stats-sep">/</span>
+					<span class="wp-smush-stats-percent"><?php echo $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0; ?></span>%
 				</span>
 			</div><?php
 			/**

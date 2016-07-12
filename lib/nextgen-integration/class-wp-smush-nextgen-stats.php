@@ -399,7 +399,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			}
 
 			//Round off precentage
-			$smushed_stats['percent'] = ! empty( $smushed_stats['percent'] ) ? round( $smushed_stats['percent'], 2 ) : 0;
+			$smushed_stats['percent'] = ! empty( $smushed_stats['percent'] ) ? round( $smushed_stats['percent'], 1 ) : 0;
 
 			$smushed_stats['human'] = $WpSmush->format_bytes( $smushed_stats['bytes'] );
 
