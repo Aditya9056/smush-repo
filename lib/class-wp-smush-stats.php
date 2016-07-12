@@ -323,7 +323,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			$savings = '';
 
 			if ( ! $force_update ) {
-				$savings = wp_cache_get( WP_SMUSH_PREFIX . 'conversion_savings', 'wp-smush' );
+				$savings = wp_cache_get( WP_SMUSH_PREFIX . 'pngjpg_savings', 'wp-smush' );
 			}
 			//If nothing in cache, Calculate it
 			if ( empty( $savings ) || $force_update ) {

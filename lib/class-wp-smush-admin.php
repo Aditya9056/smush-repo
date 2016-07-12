@@ -905,7 +905,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Get all the Savings for each image
 				$smush_stats        = get_post_meta( $attachment, 'wp-smpro-smush-data', true );
 				$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
-				$conversion_savings = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'conversion_savings', true );
+				$conversion_savings = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
 
 				$smush_data['count'] += 1;
 				$smush_data['total_images'] += ! empty( $smush_stats['sizes'] ) ? count( $smush_stats['sizes'] ) : 0;
@@ -913,18 +913,30 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Sum up all the stats
 				if ( ! empty( $smush_stats['sizes'] ) ) {
 					foreach ( $smush_stats['sizes'] as $size_k => $size_savings ) {
+						//size_before from optimisation stats
 						$size_before = $size_savings->size_before;
+						$size_after = $size_savings->size_after;
 						if ( 'full' == $size_k ) {
-							//Check for the original size
+							//Check for savings from resizing for the original image
 							if ( ! empty( $resize_savings['size_before'] ) && $resize_savings['size_before'] > $size_before ) {
 								$size_before = $resize_savings['size_before'];
 							}
+							//Check for savings from resizing for the original image
+							if ( ! empty( $resize_savings['size_after'] ) && $resize_savings['size_after'] > $size_after ) {
+								$size_after = $resize_savings['size_after'];
+							}
 						}
-						if ( ! empty( $conversion_savings[ $size_k ]['size_before'] ) && $conversion_savings[ $size_k ]['size_before'] > $size_before ) {
-							$size_before = $conversion_savings[ $size_k ]['size_before'];
+
+						if ( ! empty( $conversion_savings[ $size_k ] ) ) {
+							if( ! empty( $conversion_savings[ $size_k ]['size_before'] ) && $conversion_savings[ $size_k ]['size_before'] > $size_before ) {
+								$size_before = $conversion_savings[ $size_k ]['size_before'];
+							}
+							if( ! empty( $conversion_savings[ $size_k ]['size_after'] ) && $conversion_savings[ $size_k ]['size_after'] < $size_after ) {
+								$size_after = $conversion_savings[ $size_k ]['size_after'];
+							}
 						}
 						$smush_data['size_before'] += $size_before;
-						$smush_data['size_after'] += $size_savings->size_after;
+						$smush_data['size_after'] += $size_after;
 					}
 				}
 			}
