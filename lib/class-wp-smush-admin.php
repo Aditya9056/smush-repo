@@ -938,6 +938,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$smush_data['size_before'] += $size_before;
 						$smush_data['size_after'] += $size_after;
 					}
+
+					//If full image wasn't optimised, but resized, combine the stats
+					if ( empty( $smush_stats['sizes']['full'] ) && !empty( $resize_savings ) && $resize_savings['bytes'] > 0 ) {
+						$smush_data['size_before'] += $resize_savings['size_before'];
+						$smush_data['size_after'] += $resize_savings['size_after'];
+					}
+
 				}
 			}
 			$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];

@@ -295,9 +295,9 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 				foreach ( $resized_images as $id ) {
 					$meta = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
 					if ( ! empty( $meta ) && ! empty( $meta['bytes'] ) ) {
-						$savings['bytes'] += intval( $meta['bytes'] );
-						$savings['size_before'] += intval( $meta['size_before'] );
-						$savings['size_after'] += intval( $meta['size_after'] );
+						$savings['bytes'] += $meta['bytes'];
+						$savings['size_before'] += $meta['size_before'];
+						$savings['size_after'] += $meta['size_after'];
 					}
 				}
 
@@ -346,9 +346,9 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 							if ( ! is_array( $size_savings ) ) {
 								continue;
 							}
-							$savings['bytes'] += intval( $size_savings['bytes'] );
-							$savings['size_before'] += intval( $size_savings['size_before'] );
-							$savings['size_after'] += intval( $size_savings['size_after'] );
+							$savings['bytes'] += $size_savings['bytes'];
+							$savings['size_before'] += $size_savings['size_before'];
+							$savings['size_after'] += $size_savings['size_after'];
 						}
 					}
 				}
