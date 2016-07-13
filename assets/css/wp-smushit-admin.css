@@ -901,7 +901,7 @@ small.smush-setting-description {
     padding: 10px;
 }
 
-.wpmud .wp-smush-stats .button-small.wp-smush-lossy-enable {
+.wpmud .wp-smush-stats .button-small.wp-smush-lossy-enable, .wpmud .wp-smush-stats .button-small.wp-smush-resize-enable {
     border-radius: 3px;
     font: 500 11px/20px 'Roboto';
     padding: 5px 8px;

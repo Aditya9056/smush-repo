@@ -18,6 +18,7 @@ $smushit_keys = array(
 	'lossy',
 	'backup',
 	'resize',
+	'png_to_jpg',
 	'resize-sizes',
 	'nextgen',
 	'keep_exif',
@@ -44,6 +45,7 @@ $cache_keys = array(
 $cache_smush_group   = array(
 	'exceeding_items',
 	'wp-smush-resize_savings',
+	'pngjpg_savings'
 );
 $cache_nextgen_group = array(
 	'wp_smush_images',

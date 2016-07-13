@@ -330,7 +330,7 @@ jQuery(function ($) {
 
                 var smush_conversion_savings = $('.smush-conversion-savings');
                 //Update Conversion Savings
-                if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.conversion_savings )) {
+                if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.conversion_savings ) && _res.data.stats.conversion_savings > 0) {
                     var conversion_savings = smush_conversion_savings.find('.wp-smush-stats');
                     if (conversion_savings.length > 0) {
                         conversion_savings.html(_res.data.stats.conversion_savings);
@@ -338,7 +338,7 @@ jQuery(function ($) {
                 }
                 var smush_resize_savings = $('.smush-resize-savings');
                 //Update Resize Savings
-                if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings )) {
+                if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings ) && _res.data.stats.resize_savings > 0) {
                     var resize_savings = smush_resize_savings.find('.wp-smush-stats');
                     if (resize_savings.length > 0) {
                         resize_savings.html(_res.data.stats.resize_savings);

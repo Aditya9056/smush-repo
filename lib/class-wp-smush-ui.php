@@ -165,7 +165,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			 */
 			if ( $WpSmush->validate_install() && apply_filters( 'wp_smush_show_lossy_stats', true ) ) {
 				$wpsmushit_admin->super_smushed = $wpsmush_stats->super_smushed_count(); ?>
-				<hr>
+				<hr />
 				<div class="row super-smush-attachments">
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
 				<span class="float-r wp-smush-stats<?php echo $WpSmush->lossy_enabled ? '' : ' wp-smush-lossy-disabled-wrap' ?>"><?php
@@ -175,9 +175,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
 					} ?>
 				</span>
-				</div>
-				<hr /><?php
+				</div><?php
 			} ?>
+			<hr />
 			<div class="row smush-resize-savings">
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "RESIZE SAVINGS", "wp-smushit" ); ?></strong></span>
 				<span class="float-r wp-smush-stats"><?php

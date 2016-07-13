@@ -922,11 +922,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 								$size_before = $resize_savings['size_before'];
 							}
 							//Check for savings from resizing for the original image
-							if ( ! empty( $resize_savings['size_after'] ) && $resize_savings['size_after'] > $size_after ) {
+							if ( ! empty( $resize_savings['size_after'] ) && $resize_savings['size_after'] < $size_after ) {
 								$size_after = $resize_savings['size_after'];
 							}
 						}
 
+						//Add up conversion savings
 						if ( ! empty( $conversion_savings[ $size_k ] ) ) {
 							if( ! empty( $conversion_savings[ $size_k ]['size_before'] ) && $conversion_savings[ $size_k ]['size_before'] > $size_before ) {
 								$size_before = $conversion_savings[ $size_k ]['size_before'];
@@ -939,12 +940,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						$smush_data['size_after'] += $size_after;
 					}
 
-					//If full image wasn't optimised, but resized, combine the stats
+					//Resize Savings: If full image wasn't optimised, but resized, combine the stats
 					if ( empty( $smush_stats['sizes']['full'] ) && !empty( $resize_savings ) && $resize_savings['bytes'] > 0 ) {
 						$smush_data['size_before'] += $resize_savings['size_before'];
 						$smush_data['size_after'] += $resize_savings['size_after'];
 					}
 
+					//Conversion Savings: If full image wasn't optimised, but Conversion saved few bytes
+					if ( empty( $smush_stats['sizes']['full'] ) && !empty( $conversion_savings['full'] ) && $conversion_savings['full']['bytes'] > 0 ) {
+						$smush_data['size_before'] += $conversion_savings['full']['size_before'];
+						$smush_data['size_after'] += $conversion_savings['full']['size_after'];
+					}
 				}
 			}
 			$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
