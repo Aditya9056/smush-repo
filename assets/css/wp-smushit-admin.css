@@ -908,10 +908,13 @@ small.smush-setting-description {
     vertical-align: top;
 }
 
-.wp-smush-lossy-enable:hover, .wp-smush-lossy-enable:active, .wp-smush-lossy-enable:focus {
+.wpmud .wp-smush-lossy-enable:hover, .wpmud .wp-smush-lossy-enable:active, .wpmud .wp-smush-lossy-enable:focus,
+.wpmud .wp-smush-resize-enable:hover, .wpmud .wp-smush-resize-enable:active, .wpmud .wp-smush-resize-enable:focus {
     background-color: #0093B1;
     color: #FFF;
     box-shadow: none;
+    transform: none;
+    -webkit-transform: none;
 }
 
 .wpmud .wp-smush-stats, .wp-smush-stats-wrap {
