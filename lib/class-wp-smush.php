@@ -1347,7 +1347,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				if ( $size_value->bytes > 0 ) {
 					$stats .= '<tr>
 					<td>' . strtoupper( $size_key ) . '</td>
-					<td>' . $this->format_bytes( $size_value->bytes ) . ' ( ' . $size_value->percent . '% )</td>
+					<td>' . $this->format_bytes( $size_value->bytes ) . ' ( ' . round( $size_value->percent, 1 ) . '% )</td>
 				</tr>';
 				}
 			}

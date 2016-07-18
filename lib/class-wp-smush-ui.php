@@ -202,25 +202,41 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 			//Pro Savings Expected: For free Version
 			if ( ! $WpSmush->validate_install() ) {
-				$upgrade_url = add_query_arg(
-					array(
-						'utm_source' => 'Smush-Free',
-						'utm_medium' => 'Banner',
-						'utm_campaign'=> 'pro-only-stats'
-					),
-					$wpsmushit_admin->upgrade_url
-				);
-				$pro_only = sprintf( esc_html__( '%sTRY PRO FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' ); ?>
-				<div class="row smush-avg-pro-savings">
-					<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PRO SAVINGS", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
-					<span class="float-r wp-smush-stats">
-						<span class="wp-smush-stats-human">
-							<?php echo $wpsmushit_admin->stats['human'] > 0 ? $wpsmushit_admin->format_bytes( 2 * $wpsmushit_admin->stats['bytes'] ) : "0MB"; ?>
+				$savings = $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( 2 * $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0;
+				$savings_bytes = $wpsmushit_admin->stats['human'] > 0 ? $wpsmushit_admin->stats['bytes'] : "0";
+				$show_pro_savings = false;
+				//If the smush savings percent isn't empty and the percentage is below 45, double it
+				if( !empty( $savings ) && $savings < 45 ) {
+					$savings = 2 * $savings;
+					$savings_bytes = 2 * $savings_bytes;
+					$show_pro_savings = true;
+				}elseif( !empty( $savings ) && $savings < 80  ){
+					$savings = 1.1 * $savings;
+					$savings_bytes = 1.1 * $savings_bytes;
+					$show_pro_savings = true;
+				}
+				//If we have any savings
+				if( $savings > 0 && $show_pro_savings ) {
+					$upgrade_url = add_query_arg(
+						array(
+							'utm_source' => 'Smush-Free',
+							'utm_medium' => 'Banner',
+							'utm_campaign'=> 'pro-only-stats'
+						),
+						$wpsmushit_admin->upgrade_url
+					);
+					$pro_only = sprintf( esc_html__( '%sTRY PRO FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' ); ?>
+					<div class="row smush-avg-pro-savings">
+						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PRO SAVINGS", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
+						<span class="float-r wp-smush-stats">
+							<span class="wp-smush-stats-human">
+								<?php echo $wpsmushit_admin->format_bytes( round( $savings_bytes, 1 ) ); ?>
+							</span>
+							<span class="wp-smush-stats-sep">/</span>
+							<span class="wp-smush-stats-percent"><?php echo number_format_i18n( 2 * $savings, 1, '.', '' );  ?></span>%
 						</span>
-						<span class="wp-smush-stats-sep">/</span>
-						<span class="wp-smush-stats-percent"><?php echo $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( 2 * $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0; ?></span>%
-					</span>
-				</div><?php
+					</div><?php
+				}
 			}
 			/**
 			 * Allows you to output any content within the stats box at the end
