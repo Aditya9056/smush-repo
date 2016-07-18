@@ -1810,6 +1810,35 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			<script src="<?php echo esc_url( $js_url ) . '?v=' . WP_SMUSH_VERSION; ?>"></script><?php
 		}
 
+		/**
+		 * Check whether to skip a specific image size or not
+		 *
+		 * @param string $size Registered image size
+		 *
+		 * @return bool true/false Whether to skip the image size or not
+		 *
+		 */
+		function skip_image_size (  $size = '' ) {
+
+			//No image size specified, Don't skip
+			if( empty( $size ) ) {
+				return false;
+			}
+
+			$image_sizes = get_option( WP_SMUSH_PREFIX.'image_sizes' );
+
+			//If Images sizes aren't set, don't skip any of the image size
+			if( false === $image_sizes ) {
+				return false;
+			}
+
+			//Check if the size is in the smush list
+			if( is_array( $image_sizes ) && !in_array(  $size, $image_sizes ) ) {
+				return true;
+			}
+
+		}
+
 	}
 
 	global $wpsmushit_admin;

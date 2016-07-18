@@ -352,7 +352,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				} else {
 					$finfo = false;
 				}
+
+				global $wpsmushit_admin;
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
+
+					//Check if registered size is supposed to be Smushed or not
+					if( 'full' != $size_key && $wpsmushit_admin->skip_image_size( $size_key ) ) {
+						continue;
+					}
 
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and replace the filename.

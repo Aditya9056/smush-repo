@@ -174,6 +174,12 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return false;
 			}
 
+			//Check if registered size is supposed to be converted or not
+			global $wpsmushit_admin;
+			if( 'full' != $size && $wpsmushit_admin->skip_image_size( $size ) ) {
+				return false;
+			}
+
 			$file = get_attached_file( $id );
 
 			/** Whether to convert to jpg or not **/
