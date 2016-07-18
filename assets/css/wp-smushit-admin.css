@@ -1361,7 +1361,7 @@ small.smush-setting-description {
     opacity: 0;
 }
 
-.wp-smush-resize-settings-wrap, .wp-smush-png_to_jpg-wrap {
+.wp-smush-resize-settings-wrap, .wp-smush-png_to_jpg-wrap, .wp-smush-image-size-list {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 5px;
     color: #555;
@@ -1370,6 +1370,11 @@ small.smush-setting-description {
     overflow: auto;
     padding: 30px;
     vertical-align: middle;
+}
+.wpmud .wp-smush-image-size-list label {
+    clear: left;
+    float: left;
+    font-size: 13px;
 }
 
 .wpmud .wp-smush-resize-settings-wrap label {

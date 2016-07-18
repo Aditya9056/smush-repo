@@ -428,6 +428,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				unset( $setting );
 			}
 
+			//Save the selected image sizes
+			$image_sizes = !empty( $_POST['wp-smush-image_sizes'] ) ? $_POST['wp-smush-image_sizes'] : array();
+			$image_sizes = array_filter( array_map("sanitize_text_field", $image_sizes ) );
+			update_option( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
+
 			//Update Resize width and height settings if set
 			$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0;
 			$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0;

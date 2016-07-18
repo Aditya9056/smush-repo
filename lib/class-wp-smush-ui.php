@@ -381,8 +381,26 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//Dimensions
 			$resize_sizes = get_option( WP_SMUSH_PREFIX . 'resize_sizes', array( 'width' => '', 'height' => '' ) );
 
-			//Fetch Max. width and height
-			?>
+			//Additional Image sizes
+			$image_sizes = get_option( WP_SMUSH_PREFIX . 'image_sizes' );
+
+			global $_wp_additional_image_sizes;
+			$additional_sizes = get_intermediate_image_sizes();
+			$sizes = array();
+			// Create the full array with sizes and crop info
+			foreach( $additional_sizes as $_size ) {
+				if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ) ) ) {
+					$sizes[ $_size ]['width'] = get_option( $_size . '_size_w' );
+					$sizes[ $_size ]['height'] = get_option( $_size . '_size_h' );
+					$sizes[ $_size ]['crop'] = (bool) get_option( $_size . '_crop' );
+				} elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
+					$sizes[ $_size ] = array(
+						'width' => $_wp_additional_image_sizes[ $_size ]['width'],
+						'height' => $_wp_additional_image_sizes[ $_size ]['height'],
+						'crop' =>  $_wp_additional_image_sizes[ $_size ]['crop']
+					);
+				}
+			} ?>
 
 			<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 			<div class='wp-smush-setting-row wp-smush-basic'>
@@ -399,7 +417,25 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				       id="<?php echo $opt_auto; ?>"
 				       name="<?php echo $opt_auto; ?>" <?php checked( $opt_auto_val, 1, true ); ?> value="1" tabindex="0">
 					<label class="toggle-label" for="<?php echo $opt_auto; ?>"></label>
-				</span>
+				</span><?php
+				if( !empty( $sizes ) ) { ?>
+					<!-- List of image sizes recognised by WP Smush -->
+					<div class="wp-smush-image-size-list">
+						<p><?php esc_html_e("Following image sizes will be optimised by WP Smush:", "wp-smushit"); ?></p><?php
+						foreach ( $sizes as $size_k => $size ) {
+							//If image sizes array isn't set, mark all checked ( Default Values )
+							if ( false === $image_sizes ) {
+								$checked = true;
+							}else{
+								$checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes ) : false;
+							} ?>
+							<label>
+								<input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>"><?php
+								echo $size_k . " (" . $size['width'] . "x" . $size['height'] . ") "; ?>
+							</label><?php
+						} ?>
+					</div><?php
+				} ?>
 			</div>
 			<hr/>
 			<div class='wp-smush-setting-row wp-smush-basic'>
