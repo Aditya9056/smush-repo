@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix  = 'WP_SMUSH_';
-$version = '2.3.1' .time();
+$version = '2.3.1' . time();
 
 /**
  * Set the default timeout for API request and AJAX timeout
@@ -116,6 +116,7 @@ if ( ! function_exists( 'wp_smush_email_message' ) ) {
  */
 function get_plugin_dir() {
 	$dir_path = plugin_dir_path( __FILE__ );
+
 	return $dir_path;
 }
 
@@ -211,9 +212,9 @@ function smush_activated() {
 
 		if ( $results ) {
 			update_option( 'wp-smush-install-type', 'existing' );
-		}else{
+		} else {
 			//Check for existing settings
-			if( false !== get_site_option( WP_SMUSH_PREFIX . 'auto' ) || false !== get_option( WP_SMUSH_PREFIX . 'auto' ) ) {
+			if ( false !== get_site_option( WP_SMUSH_PREFIX . 'auto' ) || false !== get_option( WP_SMUSH_PREFIX . 'auto' ) ) {
 				update_option( 'wp-smush-install-type', 'existing' );
 			}
 		}
@@ -222,6 +223,46 @@ function smush_activated() {
 		update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
 	}
 
+}
+
+
+if ( ! function_exists( 'sanitize_hex_color' ) ) {
+	/**
+	 * Sanitizes a hex color.
+	 *
+	 * @param $color
+	 *
+	 * @return string Returns either '', a 3 or 6 digit hex color (with #), or nothing
+	 */
+	function sanitize_hex_color( $color ) {
+		if ( '' === $color ) {
+			return '';
+		}
+
+		// 3 or 6 hex digits, or the empty string.
+		if ( preg_match( '|^#([A-Fa-f0-9]{3}){1,2}$|', $color ) ) {
+			return $color;
+		}
+	}
+}
+
+if ( ! function_exists( 'sanitize_hex_color_no_hash' ) ) {
+	/**
+	 * Sanitizes a hex color without hash
+	 *
+	 * @param $color
+	 *
+	 * @return string Returns either '', a 3 or 6 digit hex color (with #), or nothing
+	 */
+	function sanitize_hex_color_no_hash( $color ) {
+		$color = ltrim( $color, '#' );
+
+		if ( '' === $color ) {
+			return '';
+		}
+
+		return sanitize_hex_color( '#' . $color ) ? $color : null;
+	}
 }
 
 register_activation_hook( __FILE__, 'smush_activated' );

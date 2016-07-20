@@ -454,10 +454,13 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 							$result = $this->convert_tpng_to_jpg( $id, $s_file, $result['meta'], $size_k );
 						}
 
-						//Add all the stats
-						array_walk_recursive( $result['savings'], function ( $item, $key ) use ( &$savings, $size_k ) {
-							$savings[ $size_k ][ $key ] = isset( $savings[ $size_k ][ $key ] ) ? $item + $savings[ $size_k ][ $key ] : $item;
-						} );
+						//If there are savings
+						if ( ! empty( $result['savings'] ) ) {
+							//Add all the stats
+							array_walk_recursive( $result['savings'], function ( $item, $key ) use ( &$savings, $size_k ) {
+								$savings[ $size_k ][ $key ] = isset( $savings[ $size_k ][ $key ] ) ? $item + $savings[ $size_k ][ $key ] : $item;
+							} );
+						}
 					}
 				}
 

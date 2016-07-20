@@ -322,7 +322,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
 						</span><?php
 						if( 'png_to_jpg' == $setting_key ) {
-						$bg_color = '#<input type="text" id="png_to_jpg_background" class="wp-smush-png_to_jpg_background" value="' . $transparent_png['background'] . '" placeholder="fff" name="' . $setting_m_key . '_background" tabindex="0" width="50px" maxlength="6" />';
+						$bg_color = '#<input type="text" pattern=".{6,}" id="png_to_jpg_background" class="wp-smush-png_to_jpg_background" value="' . $transparent_png['background'] . '" placeholder="fff" name="' . $setting_m_key . '_background" tabindex="0" width="50px" maxlength="6" title="' . esc_html__("Enter 6 character Hexcode", "wp-smushit") . '" />';
 						?>
 							<div class="wp-smush-png_to_jpg-wrap<?php echo $setting_val ? '' : ' hidden'?>">
 								<label for="png_to_jpg_transparent">
