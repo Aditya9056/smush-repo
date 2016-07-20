@@ -176,7 +176,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			//Check if registered size is supposed to be converted or not
 			global $wpsmushit_admin;
-			if( 'full' != $size && $wpsmushit_admin->skip_image_size( $size ) ) {
+			if ( 'full' != $size && $wpsmushit_admin->skip_image_size( $size ) ) {
 				return false;
 			}
 
@@ -375,8 +375,18 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return $result;
 			}
 
+			$n_file = pathinfo( $file );
+
+			if ( ! empty( $n_file['filename'] ) && $n_file['dirname'] ) {
+				//Get a unique File name
+				$n_file['filename'] = wp_unique_filename( $n_file['dirname'], $n_file['filename'] . '.jpg' );
+				$n_file             = path_join( $n_file['dirname'], $n_file['filename'] );
+			} else {
+				return $result;
+			}
+
 			//Save PNG as JPG
-			$new_image_info = $editor->save( $file, 'image/jpeg' );
+			$new_image_info = $editor->save( $n_file, 'image/jpeg' );
 
 			//If image editor was unable to save the image, return
 			if ( is_wp_error( $new_image_info ) ) {
@@ -387,6 +397,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			//Replace file, and get savings
 			$result = $this->replace_file( $file, $result, $n_file );
+
 			if ( ! empty( $result['savings'] ) ) {
 				if ( 'full' == $size ) {
 					$result['converted'] = true;
@@ -514,8 +525,10 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return $result;
 			}
 
+			$n_file['filename'] = wp_unique_filename( $n_file['dirname'], $n_file['filename'] . '.jpg' );
+
 			//Updated File name
-			$n_file = path_join( $n_file['dirname'], $n_file['filename'] ) . '.jpg';
+			$n_file = path_join( $n_file['dirname'], $n_file['filename'] );
 
 			$transparent_png = get_option( WP_SMUSH_PREFIX . 'transparent_png' );
 
@@ -536,6 +549,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 					$imagick->writeImage( $n_file );
 				} catch ( Exception $e ) {
 					error_log( "WP Smush PNG to JPG Conversion error in " . __FILE__ . " at " . __LINE__ . " " . $e->getMessage() );
+					return $result;
 				}
 			} else {
 				//Use GD for conversion
