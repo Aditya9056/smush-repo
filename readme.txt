@@ -1,6 +1,6 @@
 === WP Smush - Image Optimization ===
 Plugin Name: WP Smush - Image Optimization
-Version: 2.3.1
+Version: 2.3.2
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
@@ -97,7 +97,9 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * WPML Media Add-on compatibility, you can smush all the images for all the languages at once from Bulk Smush page
 
 * Updated:
+    * Minor Tweaks on WP Smush Page ( Bulk Smush )
     * Stats calculation is more accurate
+    * Show current image size in media library after image has been smushed
     * Added Multi Pass JPEG optimisation ( Pro Feature )
 
 * Features:
