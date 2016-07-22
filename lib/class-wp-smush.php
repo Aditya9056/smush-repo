@@ -1904,7 +1904,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $stats;
 			}
 			foreach ( $conversion_savings as $size_k => $savings ) {
-				if ( ! empty( $stats['sizes'][ $size_k ] ) ) {
+				if ( ! empty( $stats['sizes'][ $size_k ] ) && ! empty( $savings ) ) {
 					$stats['sizes'][ $size_k ]->bytes       = $stats['sizes'][ $size_k ]->bytes + $savings['bytes'];
 					$stats['sizes'][ $size_k ]->size_before = $stats['sizes'][ $size_k ]->size_before > $savings['size_before'] ? $stats['sizes'][ $size_k ]->size_before : $savings['size_before'];
 					$stats['sizes'][ $size_k ]->percent     = ! empty( $stats['sizes'][ $size_k ]->bytes ) && $stats['sizes'][ $size_k ]->size_before > 0 ? ( $stats['sizes'][ $size_k ]->bytes / $stats['sizes'][ $size_k ]->size_before ) * 100 : $stats['sizes'][ $size_k ]->percent;

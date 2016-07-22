@@ -174,6 +174,11 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return false;
 			}
 
+			//If already tried the conversion
+			if ( get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', false ) ) {
+				return false;
+			}
+
 			//Check if registered size is supposed to be converted or not
 			global $wpsmushit_admin;
 			if ( 'full' != $size && $wpsmushit_admin->skip_image_size( $size ) ) {
@@ -404,11 +409,12 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				}
 				//Update the File Details. and get updated meta
 				$result['meta'] = $this->update_image_path( $id, $file, $n_file, $meta, $size );
+
+				/**
+				 *  Perform a action after the image URL is updated in post content
+				 */
+				do_action( 'wp_smush_image_url_changed', $id, $file, $n_file, $size );
 			}
-			/**
-			 *  Perform a action after the image URL is updated in post content
-			 */
-			do_action( 'wp_smush_image_url_changed', $id, $file, $n_file, $size );
 
 			return $result;
 		}
@@ -445,7 +451,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				$result = $this->convert_tpng_to_jpg( $id, $file, $result['meta'] );
 			}
 
-			$savings['full'] = $result['savings'];
+			$savings['full'] = ! empty( $result['savings'] ) ? $result['savings'] : '';
 
 			//If original image was converted and other sizes are there for the image, Convert all other image sizes
 			if ( $result['converted'] ) {
@@ -483,14 +489,14 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				$o_file = ! empty( $meta['file'] ) ? $meta['file'] : get_post_meta( $id, '_wp_attached_file', true );
 				update_post_meta( $id, WP_SMUSH_PREFIX . 'original_file', $o_file );
 
-				//Update the Final Stats
-				update_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', $savings );
-
 				/**
 				 * Do action, if the PNG to JPG conversion was successful
 				 */
 				do_action( 'wp_smush_png_jpg_converted', $id, $meta, $savings );
 			}
+
+			//Update the Final Stats
+			update_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', $savings );
 
 			return $result['meta'];
 
@@ -553,6 +559,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 					$imagick->writeImage( $n_file );
 				} catch ( Exception $e ) {
 					error_log( "WP Smush PNG to JPG Conversion error in " . __FILE__ . " at " . __LINE__ . " " . $e->getMessage() );
+
 					return $result;
 				}
 			} else {
