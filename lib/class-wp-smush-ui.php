@@ -421,7 +421,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				if( !empty( $sizes ) ) { ?>
 					<!-- List of image sizes recognised by WP Smush -->
 					<div class="wp-smush-image-size-list">
-						<p><?php esc_html_e("Following image sizes will be optimised by WP Smush:", "wp-smushit"); ?></p><?php
+						<p><?php esc_html_e("The Following image sizes will be optimised by WP Smush:", "wp-smushit"); ?></p><?php
 						foreach ( $sizes as $size_k => $size ) {
 							//If image sizes array isn't set, mark all checked ( Default Values )
 							if ( false === $image_sizes ) {

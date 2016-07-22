@@ -553,19 +553,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_backup;
 
-			//Optionally Convert PNGs to JPG
-			$meta = $wpsmush_pngjpg->png_to_jpg( $ID, $meta );
+			//Check if auto is enabled
+			$auto_smush = $this->is_auto_smush_enabled();
 
 			//Optionally Resize Images
 			$meta = $wpsmush_resize->auto_resize( $ID, $meta );
 
-			//Check if auto is enabled
-			$auto_smush = $this->is_auto_smush_enabled();
-
 			//Auto Smush the new image
 			if ( $auto_smush ) {
-				//Update API url for Hostgator
 
+				//Optionally Convert PNGs to JPG
+				$meta = $wpsmush_pngjpg->png_to_jpg( $ID, $meta );
+
+				/** Fix for Hostgator */
 				//Check for use of http url, (Hostgator mostly)
 				$use_http = wp_cache_get( WP_SMUSH_PREFIX . 'use_http', 'smush' );
 				if ( ! $use_http ) {

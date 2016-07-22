@@ -180,7 +180,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'desc'  => esc_html__( 'Save your original full-size images so you can restore them at any point. Note: Activating this setting will significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' )
 				),
 				'png_to_jpg' => array(
-					'label' => esc_html__( 'Auto-convert PNG to JPEG (lossy)', 'wp-smushit' ),
+					'label' => esc_html__( 'Convert PNG to JPEG (lossy)', 'wp-smushit' ),
 					'desc'  => esc_html__( "When you optimise a PNG, Smush will check if converting it to a JPEG will reduce the file size, and if so it will automatically convert it. Note: Smush will only convert the file format if it results in smaller file size. This will change the file's name, any hardcoded URLs will need updating.", 'wp-smushit' )
 				)
 			);
@@ -544,6 +544,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 				wp_update_attachment_metadata( $attachment_id, $original_meta );
 			}
+
+			global $wpsmush_pngjpg;
+
+			//Convert PNGs to JPG
+			$original_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
 
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 
