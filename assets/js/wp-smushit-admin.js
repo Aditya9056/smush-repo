@@ -1085,6 +1085,17 @@ jQuery(function ($) {
         $('#wp-smush-save-settings').click();
     });
 
+    //Enable Resize
+    $('.wp-smush-resize-enable').on('click', function (e) {
+        e.preventDefault();
+
+        //Enable Super Smush
+        $('#wp-smush-resize').prop('checked', true);
+        //Induce Setting button save click
+        $('#wp-smush-save-settings').click();
+    });
+
+
     //Trigger Bulk
     $('body').on('click', '.wp-smush-trigger-bulk', function (e) {
         e.preventDefault();
