@@ -23,6 +23,9 @@ $smushit_keys = array(
 	'nextgen',
 	'keep_exif',
 	'resmush-list',
+	'resize_sizes',
+	'transparent_png',
+	'image_sizes',
 	'skip-redirect',
 	'nextgen-resmush-list',
 	'super_smushed',
@@ -125,4 +128,5 @@ if ( is_multisite() ) {
 	delete_metadata( $meta_type, null, 'wp-smush-pngjpg_savings', '', $delete_all );
 }
 //@todo: Add procedure to delete backup files
+//@todo: Update NextGen Metadata to remove Smush stats on plugin deletion
 ?>
