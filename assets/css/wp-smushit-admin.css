@@ -893,6 +893,10 @@ small.smush-setting-description {
     font-weight: 700;
 }
 
+.wpmud .smush-stats-wrapper strong {
+    font-weight: 700;
+}
+
 .wp-smush-lossy-disabled {
     color: #adadad;
     background: #fafafa;
@@ -1371,6 +1375,7 @@ small.smush-setting-description {
     padding: 30px;
     vertical-align: middle;
 }
+
 .wpmud .wp-smush-image-size-list label {
     clear: left;
     float: left;
@@ -1516,4 +1521,13 @@ small.smush-setting-description {
 
 .wpmud .wp-smush-share-message {
     font-weight: 500;
+}
+
+/** Override WP Footer Styling, Hide it on WPMU pages only, if we really need to **/
+.wp-admin #wpfooter {
+    display: block;
+}
+
+.wpmud #wpfooter {
+    display: none;
 }
