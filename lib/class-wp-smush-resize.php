@@ -104,7 +104,24 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				return false;
 			}
 
-			return true;
+			//Get attachment metadata
+			$meta = wp_get_attachment_metadata( $id );
+
+			if( !empty( $meta['width'] ) && !empty( $meta['height'] ) ) {
+				$oldW = $meta['width'];
+				$oldH = $meta['height'];
+
+				$resize_dim = get_option( WP_SMUSH_PREFIX . 'resize_sizes' );
+
+				$maxW = ! empty( $resize_dim['width'] ) ? $resize_dim['width'] : 0;
+				$maxH = ! empty( $resize_dim['height'] ) ? $resize_dim['height'] : 0;
+
+				if ( ( $oldW > $maxW && $maxW > 0 ) || ( $oldH > $maxH && $maxH > 0 ) ) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/**
