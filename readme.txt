@@ -96,14 +96,18 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Compatibility:
     * WPML Media Add-on compatibility, you can smush all the images for all the languages at once from Bulk Smush page
 
+* Features:
+    * Added PNG to JPG - Lossy Conversion for higher savings ( Pro Feature )
+
+*Fixed:
+    * EXIF: Device details were left out for some images, even when opted for stripping it
+
 * Updated:
     * Minor Tweaks on WP Smush Page ( Bulk Smush )
     * Stats calculation is more accurate
     * Show current image size in media library after image has been smushed
     * Added Multi Pass JPEG optimisation ( Pro Feature )
-
-* Features:
-    * Added PNG to JPG - Lossy Conversion for higher savings ( Pro Users )
+    * Higher savings for JPEGs lossy optimisation ( Pro Feature )
 
 = 2.3.1 =
 
