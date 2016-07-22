@@ -451,6 +451,10 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			if ( $result['converted'] ) {
 				if ( ! empty( $meta['sizes'] ) ) {
 					foreach ( $meta['sizes'] as $size_k => $data ) {
+
+						/** Whether to convert to jpg or not **/
+						$should_convert = $this->can_be_converted( $id, $size_k );
+
 						//Perform the conversion
 						if ( ! $should_convert = apply_filters( 'wp_smush_convert_to_jpg', $should_convert, $id, $file, $size_k ) ) {
 							continue;
