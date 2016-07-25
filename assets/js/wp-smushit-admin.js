@@ -43,6 +43,17 @@ var update_dashoffset = function (stats) {
         }
     }
 }
+/**
+ * Resize Background width
+ */
+var resize_width = function () {
+    var width = jQuery('.wp-smush-pro-for-free').width();
+    if ('undefined' != typeof ( width ) && 500 < width) {
+        jQuery('.wpmud .wp-smush-pro-adv').css({'background-size': '500px'});
+    } else {
+        jQuery('.wpmud .wp-smush-pro-adv').css({'background-size': '90%'});
+    }
+}
 
 jQuery(function ($) {
     var smushAddParams = function (url, data) {
@@ -330,7 +341,7 @@ jQuery(function ($) {
 
                 var smush_conversion_savings = $('.smush-conversion-savings');
                 //Update Conversion Savings
-                if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.conversion_savings ) && _res.data.stats.conversion_savings != '' ) {
+                if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.conversion_savings ) && _res.data.stats.conversion_savings != '') {
                     var conversion_savings = smush_conversion_savings.find('.wp-smush-stats');
                     if (conversion_savings.length > 0) {
                         conversion_savings.html(_res.data.stats.conversion_savings);
@@ -338,7 +349,7 @@ jQuery(function ($) {
                 }
                 var smush_resize_savings = $('.smush-resize-savings');
                 //Update Resize Savings
-                if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings ) && _res.data.stats.resize_savings != '' ) {
+                if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings ) && _res.data.stats.resize_savings != '') {
                     var resize_savings = smush_resize_savings.find('.wp-smush-stats');
                     if (resize_savings.length > 0) {
                         resize_savings.html(_res.data.stats.resize_savings);
@@ -974,10 +985,10 @@ jQuery(function ($) {
             update_button_txt = false;
         }
         //If PNG to JPEG conversion is enabled
-        if( smush_pngjpg.checked ) {
+        if (smush_pngjpg.checked) {
             var jpg_bg = $('[name="wp-smush-png_to_jpg_background"]');
             //Check the length of hex code
-            if( jpg_bg.val().length < 6 ) {
+            if (jpg_bg.val().length < 6) {
                 //Return false and add error class
                 jpg_bg.addClass('error');
                 return false;
@@ -1151,8 +1162,8 @@ jQuery(function ($) {
     });
 
     //On background input remove class error
-    $('#png_to_jpg_background').on('mouseup', function(e) {
-       $(this).removeClass('error');
+    $('#png_to_jpg_background').on('mouseup', function (e) {
+        $(this).removeClass('error');
     });
 
     //Handle Twitter Share
@@ -1190,7 +1201,12 @@ jQuery(function ($) {
 
         return false;
     });
-
+    //On Page load
+    resize_width();
+    //Adjust background image
+    $(window).resize(function () {
+        resize_width();
+    });
 
 });
 (function ($) {
