@@ -234,7 +234,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 								<?php echo $wpsmushit_admin->format_bytes( round( $savings_bytes, 1 ) ); ?>
 							</span>
 							<span class="wp-smush-stats-sep">/</span>
-							<span class="wp-smush-stats-percent"><?php echo number_format_i18n( 2 * $savings, 1, '.', '' );  ?></span>%
+							<span class="wp-smush-stats-percent"><?php echo number_format_i18n( $savings, 1, '.', '' );  ?></span>%
 						</span>
 					</div><?php
 				}
