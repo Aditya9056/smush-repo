@@ -227,7 +227,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						$wpsmushit_admin->upgrade_url
 					);
 					$pro_only = sprintf( esc_html__( '%sTRY PRO FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' ); ?>
-					<div class="row smush-avg-pro-savings">
+					<div class="row smush-avg-pro-savings" tooltip="<?php esc_html_e("BASED ON AVERAGE FREE VS PRO SAVINGS", "wp-smushit"); ?>">
 						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PRO SAVINGS", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
 						<span class="float-r wp-smush-stats">
 							<span class="wp-smush-stats-human">
@@ -384,24 +384,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			//Additional Image sizes
 			$image_sizes = get_option( WP_SMUSH_PREFIX . 'image_sizes' );
-
-			global $_wp_additional_image_sizes;
-			$additional_sizes = get_intermediate_image_sizes();
-			$sizes = array();
-			// Create the full array with sizes and crop info
-			foreach( $additional_sizes as $_size ) {
-				if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ) ) ) {
-					$sizes[ $_size ]['width'] = get_option( $_size . '_size_w' );
-					$sizes[ $_size ]['height'] = get_option( $_size . '_size_h' );
-					$sizes[ $_size ]['crop'] = (bool) get_option( $_size . '_crop' );
-				} elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
-					$sizes[ $_size ] = array(
-						'width' => $_wp_additional_image_sizes[ $_size ]['width'],
-						'height' => $_wp_additional_image_sizes[ $_size ]['height'],
-						'crop' =>  $_wp_additional_image_sizes[ $_size ]['crop']
-					);
-				}
-			} ?>
+			$sizes = $wpsmushit_admin->image_dimensions();
+			 ?>
 
 			<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 			<div class='wp-smush-setting-row wp-smush-basic'>

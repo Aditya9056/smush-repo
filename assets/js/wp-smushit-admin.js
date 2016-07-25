@@ -1201,12 +1201,16 @@ jQuery(function ($) {
 
         return false;
     });
-    //On Page load
-    resize_width();
-    //Adjust background image
-    $(window).resize(function () {
+
+    //Adjust background image size if required
+    if( $('.wp-smush-pro-for-free').length ) {
+        //On Page load
         resize_width();
-    });
+        //Adjust background image
+        $(window).resize(function () {
+            resize_width();
+        });
+    }
 
 });
 (function ($) {

@@ -1320,6 +1320,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata ) {
 
+			global $wpsmushit_admin;
+
 			$stats      = '<div id="smush-stats-' . $image_id . '" class="smush-stats-wrapper hidden">
 				<table class="wp-smush-stats-holder">
 					<thead>
@@ -1351,9 +1353,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 			//Show Sizes and their compression
 			foreach ( $size_stats as $size_key => $size_value ) {
+				$dimensions = '';
+				//Get the dimensions for the image size if available
+				if ( ! empty( $wpsmushit_admin->image_sizes ) && !empty( $wpsmushit_admin->image_sizes[$size_key] ) ) {
+					$dimensions = $wpsmushit_admin->image_sizes[ $size_key ]['width'] . 'x' . $wpsmushit_admin->image_sizes[ $size_key ]['height'];
+				}
+				$dimensions = !empty( $dimensions ) ? sprintf( " <br /> (%s)", $dimensions ) : '';
 				if ( $size_value->bytes > 0 ) {
 					$stats .= '<tr>
-					<td>' . strtoupper( $size_key ) . '</td>
+					<td>' . strtoupper( $size_key ) . $dimensions . '</td>
 					<td>' . $this->format_bytes( $size_value->bytes ) . ' ( ' . round( $size_value->percent, 1 ) . '% )</td>
 				</tr>';
 				}

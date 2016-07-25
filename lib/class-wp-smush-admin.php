@@ -92,6 +92,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		private $attachments = '';
 
+
+		public $image_sizes = array();
+
 		/**
 		 * Constructor
 		 */
@@ -192,6 +195,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
 				);
 			}
+
+			//Initialize Image dimensions
+			$this->image_sizes = $this->image_dimensions();
 		}
 
 		/**
@@ -1848,6 +1854,44 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if( is_array( $image_sizes ) && !in_array(  $size, $image_sizes ) ) {
 				return true;
 			}
+
+		}
+
+		/**
+		 * Get registered image sizes with dimension
+		 *
+		 */
+		function image_dimensions() {
+			global $_wp_additional_image_sizes;
+			$additional_sizes = get_intermediate_image_sizes();
+			$sizes = array();
+
+			// Create the full array with sizes and crop info
+			foreach( $additional_sizes as $_size ) {
+				if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ) ) ) {
+					$sizes[ $_size ]['width'] = get_option( $_size . '_size_w' );
+					$sizes[ $_size ]['height'] = get_option( $_size . '_size_h' );
+					$sizes[ $_size ]['crop'] = (bool) get_option( $_size . '_crop' );
+				} elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
+					$sizes[ $_size ] = array(
+						'width' => $_wp_additional_image_sizes[ $_size ]['width'],
+						'height' => $_wp_additional_image_sizes[ $_size ]['height'],
+						'crop' =>  $_wp_additional_image_sizes[ $_size ]['crop']
+					);
+				}
+			}
+			//Medium Large
+			if ( empty( $sizes['medium_large'] ) ) {
+				$width  = intval( get_option( 'medium_large_size_w' ) );
+				$height = intval( get_option( 'medium_large_size_h' ) );
+
+				$sizes['medium_large'] = array(
+					'width'  => $width,
+					'height' => $height
+				);
+			}
+
+			return $sizes;
 
 		}
 
