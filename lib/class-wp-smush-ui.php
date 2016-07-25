@@ -330,6 +330,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 									<input type="checkbox" id="png_to_jpg_transparent" class="wp-smush-png_to_jpg_transparent" name="<?php echo $setting_m_key; ?>_transparent" tabindex="0" <?php checked( $transparent_png['convert'] ); ?>/>
 									<?php printf( esc_html__("Convert transparent images and use background color %s", "wp-smushit"), $bg_color ); ?>
 								</label>
+								<div class="wp-smush-settings-info wp-smush-hex-notice hidden"><?php esc_html_e("Color hexcode should be 6 digit", "wp-smushit"); ?></div>
 							</div><?php
 						}
 						?>
@@ -464,8 +465,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<input type="text" id="<?php echo $opt_resize . '_height'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>" placeholder="<?php echo $p_height; ?>" name="<?php echo $opt_resize . '_height'; ?>" tabindex="0" width=100 /> px
 					</label>
 					<div class="wp-smush-resize-note"><?php printf( esc_html__("Currently, your largest thumbnail size is set at %s%dpx wide x %dpx high%s. Anything above 2048px in width or height is huge and not recommended.", "wp-smushit"), '<strong>', $max_sizes['width'], $max_sizes['height'], '</strong>' ); ?></div>
-					<div class="wp-smush-size-info wp-smush-update-width hidden"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest thumbnail and may result in pixelation.", "wp-smushit" ); ?></div>
-					<div class="wp-smush-size-info wp-smush-update-height hidden"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest thumbnail and may result in pixelation.", "wp-smushit" ); ?></div>
+					<div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-width hidden"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest thumbnail and may result in pixelation.", "wp-smushit" ); ?></div>
+					<div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-height hidden"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest thumbnail and may result in pixelation.", "wp-smushit" ); ?></div>
 				</div>
 			</div><!-- End of Basic Settings --><?php
 

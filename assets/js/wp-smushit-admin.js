@@ -980,15 +980,18 @@ jQuery(function ($) {
 
         var update_button_txt = true;
 
+        $('.wp-smush-hex-notice').hide();
+
         //If Preserve Exif is Checked, and all other settings are off, just save the settings
         if (keep_exif.checked && !super_smush.checked && !smush_original.checked && !resize_images.checked && !smush_pngjpg.checked) {
             update_button_txt = false;
         }
         //If PNG to JPEG conversion is enabled
-        if (smush_pngjpg.checked) {
+        if (smush_pngjpg.checked && document.getElementById('png_to_jpg_transparent').checked ) {
             var jpg_bg = $('[name="wp-smush-png_to_jpg_background"]');
             //Check the length of hex code
             if (jpg_bg.val().length < 6) {
+                $('.wp-smush-hex-notice').show();
                 //Return false and add error class
                 jpg_bg.addClass('error');
                 return false;
