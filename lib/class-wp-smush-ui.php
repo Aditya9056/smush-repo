@@ -202,11 +202,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 			//Pro Savings Expected: For free Version
 			if ( ! $WpSmush->validate_install() ) {
-				$savings = $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( 2 * $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0;
+				$savings = $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0;
 				$savings_bytes = $wpsmushit_admin->stats['human'] > 0 ? $wpsmushit_admin->stats['bytes'] : "0";
 				$show_pro_savings = false;
 				//If the smush savings percent isn't empty and the percentage is below 45, double it
-				if( !empty( $savings ) && $savings < 45 ) {
+				if( !empty( $savings ) && $savings < 49 ) {
 					$savings = 2 * $savings;
 					$savings_bytes = 2 * $savings_bytes;
 					$show_pro_savings = true;
@@ -215,6 +215,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$savings_bytes = 1.1 * $savings_bytes;
 					$show_pro_savings = true;
 				}
+
 				//If we have any savings
 				if( $savings > 0 && $show_pro_savings ) {
 					$upgrade_url = add_query_arg(
