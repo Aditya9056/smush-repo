@@ -200,31 +200,33 @@ if ( ! function_exists( 'smush_deactivated' ) ) {
 	}
 }
 
+if ( ! function_exists( 'smush_activated' ) ) {
 //Check if a existing install or new
-function smush_activated() {
+	function smush_activated() {
 
-	$version = get_site_option( WP_SMUSH_PREFIX . 'version' );
+		$version = get_site_option( WP_SMUSH_PREFIX . 'version' );
 
-	//If the version is not saved or if the version is not same as the current version,
-	if ( ! $version || WP_SMUSH_VERSION != $version ) {
-		global $wpdb;
-		//Check if there are any existing smush stats
-		$query   = "SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT 1";
-		$results = $wpdb->get_var( $wpdb->prepare( $query, 'wp-smpro-smush-data' ) );
+		//If the version is not saved or if the version is not same as the current version,
+		if ( ! $version || WP_SMUSH_VERSION != $version ) {
+			global $wpdb;
+			//Check if there are any existing smush stats
+			$query   = "SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT 1";
+			$results = $wpdb->get_var( $wpdb->prepare( $query, 'wp-smpro-smush-data' ) );
 
-		if ( $results ) {
-			update_option( 'wp-smush-install-type', 'existing' );
-		} else {
-			//Check for existing settings
-			if ( false !== get_site_option( WP_SMUSH_PREFIX . 'auto' ) || false !== get_option( WP_SMUSH_PREFIX . 'auto' ) ) {
+			if ( $results ) {
 				update_option( 'wp-smush-install-type', 'existing' );
+			} else {
+				//Check for existing settings
+				if ( false !== get_site_option( WP_SMUSH_PREFIX . 'auto' ) || false !== get_option( WP_SMUSH_PREFIX . 'auto' ) ) {
+					update_option( 'wp-smush-install-type', 'existing' );
+				}
 			}
+
+			//Store the plugin version in db
+			update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
 		}
 
-		//Store the plugin version in db
-		update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
 	}
-
 }
 
 
