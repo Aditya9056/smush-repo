@@ -37,6 +37,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 $prefix  = 'WP_SMUSH_';
 $version = '2.4';
 
+//Deactivate the .org version, if pro version is active
+add_action( 'admin_init', 'deactivate_smush_org' );
+
+if ( ! function_exists( 'deactivate_smush_org' ) ) {
+	function deactivate_smush_org() {
+		if ( is_plugin_active( 'wp-smush-pro/wp-smush.php' ) && is_plugin_active( 'wp-smushit/wp-smush.php' ) ) {
+			deactivate_plugins( 'wp-smushit/wp-smush.php' );
+			//Store in database, in order to show a notice on page load
+			update_site_option( 'smush_deactivated', 1 );
+		}
+	}
+}
+
 /**
  * Set the default timeout for API request and AJAX timeout
  */
@@ -170,18 +183,6 @@ if ( is_admin() ) {
 				'upload'
 			)
 		);
-	}
-}
-//Deactivate the .org version, if pro version is active
-add_action( 'admin_init', 'deactivate_smush_org' );
-
-if ( ! function_exists( 'deactivate_smush_org' ) ) {
-	function deactivate_smush_org() {
-		if ( is_plugin_active( 'wp-smush-pro/wp-smush.php' ) && is_plugin_active( 'wp-smushit/wp-smush.php' ) ) {
-			deactivate_plugins( 'wp-smushit/wp-smush.php' );
-			//Store in database, in order to show a notice on page load
-			update_site_option( 'smush_deactivated', 1 );
-		}
 	}
 }
 
