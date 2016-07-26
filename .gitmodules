@@ -8,3 +8,4 @@
 [submodule "assets/shared-ui"]
 	path = assets/shared-ui
 	url = git@bitbucket.org:incsub/shared-ui.git
+	ignore = dirty
