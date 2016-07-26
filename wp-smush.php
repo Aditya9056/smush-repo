@@ -109,15 +109,17 @@ if ( ! function_exists( 'wp_smush_email_message' ) ) {
 		return $message;
 	}
 }
-/**
- * Returns the dir path for the plugin
- *
- * @return string
- */
-function get_plugin_dir() {
-	$dir_path = plugin_dir_path( __FILE__ );
+if( !function_exists('get_plugin_dir') ) {
+	/**
+	 * Returns the dir path for the plugin
+	 *
+	 * @return string
+	 */
+	function get_plugin_dir() {
+		$dir_path = plugin_dir_path( __FILE__ );
 
-	return $dir_path;
+		return $dir_path;
+	}
 }
 
 if ( is_admin() ) {
