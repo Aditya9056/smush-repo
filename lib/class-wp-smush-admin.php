@@ -450,7 +450,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$transparent_png['convert'] = isset( $_POST['wp-smush-png_to_jpg_transparent'] ) ? 1 : 0;
 
 			//Validate Hexcode and Store it
-			$transparent_png['background'] = isset( $_POST['wp-smush-png_to_jpg_background'] ) && ctype_xdigit( $_POST['wp-smush-png_to_jpg_background'] ) ? sanitize_hex_color_no_hash( $_POST['wp-smush-png_to_jpg_background'] ) : 'ffffff';
+			$transparent_png['background'] = isset( $_POST['wp-smush-png_to_jpg_background'] ) && ctype_xdigit( $_POST['wp-smush-png_to_jpg_background'] ) ? smush_sanitize_hex_color_no_hash( $_POST['wp-smush-png_to_jpg_background'] ) : 'ffffff';
 
 			//If background is not set, or length is not proper
 			if ( empty( $transparent_png['background'] ) || strlen( $transparent_png['background'] ) < 6 ) {

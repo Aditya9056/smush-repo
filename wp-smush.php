@@ -4,7 +4,7 @@ Plugin Name: WP Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.4
+Version: 2.4.1
 Author URI: http://premium.wpmudev.org/
 Textdomain: wp-smushit
 */
@@ -231,7 +231,7 @@ if ( ! function_exists( 'smush_activated' ) ) {
 }
 
 
-if ( ! function_exists( 'sanitize_hex_color' ) ) {
+if ( ! function_exists( 'smush_sanitize_hex_color' ) ) {
 	/**
 	 * Sanitizes a hex color.
 	 *
@@ -239,7 +239,7 @@ if ( ! function_exists( 'sanitize_hex_color' ) ) {
 	 *
 	 * @return string Returns either '', a 3 or 6 digit hex color (with #), or nothing
 	 */
-	function sanitize_hex_color( $color ) {
+	function smush_sanitize_hex_color( $color ) {
 		if ( '' === $color ) {
 			return '';
 		}
@@ -251,7 +251,7 @@ if ( ! function_exists( 'sanitize_hex_color' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sanitize_hex_color_no_hash' ) ) {
+if ( ! function_exists( 'smush_sanitize_hex_color_no_hash' ) ) {
 	/**
 	 * Sanitizes a hex color without hash
 	 *
@@ -259,14 +259,14 @@ if ( ! function_exists( 'sanitize_hex_color_no_hash' ) ) {
 	 *
 	 * @return string Returns either '', a 3 or 6 digit hex color (with #), or nothing
 	 */
-	function sanitize_hex_color_no_hash( $color ) {
+	function smush_sanitize_hex_color_no_hash( $color ) {
 		$color = ltrim( $color, '#' );
 
 		if ( '' === $color ) {
 			return '';
 		}
 
-		return sanitize_hex_color( '#' . $color ) ? $color : null;
+		return smush_sanitize_hex_color( '#' . $color ) ? $color : null;
 	}
 }
 
