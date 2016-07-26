@@ -172,7 +172,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				),
 				'lossy'      => array(
 					'label' => esc_html__( 'Super-smush my images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Compress images up to 10x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
+					'desc'  => esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
 				),
 				'original'   => array(
 					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),

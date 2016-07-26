@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the WP Smush package.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Smush 2.4\n"
+"Project-Id-Version: WP Smush 2.4.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wp-smushit\n"
-"POT-Creation-Date: 2016-07-26 05:38:33+00:00\n"
+"POT-Creation-Date: 2016-07-26 08:16:24+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -86,7 +86,7 @@ msgid "Super-smush my images"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:175
-msgid "Compress images up to 10x more than regular smush with almost no visible drop in quality."
+msgid "Compress images up to 2x more than regular smush with almost no visible drop in quality."
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:178
@@ -251,23 +251,23 @@ msgstr ""
 msgid "Unable to smush image, %s"
 msgstr ""
 
-#: lib/class-wp-smush-share.php:29
+#: lib/class-wp-smush-share.php:25
 msgid "%s, you've smushed %d images and saved %s in total. Help your friends save bandwidth easily, and help me in my quest to Smush the internet!"
 msgstr ""
 
-#: lib/class-wp-smush-share.php:30
+#: lib/class-wp-smush-share.php:26
 msgid "I saved %s on my site with WP Smush ( %s ) - wanna make your website smaller and faster?"
 msgstr ""
 
-#: lib/class-wp-smush-share.php:39
+#: lib/class-wp-smush-share.php:35
 msgid "TWEET"
 msgstr ""
 
-#: lib/class-wp-smush-share.php:43
+#: lib/class-wp-smush-share.php:39
 msgid "SHARE"
 msgstr ""
 
-#: lib/class-wp-smush-share.php:47
+#: lib/class-wp-smush-share.php:43
 msgid "WhatsApp"
 msgstr ""
 
@@ -512,7 +512,7 @@ msgid "Yep, Super Smush your images for double the savings, save originals and b
 msgstr ""
 
 #: lib/class-wp-smush-ui.php:859
-msgid "Did you know WP Smush Pro delivers up to 10x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s"
+msgid "Did you know WP Smush Pro delivers up to 2x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s"
 msgstr ""
 
 #: lib/class-wp-smush-ui.php:859
