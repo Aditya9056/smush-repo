@@ -133,7 +133,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
 			// New Features Notice
-			add_action( 'admin_notices', array( $this, 'smush_updated' ) );
+//			add_action( 'admin_notices', array( $this, 'smush_updated' ) );
 
 			//Handle the smush pro dismiss features notice ajax
 			add_action( 'wp_ajax_dismiss_upgrade_notice', array( $this, 'dismiss_upgrade_notice' ) );
