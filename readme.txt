@@ -34,7 +34,7 @@ WP Smush meticulously scans every image you upload – or have already added to 
 ★★★★★ <br>
 “I optimize my photos in Photoshop, but Smush makes it so easy – it does it automatically. I can just sit back and enjoy the speed.” - <a href="https://profiles.wordpress.org/helen432">helen432</a>
 
-WP Smush is super easy to use – no confusing compression software settings! Smush images in your library one at a time or bulk smush up to 50 images at a time.  Plus, Smush can help keep your site running fast. Use automatic smush to scale and compress every new image upload without thinking about it.
+WP Smush is super easy to use – no confusing compression software settings! Smush images in your library one at a time or bulk smush up to 50 images at a time.  Plus, configure automatic smush to scale and compress some or all of your images as they are being uploaded.
 
 The faster your site loads, the more Google, Bing, Yahoo and other search engines will like it. Your site will load faster and rank higher.
 
@@ -63,6 +63,7 @@ WP Smush Pro gives you everything you'll find in WP Smush and more:
 	<li>Get even better lossless compression. We try multiple methods to squeeze every last byte out of your images.</li>
 	<li>Smush images up to 32MB. Now you can smush any image, even one’s that aren’t web optimized.</li>
 	<li>Bulk smush ALL your images with one click - no more rate limiting!</li>
+	<li>Automatically convert PNG files to lossy JPEG if extra savings are found.</li>
 	<li>Keep a backup of original un-smushed images in case you want to restore later.</li>
 	<li>24/7/365 support from the best WordPress support team on the planet.</li>
 	<li>Includes Hummingbird pagespeed booster, Uptime monitoring and security hardening.</li>
