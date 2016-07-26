@@ -346,9 +346,12 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 							if ( ! is_array( $size_savings ) ) {
 								continue;
 							}
-							$savings['bytes'] += $size_savings['bytes'];
-							$savings['size_before'] += $size_savings['size_before'];
-							$savings['size_after'] += $size_savings['size_after'];
+							//If we have savings, add all the stats
+							if( !empty( $size_savings['bytes'])) {
+								$savings['bytes'] += $size_savings['bytes'];
+								$savings['size_before'] += $size_savings['size_before'];
+								$savings['size_after'] += $size_savings['size_after'];
+							}
 						}
 					}
 				}
