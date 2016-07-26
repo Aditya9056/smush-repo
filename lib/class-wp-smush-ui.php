@@ -227,8 +227,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						$wpsmushit_admin->upgrade_url
 					);
 					$pro_only = sprintf( esc_html__( '%sTRY PRO FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' ); ?>
-					<div class="row smush-avg-pro-savings" tooltip="<?php esc_html_e("BASED ON AVERAGE FREE VS PRO SAVINGS", "wp-smushit"); ?>">
-						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PRO SAVINGS", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
+					<div class="row smush-avg-pro-savings" tooltip="<?php esc_html_e("ESTIMATE BASED ON AVERAGE SAVINGS WHEN UPGRADING TO PRO", "wp-smushit"); ?>">
+						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PRO SAVINGS ESTIMATE", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
 						<span class="float-r wp-smush-stats">
 							<span class="wp-smush-stats-human">
 								<?php echo $wpsmushit_admin->format_bytes( round( $savings_bytes, 1 ) ); ?>
@@ -323,7 +323,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
 						</span><?php
 						if( 'png_to_jpg' == $setting_key ) {
-						$bg_color = '#<input type="text" pattern=".{6,}" id="png_to_jpg_background" class="wp-smush-png_to_jpg_background" value="' . $transparent_png['background'] . '" placeholder="fff" name="' . $setting_m_key . '_background" tabindex="0" width="50px" maxlength="6" title="' . esc_html__("Enter 6 character Hexcode", "wp-smushit") . '" />';
+						$bg_color = '#<input type="text" pattern=".{6,}" id="png_to_jpg_background" class="wp-smush-png_to_jpg_background" value="' . $transparent_png['background'] . '" placeholder="ffffff" name="' . $setting_m_key . '_background" tabindex="0" width="50px" maxlength="6" title="' . esc_html__("Enter 6 character Hexcode", "wp-smushit") . '" />';
 						?>
 							<div class="wp-smush-png_to_jpg-wrap<?php echo $setting_val ? '' : ' hidden'?>">
 								<label for="png_to_jpg_transparent">
