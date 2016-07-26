@@ -666,27 +666,6 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			return false;
 		}
-
-		/**
-		 * Callback function for Array walk recursive
-		 *
-		 * @param $item Item Value
-		 * @param $key Item Key
-		 * @param $data Savings and Size
-		 *
-		 */
-		function add_stats( $item, $key, $data ) {
-			error_log( "Callback" );
-			error_log( print_r( $data, true ) );
-			if ( empty( $data ) ) {
-				return;
-			}
-			$size_k  = $data['size'];
-			$savings = $data['savings'];
-
-			$savings[ $size_k ][ $key ] = isset( $savings[ $size_k ][ $key ] ) ? $item + $savings[ $size_k ][ $key ] : $item;
-
-		}
 	}
 
 	global $wpsmush_pngjpg;
