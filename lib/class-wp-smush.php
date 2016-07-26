@@ -916,8 +916,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						}
 
 					} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
-						$status_txt = $image_count > 1 ? sprintf( __( "%d images reduced ", 'wp-smushit' ), $image_count ) : __( "Reduced ", 'wp-smushit' );
-						$status_txt .= sprintf( __( "by %s (  %01.1f%% )", 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
+						$status_txt    = $image_count > 1 ? sprintf( __( "%d images reduced ", 'wp-smushit' ), $image_count ) : __( "Reduced ", 'wp-smushit' );
+
+						$stats_percent = number_format_i18n( $percent, 2, '.', '' );
+						$stats_percent = $stats_percent > 0 ? sprintf( "(  %01.1f%% )", $stats_percent ) : '';
+						$status_txt .= sprintf( __( "by %s %s", 'wp-smushit' ), $bytes_readable, $stats_percent );
 
 						$file_path = get_attached_file( $id );
 						$size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
@@ -1360,9 +1363,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 				$dimensions = !empty( $dimensions ) ? sprintf( " <br /> (%s)", $dimensions ) : '';
 				if ( $size_value->bytes > 0 ) {
+					$percent = round( $size_value->percent, 1 );
+					$percent = $percent > 0 ? ' ( ' . $percent . '% )' : '';
 					$stats .= '<tr>
 					<td>' . strtoupper( $size_key ) . $dimensions . '</td>
-					<td>' . $this->format_bytes( $size_value->bytes ) . ' ( ' . round( $size_value->percent, 1 ) . '% )</td>
+					<td>' . $this->format_bytes( $size_value->bytes ) . $percent . '</td>
 				</tr>';
 				}
 			}
