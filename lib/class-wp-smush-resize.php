@@ -62,7 +62,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 *
 		 * @return bool
 		 */
-		public function should_resize( $id = '' ) {
+		public function should_resize( $id = '', $meta = '' ) {
 
 			//If resizing not enabled, or if both max width and height is set to 0, return
 			if ( ! $this->resize_enabled || ( $this->max_w == 0 && $this->max_h == 0 ) ) {
@@ -105,7 +105,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			}
 
 			//Get attachment metadata
-			$meta = wp_get_attachment_metadata( $id );
+			$meta = empty( $meta ) ? wp_get_attachment_metadata( $id ) : $meta;
 
 			if( !empty( $meta['width'] ) && !empty( $meta['height'] ) ) {
 				$oldW = $meta['width'];
@@ -144,7 +144,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			}
 
 			//Check if the image should be resized or not
-			$should_resize = $this->should_resize( $id );
+			$should_resize = $this->should_resize( $id, $meta );
 
 			/**
 			 * Filter whether the uploaded image should be resized or not
