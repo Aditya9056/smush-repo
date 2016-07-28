@@ -94,17 +94,15 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.4.3 =
 
-    * Fixed:
-        * Image resizing not working on image upload
+* Fixed: Image resizing not working on image upload
 
 = 2.4.2 =
 
-    * Fixed:
-        * PHP 5.2 compatibility
+* Fixed: PHP 5.2 compatibility
 
 = 2.4.1 =
 
-    * Fixed: Conflict with Customizer
+* Fixed: Conflict with Customizer
 
 = 2.4 =
 
