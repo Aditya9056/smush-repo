@@ -123,7 +123,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			$should_convert = false;
 
 			//Get the Transparency conversion settings
-			$convert_png = get_site_option( WP_SMUSH_PREFIX . 'png_to_jpg', false );
+			$convert_png = get_option( WP_SMUSH_PREFIX . 'png_to_jpg', false );
 			if ( ! $convert_png ) {
 				return $should_convert;
 			}
@@ -544,9 +544,6 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			 * Filter Background Color for Transparent PNGs
 			 */
 			$bg = apply_filters( 'wp_smush_bg', $transparent_png['background'], $id, $size );
-			echo "<pre>$size";
-			print_r( $bg );
-			echo "</pre>";
 
 			$quality = $this->get_quality( $file );
 

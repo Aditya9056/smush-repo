@@ -92,6 +92,12 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.4.4 =
+
+* Fixed:
+    * PNG to JPEG conversion not working for Multisite
+    * Wrong background was used for image sizes other then the original image
+
 = 2.4.3 =
 
 * Fixed: Image resizing not working on image upload
