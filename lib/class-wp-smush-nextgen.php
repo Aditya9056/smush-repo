@@ -168,15 +168,11 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 				foreach ( $sizes as $size ) {
 
+					echo "Smush Original";
+					var_dump( $WpSmush->smush_original );
 					//Skip Full size, if smush original is not checked
 					if ( 'full' == $size && ! $WpSmush->smush_original ) {
 						continue;
-					}
-
-					//Check if registered size is supposed to be converted or not
-					global $wpsmushit_admin;
-					if( 'full' != $size && $wpsmushit_admin->skip_image_size( $size ) ) {
-						return false;
 					}
 
 					//Check if registered size is supposed to be converted or not
@@ -333,6 +329,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			$registry = C_Component_Registry::get_instance();
 			$storage  = $registry->get_utility( 'I_Gallery_Storage' );
 
+			//Perform Resizing
 			$metadata = $this->resize_image( $pid, $image, $metadata, $storage );
 
 			//Store Meta
