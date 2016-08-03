@@ -184,7 +184,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				),
 				'png_to_jpg' => array(
 					'label' => esc_html__( 'Convert PNG to JPEG (lossy)', 'wp-smushit' ),
-					'desc'  => esc_html__( "When you optimise a PNG, Smush will check if converting it to a JPEG will reduce the file size, and if so it will automatically convert it. Note: Smush will only convert the file format if it results in smaller file size. This will change the file's name, any hardcoded URLs will need updating.", 'wp-smushit' )
+					'desc'  => sprintf( esc_html__( "When you compress a PNG file, Smush will check if converting the file to JPEG will further reduce its size. %s Note: PNGs with transparency will be ignored and Smush will only convert the file format if it results in a smaller file size. This will change the file’s name and extension, and any hard-coded URLs will need to be updated.", 'wp-smushit' ), "<br />" )
 				)
 			);
 
