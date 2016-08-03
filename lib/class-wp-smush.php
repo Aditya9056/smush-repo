@@ -140,10 +140,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Check Whether to keep exif or not
 			$opt_keep_exif   = WP_SMUSH_PREFIX . 'keep_exif';
 			$this->keep_exif = get_option( $opt_keep_exif, false );
-			var_dump("Initialisation");
-			var_dump( $this->smush_original );
-			var_dump( get_option( $opt_original, false ) );
-			var_dump( $this->validate_install() );
 		}
 
 		function admin_init() {

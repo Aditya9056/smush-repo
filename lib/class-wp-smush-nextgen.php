@@ -168,8 +168,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 				foreach ( $sizes as $size ) {
 
-					echo "Smush Original";
-					var_dump( $WpSmush->smush_original );
 					//Skip Full size, if smush original is not checked
 					if ( 'full' == $size && ! $WpSmush->smush_original ) {
 						continue;
@@ -311,7 +309,9 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @param bool|true $echo , Whether to echo the stats or not, false for auto smush
 		 */
 		function smush_image( $pid = '', $image = '', $echo = true ) {
-			global $wpsmushnextgenstats;
+			global $wpsmushnextgenstats, $WpSmush;
+
+			$WpSmush->initialise();
 
 			//Get image, if we have image id
 			if ( ! empty( $pid ) ) {
@@ -632,6 +632,9 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			if ( empty( $attachment_id ) || empty( $meta ) || ! is_object( $storage ) ) {
 				return $meta;
 			}
+
+			//Initialize resize class
+			$wpsmush_resize->initialize();
 
 			//If resizing not enabled, or if both max width and height is set to 0, return
 			if ( ! $wpsmush_resize->resize_enabled || ( $wpsmush_resize->max_w == 0 && $wpsmush_resize->max_h == 0 ) ) {
