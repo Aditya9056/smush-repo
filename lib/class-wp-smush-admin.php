@@ -872,10 +872,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smush_data['size_after'] += $conversion_savings['size_after'];
 
 			//Add the size before and after
-			$smush_data['resize_savings'] = $this->format_bytes( $smush_data['resize_savings'] );
+			$smush_data['resize_savings'] = size_format( $smush_data['resize_savings'], 1 );
 
 			//Conversion Savings
-			$smush_data['conversion_savings'] = $this->format_bytes( $smush_data['conversion_savings'] );
+			$smush_data['conversion_savings'] = size_format( $smush_data['conversion_savings'], 1 );
 
 			if ( $smush_data['size_before'] > 0 ) {
 				$smush_data['percent'] = ( $smush_data['bytes'] / $smush_data['size_before'] ) * 100;
@@ -884,7 +884,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Round off precentage
 			$smush_data['percent'] = round( $smush_data['percent'], 1 );
 
-			$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
+			$smush_data['human'] = size_format( $smush_data['bytes'], 1 );
 
 			//Update Cache
 			wp_cache_set( 'smush_global_stats', $smush_data, '', DAY_IN_SECONDS );
@@ -986,10 +986,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$smush_data['conversion_savings'] = ! empty( $conversion_savings['bytes'] ) ? $conversion_savings['bytes'] : 0;
 
 				//Add the size before and after
-				$smush_data['resize_savings'] = $this->format_bytes( $smush_data['resize_savings'] );
+				$smush_data['resize_savings'] = size_format( $smush_data['resize_savings'], 1 );
 
 				//Conversion Savings
-				$smush_data['conversion_savings'] = $this->format_bytes( $smush_data['conversion_savings'] );
+				$smush_data['conversion_savings'] = size_format( $smush_data['conversion_savings'], 1 );
 
 				if ( $smush_data['size_before'] > 0 ) {
 					$smush_data['percent'] = ( $smush_data['bytes'] / $smush_data['size_before'] ) * 100;
@@ -998,7 +998,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Round off precentage
 				$smush_data['percent'] = round( $smush_data['percent'], 1 );
 
-				$smush_data['human'] = $WpSmush->format_bytes( $smush_data['bytes'] );
+				$smush_data['human'] = size_format( $smush_data['bytes'], 1 );
 
 			}
 			//Update Cache

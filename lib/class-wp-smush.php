@@ -189,12 +189,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Check if file exists
 			if ( $file_size == 0 ) {
-				$errors->add( "image_not_found", '<p>' . sprintf( __( 'Skipped (%s), image not found. Attachment: %s', 'wp-smushit' ), $this->format_bytes( $file_size ), basename( $file_path ) ) . '</p>' );
+				$errors->add( "image_not_found", '<p>' . sprintf( __( 'Skipped (%s), image not found. Attachment: %s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
 			}
 
 			//Check size limit
 			if ( $file_size > $max_size ) {
-				$errors->add( "size_limit", '<p>' . sprintf( __( 'Skipped (%s), size limit exceeded. Attachment: %s', 'wp-smushit' ), $this->format_bytes( $file_size ), basename( $file_path ) ) . '</p>' );
+				$errors->add( "size_limit", '<p>' . sprintf( __( 'Skipped (%s), size limit exceeded. Attachment: %s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
 			}
 
 			if ( count( $errors->get_error_messages() ) ) {
@@ -898,7 +898,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				$image_count    = count( $wp_smush_data['sizes'] );
 				$bytes          = isset( $combined_stats['stats']['bytes'] ) ? $combined_stats['stats']['bytes'] : 0;
-				$bytes_readable = ! empty( $bytes ) ? $this->format_bytes( $bytes ) : '';
+				$bytes_readable = ! empty( $bytes ) ? size_format( $bytes, 1 ) : '';
 				$percent        = isset( $combined_stats['stats']['percent'] ) ? $combined_stats['stats']['percent'] : 0;
 				$percent        = $percent < 0 ? 0 : $percent;
 
@@ -925,7 +925,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$file_path = get_attached_file( $id );
 						$size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
 						if( $size > 0 ) {
-							$size       = $this->format_bytes( $size );
+							$size       = size_format( $size, 1 );
 							$image_size = sprintf( __( "<br /> Image Size: %s", "wp-smushit"), $size );
 							$status_txt .= $image_size;
 						}
@@ -1367,7 +1367,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$percent = $percent > 0 ? ' ( ' . $percent . '% )' : '';
 					$stats .= '<tr>
 					<td>' . strtoupper( $size_key ) . $dimensions . '</td>
-					<td>' . $this->format_bytes( $size_value->bytes ) . $percent . '</td>
+					<td>' . size_format( $size_value->bytes, 1 ) . $percent . '</td>
 				</tr>';
 				}
 			}
@@ -1864,6 +1864,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 */
 		function total_compression( $stats ) {
+			$stats['stats']['size_before'] = $stats['stats']['size_after'] = $stats['stats']['time'] = '';
 			foreach ( $stats['sizes'] as $size_stats ) {
 				$stats['stats']['size_before'] += !empty( $size_stats->size_before ) ? $size_stats->size_before : 0;
 				$stats['stats']['size_after'] += !empty( $size_stats->size_after) ? $size_stats->size_after : 0;

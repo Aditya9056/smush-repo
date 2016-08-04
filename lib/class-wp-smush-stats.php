@@ -302,7 +302,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 				}
 
 				if ( $format ) {
-					$savings['bytes'] = $wpsmushit_admin->format_bytes( $savings['bytes'] );
+					$savings['bytes'] = size_format( $savings['bytes'], 1 );
 				}
 
 				wp_cache_set( WP_SMUSH_PREFIX . 'resize_savings', $savings, 'wp-smush' );
@@ -357,7 +357,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 				}
 
 				if ( $format ) {
-					$savings['bytes'] = $wpsmushit_admin->format_bytes( $savings['bytes'] );
+					$savings['bytes'] = size_format( $savings['bytes'], 1 );
 				}
 
 				wp_cache_set( WP_SMUSH_PREFIX . 'pngjpg_savings', $savings, 'wp-smush' );

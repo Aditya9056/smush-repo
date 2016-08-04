@@ -232,7 +232,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PRO SAVINGS ESTIMATE", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
 						<span class="float-r wp-smush-stats">
 							<span class="wp-smush-stats-human">
-								<?php echo $wpsmushit_admin->format_bytes( round( $savings_bytes, 1 ) ); ?>
+								<?php echo size_format( $savings_bytes, 1 ); ?>
 							</span>
 							<span class="wp-smush-stats-sep">/</span>
 							<span class="wp-smush-stats-percent"><?php echo number_format_i18n( $savings, 1, '.', '' );  ?></span>%

@@ -618,7 +618,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				$nextgen_stats['size_after']  = $nextgen_stats['size_after'] - $smush_stats['stats']['size_after'];
 				$nextgen_stats['bytes']       = $nextgen_stats['size_before'] - $nextgen_stats['size_after'];
 				$nextgen_stats['percent']     = ( $nextgen_stats['bytes'] / $nextgen_stats['size_before'] ) * 100;
-				$nextgen_stats['human']       = $WpSmush->format_bytes( $nextgen_stats['bytes'] );
+				$nextgen_stats['human']       = size_format( $nextgen_stats['bytes'], 1 );
 			}
 
 			//Update Stats
