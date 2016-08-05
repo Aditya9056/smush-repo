@@ -1943,6 +1943,34 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			return path_join( $upload_path, $original_file );
 		}
+
+		/**
+		 * Check whether to show warning or not for Pro users, if they don't have a valid install
+		 *
+		 * @return bool
+		 *
+		 */
+		function show_warning() {
+			//If it's a free setup, Go back right away!
+			if ( ! $this->validate_install() ) {
+				return false;
+			}
+
+			//Check for User validation stored in DB
+			$user_valid = get_site_option( WP_SMUSH_PREFIX . 'user_valid', '' );
+
+			//Check for the API Key
+			$api_key = $this->_get_api_key();
+
+			//Do not show warning, if the user is valid or not set yet
+			if ( ! empty( $api_key ) && ( $user_valid || empty( $user_valid ) ) ) {
+				return false;
+			}
+
+			//Show notice otherwise
+			//API Key is Invalid/ Not available, or User is not valid and is using a pro setup somehow
+			return true;
+		}
 	}
 
 	global $WpSmush;

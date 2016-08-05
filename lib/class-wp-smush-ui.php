@@ -762,13 +762,18 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$page_heading = $WpSmush->validate_install() ? esc_html__( 'WP Smush Pro', 'wp-smushit' ) : esc_html__( 'WP Smush', 'wp-smushit' );
 
 			$auto_smush_message = $WpSmush->is_auto_smush_enabled() ? sprintf( esc_html__( "Automatic smushing is %senabled%s. Newly uploaded images will be automagically compressed." ), '<span class="wp-smush-auto-enabled">', '</span>' ) : sprintf( esc_html__( "Automatic smushing is %sdisabled%s. Newly uploaded images will need to be manually smushed." ), '<span class="wp-smush-auto-disabled">', '</span>' );
+
+			//User API check, and display a message if not valid
+			$user_validation = $this->get_user_validation_message();
+
 			echo '<div class="smush-page-wrap">
 				<section id="header">
 					<div class="wp-smush-page-header">
 						<h1 class="wp-smush-page-heading">' . $page_heading . '</h1>
 						<div class="wp-smush-auto-message roboto-regular">' . $auto_smush_message . '</div>
-					</div>
-				</section>';
+					</div>' .
+					$user_validation .
+				'</section>';
 			//Check if settings were updated and shoe a notice
 			$this->settings_updated();
 
@@ -856,6 +861,22 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function smush_page_footer() {
 			echo '</div><!-- End of Container wrap -->
 			</div> <!-- End of div wrap -->';
+		}
+
+		/**
+		* Returns a Warning message if API key is not validated
+		* @return string Warning Message to be displayed on Bulk Smush Page
+		*/
+		function get_user_validation_message() {
+			global $WpSmush;
+			if( !$WpSmush->show_warning() ) {
+				return '';
+			}
+			$wpmu_contact = sprintf( '<a href="%s" target="_blank">', esc_url("https://premium.wpmudev.org/contact") );
+			$recheck_link = '<a href="#" id="wp-smush-revalidate-member">';
+			$message = sprintf( esc_html__( "It looks like Smush couldn't verify your WPMU DEV membership so Pro features have been disabled for now. If you think this is an error, run a %sre-check%s or get in touch with our %ssupport team%s.", "wp-smushit"), $recheck_link, '</a>', $wpmu_contact, '</a>' ) ;
+			$content = sprintf( '<div id="wp-smush-invalid-member">%s</div>', $message );
+			return $content;
 		}
 	}
 }

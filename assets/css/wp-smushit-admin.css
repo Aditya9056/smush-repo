@@ -556,6 +556,14 @@ table.wp-smush-stats-holder tr td:first-child {
     margin: 0 0 20px;
     width: 100%;
 }
+#wp-smush-invalid-member {
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding: 15px 30px;
+}
 
 .wpmud .wp-smush-welcome.wp-smush-container {
     background-image: url(../images/welcome-notice.png);
@@ -734,7 +742,7 @@ table.wp-smush-stats-holder tr td:first-child {
 }
 
 /** Image Remaining **/
-.wp-smush-remaining {
+.wp-smush-remaining, #wp-smush-invalid-member {
     background-color: #fee696;
     color: #514a30;
     line-height: 1.7;
