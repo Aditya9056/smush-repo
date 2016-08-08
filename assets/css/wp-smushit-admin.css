@@ -1195,7 +1195,7 @@ small.smush-setting-description {
     .wpmud .wp-smush-super-smush-content {
         font-size: 11px;
         margin-left: 160px;
-        padding: 15px 20px;
+        /*padding: 15px 20px;*/
     }
 }
 
