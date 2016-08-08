@@ -680,6 +680,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$data['success'] = true;
 					$data['data']    = $response->data;
 				}
+				//If is_premium is set in response, send it over to check for member validity
+				if( !empty( $response->data ) && isset( $response->data->is_premium ) ) {
+					//Update the Membership status
+					$this->update_member_validity( $response->data->is_premium );
+				}
 			} else {
 				//Server side error, get message from response
 				$data['message'] = ! empty( $response->data ) ? $response->data : __( "Image couldn't be smushed", 'wp-smushit' );
@@ -733,6 +738,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function validate_install() {
 
+			return true;
 			if ( isset( $this->is_pro ) ) {
 				return $this->is_pro;
 			}
@@ -1957,19 +1963,38 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Check for User validation stored in DB
-			$user_valid = get_site_option( WP_SMUSH_PREFIX . 'user_valid', '' );
+			$user_valid = get_transient( WP_SMUSH_PREFIX . 'member_valid' );
 
 			//Check for the API Key
 			$api_key = $this->_get_api_key();
 
-			//Do not show warning, if the user is valid or not set yet
-			if ( ! empty( $api_key ) && ( $user_valid || empty( $user_valid ) ) ) {
+			//Do not show warning, if the user is valid or not set yet/ or if the transient is expired
+			if ( ! empty( $api_key ) && ( $user_valid || false === $user_valid ) ) {
 				return false;
 			}
 
 			//Show notice otherwise
 			//API Key is Invalid/ Not available, or User is not valid and is using a pro setup somehow
 			return true;
+		}
+
+		/**
+		 * Store the API header results in db for validation
+		 *
+		 * @param $is_premium Whether the API key sent was valid or not
+		 *
+		 */
+		function update_member_validity( $is_premium ) {
+			//If Free Setup, don't go any further
+			if( ! $this->validate_install() ) {
+				return;
+			}
+
+			//Check and update transient
+			if( !get_transient(WP_SMUSH_PREFIX . 'member_valid') ) {
+				set_transient( WP_SMUSH_PREFIX . 'member_valid',  intval( $is_premium ), DAY_IN_SECONDS );
+			}
+
 		}
 	}
 
