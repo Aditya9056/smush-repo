@@ -313,13 +313,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$handle = 'wp-smushit-admin-js';
 
 			$wp_smush_msgs = array(
-				'resmush'       => esc_html__( 'Super-Smush', 'wp-smushit' ),
-				'smush_now'     => esc_html__( 'Smush Now', 'wp-smushit' ),
-				'error_in_bulk' => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				'all_resmushed' => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
-				'restore'       => esc_html__( "Restoring image..", "wp-smushit" ),
-				'smushing'      => esc_html__( "Smushing image..", "wp-smushit" ),
-				'checking'      => esc_html__( "Checking images..", "wp-smushit" ),
+				'resmush'            => esc_html__( 'Super-Smush', 'wp-smushit' ),
+				'smush_now'          => esc_html__( 'Smush Now', 'wp-smushit' ),
+				'error_in_bulk'      => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				'all_resmushed'      => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
+				'restore'            => esc_html__( "Restoring image..", "wp-smushit" ),
+				'smushing'           => esc_html__( "Smushing image..", "wp-smushit" ),
+				'checking'           => esc_html__( "Checking images..", "wp-smushit" ),
+				'membership_valid'   => esc_html__( "We successfully verified your membership, all the Pro features should work completely. ", "wp-smushit" ),
+				'membership_invalid' => esc_html__( "Your membership couldn't be verified.", "wp-smushit" ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );

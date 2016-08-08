@@ -119,6 +119,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Send Smush Stats for pro members
 			add_filter( 'wpmudev_api_project_extra_data-912164', array( $this, 'send_smush_stats') );
 
+			//Send Smush Stats for pro members
+			add_action( 'wp_ajax_smush_show_warning', array( $this, 'show_warning_ajax') );
+
 		}
 
 		function i18n() {
@@ -1986,15 +1989,23 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function update_member_validity( $is_premium ) {
 			//If Free Setup, don't go any further
-			if( ! $this->validate_install() ) {
+			if ( ! $this->validate_install() ) {
 				return;
 			}
 
 			//Check and update transient
-			if( !get_transient(WP_SMUSH_PREFIX . 'member_valid') ) {
-				set_transient( WP_SMUSH_PREFIX . 'member_valid',  intval( $is_premium ), DAY_IN_SECONDS );
+			if ( ! get_transient( WP_SMUSH_PREFIX . 'member_valid' ) ) {
+				set_transient( WP_SMUSH_PREFIX . 'member_valid', intval( $is_premium ), DAY_IN_SECONDS );
 			}
 
+		}
+
+		/**
+		 * Send JSON response whether to show or not the warning
+		 */
+		function show_warning_ajax() {
+			$show = $this->show_warning();
+			wp_send_json( intval( $show ) );
 		}
 	}
 

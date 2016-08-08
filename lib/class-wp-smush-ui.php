@@ -873,9 +873,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				return '';
 			}
 			$wpmu_contact = sprintf( '<a href="%s" target="_blank">', esc_url("https://premium.wpmudev.org/contact") );
-			$recheck_link = '<a href="#" id="wp-smush-revalidate-member">';
+			$attr_message = esc_html__("Validating..", "wp-smushit");
+			$recheck_link = '<a href="#" id="wp-smush-revalidate-member" data-message="%s">';
 			$message = sprintf( esc_html__( "It looks like Smush couldn't verify your WPMU DEV membership so Pro features may not work correctly. If you think this is an error, run a %sre-check%s or get in touch with our %ssupport team%s.", "wp-smushit"), $recheck_link, '</a>', $wpmu_contact, '</a>' ) ;
-			$content = sprintf( '<div id="wp-smush-invalid-member">%s</div>', $message );
+			$content = sprintf( '<div id="wp-smush-invalid-member" data-message="%s"><div class="message">%s</div></div>', $attr_message, $message );
 			return $content;
 		}
 	}

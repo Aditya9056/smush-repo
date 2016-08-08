@@ -562,7 +562,45 @@ table.wp-smush-stats-holder tr td:first-child {
     font-size: 15px;
     font-weight: 500;
     margin-bottom: 20px;
+    overflow: hidden;
     padding: 15px 30px;
+    position: relative;
+}
+
+#wp-smush-invalid-member.loading-notice:before {
+    content: attr(data-message);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 5;
+    text-align: center;
+    line-height: 80px;
+    font-size: 18px;
+}
+
+#wp-smush-invalid-member.loaded-notice:before {
+    content: attr(data-message);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 5;
+    text-align: center;
+    line-height: 80px;
+    font-size: 18px;
+}
+
+#wp-smush-invalid-member.loading-notice > div, #wp-smush-invalid-member.loaded-notice > div {
+    -webkit-filter: blur(2px);
+    -moz-filter: blur(2px);
+    -o-filter: blur(2px);
+    -ms-filter: blur(2px);
+    filter: blur(2px);
 }
 
 .wpmud .wp-smush-welcome.wp-smush-container {

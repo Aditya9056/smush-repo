@@ -53,7 +53,18 @@ var resize_width = function () {
     } else {
         jQuery('.wpmud .wp-smush-pro-adv').css({'background-size': '90%'});
     }
-}
+};
+
+var remove_element = function( el, timeout ) {
+    if( typeof timeout == 'undefined' ) {
+        timeout = 100;
+    }
+    el.fadeTo(timeout, 0, function () {
+        el.slideUp(timeout, function () {
+            el.remove();
+        });
+    });
+};
 
 jQuery(function ($) {
     var smushAddParams = function (url, data) {
@@ -941,11 +952,8 @@ jQuery(function ($) {
     $('#wp-smush-welcome-box .smush-dismiss-welcome').on('click', function (e) {
         e.preventDefault();
         var $el = $(this).parents().eq(1);
-        $el.fadeTo(100, 0, function () {
-            $el.slideUp(100, function () {
-                $el.remove();
-            });
-        });
+        remove_element( $el );
+
         //Send a ajax request to save the dismissed notice option
         var param = {
             action: 'dismiss_welcome_notice'
@@ -957,11 +965,7 @@ jQuery(function ($) {
     $('body').on('click', '.wp-smush-notice .dev-icon-cross', function (e) {
         e.preventDefault();
         var $el = $(this).parent();
-        $el.fadeTo(100, 0, function () {
-            $el.slideUp(100, function () {
-                $el.remove();
-            });
-        });
+        remove_element( $el );
     });
 
     //On Click Update Settings. Check for change in settings
@@ -1023,11 +1027,7 @@ jQuery(function ($) {
 
         //Remove Parent div
         var $el = self.parent();
-        $el.fadeTo(100, 0, function () {
-            $el.slideUp(100, function () {
-                $el.remove();
-            });
-        });
+        remove_element( $el );
 
         //Remove Settings Notice
         $('.wp-smush-notice.wp-smush-settings-updated').remove();
@@ -1198,6 +1198,30 @@ jQuery(function ($) {
             resize_width();
         });
     }
+    //Handle Re-check button functionality
+    $("#wp-smush-revalidate-member").on( 'click', function( e ) {
+        e.preventDefault();
+        //Ajax Params
+        var params = {
+            action: 'smush_show_warning',
+        };
+        var link = $(this);
+        var parent = link.parents().eq(1);
+        parent.addClass('loading-notice');
+        $.get(ajaxurl, params, function ( r ) {
+            //remove the warning
+            parent.removeClass('loading-notice').addClass("loaded-notice");
+            if( 0 == r ) {
+                parent.attr('data-message', wp_smush_msgs.membership_valid );
+                remove_element( parent, 1000 );
+            }else{
+                parent.attr( 'data-message', wp_smush_msgs.membership_invalid );
+                setTimeout(function remove_loader() {
+                    parent.removeClass('loaded-notice');
+                }, 1000)
+            }
+        });
+    });
 
 });
 (function ($) {
