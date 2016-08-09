@@ -603,6 +603,11 @@ table.wp-smush-stats-holder tr td:first-child {
     filter: blur(2px);
 }
 
+#wp-smush-invalid-member a {
+    color: #514a30;
+    text-decoration: underline;
+}
+
 .wpmud .wp-smush-welcome.wp-smush-container {
     background-image: url(../images/welcome-notice.png);
     background-repeat: no-repeat;
