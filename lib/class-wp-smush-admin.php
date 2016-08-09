@@ -152,6 +152,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			add_action( 'admin_init', array( $this, 'init_settings' ) );
 
+			/**
+			 * Prints a membership validation issue notice in Media Library
+			 */
+			add_action( 'admin_notices', array( $this, 'media_library_membership_notice' ) );
+
 			$this->bulk_ui = new WpSmushBulkUi();
 
 		}
@@ -594,9 +599,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( esc_html__( "You've smushed %d images in total.", "wp-smushit" ), $stats['total_images'] ) : '';
 
 			//Send ajax response
-			$send_error ? wp_send_json_error( array( 'stats'     => $stats,
-			                                         'error_msg' => $error
-			) ) : wp_send_json_success( array( 'stats' => $stats ) );
+			$send_error ? wp_send_json_error( array(
+				'stats'     => $stats,
+				'error_msg' => $error,
+				'show_warning' => intval( $this->show_warning() )
+
+			) ) : wp_send_json_success( array(
+				'stats' => $stats,
+				'show_warning' => intval( $this->show_warning() )
+			) );
 
 		}
 
@@ -662,7 +673,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( $return ) {
 					return array( 'error' => $smush->get_error_message() );
 				} else {
-					wp_send_json_error( array( 'error_msg' => '<p class="wp-smush-error-message">' . $smush->get_error_message() . '</p>' ) );
+					wp_send_json_error( array( 'error_msg' => '<p class="wp-smush-error-message">' . $smush->get_error_message() . '</p>', 'show_warning' => intval( $this->show_warning() ) ) );
 				}
 			} else {
 				if ( $return ) {
@@ -801,7 +812,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 
-			global $wpdb, $WpSmush, $wpsmush_stats;
+			global $wpdb, $wpsmush_stats;
 
 			$smush_data = array(
 				'size_before' => 0,
@@ -1895,6 +1906,27 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			return $sizes;
 
+		}
+
+		/**
+		 * Prints the Membership Validation issue notice
+		 *
+		 */
+		function media_library_membership_notice() {
+
+			//No need to print it for free version
+			if( !$this->validate_install() ) {
+				return;
+			}
+			//Show it on Media Library page only
+			$screen = get_current_screen();
+			$screen_id = !empty( $screen ) ? $screen->id : '';
+			//Do not show notice anywhere else
+			if( empty( $screen ) || 'upload' != $screen_id ) {
+				return;
+			}
+
+			echo $this->bulk_ui->get_user_validation_message( $notice = true );
 		}
 
 	}

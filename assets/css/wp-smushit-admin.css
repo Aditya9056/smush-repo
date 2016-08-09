@@ -782,6 +782,7 @@ table.wp-smush-stats-holder tr td:first-child {
 /** Image Remaining **/
 .wp-smush-remaining, #wp-smush-invalid-member {
     background-color: #fee696;
+    border: none;
     color: #514a30;
     line-height: 1.7;
 }
@@ -902,6 +903,7 @@ table.wp-smush-stats-holder tr td:first-child {
 }
 
 .smush-final-log {
+    margin-left: 0;
     padding: 10px;
 }
 

@@ -741,6 +741,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function validate_install() {
 
+			return true;
+
 			if ( isset( $this->is_pro ) ) {
 				return $this->is_pro;
 			}
@@ -1013,8 +1015,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( $text_only ) {
 				//For ajax response
 				return array(
-					'status' => $status_txt,
-					'stats'  => $stats
+					'status'       => $status_txt,
+					'stats'        => $stats,
+					'show_warning' => intval( $this->show_warning() )
 				);
 			}
 

@@ -42,7 +42,20 @@ var update_dashoffset = function (stats) {
             circle_progress.css({'stroke-dashoffset': dashoffset});
         }
     }
-}
+};
+
+var membership_validity = function( data ) {
+    var member_validity_notice = jQuery('#wp-smush-invalid-member');
+
+    //Check for Membership warning
+    if( 'undefined' != typeof ( data.show_warning ) && member_validity_notice.length > 0 ) {
+        if( data.show_warning ) {
+            member_validity_notice.show();
+        }else{
+            member_validity_notice.hide();
+        }
+    }
+};
 /**
  * Resize Background width
  */
@@ -193,6 +206,10 @@ jQuery(function ($) {
                 if (typeof response.data != 'undefined') {
                     //Append the smush stats or error
                     self.$status.html(response.data);
+
+                    //Check whether to show membership validity notice or not
+                    membership_validity( response.data );
+
                     if (response.success && response.data !== "Not processed") {
                         self.$status.removeClass('hidden');
                         self.$button.parent().removeClass('unsmushed').addClass('smushed');
@@ -339,6 +356,7 @@ jQuery(function ($) {
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
 
+                //Update Progress on Circle
                 update_dashoffset(_res.data.stats);
 
                 //Update stats
@@ -435,6 +453,9 @@ jQuery(function ($) {
                             self.$log.removeClass('hidden');
                         }
                     }
+
+                    //Check whether to show the warning notice or not
+                    membership_validity( res.data );
 
                     if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved()) {
                         //Add a data attribute to the smush button, to stop sending ajax
