@@ -600,6 +600,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return bool|array array containing success status, and stats
 		 */
 		function _post( $file_path, $file_size ) {
+			global $wpsmushit_admin;
 
 			$data = false;
 
@@ -685,8 +686,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 				//If is_premium is set in response, send it over to check for member validity
 				if( !empty( $response->data ) && isset( $response->data->is_premium ) ) {
-					//Update the Membership status
-					$this->update_member_validity( $response->data->is_premium );
+					$wpsmushit_admin->api_headers['is_premium'] = $response->data->is_premium;
 				}
 			} else {
 				//Server side error, get message from response
@@ -1967,38 +1967,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			//Check for User validation stored in DB
-			$user_valid = get_transient( WP_SMUSH_PREFIX . 'member_valid' );
-
-			//Check for the API Key
-			$api_key = $this->_get_api_key();
-
-			//Do not show warning, if the user is valid or not set yet/ or if the transient is expired
-			if ( ! empty( $api_key ) && ( $user_valid || false === $user_valid ) ) {
+			global $wpsmushit_admin;
+			// Return. If we don't have any headers
+			if( !isset( $wpsmushit_admin->api_headers ) ) {
 				return false;
 			}
 
-			//Show notice otherwise
-			//API Key is Invalid/ Not available, or User is not valid and is using a pro setup somehow
-			return true;
-		}
-
-		/**
-		 * Store the API header results in db for validation
-		 *
-		 * @param $is_premium Whether the API key sent was valid or not
-		 *
-		 */
-		function update_member_validity( $is_premium ) {
-			//If Free Setup, don't go any further
-			if ( ! $this->validate_install() ) {
-				return;
+			//Show warning, if function says it's premium and api says not premium
+			if( isset( $wpsmushit_admin->api_headers['is_premium'] ) && ! intval( $wpsmushit_admin->api_headers['is_premium'] ) ) {
+				return true;
 			}
 
-			//Check and update transient
-			if ( ! get_transient( WP_SMUSH_PREFIX . 'member_valid' ) ) {
-				set_transient( WP_SMUSH_PREFIX . 'member_valid', intval( $is_premium ), DAY_IN_SECONDS );
-			}
+			return false;
 
 		}
 

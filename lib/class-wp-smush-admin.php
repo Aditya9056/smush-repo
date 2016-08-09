@@ -96,6 +96,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $image_sizes = array();
 
 		/**
+		 * @var string Stores the headers returned by the latest API call
+		 *
+		 */
+		public $api_headers = array();
+
+		/**
 		 * Constructor
 		 */
 		public function __construct() {
