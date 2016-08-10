@@ -279,25 +279,48 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			if ( ! $force_update ) {
 				$savings = wp_cache_get( WP_SMUSH_PREFIX . 'resize_savings', 'wp-smush' );
 			}
+
+			global $wpsmushit_admin;
+
 			//If nothing in cache, Calculate it
 			if ( empty( $savings ) || $force_update ) {
-				global $wpsmushit_admin;
 				$savings = array(
 					'bytes'       => 0,
 					'size_before' => 0,
 					'size_after'  => 0,
 				);
 
-				//Get the List of resized images
-				$resized_images = $this->resize_images();
+				$limit      = $wpsmushit_admin->query_limit();
+				$offset     = 0;
+				$query_next = true;
+				global $wpdb;
 
-				//Iterate over them
-				foreach ( $resized_images as $id ) {
-					$meta = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
-					if ( ! empty( $meta ) && ! empty( $meta['bytes'] ) ) {
-						$savings['bytes'] += $meta['bytes'];
-						$savings['size_before'] += $meta['size_before'];
-						$savings['size_after'] += $meta['size_after'];
+				while ( $query_next ) {
+
+					$resize_data = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", WP_SMUSH_PREFIX . 'resize_savings' ) );
+
+					if ( ! empty( $resize_data ) ) {
+						foreach ( $resize_data as $data ) {
+
+							if ( ! empty( $data ) ) {
+								$meta = maybe_unserialize( $data );
+								if ( ! empty( $meta ) && ! empty( $meta['bytes'] ) ) {
+									$savings['bytes'] += $meta['bytes'];
+									$savings['size_before'] += $meta['size_before'];
+									$savings['size_after'] += $meta['size_after'];
+								}
+							}
+						}
+					}
+					//Update the offset
+					$offset += $limit;
+
+					//Compare the Offset value to total images
+					if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $offset ) {
+						$query_next = false;
+					} elseif ( ! $resize_data ) {
+						//If we didn' got any results
+						$query_next = false;
 					}
 				}
 
@@ -323,7 +346,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			$savings = '';
 
 			if ( ! $force_update ) {
-				$savings = wp_cache_get( WP_SMUSH_PREFIX . 'pngjpg_savings', 'wp-smush' );
+//				$savings = wp_cache_get( WP_SMUSH_PREFIX . 'pngjpg_savings', 'wp-smush' );
 			}
 			//If nothing in cache, Calculate it
 			if ( empty( $savings ) || $force_update ) {
@@ -334,25 +357,42 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 					'size_after'  => 0,
 				);
 
-				//Get the List of resized images
-				$png_jpg_images = $this->converted_images();
+				$limit      = $wpsmushit_admin->query_limit();
+				$offset     = 0;
+				$query_next = true;
+				global $wpdb;
 
-				//Iterate over them
-				foreach ( $png_jpg_images as $id ) {
-					$meta = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
-					if ( ! empty( $meta ) ) {
-						//Iterate Over
-						foreach ( $meta as $size_savings ) {
-							if ( ! is_array( $size_savings ) ) {
-								continue;
-							}
-							//If we have savings, add all the stats
-							if( !empty( $size_savings['bytes'])) {
-								$savings['bytes'] += $size_savings['bytes'];
-								$savings['size_before'] += $size_savings['size_before'];
-								$savings['size_after'] += $size_savings['size_after'];
+				while ( $query_next ) {
+
+					$conversion_savings = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", WP_SMUSH_PREFIX . 'pngjpg_savings' ) );
+
+					if ( ! empty( $conversion_savings ) ) {
+						foreach ( $conversion_savings as $data ) {
+
+							if ( ! empty( $data ) ) {
+								$meta = maybe_unserialize( $data );
+
+								if( is_array( $meta ) ) {
+									foreach ( $meta as $size ) {
+										if ( ! empty( $size ) && is_array( $size ) ) {
+											$savings['bytes'] += $size['bytes'];
+											$savings['size_before'] += $size['size_before'];
+											$savings['size_after'] += $size['size_after'];
+										}
+									}
+								}
 							}
 						}
+					}
+					//Update the offset
+					$offset += $limit;
+
+					//Compare the Offset value to total images
+					if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $offset ) {
+						$query_next = false;
+					} elseif ( ! $conversion_savings ) {
+						//If we didn' got any results
+						$query_next = false;
 					}
 				}
 
@@ -427,11 +467,11 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		 */
 		function converted_images() {
 			global $wpsmushit_admin;
-			$limit          = $wpsmushit_admin->query_limit();
-			$limit          = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
-			$get_posts      = true;
+			$limit            = $wpsmushit_admin->query_limit();
+			$limit            = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
+			$get_posts        = true;
 			$converted_images = array();
-			$args           = array(
+			$args             = array(
 				'fields'                 => 'ids',
 				'post_type'              => 'attachment',
 				'post_status'            => 'inherit',
