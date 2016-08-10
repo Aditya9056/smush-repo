@@ -1514,12 +1514,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 
-			//Check for backup of image sizes
-			foreach ( $attachment_data['sizes'] as $image_size ) {
-				$size_path        = path_join( dirname( $file ), $image_size['file'] );
-				$size_backup_path = $wpsmushit_admin->get_image_backup_path( $size_path );
-				if ( file_exists( $size_backup_path ) ) {
-					return true;
+			if( !empty( $attachment_data['sizes'] ) ) {
+				//Check for backup of image sizes
+				foreach ( $attachment_data['sizes'] as $image_size ) {
+					$size_path        = path_join( dirname( $file ), $image_size['file'] );
+					$size_backup_path = $wpsmushit_admin->get_image_backup_path( $size_path );
+					if ( file_exists( $size_backup_path ) ) {
+						return true;
+					}
 				}
 			}
 

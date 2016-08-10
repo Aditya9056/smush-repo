@@ -560,6 +560,7 @@ table.wp-smush-stats-holder tr td:first-child {
     border-radius: 5px;
     font-family: 'Roboto', sans-serif;
     font-size: 15px;
+    -webkit-font-smoothing: antialiased;
     font-weight: 500;
     margin-bottom: 20px;
     overflow: hidden;
