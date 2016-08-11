@@ -99,6 +99,10 @@ Smush button transformation
     margin-top: 30px;
 }
 
+.wpmud .bulk-smush-wrapper.wp-smush-container:not(.wp-smush-pro-install) {
+    padding-bottom: 0;
+}
+
 .wp-smush-pro.smush-settings-wrapper {
     width: 100%;
 }
@@ -556,6 +560,7 @@ table.wp-smush-stats-holder tr td:first-child {
     margin: 0 0 20px;
     width: 100%;
 }
+
 #wp-smush-invalid-member {
     border-radius: 5px;
     font-family: 'Roboto', sans-serif;

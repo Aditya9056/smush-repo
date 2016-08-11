@@ -833,14 +833,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$offset     = 0;
 			$query_next = true;
 
+			$supersmushed_count         = 0;
+			$smush_data['total_images'] = 0;
+			$smush_data['id']           = array();
+
 			while ( $query_next ) {
 
 				$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) );
-
 				if ( ! empty( $global_data ) ) {
-					$supersmushed_count = 0;
-					$smush_data['total_images']       = 0;
-					$smush_data['id']                 = array();
 					foreach ( $global_data as $data ) {
 						$smush_data['id'][] = $data->post_id;
 						if( !empty( $data->meta_value ) ) {
@@ -914,7 +914,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smush_data['human'] = size_format( $smush_data['bytes'], 1 );
 
 			//Setup Smushed attachment ids
-			$this->smushed_attachments = $smush_data['id'];
+			$this->smushed_attachments = !empty( $smush_data['id'] ) ? $smush_data['id'] : '';
 
 			//Super Smushed attachment count
 			$this->super_smushed = $supersmushed_count;
