@@ -632,7 +632,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				'timeout'    => WP_SMUSH_TIMEOUT,
 				'user-agent' => WP_SMUSH_UA,
 			);
-			$result  = wp_remote_get( $api_url, $args );
+			$result  = wp_remote_post( $api_url, $args );
 
 			//Close file connection
 			fclose( $file );

@@ -1,6 +1,6 @@
 === WP Smush - Image Optimization ===
 Plugin Name: WP Smush - Image Optimization
-Version: 2.4.4
+Version: 2.4.5
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
@@ -91,6 +91,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 
 == Changelog ==
+
+= 2.4.5 =
+
+* Fixed:
+    * Error "No file content sent"
 
 = 2.4.4 =
 
