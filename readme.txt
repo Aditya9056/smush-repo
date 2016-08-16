@@ -99,6 +99,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Stats Calculation, Use custom query to retrieve data
     * Added check for invalid membership ( Pro Users )
     * Fixed warning and notices
+* Removed option to convert Transparent PNGs to JPEGs ( Pro Users )
 
 = 2.4.3 =
 
