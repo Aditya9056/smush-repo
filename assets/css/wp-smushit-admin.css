@@ -732,7 +732,7 @@ table.wp-smush-stats-holder tr td:first-child {
 .wp-smush-upload-images {
     display: block;
     overflow: hidden;
-    padding: 10px 0;
+    padding: 10px 0 40px;
 }
 
 /** Ongoing Bulk Smush **/
