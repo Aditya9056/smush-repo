@@ -92,6 +92,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.4.6 =
+
+* Fixed:
+    * Double slash in file path causing 403 on some of the sites
+
 = 2.4.5 =
 
 * Fixed:

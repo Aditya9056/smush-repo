@@ -645,7 +645,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return array|string|void
 		 */
-		function smush_single( $attachment_id, $return = false ) {
+		function  smush_single( $attachment_id, $return = false ) {
 
 			global $WpSmush, $wpsmush_pngjpg;
 
@@ -1693,7 +1693,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( method_exists( 'WDEV_Plugin_Ui', 'load' ) ) {
 
 					//Load Shared UI
-					WDEV_Plugin_Ui::load( WP_SMUSH_URL . '/assets/shared-ui/', false );
+					WDEV_Plugin_Ui::load( WP_SMUSH_URL . 'assets/shared-ui/', false );
 
 					if ( ( 'media_page_wp-smush-bulk' != $current_page && 'gallery_page_wp-smush-nextgen-bulk' != $current_page ) ) {
 

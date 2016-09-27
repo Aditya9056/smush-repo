@@ -17,6 +17,9 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-share.php';
 //Include Image backup class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-backup.php';
 
+//Include Smush Async class
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-async.php';
+
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
@@ -121,6 +124,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Send Smush Stats for pro members
 			add_action( 'wp_ajax_smush_show_warning', array( $this, 'show_warning_ajax') );
+
+			//Instanitate the Async class
+			add_action( 'plugins_loaded', array( $this, 'wp_smush_async' ) );
+
+			//Handle the Async optimisation
+			add_action( 'wp_async_wp_generate_attachment_metadata', array( $this, 'wp_smush_handle_async' ) );
 
 		}
 
@@ -298,6 +307,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		/**
 		 * Optimises the image sizes
+		 *
+		 * Note: Function name is bit confusing, it is for optimisation, and calls the resizing function as well
 		 *
 		 * Read the image paths from an attachment's meta data and process each image
 		 * with wp_smushit().
@@ -999,6 +1010,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$show_button = true;
 				}
 
+			} elseif ( get_transient( 'smush-in-progress-' . $id ) ) {
+				// the status
+				$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
+
+				//Set WP Smush data to true in order to show the text
+				$wp_smush_data = true;
+
+				// we need to show the smush button
+				$show_button = false;
+
+				// the button text
+				$button_txt = '';
 			} else {
 
 				// the status
@@ -1988,6 +2011,41 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function show_warning_ajax() {
 			$show = $this->show_warning();
 			wp_send_json( intval( $show ) );
+		}
+
+		/**
+		 * Initialize the Smush Async class
+		 */
+		function wp_smush_async() {
+			//Don't load the Async task, if user not logged in or not in backend
+			if( !is_user_logged_in() || ! is_admin() ) {
+				return;
+			}
+			//Instanitate Class
+			new WpSmushAsync();
+		}
+
+		/**
+		 * Send a smush request for the attachment
+		 *
+		 * @param $id Attachment ID
+		 */
+		function wp_smush_handle_async( $id ) {
+
+			//If we don't have image id, or the smush is already in progress for the image, return
+			if( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) ) {
+				return;
+			}
+			//Set a transient to avoid multiple request
+			set_transient( 'smush-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
+
+			global $wpsmushit_admin;
+			$status = $wpsmushit_admin->smush_single( $id, true );
+
+			//remove the transient
+			if( $status ) {
+				delete_transient( 'smush-in-progress-' . $id );
+			}
 		}
 	}
 
