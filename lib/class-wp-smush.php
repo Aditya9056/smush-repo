@@ -560,10 +560,23 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function smush_image( $meta, $ID = null ) {
 
+			//Check if Async is Enabled, Do not run
+			if ( defined( 'WP_SMUSH_ASYNC' ) && WP_SMUSH_ASYNC ) {
+				return $meta;
+			}
+
 			//Return directly if not a image
 			if ( ! wp_attachment_is_image( $ID ) ) {
 				return $meta;
 			}
+
+			//If the smushing transient is already set, return the status
+			if ( get_transient( 'smush-in-progress-' . $ID ) ) {
+				return $meta;
+			}
+
+			//Set a transient to avoid multiple request
+			set_transient( 'smush-in-progress-' . $ID, true, 5 * MINUTE_IN_SECONDS );
 
 			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_backup;
 
@@ -597,6 +610,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//remove the smush metadata
 				delete_post_meta( $ID, $this->smushed_meta_key );
 			}
+
+			//Delete Transient
+			delete_transient( 'smush-in-progress-' . $ID );
 
 			return $meta;
 		}
@@ -2017,11 +2033,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Initialize the Smush Async class
 		 */
 		function wp_smush_async() {
+
 			//Don't load the Async task, if user not logged in or not in backend
-			if( !is_user_logged_in() || ! is_admin() ) {
+			if ( ! is_user_logged_in() || ! is_admin() ) {
 				return;
 			}
-			//Instanitate Class
+
+			//Check if Async is disabled
+			if ( defined( 'WP_SMUSH_ASYNC' ) && ! WP_SMUSH_ASYNC ) {
+				return;
+			}
+
+			//Instantiate Class
 			new WpSmushAsync();
 		}
 
@@ -2033,17 +2056,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function wp_smush_handle_async( $id ) {
 
 			//If we don't have image id, or the smush is already in progress for the image, return
-			if( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) ) {
+			if ( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) ) {
 				return;
 			}
+
 			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
+			set_transient( 'smush-in-progress-' . $id, true, 5 * MINUTE_IN_SECONDS );
 
 			global $wpsmushit_admin;
 			$status = $wpsmushit_admin->smush_single( $id, true );
 
 			//remove the transient
-			if( $status ) {
+			if ( $status ) {
 				delete_transient( 'smush-in-progress-' . $id );
 			}
 		}

@@ -56,7 +56,7 @@ if ( ! class_exists( 'WpSmushAsync' ) ) {
 			$id       = ! empty( $_POST['id'] ) ? $_POST['id'] : '';
 
 			//Get metadata from $_POST
-			if ( ! empty( $metadata ) ) {
+			if ( ! empty( $metadata ) && wp_attachment_is_image( $id ) ) {
 				// Allow the Asynchronous task to run
 				do_action( "wp_async_$this->action", $id );
 			}

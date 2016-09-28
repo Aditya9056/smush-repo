@@ -380,7 +380,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
 
-
 		}
 
 		/**
@@ -510,6 +509,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Processes the Smush request and sends back the next id for smushing
+		 *
+		 * Bulk Smushing Handler
+		 *
 		 */
 		function process_smush_request() {
 
@@ -543,31 +545,41 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$attachment_id = (int) ( $_REQUEST['attachment_id'] );
 
-			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
+			//Proceed only if Smushing Transient is not set for the given attachment id
+			if ( ! get_transient( 'smush-in-progress-' . $attachment_id ) ) {
 
-			//Resize the dimensions of the image
-			/**
-			 * Filter whether the existing image should be resized or not
-			 *
-			 * @since 2.3
-			 *
-			 * @param bool $should_resize , Set to True by default
-			 *
-			 * @param $attachment_id Image Attachment ID
-			 *
-			 */
-			if ( $should_resize = apply_filters( 'wp_smush_resize_media_image', true, $attachment_id ) ) {
-				$updated_meta  = $this->resize_image( $attachment_id, $original_meta );
-				$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
-				wp_update_attachment_metadata( $attachment_id, $original_meta );
+				//Set a transient to avoid multiple request
+				set_transient( 'smush-in-progress-' . $attachment_id, true, 5 * MINUTE_IN_SECONDS );
+
+				$original_meta = wp_get_attachment_metadata( $attachment_id, true );
+
+				//Resize the dimensions of the image
+				/**
+				 * Filter whether the existing image should be resized or not
+				 *
+				 * @since 2.3
+				 *
+				 * @param bool $should_resize , Set to True by default
+				 *
+				 * @param $attachment_id Image Attachment ID
+				 *
+				 */
+				if ( $should_resize = apply_filters( 'wp_smush_resize_media_image', true, $attachment_id ) ) {
+					$updated_meta  = $this->resize_image( $attachment_id, $original_meta );
+					$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
+					wp_update_attachment_metadata( $attachment_id, $original_meta );
+				}
+
+				global $wpsmush_pngjpg;
+
+				//Convert PNGs to JPG
+				$original_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
+
+				$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 			}
 
-			global $wpsmush_pngjpg;
-
-			//Convert PNGs to JPG
-			$original_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
-
-			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
+			//Delete Transient
+			delete_transient( 'smush-in-progress-' . $attachment_id );
 
 			//Get the updated Global Stats
 			$this->setup_global_stats( true );
@@ -604,12 +616,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Send ajax response
 			$send_error ? wp_send_json_error( array(
-				'stats'     => $stats,
-				'error_msg' => $error,
+				'stats'        => $stats,
+				'error_msg'    => $error,
 				'show_warning' => intval( $this->show_warning() )
 
 			) ) : wp_send_json_success( array(
-				'stats' => $stats,
+				'stats'        => $stats,
 				'show_warning' => intval( $this->show_warning() )
 			) );
 
@@ -647,6 +659,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function  smush_single( $attachment_id, $return = false ) {
 
+			//If the smushing transient is already set, return the status
+			if ( get_transient( 'smush-in-progress-' . $attachment_id ) ) {
+				//Get the button status
+				$status = $this->set_status( $attachment_id, false, true );
+				if ( $return ) {
+					return $status;
+				} else {
+					wp_send_json_success( $status );
+				}
+			}
+
+			//Set a transient to avoid multiple request
+			set_transient( 'smush-in-progress-' . $attachment_id, true, 5 * MINUTE_IN_SECONDS );
+
 			global $WpSmush, $wpsmush_pngjpg;
 
 			$attachment_id = absint( (int) ( $attachment_id ) );
@@ -669,6 +695,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Get the button status
 			$status = $WpSmush->set_status( $attachment_id, false, true );
+
+			delete_transient( 'smush-in-progress-' . $attachment_id );
 
 			//Send Json response if we are not suppose to return the results
 
