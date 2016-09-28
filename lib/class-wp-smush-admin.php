@@ -657,7 +657,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return array|string|void
 		 */
-		function  smush_single( $attachment_id, $return = false ) {
+		function smush_single( $attachment_id, $return = false ) {
 
 			//If the smushing transient is already set, return the status
 			if ( get_transient( 'smush-in-progress-' . $attachment_id ) ) {

@@ -2060,16 +2060,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
-			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $id, true, 5 * MINUTE_IN_SECONDS );
+			//If auto Smush is disabled
+			if ( ! $this->is_auto_smush_enabled() ) {
+				return;
+			}
 
 			global $wpsmushit_admin;
-			$status = $wpsmushit_admin->smush_single( $id, true );
+			$wpsmushit_admin->smush_single( $id, true );
 
-			//remove the transient
-			if ( $status ) {
-				delete_transient( 'smush-in-progress-' . $id );
-			}
 		}
 	}
 
