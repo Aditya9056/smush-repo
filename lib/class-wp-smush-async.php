@@ -14,8 +14,11 @@ if ( ! class_exists( 'WpSmushAsync' ) ) {
 
 	class WpSmushAsync extends WP_Async_Task {
 
+		protected  $argument_count = 2;
+		protected  $priority       = 12;
 		/**
-		 * Whenever a attachment metadata is updated
+		 * Whenever a attachment metadata is generated
+		 * Had to be hooked on generate and not update, else it goes in infinite loop
 		 *
 		 * @var string
 		 */

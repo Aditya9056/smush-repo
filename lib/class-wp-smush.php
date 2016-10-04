@@ -89,10 +89,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			/**
 			 * Smush image (Auto Smush ) when `wp_update_attachment_metadata` filter is fired
 			 */
-			add_filter( 'wp_update_attachment_metadata', array(
-				$this,
-				'smush_image'
-			), 15, 2 );
+//			add_filter( 'wp_update_attachment_metadata', array(
+//				$this,
+//				'smush_image'
+//			), 15, 2 );
 
 			//Delete Backup files
 			add_action( 'delete_attachment', array(

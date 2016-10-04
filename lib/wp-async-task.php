@@ -84,6 +84,7 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 			if ( $auth_level & self::LOGGED_IN ) {
 				add_action( "admin_post_wp_async_$this->action", array( $this, 'handle_postback' ) );
 			}
+
 			if ( $auth_level & self::LOGGED_OUT ) {
 				add_action( "admin_post_nopriv_wp_async_$this->action", array( $this, 'handle_postback' ) );
 			}
@@ -140,7 +141,7 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 				$request_args = array(
 					'timeout'   => 0.01,
 					'blocking'  => false,
-					'sslverify' => apply_filters( 'https_local_ssl_verify', true ),
+					'sslverify' => false,
 					'body'      => $this->_body_data,
 					'headers'   => array(
 						'cookie' => implode( '; ', $cookies ),
@@ -169,7 +170,9 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 				$this->run_action();
 			}
 
-			add_filter( 'wp_die_handler', function() { die(); } );
+			add_filter( 'wp_die_handler', function () {
+				die();
+			} );
 			wp_die();
 		}
 
@@ -230,6 +233,7 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 				$action = substr( $action, 7 );
 			}
 			$action = "wp_async_$action";
+
 			return $action;
 		}
 
