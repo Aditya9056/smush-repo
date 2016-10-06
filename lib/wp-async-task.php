@@ -113,7 +113,10 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 				add_action( 'shutdown', array( $this, 'launch_on_shutdown' ) );
 			}
 
-			return $data['metadata'];
+			//If we have image metadata return it
+			if( !empty( $data['metadata'] ) ) {
+				return $data['metadata'];
+			}
 		}
 
 		/**
@@ -164,9 +167,6 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 		 */
 		public function handle_postback() {
 			if ( isset( $_POST['_nonce'] ) && $this->verify_async_nonce( $_POST['_nonce'] ) ) {
-				if ( ! is_user_logged_in() ) {
-					$this->action = "nopriv_$this->action";
-				}
 				$this->run_action();
 			}
 
