@@ -2073,7 +2073,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Instantiate Class
 			new WpSmushAsync();
-//			new WpSmushEditorAsync();
+			new WpSmushEditorAsync();
 		}
 
 		/**
