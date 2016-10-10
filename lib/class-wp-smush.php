@@ -1647,7 +1647,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( empty( $attachment_path ) ) {
 				return false;
 			}
-			$path        = pathinfo( $attachment_path );
+			$path = pathinfo( $attachment_path );
+
+			//If we don't have complete filename return false
+			if ( empty( $path['extension'] ) ) {
+				return false;
+			}
+
 			$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . ".bak." . $path['extension'];
 
 			return $backup_name;
