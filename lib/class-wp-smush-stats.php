@@ -168,8 +168,9 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 		 *
 		 */
 		function media_super_smush_count( $return_ids = false ) {
+
 			global $wpsmushit_admin;
-			$lossy_update = false;
+
 			//Check if we have updated the stats for existing images, One time
 			if ( ! $lossy_updated = get_option( WP_SMUSH_PREFIX . 'lossy-updated' ) ) {
 
@@ -181,6 +182,7 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 					}
 				}
 			}
+
 			//Get all the attachments with wp-smush-lossy
 			$limit         = $wpsmushit_admin->query_limit();
 			$get_posts     = true;

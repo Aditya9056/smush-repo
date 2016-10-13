@@ -216,11 +216,11 @@ if ( ! function_exists( 'smush_activated' ) ) {
 			$results = $wpdb->get_var( $wpdb->prepare( $query, 'wp-smpro-smush-data' ) );
 
 			if ( $results ) {
-				update_option( 'wp-smush-install-type', 'existing' );
+				update_site_option( 'wp-smush-install-type', 'existing' );
 			} else {
 				//Check for existing settings
 				if ( false !== get_site_option( WP_SMUSH_PREFIX . 'auto' ) || false !== get_option( WP_SMUSH_PREFIX . 'auto' ) ) {
-					update_option( 'wp-smush-install-type', 'existing' );
+					update_site_option( 'wp-smush-install-type', 'existing' );
 				}
 			}
 

@@ -110,7 +110,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Outputs the Smush stats for the site
 		 */
 		function smush_stats_container() {
-			global $WpSmush, $wpsmushit_admin, $wpsmush_stats;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_stats, $wpsmush_settings;
 
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
 			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? $wpsmushit_admin->total_count - ( $resmush_count + $wpsmushit_admin->remaining_count ) : $wpsmushit_admin->smushed_count;
@@ -184,7 +184,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					if( !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) {
 						echo $wpsmushit_admin->stats['resize_savings'];
 					}else{
-						if( !get_option( WP_SMUSH_PREFIX . 'resize' ) ) {
+						if( !$wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize' ) ) {
 							//If Not enabled, Add a enable button
 							printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
 						}else{
@@ -253,7 +253,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Outputs the advanced settings for Pro users, Disabled for basic users by default
 		 */
 		function advanced_settings( $configure_screen = false ) {
-			global $WpSmush, $wpsmushit_admin;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
 
 			//Content for the End of box container
 			$div_end =
@@ -300,13 +300,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				echo "<hr />";
 			}
 
-			$transparent_png = get_option( WP_SMUSH_PREFIX . 'transparent_png', array('convert' => '', 'background' => '' ) );
-
 			//Iterate Over all the available settings, and print a row for each of them
 			foreach ( $pro_settings as $setting_key ) {
 				if ( isset( $wpsmushit_admin->settings[ $setting_key ] ) ) {
 					$setting_m_key = WP_SMUSH_PREFIX . $setting_key;
-					$setting_val   = $WpSmush->validate_install() ? get_option( $setting_m_key, false ) : 0; ?>
+					$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0; ?>
 					<div class='wp-smush-setting-row wp-smush-advanced'>
 						<label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
 						<span
@@ -340,7 +338,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Process and display the options form
 		 */
 		function options_ui( $configure_screen = false ) {
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpsmush_settings;
 			echo '<div class="box-container">
 				<form id="wp-smush-settings-form" method="post">';
 
@@ -350,10 +348,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//Placeholder width and Height
 			$p_width = $p_height = 2048;
 
+			//Use settings networkwide,@uses get_site_option() and not get_option
+			$opt_networkwide = WP_SMUSH_PREFIX . 'networkwide';
+			$opt_networkwide_val = get_site_option( $opt_networkwide, true );
+
 			//Smush auto key
 			$opt_auto = WP_SMUSH_PREFIX . 'auto';
 			//Auto value
-			$opt_auto_val = get_option( $opt_auto, false );
+			$opt_auto_val = $wpsmush_settings->get_setting( $opt_auto, false );
 
 			//If value is not set for auto smushing set it to 1
 			if ( $opt_auto_val === false ) {
@@ -363,21 +365,41 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			//Keep Exif
 			$opt_keep_exif = WP_SMUSH_PREFIX . 'keep_exif';
-			$opt_keep_exif_val = get_option( $opt_keep_exif, false );
+			$opt_keep_exif_val = $wpsmush_settings->get_setting( $opt_keep_exif, false );
 
 			 //Resize images
 			$opt_resize = WP_SMUSH_PREFIX . 'resize';
-			$opt_resize_val = get_option( $opt_resize, false );
+			$opt_resize_val = $wpsmush_settings->get_setting( $opt_resize, false );
 
 			//Dimensions
-			$resize_sizes = get_option( WP_SMUSH_PREFIX . 'resize_sizes', array( 'width' => '', 'height' => '' ) );
+			$resize_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes', array( 'width' => '', 'height' => '' ) );
 
 			//Additional Image sizes
-			$image_sizes = get_option( WP_SMUSH_PREFIX . 'image_sizes' );
+			$image_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 			$sizes = $wpsmushit_admin->image_dimensions();
-			 ?>
 
-			<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
+			//Option to enable/disable networkwide settings
+			if( is_network_admin() ) { ?>
+				<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
+				<div class='wp-smush-setting-row wp-smush-basic'>
+					<label class="inline-label" for="<?php echo $opt_networkwide; ?>" tabindex="0">
+						<span class="wp-smush-setting-label">
+							<?php echo $wpsmushit_admin->settings['networkwide']['label']; ?>
+						</span><br/>
+						<small class="smush-setting-description">
+							<?php echo $wpsmushit_admin->settings['networkwide']['desc']; ?>
+						</small>
+					</label>
+					<span class="toggle float-r">
+						<input type="checkbox" class="toggle-checkbox"
+					       id="<?php echo $opt_networkwide; ?>"
+					       name="<?php echo $opt_networkwide; ?>" <?php checked( $opt_networkwide_val, 1, true ); ?> value="1" tabindex="0">
+						<label class="toggle-label" for="<?php echo $opt_networkwide; ?>"></label>
+					</span>
+				</div>
+
+				<hr /><?php
+			} ?>
 			<div class='wp-smush-setting-row wp-smush-basic'>
 				<label class="inline-label" for="<?php echo $opt_auto; ?>" tabindex="0">
 					<span class="wp-smush-setting-label">
@@ -468,7 +490,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function ui() {
 
-			global $WpSmush, $wpsmushit_admin;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
 
 			if( !$WpSmush->validate_install() ) {
 				//Reset Transient
@@ -476,39 +498,44 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 
 			$this->smush_page_header();
+			$is_network = is_network_admin();
 
-			//Show Configure screen for only a new installation and for only network admins
-			if ( ( 1 != get_site_option( 'wp-smush-hide_smush_welcome' ) && 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && 0 >= $wpsmushit_admin->smushed_count && is_super_admin() ) {
-				echo '<div class="block float-l smush-welcome-wrapper">';
-				$this->welcome_screen();
-				echo '</div>';
-			} ?>
-
-			<!-- Bulk Smush Progress Bar -->
-			<div class="wp-smushit-container-left col-half float-l"><?php
-				//Bulk Smush Container
-				$this->bulk_smush_container();
-				?>
-			</div>
-
-			<!-- Stats -->
-			<div class="wp-smushit-container-right col-half float-l"><?php
-				//Stats
-				$this->smush_stats_container();
-				if ( ! $WpSmush->validate_install() ) {
-					/**
-					 * Allows to Hook in Additional Containers after Stats Box for free version
-					 * Pro Version has a full width settings box, so we don't want to do it there
-					 */
-					do_action( 'wp_smush_after_stats_box' );
+			if( !$is_network ) {
+				//Show Configure screen for only a new installation and for only network admins
+				if ( ( 1 != get_site_option( 'wp-smush-hide_smush_welcome' ) && 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && 0 >= $wpsmushit_admin->smushed_count && is_super_admin() ) {
+					echo '<div class="block float-l smush-welcome-wrapper">';
+					$this->welcome_screen();
+					echo '</div>';
 				} ?>
-			</div><!-- End Of Smushit Container right -->
 
-			<!-- Stats Share Widget -->
-			<div class="row"><?php
-				global $wpsmush_share;
-				$wpsmush_share->share_widget(); ?>
-			</div>
+				<!-- Bulk Smush Progress Bar -->
+				<div class="wp-smushit-container-left col-half float-l"><?php
+					//Bulk Smush Container
+					$this->bulk_smush_container();
+					?>
+				</div>
+
+				<!-- Stats -->
+				<div class="wp-smushit-container-right col-half float-l"><?php
+					//Stats
+					$this->smush_stats_container();
+					if ( ! $WpSmush->validate_install() ) {
+						/**
+						 * Allows to Hook in Additional Containers after Stats Box for free version
+						 * Pro Version has a full width settings box, so we don't want to do it there
+						 */
+						do_action( 'wp_smush_after_stats_box' );
+					} ?>
+				</div><!-- End Of Smushit Container right -->
+
+				<!-- Stats Share Widget -->
+				<div class="row"><?php
+					global $wpsmush_share;
+					$wpsmush_share->share_widget(); ?>
+				</div>
+			<?php
+			//End of "!is_network()' check
+			}?>
 
 			<!-- Settings -->
 			<div class="row"><?php
@@ -722,9 +749,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Displays a admin notice for settings update
 		 */
 		function settings_updated() {
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpsmush_settings;
 			//Show Setttings Saved message
-			if ( 1 == get_option( 'wp-smush-settings_updated', false ) ) {
+			if ( 1 == $wpsmush_settings->get_setting( 'wp-smush-settings_updated', false ) ) {
 
 				//Default message
 				$message = esc_html__( "Your settings have been updated!", "wp-smushit" );

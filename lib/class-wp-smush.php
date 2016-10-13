@@ -1,4 +1,7 @@
 <?php
+//Settings Class
+require_once WP_SMUSH_DIR . "lib/class-wp-smush-settings.php";
+
 //Migration Class
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-migrate.php";
 
@@ -145,17 +148,20 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Initialise the setting variables
 		 */
 		function initialise() {
+
+			global $wpsmush_settings;
+
 			//Check if Lossy enabled
 			$opt_lossy           = WP_SMUSH_PREFIX . 'lossy';
-			$this->lossy_enabled = $this->validate_install() && get_option( $opt_lossy, false );
+			$this->lossy_enabled = $this->validate_install() && $wpsmush_settings->get_setting( $opt_lossy, false );
 
 			//Check if Smush Original enabled
 			$opt_original         = WP_SMUSH_PREFIX . 'original';
-			$this->smush_original = $this->validate_install() && get_option( $opt_original, false );
+			$this->smush_original = $this->validate_install() && $wpsmush_settings->get_setting( $opt_original, false );
 
 			//Check Whether to keep exif or not
 			$opt_keep_exif   = WP_SMUSH_PREFIX . 'keep_exif';
-			$this->keep_exif = get_option( $opt_keep_exif, false );
+			$this->keep_exif = $wpsmush_settings->get_setting( $opt_keep_exif, false );
 		}
 
 		function admin_init() {
@@ -324,8 +330,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function resize_from_meta_data( $meta, $ID = null ) {
 
+			global $wpsmush_settings;
+
 			//Flag to check, if original size image should be smushed or not
-			$original   = get_option( WP_SMUSH_PREFIX . 'original' );
+			$original   = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'original' );
 			$smush_full = ( $this->validate_install() && $original == 1 ) ? true : false;
 
 			$errors = new WP_Error();
@@ -582,7 +590,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Set a transient to avoid multiple request
 			set_transient( 'smush-in-progress-' . $ID, true, 5 * MINUTE_IN_SECONDS );
 
-			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_backup;
+			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_settings;
 
 			//Check if auto is enabled
 			$auto_smush = $this->is_auto_smush_enabled();
@@ -600,7 +608,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//Check for use of http url, (Hostgator mostly)
 				$use_http = wp_cache_get( WP_SMUSH_PREFIX . 'use_http', 'smush' );
 				if ( ! $use_http ) {
-					$use_http = get_option( WP_SMUSH_PREFIX . 'use_http' );
+					$use_http = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'use_http' );
 					wp_cache_add( WP_SMUSH_PREFIX . 'use_http', $use_http, 'smush' );
 				}
 				if ( $use_http ) {
@@ -631,7 +639,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return bool|array array containing success status, and stats
 		 */
 		function _post( $file_path, $file_size ) {
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpsmush_settings;
 
 			$data = false;
 
@@ -675,7 +683,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//Hostgator Issue
 				if ( ! empty( $er_msg ) && strpos( $er_msg, 'SSL CA cert' ) !== false ) {
 					//Update DB for using http protocol
-					update_option( WP_SMUSH_PREFIX . 'use_http', 1 );
+					$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'use_http', 1 );
 				}
 				//Handle error
 				$data['message'] = sprintf( __( 'Error posting to API: %s', 'wp-smushit' ), $result->get_error_message() );
@@ -1149,7 +1157,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
-			$migrated_version = get_option( $this->migrated_version_key );
+			$migrated_version = get_site_option( $this->migrated_version_key );
 
 			if ( $migrated_version === $this->version ) {
 				return;
@@ -1172,7 +1180,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 
-			update_option( $this->migrated_version_key, $this->version );
+			update_site_option( $this->migrated_version_key, $this->version );
 
 		}
 
@@ -1450,10 +1458,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( ! class_exists( 'C_NextGEN_Bootstrap' ) || ! $this->validate_install() ) {
 				return;
 			}
+
+			global $wpsmush_settings;
+
 			//Check if integration is Enabled or not
 			//Smush NextGen key
 			$opt_nextgen     = WP_SMUSH_PREFIX . 'nextgen';
-			$opt_nextgen_val = get_option( $opt_nextgen, false );
+			$opt_nextgen_val = $wpsmush_settings->get_setting( $opt_nextgen, false );
 			if ( ! $opt_nextgen_val ) {
 				return;
 			}
@@ -1604,7 +1615,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return int|mixed|void
 		 */
 		function is_auto_smush_enabled() {
-			$auto_smush = get_option( WP_SMUSH_PREFIX . 'auto' );
+
+			global $wpsmush_settings;
+
+			$auto_smush = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'auto' );
 
 			//Keep the auto smush on by default
 			if ( $auto_smush === false ) {

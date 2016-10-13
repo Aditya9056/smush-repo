@@ -44,10 +44,12 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 * Get the settings for resizing
 		 */
 		function initialize() {
-			//If resizing is enabled
-			$this->resize_enabled = get_option( WP_SMUSH_PREFIX . 'resize' );
+			global $wpsmush_settings;
 
-			$resize_sizes = get_option( WP_SMUSH_PREFIX . 'resize_sizes', array() );
+			//If resizing is enabled
+			$this->resize_enabled = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize' );
+
+			$resize_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes', array() );
 
 			//Resize width and Height
 			$this->max_w = ! empty( $resize_sizes['width'] ) ? $resize_sizes['width'] : 0;
@@ -86,7 +88,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			}
 
 			//Check for a supported mime type
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpsmush_settings;
 
 			//Get image mime type
 			$mime = get_post_mime_type( $id );
@@ -111,7 +113,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				$oldW = $meta['width'];
 				$oldH = $meta['height'];
 
-				$resize_dim = get_option( WP_SMUSH_PREFIX . 'resize_sizes' );
+				$resize_dim = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 
 				$maxW = ! empty( $resize_dim['width'] ) ? $resize_dim['width'] : 0;
 				$maxH = ! empty( $resize_dim['height'] ) ? $resize_dim['height'] : 0;
