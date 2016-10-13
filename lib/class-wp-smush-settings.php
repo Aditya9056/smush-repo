@@ -97,7 +97,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 		 */
 		function is_network_enabled() {
 			//If Single site return true
-			if ( ! is_network_admin() ) {
+			if ( ! is_multisite() ) {
 				return true;
 			}
 

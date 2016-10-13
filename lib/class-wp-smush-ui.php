@@ -379,7 +379,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$sizes = $wpsmushit_admin->image_dimensions();
 
 			//Option to enable/disable networkwide settings
-			if( is_network_admin() ) { ?>
+			if( is_multisite() ) { ?>
 				<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 				<div class='wp-smush-setting-row wp-smush-basic'>
 					<label class="inline-label" for="<?php echo $opt_networkwide; ?>" tabindex="0">
@@ -539,7 +539,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			<!-- Settings -->
 			<div class="row"><?php
-				$this->settings_ui();
+				//Check if a network site and networkwide settings is enabled
+				if( ! is_multisite() || ( is_multisite() && ! get_site_option( WP_SMUSH_PREFIX . 'networkwide', true ) ) || ( is_multisite() && is_network_admin() ) ) {
+					$this->settings_ui();
+				}
+
+				//Validate Membership
 				if( !$wpsmushit_admin->validate_install() ) {?>
 					<div class="wp-smush-pro-for-free wp-smushit-container-left col-half float-l"><?php
 						$this->wp_smush_promo();?>
