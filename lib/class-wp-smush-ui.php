@@ -261,6 +261,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//For Basic User, Show advanced settings in a separate box
 			if ( ! $WpSmush->validate_install() ) {
 				echo $div_end;
+				//Network settings wrapper
+				if( is_multisite() && is_network_admin() ) {
+					$class = get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) ? '' : ' hidden'; ?>
+					<div class="network-settings-wrapper<?php echo $class; ?>"><?php
+				}
 				$upgrade_url = add_query_arg(
 					array(
 						'utm_source' => 'Smush-Free',
@@ -392,7 +397,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 
 			//Do not print settings in network page if networkwide settings are disabled
-			if( ! is_multisite() || ( !get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) && !is_network_admin() ) || is_network_admin() ) { ?>
+			if( ! is_multisite() || ( ! get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) && !is_network_admin() ) || is_network_admin() ) { ?>
 				<div class='wp-smush-setting-row wp-smush-basic'>
 					<label class="inline-label" for="<?php echo $opt_auto; ?>" tabindex="0">
 						<span class="wp-smush-setting-label">
@@ -918,7 +923,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
         *
 		*/
 		function save_button( $configure_screen = false ) {
-
 			$div_end = '';
 			//Close wrapper div
 			if( is_multisite() && is_network_admin() ) {
