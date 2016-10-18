@@ -13,19 +13,10 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 		 */
 		function process_options() {
 
-			if ( ! is_admin() ) {
+			if ( ! is_user_logged_in() ) {
 				return false;
 			}
 
-			// we aren't saving options
-			if ( ! isset( $_POST['wp_smush_options_nonce'] ) ) {
-				return false;
-			}
-
-			// the nonce doesn't pan out
-			if ( ! wp_verify_nonce( $_POST['wp_smush_options_nonce'], 'save_wp_smush_options' ) ) {
-				return false;
-			}
 			global $wpsmushit_admin, $wpsmush_settings;
 
 			//Store that we need not redirect again on plugin activation
@@ -36,6 +27,17 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 
 			//Store Option Name and their values in an array
 			$settings = array();
+
+			//Save whether to use the settings networkwide or not ( Only if in network admin )
+			if ( ! empty( $_POST['action'] ) && 'save_settings' == $_POST['action'] ) {
+				if ( ! isset( $_POST['wp-smush-networkwide'] ) ) {
+					//Save the option to disable nwtwork wide settings and return
+					update_site_option( WP_SMUSH_PREFIX . 'networkwide', 0 );
+				} else {
+					//Save the option to disable nwtwork wide settings and return
+					update_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 );
+				}
+			}
 
 			// process each setting and update options
 			foreach ( $wpsmushit_admin->settings as $name => $text ) {
@@ -66,20 +68,6 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 
 			// update the resize sizes
 			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
-
-			//Transparent PNG Conversion settings
-			$transparent_png['convert'] = isset( $_POST['wp-smush-png_to_jpg_transparent'] ) ? 1 : 0;
-
-			//Validate Hexcode and Store it
-			$transparent_png['background'] = isset( $_POST['wp-smush-png_to_jpg_background'] ) && ctype_xdigit( $_POST['wp-smush-png_to_jpg_background'] ) ? smush_sanitize_hex_color_no_hash( $_POST['wp-smush-png_to_jpg_background'] ) : 'ffffff';
-
-			//If background is not set, or length is not proper
-			if ( empty( $transparent_png['background'] ) || strlen( $transparent_png['background'] ) < 6 ) {
-				$transparent_png['background'] = 'ffffff';
-			}
-
-			// update the resize sizes
-			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'transparent_png', $transparent_png );
 
 			//Store the option in table
 			$wpsmush_settings->update_setting( 'wp-smush-settings_updated', 1 );

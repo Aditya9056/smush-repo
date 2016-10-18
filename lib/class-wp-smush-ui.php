@@ -256,19 +256,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
 
 			//Content for the End of box container
-			$div_end =
-				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', false ) .
-				'<div class="wp-smush-submit-wrap">
-					<input type="submit" id="wp-smush-save-settings" class="button button-grey"
-					       value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
-			        <span class="spinner"></span>
-		        </div>
-				</form>';
-			//For Configuration screen we need to show the advanced settings in single box
-			if ( ! $configure_screen ) {
-				$div_end .= '</div><!-- Box Content -->
-					</section><!-- Main Section -->';
-			}
+			$div_end = $this->save_button( $configure_screen );
 
 			//For Basic User, Show advanced settings in a separate box
 			if ( ! $WpSmush->validate_install() ) {
@@ -379,7 +367,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$sizes = $wpsmushit_admin->image_dimensions();
 
 			//Option to enable/disable networkwide settings
-			if( is_multisite() ) { ?>
+			if( is_multisite() && is_network_admin() ) {
+				$class = get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) ? '' : ' hidden'; ?>
 				<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 				<div class='wp-smush-setting-row wp-smush-basic'>
 					<label class="inline-label" for="<?php echo $opt_networkwide; ?>" tabindex="0">
@@ -397,92 +386,102 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<label class="toggle-label" for="<?php echo $opt_networkwide; ?>"></label>
 					</span>
 				</div>
+				<input type="hidden" name="setting-type" value="network">
+				<hr />
+				<div class="network-settings-wrapper<?php echo $class; ?>"><?php
+			}
 
-				<hr /><?php
-			} ?>
-			<div class='wp-smush-setting-row wp-smush-basic'>
-				<label class="inline-label" for="<?php echo $opt_auto; ?>" tabindex="0">
-					<span class="wp-smush-setting-label">
-						<?php echo $wpsmushit_admin->settings['auto']['label']; ?>
-					</span><br/>
-					<small class="smush-setting-description">
-						<?php echo $wpsmushit_admin->settings['auto']['desc']; ?>
-					</small>
-				</label>
-				<span class="toggle float-r">
-					<input type="checkbox" class="toggle-checkbox"
-				       id="<?php echo $opt_auto; ?>"
-				       name="<?php echo $opt_auto; ?>" <?php checked( $opt_auto_val, 1, true ); ?> value="1" tabindex="0">
-					<label class="toggle-label" for="<?php echo $opt_auto; ?>"></label>
-				</span><?php
-				if( !empty( $sizes ) ) { ?>
-					<!-- List of image sizes recognised by WP Smush -->
-					<div class="wp-smush-image-size-list">
-						<p><?php esc_html_e("The Following image sizes will be optimised by WP Smush:", "wp-smushit"); ?></p><?php
-						foreach ( $sizes as $size_k => $size ) {
-							if( 'medium_large' == $size_k ) {
-								continue;
-							}
-							//If image sizes array isn't set, mark all checked ( Default Values )
-							if ( false === $image_sizes ) {
-								$checked = true;
-							}else{
-								$checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes ) : false;
+			//Do not print settings in network page if networkwide settings are disabled
+			if( ! is_multisite() || ( !get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) && !is_network_admin() ) || is_network_admin() ) { ?>
+				<div class='wp-smush-setting-row wp-smush-basic'>
+					<label class="inline-label" for="<?php echo $opt_auto; ?>" tabindex="0">
+						<span class="wp-smush-setting-label">
+							<?php echo $wpsmushit_admin->settings['auto']['label']; ?>
+						</span><br/>
+						<small class="smush-setting-description">
+							<?php echo $wpsmushit_admin->settings['auto']['desc']; ?>
+						</small>
+					</label>
+					<span class="toggle float-r">
+						<input type="checkbox" class="toggle-checkbox"
+					       id="<?php echo $opt_auto; ?>"
+					       name="<?php echo $opt_auto; ?>" <?php checked( $opt_auto_val, 1, true ); ?> value="1" tabindex="0">
+						<label class="toggle-label" for="<?php echo $opt_auto; ?>"></label>
+					</span><?php
+					if( !empty( $sizes ) ) { ?>
+						<!-- List of image sizes recognised by WP Smush -->
+						<div class="wp-smush-image-size-list">
+							<p><?php esc_html_e("The Following image sizes will be optimised by WP Smush:", "wp-smushit"); ?></p><?php
+							foreach ( $sizes as $size_k => $size ) {
+								if( 'medium_large' == $size_k ) {
+									continue;
+								}
+								//If image sizes array isn't set, mark all checked ( Default Values )
+								if ( false === $image_sizes ) {
+									$checked = true;
+								}else{
+									$checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes ) : false;
+								} ?>
+								<label>
+									<input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>"><?php
+									echo $size_k . " (" . $size['width'] . "x" . $size['height'] . ") "; ?>
+								</label><?php
 							} ?>
-							<label>
-								<input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>"><?php
-								echo $size_k . " (" . $size['width'] . "x" . $size['height'] . ") "; ?>
-							</label><?php
-						} ?>
-					</div><?php
-				} ?>
-			</div>
-			<hr/>
-			<div class='wp-smush-setting-row wp-smush-basic'>
-				<label class="inline-label" for="<?php echo $opt_keep_exif; ?>" tabindex="0">
-					<span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['keep_exif']['label']; ?></span>
-					<br/>
-					<small class="smush-setting-description">
-						<?php echo $wpsmushit_admin->settings['keep_exif']['desc']; ?>
-					</small>
-				</label>
-				<span class="toggle float-r">
-					<input type="checkbox" class="toggle-checkbox"
-					       id="<?php echo $opt_keep_exif; ?>" <?php checked( $opt_keep_exif_val, 1, true ); ?>
-					       value="1" name="<?php echo $opt_keep_exif; ?>" tabindex="0">
-					<label class="toggle-label" for="<?php echo $opt_keep_exif; ?>"></label>
-				</span>
-			</div>
-			<hr/>
-			<div class='wp-smush-setting-row wp-smush-basic'>
-				<label class="inline-label" for="<?php echo $opt_resize; ?>" tabindex="0">
-					<span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['resize']['label']; ?></span>
-					<br/>
-					<small class="smush-setting-description">
-						<?php echo $wpsmushit_admin->settings['resize']['desc']; ?>
-					</small>
-				</label>
-				<span class="toggle float-r">
-					<input type="checkbox" class="toggle-checkbox"
-					       id="<?php echo $opt_resize; ?>" <?php echo $resize_checked = checked( $opt_resize_val, 1, false ); ?>
-					       value="1" name="<?php echo $opt_resize; ?>" tabindex="0">
-					<label class="toggle-label" for="<?php echo $opt_resize; ?>"></label>
-				</span>
-				<div class="wp-smush-resize-settings-wrap<?php echo $resize_checked ? '' : ' hidden'?>">
-					<label for="<?php echo $opt_resize . '_width'; ?>"><?php esc_html_e("Width", "wp-smushit"); ?>
-						<input type="text" id="<?php echo $opt_resize . '_width'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>" placeholder="<?php echo $p_width; ?>" name="<?php echo $opt_resize . '_width'; ?>" tabindex="0" width=100 /> px
-					</label>
-					<label for"<?php echo $opt_resize . '_height'; ?>"><?php esc_html_e("Height", "wp-smushit"); ?>
-						<input type="text" id="<?php echo $opt_resize . '_height'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>" placeholder="<?php echo $p_height; ?>" name="<?php echo $opt_resize . '_height'; ?>" tabindex="0" width=100 /> px
-					</label>
-					<div class="wp-smush-resize-note"><?php printf( esc_html__("Currently, your largest thumbnail size is set at %s%dpx wide x %dpx high%s. Anything above 2048px in width or height is huge and not recommended.", "wp-smushit"), '<strong>', $max_sizes['width'], $max_sizes['height'], '</strong>' ); ?></div>
-					<div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-width hidden"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest thumbnail and may result in pixelation.", "wp-smushit" ); ?></div>
-					<div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-height hidden"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest thumbnail and may result in pixelation.", "wp-smushit" ); ?></div>
+						</div><?php
+					} ?>
 				</div>
-			</div><!-- End of Basic Settings --><?php
+				<hr/>
+				<div class='wp-smush-setting-row wp-smush-basic'>
+					<label class="inline-label" for="<?php echo $opt_keep_exif; ?>" tabindex="0">
+						<span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['keep_exif']['label']; ?></span>
+						<br/>
+						<small class="smush-setting-description">
+							<?php echo $wpsmushit_admin->settings['keep_exif']['desc']; ?>
+						</small>
+					</label>
+					<span class="toggle float-r">
+						<input type="checkbox" class="toggle-checkbox"
+						       id="<?php echo $opt_keep_exif; ?>" <?php checked( $opt_keep_exif_val, 1, true ); ?>
+						       value="1" name="<?php echo $opt_keep_exif; ?>" tabindex="0">
+						<label class="toggle-label" for="<?php echo $opt_keep_exif; ?>"></label>
+					</span>
+				</div>
+				<hr/>
+				<div class='wp-smush-setting-row wp-smush-basic'>
+					<label class="inline-label" for="<?php echo $opt_resize; ?>" tabindex="0">
+						<span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['resize']['label']; ?></span>
+						<br/>
+						<small class="smush-setting-description">
+							<?php echo $wpsmushit_admin->settings['resize']['desc']; ?>
+						</small>
+					</label>
+					<span class="toggle float-r">
+						<input type="checkbox" class="toggle-checkbox"
+						       id="<?php echo $opt_resize; ?>" <?php echo $resize_checked = checked( $opt_resize_val, 1, false ); ?>
+						       value="1" name="<?php echo $opt_resize; ?>" tabindex="0">
+						<label class="toggle-label" for="<?php echo $opt_resize; ?>"></label>
+					</span>
+					<div class="wp-smush-resize-settings-wrap<?php echo $resize_checked ? '' : ' hidden'?>">
+						<label for="<?php echo $opt_resize . '_width'; ?>"><?php esc_html_e("Width", "wp-smushit"); ?>
+							<input type="text" id="<?php echo $opt_resize . '_width'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>" placeholder="<?php echo $p_width; ?>" name="<?php echo $opt_resize . '_width'; ?>" tabindex="0" width=100 /> px
+						</label>
+						<label for"<?php echo $opt_resize . '_height'; ?>"><?php esc_html_e("Height", "wp-smushit"); ?>
+							<input type="text" id="<?php echo $opt_resize . '_height'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>" placeholder="<?php echo $p_height; ?>" name="<?php echo $opt_resize . '_height'; ?>" tabindex="0" width=100 /> px
+						</label>
+						<div class="wp-smush-resize-note"><?php printf( esc_html__("Currently, your largest thumbnail size is set at %s%dpx wide x %dpx high%s. Anything above 2048px in width or height is huge and not recommended.", "wp-smushit"), '<strong>', $max_sizes['width'], $max_sizes['height'], '</strong>' ); ?></div>
+						<div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-width hidden"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest thumbnail and may result in pixelation.", "wp-smushit" ); ?></div>
+						<div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-height hidden"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest thumbnail and may result in pixelation.", "wp-smushit" ); ?></div>
+					</div>
+				</div><!-- End of Basic Settings --><?php
 
-			do_action( 'wp_smush_after_basic_settings' );
-			$this->advanced_settings( $configure_screen );
+				do_action( 'wp_smush_after_basic_settings' );
+				$this->advanced_settings( $configure_screen );
+			} else{
+				echo "<hr />";
+				echo $this->save_button( $configure_screen );
+				echo "</div><!-- Box Content -->
+				</section><!-- Main Section -->";
+			}
 		}
 
 		/**
@@ -909,6 +908,37 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$message = sprintf( esc_html__( "It looks like Smush couldn’t verify your WPMU DEV membership so Pro features like Super-Smush may not work correctly. If you think this is an error, run a %sre-check%s or get in touch with our %ssupport team%s.", "wp-smushit"), $recheck_link, '</a>', $wpmu_contact, '</a>' ) ;
 			$content = sprintf( '<div id="wp-smush-invalid-member" data-message="%s" class="hidden' . $notice_class . '"><div class="message">%s</div></div>', $attr_message, $message );
 			return $content;
+		}
+
+		/**
+        *
+		* @param $configure_screen
+		*
+		* @return string
+        *
+		*/
+		function save_button( $configure_screen = false ) {
+
+			$div_end = '';
+			//Close wrapper div
+			if( is_multisite() && is_network_admin() ) {
+				$div_end .= "</div>";
+			}
+
+			$div_end .= wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', false ) .
+			'<div class="wp-smush-submit-wrap">
+				<input type="submit" id="wp-smush-save-settings" class="button button-grey"
+				       value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
+		        <span class="spinner"></span>
+	        </div>
+			</form>';
+
+			//For Configuration screen we need to show the advanced settings in single box
+			if ( ! $configure_screen ) {
+				$div_end .= '</div><!-- Box Content -->
+					</section><!-- Main Section -->';
+			}
+			return $div_end;
 		}
 	}
 }

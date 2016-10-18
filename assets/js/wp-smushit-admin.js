@@ -208,7 +208,7 @@ jQuery(function ($) {
                     self.$status.html(response.data);
 
                     //Check whether to show membership validity notice or not
-                    membership_validity( response.data );
+                    membership_validity(response.data);
 
                     if (response.success && response.data !== "Not processed") {
                         self.$status.removeClass('hidden');
@@ -455,7 +455,7 @@ jQuery(function ($) {
                     }
 
                     //Check whether to show the warning notice or not
-                    membership_validity( res.data );
+                    membership_validity(res.data);
 
                     if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved()) {
                         //Add a data attribute to the smush button, to stop sending ajax
@@ -973,7 +973,7 @@ jQuery(function ($) {
     $('#wp-smush-welcome-box .smush-dismiss-welcome').on('click', function (e) {
         e.preventDefault();
         var $el = $(this).parents().eq(1);
-        remove_element( $el );
+        remove_element($el);
 
         //Send a ajax request to save the dismissed notice option
         var param = {
@@ -986,58 +986,84 @@ jQuery(function ($) {
     $('body').on('click', '.wp-smush-notice .dev-icon-cross', function (e) {
         e.preventDefault();
         var $el = $(this).parent();
-        remove_element( $el );
+        remove_element($el);
     });
 
     //On Click Update Settings. Check for change in settings
     $('#wp-smush-save-settings').on('click', function (e) {
         e.preventDefault();
 
-        var self = $(this);
-        var wrapper_div = self.parents().eq(1);
-
-        //Get all the main settings
-        var keep_exif = document.getElementById("wp-smush-keep_exif");
-        var super_smush = document.getElementById("wp-smush-lossy");
-        var smush_original = document.getElementById("wp-smush-original");
-        var resize_images = document.getElementById("wp-smush-resize");
-        var smush_pngjpg = document.getElementById("wp-smush-png_to_jpg");
-
-        var update_button_txt = true;
-
-        $('.wp-smush-hex-notice').hide();
-
-        //If Preserve Exif is Checked, and all other settings are off, just save the settings
-        if (keep_exif.checked && !super_smush.checked && !smush_original.checked && !resize_images.checked && !smush_pngjpg.checked) {
-            update_button_txt = false;
+        var setting_type = '';
+        //Check if setting type is set in the form
+        if (setting_input = $('input[name="setting-type"]')) {
+            setting_type = setting_input.val();
         }
 
-        //Update text
-        self.attr('disabled', 'disabled').addClass('button-grey');
+        //Save settings if in network admin
+        if ('' != setting_type && 'network' == setting_type) {
+            //Ajax param
+            var param = {
+                action: 'save_settings',
+                nonce: $('#wp_smush_options_nonce').val()
+            };
 
-        if (update_button_txt) {
-            self.val(wp_smush_msgs.checking)
+            param = jQuery.param(param) + '&' + jQuery('form#wp-smush-settings-form').serialize();
+            ;
+
+            //Send ajax, Update Settings, And Check For resmush
+            jQuery.post(ajaxurl, param).done(function () {
+                jQuery('form#wp-smush-settings-form').submit();
+                return true;
+            });
+        } else {
+
+            //Check for all the settings, and scan for resmush
+            var self = $(this);
+            var wrapper_div = self.parents().eq(1);
+
+            //Get all the main settings
+            var keep_exif = document.getElementById("wp-smush-keep_exif");
+            var super_smush = document.getElementById("wp-smush-lossy");
+            var smush_original = document.getElementById("wp-smush-original");
+            var resize_images = document.getElementById("wp-smush-resize");
+            var smush_pngjpg = document.getElementById("wp-smush-png_to_jpg");
+
+            var update_button_txt = true;
+
+            $('.wp-smush-hex-notice').hide();
+
+            //If Preserve Exif is Checked, and all other settings are off, just save the settings
+            if (keep_exif.checked && !super_smush.checked && !smush_original.checked && !resize_images.checked && !smush_pngjpg.checked) {
+                update_button_txt = false;
+            }
+
+            //Update text
+            self.attr('disabled', 'disabled').addClass('button-grey');
+
+            if (update_button_txt) {
+                self.val(wp_smush_msgs.checking)
+            }
+
+            self.parent().find('.spinner').addClass('is-active');
+
+            //Check if type is set in data attributes
+            var scan_type = self.data('type');
+            scan_type = 'undefined' == typeof scan_type ? 'media' : scan_type;
+
+            //Ajax param
+            var param = {
+                action: 'scan_for_resmush',
+                scan_type: scan_type
+            };
+
+            param = jQuery.param(param) + '&' + jQuery('form#wp-smush-settings-form').serialize();
+
+            //Send ajax, Update Settings, And Check For resmush
+            jQuery.post(ajaxurl, param).done(function () {
+                jQuery('form#wp-smush-settings-form').submit();
+                return true;
+            });
         }
-
-        self.parent().find('.spinner').addClass('is-active');
-
-        //Check if type is set in data attributes
-        var scan_type = self.data('type');
-        scan_type = 'undefined' == typeof scan_type ? 'media' : scan_type;
-
-        //Ajax param
-        var param = {
-            action: 'scan_for_resmush',
-            scan_type: scan_type
-        };
-
-        param = jQuery.param(param) + '&' + jQuery('form#wp-smush-settings-form').serialize();
-
-        //Send ajax, Update Settings, And Check For resmush
-        jQuery.post(ajaxurl, param).done(function () {
-            jQuery('form#wp-smush-settings-form').submit();
-            return true;
-        });
     });
 
     //On Resmush click
@@ -1048,7 +1074,7 @@ jQuery(function ($) {
 
         //Remove Parent div
         var $el = self.parent();
-        remove_element( $el );
+        remove_element($el);
 
         //Remove Settings Notice
         $('.wp-smush-notice.wp-smush-settings-updated').remove();
@@ -1109,7 +1135,7 @@ jQuery(function ($) {
         $('#wp-smush-save-settings').click();
     });
 
-    //Enable Resi
+    //Enable Resize
     $('.wp-smush-resize-enable').on('click', function (e) {
         e.preventDefault();
 
@@ -1118,7 +1144,6 @@ jQuery(function ($) {
         //Induce Setting button save click
         $('#wp-smush-save-settings').click();
     });
-
 
     //Trigger Bulk
     $('body').on('click', '.wp-smush-trigger-bulk', function (e) {
@@ -1171,6 +1196,15 @@ jQuery(function ($) {
             settings_wrap.show();
         } else {
             settings_wrap.hide();
+        }
+    });
+
+    //Handle, Change event in Enable Networkwide settings
+    $('#wp-smush-networkwide').on('click', function (e) {
+        if ( $( this ).is(':checked')) {
+           $('.network-settings-wrapper').show();
+        }else{
+            $('.network-settings-wrapper').hide();
         }
     });
 

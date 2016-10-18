@@ -124,8 +124,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle Restore operation
 			add_action( 'wp_ajax_smush_resmush_image', array( $this, 'resmush_image' ) );
 
-			//Handle Restore operation
+			//Scan images as per the latest settings
 			add_action( 'wp_ajax_scan_for_resmush', array( $this, 'scan_images' ) );
+
+			//Save Settings
+			add_action( 'wp_ajax_save_settings', array( $this, 'save_settings' ) );
 
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
@@ -1909,6 +1912,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			echo $this->bulk_ui->get_user_validation_message( $notice = true );
+		}
+
+		function save_settings() {
+			//Validate Ajax request
+			check_ajax_referer( 'save_wp_smush_options', 'nonce' );
+
+			global $wpsmush_settings;
+			//Save Settings
+			$wpsmush_settings->process_options();
+			wp_send_json_success();
+
 		}
 
 	}
