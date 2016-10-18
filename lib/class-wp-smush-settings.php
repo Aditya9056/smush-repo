@@ -133,6 +133,22 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			return $this->is_network_enabled() ? update_site_option( $name, $value ) : update_option( $name, $value );
 		}
 
+		/**
+		 * Delete the given key name
+		 *
+		 * @param string $name Key
+		 *
+		 * @return bool If the setting was updated or not
+		 */
+		function delete_setting( $name = '' ) {
+
+			if( empty( $name ) ) {
+				return false;
+			}
+
+			return $this->is_network_enabled() ? delete_site_option( $name ) : delete_option( $name );
+		}
+
 	}
 	global $wpsmush_settings;
 	$wpsmush_settings = new WpSmushSettings();

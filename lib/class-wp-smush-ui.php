@@ -34,7 +34,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				return '';
 			}
 			echo '<section class="dev-box ' . $classes . ' wp-smush-container" id="' . $id . '">'; ?>
-<div class="wp-smush-container-header box-title" xmlns="http://www.w3.org/1999/html">
+			<div class="wp-smush-container-header box-title" xmlns="http://www.w3.org/1999/html">
 			<h3 tabindex="0"><?php echo $heading ?></h3><?php
 			//Sub Heading
 			if ( ! empty( $sub_heading ) ) { ?>
@@ -324,6 +324,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			} else {
 				echo "</div><!-- Box Content -->
 				</section><!-- Main Section -->";
+			}
+			//Close wrapper div
+			if( is_multisite() && is_network_admin() && !$WpSmush->validate_install() ) {
+				echo "</div>";
 			}
 		}
 
@@ -759,6 +763,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function settings_updated() {
 			global $wpsmushit_admin, $wpsmush_settings;
+
+			//Check if Networkwide settings are enabled, Do not show settings updated message
+			if( is_multisite() && get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) && !is_network_admin() ) {
+				return;
+			}
+
 			//Show Setttings Saved message
 			if ( 1 == $wpsmush_settings->get_setting( 'wp-smush-settings_updated', false ) ) {
 
@@ -777,7 +787,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>';
 
 				//Remove the option
-				delete_option( 'wp-smush-settings_updated' );
+				$wpsmush_settings->delete_setting( 'wp-smush-settings_updated' );
 			}
 		}
 
