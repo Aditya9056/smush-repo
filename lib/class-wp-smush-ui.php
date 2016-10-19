@@ -547,6 +547,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			<!-- Settings -->
 			<div class="row"><?php
+				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
 				//Check if a network site and networkwide settings is enabled
 				if( ! is_multisite() || ( is_multisite() && ! get_site_option( WP_SMUSH_PREFIX . 'networkwide', true ) ) || ( is_multisite() && is_network_admin() ) ) {
 					$this->settings_ui();
@@ -939,7 +940,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$div_end .= "</div>";
 			}
 
-			$div_end .= wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', false ) .
+			$div_end .=
 			'<div class="wp-smush-submit-wrap">
 				<input type="submit" id="wp-smush-save-settings" class="button button-grey"
 				       value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">

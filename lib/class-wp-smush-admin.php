@@ -335,7 +335,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Localize Translations
 		 */
 		function localize() {
-			global $current_screen;
+			global $current_screen, $wpsmush_settings;
 			$current_page = ! empty( $current_screen ) ? $current_screen->base : '';
 
 			$bulk   = new WpSmushitBulk();
@@ -397,6 +397,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$data['timeout'] = WP_SMUSH_TIMEOUT * 1000; //Convert it into ms
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
+
+			//Check if settings were changed for a multisite, and localize whether to run re-check on page load
+			if ( is_multisite() && get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) && ! is_network_admin() ) {
+				//Check the last settings stored in db
+				$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', '' );
+
+				//Get current settings
+				$c_settings = $this->get_serialised_settings();
+
+				//If not same, Set a variable to run re-check on page load
+				if( $settings != $c_settings ) {
+					wp_localize_script( 'wp-smushit-admin-js', 'wp_smush_run_re_check', 1 );
+				}
+			}
 
 		}
 
@@ -1251,6 +1265,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$resmush_list = array();
 
+			//If there aren't any images in the library, return the notice
+			if ( 0 == $wpsmush_stats->total_count() ) {
+				$notice = esc_html__( "We haven’t found any images in your media library yet so there’s no smushing to be done!", "wp-smushit" );
+				$resp   = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $notice . '
+				<i class="dev-icon dev-icon-cross"></i>
+				</div>';
+				wp_send_json_success( array(
+					'notice'      => $resp,
+					'super_smush' => $WpSmush->lossy_enabled
+				) );
+			}
+
 			//Default Notice, to be displayed at the top of page
 			//Show a message, at the top
 			$message = esc_html__( 'Yay! All images are optimised as per your current settings.', 'wp-smushit' );
@@ -1923,6 +1949,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$wpsmush_settings->process_options();
 			wp_send_json_success();
 
+		}
+
+		/**
+		 * Returns a serialised string of current settings
+		 *
+		 * @return Serialised string of settings
+		 *
+		 */
+		function get_serialised_settings() {
+			global $wpsmush_settings;
+			$settings = array();
+			foreach ( $this->settings as $key => $val ) {
+				$settings[ $key ] = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . $key );
+			}
+			$settings = maybe_serialize( $settings );
+
+			return $settings;
 		}
 
 	}
