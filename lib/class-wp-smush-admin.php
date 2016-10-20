@@ -408,7 +408,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				//If not same, Set a variable to run re-check on page load
 				if( $settings != $c_settings ) {
-					wp_localize_script( 'wp-smushit-admin-js', 'wp_smush_run_re_check', 1 );
+					wp_localize_script( 'wp-smushit-admin-js', 'wp_smush_run_re_check', array( 1 ) );
 				}
 			}
 
@@ -1271,6 +1271,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$resp   = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $notice . '
 				<i class="dev-icon dev-icon-cross"></i>
 				</div>';
+
+				//Save serialized settings
+				$this->save_serialized_settings();
+
 				wp_send_json_success( array(
 					'notice'      => $resp,
 					'super_smush' => $WpSmush->lossy_enabled
@@ -1317,6 +1321,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			if ( 0 == $remaining_count && ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
 				delete_option( $key );
+				//Save serialized settings
+				$this->save_serialized_settings();
 				wp_send_json_success( array( 'notice' => $resp ) );
 			}
 
@@ -1475,6 +1481,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$ss_count                    = $wpsmush_stats->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
 				$return['super_smush_stats'] = sprintf( '<strong><span class="smushed-count">%d</span>/%d</strong>', $ss_count, $wpsmushnextgenadmin->total_count );
 			}
+
+			//Save serialized settings
+			$this->save_serialized_settings();
 
 			wp_send_json_success( $return );
 
@@ -1940,6 +1949,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			echo $this->bulk_ui->get_user_validation_message( $notice = true );
 		}
 
+		/**
+		 * Save settings, Used for networkwide option
+		 */
 		function save_settings() {
 			//Validate Ajax request
 			check_ajax_referer( 'save_wp_smush_options', 'nonce' );
@@ -1966,6 +1978,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$settings = maybe_serialize( $settings );
 
 			return $settings;
+		}
+
+		/**
+		 * Stores the latest settings in serialised form in DB For the current settings
+		 *
+		 * No need to store the serialised settings, if network wide settings is disabled
+		 * because the site would run the scan when settings are saved
+		 *
+		 */
+		function save_serialized_settings() {
+			//Return -> Single Site | If network settings page | Networkwide Settings Disabled
+			if ( ! is_multisite() || is_network_admin() || ! get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ) {
+				return;
+			}
+			global $wpsmush_settings;
+			$c_settings = $this->get_serialised_settings();
+			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $c_settings );
 		}
 
 	}

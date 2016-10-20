@@ -756,7 +756,9 @@ table.wp-smush-stats-holder tr td:first-child {
     padding: 20px 40px;
 }
 
-.wp-smush-resmush-message, .wp-smush-settings-updated {
+.wp-smush-resmush-message,
+.wp-smush-settings-updated,
+.wp-smush-re-check-message {
     border: none;
     margin-bottom: 25px;
     padding: 18px 50px;
@@ -769,11 +771,15 @@ table.wp-smush-stats-holder tr td:first-child {
     text-decoration: underline;
 }
 
-.wp-smush-resmush-message .dev-icon, .wp-smush-settings-updated .dev-icon {
+.wp-smush-resmush-message .dev-icon,
+.wp-smush-settings-updated .dev-icon,
+.wp-smush-re-check-message .dev-icon {
     font-size: 16px;
 }
 
-.wp-smush-resmush-message .dev-icon-cross, .wp-smush-settings-updated .dev-icon-cross {
+.wp-smush-resmush-message .dev-icon-cross,
+.wp-smush-settings-updated .dev-icon-cross,
+.wp-smush-re-check-message .dev-icon-cross {
     cursor: pointer;
     float: right;
 }

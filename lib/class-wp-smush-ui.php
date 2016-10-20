@@ -813,6 +813,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//User API check, and display a message if not valid
 			$user_validation = $this->get_user_validation_message();
 
+			//Re-Check images notice
+			$recheck_notice = $this->get_recheck_message();
+
 			echo '<div class="smush-page-wrap">
 				<section id="header">
 					<div class="wp-smush-page-header">
@@ -820,6 +823,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<div class="wp-smush-auto-message roboto-regular">' . $auto_smush_message . '</div>
 					</div>' .
 					$user_validation .
+					$recheck_notice .
 				'</section>';
 			//Check if settings were updated and shoe a notice
 			$this->settings_updated();
@@ -954,6 +958,28 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</section><!-- Main Section -->';
 			}
 			return $div_end;
+		}
+
+		function get_recheck_message() {
+			//Return if not multisite, or on network settings page, Netowrkwide settings is disabled
+			if( ! is_multisite() || is_network_admin() || ! get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ) {
+				return;
+			}
+			global $wpsmush_settings, $wpsmushit_admin;
+
+			//Check the last settings stored in db
+			$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', '' );
+
+			//Get current settings
+			$c_settings = $wpsmushit_admin->get_serialised_settings();
+
+			//If not same, Display notice
+			if( $settings == $c_settings ) {
+				return;
+			}
+			$message = '<div class="wp-smush-notice wp-smush-re-check-message">' . esc_html__( "Smush settings were updated, performing a quick scan to check if any of the images need to be Smushed again.", "wp-smushit") . '<i class="dev-icon dev-icon-cross"></i></div>';
+
+			return $message;
 		}
 	}
 }
