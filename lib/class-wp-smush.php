@@ -1618,7 +1618,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			global $wpsmush_settings;
 
-			$auto_smush = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'auto' );
+			$auto_smush = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'auto', false );
 
 			//Keep the auto smush on by default
 			if ( $auto_smush === false ) {

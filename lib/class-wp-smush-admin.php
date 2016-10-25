@@ -1077,7 +1077,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function settings_link( $links ) {
 
-			$settings_page = admin_url( 'upload.php?page=wp-smush-bulk' );
+			$settings_page = is_multisite() ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
 			$settings      = '<a href="' . $settings_page . '">' . __( 'Settings', 'wp-smushit' ) . '</a>';
 
 			//Added a fix for weird warning in multisite, "array_unshift() expects parameter 1 to be array, null given"

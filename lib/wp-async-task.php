@@ -81,13 +81,7 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 			//Handle the actual action
 			add_action( $this->action, array( $this, 'launch' ), (int) $this->priority, (int) $this->argument_count );
 
-			if ( $auth_level & self::LOGGED_IN ) {
-				add_action( "admin_post_wp_async_$this->action", array( $this, 'handle_postback' ) );
-			}
-
-			if ( $auth_level & self::LOGGED_OUT ) {
-				add_action( "admin_post_nopriv_wp_async_$this->action", array( $this, 'handle_postback' ) );
-			}
+			add_action( "admin_post_wp_async_$this->action", array( $this, 'handle_postback' ) );
 		}
 
 		/**
@@ -114,7 +108,7 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 			}
 
 			//If we have image metadata return it
-			if( !empty( $data['metadata'] ) ) {
+			if ( ! empty( $data['metadata'] ) ) {
 				return $data['metadata'];
 			}
 		}
@@ -141,6 +135,7 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 					$cookies[] = "$name=" . urlencode( is_array( $value ) ? serialize( $value ) : $value );
 				}
 
+				//@todo: We've set sslverify to false
 				$request_args = array(
 					'timeout'   => 0.01,
 					'blocking'  => false,

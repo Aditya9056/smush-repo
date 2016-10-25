@@ -96,6 +96,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 * Added:
     * Async Optimisation for Auto Smush on upload
+    * Networkwide settings option in a Multisite
 
 * Fixed:
     * Double slash in file path causing 403 on some of the sites

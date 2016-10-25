@@ -1057,6 +1057,7 @@ jQuery(function ($) {
             //Ajax param
             var param = {
                 action: 'scan_for_resmush',
+                wp_smush_options_nonce: jQuery('#wp_smush_options_nonce').val(),
                 scan_type: scan_type
             };
 
