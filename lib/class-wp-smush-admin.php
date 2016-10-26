@@ -302,10 +302,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
 
-			//If we upgrade/install message is dismissed and for pro users
+			//Load js and css on all admin pages, in order t display install/upgrade notice
+			// And If upgrade/install message is dismissed or for pro users, Do not enqueue script
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->validate_install() ) {
+				/** @var $pages List of screens where script needs to be loaded */
+				$pages = array(
+					'nggallery-manage-images',
+					'gallery_page_wp-smush-nextgen-bulk',
+					'post',
+					'post-new',
+					'upload',
+					'settings_page_wp-smush-network',
+					'media_page_wp-smush-bulk'
+				);
+
 				//Do not enqueue, unless it is one of the required screen
-				if ( ! $enqueue_smush || ( $current_page != 'nggallery-manage-images' && $current_page != 'gallery_page_wp-smush-nextgen-bulk' && $pagenow != 'post.php' && $pagenow != 'post-new.php' && $pagenow != 'upload.php' ) ) {
+				if ( ! $enqueue_smush || ! in_array( $current_page, $pages ) ) {
 
 					return;
 				}
