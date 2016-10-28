@@ -68,18 +68,6 @@ Smush button transformation
     margin-top: 18px;
 }
 
-.wpmud .dev-box.wp-smush-install-thanks-box {
-    margin-bottom: 20px;
-    padding-bottom: 0;
-}
-
-#wp-smush-install-thanks .row {
-    background-image: url(../images/install-welcome.png);
-    background-repeat: no-repeat;
-    background-position: 30px bottom;
-    min-height: 206px;
-}
-
 /** Settings Page **/
 
 .wp-smush-setting-row {
@@ -615,7 +603,7 @@ table.wp-smush-stats-holder tr td:first-child {
 }
 
 .wpmud .wp-smush-welcome.wp-smush-container {
-    background-image: url(../images/welcome-notice.png);
+    background-image: url(../images/welcome-notice.svg);
     background-repeat: no-repeat;
     background-position: 30px bottom;
     padding-bottom: 0;
@@ -1383,7 +1371,7 @@ small.smush-setting-description {
 /** Super Smush Content **/
 
 .wp-smush-super-smush-promo {
-    background-image: url(../images/welcome-notice.png);
+    background-image: url(../images/welcome-notice.svg);
     background-repeat: no-repeat;
     background-position: 0 bottom;
     height: 180px;
@@ -1539,7 +1527,7 @@ small.smush-setting-description {
 }
 
 .wpmud #wp-smush-share-widget {
-    background-image: url(../images/share-bg-small.png);
+    background-image: url(../images/share-bg-small.svg);
     background-repeat: no-repeat;
     background-position: 30px 24px;
     min-height: 144px;
