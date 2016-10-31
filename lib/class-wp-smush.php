@@ -333,7 +333,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			global $wpsmush_settings;
 
 			//Flag to check, if original size image should be smushed or not
-			$original   = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'original' );
+			$original   = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'original', false );
 			$smush_full = ( $this->validate_install() && $original == 1 ) ? true : false;
 
 			$errors = new WP_Error();
@@ -608,7 +608,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				//Check for use of http url, (Hostgator mostly)
 				$use_http = wp_cache_get( WP_SMUSH_PREFIX . 'use_http', 'smush' );
 				if ( ! $use_http ) {
-					$use_http = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'use_http' );
+					$use_http = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'use_http', false );
 					wp_cache_add( WP_SMUSH_PREFIX . 'use_http', $use_http, 'smush' );
 				}
 				if ( $use_http ) {

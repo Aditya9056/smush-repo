@@ -36,7 +36,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			/**
 			 * Initialize class variables, after all stuff has been loaded
 			 */
-			add_action( 'wp_loaded', array( $this, 'initialize' ) );
+			add_action( 'wp_after_admin_bar_render', array( $this, 'initialize' ) );
 
 		}
 
@@ -44,7 +44,19 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 * Get the settings for resizing
 		 */
 		function initialize() {
-			global $wpsmush_settings;
+			//Do not initialize unless in the WP Backend Or On one of the smush pages
+			if ( ! is_user_logged_in() || ! is_admin() ) {
+				return;
+			}
+
+			global $wpsmush_settings, $wpsmushit_admin;
+			$current_screen = get_current_screen();
+
+			//Do not Proceed if not on one of the required screens
+			$current_page = $current_screen->base;
+			if ( ! in_array( $current_page, $wpsmushit_admin->pages ) ) {
+				return;
+			}
 
 			//If resizing is enabled
 			$this->resize_enabled = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize' );
@@ -109,7 +121,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			//Get attachment metadata
 			$meta = empty( $meta ) ? wp_get_attachment_metadata( $id ) : $meta;
 
-			if( !empty( $meta['width'] ) && !empty( $meta['height'] ) ) {
+			if ( ! empty( $meta['width'] ) && ! empty( $meta['height'] ) ) {
 				$oldW = $meta['width'];
 				$oldH = $meta['height'];
 
@@ -192,7 +204,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 				//Updated File size
 				$u_file_size = filesize( $file_path );
 
-				$savings['bytes']     = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
+				$savings['bytes']       = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
 				$savings['size_before'] = $original_file_size;
 				$savings['size_after']  = $u_file_size;
 
@@ -272,7 +284,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			$file_size = filesize( $resize_path );
 			if ( $file_size > $original_file_size ) {
 				//Don't Unlink for nextgen images
-				if( $unlink ) {
+				if ( $unlink ) {
 					$this->maybe_unlink( $resize_path, $meta );
 				}
 

@@ -372,7 +372,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$resize_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes', array( 'width' => '', 'height' => '' ) );
 
 			//Additional Image sizes
-			$image_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
+			$image_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
 			$sizes = $wpsmushit_admin->image_dimensions();
 
 			//Option to enable/disable networkwide settings
@@ -420,7 +420,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					if( !empty( $sizes ) ) { ?>
 						<!-- List of image sizes recognised by WP Smush -->
 						<div class="wp-smush-image-size-list">
-							<p><?php esc_html_e("The Following image sizes will be optimised by WP Smush:", "wp-smushit"); ?></p><?php
+							<p><?php esc_html_e("The following image sizes will be optimised by WP Smush:", "wp-smushit"); ?></p><?php
 							foreach ( $sizes as $size_k => $size ) {
 								if( 'medium_large' == $size_k ) {
 									continue;

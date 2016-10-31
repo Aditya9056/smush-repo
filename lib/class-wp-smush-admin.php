@@ -72,6 +72,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		public $bulk_ui = '';
 
+		//List of pages where smush needs to be loaded
+		public $pages = array(
+			'nggallery-manage-images',
+			'gallery_page_wp-smush-nextgen-bulk',
+			'post',
+			'post-new',
+			'upload',
+			'settings_page_wp-smush-network',
+			'media_page_wp-smush-bulk'
+		);
+
 		/**
 		 * @var int Limit for allowed number of images per bulk request
 		 */
@@ -292,8 +303,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function enqueue() {
 
-			global $pagenow;
-
 			$current_screen = get_current_screen();
 			$current_page   = $current_screen->base;
 
@@ -306,18 +315,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// And If upgrade/install message is dismissed or for pro users, Do not enqueue script
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->validate_install() ) {
 				/** @var $pages List of screens where script needs to be loaded */
-				$pages = array(
-					'nggallery-manage-images',
-					'gallery_page_wp-smush-nextgen-bulk',
-					'post',
-					'post-new',
-					'upload',
-					'settings_page_wp-smush-network',
-					'media_page_wp-smush-bulk'
-				);
 
 				//Do not enqueue, unless it is one of the required screen
-				if ( ! $enqueue_smush || ! in_array( $current_page, $pages ) ) {
+				if ( ! $enqueue_smush || ! in_array( $current_page, $this->pages ) ) {
 
 					return;
 				}
@@ -1539,10 +1539,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function get_upfront_images( $skip_ids = array() ) {
 
 			$query = array(
-				'fields'         => 'ids',
+				'fields'         => array( 'ids', 'post_mime_type' ),
 				'post_type'      => 'attachment',
 				'post_status'    => 'any',
-				'post_mime_type' => $this->mime_types,
 				'order'          => 'ASC',
 				'posts_per_page' => - 1,
 				'meta_key'       => 'upfront_used_image_sizes',
@@ -1557,7 +1556,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$results = new WP_Query( $query );
 
 			if ( ! is_wp_error( $results ) && $results->post_count > 0 ) {
-				return $results->posts;
+				$posts = $this->filter_by_mime( $results->posts );
+				return $posts;
 			} else {
 				return false;
 			}
@@ -2007,6 +2007,28 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $wpsmush_settings;
 			$c_settings = $this->get_serialised_settings();
 			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $c_settings );
+		}
+
+		/**
+		 * Filter the Posts object as per mime type
+		 *
+		 * @param $posts Object of Posts
+		 *
+		 * @return mixed array of post ids
+		 *
+		 */
+		function filter_by_mime( $posts ) {
+			if ( empty( $posts ) ) {
+				return $posts;
+			}
+			foreach ( $posts as $post_k => $post ) {
+				if ( ! isset( $post->post_mime_type ) || ! in_array( $post->post_mime_type, $this->mime_types ) ) {
+					unset( $posts[ $post_k ] );
+				} else {
+					$posts[ $post_k ] = $post->ID;
+				}
+			}
+			return $posts;
 		}
 
 	}

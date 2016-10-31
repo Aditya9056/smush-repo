@@ -66,6 +66,7 @@ $smush_constants = array(
 	'PREMIUM_MAX_BYTES' => 32000000,
 	'PREFIX'            => 'wp-smush-',
 	'TIMEOUT'           => $timeout,
+	//If Set to false, WP Smush switch backs to the Old Sync Optimisation
 	'ASYNC'             => true
 );
 
