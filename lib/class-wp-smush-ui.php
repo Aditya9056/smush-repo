@@ -931,11 +931,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		}
 
 		/**
-        *
+		*
 		* @param $configure_screen
 		*
 		* @return string
-        *
+		*
 		*/
 		function save_button( $configure_screen = false ) {
 			$div_end = '';
@@ -949,7 +949,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<input type="submit" id="wp-smush-save-settings" class="button button-grey"
 				       value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
 		        <span class="spinner"></span>
-	        </div>
+		        </div>
 			</form>';
 
 			//For Configuration screen we need to show the advanced settings in single box

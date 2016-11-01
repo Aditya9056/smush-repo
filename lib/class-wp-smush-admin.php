@@ -371,7 +371,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( $current_page == 'media_page_wp-smush-bulk' ) {
 
 				//Setup all the stats
-				$this->setup_global_stats();
+				$this->setup_global_stats( true );
 
 				//Get attachments if all the images are not smushed
 				$this->attachments = $this->remaining_count > 0 ? $bulk->get_attachments() : array();
