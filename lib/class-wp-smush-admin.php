@@ -1277,6 +1277,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$resmush_list = array();
 
+			//Save settings only if networkwide settings are disabled
+			if ( ( ! is_multisite() || ! $wpsmush_settings->is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
+				//Save Settings
+				$wpsmush_settings->process_options();
+			}
+
 			//If there aren't any images in the library, return the notice
 			if ( 0 == $wpsmush_stats->total_count() ) {
 				$notice = esc_html__( "We haven’t found any images in your media library yet so there’s no smushing to be done!", "wp-smushit" );
@@ -1305,12 +1311,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//If a user manually runs smush check
 			$return_ui = isset( $_REQUEST['get_ui'] ) && 'true' == $_REQUEST['get_ui'] ? true : false;
-
-			//Save settings only if networkwide settings are disabled
-			if ( !is_multisite() || ! $wpsmush_settings->is_network_enabled() ) {
-				//Save Settings
-				$wpsmush_settings->process_options();
-			}
 
 			//Update the variables
 			$WpSmush->initialise();

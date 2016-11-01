@@ -774,7 +774,7 @@ jQuery(function ($) {
         $progress_bar.css('width', width + '%');
     };
 
-    var run_re_check = function( button ) {
+    var run_re_check = function( button, process_settings ) {
         var spinner = button.parent().find('.spinner');
 
         //Check if type is set in data attributes
@@ -808,6 +808,7 @@ jQuery(function ($) {
             action: 'scan_for_resmush',
             type: scan_type,
             get_ui: true,
+            process_settings: process_settings,
             wp_smush_options_nonce: jQuery('#wp_smush_options_nonce').val()
         };
 
@@ -974,7 +975,7 @@ jQuery(function ($) {
         e.preventDefault();
 
         //Run the Re-check
-        run_re_check( $(this) );
+        run_re_check( $(this ), false );
 
     });
 
@@ -1003,8 +1004,9 @@ jQuery(function ($) {
         e.preventDefault();
 
         var setting_type = '';
+        var setting_input = $('input[name="setting-type"]');
         //Check if setting type is set in the form
-        if (setting_input = $('input[name="setting-type"]')) {
+        if ( setting_input.length > 0 ) {
             setting_type = setting_input.val();
         }
 
@@ -1017,7 +1019,6 @@ jQuery(function ($) {
             };
 
             param = jQuery.param(param) + '&' + jQuery('form#wp-smush-settings-form').serialize();
-            ;
 
             //Send ajax, Update Settings, And Check For resmush
             jQuery.post(ajaxurl, param).done(function () {
@@ -1294,7 +1295,7 @@ jQuery(function ($) {
     //Initiate Re-check if the variable is set
     if( 'undefined' != typeof (wp_smush_run_re_check) && 1 == wp_smush_run_re_check && $('.wp-smush-scan').length > 0 ) {
         //Run the Re-check
-        run_re_check( $('.wp-smush-scan') );
+        run_re_check( $('.wp-smush-scan' ), false );
     }
 
 });
