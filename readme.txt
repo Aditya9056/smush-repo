@@ -1,13 +1,13 @@
 === WP Smush - Image Optimization ===
 Plugin Name: WP Smush - Image Optimization
-Version: 2.4.6
+Version: 2.5
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: image optimization, image compression, attachment,Attachments,compress,Compress Image File,Compress Image Size,Compress JPG,Compressed JPG, Compression Image,Image,Images,JPG,Optimise,Optimize,Photo,Photos,Pictures,PNG,Reduce Image Size,Smush,Smush.it,Upload,WordPress Compression,WordPress Image Tool,Yahoo, Yahoo Smush.it
 Requires at least: 3.5
 Tested up to: 4.6.1
-Stable tag: 2.4.5
+Stable tag: 2.5
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
@@ -92,10 +92,10 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.4.6 =
+= 2.5 =
 
 * Added:
-    * Async Optimisation for Auto Smush on upload
+    * Async Optimisation for Auto Smush on upload ( Set WP_SMUSH_ASYNC to false to turn off async optimisation )
     * Networkwide settings option in a Multisite
 
 * Fixed:

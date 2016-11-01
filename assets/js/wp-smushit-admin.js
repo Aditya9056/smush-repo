@@ -875,6 +875,11 @@ jQuery(function ($) {
             //Hide Spinner
             spinner.removeClass('is-active');
             $('.wp-smush-button').removeAttr('disabled');
+
+            //If wp-smush-re-check-message is there, remove it
+            if ($('.wp-smush-re-check-message').length) {
+                remove_element($('.wp-smush-re-check-message'));
+            }
         });
     }
 

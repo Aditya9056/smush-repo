@@ -1306,8 +1306,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//If a user manually runs smush check
 			$return_ui = isset( $_REQUEST['get_ui'] ) && 'true' == $_REQUEST['get_ui'] ? true : false;
 
-			//Save Settings
-			$wpsmush_settings->process_options();
+			//Save settings only if networkwide settings are disabled
+			if ( !is_multisite() || ! $wpsmush_settings->is_network_enabled() ) {
+				//Save Settings
+				$wpsmush_settings->process_options();
+			}
 
 			//Update the variables
 			$WpSmush->initialise();
