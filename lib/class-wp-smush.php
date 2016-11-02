@@ -582,6 +582,20 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $meta;
 			}
 
+			/**
+			 * Filter: wp_smush_image
+			 *
+			 * Whether to smush the given attachment id or not
+			 *
+			 * @param $skip bool, whether to Smush image or not
+			 *
+			 * @param $Attachment Id, Attachment id of the image being processed
+			 *
+			 */
+			if ( ! apply_filters( 'wp_smush_image', true, $ID ) ) {
+				return false;
+			}
+
 			//If the smushing transient is already set, return the status
 			if ( get_transient( 'smush-in-progress-' . $ID ) ) {
 				return $meta;
@@ -2113,6 +2127,20 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
+			/**
+			 * Filter: wp_smush_image
+			 *
+			 * Whether to smush the given attachment id or not
+			 *
+			 * @param $skip bool, whether to Smush image or not
+			 *
+			 * @param $Attachment Id, Attachment id of the image being processed
+			 *
+			 */
+			if ( ! apply_filters( 'wp_smush_image', true, $id ) ) {
+				return;
+			}
+
 			global $wpsmushit_admin;
 			$wpsmushit_admin->smush_single( $id, true );
 
@@ -2132,6 +2160,20 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//If auto Smush is disabled
 			if ( ! $this->is_auto_smush_enabled() ) {
+				return;
+			}
+
+			/**
+			 * Filter: wp_smush_image
+			 *
+			 * Whether to smush the given attachment id or not
+			 *
+			 * @param $skip bool, whether to Smush image or not
+			 *
+			 * @param $Attachment Id, Attachment id of the image being processed
+			 *
+			 */
+			if ( ! apply_filters( 'wp_smush_image', true, $id ) ) {
 				return;
 			}
 

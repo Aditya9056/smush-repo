@@ -95,6 +95,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 = 2.5 =
 
 * Added:
+    * Filter: `wp_smush_image`, Boolean, Whether to Smush image or not
     * Async Optimisation for Auto Smush on upload ( Set WP_SMUSH_ASYNC to false to turn off async optimisation )
     * Networkwide settings option in a Multisite
 
