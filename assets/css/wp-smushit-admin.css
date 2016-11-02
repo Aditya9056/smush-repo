@@ -1031,7 +1031,7 @@ small.smush-setting-description {
 
 /** For Smush Pro Promo and Humming Bird promo **/
 .wpmud .wp-smush-pro-adv {
-    background-image: url(../images/dev-team.png);
+    background-image: url(../images/dev-team.svg);
     background-repeat: no-repeat;
     background-position: center bottom;
     background-size: 90%;
