@@ -589,7 +589,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$stats['super_smushed'] = $this->super_smushed;
 			}
 
-			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( esc_html__( "You've smushed %d images in total.", "wp-smushit" ), $stats['total_images'] ) : '';
+			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( __( "You've smushed %d images in total.", "wp-smushit" ), $stats['total_images'] ) : '';
 
 			//Wrap the error message in div
 			$error = !empty( $error ) ? '<p class="wp-smush-error-message">' . $error . '</p>' : $error;
