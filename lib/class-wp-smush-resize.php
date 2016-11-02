@@ -36,7 +36,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			/**
 			 * Initialize class variables, after all stuff has been loaded
 			 */
-			add_action( 'wp_after_admin_bar_render', array( $this, 'initialize' ) );
+			add_action( 'admin_init', array( $this, 'initialize' ) );
 
 		}
 
@@ -52,10 +52,12 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			global $wpsmush_settings, $wpsmushit_admin;
 			$current_screen = get_current_screen();
 
-			//Do not Proceed if not on one of the required screens
-			$current_page = $current_screen->base;
-			if ( ! in_array( $current_page, $wpsmushit_admin->pages ) ) {
-				return;
+			if( !empty( $current_screen ) ) {
+				//Do not Proceed if not on one of the required screens
+				$current_page = $current_screen->base;
+				if ( ! in_array( $current_page, $wpsmushit_admin->pages ) ) {
+					return;
+				}
 			}
 
 			//If resizing is enabled
