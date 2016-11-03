@@ -1879,7 +1879,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Do not display the notice on Bulk Smush Screen
 			global $current_screen;
-			if ( ! empty( $current_screen->base ) && ( 'media_page_wp-smush-bulk' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base ) ) {
+			if ( ! empty( $current_screen->base ) && ( 'media_page_wp-smush-bulk' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base || 'settings_page_wp-smush-network' == $current_screen->base ) ) {
 				return true;
 			}
 
