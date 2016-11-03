@@ -566,7 +566,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$stats['total'] = $wpsmush_stats->total_count();
 
-			if ( is_wp_error( $smush ) ) {
+			if ( isset( $smush ) && is_wp_error( $smush ) ) {
 
 				$send_error = true;
 
