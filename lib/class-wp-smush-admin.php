@@ -156,7 +156,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
 			// New Features Notice
-//			add_action( 'admin_notices', array( $this, 'smush_updated' ) );
+			add_action( 'admin_notices', array( $this, 'smush_updated' ) );
+			add_action( 'network_admin_notices', array( $this, 'smush_updated' ) );
 
 			//Handle the smush pro dismiss features notice ajax
 			add_action( 'wp_ajax_dismiss_upgrade_notice', array( $this, 'dismiss_upgrade_notice' ) );
@@ -1857,7 +1858,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//If Versions Do not match
 			if ( empty( $version ) || $version != WP_SMUSH_VERSION ) {
-				return true;
+//				return true;
 			}
 
 			//Do not display it for other users
@@ -1876,13 +1877,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return true;
 			}
 
-			//Do not show for new installations
-			$install_type = get_site_option( 'wp-smush-install-type', false );
-
-			if ( ! $install_type || 'new' == $install_type ) {
-				return true;
-			}
-
 			//Do not display the notice on Bulk Smush Screen
 			global $current_screen;
 			if ( ! empty( $current_screen->base ) && ( 'media_page_wp-smush-bulk' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base ) ) {
@@ -1895,16 +1889,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				array(
 					'utm_source'   => 'Smush-Free',
 					'utm_medium'   => 'Banner',
-					'utm_campaign' => 'now-with-resizing'
+					'utm_campaign' => 'now-with-async'
 				),
 				$this->upgrade_url
 			);
+			$settings_link = is_multisite() ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
 
-			$settings_link = '<a href="' . admin_url( 'upload.php?page=wp-smush-bulk#wp-smush-settings-box' ) . '" title="' . esc_html__( "Settings", "wp-smushit" ) . '">';
+			$settings_link = '<a href="' . $settings_link . '" title="' . esc_html__( "Review your setting now.", "wp-smushit" ) . '">';
 			$upgrade_link  = '<a href="' . esc_url( $upgrade_url ) . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
+			$message_s = sprintf( esc_html__( "Hey there, Smush %s makes the feature %sAutomatically smush my images on upload%s faster, as it works in the background now.", 'wp-smushit' ), WP_SMUSH_VERSION, '<strong>', '</strong>' );
+			$message_s .= is_multisite() ? sprintf( esc_html__( " Moreover, it allows you to manage the whole network settings from a single page. %sReview your settings now!%s", 'wp-smushit' ), $settings_link, '</a>' ) : '';
 			?>
 			<div class="notice notice-info is-dismissible wp-smush-update-info">
-				<p><?php printf( esc_html__( "Woohoo! Your latest Smush update %s allows you to %sauto resize%s all your images, how cool is that! %sFind out more here >>%s", 'wp-smushit' ), WP_SMUSH_VERSION, $settings_link, '</a>', $upgrade_link, '</a>' ); ?></p>
+				<p><?php echo $message_s; ?></p>
 			</div>
 
 			<script src="<?php echo esc_url( $js_url ) . '?v=' . WP_SMUSH_VERSION; ?>"></script><?php
