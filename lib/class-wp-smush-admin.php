@@ -1858,7 +1858,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//If Versions Do not match
 			if ( empty( $version ) || $version != WP_SMUSH_VERSION ) {
-//				return true;
+				return true;
 			}
 
 			//Do not display it for other users
@@ -1897,8 +1897,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$settings_link = '<a href="' . $settings_link . '" title="' . esc_html__( "Review your setting now.", "wp-smushit" ) . '">';
 			$upgrade_link  = '<a href="' . esc_url( $upgrade_url ) . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
-			$message_s = sprintf( esc_html__( "Hey there, Smush %s makes the feature %sAutomatically smush my images on upload%s faster, as it works in the background now.", 'wp-smushit' ), WP_SMUSH_VERSION, '<strong>', '</strong>' );
-			$message_s .= is_multisite() ? sprintf( esc_html__( " Moreover, it allows you to manage the whole network settings from a single page. %sReview your settings now!%s", 'wp-smushit' ), $settings_link, '</a>' ) : '';
+			$message_s     = sprintf( esc_html__( "Welcome to the newest version of WP Smush! Auto-smushing on upload is lightning fast now that we handle all the smushing asynchronously.", 'wp-smushit' ), WP_SMUSH_VERSION, '<strong>', '</strong>' );
+
+			//Message for network admin
+			$message_s .= is_multisite() ? sprintf( esc_html__( " And as a multisite user, you can manage %sSmush settings%s globally across all sites!", 'wp-smushit' ), $settings_link, '</a>' ) : '';
+
+			//Upgrade link for free users
+			$message_s .= ! $this->validate_install() ? sprintf( esc_html__( " %sFind out more here >>%s", "wp-smushit" ), $upgrade_link, '</a>' ) : '';
 			?>
 			<div class="notice notice-info is-dismissible wp-smush-update-info">
 				<p><?php echo $message_s; ?></p>
