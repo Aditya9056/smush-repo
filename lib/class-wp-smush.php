@@ -116,9 +116,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Enqueue Scripts, And Initialize variables
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 
-			//Load Translation files
-			add_action( 'plugins_loaded', array( $this, 'i18n' ), 12 );
-
 			//Load NextGen Gallery, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
 			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ), 90 );
 
@@ -137,11 +134,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Handle the Async optimisation
 			add_action( 'wp_async_wp_save_image_editor_file', array( $this, 'wp_smush_handle_editor_async' ), '', 2 );
 
-		}
-
-		function i18n() {
-			$path = path_join( dirname( plugin_basename( __FILE__ ) ), 'languages' );
-			load_plugin_textdomain( 'wp-smushit', false, $path );
 		}
 
 		/**

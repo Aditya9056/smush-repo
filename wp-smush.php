@@ -6,7 +6,7 @@ Description: Reduce image file sizes, improve performance and boost your SEO usi
 Author: WPMU DEV
 Version: 2.5.2
 Author URI: http://premium.wpmudev.org/
-Textdomain: wp-smushit
+Text Domain: wp-smushit
 */
 
 /*
@@ -124,7 +124,7 @@ if ( ! function_exists( 'wp_smush_email_message' ) ) {
 		return $message;
 	}
 }
-if( !function_exists('get_plugin_dir') ) {
+if ( ! function_exists( 'get_plugin_dir' ) ) {
 	/**
 	 * Returns the dir path for the plugin
 	 *
@@ -271,6 +271,12 @@ if ( ! function_exists( 'smush_sanitize_hex_color_no_hash' ) ) {
 
 		return smush_sanitize_hex_color( '#' . $color ) ? $color : null;
 	}
+}
+//Load Translation files
+add_action( 'plugins_loaded', 'i18n' );
+function i18n() {
+	$path = path_join( dirname( plugin_basename( __FILE__ ) ), 'languages/' );
+	load_plugin_textdomain( 'wp-smushit', false, $path );
 }
 
 register_activation_hook( __FILE__, 'smush_activated' );
