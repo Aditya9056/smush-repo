@@ -13,6 +13,9 @@
 //Include Bulk UI
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-ui.php';
 
+//Include Bulk UI
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-all.php';
+
 //Load Shared UI
 if ( ! class_exists( 'WDEV_Plugin_Ui' ) ) {
 	require_once WP_SMUSH_DIR . 'assets/shared-ui/plugin-ui.php';
@@ -80,7 +83,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			'post-new',
 			'upload',
 			'settings_page_wp-smush-network',
-			'media_page_wp-smush-bulk'
+			'media_page_wp-smush-bulk',
+			'media_page_wp-smush-all'
 		);
 
 		/**
@@ -111,6 +115,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		public $api_headers = array();
+
+		public $page_smush_all = '';
 
 		/**
 		 * Constructor
@@ -261,19 +267,26 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Add Bulk option settings page
 		 */
 		function screen() {
-			global $admin_page_suffix;
+			global $admin_page_suffix, $wpsmush_all;
 
+			//Bulk Smush Page for each site
 			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smush-bulk', array(
 				$this->bulk_ui,
 				'ui'
 			) );
 
+			//Network Settings Page
 			$page = 'settings.php';
 			$cap  = 'manage_network_options';
 
 			add_submenu_page( $page, 'WP Smush', 'WP Smush', $cap, 'wp-smush', array(
 				$this->bulk_ui,
 				'ui'
+			) );
+
+			$this->page_smush_all = add_media_page( 'WP Smush All', 'WP Smush All', 'manage_options', 'wp-smush-all', array(
+				$wpsmush_all,
+				'admin_menu'
 			) );
 
 			//For Nextgen gallery Pages, check later in enqueue function
@@ -294,6 +307,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/* Register Style. */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
+
+			//jQuery tree
+			wp_register_script( 'jqft-js', WP_SMUSH_URL . 'assets/js/jQueryFileTree.min.js', array(
+				'jquery'
+			), WP_SMUSH_VERSION, true );
+			wp_register_style( 'jqft-css', WP_SMUSH_URL . 'assets/css/jQueryFileTree.min.css', array(), $WpSmush->version );
 
 			//Dismiss Update Info
 			$this->dismiss_update_info();
@@ -338,6 +357,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'wdev-plugin-google_fonts',
 					'https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,500,300,300italic'
 				);
+			}
+
+			//Load on Smush all page only
+			if ( 'media_page_wp-smush-all' == $current_page ) {
+				//Load Jquery tree on specified page
+				wp_enqueue_script( 'jqft-js' );
+				wp_enqueue_style( 'jqft-css' );
 			}
 
 			// localize translatable strings for js
@@ -1745,7 +1771,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					//Load Shared UI
 					WDEV_Plugin_Ui::load( WP_SMUSH_URL . 'assets/shared-ui/', false );
 
-					if ( ( 'settings_page_wp-smush-network' != $current_page && 'media_page_wp-smush-bulk' != $current_page && 'gallery_page_wp-smush-nextgen-bulk' != $current_page ) ) {
+					if ( ( 'settings_page_wp-smush-network' != $current_page && 'media_page_wp-smush-bulk' != $current_page && 'gallery_page_wp-smush-nextgen-bulk' != $current_page && 'media_page_wp-smush-all' != $current_page) ) {
 
 						//Don't add thhe WPMUD class to body to other admin pages
 						remove_filter(

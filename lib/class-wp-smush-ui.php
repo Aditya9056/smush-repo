@@ -433,7 +433,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 								} ?>
 								<label>
 									<input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>"><?php
-									echo $size_k . " (" . $size['width'] . "x" . $size['height'] . ") "; ?>
+									if( isset( $size['width'] ) && $size['height'] ) {
+										echo $size_k . " (" . $size['width'] . "x" . $size['height'] . ") ";
+									} ?>
 								</label><?php
 							} ?>
 						</div><?php

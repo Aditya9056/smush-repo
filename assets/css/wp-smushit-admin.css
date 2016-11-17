@@ -1465,6 +1465,19 @@ small.smush-setting-description {
     display: none;
 }
 
+/** Directory Browser **/
+.wp-smush-dir-browser {
+    overflow: hidden;
+}
+
+.wpmud .wp-smush-dir-browser input.wp-smush-dir-path {
+    width: 450px;
+}
+
+.wpmud .wp-smush-dir-browser input.wp-smush-dir-path, .wpmud .wp-smush-dir-browser button {
+   display: inline-block;
+}
+
 /** Media Queries **/
 @media screen and (max-width: 1024px) and ( min-width: 800px ) {
     .wpmud .wrap .dev-box:not(.wp-smush-pro-adv) {

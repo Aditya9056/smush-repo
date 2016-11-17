@@ -1298,6 +1298,22 @@ jQuery(function ($) {
         run_re_check( $('.wp-smush-scan' ), false );
     }
 
+    //Scan Images
+    $('.wp-smush-scan').on('click', function () {
+        e.preventDefault();
+        //Disable button
+        jQuery(this).attr('disabled', 'disabled');
+        //Ajax Params
+        var params = {
+            action: 'smush_scan_images',
+            path: $('.wp-smush-dir-path').val()
+        };
+        //Send ajax, Update Settings, And Check For resmush
+        $.post(ajaxurl, params).done(function () {
+
+        });
+
+    });
 });
 (function ($) {
     var Smush = function (element, options) {

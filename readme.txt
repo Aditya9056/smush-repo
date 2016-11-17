@@ -22,7 +22,7 @@ Our servers do all the heavy lifting. Strip hidden bulky information from your i
 
 Large image files may be slowing down your site without you even knowing it. WP Smush uses WPMU DEV’s super servers to quickly smush every single one of your images and cuts all the unnecessary data without slowing down your site.
 
-[youtube https://www.youtube.com/watch?v=BLqk4KPRz28&feature=youtu.be]
+[youtube https://www.youtube.com/watch?v=BDtgVJZEajg&feature=youtu.be]
 
 WP Smush meticulously scans every image you upload – or have already added to your site – cuts all the unnecessary data and scales it for you before adding it to your media library.
 
@@ -34,7 +34,9 @@ WP Smush meticulously scans every image you upload – or have already added to 
 ★★★★★ <br>
 “I optimize my photos in Photoshop, but Smush makes it so easy – it does it automatically. I can just sit back and enjoy the speed.” - <a href="https://profiles.wordpress.org/helen432">helen432</a>
 
-WP Smush is super easy to use – no confusing compression software settings! Smush images in your library one at a time or bulk smush up to 50 images at a time.  Plus, configure automatic smush to scale and compress some or all of your images as they are being uploaded.
+<strong>What about Multisite?</strong> WP Smush can be used to optimize all the images across your entire network! Use global settings or configure each site individually.
+
+WP Smush is super easy to use – no confusing compression software settings! Smush images in your library one at a time or bulk smush up to 50 images at a time.  Plus, configure auto-smush to asyncronously scale and compress some or all of your images as they are being uploaded – it's incredibly fast.
 
 The faster your site loads, the more Google, Bing, Yahoo and other search engines will like it. Your site will load faster and rank higher.
 
@@ -45,10 +47,11 @@ The faster your site loads, the more Google, Bing, Yahoo and other search engine
   <li>Optimize your images using advanced lossless compression techniques.</li>
   <li>Set maximum width and height and large images will automatically scale before being added to your media library</li>
   <li>Process JPEG, GIF and PNG image files.</li>
-  <li>Auto-smush your attachments on upload.</li>
+  <li>Asynchronously auto-smush your attachments for super fast compression on upload.</li>
   <li>Manually smush your attachments individually in the media library, or in bulk 50 attachments at a time.</li>
   <li>Smush all standard web-sized images 1MB or smaller. </li>
   <li>Smush images with no slowdown using WPMU DEV's fast, reliable Smush API.</li>
+  <li>Global and individual settings for Multisite </li>
   <li>View advanced compression stats per-attachment and library totals.</li>
 </ul>
 
