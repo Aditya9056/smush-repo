@@ -1474,8 +1474,26 @@ small.smush-setting-description {
     width: 450px;
 }
 
-.wpmud .wp-smush-dir-browser input.wp-smush-dir-path, .wpmud .wp-smush-dir-browser button {
-   display: inline-block;
+.wpmud .wp-smush-dir-browser input.wp-smush-dir-path,
+.wpmud .wp-smush-dir-browser button,
+.wpmud .wp-smush-dir-browser label {
+    display: inline-block;
+}
+
+.wp-smush-loading-wrap {
+    margin: 0 auto;
+    overflow: hidden;
+    width: 150px;
+}
+
+.wp-smush-list-dialog .spinner {
+    float: left;
+}
+
+.wp-smush-loading-text {
+    font-size: 20px;
+    line-height: 1.3;
+    visibility: visible;
 }
 
 /** Media Queries **/
@@ -1617,11 +1635,13 @@ small.smush-setting-description {
         display: inline-block;
     }
 }
+
 @media screen and (max-width: 600px) {
     .wpmud .wp-smush-welcome.wp-smush-container {
         background-position: 43% bottom;
         padding-bottom: 148px;
     }
+
     .wpmud .wp-smush-welcome-content {
         margin: 0 30px 0px 0;
         max-width: 100%;

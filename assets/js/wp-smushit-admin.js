@@ -79,6 +79,16 @@ var remove_element = function( el, timeout ) {
     });
 };
 
+var getDirectories = function ( param ) {
+    console.log( param );
+    param.action = 'smush_get_directories';
+    var res = "";
+    jQuery.post( ajaxurl, param, function( response ) {
+        res = response;
+    });
+    return res;
+}
+
 jQuery(function ($) {
     var smushAddParams = function (url, data) {
         if (!$.isEmptyObject(data)) {
@@ -1299,18 +1309,16 @@ jQuery(function ($) {
     }
 
     //Scan Images
-    $('.wp-smush-scan').on('click', function () {
-        e.preventDefault();
-        //Disable button
-        jQuery(this).attr('disabled', 'disabled');
-        //Ajax Params
-        var params = {
-            action: 'smush_scan_images',
-            path: $('.wp-smush-dir-path').val()
-        };
-        //Send ajax, Update Settings, And Check For resmush
-        $.post(ajaxurl, params).done(function () {
+    $('.wp-smush-browse').on('click', function (e) {
 
+        //Display the loader
+        $('.wp-smush-loading-wrap span').css({'visibility': 'visible'});
+
+        $(".wp-smush-list-dialog .content").fileTree({
+            script: getDirectories,
+            //folderEvent: 'dblclick',
+            multiFolder: false
+            //onlyFolders: true
         });
 
     });

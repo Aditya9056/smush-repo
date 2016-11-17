@@ -1603,7 +1603,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$ajax_nonce = wp_create_nonce( "wp-smush-restore-" . $image_id );
 
-			return sprintf( '<a href="#" tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Restore original image.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Restore image", "wp-smush" ) );
+			return sprintf( '<a href="#" tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Restore original image.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Restore image", "wp-smushit" ) );
 		}
 
 		/**
@@ -1651,7 +1651,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$ajax_nonce = wp_create_nonce( "wp-smush-resmush-" . $image_id );
 
-			return sprintf( '<a href="#" tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Smush image including original file.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Resmush image", "wp-smush" ) );
+			return sprintf( '<a href="#" tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Smush image including original file.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Resmush image", "wp-smushit" ) );
 		}
 
 		/**
