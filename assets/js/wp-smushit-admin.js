@@ -79,16 +79,6 @@ var remove_element = function( el, timeout ) {
     });
 };
 
-var getDirectories = function ( param ) {
-    console.log( param );
-    param.action = 'smush_get_directories';
-    var res = "";
-    jQuery.post( ajaxurl, param, function( response ) {
-        res = response;
-    });
-    return res;
-}
-
 jQuery(function ($) {
     var smushAddParams = function (url, data) {
         if (!$.isEmptyObject(data)) {
@@ -894,6 +884,22 @@ jQuery(function ($) {
         });
     }
 
+    var getDirectoryList = function (param) {
+        param.action = 'smush_get_directory_list';
+        param.list_nonce = jQuery('input[name="list_nonce"]').val();
+        var res = '';
+        $.ajax({
+            type: "GET",
+            url: ajaxurl,
+            data: param,
+            success: function (response) {
+                res = response;
+            },
+            async: false
+        });
+        return res;
+    }
+
     /**
      * Handle the Smush Stats link click
      */
@@ -1308,20 +1314,28 @@ jQuery(function ($) {
         run_re_check( $('.wp-smush-scan' ), false );
     }
 
-    //Scan Images
+    //WP Smush all : Scan Images
     $('.wp-smush-browse').on('click', function (e) {
 
+        $('.wp-smush-list-dialog').show();
         //Display the loader
         $('.wp-smush-loading-wrap span').css({'visibility': 'visible'});
 
         $(".wp-smush-list-dialog .content").fileTree({
-            script: getDirectories,
+            script: getDirectoryList,
             //folderEvent: 'dblclick',
             multiFolder: false
             //onlyFolders: true
         });
 
     });
+
+    //WP Smush all: Close button functionality
+    $('.wp-smush-list-dialog').on('click', '.close', function(e) {
+        e.preventDefault();
+        $('.wp-smush-list-dialog').hide();
+    });
+
 });
 (function ($) {
     var Smush = function (element, options) {

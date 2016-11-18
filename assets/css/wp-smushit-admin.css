@@ -1486,6 +1486,10 @@ small.smush-setting-description {
     width: 150px;
 }
 
+.wp-smush-list-dialog .box-scroll {
+    margin-top: 80px;
+}
+
 .wp-smush-list-dialog .spinner {
     float: left;
 }
