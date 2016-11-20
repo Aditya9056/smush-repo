@@ -44,14 +44,14 @@ var update_dashoffset = function (stats) {
     }
 };
 
-var membership_validity = function( data ) {
+var membership_validity = function (data) {
     var member_validity_notice = jQuery('#wp-smush-invalid-member');
 
     //Check for Membership warning
-    if( 'undefined' != typeof ( data.show_warning ) && member_validity_notice.length > 0 ) {
-        if( data.show_warning ) {
+    if ('undefined' != typeof ( data.show_warning ) && member_validity_notice.length > 0) {
+        if (data.show_warning) {
             member_validity_notice.show();
-        }else{
+        } else {
             member_validity_notice.hide();
         }
     }
@@ -68,8 +68,8 @@ var resize_width = function () {
     }
 };
 
-var remove_element = function( el, timeout ) {
-    if( typeof timeout == 'undefined' ) {
+var remove_element = function (el, timeout) {
+    if (typeof timeout == 'undefined') {
         timeout = 100;
     }
     el.fadeTo(timeout, 0, function () {
@@ -774,7 +774,7 @@ jQuery(function ($) {
         $progress_bar.css('width', width + '%');
     };
 
-    var run_re_check = function( button, process_settings ) {
+    var run_re_check = function (button, process_settings) {
         var spinner = button.parent().find('.spinner');
 
         //Check if type is set in data attributes
@@ -884,6 +884,13 @@ jQuery(function ($) {
         });
     }
 
+    /**
+     * Get directory list using Ajax
+     *
+     * @param param
+     * @returns {string}
+     *
+     */
     var getDirectoryList = function (param) {
         param.action = 'smush_get_directory_list';
         param.list_nonce = jQuery('input[name="list_nonce"]').val();
@@ -991,7 +998,7 @@ jQuery(function ($) {
         e.preventDefault();
 
         //Run the Re-check
-        run_re_check( $(this ), false );
+        run_re_check($(this), false);
 
     });
 
@@ -1022,7 +1029,7 @@ jQuery(function ($) {
         var setting_type = '';
         var setting_input = $('input[name="setting-type"]');
         //Check if setting type is set in the form
-        if ( setting_input.length > 0 ) {
+        if (setting_input.length > 0) {
             setting_type = setting_input.val();
         }
 
@@ -1229,9 +1236,9 @@ jQuery(function ($) {
 
     //Handle, Change event in Enable Networkwide settings
     $('#wp-smush-networkwide').on('click', function (e) {
-        if ( $( this ).is(':checked')) {
-           $('.network-settings-wrapper').show();
-        }else{
+        if ($(this).is(':checked')) {
+            $('.network-settings-wrapper').show();
+        } else {
             $('.network-settings-wrapper').hide();
         }
     });
@@ -1275,7 +1282,7 @@ jQuery(function ($) {
     });
 
     //Adjust background image size if required
-    if( $('.wp-smush-pro-for-free').length ) {
+    if ($('.wp-smush-pro-for-free').length) {
         //On Page load
         resize_width();
         //Adjust background image
@@ -1284,7 +1291,7 @@ jQuery(function ($) {
         });
     }
     //Handle Re-check button functionality
-    $("#wp-smush-revalidate-member").on( 'click', function( e ) {
+    $("#wp-smush-revalidate-member").on('click', function (e) {
         e.preventDefault();
         //Ajax Params
         var params = {
@@ -1293,14 +1300,14 @@ jQuery(function ($) {
         var link = $(this);
         var parent = link.parents().eq(1);
         parent.addClass('loading-notice');
-        $.get(ajaxurl, params, function ( r ) {
+        $.get(ajaxurl, params, function (r) {
             //remove the warning
             parent.removeClass('loading-notice').addClass("loaded-notice");
-            if( 0 == r ) {
-                parent.attr('data-message', wp_smush_msgs.membership_valid );
-                remove_element( parent, 1000 );
-            }else{
-                parent.attr( 'data-message', wp_smush_msgs.membership_invalid );
+            if (0 == r) {
+                parent.attr('data-message', wp_smush_msgs.membership_valid);
+                remove_element(parent, 1000);
+            } else {
+                parent.attr('data-message', wp_smush_msgs.membership_invalid);
                 setTimeout(function remove_loader() {
                     parent.removeClass('loaded-notice');
                 }, 1000)
@@ -1309,9 +1316,9 @@ jQuery(function ($) {
     });
 
     //Initiate Re-check if the variable is set
-    if( 'undefined' != typeof (wp_smush_run_re_check) && 1 == wp_smush_run_re_check && $('.wp-smush-scan').length > 0 ) {
+    if ('undefined' != typeof (wp_smush_run_re_check) && 1 == wp_smush_run_re_check && $('.wp-smush-scan').length > 0) {
         //Run the Re-check
-        run_re_check( $('.wp-smush-scan' ), false );
+        run_re_check($('.wp-smush-scan'), false);
     }
 
     //WP Smush all : Scan Images
@@ -1331,9 +1338,27 @@ jQuery(function ($) {
     });
 
     //WP Smush all: Close button functionality
-    $('.wp-smush-list-dialog').on('click', '.close', function(e) {
+    $('.wp-smush-list-dialog').on('click', '.close', function (e) {
         e.preventDefault();
         $('.wp-smush-list-dialog').hide();
+    });
+
+    //On Select button click
+    $('.wp-smush-select-dir').on('click', function (e) {
+        e.preventDefault();
+
+        //Get the Selected directory path
+        var path = $('.jqueryFileTree .directory.selected a').attr('rel');
+        path = 'undefined' == typeof (path) ? '' : path;
+
+        //Absolute path
+        var abs_path = $('input[name="wp-smush-base-path"]').val();
+
+        //Hide the dialog
+        $('.wp-smush-list-dialog').hide();
+
+        //Fill in the input field
+        $('.wp-smush-dir-path').val(abs_path + path);
     });
 
 });

@@ -32,7 +32,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		 * Output the required UI for WP Smush All page
 		 */
 		function ui() {
-			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' ); ?>
+			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );?>
 			<div class="wp-smush-dir-browser">
 				<label for="wp-smush-dir"><?php esc_attr_e( "Image Directories", "wp-smushit" ); ?>
 					<input type="text" value="" class="wp-smush-dir-path" name="smush_dir_path" id="wp-smush-dir">
@@ -53,9 +53,11 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 								<span class="wp-smush-loading-text">Loading..</span>
 							</div>
 						</div>
+						<button class="wp-smush-select-dir"><?php esc_html_e("Select", "wp-smushit"); ?></button>
 					</div>
 				</div>
 			</div>
+			<input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>">
 			<button type="button"
 			        class="wp-smush-scan wp-smush-button"><?php esc_html_e( "Scan", "wp-smushit" ); ?></button><?php
 		}

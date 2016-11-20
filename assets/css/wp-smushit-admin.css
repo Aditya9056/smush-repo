@@ -1490,6 +1490,16 @@ small.smush-setting-description {
     margin-top: 80px;
 }
 
+.wpmud .dev-overlay.wp-smush-list-dialog .box {
+    margin-left: -300px;
+    width: 600px;
+}
+
+.wp-smush-select-dir {
+    float: right;
+    margin-top: 20px;
+}
+
 .wp-smush-list-dialog .spinner {
     float: left;
 }

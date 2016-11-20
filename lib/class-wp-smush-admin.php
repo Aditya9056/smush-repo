@@ -309,7 +309,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
 
 			//jQuery tree
-			wp_register_script( 'jqft-js', WP_SMUSH_URL . 'assets/js/jQueryFileTree.min.js', array(
+			wp_register_script( 'jqft-js', WP_SMUSH_URL . 'assets/js/jQueryFileTree.js', array(
 				'jquery'
 			), WP_SMUSH_VERSION, true );
 			wp_register_style( 'jqft-css', WP_SMUSH_URL . 'assets/css/jQueryFileTree.min.css', array(), $WpSmush->version );
