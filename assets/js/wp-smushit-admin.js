@@ -1393,6 +1393,18 @@ jQuery(function ($) {
         //Disable input field and browse button
         $('.wp-smush-dir-path').attr('disabled', 'disabled');
         $('.wp-smush-browse').attr('disabled', 'disabled');
+
+        //Send a ajax request to get a list of all the image files
+        var param = {
+            action: 'get_image_list',
+            path: $('.wp-smush-dir-path').val(),
+            image_list_nonce: $('input[name="image_list_nonce"]').val()
+        };
+
+        //Get the List of images
+        $.get(ajaxurl, param, function (res) {
+
+        });
     });
 
 });

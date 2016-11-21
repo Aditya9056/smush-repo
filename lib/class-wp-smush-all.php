@@ -18,6 +18,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			//Handle Ajax request 'smush_get_directory_list'
 			add_action( 'wp_ajax_smush_get_directory_list', array( $this, 'directory_list' ) );
 
+			//Scan the given directory path for the list of images
+			add_action( 'wp_ajax_get_image_list', array( $this, 'get_image_list' ) );
+
 		}
 
 		function admin_menu() {
@@ -32,7 +35,8 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		 * Output the required UI for WP Smush All page
 		 */
 		function ui() {
-			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );?>
+			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
+			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' ); ?>
 			<div class="wp-smush-dir-browser">
 				<label for="wp-smush-dir"><?php esc_attr_e( "Image Directories", "wp-smushit" ); ?>
 					<input type="text" value="" class="wp-smush-dir-path" name="smush_dir_path" id="wp-smush-dir">
@@ -53,16 +57,16 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 								<span class="wp-smush-loading-text">Loading..</span>
 							</div>
 						</div>
-						<button class="wp-smush-select-dir"><?php esc_html_e("Select", "wp-smushit"); ?></button>
+						<button class="wp-smush-select-dir"><?php esc_html_e( "Select", "wp-smushit" ); ?></button>
 					</div>
 				</div>
 			</div>
 			<input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>">
 			<div class="wp-smush-scan-wrap">
-				<button type="button" class="wp-smush-scan wp-smush-button">
-					<?php esc_html_e( "Scan", "wp-smushit" ); ?>
-				</button>
-				<span class="spinner"></span>
+			<button type="button" class="wp-smush-scan wp-smush-button">
+				<?php esc_html_e( "Scan", "wp-smushit" ); ?>
+			</button>
+			<span class="spinner"></span>
 			</div><?php
 		}
 
@@ -134,6 +138,130 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			}
 		}
 
+		/**
+		 * @param SplFileInfo $file
+		 * @param mixed $key
+		 * @param RecursiveCallbackFilterIterator $iterator
+		 *
+		 * @return bool True if you need to recurse or if the item is acceptable
+		 */
+		function exclude_files( $file, $key, $iterator ) {
+			// Will exclude everything under these directories
+			$exclude = array( '.php', '.svg' );
+			if ( $iterator->hasChildren() && ! in_array( $file->getFilename(), $exclude ) ) {
+				return true;
+			}
+
+			return $file->isFile();
+		}
+
+		function get_image_list() {
+
+			//Check For Permission
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( "Unauthorized" );
+			}
+
+			//Verify nonce
+			check_ajax_referer( 'smush_get_image_list', 'image_list_nonce' );
+
+			//Check if directory path is set or not
+			if ( empty( $_GET['path'] ) ) {
+				wp_send_json_error( "Empth Directory Path" );
+			}
+
+			//Directory Path
+			$path = realpath( $_GET['path'] );
+
+			//Directory Iterator, Exclude . and ..
+			$innerIterator = new RecursiveDirectoryIterator(
+				$path,
+				RecursiveDirectoryIterator::SKIP_DOTS
+			);
+
+			//File Iterator
+			$iterator = new RecursiveIteratorIterator(
+				new RecursiveCallbackFilterIterator( $innerIterator, array( $this, 'exclude_files' ) ),
+				RecursiveIteratorIterator::CHILD_FIRST
+			);
+
+			$files = array();
+			foreach ( $iterator as $path ) {
+
+				if ( $path->isFile() ) {
+					$file_path = $path->getPathname();
+					$file_name = $path->getFilename();
+					if( !file_exists( $file_path ) ) {
+						echo $file_path;
+					}
+
+					if ( $this->is_image( $file_path ) ) {
+						$dir_name = dirname( $file_path );
+
+						//Initialize if dirname doesn't exists in array already
+						if ( ! isset( $files[ $dir_name ] ) ) {
+							$files[ $dir_name ] = array();
+						}
+						$files[ $dir_name ][ $file_name ] = $file_path;
+					}
+				}
+			}
+			wp_send_json_success( $files );
+
+		}
+
+		/**
+		 * Check whether the given path is a image or not
+		 *
+		 * @param $path
+		 *
+		 * @return bool
+		 *
+		 */
+		function is_image( $path ) {
+
+			//Check if the path is valid
+			if ( ! file_exists( $path ) || ! $this->is_image_from_extension( $path ) ) {
+				return false;
+			}
+
+			$a = getimagesize( $path );
+
+			//If a is not set
+			if ( ! $a || empty( $a ) ) {
+				return false;
+			}
+
+			$image_type = $a[2];
+
+			if ( in_array( $image_type, array( IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG ) ) ) {
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Check if the given file path is a supported image format
+		 *
+		 * @param $path File Path
+		 *
+		 * @return bool Whether a image or not
+		 */
+		function is_image_from_extension( $path ) {
+			$supported_image = array(
+				'gif',
+				'jpg',
+				'jpeg',
+				'png'
+			);
+			$ext             = strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ); // Using strtolower to overcome case sensitive
+			if ( in_array( $ext, $supported_image ) ) {
+				return true;
+			}
+
+			return false;
+		}
 	}
 
 	//Class Object
