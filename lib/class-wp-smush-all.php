@@ -37,7 +37,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				<label for="wp-smush-dir"><?php esc_attr_e( "Image Directories", "wp-smushit" ); ?>
 					<input type="text" value="" class="wp-smush-dir-path" name="smush_dir_path" id="wp-smush-dir">
 				</label>
-				<a href="#wp-smush-image-list"
+				<a href="#"
 				   class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "Browse", "wp-smushit" ); ?></a>
 			</div>
 			<div class="dev-overlay wp-smush-list-dialog">
@@ -58,8 +58,12 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				</div>
 			</div>
 			<input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>">
-			<button type="button"
-			        class="wp-smush-scan wp-smush-button"><?php esc_html_e( "Scan", "wp-smushit" ); ?></button><?php
+			<div class="wp-smush-scan-wrap">
+				<button type="button" class="wp-smush-scan wp-smush-button">
+					<?php esc_html_e( "Scan", "wp-smushit" ); ?>
+				</button>
+				<span class="spinner"></span>
+			</div><?php
 		}
 
 		function directory_list() {

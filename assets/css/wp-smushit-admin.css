@@ -1504,6 +1504,24 @@ small.smush-setting-description {
     float: left;
 }
 
+/** Scan Button **/
+.wp-smush-scan-wrap {
+    padding-left: 10px;
+    overflow: hidden;
+}
+
+.wp-smush-scan-wrap button, .wp-smush-scan-wrap span {
+    float: left;
+}
+
+.wp-smush-scan-wrap .spinner {
+    margin-top: 10px;
+}
+
+.wpmud .button.wp-smush-browse {
+    margin-top: 7px;
+}
+
 .wp-smush-loading-text {
     font-size: 20px;
     line-height: 1.3;

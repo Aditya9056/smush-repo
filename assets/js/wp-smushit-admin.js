@@ -1324,6 +1324,12 @@ jQuery(function ($) {
     //WP Smush all : Scan Images
     $('.wp-smush-browse').on('click', function (e) {
 
+        e.preventDefault();
+        //If disabled, do not process
+        if ($(this).attr('disabled')) {
+            return;
+        }
+
         $('.wp-smush-list-dialog').show();
         //Display the loader
         $('.wp-smush-loading-wrap span').css({'visibility': 'visible'});
@@ -1347,8 +1353,13 @@ jQuery(function ($) {
     $('.wp-smush-select-dir').on('click', function (e) {
         e.preventDefault();
 
+        //If disabled, do not process
+        if ($(this).attr('disabled')) {
+            return;
+        }
+
         //Get the Selected directory path
-        var path = $('.jqueryFileTree .directory.selected a').attr('rel');
+        var path = $('.jqueryFileTree .selected a').attr('rel');
         path = 'undefined' == typeof (path) ? '' : path;
 
         //Absolute path
@@ -1359,6 +1370,29 @@ jQuery(function ($) {
 
         //Fill in the input field
         $('.wp-smush-dir-path').val(abs_path + path);
+    });
+
+    //On Click "Scan"
+    $('.wp-smush-scan').on('click', function (e) {
+        e.preventDefault();
+
+        var button = $(this);
+
+        //if the button is already disabled, return
+        if (button.attr('disabled')) {
+            return;
+        }
+        button.css({'opacity': '0.7'});
+
+        //Disable Button
+        button.attr('disabled', 'disabled');
+
+        //Display the spinner
+        button.parent().find('.spinner').css({'visibility': 'visible'});
+
+        //Disable input field and browse button
+        $('.wp-smush-dir-path').attr('disabled', 'disabled');
+        $('.wp-smush-browse').attr('disabled', 'disabled');
     });
 
 });
