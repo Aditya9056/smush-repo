@@ -42,7 +42,20 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					<input type="text" value="" class="wp-smush-dir-path" name="smush_dir_path" id="wp-smush-dir">
 				</label>
 				<a href="#"
-				   class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "Browse", "wp-smushit" ); ?></a>
+				   class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "Select", "wp-smushit" ); ?></a>
+			</div>
+			<div class="wp-smush-scan-result">
+				<p class="wp-smush-div-heading"><b><?php esc_html_e( "IMAGES TO BE OPTIMISED", "wp-smushit" ); ?></b></p>
+				<button class="wp-smush-start"><?php esc_html_e("SMUSH NOW", "wp-smushit"); ?></button>
+				<div class="wp-smush-folder-stats">
+					<!-- Show the pretty Graph with a circle, total image count, optimised images, savings-->
+				</div>
+				<div class="content">
+					<!-- Show a list of images, inside a fixed height div, with a scroll. As soon as the image is
+					optimised show a tick mark, with savings below the image. Scroll the li each time for the
+					current optimised image -->
+
+				</div>
 			</div>
 			<div class="dev-overlay wp-smush-list-dialog">
 				<div class="back"></div>
@@ -57,19 +70,19 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 								<span class="wp-smush-loading-text">Loading..</span>
 							</div>
 						</div>
-						<button class="wp-smush-select-dir"><?php esc_html_e( "Select", "wp-smushit" ); ?></button>
+						<div class="wp-smush-select-button-wrap">
+							<span class="spinner"></span>
+							<button class="wp-smush-select-dir"><?php esc_html_e( "Scan", "wp-smushit" ); ?></button>
+						</div>
 					</div>
 				</div>
 			</div>
-			<input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>">
-			<div class="wp-smush-scan-wrap">
-			<button type="button" class="wp-smush-scan wp-smush-button">
-				<?php esc_html_e( "Scan", "wp-smushit" ); ?>
-			</button>
-			<span class="spinner"></span>
-			</div><?php
+			<input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>"><?php
 		}
 
+		/**
+		 * Return a directory/File list
+		 */
 		function directory_list() {
 			//Check For Permission
 			if ( ! current_user_can( 'manage_options' ) ) {
@@ -91,7 +104,6 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			);
 
 			// set checkbox if multiSelect set to true
-			$checkbox    = ( isset( $_GET['multiSelect'] ) && $_GET['multiSelect'] == 'true' ) ? "<input type='checkbox' />" : null;
 			$onlyFolders = ( '/' == $_GET['dir'] || isset( $_GET['onlyFolders'] ) && $_GET['onlyFolders'] == 'true' ) ? true : false;
 			$onlyFiles   = ( isset( $_GET['onlyFiles'] ) && $_GET['onlyFiles'] == 'true' ) ? true : false;
 
@@ -112,9 +124,11 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 						if ( file_exists( $postDir . $file ) && $file != '.' && $file != '..' ) {
 							if ( is_dir( $postDir . $file ) && ( ! $onlyFiles || $onlyFolders ) ) {
-								$list .= "<li class='directory collapsed'>{$checkbox}<a rel='" . $htmlRel . "/'>" . $htmlName . "</a></li>";
+								//Skip Uploads folder - Media Files
+
+								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/'>" . $htmlName . "</a></li><br />";
 							} else if ( ( ! $onlyFolders || $onlyFiles ) && in_array( $ext, $supported_image ) ) {
-								$list .= "<li class='file ext_{$ext}'>{$checkbox}<a rel='" . $htmlRel . "'>" . $htmlName . "</a></li>";
+								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "'>" . $htmlName . "</a></li><br />";
 							}
 						}
 					}
@@ -145,16 +159,32 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		 *
 		 * @return bool True if you need to recurse or if the item is acceptable
 		 */
-		function exclude_files( $file, $key, $iterator ) {
+		function exclude( $file, $key, $iterator ) {
 			// Will exclude everything under these directories
-			$exclude = array( '.php', '.svg' );
-			if ( $iterator->hasChildren() && ! in_array( $file->getFilename(), $exclude ) ) {
+			$exclude_dir = array( '.git', 'test' );
+
+			//Exclude from the list, if one of the media upload folders
+			if ( $this->is_subfolder( $file->getPath() ) ) {
+				return true;
+			}
+
+			//Exclude Directories like git, and test
+			if ( $iterator->hasChildren() && ! in_array( $file->getFilename(), $exclude_dir ) ) {
+				return true;
+			}
+
+			//Do not exclude, if image
+			if ( $file->isFile() && $this->is_image_from_extension( $file->getPath() ) ) {
 				return true;
 			}
 
 			return $file->isFile();
 		}
 
+		/**
+		 * Handles Ajax request to obtain the Image list within a selected directory path
+		 *
+		 */
 		function get_image_list() {
 
 			//Check For Permission
@@ -171,17 +201,17 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			}
 
 			//Directory Path
-			$path = realpath( $_GET['path'] );
+			$base_dir = realpath( $_GET['path'] );
 
 			//Directory Iterator, Exclude . and ..
 			$innerIterator = new RecursiveDirectoryIterator(
-				$path,
+				$base_dir,
 				RecursiveDirectoryIterator::SKIP_DOTS
 			);
 
 			//File Iterator
-			$iterator = new RecursiveIteratorIterator(
-				new RecursiveCallbackFilterIterator( $innerIterator, array( $this, 'exclude_files' ) ),
+			//@todo: Manual Filtering since Recursive callback iterator is 5.4.0+
+			$iterator = new RecursiveIteratorIterator( $innerIterator,
 				RecursiveIteratorIterator::CHILD_FIRST
 			);
 
@@ -191,7 +221,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				if ( $path->isFile() ) {
 					$file_path = $path->getPathname();
 					$file_name = $path->getFilename();
-					if( !file_exists( $file_path ) ) {
+					if ( ! file_exists( $file_path ) ) {
 						echo $file_path;
 					}
 
@@ -206,7 +236,10 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					}
 				}
 			}
-			wp_send_json_success( $files );
+
+			$markup = $this->generate_image_list( $files );
+
+			wp_send_json_success( $markup );
 
 		}
 
@@ -261,6 +294,119 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			}
 
 			return false;
+		}
+
+		/**
+		 *
+		 * @param $path
+		 *
+		 * @return bool
+		 *
+		 * Borrowed from Shortpixel - (y)
+		 *
+		 */
+		public function is_subfolder( $path ) {
+			$upload_dir  = wp_upload_dir();
+			$base_dir    = $upload_dir["basedir"];
+			$upload_path = $upload_dir["path"];
+
+			//If matches the current upload path
+			if ( $upload_path == $path ) {
+				return true;
+			}
+
+			//contains one of the year subfolders of the media library
+			if ( strpos( $path, $upload_path ) == 0 ) {
+				$pathArr = explode( '/', str_replace( $base_dir . '/', "", $path ) );
+				if ( count( $pathArr ) >= 1
+				     && is_numeric( $pathArr[0] ) && $pathArr[0] > 1900 && $pathArr[0] < 2100 //contains the year subfolder
+				     && ( count( $pathArr ) == 1 //if there is another subfolder then it's the month subfolder
+				          || ( is_numeric( $pathArr[1] ) && $pathArr[1] > 0 && $pathArr[1] < 13 ) )
+				) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * Creates a tree out of Given path array
+		 *
+		 * @param $path_list Array of path and images
+		 *
+		 * @param $base_dir Selected Base Path for the image search
+		 *
+		 */
+		function build_tree( $path_list, $base_dir ) {
+			$path_tree = array();
+			foreach ( $path_list as $path => $images ) {
+				$path     = str_replace( $base_dir, '', $path );
+				$list     = explode( '/', trim( $path, '/' ), 3 );
+				$last_dir = &$path_tree;
+				$length = sizeof( $list );
+				foreach ( $list as $dir ) {
+					$length--;
+					$last_dir =& $last_dir[ $dir ];
+				}
+				echo "<pre>";
+				print_r( $path_tree );
+				print_r( $images );
+				print_r( $dir );
+				echo "</pre>";
+				exit;
+			}
+			return $path_tree;
+		}
+
+		/*
+		 * Generate the markup for all the images
+		 */
+		function generate_markup( $images ) {
+			$div = '<ul class="wp-smush-image-list">';
+			foreach( $images as $image_path => $image ) {
+				$count = sizeof( $image );
+				if( is_array( $image ) && $count > 1 ) {
+					$div .= "<li class='wp-smush-image-ul'><span class='wp-smush-li-path'>{$image_path} - " . sprintf( esc_html__( "%d image(s)", "wp-smushit" ), $count ) . "</span>
+					<ul class='wp-smush-image-list-inner'>";
+					foreach ($image as $item ) {
+						$div .= "<li class='wp-smush-image-ele' id='{$item}'>{$item}";
+						//Optimisation Status
+						$div .= "<span class='wp-smush-image-ele-optimised'></span>";
+						//Div to show stats after
+						$div .= "<div class='wp-smush-image-ele-stats'></div>";
+						//Close LI
+						$div .= "</li>";
+					}
+					$div .= "</ul>
+					</li>";
+				}else{
+					$image_p = array_pop( $image );
+					$div .= "<li class='wp-smush-image-ele' id='{$image_p}'>{$image_p}";
+					//Optimisation Status
+					$div .= "<span class='wp-smush-image-ele-optimised' title='". esc_html_e("", "wp-smushit") ."'></span>";
+					//Div to show stats after
+					$div .= "<div class='wp-smush-image-ele-stats'></div>";
+					//Close LI
+					$div .= "</li>";
+				}
+			}
+			$div .= '</ul>';
+			return $div;
+
+		}
+
+		/**
+		 *
+		 * Create a tree and markup for the same from given file list
+		 *
+		 * @param $files List of files in their respective directories
+		 *
+		 * @param $base_dir Base Path to search for images
+		 *
+		 */
+		function generate_image_list( $files ) {
+			return $this->generate_markup( $files );
 		}
 	}
 
