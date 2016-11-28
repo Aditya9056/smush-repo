@@ -158,6 +158,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		function admin_init() {
 
+			global $wpsmush_all;
+
 			//Handle Notice dismiss
 			$this->dismiss_smush_upgrade();
 
@@ -166,6 +168,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Initialize variables
 			$this->initialise();
+
+			$wpsmush_all->create_table();
 		}
 
 		/**

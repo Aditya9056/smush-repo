@@ -32,6 +32,57 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		}
 
 		/**
+		 *  Create the Smush image table to store the paths of scanned images, and stats
+		 */
+		function create_table() {
+			global $wpdb;
+
+			$charset_collate = $wpdb->get_charset_collate();
+
+			//If path index is not specified WPDb gives an error, Lower Index size for utf8mb4
+			if ( empty( $path_index_size ) && strpos( $charset_collate, 'utf8mb4' ) ) {
+				$path_index_size = 191;
+			} else {
+				$path_index_size = 255;
+			}
+
+			/**
+			 * Table: wp_smush_images
+			 * Columns:
+			 * id -> Auto Increment ID
+			 * path -> Absolute path to the image file
+			 * resize -> Whether the image was resized or not
+			 * image_size -> Current image size post optimisation
+			 * orig_size -> Original image size before optimisation
+			 * creation_time -> Unix time for the file creation, to match it against the current creation time,
+			 *                  in order to confirm if it is optimised or not
+			 * updated -> Timestamp
+			 * last_scanned -> 1/0 to mark if the image was in last scan or not, so that the images loaded on page refresh
+			 *                  are from latest scan only and not the whole list from db
+			 * meta -> For any future use
+			 *
+			 */
+			$sql = "CREATE TABLE {$wpdb->prefix}smush_images (
+				id mediumint(9) NOT NULL AUTO_INCREMENT,
+				path text NOT NULL,
+				resize varchar(55),
+				image_size int(10) unsigned,
+				orig_size int(10) unsigned,
+				creation_time datetime,
+				last_scanned tinyint(1),
+				updated timestamp DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+				meta text,
+				UNIQUE KEY id (id),
+				UNIQUE KEY path (path($path_index_size)),
+				UNIQUE KEY creation_time (creation_time)
+			) $charset_collate;";
+
+			// include the upgrade library to initialize a table
+			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+			dbDelta( $sql );
+		}
+
+		/**
 		 * Output the required UI for WP Smush All page
 		 */
 		function ui() {
@@ -45,8 +96,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				   class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "Select", "wp-smushit" ); ?></a>
 			</div>
 			<div class="wp-smush-scan-result">
-				<p class="wp-smush-div-heading"><b><?php esc_html_e( "IMAGES TO BE OPTIMISED", "wp-smushit" ); ?></b></p>
-				<button class="wp-smush-start"><?php esc_html_e("SMUSH NOW", "wp-smushit"); ?></button>
+				<p class="wp-smush-div-heading"><b><?php esc_html_e( "IMAGES TO BE OPTIMISED", "wp-smushit" ); ?></b>
+				</p>
+				<button class="wp-smush-start"><?php esc_html_e( "SMUSH NOW", "wp-smushit" ); ?></button>
 				<div class="wp-smush-folder-stats">
 					<!-- Show the pretty Graph with a circle, total image count, optimised images, savings-->
 				</div>
@@ -123,7 +175,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						$ext      = preg_replace( '/^.*\./', '', $file );
 
 						if ( file_exists( $postDir . $file ) && $file != '.' && $file != '..' ) {
-							if ( is_dir( $postDir . $file ) && ( ! $onlyFiles || $onlyFolders ) ) {
+							if ( is_dir( $postDir . $file ) && ( ! $onlyFiles || $onlyFolders ) && ! $this->is_subfolder( $postDir . $file ) ) {
 								//Skip Uploads folder - Media Files
 
 								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/'>" . $htmlName . "</a></li><br />";
@@ -204,14 +256,16 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$base_dir = realpath( $_GET['path'] );
 
 			//Directory Iterator, Exclude . and ..
-			$innerIterator = new RecursiveDirectoryIterator(
+			$dirIterator = new RecursiveDirectoryIterator(
 				$base_dir,
 				RecursiveDirectoryIterator::SKIP_DOTS
 			);
 
+			$filtered_dir = new WPSmushRecursiveFilterIterator( $dirIterator );
+
 			//File Iterator
 			//@todo: Manual Filtering since Recursive callback iterator is 5.4.0+
-			$iterator = new RecursiveIteratorIterator( $innerIterator,
+			$iterator = new RecursiveIteratorIterator( $filtered_dir,
 				RecursiveIteratorIterator::CHILD_FIRST
 			);
 
@@ -297,12 +351,15 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		}
 
 		/**
+		 * Excludes the Media Upload Directory ( Checks for Year and Month )
 		 *
 		 * @param $path
 		 *
 		 * @return bool
 		 *
 		 * Borrowed from Shortpixel - (y)
+		 *
+		 * @todo: Add a option to filter images if User have turned off the Year and Month Organize option
 		 *
 		 */
 		public function is_subfolder( $path ) {
@@ -344,9 +401,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				$path     = str_replace( $base_dir, '', $path );
 				$list     = explode( '/', trim( $path, '/' ), 3 );
 				$last_dir = &$path_tree;
-				$length = sizeof( $list );
+				$length   = sizeof( $list );
 				foreach ( $list as $dir ) {
-					$length--;
+					$length --;
 					$last_dir =& $last_dir[ $dir ];
 				}
 				echo "<pre>";
@@ -356,6 +413,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				echo "</pre>";
 				exit;
 			}
+
 			return $path_tree;
 		}
 
@@ -364,12 +422,12 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		 */
 		function generate_markup( $images ) {
 			$div = '<ul class="wp-smush-image-list">';
-			foreach( $images as $image_path => $image ) {
+			foreach ( $images as $image_path => $image ) {
 				$count = sizeof( $image );
-				if( is_array( $image ) && $count > 1 ) {
+				if ( is_array( $image ) && $count > 1 ) {
 					$div .= "<li class='wp-smush-image-ul'><span class='wp-smush-li-path'>{$image_path} - " . sprintf( esc_html__( "%d image(s)", "wp-smushit" ), $count ) . "</span>
 					<ul class='wp-smush-image-list-inner'>";
-					foreach ($image as $item ) {
+					foreach ( $image as $item ) {
 						$div .= "<li class='wp-smush-image-ele' id='{$item}'>{$item}";
 						//Optimisation Status
 						$div .= "<span class='wp-smush-image-ele-optimised'></span>";
@@ -380,11 +438,11 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					}
 					$div .= "</ul>
 					</li>";
-				}else{
+				} else {
 					$image_p = array_pop( $image );
 					$div .= "<li class='wp-smush-image-ele' id='{$image_p}'>{$image_p}";
 					//Optimisation Status
-					$div .= "<span class='wp-smush-image-ele-optimised' title='". esc_html_e("", "wp-smushit") ."'></span>";
+					$div .= "<span class='wp-smush-image-ele-optimised' title='" . esc_html_e( "", "wp-smushit" ) . "'></span>";
 					//Div to show stats after
 					$div .= "<div class='wp-smush-image-ele-stats'></div>";
 					//Close LI
@@ -392,6 +450,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				}
 			}
 			$div .= '</ul>';
+
 			return $div;
 
 		}
@@ -413,4 +472,28 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 	//Class Object
 	global $wpsmush_all;
 	$wpsmush_all = new WpSmushAll();
+}
+
+/**
+ * Filters the list of directories, Exclude the Media Subfolders
+ *
+ */
+if ( class_exists( 'RecursiveFilterIterator' ) && ! class_exists( 'WPSmushRecursiveFilterIterator' ) ) {
+	class WPSmushRecursiveFilterIterator extends \RecursiveFilterIterator {
+
+		public function accept() {
+			global $wpsmush_all;
+			$path = $this->current()->getPathname();
+			if ( $this->isDir() ) {
+				if ( ! $wpsmush_all->is_subfolder( $path ) ) {
+					return true;
+				}
+			} else {
+				return true;
+			}
+
+			return false;
+		}
+
+	}
 }
