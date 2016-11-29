@@ -54,7 +54,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			 * resize -> Whether the image was resized or not
 			 * image_size -> Current image size post optimisation
 			 * orig_size -> Original image size before optimisation
-			 * creation_time -> Unix time for the file creation, to match it against the current creation time,
+			 * file_time -> Unix time for the file creation, to match it against the current creation time,
 			 *                  in order to confirm if it is optimised or not
 			 * updated -> Timestamp
 			 * last_scanned -> 1/0 to mark if the image was in last scan or not, so that the images loaded on page refresh
@@ -68,13 +68,13 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				resize varchar(55),
 				image_size int(10) unsigned,
 				orig_size int(10) unsigned,
-				creation_time datetime,
+				file_time int(10) unsigned,
 				last_scanned tinyint(1),
 				updated timestamp DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
 				meta text,
 				UNIQUE KEY id (id),
 				UNIQUE KEY path (path($path_index_size)),
-				UNIQUE KEY creation_time (creation_time)
+				KEY file_time (file_time)
 			) $charset_collate;";
 
 			// include the upgrade library to initialize a table
@@ -252,6 +252,8 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				wp_send_json_error( "Empth Directory Path" );
 			}
 
+			global $wpdb;
+
 			//Directory Path
 			$base_dir = realpath( $_GET['path'] );
 
@@ -264,12 +266,26 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$filtered_dir = new WPSmushRecursiveFilterIterator( $dirIterator );
 
 			//File Iterator
-			//@todo: Manual Filtering since Recursive callback iterator is 5.4.0+
 			$iterator = new RecursiveIteratorIterator( $filtered_dir,
 				RecursiveIteratorIterator::CHILD_FIRST
 			);
 
-			$files = array();
+			//Get the list of exsiting images in db
+			$image_list = array();
+			if ( empty( $image_list ) ) {
+				$query   = "SELECT id,path FROM {$wpdb->prefix}smush_images";
+				$results = $wpdb->get_results( $query, ARRAY_A );
+				foreach ( $results as $i ) {
+					$id                = $i['id'];
+					$path              = $i['path'];
+					$image_list[ $id ] = $path;
+				}
+			}
+
+			//Iterate over the file List
+			$files_arr = array();
+			$images    = array();
+			$count     = 0;
 			foreach ( $iterator as $path ) {
 
 				if ( $path->isFile() ) {
@@ -280,18 +296,43 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					}
 
 					if ( $this->is_image( $file_path ) ) {
+
+						/**  To generate Markup **/
 						$dir_name = dirname( $file_path );
 
 						//Initialize if dirname doesn't exists in array already
-						if ( ! isset( $files[ $dir_name ] ) ) {
-							$files[ $dir_name ] = array();
+						if ( ! isset( $files_arr[ $dir_name ] ) ) {
+							$files_arr[ $dir_name ] = array();
 						}
-						$files[ $dir_name ][ $file_name ] = $file_path;
+						$files_arr[ $dir_name ][ $file_name ] = $file_path;
+						/** End */
+
+						//If the image is not in db already, insert
+						if ( ! in_array( $file_path, $image_list ) ) {
+							/** To be stored in DB, Part of code inspired from Ewwww Optimiser  */
+							$image_size = $path->getSize();
+							$file_time  = @filectime( $file_path );
+							$images[]   = "('" . utf8_encode( $file_path ) . "',$image_size, $file_time, 1 )";
+							$count ++;
+						}
 					}
+				}
+				//Store the Images in db
+				if ( $count >= 5000 ) {
+					$count = 0;
+					$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES" . implode( ',', $images );
+					$wpdb->query( $query );
+					$images = array();
 				}
 			}
 
-			$markup = $this->generate_image_list( $files );
+			//Update rest of the images
+			if ( ! empty( $images ) && $count > 0 ) {
+				$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES" . implode( ',', $images );
+				$wpdb->query( $query );
+			}
+
+			$markup = $this->generate_markup( $files_arr );
 
 			wp_send_json_success( $markup );
 
@@ -453,19 +494,6 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			return $div;
 
-		}
-
-		/**
-		 *
-		 * Create a tree and markup for the same from given file list
-		 *
-		 * @param $files List of files in their respective directories
-		 *
-		 * @param $base_dir Base Path to search for images
-		 *
-		 */
-		function generate_image_list( $files ) {
-			return $this->generate_markup( $files );
 		}
 	}
 
