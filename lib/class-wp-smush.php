@@ -183,7 +183,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @returns array
 		 */
 		function do_smushit( $file_path = '' ) {
-			global $wpsmushit_admin;
 			$errors   = new WP_Error();
 			$dir_name = dirname( $file_path );
 			if ( empty( $file_path ) ) {

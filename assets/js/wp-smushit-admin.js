@@ -5,6 +5,8 @@
  * @author Umesh Kumar <umeshsingla05@gmail.com>
  *
  */
+/**@todo: Use Element tag for all the class selectors **/
+
 var WP_Smush = WP_Smush || {};
 
 /**
@@ -938,6 +940,32 @@ jQuery(function ($) {
             }
         }
     }
+    /**
+     * Start Optimising all the images listed in last scan
+     *
+     */
+    var smush_all = function() {
+
+        //Update the Optimising status for the image
+        var first_child = $('ul.wp-smush-image-list li:first:not(".optimised")');
+
+        //Disable Select Directory button
+        $('a.wp-smush-browse').attr('disabled', 'disabled');
+
+        //Hide the tick mark and show the spinner
+        first_child.find('span.wp-smush-image-ele-status').css({'display' : 'none'});
+        first_child.find('span.spinner').css({'visibility': 'visible'});
+
+        /** Send Ajax Request */
+        var param = {
+            action: 'wp_smush_optimise',
+            nonce: $('#wp-smush-all').val()
+        };
+
+        $.get(ajaxurl, param, function (e) {
+
+        });
+    }
 
     /**
      * Handle the Smush Stats link click
@@ -1381,7 +1409,7 @@ jQuery(function ($) {
         close_dialog();
     });
 
-    //On Select button click
+    //Image Directories: On Select button click
     $('.wp-smush-select-dir').on('click', function (e) {
         e.preventDefault();
 
@@ -1424,6 +1452,30 @@ jQuery(function ($) {
             set_accordion();
             close_dialog();
         });
+    });
+
+    /**
+     * Handle the Smush Now button click
+     */
+    $('.wp-smush-start').on('click', function (e) {
+        e.preventDefault();
+
+        //Check if we have images to be optimised
+        if( !$('.wp-smush-image-list li').length ) {
+            return;
+        }
+
+        //Disable this button
+        var self = $(this);
+
+        /** All the Styling changes **/
+        self.attr('disabled', 'disabled');
+        self.css({'opacity': '0.7'});
+        self.parent().find('.spinner').css({'visibility': 'visible'});
+
+        //Initialize the optimisation
+        smush_all();
+
     });
 
 });

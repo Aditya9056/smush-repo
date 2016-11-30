@@ -1519,6 +1519,18 @@ small.smush-setting-description {
     overflow: hidden;
 }
 
+/** Smush Button Wrapper **/
+.wp-smush-all-button-wrap {
+    float: right;
+    overflow: hidden;
+    width: 170px;
+}
+
+.wp-smush-all-button-wrap .spinner {
+    float: left;
+    margin-top: 12px;
+}
+
 .wp-smush-start {
     float: right;
     vertical-align: top;
@@ -1575,7 +1587,14 @@ small.smush-setting-description {
     margin-top: 12px;
 }
 
-.wp-smush-image-ele-optimised {
+.wp-smush-image-ele .spinner {
+    float: none;
+    margin-left: 22px;
+    margin-top: 1px;
+    position: absolute;
+}
+
+.wp-smush-image-ele-status {
     color: #C6C6C6;
     display: inline-block;
     height: 22px;
@@ -1587,7 +1606,7 @@ small.smush-setting-description {
     vertical-align: middle;
 }
 
-.wp-smush-image-ele-optimised:after {
+.wp-smush-image-ele-status:after {
     box-shadow: none;
     content: '\67';
     font-family: 'WPMU-DEV-App-Icons';
@@ -1611,7 +1630,8 @@ small.smush-setting-description {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.wp-smush-image-ele-optimised.done:after {
+/** Optimised Image **/
+li.wp-smush-image-ele.optimised .wp-smush-image-ele-status:after {
     content: '\67';
     color: #1ABC9C;
 }

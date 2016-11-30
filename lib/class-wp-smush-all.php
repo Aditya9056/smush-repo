@@ -21,6 +21,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			//Scan the given directory path for the list of images
 			add_action( 'wp_ajax_get_image_list', array( $this, 'get_image_list' ) );
 
+			//Handle Ajax Request to optimise images
+			add_action( 'wp_ajax_wp_smush_optimise', array( $this, 'optimise' ) );
+
 		}
 
 		function admin_menu() {
@@ -88,48 +91,53 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		function ui() {
 			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
 			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' ); ?>
-			<div class="wp-smush-dir-browser">
-				<label for="wp-smush-dir"><?php esc_attr_e( "Image Directories", "wp-smushit" ); ?>
-					<input type="text" value="" class="wp-smush-dir-path" name="smush_dir_path" id="wp-smush-dir">
-				</label>
-				<a href="#"
-				   class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "Select", "wp-smushit" ); ?></a>
-			</div>
-			<div class="wp-smush-scan-result">
-				<p class="wp-smush-div-heading"><b><?php esc_html_e( "IMAGES TO BE OPTIMISED", "wp-smushit" ); ?></b>
-				</p>
-				<button class="wp-smush-start"><?php esc_html_e( "SMUSH NOW", "wp-smushit" ); ?></button>
-				<div class="wp-smush-folder-stats">
-					<!-- Show the pretty Graph with a circle, total image count, optimised images, savings-->
-				</div>
-				<div class="content">
-					<!-- Show a list of images, inside a fixed height div, with a scroll. As soon as the image is
+            <div class="wp-smush-dir-browser">
+                <label for="wp-smush-dir"><?php esc_attr_e( "Image Directories", "wp-smushit" ); ?>
+                    <input type="text" value="" class="wp-smush-dir-path" name="smush_dir_path" id="wp-smush-dir">
+                </label>
+                <a href="#"
+                   class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "Select", "wp-smushit" ); ?></a>
+            </div>
+            <div class="wp-smush-scan-result">
+                <p class="wp-smush-div-heading"><b><?php esc_html_e( "IMAGES TO BE OPTIMISED", "wp-smushit" ); ?></b>
+                </p>
+                <div class="wp-smush-all-button-wrap">
+                    <span class="spinner"></span><?php
+					wp_nonce_field( 'wp_smush_all', 'wp-smush-all' );
+					?>
+                    <button class="wp-smush-start"><?php esc_html_e( "SMUSH NOW", "wp-smushit" ); ?></button>
+                </div>
+                <div class="wp-smush-folder-stats">
+                    <!-- Show the pretty Graph with a circle, total image count, optimised images, savings-->
+                </div>
+                <div class="content">
+                    <!-- Show a list of images, inside a fixed height div, with a scroll. As soon as the image is
 					optimised show a tick mark, with savings below the image. Scroll the li each time for the
 					current optimised image -->
 
-				</div>
-			</div>
-			<div class="dev-overlay wp-smush-list-dialog">
-				<div class="back"></div>
-				<div class="box-scroll">
-					<div class="box">
-						<div class="title"><h3><?php esc_html_e( "Directory list", "wp-smushit" ); ?></h3>
-							<div class="close" aria-label="Close">×</div>
-						</div>
-						<div class="content">
-							<div class="wp-smush-loading-wrap">
-								<span class="spinner"></span>
-								<span class="wp-smush-loading-text">Loading..</span>
-							</div>
-						</div>
-						<div class="wp-smush-select-button-wrap">
-							<span class="spinner"></span>
-							<button class="wp-smush-select-dir"><?php esc_html_e( "Scan", "wp-smushit" ); ?></button>
-						</div>
-					</div>
-				</div>
-			</div>
-			<input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>"><?php
+                </div>
+            </div>
+            <div class="dev-overlay wp-smush-list-dialog">
+                <div class="back"></div>
+                <div class="box-scroll">
+                    <div class="box">
+                        <div class="title"><h3><?php esc_html_e( "Directory list", "wp-smushit" ); ?></h3>
+                            <div class="close" aria-label="Close">×</div>
+                        </div>
+                        <div class="content">
+                            <div class="wp-smush-loading-wrap">
+                                <span class="spinner"></span>
+                                <span class="wp-smush-loading-text">Loading..</span>
+                            </div>
+                        </div>
+                        <div class="wp-smush-select-button-wrap">
+                            <span class="spinner"></span>
+                            <button class="wp-smush-select-dir"><?php esc_html_e( "Scan", "wp-smushit" ); ?></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>"><?php
 		}
 
 		/**
@@ -471,7 +479,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					foreach ( $image as $item ) {
 						$div .= "<li class='wp-smush-image-ele' id='{$item}'>{$item}";
 						//Optimisation Status
-						$div .= "<span class='wp-smush-image-ele-optimised'></span>";
+						$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span><span class='wp-smush-image-ele-status'></span>";
 						//Div to show stats after
 						$div .= "<div class='wp-smush-image-ele-stats'></div>";
 						//Close LI
@@ -483,7 +491,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					$image_p = array_pop( $image );
 					$div .= "<li class='wp-smush-image-ele' id='{$image_p}'>{$image_p}";
 					//Optimisation Status
-					$div .= "<span class='wp-smush-image-ele-optimised' title='" . esc_html_e( "", "wp-smushit" ) . "'></span>";
+					$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span><span class='wp-smush-image-ele-status' title='" . esc_html_e( "", "wp-smushit" ) . "'></span>";
 					//Div to show stats after
 					$div .= "<div class='wp-smush-image-ele-stats'></div>";
 					//Close LI
@@ -494,6 +502,115 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			return $div;
 
+		}
+
+		/**
+         * Fetch all the optimised image, Calculate stats
+         *
+		 * @return array Total Stats
+         *
+		 */
+		function total_stats() {
+			global $wpdb;
+
+			$offset = 0;
+			$limit  = 1000;
+			$stats  = array();
+			while ( $results = $wpdb->get_results( "SELECT image_size, orig_size FROM {$wpdb->prefix}smush_images WHERE image_size IS NOT NULL LIMIT $offset, $limit ", ARRAY_A ) ) {
+				if ( ! empty( $results ) ) {
+					$stats = array_merge( $stats, $results );
+				}
+				$offset += $limit;
+			}
+			//Iterate over stats, Return Count and savings
+			if ( ! empty( $stats ) ) {
+				$total_stats = array_shift( $stats );
+				foreach ( $stats as $val ) {
+					foreach ( $val as $key => $val ) {
+						$total_stats[ $key ] += $val;
+					}
+				}
+			}
+			//Get the savings in bytes and percent
+			if ( ! empty( $total_stats ) ) {
+				$total_stats['bytes']   = $total_stats['orig_size'] - $total_stats['image_size'];
+				$total_stats['percent'] = number_format_i18n( ( ( $total_stats['bytes'] / $total_stats['orig_size'] ) * 100 ), 1 );
+				//Convert to human readable form
+				$total_stats['bytes'] = size_format( $total_stats['bytes'], 1 );
+			}
+
+			return $total_stats;
+		}
+
+		/**
+		 * Handles the ajax request  for image optimisation in a folder
+		 */
+		function optimise() {
+			global $wpdb, $WpSmush;
+
+			//Verify the ajax nonce
+			check_ajax_referer( 'wp_smush_all', 'nonce' );
+
+			$error_msg = '';
+
+			//Get the image from db
+			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_images WHERE last_scanned=1 && image_size IS NULL LIMIT 1";
+			$results = $wpdb->get_results( $query, ARRAY_A );
+
+			//If there is no result from the query
+			if ( is_wp_error( $results ) || empty( $results ) ) {
+				wp_send_json_error();
+			}
+			$results = $results[0];
+
+			//We have the image path, optimise
+			$smush_results = $WpSmush->do_smushit( $results['path'] );
+
+			if ( is_wp_error( $smush_results ) ) {
+				$error_msg = $smush_results->get_error_message( $smush_results );
+			}
+
+			//If there are no stats
+			if ( empty( $smush_results['data'] ) ) {
+				$error_msg = esc_html_e( "Image couldn't be optimised", "wp-smushit" );
+			}
+
+			//If the image size grew after smushing, skip it
+			if ( $smush_results['data']->after_size >= $smush_results['data']->before_size ) {
+				//Already Optimised
+				$error_msg = esc_html_e( "Already optimised", "wp-smushit" );
+			}
+
+			if ( ! empty( $error_msg ) ) {
+				$error_msg = "<div class='wp-smush-error'>" . $error_msg . "</div>";
+				wp_send_json_error(
+					array(
+						'error' => $error_msg
+					)
+				);
+			}
+
+			//All good, Update the stats
+			$query = "UPDATE {$wpdb->prefix}smush_images SET image_size=%d WHERE id=%d LIMIT 1";
+			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $results['id'] );
+			$wpdb->query( $query );
+
+			//Get the total stats
+			$total = $this->total_stats();
+
+			//Show the image wise stats
+			$image            = array(
+				'orig_size' => $results['orig_size'],
+				'img_size'  => $smush_results['data']->after_size
+			);
+			$bytes            = $image['orig_size'] - $image['img_size'];
+			$image['savings'] = size_format( $bytes, 1 );
+			$image['percent'] = number_format_i18n( ( ( $bytes / $image['orig_size'] ) * 100 ), 1 ) . '%';
+			$data             = array(
+				'image' => $image,
+				'total' => $total
+			);
+			wp_send_json_success( $data );
 		}
 	}
 
