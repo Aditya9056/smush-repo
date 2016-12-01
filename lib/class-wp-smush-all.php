@@ -13,6 +13,17 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 	class WpSmushAll {
 
+		/**
+		 * @var Contains a list of optimised images
+		 */
+		public $optimised_images;
+
+		/**
+		 * @var Total Stats for the image optimisation
+		 *
+		 */
+		public $stats;
+
 		function __construct() {
 
 			//Handle Ajax request 'smush_get_directory_list'
@@ -23,6 +34,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			//Handle Ajax Request to optimise images
 			add_action( 'wp_ajax_wp_smush_optimise', array( $this, 'optimise' ) );
+
+			//Initialize the content on page load
+			add_action( 'load-media_page_wp-smush-all', array( $this, 'total_stats' ) );
 
 		}
 
@@ -361,7 +375,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				return false;
 			}
 
-			$a = getimagesize( $path );
+			$a = @getimagesize( $path );
 
 			//If a is not set
 			if ( ! $a || empty( $a ) ) {
@@ -455,12 +469,6 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					$length --;
 					$last_dir =& $last_dir[ $dir ];
 				}
-				echo "<pre>";
-				print_r( $path_tree );
-				print_r( $images );
-				print_r( $dir );
-				echo "</pre>";
-				exit;
 			}
 
 			return $path_tree;
@@ -470,6 +478,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		 * Generate the markup for all the images
 		 */
 		function generate_markup( $images ) {
+
+			$this->total_stats();
+
 			$div = '<ul class="wp-smush-image-list">';
 			foreach ( $images as $image_path => $image ) {
 				$count = sizeof( $image );
@@ -477,7 +488,8 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					$div .= "<li class='wp-smush-image-ul'><span class='wp-smush-li-path'>{$image_path} - " . sprintf( esc_html__( "%d image(s)", "wp-smushit" ), $count ) . "</span>
 					<ul class='wp-smush-image-list-inner'>";
 					foreach ( $image as $item ) {
-						$div .= "<li class='wp-smush-image-ele' id='{$item}'>{$item}";
+						$class = array_key_exists( $item, $this->optimised_images ) ? ' optimised' : '';
+						$div .= "<li class='wp-smush-image-ele{$class}' id='{$item}'>{$item}";
 						//Optimisation Status
 						$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span><span class='wp-smush-image-ele-status'></span>";
 						//Div to show stats after
@@ -489,7 +501,8 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					</li>";
 				} else {
 					$image_p = array_pop( $image );
-					$div .= "<li class='wp-smush-image-ele' id='{$image_p}'>{$image_p}";
+					$class   = array_key_exists( $image_p, $this->optimised_images ) ? ' optimised' : '';
+					$div .= "<li class='wp-smush-image-ele{$class}' id='{$image_p}'>{$image_p}";
 					//Optimisation Status
 					$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span><span class='wp-smush-image-ele-status' title='" . esc_html_e( "", "wp-smushit" ) . "'></span>";
 					//Div to show stats after
@@ -505,41 +518,82 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		}
 
 		/**
-         * Fetch all the optimised image, Calculate stats
-         *
+		 * Fetch all the optimised image, Calculate stats
+		 *
 		 * @return array Total Stats
-         *
+		 *
 		 */
 		function total_stats() {
 			global $wpdb;
 
-			$offset = 0;
-			$limit  = 1000;
-			$stats  = array();
-			while ( $results = $wpdb->get_results( "SELECT image_size, orig_size FROM {$wpdb->prefix}smush_images WHERE image_size IS NOT NULL LIMIT $offset, $limit ", ARRAY_A ) ) {
+			$offset    = 0;
+			$optimised = 1;
+			$limit     = 1000;
+			$images    = array();
+
+			$total = $wpdb->get_col( "SELECT count(id) FROM {$wpdb->prefix}smush_images" );
+
+			$total = ! empty( $total ) && is_array( $total ) ? $total[0] : 0;
+
+			while ( $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_images WHERE image_size IS NOT NULL LIMIT $offset, $limit ", ARRAY_A ) ) {
 				if ( ! empty( $results ) ) {
-					$stats = array_merge( $stats, $results );
+					$images = array_merge( $images, $results );
 				}
 				$offset += $limit;
 			}
+
 			//Iterate over stats, Return Count and savings
-			if ( ! empty( $stats ) ) {
-				$total_stats = array_shift( $stats );
-				foreach ( $stats as $val ) {
-					foreach ( $val as $key => $val ) {
-						$total_stats[ $key ] += $val;
+			if ( ! empty( $images ) ) {
+				$this->stats                     = array_shift( $images );
+				$path                            = $this->stats['path'];
+				$this->optimised_images[ $path ] = $this->stats;
+
+				foreach ( $images as $im ) {
+					foreach ( $im as $key => $val ) {
+						if ( 'path' == $key ) {
+							$this->optimised_images[$val] = $im;
+							continue;
+						}
+						$this->stats[ $key ] += $val;
 					}
+					$optimised ++;
 				}
 			}
 			//Get the savings in bytes and percent
-			if ( ! empty( $total_stats ) ) {
-				$total_stats['bytes']   = $total_stats['orig_size'] - $total_stats['image_size'];
-				$total_stats['percent'] = number_format_i18n( ( ( $total_stats['bytes'] / $total_stats['orig_size'] ) * 100 ), 1 );
+			if ( ! empty( $this->stats ) ) {
+				$this->stats['bytes']   = $this->stats['orig_size'] - $this->stats['image_size'];
+				$this->stats['percent'] = number_format_i18n( ( ( $this->stats['bytes'] / $this->stats['orig_size'] ) * 100 ), 1 );
 				//Convert to human readable form
-				$total_stats['bytes'] = size_format( $total_stats['bytes'], 1 );
+				$this->stats['bytes'] = size_format( $this->stats['bytes'], 1 );
 			}
 
-			return $total_stats;
+			$this->stats['total']     = $total;
+			$this->stats['optimised'] = $optimised;
+		}
+
+		/**
+		 * Returns the number of images scanned and optimised
+		 *
+		 * @return array
+		 *
+		 */
+		function last_scan_stats() {
+			global $wpdb;
+			$query   = "SELECT image_size FROM {$wpdb->prefix}smush_images WHERE last_scanned = 1";
+			$results = $wpdb->get_results( $query, ARRAY_A );
+			$total   = count( $results );
+			$smushed = 0;
+			foreach ( $results as $image ) {
+				if ( ! is_null( $image['image_size'] ) ) {
+					$smushed ++;
+				}
+			}
+			$stats = array(
+				'total'   => $total,
+				'smushed' => $smushed
+			);
+
+			return $stats;
 		}
 
 		/**
@@ -595,8 +649,12 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $results['id'] );
 			$wpdb->query( $query );
 
+			//Get Total stats
+			$this->total_stats();
+
 			//Get the total stats
-			$total = $this->total_stats();
+			$total     = $this->stats;
+			$last_scan = $this->last_scan_stats();
 
 			//Show the image wise stats
 			$image            = array(
@@ -607,8 +665,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$image['savings'] = size_format( $bytes, 1 );
 			$image['percent'] = number_format_i18n( ( ( $bytes / $image['orig_size'] ) * 100 ), 1 ) . '%';
 			$data             = array(
-				'image' => $image,
-				'total' => $total
+				'image'       => $image,
+				'total'       => $total,
+				'latest_scan' => $last_scan
 			);
 			wp_send_json_success( $data );
 		}
