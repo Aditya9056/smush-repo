@@ -912,7 +912,7 @@ jQuery(function ($) {
      * Hide the popup and reset the opacity for the button
      *
      */
-    var close_dialog = function() {
+    var close_dialog = function () {
         $('.wp-smush-list-dialog').hide();
         $('.wp-smush-select-dir').removeAttr('disabled');
         //Reset the opacity for content and scan button
@@ -923,7 +923,7 @@ jQuery(function ($) {
      * Initialize accordion
      *
      */
-    var set_accordion = function() {
+    var set_accordion = function () {
         //Accordion On WP Smush All Page
         var acc = document.getElementsByClassName("wp-smush-image-ul");
         var i;
@@ -944,17 +944,24 @@ jQuery(function ($) {
      * Start Optimising all the images listed in last scan
      *
      */
-    var smush_all = function() {
+    var smush_all = function (show_spinner) {
 
-        //Update the Optimising status for the image
-        var first_child = $('ul.wp-smush-image-list li:first:not(".optimised")');
+        if (show_spinner) {
+            //Update the Optimising status for the image
+            var first_child = $('ul.wp-smush-image-list li.wp-smush-image-ele:not(".optimised"):first');
 
-        //Disable Select Directory button
-        $('a.wp-smush-browse').attr('disabled', 'disabled');
+            var parent = first_child.parents('li.wp-smush-image-ul');
 
-        //Hide the tick mark and show the spinner
-        first_child.find('span.wp-smush-image-ele-status').css({'display' : 'none'});
-        first_child.find('span.spinner').css({'visibility': 'visible'});
+            //Check if the selected element is under expandable li
+            if (parent.length == 1) {
+                parent.addClass('active');
+                parent.find('.wp-smush-image-list-inner').addClass('show');
+            }
+
+            //Hide the tick mark and show the spinner
+            first_child.find('span.wp-smush-image-ele-status').css({'display': 'none'});
+            first_child.find('span.spinner').css({'visibility': 'visible'});
+        }
 
         /** Send Ajax Request */
         var param = {
@@ -962,7 +969,45 @@ jQuery(function ($) {
             nonce: $('#wp-smush-all').val()
         };
 
-        $.get(ajaxurl, param, function (e) {
+        //Send Ajax request
+        $.get(ajaxurl, param, function ( res ) {
+
+            //append stats, remove loader, add loader to next image, loop
+            var data = 'undefined' != typeof ( res.data ) ? res.data : '';
+
+            if (res.success) {
+                //Mark Optimised
+                var ele = jQuery(document.getElementById(data.image.path));
+                //Hide the spinner
+                ele.find('span.spinner').css({'visibility': 'hidden'});
+                //Show the Optimisation status
+                ele.find('span.wp-smush-image-ele-status').show();
+
+                //Show the stats
+
+                //Update the total stats
+            }
+
+            //If we'va next element
+            if (data.next) {
+                //Update the status for the next image
+                var next = jQuery(document.getElementById(data.next))
+                //Hide the Optimisation status
+                next.find('span.wp-smush-image-ele-status').hide();
+                //Show the loader
+                next.find('span.spinner').css({'visibility': 'visible'});
+
+                var parent = next.parents('li.wp-smush-image-ul');
+
+                //Check if the selected element is under expandable li
+                if (parent.length == 1) {
+                    parent.addClass('active');
+                    parent.find('.wp-smush-image-list-inner').addClass('show');
+                }
+
+                //Loop
+                smush_all(false);
+            }
 
         });
     }
@@ -1461,7 +1506,7 @@ jQuery(function ($) {
         e.preventDefault();
 
         //Check if we have images to be optimised
-        if( !$('.wp-smush-image-list li').length ) {
+        if (!$('.wp-smush-image-list li').length) {
             return;
         }
 
@@ -1473,8 +1518,11 @@ jQuery(function ($) {
         self.css({'opacity': '0.7'});
         self.parent().find('.spinner').css({'visibility': 'visible'});
 
+        //Disable Select Directory button
+        $('a.wp-smush-browse').attr('disabled', 'disabled');
+
         //Initialize the optimisation
-        smush_all();
+        smush_all( true );
 
     });
 

@@ -1594,6 +1594,10 @@ small.smush-setting-description {
     position: absolute;
 }
 
+.wp-smush-image-ul .wp-smush-image-ele .spinner {
+    margin-left: 18px;
+}
+
 .wp-smush-image-ele-status {
     color: #C6C6C6;
     display: inline-block;

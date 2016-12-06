@@ -83,6 +83,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
 				path text NOT NULL,
 				resize varchar(55),
+				error varchar(55) DEFAULT NULL,
 				image_size int(10) unsigned,
 				orig_size int(10) unsigned,
 				file_time int(10) unsigned,
@@ -91,7 +92,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				meta text,
 				UNIQUE KEY id (id),
 				UNIQUE KEY path (path($path_index_size)),
-				KEY file_time (file_time)
+				KEY image_size (image_size)
 			) $charset_collate;";
 
 			// include the upgrade library to initialize a table
@@ -354,7 +355,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				$wpdb->query( $query );
 			}
 
-			$markup = $this->generate_markup( $files_arr );
+			$markup = $this->generate_markup( $files_arr, $base_dir );
 
 			wp_send_json_success( $markup );
 
@@ -477,7 +478,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		/*
 		 * Generate the markup for all the images
 		 */
-		function generate_markup( $images ) {
+		function generate_markup( $images, $base_dir ) {
 
 			$this->total_stats();
 
@@ -488,7 +489,10 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					$div .= "<li class='wp-smush-image-ul'><span class='wp-smush-li-path'>{$image_path} - " . sprintf( esc_html__( "%d image(s)", "wp-smushit" ), $count ) . "</span>
 					<ul class='wp-smush-image-list-inner'>";
 					foreach ( $image as $item ) {
+						$id = str_replace( $base_dir, '', $item );
+						//Check if the image is already in optimised list
 						$class = array_key_exists( $item, $this->optimised_images ) ? ' optimised' : '';
+
 						$div .= "<li class='wp-smush-image-ele{$class}' id='{$item}'>{$item}";
 						//Optimisation Status
 						$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span><span class='wp-smush-image-ele-status'></span>";
@@ -501,7 +505,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					</li>";
 				} else {
 					$image_p = array_pop( $image );
-					$class   = array_key_exists( $image_p, $this->optimised_images ) ? ' optimised' : '';
+					$id      = str_replace( $base_dir, '', $image_p );
+					//Check if the image is already in optimised list
+					$class = array_key_exists( $image_p, $this->optimised_images ) ? ' optimised' : '';
 					$div .= "<li class='wp-smush-image-ele{$class}' id='{$image_p}'>{$image_p}";
 					//Optimisation Status
 					$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span><span class='wp-smush-image-ele-status' title='" . esc_html_e( "", "wp-smushit" ) . "'></span>";
@@ -551,7 +557,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				foreach ( $images as $im ) {
 					foreach ( $im as $key => $val ) {
 						if ( 'path' == $key ) {
-							$this->optimised_images[$val] = $im;
+							$this->optimised_images[ $val ] = $im;
 							continue;
 						}
 						$this->stats[ $key ] += $val;
@@ -559,6 +565,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					$optimised ++;
 				}
 			}
+
 			//Get the savings in bytes and percent
 			if ( ! empty( $this->stats ) ) {
 				$this->stats['bytes']   = $this->stats['orig_size'] - $this->stats['image_size'];
@@ -608,45 +615,49 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$error_msg = '';
 
 			//Get the image from db
-			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_images WHERE last_scanned=1 && image_size IS NULL LIMIT 1";
+			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_images WHERE last_scanned=1 && image_size IS NULL && error IS NULL LIMIT 2";
 			$results = $wpdb->get_results( $query, ARRAY_A );
+
+			$next = ! empty( $results[1] ) ? $results[1]['path'] : '';
 
 			//If there is no result from the query
 			if ( is_wp_error( $results ) || empty( $results ) ) {
 				wp_send_json_error();
 			}
-			$results = $results[0];
+
+			$curr_img = $results[0];
 
 			//We have the image path, optimise
-			$smush_results = $WpSmush->do_smushit( $results['path'] );
+			$smush_results = $WpSmush->do_smushit( $curr_img['path'] );
 
 			if ( is_wp_error( $smush_results ) ) {
-				$error_msg = $smush_results->get_error_message( $smush_results );
-			}
-
-			//If there are no stats
-			if ( empty( $smush_results['data'] ) ) {
-				$error_msg = esc_html_e( "Image couldn't be optimised", "wp-smushit" );
-			}
-
-			//If the image size grew after smushing, skip it
-			if ( $smush_results['data']->after_size >= $smush_results['data']->before_size ) {
-				//Already Optimised
-				$error_msg = esc_html_e( "Already optimised", "wp-smushit" );
+				$error_msg = $smush_results->get_error_message();
+			} else if ( empty( $smush_results['data'] ) ) {
+				//If there are no stats
+				$error_msg = esc_html__( "Image couldn't be optimised", "wp-smushit" );
 			}
 
 			if ( ! empty( $error_msg ) ) {
+
+				//Store the error in DB
+				//All good, Update the stats
+				$query = "UPDATE {$wpdb->prefix}smush_images SET error=%s WHERE id=%d LIMIT 1";
+				$query = $wpdb->prepare( $query, $error_msg, $curr_img['id'] );
+				$wpdb->query( $query );
+
 				$error_msg = "<div class='wp-smush-error'>" . $error_msg . "</div>";
+
 				wp_send_json_error(
 					array(
-						'error' => $error_msg
+						'error' => $error_msg,
+                        'next'        => $next
 					)
 				);
 			}
 
 			//All good, Update the stats
 			$query = "UPDATE {$wpdb->prefix}smush_images SET image_size=%d WHERE id=%d LIMIT 1";
-			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $results['id'] );
+			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $curr_img['id'] );
 			$wpdb->query( $query );
 
 			//Get Total stats
@@ -657,15 +668,18 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$last_scan = $this->last_scan_stats();
 
 			//Show the image wise stats
-			$image            = array(
-				'orig_size' => $results['orig_size'],
+			$image = array(
+				'path'      => $curr_img['path'],
+				'orig_size' => $curr_img['orig_size'],
 				'img_size'  => $smush_results['data']->after_size
 			);
+
 			$bytes            = $image['orig_size'] - $image['img_size'];
 			$image['savings'] = size_format( $bytes, 1 );
 			$image['percent'] = number_format_i18n( ( ( $bytes / $image['orig_size'] ) * 100 ), 1 ) . '%';
 			$data             = array(
 				'image'       => $image,
+				'next'        => $next,
 				'total'       => $total,
 				'latest_scan' => $last_scan
 			);

@@ -185,17 +185,15 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function do_smushit( $file_path = '' ) {
 			$errors   = new WP_Error();
 			$dir_name = dirname( $file_path );
+
+			//Check if file exists and the directory is writable
 			if ( empty( $file_path ) ) {
 				$errors->add( "empty_path", __( "File path is empty", 'wp-smushit' ) );
-			}
-
-			// check that the file exists
-			if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
+			} elseif ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
+				// check that the file exists
 				$errors->add( "file_not_found", sprintf( __( "Could not find %s", 'wp-smushit' ), $file_path ) );
-			}
-
-			// check that the file is writable
-			if ( ! is_writable( $dir_name ) ) {
+			} elseif ( ! is_writable( $dir_name ) ) {
+				// check that the file is writable
 				$errors->add( "not_writable", sprintf( __( "%s is not writable", 'wp-smushit' ), $dir_name ) );
 			}
 
@@ -207,10 +205,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Check if file exists
 			if ( $file_size == 0 ) {
 				$errors->add( "image_not_found", '<p>' . sprintf( __( 'Skipped (%s), image not found. Attachment: %s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
-			}
-
-			//Check size limit
-			if ( $file_size > $max_size ) {
+			} elseif ( $file_size > $max_size ) {
+				//Check size limit
 				$errors->add( "size_limit", '<p>' . sprintf( __( 'Skipped (%s), size limit exceeded. Attachment: %s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
 			}
 
@@ -227,9 +223,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			if ( ! $response['success'] ) {
 				$errors->add( "false_response", $response['message'] );
-			}
-			//If there is no data
-			if ( empty( $response['data'] ) ) {
+			} else if ( empty( $response['data'] ) ) {
+				//If there is no data
 				$errors->add( "no_data", __( 'Unknown API error', 'wp-smushit' ) );
 			}
 
