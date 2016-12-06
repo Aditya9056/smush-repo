@@ -903,6 +903,7 @@ jQuery(function ($) {
             data: param,
             success: function (response) {
                 res = response;
+                $('.wp-smush-scan-result').removeClass('hidden');
             },
             async: false
         });
@@ -978,6 +979,9 @@ jQuery(function ($) {
             if (res.success) {
                 //Mark Optimised
                 var ele = jQuery(document.getElementById(data.image.path));
+
+                // goToByScroll( ele );
+
                 //Hide the spinner
                 ele.find('span.spinner').css({'visibility': 'hidden'});
                 //Show the Optimisation status
@@ -1005,6 +1009,8 @@ jQuery(function ($) {
                     parent.find('.wp-smush-image-list-inner').addClass('show');
                 }
 
+                // goToByScroll( next );
+
                 //Loop
                 smush_all(false);
             }else{
@@ -1014,6 +1020,14 @@ jQuery(function ($) {
 
         });
     }
+
+    //Scroll the element to top of the page
+    var goToByScroll = function ( selector ){
+        // Scroll
+        $('html,body').animate({
+                scrollTop: selector.offset().top },
+            'slow');
+    };
 
     /**
      * Handle the Smush Stats link click

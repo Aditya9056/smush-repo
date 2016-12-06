@@ -101,60 +101,85 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		}
 
 		/**
+		 * Prints the content for the Stats section on the page
+		 */
+		function stats_section() {
+			global $wpsmushit_admin;
+
+			//Contianer Header
+			$wpsmushit_admin->bulk_ui->container_header( 'wp-smush-dir-stats-wrap', 'wp-smush-dir-stats-wrap', esc_html__( "STATS", "wp-smushit" ) ); ?>
+            <div class="box-content">
+                <div class="row">
+                </div>
+            </div><?php
+			echo "</section>";
+		}
+
+		/**
 		 * Output the required UI for WP Smush All page
 		 */
 		function ui() {
+		    global $wpsmushit_admin;
 			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
-			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' ); ?>
-            <div class="wp-smush-dir-browser">
-                <label for="wp-smush-dir"><?php esc_attr_e( "Image Directories", "wp-smushit" ); ?>
-                    <input type="text" value="" class="wp-smush-dir-path" name="smush_dir_path" id="wp-smush-dir">
-                </label>
-                <a href="#"
-                   class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "Select", "wp-smushit" ); ?></a>
-            </div>
-            <div class="wp-smush-scan-result">
-                <p class="wp-smush-div-heading"><b><?php esc_html_e( "IMAGES TO BE OPTIMISED", "wp-smushit" ); ?></b>
-                </p>
-                <div class="wp-smush-all-button-wrap">
-                    <span class="spinner"></span><?php
-		            wp_nonce_field( 'wp_smush_all', 'wp-smush-all' );
-		            ?>
-                    <input type="hidden" name="wp-smush-continue-ajax" value=1>
-                    <button class="wp-smush-start"><?php esc_html_e( "SMUSH NOW", "wp-smushit" ); ?></button>
-                    <button class="wp-smush-pause" disabled="disabled" title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit"); ?>"><?php esc_html_e( "PAUSE", "wp-smushit" ); ?></button>
-                </div>
-                <div class="wp-smush-folder-stats">
-                    <!-- Show the pretty Graph with a circle, total image count, optimised images, savings-->
-                </div>
-                <div class="content">
-                    <!-- Show a list of images, inside a fixed height div, with a scroll. As soon as the image is
-					optimised show a tick mark, with savings below the image. Scroll the li each time for the
-					current optimised image -->
+			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' );
 
-                </div>
-            </div>
-            <div class="dev-overlay wp-smush-list-dialog">
-                <div class="back"></div>
-                <div class="box-scroll">
-                    <div class="box">
-                        <div class="title"><h3><?php esc_html_e( "Directory list", "wp-smushit" ); ?></h3>
-                            <div class="close" aria-label="Close">×</div>
+			$this->stats_section();
+
+			/** Directory Browser and Image List **/
+			$wpsmushit_admin->bulk_ui->container_header( 'wp-smush-dir-browser', 'wp-smush-dir-browser', esc_html__( "DIRECTORY BROWSER", "wp-smushit" ) ); ?>
+            <div class="box-content">
+                <div class="row">
+                    <label for="wp-smush-dir"><?php esc_attr_e( "DIRECTORY PATH", "wp-smushit" ); ?>
+                        <input type="text" value="" class="wp-smush-dir-path" name="smush_dir_path" id="wp-smush-dir">
+                    </label>
+                    <a href="#"
+                       class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "SELECT", "wp-smushit" ); ?></a>
+                    <div class="wp-smush-scan-result hidden">
+                        <p class="wp-smush-div-heading"><b><?php esc_html_e( "IMAGE LIST", "wp-smushit" ); ?></b></p>
+                        <div class="wp-smush-all-button-wrap">
+                            <span class="spinner"></span><?php
+			                wp_nonce_field( 'wp_smush_all', 'wp-smush-all' );
+			                ?>
+                            <input type="hidden" name="wp-smush-continue-ajax" value=1>
+                            <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
+                            <button class="wp-smush-start"><?php esc_html_e( "SMUSH NOW", "wp-smushit" ); ?></button>
+                            <button class="wp-smush-pause" disabled="disabled" title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit"); ?>"><?php esc_html_e( "PAUSE", "wp-smushit" ); ?></button>
+                        </div>
+                        <div class="wp-smush-folder-stats">
+                            <!-- Show the pretty Graph with a circle, total image count, optimised images, savings-->
                         </div>
                         <div class="content">
-                            <div class="wp-smush-loading-wrap">
-                                <span class="spinner"></span>
-                                <span class="wp-smush-loading-text">Loading..</span>
-                            </div>
-                        </div>
-                        <div class="wp-smush-select-button-wrap">
-                            <span class="spinner"></span>
-                            <button class="wp-smush-select-dir"><?php esc_html_e( "Scan", "wp-smushit" ); ?></button>
+                            <!-- Show a list of images, inside a fixed height div, with a scroll. As soon as the image is
+							optimised show a tick mark, with savings below the image. Scroll the li each time for the
+							current optimised image -->
+
                         </div>
                     </div>
+                    <div class="dev-overlay wp-smush-list-dialog">
+                        <div class="back"></div>
+                        <div class="box-scroll">
+                            <div class="box">
+                                <div class="title"><h3><?php esc_html_e( "Directory list", "wp-smushit" ); ?></h3>
+                                    <div class="close" aria-label="Close">×</div>
+                                </div>
+                                <div class="content">
+                                    <div class="wp-smush-loading-wrap">
+                                        <span class="spinner"></span>
+                                        <span class="wp-smush-loading-text">Loading..</span>
+                                    </div>
+                                </div>
+                                <div class="wp-smush-select-button-wrap">
+                                    <span class="spinner"></span>
+                                    <button class="wp-smush-select-dir"><?php esc_html_e( "Scan", "wp-smushit" ); ?></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>">
                 </div>
-            </div>
-            <input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>"><?php
+            </div><?php
+			echo "</section>";
+
 		}
 
 		/**

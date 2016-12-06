@@ -1571,7 +1571,7 @@ small.smush-setting-description {
     font-weight: 500;
 }
 
-.wp-smush-scan-result {
+div.wp-smush-dir-stats-wrap, div.wp-smush-scan-result {
     background: white;
     padding: 10px;
 }
