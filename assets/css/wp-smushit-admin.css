@@ -1523,7 +1523,7 @@ small.smush-setting-description {
 .wp-smush-all-button-wrap {
     float: right;
     overflow: hidden;
-    width: 170px;
+    width: 270px;
 }
 
 .wp-smush-all-button-wrap .spinner {
@@ -1532,8 +1532,17 @@ small.smush-setting-description {
 }
 
 .wp-smush-start {
-    float: right;
+    float: left;
     vertical-align: top;
+}
+
+.wp-smush-pause {
+    float: right;
+}
+
+.wp-smush-pause:disabled, .wp-smush-start:disabled {
+    opacity: 0.7;
+    cursor: none;
 }
 
 .wp-smush-image-list {

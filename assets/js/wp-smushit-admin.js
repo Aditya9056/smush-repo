@@ -970,7 +970,7 @@ jQuery(function ($) {
         };
 
         //Send Ajax request
-        $.get(ajaxurl, param, function ( res ) {
+        $.get(ajaxurl, param, function (res) {
 
             //append stats, remove loader, add loader to next image, loop
             var data = 'undefined' != typeof ( res.data ) ? res.data : '';
@@ -988,8 +988,8 @@ jQuery(function ($) {
                 //Update the total stats
             }
 
-            //If we'va next element
-            if (data.next) {
+            //If we'va next element and the user haven't paused the Smushing
+            if (data.next && 1 == $('input[name="wp-smush-continue-ajax"]').val()) {
                 //Update the status for the next image
                 var next = jQuery(document.getElementById(data.next))
                 //Hide the Optimisation status
@@ -1007,6 +1007,9 @@ jQuery(function ($) {
 
                 //Loop
                 smush_all(false);
+            }else{
+                //Set the continue ajax to 1
+                $('input.wp-smush-continue-ajax').val(1);
             }
 
         });
@@ -1512,17 +1515,36 @@ jQuery(function ($) {
 
         //Disable this button
         var self = $(this);
+        var parent = self.parent();
 
         /** All the Styling changes **/
         self.attr('disabled', 'disabled');
-        self.css({'opacity': '0.7'});
-        self.parent().find('.spinner').css({'visibility': 'visible'});
+        parent.find('span.spinner').css({'visibility': 'visible'});
+        parent.find('button.wp-smush-pause').removeAttr('disabled');
 
         //Disable Select Directory button
         $('a.wp-smush-browse').attr('disabled', 'disabled');
 
         //Initialize the optimisation
-        smush_all( true );
+        smush_all(true);
+
+    });
+
+    //Handle the Pause button click
+    $('button.wp-smush-pause').on('click', function (e) {
+        e.preventDefault();
+
+        //Set the button status to 0, to cancel next ajax request
+        $('input[name="wp-smush-continue-ajax"]').val(0);
+
+        //Enable the smush button, disable Pause button
+        var self = $(this);
+        self.attr('disabled', 'disabled');
+
+        //Enable the smush button, hide the spinner
+        $('button.wp-smush-start, a.wp-smush-browse').removeAttr('disabled');
+        $('div.wp-smush-all-button-wrap span.spinner').css({'visibility': 'hidden'});
+
 
     });
 

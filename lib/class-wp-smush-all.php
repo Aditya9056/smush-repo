@@ -118,9 +118,11 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
                 </p>
                 <div class="wp-smush-all-button-wrap">
                     <span class="spinner"></span><?php
-					wp_nonce_field( 'wp_smush_all', 'wp-smush-all' );
-					?>
+		            wp_nonce_field( 'wp_smush_all', 'wp-smush-all' );
+		            ?>
+                    <input type="hidden" name="wp-smush-continue-ajax" value=1>
                     <button class="wp-smush-start"><?php esc_html_e( "SMUSH NOW", "wp-smushit" ); ?></button>
+                    <button class="wp-smush-pause" disabled="disabled" title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit"); ?>"><?php esc_html_e( "PAUSE", "wp-smushit" ); ?></button>
                 </div>
                 <div class="wp-smush-folder-stats">
                     <!-- Show the pretty Graph with a circle, total image count, optimised images, savings-->
