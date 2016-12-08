@@ -168,7 +168,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					</span>
 					<span class="wp-smush-stats-sep">/</span>
 					<span class="wp-smush-stats-percent"><?php echo $percent > 0 ? number_format_i18n( $percent, 1, '.', '' ) : 0; ?></span>%
-				</span>
+            </span>
             </div><?php
 		}
 
