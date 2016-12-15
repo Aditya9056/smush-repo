@@ -1110,6 +1110,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return string
 		 */
 		function smush_status( $id ) {
+			global $WpSmush;
+
+			//Show Temporary Status, For Async Optimisation, No Good workaround
+			if ( ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $WpSmush->is_auto_smush_enabled() ) {
+				// the status
+				$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
+
+				// we need to show the smush button
+				$show_button = false;
+
+				// the button text
+				$button_txt = __( 'Smush Now!', 'wp-smushit' );
+
+				return $this->column_html( $id, $status_txt, $button_txt, $show_button, true, false, true );
+			}
+			//Else Return the normal status
 			$response = trim( $this->set_status( $id, false ) );
 
 			return $response;
