@@ -880,7 +880,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$api_auth[ $api_key ] = array( 'validity' => $valid, 'timestamp' => $timestamp );
 
 				//Update API validity
-//				update_site_option( 'wp_smush_api_auth', $api_auth );
+				update_site_option( 'wp_smush_api_auth', $api_auth );
 
 			}
 

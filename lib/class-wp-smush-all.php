@@ -378,15 +378,14 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				RecursiveIteratorIterator::CHILD_FIRST
 			);
 
-			//Get the list of exsiting images in db
+			//Get the list of existing images in db
 			$image_list = array();
 			if ( empty( $image_list ) ) {
-				$query   = "SELECT id,path FROM {$wpdb->prefix}smush_images";
+				$query   = "SELECT path,file_time FROM {$wpdb->prefix}smush_images";
 				$results = $wpdb->get_results( $query, ARRAY_A );
 				foreach ( $results as $i ) {
-					$id                = $i['id'];
-					$path              = $i['path'];
-					$image_list[ $id ] = $path;
+					$path                = $i['path'];
+					$image_list[ $path ] = $i['file_time'];
 				}
 			}
 
@@ -415,30 +414,40 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						$files_arr[ $dir_name ][ $file_name ] = $file_path;
 						/** End */
 
+						//Get the file modification time
+						$file_time  = @filectime( $file_path );
+
 						//If the image is not in db already, insert
-						if ( ! in_array( $file_path, $image_list ) ) {
+						if ( ! array_key_exists( $file_path, $image_list ) ) {
 							/** To be stored in DB, Part of code inspired from Ewwww Optimiser  */
 							$image_size = $path->getSize();
-							$file_time  = @filectime( $file_path );
 							$images[]   = "('" . utf8_encode( $file_path ) . "',$image_size, $file_time, 1 )";
 							$count ++;
 						}
 					}
 				}
-				//Store the Images in db
+				//Store the Images in db at an interval of 5k
 				if ( $count >= 5000 ) {
 					$count = 0;
-					$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES" . implode( ',', $images );
-					$wpdb->query( $query );
+					$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
+					$sql = $wpdb->prepare( $query, implode( ',', $images ) );
+					$wpdb->query( $sql );
 					$images = array();
 				}
 			}
 
 			//Update rest of the images
 			if ( ! empty( $images ) && $count > 0 ) {
-				$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES" . implode( ',', $images );
-				$wpdb->query( $query );
+				$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES %1\$s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
+				$sql = $wpdb->prepare( $query, implode( ',', $images ) );
+				var_dump( $sql );
+				$wpdb->query( $sql );
 			}
+
+			//If files array is not empty
+			if( !empty( $files_arr ) ) {
+			    update_option('wp_smush_scan', array('path' => $base_dir ) );
+            }
 
 			$markup = $this->generate_markup( $files_arr, $base_dir );
 
