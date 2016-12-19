@@ -554,6 +554,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				if( ! is_multisite() || ( is_multisite() && ! get_site_option( WP_SMUSH_PREFIX . 'networkwide', true ) ) || ( is_multisite() && is_network_admin() ) ) {
 					$this->settings_ui();
 				}
+				//Print Directory Smush UI, if not a network site
+				if( !is_network_admin() ) {
+				    global $wpsmush_all;
+				    //Page Content
+			        $wpsmush_all->ui();
+				}
 
 				//Validate Membership
 				if( !$wpsmushit_admin->validate_install() ) {?>

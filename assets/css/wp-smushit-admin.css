@@ -1466,6 +1466,12 @@ small.smush-setting-description {
 }
 
 /** Directory Browser **/
+div.wp-smush-dir-desc {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 0 25px;
+}
+
 .wp-smush-dir-browser {
     overflow: hidden;
 }
@@ -1577,6 +1583,7 @@ div.wp-smush-dir-stats-wrap, div.wp-smush-scan-result {
 }
 
 .wpmud .button.wp-smush-browse {
+    background: #9E9E9E;
     margin-top: 7px;
 }
 

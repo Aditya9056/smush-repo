@@ -284,11 +284,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'ui'
 			) );
 
-			$this->page_smush_all = add_media_page( 'WP Smush All', 'WP Smush All', 'manage_options', 'wp-smush-all', array(
-				$wpsmush_all,
-				'admin_menu'
-			) );
-
 			//For Nextgen gallery Pages, check later in enqueue function
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 
@@ -360,7 +355,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Load on Smush all page only
-			if ( 'media_page_wp-smush-all' == $current_page ) {
+			if ( 'media_page_wp-smush-bulk' == $current_page ) {
 				//Load Jquery tree on specified page
 				wp_enqueue_script( 'jqft-js' );
 				wp_enqueue_style( 'jqft-css' );
