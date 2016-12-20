@@ -926,7 +926,8 @@ jQuery(function ($) {
      */
     var set_accordion = function () {
         //Accordion On WP Smush All Page
-        var acc = document.getElementsByClassName("wp-smush-image-ul");
+        var acc = document.getElementsByClassName("wp-smush-li-path");
+        var parent = $(acc).parent();
         var i;
 
         for (i = 0; i < acc.length; i++) {
@@ -1562,6 +1563,39 @@ jQuery(function ($) {
         $('div.wp-smush-all-button-wrap span.spinner').css({'visibility': 'hidden'});
 
 
+    });
+
+    //Exclude Directory from list - Handle Click
+    $('div.wp-smush-scan-result').on('click', 'a.wp-smush-exclude-dir', function (e) {
+        e.preventDefault();
+
+        var self = $(this);
+        var parent = self.parent();
+
+        //Hide the link
+        self.hide();
+
+        //Append the loader
+        parent.find('span.wp-smush-li-path').after( $('div.wp-smush-scan-result span.spinner:first').clone() );
+
+        //Store the spinner in a element
+        var loader = parent.find('span.spinner:first');
+
+        loader.css({'visibility': 'visible'});
+
+        var path = self.attr('path');
+        var param = {
+            action: 'wp_smush_exclude_path',
+            path: path,
+            nonce: $('input[name="exclude-path-nonce"]').val()
+        };
+
+        //Send Ajax request to remove image for the given path from db
+        $.post( ajaxurl, param, function(res) {
+            console.log(res);
+            loader.remove();
+            //Remove the whole li element on success
+        });
     });
 
 });

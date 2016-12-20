@@ -498,7 +498,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			$this->total_stats();
 
-			$div = '<ul class="wp-smush-image-list roboto-regular">';
+			$div = wp_nonce_field('wp-smush-exclude-path', 'exclude-path-nonce', '', false );
+			$div .= "<span class='spinner'></span>";
+			$div .= '<ul class="wp-smush-image-list roboto-regular">';
 			//Flag - Whether to print top hr tag or not
 			$hr = true;
 			foreach ( $images as $image_path => $image ) {
@@ -509,6 +511,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
                         $div .= "<hr/>";
 					}
 					$div .= "<span class='wp-smush-li-path'>{$image_path} <span class='wp-smush-image-count'>" . sprintf( esc_html__( "%d images", "wp-smushit" ), $count ) . "</span></span>
+					<a href='#' class='wp-smush-exclude-dir' data-path='" . $image_path . "' title='". esc_html__( "Exclude directory from Smush List", "wp-smushit") ."'>X</a>
 					<ul class='wp-smush-image-list-inner'>";
 					foreach ( $image as $item ) {
 						$id = str_replace( $base_dir, '', $item );
@@ -524,7 +527,6 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						$div .= "</li>";
 					}
 					$div .= "</ul>
-					<div class='wp-smush-exclude-dir' data-path='" . $image_path . "'>X</div>
 					<hr />
 					</li>";
 					$hr = false;

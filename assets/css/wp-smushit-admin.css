@@ -1623,13 +1623,18 @@ div.wp-smush-scan-result hr {
     margin: 20px 0;
 }
 
-div.wp-smush-exclude-dir {
+.wpmud a.wp-smush-exclude-dir {
     color: #878787;
+    cursor: pointer;
     display: inline-block;
     float: right;
     font-size: 15px;
     font-weight: 700;
     margin-right: 25px;
+}
+
+.wpmud a.wp-smush-exclude-dir:hover {
+    color: #878787;
 }
 
 .wpmud .button.wp-smush-browse {
