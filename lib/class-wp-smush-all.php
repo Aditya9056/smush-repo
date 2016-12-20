@@ -100,6 +100,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
 			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' );
 
+
 			/** Directory Browser and Image List **/
 			$wpsmushit_admin->bulk_ui->container_header( 'wp-smush-dir-browser', 'wp-smush-dir-browser', esc_html__( "DIRECTORY SMUSH", "wp-smushit" ) ); ?>
             <div class="box-content">
@@ -110,8 +111,10 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
                 </div>
                 <a href="#"
                    class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "CHOOSE DIRECTORY", "wp-smushit" ); ?></a>
+                <!-- Directory Path -->
+                <input type="hidden" class="wp-smush-dir-path" value="" />
                 <div class="wp-smush-scan-result hidden">
-                    <p class="wp-smush-div-heading"><b><?php esc_html_e( "IMAGE LIST", "wp-smushit" ); ?></b></p>
+                    <hr class="primary-separator"/>
                     <div class="wp-smush-all-button-wrap">
                         <span class="spinner"></span><?php
 						wp_nonce_field( 'wp_smush_all', 'wp-smush-all' );
@@ -132,13 +135,14 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
                     </div>
                 </div>
-                <div class="dev-overlay wp-smush-list-dialog">
+                <div class="dev-overlay wp-smush-list-dialog roboto-regular">
                     <div class="back"></div>
                     <div class="box-scroll">
                         <div class="box">
                             <div class="title"><h3><?php esc_html_e( "Directory list", "wp-smushit" ); ?></h3>
                                 <div class="close" aria-label="Close">×</div>
                             </div>
+                            <div class="wp-smush-instruct"><?php esc_html_e( "Choose the folder you wish to smush.", "wp-smushit" ); ?></div>
                             <div class="content">
                                 <div class="wp-smush-loading-wrap">
                                     <span class="spinner"></span>
@@ -146,8 +150,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
                                 </div>
                             </div>
                             <div class="wp-smush-select-button-wrap">
+                                <div class="wp-smush-section-desc"><?php esc_html_e("Smush will also include any images in sub folders of your selected folder.", "wp-smushit"); ?></div>
                                 <span class="spinner"></span>
-                                <button class="wp-smush-select-dir"><?php esc_html_e( "Scan", "wp-smushit" ); ?></button>
+                                <button class="wp-smush-select-dir"><?php esc_html_e( "ADD DIRECTORY", "wp-smushit" ); ?></button>
                             </div>
                         </div>
                     </div>
@@ -204,7 +209,6 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						if ( file_exists( $postDir . $file ) && $file != '.' && $file != '..' ) {
 							if ( is_dir( $postDir . $file ) && ( ! $onlyFiles || $onlyFolders ) && ! $this->is_subfolder( $postDir . $file ) ) {
 								//Skip Uploads folder - Media Files
-
 								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/'>" . $htmlName . "</a></li><br />";
 							} else if ( ( ! $onlyFolders || $onlyFiles ) && in_array( $ext, $supported_image ) ) {
 								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "'>" . $htmlName . "</a></li><br />";
@@ -357,9 +361,8 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			//Update rest of the images
 			if ( ! empty( $images ) && $count > 0 ) {
-				$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES %1\$s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
-				$sql = $wpdb->prepare( $query, implode( ',', $images ) );
-				var_dump( $sql );
+				$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
+				$sql = sprintf( $query, implode( ',', $images ) );
 				$wpdb->query( $sql );
 			}
 
@@ -495,11 +498,17 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			$this->total_stats();
 
-			$div = '<ul class="wp-smush-image-list">';
+			$div = '<ul class="wp-smush-image-list roboto-regular">';
+			//Flag - Whether to print top hr tag or not
+			$hr = true;
 			foreach ( $images as $image_path => $image ) {
 				$count = sizeof( $image );
 				if ( is_array( $image ) && $count > 1 ) {
-					$div .= "<li class='wp-smush-image-ul'><span class='wp-smush-li-path'>{$image_path} - " . sprintf( esc_html__( "%d image(s)", "wp-smushit" ), $count ) . "</span>
+					$div .= "<li class='wp-smush-image-ul'>";
+					if( $hr ) {
+                        $div .= "<hr/>";
+					}
+					$div .= "<span class='wp-smush-li-path'>{$image_path} <span class='wp-smush-image-count'>" . sprintf( esc_html__( "%d images", "wp-smushit" ), $count ) . "</span></span>
 					<ul class='wp-smush-image-list-inner'>";
 					foreach ( $image as $item ) {
 						$id = str_replace( $base_dir, '', $item );
@@ -515,8 +524,12 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						$div .= "</li>";
 					}
 					$div .= "</ul>
+					<div class='wp-smush-exclude-dir' data-path='" . $image_path . "'>X</div>
+					<hr />
 					</li>";
+					$hr = false;
 				} else {
+				    $hr = true;
 					$image_p = array_pop( $image );
 					$id      = str_replace( $base_dir, '', $image_p );
 					//Check if the image is already in optimised list

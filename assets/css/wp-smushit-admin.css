@@ -1504,10 +1504,29 @@ div.wp-smush-dir-desc {
 .wp-smush-select-dir {
     float: right;
     margin-top: 20px;
+    width: 154px;
 }
 
 .wp-smush-list-dialog .spinner {
     float: left;
+}
+
+.wpmud .dev-overlay.wp-smush-list-dialog .box .title {
+    margin-bottom: 20px;
+}
+
+.dev-overlay.wp-smush-list-dialog .wp-smush-instruct {
+    color: #888888;
+    font-size: 14px;
+    font-weight: 500;
+    padding-bottom: 20px;
+}
+
+.wpmud UL.jqueryFileTree a, .wpmud UL.jqueryFileTree a:hover {
+    color: #888888;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .jqueryFileTree .wp-smush-list {
@@ -1560,6 +1579,7 @@ div.wp-smush-dir-desc {
 }
 
 .wp-smush-image-list-inner {
+    display: none;
     max-height: 0;
     opacity: 0;
     overflow: scroll;
@@ -1568,18 +1588,48 @@ div.wp-smush-dir-desc {
 }
 
 .wp-smush-image-list-inner.show {
+    display: block;
     opacity: 1;
     max-height: 500px;
 }
 
-.wp-smush-li-path {
+span.wp-smush-li-path {
     cursor: pointer;
     font-weight: 500;
 }
 
+li.wp-smush-image-ul span.wp-smush-li-path {
+    background: url("../images/directory.png") no-repeat;
+    padding: 0 30px;
+}
+
+.wp-smush-image-count {
+    background: #f2f2f2;
+    border-radius: 20px;
+    margin-left: 10px;
+    padding: 5px 10px;
+    vertical-align: middle;
+}
+
 div.wp-smush-dir-stats-wrap, div.wp-smush-scan-result {
     background: white;
-    padding: 10px;
+}
+
+div.wp-smush-scan-result hr.primary-separator {
+    margin: 10px 0 30px;
+}
+
+div.wp-smush-scan-result hr {
+    margin: 20px 0;
+}
+
+div.wp-smush-exclude-dir {
+    color: #878787;
+    display: inline-block;
+    float: right;
+    font-size: 15px;
+    font-weight: 700;
+    margin-right: 25px;
 }
 
 .wpmud .button.wp-smush-browse {
@@ -1594,13 +1644,26 @@ div.wp-smush-dir-stats-wrap, div.wp-smush-scan-result {
 }
 
 .wp-smush-select-button-wrap {
-    float: right;
-    max-width: 150px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 15px;
     overflow: hidden;
+}
+
+.wp-smush-select-button-wrap .wp-smush-section-desc {
+    display: inline-block;
+    float: left;
+    max-width: 59%;
 }
 
 .wp-smush-select-button-wrap .spinner {
     margin-top: 12px;
+}
+
+.wp-smush-image-ele {
+    background: url("../images/file.png") no-repeat;
+    padding: 0 30px;
 }
 
 .wp-smush-image-ele .spinner {

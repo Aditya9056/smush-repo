@@ -1513,6 +1513,8 @@ jQuery(function ($) {
             $('.wp-smush-scan-result .content').html(res.data);
             set_accordion();
             close_dialog();
+            //Hide Selector button
+            $('a.wp-smush-browse').hide();
         });
     });
 
