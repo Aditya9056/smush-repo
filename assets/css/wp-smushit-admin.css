@@ -1557,12 +1557,15 @@ div.wp-smush-dir-desc {
 }
 
 .wp-smush-start {
-    float: left;
+    float: right;
     vertical-align: top;
 }
 
-.wp-smush-pause {
+.wpmud a.wp-smush-pause {
+    color: #9b9b9b;
     float: right;
+    margin-right: 20px;
+    margin-top: 12px;
 }
 
 .wp-smush-pause:disabled, .wp-smush-start:disabled {

@@ -38,6 +38,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			//Initialize the content on page load
 			add_action( 'load-media_page_wp-smush-all', array( $this, 'total_stats' ) );
 
+			//Handle Exclude path request
+			add_action( 'wp_ajax_smush_exclude_path', array( $this, 'smush_exclude_path' ) );
+
 		}
 
 		/**
@@ -120,10 +123,6 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						wp_nonce_field( 'wp_smush_all', 'wp-smush-all' );
 						?>
                         <input type="hidden" name="wp-smush-continue-ajax" value=1>
-                        <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
-                        <button class="wp-smush-start"><?php esc_html_e( "SMUSH NOW", "wp-smushit" ); ?></button>
-                        <button class="wp-smush-pause" disabled="disabled"
-                                title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit" ); ?>"><?php esc_html_e( "PAUSE", "wp-smushit" ); ?></button>
                     </div>
                     <div class="wp-smush-folder-stats">
                         <!-- Show the pretty Graph with a circle, total image count, optimised images, savings-->
@@ -134,6 +133,10 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						current optimised image -->
 
                     </div>
+                    <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
+                    <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
+                    <a href="#" class="wp-smush-pause" disabled="disabled"
+                            title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit" ); ?>"><?php esc_html_e( "Cancel", "wp-smushit" ); ?></a>
                 </div>
                 <div class="dev-overlay wp-smush-list-dialog roboto-regular">
                     <div class="back"></div>
@@ -722,6 +725,39 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				'latest_scan' => $last_scan
 			);
 			wp_send_json_success( $data );
+		}
+
+		/**
+		 * Remove image/image from db based on path details
+		 */
+		function smush_exclude_path() {
+
+			//Validate Ajax nonce
+			check_ajax_referer( 'wp-smush-exclude-path', 'nonce' );
+
+			//If we don't have path, send json error
+			if ( empty( $_POST['path'] ) ) {
+				wp_send_json_error( 'missing_path' );
+			}
+
+			global $wpdb;
+
+			$path = realpath( $_POST['path'] );
+			$table = "{$wpdb->prefix}smush_images";
+			if( is_file( $path ) ) {
+			    $sql = sprintf( "DELETE FROM $table WHERE path='%s'", $path );
+            }else{
+			    $sql = sprintf( "DELETE FROM $table WHERE path LIKE '%s'", '%' . $path . '%' );
+            }
+
+            //Execute the query
+			$result = $wpdb->query( $sql );
+
+			if( $result ) {
+			    wp_send_json_success();
+            }else{
+			    wp_send_json_error();
+            }
 		}
 	}
 

@@ -385,6 +385,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'checking'           => esc_html__( "Checking images..", "wp-smushit" ),
 				'membership_valid'   => esc_html__( "We successfully verified your membership, all the Pro features should work completely. ", "wp-smushit" ),
 				'membership_invalid' => esc_html__( "Your membership couldn't be verified.", "wp-smushit" ),
+                'missing_path'       => esc_html__( "Missing file path.", "wp-smushit" ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
