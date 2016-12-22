@@ -581,9 +581,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						//Check if the image is already in optimised list
 						$class = array_key_exists( $item, $this->optimised_images ) ? ' optimised' : '';
 
-						$div .= "<li class='wp-smush-image-ele{$class}' id='{$item}'>{$item}";
+						$div .= "<li class='wp-smush-image-ele{$class}' id='{$item}'><span class='wp-smush-image-ele-status'></span>{$item}";
 						//Optimisation Status
-						$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span><span class='wp-smush-image-ele-status'></span>";
+						$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span>";
 						//Div to show stats after
 						$div .= "<div class='wp-smush-image-ele-stats'></div>";
 						//Close LI
@@ -596,12 +596,11 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				} else {
 				    $hr = true;
 					$image_p = array_pop( $image );
-					$id      = str_replace( $base_dir, '', $image_p );
 					//Check if the image is already in optimised list
 					$class = array_key_exists( $image_p, $this->optimised_images ) ? ' optimised' : '';
-					$div .= "<li class='wp-smush-image-ele{$class}' id='{$image_p}'>{$image_p}";
+					$div .= "<li class='wp-smush-image-ele{$class}' id='{$image_p}'><span class='wp-smush-image-ele-status'></span>{$image_p}";
 					//Optimisation Status
-					$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span><span class='wp-smush-image-ele-status' title='" . esc_html_e( "", "wp-smushit" ) . "'></span>";
+					$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span>";
 					//Div to show stats after
 					$div .= "<div class='wp-smush-image-ele-stats'></div>";
 					//Close LI

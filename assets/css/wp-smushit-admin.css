@@ -1639,6 +1639,12 @@ li.wp-smush-image-ul.partial span.wp-smush-li-path:before {
     -moz-osx-font-smoothing: grayscale;
 }
 
+li.wp-smush-image-ul.partial span.wp-smush-li-path:before {
+    color: #ffd000;
+    content: '\f06a';
+    font-family: 'FontAwesomeWdv';
+}
+
 .wp-smush-image-count {
     background: #f2f2f2;
     border-radius: 20px;
@@ -1702,11 +1708,6 @@ div.wp-smush-scan-result hr {
     margin-top: 12px;
 }
 
-.wp-smush-image-ele {
-    background: url("../images/file.png") no-repeat;
-    padding: 0 30px;
-}
-
 .wp-smush-image-ele .spinner {
     float: none;
     margin-left: 22px;
@@ -1723,16 +1724,16 @@ div.wp-smush-scan-result hr {
     display: inline-block;
     height: 22px;
     line-height: 1;
-    margin-left: 20px;
+    margin-right: 10px;
     overflow: hidden;
     position: relative;
     width: 22px;
     vertical-align: middle;
 }
 
-.wp-smush-image-ele-status:before {
+.wp-smush-image-ele-status:after {
     box-shadow: none;
-    content: '\67';
+    content: url("../images/file.png");
     font-family: 'WPMU-DEV-App-Icons';
     font-size: 22px;
     font-style: normal;
@@ -1755,7 +1756,7 @@ div.wp-smush-scan-result hr {
 }
 
 /** Optimised Image **/
-li.wp-smush-image-ele.optimised .wp-smush-image-ele-status:before {
+li.wp-smush-image-ele.optimised .wp-smush-image-ele-status:after {
     content: '\67';
     color: #1ABC9C;
 }
@@ -1764,12 +1765,17 @@ div.wp-smush-dir-progress-wrap {
     display: inline-block;
     float: right;
     font-weight: 600;
-    margin-right: 25px;
     width: 150px;
 }
 
 div.wp-smush-dir-progress-wrap.hidden {
     display: none;
+}
+
+span.smush-percent {
+    display: inline-block;
+    text-align: right;
+    width: 40px;
 }
 
 div.wp-smush-dir-progress-wrap-inner {
