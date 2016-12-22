@@ -1599,11 +1599,44 @@ div.wp-smush-dir-desc {
 span.wp-smush-li-path {
     cursor: pointer;
     font-weight: 500;
+    position: relative;
 }
 
 li.wp-smush-image-ul span.wp-smush-li-path {
     background: url("../images/directory.png") no-repeat;
     padding: 0 30px;
+}
+
+li.wp-smush-image-ul.complete span.wp-smush-li-path,
+li.wp-smush-image-ul.partial span.wp-smush-li-path {
+    background: none;
+}
+
+li.wp-smush-image-ul.complete span.wp-smush-li-path:before,
+li.wp-smush-image-ul.partial span.wp-smush-li-path:before {
+    box-shadow: none;
+    color: #1ABC9C;
+    content: '\67';
+    font-family: 'WPMU-DEV-App-Icons';
+    font-size: 22px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    height: 22px;
+    left: 0;
+    line-height: 22px;
+    margin-top: -11px;
+    opacity: 1;
+    position: absolute;
+    speak: none;
+    transition-duration: 0.2s;
+    transition-property: color, opacity;
+    text-transform: none;
+    top: 50%;
+    vertical-align: middle;
+    width: 22px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .wp-smush-image-count {
@@ -1697,7 +1730,7 @@ div.wp-smush-scan-result hr {
     vertical-align: middle;
 }
 
-.wp-smush-image-ele-status:after {
+.wp-smush-image-ele-status:before {
     box-shadow: none;
     content: '\67';
     font-family: 'WPMU-DEV-App-Icons';
@@ -1722,9 +1755,65 @@ div.wp-smush-scan-result hr {
 }
 
 /** Optimised Image **/
-li.wp-smush-image-ele.optimised .wp-smush-image-ele-status:after {
+li.wp-smush-image-ele.optimised .wp-smush-image-ele-status:before {
     content: '\67';
     color: #1ABC9C;
+}
+
+div.wp-smush-dir-progress-wrap {
+    display: inline-block;
+    float: right;
+    font-weight: 600;
+    margin-right: 25px;
+    width: 150px;
+}
+
+div.wp-smush-dir-progress-wrap.hidden {
+    display: none;
+}
+
+div.wp-smush-dir-progress-wrap-inner {
+    background: #e6e6e6;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    display: inline-block;
+    height: 10px;
+    margin-left: 10px;
+    position: relative;
+    width: 100px;
+}
+
+.wp-smush-dir-progress {
+    -ms-animation: move 2s;
+    -moz-animation: move 2s;
+    -webkit-animation: move 2s;
+    animation: move 2s;
+    background: #ffd000;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    display: block;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.wp-smush-dir-progress.complete {
+    background: #1abc9c;
+}
+
+.wp-smush-dir-progress.complete ~ a.wp-smush-exclude-dir {
+    display: none;
+}
+
+@keyframes move {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: auto;
+    }
 }
 
 /** Media Queries **/

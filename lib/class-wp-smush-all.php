@@ -268,6 +268,37 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		}
 
 		/**
+         * Display a progress bar for the images in particular directory
+         *
+		 * @param $count Total number of images
+		 * @param array $image Array of image
+		 *
+		 * @return bool|string Progress bar HTML or false, if count is 0
+		 */
+		function progress_ui( $count, $optimised, $dir_path ) {
+
+			if ( ! $count ) {
+				return false;
+			}
+
+			$width = ( $optimised > 0 ) ? ( $optimised / $count ) * 100 : 0;
+
+			$class   = 0 < $width && 100 == $width ? 'complete' : 'partial';
+			$o_class = 0 == $width ? 'hidden' : '';
+
+			$content = "<div class='wp-smush-dir-progress-wrap {$o_class}'>";
+			$content .= '<span class="smush-percent">' . number_format_i18n( $width, 0 ) . '% </span>';
+			$content .= "<div class='wp-smush-dir-progress-wrap-inner'>
+		        <span class='wp-smush-dir-progress {$class}' style='width: {$width}px'></span>
+		        </div>
+		    </div>";
+
+			$content .= 0 == $width ? "<a href='#' class='wp-smush-exclude-dir' data-path='" . $dir_path . "' title='" . esc_html__( "Exclude directory from Smush List", "wp-smushit" ) . "'>X</a>" : '';
+
+			return $content;
+		}
+
+		/**
 		 * Handles Ajax request to obtain the Image list within a selected directory path
 		 *
 		 */
@@ -494,6 +525,28 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			return $path_tree;
 		}
 
+		/**
+         * Returns the count of optimised image
+         *
+		 * @param array $image array of images
+		 *
+		 * @return int Count
+		 */
+		function optimised_count( $image = array() ) {
+			//If we have optimised images
+			if ( ! empty( $image ) && is_array( $image ) ) {
+				$optimised = 0;
+				foreach ( $image as $item ) {
+					//Check if the image is already in optimised list
+					if ( array_key_exists( $item, $this->optimised_images ) ) {
+						$optimised ++;
+					}
+				}
+			}
+
+			return $optimised;
+		}
+
 		/*
 		 * Generate the markup for all the images
 		 */
@@ -508,16 +561,23 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$hr = true;
 			foreach ( $images as $image_path => $image ) {
 				$count = sizeof( $image );
+				$wrapper_class = '';
 				if ( is_array( $image ) && $count > 1 ) {
-					$div .= "<li class='wp-smush-image-ul'>";
+
+					$optimised_count = $this->optimised_count( $image );
+					if( $optimised_count > 0 ) {
+					    $wrapper_class = $count == $optimised_count ? 'complete' : 'partial';
+                    }
+
+					$div .= "<li class='wp-smush-image-ul {$wrapper_class}'>";
 					if( $hr ) {
                         $div .= "<hr/>";
 					}
-					$div .= "<span class='wp-smush-li-path'>{$image_path} <span class='wp-smush-image-count'>" . sprintf( esc_html__( "%d images", "wp-smushit" ), $count ) . "</span></span>
-					<a href='#' class='wp-smush-exclude-dir' data-path='" . $image_path . "' title='". esc_html__( "Exclude directory from Smush List", "wp-smushit") ."'>X</a>
-					<ul class='wp-smush-image-list-inner'>";
+
+					$div .= "<span class='wp-smush-li-path'>{$image_path} <span class='wp-smush-image-count'>" . sprintf( esc_html__( "%d images", "wp-smushit" ), $count ) . "</span></span>";
+					$div .= $this->progress_ui( $count, $optimised_count, $image_path );
+					$div .= "<ul class='wp-smush-image-list-inner'>";
 					foreach ( $image as $item ) {
-						$id = str_replace( $base_dir, '', $item );
 						//Check if the image is already in optimised list
 						$class = array_key_exists( $item, $this->optimised_images ) ? ' optimised' : '';
 
