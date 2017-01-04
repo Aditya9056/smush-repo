@@ -1416,7 +1416,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$should_resmush = false;
 
 					//For NextGen we get the metadata in the attachment data itself
-					if ( ! empty( $attachment['wp_smush'] ) ) {
+					if ( is_array( $attachment ) && ! empty( $attachment['wp_smush'] ) ) {
 						$smush_data = $attachment['wp_smush'];
 					} else {
 						//Check the current settings, and smush data for the image
@@ -1424,7 +1424,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					}
 
 					//If the image is already smushed
-					if ( ! empty( $smush_data['stats'] ) ) {
+					if ( is_array( $smush_data ) && ! empty( $smush_data['stats'] ) ) {
 
 						//If we need to optmise losslessly, add to resmush list
 						$smush_lossy = $WpSmush->lossy_enabled && ! $smush_data['stats']['lossy'];
