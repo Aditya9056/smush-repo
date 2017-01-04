@@ -1982,7 +1982,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 			//Medium Large
-			if ( empty( $sizes['medium_large'] ) ) {
+			if ( !isset( $sizes['medium_large'] ) || empty( $sizes['medium_large'] ) ) {
 				$width  = intval( get_option( 'medium_large_size_w' ) );
 				$height = intval( get_option( 'medium_large_size_h' ) );
 

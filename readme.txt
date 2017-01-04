@@ -101,6 +101,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Pro Status not recognised
     * Translation domain was incorrect for few strings
     * Translation: Load translation domain in main plugin file
+    * Include image size `medium_large` in smush list
 
 = 2.5.2 =
 
