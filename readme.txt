@@ -98,7 +98,14 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 = 2.5.3 =
 
 * Fixed:
-    * Translation not working
+    * Error in PNG to JPG conversion, added check for mime_content_type function
+    * Show a Smush progress message in Grid view for Auto Smush
+      ( A lot of people reported it as Auto Smush not working, which works in background though )
+    * Pro Status not recognised
+    * Translation domain was incorrect for few strings
+    * Translation: Load translation domain in main plugin file
+    * Include image size `medium_large` in smush list
+    * Error: Cannot use string offset as an array
 
 = 2.5.2 =
 

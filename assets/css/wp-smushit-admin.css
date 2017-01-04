@@ -1538,6 +1538,33 @@ div.wp-smush-dir-desc {
     display: inline-block;
 }
 
+.wpmud UL.jqueryFileTree LI {
+    padding: 0 0 5px 20px;
+}
+
+.wpmud UL.jqueryFileTree LI.ext_tif,
+.wpmud UL.jqueryFileTree LI.ext_tiff,
+.wpmud UL.jqueryFileTree LI.ext_png,
+.wpmud UL.jqueryFileTree LI.ext_pcx,
+.wpmud UL.jqueryFileTree LI.ext_jpeg,
+.wpmud UL.jqueryFileTree LI.ext_jpg,
+.wpmud UL.jqueryFileTree LI.ext_gif,
+.wpmud UL.jqueryFileTree LI.ext_bmp {
+    background: url(../images/image.svg) left top no-repeat
+}
+
+.wpmud UL.jqueryFileTree LI.expanded {
+    background:url(../images/folder-open.svg) left top no-repeat;
+}
+
+.wpmud UL.jqueryFileTree LI.directory {
+    background:url(../images/folder-closed.svg) left top no-repeat;
+}
+
+li.directory.selected.expanded ul.jqueryFileTree {
+    margin-top: 10px;
+}
+
 /** Image List **/
 .wpmud .wp-smush-div-heading {
     display: inline-block;
@@ -1603,7 +1630,7 @@ span.wp-smush-li-path {
 }
 
 li.wp-smush-image-ul span.wp-smush-li-path {
-    background: url("../images/directory.png") no-repeat;
+    background: url("../images/folder-closed.svg") no-repeat;
     padding: 0 30px;
 }
 
@@ -1708,6 +1735,10 @@ div.wp-smush-scan-result hr {
     margin-top: 12px;
 }
 
+.wp-smush-image-ele {
+    margin: 15px 0;
+}
+
 .wp-smush-image-ele .spinner {
     float: none;
     margin-left: 22px;
@@ -1733,7 +1764,7 @@ div.wp-smush-scan-result hr {
 
 .wp-smush-image-ele-status:after {
     box-shadow: none;
-    content: url("../images/file.png");
+    content: url("../images/image.svg");
     font-family: 'WPMU-DEV-App-Icons';
     font-size: 22px;
     font-style: normal;
