@@ -100,6 +100,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
       ( A lot of people reported it as Auto Smush not working, which works in background though )
     * Pro Status not recognised
     * Translation domain was incorrect for few strings
+    * Translation: Load translation domain in main plugin file
 
 = 2.5.2 =
 
