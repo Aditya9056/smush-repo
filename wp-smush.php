@@ -4,7 +4,7 @@ Plugin Name: WP Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.5.2
+Version: 2.5.3
 Author URI: http://premium.wpmudev.org/
 Text Domain: wp-smushit
 */

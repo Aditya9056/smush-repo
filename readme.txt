@@ -1,20 +1,20 @@
-=== WP Smush - Image Optimization ===
-Plugin Name: WP Smush - Image Optimization
-Version: 2.5.2
+=== Smush Image Compression and Optimization ===
+Plugin Name: Smush Image Compression and Optimization
+Version: 2.5.3
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
-Tags: image optimization, image compression, attachment,Attachments,compress,Compress Image File,Compress Image Size,Compress JPG,Compressed JPG, Compression Image,Image,Images,JPG,Optimise,Optimize,Photo,Photos,Pictures,PNG,Reduce Image Size,Smush,Smush.it,Upload,WordPress Compression,WordPress Image Tool,Yahoo, Yahoo Smush.it
+Tags: image, optimize, compress, performance, lossless, lossy, photo, pictures, optimize JPG, compress PNG, Smush WordPress Compression, Smush.it
 Requires at least: 3.5
-Tested up to: 4.6.1
-Stable tag: 2.5.2
+Tested up to: 4.7
+Stable tag: 2.5.3
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
-Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
+Compress and optimize image files, improve performance and boost your SEO rank using Smush WordPress image compression and optimization.
 
 == Description ==
 
-<strong>Resize and optimize all of your images</strong> with the <strong>incredibly powerful</strong> and <strong>100% free image smusher</strong>, brought to you by the superteam at WPMU DEV!
+<strong>Resize, optimize and compress all of your images</strong> with the <strong>incredibly powerful</strong> and <strong>100% free WordPress image smusher</strong>, brought to you by the superteam at WPMU DEV!
 
 <strong>Now with image resizing!</strong> Set a max width and height and large images will scale down as they are being compressed.
 
@@ -75,6 +75,38 @@ WP Smush Pro gives you everything you'll find in WP Smush and more:
 Upgrade to WP Smush Pro and optimize more and larger image files faster to increase your site’s performance.
 
 
+== Frequently Asked Questions ==
+
+= I just finished running Smush and Google Pagespeed still says my images need compressing and resizing. How do I fix it? =
+
+This means your images were not properly scaled for where they are being displayed. Scaling images before uploading them can be time consuming but can save space and speedup load time. First, determine what size your image needs to be. You can use the built-in developer tools in Chrome or Firefox to find what height and width your image should be. Once you know how large the image should be, scale your images to the right size.
+
+
+<strong>Tip:</strong> you may not be need to scale each image individually. If the images are in your Media Library, you may be able to fix them with a plugin.
+
+= Does Smush delete or replace my original full-size images? =
+
+Nope. WordPress crops and resizes every image you upload for embedding on your site. By default, Smush only compresses these cropped and resized images, not your original full-size images. To compress your original full-sized images use <a href="https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme">WP Smush Pro</a>.
+
+= What type of file should I use for my images (GIF, PNG, JPG)? =
+
+GIF files are large and can’t be optimized much. They should only be used if the image is animated.
+
+
+PNG is best for computer generated graphics (vectors, logos, fonts, etc.), images with few colors or images with transparency.
+
+
+JPG should be used for photography or images with a lot of color variation.
+
+= I’m a photographer can I keep all my EXIF data? =
+
+Yes! EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information. We have included the option to preserve EXIF image data in WP Smush.
+
+= I just ran bulk smush and some of my images didn't get compressed? =
+
+First, check to see if you're receiving any server errors. If your images seem to be processing correctly check the file size of the images being skipped. Images over 1mb will be skipped. To compress images up to 32mb get <a href="https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme">WP Smush Pro</a>.
+
+
 == Screenshots ==
 
 1. Watch as your image library is processed – up to 50 images at a time.
@@ -98,14 +130,14 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 = 2.5.3 =
 
 * Fixed:
-    * Error in PNG to JPG conversion, added check for mime_content_type function
     * Show a Smush progress message in Grid view for Auto Smush
       ( A lot of people reported it as Auto Smush not working, which works in background though )
-    * Pro Status not recognised
     * Translation domain was incorrect for few strings
     * Translation: Load translation domain in main plugin file
     * Include image size `medium_large` in smush list
     * Error: Cannot use string offset as an array
+    * Error in PNG to JPG conversion ( Pro Feature ), added check for mime_content_type function
+    * Pro Status not recognised
 
 = 2.5.2 =
 
