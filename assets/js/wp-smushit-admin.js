@@ -920,6 +920,7 @@ jQuery(function ($) {
         $('.wp-smush-select-dir, .wp-smush-list-dialog .box .content').css({'opacity': '1'});
         $('.wp-smush-select-button-wrap .spinner').css({'visibility': 'hidden'});
     }
+
     /**
      * Initialize accordion
      *
@@ -942,6 +943,45 @@ jQuery(function ($) {
             }
         }
     }
+
+    /**
+     * Update directory progress if the element has a parent
+     *
+     * @param parent
+     *
+     */
+    var update_dir_progress = function (ele, parent) {
+        if (!parent.length) {
+            return;
+        }
+
+        //Check if the selected element is under expandable li
+        parent.addClass('active');
+        parent.find('.wp-smush-image-list-inner').addClass('show');
+
+        //Check if first image, Add a loader against directory path
+        if (ele.is(':first-child')) {
+            parent.find('div.wp-smush-dir-progress-wrap').css({'display': 'inline-block'});
+        }
+
+        var child = parent.find('ul.wp-smush-image-list-inner li');
+
+        //Update the percentage, Check the total number of images inside dir, smushed images count
+        var total = child.length;
+        var smushed = child.filter('.optimised').length;
+        if( smushed > 0 && total > 0 ) {
+            var percent = ( smushed/total ) * 100;
+        }
+        //Mark all the images inside a directory path, as waiting. Copy and append a single span from the page
+        var unsmushed = child.filter(":not('.optimised')");
+        if( unsmushed.length > 0 ) {
+            //Loop, on unsmushed images and append a loader
+        }
+
+        //Check if last image, and if all the images are not smushed under the specified directory path, add a genric warning message
+
+    }
+
     /**
      * Start Optimising all the images listed in last scan
      *
@@ -1004,11 +1044,8 @@ jQuery(function ($) {
 
                 var parent = next.parents('li.wp-smush-image-ul');
 
-                //Check if the selected element is under expandable li
-                if (parent.length == 1) {
-                    parent.addClass('active');
-                    parent.find('.wp-smush-image-list-inner').addClass('show');
-                }
+                //Update Directory Progress for the element
+                update_dir_progress(next, parent);
 
                 // goToByScroll( next );
 

@@ -1790,6 +1790,7 @@ div.wp-smush-scan-result hr {
 li.wp-smush-image-ele.optimised .wp-smush-image-ele-status:after {
     content: '\67';
     color: #1ABC9C;
+    margin-left: -1px;
 }
 
 div.wp-smush-dir-progress-wrap {
