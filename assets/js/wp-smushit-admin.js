@@ -957,11 +957,16 @@ jQuery(function ($) {
 
         //Check if the selected element is under expandable li
         parent.addClass('active');
-        parent.find('.wp-smush-image-list-inner').addClass('show');
+        var list = parent.find('.wp-smush-image-list-inner');
+        list.addClass('show');
 
         //Check if first image, Add a loader against directory path
+        var progress_wrap = parent.find('div.wp-smush-dir-progress-wrap');
+
+        var waiting_message = progress_wrap.find('span.waiting-message').clone();
+
         if (ele.is(':first-child')) {
-            parent.find('div.wp-smush-dir-progress-wrap').css({'display': 'inline-block'});
+            progress_wrap.css({'display': 'inline-block'});
         }
 
         var child = parent.find('ul.wp-smush-image-list-inner li');
@@ -971,14 +976,23 @@ jQuery(function ($) {
         var smushed = child.filter('.optimised').length;
         if( smushed > 0 && total > 0 ) {
             var percent = ( smushed/total ) * 100;
+            progress_wrap.find('.smush-percent').html(percent + '%');
+
         }
+
         //Mark all the images inside a directory path, as waiting. Copy and append a single span from the page
         var unsmushed = child.filter(":not('.optimised')");
         if( unsmushed.length > 0 ) {
-            //Loop, on unsmushed images and append a loader
+            //Loop, on unsmushed images and append a waiting message
+            unsmushed.forEach( function( element ) {
+                unsmushed.append(waiting_message).show();
+            });
         }
 
         //Check if last image, and if all the images are not smushed under the specified directory path, add a genric warning message
+        if(ele.is(':last-child') ) {
+            console.log("Add warning message " + parent );
+        }
 
     }
 
@@ -988,6 +1002,7 @@ jQuery(function ($) {
      */
     var smush_all = function (show_spinner) {
 
+        var spinner = $('div.wp-smush-scan-result span.spinner').clone();
         if (show_spinner) {
             //Update the Optimising status for the image
             var first_child = $('ul.wp-smush-image-list li.wp-smush-image-ele:not(".optimised"):first');
@@ -1002,7 +1017,9 @@ jQuery(function ($) {
 
             //Hide the tick mark and show the spinner
             first_child.find('span.wp-smush-image-ele-status').css({'display': 'none'});
-            first_child.find('span.spinner').css({'visibility': 'visible'});
+
+            //Append and show spinner
+            first_child.append(spinner).css({'visibility': 'visible'});
         }
 
         /** Send Ajax Request */
@@ -1023,8 +1040,8 @@ jQuery(function ($) {
 
                 // goToByScroll( ele );
 
-                //Hide the spinner
-                ele.find('span.spinner').css({'visibility': 'hidden'});
+                //Remove the spinner
+                ele.find('span.spinner').remove();
                 //Show the Optimisation status
                 ele.find('span.wp-smush-image-ele-status').show();
 
@@ -1039,8 +1056,9 @@ jQuery(function ($) {
                 var next = jQuery(document.getElementById(data.next))
                 //Hide the Optimisation status
                 next.find('span.wp-smush-image-ele-status').hide();
-                //Show the loader
-                next.find('span.spinner').css({'visibility': 'visible'});
+
+                //Append spinner
+                next.append(spinner).css({'visibility': 'visible'});
 
                 var parent = next.parents('li.wp-smush-image-ul');
 
@@ -1051,7 +1069,7 @@ jQuery(function ($) {
 
                 //Loop
                 smush_all(false);
-            }else{
+            } else {
                 //Set the continue ajax to 1
                 $('input.wp-smush-continue-ajax').val(1);
             }
