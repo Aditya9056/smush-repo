@@ -749,6 +749,11 @@ jQuery(function ($) {
         return true;
 
     };
+    //Stackoverflow: http://stackoverflow.com/questions/1726630/formatting-a-number-with-exactly-two-decimals-in-javascript
+    var precise_round = function (num, decimals) {
+        var sign = num >= 0 ? 1 : -1;
+        return (Math.round((num * Math.pow(10, decimals)) + (sign * 0.001)) / Math.pow(10, decimals));
+    };
 
     /**
      * Update the progress bar width if we have images that needs to be resmushed
@@ -945,16 +950,16 @@ jQuery(function ($) {
     }
 
     /**
-     * Update directory progress if the element has a parent
-     *
-     * @param parent
-     *
+     * Appends the waiting message to child elements for a directory
+     * @param ele
      */
-    var update_dir_progress = function (ele, parent) {
+    var update_dir_ele_status = function (ele) {
+        //Get the parent element
+        var parent = ele.parents('li.wp-smush-image-ul');
+
         if (!parent.length) {
             return;
         }
-
         //Check if the selected element is under expandable li
         parent.addClass('active');
         var list = parent.find('.wp-smush-image-list-inner');
@@ -963,7 +968,7 @@ jQuery(function ($) {
         //Check if first image, Add a loader against directory path
         var progress_wrap = parent.find('div.wp-smush-dir-progress-wrap');
 
-        var waiting_message = progress_wrap.find('span.waiting-message').clone();
+        var waiting_message = $('content').find('span.waiting-message').clone();
 
         if (ele.is(':first-child')) {
             progress_wrap.css({'display': 'inline-block'});
@@ -971,27 +976,41 @@ jQuery(function ($) {
 
         var child = parent.find('ul.wp-smush-image-list-inner li');
 
-        //Update the percentage, Check the total number of images inside dir, smushed images count
-        var total = child.length;
-        var smushed = child.filter('.optimised').length;
-        if( smushed > 0 && total > 0 ) {
-            var percent = ( smushed/total ) * 100;
-            progress_wrap.find('.smush-percent').html(percent + '%');
-
-        }
-
         //Mark all the images inside a directory path, as waiting. Copy and append a single span from the page
         var unsmushed = child.filter(":not('.optimised')");
-        if( unsmushed.length > 0 ) {
-            //Loop, on unsmushed images and append a waiting message
-            unsmushed.forEach( function( element ) {
-                unsmushed.append(waiting_message).show();
-            });
+        if (unsmushed.length > 0) {
+            //Append a waiting message
+            unsmushed.append(waiting_message);
+            unsmushed.find(waiting_message).show();
         }
 
         //Check if last image, and if all the images are not smushed under the specified directory path, add a genric warning message
-        if(ele.is(':last-child') ) {
-            console.log("Add warning message " + parent );
+        if (ele.is(':last-child')) {
+            console.log("Add warning message " + parent);
+        }
+    }
+
+    /**
+     * Update directory optimisation progress if the element has a parent
+     *
+     * @param ele
+     *
+     */
+    var update_dir_progress = function (ele) {
+        //Get the parent element
+        var parent = ele.parents('li.wp-smush-image-ul');
+
+        if (!parent.length) {
+            return;
+        }
+        var child = parent.find('ul.wp-smush-image-list-inner li');
+
+        //Update the percentage, Check the total number of images inside dir, smushed images count
+        var total = child.length;
+        var smushed = child.filter('.optimised').length;
+        if (smushed > 0 && total > 0) {
+            var percent = ( smushed / total ) * 100;
+            progress_wrap.find('.smush-percent').html(percent + '%');
         }
 
     }
@@ -1002,7 +1021,7 @@ jQuery(function ($) {
      */
     var smush_all = function (show_spinner) {
 
-        var spinner = $('div.wp-smush-scan-result span.spinner').clone();
+        var spinner = $('div.wp-smush-scan-result span.spinner:first').clone();
         if (show_spinner) {
             //Update the Optimising status for the image
             var first_child = $('ul.wp-smush-image-list li.wp-smush-image-ele:not(".optimised"):first');
@@ -1015,11 +1034,9 @@ jQuery(function ($) {
                 parent.find('.wp-smush-image-list-inner').addClass('show');
             }
 
-            //Hide the tick mark and show the spinner
-            first_child.find('span.wp-smush-image-ele-status').css({'display': 'none'});
-
             //Append and show spinner
-            first_child.append(spinner).css({'visibility': 'visible'});
+            first_child.append(spinner);
+            first_child.find('span.spinner').css({'visibility': 'visible'});
         }
 
         /** Send Ajax Request */
@@ -1042,31 +1059,35 @@ jQuery(function ($) {
 
                 //Remove the spinner
                 ele.find('span.spinner').remove();
+
+                ele.addClass('optimised');
+
                 //Show the Optimisation status
                 ele.find('span.wp-smush-image-ele-status').show();
 
                 //Show the stats
 
-                //Update the total stats
+                //Update Directory progress
+                update_dir_progress( ele );
             }
 
             //If we'va next element and the user haven't paused the Smushing
             if (data.next && 1 == $('input[name="wp-smush-continue-ajax"]').val()) {
                 //Update the status for the next image
                 var next = jQuery(document.getElementById(data.next))
-                //Hide the Optimisation status
-                next.find('span.wp-smush-image-ele-status').hide();
 
                 //Append spinner
                 next.append(spinner).css({'visibility': 'visible'});
 
-                var parent = next.parents('li.wp-smush-image-ul');
+                //Append and update waiting message for all the elements, for the current directory being optimised
+                update_dir_ele_status(next);
 
-                //Update Directory Progress for the element
-                update_dir_progress(next, parent);
+                //Check if last image, and if all the images are not smushed under the specified directory path, add a generic warning message
+                if( ele && ele.is(':last-child') ) {
+
+                }
 
                 // goToByScroll( next );
-
                 //Loop
                 smush_all(false);
             } else {
@@ -1586,13 +1607,13 @@ jQuery(function ($) {
         }
 
         //Disable this button
-        var self = $(this);
-        var parent = self.parent();
+        var button = $('.wp-smush-start');
+        var parent = button.parent();
 
         /** All the Styling changes **/
-        self.attr('disabled', 'disabled');
+        button.attr('disabled', 'disabled');
         parent.find('span.spinner').css({'visibility': 'visible'});
-        parent.find('button.wp-smush-pause').removeAttr('disabled');
+        parent.find('a.wp-smush-pause').removeClass('disabled');
 
         //Disable Select Directory button
         $('a.wp-smush-browse').attr('disabled', 'disabled');
@@ -1603,15 +1624,20 @@ jQuery(function ($) {
     });
 
     //Handle the Pause button click
-    $('button.wp-smush-pause').on('click', function (e) {
+    $('a.wp-smush-pause').on('click', function (e) {
         e.preventDefault();
+
+        //Return if the link is disabled
+        if($(this).hasClass('disabled') ) {
+            return false;
+        }
 
         //Set the button status to 0, to cancel next ajax request
         $('input[name="wp-smush-continue-ajax"]').val(0);
 
         //Enable the smush button, disable Pause button
         var self = $(this);
-        self.attr('disabled', 'disabled');
+        self.addClass('disabled', 'disabled');
 
         //Enable the smush button, hide the spinner
         $('button.wp-smush-start, a.wp-smush-browse').removeAttr('disabled');

@@ -35,9 +35,6 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			//Handle Ajax Request to optimise images
 			add_action( 'wp_ajax_wp_smush_optimise', array( $this, 'optimise' ) );
 
-			//Initialize the content on page load
-			add_action( 'load-media_page_wp-smush-all', array( $this, 'total_stats' ) );
-
 			//Handle Exclude path request
 			add_action( 'wp_ajax_smush_exclude_path', array( $this, 'smush_exclude_path' ) );
 
@@ -59,7 +56,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			}
 
 			/**
-			 * Table: wp_smush_images
+			 * Table: wp_smush_dir_images
 			 * Columns:
 			 * id -> Auto Increment ID
 			 * path -> Absolute path to the image file
@@ -69,12 +66,12 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			 * file_time -> Unix time for the file creation, to match it against the current creation time,
 			 *                  in order to confirm if it is optimised or not
 			 * updated -> Timestamp
-			 * last_scanned -> 1/0 to mark if the image was in last scan or not, so that the images loaded on page refresh
+			 * last_scanned -> Timestamp, Get images form last scan by latest timestamp
 			 *                  are from latest scan only and not the whole list from db
 			 * meta -> For any future use
 			 *
 			 */
-			$sql = "CREATE TABLE {$wpdb->prefix}smush_images (
+			$sql = "CREATE TABLE {$wpdb->prefix}smush_dir_images (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
 				path text NOT NULL,
 				resize varchar(55),
@@ -82,7 +79,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				image_size int(10) unsigned,
 				orig_size int(10) unsigned,
 				file_time int(10) unsigned,
-				last_scanned tinyint(1),
+				last_scanned timestamp DEFAULT CURRENT_TIMESTAMP,
 				updated timestamp DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
 				meta text,
 				UNIQUE KEY id (id),
@@ -118,25 +115,28 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
                 <input type="hidden" class="wp-smush-dir-path" value="" />
                 <div class="wp-smush-scan-result hidden">
                     <hr class="primary-separator"/>
-                    <div class="wp-smush-all-button-wrap">
-                        <span class="spinner"></span><?php
-						wp_nonce_field( 'wp_smush_all', 'wp-smush-all' );
-						?>
-                        <input type="hidden" name="wp-smush-continue-ajax" value=1>
-                    </div>
-                    <div class="wp-smush-folder-stats">
-                        <!-- Show the pretty Graph with a circle, total image count, optimised images, savings-->
+                    <div class="wp-smush-all-button-wrap top">
+                        <span class="spinner"></span>
+                        <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
+                        <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
+                        <a href="#" class="wp-smush-pause disabled"
+                           title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit" ); ?>"><?php esc_html_e( "Cancel", "wp-smushit" ); ?></a>
                     </div>
                     <div class="content">
                         <!-- Show a list of images, inside a fixed height div, with a scroll. As soon as the image is
 						optimised show a tick mark, with savings below the image. Scroll the li each time for the
 						current optimised image -->
-
                     </div>
-                    <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
-                    <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
-                    <a href="#" class="wp-smush-pause" disabled="disabled"
-                            title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit" ); ?>"><?php esc_html_e( "Cancel", "wp-smushit" ); ?></a>
+                    <div class="wp-smush-all-button-wrap bottom">
+                        <span class="spinner"></span>
+                        <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
+                        <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
+                        <a href="#" class="wp-smush-pause disabled"
+                           title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit" ); ?>"><?php esc_html_e( "Cancel", "wp-smushit" ); ?></a>
+                    </div><?php
+	                //Nonce Field
+	                wp_nonce_field( 'wp_smush_all', 'wp-smush-all' ); ?>
+                    <input type="hidden" name="wp-smush-continue-ajax" value=1>
                 </div>
                 <div class="dev-overlay wp-smush-list-dialog roboto-regular">
                     <div class="back"></div>
@@ -338,7 +338,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			//Get the list of existing images in db
 			$image_list = array();
 			if ( empty( $image_list ) ) {
-				$query   = "SELECT path,file_time FROM {$wpdb->prefix}smush_images";
+				$query   = "SELECT path,file_time FROM {$wpdb->prefix}smush_dir_images";
 				$results = $wpdb->get_results( $query, ARRAY_A );
 				foreach ( $results as $i ) {
 					$path                = $i['path'];
@@ -350,6 +350,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$files_arr = array();
 			$images    = array();
 			$count     = 0;
+			$timestamp = current_time('timestamp');
 			foreach ( $iterator as $path ) {
 
 				if ( $path->isFile() ) {
@@ -378,7 +379,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						if ( ! array_key_exists( $file_path, $image_list ) ) {
 							/** To be stored in DB, Part of code inspired from Ewwww Optimiser  */
 							$image_size = $path->getSize();
-							$images[]   = "('" . utf8_encode( $file_path ) . "',$image_size, $file_time, 1 )";
+							$images[]   = "('" . utf8_encode( $file_path ) . "',$image_size, $file_time, $timestamp )";
 							$count ++;
 						}
 					}
@@ -386,7 +387,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				//Store the Images in db at an interval of 5k
 				if ( $count >= 5000 ) {
 					$count = 0;
-					$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
+					$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
 					$sql = $wpdb->prepare( $query, implode( ',', $images ) );
 					$wpdb->query( $sql );
 					$images = array();
@@ -395,7 +396,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			//Update rest of the images
 			if ( ! empty( $images ) && $count > 0 ) {
-				$query = "INSERT INTO {$wpdb->prefix}smush_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
+				$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
 				$sql = sprintf( $query, implode( ',', $images ) );
 				$wpdb->query( $sql );
 			}
@@ -555,10 +556,11 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$this->total_stats();
 
 			$div = wp_nonce_field('wp-smush-exclude-path', 'exclude-path-nonce', '', false );
-			$div .= "<span class='spinner'></span>";
 			$div .= '<ul class="wp-smush-image-list roboto-regular">';
 			//Flag - Whether to print top hr tag or not
 			$hr = true;
+			//Flag - Not to print hr tag, if first element is ul in the scanned image list
+			$index = 1;
 			foreach ( $images as $image_path => $image ) {
 				$count = sizeof( $image );
 				$wrapper_class = '';
@@ -570,7 +572,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
                     }
 
 					$div .= "<li class='wp-smush-image-ul {$wrapper_class}'>";
-					if( $hr ) {
+					if( $hr && $index > 1 ) {
                         $div .= "<hr/>";
 					}
 
@@ -581,9 +583,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 						//Check if the image is already in optimised list
 						$class = array_key_exists( $item, $this->optimised_images ) ? ' optimised' : '';
 
-						$div .= "<li class='wp-smush-image-ele{$class}' id='{$item}'><span class='wp-smush-image-ele-status'></span>{$item}";
-						//Div to show stats after
-						$div .= "<div class='wp-smush-image-ele-stats'></div>";
+						$div .= "<li class='wp-smush-image-ele{$class}' id='{$item}'><span class='wp-smush-image-ele-status'></span><span class='wp-smush-image-path'>{$item}</span>";
 						//Close LI
 						$div .= "</li>";
 					}
@@ -596,12 +596,11 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					$image_p = array_pop( $image );
 					//Check if the image is already in optimised list
 					$class = array_key_exists( $image_p, $this->optimised_images ) ? ' optimised' : '';
-					$div .= "<li class='wp-smush-image-ele{$class}' id='{$image_p}'><span class='wp-smush-image-ele-status'></span>{$image_p}";
-					//Div to show stats after
-					$div .= "<div class='wp-smush-image-ele-stats'></div>";
+					$div .= "<li class='wp-smush-image-ele{$class}' id='{$image_p}'><span class='wp-smush-image-ele-status'></span><span class='wp-smush-image-path'>{$image_p}</span>";
 					//Close LI
 					$div .= "</li>";
 				}
+				$index++;
 			}
 			$div .= '</ul>';
 			$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span>";
@@ -625,11 +624,11 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$limit     = 1000;
 			$images    = array();
 
-			$total = $wpdb->get_col( "SELECT count(id) FROM {$wpdb->prefix}smush_images" );
+			$total = $wpdb->get_col( "SELECT count(id) FROM {$wpdb->prefix}smush_dir_images" );
 
 			$total = ! empty( $total ) && is_array( $total ) ? $total[0] : 0;
 
-			while ( $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_images WHERE image_size IS NOT NULL LIMIT $offset, $limit ", ARRAY_A ) ) {
+			while ( $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL LIMIT $offset, $limit ", ARRAY_A ) ) {
 				if ( ! empty( $results ) ) {
 					$images = array_merge( $images, $results );
 				}
@@ -674,7 +673,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		 */
 		function last_scan_stats() {
 			global $wpdb;
-			$query   = "SELECT image_size, orig_size FROM {$wpdb->prefix}smush_images WHERE last_scanned = 1";
+			$query   = "SELECT id, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images t1 WHERE last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id) GROUP BY id";
 			$results = $wpdb->get_results( $query, ARRAY_A );
 			$total   = count( $results );
 			$smushed = 0;
@@ -690,6 +689,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				}
 				//Summation of stats
 				foreach ( $image as $k => $v ) {
+					if ( 'id' == $k ) {
+						continue;
+					}
 					$stats[ $k ] += $v;
 				}
 			}
@@ -712,8 +714,8 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			$error_msg = '';
 
-			//Get the image from db
-			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_images WHERE last_scanned=1 && image_size IS NULL && error IS NULL LIMIT 2";
+			//Get the image from db, //@todo: Make function get unsmushed images
+			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && error IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id) GROUP BY id LIMIT 2";
 			$results = $wpdb->get_results( $query, ARRAY_A );
 
 			$next = ! empty( $results[1] ) ? $results[1]['path'] : '';
@@ -739,7 +741,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 				//Store the error in DB
 				//All good, Update the stats
-				$query = "UPDATE {$wpdb->prefix}smush_images SET error=%s WHERE id=%d LIMIT 1";
+				$query = "UPDATE {$wpdb->prefix}smush_dir_images SET error=%s WHERE id=%d LIMIT 1";
 				$query = $wpdb->prepare( $query, $error_msg, $curr_img['id'] );
 				$wpdb->query( $query );
 
@@ -754,7 +756,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			}
 
 			//All good, Update the stats
-			$query = "UPDATE {$wpdb->prefix}smush_images SET image_size=%d WHERE id=%d LIMIT 1";
+			$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d WHERE id=%d LIMIT 1";
 			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $curr_img['id'] );
 			$wpdb->query( $query );
 
@@ -800,7 +802,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			global $wpdb;
 
 			$path = realpath( $_POST['path'] );
-			$table = "{$wpdb->prefix}smush_images";
+			$table = "{$wpdb->prefix}smush_dir_images";
 			if( is_file( $path ) ) {
 			    $sql = sprintf( "DELETE FROM $table WHERE path='%s'", $path );
             }else{

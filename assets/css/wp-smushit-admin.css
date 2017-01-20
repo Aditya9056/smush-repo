@@ -1553,12 +1553,28 @@ div.wp-smush-dir-desc {
     background: url(../images/image.svg) left top no-repeat
 }
 
-.wpmud UL.jqueryFileTree LI.expanded {
-    background:url(../images/folder-open.svg) left top no-repeat;
+.wpmud UL.jqueryFileTree LI.directory {
+    background: url(../images/folder-closed.svg) left top no-repeat;
 }
 
-.wpmud UL.jqueryFileTree LI.directory {
-    background:url(../images/folder-closed.svg) left top no-repeat;
+.wpmud UL.jqueryFileTree LI.expanded {
+    background: url(../images/folder-open.svg) left top no-repeat;
+}
+
+.wpmud UL.jqueryFileTree LI.expanded.selected {
+    background: url(../images/folder-open-selected.svg) left top no-repeat;
+}
+
+.wpmud UL.jqueryFileTree LI.expanded.selected > a {
+    color: #17a8e3;
+}
+
+.wpmud UL.jqueryFileTree LI.expanded.selected #Folder-22px-Solid-3-Open {
+    fill: #17a8e3;
+}
+
+.wpmud UL.jqueryFileTree LI.selected > a {
+    font-weight: 500;
 }
 
 li.directory.selected.expanded ul.jqueryFileTree {
@@ -1578,8 +1594,14 @@ li.directory.selected.expanded ul.jqueryFileTree {
     width: 270px;
 }
 
+.wp-smush-all-button-wrap.top {
+    display: block;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
 .wp-smush-all-button-wrap .spinner {
-    float: left;
+    float: right;
     margin-top: 12px;
 }
 
@@ -1590,14 +1612,15 @@ li.directory.selected.expanded ul.jqueryFileTree {
 
 .wpmud a.wp-smush-pause {
     color: #9b9b9b;
+    cursor: pointer;
     float: right;
     margin-right: 20px;
     margin-top: 12px;
 }
 
-.wp-smush-pause:disabled, .wp-smush-start:disabled {
+.wpmud a.wp-smush-pause.disabled, .wpmud button.wp-smush-start:disabled {
     opacity: 0.7;
-    cursor: none;
+    cursor: none !important;
 }
 
 .wp-smush-image-list {
@@ -1823,10 +1846,6 @@ div.wp-smush-dir-progress-wrap-inner {
 }
 
 .wp-smush-dir-progress {
-    -ms-animation: move 2s;
-    -moz-animation: move 2s;
-    -webkit-animation: move 2s;
-    animation: move 2s;
     background: #ffd000;
     -webkit-border-radius: 20px;
     -moz-border-radius: 20px;
@@ -1835,6 +1854,8 @@ div.wp-smush-dir-progress-wrap-inner {
     height: 100%;
     position: relative;
     overflow: hidden;
+    transition: 0.4s linear;
+    transition-property: width, background-color;
 }
 
 .wp-smush-dir-progress.complete {
@@ -1843,15 +1864,6 @@ div.wp-smush-dir-progress-wrap-inner {
 
 .wp-smush-dir-progress.complete ~ a.wp-smush-exclude-dir {
     display: none;
-}
-
-@keyframes move {
-    0% {
-        width: 0;
-    }
-    100% {
-        width: auto;
-    }
 }
 
 /** Media Queries **/
