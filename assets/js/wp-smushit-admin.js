@@ -1005,12 +1005,28 @@ jQuery(function ($) {
         }
         var child = parent.find('ul.wp-smush-image-list-inner li');
 
+        //Check if first image, Add a loader against directory path
+        var progress_wrap = parent.find('div.wp-smush-dir-progress-wrap');
+
         //Update the percentage, Check the total number of images inside dir, smushed images count
         var total = child.length;
         var smushed = child.filter('.optimised').length;
+        var smush_progress = progress_wrap.find('.wp-smush-dir-progress');
         if (smushed > 0 && total > 0) {
             var percent = ( smushed / total ) * 100;
+            percent = precise_round(percent, 1);
             progress_wrap.find('.smush-percent').html(percent + '%');
+            smush_progress.css({'width': percent + '%'});
+        }
+
+        //Add the class partial, to show the respective icon for parent
+        if( !parent.hasClass('partial') && smushed != total ) {
+            parent.addClass('partial');
+        }
+        //If all the images are smushed, remove the class partial and add the class complete
+        if (smushed == total) {
+            smush_progress.removeClass('partial').addClass('complete');
+            parent.removeClass('partial').addClass('complete');
         }
 
     }

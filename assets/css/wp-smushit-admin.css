@@ -1771,6 +1771,7 @@ div.wp-smush-scan-result hr {
 
 .wp-smush-image-ul .wp-smush-image-ele .spinner {
     margin-left: 18px;
+    position: relative;
 }
 
 .wp-smush-image-ele-status {
