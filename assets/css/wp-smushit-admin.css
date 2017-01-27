@@ -1734,6 +1734,10 @@ div.wp-smush-scan-result hr {
     margin-top: 7px;
 }
 
+.wpmud .button.wp-smush-resume {
+    margin-top: 7px;
+}
+
 .wp-smush-loading-text {
     font-size: 20px;
     line-height: 1.3;

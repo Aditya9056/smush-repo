@@ -93,13 +93,48 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		}
 
 		/**
+		 * Query db for a unsmushed latest scanned image
+		 *
+		 * @param int $limit Number of rows to fetch
+         *
+		 * @return bool True/False
+		 */
+		function get_scanned_images( $limit = 1 ) {
+			global $wpdb;
+
+			//Get the latest scanned unsmushed row, if any
+			$query   = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && error IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id)  GROUP BY id LIMIT %d", $limit );
+			$results = $wpdb->get_col( $query );
+
+			if ( empty( $results ) ) {
+				return false;
+			} elseif ( is_wp_error( $results ) ) {
+				error_log( sprintf( "WP Smush Query Error in %s at %s: %s", __FILE__, __LINE__, $results->get_error_message() ) );
+				return false;
+			}
+
+			return true;
+		}
+
+		/**
+		 * Prints a resume button if required
+		 */
+		function show_resume_button() {
+			if ( ! $this->get_scanned_images() ) {
+				return null;
+			}
+			//Print the button ?>
+            <a href="#"
+               class="wp-smush-resume wp-smush-button button"><?php esc_html_e( "RESUME LAST SCAN", "wp-smushit" ); ?></a><?php
+		}
+
+		/**
 		 * Output the required UI for WP Smush All page
 		 */
 		function ui() {
 			global $wpsmushit_admin;
 			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
 			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' );
-
 
 			/** Directory Browser and Image List **/
 			$wpsmushit_admin->bulk_ui->container_header( 'wp-smush-dir-browser', 'wp-smush-dir-browser', esc_html__( "DIRECTORY SMUSH", "wp-smushit" ) ); ?>
@@ -111,6 +146,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
                 </div>
                 <a href="#"
                    class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "CHOOSE DIRECTORY", "wp-smushit" ); ?></a>
+	            <?php
+	            //Optionally show a resume button, if there were images left from last scan
+	            $this->show_resume_button(); ?>
                 <!-- Directory Path -->
                 <input type="hidden" class="wp-smush-dir-path" value="" />
                 <div class="wp-smush-scan-result hidden">
