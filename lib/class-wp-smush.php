@@ -2039,6 +2039,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @param string $original_file
 		 *
+		 * @return string File Path
+		 *
 		 */
 		function original_file( $original_file = '' ) {
 			$uploads     = wp_get_upload_dir();

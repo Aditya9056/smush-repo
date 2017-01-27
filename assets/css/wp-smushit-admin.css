@@ -1729,13 +1729,21 @@ div.wp-smush-scan-result hr {
     color: #878787;
 }
 
-.wpmud .button.wp-smush-browse {
-    background: #9E9E9E;
-    margin-top: 7px;
+div.dir-smush-button-wrap button, div.dir-smush-button-wrap span {
+    float: left;
 }
 
-.wpmud .button.wp-smush-resume {
-    margin-top: 7px;
+div.dir-smush-button-wrap span {
+    margin-top: 17px;
+}
+
+.wpmud button.wp-smush-browse {
+    background-color: #9E9E9E !important;
+    margin-top: 7px !important;
+}
+
+.wpmud button.wp-smush-resume {
+    margin-top: 7px !important;
 }
 
 .wp-smush-loading-text {

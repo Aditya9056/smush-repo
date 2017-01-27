@@ -124,8 +124,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				return null;
 			}
 			//Print the button ?>
-            <a href="#"
-               class="wp-smush-resume wp-smush-button button"><?php esc_html_e( "RESUME LAST SCAN", "wp-smushit" ); ?></a><?php
+            <button class="wp-smush-resume wp-smush-button button"><?php esc_html_e( "RESUME LAST SCAN", "wp-smushit" ); ?></button><?php
 		}
 
 		/**
@@ -144,11 +143,12 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
                     <!-- Description -->
                     <?php esc_html_e("In addition to smushing your media uploads, you may want to also smush images living outside your uploads directory. Simply add any directories you wish to smush and bulk smush away!", "wp-smushit"); ?>
                 </div>
-                <a href="#"
-                   class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "CHOOSE DIRECTORY", "wp-smushit" ); ?></a>
-	            <?php
-	            //Optionally show a resume button, if there were images left from last scan
-	            $this->show_resume_button(); ?>
+                <div class="dir-smush-button-wrap">
+                    <button class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "CHOOSE DIRECTORY", "wp-smushit" ); ?></button>
+                    <?php
+                    //Optionally show a resume button, if there were images left from last scan
+                    $this->show_resume_button(); ?>
+                </div>
                 <!-- Directory Path -->
                 <input type="hidden" class="wp-smush-dir-path" value="" />
                 <div class="wp-smush-scan-result hidden">
