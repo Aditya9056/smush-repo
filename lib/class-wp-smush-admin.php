@@ -386,8 +386,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'membership_valid'        => esc_html__( "We successfully verified your membership, all the Pro features should work completely. ", "wp-smushit" ),
 				'membership_invalid'      => esc_html__( "Your membership couldn't be verified.", "wp-smushit" ),
 				'missing_path'            => esc_html__( "Missing file path.", "wp-smushit" ),
-				'unfinished_smush_single' => esc_html__( "%d images were not smus", "wp-smushit" ),
-				'unfinished_smush'        => esc_html__( "Missing file path.", "wp-smushit" ),
+				'unfinished_smush_single' => esc_html__( "image could not be smushed.", "wp-smushit" ),
+				'unfinished_smush'        => esc_html__( "images could not be smushed.", "wp-smushit" ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );

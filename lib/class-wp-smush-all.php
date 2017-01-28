@@ -567,9 +567,10 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		 * Creates a tree out of Given path array
 		 *
 		 * @param $path_list Array of path and images
-		 *
 		 * @param $base_dir Selected Base Path for the image search
-		 *
+         *
+		 * @return array Array of images, Child Directories and images inside
+         *
 		 */
 		function build_tree( $path_list, $base_dir ) {
 			$path_tree = array();
@@ -598,6 +599,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			//If we have optimised images
 			if ( ! empty( $image ) && is_array( $image ) ) {
 				$optimised = 0;
+				if ( ! is_array( $this->optimised_images ) ) {
+					return 0;
+				}
 				foreach ( $image as $item ) {
 					//Check if the image is already in optimised list
 					if ( array_key_exists( $item, $this->optimised_images ) ) {
@@ -642,7 +646,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 					$div .= "<ul class='wp-smush-image-list-inner'>";
 					foreach ( $image as $item ) {
 						//Check if the image is already in optimised list
-						$class = array_key_exists( $item, $this->optimised_images ) ? ' optimised' : '';
+						$class = is_array( $this->optimised_images ) && array_key_exists( $item, $this->optimised_images ) ? ' optimised' : '';
 
 						$div .= "<li class='wp-smush-image-ele{$class}' id='{$item}'><span class='wp-smush-image-ele-status'></span><span class='wp-smush-image-path'>{$item}</span>";
 						//Close LI
@@ -656,7 +660,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				    $hr = true;
 					$image_p = array_pop( $image );
 					//Check if the image is already in optimised list
-					$class = array_key_exists( $image_p, $this->optimised_images ) ? ' optimised' : '';
+					$class = is_array( $this->optimised_images ) && array_key_exists( $image_p, $this->optimised_images ) ? ' optimised' : '';
 					$div .= "<li class='wp-smush-image-ele{$class}' id='{$image_p}'><span class='wp-smush-image-ele-status'></span><span class='wp-smush-image-path'>{$image_p}</span>";
 					//Close LI
 					$div .= "</li>";
@@ -783,7 +787,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			//If there is no result from the query
 			if ( is_wp_error( $results ) || empty( $results ) ) {
-				wp_send_json_error();
+				wp_send_json_error( array(
+					'next' => $next
+				) );
 			}
 
 			$curr_img = $results[0];

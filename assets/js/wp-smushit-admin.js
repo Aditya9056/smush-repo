@@ -982,11 +982,6 @@ jQuery(function ($) {
             unsmushed.append(waiting_message);
             unsmushed.find(waiting_message).show();
         }
-
-        //Check if last image, and if all the images are not smushed under the specified directory path, add a genric warning message
-        if (ele.is(':last-child')) {
-            console.log("Add warning message " + parent);
-        }
     }
 
     /**
@@ -1022,6 +1017,15 @@ jQuery(function ($) {
         if( !parent.hasClass('partial') && smushed != total ) {
             parent.addClass('partial');
         }
+
+        //Check if last image, and if all the images are not smushed under the specified directory path, add a generic warning message
+        if (ele && ele.is(':last-child') && smushed < total) {
+            var unsmushed = total - smushed;
+            var message = '<div class="wp-smush-dir-notice">' + unsmushed + ' ' + ( 1 == unsmushed ? wp_smush_msgs.unfinished_smush_single : wp_smush_msgs.unfinished_smush ) + '</div>';
+            //Append message to 2nd parent i.e li
+            ele.parents().eq(1).find('ul.wp-smush-image-list-inner').after(message);
+        }
+
         //If all the images are smushed, remove the class partial and add the class complete
         if (smushed == total) {
             smush_progress.removeClass('partial').addClass('complete');
@@ -1066,24 +1070,23 @@ jQuery(function ($) {
             //append stats, remove loader, add loader to next image, loop
             var data = 'undefined' != typeof ( res.data ) ? res.data : '';
 
-            if (res.success) {
+            if ('undefined' != typeof(data.image)) {
                 //Mark Optimised
                 var ele = jQuery(document.getElementById(data.image.path));
-
-                // goToByScroll( ele );
 
                 //Remove the spinner
                 ele.find('span.spinner').remove();
 
-                ele.addClass('optimised');
+                if (res.success) {
 
-                //Show the Optimisation status
-                ele.find('span.wp-smush-image-ele-status').show();
+                    ele.addClass('optimised');
 
-                //Show the stats
+                    //Show the Optimisation status
+                    ele.find('span.wp-smush-image-ele-status').show();
 
-                //Update Directory progress
-                update_dir_progress( ele );
+                    //Update Directory progress
+                    update_dir_progress(ele);
+                }
             }
 
             //If we'va next element and the user haven't paused the Smushing
@@ -1097,15 +1100,15 @@ jQuery(function ($) {
                 //Append and update waiting message for all the elements, for the current directory being optimised
                 update_dir_ele_status(next);
 
-                //Check if last image, and if all the images are not smushed under the specified directory path, add a generic warning message
-                if( ele && ele.is(':last-child') ) {
-
-                }
-
-                // goToByScroll( next );
                 //Loop
                 smush_all(false);
-            } else {
+            }
+            else if ('' == data.next) {
+                $('div.wp-smush-all-button-wrap span.spinner').remove();
+                $('button.wp-smush-start').removeAttr('disabled');
+                $('a.wp-smush-pause').addClass('disabled');
+            }
+            else {
                 //Set the continue ajax to 1
                 $('input.wp-smush-continue-ajax').val(1);
             }

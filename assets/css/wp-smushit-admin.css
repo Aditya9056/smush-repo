@@ -821,10 +821,10 @@ table.wp-smush-stats-holder tr td:first-child {
     margin: 20px 0 0;
 }
 
-.bulk-smush-wrapper .wp-smush-remaining .wp-smush-skip-resmush {
-    display: block;
-    margin-left: 27px;
-    margin-top: 10px;
+.wpmud .bulk-smush-wrapper .wp-smush-remaining button.wp-smush-skip-resmush {
+    display: block !important;
+    margin-left: 27px !important;
+    margin-top: 10px !important;
 }
 
 .wp-smush-pro-trial {
@@ -1831,6 +1831,15 @@ li.wp-smush-image-ele.optimised .wp-smush-image-ele-status:after {
     content: '\67';
     color: #1ABC9C;
     margin-left: -1px;
+}
+
+div.wp-smush-dir-notice {
+    padding: 15px 20px;
+    background: #fff5d5;
+    border-radius: 5px;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 div.wp-smush-dir-progress-wrap {
