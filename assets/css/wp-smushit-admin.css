@@ -1729,6 +1729,10 @@ div.wp-smush-scan-result hr {
     color: #878787;
 }
 
+div.dir-smush-button-wrap {
+    overflow: hidden;
+}
+
 div.dir-smush-button-wrap button, div.dir-smush-button-wrap span {
     float: left;
 }

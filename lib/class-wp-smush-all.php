@@ -30,13 +30,16 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			add_action( 'wp_ajax_smush_get_directory_list', array( $this, 'directory_list' ) );
 
 			//Scan the given directory path for the list of images
-			add_action( 'wp_ajax_get_image_list', array( $this, 'get_image_list' ) );
+			add_action( 'wp_ajax_image_list', array( $this, 'image_list' ) );
 
 			//Handle Ajax Request to optimise images
-			add_action( 'wp_ajax_wp_smush_optimise', array( $this, 'optimise' ) );
+			add_action( 'wp_ajax_optimise', array( $this, 'optimise' ) );
 
 			//Handle Exclude path request
 			add_action( 'wp_ajax_smush_exclude_path', array( $this, 'smush_exclude_path' ) );
+
+			//Handle Ajax request: resume scan
+			add_action( 'wp_ajax_resume_scan', array( $this, 'resume_scan' ) );
 
 		}
 
@@ -143,12 +146,6 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
                     <!-- Description -->
                     <?php esc_html_e("In addition to smushing your media uploads, you may want to also smush images living outside your uploads directory. Simply add any directories you wish to smush and bulk smush away!", "wp-smushit"); ?>
                 </div>
-                <div class="dir-smush-button-wrap">
-                    <button class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "CHOOSE DIRECTORY", "wp-smushit" ); ?></button>
-                    <?php
-                    //Optionally show a resume button, if there were images left from last scan
-                    $this->show_resume_button(); ?>
-                </div>
                 <!-- Directory Path -->
                 <input type="hidden" class="wp-smush-dir-path" value="" />
                 <div class="wp-smush-scan-result hidden">
@@ -175,6 +172,12 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 	                //Nonce Field
 	                wp_nonce_field( 'wp_smush_all', 'wp-smush-all' ); ?>
                     <input type="hidden" name="wp-smush-continue-ajax" value=1>
+                </div>
+                <div class="dir-smush-button-wrap">
+                    <button class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "CHOOSE DIRECTORY", "wp-smushit" ); ?></button>
+		            <?php
+		            //Optionally show a resume button, if there were images left from last scan
+		            $this->show_resume_button(); ?>
                 </div>
                 <div class="dev-overlay wp-smush-list-dialog roboto-regular">
                     <div class="back"></div>
@@ -337,28 +340,21 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		}
 
 		/**
-		 * Handles Ajax request to obtain the Image list within a selected directory path
+         * Get the image list in a specified directory path
+         *
+		 * @param string $path
 		 *
+		 * @return string
 		 */
-		function get_image_list() {
-
-			//Check For Permission
-			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_send_json_error( "Unauthorized" );
-			}
-
-			//Verify nonce
-			check_ajax_referer( 'smush_get_image_list', 'image_list_nonce' );
-
-			//Check if directory path is set or not
-			if ( empty( $_GET['path'] ) ) {
-				wp_send_json_error( "Empth Directory Path" );
-			}
-
+		function get_image_list( $path = '' ) {
 			global $wpdb;
 
+			$base_dir = empty( $path ) ? $_GET['path'] : $path;
 			//Directory Path
-			$base_dir = realpath( $_GET['path'] );
+			$base_dir = realpath( $base_dir );
+
+			//Store the path in option
+			update_option( 'wp_smush_dir_path', $base_dir );
 
 			//Directory Iterator, Exclude . and ..
 			$dirIterator = new RecursiveDirectoryIterator(
@@ -441,11 +437,38 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			//If files array is not empty
 			if( !empty( $files_arr ) ) {
-			    update_option('wp_smush_scan', array('path' => $base_dir ) );
-            }
+				update_option('wp_smush_scan', array('path' => $base_dir ) );
+			}
 
-			$markup = $this->generate_markup( $files_arr, $base_dir );
+			return array('files_arr' => $files_arr, 'base_dir' => $base_dir );
+        }
 
+		/**
+		 * Handles Ajax request to obtain the Image list within a selected directory path
+		 *
+		 */
+		function image_list() {
+
+			//Check For Permission
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( "Unauthorized" );
+			}
+
+			//Verify nonce
+			check_ajax_referer( 'smush_get_image_list', 'image_list_nonce' );
+
+			//Check if directory path is set or not
+			if ( empty( $_GET['path'] ) ) {
+				wp_send_json_error( "Empth Directory Path" );
+			}
+
+			//Get the File list
+			$files = $this->get_image_list( $_GET['path'] );
+
+			//Get the markup from the list
+			$markup = $this->generate_markup( $files['files_arr'], $files['base_dir'] );
+
+			//Send response
 			wp_send_json_success( $markup );
 
 		}
@@ -856,6 +879,26 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			    wp_send_json_error();
             }
 		}
+
+		/**
+		 * Send the markup for image list scanned from a directory path
+         *
+		 */
+		function resume_scan() {
+			$dir_path = get_option( 'wp_smush_dir_path' );
+
+			//If we don't get an error path, return an error message
+			if ( empty( $dir_path ) ) {
+				$message = "<div class='error'>" . esc_html__( "We were unable to retrieve the image list from last scan, please continue with a latest scan", "wp-smushit" ) . "</div>";
+				wp_send_json_error( $message );
+			}
+
+			//Else, Get the image list and then markup
+			$file_list = $this->get_image_list( $dir_path );
+			$markup    = $this->generate_markup( $file_list['files_arr'], $file_list['base_dir'] );
+			wp_send_json_success( $markup );
+		}
+
 	}
 
 	//Class Object

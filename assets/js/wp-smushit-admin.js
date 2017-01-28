@@ -1056,7 +1056,7 @@ jQuery(function ($) {
 
         /** Ajax Request to optimise directory images */
         var param = {
-            action: 'wp_smush_optimise',
+            action: 'optimise',
             nonce: $('#wp-smush-all').val()
         };
 
@@ -1603,19 +1603,16 @@ jQuery(function ($) {
 
         //Send a ajax request to get a list of all the image files
         var param = {
-            action: 'get_image_list',
+            action: 'image_list',
             path: $('.wp-smush-dir-path').val(),
             image_list_nonce: $('input[name="image_list_nonce"]').val()
         };
 
         //Get the List of images
         $.get(ajaxurl, param, function (res) {
-            $('.wp-smush-scan-result .content').html(res.data);
+            $('div.wp-smush-scan-result div.content').html(res.data);
             set_accordion();
             close_dialog();
-
-            //Hide Selector button
-            $('button.wp-smush-browse').hide();
 
             //Show Scan result
             $('.wp-smush-scan-result').removeClass('hidden');
@@ -1636,6 +1633,9 @@ jQuery(function ($) {
         //Disable this button
         var button = $('.wp-smush-start');
         var parent = button.parent();
+
+        //Hide Directory browser button
+        $('button.wp-smush-browse').hide();
 
         /** All the Styling changes **/
         button.attr('disabled', 'disabled');
@@ -1713,6 +1713,7 @@ jQuery(function ($) {
 
         var self = $(this);
         var parent = self.parent();
+
         //Disable buttons
         disable_buttons(self);
 
@@ -1720,6 +1721,29 @@ jQuery(function ($) {
         var spinner = $('span.spinner:first').clone();
         parent.append(spinner);
         parent.find('span.spinner').css({'visibility': 'visible'});
+
+        var params = {
+            action  : 'resume_scan',
+        };
+
+        //Send Ajax request to load a list of images
+        $.get(ajaxurl, params, function (r) {
+            //Append the results
+            if (!r.success) {
+                //Append the error message before the buttons
+                $('div.wp-smush-dir-desc').after(r.data)
+            } else {
+                //Hide the buttons
+                $('button.wp-smush-resume').remove();
+                //Append the image markup after the buttons
+                $('div.wp-smush-scan-result div.content').html(r.data);
+                $('div.wp-smush-scan-result').removeClass('hidden');
+
+                //Remove the loader for choose directory button, Allow to select a new directory
+                $('div.dir-smush-button-wrap span.spinner').remove();
+                $('button.wp-smush-browse').removeAttr('disabled');
+            }
+        });
 
     });
 
