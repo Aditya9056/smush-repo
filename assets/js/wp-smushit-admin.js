@@ -1654,8 +1654,9 @@ jQuery(function ($) {
     $('a.wp-smush-pause').on('click', function (e) {
         e.preventDefault();
 
+        var pause_button = $('a.wp-smush-pause');
         //Return if the link is disabled
-        if($(this).hasClass('disabled') ) {
+        if( pause_button.hasClass('disabled') ) {
             return false;
         }
 
@@ -1663,8 +1664,7 @@ jQuery(function ($) {
         $('input[name="wp-smush-continue-ajax"]').val(0);
 
         //Enable the smush button, disable Pause button
-        var self = $(this);
-        self.addClass('disabled', 'disabled');
+        pause_button.addClass('disabled', 'disabled');
 
         //Enable the smush button, hide the spinner
         $('button.wp-smush-start, button.wp-smush-browse').removeAttr('disabled');
