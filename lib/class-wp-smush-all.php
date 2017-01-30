@@ -41,6 +41,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			//Handle Ajax request: resume scan
 			add_action( 'wp_ajax_resume_scan', array( $this, 'resume_scan' ) );
 
+			//Handle Ajax request for directory smush stats
+			add_action('wp_ajax_get_dir_smush_stats', array( $this, 'get_dir_smush_stats' ) );
+
 		}
 
 		/**
@@ -595,14 +598,14 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		 *
 		 * @return int Count
 		 */
-		function optimised_count( $image = array() ) {
+		function optimised_count( $images = array() ) {
 			//If we have optimised images
-			if ( ! empty( $image ) && is_array( $image ) ) {
+			if ( ! empty( $images ) && is_array( $images ) ) {
 				$optimised = 0;
 				if ( ! is_array( $this->optimised_images ) ) {
 					return 0;
 				}
-				foreach ( $image as $item ) {
+				foreach ( $images as $item ) {
 					//Check if the image is already in optimised list
 					if ( array_key_exists( $item, $this->optimised_images ) ) {
 						$optimised ++;
@@ -631,7 +634,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 				$wrapper_class = '';
 				if ( is_array( $image ) && $count > 1 ) {
 
+					//Get the number of optimised images for the given image array
 					$optimised_count = $this->optimised_count( $image );
+
 					if( $optimised_count > 0 ) {
 					    $wrapper_class = $count == $optimised_count ? 'complete' : 'partial';
                     }
@@ -728,6 +733,9 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 			$this->stats['total']     = $total;
 			$this->stats['optimised'] = $optimised;
+
+			return $this->stats;
+
 		}
 
 		/**
@@ -903,6 +911,48 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$file_list = $this->get_image_list( $dir_path );
 			$markup    = $this->generate_markup( $file_list['files_arr'], $file_list['base_dir'] );
 			wp_send_json_success( $markup );
+		}
+
+		/**
+		 * Returns Directory Smush stats and Cumulative stats
+         *
+		 */
+		function get_dir_smush_stats() {
+
+			global $wpsmushit_admin;
+			$result = array();
+			$wpsmushit_admin->setup_global_stats();
+
+			//@todo: Redundant code, Move this to a single function
+			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? $wpsmushit_admin->total_count - ( $resmush_count + $wpsmushit_admin->remaining_count ) : $wpsmushit_admin->smushed_count;
+			$smushed_count = $smushed_count > 0 ? $smushed_count : 0;
+
+			//Store the Total/Smushed count
+			$stats = $this->total_stats();
+
+			$result['dir_smush'] = $stats;
+
+			//Cumulative Stats
+			$total_attachments = $wpsmushit_admin->total_count + $stats['total'];
+			$total_images      = $wpsmushit_admin->stats['total_images'] + $stats['total'];
+
+			$smushed     = $smushed_count + $stats['optimised'];
+			$savings     = ! empty( $wpsmushit_admin->stats ) ? $wpsmushit_admin->stats['bytes'] + $stats['bytes'] : $stats['bytes'];
+			$size_before = ! empty( $wpsmushit_admin->stats ) ? $wpsmushit_admin->stats['size_before'] + $stats['orig_size'] : $stats['orig_size'];
+			$percent     = $size_before > 0 ? ( $savings / $size_before ) * 100 : 0;
+
+			//Array of cumulative stats
+			$result['combined_stats']['total_count']   = $total_attachments;
+			$result['combined_stats']['smushed_count'] = $smushed;
+			$result['combined_stats']['savings']       = size_format( $savings );
+			$result['combined_stats']['percent']       = round( $percent, 1 );
+			$result['combined_stats']['image_count']   = $total_images;
+
+			//Store the stats in options table
+			update_option('dir_smush_stats', $result, false );
+
+			//Send ajax response
+			wp_send_json_success( $result );
 		}
 
 	}

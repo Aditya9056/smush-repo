@@ -112,6 +112,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function smush_stats_container() {
 			global $WpSmush, $wpsmushit_admin, $wpsmush_stats, $wpsmush_settings;
 
+			//@todo: Move this to Stats section, In order to have a proper count somewhere
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
 			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? $wpsmushit_admin->total_count - ( $resmush_count + $wpsmushit_admin->remaining_count ) : $wpsmushit_admin->smushed_count;
 			$smushed_count = $smushed_count > 0 ? $smushed_count : 0;
@@ -191,6 +192,24 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							echo "0MB";
 						}
 					} ?>
+				</span>
+			</div>
+			<hr /><?php
+			$dir_smush_stats = get_option('dir_smush_stats');
+			$human = !empty( $dir_smush_stats ) && $dir_smush_stats['dir_smush']['percent'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
+			$percent = !empty( $dir_smush_stats ) && $dir_smush_stats['dir_smush']['percent'] > 0  ? number_format_i18n( $dir_smush_stats['dir_smush']['percent'], 1, '.', '' ) : 0; ?>
+			<!-- Savings from Directory Smush -->
+			<div class="row smush-dir-savings">
+				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "DIRECTORY SMUSH SAVINGS", "wp-smushit" ); ?></strong></span>
+				<span class="float-r wp-smush-stats"><?php
+                    if( !empty( $dir_smush_stats ) && $human == 0 && $percent == 0 ) {
+                        esc_html_e("Already Optimised", "wp-smushit");
+                    }else {?>
+                        <span class="spinner" style="visibility: visible" title="<?php esc_html_e("Updating Stats", "wp-smushit"); ?>"></span>
+                        <span class="wp-smush-stats-human"><?php echo $human > 0 ? $human : ''; ?></span>
+                        <span class="wp-smush-stats-sep">/</span>
+                        <span class="wp-smush-stats-percent"><?php echo $percent > 0 ? $percent : ''; ?></span>%<?php
+                    } ?>
 				</span>
 			</div><?php
 			if( $WpSmush->validate_install() && !empty( $wpsmushit_admin->stats['conversion_savings'] ) && $wpsmushit_admin->stats['conversion_savings'] > 0 ) { ?>

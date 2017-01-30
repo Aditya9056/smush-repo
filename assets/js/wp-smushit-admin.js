@@ -1014,7 +1014,7 @@ jQuery(function ($) {
         }
 
         //Add the class partial, to show the respective icon for parent
-        if( !parent.hasClass('partial') && smushed != total ) {
+        if (!parent.hasClass('partial') && smushed != total) {
             parent.addClass('partial');
         }
 
@@ -1117,14 +1117,15 @@ jQuery(function ($) {
     }
 
     //Scroll the element to top of the page
-    var goToByScroll = function ( selector ){
+    var goToByScroll = function (selector) {
         // Scroll
         $('html,body').animate({
-                scrollTop: selector.offset().top },
+                scrollTop: selector.offset().top
+            },
             'slow');
     };
 
-    var disable_buttons = function( self ) {
+    var disable_buttons = function (self) {
         self.attr('disabled', 'disabled');
         $('.wp-smush-browse').attr('disabled', 'disabled');
     };
@@ -1659,7 +1660,7 @@ jQuery(function ($) {
 
         var pause_button = $('a.wp-smush-pause');
         //Return if the link is disabled
-        if( pause_button.hasClass('disabled') ) {
+        if (pause_button.hasClass('disabled')) {
             return false;
         }
 
@@ -1687,7 +1688,7 @@ jQuery(function ($) {
         self.hide();
 
         //Append the loader
-        parent.find('span.wp-smush-li-path').after( $('div.wp-smush-scan-result span.spinner:first').clone() );
+        parent.find('span.wp-smush-li-path').after($('div.wp-smush-scan-result span.spinner:first').clone());
 
         //Store the spinner in a element
         var loader = parent.find('span.spinner:first');
@@ -1702,10 +1703,10 @@ jQuery(function ($) {
         };
 
         //Send Ajax request to remove image for the given path from db
-        $.post( ajaxurl, param, function(res) {
+        $.post(ajaxurl, param, function (res) {
             loader.remove();
             //Remove the whole li element on success
-            if( res.success ) {
+            if (res.success) {
 
             }
         });
@@ -1726,7 +1727,7 @@ jQuery(function ($) {
         parent.find('span.spinner').css({'visibility': 'visible'});
 
         var params = {
-            action  : 'resume_scan',
+            action: 'resume_scan',
         };
 
         //Send Ajax request to load a list of images
@@ -1749,6 +1750,16 @@ jQuery(function ($) {
         });
 
     });
+
+    if ($('div.smush-dir-savings').length > 0) {
+        //Update Directory Smush, as soon as the page loads
+        var stats_param = {
+            action: 'get_dir_smush_stats'
+        }
+        $.get(ajaxurl, stats_param, function (r) {
+            console.log(r);
+        });
+    }
 
 });
 (function ($) {
