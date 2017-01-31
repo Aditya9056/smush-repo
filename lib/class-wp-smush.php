@@ -1965,9 +1965,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @param $stats
 		 *
+		 * @return mixed
 		 */
 		function total_compression( $stats ) {
-			$stats['stats']['size_before'] = $stats['stats']['size_after'] = $stats['stats']['time'] = '';
+			$stats['stats']['size_before'] = $stats['stats']['size_after'] = $stats['stats']['time'] = 0;
 			foreach ( $stats['sizes'] as $size_stats ) {
 				$stats['stats']['size_before'] += ! empty( $size_stats->size_before ) ? $size_stats->size_before : 0;
 				$stats['stats']['size_after'] += ! empty( $size_stats->size_after ) ? $size_stats->size_after : 0;

@@ -127,6 +127,14 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.6 =
+
+* Fixed:
+    * PHP 7 warning ( https://goo.gl/GKEMim ), @props: @alexis-mag
+
+* Added:
+    * Directory Smush ( Pro Feature )
+
 = 2.5.3 =
 
 * Fixed:
