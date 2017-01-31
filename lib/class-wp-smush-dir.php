@@ -599,24 +599,29 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$base_dir    = $upload_dir["basedir"];
 			$upload_path = $upload_dir["path"];
 
+			$subfolder = false;
+
 			//If matches the current upload path
 			if ( $upload_path == $path ) {
-				return true;
-			}
-
-			//contains one of the year subfolders of the media library
-			if ( strpos( $path, $upload_path ) == 0 ) {
+				$subfolder = true;
+			} else if ( strpos( $path, $upload_path ) == 0 ) {
+				//contains one of the year subfolders of the media library
 				$pathArr = explode( '/', str_replace( $base_dir . '/', "", $path ) );
 				if ( count( $pathArr ) >= 1
 				     && is_numeric( $pathArr[0] ) && $pathArr[0] > 1900 && $pathArr[0] < 2100 //contains the year subfolder
 				     && ( count( $pathArr ) == 1 //if there is another subfolder then it's the month subfolder
 				          || ( is_numeric( $pathArr[1] ) && $pathArr[1] > 0 && $pathArr[1] < 13 ) )
 				) {
-					return true;
+					$subfolder = true;
 				}
 			}
+			/**
+			 * Allows to filter a directory path
+             *
+			 */
+			apply_filters( 'wp_smush_is_subfolder', $subfolder );
 
-			return false;
+			return $subfolder;
 		}
 
 		/**
@@ -743,7 +748,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			global $wpdb;
 
 			$offset    = 0;
-			$optimised = 1;
+			$optimised = 0;
 			$limit     = 1000;
 			$images    = array();
 
@@ -1021,7 +1026,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$stats = $this->total_stats();
 
 			$result['dir_smush'] = $stats;
-			$result['dir_smush']['percent'] = 1;
 
 			//Cumulative Stats
 			$result['combined_stats'] = $this->combined_stats( $stats );
@@ -1036,8 +1040,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 	}
 
 	//Class Object
-	global $wpsmush_all;
-	$wpsmush_all = new WpSmushDir();
+	global $wpsmush_dir;
+	$wpsmush_dir = new WpSmushDir();
 }
 
 /**
@@ -1048,10 +1052,10 @@ if ( class_exists( 'RecursiveFilterIterator' ) && ! class_exists( 'WPSmushRecurs
 	class WPSmushRecursiveFilterIterator extends \RecursiveFilterIterator {
 
 		public function accept() {
-			global $wpsmush_all;
+			global $wpsmush_dir;
 			$path = $this->current()->getPathname();
 			if ( $this->isDir() ) {
-				if ( ! $wpsmush_all->is_subfolder( $path ) ) {
+				if ( ! $wpsmush_dir->is_subfolder( $path ) ) {
 					return true;
 				}
 			} else {

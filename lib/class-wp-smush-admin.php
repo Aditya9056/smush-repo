@@ -267,7 +267,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Add Bulk option settings page
 		 */
 		function screen() {
-			global $admin_page_suffix, $wpsmush_all;
+			global $admin_page_suffix, $wpsmush_dir;
 
 			//Bulk Smush Page for each site
 			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smush-bulk', array(
