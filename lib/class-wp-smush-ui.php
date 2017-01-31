@@ -107,8 +107,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		}
 
 		/**
-		 * Outputs the Smush stats for the site
-		 */
+        * Outputs the Smush stats for the site
+        * @todo: Divide the function into parts, way too big
+        *
+        */
 		function smush_stats_container() {
 			global $WpSmush, $wpsmushit_admin, $wpsmush_stats, $wpsmush_settings;
 
@@ -208,7 +210,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                         <span class="spinner" style="visibility: visible" title="<?php esc_html_e("Updating Stats", "wp-smushit"); ?>"></span>
                         <span class="wp-smush-stats-human"><?php echo $human > 0 ? $human : ''; ?></span>
                         <span class="wp-smush-stats-sep">/</span>
-                        <span class="wp-smush-stats-percent"><?php echo $percent > 0 ? $percent : ''; ?></span>%<?php
+                        <span class="wp-smush-stats-percent"><?php echo $percent > 0 ? $percent : ''; ?>%</span><?php
                     } ?>
 				</span>
 			</div><?php
@@ -263,9 +265,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			 * Allows you to output any content within the stats box at the end
 			 */
 			do_action( 'wp_smush_after_stats' );
-			?>
-			</div><?php
-			echo "</section>";
+			echo "</div></section>";
 		}
 
 		/**

@@ -1130,6 +1130,57 @@ jQuery(function ($) {
         $('.wp-smush-browse').attr('disabled', 'disabled');
     };
 
+    var update_cummulative_stats = function (stats) {
+        //Update Directory Smush Stats
+        if ('undefined' != typeof ( stats.dir_smush )) {
+            var stats_human = $('span.wp-smush-stats span.wp-smush-stats-human');
+            var stats_percent = $('span.wp-smush-stats span.wp-smush-stats-percent');
+
+            //Update Savings in bytes
+            if (stats_human.length > 0) {
+                stats_human.html(stats.dir_smush.bytes);
+            } else {
+                var span = '<span class="wp-smush-stats-human">' + stats.dir_smush.bytes + '</span>';
+            }
+
+            //Update Optimisation percentage
+            if (stats_percent.length > 0) {
+                stats_percent.html(stats.dir_smush.percent + '%');
+            } else {
+                var span = '<span class="wp-smush-stats-percent">' + stats.dir_smush.percent + '%' + '</span>';
+            }
+        }
+
+        //Update Combined stats
+        if ('undefined' != typeof ( stats.combined_stats )) {
+            var c_stats = stats.combined_stats;
+
+            //Update Circle Progress
+            if (c_stats.dash_offset) {
+                $('circle.wp-smush-svg-circle-progress').css({'stroke-dashoffset': c_stats.dash_offset});
+            }
+            //Update Tooltip Text
+            if (c_stats.tooltip_text) {
+                $('div.wp-smush-current-progress').attr('tooltip', c_stats.tooltip_text);
+            }
+            //Update Smushed count
+            if (c_stats.smushed_count) {
+                $('div.wp-smush-count-total span.wp-smush-optimised').html(c_stats.smushed_count);
+            }
+            //Update Total Attachment Count
+            if (c_stats.total_count) {
+                $('div.wp-smush-count-total span:last-child').html(c_stats.total_count);
+            }
+            //Update Savings and Percent
+            if (c_stats.savings) {
+                $('div.wp-smush-savings span.wp-smush-stats-human').html(c_stats.savings);
+            }
+            if (c_stats.percent) {
+                $('div.wp-smush-savings span.wp-smush-stats-percent').html(c_stats.percent);
+            }
+        }
+    };
+
     /**
      * Handle the Smush Stats link click
      */
@@ -1757,7 +1808,24 @@ jQuery(function ($) {
             action: 'get_dir_smush_stats'
         }
         $.get(ajaxurl, stats_param, function (r) {
-            console.log(r);
+
+            //If there is no value in r
+            if( 'undefined' == typeof ( r.data.dir_smush) ) {
+                //Append the text
+                $('div.smush-dir-savings span.wp-smush-stats').append(wp_smush_msgs.ajax_error);
+                $('div.smush-dir-savings span.wp-smush-stats span').hide();
+                return;
+            }
+            else if ( r.data.dir_smush.percent < 1) {
+                //If the Directory Smush optimisation is very low
+                //Hide all the span
+                $('div.smush-dir-savings span.wp-smush-stats span').hide();
+                //Append the text
+                $('div.smush-dir-savings span.wp-smush-stats').html(wp_smush_msgs.already_optimised);
+            }else{
+                //Update the stats
+                update_cummulative_stats(r.data);
+            }
         });
     }
 

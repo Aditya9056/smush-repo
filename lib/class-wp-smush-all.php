@@ -914,25 +914,26 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		}
 
 		/**
-		 * Returns Directory Smush stats and Cumulative stats
+         * Combine the stats from Directory Smush and Media Library Smush
          *
+		 * @param $stats Directory Smush stats
+		 *
+		 * @return array Combined array of Stats
 		 */
-		function get_dir_smush_stats() {
-
+		function combined_stats( $stats ) {
 			global $wpsmushit_admin;
-			$result = array();
+
+			$result    = array();
+			$dasharray = 125.663706144;
+
+			//Initialize Global Stats
 			$wpsmushit_admin->setup_global_stats();
 
 			//@todo: Redundant code, Move this to a single function
 			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? $wpsmushit_admin->total_count - ( $resmush_count + $wpsmushit_admin->remaining_count ) : $wpsmushit_admin->smushed_count;
 			$smushed_count = $smushed_count > 0 ? $smushed_count : 0;
 
-			//Store the Total/Smushed count
-			$stats = $this->total_stats();
-
-			$result['dir_smush'] = $stats;
-
-			//Cumulative Stats
+			//Get the total/Smushed attachment count
 			$total_attachments = $wpsmushit_admin->total_count + $stats['total'];
 			$total_images      = $wpsmushit_admin->stats['total_images'] + $stats['total'];
 
@@ -941,12 +942,36 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			$size_before = ! empty( $wpsmushit_admin->stats ) ? $wpsmushit_admin->stats['size_before'] + $stats['orig_size'] : $stats['orig_size'];
 			$percent     = $size_before > 0 ? ( $savings / $size_before ) * 100 : 0;
 
-			//Array of cumulative stats
-			$result['combined_stats']['total_count']   = $total_attachments;
-			$result['combined_stats']['smushed_count'] = $smushed;
-			$result['combined_stats']['savings']       = size_format( $savings );
-			$result['combined_stats']['percent']       = round( $percent, 1 );
-			$result['combined_stats']['image_count']   = $total_images;
+			//Store the stats in array
+			$result = array(
+				'total_count'   => $total_attachments,
+				'smushed_count' => $smushed,
+				'savings'       => size_format( $savings ),
+				'percent'       => round( $percent, 1 ),
+				'image_count'   => $total_images,
+				'dash_offset'   => $total_attachments > 0 ? $dasharray - ( $dasharray * ( $smushed / $total_attachments ) ) : $dasharray,
+				'tooltip_text'  => ! empty( $total_images ) ? sprintf( __( "You've smushed %d images in total.", "wp-smushit" ), $total_images ) : ''
+			);
+
+			return $result;
+		}
+
+		/**
+		 * Returns Directory Smush stats and Cumulative stats
+         *
+		 */
+		function get_dir_smush_stats() {
+
+			$result = array();
+
+			//Store the Total/Smushed count
+			$stats = $this->total_stats();
+
+			$result['dir_smush'] = $stats;
+			$result['dir_smush']['percent'] = 1;
+
+			//Cumulative Stats
+			$result['combined_stats'] = $this->combined_stats( $stats );
 
 			//Store the stats in options table
 			update_option('dir_smush_stats', $result, false );
