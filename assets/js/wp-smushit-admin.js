@@ -1133,8 +1133,8 @@ jQuery(function ($) {
     var update_cummulative_stats = function (stats) {
         //Update Directory Smush Stats
         if ('undefined' != typeof ( stats.dir_smush )) {
-            var stats_human = $('span.wp-smush-stats span.wp-smush-stats-human');
-            var stats_percent = $('span.wp-smush-stats span.wp-smush-stats-percent');
+            var stats_human = $('div.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-human');
+            var stats_percent = $('div.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-percent');
 
             //Update Savings in bytes
             if (stats_human.length > 0) {
@@ -1152,7 +1152,7 @@ jQuery(function ($) {
         }
 
         //Update Combined stats
-        if ('undefined' != typeof ( stats.combined_stats )) {
+        if ('undefined' != typeof ( stats.combined_stats ) && stats.combined_stats.length > 0 ) {
             var c_stats = stats.combined_stats;
 
             //Update Circle Progress
@@ -1759,7 +1759,7 @@ jQuery(function ($) {
             loader.remove();
             //Remove the whole li element on success
             if (res.success) {
-
+                parent.remove();
             }
         });
     });

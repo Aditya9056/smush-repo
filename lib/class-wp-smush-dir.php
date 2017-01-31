@@ -75,9 +75,12 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 		function stats_ui() { ?>
 			<hr /><?php
-			$dir_smush_stats = get_option('dir_smush_stats');
-			$human = !empty( $dir_smush_stats ) && $dir_smush_stats['dir_smush']['percent'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
-			$percent = !empty( $dir_smush_stats ) && $dir_smush_stats['dir_smush']['percent'] > 0  ? number_format_i18n( $dir_smush_stats['dir_smush']['percent'], 1, '.', '' ) : 0; ?>
+			$dir_smush_stats = get_option( 'dir_smush_stats' );
+			$human           = $percent = 0;
+			if ( ! empty( $dir_smush_stats ) && ! empty( $dir_smush_stats['dir_smush'] ) ) {
+				$human   = ! empty( $dir_smush_stats['dir_smush']['percent'] ) && ! $dir_smush_stats['dir_smush']['percent'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
+				$percent = ! empty( $dir_smush_stats['dir_smush']['percent'] ) && $dir_smush_stats['dir_smush']['percent'] > 0 ? number_format_i18n( $dir_smush_stats['dir_smush']['percent'], 1, '.', '' ) : 0;
+			} ?>
             <!-- Savings from Directory Smush -->
             <div class="row smush-dir-savings">
                 <span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "DIRECTORY SMUSH SAVINGS", "wp-smushit" ); ?></strong></span>
@@ -979,6 +982,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * @return array Combined array of Stats
 		 */
 		function combined_stats( $stats ) {
+
+			if ( empty( $stats ) || empty( $stats['percent'] ) || empty( $stats['bytes'] ) ) {
+				return array();
+			}
+
 			global $wpsmushit_admin;
 
 			$result    = array();
