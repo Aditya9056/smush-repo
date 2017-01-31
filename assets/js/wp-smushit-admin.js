@@ -1169,7 +1169,7 @@ jQuery(function ($) {
             }
             //Update Total Attachment Count
             if (c_stats.total_count) {
-                $('div.wp-smush-count-total span:last-child').html(c_stats.total_count);
+                $('div.wp-smush-count-total div.wp-smush-smush-stats-wrapper span:last-child').html(c_stats.total_count);
             }
             //Update Savings and Percent
             if (c_stats.savings) {
@@ -1809,6 +1809,7 @@ jQuery(function ($) {
         }
         $.get(ajaxurl, stats_param, function (r) {
 
+            $('div.smush-dir-savings span.spinner').hide();
             //If there is no value in r
             if( 'undefined' == typeof ( r.data.dir_smush) ) {
                 //Append the text
