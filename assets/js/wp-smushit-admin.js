@@ -1811,7 +1811,7 @@ jQuery(function ($) {
 
             $('div.smush-dir-savings span.spinner').hide();
             //If there is no value in r
-            if( 'undefined' == typeof ( r.data.dir_smush) ) {
+            if ('undefined' == typeof ( r.data) || 'undefined' == typeof ( r.data.dir_smush )) {
                 //Append the text
                 $('div.smush-dir-savings span.wp-smush-stats').append(wp_smush_msgs.ajax_error);
                 $('div.smush-dir-savings span.wp-smush-stats span').hide();

@@ -9,9 +9,9 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-if ( ! class_exists( 'WpSmushAll' ) ) {
+if ( ! class_exists( 'WpSmushDir' ) ) {
 
-	class WpSmushAll {
+	class WpSmushDir {
 
 		/**
 		 * @var Contains a list of optimised images
@@ -25,6 +25,16 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		public $stats;
 
 		function __construct() {
+
+			if ( ! $this->should_continue() ) {
+				return;
+			}
+
+			//Hook UI at the end of Settings UI
+            add_action( 'smush_settings_ui_bottom', array($this, 'ui') );
+
+			//Output Stats after Resize savings
+			add_action('stats_ui_after_resize_savings', array( $this, 'stats_ui') );
 
 			//Handle Ajax request 'smush_get_directory_list'
 			add_action( 'wp_ajax_smush_get_directory_list', array( $this, 'directory_list' ) );
@@ -45,6 +55,44 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 			add_action('wp_ajax_get_dir_smush_stats', array( $this, 'get_dir_smush_stats' ) );
 
 		}
+
+		function should_continue() {
+			global $WpSmush;
+
+			//Check If pro User
+			$api_auth = get_site_option( 'wp_smush_api_auth' );
+
+			//no api key set, always false
+			$api_key = $WpSmush->_get_api_key();
+
+			//Check if need to revalidate
+			if ( empty( $api_key ) || ! $api_auth || empty( $api_auth ) || empty( $api_auth[ $api_key ] ) ) {
+				return false;
+			}
+
+			return true;
+		}
+
+		function stats_ui() { ?>
+			<hr /><?php
+			$dir_smush_stats = get_option('dir_smush_stats');
+			$human = !empty( $dir_smush_stats ) && $dir_smush_stats['dir_smush']['percent'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
+			$percent = !empty( $dir_smush_stats ) && $dir_smush_stats['dir_smush']['percent'] > 0  ? number_format_i18n( $dir_smush_stats['dir_smush']['percent'], 1, '.', '' ) : 0; ?>
+            <!-- Savings from Directory Smush -->
+            <div class="row smush-dir-savings">
+                <span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "DIRECTORY SMUSH SAVINGS", "wp-smushit" ); ?></strong></span>
+                <span class="float-r wp-smush-stats"><?php
+					if( !empty( $dir_smush_stats ) && $human == 0 && $percent == 0 ) {
+						esc_html_e("Already Optimised", "wp-smushit");
+					}else {?>
+                        <span class="spinner" style="visibility: visible" title="<?php esc_html_e("Updating Stats", "wp-smushit"); ?>"></span>
+                        <span class="wp-smush-stats-human"><?php echo $human > 0 ? $human : ''; ?></span>
+                        <span class="wp-smush-stats-sep">/</span>
+                        <span class="wp-smush-stats-percent"><?php echo $percent > 0 ? $percent : ''; ?>%</span><?php
+					} ?>
+				</span>
+            </div><?php
+        }
 
 		/**
 		 *  Create the Smush image table to store the paths of scanned images, and stats
@@ -137,6 +185,11 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 		 * Output the required UI for WP Smush All page
 		 */
 		function ui() {
+			//Print Directory Smush UI, if not a network site
+			if( is_network_admin() ) {
+				return;
+			}
+
 			global $wpsmushit_admin;
 			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
 			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' );
@@ -984,7 +1037,7 @@ if ( ! class_exists( 'WpSmushAll' ) ) {
 
 	//Class Object
 	global $wpsmush_all;
-	$wpsmush_all = new WpSmushAll();
+	$wpsmush_all = new WpSmushDir();
 }
 
 /**

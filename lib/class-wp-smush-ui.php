@@ -196,24 +196,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					} ?>
 				</span>
 			</div>
-			<hr /><?php
-			$dir_smush_stats = get_option('dir_smush_stats');
-			$human = !empty( $dir_smush_stats ) && $dir_smush_stats['dir_smush']['percent'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
-			$percent = !empty( $dir_smush_stats ) && $dir_smush_stats['dir_smush']['percent'] > 0  ? number_format_i18n( $dir_smush_stats['dir_smush']['percent'], 1, '.', '' ) : 0; ?>
-			<!-- Savings from Directory Smush -->
-			<div class="row smush-dir-savings">
-				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "DIRECTORY SMUSH SAVINGS", "wp-smushit" ); ?></strong></span>
-				<span class="float-r wp-smush-stats"><?php
-                    if( !empty( $dir_smush_stats ) && $human == 0 && $percent == 0 ) {
-                        esc_html_e("Already Optimised", "wp-smushit");
-                    }else {?>
-                        <span class="spinner" style="visibility: visible" title="<?php esc_html_e("Updating Stats", "wp-smushit"); ?>"></span>
-                        <span class="wp-smush-stats-human"><?php echo $human > 0 ? $human : ''; ?></span>
-                        <span class="wp-smush-stats-sep">/</span>
-                        <span class="wp-smush-stats-percent"><?php echo $percent > 0 ? $percent : ''; ?>%</span><?php
-                    } ?>
-				</span>
-			</div><?php
+			<?php
 			if( $WpSmush->validate_install() && !empty( $wpsmushit_admin->stats['conversion_savings'] ) && $wpsmushit_admin->stats['conversion_savings'] > 0 ) { ?>
 				<hr />
 				<div class="row smush-conversion-savings">
@@ -221,6 +204,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<span class="float-r wp-smush-stats"><?php echo $wpsmushit_admin->stats['conversion_savings'] > 0 ? $wpsmushit_admin->stats['conversion_savings'] : "0MB"; ?></span>
 				</div><?php
 			}
+			/**
+			* Allows to output Directory Smush stats
+            */
+			do_action('stats_ui_after_resize_savings');
 			//Pro Savings Expected: For free Version
 			if ( ! $WpSmush->validate_install() ) {
 				$savings = $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0;
@@ -570,12 +557,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				if( ! is_multisite() || ( is_multisite() && ! get_site_option( WP_SMUSH_PREFIX . 'networkwide', true ) ) || ( is_multisite() && is_network_admin() ) ) {
 					$this->settings_ui();
 				}
-				//Print Directory Smush UI, if not a network site
-				if( !is_network_admin() ) {
-				    global $wpsmush_all;
-				    //Page Content
-			        $wpsmush_all->ui();
-				}
+
+				do_action('smush_settings_ui_bottom');
 
 				//Validate Membership
 				if( !$wpsmushit_admin->validate_install() ) {?>
