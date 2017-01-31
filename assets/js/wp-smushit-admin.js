@@ -1105,8 +1105,8 @@ jQuery(function ($) {
             }
             else if ('' == data.next) {
                 $('div.wp-smush-all-button-wrap span.spinner').remove();
-                $('button.wp-smush-start').removeAttr('disabled');
-                $('a.wp-smush-pause').addClass('disabled');
+                $('a.wp-smush-pause').remove();
+                $('button.wp-smush-start').html( wp_smush_msgs.all_done ).addClass('finished');
             }
             else {
                 //Set the continue ajax to 1
@@ -1297,7 +1297,7 @@ jQuery(function ($) {
     });
 
     //On Click Update Settings. Check for change in settings
-    $('#wp-smush-save-settings').on('click', function (e) {
+    $('input#wp-smush-save-settings').on('click', function (e) {
         e.preventDefault();
 
         var setting_type = '';
@@ -1306,6 +1306,10 @@ jQuery(function ($) {
         if (setting_input.length > 0) {
             setting_type = setting_input.val();
         }
+
+        //Show the spinner
+        var self = $(this);
+        self.parent().find('span.spinner').addClass('is-active');
 
         //Save settings if in network admin
         if ('' != setting_type && 'network' == setting_type) {
@@ -1325,7 +1329,6 @@ jQuery(function ($) {
         } else {
 
             //Check for all the settings, and scan for resmush
-            var self = $(this);
             var wrapper_div = self.parents().eq(1);
 
             //Get all the main settings
@@ -1350,8 +1353,6 @@ jQuery(function ($) {
             if (update_button_txt) {
                 self.val(wp_smush_msgs.checking)
             }
-
-            self.parent().find('.spinner').addClass('is-active');
 
             //Check if type is set in data attributes
             var scan_type = self.data('type');

@@ -391,6 +391,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'unfinished_smush'        => esc_html__( "images could not be smushed.", "wp-smushit" ),
 				'already_optimised'       => esc_html__( "Already Optimised", "wp-smushit" ),
 				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
+				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );

@@ -1623,6 +1623,11 @@ li.directory.selected.expanded ul.jqueryFileTree {
     cursor: none !important;
 }
 
+.wpmud button.wp-smush-start.finished {
+    background: #1abc9c !important;
+    opacity: 1;
+}
+
 .wp-smush-image-list {
     line-height: 1.5;
 }
