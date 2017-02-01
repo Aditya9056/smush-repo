@@ -1766,7 +1766,10 @@ jQuery(function ($) {
             //Remove the whole li element on success
             if (res.success) {
                 //Check if immediate sibling is ul, add a hr tag to it
-                parent.next('.wp-smush-image-ul').prepend('<hr />');
+                if (parent.is("li.wp-smush-image-ul:first")) {
+                    //Add a hr tag for the next element
+                    parent.siblings('li.wp-smush-image-ul:first').prepend('<hr />');
+                }
                 parent.remove();
             }
         });
