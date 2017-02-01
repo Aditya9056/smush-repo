@@ -85,14 +85,15 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
             <div class="row smush-dir-savings">
                 <span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "DIRECTORY SMUSH SAVINGS", "wp-smushit" ); ?></strong></span>
                 <span class="float-r wp-smush-stats"><?php
-					if( !empty( $dir_smush_stats ) && $human == 0 && $percent == 0 ) {
-						esc_html_e("Already Optimised", "wp-smushit");
-					}else {?>
-                        <span class="spinner" style="visibility: visible" title="<?php esc_html_e("Updating Stats", "wp-smushit"); ?>"></span>
+	                if ( ! empty( $dir_smush_stats ) && $human == 0 && $percent == 0 ) {
+		                esc_html_e( "Already Optimised", "wp-smushit" );
+	                } else { ?>
+                        <span class="spinner" style="visibility: visible"
+                              title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
                         <span class="wp-smush-stats-human"><?php echo $human > 0 ? $human : ''; ?></span>
                         <span class="wp-smush-stats-sep">/</span>
                         <span class="wp-smush-stats-percent"><?php echo $percent > 0 ? $percent : ''; ?>%</span><?php
-					} ?>
+	                } ?>
 				</span>
             </div><?php
         }

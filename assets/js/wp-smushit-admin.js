@@ -942,7 +942,7 @@ jQuery(function ($) {
                     parent.find('.wp-smush-image-list-inner').removeClass("show");
                 } else {
                     parent.addClass("active");
-                    $('.wp-smush-image-ul.active .wp-smush-image-list-inner').toggleClass("show");
+                    $('.wp-smush-image-ul.active .wp-smush-image-list-inner').addClass("show");
                 }
             }
         }
@@ -1765,6 +1765,8 @@ jQuery(function ($) {
             loader.remove();
             //Remove the whole li element on success
             if (res.success) {
+                //Check if immediate sibling is ul, add a hr tag to it
+                parent.next('.wp-smush-image-ul').prepend('<hr />');
                 parent.remove();
             }
         });
@@ -1804,6 +1806,7 @@ jQuery(function ($) {
                 //Remove the loader for choose directory button, Allow to select a new directory
                 $('div.dir-smush-button-wrap span.spinner').remove();
                 $('button.wp-smush-browse').removeAttr('disabled');
+                set_accordion();
             }
         });
 
