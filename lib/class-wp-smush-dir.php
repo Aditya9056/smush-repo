@@ -886,6 +886,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				wp_send_json_error(
 					array(
 						'error' => $error_msg,
+						'image' => array( 'path' => $curr_img['path'] ),
 						'next'  => $next
 					)
 				);

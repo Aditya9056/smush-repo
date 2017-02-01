@@ -1838,6 +1838,12 @@ li.wp-smush-image-ele.optimised .wp-smush-image-ele-status:after {
     margin-left: -1px;
 }
 
+li.wp-smush-image-ele.error .wp-smush-image-ele-status:after {
+    color: #ffd000;
+    content: '\f06a';
+    font-family: 'FontAwesomeWdv';
+}
+
 div.wp-smush-dir-notice {
     padding: 15px 20px;
     background: #fff5d5;

@@ -1070,6 +1070,7 @@ jQuery(function ($) {
             //append stats, remove loader, add loader to next image, loop
             var data = 'undefined' != typeof ( res.data ) ? res.data : '';
 
+            //If image element is there
             if ('undefined' != typeof(data.image)) {
                 //Mark Optimised
                 var ele = jQuery(document.getElementById(data.image.path));
@@ -1084,6 +1085,11 @@ jQuery(function ($) {
                     //Show the Optimisation status
                     ele.find('span.wp-smush-image-ele-status').show();
 
+                    //Update Directory progress
+                    update_dir_progress(ele);
+                }else{
+                    //If there was an error optimising the image
+                    ele.addClass('error');
                     //Update Directory progress
                     update_dir_progress(ele);
                 }
