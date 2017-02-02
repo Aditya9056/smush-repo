@@ -137,7 +137,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				image_size int(10) unsigned,
 				orig_size int(10) unsigned,
 				file_time int(10) unsigned,
-				last_scanned timestamp DEFAULT CURRENT_TIMESTAMP,
+				last_scanned timestamp DEFAULT 0,
 				updated timestamp DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
 				meta text,
 				UNIQUE KEY id (id),
@@ -370,13 +370,14 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 		/**
          * Display a progress bar for the images in particular directory
-         *
-		 * @param $count Total number of images
-		 * @param array $image Array of image
 		 *
-		 * @return bool|string Progress bar HTML or false, if count is 0
+		 * @param $count
+		 * @param $optimised
+		 * @param $dir_path
+		 *
+		 * @return bool|string
 		 */
-		function progress_ui( $count, $optimised, $dir_path ) {
+         function progress_ui( $count, $optimised, $dir_path ) {
 
 			if ( ! $count ) {
 				return false;
@@ -655,10 +656,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 		/**
          * Returns the count of optimised image
-         *
-		 * @param array $image array of images
 		 *
-		 * @return int Count
+		 * @param array $images
+		 *
+		 * @return int
 		 */
 		function optimised_count( $images = array() ) {
 			//If we have optimised images
@@ -681,7 +682,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		/*
 		 * Generate the markup for all the images
 		 */
-		function generate_markup( $images, $base_dir ) {
+		function generate_markup( $images ) {
 
 			$this->total_stats();
 

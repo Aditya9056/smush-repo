@@ -46,7 +46,10 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 		/**
 		 * Total Image count
-		 * @return int
+		 *
+		 * @param bool $force_update
+		 *
+		 * @return bool|int|mixed
 		 */
 		function total_count( $force_update = false ) {
 			global $wpsmushit_admin;
