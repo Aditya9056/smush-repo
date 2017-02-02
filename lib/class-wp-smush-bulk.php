@@ -63,7 +63,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 					if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
 
 						//Get a filtered list of post ids
-						$posts = $wpsmushit_admin->filter_by_mime( $query->posts );
+						$posts = $wpsmush_db->filter_by_mime( $query->posts );
 
 						//Merge the results
 						$unsmushed_posts = array_merge( $unsmushed_posts, $posts );

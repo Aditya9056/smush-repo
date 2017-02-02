@@ -593,7 +593,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$stats = $this->stats;
 
-			$stats['total'] = $wpsmush_db->total_count();
+			$stats['total'] = $wpsmush_db->total_count( true );
 
 			if ( isset( $smush ) && is_wp_error( $smush ) ) {
 
@@ -1250,7 +1250,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				//Update the offset
 				$offset += $limit;
-				if ( $wpsmush_db->total_count() && $wpsmush_db->total_count() <= $offset ) {
+				if ( !empty( $this->total_count ) && $this->total_count <= $offset ) {
 					$query_next = false;
 				} else if ( ! $results || empty( $results ) ) {
 					$query_next = false;
@@ -1837,8 +1837,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function query_limit() {
-		    global $wpsmush_db;
-		    $total = $wpsmush_db->total_count();
+		    $total = $this->total_count;
 			$limit = apply_filters( 'wp_smush_query_limit', 1000 );
 			$limit = $limit > $total ? $total : $limit;
 			$limit = intval( $limit );

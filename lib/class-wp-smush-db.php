@@ -30,11 +30,12 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 *
 		 */
 		function filter_by_mime( $posts ) {
+			global $wpsmushit_admin;
 			if ( empty( $posts ) ) {
 				return $posts;
 			}
 			foreach ( $posts as $post_k => $post ) {
-				if ( ! isset( $post->post_mime_type ) || ! in_array( $post->post_mime_type, $this->mime_types ) ) {
+				if ( ! isset( $post->post_mime_type ) || ! in_array( $post->post_mime_type, $wpsmushit_admin->mime_types ) ) {
 					unset( $posts[ $post_k ] );
 				} else {
 					$posts[ $post_k ] = $post->ID;
@@ -47,8 +48,13 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 * Total Image count
 		 * @return int
 		 */
-		function total_count() {
+		function total_count( $force_update = false ) {
 			global $wpsmushit_admin;
+
+			//Retrieve from Cache
+			if ( !$force_update && $count = wp_cache_get( 'total_count', 'wp-smush' ) ) {
+				return $count;
+			}
 
 			//Remove the Filters added by WP Media Folder
 			$this->remove_filters();
@@ -64,6 +70,9 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				}
 			}
 			$count = !empty( $_num_posts['image/*'] ) ? $_num_posts['image/*'] : 0;
+
+			wp_cache_add( 'total_count', $count, 'wp-smush');
+
 			// send the count
 			return $count;
 		}
