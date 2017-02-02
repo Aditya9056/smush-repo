@@ -22,6 +22,28 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		}
 
 		/**
+		 * Filter the Posts object as per mime type
+		 *
+		 * @param $posts Object of Posts
+		 *
+		 * @return mixed array of post ids
+		 *
+		 */
+		function filter_by_mime( $posts ) {
+			if ( empty( $posts ) ) {
+				return $posts;
+			}
+			foreach ( $posts as $post_k => $post ) {
+				if ( ! isset( $post->post_mime_type ) || ! in_array( $post->post_mime_type, $this->mime_types ) ) {
+					unset( $posts[ $post_k ] );
+				} else {
+					$posts[ $post_k ] = $post->ID;
+				}
+			}
+			return $posts;
+		}
+
+		/**
 		 * Total Image count
 		 * @return int
 		 */
@@ -78,7 +100,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 			if ( ! is_wp_error( $results ) && $results->post_count > 0 ) {
 
-				$posts = $wpsmushit_admin->filter_by_mime( $results->posts );
+				$posts = $this->filter_by_mime( $results->posts );
 
 				if ( ! $return_ids ) {
 					//return Post Count
@@ -217,7 +239,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				$query = new WP_Query( $args );
 
 				if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
-					$posts = $wpsmushit_admin->filter_by_mime( $query->posts );
+					$posts = $this->filter_by_mime( $query->posts );
 					//Merge the results
 					$super_smushed = array_merge( $super_smushed, $posts );
 
@@ -445,7 +467,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 				if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
 
-					$posts = $wpsmushit_admin->filter_by_mime( $query->posts );
+					$posts = $this->filter_by_mime( $query->posts );
 
 					//Merge the results
 					$resized_images = array_merge( $resized_images, $posts );
@@ -501,7 +523,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
 
 					//Filter Posts by mime types
-					$posts = $wpsmushit_admin->filter_by_mime( $query->posts );
+					$posts = $this->filter_by_mime( $query->posts );
 
 					//Merge the results
 					$converted_images = array_merge( $converted_images, $posts );
@@ -582,6 +604,40 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 			}
 
 			return $lossy_attachments;
+		}
+
+		/**
+		 * Get the attachment ids with Upfront images
+		 *
+		 * @param array $skip_ids
+		 *
+		 * @return array|bool
+		 */
+		function get_upfront_images( $skip_ids = array() ) {
+
+			$query = array(
+				'fields'         => array( 'ids', 'post_mime_type' ),
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'order'          => 'ASC',
+				'posts_per_page' => - 1,
+				'meta_key'       => 'upfront_used_image_sizes',
+				'no_found_rows'  => true
+			);
+
+			//Skip all the ids which are already in resmush list
+			if ( ! empty( $skip_ids ) && is_array( $skip_ids ) ) {
+				$query['post__not_in'] = $skip_ids;
+			}
+
+			$results = new WP_Query( $query );
+
+			if ( ! is_wp_error( $results ) && $results->post_count > 0 ) {
+				$posts = $this->filter_by_mime( $results->posts );
+				return $posts;
+			} else {
+				return false;
+			}
 		}
 	}
 

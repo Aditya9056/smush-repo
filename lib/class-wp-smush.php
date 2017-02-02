@@ -6,7 +6,7 @@ require_once WP_SMUSH_DIR . "lib/class-wp-smush-settings.php";
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-migrate.php";
 
 //Stats
-require_once WP_SMUSH_DIR . "lib/class-wp-smush-stats.php";
+require_once WP_SMUSH_DIR . "lib/class-wp-smush-db.php";
 
 //Include Resize class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';

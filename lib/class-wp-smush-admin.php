@@ -1493,7 +1493,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				//Check for Upfront images that needs to be smushed
 				if ( $upfront_active && 'nextgen' != $type ) {
-					$upfront_attachments = $this->get_upfront_images( $resmush_list );
+					$upfront_attachments = $wpsmush_db->get_upfront_images( $resmush_list );
 					if ( ! empty( $upfront_attachments ) && is_array( $upfront_attachments ) ) {
 						foreach ( $upfront_attachments as $u_attachment_id ) {
 							if ( ! in_array( $u_attachment_id, $resmush_list ) ) {
@@ -1609,40 +1609,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				delete_option( $mkey );
 			} else {
 				update_option( $mkey, $resmush_list );
-			}
-		}
-
-		/**
-		 * Get the attachment ids with Upfront images
-		 *
-		 * @param array $skip_ids
-		 *
-		 * @return array|bool
-		 */
-		function get_upfront_images( $skip_ids = array() ) {
-
-			$query = array(
-				'fields'         => array( 'ids', 'post_mime_type' ),
-				'post_type'      => 'attachment',
-				'post_status'    => 'any',
-				'order'          => 'ASC',
-				'posts_per_page' => - 1,
-				'meta_key'       => 'upfront_used_image_sizes',
-				'no_found_rows'  => true
-			);
-
-			//Skip all the ids which are already in resmush list
-			if ( ! empty( $skip_ids ) && is_array( $skip_ids ) ) {
-				$query['post__not_in'] = $skip_ids;
-			}
-
-			$results = new WP_Query( $query );
-
-			if ( ! is_wp_error( $results ) && $results->post_count > 0 ) {
-				$posts = $this->filter_by_mime( $results->posts );
-				return $posts;
-			} else {
-				return false;
 			}
 		}
 
@@ -2094,28 +2060,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $wpsmush_settings;
 			$c_settings = $this->get_serialised_settings();
 			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $c_settings );
-		}
-
-		/**
-		 * Filter the Posts object as per mime type
-		 *
-		 * @param $posts Object of Posts
-		 *
-		 * @return mixed array of post ids
-		 *
-		 */
-		function filter_by_mime( $posts ) {
-			if ( empty( $posts ) ) {
-				return $posts;
-			}
-			foreach ( $posts as $post_k => $post ) {
-				if ( ! isset( $post->post_mime_type ) || ! in_array( $post->post_mime_type, $this->mime_types ) ) {
-					unset( $posts[ $post_k ] );
-				} else {
-					$posts[ $post_k ] = $post->ID;
-				}
-			}
-			return $posts;
 		}
 
 	}
