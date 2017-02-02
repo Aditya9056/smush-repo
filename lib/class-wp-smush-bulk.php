@@ -22,7 +22,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 		 * @return array $attachments
 		 */
 		function get_attachments() {
-			global $wpsmushit_admin, $wpsmush_stats;
+			global $wpsmushit_admin, $wpsmush_db;
 
 			if ( ! isset( $_REQUEST['ids'] ) ) {
 				$limit = $wpsmushit_admin->query_limit();
@@ -56,7 +56,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 				while ( $get_posts ) {
 
 					//Remove the Filters added by WP Media Folder
-					$wpsmush_stats->remove_filters();
+					$wpsmush_db->remove_filters();
 
 					$query = new WP_Query( $args );
 

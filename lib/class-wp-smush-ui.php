@@ -112,7 +112,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
         *
         */
 		function smush_stats_container() {
-			global $WpSmush, $wpsmushit_admin, $wpsmush_stats, $wpsmush_settings;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_db, $wpsmush_settings;
 
 			//@todo: Move this to Stats section, In order to have a proper count somewhere
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
@@ -167,7 +167,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			 * Allows to hide the Super Smush stats as it might be heavy for some users
 			 */
 			if ( $WpSmush->validate_install() && apply_filters( 'wp_smush_show_lossy_stats', true ) ) {
-				$wpsmushit_admin->super_smushed = $wpsmush_stats->super_smushed_count(); ?>
+				$wpsmushit_admin->super_smushed = $wpsmush_db->super_smushed_count(); ?>
 				<hr />
 				<div class="row super-smush-attachments">
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>

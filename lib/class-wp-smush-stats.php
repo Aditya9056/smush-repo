@@ -8,12 +8,12 @@
  *
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
-if ( ! class_exists( 'WpSmushStats' ) ) {
+if ( ! class_exists( 'WpSmushDB' ) ) {
 
 	/**
 	 * Class WpSmushStats
 	 */
-	class WpSmushStats {
+	class WpSmushDB {
 		function __construct() {
 			//Update resize savings
 			add_action( 'wp_smush_image_resized', array( $this, 'resize_savings' ) );
@@ -588,6 +588,6 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 	/**
 	 * Initialise class
 	 */
-	global $wpsmush_stats;
-	$wpsmush_stats = new WpSmushStats();
+	global $wpsmush_db;
+	$wpsmush_db = new WpSmushDB();
 }

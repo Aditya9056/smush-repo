@@ -14,9 +14,9 @@ if ( ! class_exists( 'WpSmushShare' ) ) {
 		function __construct() {}
 
 		function share_widget() {
-			global $wpsmushit_admin, $wpsmush_stats;
+			global $wpsmushit_admin, $wpsmush_db;
 			$savings     = $wpsmushit_admin->global_stats_from_ids();
-			$image_count = $wpsmush_stats->smushed_count();
+			$image_count = $wpsmush_db->smushed_count();
 
 			//If there is any saving, greater than 1Mb, show stats
 			if ( empty( $savings ) || empty( $savings['bytes'] ) || $savings['bytes'] <= 1048576 || $image_count <= 1 || ! is_super_admin() ) {

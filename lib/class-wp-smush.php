@@ -1687,13 +1687,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @param $image_id
 		 */
 		function delete_images( $image_id ) {
-			global $wpsmush_stats;
+			global $wpsmush_db;
 
 			//Update the savings cache
-			$wpsmush_stats->resize_savings( true );
+			$wpsmush_db->resize_savings( true );
 
 			//Update the savings cache
-			$wpsmush_stats->conversion_savings( true );
+			$wpsmush_db->conversion_savings( true );
 
 			//If no image id provided
 			if ( empty( $image_id ) ) {
@@ -1875,7 +1875,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function wp_smush_redirect( $plugin ) {
 
-			global $wpsmushit_admin, $wpsmush_stats;
+			global $wpsmush_db;
 
 			//Run for only our plugin
 			if ( $plugin != WP_SMUSH_BASENAME ) {
@@ -1892,7 +1892,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//If images are already smushed
-			if ( $wpsmush_stats->smushed_count( false ) > 0 ) {
+			if ( $wpsmush_db->smushed_count( false ) > 0 ) {
 				return false;
 			}
 
