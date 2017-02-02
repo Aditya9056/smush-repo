@@ -921,7 +921,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$offset += $limit;
 
 				//Compare the Offset value to total images
-				if ( ! empty( $this->total_count ) && $this->total_count < $offset ) {
+				if ( ! empty( $this->total_count ) && $this->total_count <= $offset ) {
 					$query_next = false;
 				} elseif ( ! $global_data ) {
 					//If we didn' got any results
@@ -1871,7 +1871,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function query_limit() {
+		    global $wpsmush_stats;
+		    $total = $wpsmush_stats->total_count();
 			$limit = apply_filters( 'wp_smush_query_limit', 1000 );
+			$limit = $limit > $total ? $total : $limit;
 			$limit = intval( $limit );
 
 			return $limit;

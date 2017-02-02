@@ -78,10 +78,8 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 					//If we already got enough posts
 					if ( count( $unsmushed_posts ) >= $r_limit ) {
 						$get_posts = false;
-					}
-
-					//If total Count is set, and it is alread lesser than offset, don't query
-					if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $args['offset'] ) {
+					} else if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $args['offset'] ) {
+						//If total Count is set, and it is alread lesser than offset, don't query
 						$get_posts = false;
 					}
 				}

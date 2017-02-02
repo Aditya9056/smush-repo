@@ -227,9 +227,8 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 					//If we didn't get any posts from query, set $get_posts to false
 					$get_posts = false;
 				}
-
 				//If total Count is set, and it is alread lesser than offset, don't query
-				if ( ! empty( $this->total_count ) && $this->total_count < $args['offset'] ) {
+				if (  !empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $args['offset'] ) {
 					$get_posts = false;
 				}
 			}
