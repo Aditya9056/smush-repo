@@ -48,6 +48,7 @@ if ( ! class_exists( 'WpSmushitBulk' ) ) {
 							'compare' => 'NOT EXISTS'
 						)
 					),
+					'update_post_meta_cache' => false,
 					'update_post_term_cache' => false,
 					'no_found_rows'          => true,
 				);
