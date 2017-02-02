@@ -67,7 +67,7 @@ $smush_constants = array(
 	'PREFIX'            => 'wp-smush-',
 	'TIMEOUT'           => $timeout,
 	//If Set to false, WP Smush switch backs to the Old Sync Optimisation
-	'ASYNC'             => false
+	'ASYNC'             => true
 );
 
 foreach ( $smush_constants as $const_name => $constant_val ) {
