@@ -31,15 +31,17 @@ if ( ! class_exists( 'WpSmushStats' ) ) {
 			//Remove the Filters added by WP Media Folder
 			$this->remove_filters();
 
-			$count = 0;
-
-			$counts = wp_count_attachments( $wpsmushit_admin->mime_types );
-			foreach ( $wpsmushit_admin->mime_types as $mime ) {
-				if ( isset( $counts->$mime ) ) {
-					$count += $counts->$mime;
+			$_num_posts = (array) wp_count_attachments();
+			$matches    = wp_match_mime_types( 'image/*', array_keys( $_num_posts ) );
+			foreach ( $matches as $_type => $reals ) {
+				foreach ( $reals as $real ) {
+					if ( in_array( $real, $wpsmushit_admin->mime_types ) ) {
+						$_num_posts[ $_type ] = ! isset( $_num_posts[ $_type ] ) ? 0 : $_num_posts[ $_type ];
+						$_num_posts[ $_type ] += $_num_posts[ $real ];
+					}
 				}
 			}
-
+			$count = !empty( $_num_posts['image/*'] ) ? $_num_posts['image/*'] : 0;
 			// send the count
 			return $count;
 		}
