@@ -41,73 +41,83 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 					$posts[ $post_k ] = $post->ID;
 				}
 			}
+
 			return $posts;
 		}
 
 		/**
 		 * Fetch all the unsmushed attachments
+		 *
 		 * @return array $attachments
 		 */
 		function get_unsmushed_attachments() {
 			global $wpsmushit_admin, $wpsmush_db;
 
 			if ( ! isset( $_REQUEST['ids'] ) ) {
-				$limit = $wpsmushit_admin->query_limit();
-				$limit = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
 
-				//Do not fetch more than this, any time
-				//Localizing all rows at once increases the page load and slows down everything
+				/** Do not fetch more than this, any time
+				Localizing all rows at once increases the page load and slows down everything */
 				$r_limit = apply_filters( 'wp_smush_max_rows', 5000 );
 
-				$get_posts       = true;
-				$unsmushed_posts = array();
-				$args            = array(
-					'fields'                 => array( 'ids', 'post_mime_type' ),
-					'post_type'              => 'attachment',
-					'post_status'            => 'any',
-					'orderby'                => 'ID',
-					'order'                  => 'DESC',
-					'posts_per_page'         => $limit,
-					'offset'                 => 0,
-					'meta_query'             => array(
-						array(
-							'key'     => 'wp-smpro-smush-data',
-							'compare' => 'NOT EXISTS'
-						)
-					),
-					'update_post_meta_cache' => false,
-					'update_post_term_cache' => false,
-					'no_found_rows'          => true,
-				);
-				//Loop Over to get all the attachments
-				while ( $get_posts ) {
+				//Check if we can get the unsmushed attachments from the other two variables
+				if ( ! empty( $wpsmushit_admin->attachments ) && ! empty( $wpsmushit_admin->smushed_attachments ) ) {
+					$unsmushed_posts = array_diff( $wpsmushit_admin->attachments, $wpsmushit_admin->smushed_attachments );
+					$unsmushed_posts = ! empty( $unsmushed_posts ) && is_array( $unsmushed_posts ) ? array_slice( $unsmushed_posts, 0, $r_limit ) : array();
 
-					//Remove the Filters added by WP Media Folder
-					$wpsmush_db->remove_filters();
+					return $unsmushed_posts;
+				} else {
+					$limit = $wpsmushit_admin->query_limit();
 
-					$query = new WP_Query( $args );
+					$get_posts       = true;
+					$unsmushed_posts = array();
+					$args            = array(
+						'fields'                 => array( 'ids', 'post_mime_type' ),
+						'post_type'              => 'attachment',
+						'post_status'            => 'any',
+						'orderby'                => 'ID',
+						'order'                  => 'DESC',
+						'posts_per_page'         => $limit,
+						'offset'                 => 0,
+						'meta_query'             => array(
+							array(
+								'key'     => 'wp-smpro-smush-data',
+								'compare' => 'NOT EXISTS'
+							)
+						),
+						'update_post_meta_cache' => false,
+						'update_post_term_cache' => false,
+						'no_found_rows'          => true,
+					);
+					//Loop Over to get all the attachments
+					while ( $get_posts ) {
 
-					if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
+						//Remove the Filters added by WP Media Folder
+						$wpsmush_db->remove_filters();
 
-						//Get a filtered list of post ids
-						$posts = $wpsmush_db->filter_by_mime( $query->posts );
+						$query = new WP_Query( $args );
 
-						//Merge the results
-						$unsmushed_posts = array_merge( $unsmushed_posts, $posts );
+						if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
 
-						//Update the offset
-						$args['offset'] += $limit;
-					} else {
-						//If we didn't get any posts from query, set $get_posts to false
-						$get_posts = false;
-					}
+							//Get a filtered list of post ids
+							$posts = $wpsmush_db->filter_by_mime( $query->posts );
 
-					//If we already got enough posts
-					if ( count( $unsmushed_posts ) >= $r_limit ) {
-						$get_posts = false;
-					} else if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $args['offset'] ) {
-						//If total Count is set, and it is alread lesser than offset, don't query
-						$get_posts = false;
+							//Merge the results
+							$unsmushed_posts = array_merge( $unsmushed_posts, $posts );
+
+							//Update the offset
+							$args['offset'] += $limit;
+						} else {
+							//If we didn't get any posts from query, set $get_posts to false
+							$get_posts = false;
+						}
+
+						//If we already got enough posts
+						if ( count( $unsmushed_posts ) >= $r_limit ) {
+							$get_posts = false;
+						} else if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $args['offset'] ) {
+							//If total Count is set, and it is alread lesser than offset, don't query
+							$get_posts = false;
+						}
 					}
 				}
 			} else {
@@ -125,32 +135,50 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 * @return bool|int|mixed
 		 */
 		function total_count( $force_update = false ) {
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpdb;
 
 			//Retrieve from Cache
-			if ( !$force_update && $count = wp_cache_get( 'total_count', 'wp-smush' ) ) {
+			if ( ! $force_update && $count = wp_cache_get( 'total_count', 'wp-smush' ) ) {
 				return $count;
 			}
 
+			$posts  = array();
+			$offset = 0;
+			$limit  = $wpsmushit_admin->query_limit();
+
+			$mime  = implode( "', '", $wpsmushit_admin->mime_types );
+			$query = "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status != 'trash' AND post_mime_type IN ('$mime') LIMIT %d, %d";
 			//Remove the Filters added by WP Media Folder
 			$this->remove_filters();
 
-			$_num_posts = (array) wp_count_attachments();
-			$matches    = wp_match_mime_types( 'image/*', array_keys( $_num_posts ) );
-			foreach ( $matches as $_type => $reals ) {
-				foreach ( $reals as $real ) {
-					if ( in_array( $real, $wpsmushit_admin->mime_types ) ) {
-						$_num_posts[ $_type ] = ! isset( $_num_posts[ $_type ] ) ? 0 : $_num_posts[ $_type ];
-						$_num_posts[ $_type ] += $_num_posts[ $real ];
-					}
+			$get_posts = true;
+
+			while ( $get_posts ) {
+				$results = $wpdb->get_col( $wpdb->prepare( $query, $offset, $limit ) );
+				if ( ! empty( $results ) && is_array( $results ) && sizeof( $results ) > 0 ) {
+
+					//Get a filtered list of post ids
+					$posts = array_merge( $posts, $results );
+
+					//Update the offset
+					$offset += $limit;
+				} else {
+					//If we didn't get any posts from query, set $get_posts to false
+					$get_posts = false;
 				}
 			}
-			$count = !empty( $_num_posts['image/*'] ) ? $_num_posts['image/*'] : 0;
 
-			wp_cache_add( 'total_count', $count, 'wp-smush');
+			//If we have got the Query result
+			if ( ! empty( $posts ) && is_array( $posts ) ) {
+				wp_cache_add( 'smush_attachments', $posts, 'wp-smush' );
+			}
+
+			//Set Attachment ids, and total count
+			$wpsmushit_admin->attachments = $posts;
+			$wpsmushit_admin->total_count = ! empty( $posts ) && is_array( $posts ) ? sizeof( $posts ) : 0;
 
 			// send the count
-			return $count;
+			return $posts;
 		}
 
 		/**
@@ -169,7 +197,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 			}
 
 			$query = array(
-				'fields'         => array( 'ids', 'post_mime_type' ) ,
+				'fields'         => array( 'ids', 'post_mime_type' ),
 				'post_type'      => 'attachment',
 				'post_status'    => 'inherit',
 				'order'          => 'ASC',
@@ -298,7 +326,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 			$limit         = $wpsmushit_admin->query_limit();
 			$get_posts     = true;
 			$super_smushed = array();
-			$args = array(
+			$args          = array(
 				'fields'                 => array( 'ids', 'post_mime_type' ),
 				'post_type'              => 'attachment',
 				'post_status'            => 'any',
@@ -335,7 +363,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 					$get_posts = false;
 				}
 				//If total Count is set, and it is alread lesser than offset, don't query
-				if (  !empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $args['offset'] ) {
+				if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $args['offset'] ) {
 					$get_posts = false;
 				}
 			}
@@ -484,7 +512,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 							if ( ! empty( $data ) ) {
 								$meta = maybe_unserialize( $data );
 
-								if( is_array( $meta ) ) {
+								if ( is_array( $meta ) ) {
 									foreach ( $meta as $size ) {
 										if ( ! empty( $size ) && is_array( $size ) ) {
 											$savings['bytes'] += $size['bytes'];
@@ -527,7 +555,6 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		function resize_images() {
 			global $wpsmushit_admin;
 			$limit          = $wpsmushit_admin->query_limit();
-			$limit          = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
 			$get_posts      = true;
 			$resized_images = array();
 			$args           = array(
@@ -582,7 +609,6 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		function converted_images() {
 			global $wpsmushit_admin;
 			$limit            = $wpsmushit_admin->query_limit();
-			$limit            = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
 			$get_posts        = true;
 			$converted_images = array();
 			$args             = array(
@@ -719,6 +745,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 			if ( ! is_wp_error( $results ) && $results->post_count > 0 ) {
 				$posts = $this->filter_by_mime( $results->posts );
+
 				return $posts;
 			} else {
 				return false;

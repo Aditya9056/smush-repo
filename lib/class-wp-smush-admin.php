@@ -60,11 +60,35 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $remaining_count;
 
 		/**
-		 * @var Smushed attachments out of total attachments
+		 * @var Super Smushed attachments out of total attachments
 		 */
 		public $super_smushed;
 
+		/**
+		 * @var array Unsmushed image ids
+		 */
+		public $attachments = array();
+
+		/**
+		 * @var array Unsmushed image ids
+		 */
+		public $unsmushed_attachments = array();
+
+		/**
+		 * @var array Attachment ids which are smushed
+         *
+		 */
 		public $smushed_attachments = array();
+
+		/**
+		 * @var array Image ids that needs to be resmushed
+		 */
+		public $resmush_ids = array();
+
+		/**
+		 * @var int Number of attachments exceeding free limit
+		 */
+		public $exceeding_items_count = 0;
 
 		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/gif', 'image/png' );
 
@@ -74,6 +98,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $stats;
 
 		public $bulk_ui = '';
+
+		/**
+		 * @var int Limit for allowed number of images per bulk request
+		 */
+		private $max_free_bulk = 50; //this is enforced at api level too
+
+		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
+
+		public $image_sizes = array();
+
+		/**
+		 * @var string Stores the headers returned by the latest API call
+		 *
+		 */
+		public $api_headers = array();
+
+		public $page_smush_all = '';
 
 		//List of pages where smush needs to be loaded
 		public $pages = array(
@@ -86,37 +127,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			'media_page_wp-smush-bulk',
 			'media_page_wp-smush-all'
 		);
-
-		/**
-		 * @var int Limit for allowed number of images per bulk request
-		 */
-		private $max_free_bulk = 50; //this is enforced at api level too
-
-		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
-
-		//Stores unsmushed ids
-		private $ids = '';
-
-		//Stores all lossless smushed ids
-		public $resmush_ids = array();
-
-		/**
-		 * @var int Number of attachments exceeding free limit
-		 */
-		public $exceeding_items_count = 0;
-
-		private $attachments = '';
-
-
-		public $image_sizes = array();
-
-		/**
-		 * @var string Stores the headers returned by the latest API call
-		 *
-		 */
-		public $api_headers = array();
-
-		public $page_smush_all = '';
 
 		/**
 		 * Constructor
@@ -401,11 +411,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Setup all the stats
 				$this->setup_global_stats( true );
 
-				//Get attachments if all the images are not smushed
-				$this->attachments = $this->remaining_count > 0 ? $wpsmush_db->get_unsmushed_attachments() : array();
-
 				//Localize smushit_ids variable, if there are fix number of ids
-				$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments;
+				$this->unsmushed_attachments = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : array();
+
+				if( empty( $this->unsmushed_attachments ) ) {
+					//Get attachments if all the images are not smushed
+					$this->unsmushed_attachments = $this->remaining_count > 0 ? $wpsmush_db->get_unsmushed_attachments() : array();
+				}
 
 				//Get resmush list, If we have a resmush list already, localize those ids
 				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
@@ -419,7 +431,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$data = array(
 					'count_smushed' => $this->smushed_count,
 					'count_total'   => $this->total_count,
-					'unsmushed'     => $this->ids,
+					'unsmushed'     => $this->unsmushed_attachments,
 					'resmush'       => $this->resmush_ids,
 				);
 			} else {
@@ -462,9 +474,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function setup_global_stats( $force_update = false ) {
 			global $wpsmush_db;
-			$this->total_count     = $wpsmush_db->total_count();
+			//Setup Attachments and total count
+			$wpsmush_db->total_count( true );
+
 			$this->stats           = $this->global_stats( $force_update );
 			$this->smushed_count   = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
+			//@todo: Rename to unsmushed_count
 			$this->remaining_count = $this->remaining_count();
 		}
 
@@ -480,7 +495,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! $count || $force_update ) {
 				$count = 0;
 				//Check images bigger than 1Mb, used to display the count of images that can't be smushed
-				foreach ( $this->attachments as $attachment ) {
+				foreach ( $this->unsmushed_attachments as $attachment ) {
 					if ( file_exists( get_attached_file( $attachment ) ) ) {
 						$size = filesize( get_attached_file( $attachment ) );
 					}
@@ -791,7 +806,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return int
 		 */
 		function remaining_count() {
-			return $this->total_count - $this->smushed_count;
+			return ( $this->total_count - $this->smushed_count );
 		}
 
 		/**
@@ -1225,7 +1240,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function get_smushed_attachments() {
 
-			global $wpdb, $wpsmush_db;
+			global $wpdb;
 
 			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/png' )";
 
@@ -1836,9 +1851,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function query_limit() {
-		    $total = $this->total_count;
-			$limit = apply_filters( 'wp_smush_query_limit', 1000 );
-			$limit = $limit > $total ? $total : $limit;
+			$limit = apply_filters( 'wp_smush_query_limit', 2000 );
+			$limit = !empty( $this->total_count ) && $limit > $this->total_count ? $this->total_count : $limit;
 			$limit = intval( $limit );
 
 			return $limit;
