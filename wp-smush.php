@@ -274,9 +274,11 @@ if ( ! function_exists( 'smush_sanitize_hex_color_no_hash' ) ) {
 }
 //Load Translation files
 add_action( 'plugins_loaded', 'i18n' );
-function i18n() {
-	$path = path_join( dirname( plugin_basename( __FILE__ ) ), 'languages/' );
-	load_plugin_textdomain( 'wp-smushit', false, $path );
+if( !function_exists('i18n')) {
+	function i18n() {
+		$path = path_join( dirname( plugin_basename( __FILE__ ) ), 'languages/' );
+		load_plugin_textdomain( 'wp-smushit', false, $path );
+	}
 }
 
 register_activation_hook( __FILE__, 'smush_activated' );
