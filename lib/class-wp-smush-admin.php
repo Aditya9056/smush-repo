@@ -369,10 +369,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Localize Translations
 		 */
 		function localize() {
-			global $current_screen, $wpsmush_settings;
+			global $current_screen, $wpsmush_settings, $wpsmush_db;
 			$current_page = ! empty( $current_screen ) ? $current_screen->base : '';
 
-			$bulk   = new WpSmushitBulk();
 			$handle = 'wp-smushit-admin-js';
 
 			$wp_smush_msgs = array(
@@ -403,7 +402,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$this->setup_global_stats( true );
 
 				//Get attachments if all the images are not smushed
-				$this->attachments = $this->remaining_count > 0 ? $bulk->get_attachments() : array();
+				$this->attachments = $this->remaining_count > 0 ? $wpsmush_db->get_unsmushed_attachments() : array();
 
 				//Localize smushit_ids variable, if there are fix number of ids
 				$this->ids = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : $this->attachments;

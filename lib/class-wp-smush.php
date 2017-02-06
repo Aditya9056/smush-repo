@@ -647,8 +647,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$data = false;
 
-			$file      = @fopen( $file_path, 'r' );
-			$file_data = fread( $file, $file_size );
+			$file_data = file_get_contents( $file_path );
+
 			$headers   = array(
 				'accept'       => 'application/json', // The API returns JSON
 				'content-type' => 'application/binary', // Set content type to binary
@@ -679,8 +679,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			@ini_set('memory_limit','256M');
 			$result  = wp_remote_post( $api_url, $args );
 
-			//Close file connection
-			fclose( $file );
 			unset( $file_data );//free memory
 			if ( is_wp_error( $result ) ) {
 
@@ -2220,5 +2218,4 @@ if ( ! class_exists( 'WpSmush' ) ) {
 }
 
 //Include Admin classes
-require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-bulk.php' );
 require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-admin.php' );

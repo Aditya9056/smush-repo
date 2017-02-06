@@ -45,6 +45,79 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		}
 
 		/**
+		 * Fetch all the unsmushed attachments
+		 * @return array $attachments
+		 */
+		function get_unsmushed_attachments() {
+			global $wpsmushit_admin, $wpsmush_db;
+
+			if ( ! isset( $_REQUEST['ids'] ) ) {
+				$limit = $wpsmushit_admin->query_limit();
+				$limit = ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $limit ? $wpsmushit_admin->total_count : $limit;
+
+				//Do not fetch more than this, any time
+				//Localizing all rows at once increases the page load and slows down everything
+				$r_limit = apply_filters( 'wp_smush_max_rows', 5000 );
+
+				$get_posts       = true;
+				$unsmushed_posts = array();
+				$args            = array(
+					'fields'                 => array( 'ids', 'post_mime_type' ),
+					'post_type'              => 'attachment',
+					'post_status'            => 'any',
+					'orderby'                => 'ID',
+					'order'                  => 'DESC',
+					'posts_per_page'         => $limit,
+					'offset'                 => 0,
+					'meta_query'             => array(
+						array(
+							'key'     => 'wp-smpro-smush-data',
+							'compare' => 'NOT EXISTS'
+						)
+					),
+					'update_post_meta_cache' => false,
+					'update_post_term_cache' => false,
+					'no_found_rows'          => true,
+				);
+				//Loop Over to get all the attachments
+				while ( $get_posts ) {
+
+					//Remove the Filters added by WP Media Folder
+					$wpsmush_db->remove_filters();
+
+					$query = new WP_Query( $args );
+
+					if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
+
+						//Get a filtered list of post ids
+						$posts = $wpsmush_db->filter_by_mime( $query->posts );
+
+						//Merge the results
+						$unsmushed_posts = array_merge( $unsmushed_posts, $posts );
+
+						//Update the offset
+						$args['offset'] += $limit;
+					} else {
+						//If we didn't get any posts from query, set $get_posts to false
+						$get_posts = false;
+					}
+
+					//If we already got enough posts
+					if ( count( $unsmushed_posts ) >= $r_limit ) {
+						$get_posts = false;
+					} else if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $args['offset'] ) {
+						//If total Count is set, and it is alread lesser than offset, don't query
+						$get_posts = false;
+					}
+				}
+			} else {
+				return array_map( 'intval', explode( ',', $_REQUEST['ids'] ) );
+			}
+
+			return $unsmushed_posts;
+		}
+
+		/**
 		 * Total Image count
 		 *
 		 * @param bool $force_update
