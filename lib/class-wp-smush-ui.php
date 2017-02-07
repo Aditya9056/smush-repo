@@ -843,8 +843,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function installation_notice() {
 			global $wpsmushit_admin;
-			$css_url = WP_SMUSH_URL . 'assets/css/notice.css?1';
-			$js_url = WP_SMUSH_URL . 'assets/js/notice.js';
 
 			//Whether New/Existing Installation
 			$install_type = get_site_option('wp-smush-install-type', false );
@@ -871,7 +869,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				),
 				$wpsmushit_admin->upgrade_url
 			);?>
-			<link rel="stylesheet" type="text/css" href="<?php echo esc_url( $css_url ); ?>" />
 			<div class="notice smush-notice" style="display: none;">
 				<div class="smush-notice-logo"><span></span></div>
 				<div
@@ -885,8 +882,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</a>
 					<button class="smush-notice-dismiss smush-dismiss-welcome" data-msg="<?php esc_html_e( 'Saving', 'wp-smushit'); ?>"><?php esc_html_e( 'Dismiss', "wp-smushit" ); ?></button>
 				</div>
-			</div>
-			<script src="<?php echo esc_url( $js_url )  . '?v=' . WP_SMUSH_VERSION; ?>"></script><?php
+			</div><?php
+			//Notice CSS
+			wp_enqueue_style('wp-smushit-notice-css');
+			//Notice JS
+			wp_enqueue_script('wp-smushit-notice-js', '', array(), '', true );
 		}
 
 		/**

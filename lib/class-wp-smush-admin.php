@@ -306,18 +306,26 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $WpSmush;
 
+			//Main JS
 			wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 				'jquery'
 			), WP_SMUSH_VERSION );
 
-			/* Register Style. */
-			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), $WpSmush->version );
+			//Notice JS
+			wp_register_script( 'wp-smushit-notice-js', WP_SMUSH_URL . 'assets/js/notice.js', array(
+				'jquery'
+			), WP_SMUSH_VERSION );
+
+			/* Register Style */
+			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), WP_SMUSH_VERSION );
+			//Notice CSS
+			wp_register_style( 'wp-smushit-notice-css', WP_SMUSH_URL . 'assets/css/notice.css', array(), WP_SMUSH_VERSION );
 
 			//jQuery tree
 			wp_register_script( 'jqft-js', WP_SMUSH_URL . 'assets/js/jQueryFileTree.js', array(
 				'jquery'
 			), WP_SMUSH_VERSION, true );
-			wp_register_style( 'jqft-css', WP_SMUSH_URL . 'assets/css/jQueryFileTree.min.css', array(), $WpSmush->version );
+			wp_register_style( 'jqft-css', WP_SMUSH_URL . 'assets/css/jQueryFileTree.min.css', array(), WP_SMUSH_VERSION );
 
 			//Dismiss Update Info
 			$this->dismiss_update_info();
@@ -1908,8 +1916,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return true;
 			}
 
-			//Handles the dismiss action
-			$js_url      = WP_SMUSH_URL . 'assets/js/notice.js';
 			$upgrade_url = add_query_arg(
 				array(
 					'utm_source'   => 'Smush-Free',
@@ -1932,9 +1938,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			?>
 			<div class="notice notice-info is-dismissible wp-smush-update-info">
 				<p><?php echo $message_s; ?></p>
-			</div>
-
-			<script src="<?php echo esc_url( $js_url ) . '?v=' . WP_SMUSH_VERSION; ?>"></script><?php
+			</div><?php
+			//Notice JS
+			wp_enqueue_script('wp-smushit-notice-js', '', array(), '', true );
 		}
 
 		/**

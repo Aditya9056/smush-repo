@@ -235,6 +235,8 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 *
 		 * @return array|mixed|void
 		 *
+		 * @todo: Refactor Method, Separate Media Library and Nextgen, moreover nextgen functioanlity is broken
+		 *
 		 */
 		function super_smushed_count( $type = 'media', $attachments = array() ) {
 
@@ -277,6 +279,8 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				//Need to scan all the image
 				if ( $revaluate ) {
 					//Get all the Smushed attachments ids
+					//Note: Wrong Method called, it'll fetch media images and not NextGen images
+					//Should be $attachments, in place of $super_smushed_images
 					$super_smushed_images = $this->get_super_smushed_attachments( true );
 
 					if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
