@@ -84,7 +84,6 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 								'compare' => 'NOT EXISTS'
 							)
 						),
-						'update_post_meta_cache' => false,
 						'update_post_term_cache' => false,
 						'no_found_rows'          => true,
 					);
@@ -237,10 +236,10 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 * @return array|mixed|void
 		 *
 		 */
-		function super_smushed_count( $type = 'media', $attachments = '' ) {
+		function super_smushed_count( $type = 'media', $attachments = array() ) {
 
 			if ( 'media' == $type ) {
-				$count = $this->media_super_smush_count();
+				$count = $this->get_super_smushed_attachments();
 			} else {
 				$key = 'wp-smush-super_smushed_nextgen';
 
@@ -278,7 +277,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				//Need to scan all the image
 				if ( $revaluate ) {
 					//Get all the Smushed attachments ids
-					$super_smushed_images = $this->get_lossy_attachments( $attachments, false );
+					$super_smushed_images = $this->get_super_smushed_attachments( true );
 
 					if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
 						//Iterate over all the attachments to check if it's already there in list, else add it
@@ -303,24 +302,13 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		/**
 		 * Updates the Meta for existing smushed images and retrieves the count of Super Smushed images
 		 *
-		 * @return int Count of Super Smushed images
+		 * @param bool $return_ids Whether to return ids or just the count
 		 *
+		 * @return array|int Super Smushed images Id / Count of Super Smushed images
 		 */
-		function media_super_smush_count( $return_ids = false ) {
+		function get_super_smushed_attachments( $return_ids = false ) {
 
 			global $wpsmushit_admin;
-
-			//Check if we have updated the stats for existing images, One time
-			if ( ! $lossy_updated = get_option( WP_SMUSH_PREFIX . 'lossy-updated' ) ) {
-
-				//Get all the smushed attachments
-				$attachments = $this->get_lossy_attachments( '', false );
-				if ( ! empty( $attachments ) ) {
-					foreach ( $attachments as $attachment ) {
-						update_post_meta( $attachment, WP_SMUSH_PREFIX . 'lossy', 1 );
-					}
-				}
-			}
 
 			//Get all the attachments with wp-smush-lossy
 			$limit         = $wpsmushit_admin->query_limit();
@@ -366,9 +354,6 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $args['offset'] ) {
 					$get_posts = false;
 				}
-			}
-			if ( ! $lossy_updated ) {
-				update_option( 'wp-smush-lossy-updated', true );
 			}
 
 			return $return_ids ? $super_smushed : count( $super_smushed );
