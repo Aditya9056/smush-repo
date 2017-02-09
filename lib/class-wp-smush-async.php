@@ -49,7 +49,6 @@ if ( ! class_exists( 'WpSmushAsync' ) ) {
 
 		/**
 		 * Run the async task action
-		 * @todo: Add a check for image
 		 * @todo: See if auto smush is enabled or not
 		 * @todo: Check if async is enabled or not
 		 */
