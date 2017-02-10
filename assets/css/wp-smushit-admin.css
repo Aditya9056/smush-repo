@@ -1446,8 +1446,16 @@ small.smush-setting-description {
     background: #1da1f2;
 }
 
+#wp-smush-twitter-share:hover:not(:focus):not(:active):not(.wph-button):not(#collapse-button):not([tooltip]) {
+    background-color: #0A9BD6;
+}
+
 #wp-smush-facebook-share {
     background: #3b5998;
+}
+
+#wp-smush-facebook-share:hover:not(:focus):not(:active):not(.wph-button):not(#collapse-button):not([tooltip]) {
+    background-color: #2b4886;
 }
 
 #wp-smush-whatsapp-share {
@@ -1550,6 +1558,7 @@ div.wp-smush-dir-desc {
 }
 
 .wpmud UL.jqueryFileTree a, .wpmud UL.jqueryFileTree a:hover {
+    background: #f8f8f8;
     color: #888888;
     font-family: "Roboto", sans-serif;
     font-size: 14px;
@@ -1628,11 +1637,10 @@ li.directory.selected.expanded ul.jqueryFileTree {
 }
 
 div.wp-smush-all-button-wrap.bottom {
-    margin-top: 15px;
+    margin-top: 14px;
 }
 
 .wp-smush-all-button-wrap .spinner {
-    float: left;
     margin-top: 12px;
 }
 
@@ -1759,7 +1767,8 @@ div.wp-smush-scan-result div.content {
     float: right;
     font-size: 15px;
     font-weight: 700;
-    margin-right: 25px;
+    margin-right: 16px;
+    padding: 0 10px;
 }
 
 .wpmud a.wp-smush-exclude-dir:hover {
@@ -1798,8 +1807,10 @@ div.dir-smush-button-wrap span {
 }
 
 .wp-smush-select-button-wrap .wp-smush-section-desc {
+    color: #888;
     display: inline-block;
     float: left;
+    line-height: 22px;
     max-width: 59%;
 }
 
@@ -1936,6 +1947,21 @@ div.wp-smush-info.notice {
     letter-spacing: -0.015em;
     margin: 0 0 30px;
     padding: 15px;
+}
+
+.wpmud div.smush-page-wrap button:not(.wph-button):not(#collapse-button),
+.wpmud div.smush-page-wrap .button {
+    background-color: #17A8E3;
+}
+
+.wpmud div.smush-page-wrap button:hover:not(:focus):not(:active):not(.wph-button):not(#collapse-button):not([tooltip]),
+.wpmud .div.smush-page-wrap button:hover:not(:focus):not(:active):not(.wph-button):not(#collapse-button):not([tooltip]),
+.wpmud .smush-page-wrap .wp-smush-submit-wrap .button.button-grey:hover:not(:focus):not(:active):not(.wph-button):not(#collapse-button):not([tooltip]) {
+    background: #0A9BD6;
+}
+
+.wpmud .smush-page-wrap .button.button-grey {
+    background: #AEAEAE;
 }
 
 /** Media Queries **/

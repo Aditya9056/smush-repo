@@ -214,10 +214,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                 <div class="wp-smush-scan-result hidden">
                     <hr class="primary-separator"/>
                     <div class="wp-smush-all-button-wrap top">
-                        <span class="spinner"></span>
                         <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
                         <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
                         <button type="button" title="<?php esc_html_e( "Click to stop the directory smushing process.", "wp-smushit" ); ?>" class="button button-grey wp-smush-pause disabled"><?php esc_html_e( "CANCEL", "wp-smushit" ); ?></button>
+                        <span class="spinner"></span>
                     </div>
                     <div class="content">
                         <!-- Show a list of images, inside a fixed height div, with a scroll. As soon as the image is
@@ -225,10 +225,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						current optimised image -->
                     </div>
                     <div class="wp-smush-all-button-wrap bottom">
-                        <span class="spinner"></span>
                         <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
                         <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
                         <button type="button" title="<?php esc_html_e( "Click to stop the directory smushing process.", "wp-smushit" ); ?>" class="button button-grey wp-smush-pause disabled"><?php esc_html_e( "CANCEL", "wp-smushit" ); ?></button>
+                        <span class="spinner"></span>
                     </div><?php
 	                //Nonce Field
 	                wp_nonce_field( 'wp_smush_all', 'wp-smush-all' ); ?>
@@ -396,7 +396,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		        </div>
 		    </div>";
 
-			$content .= 0 == $width ? "<a href='#' class='wp-smush-exclude-dir' data-path='" . $dir_path . "' title='" . esc_html__( "Exclude directory from Smush List", "wp-smushit" ) . "'>X</a>" : '';
+			$content .= 0 == $width ? "<a href='#' class='wp-smush-exclude-dir' data-path='" . $dir_path . "' title='" . esc_html__( "Exclude directory from Smush List", "wp-smushit" ) . "'>&times;</a>" : '';
 
 			return $content;
 		}
