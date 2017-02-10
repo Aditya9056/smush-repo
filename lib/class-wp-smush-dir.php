@@ -85,15 +85,18 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
             <div class="row smush-dir-savings">
                 <span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "DIRECTORY SMUSH SAVINGS", "wp-smushit" ); ?></strong></span>
                 <span class="float-r wp-smush-stats"><?php
-	                if ( ! empty( $dir_smush_stats ) && $human == 0 && $percent == 0 ) {
-		                esc_html_e( "Already Optimised", "wp-smushit" );
-	                } else { ?>
-                        <span class="spinner" style="visibility: visible"
-                              title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
-                        <span class="wp-smush-stats-human"><?php echo $human > 0 ? $human : ''; ?></span>
+	                if ( ! empty( $dir_smush_stats ) && $human == 0 && $percent < 1 ) {
+	                    //If smush percentage is lower, Show stats as < 1Kb
+		                $human = "< 1KB";
+		                $percent = "< 1";
+	                }?>
+                    <span class="spinner" style="visibility: visible"
+                          title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
+                    <span class="wp-smush-stats-human"><?php echo !empty( $human ) ? $human : ''; ?></span><?php
+                    if( $percent > 1 ) { ?>
                         <span class="wp-smush-stats-sep">/</span>
-                        <span class="wp-smush-stats-percent"><?php echo $percent > 0 ? $percent : ''; ?>%</span><?php
-	                } ?>
+                        <span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>%</span><?php
+                    } ?>
 				</span>
             </div><?php
         }
@@ -214,8 +217,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                         <span class="spinner"></span>
                         <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
                         <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
-                        <a href="#" class="wp-smush-pause disabled"
-                           title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit" ); ?>"><?php esc_html_e( "Cancel", "wp-smushit" ); ?></a>
+                        <button type="button" title="<?php esc_html_e( "Click to stop the directory smushing process.", "wp-smushit" ); ?>" class="button button-grey wp-smush-pause disabled"><?php esc_html_e( "CANCEL", "wp-smushit" ); ?></button>
                     </div>
                     <div class="content">
                         <!-- Show a list of images, inside a fixed height div, with a scroll. As soon as the image is
@@ -226,8 +228,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                         <span class="spinner"></span>
                         <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
                         <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
-                        <a href="#" class="wp-smush-pause disabled"
-                           title="<?php esc_html_e( "Click to stop the Smushing process", "wp-smushit" ); ?>"><?php esc_html_e( "Cancel", "wp-smushit" ); ?></a>
+                        <button type="button" title="<?php esc_html_e( "Click to stop the directory smushing process.", "wp-smushit" ); ?>" class="button button-grey wp-smush-pause disabled"><?php esc_html_e( "CANCEL", "wp-smushit" ); ?></button>
                     </div><?php
 	                //Nonce Field
 	                wp_nonce_field( 'wp_smush_all', 'wp-smush-all' ); ?>
@@ -505,6 +506,14 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
         }
 
 		/**
+		 * Sends a Ajax response if no images are found in selected directory
+		 */
+        function send_error() {
+	        $message = sprintf("<div class='wp-smush-info notice notice-info roboto-regular'>%s</div>", esc_html__("We could not find any images in the selected directory.", "wp-smushit") );
+	        wp_send_json_error( array( 'message' => $message ) );
+        }
+
+		/**
 		 * Handles Ajax request to obtain the Image list within a selected directory path
 		 *
 		 */
@@ -525,6 +534,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			//Get the File list
 			$files = $this->get_image_list( $_GET['path'] );
+
+			//If files array is empty, send a message
+			if ( empty( $files['files_arr'] ) ) {
+			    $this->send_error();
+			}
 
 			//Get the markup from the list
 			$markup = $this->generate_markup( $files['files_arr'], $files['base_dir'] );
@@ -736,7 +750,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				$index++;
 			}
 			$div .= '</ul>';
-			$div .= "<span class='spinner' title='" . esc_html__( "Optimising image..", "wp-smushit" ) . "'></span>";
 			$div .= "<span class='waiting-message hidden' title='" . esc_html__( "Waiting..", "wp-smushit" ) . "'></span>";
 
 			return $div;
@@ -968,11 +981,17 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			//If we don't get an error path, return an error message
 			if ( empty( $dir_path ) ) {
 				$message = "<div class='error'>" . esc_html__( "We were unable to retrieve the image list from last scan, please continue with a latest scan", "wp-smushit" ) . "</div>";
-				wp_send_json_error( $message );
+				wp_send_json_error( array( 'message' => $message ) );
 			}
 
 			//Else, Get the image list and then markup
 			$file_list = $this->get_image_list( $dir_path );
+
+			//If there are no image files in selected directory
+			if( empty( $file_list['files_arr'] ) ) {
+			    $this->send_error();
+            }
+
 			$markup    = $this->generate_markup( $file_list['files_arr'], $file_list['base_dir'] );
 			wp_send_json_success( $markup );
 		}

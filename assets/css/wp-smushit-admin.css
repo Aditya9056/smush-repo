@@ -1487,8 +1487,9 @@ small.smush-setting-description {
 
 /** Directory Browser **/
 div.wp-smush-dir-desc {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 500;
+    line-height: 30px;
     padding: 10px 0 25px;
 }
 
@@ -1615,19 +1616,23 @@ li.directory.selected.expanded ul.jqueryFileTree {
 
 /** Smush Button Wrapper **/
 .wp-smush-all-button-wrap {
+    display: inline-block;
     float: right;
     overflow: hidden;
-    width: 270px;
 }
 
 .wp-smush-all-button-wrap.top {
     display: block;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     width: 100%;
 }
 
+div.wp-smush-all-button-wrap.bottom {
+    margin-top: 15px;
+}
+
 .wp-smush-all-button-wrap .spinner {
-    float: right;
+    float: left;
     margin-top: 12px;
 }
 
@@ -1636,17 +1641,13 @@ li.directory.selected.expanded ul.jqueryFileTree {
     vertical-align: top;
 }
 
-.wpmud a.wp-smush-pause {
-    color: #9b9b9b;
+.wpmud button.wp-smush-pause {
     cursor: pointer;
     float: right;
-    margin-right: 20px;
-    margin-top: 12px;
 }
 
-.wpmud a.wp-smush-pause.disabled, .wpmud button.wp-smush-start:disabled {
-    opacity: 0.7;
-    cursor: none !important;
+.wpmud button.wp-smush-pause.disabled, .wpmud button.wp-smush-start:disabled {
+    display: none !important;
 }
 
 .wpmud button.wp-smush-start.finished {
@@ -1739,11 +1740,16 @@ div.wp-smush-dir-stats-wrap, div.wp-smush-scan-result {
 }
 
 div.wp-smush-scan-result hr.primary-separator {
-    margin: 10px 0 30px;
+    margin: 10px 0 28px;
 }
 
 div.wp-smush-scan-result hr {
     margin: 20px 0;
+}
+
+div.wp-smush-scan-result div.content {
+    overflow: hidden;
+    width: 100%;
 }
 
 .wpmud a.wp-smush-exclude-dir {
@@ -1761,6 +1767,7 @@ div.wp-smush-scan-result hr {
 }
 
 div.dir-smush-button-wrap {
+    margin-top: 14px;
     overflow: hidden;
 }
 
@@ -1769,16 +1776,11 @@ div.dir-smush-button-wrap button, div.dir-smush-button-wrap span {
 }
 
 div.dir-smush-button-wrap span {
-    margin-top: 17px;
+    margin-top: 10px;
 }
 
 .wpmud button.wp-smush-browse {
     background-color: #9E9E9E !important;
-    margin-top: 7px !important;
-}
-
-.wpmud button.wp-smush-resume {
-    margin-top: 7px !important;
 }
 
 .wp-smush-loading-text {
@@ -1927,6 +1929,13 @@ div.wp-smush-dir-progress-wrap-inner {
 
 .wp-smush-dir-progress.complete ~ a.wp-smush-exclude-dir {
     display: none;
+}
+
+div.wp-smush-info.notice {
+    font-size: 15px;
+    letter-spacing: -0.015em;
+    margin: 0 0 30px;
+    padding: 15px;
 }
 
 /** Media Queries **/

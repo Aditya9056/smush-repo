@@ -4,7 +4,6 @@
  * @subpackage Admin
  * @version 1.0
  *
- * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umesh@incsub.com>
  *
  * @copyright (c) 2016, Incsub (http://incsub.com)

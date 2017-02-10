@@ -1,7 +1,6 @@
 /**
  * Processes bulk smushing
  *
- * @author Saurabh Shukla <saurabh@incsub.com>
  * @author Umesh Kumar <umeshsingla05@gmail.com>
  *
  */
@@ -1111,7 +1110,7 @@ jQuery(function ($) {
             }
             else if ('' == data.next) {
                 $('div.wp-smush-all-button-wrap span.spinner').remove();
-                $('a.wp-smush-pause').remove();
+                $('button.wp-smush-pause').remove();
                 $('button.wp-smush-start').html( wp_smush_msgs.all_done ).addClass('finished');
             }
             else {
@@ -1611,7 +1610,12 @@ jQuery(function ($) {
             return;
         }
 
+        //Remove Notice
+        $('div.wp-smush-info').remove();
+
+        //Shows the directories available
         $('.wp-smush-list-dialog').show();
+
         //Display the loader
         $('.wp-smush-loading-wrap span').css({'visibility': 'visible'});
 
@@ -1702,7 +1706,7 @@ jQuery(function ($) {
         /** All the Styling changes **/
         button.attr('disabled', 'disabled');
         parent.find('span.spinner').css({'visibility': 'visible'});
-        parent.find('a.wp-smush-pause').removeClass('disabled');
+        parent.find('button.wp-smush-pause').removeClass('disabled');
 
         //Disable Select Directory button
         $('button.wp-smush-browse').attr('disabled', 'disabled');
@@ -1713,10 +1717,10 @@ jQuery(function ($) {
     });
 
     //Handle the Pause button click
-    $('a.wp-smush-pause').on('click', function (e) {
+    $('button.wp-smush-pause').on('click', function (e) {
         e.preventDefault();
 
-        var pause_button = $('a.wp-smush-pause');
+        var pause_button = $('button.wp-smush-pause');
         //Return if the link is disabled
         if (pause_button.hasClass('disabled')) {
             return false;
@@ -1795,20 +1799,22 @@ jQuery(function ($) {
 
         //Send Ajax request to load a list of images
         $.get(ajaxurl, params, function (r) {
+
+            //Hide the buttons
+            $('button.wp-smush-resume').remove();
+            //Remove the loader for choose directory button
+            $('div.dir-smush-button-wrap span.spinner').remove();
+            // Allow to select a new directory
+            $('button.wp-smush-browse').removeAttr('disabled');
             //Append the results
             if (!r.success) {
                 //Append the error message before the buttons
-                $('div.wp-smush-dir-desc').after(r.data)
+                $('div.wp-smush-dir-desc').after(r.data.message);
             } else {
-                //Hide the buttons
-                $('button.wp-smush-resume').remove();
                 //Append the image markup after the buttons
                 $('div.wp-smush-scan-result div.content').html(r.data);
                 $('div.wp-smush-scan-result').removeClass('hidden');
 
-                //Remove the loader for choose directory button, Allow to select a new directory
-                $('div.dir-smush-button-wrap span.spinner').remove();
-                $('button.wp-smush-browse').removeAttr('disabled');
                 set_accordion();
             }
         });
@@ -1822,21 +1828,21 @@ jQuery(function ($) {
         }
         $.get(ajaxurl, stats_param, function (r) {
 
+            //Hide the spinner
             $('div.smush-dir-savings span.spinner').hide();
+
+            //If there are no errors, and we have a message to display
+            if (!r.success && 'undefined' != typeof ( r.data.message )) {
+                $('div.wp-smush-scan-result div.content').prepend( r.data.message );
+                return;
+            }
             //If there is no value in r
             if ('undefined' == typeof ( r.data) || 'undefined' == typeof ( r.data.dir_smush )) {
                 //Append the text
                 $('div.smush-dir-savings span.wp-smush-stats').append(wp_smush_msgs.ajax_error);
                 $('div.smush-dir-savings span.wp-smush-stats span').hide();
                 return;
-            }
-            else if ( r.data.dir_smush.percent < 1) {
-                //If the Directory Smush optimisation is very low
-                //Hide all the span
-                $('div.smush-dir-savings span.wp-smush-stats span').hide();
-                //Append the text
-                $('div.smush-dir-savings span.wp-smush-stats').html(wp_smush_msgs.already_optimised);
-            }else{
+            } else{
                 //Update the stats
                 update_cummulative_stats(r.data);
             }
