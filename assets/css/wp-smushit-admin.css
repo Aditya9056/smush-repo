@@ -662,8 +662,13 @@ table.wp-smush-stats-holder tr td:first-child {
 }
 
 .smush-stats-wrapper .smush-container-subheading {
-    margin: 0.9em 0;
+    margin: 1.2em 0 0.9em;
     max-width: 90%;
+}
+
+.wpmud .smush-stats-wrapper .smush-container-subheading button.wp-smush-scan:not(.wph-button):not(#collapse-button) {
+    font-size: 12px;
+    padding: 5px 16px 5px;
 }
 
 .wpmud .row .col-half.wp-smushit-container-left {
@@ -836,10 +841,12 @@ table.wp-smush-stats-holder tr td:first-child {
     margin: 22px 0 0 !important;
 }
 
-.wpmud .bulk-smush-wrapper .wp-smush-remaining button.wp-smush-skip-resmush {
+.wpmud .bulk-smush-wrapper .wp-smush-remaining button.wp-smush-skip-resmush:not(.wph-button):not(#collapse-button) {
     display: block !important;
+    font-size: 12px;
     margin-left: 27px !important;
     margin-top: 10px !important;
+    padding: 5px 16px;
 }
 
 .wp-smush-pro-trial {
@@ -980,8 +987,8 @@ small.smush-setting-description {
 
 .wpmud .wp-smush-stats .button-small.wp-smush-lossy-enable, .wpmud .wp-smush-stats .button-small.wp-smush-resize-enable {
     border-radius: 3px;
-    font: 500 11px/20px 'Roboto';
-    padding: 5px 8px;
+    font: 500 12px/20px 'Roboto' !important;
+    padding: 5px 16px !important;
     vertical-align: top;
 }
 
