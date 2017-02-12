@@ -1111,7 +1111,14 @@ jQuery(function ($) {
             else if ('' == data.next) {
                 $('div.wp-smush-all-button-wrap span.spinner').remove();
                 $('button.wp-smush-pause').remove();
-                $('button.wp-smush-start').html( wp_smush_msgs.all_done ).addClass('finished');
+                $('button.wp-smush-start').parent().remove();
+                //Enable Choose directory button
+                $('button.wp-smush-browse').show().removeAttr('disabled', 'disabled');
+                //Clone button and add at the top
+                var choose_button = $('div.dir-smush-button-wrap').clone();
+                choose_button.addClass('top');
+                $('div.wp-smush-scan-result div.content').prepend( choose_button );
+
             }
             else {
                 //Set the continue ajax to 1

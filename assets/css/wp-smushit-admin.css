@@ -1661,7 +1661,8 @@ div.wp-smush-all-button-wrap.bottom {
     float: right;
 }
 
-.wpmud button.wp-smush-pause.disabled, .wpmud button.wp-smush-start:disabled {
+.wpmud button.wp-smush-start:disabled:not(.finished),
+.wpmud button.wp-smush-pause.disabled {
     display: none !important;
 }
 
@@ -1785,6 +1786,10 @@ div.wp-smush-scan-result div.content {
 div.dir-smush-button-wrap {
     margin-top: 14px;
     overflow: hidden;
+}
+div.dir-smush-button-wrap.top {
+    margin-top: 0;
+    margin-bottom: 30px;
 }
 
 div.dir-smush-button-wrap button, div.dir-smush-button-wrap span {
