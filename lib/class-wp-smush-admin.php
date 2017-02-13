@@ -408,6 +408,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'already_optimised'       => esc_html__( "Already Optimised", "wp-smushit" ),
 				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
+				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );

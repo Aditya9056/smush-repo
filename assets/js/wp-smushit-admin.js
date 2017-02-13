@@ -1114,10 +1114,31 @@ jQuery(function ($) {
                 $('button.wp-smush-start').parent().remove();
                 //Enable Choose directory button
                 $('button.wp-smush-browse').show().removeAttr('disabled', 'disabled');
-                //Clone button and add at the top
+
+                //Clone Choose Directory Button and add at the top
                 var choose_button = $('div.dir-smush-button-wrap').clone();
                 choose_button.addClass('top');
                 $('div.wp-smush-scan-result div.content').prepend( choose_button );
+
+                //Get the Total and Optimised image count
+                var image_ele = $('li.wp-smush-image-ele')
+                var total = image_ele.length;
+                var remaning = image_ele.filter(':not(.optimised)').length;
+                var smushed = total - remaning;
+                if( remaning > 0 ) {
+
+                    //Append the count
+                    $('span.wp-smush-dir-remaining').html( remaning );
+                    $('span.wp-smush-dir-total').html( total );
+                    $('span.wp-smush-dir-smushed').html( smushed );
+
+                    //Show remaining image notice
+                    $('.wp-smush-notice.wp-smush-dir-remaining').show();
+                }else{
+                    //Show All done notice
+                    $('.wp-smush-notice.wp-smush-dir-all-done').show();
+                }
+
 
             }
             else {

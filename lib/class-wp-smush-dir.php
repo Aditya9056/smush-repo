@@ -224,6 +224,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						optimised show a tick mark, with savings below the image. Scroll the li each time for the
 						current optimised image -->
                     </div>
+                    <!-- Notices -->
+                    <div class="wp-smush-notice wp-smush-dir-all-done" tabindex="0">
+                        <i class="dev-icon dev-icon-tick"></i><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?>
+                    </div>
+                    <div class="wp-smush-notice wp-smush-dir-remaining hidden" tabindex="0">
+                        <i class="wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i><?php printf( esc_html__( "%s/%s image(s) were smushed. %s image(s) could not be smushed due to error.", "wp-smushit" ), '<span class="wp-smush-dir-smushed"></span>', '<span class="wp-smush-dir-total"></span>', '<span class="wp-smush-dir-remaining"></span>'); ?>
+                    </div>
                     <div class="wp-smush-all-button-wrap bottom">
                         <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
                         <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
@@ -929,6 +936,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$bytes            = $image['orig_size'] - $image['img_size'];
 			$image['savings'] = size_format( $bytes, 1 );
 			$image['percent'] = number_format_i18n( ( ( $bytes / $image['orig_size'] ) * 100 ), 1 ) . '%';
+
 			$data             = array(
 				'image'       => $image,
 				'next'        => $next,
