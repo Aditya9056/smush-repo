@@ -751,7 +751,7 @@ table.wp-smush-stats-holder tr td:first-child {
 
 .wp-smush-bulk-active .spinner {
     float: left;
-    margin-top: 0;
+    margin-top: 5px;
 }
 
 /** All Smushed **/
@@ -778,14 +778,21 @@ table.wp-smush-stats-holder tr td:first-child {
 
 .wpmud a.wp-smush-trigger-bulk, .wpmud a.wp-smush-trigger-bulk:hover,
 .wpmud a.wp-smush-trigger-bulk:focus, .wpmud a.wp-smush-trigger-bulk:active {
-    color: white;
+    color: #333333;
     text-decoration: underline;
 }
 
 .wp-smush-resmush-message .dev-icon,
 .wp-smush-settings-updated .dev-icon,
 .wp-smush-re-check-message .dev-icon {
-    font-size: 16px;
+    font-size: 22px;
+}
+
+.wp-smush-resmush-message .dev-icon-tick,
+.wp-smush-settings-updated .dev-icon-tick {
+    font-size: 22px;
+    margin-right: 5px;
+    vertical-align: middle;
 }
 
 .wp-smush-resmush-message .dev-icon-cross,
@@ -793,13 +800,16 @@ table.wp-smush-stats-holder tr td:first-child {
 .wp-smush-re-check-message .dev-icon-cross {
     cursor: pointer;
     float: right;
+    font-size: 16px;
+    margin-top: 8px;
 }
 
 .wp-smush-all-done .dev-icon-tick {
     display: inline-block;
-    font-size: 16px;
+    font-size: 22px;
     margin-right: 10px;
-    vertical-align: bottom;
+    margin-top: -3px;
+    vertical-align: middle;
 }
 
 /** Image Remaining **/
@@ -814,6 +824,8 @@ table.wp-smush-stats-holder tr td:first-child {
     letter-spacing: -0.015em;
 }
 
+div.wp-smush-notice .dev-icon-tick:before,
+div.wp-smush-all-done .dev-icon-tick:before,
 div.wp-smush-dir-all-done .dev-icon-tick:before {
     content: "\67";
     color: #1ABC9C;
@@ -829,12 +841,13 @@ div.wp-smush-dir-remaining .wdv-icon-exclamation-sign:before {
 
 .wp-smush-remaining .dev-icon img {
     position: relative;
-    top: 6px;
+    top: 8px;
     width: 14px;
 }
 
-.wpmud .bulk-smush-wrapper .dev-icon {
+.wpmud .bulk-smush-wrapper .wp-smush-remaining .dev-icon {
     margin-right: 10px;
+    line-height: 30px;
     vertical-align: top;
 }
 
