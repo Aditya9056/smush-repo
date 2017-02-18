@@ -756,13 +756,15 @@ table.wp-smush-stats-holder tr td:first-child {
 
 /** All Smushed **/
 .wp-smush-notice {
-    background-color: #1abc9c;
+    background-color: #D1F1EA;
     border-radius: 5px;
-    color: white;
+    color: #333333;
     font-family: 'Roboto', sans-serif;
     font-size: 15px;
+    line-height: 30px;
     margin-bottom: 30px;
-    padding: 20px 40px;
+    padding: 15px 30px;
+    letter-spacing: -0.015em;
 }
 
 .wp-smush-resmush-message,
@@ -793,11 +795,6 @@ table.wp-smush-stats-holder tr td:first-child {
     float: right;
 }
 
-.wp-smush-notice .dev-icon-tick:before {
-    line-height: 1.1;
-    vertical-align: bottom;
-}
-
 .wp-smush-all-done .dev-icon-tick {
     display: inline-block;
     font-size: 16px;
@@ -809,10 +806,21 @@ table.wp-smush-stats-holder tr td:first-child {
 .wp-smush-remaining,
 #wp-smush-invalid-member,
 .wp-smush-dir-remaining {
-    background-color: #fee696;
+    background-color: #FFF5D5;
     border: none;
-    color: #514a30;
-    line-height: 1.7;
+    color: #333333;
+    line-height: 30px;
+    font-size: 15px;
+    letter-spacing: -0.015em;
+}
+
+div.wp-smush-dir-all-done .dev-icon-tick:before {
+    content: "\67";
+    color: #1ABC9C;
+}
+
+div.wp-smush-dir-remaining .wdv-icon-exclamation-sign:before {
+    color: #FECF2F;
 }
 
 .wp-smush-resmush-wrap .wp-smush-remaining {
@@ -1777,13 +1785,17 @@ div.wp-smush-dir-stats-wrap, div.wp-smush-scan-result {
 
 div.wp-smush-scan-result div.wp-smush-notice {
     margin-top: 14px;
-    padding: 20px 35px;
+    padding: 15px 30px;
 
 }
 
 div.wp-smush-scan-result div.wp-smush-notice .wdv-icon,
 div.wp-smush-scan-result div.wp-smush-notice .dev-icon {
+    display: inline-block;
+    font-size: 22px;
     margin-right: 15px;
+    margin-top: -3px;
+    vertical-align: middle;
 }
 
 div.wp-smush-scan-result hr.primary-separator {
