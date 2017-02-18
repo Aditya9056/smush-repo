@@ -1758,6 +1758,9 @@ jQuery(function ($) {
         var button = $('.wp-smush-start');
         var parent = button.parent();
 
+        //Set the button status to 0, to cancel next ajax request
+        $('input[name="wp-smush-continue-ajax"]').val(1);
+
         //Hide Directory browser button
         $('button.wp-smush-browse').hide();
 
