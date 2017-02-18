@@ -970,6 +970,7 @@ jQuery(function ($) {
 
         if (ele.is(':first-child')) {
             progress_wrap.css({'display': 'inline-block'});
+            parent.find('a.wp-smush-exclude-dir').remove();
         }
 
         var child = parent.find('ul.wp-smush-image-list-inner li');
@@ -1012,23 +1013,36 @@ jQuery(function ($) {
             smush_progress.css({'width': percent + '%'});
         }
 
-        //Add the class partial, to show the respective icon for parent
-        if (!parent.hasClass('partial') && smushed != total) {
-            parent.addClass('partial');
+        //Add the class in-progress, to show the respective icon for parent
+        if (!parent.hasClass('in-progress') && smushed != total) {
+            parent.addClass('in-progress').removeClass('partial');
+            //Append a spinner
+            var spinner = $('div.wp-smush-scan-result span.spinner:first').clone();
+            if( spinner ) {
+                parent.find('span.wp-smush-li-path').prepend(spinner).addClass('is-active');
+            }
         }
 
+        var parent_class = '';
         //Check if last image, and if all the images are not smushed under the specified directory path, add a generic warning message
         if (ele && ele.is(':last-child') && smushed < total) {
             var unsmushed = total - smushed;
             var message = '<div class="wp-smush-dir-notice">' + unsmushed + ' ' + ( 1 == unsmushed ? wp_smush_msgs.unfinished_smush_single : wp_smush_msgs.unfinished_smush ) + '</div>';
             //Append message to 2nd parent i.e li
             ele.parents().eq(1).find('ul.wp-smush-image-list-inner').after(message);
-        }
 
-        //If all the images are smushed, remove the class partial and add the class complete
-        if (smushed == total) {
-            smush_progress.removeClass('partial').addClass('complete');
-            parent.removeClass('partial').addClass('complete');
+            //Check If all the images are smushed, remove the class in-progress and add the class complete, else add class partial
+            parent_class = smushed == total ? 'complete' : 'partial';
+
+            //Remove the Spinner
+            parent.find('span.wp-smush-li-path span.spinner').remove();
+
+            //Update the class
+            smush_progress.removeClass('partial').addClass(parent_class);
+            parent.removeClass('in-progress').addClass(parent_class);
+
+            //Remove active class from parent
+            parent.removeClass('active');
         }
 
     }
@@ -1076,6 +1090,7 @@ jQuery(function ($) {
 
                 //Remove the spinner
                 ele.find('span.spinner').remove();
+                ele.removeClass('in-progress');
 
                 if (res.success) {
 
@@ -1100,7 +1115,7 @@ jQuery(function ($) {
                 var next = jQuery(document.getElementById(data.next))
 
                 //Append spinner
-                next.append(spinner).css({'visibility': 'visible'});
+                next.append(spinner).css({'visibility': 'visible'}).addClass('in-progress');
 
                 //Append and update waiting message for all the elements, for the current directory being optimised
                 update_dir_ele_status(next);
@@ -1731,6 +1746,9 @@ jQuery(function ($) {
         //Hide Directory browser button
         $('button.wp-smush-browse').hide();
 
+        //Hide Exclude directory button link
+        $('a.wp-smush-exclude-dir').hide();
+
         /** All the Styling changes **/
         button.attr('disabled', 'disabled');
         parent.find('span.spinner').css({'visibility': 'visible'});
@@ -1763,6 +1781,9 @@ jQuery(function ($) {
         //Enable the smush button, hide the spinner
         $('button.wp-smush-start, button.wp-smush-browse').removeAttr('disabled');
         $('div.wp-smush-all-button-wrap span.spinner').css({'visibility': 'hidden'});
+
+        //Show directory exclude option
+        $('a.wp-smush-exclude-dir').show();
 
 
     });

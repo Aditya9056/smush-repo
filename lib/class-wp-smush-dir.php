@@ -225,11 +225,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						current optimised image -->
                     </div>
                     <!-- Notices -->
-                    <div class="wp-smush-notice wp-smush-dir-all-done" tabindex="0">
+                    <div class="wp-smush-notice wp-smush-dir-all-done hidden" tabindex="0">
                         <i class="dev-icon dev-icon-tick"></i><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?>
                     </div>
                     <div class="wp-smush-notice wp-smush-dir-remaining hidden" tabindex="0">
-                        <i class="wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i><?php printf( esc_html__( "%s/%s image(s) were smushed. %s image(s) could not be smushed due to error.", "wp-smushit" ), '<span class="wp-smush-dir-smushed"></span>', '<span class="wp-smush-dir-total"></span>', '<span class="wp-smush-dir-remaining"></span>'); ?>
+                        <i class="wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i><?php printf( esc_html__( "%s/%s image(s) were successfully smushed, however %s image(s) could not be smushed due to an error.", "wp-smushit" ), '<span class="wp-smush-dir-smushed"></span>', '<span class="wp-smush-dir-total"></span>', '<span class="wp-smush-dir-remaining"></span>'); ?>
                     </div>
                     <div class="wp-smush-all-button-wrap bottom">
                         <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
