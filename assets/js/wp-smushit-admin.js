@@ -955,11 +955,20 @@ jQuery(function ($) {
         //Get the parent element
         var parent = ele.parents('li.wp-smush-image-ul');
 
+        //Spinner
+        var spinner = $('div.wp-smush-scan-result span.spinner:first').clone();
+
         if (!parent.length) {
             return;
         }
         //Check if the selected element is under expandable li
-        parent.addClass('active');
+        parent.addClass('active in-progress');
+
+        //Append a spinner, if parent doesn't have it
+        if( !parent.find('span.wp-smush-li-path span.spinner').length ) {
+            parent.find('span.wp-smush-li-path').append(spinner.clone());
+        }
+
         var list = parent.find('.wp-smush-image-list-inner');
         list.addClass('show');
 
@@ -1019,30 +1028,33 @@ jQuery(function ($) {
             //Append a spinner
             var spinner = $('div.wp-smush-scan-result span.spinner:first').clone();
             if( spinner ) {
-                parent.find('span.wp-smush-li-path').prepend(spinner).addClass('is-active');
+                parent.find('span.wp-smush-li-path').prepend(spinner);
             }
         }
 
         var parent_class = '';
         //Check if last image, and if all the images are not smushed under the specified directory path, add a generic warning message
-        if (ele && ele.is(':last-child') && smushed < total) {
-            var unsmushed = total - smushed;
-            var message = '<div class="wp-smush-dir-notice">' + unsmushed + ' ' + ( 1 == unsmushed ? wp_smush_msgs.unfinished_smush_single : wp_smush_msgs.unfinished_smush ) + '</div>';
-            //Append message to 2nd parent i.e li
-            ele.parents().eq(1).find('ul.wp-smush-image-list-inner').after(message);
+        if (ele && ele.is(':last-child') ) {
+            if( smushed < total ) {
+                var unsmushed = total - smushed;
+                var message = '<div class="wp-smush-dir-notice">' + unsmushed + ' ' + ( 1 == unsmushed ? wp_smush_msgs.unfinished_smush_single : wp_smush_msgs.unfinished_smush ) + '</div>';
+                //Append message to 2nd parent i.e li
+                ele.parents().eq(1).find('ul.wp-smush-image-list-inner').after(message);
 
-            //Check If all the images are smushed, remove the class in-progress and add the class complete, else add class partial
-            parent_class = smushed == total ? 'complete' : 'partial';
+                //Check If all the images are smushed, remove the class in-progress and add the class complete, else add class partial
+                parent_class = 'partial';
 
-            //Remove the Spinner
+                //Remove the Spinner
+                parent.find('span.wp-smush-li-path span.spinner').remove();
+            }else {
+                parent_class = 'complete';
+                smush_progress.removeClass('partial').addClass('complete');
+            }
+            parent.removeClass('in-progress').addClass(parent_class);
             parent.find('span.wp-smush-li-path span.spinner').remove();
 
-            //Update the class
-            smush_progress.removeClass('partial').addClass(parent_class);
-            parent.removeClass('in-progress').addClass(parent_class);
-
             //Remove active class from parent
-            parent.removeClass('active');
+            parent.removeClass('active').find('.wp-smush-image-list-inner').removeClass("show");;
         }
 
     }
@@ -1054,6 +1066,7 @@ jQuery(function ($) {
     var smush_all = function (show_spinner) {
 
         var spinner = $('div.wp-smush-scan-result span.spinner:first').clone();
+        spinner.addClass('is-active');
         if (show_spinner) {
             //Update the Optimising status for the image
             var first_child = $('ul.wp-smush-image-list li.wp-smush-image-ele:not(".optimised"):first');
@@ -1062,13 +1075,15 @@ jQuery(function ($) {
 
             //Check if the selected element is under expandable li
             if (parent.length == 1) {
-                parent.addClass('active');
+                parent.addClass('active in-progress').removeClass('partial');
                 parent.find('.wp-smush-image-list-inner').addClass('show');
+                if( !parent.find('span.wp-smush-li-path span.spinner').length ) {
+                    parent.find('span.wp-smush-li-path').append(spinner.clone());
+                }
             }
 
             //Append and show spinner
-            first_child.append(spinner);
-            first_child.find('span.spinner').css({'visibility': 'visible'});
+            first_child.append(spinner.clone());
         }
 
         /** Ajax Request to optimise directory images */
