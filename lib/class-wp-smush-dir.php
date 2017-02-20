@@ -263,8 +263,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                             </div>
                             <div class="wp-smush-select-button-wrap">
                                 <div class="wp-smush-section-desc"><?php esc_html_e("Smush will also include any images in sub folders of your selected folder.", "wp-smushit"); ?></div>
-                                <span class="spinner"></span>
-                                <button class="wp-smush-select-dir"><?php esc_html_e( "ADD DIRECTORY", "wp-smushit" ); ?></button>
+                                <div class="wp-smush-select-button-wrap-child">
+                                    <span class="spinner"></span>
+                                    <button class="wp-smush-select-dir"><?php esc_html_e( "ADD DIRECTORY", "wp-smushit" ); ?></button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -870,7 +872,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$error_msg = '';
 
-//			sleep( 1 );
+			sleep( 10 );
 			//Get the image from db, //@todo: Make function get unsmushed images
 			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && error IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id) GROUP BY id LIMIT 2";
 			$results = $wpdb->get_results( $query, ARRAY_A );

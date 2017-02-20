@@ -966,7 +966,7 @@ jQuery(function ($) {
 
         //Append a spinner, if parent doesn't have it
         if( !parent.find('span.wp-smush-li-path span.spinner').length ) {
-            parent.find('span.wp-smush-li-path').append(spinner.clone());
+            parent.find('span.wp-smush-li-path').prepend(spinner.clone());
         }
 
         var list = parent.find('.wp-smush-image-list-inner');
@@ -1078,12 +1078,12 @@ jQuery(function ($) {
                 parent.addClass('active in-progress').removeClass('partial');
                 parent.find('.wp-smush-image-list-inner').addClass('show');
                 if( !parent.find('span.wp-smush-li-path span.spinner').length ) {
-                    parent.find('span.wp-smush-li-path').append(spinner.clone());
+                    parent.find('span.wp-smush-li-path').prepend(spinner.clone());
                 }
             }
 
             //Append and show spinner
-            first_child.append(spinner.clone());
+            first_child.addClass('in-progress').prepend(spinner.clone());
         }
 
         /** Ajax Request to optimise directory images */
@@ -1130,7 +1130,7 @@ jQuery(function ($) {
                 var next = jQuery(document.getElementById(data.next))
 
                 //Append spinner
-                next.append(spinner).css({'visibility': 'visible'}).addClass('in-progress');
+                next.prepend(spinner).addClass('in-progress');
 
                 //Append and update waiting message for all the elements, for the current directory being optimised
                 update_dir_ele_status(next);
