@@ -1037,7 +1037,7 @@ jQuery(function ($) {
         if (ele && ele.is(':last-child') ) {
             if( smushed < total ) {
                 var unsmushed = total - smushed;
-                var message = '<div class="wp-smush-dir-notice">' + unsmushed + ' ' + ( 1 == unsmushed ? wp_smush_msgs.unfinished_smush_single : wp_smush_msgs.unfinished_smush ) + '</div>';
+                var message = '<div class="wp-smush-dir-notice"><i class="dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i>' + unsmushed + ' ' + ( 1 == unsmushed ? wp_smush_msgs.unfinished_smush_single : wp_smush_msgs.unfinished_smush ) + '</div>';
                 //Append message to 2nd parent i.e li
                 ele.parents().eq(1).find('ul.wp-smush-image-list-inner').after(message);
 

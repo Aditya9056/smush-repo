@@ -872,7 +872,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$error_msg = '';
 
-			sleep( 10 );
+//			sleep( 10 );
 			//Get the image from db, //@todo: Make function get unsmushed images
 			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && error IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id) GROUP BY id LIMIT 2";
 			$results = $wpdb->get_results( $query, ARRAY_A );

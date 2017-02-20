@@ -1973,6 +1973,21 @@ div.wp-smush-dir-notice {
     font-weight: 500;
 }
 
+div.wp-smush-dir-notice .wdv-icon-exclamation-sign {
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+div.wp-smush-dir-notice .wdv-icon-exclamation-sign:before {
+    color: #ffd000;
+    content: '\f06a';
+    font-family: 'FontAwesomeWdv';
+    font-size: 22px;
+    margin-left: 1px;
+    margin-top: 4px;
+    vertical-align: middle;
+}
+
 div.wp-smush-dir-progress-wrap {
     display: inline-block;
     float: right;
