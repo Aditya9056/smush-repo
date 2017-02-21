@@ -8,8 +8,8 @@
  * Note: Modified to return metadata at the end of the launch function
  */
 
-if ( ! class_exists( 'WP_Async_Task' ) ) {
-	abstract class WP_Async_Task {
+if ( ! class_exists( 'WP_Async_Task_Smush' ) ) {
+	abstract class WP_Async_Task_Smush {
 
 		/**
 		 * Constant identifier for a task that should be available to logged-in users

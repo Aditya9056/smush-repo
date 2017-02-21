@@ -8,11 +8,11 @@
  *
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
-require_once 'wp-async-task.php';
+require_once 'wp-async-task-smush.php';
 
 if ( ! class_exists( 'WpSmushAsync' ) ) {
 
-	class WpSmushAsync extends WP_Async_Task {
+	class WpSmushAsync extends WP_Async_Task_Smush {
 
 		protected $argument_count = 2;
 		protected $priority = 12;

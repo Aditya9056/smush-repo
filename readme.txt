@@ -131,6 +131,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 * Fixed:
     * PHP 7 warning ( https://goo.gl/GKEMim ), @props: @alexis-mag
+    * Async Smush conflict with other plugins
 
 * Changes:
     * Moved notice JS/CSS in footer
