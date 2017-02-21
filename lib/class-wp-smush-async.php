@@ -66,7 +66,7 @@ if ( ! class_exists( 'WpSmushAsync' ) ) {
 
 	}
 
-	class WpSmushEditorAsync extends WP_Async_Task {
+	class WpSmushEditorAsync extends WP_Async_Task_Smush {
 
 		protected $argument_count = 2;
 		protected $priority = 12;
