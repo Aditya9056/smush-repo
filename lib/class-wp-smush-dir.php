@@ -279,6 +279,27 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		}
 
 		/**
+		 * Check if the image file is media library file
+		 *
+		 * @param $file_path
+		 *
+		 * @return bool
+		 *
+		 */
+		function is_media_library_file( $file_path ) {
+			$upload_dir  = wp_upload_dir();
+			$upload_path = $upload_dir["path"];
+
+			//Get the base path of file
+			$base_dir = dirname( $file_path );
+			if ( $base_dir == $upload_path ) {
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
 		 * Return a directory/File list
 		 */
 		function directory_list() {
@@ -321,10 +342,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						$ext      = preg_replace( '/^.*\./', '', $file );
 
 						if ( file_exists( $postDir . $file ) && $file != '.' && $file != '..' ) {
-							if ( is_dir( $postDir . $file ) && ( ! $onlyFiles || $onlyFolders ) && ! $this->is_subfolder( $postDir . $file ) ) {
+							if ( is_dir( $postDir . $file ) && ( ! $onlyFiles || $onlyFolders ) && ! $this->skip_dir( $postDir . $file ) ) {
 								//Skip Uploads folder - Media Files
 								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/'>" . $htmlName . "</a></li><br />";
-							} else if ( ( ! $onlyFolders || $onlyFiles ) && in_array( $ext, $supported_image ) ) {
+							} else if ( ( ! $onlyFolders || $onlyFiles ) && in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $postDir . $file ) ) {
 								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "'>" . $htmlName . "</a></li><br />";
 							}
 						}
@@ -361,7 +382,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$exclude_dir = array( '.git', 'test' );
 
 			//Exclude from the list, if one of the media upload folders
-			if ( $this->is_subfolder( $file->getPath() ) ) {
+			if ( $this->skip_dir( $file->getPath() ) ) {
 				return true;
 			}
 
@@ -461,11 +482,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				if ( $path->isFile() ) {
 					$file_path = $path->getPathname();
 					$file_name = $path->getFilename();
-					if ( ! file_exists( $file_path ) ) {
-						echo $file_path;
-					}
 
-					if ( $this->is_image( $file_path ) ) {
+					if ( $this->is_image( $file_path ) && ! $this->is_media_library_file( $file_path ) ) {
 
 						/**  To generate Markup **/
 						$dir_name = dirname( $file_path );
@@ -622,7 +640,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * @todo: Add a option to filter images if User have turned off the Year and Month Organize option
 		 *
 		 */
-		public function is_subfolder( $path ) {
+		public function skip_dir( $path ) {
 			$upload_dir  = wp_upload_dir();
 			$base_dir    = $upload_dir["basedir"];
 			$upload_path = $upload_dir["path"];
@@ -630,9 +648,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$subfolder = false;
 
 			//If matches the current upload path
-			if ( $upload_path == $path ) {
-				$subfolder = true;
-			} else if ( strpos( $path, $upload_path ) == 0 ) {
+			if ( strpos( $path, $upload_path ) == 0 ) {
 				//contains one of the year subfolders of the media library
 				$pathArr = explode( '/', str_replace( $base_dir . '/', "", $path ) );
 				if ( count( $pathArr ) >= 1
@@ -644,10 +660,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				}
 			}
 			/**
-			 * Allows to filter a directory path
+			 * Can be used to skip/include folders matching a specific directory path
              *
 			 */
-			apply_filters( 'wp_smush_is_subfolder', $subfolder );
+			apply_filters( 'wp_smush_skip_folder', $subfolder, $path );
 
 			return $subfolder;
 		}
@@ -872,7 +888,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$error_msg = '';
 
-//			sleep( 10 );
 			//Get the image from db, //@todo: Make function get unsmushed images
 			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && error IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id) GROUP BY id LIMIT 2";
 			$results = $wpdb->get_results( $query, ARRAY_A );
@@ -1096,7 +1111,7 @@ if ( class_exists( 'RecursiveFilterIterator' ) && ! class_exists( 'WPSmushRecurs
 			global $wpsmush_dir;
 			$path = $this->current()->getPathname();
 			if ( $this->isDir() ) {
-				if ( ! $wpsmush_dir->is_subfolder( $path ) ) {
+				if ( ! $wpsmush_dir->skip_dir( $path ) ) {
 					return true;
 				}
 			} else {
