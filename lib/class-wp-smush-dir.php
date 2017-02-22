@@ -645,7 +645,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$base_dir    = $upload_dir["basedir"];
 			$upload_path = $upload_dir["path"];
 
-			$subfolder = false;
+			$skip = false;
 
 			//If matches the current upload path
 			if ( strpos( $path, $upload_path ) == 0 ) {
@@ -656,16 +656,16 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				     && ( count( $pathArr ) == 1 //if there is another subfolder then it's the month subfolder
 				          || ( is_numeric( $pathArr[1] ) && $pathArr[1] > 0 && $pathArr[1] < 13 ) )
 				) {
-					$subfolder = true;
+					$skip = true;
 				}
 			}
 			/**
 			 * Can be used to skip/include folders matching a specific directory path
              *
 			 */
-			apply_filters( 'wp_smush_skip_folder', $subfolder, $path );
+			apply_filters( 'wp_smush_skip_folder', $skip, $path );
 
-			return $subfolder;
+			return $skip;
 		}
 
 		/**
