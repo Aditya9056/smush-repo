@@ -1728,7 +1728,7 @@ jQuery(function ($) {
         //Send a ajax request to get a list of all the image files
         var param = {
             action: 'image_list',
-            path: $('.wp-smush-dir-path').val(),
+            smush_path: $('.wp-smush-dir-path').val(),
             image_list_nonce: $('input[name="image_list_nonce"]').val()
         };
 

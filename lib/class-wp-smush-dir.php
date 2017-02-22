@@ -126,7 +126,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			 * orig_size -> Original image size before optimisation
 			 * file_time -> Unix time for the file creation, to match it against the current creation time,
 			 *                  in order to confirm if it is optimised or not
-			 * updated -> Timestamp
 			 * last_scanned -> Timestamp, Get images form last scan by latest timestamp
 			 *                  are from latest scan only and not the whole list from db
 			 * meta -> For any future use
@@ -140,8 +139,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				image_size int(10) unsigned,
 				orig_size int(10) unsigned,
 				file_time int(10) unsigned,
-				last_scanned timestamp DEFAULT 0,
-				updated timestamp DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+				last_scanned timestamp DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
 				meta text,
 				UNIQUE KEY id (id),
 				UNIQUE KEY path (path($path_index_size)),
@@ -476,7 +474,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$files_arr = array();
 			$images    = array();
 			$count     = 0;
-			$timestamp = current_time('timestamp');
+			$timestamp = current_time('mysql');
 			foreach ( $iterator as $path ) {
 
 				if ( $path->isFile() ) {
@@ -499,19 +497,19 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						$file_time  = @filectime( $file_path );
 
 						//If the image is not in db already, insert
-						if ( ! array_key_exists( $file_path, $image_list ) ) {
-							/** To be stored in DB, Part of code inspired from Ewwww Optimiser  */
+//						if ( ! array_key_exists( $file_path, $image_list ) ) {
+							/** To be stored in DB, Part of code borrowed from Ewwww Optimiser  */
 							$image_size = $path->getSize();
-							$images[]   = "('" . utf8_encode( $file_path ) . "',$image_size, $file_time, $timestamp )";
+							$images[]   = "('" . utf8_encode( $file_path ) . "',$image_size, $file_time, '$timestamp' )";
 							$count ++;
-						}
+//						}
 					}
 				}
 				//Store the Images in db at an interval of 5k
 				if ( $count >= 5000 ) {
 					$count = 0;
 					$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
-					$sql = $wpdb->prepare( $query, implode( ',', $images ) );
+					$sql = sprintf( $query, implode( ',', $images ) );
 					$wpdb->query( $sql );
 					$images = array();
 				}
@@ -555,12 +553,12 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			check_ajax_referer( 'smush_get_image_list', 'image_list_nonce' );
 
 			//Check if directory path is set or not
-			if ( empty( $_GET['path'] ) ) {
+			if ( empty( $_GET['smush_path'] ) ) {
 				wp_send_json_error( "Empth Directory Path" );
 			}
 
 			//Get the File list
-			$files = $this->get_image_list( $_GET['path'] );
+			$files = $this->get_image_list( $_GET['smush_path'] );
 
 			//If files array is empty, send a message
 			if ( empty( $files['files_arr'] ) ) {
