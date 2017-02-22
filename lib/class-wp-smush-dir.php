@@ -241,6 +241,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                 </div>
                 <div class="dir-smush-button-wrap">
                     <button class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "CHOOSE DIRECTORY", "wp-smushit" ); ?></button>
+                    <div class="wp-smush-loading-wrap">
+                        <span class="spinner"></span>
+                    </div>
 		            <?php
 		            //Optionally show a resume button, if there were images left from last scan
 		            $this->show_resume_button(); ?>
@@ -254,10 +257,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                             </div>
                             <div class="wp-smush-instruct"><?php esc_html_e( "Choose the folder you wish to smush.", "wp-smushit" ); ?></div>
                             <div class="content">
-                                <div class="wp-smush-loading-wrap">
-                                    <span class="spinner"></span>
-                                    <span class="wp-smush-loading-text">Loading..</span>
-                                </div>
                             </div>
                             <div class="wp-smush-select-button-wrap">
                                 <div class="wp-smush-section-desc"><?php esc_html_e("Smush will also include any images in sub folders of your selected folder.", "wp-smushit"); ?></div>

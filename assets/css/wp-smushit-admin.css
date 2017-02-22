@@ -1546,6 +1546,7 @@ div.wp-smush-dir-desc {
 }
 
 .wp-smush-loading-wrap {
+    float: left;
     margin: 0 auto;
     overflow: hidden;
     width: 150px;

@@ -917,8 +917,13 @@ jQuery(function ($) {
      *
      */
     var close_dialog = function () {
+        //Hide the dialog
         $('.wp-smush-list-dialog').hide();
         $('.wp-smush-select-dir').removeAttr('disabled');
+
+        //Remove the spinner
+        $('div.wp-smush-loading-wrap span.spinner').removeClass('is-active');
+
         //Reset the opacity for content and scan button
         $('.wp-smush-select-dir, .wp-smush-list-dialog .box .content').css({'opacity': '1'});
         $('.wp-smush-select-button-wrap .spinner').css({'visibility': 'hidden'});
@@ -1675,7 +1680,7 @@ jQuery(function ($) {
         $('.wp-smush-list-dialog').show();
 
         //Display the loader
-        $('.wp-smush-loading-wrap span').css({'visibility': 'visible'});
+        $('.wp-smush-loading-wrap span.spinner').addClass('is-active');
 
         $(".wp-smush-list-dialog .content").fileTree({
             script: getDirectoryList,
