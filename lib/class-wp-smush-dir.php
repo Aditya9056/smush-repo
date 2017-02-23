@@ -162,7 +162,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			global $wpdb;
 
 			//Get the latest scanned unsmushed row, if any
-			$query   = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && error IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id ORDER BY t2.id )  GROUP BY id LIMIT %d", $limit );
+			$query   = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id ORDER BY t2.id )  GROUP BY id LIMIT %d", $limit );
 			$results = $wpdb->get_col( $query );
 
 			if ( empty( $results ) ) {
@@ -871,8 +871,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$error_msg = '';
 
+			$prev_id = get_transient( 'wp_smush_dir_curr_id' );
+
+			$and_where       = $prev_id && ! empty( $prev_id ) ? sprintf( "&& t2.id > %d", $prev_id ) : '';
+			$query_timestamp = "SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id {$and_where} ORDER BY t2.id";
+
 			//Get the image from db, //@todo: Make function get unsmushed images
-			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && error IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 WHERE t1.id = t2.id ORDER BY t2.id ) GROUP BY id LIMIT 2";
+			$query   = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && last_scanned = ({$query_timestamp}) GROUP BY id LIMIT 2";
 			$results = $wpdb->get_results( $query, ARRAY_A );
 
 			$next = ! empty( $results[1] ) ? $results[1]['path'] : '';
@@ -885,6 +890,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			}
 
 			$curr_img = $results[0];
+
+			//Store Current iamge id in transient
+			if ( ! empty( $curr_img['id'] ) ) {
+				set_transient( 'wp_smush_dir_curr_id', $curr_img['id'], 100 );
+			}
 
 			//We have the image path, optimise
 			$smush_results = $WpSmush->do_smushit( $curr_img['path'] );
