@@ -240,13 +240,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                     <input type="hidden" name="wp-smush-continue-ajax" value=1>
                 </div>
                 <div class="dir-smush-button-wrap">
-                    <button class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "CHOOSE DIRECTORY", "wp-smushit" ); ?></button>
-                    <div class="wp-smush-loading-wrap">
-                        <span class="spinner"></span>
-                    </div>
-		            <?php
+                    <button class="wp-smush-browse wp-smush-button button"><?php esc_html_e( "CHOOSE DIRECTORY", "wp-smushit" ); ?></button><?php
 		            //Optionally show a resume button, if there were images left from last scan
 		            $this->show_resume_button(); ?>
+                    <span class="spinner"></span>
                 </div>
                 <div class="dev-overlay wp-smush-list-dialog roboto-regular">
                     <div class="back"></div>
@@ -301,7 +298,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		function directory_list() {
 			//Check For Permission
-			if ( ! current_user_can( 'manage_options' ) ) {
+			if ( ! current_user_can( 'manage_options' ) || ! is_user_logged_in() ) {
 				wp_send_json_error( "Unauthorized" );
 			}
 			//Verify nonce
