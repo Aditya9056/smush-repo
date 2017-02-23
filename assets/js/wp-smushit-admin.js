@@ -922,7 +922,7 @@ jQuery(function ($) {
         $('.wp-smush-select-dir, button.wp-smush-browse, button.wp-smush-resume').removeAttr('disabled');
 
         //Remove the spinner
-        $('button.dir-smush-button-wrap span.spinner').removeClass('is-active');
+        $('div.dir-smush-button-wrap span.spinner').removeClass('is-active');
 
         //Reset the opacity for content and scan button
         $('.wp-smush-select-dir, .wp-smush-list-dialog .box .content').css({'opacity': '1'});
