@@ -812,7 +812,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				$this->stats['bytes']   = $this->stats['orig_size'] - $this->stats['image_size'];
 				$this->stats['percent'] = number_format_i18n( ( ( $this->stats['bytes'] / $this->stats['orig_size'] ) * 100 ), 1 );
 				//Convert to human readable form
-				$this->stats['bytes'] = size_format( $this->stats['bytes'], 1 );
+				$this->stats['human'] = size_format( $this->stats['bytes'], 1 );
 			}
 
 			$this->stats['total']     = $total;

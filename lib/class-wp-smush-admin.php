@@ -1585,7 +1585,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$return = ! empty( $ajax_response ) ? array(
 				"resmush_ids" => $resmush_list,
 				"content"     => $ajax_response
-			) : '';
+			) : array();
 
 			//Include the count
 			if ( ! empty( $count ) && $count ) {

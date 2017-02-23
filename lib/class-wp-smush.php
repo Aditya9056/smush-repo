@@ -169,6 +169,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Initialize variables
 			$this->initialise();
 
+			//Create a clas object, if doesn't exists
+			if( empty( $wpsmush_dir ) ) {
+				$wpsmush_dir = new WpSmushDir();
+			}
 			$wpsmush_dir->create_table();
 		}
 

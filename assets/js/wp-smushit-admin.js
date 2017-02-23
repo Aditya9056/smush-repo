@@ -1207,7 +1207,7 @@ jQuery(function ($) {
 
             //Update Savings in bytes
             if (stats_human.length > 0) {
-                stats_human.html(stats.dir_smush.bytes);
+                stats_human.html(stats.dir_smush.human);
             } else {
                 var span = '<span class="wp-smush-stats-human">' + stats.dir_smush.bytes + '</span>';
             }
