@@ -211,12 +211,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                 <input type="hidden" class="wp-smush-dir-path" value="" />
                 <div class="wp-smush-scan-result hidden">
                     <hr class="primary-separator"/>
-                    <div class="wp-smush-all-button-wrap top">
-                        <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
-                        <button class="wp-smush-start"><?php esc_html_e( "BULK SMUSH", "wp-smushit" ); ?></button>
-                        <button type="button" title="<?php esc_html_e( "Click to stop the directory smushing process.", "wp-smushit" ); ?>" class="button button-grey wp-smush-pause disabled"><?php esc_html_e( "CANCEL", "wp-smushit" ); ?></button>
-                        <span class="spinner"></span>
-                    </div>
                     <div class="content">
                         <!-- Show a list of images, inside a fixed height div, with a scroll. As soon as the image is
 						optimised show a tick mark, with savings below the image. Scroll the li each time for the

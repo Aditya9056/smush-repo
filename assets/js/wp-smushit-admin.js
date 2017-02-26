@@ -1066,6 +1066,33 @@ jQuery(function ($) {
     }
 
     /**
+     * Add choose directory button at the top
+     *
+     */
+    var add_dir_browser_button = function () {
+        //Get the content div length, if less than 700, Skip
+        if( $('div.wp-smush-scan-result div.content').height() < 700 || $('div.dir-smush-button-wrap.top').length >= 1 ) {
+            return;
+        }
+
+        var choose_button = $('div.dir-smush-button-wrap').clone();
+        choose_button.addClass('top');
+        $('div.wp-smush-scan-result div.content').prepend(choose_button);
+    };
+
+    var add_smush_button = function() {
+        //Get the content div length, if less than 700, Skip
+        if( $('div.wp-smush-scan-result div.content').height() < 700 || $('div.wp-smush-all-button-wrap.top').length >= 1 ) {
+            return;
+        }
+
+        var smush_button = $('div.wp-smush-all-button-wrap.bottom').clone();
+        smush_button.addClass('top').removeClass('bottom');
+        $('div.wp-smush-scan-result div.content').prepend(smush_button);
+
+    };
+
+    /**
      * Start Optimising all the images listed in last directory scan
      *
      */
@@ -1145,16 +1172,19 @@ jQuery(function ($) {
                 smush_all(false);
             }
             else if ('' == data.next) {
+                //If there are no images left
                 $('div.wp-smush-all-button-wrap span.spinner').remove();
                 $('button.wp-smush-pause').remove();
                 $('button.wp-smush-start').parent().remove();
+
                 //Enable Choose directory button
                 $('button.wp-smush-browse').show().removeAttr('disabled', 'disabled');
 
                 //Clone Choose Directory Button and add at the top
-                var choose_button = $('div.dir-smush-button-wrap').clone();
-                choose_button.addClass('top');
-                $('div.wp-smush-scan-result div.content').prepend(choose_button);
+                add_dir_browser_button();
+
+                //Clone and add Smush button
+                add_smush_button();
 
                 //Get the Total and Optimised image count
                 var image_ele = $('li.wp-smush-image-ele')
@@ -1748,18 +1778,26 @@ jQuery(function ($) {
         //Get the List of images
         $.get(ajaxurl, param, function (res) {
             $('div.wp-smush-scan-result div.content').html(res.data);
+            console.log($('div.wp-smush-scan-result div.content').height());
             set_accordion();
             close_dialog();
 
             //Show Scan result
             $('.wp-smush-scan-result').removeClass('hidden');
+        }).done(function () {
+            //Append a Directory browser button at the top
+            add_dir_browser_button();
+
+            //Clone and add Smush button
+            add_smush_button();
+
         });
     });
 
     /**
      * Handle the Smush Now button click
      */
-    $('.wp-smush-start').on('click', function (e) {
+    $('div.wp-smush-scan-result').on('click', 'button.wp-smush-start', function (e) {
         e.preventDefault();
 
         //Check if we have images to be optimised
@@ -1894,6 +1932,12 @@ jQuery(function ($) {
 
                 set_accordion();
             }
+        }).done(function () {
+            //Add Choose dir browser button
+            add_dir_browser_button();
+
+            //Clone and add Smush button
+            add_smush_button();
         });
 
     });
@@ -1913,6 +1957,7 @@ jQuery(function ($) {
                 $('div.wp-smush-scan-result div.content').prepend(r.data.message);
                 return;
             }
+
             //If there is no value in r
             if ('undefined' == typeof ( r.data) || 'undefined' == typeof ( r.data.dir_smush )) {
                 //Append the text
@@ -1923,6 +1968,7 @@ jQuery(function ($) {
                 //Update the stats
                 update_cummulative_stats(r.data);
             }
+
         });
     }
 

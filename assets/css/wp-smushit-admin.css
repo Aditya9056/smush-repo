@@ -1662,9 +1662,8 @@ li.directory.selected.expanded ul.jqueryFileTree {
 }
 
 .wp-smush-all-button-wrap.top {
-    display: block;
+    display: inline-block;
     margin-bottom: 20px;
-    width: 100%;
 }
 
 div.wp-smush-all-button-wrap.bottom {
