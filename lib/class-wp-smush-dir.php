@@ -887,8 +887,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			//Store Current iamge id in transient
 			if ( ! empty( $curr_img['id'] ) ) {
-				set_transient( 'wp_smush_dir_curr_id', $curr_img['id'], 100 );
-			}
+				set_transient( 'wp_smush_dir_curr_id', $curr_img['id'], 40 );
+			}else{
+			    delete_transient('wp_smush_dir_curr_id');
+            }
 
 			//We have the image path, optimise
 			$smush_results = $WpSmush->do_smushit( $curr_img['path'] );

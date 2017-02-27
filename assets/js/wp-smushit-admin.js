@@ -999,6 +999,22 @@ jQuery(function ($) {
     }
 
     /**
+     * Check if all the elements in the directory are smushed or not
+     *
+     * @param parent directory selector
+     *
+     * @returns {boolean}
+     *
+     */
+    var is_last_element = function(parent) {
+        var elements = parent.find('li.wp-smush-image-ele:not(.optimised,.error)');
+        if( elements.length <= 0 ) {
+            return true;
+        }
+        return false;
+    };
+
+    /**
      * Update directory optimisation progress if the element has a parent
      *
      * @param ele
@@ -1039,12 +1055,19 @@ jQuery(function ($) {
 
         var parent_class = '';
         //Check if last image, and if all the images are not smushed under the specified directory path, add a generic warning message
-        if (ele && ele.is(':last-child')) {
+        if (is_last_element(parent)) {
             if (smushed < total) {
                 var unsmushed = total - smushed;
                 var message = '<div class="wp-smush-dir-notice"><i class="dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i>' + unsmushed + ' ' + ( 1 == unsmushed ? wp_smush_msgs.unfinished_smush_single : wp_smush_msgs.unfinished_smush ) + '</div>';
+
+                //If the notice is already displayed, remove it
+                var notice = parent.find('div.wp-smush-dir-notice');
+                if( notice.length  ) {
+                    notice.remove();
+                }
+
                 //Append message to 2nd parent i.e li
-                ele.parents().eq(1).find('ul.wp-smush-image-list-inner').after(message);
+                parent.find('ul.wp-smush-image-list-inner').after(message);
 
                 //Check If all the images are smushed, remove the class in-progress and add the class complete, else add class partial
                 parent_class = 'partial';
@@ -1055,12 +1078,13 @@ jQuery(function ($) {
                 parent_class = 'complete';
                 smush_progress.removeClass('partial').addClass('complete');
             }
-            parent.removeClass('in-progress').addClass(parent_class);
+            //Remove In progress class for the element and add partial/complete class
+            parent.removeClass('in-progress active').addClass(parent_class);
+
             parent.find('span.wp-smush-li-path span.spinner').remove();
 
             //Remove active class from parent
             parent.removeClass('active').find('.wp-smush-image-list-inner').removeClass("show");
-            ;
         }
 
     }
@@ -1090,6 +1114,28 @@ jQuery(function ($) {
         smush_button.addClass('top').removeClass('bottom');
         $('div.wp-smush-scan-result div.content').prepend(smush_button);
 
+    };
+
+    /**
+     * Add smush notice after directory smushing is finished
+     *
+     * @param notice_type all_done -  If all the images were smushed else warning
+     *
+     */
+    var add_smush_dir_notice = function ( notice_type ) {
+        //Get the content div length, if less than 700, Skip
+        if( $('div.wp-smush-scan-result div.content').height() < 700 || $('div.wp-smush-scan-result div.wp-smush-notice.top').length >= 1 ) {
+            return;
+        }
+        var notice = '';
+        //Clone and append the notice
+        if( 'all_done' == notice_type ) {
+            notice = $('div.wp-smush-notice.wp-smush-dir-all-done').clone();
+        }else{
+            notice = $('div.wp-smush-notice.wp-smush-dir-remaining').clone();
+        }
+        //Append the notice
+        $('div.wp-smush-scan-result div.dir-smush-button-wrap').after( notice );
     };
 
     /**
@@ -1200,11 +1246,16 @@ jQuery(function ($) {
 
                     //Show remaining image notice
                     $('.wp-smush-notice.wp-smush-dir-remaining').show();
+
+                    //Show notice on top if required
+                    add_smush_dir_notice();
                 } else {
                     //Show All done notice
                     $('.wp-smush-notice.wp-smush-dir-all-done').show();
-                }
 
+                    //Show notice on top if required
+                    add_smush_dir_notice( 'all_done' );
+                }
 
             }
             else {
@@ -1699,6 +1750,10 @@ jQuery(function ($) {
     $('button.wp-smush-browse').on('click', function (e) {
 
         e.preventDefault();
+
+        //Hide all the notices
+        $('div.wp-smush-scan-result div.wp-smush-notice').hide();
+
         //If disabled, do not process
         if ($(this).attr('disabled')) {
             return;
