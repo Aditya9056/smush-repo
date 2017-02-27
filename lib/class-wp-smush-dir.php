@@ -70,6 +70,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				return false;
 			}
 
+			//Do not show directory smush, if not main site in a network
+			if( is_multisite() && !is_main_site() ) {
+			    return false;
+            }
+
 			return true;
 		}
 
