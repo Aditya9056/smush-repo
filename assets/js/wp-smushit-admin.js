@@ -1146,7 +1146,7 @@ jQuery(function ($) {
             in_progress_path.each( function( ele ) {
                 if ($(ele).hasClass('wp-smush-image-ul ')) {
                     //Remove Spinner
-                    $(ele).find('span.spiner').remove();
+                    $(ele).find('span.spinner').remove();
 
                     //Check if images are pending
                     var in_progress_ele = $(ele).find('li.wp-smush-image-ele.in-progress');
@@ -1188,7 +1188,10 @@ jQuery(function ($) {
             }
 
             //Append and show spinner
-            first_child.addClass('in-progress').prepend(spinner.clone());
+            first_child.addClass('in-progress');
+            if (!first_child.find('spam.spinner').length) {
+                first_child.prepend(spinner.clone());
+            }
         }
 
         /** Ajax Request to optimise directory images */
@@ -1234,8 +1237,11 @@ jQuery(function ($) {
                 //Update the status for the next image
                 var next = jQuery(document.getElementById(data.next))
 
+                if (!next.find('span.spinner').length) {
+                    next.prepend(spinner);
+                }
                 //Append spinner
-                next.prepend(spinner).addClass('in-progress');
+                next.addClass('in-progress');
 
                 //Append and update waiting message for all the elements, for the current directory being optimised
                 update_dir_ele_status(next);

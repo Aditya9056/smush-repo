@@ -490,7 +490,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				//Store the Images in db at an interval of 5k
 				if ( $count >= 5000 ) {
 					$count = 0;
-					$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
+					$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size )";
 					$sql   = sprintf( $query, implode( ',', $images ) );
 					$wpdb->query( $sql );
 					$images = array();
@@ -499,7 +499,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			//Update rest of the images
 			if ( ! empty( $images ) && $count > 0 ) {
-				$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE file_time = VALUES(file_time)";
+				$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size )";
 				$sql   = sprintf( $query, implode( ',', $images ) );
 				$wpdb->query( $sql );
 			}
@@ -509,7 +509,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				update_option( 'wp_smush_scan', array( 'path' => $base_dir ) );
 			}
 
-			return array( 'files_arr' => $files_arr, 'base_dir' => $base_dir );
+			return array( 'files_arr' => $files_arr, 'base_dir' => $base_dir, 'query' => $query );
 		}
 
 		/**
@@ -947,10 +947,12 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					)
 				);
 			}
+			//Get file time
+			$file_time = @filectime( $curr_img['path'] );
 
 			//All good, Update the stats
-			$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d WHERE id=%d LIMIT 1";
-			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $curr_img['id'] );
+			$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d WHERE id=%d LIMIT 1";
+			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $file_time, $curr_img['id'] );
 			$wpdb->query( $query );
 
 			//Get Total stats
