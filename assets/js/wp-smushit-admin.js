@@ -1747,7 +1747,7 @@ jQuery(function ($) {
     }
 
     //WP Smush all : Scan Images
-    $('button.wp-smush-browse').on('click', function (e) {
+    $('div.row').on('click', 'button.wp-smush-browse', function (e) {
 
         e.preventDefault();
 
@@ -1832,13 +1832,23 @@ jQuery(function ($) {
 
         //Get the List of images
         $.get(ajaxurl, param, function (res) {
-            $('div.wp-smush-scan-result div.content').html(res.data);
+            if( !res.success && 'undefined' !== typeof ( res.data.message ) ) {
+                $('div.wp-smush-scan-result div.content').html(res.data.message );
+            }else {
+                $('div.wp-smush-scan-result div.content').html(res.data);
+            }
             set_accordion();
             close_dialog();
 
             //Show Scan result
             $('.wp-smush-scan-result').removeClass('hidden');
-        }).done(function () {
+        }).done(function (res) {
+
+            //If there was no image list, return
+            if( !res.success ) {
+                return;
+            }
+
             //Show the smush button
             $('div.wp-smush-all-button-wrap.bottom').show();
 
