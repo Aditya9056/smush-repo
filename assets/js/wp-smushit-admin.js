@@ -36,8 +36,9 @@ var dash_offset = function (percent) {
 }
 
 var update_dashoffset = function (stats) {
-    if (stats.total > 0) {
-        var dashoffset = dash_offset(stats.smushed / stats.total);
+    var total = stats.total.length;
+    if (total > 0) {
+        var dashoffset = dash_offset(stats.smushed / total);
         var circle_progress = jQuery('.wp-smush-svg-circle-progress');
         if (typeof dashoffset != 'undefined' && circle_progress.length) {
             circle_progress.css({'stroke-dashoffset': dashoffset});
@@ -312,7 +313,7 @@ jQuery(function ($) {
                     return;
                 }
                 //handle progress for normal bulk smush
-                progress = ( _res.data.stats.smushed / _res.data.stats.total) * 100;
+                progress = ( _res.data.stats.smushed / _res.data.stats.total.length ) * 100;
             } else {
                 //If the Request was successful, Update the progress bar
                 if (_res.success) {
@@ -1138,6 +1139,31 @@ jQuery(function ($) {
         $('div.wp-smush-scan-result div.dir-smush-button-wrap').after( notice );
     };
 
+    var update_smush_progress = function() {
+        var in_progress_path = $('ul.wp-smush-image-list li.in-progress');
+        in_progress_path.removeClass('in-progress active');
+        if( in_progress_path.length > 0 ) {
+            in_progress_path.each( function( ele ) {
+                if ($(ele).hasClass('wp-smush-image-ul ')) {
+                    //Remove Spinner
+                    $(ele).find('span.spiner').remove();
+
+                    //Check if images are pending
+                    var in_progress_ele = $(ele).find('li.wp-smush-image-ele.in-progress');
+
+                    //If there are images that needs to be smushed, add the class partial
+                    if( in_progress_ele.length > 0 ) {
+                        ele.addClass('partial');
+                    }
+
+                }else{
+                    //Remove spinner for the element
+                    $(ele).find('span.spinner').remove();
+                }
+            });
+        }
+    };
+
     /**
      * Start Optimising all the images listed in last directory scan
      *
@@ -1256,6 +1282,9 @@ jQuery(function ($) {
                     //Show notice on top if required
                     add_smush_dir_notice( 'all_done' );
                 }
+
+                //Update Directory progress and remove any loaders still in there
+                update_smush_progress();
 
             }
             else {
