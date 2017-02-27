@@ -1221,7 +1221,7 @@ jQuery(function ($) {
                 //If there are no images left
                 $('div.wp-smush-all-button-wrap span.spinner').remove();
                 $('button.wp-smush-pause').remove();
-                $('button.wp-smush-start').parent().remove();
+                $('button.wp-smush-start').parent().hide();
 
                 //Enable Choose directory button
                 $('button.wp-smush-browse').show().removeAttr('disabled', 'disabled');
@@ -1833,13 +1833,18 @@ jQuery(function ($) {
         //Get the List of images
         $.get(ajaxurl, param, function (res) {
             $('div.wp-smush-scan-result div.content').html(res.data);
-            console.log($('div.wp-smush-scan-result div.content').height());
             set_accordion();
             close_dialog();
 
             //Show Scan result
             $('.wp-smush-scan-result').removeClass('hidden');
         }).done(function () {
+            //Show the smush button
+            $('div.wp-smush-all-button-wrap.bottom').show();
+
+            //Remove disabled attribute for the button
+            $('button.wp-smush-start').removeAttr('disabled');
+
             //Append a Directory browser button at the top
             add_dir_browser_button();
 
