@@ -1045,7 +1045,7 @@ jQuery(function ($) {
         }
 
         //Add the class in-progress, to show the respective icon for parent
-        if (!parent.hasClass('in-progress') && smushed != total) {
+        if (0 != $('input[name="wp-smush-continue-ajax"]').val() && !parent.hasClass('in-progress') && smushed != total) {
             parent.addClass('in-progress').removeClass('partial');
             //Append a spinner
             var spinner = $('div.wp-smush-scan-result span.spinner:first').clone();
@@ -1143,8 +1143,8 @@ jQuery(function ($) {
         var in_progress_path = $('ul.wp-smush-image-list li.in-progress');
         in_progress_path.removeClass('in-progress active');
         if( in_progress_path.length > 0 ) {
-            in_progress_path.each( function( ele ) {
-                if ($(ele).hasClass('wp-smush-image-ul ')) {
+            in_progress_path.each( function( index, ele ) {
+                if ($(ele).hasClass('wp-smush-image-ul')) {
                     //Remove Spinner
                     $(ele).find('span.spinner').remove();
 
@@ -1937,7 +1937,7 @@ jQuery(function ($) {
     });
 
     //Handle the Pause button click
-    $('div.content').on('click', 'button.wp-smush-pause', function (e) {
+    $('div.wp-smush-scan-result').on('click', 'button.wp-smush-pause', function (e) {
         e.preventDefault();
 
         var pause_button = $('button.wp-smush-pause');
@@ -1958,6 +1958,9 @@ jQuery(function ($) {
 
         //Show directory exclude option
         $('a.wp-smush-exclude-dir').show();
+
+        //Remove the loaders
+        update_smush_progress();
 
 
     });
