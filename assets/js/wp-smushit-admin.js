@@ -1937,7 +1937,7 @@ jQuery(function ($) {
     });
 
     //Handle the Pause button click
-    $('button.wp-smush-pause').on('click', function (e) {
+    $('div.content').on('click', 'button.wp-smush-pause', function (e) {
         e.preventDefault();
 
         var pause_button = $('button.wp-smush-pause');
@@ -2076,6 +2076,18 @@ jQuery(function ($) {
 
         });
     }
+    //Close Directory smush modal, if pressed esc
+    $(document).keyup(function (e) {
+        if (e.keyCode === 27) {
+            var modal = $('div.dev-overlay.wp-smush-list-dialog');
+            //If the Directory dialog is not visible
+            if (!modal.is(':visible')) {
+                return;
+            }
+            modal.find('div.close').click();
+
+        }
+    });
 
 });
 (function ($) {
