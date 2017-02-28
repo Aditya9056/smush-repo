@@ -544,6 +544,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				wp_send_json_error( "Empth Directory Path" );
 			}
 
+			//Remove the transient
+			delete_transient( 'wp_smush_dir_curr_id' );
+
 			//Get the File list
 			$files = $this->get_image_list( $_GET['smush_path'] );
 

@@ -1847,6 +1847,7 @@ div.dir-smush-button-wrap {
 }
 
 div.dir-smush-button-wrap.top {
+    height: 40px;
     margin-top: 0;
     margin-bottom: 30px;
 }

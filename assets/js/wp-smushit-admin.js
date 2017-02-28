@@ -968,7 +968,7 @@ jQuery(function ($) {
             return;
         }
         //Check if the selected element is under expandable li
-        parent.addClass('active in-progress');
+        parent.removeClass('partial complete').addClass('active in-progress');
 
         //Append a spinner, if parent doesn't have it
         if (!parent.find('span.wp-smush-li-path span.spinner').length) {
@@ -1079,10 +1079,11 @@ jQuery(function ($) {
                 parent_class = 'complete';
                 smush_progress.removeClass('partial').addClass('complete');
             }
+            //Remove Spinner
+            parent.find('span.wp-smush-li-path span.spinner').remove();
+
             //Remove In progress class for the element and add partial/complete class
             parent.removeClass('in-progress active').addClass(parent_class);
-
-            parent.find('span.wp-smush-li-path span.spinner').remove();
 
             //Remove active class from parent
             parent.removeClass('active').find('.wp-smush-image-list-inner').removeClass("show");
@@ -1149,11 +1150,19 @@ jQuery(function ($) {
                     $(ele).find('span.spinner').remove();
 
                     //Check if images are pending
-                    var in_progress_ele = $(ele).find('li.wp-smush-image-ele.in-progress');
+                    var in_progress_ele = $(ele).find('li.wp-smush-image-ele');
 
-                    //If there are images that needs to be smushed, add the class partial
-                    if( in_progress_ele.length > 0 ) {
-                        ele.addClass('partial');
+                    //If there are elements
+                    if (in_progress_ele.length > 0) {
+                        var optimised = in_progress_ele.filter('.optimised').length;
+                        var error = in_progress_ele.filter('.error').length;
+                        //if all the elements are optimised
+                        if (optimised == in_progress_ele.length) {
+                            $( ele ).addClass('complete');
+                        } else if (0 < optimised || 0 < error) {
+                            //If there are images that needs to be smushed, add the class partial
+                            $( ele ).addClass('partial');
+                        }
                     }
 
                 }else{
@@ -1881,6 +1890,8 @@ jQuery(function ($) {
 
             //If there was no image list, return
             if( !res.success ) {
+                //Hide the smush button
+                $('div.wp-smush-all-button-wrap.bottom').hide();
                 return;
             }
 
