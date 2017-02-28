@@ -71,9 +71,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			}
 
 			//Do not show directory smush, if not main site in a network
-			if( is_multisite() && !is_main_site() ) {
-			    return false;
-            }
+			if ( is_multisite() && ! is_main_site() ) {
+				return false;
+			}
 
 			return true;
 		}
@@ -645,16 +645,20 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		public function skip_dir( $path ) {
 
+		    //Admin Directory path
 			$admin_dir    = $this->get_admin_path();
+
+			//Includes directory path
 			$includes_dir = ABSPATH . WPINC;
+
+			//Upload Directory
 			$upload_dir   = wp_upload_dir();
 			$base_dir     = $upload_dir["basedir"];
-			$upload_path  = $upload_dir["path"];
 
 			$skip = false;
 
 			//If matches the current upload path
-			if ( false !== strpos( $path, $upload_path ) ) {
+			if ( false !== strpos( $path, $base_dir ) ) {
 				//contains one of the year subfolders of the media library
 				$pathArr = explode( '/', str_replace( $base_dir . '/', "", $path ) );
 				if ( count( $pathArr ) >= 1
