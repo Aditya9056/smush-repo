@@ -318,6 +318,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				'png'
 			);
 
+			$list = '';
+
 			// set checkbox if multiSelect set to true
 			$onlyFolders = ( '/' == $_GET['dir'] || isset( $_GET['onlyFolders'] ) && $_GET['onlyFolders'] == 'true' ) ? true : false;
 			$onlyFiles   = ( isset( $_GET['onlyFiles'] ) && $_GET['onlyFiles'] == 'true' ) ? true : false;
