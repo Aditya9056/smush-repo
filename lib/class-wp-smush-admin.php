@@ -1889,6 +1889,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$plugin_data = get_plugin_data( WP_SMUSH_DIR . 'wp-smush.php', false, false );
 			$version     = ! empty( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
 
+			//Need to show only for pro users, particularly for v2.6
+			if ( ! $this->validate_install() ) {
+				return true;
+			}
+
 			//If Versions Do not match
 			if ( empty( $version ) || $version != WP_SMUSH_VERSION ) {
 				return true;
