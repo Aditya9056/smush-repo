@@ -127,6 +127,10 @@ if ( is_multisite() ) {
 	delete_metadata( $meta_type, null, 'wp-smush-original_file', '', $delete_all );
 	delete_metadata( $meta_type, null, 'wp-smush-pngjpg_savings', '', $delete_all );
 }
+//@todo: Delete db tables
+global $wpdb;
+$wpdb->delete('wp_smush_dir_images');
+
 //@todo: Add procedure to delete backup files
 //@todo: Update NextGen Metadata to remove Smush stats on plugin deletion
 ?>

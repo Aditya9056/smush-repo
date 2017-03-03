@@ -115,7 +115,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$charset_collate = $wpdb->get_charset_collate();
 
 			//Use a lower index size
-			$path_index_size = 190;
+			$path_index_size = 191;
 
 			/**
 			 * Table: wp_smush_dir_images
