@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP Smush 2.6\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wp-smushit\n"
-"POT-Creation-Date: 2017-03-01 05:03:45+00:00\n"
+"POT-Creation-Date: 2017-03-02 08:33:16+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -356,24 +356,24 @@ msgstr ""
 msgid "You have images that need smushing. %sBulk smush now!%s"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1929
+#: lib/class-wp-smush-admin.php:1934
 msgid "Review your setting now."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1930 lib/class-wp-smush-ui.php:679
+#: lib/class-wp-smush-admin.php:1935 lib/class-wp-smush-ui.php:679
 #: lib/class-wp-smush-ui.php:816
 msgid "WP Smush Pro"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1931
+#: lib/class-wp-smush-admin.php:1936
 msgid "Welcome to the newest version of WP Smush! In this update we've added the ability to bulk smush images in directories outside your uploads folder."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1934
+#: lib/class-wp-smush-admin.php:1939
 msgid " And as a multisite user, you can manage %sSmush settings%s globally across all sites!"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1937
+#: lib/class-wp-smush-admin.php:1942
 msgid " %sFind out more here >>%s"
 msgstr ""
 

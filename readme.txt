@@ -127,6 +127,12 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.6.1 =
+
+* Fixed:
+    * PHP 5.2 compatibility
+    * DB error: Use a smaller value for Path Index size ( Prefix Indexes )
+
 = 2.6 =
 
 * Fixed:

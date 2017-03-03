@@ -1179,7 +1179,7 @@ jQuery(function ($) {
      */
     var smush_all = function (show_spinner) {
 
-        var spinner = $('div.wp-smush-scan-result span.spinner:first').clone();
+        var spinner = $('div.smush-page-wrap span.spinner:first').clone();
         spinner.addClass('is-active');
         if (show_spinner) {
             //Update the Optimising status for the image
@@ -1247,7 +1247,7 @@ jQuery(function ($) {
                 var next = jQuery(document.getElementById(data.next))
 
                 if (!next.find('span.spinner').length) {
-                    next.prepend(spinner);
+                    next.prepend(spinner.clone());
                 }
                 //Append spinner
                 next.addClass('in-progress');
@@ -1964,7 +1964,7 @@ jQuery(function ($) {
         pause_button.addClass('disabled', 'disabled');
 
         //Enable the smush button, hide the spinner
-        $('button.wp-smush-start, button.wp-smush-browse').removeAttr('disabled');
+        $('button.wp-smush-start, button.wp-smush-browse').show().removeAttr('disabled');
         $('div.wp-smush-all-button-wrap span.spinner').removeClass('is-active');
 
         //Show directory exclude option

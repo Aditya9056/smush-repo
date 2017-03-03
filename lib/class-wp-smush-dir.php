@@ -114,12 +114,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$charset_collate = $wpdb->get_charset_collate();
 
-			//If path index is not specified WPDb gives an error, Lower Index size for utf8mb4
-			if ( empty( $path_index_size ) && strpos( $charset_collate, 'utf8mb4' ) ) {
-				$path_index_size = 191;
-			} else {
-				$path_index_size = 255;
-			}
+			//Use a lower index size
+			$path_index_size = 190;
 
 			/**
 			 * Table: wp_smush_dir_images
@@ -448,8 +444,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			//Directory Iterator, Exclude . and ..
 			$dirIterator = new RecursiveDirectoryIterator(
-				$base_dir,
-				RecursiveDirectoryIterator::SKIP_DOTS
+				$base_dir
+			//PHP 5.2 compatibility
+            //RecursiveDirectoryIterator::SKIP_DOTS
 			);
 
 			$filtered_dir = new WPSmushRecursiveFilterIterator( $dirIterator );
@@ -466,6 +463,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$timestamp = current_time( 'mysql' );
 			foreach ( $iterator as $path ) {
 
+			    //Used in place of Skip Dots, For php 5.2 compatability
+				if ( basename( $path ) == '..' || basename( $path ) == '.' ) {
+					continue;
+				}
 				if ( $path->isFile() ) {
 					$file_path = $path->getPathname();
 					$file_name = $path->getFilename();
@@ -497,7 +498,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				//Store the Images in db at an interval of 5k
 				if ( $count >= 5000 ) {
 					$count = 0;
-					$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size )";
+					$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size ), image_size = IF( file_time < VALUES(file_time), VALUES(file_time), file_time ), last_scanned = VALUES( last_scanned )";
 					$sql   = sprintf( $query, implode( ',', $images ) );
 					$wpdb->query( $sql );
 					$images = array();
@@ -506,7 +507,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			//Update rest of the images
 			if ( ! empty( $images ) && $count > 0 ) {
-				$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size )";
+				$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size ), file_time = IF( file_time < VALUES(file_time), VALUES(file_time), file_time ), last_scanned = VALUES( last_scanned )";
 				$sql   = sprintf( $query, implode( ',', $images ) );
 				$wpdb->query( $sql );
 			}
@@ -516,7 +517,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				update_option( 'wp_smush_scan', array( 'path' => $base_dir ) );
 			}
 
-			return array( 'files_arr' => $files_arr, 'base_dir' => $base_dir, 'query' => $query );
+			return array( 'files_arr' => $files_arr, 'base_dir' => $base_dir );
 		}
 
 		/**
@@ -1137,7 +1138,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
  *
  */
 if ( class_exists( 'RecursiveFilterIterator' ) && ! class_exists( 'WPSmushRecursiveFilterIterator' ) ) {
-	class WPSmushRecursiveFilterIterator extends \RecursiveFilterIterator {
+	class WPSmushRecursiveFilterIterator extends RecursiveFilterIterator {
 
 		public function accept() {
 			global $wpsmush_dir;
