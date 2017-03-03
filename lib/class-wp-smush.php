@@ -170,7 +170,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$this->initialise();
 
 			//Create a clas object, if doesn't exists
-			if( empty( $wpsmush_dir ) ) {
+			if ( empty( $wpsmush_dir ) && class_exists( 'WpSmushDir' ) ) {
 				$wpsmush_dir = new WpSmushDir();
 			}
 			$wpsmush_dir->create_table();
@@ -2223,3 +2223,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 //Include Admin classes
 require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-admin.php' );
+
+//Include Directory Smush
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-dir.php';

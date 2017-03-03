@@ -1179,7 +1179,7 @@ jQuery(function ($) {
     var directory_smush_finished = function() {
         //If there are no images left
         $('div.wp-smush-all-button-wrap span.spinner').remove();
-        $('button.wp-smush-pause').remove();
+        $('button.wp-smush-pause').attr('disabled', 'disabled');
         $('button.wp-smush-start').parent().hide();
 
         //Enable Choose directory button

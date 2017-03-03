@@ -134,6 +134,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * DB error: Use a smaller value for Path Index size ( Prefix Indexes )
     * Updated translation function name
     * UI/UX fixes for directory smush
+    * Improved optimisation process for directory smush
 
 = 2.6 =
 

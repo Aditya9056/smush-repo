@@ -129,7 +129,7 @@ if ( is_multisite() ) {
 }
 //@todo: Delete db tables
 global $wpdb;
-$wpdb->delete('wp_smush_dir_images');
+$wpdb->query( "DROP TABLE IF EXISTS wp_smush_dir_images" );
 
 //@todo: Add procedure to delete backup files
 //@todo: Update NextGen Metadata to remove Smush stats on plugin deletion

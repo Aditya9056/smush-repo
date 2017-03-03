@@ -140,7 +140,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				image_size int(10) unsigned,
 				orig_size int(10) unsigned,
 				file_time int(10) unsigned,
-				last_scanned timestamp DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+				last_scanned timestamp DEFAULT '0000-00-00 00:00:00',
 				meta text,
 				UNIQUE KEY id (id),
 				UNIQUE KEY path (path($path_index_size)),
@@ -160,7 +160,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function get_scanned_images() {
 			global $wpdb;
 
-			$query = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images t1 WHERE last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images )  GROUP BY id ORDER BY id";
+			$query = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images )  GROUP BY id ORDER BY id";
 
 			$results = $wpdb->get_results( $query, ARRAY_A );
 
@@ -181,7 +181,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		function get_unsmushed_image() {
 			global $wpdb;
-			$query   = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}smush_dir_images t1 WHERE image_size IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 )  GROUP BY id ORDER BY id LIMIT %d", 1 );
+			$query   = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 )  GROUP BY id ORDER BY id LIMIT %d", 1 );
 			$results = $wpdb->get_col( $query );
 
 			//If The query went through
@@ -481,7 +481,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$files_arr = array();
 			$images    = array();
 			$count     = 0;
-			$timestamp = current_time( 'mysql' );
+			$timestamp = gmdate( 'Y-m-d H:i:s' );
 			foreach ( $iterator as $path ) {
 
 			    //Used in place of Skip Dots, For php 5.2 compatability
@@ -529,6 +529,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				$sql   = sprintf( $query, implode( ',', $images ) );
 				$wpdb->query( $sql );
 			}
+			echo $sql;
 
 			//remove scanne dimages from cache
 			wp_cache_delete('wp_smush_scanned_images');
@@ -953,7 +954,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		function last_scan_stats() {
 			global $wpdb;
-			$query   = "SELECT id, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images t1 WHERE last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 ) GROUP BY id";
+			$query   = "SELECT id, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images ) GROUP BY id";
 			$results = $wpdb->get_results( $query, ARRAY_A );
 			$total   = count( $results );
 			$smushed = 0;
@@ -992,6 +993,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			//Verify the ajax nonce
 			check_ajax_referer( 'wp_smush_all', 'nonce' );
 
+			sleep(1);
 			$error_msg = '';
 			if ( empty( $_GET['image_id'] ) ) {
 				//If there are no stats
