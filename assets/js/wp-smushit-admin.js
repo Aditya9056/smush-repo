@@ -1179,7 +1179,7 @@ jQuery(function ($) {
     var directory_smush_finished = function() {
         //If there are no images left
         $('div.wp-smush-all-button-wrap span.spinner').remove();
-        $('button.wp-smush-pause').attr('disabled', 'disabled');
+        $('button.wp-smush-pause').hide().attr('disabled', 'disabled');
         $('button.wp-smush-start').parent().hide();
 
         //Enable Choose directory button
@@ -1934,7 +1934,7 @@ jQuery(function ($) {
         /** All the Styling changes **/
         button.attr('disabled', 'disabled');
         parent.find('span.spinner').addClass('is-active');
-        parent.find('button.wp-smush-pause').removeClass('disabled');
+        parent.find('button.wp-smush-pause').show().removeClass('disabled');
 
         //Disable Select Directory button
         $('button.wp-smush-browse').attr('disabled', 'disabled');

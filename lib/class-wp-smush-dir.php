@@ -529,7 +529,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				$sql   = sprintf( $query, implode( ',', $images ) );
 				$wpdb->query( $sql );
 			}
-			echo $sql;
 
 			//remove scanne dimages from cache
 			wp_cache_delete('wp_smush_scanned_images');
