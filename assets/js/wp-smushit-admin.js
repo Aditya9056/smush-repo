@@ -1174,38 +1174,91 @@ jQuery(function ($) {
     };
 
     /**
+     * Update the progress and show notice when smush completes
+     */
+    var directory_smush_finished = function() {
+        //If there are no images left
+        $('div.wp-smush-all-button-wrap span.spinner').remove();
+        $('button.wp-smush-pause').remove();
+        $('button.wp-smush-start').parent().hide();
+
+        //Enable Choose directory button
+        $('button.wp-smush-browse').show().removeAttr('disabled', 'disabled');
+
+        //Clone Choose Directory Button and add at the top
+        add_dir_browser_button();
+
+        //Clone and add Smush button
+        add_smush_button();
+
+        //Get the Total and Optimised image count
+        var image_ele = $('li.wp-smush-image-ele')
+        var total = image_ele.length;
+        var remaning = image_ele.filter(':not(.optimised)').length;
+        var smushed = total - remaning;
+        if (remaning > 0) {
+
+            //Append the count
+            $('span.wp-smush-dir-remaining').html(remaning);
+            $('span.wp-smush-dir-total').html(total);
+            $('span.wp-smush-dir-smushed').html(smushed);
+
+            //Show remaining image notice
+            $('.wp-smush-notice.wp-smush-dir-remaining').show();
+
+            //Show notice on top if required
+            add_smush_dir_notice();
+        } else {
+            //Show All done notice
+            $('.wp-smush-notice.wp-smush-dir-all-done').show();
+
+            //Show notice on top if required
+            add_smush_dir_notice( 'all_done' );
+        }
+
+        //Update Directory progress and remove any loaders still in there
+        update_smush_progress();
+
+    }
+
+    /**
      * Start Optimising all the images listed in last directory scan
      *
      */
-    var smush_all = function (show_spinner) {
+    var smush_all = function () {
 
         var spinner = $('div.smush-page-wrap span.spinner:first').clone();
         spinner.addClass('is-active');
-        if (show_spinner) {
-            //Update the Optimising status for the image
-            var first_child = $('ul.wp-smush-image-list li.wp-smush-image-ele:not(".optimised"):first');
+        //Update the Optimising status for the image
+        var first_child = $('ul.wp-smush-image-list li.wp-smush-image-ele:not(".optimised, .processed"):first');
 
-            var parent = first_child.parents('li.wp-smush-image-ul');
+        var parent = first_child.parents('li.wp-smush-image-ul');
 
-            //Check if the selected element is under expandable li
-            if (parent.length == 1) {
-                parent.addClass('active in-progress').removeClass('partial');
-                parent.find('.wp-smush-image-list-inner').addClass('show');
-                if (!parent.find('span.wp-smush-li-path span.spinner').length) {
-                    parent.find('span.wp-smush-li-path').prepend(spinner.clone());
-                }
+        //Check if the selected element is under expandable li
+        if (parent.length == 1) {
+            parent.addClass('active in-progress').removeClass('partial');
+            parent.find('.wp-smush-image-list-inner').addClass('show');
+            if (!parent.find('span.wp-smush-li-path span.spinner').length) {
+                parent.find('span.wp-smush-li-path').prepend(spinner.clone());
             }
+        }
 
-            //Append and show spinner
-            first_child.addClass('in-progress');
-            if (!first_child.find('spam.spinner').length) {
-                first_child.prepend(spinner.clone());
-            }
+        //Append and show spinner
+        first_child.addClass('in-progress processed');
+        if (!first_child.find('spam.spinner').length) {
+            first_child.prepend(spinner.clone());
+        }
+
+        //If all the elemnts are optimised
+        if( first_child.length == 0 ) {
+            directory_smush_finished();
+            return;
         }
 
         /** Ajax Request to optimise directory images */
         var param = {
             action: 'optimise',
+            image_id: first_child.attr('id'),
             nonce: $('#wp-smush-all').val()
         };
 
@@ -1218,7 +1271,7 @@ jQuery(function ($) {
             //If image element is there
             if ('undefined' != typeof(data.image)) {
                 //Mark Optimised
-                var ele = jQuery(document.getElementById(data.image.path));
+                var ele = jQuery(document.getElementById(data.image.id));
 
                 //Remove the spinner
                 ele.find('span.spinner').remove();
@@ -1241,69 +1294,12 @@ jQuery(function ($) {
                 }
             }
 
-            //If we'va next element and the user haven't paused the Smushing
-            if (data.next && 1 == $('input[name="wp-smush-continue-ajax"]').val()) {
-                //Update the status for the next image
-                var next = jQuery(document.getElementById(data.next))
-
-                if (!next.find('span.spinner').length) {
-                    next.prepend(spinner.clone());
-                }
-                //Append spinner
-                next.addClass('in-progress');
-
-                //Append and update waiting message for all the elements, for the current directory being optimised
-                update_dir_ele_status(next);
-
+            //If user haven't paused the Smushing
+            if ( 1 == $('input[name="wp-smush-continue-ajax"]').val() ) {
                 //Loop
                 smush_all(false);
-            }
-            else if ('' == data.next) {
-                //If there are no images left
-                $('div.wp-smush-all-button-wrap span.spinner').remove();
-                $('button.wp-smush-pause').remove();
-                $('button.wp-smush-start').parent().hide();
-
-                //Enable Choose directory button
-                $('button.wp-smush-browse').show().removeAttr('disabled', 'disabled');
-
-                //Clone Choose Directory Button and add at the top
-                add_dir_browser_button();
-
-                //Clone and add Smush button
-                add_smush_button();
-
-                //Get the Total and Optimised image count
-                var image_ele = $('li.wp-smush-image-ele')
-                var total = image_ele.length;
-                var remaning = image_ele.filter(':not(.optimised)').length;
-                var smushed = total - remaning;
-                if (remaning > 0) {
-
-                    //Append the count
-                    $('span.wp-smush-dir-remaining').html(remaning);
-                    $('span.wp-smush-dir-total').html(total);
-                    $('span.wp-smush-dir-smushed').html(smushed);
-
-                    //Show remaining image notice
-                    $('.wp-smush-notice.wp-smush-dir-remaining').show();
-
-                    //Show notice on top if required
-                    add_smush_dir_notice();
-                } else {
-                    //Show All done notice
-                    $('.wp-smush-notice.wp-smush-dir-all-done').show();
-
-                    //Show notice on top if required
-                    add_smush_dir_notice( 'all_done' );
-                }
-
-                //Update Directory progress and remove any loaders still in there
-                update_smush_progress();
-
-            }
-            else {
-                //Set the continue ajax to 1
+            } else {
+                //Reset the Ajax flag
                 $('input.wp-smush-continue-ajax').val(1);
             }
 
@@ -1879,7 +1875,8 @@ jQuery(function ($) {
             if( !res.success && 'undefined' !== typeof ( res.data.message ) ) {
                 $('div.wp-smush-scan-result div.content').html(res.data.message );
             }else {
-                $('div.wp-smush-scan-result div.content').html(res.data);
+                $('div.wp-smush-scan-result div.content').html(res.data );
+                wp_smush_dir_image_ids = res.data.ids;
             }
             set_accordion();
             close_dialog();
