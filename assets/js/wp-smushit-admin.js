@@ -1140,6 +1140,10 @@ jQuery(function ($) {
         }else{
             notice = $('div.wp-smush-notice.wp-smush-dir-remaining').clone();
         }
+
+        //Add class top
+        notice.addClass('top');
+
         //Append the notice
         $('div.wp-smush-scan-result div.dir-smush-button-wrap').after( notice );
     };
@@ -1184,7 +1188,13 @@ jQuery(function ($) {
         //If there are no images left
         $('div.wp-smush-all-button-wrap span.spinner').remove();
         $('button.wp-smush-pause').hide().attr('disabled', 'disabled');
-        $('button.wp-smush-start').parent().hide();
+
+        //Hide Bulk Smush button if smush was stopped for error or finished
+        if ('' == notice_type) {
+            $('button.wp-smush-start').parent().hide();
+        } else {
+            $('button.wp-smush-start').show().removeAttr('disabled');
+        }
 
         //Enable Choose directory button
         $('button.wp-smush-browse').show().removeAttr('disabled', 'disabled');
@@ -1939,6 +1949,9 @@ jQuery(function ($) {
         //Disable this button
         var button = $('.wp-smush-start');
         var parent = button.parent();
+
+        //Hide all the notices
+        $('div.wp-smush-scan-result div.wp-smush-notice').hide();
 
         //Set the button status to 0, to cancel next ajax request
         $('input[name="wp-smush-continue-ajax"]').val(1);
