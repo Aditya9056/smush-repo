@@ -56,19 +56,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 		}
 
+		/**
+		 * Do not display Directory smush for Subsites
+		 *
+		 * @return bool True/False, whether to display the Directory smush or not
+		 *
+		 */
 		function should_continue() {
-			global $WpSmush;
-
-			//Check If pro User
-			$api_auth = get_site_option( 'wp_smush_api_auth' );
-
-			//no api key set, always false
-			$api_key = $WpSmush->_get_api_key();
-
-			//Check if need to revalidate
-			if ( empty( $api_key ) || ! $api_auth || empty( $api_auth ) || empty( $api_auth[ $api_key ] ) ) {
-				return false;
-			}
 
 			//Do not show directory smush, if not main site in a network
 			if ( is_multisite() && ! is_main_site() ) {
@@ -213,15 +207,23 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * Output the required UI for WP Smush All page
 		 */
 		function ui() {
+		    global $WpSmush, $wpsmushit_admin;
+
 			//Print Directory Smush UI, if not a network site
 			if ( is_network_admin() ) {
 				return;
 			}
 
-			global $wpsmushit_admin;
+			//Reset the bulk limit
+			if ( ! $WpSmush->validate_install() ) {
+				//Reset Transient
+				$wpsmushit_admin->check_bulk_limit( true, 'dir_sent_count' );
+			}
+
 			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
 			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' );
 
+			$upgrade_link = '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ) . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
 			/** Directory Browser and Image List **/
 			$wpsmushit_admin->bulk_ui->container_header( 'wp-smush-dir-browser', 'wp-smush-dir-browser', esc_html__( "DIRECTORY SMUSH", "wp-smushit" ) ); ?>
             <div class="box-content">
@@ -245,6 +247,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                     </div>
                     <div class="wp-smush-notice wp-smush-dir-remaining hidden" tabindex="0">
                         <i class="dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i><?php printf( esc_html__( "%s/%s image(s) were successfully smushed, however %s image(s) could not be smushed due to an error.", "wp-smushit" ), '<span class="wp-smush-dir-smushed"></span>', '<span class="wp-smush-dir-total"></span>', '<span class="wp-smush-dir-remaining"></span>' ); ?>
+                    </div>
+                    <div class="wp-smush-notice wp-smush-dir-limit hidden" tabindex="0">
+                        <i class="dev-icon wdv-icon wdv-icon-fw wdv-icon-info-sign"></i><?php printf( esc_html__( " %sUpgrade to pro%s to bulk smush all your directory images with one click. Free users can smush 50 images with each click.", "wp-smushit"),'<a href="' . esc_url( $wpsmushit_admin->upgrade_url ). '" target="_blank" title="' . esc_html__("WP Smush Pro", "wp-smushit") . '">', '</a>' ); ?>
                     </div>
                     <div class="wp-smush-all-button-wrap bottom">
                         <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
@@ -987,17 +992,33 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * Handles the ajax request  for image optimisation in a folder
 		 */
 		function optimise() {
-			global $wpdb, $WpSmush;
+			global $wpdb, $WpSmush, $wpsmushit_admin;
 
 			//Verify the ajax nonce
 			check_ajax_referer( 'wp_smush_all', 'nonce' );
 
-			sleep(1);
 			$error_msg = '';
 			if ( empty( $_GET['image_id'] ) ) {
 				//If there are no stats
 				$error_msg = esc_html__( "Incorrect image id", "wp-smushit" );
 				wp_send_json_error( $error_msg );
+			}
+
+			//Check smush limit for free users
+			if ( ! $WpSmush->validate_install() ) {
+
+				//Free version bulk smush, check the transient counter value
+				$should_continue = $wpsmushit_admin->check_bulk_limit( false, 'dir_sent_count' );
+
+				//Send a error for the limit
+				if ( ! $should_continue ) {
+					wp_send_json_error(
+						array(
+							'error'    => 'dir_smush_limit_exceeded',
+							'continue' => false
+						)
+					);
+				}
 			}
 
 			$id = intval( $_GET['image_id'] );

@@ -1121,7 +1121,9 @@ jQuery(function ($) {
     /**
      * Add smush notice after directory smushing is finished
      *
-     * @param notice_type all_done -  If all the images were smushed else warning
+     * @param notice_type
+     *  all_done -  If all the images were smushed else warning
+     *  smush_limit - If Free users exceeded limit
      *
      */
     var add_smush_dir_notice = function ( notice_type ) {
@@ -1133,6 +1135,8 @@ jQuery(function ($) {
         //Clone and append the notice
         if( 'all_done' == notice_type ) {
             notice = $('div.wp-smush-notice.wp-smush-dir-all-done').clone();
+        }else if( 'smush_limit' == notice_type ){
+            notice = $('div.wp-smush-notice.wp-smush-dir-limit').clone();
         }else{
             notice = $('div.wp-smush-notice.wp-smush-dir-remaining').clone();
         }
@@ -1176,7 +1180,7 @@ jQuery(function ($) {
     /**
      * Update the progress and show notice when smush completes
      */
-    var directory_smush_finished = function() {
+    var directory_smush_finished = function( notice_type ) {
         //If there are no images left
         $('div.wp-smush-all-button-wrap span.spinner').remove();
         $('button.wp-smush-pause').hide().attr('disabled', 'disabled');
@@ -1191,29 +1195,36 @@ jQuery(function ($) {
         //Clone and add Smush button
         add_smush_button();
 
-        //Get the Total and Optimised image count
-        var image_ele = $('li.wp-smush-image-ele')
-        var total = image_ele.length;
-        var remaning = image_ele.filter(':not(.optimised)').length;
-        var smushed = total - remaning;
-        if (remaning > 0) {
+        if( '' == notice_type ) {
+            //Get the Total and Optimised image count
+            var image_ele = $('li.wp-smush-image-ele')
+            var total = image_ele.length;
+            var remaning = image_ele.filter(':not(.optimised)').length;
+            var smushed = total - remaning;
+            if (remaning > 0) {
 
-            //Append the count
-            $('span.wp-smush-dir-remaining').html(remaning);
-            $('span.wp-smush-dir-total').html(total);
-            $('span.wp-smush-dir-smushed').html(smushed);
+                //Append the count
+                $('span.wp-smush-dir-remaining').html(remaning);
+                $('span.wp-smush-dir-total').html(total);
+                $('span.wp-smush-dir-smushed').html(smushed);
 
-            //Show remaining image notice
-            $('.wp-smush-notice.wp-smush-dir-remaining').show();
+                //Show remaining image notice
+                $('.wp-smush-notice.wp-smush-dir-remaining').show();
 
+                //Show notice on top if required
+                add_smush_dir_notice();
+            } else {
+                //Show All done notice
+                $('.wp-smush-notice.wp-smush-dir-all-done').show();
+
+                //Show notice on top if required
+                add_smush_dir_notice('all_done');
+            }
+        }else{
+            //Show Bulk Limit Notice
+            $('.wp-smush-notice.wp-smush-dir-limit').show();
             //Show notice on top if required
-            add_smush_dir_notice();
-        } else {
-            //Show All done notice
-            $('.wp-smush-notice.wp-smush-dir-all-done').show();
-
-            //Show notice on top if required
-            add_smush_dir_notice( 'all_done' );
+            add_smush_dir_notice('smush_limit');
         }
 
         //Update Directory progress and remove any loaders still in there
@@ -1249,9 +1260,9 @@ jQuery(function ($) {
             first_child.prepend(spinner.clone());
         }
 
-        //If all the elemnts are optimised
+        //If all the elements are optimised, No need to send ajax request
         if( first_child.length == 0 ) {
-            directory_smush_finished();
+            directory_smush_finished('');
             return;
         }
 
@@ -1264,6 +1275,13 @@ jQuery(function ($) {
 
         //Send Ajax request
         $.get(ajaxurl, param, function (res) {
+
+            //Check, if limit is exceeded for free version
+            if (typeof res.data !== "undefined" && res.data.error == 'dir_smush_limit_exceeded') {
+                //Show error, Bulk Smush limit exceeded
+                directory_smush_finished( 'wp-smush-dir-limit' );
+                return;
+            }
 
             //append stats, remove loader, add loader to next image, loop
             var data = 'undefined' != typeof ( res.data ) ? res.data : '';

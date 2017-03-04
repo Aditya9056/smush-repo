@@ -273,7 +273,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Add Bulk option settings page
 		 */
 		function screen() {
-			global $admin_page_suffix, $wpsmush_dir;
+			global $admin_page_suffix;
 
 			//Bulk Smush Page for each site
 			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smush-bulk', array(
@@ -764,11 +764,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Check bulk sent count, whether to allow further smushing or not
 		 *
+		 * @param bool $reset To hard reset the transient
+		 * @param string $key Transient Key - bulk_sent_count/dir_sent_count
+		 *
 		 * @return bool
 		 */
-		function check_bulk_limit( $reset = false ) {
+		function check_bulk_limit( $reset = false, $key = 'bulk_sent_count' ) {
 
-			$transient_name = WP_SMUSH_PREFIX . 'bulk_sent_count';
+			$transient_name = WP_SMUSH_PREFIX . $key;
 
 			//Do not go through this, if we need to reset
 			if ( ! $reset ) {
@@ -1885,11 +1888,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Make sure to not display this message for next release
 			$plugin_data = get_plugin_data( WP_SMUSH_DIR . 'wp-smush.php', false, false );
 			$version     = ! empty( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
-
-			//Need to show only for pro users, particularly for v2.6
-			if ( ! $this->validate_install() ) {
-				return true;
-			}
 
 			//If Versions Do not match
 			if ( empty( $version ) || $version != WP_SMUSH_VERSION ) {

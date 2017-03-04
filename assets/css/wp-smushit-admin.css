@@ -815,7 +815,8 @@ table.wp-smush-stats-holder tr td:first-child {
 /** Image Remaining **/
 .wp-smush-remaining,
 #wp-smush-invalid-member,
-.wp-smush-dir-remaining {
+.wp-smush-dir-remaining,
+.wp-smush-dir-limit {
     background-color: #FFF5D5;
     border: none;
     color: #333333;
@@ -831,7 +832,8 @@ div.wp-smush-dir-all-done .dev-icon-tick:before {
     color: #1ABC9C;
 }
 
-div.wp-smush-dir-remaining .wdv-icon-exclamation-sign:before {
+div.wp-smush-dir-remaining .wdv-icon-exclamation-sign:before,
+div.wp-smush-dir-limit .wdv-icon-info-sign:before{
     color: #FECF2F;
 }
 
@@ -1136,9 +1138,17 @@ small.smush-setting-description {
     margin-top: 30px;
 }
 
+.wpmud .wp-smush-pro-cta .button.button-cta {
+    box-shadow: none !important;
+}
+
+.wpmud .wp-smush-pro-cta .button.button-cta:hover {
+    background: #0A9BD6 !important;
+}
+
 .wpmud .wp-smush-hb-cta .button.button-cta {
-    background-color: #ffe900;
-    box-shadow: inset 0 -3px 0 0 #f0db00;
+    background-color: #FFEA00;
+    box-shadow: none;
     color: #4e4b10;
     width: 100%;
 }
@@ -1147,7 +1157,8 @@ small.smush-setting-description {
 .wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:active,
 .wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:focus {
     box-shadow: none;
-    color: #4e4b10;
+    background: #f7e303 !important;
+    color: #4e4b10 !important;
 }
 
 /** Re Smush **/
