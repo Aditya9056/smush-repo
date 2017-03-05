@@ -1965,7 +1965,7 @@ jQuery(function ($) {
         /** All the Styling changes **/
         button.attr('disabled', 'disabled');
         parent.find('span.spinner').addClass('is-active');
-        parent.find('button.wp-smush-pause').show().removeClass('disabled');
+        parent.find('button.wp-smush-pause').show().removeAttr('disabled');
 
         //Disable Select Directory button
         $('button.wp-smush-browse').attr('disabled', 'disabled');
@@ -1989,7 +1989,7 @@ jQuery(function ($) {
         $('input[name="wp-smush-continue-ajax"]').val(0);
 
         //Enable the smush button, disable Pause button
-        pause_button.addClass('disabled', 'disabled');
+        pause_button.attr('disabled', 'disabled');
 
         //Enable the smush button, hide the spinner
         $('button.wp-smush-start, button.wp-smush-browse').show().removeAttr('disabled');

@@ -135,6 +135,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Updated translation function name
     * UI/UX fixes for directory smush
     * Improved optimisation process for directory smush
+    * Updated uninstall.php
 
 = 2.6 =
 
