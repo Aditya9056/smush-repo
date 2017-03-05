@@ -121,7 +121,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			 * orig_size -> Original image size before optimisation
 			 * file_time -> Unix time for the file creation, to match it against the current creation time,
 			 *                  in order to confirm if it is optimised or not
-			 * last_scanned -> Timestamp, Get images form last scan by latest timestamp
+			 * last_scan -> Timestamp, Get images form last scan by latest timestamp
 			 *                  are from latest scan only and not the whole list from db
 			 * meta -> For any future use
 			 *
@@ -134,7 +134,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				image_size int(10) unsigned,
 				orig_size int(10) unsigned,
 				file_time int(10) unsigned,
-				last_scanned timestamp DEFAULT '0000-00-00 00:00:00',
+				last_scan timestamp DEFAULT '0000-00-00 00:00:00',
 				meta text,
 				UNIQUE KEY id (id),
 				UNIQUE KEY path (path($path_index_size)),
@@ -154,7 +154,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function get_scanned_images() {
 			global $wpdb;
 
-			$query = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images )  GROUP BY id ORDER BY id";
+			$query = "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE last_scan = (SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images )  GROUP BY id ORDER BY id";
 
 			$results = $wpdb->get_results( $query, ARRAY_A );
 
@@ -175,7 +175,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		function get_unsmushed_image() {
 			global $wpdb;
-			$query   = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NULL && last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images t2 )  GROUP BY id ORDER BY id LIMIT %d", 1 );
+			$query   = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NULL && last_scan = (SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images t2 )  GROUP BY id ORDER BY id LIMIT %d", 1 );
 			$results = $wpdb->get_col( $query );
 
 			//If The query went through
@@ -521,7 +521,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				//Store the Images in db at an interval of 5k
 				if ( $count >= 5000 ) {
 					$count = 0;
-					$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size ), image_size = IF( file_time < VALUES(file_time), VALUES(file_time), file_time ), last_scanned = VALUES( last_scanned )";
+					$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scan) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size ), image_size = IF( file_time < VALUES(file_time), VALUES(file_time), file_time ), last_scan = VALUES( last_scan )";
 					$sql   = sprintf( $query, implode( ',', $images ) );
 					$wpdb->query( $sql );
 					$images = array();
@@ -530,7 +530,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			//Update rest of the images
 			if ( ! empty( $images ) && $count > 0 ) {
-				$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scanned) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size ), file_time = IF( file_time < VALUES(file_time), VALUES(file_time), file_time ), last_scanned = VALUES( last_scanned )";
+				$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scan) VALUES %s ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size ), file_time = IF( file_time < VALUES(file_time), VALUES(file_time), file_time ), last_scan = VALUES( last_scan )";
 				$sql   = sprintf( $query, implode( ',', $images ) );
 				$wpdb->query( $sql );
 			}
@@ -958,7 +958,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		function last_scan_stats() {
 			global $wpdb;
-			$query   = "SELECT id, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE last_scanned = (SELECT MAX(last_scanned) FROM {$wpdb->prefix}smush_dir_images ) GROUP BY id";
+			$query   = "SELECT id, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE last_scan = (SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images ) GROUP BY id";
 			$results = $wpdb->get_results( $query, ARRAY_A );
 			$total   = count( $results );
 			$smushed = 0;
