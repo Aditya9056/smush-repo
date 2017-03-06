@@ -136,6 +136,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * UI/UX fixes for directory smush
     * Improved optimisation process for directory smush
     * Updated uninstall.php
+    * Skip sites directory from Directory Smush in a Multisite
 
 = 2.6 =
 

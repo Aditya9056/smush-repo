@@ -690,8 +690,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$skip = false;
 
-			//If matches the current upload path
-			if ( false !== strpos( $path, $base_dir ) ) {
+			//Skip sites folder for Multisite
+			if ( false !== strpos( $path, $base_dir . '/sites' ) ) {
+				$skip = true;
+			} else if ( false !== strpos( $path, $base_dir ) ) {
+				//If matches the current upload path
 				//contains one of the year subfolders of the media library
 				$pathArr = explode( '/', str_replace( $base_dir . '/', "", $path ) );
 				if ( count( $pathArr ) >= 1
