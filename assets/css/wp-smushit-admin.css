@@ -832,6 +832,12 @@ div.wp-smush-dir-all-done .dev-icon-tick:before {
     color: #1ABC9C;
 }
 
+.wpmud div.wp-smush-notice.wp-smush-dir-limit a,
+.wpmud div.wp-smush-notice.wp-smush-remaining a {
+    color: #333;
+    text-decoration: underline;
+}
+
 div.wp-smush-dir-remaining .wdv-icon-exclamation-sign:before,
 div.wp-smush-dir-limit .wdv-icon-info-sign:before{
     color: #FECF2F;
