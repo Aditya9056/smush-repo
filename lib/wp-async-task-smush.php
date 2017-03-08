@@ -95,6 +95,7 @@ if ( ! class_exists( 'WP_Async_Task_Smush' ) ) {
 			try {
 				$data = $this->prepare_data( $data );
 			} catch ( Exception $e ) {
+				error_log( sprintf( "Async Smush: Error in prepare_data function in %s at line %s: %s", __FILE__, __LINE__, $e->getMessage() ) );
 				return;
 			}
 
@@ -103,9 +104,13 @@ if ( ! class_exists( 'WP_Async_Task_Smush' ) ) {
 
 			$this->_body_data = $data;
 
-			if ( ! has_action( 'shutdown', array( $this, 'launch_on_shutdown' ) ) ) {
-				add_action( 'shutdown', array( $this, 'launch_on_shutdown' ) );
-			}
+			//Send a ajax request to process image and return image metadata
+			$this->process_request();
+
+			//Do not use this, as in case of importing, only the last image gets processed
+//			if ( ! has_action( 'shutdown', array( $this, 'launch_on_shutdown' ) ) ) {
+//				add_action( 'shutdown', array( $this, 'launch_on_shutdown' ) );
+//			}
 
 			//If we have image metadata return it
 			if ( ! empty( $data['metadata'] ) ) {
@@ -128,7 +133,7 @@ if ( ! class_exists( 'WP_Async_Task_Smush' ) ) {
 		 * @uses admin_url()
 		 * @uses wp_remote_post()
 		 */
-		public function launch_on_shutdown() {
+		public function process_request() {
 			if ( ! empty( $this->_body_data ) ) {
 				$cookies = array();
 				foreach ( $_COOKIE as $name => $value ) {

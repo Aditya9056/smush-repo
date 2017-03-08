@@ -71,12 +71,12 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		}
 
 		/**
-		 * Check whether Image should be resized or not
+		 *  Check whether Image should be resized or not
+		 * @param string $id Attachment ID
+		 * @param string $meta Attachment Metadata
 		 *
-		 * @param string $params
-		 * @param string $action
+		 * @return bool Should resize or not
 		 *
-		 * @return bool
 		 */
 		public function should_resize( $id = '', $meta = '' ) {
 
@@ -143,10 +143,10 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		/**
 		 * Handles the Auto resizing of new uploaded images
 		 *
-		 * @param array $upload
-		 * @param string $action
+		 * @param $id Attachment ID
+		 * @param $meta Attachment Metadata
 		 *
-		 * @return array $upload
+		 * @return mixed Updated/Original Metadata if image was resized or not
 		 */
 		function auto_resize( $id, $meta ) {
 
@@ -235,8 +235,12 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 * Checks if the size of generated image is greater,
 		 *
 		 * @param $file_path Original File path
+		 * @param $original_file_size File size before optimisation
+		 * @param $id Attachment ID
+		 * @param string $meta Attachment Metadata
+		 * @param bool $unlink Whether to unlink the original image or not
 		 *
-		 * @return bool, If the image generation was succesfull
+		 * @return array|bool|false If the image generation was successful
 		 */
 		function perform_resize( $file_path, $original_file_size, $id, $meta = '', $unlink = true ) {
 
@@ -302,10 +306,12 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		/**
 		 * Replace the original file with resized file
 		 *
-		 * @param $upload
-		 *
+		 * @param $file_path
 		 * @param $resized
+		 * @param string $attachment_id
+		 * @param string $meta
 		 *
+		 * @return bool
 		 */
 		function replcae_original_image( $file_path, $resized, $attachment_id = '', $meta = '' ) {
 			$replaced = false;
@@ -322,11 +328,10 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		/**
 		 * Creates a WordPress backup of original image, Disabled by default
 		 *
-		 * @param $upload
-		 *
+		 * @param $path
 		 * @param $attachment_id
-		 *
 		 * @param $meta
+		 *
 		 */
 		function backup_image( $path, $attachment_id, $meta ) {
 
@@ -377,6 +382,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 					update_post_meta( $attachment_id, '_wp_attachment_backup_sizes', $backup_sizes );
 				}
 			}
+			return;
 		}
 
 		/**

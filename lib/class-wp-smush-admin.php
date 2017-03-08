@@ -720,7 +720,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$attachment_id = absint( (int) ( $attachment_id ) );
 
-			$original_meta = wp_get_attachment_metadata( $attachment_id );
+			//Get the image metadata from $_POST
+			$original_meta = !empty( $_POST['metadata'] ) ? $_POST['metadata'] : '';
+
+			$original_meta = empty( $original_meta ) ? wp_get_attachment_metadata( $attachment_id ) : $original_meta;
 
 			//Send image for resizing, if enabled resize first before any other operation
 			$updated_meta = $this->resize_image( $attachment_id, $original_meta );

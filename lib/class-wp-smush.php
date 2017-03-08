@@ -179,12 +179,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		/**
 		 * Process an image with Smush.
 		 *
-		 * Returns an array of the $file $results.
+		 * @param string $file_path Absolute path to the image
 		 *
-		 * @param   string $file Full absolute path to the image file
-		 * @param   string $file_url Optional full URL to the image file
+		 * @return array|bool
 		 *
-		 * @returns array
 		 */
 		function do_smushit( $file_path = '' ) {
 			$errors   = new WP_Error();
@@ -745,7 +743,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			unset( $response );//free memory
 			return $data;
 		}
-
 
 		/**
 		 * Print column header for Smush results in the media library using
