@@ -954,7 +954,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			//Get the savings in bytes and percent
 			if ( ! empty( $this->stats ) ) {
-				$this->stats['bytes']   = $this->stats['orig_size'] - $this->stats['image_size'];
+				$this->stats['bytes']   = ( $this->stats['orig_size'] > $this->stats['image_size'] ) ? $this->stats['orig_size'] - $this->stats['image_size'] : 0;
 				$this->stats['percent'] = number_format_i18n( ( ( $this->stats['bytes'] / $this->stats['orig_size'] ) * 100 ), 1 );
 				//Convert to human readable form
 				$this->stats['human'] = size_format( $this->stats['bytes'], 1 );

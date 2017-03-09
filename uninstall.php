@@ -39,7 +39,9 @@ $smushit_keys = array(
 	'lossy-updated',
 	'version',
 	'networkwide',
-	'dir_path'
+	'dir_path',
+	'api_auth',
+	'scan'
 );
 
 //Cache Keys
