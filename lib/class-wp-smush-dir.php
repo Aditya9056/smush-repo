@@ -1111,6 +1111,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				'total'       => $total,
 				'latest_scan' => $last_scan
 			);
+
+			//Update Bulk Limit Transient
+			$wpsmushit_admin->update_smush_count( 'dir_sent_count' );
+
 			wp_send_json_success( $data );
 		}
 

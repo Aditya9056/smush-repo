@@ -129,9 +129,14 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.6.2 =
 
-*Added:
+* Added:
     * WP All Import Compatibility
 
+* Fixed:
+    * Added check for directory smush savings
+
+* Updated:
+    * Apply limit for only successful smush
 
 = 2.6.1 =
 

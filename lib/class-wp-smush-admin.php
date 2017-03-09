@@ -642,6 +642,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Wrap the error message in div
 			$error = !empty( $error ) ? '<p class="wp-smush-error-message">' . $error . '</p>' : $error;
 
+			//Update the bulk Limit count
+			$this->update_smush_count();
+
 			//Send ajax response
 			$send_error ? wp_send_json_error( array(
 				'stats'        => $stats,
@@ -768,6 +771,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Check bulk sent count, whether to allow further smushing or not
 		 *
 		 * @param bool $reset To hard reset the transient
+		 *
 		 * @param string $key Transient Key - bulk_sent_count/dir_sent_count
 		 *
 		 * @return bool
@@ -776,38 +780,46 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$transient_name = WP_SMUSH_PREFIX . $key;
 
-			//Do not go through this, if we need to reset
-			if ( ! $reset ) {
-				$bulk_sent_count = get_transient( $transient_name );
+			$bulk_sent_count = get_transient( $transient_name );
 
-				//If bulk sent count is not set
-				if ( false === $bulk_sent_count ) {
-
-					//start transient at 0
-					set_transient( $transient_name, 1, 200 );
-
-					return true;
-
-				} else if ( $bulk_sent_count < $this->max_free_bulk ) {
-
-					//If lte $this->max_free_bulk images are sent, increment
-					set_transient( $transient_name, $bulk_sent_count + 1, 200 );
-
-					return true;
-
-				} else { //Bulk sent count is set and greater than $this->max_free_bulk
-
-					$reset = true;
-
-				}
+			//Check if bulk smush limit is less than limit
+			if ( ! $bulk_sent_count || $bulk_sent_count < $this->max_free_bulk ) {
+				$continue = true;
+			} else {
+				$continue = false;
 			}
 
-			//Reset the transient
+			//If we need to reset the transient
 			if ( $reset ) {
-				//clear it and return false to stop the process
 				set_transient( $transient_name, 0, 60 );
+			}
 
-				return false;
+			return $continue;
+		}
+
+		/**
+		 * Update the image smushed count in transient
+		 *
+		 * @param string $key
+		 *
+		 */
+		function update_smush_count( $key = 'bulk_sent_count' ) {
+
+			$transient_name = WP_SMUSH_PREFIX . $key;
+
+			$bulk_sent_count = get_transient( $transient_name );
+
+			//If bulk sent count is not set
+			if ( false === $bulk_sent_count ) {
+
+				//start transient at 0
+				set_transient( $transient_name, 1, 200 );
+
+			} else if ( $bulk_sent_count < $this->max_free_bulk ) {
+
+				//If lte $this->max_free_bulk images are sent, increment
+				set_transient( $transient_name, $bulk_sent_count + 1, 200 );
+
 			}
 		}
 
