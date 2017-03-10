@@ -642,8 +642,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Wrap the error message in div
 			$error = !empty( $error ) ? '<p class="wp-smush-error-message">' . $error . '</p>' : $error;
 
-			//Update the bulk Limit count
-			$this->update_smush_count();
+			if ( ! $send_error ) {
+				//Update the bulk Limit count
+				$this->update_smush_count();
+			}
 
 			//Send ajax response
 			$send_error ? wp_send_json_error( array(
@@ -785,6 +787,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Check if bulk smush limit is less than limit
 			if ( ! $bulk_sent_count || $bulk_sent_count < $this->max_free_bulk ) {
 				$continue = true;
+			} elseif ( $bulk_sent_count == $this->max_free_bulk ) {
+				//If user has reached the limit, reset the transient
+				$continue = false;
+				$reset    = true;
 			} else {
 				$continue = false;
 			}

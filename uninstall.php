@@ -41,7 +41,8 @@ $smushit_keys = array(
 	'networkwide',
 	'dir_path',
 	'api_auth',
-	'scan'
+	'scan',
+	'last_settings'
 );
 
 //Cache Keys

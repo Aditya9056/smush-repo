@@ -1965,7 +1965,7 @@ jQuery(function ($) {
         /** All the Styling changes **/
         button.attr('disabled', 'disabled');
         parent.find('span.spinner').addClass('is-active');
-        parent.find('button.wp-smush-pause').show().removeAttr('disabled');
+        parent.find('button.wp-smush-pause').show().removeClass('disabled').removeAttr('disabled');
 
         //Disable Select Directory button
         $('button.wp-smush-browse').attr('disabled', 'disabled');

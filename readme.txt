@@ -136,7 +136,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Added check for directory smush savings
 
 * Updated:
-    * Apply limit for only successful smush
+    * Smush Limit ( 50 Images ), do not include images which couldn't be smushed
 
 = 2.6.1 =
 
