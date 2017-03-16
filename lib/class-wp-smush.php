@@ -2180,7 +2180,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$res = $this->do_smushit( $post_data['filepath'] );
 
 			//Exit if smushing wasn't successful
-			if ( empty( $res['success'] ) || ! $res['success'] ) {
+			if ( is_wp_error( $res) || empty( $res['success'] ) || ! $res['success'] ) {
 				return;
 			}
 

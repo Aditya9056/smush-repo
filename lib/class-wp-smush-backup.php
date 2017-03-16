@@ -72,6 +72,10 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 		/**
 		 * Restore the image and its sizes from backup
 		 *
+		 * @param string $attachment
+		 * @param bool $resp
+		 *
+		 * @return bool
 		 */
 		function restore_image( $attachment = '', $resp = true ) {
 			global $WpSmush;

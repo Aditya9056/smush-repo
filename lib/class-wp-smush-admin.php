@@ -566,7 +566,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			if ( ! apply_filters( 'wp_smush_image', true, $attachment_id ) ) {
 				$send_error = true;
-				$error = esc_html__( "Attachment $attachment_id was skipped.", "wp-smushit" );
+				$error = $this->filter_error( esc_html__( "Attachment $attachment_id was skipped.", "wp-smushit" ), $attachment_id );
 			}
 
 			if ( ! $send_error ) {
@@ -629,6 +629,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$this->update_resmush_list( $attachment_id );
 				}
 			}
+
 			$resmush_count = empty( $this->resmush_ids ) ? count( $this->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $this->resmush_ids );
 
 			$stats['smushed'] = ! empty( $this->resmush_ids ) ? $this->smushed_count - $resmush_count : $this->smushed_count;
@@ -639,8 +640,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( __( "You've smushed %d images in total.", "wp-smushit" ), $stats['total_images'] ) : '';
 
+			/**
+			 * Used internally to modify the error message
+			 *
+			 */
+			$error = $this->filter_error( $error, $attachment_id );
+
 			//Wrap the error message in div
-			$error = !empty( $error ) ? '<p class="wp-smush-error-message">' . $error . '</p>' : $error;
+			$error = !empty( $error ) ? sprintf( '<p class="wp-smush-error-message">%s</p>', $error ) : $error;
 
 			if ( ! $send_error ) {
 				//Update the bulk Limit count
@@ -687,8 +694,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 *
 			 */
 			if ( ! apply_filters( 'wp_smush_image', true, $attachemnt_id ) ) {
+			    $error = $this->filter_error( esc_html__( "Attachment Skipped - Check `wp_smush_image` filter.", "wp-smushit" ), $attachemnt_id );
 				wp_send_json_error( array(
-					'error_msg'    => '<p class="wp-smush-error-message">' . esc_html__( "Attachment Skipped - Check `wp_smush_image` filter.", "wp-smushit" ) . '</p>',
+					'error_msg'    => sprintf( '<p class="wp-smush-error-message">%s</p>', $error ),
 					'show_warning' => intval( $this->show_warning() )
 				) );
 			}
@@ -738,9 +746,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 
-			//Update the details, as soon as we are done with resizing
-			wp_update_attachment_metadata( $attachment_id, $original_meta );
-
 			//Smush the image
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 
@@ -748,6 +753,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$status = $WpSmush->set_status( $attachment_id, false, true );
 
 			delete_transient( 'smush-in-progress-' . $attachment_id );
+
+			//Update the details, after smushing, so that latest image is used in hook
+			wp_update_attachment_metadata( $attachment_id, $original_meta );
 
 			//Send Json response if we are not suppose to return the results
 
@@ -2099,6 +2107,27 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $wpsmush_settings;
 			$c_settings = $this->get_serialised_settings();
 			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $c_settings );
+		}
+
+		/**
+		 * Allows to filter the error message sent to the user
+		 *
+		 * @param string $error
+		 * @param string $attachment_id
+		 *
+		 * @return mixed|null|string|void
+		 */
+		function filter_error( $error = '', $attachment_id = '' ) {
+			if ( empty( $error ) ) {
+				return null;
+			}
+			/**
+			 * Used internally to modify the error message
+			 *
+			 */
+			$error = apply_filters( 'wp_smush_error', $error, $attachment_id );
+
+			return $error;
 		}
 
 	}
