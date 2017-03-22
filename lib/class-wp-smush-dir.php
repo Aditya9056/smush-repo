@@ -510,7 +510,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					$file_path = $path->getPathname();
 					$file_name = $path->getFilename();
 
-					if ( $this->is_image( $file_path ) && ! $this->is_media_library_file( $file_path ) ) {
+					if ( $this->is_image( $file_path ) && ! $this->is_media_library_file( $file_path ) && strpos( $path, '.bak' ) === false ) {
 
 						/**  To generate Markup **/
 						$dir_name = dirname( $file_path );
@@ -633,6 +633,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 		/**
 		 * Check whether the given path is a image or not
+         *
+         * Do not include backup files
 		 *
 		 * @param $path
 		 *

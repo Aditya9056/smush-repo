@@ -133,9 +133,12 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * WP All Import Compatibility
 
 * Fixed:
+    * Image not being updated to S3 after resmush ( *Remove files from server is kept off )
     * Added check for directory smush savings
     * Call `wp_update_attachment_metadata` after smushing, to allow the optimised image to be used
-    * Directory Smush: Images with special symbols doesn't gets optimised
+    * Dir Smush: Images with special symbols doesn't gets optimised
+    * Dir Smush: Skip .bak files
+    * Retina Images @2x: Do not smush if auto smush is disabled
 
 * Updated:
     * Smush Limit ( 50 Images ), do not include images with error in count

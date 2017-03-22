@@ -1272,6 +1272,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
+			//Do not smush if auto smush is turned off
+			if ( ! $this->is_auto_smush_enabled() ) {
+				return;
+			}
+
 			/**
 			 * Allows to skip a image from smushing
 			 *
