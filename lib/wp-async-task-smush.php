@@ -104,13 +104,14 @@ if ( ! class_exists( 'WP_Async_Task_Smush' ) ) {
 
 			$this->_body_data = $data;
 
-			//Send a ajax request to process image and return image metadata
-			$this->process_request();
-
+			$shutdown_action = has_action( 'shutdown', array( $this, 'process_request' ) );
 			//Do not use this, as in case of importing, only the last image gets processed
-//			if ( ! has_action( 'shutdown', array( $this, 'launch_on_shutdown' ) ) ) {
-//				add_action( 'shutdown', array( $this, 'launch_on_shutdown' ) );
-//			}
+			if ( ! empty( $_POST ) && isset( $_POST['post_id'] ) && ! $shutdown_action ) {
+				add_action( 'shutdown', array( $this, 'process_request' ) );
+			} else {
+				//Send a ajax request to process image and return image metadata
+				$this->process_request();
+			}
 
 			//If we have image metadata return it
 			if ( ! empty( $data['metadata'] ) ) {
