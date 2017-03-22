@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP Smush 2.6.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wp-smushit\n"
-"POT-Creation-Date: 2017-03-06 09:20:46+00:00\n"
+"POT-Creation-Date: 2017-03-22 17:22:58+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -220,7 +220,7 @@ msgstr ""
 msgid "WP Smush"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:392 lib/class-wp-smush.php:1045
+#: lib/class-wp-smush-admin.php:392 lib/class-wp-smush.php:1043
 #: lib/nextgen-integration/class-wp-smush-nextgen-admin.php:158
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:275
 msgid "Super-Smush"
@@ -285,108 +285,108 @@ msgid "Ajax Error"
 msgstr ""
 
 #: lib/class-wp-smush-admin.php:407 lib/class-wp-smush-admin.php:408
-#: lib/class-wp-smush-admin.php:1140
+#: lib/class-wp-smush-admin.php:1184
 #: lib/nextgen-integration/class-wp-smush-nextgen-admin.php:340
 msgid "All Done!"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:624
+#: lib/class-wp-smush-admin.php:631
 msgid "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:640 lib/class-wp-smush-dir.php:1219
+#: lib/class-wp-smush-admin.php:648 lib/class-wp-smush-dir.php:1251
 msgid "You've smushed %d images in total."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:669 lib/class-wp-smush-nextgen.php:381
+#: lib/class-wp-smush-admin.php:688 lib/class-wp-smush-nextgen.php:381
 msgid "You don't have permission to work with uploaded files."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:673 lib/class-wp-smush-nextgen.php:385
+#: lib/class-wp-smush-admin.php:692 lib/class-wp-smush-nextgen.php:385
 msgid "No attachment ID was provided."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:686
+#: lib/class-wp-smush-admin.php:704
 msgid "Attachment Skipped - Check `wp_smush_image` filter."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:836
+#: lib/class-wp-smush-admin.php:880
 msgid "<strong>%d of %d images</strong> were sent for smushing:"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1133 lib/class-wp-smush-admin.php:1146
+#: lib/class-wp-smush-admin.php:1177 lib/class-wp-smush-admin.php:1190
 #: lib/nextgen-integration/class-wp-smush-nextgen-admin.php:336
 msgid "Bulk Smush Now"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1168 lib/class-wp-smush.php:1051
+#: lib/class-wp-smush-admin.php:1212 lib/class-wp-smush.php:1049
 msgid "Smushing in progress.."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1174 lib/class-wp-smush.php:1070
+#: lib/class-wp-smush-admin.php:1218 lib/class-wp-smush.php:1068
 #: lib/nextgen-integration/class-wp-smush-nextgen-admin.php:255
 msgid "Smush Now!"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1195
+#: lib/class-wp-smush-admin.php:1239
 msgid "Settings"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1341
+#: lib/class-wp-smush-admin.php:1385
 msgid "Image not smushed, fields empty."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1348 lib/class-wp-smush-nextgen.php:568
+#: lib/class-wp-smush-admin.php:1392 lib/class-wp-smush-nextgen.php:568
 msgid "Image couldn't be smushed as the nonce verification failed, try reloading the page."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1365
+#: lib/class-wp-smush-admin.php:1409
 msgid "Unable to smush image"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1390
+#: lib/class-wp-smush-admin.php:1434
 msgid "We haven’t found any images in your media library yet so there’s no smushing to be done!"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1406
+#: lib/class-wp-smush-admin.php:1450
 msgid "Yay! All images are optimised as per your current settings."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1578 lib/class-wp-smush-ui.php:792
+#: lib/class-wp-smush-admin.php:1622 lib/class-wp-smush-ui.php:792
 msgid "You have images that need smushing. %sBulk smush now!%s"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1929
+#: lib/class-wp-smush-admin.php:1973
 msgid "Review your setting now."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1930 lib/class-wp-smush-dir.php:238
+#: lib/class-wp-smush-admin.php:1974 lib/class-wp-smush-dir.php:238
 #: lib/class-wp-smush-dir.php:264 lib/class-wp-smush-ui.php:680
 #: lib/class-wp-smush-ui.php:817
 msgid "WP Smush Pro"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1931
+#: lib/class-wp-smush-admin.php:1975
 msgid "Welcome to the newest version of WP Smush! In this update we've added the ability to bulk smush images in directories outside your uploads folder."
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1934
+#: lib/class-wp-smush-admin.php:1978
 msgid " And as a multisite user, you can manage %sSmush settings%s globally across all sites!"
 msgstr ""
 
-#: lib/class-wp-smush-admin.php:1937
+#: lib/class-wp-smush-admin.php:1981
 msgid " %sFind out more here >>%s"
 msgstr ""
 
-#: lib/class-wp-smush-backup.php:84 lib/class-wp-smush-nextgen.php:468
+#: lib/class-wp-smush-backup.php:98 lib/class-wp-smush-nextgen.php:468
 msgid "Error in processing restore action, Fields empty."
 msgstr ""
 
-#: lib/class-wp-smush-backup.php:91 lib/class-wp-smush-nextgen.php:475
+#: lib/class-wp-smush-backup.php:105 lib/class-wp-smush-nextgen.php:475
 msgid "Image not restored, Nonce verification failed."
 msgstr ""
 
-#: lib/class-wp-smush-backup.php:185 lib/class-wp-smush-nextgen.php:550
+#: lib/class-wp-smush-backup.php:182 lib/class-wp-smush-nextgen.php:550
 msgid "Unable to restore image"
 msgstr ""
 
@@ -460,31 +460,31 @@ msgstr ""
 msgid "Exclude directory from Smush List"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:566
+#: lib/class-wp-smush-dir.php:595
 msgid "We could not find any images in the selected directory."
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:877
+#: lib/class-wp-smush-dir.php:905
 msgid "%d images"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:906
+#: lib/class-wp-smush-dir.php:934
 msgid "Waiting.."
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1020
+#: lib/class-wp-smush-dir.php:1048
 msgid "Incorrect image id"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1050
+#: lib/class-wp-smush-dir.php:1078
 msgid "Could not find image id in last scanned images"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1063
+#: lib/class-wp-smush-dir.php:1091
 msgid "Image couldn't be optimised"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1159
+#: lib/class-wp-smush-dir.php:1191
 msgid "We were unable to retrieve the image list from last scan, please continue with a latest scan"
 msgstr ""
 
@@ -754,117 +754,117 @@ msgstr ""
 msgid "Smush settings were updated, performing a quick scan to check if any of the images need to be Smushed again."
 msgstr ""
 
-#: lib/class-wp-smush.php:195
+#: lib/class-wp-smush.php:193
 msgid "File path is empty"
 msgstr ""
 
-#: lib/class-wp-smush.php:198
+#: lib/class-wp-smush.php:196
 msgid "Could not find %s"
 msgstr ""
 
-#: lib/class-wp-smush.php:201
+#: lib/class-wp-smush.php:199
 msgid "%s is not writable"
 msgstr ""
 
-#: lib/class-wp-smush.php:211
+#: lib/class-wp-smush.php:209
 msgid "Skipped (%s), image not found. Attachment: %s"
 msgstr ""
 
-#: lib/class-wp-smush.php:214
+#: lib/class-wp-smush.php:212
 msgid "Skipped (%s), size limit exceeded. Attachment: %s"
 msgstr ""
 
-#: lib/class-wp-smush.php:232
+#: lib/class-wp-smush.php:230
 msgid "Unknown API error"
 msgstr ""
 
-#: lib/class-wp-smush.php:697
+#: lib/class-wp-smush.php:696
 msgid "Error posting to API: %s"
 msgstr ""
 
-#: lib/class-wp-smush.php:703
+#: lib/class-wp-smush.php:702
 msgid "Error posting to API: %s %s"
 msgstr ""
 
-#: lib/class-wp-smush.php:720
+#: lib/class-wp-smush.php:719
 msgid "Smush data corrupted, try again."
 msgstr ""
 
-#: lib/class-wp-smush.php:740
+#: lib/class-wp-smush.php:739
 msgid "Image couldn't be smushed"
 msgstr ""
 
-#: lib/class-wp-smush.php:961 lib/class-wp-smush.php:965
+#: lib/class-wp-smush.php:959 lib/class-wp-smush.php:963
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:193
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:196
 msgid "Already Optimized"
 msgstr ""
 
-#: lib/class-wp-smush.php:974
+#: lib/class-wp-smush.php:972
 msgid "%d images reduced "
 msgstr ""
 
-#: lib/class-wp-smush.php:974
+#: lib/class-wp-smush.php:972
 msgid "Reduced "
 msgstr ""
 
-#: lib/class-wp-smush.php:978
+#: lib/class-wp-smush.php:976
 msgid "by %s %s"
 msgstr ""
 
-#: lib/class-wp-smush.php:984
+#: lib/class-wp-smush.php:982
 msgid "<br /> Image Size: %s"
 msgstr ""
 
-#: lib/class-wp-smush.php:1020
+#: lib/class-wp-smush.php:1018
 msgid "Detailed stats for all the image sizes"
 msgstr ""
 
-#: lib/class-wp-smush.php:1020
+#: lib/class-wp-smush.php:1018
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:236
 msgid "Smush stats"
 msgstr ""
 
-#: lib/class-wp-smush.php:1064
+#: lib/class-wp-smush.php:1062
 #: lib/nextgen-integration/class-wp-smush-nextgen-admin.php:249
 msgid "Not processed"
 msgstr ""
 
-#: lib/class-wp-smush.php:1373
+#: lib/class-wp-smush.php:1376
 msgid "When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this."
 msgstr ""
 
-#: lib/class-wp-smush.php:1376
+#: lib/class-wp-smush.php:1379
 msgid "Image couldn't be smushed as it exceeded the 1Mb size limit, Pro users can smush images with size upto 32Mb."
 msgstr ""
 
-#: lib/class-wp-smush.php:1378
+#: lib/class-wp-smush.php:1381
 msgid " Skipped"
 msgstr ""
 
-#: lib/class-wp-smush.php:1400
+#: lib/class-wp-smush.php:1403
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:432
 msgid "Image size"
 msgstr ""
 
-#: lib/class-wp-smush.php:1401
+#: lib/class-wp-smush.php:1404
 #: lib/nextgen-integration/class-wp-smush-nextgen-stats.php:433
 msgid "Savings"
 msgstr ""
 
-#: lib/class-wp-smush.php:1608
+#: lib/class-wp-smush.php:1611
 msgid "Restore original image."
 msgstr ""
 
-#: lib/class-wp-smush.php:1608
+#: lib/class-wp-smush.php:1611
 msgid "Restore image"
 msgstr ""
 
-#: lib/class-wp-smush.php:1656
+#: lib/class-wp-smush.php:1659
 msgid "Smush image including original file."
 msgstr ""
 
-#: lib/class-wp-smush.php:1656
+#: lib/class-wp-smush.php:1659
 msgid "Resmush image"
 msgstr ""
 

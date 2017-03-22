@@ -633,8 +633,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 		/**
 		 * Check whether the given path is a image or not
-         *
-         * Do not include backup files
+		 *
+		 * Do not include backup files
 		 *
 		 * @param $path
 		 *
