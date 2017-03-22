@@ -245,10 +245,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Add the file as tmp
 			file_put_contents( $tempfile, $response['data']->image );
 
-			//Take Backup
-			global $wpsmush_backup;
-			$wpsmush_backup->create_backup( $file_path );
-
 			//replace the file
 			$success = @rename( $tempfile, $file_path );
 
@@ -571,6 +567,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Return directly if not a image
 			if ( ! wp_attachment_is_image( $ID ) ) {
+				return $meta;
+			}
+
+			//Check if we're restoring the image
+			if ( get_transient( "wp-smush-restore-$ID" ) ) {
 				return $meta;
 			}
 
@@ -2118,6 +2119,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//If auto Smush is disabled
 			if ( ! $this->is_auto_smush_enabled() ) {
+				return;
+			}
+
+			//Check if we're restoring the image
+			if ( get_transient( "wp-smush-restore-$id" ) ) {
 				return;
 			}
 

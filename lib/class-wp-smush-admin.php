@@ -569,6 +569,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$error = $this->filter_error( esc_html__( "Attachment $attachment_id was skipped.", "wp-smushit" ), $attachment_id );
 			}
 
+			//Get the file path for backup
+			$attachment_file_path = get_attached_file( $attachment_id );
+
+			//Take Backup
+			global $wpsmush_backup;
+			$wpsmush_backup->create_backup( $attachment_file_path );
+
 			if ( ! $send_error ) {
 				//Proceed only if Smushing Transient is not set for the given attachment id
 				if ( ! get_transient( 'smush-in-progress-' . $attachment_id ) ) {
@@ -733,6 +740,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$attachment_id = absint( (int) ( $attachment_id ) );
 
+			//Get the file path for backup
+			$attachment_file_path = get_attached_file( $attachment_id );
+
+			//Take Backup
+			global $wpsmush_backup;
+			$wpsmush_backup->create_backup( $attachment_file_path );
+
 			//Get the image metadata from $_POST
 			$original_meta = !empty( $_POST['metadata'] ) ? $_POST['metadata'] : '';
 
@@ -749,13 +763,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Smush the image
 			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
 
+			//Update the details, after smushing, so that latest image is used in hook
+			wp_update_attachment_metadata( $attachment_id, $original_meta );
+
 			//Get the button status
 			$status = $WpSmush->set_status( $attachment_id, false, true );
 
+			//Delete the transient after attachment meta is updated
 			delete_transient( 'smush-in-progress-' . $attachment_id );
-
-			//Update the details, after smushing, so that latest image is used in hook
-			wp_update_attachment_metadata( $attachment_id, $original_meta );
 
 			//Send Json response if we are not suppose to return the results
 

@@ -135,7 +135,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Fixed:
     * Added check for directory smush savings
     * Call `wp_update_attachment_metadata` after smushing, to allow the optimised image to be used
-    * Images with special symbols doesn't gets optimised
+    * Directory Smush: Images with special symbols doesn't gets optimised
 
 * Updated:
     * Smush Limit ( 50 Images ), do not include images with error in count

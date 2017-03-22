@@ -314,75 +314,11 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 * @return bool
 		 */
 		function replcae_original_image( $file_path, $resized, $attachment_id = '', $meta = '' ) {
-			$replaced = false;
-
-			//Take Backup, if we have to, off by default
-			$this->backup_image( $file_path, $attachment_id, $meta );
 
 			$replaced = @copy( $resized['file_path'], $file_path );
 			$this->maybe_unlink( $resized['file_path'], $meta );
 
 			return $replaced;
-		}
-
-		/**
-		 * Creates a WordPress backup of original image, Disabled by default
-		 *
-		 * @param $path
-		 * @param $attachment_id
-		 * @param $meta
-		 *
-		 */
-		function backup_image( $path, $attachment_id, $meta ) {
-
-			/**
-			 * Allows to turn on the backup for resized image
-			 */
-			$backup = apply_filters( 'wp_smush_resize_create_backup', false );
-
-			//If we don't have a attachment id, return
-			if ( empty( $attachment_id ) || ! $backup ) {
-				return;
-			}
-
-			//Creating Backup
-			$backup_sizes = get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
-
-			if ( ! is_array( $backup_sizes ) ) {
-				$backup_sizes = array();
-			}
-
-			//There is alrready a backup, no need to create one
-			if ( ! empty( $backup_sizes['full-orig'] ) ) {
-				return;
-			}
-
-			//Create a copy of original
-			if ( empty( $path ) ) {
-				$path = get_attached_file( $attachment_id );
-			}
-
-			$path_parts = pathinfo( $path );
-			$filename   = $path_parts['filename'];
-			$filename .= '-orig';
-
-			//Backup Path
-			$backup_path = path_join( $path_parts['dirname'], $filename ) . ".{$path_parts['extension']}";
-
-			//Create a copy
-			if ( file_exists( $path ) ) {
-				$copy_created = @copy( $path, $backup_path );
-				if ( $copy_created ) {
-					$backup_sizes['full-orig'] = array(
-						'file'   => basename( $backup_path ),
-						'width'  => $meta['width'],
-						'height' => $meta['height']
-					);
-					//Save in Attachment meta
-					update_post_meta( $attachment_id, '_wp_attachment_backup_sizes', $backup_sizes );
-				}
-			}
-			return;
 		}
 
 		/**
