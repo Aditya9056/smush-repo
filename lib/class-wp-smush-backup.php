@@ -144,7 +144,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			}
 
 			//Set a transient to avoid the smush-restore-smush loop
-			set_transient("wp-smush-restore-$image_id", true );
+			set_transient("wp-smush-restore-$image_id", true, 90 );
 
 			//Generate all other image size, and update attachment metadata
 			$metadata =  wp_generate_attachment_metadata( $image_id, $file_path );
