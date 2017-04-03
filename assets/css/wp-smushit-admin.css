@@ -1002,6 +1002,10 @@ small.smush-setting-description {
     margin-top: 10px;
 }
 
+small.smush-setting-description strong {
+    color: #5f5d5d
+}
+
 /** Stats Container **/
 .wpmud .dev-box.smush-stats-wrapper {
     color: #333333;
