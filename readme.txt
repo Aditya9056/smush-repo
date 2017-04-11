@@ -132,6 +132,12 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.6.3 =
+
+* Fixed:
+
+    * Compatibility issue with WP Defender
+
 = 2.6.2 =
 
 * Added:
