@@ -139,6 +139,10 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Compatibility issue with WP Defender
     * Image dimensions not updated after resizing in Grid view
 
+* Added:
+
+    * Added a check to preserve smush stats on plugin deletion, You can add `define('WP_SMUSH_PRESERVE_STATS', true );` in wp-config.php
+
 = 2.6.2 =
 
 * Added:
