@@ -30,9 +30,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				return;
 			}
 
-			global $WpSmush;
-
-
 			//Hook early for free version, in order to display it before the advanced settings
 			add_action( 'wp_smush_before_advanced_settings', array( $this, 'ui' ) );
 

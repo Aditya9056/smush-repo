@@ -240,13 +240,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				)
 			);
 
-			//Show NextGen settings only if Nextgen is installed
-			if ( class_exists( 'C_NextGEN_Bootstrap' ) ) {
-				$this->settings['nextgen'] = array(
-					'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
-				);
-			}
+			/**
+			 * Allow to add other settings via filtering the variable
+             *
+			 */
+			$this->settings = apply_filters('wp_smush_settings', $this->settings );
 
 			//Initialize Image dimensions
 			$this->image_sizes = $this->image_dimensions();

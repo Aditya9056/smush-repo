@@ -23,6 +23,10 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-backup.php';
 //Include Smush Async class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-async.php';
 
+//Include Smush Async class
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-s3.php';
+
+
 if ( ! class_exists( 'WpSmush' ) ) {
 
 	class WpSmush {
@@ -1466,10 +1470,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Include and instantiate classes
 		 */
 		function load_nextgen() {
-			if ( ! class_exists( 'C_NextGEN_Bootstrap' ) || ! $this->validate_install() ) {
+
+			if ( ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
 				return;
 			}
-
 			global $wpsmush_settings;
 
 			//Check if integration is Enabled or not
@@ -1487,7 +1491,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			global $wpsmushnextgen, $wpsmushnextgenadmin, $wpsmushnextgenstats;
 			//Initialize Nextgen support
-			$wpsmushnextgen      = new WpSmushNextGen();
+			if( !is_object( $wpsmushnextgen ) ) {
+				$wpsmushnextgen = new WpSmushNextGen();
+			}
 			$wpsmushnextgenstats = new WpSmushNextGenStats();
 			$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 			new WPSmushNextGenBulk();

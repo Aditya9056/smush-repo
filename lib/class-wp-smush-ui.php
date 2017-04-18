@@ -292,9 +292,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				'lossy',
 				'original',
 				'backup',
-				'png_to_jpg',
-				'nextgen'
+				'png_to_jpg'
 			);
+
+			$pro_settings = apply_filters( 'wp_smush_pro_settings', $pro_settings );
 
 			if ( $WpSmush->validate_install() ) {
 				echo "<hr />";
