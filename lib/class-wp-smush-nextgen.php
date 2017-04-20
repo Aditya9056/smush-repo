@@ -22,13 +22,21 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		var $is_nextgen_active = false;
 
 		function __construct() {
-			global $WpSmush;
+			$this->init();
+		}
 
+		function init() {
+			global $WpSmush;
 			//Filters the setting variable to add S3 setting title and description
 			add_filter( 'wp_smush_settings', array( $this, 'register' ), 5 );
 
 			//Filters the setting variable to add S3 setting in premium features
 			add_filter( 'wp_smush_pro_settings', array( $this, 'add_setting' ), 5 );
+
+			//return if not a pro user
+			if( !$WpSmush->validate_install() ) {
+				return;
+			}
 
 			//Auto Smush image, if enabled, runs after Nextgen is finished uploading the image
 			//Allows to override whether to auto smush nextgen image or not
@@ -44,7 +52,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 			//Resmush Image: Handles the single/Manual resmush image request for NextGen Gallery
 			add_action( 'wp_ajax_smush_resmush_nextgen_image', array( $this, 'resmush_image' ) );
-
 		}
 
 		/**
@@ -67,6 +74,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * Append S3 in pro feature list
 		 *
 		 * @param $pro_settings
+		 *
 		 * @return array
 		 */
 		function add_setting( $pro_settings ) {
@@ -211,7 +219,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 					//Check if registered size is supposed to be converted or not
 					global $wpsmushit_admin;
-					if( 'full' != $size && $wpsmushit_admin->skip_image_size( $size ) ) {
+					if ( 'full' != $size && $wpsmushit_admin->skip_image_size( $size ) ) {
 						return false;
 					}
 
@@ -310,8 +318,8 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 					}
 				}
 				//Total Stats
-				$stats = $WpSmush->total_compression( $stats );
-				$stats['total_images'] = !empty( $stats['sizes'] ) ? count( $stats['sizes'] ) : 0;
+				$stats                 = $WpSmush->total_compression( $stats );
+				$stats['total_images'] = ! empty( $stats['sizes'] ) ? count( $stats['sizes'] ) : 0;
 
 				//If there was any compression and there was no error in smushing
 				if ( isset( $stats['stats']['bytes'] ) && $stats['stats']['bytes'] >= 0 && ! $has_errors ) {
@@ -739,7 +747,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				//Updated File size
 				$u_file_size = filesize( $file_path );
 
-				$savings['bytes']     = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
+				$savings['bytes']       = $original_file_size > $u_file_size ? $original_file_size - $u_file_size : 0;
 				$savings['size_before'] = $original_file_size;
 				$savings['size_after']  = $u_file_size;
 
@@ -798,7 +806,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			//Check if the file name is similar to one of the image sizes
 			$path_parts = pathinfo( $path );
 
-			$filename   = ! empty( $path_parts['basename'] ) ? $path_parts['basename'] : $path_parts['filename'];
+			$filename = ! empty( $path_parts['basename'] ) ? $path_parts['basename'] : $path_parts['filename'];
 			foreach ( $sizes as $image_size ) {
 				$file_path_size = $storage->get_image_abspath( $image, $image_size );
 				if ( false === strpos( $file_path_size, $filename ) ) {
@@ -822,7 +830,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 //Extend NextGen Mixin class to smush dynamic images
 if ( class_exists( 'WpSmushNextGen' ) ) {
 	global $WpSmush, $wpsmushnextgen;
-	if( !is_object( $wpsmushnextgen ) ) {
+	if ( ! is_object( $wpsmushnextgen ) ) {
 		$wpsmushnextgen = new WpSmushNextGen();
 	}
 

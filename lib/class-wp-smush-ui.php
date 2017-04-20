@@ -322,6 +322,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							       name="<?php echo $setting_m_key; ?>" tabindex= "0">
 							<label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
 						</span>
+						<?php
+						 /**
+                          *  Perform a action after setting row content
+                         */
+						do_action('smush_setting_row_end', $setting_key );?>
 					</div>
 					<hr><?php
 				}

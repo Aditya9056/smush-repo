@@ -23,9 +23,6 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-backup.php';
 //Include Smush Async class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-async.php';
 
-//Include Smush Async class
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-s3.php';
-
 
 if ( ! class_exists( 'WpSmush' ) ) {
 
@@ -120,8 +117,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Enqueue Scripts, And Initialize variables
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 
-			//Load NextGen Gallery, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
-			add_action( 'plugins_loaded', array( $this, 'load_nextgen' ), 90 );
+			//Load NextGen Gallery, S3, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
+			add_action( 'plugins_loaded', array( $this, 'load_modules' ), 90 );
+
 
 			//Send Smush Stats for pro members
 			add_filter( 'wpmudev_api_project_extra_data-912164', array( $this, 'send_smush_stats' ) );
@@ -1466,6 +1464,17 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
+		 * Load Plugin Modulesxwx
+		 *
+		 */
+		function load_modules() {
+			$this->load_nextgen();
+			//Load S3
+			if( has_action('aws_init') ) {
+				add_action( 'aws_init', array( $this, 'load_s3' ), 120 );
+			}
+		}
+		/**
 		 * Check if NextGen is active or not
 		 * Include and instantiate classes
 		 */
@@ -1497,6 +1506,20 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$wpsmushnextgenstats = new WpSmushNextGenStats();
 			$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 			new WPSmushNextGenBulk();
+		}
+
+		/**
+		 * Load S3 module if the respective plugin is active
+		 */
+		function load_s3() {
+
+			//If we don't have free or pro verison for WP S3 Offload, return
+			if ( ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) {
+				return;
+			}
+
+			//Include Smush Async class
+			require_once WP_SMUSH_DIR . 'lib/class-wp-smush-s3.php';
 		}
 
 		/**

@@ -842,7 +842,7 @@ div.wp-smush-dir-all-done .dev-icon-tick:before {
     text-decoration: underline;
 }
 
-div.wp-smush-dir-remaining .wdv-icon-exclamation-sign:before{
+div.wp-smush-dir-remaining .wdv-icon-exclamation-sign:before {
     color: #FECF2F;
 }
 
@@ -1419,6 +1419,12 @@ small.smush-setting-description strong {
 
 .wpmud .wp-smush-resize-input.error, .wpmud #png_to_jpg_background.error {
     border-color: #fd8b8b;
+}
+
+.wpmud .smush-s3-setup-error {
+    margin-left: 0;
+    margin-top: 15px;
+    /*padding: 10px;*/
 }
 
 .wp-smush-settings-info {

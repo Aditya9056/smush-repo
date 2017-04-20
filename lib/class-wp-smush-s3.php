@@ -12,13 +12,27 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 	class WpSmushS3 {
 
+		private $setup_error = '';
+
 		function __construct() {
+			$this->init();
+		}
+
+		function init() {
+
+			global $WpSmush;
 
 			//Filters the setting variable to add S3 setting title and description
 			add_filter( 'wp_smush_settings', array( $this, 'register' ), 6 );
 
 			//Filters the setting variable to add S3 setting in premium features
 			add_filter( 'wp_smush_pro_settings', array( $this, 'add_setting' ), 6 );
+
+			//return if not a pro user
+			if ( ! $WpSmush->validate_install() ) {
+				return;
+			}
+			$this->check_client();
 
 		}
 
@@ -42,6 +56,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 * Append S3 in pro feature list
 		 *
 		 * @param $pro_settings
+		 *
 		 * @return array
 		 */
 		function add_setting( $pro_settings ) {
@@ -51,6 +66,58 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 
 			return $pro_settings;
+		}
+
+		/**
+		 * Check if WP S3 Offload is configured properly or not
+		 *
+		 * If not, hook at the end of setting row to show a error message
+		 */
+		function check_client() {
+
+			global $as3cf, $WpSmush, $wpsmush_settings;
+			$show_error = false;
+			//If S3 integration is not enabled, return
+			$setting_m_key = WP_SMUSH_PREFIX . 's3';
+			$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;
+
+			if ( ! $setting_val ) {
+				return;
+			}
+
+			//Check if plugin is setup or not
+			//In case for some reason, we couldn't find the function
+			if ( ! is_object( $as3cf ) || ! function_exists( $as3cf->is_plugin_setup() ) ) {
+				$show_error        = true;
+				$support_url       = esc_url( "https://premium.wpmudev.org/contact" );
+				$this->setup_error = sprintf( esc_html__( "We are having trouble interacting with WP S3 Offload, make sure the plugin is activated. Or you can %sreport a bug%s.", "wp-smushit" ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
+			}
+
+			//Plugin is not setup, or some information is missing
+			if ( ! $as3cf->is_plugin_setup() ) {
+				$show_error        = true;
+				$configure_url     = $as3cf->get_plugin_page_url();
+				$this->setup_error = sprintf( esc_html__( "It seems, you haven't configured WP S3 Offload yet, %sConfigure now%s to be able to optimise images on S3.", "wp-smushit" ), "<a href='" . $configure_url . "' target='_blank'>", "</a>" );
+			}
+			//Return Early if we don't need to do anything
+			if ( ! $show_error ) {
+				return;
+			}
+			//Hook at the end of setting row to output a error div
+			add_action( 'smush_setting_row_end', array( $this, 's3_setup_error' ) );
+
+		}
+
+		/**
+		 * Prints the error message if any
+		 *
+		 * @return null
+		 */
+		function s3_setup_error( $setting_key ) {
+			if ( empty( $this->setup_error ) || 's3' != $setting_key ) {
+				return null;
+			}
+			echo "<div class='error smush-s3-setup-error'><p>$this->setup_error</p></div>";
 		}
 
 	}
