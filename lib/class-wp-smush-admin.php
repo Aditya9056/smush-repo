@@ -577,6 +577,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Get the file path for backup
 			$attachment_file_path = get_attached_file( $attachment_id );
 
+
+
 			//Take Backup
 			global $wpsmush_backup;
 			$wpsmush_backup->create_backup( $attachment_file_path );

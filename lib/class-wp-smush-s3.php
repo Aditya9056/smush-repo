@@ -44,9 +44,10 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 * @return mixed
 		 */
 		function register( $settings ) {
+			$plugin_url = esc_url( "https://wordpress.org/plugins/amazon-s3-and-cloudfront/");
 			$settings['s3'] = array(
-				'label' => esc_html__( 'Enable WP S3 Offload integration for remote files', 'wp-smushit' ),
-				'desc'  => sprintf( esc_html__( 'Allows the access to optimise the images stored on S3, using the WP S3 Offload plugin, if the option %sRemove Files From Server%s is enabled. All other files are Smushed as per the Smush settings.', 'wp-smushit' ), "<b>", "</b>" )
+				'label' => esc_html__( 'Amazon S3 support', 'wp-smushit' ),
+				'desc'  => sprintf( esc_html__( 'Optimise your images stored on Amazon S3. This feature uses the %sWP Offload S3%s plugin and is needed if the option %sRemove Files From Server%s is enabled. Images will be smushed as per your current settings.', 'wp-smushit' ), "<a href='". $plugin_url ."' target = '_blank'>", "</a>", "<b>", "</b>" )
 			);
 
 			return $settings;
@@ -87,7 +88,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			//Check if plugin is setup or not
 			//In case for some reason, we couldn't find the function
-			if ( ! is_object( $as3cf ) || ! function_exists( $as3cf->is_plugin_setup() ) ) {
+			if ( ! is_object( $as3cf ) || ! method_exists( $as3cf, 'is_plugin_setup' ) ) {
 				$show_error        = true;
 				$support_url       = esc_url( "https://premium.wpmudev.org/contact" );
 				$this->setup_error = sprintf( esc_html__( "We are having trouble interacting with WP S3 Offload, make sure the plugin is activated. Or you can %sreport a bug%s.", "wp-smushit" ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
@@ -97,7 +98,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			if ( ! $as3cf->is_plugin_setup() ) {
 				$show_error        = true;
 				$configure_url     = $as3cf->get_plugin_page_url();
-				$this->setup_error = sprintf( esc_html__( "It seems, you haven't configured WP S3 Offload yet, %sConfigure now%s to be able to optimise images on S3.", "wp-smushit" ), "<a href='" . $configure_url . "' target='_blank'>", "</a>" );
+				$this->setup_error = sprintf( esc_html__( "It seems you haven't finished setting up WP S3 Offload yet, %sConfigure%s it now to enable Amazon S3 support.", "wp-smushit" ), "<a href='" . $configure_url . "' target='_blank'>", "</a>" );
 			}
 			//Return Early if we don't need to do anything
 			if ( ! $show_error ) {
@@ -117,7 +118,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			if ( empty( $this->setup_error ) || 's3' != $setting_key ) {
 				return null;
 			}
-			echo "<div class='error smush-s3-setup-error'><p>$this->setup_error</p></div>";
+			echo "<div class='wp-smush-notice smush-s3-setup-error'><i class='dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign'></i><p>$this->setup_error</p></div>";
 		}
 
 	}
