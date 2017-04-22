@@ -528,7 +528,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 						<div class="wp-smush-smush-stats-wrapper">
 							<span class="wp-smush-optimised"><?php echo $smushed_count; ?></span>/<span><?php echo $this->total_count; ?></span>
 						</div>
-						<span class="total-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SMUSHED", "wp-smushit" ); ?></strong></span>
+						<span class="total-stats-label"><strong><?php esc_html_e( "IMAGES SMUSHED", "wp-smushit" ); ?></strong></span>
 					</div>
 				</div>
 			</div>
@@ -550,7 +550,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				<hr>
 				<div class="row super-smush-attachments">
 					<span class="float-l wp-smush-stats-label">
-						<strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong>
+						<strong><?php esc_html_e( "IMAGES SUPER-SMUSHED", "wp-smushit" ); ?></strong>
 					</span>
 					<span class="float-r wp-smush-stats">
 						<?php
