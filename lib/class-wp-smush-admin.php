@@ -878,7 +878,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function remaining_count() {
 
-			$smushed_count = ( ! empty( $this->dir_stats['total'] ) && $this->dir_stats['total'] > 0 ) ? $this->smushed_count + $this->dir_stats['total'] : $this->smushed_count;
+			$smushed_count = $this->smushed_count;
+			// Add directory smush count.
+			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
+				$smushed_count = $this->smushed_count + $this->dir_stats['optimised'];
+			}
 
 			return ( $this->total_count - $smushed_count );
 		}
