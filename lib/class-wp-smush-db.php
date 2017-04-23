@@ -178,7 +178,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 			// Add directory smushed images too.
 			// NOTE: We adding only succesfully directory smushed images count to avoid confusion.
 			if ( ! empty( $wpsmushit_admin->dir_stats['optimised'] ) ) {
-				$total_count = $total_count + $wpsmushit_admin->dir_stats['optimised'];
+				$total_count += $wpsmushit_admin->dir_stats['optimised'];
 			}
 			// Set total count.
 			$wpsmushit_admin->total_count = $total_count;

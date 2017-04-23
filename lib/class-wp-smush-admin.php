@@ -499,7 +499,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smushed_count = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
 			// If directory smushed images are there, add those too.
 			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
-				$smushed_count = $smushed_count + $this->dir_stats['optimised'];
+				$smushed_count += $this->dir_stats['optimised'];
 			}
 			// Set smushed count.
 			$this->smushed_count = $smushed_count;
@@ -881,7 +881,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smushed_count = $this->smushed_count;
 			// Add directory smush count.
 			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
-				$smushed_count = $this->smushed_count + $this->dir_stats['optimised'];
+				$smushed_count += $this->dir_stats['optimised'];
 			}
 
 			return ( $this->total_count - $smushed_count );
@@ -1024,15 +1024,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Add directory smush image bytes.
 			if ( ! empty( $this->dir_stats['bytes'] && $this->dir_stats['bytes'] > 0 ) ) {
-				$smush_data['bytes'] = $smush_data['bytes'] + $this->dir_stats['bytes'];
+				$smush_data['bytes'] += $this->dir_stats['bytes'];
 			}
 			// Add directory smush image total size.
 			if ( ! empty( $this->dir_stats['orig_size'] && $this->dir_stats['orig_size'] > 0 ) ) {
-				$smush_data['size_before'] = $smush_data['size_before'] + $this->dir_stats['orig_size'];
+				$smush_data['size_before'] += $this->dir_stats['orig_size'];
 			}
 			// Add directory smush saved size.
 			if ( ! empty( $this->dir_stats['image_size'] && $this->dir_stats['image_size'] > 0 ) ) {
-				$smush_data['size_after'] = $smush_data['size_after'] + $this->dir_stats['image_size'];
+				$smush_data['size_after'] += $this->dir_stats['image_size'];
+			}
+			// Add directory smushed images.
+			if ( ! empty( $this->dir_stats['optimised'] && $this->dir_stats['optimised'] > 0 ) ) {
+				$smush_data['total_images'] += $this->dir_stats['optimised'];
 			}
 
 			//Resize Savings

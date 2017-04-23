@@ -664,8 +664,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				//Button Text
 				$button_content = esc_html__( "BULK SMUSH NOW", "wp-smushit" );
 
+				$remaining_count = $wpsmushit_admin->remaining_count;
+				// Add directory optimised count.
+				if ( ! empty( $wpsmushit_admin->dir_stats['optimised'] ) && $wpsmushit_admin->dir_stats['optimised'] > 0 ) {
+					$remaining_count += $wpsmushit_admin->dir_stats['optimised'];
+				}
 				//Show the notice only if there are remaining images and if we aren't showing a notice for resmush
-				if ( $wpsmushit_admin->remaining_count > 0 ) {
+				if ( $remaining_count > 0 ) {
 					$class = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' hidden' : '';
 					$upgrade_url = add_query_arg(
 						array(
@@ -681,7 +686,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
 						</i>
 						<span class="wp-smush-notice-text"><?php
-							printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that need smushing!", $wpsmushit_admin->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' );
+							printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that need smushing!", $remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $remaining_count, '</span>', '</strong>' );
 							if( !$WpSmush->validate_install() ) {
 								printf( '<br />' . esc_html__("%sUpgrade to Pro%s to bulk smush all your images with one click.", "wp-smushit") .'<br />', '<a href="' . esc_url( $upgrade_url ). '" target="_blank" title="' . esc_html__("WP Smush Pro", "wp-smushit") . '">', '</a>' );
 								esc_html_e("Free users can smush 50 images with each click.", "wp-smushit");
