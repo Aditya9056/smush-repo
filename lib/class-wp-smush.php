@@ -1,4 +1,8 @@
 <?php
+
+//Helper Class
+require_once WP_SMUSH_DIR . "lib/class-wp-smush-helper.php";
+
 //Settings Class
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-settings.php";
 
@@ -382,6 +386,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$attachment_file_path_size = path_join( dirname( $attachment_file_path ), $size_data['file'] );
 
 					if ( $finfo ) {
+						error_log( $attachment_file_path_size );
 						$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
 					} elseif ( function_exists( 'mime_content_type' ) ) {
 						$ext = mime_content_type( $attachment_file_path_size );
