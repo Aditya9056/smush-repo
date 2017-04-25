@@ -1,4 +1,8 @@
 <?php
+
+//Helper Class
+require_once WP_SMUSH_DIR . "lib/class-wp-smush-helper.php";
+
 //Settings Class
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-settings.php";
 
@@ -369,7 +373,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$finfo = false;
 				}
 
-				global $wpsmushit_admin;
+				global $wpsmushit_admin, $wpsmush_s3;
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					//Check if registered size is supposed to be Smushed or not
@@ -380,6 +384,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					// We take the original image. The 'sizes' will all match the same URL and
 					// path. So just get the dirname and replace the filename.
 					$attachment_file_path_size = path_join( dirname( $attachment_file_path ), $size_data['file'] );
+
+					if( !file_exists( $attachment_file_path_size ) ) {
+						$wpsmush_s3->download_file( $ID, $attachment_file_path_size );
+					}
 
 					if ( $finfo ) {
 						$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';

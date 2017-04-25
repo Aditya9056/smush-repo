@@ -753,7 +753,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$wpsmush_backup->create_backup( $attachment_file_path );
 
 			//Get the image metadata from $_POST
-			$original_meta = !empty( $_POST['metadata'] ) ? $_POST['metadata'] : '';
+			$original_meta = ! empty( $_POST['metadata'] ) ? $_POST['metadata'] : '';
 
 			$original_meta = empty( $original_meta ) ? wp_get_attachment_metadata( $attachment_id ) : $original_meta;
 
