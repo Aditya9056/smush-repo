@@ -373,7 +373,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$finfo = false;
 				}
 
-				global $wpsmushit_admin;
+				global $wpsmushit_admin, $wpsmush_s3;
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					//Check if registered size is supposed to be Smushed or not
@@ -385,8 +385,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					// path. So just get the dirname and replace the filename.
 					$attachment_file_path_size = path_join( dirname( $attachment_file_path ), $size_data['file'] );
 
+					if( !file_exists( $attachment_file_path_size ) ) {
+						$wpsmush_s3->download_file( $ID, $attachment_file_path_size );
+					}
+
 					if ( $finfo ) {
-						error_log( $attachment_file_path_size );
 						$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
 					} elseif ( function_exists( 'mime_content_type' ) ) {
 						$ext = mime_content_type( $attachment_file_path_size );

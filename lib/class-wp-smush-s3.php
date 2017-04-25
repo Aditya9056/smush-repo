@@ -121,15 +121,6 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			echo "<div class='wp-smush-notice smush-s3-setup-error'><i class='dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign'></i><p>$this->setup_error</p></div>";
 		}
 
-		function smush_download_file( $copy_back_to_local, $url, $file, $s3_object ) {
-
-//			error_log( print_r( $_REQUEST, true ) );
-			global $as3cf;
-			$result = $as3cf->copy_image_to_server_on_action( 'smush', $copy_back_to_local, $url, $file, $s3_object );
-//			error_log( print_r( $result, true ) );
-			exit;
-		}
-
 		/**
 		 * Checks if the given attachment is on S3 or not, Returns S3 URL or WP Error
 		 *
@@ -139,17 +130,15 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 *
 		 * @return bool|false|string
 		 *
-		 * @todo: Modify function to handle different image sizes
-		 *
 		 */
-		function is_image_on_s3( $attachment_id, $file_path = '' ) {
+		function is_image_on_s3( $attachment_id ) {
 			global $as3cf;
-			if ( empty( $attachment_id ) && empty( $file_path ) ) {
+			if ( empty( $attachment_id ) ) {
 				return false;
 			}
 
 			//If we only have the attachment id
-			if ( ! empty( $attachment_id ) && empty( $file_path ) ) {
+			if ( ! empty( $attachment_id ) ) {
 				$full_url = get_attached_file( $attachment_id );
 				//If the filepath contains S3, get the s3 URL for the file
 				if ( strpos( $full_url, 's3' ) !== false ) {
@@ -157,16 +146,6 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				}
 
 				return $full_url;
-			}
-
-			//If we have the attachment id and file path
-			if ( ! empty( $attachment_id ) && ! empty( $file_path ) ) {
-				//Get S3 URL corresponding to file path
-			}
-
-			//If we just have the file path
-			if ( empty( $attachment_id ) && ! empty( $file_path ) ) {
-
 			}
 
 			return false;
@@ -201,7 +180,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id );
 
 				//Try to download the attachment
-				if ( $s3_object && is_object( $s3_object ) && ! empty( $as3cf->plugin_compat ) && method_exists( $as3cf->plugin_compat, 'copy_s3_file_to_server' ) ) {
+				if ( $s3_object && is_object( $as3cf->plugin_compat ) && method_exists( $as3cf->plugin_compat, 'copy_s3_file_to_server' ) ) {
 					//Download file
 					$file = $as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $uf_file_path );
 				}
@@ -209,7 +188,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			//If we don't have the file, Try it the basic way
 			if ( ! $file ) {
-				$s3_url = $this->is_image_on_s3( $attachment_id, $uf_file_path );
+				$s3_url = $this->is_image_on_s3( $attachment_id );
 
 				//If we couldn't get the image URL, return false
 				if ( is_wp_error( $s3_url ) || empty( $s3_url ) || ! $s3_url ) {
@@ -238,6 +217,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 	$wpsmush_s3 = new WpSmushS3();
 
 }
+
 if ( class_exists( 'AS3CF_Plugin_Compatibility' ) && ! class_exists( 'wp_smush_s3_compat' ) ) {
 	class wp_smush_s3_compat extends AS3CF_Plugin_Compatibility {
 
@@ -253,17 +233,26 @@ if ( class_exists( 'AS3CF_Plugin_Compatibility' ) && ! class_exists( 'wp_smush_s
 		function smush_download_file( $url, $file, $attachment_id, $s3_object ) {
 
 			global $as3cf;
-			if( file_exists( $file ) ) {
+			//If we already have the local file at specified path
+			if ( file_exists( $file ) ) {
 				return;
 			}
+
 			//Download image for Manual and Bulk Smush
 			$action = ! empty( $_GET['action'] ) ? $_GET['action'] : '';
 			if ( empty( $action ) || ! in_array( $action, array( 'wp_smushit_manual', 'wp_smushit_bulk' ) ) ) {
 				return;
 			}
-			$result = $as3cf->plugin_compat->copy_image_to_server_on_action( $action, true, $url, $file, $s3_object );
-			error_log( print_r( $result, true ) );
+
+			//If the plugin compat object is not available, or the method has been updated
+			if ( ! is_object( $as3cf->plugin_compat ) || ! method_exists( $as3cf->plugin_compat, 'copy_image_to_server_on_action' ) ) {
+				return;
+			}
+
+			$as3cf->plugin_compat->copy_image_to_server_on_action( $action, true, $url, $file, $s3_object );
 		}
 	}
-	new wp_smush_s3_compat();
+
+	global $wpsmush_s3_compat;
+	$wpsmush_s3_compat = new wp_smush_s3_compat();
 }
