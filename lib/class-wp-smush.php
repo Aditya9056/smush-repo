@@ -819,7 +819,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$last_checked = $api_auth[ $api_key ]['timestamp'];
 				$valid        = $api_auth[ $api_key ]['validity'];
 
-				$diff = $last_checked - current_time( 'timestamp' );
+				$diff = current_time( 'timestamp' ) - $last_checked;
 
 				//Difference in hours
 				$diff_h = $diff / 3600;
