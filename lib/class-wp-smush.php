@@ -385,8 +385,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					// path. So just get the dirname and replace the filename.
 					$attachment_file_path_size = path_join( dirname( $attachment_file_path ), $size_data['file'] );
 
-					if( !file_exists( $attachment_file_path_size ) ) {
-						$wpsmush_s3->download_file( $ID, $attachment_file_path_size );
+					if ( ! file_exists( $attachment_file_path_size ) ) {
+						$wpsmush_s3->download_file( $ID, $size_data, $attachment_file_path_size );
 					}
 
 					if ( $finfo ) {
@@ -819,7 +819,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$last_checked = $api_auth[ $api_key ]['timestamp'];
 				$valid        = $api_auth[ $api_key ]['validity'];
 
-				$diff = $last_checked - current_time( 'timestamp' );
+				$diff = current_time( 'timestamp' ) - $last_checked;
 
 				//Difference in hours
 				$diff_h = $diff / 3600;
