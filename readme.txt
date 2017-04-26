@@ -132,6 +132,12 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.6.4 =
+
+* Fixed:
+
+    * Issue with WP Smush Pro membership check
+
 = 2.6.3 =
 
 * Fixed:
