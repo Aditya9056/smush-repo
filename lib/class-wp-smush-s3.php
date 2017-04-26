@@ -157,12 +157,15 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 *  and/or Attachment path
 		 *
 		 * @param $attachment_id
+		 *
+		 * @param array $size_details
+		 *
 		 * @param string $uf_file_path
 		 *
 		 * @return string|bool Returns file path or false
 		 *
 		 */
-		function download_file( $attachment_id, $uf_file_path = '' ) {
+		function download_file( $attachment_id, $size_details = array(), $uf_file_path = '' ) {
 			if ( empty( $attachment_id ) ) {
 				return false;
 			}
@@ -171,18 +174,24 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$renamed = $s3_object = $s3_url = $file = false;
 
 			//If file path wasn't specified in argument
-			if ( empty( $uf_file_path ) ) {
-				$uf_file_path = get_attached_file( $attachment_id, true );
-			}
+			$uf_file_path = empty( $uf_file_path ) ? get_attached_file( $attachment_id, true ) : $uf_file_path;
 
 			//If we have plugin method available, us that otherwise check it ourselves
 			if ( method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
 				$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id );
+				if ( ! empty( $size_details ) && is_array( $size_details ) ) {
+					$size_prefix      = dirname( $s3_object['key'] );
+					$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
+					$s3_object['key'] = $size_file_prefix . $size_details['file'];
+				}
 
 				//Try to download the attachment
 				if ( $s3_object && is_object( $as3cf->plugin_compat ) && method_exists( $as3cf->plugin_compat, 'copy_s3_file_to_server' ) ) {
 					//Download file
 					$file = $as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $uf_file_path );
+				}
+				if( $file ) {
+					return $file;
 				}
 			}
 
@@ -195,16 +204,19 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 					return false;
 				}
 
+				//If size details are available, Update the URL to get the image for the specified size
+				$s3_url = str_replace( wp_basename( $s3_url ), $size_details['file'], $s3_url );
 				//Download the file
 				$temp_file = download_url( $s3_url );
 				if ( ! is_wp_error( $temp_file ) ) {
-					$renamed = copy( $temp_file, $uf_file_path );
+					$renamed = @copy( $temp_file, $uf_file_path );
 					unlink( $temp_file );
 				}
 
 				//If we were able to successfully rename the file, return file path
 				if ( $renamed ) {
-					$uf_file_path;
+
+					return $uf_file_path;
 				}
 			}
 
@@ -230,6 +242,14 @@ if ( class_exists( 'AS3CF_Plugin_Compatibility' ) && ! class_exists( 'wp_smush_s
 			add_filter( 'as3cf_get_attached_file', array( $this, 'smush_download_file' ), 11, 4 );
 		}
 
+		/**
+		 * Download the attached file from S3 to local server
+		 *
+		 * @param $url
+		 * @param $file
+		 * @param $attachment_id
+		 * @param $s3_object
+		 */
 		function smush_download_file( $url, $file, $attachment_id, $s3_object ) {
 
 			global $as3cf;
