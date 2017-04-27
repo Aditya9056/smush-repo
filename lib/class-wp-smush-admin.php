@@ -515,13 +515,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return int
 		 */
 		function get_exceeding_items_count( $force_update = false ) {
+		    global $wpsmush_helper;
 			$count = wp_cache_get( 'exceeding_items', 'wp_smush' );
 			if ( ! $count || $force_update ) {
 				$count = 0;
 				//Check images bigger than 1Mb, used to display the count of images that can't be smushed
 				foreach ( $this->unsmushed_attachments as $attachment ) {
-					if ( file_exists( get_attached_file( $attachment ) ) ) {
-						$size = filesize( get_attached_file( $attachment ) );
+				    $attachment = $wpsmush_helper->get_attached_file( $attachment );
+					if ( file_exists( $attachment ) ) {
+						$size = filesize( $attachment );
 					}
 					if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
 						continue;
@@ -542,7 +544,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function process_smush_request() {
 
-			global $WpSmush, $wpsmush_db;
+			global $WpSmush, $wpsmush_db, $wpsmush_helper;
 
 			// turn off errors for ajax result
 			@error_reporting( 0 );
@@ -589,7 +591,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Get the file path for backup
-			$attachment_file_path = get_attached_file( $attachment_id );
+			$attachment_file_path = $wpsmush_helper->get_attached_file( $attachment_id );
 
 			//Take Backup
 			global $wpsmush_backup;
@@ -755,12 +757,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Set a transient to avoid multiple request
 			set_transient( 'smush-in-progress-' . $attachment_id, true, 5 * MINUTE_IN_SECONDS );
 
-			global $WpSmush, $wpsmush_pngjpg;
+			global $WpSmush, $wpsmush_pngjpg, $wpsmush_helper;
 
 			$attachment_id = absint( (int) ( $attachment_id ) );
 
 			//Get the file path for backup
-			$attachment_file_path = get_attached_file( $attachment_id );
+			$attachment_file_path = $wpsmush_helper->get_attached_file( $attachment_id );
 
 			//Take Backup
 			global $wpsmush_backup;
