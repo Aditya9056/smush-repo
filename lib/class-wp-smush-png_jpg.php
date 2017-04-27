@@ -52,13 +52,15 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		 */
 		function is_transparent( $id = '', $file = '' ) {
 
+			global $wpsmush_helper;
+
 			//No attachment id/ file path, return
 			if ( empty( $id ) && empty( $file ) ) {
 				return false;
 			}
 
 			if ( empty( $file ) ) {
-				$file = get_attached_file( $id );
+				$file = $wpsmush_helper->get_attached_file( $id );
 			}
 
 			//Check if File exists
@@ -183,13 +185,13 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			}
 
 			//Check if registered size is supposed to be converted or not
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpsmush_helper;
 			if ( 'full' != $size && $wpsmushit_admin->skip_image_size( $size ) ) {
 				return false;
 			}
 
 			if ( empty( $file ) ) {
-				$file = get_attached_file( $id );
+				$file = $wpsmush_helper->get_attached_file( $id );
 			}
 
 			/** Whether to convert to jpg or not **/
@@ -453,7 +455,9 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				return $meta;
 			}
 
-			$file = get_attached_file( $id );
+			global $wpsmush_helper;
+
+			$file = $wpsmush_helper->get_attached_file( $id );
 
 			/** Whether to convert to jpg or not **/
 			$should_convert = $this->can_be_converted( $id );

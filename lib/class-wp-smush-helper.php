@@ -20,25 +20,26 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 
 		function init() {
 
-
 		}
 
-
 		/**
-		 * Check if file is on S3 and download the file
+		 * Return unfiltered file path
 		 *
 		 * @param $attachment_id
 		 *
 		 * @return bool
 		 */
-		function maybe_get_remote_file( $attachment_id ) {
-
-			global $wpsmush_s3;
-			//See if we can get it using S3
-			$file = $wpsmush_s3->download_file( $attachment_id );
-			if( $file ) {
-				return $file;
+		function get_attached_file( $attachment_id ) {
+			if ( empty( $attachment_id ) ) {
+				return false;
 			}
+
+			$file_path = get_attached_file( $attachment_id );
+			if ( ! empty( $file_path ) && strpos( $file_path, 's3' ) !== false ) {
+				$file_path = get_attached_file( $attachment_id, true );
+			}
+
+			return $file_path;
 		}
 	}
 
