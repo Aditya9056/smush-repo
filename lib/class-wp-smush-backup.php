@@ -88,7 +88,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 		 * @return bool
 		 */
 		function restore_image( $attachment = '', $resp = true ) {
-			global $WpSmush;
+			global $WpSmush, $wpsmush_helper;
 			//If no attachment id is provided, check $_POST variable for attachment_id
 			if ( empty( $attachment ) ) {
 				//Check Empty fields
@@ -116,7 +116,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			//Restore Full size -> get other image sizes -> restore other images
 
 			//Get the Original Path
-			$file_path = get_attached_file( $image_id );
+			$file_path = $wpsmush_helper->get_attached_file( $image_id );
 
 			//Get the backup path
 			$backup_name = $WpSmush->get_image_backup_path( $file_path );
