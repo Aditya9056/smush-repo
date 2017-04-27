@@ -166,7 +166,8 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 *
 		 */
 		function download_file( $attachment_id, $size_details = array(), $uf_file_path = '' ) {
-			if ( empty( $attachment_id ) ) {
+			global $WpSmush, $wpsmush_settings;
+			if ( empty( $attachment_id ) || ! $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 's3', false ) || ! $WpSmush->validate_install() ) {
 				return false;
 			}
 
@@ -182,7 +183,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				if ( ! empty( $size_details ) && is_array( $size_details ) ) {
 					$size_prefix      = dirname( $s3_object['key'] );
 					$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
-					$s3_object['key'] = $size_file_prefix . $size_details['file'];
+					$s3_object['key'] = path_join( $size_file_prefix, $size_details['file'] );
 				}
 
 				//Try to download the attachment
@@ -190,7 +191,8 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 					//Download file
 					$file = $as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $uf_file_path );
 				}
-				if( $file ) {
+
+				if ( $file ) {
 					return $file;
 				}
 			}
@@ -252,7 +254,13 @@ if ( class_exists( 'AS3CF_Plugin_Compatibility' ) && ! class_exists( 'wp_smush_s
 		 */
 		function smush_download_file( $url, $file, $attachment_id, $s3_object ) {
 
-			global $as3cf;
+			global $as3cf, $wpsmush_settings, $WpSmush;
+
+			//Return if integration is disabled, or not a pro user
+			if ( ! $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 's3', false ) || ! $WpSmush->validate_install() ) {
+				return;
+			}
+
 			//If we already have the local file at specified path
 			if ( file_exists( $file ) ) {
 				return;

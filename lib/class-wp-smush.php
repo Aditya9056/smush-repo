@@ -324,7 +324,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function resize_from_meta_data( $meta, $ID = null ) {
 
-			global $wpsmush_settings;
+			global $wpsmush_settings, $wpsmush_helper;
 
 			//Flag to check, if original size image should be smushed or not
 			$original   = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'original', false );
@@ -352,7 +352,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$this->media_type    = "wp";
 
 			//File path and URL for original image
-			$attachment_file_path = get_attached_file( $ID );
+			$attachment_file_path = $wpsmush_helper->get_attached_file( $ID );
 
 			// If images has other registered size, smush them first
 			if ( ! empty( $meta['sizes'] ) ) {
@@ -373,7 +373,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$finfo = false;
 				}
 
-				global $wpsmushit_admin, $wpsmush_s3;
+				global $wpsmushit_admin, $wpsmush_s3, $wpsmush_helper;
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					//Check if registered size is supposed to be Smushed or not
@@ -390,7 +390,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					}
 
 					if ( $finfo ) {
-						$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
+						$ext = is_file( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
 					} elseif ( function_exists( 'mime_content_type' ) ) {
 						$ext = mime_content_type( $attachment_file_path_size );
 					} else {
