@@ -534,7 +534,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			</div>
 			<hr />
 			<div class="row wp-smush-savings">
-				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e("TOTAL SAVINGS", "wp-smushit");?></strong></span>
+				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e("COMPRESSION SAVINGS", "wp-smushit");?></strong></span>
 				<span class="float-r wp-smush-stats">
 				    <span class="wp-smush-stats-percent"><?php echo $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0; ?></span>%
 					<span class="wp-smush-stats-sep">/</span>
