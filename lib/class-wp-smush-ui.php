@@ -191,7 +191,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							//If Not enabled, Add a enable button
 							printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
 						}else{
-							echo "0MB";
+							printf( esc_html__( "%sNO RESIZE SAVINGS AVAILABLE%s", "wp-smushit" ), '<span class="total-stats-label"><strong>', '</strong></span>' );
 						}
 					} ?>
 				</span>
