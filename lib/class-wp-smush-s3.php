@@ -179,11 +179,14 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			//If we have plugin method available, us that otherwise check it ourselves
 			if ( method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
-				$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id );
+				$s3_object        = $as3cf->is_attachment_served_by_s3( $attachment_id );
+				$size_prefix      = dirname( $s3_object['key'] );
+				$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
 				if ( ! empty( $size_details ) && is_array( $size_details ) ) {
-					$size_prefix      = dirname( $s3_object['key'] );
-					$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
 					$s3_object['key'] = path_join( $size_file_prefix, $size_details['file'] );
+				} elseif ( ! empty( $uf_file_path ) ) {
+					//Get the File path using basename for given attachment path
+					$s3_object['key'] = path_join( $size_file_prefix, wp_basename( $uf_file_path ) );
 				}
 
 				//Try to download the attachment
@@ -206,8 +209,14 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 					return false;
 				}
 
-				//If size details are available, Update the URL to get the image for the specified size
-				$s3_url = str_replace( wp_basename( $s3_url ), $size_details['file'], $s3_url );
+				if ( ! empty( $size_details ) ) {
+					//If size details are available, Update the URL to get the image for the specified size
+					$s3_url = str_replace( wp_basename( $s3_url ), $size_details['file'], $s3_url );
+				} elseif ( ! empty( $uf_file_path ) ) {
+					//Get the File path using basename for given attachment path
+					$s3_url = str_replace( wp_basename( $s3_url ), wp_basename( $uf_file_path ), $s3_url );
+				}
+
 				//Download the file
 				$temp_file = download_url( $s3_url );
 				if ( ! is_wp_error( $temp_file ) ) {
