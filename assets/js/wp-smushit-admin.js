@@ -381,9 +381,14 @@ jQuery(function ($) {
                 var smush_resize_savings = $('.smush-resize-savings');
                 //Update Resize Savings
                 if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings ) && _res.data.stats.resize_savings != '') {
-                    var resize_savings = smush_resize_savings.find('.wp-smush-stats');
-                    if (resize_savings.length > 0) {
-                        resize_savings.html(_res.data.stats.resize_savings);
+                    // Get the resize savings in number.
+                    var savings_value = parseInt(_res.data.stats.resize_savings);
+                    // Replace only if value is grater than 0.
+                    if (savings_value > 0) {
+                        var resize_savings = smush_resize_savings.find('.wp-smush-stats');
+                        if (resize_savings.length > 0) {
+                            resize_savings.html(_res.data.stats.resize_savings);
+                        }
                     }
                 }
                 // increase the progress bar
