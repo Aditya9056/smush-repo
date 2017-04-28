@@ -86,19 +86,29 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
             <!-- Savings from Directory Smush -->
             <div class="row smush-dir-savings">
             <span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "DIRECTORY SMUSH SAVINGS", "wp-smushit" ); ?></strong></span>
-            <span class="float-r wp-smush-stats"><?php
-				if ( ! empty( $dir_smush_stats ) && $human == 0 && $percent < 1 ) {
-					//If smush percentage is lower, Show stats as < 1Kb
-					$human   = "< 1KB";
-					$percent = "< 1";
-				} ?>
-                <span class="spinner" style="visibility: visible"
-                      title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
-                        <span class="wp-smush-stats-human"><?php echo ! empty( $human ) ? $human : ''; ?></span><?php
-				if ( $percent > 1 ) { ?>
-                    <span class="wp-smush-stats-sep">/</span>
-                    <span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>%</span><?php
-				} ?>
+            <span class="float-r wp-smush-stats">
+	            <span class="spinner" style="visibility: visible" title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
+	            <?php
+	            if ($human > 0) {
+		            if ( ! empty( $dir_smush_stats ) && $human == 0 && $percent < 1 ) {
+			            //If smush percentage is lower, Show stats as < 1Kb
+			            $human   = "< 1KB";
+			            $percent = "< 1";
+		            } ?>
+
+		            <span class="wp-smush-stats-human"><?php echo ! empty( $human ) ? $human : ''; ?></span><?php
+		            if ( $percent > 1 ) { ?>
+			            <span class="wp-smush-stats-sep">/</span>
+			            <span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>
+			            %</span><?php
+		            }
+	            } else { ?>
+	                <span class="wp-smush-stats-human">
+		                <a href="#wp-smush-dir-browser"><button class="button button-small wp-smush-dir-link" type="button">SMUSH A DIRECTORY</button></a>
+	                </span>
+		            <span class="wp-smush-stats-sep" style="display: none;">/</span>
+		            <span class="wp-smush-stats-percent"></span>
+	            <?php } ?>
                 </span>
             </div><?php
 		}
