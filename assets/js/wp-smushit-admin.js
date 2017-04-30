@@ -388,7 +388,7 @@ jQuery(function ($) {
                 }
 
                 // Update avg pro savings stats.
-                if ('undefined' != typeof (_res.data.stats.pro_savings.savings ) && 'undefined' != typeof (_res.data.stats.pro_savings.percent ) ) {
+                if ('undefined' != typeof (_res.data.stats.pro_savings)) {
                     // Make pro savings div visible if hidden.
                     $('#smush-avg-pro-savings').show();
                     // Pro stats section.
@@ -396,10 +396,10 @@ jQuery(function ($) {
                     if (smush_pro_savings.length > 0) {
                         var pro_savings_percent = smush_pro_savings.find('.wp-smush-stats-percent');
                         var pro_savings_bytes = smush_pro_savings.find('.wp-smush-stats-human');
-                        if (pro_savings_percent.length > 0 && _res.data.stats.pro_savings.percent != '') {
+                        if (pro_savings_percent.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.percent) && _res.data.stats.pro_savings.percent != '') {
                             pro_savings_percent.html(_res.data.stats.pro_savings.percent);
                         }
-                        if (pro_savings_bytes.length > 0 && _res.data.stats.pro_savings.savings != '') {
+                        if (pro_savings_bytes.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.savings) && _res.data.stats.pro_savings.savings != '') {
                             pro_savings_bytes.html(_res.data.stats.pro_savings.savings);
                         }
                     }
