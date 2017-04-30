@@ -941,7 +941,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 *
 		 */
 		function total_stats() {
-			global $wpdb;
+			global $wpdb, $WpSmush;
 
 			$offset    = 0;
 			$optimised = 0;
@@ -952,7 +952,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$total = ! empty( $total ) && is_array( $total ) ? $total[0] : 0;
 
-			while ( $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL LIMIT $offset, $limit ", ARRAY_A ) ) {
+			// If super-smush enabled, add meta condition.
+			$meta_condition = $WpSmush->lossy_enabled ? 'AND meta IS NOT NULL' : '';
+
+			while ( $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL $meta_condition LIMIT $offset, $limit ", ARRAY_A ) ) {
 				if ( ! empty( $results ) ) {
 					$images = array_merge( $images, $results );
 				}
@@ -1108,9 +1111,19 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			//Get file time
 			$file_time = @filectime( $path );
 
-			//All good, Update the stats
-			$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d WHERE id=%d LIMIT 1";
-			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $file_time, $id );
+			// All good, Update the stats
+			// If super-smush enabled, update supersmushed meta value also.
+			if ( $WpSmush->lossy_enabled ) {
+				// Serialize the meta value.
+				//@todo: Make meta values searchable by changing serialized form, if new properties are added in future.
+				$meta = serialize( array( 'lossy' => 1 ) );
+
+				$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, meta=%s WHERE id=%d LIMIT 1";
+				$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $file_time, $meta, $id );
+			} else {
+				$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d WHERE id=%d LIMIT 1";
+				$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $file_time, $id );
+			}
 			$wpdb->query( $query );
 
 			//Get Total stats
