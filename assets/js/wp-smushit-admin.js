@@ -1332,6 +1332,23 @@ jQuery(function ($) {
 
                     //Update Directory progress
                     update_dir_progress(ele);
+
+                    // Update dir savings stats.
+                    if ('undefined' != typeof (res.data.total.percent) && 'undefined' != typeof (res.data.total.human)) {
+                        // Make pro savings div visible if hidden.
+                        // Pro stats section.
+                        var smush_dir_savings = $('.smush-dir-savings');
+                        if (smush_dir_savings.length > 0) {
+                            var dir_savings_percent = smush_dir_savings.find('.wp-smush-stats-percent');
+                            var dir_savings_human = smush_dir_savings.find('.wp-smush-stats-human');
+                            if (dir_savings_percent.length > 0) {
+                                dir_savings_percent.html(res.data.total.percent);
+                            }
+                            if (dir_savings_human.length > 0) {
+                                dir_savings_human.html(res.data.total.human);
+                            }
+                        }
+                    }
                 } else {
                     //If there was an error optimising the image
                     ele.addClass('error');
