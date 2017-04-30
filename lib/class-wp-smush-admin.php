@@ -1547,6 +1547,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							 *
 							 */
 							global $wpsmush_resize;
+							// Initialize resize class.
+							$wpsmush_resize->initialize();
 							$should_resmush = $wpsmush_resize->should_resize( $attachment );
 						}
 
