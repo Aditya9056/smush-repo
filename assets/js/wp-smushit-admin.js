@@ -386,6 +386,24 @@ jQuery(function ($) {
                         resize_savings.html(_res.data.stats.resize_savings);
                     }
                 }
+
+                // Update avg pro savings stats.
+                if ('undefined' != typeof (_res.data.stats.pro_savings.savings ) && 'undefined' != typeof (_res.data.stats.pro_savings.percent ) ) {
+                    // Make pro savings div visible if hidden.
+                    $('#smush-avg-pro-savings').show();
+                    // Pro stats section.
+                    var smush_pro_savings = $('.smush-avg-pro-savings');
+                    if (smush_pro_savings.length > 0) {
+                        var pro_savings_percent = smush_pro_savings.find('.wp-smush-stats-percent');
+                        var pro_savings_bytes = smush_pro_savings.find('.wp-smush-stats-human');
+                        if (pro_savings_percent.length > 0 && _res.data.stats.pro_savings.percent != '') {
+                            pro_savings_percent.html(_res.data.stats.pro_savings.percent);
+                        }
+                        if (pro_savings_bytes.length > 0 && _res.data.stats.pro_savings.savings != '') {
+                            pro_savings_bytes.html(_res.data.stats.pro_savings.savings);
+                        }
+                    }
+                }
                 // increase the progress bar
                 this._update_progress(_res.data.stats.smushed, progress);
             }

@@ -225,16 +225,17 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				}
 
 				//If we have any savings
-				if( $savings > 0 && $show_pro_savings ) {
-					$upgrade_url = add_query_arg(
-						array(
-							'utm_source' => 'Smush-Free',
-							'utm_medium' => 'Banner',
-							'utm_campaign'=> 'pro-only-stats'
-						),
-						$wpsmushit_admin->upgrade_url
-					);
-					$pro_only = sprintf( esc_html__( '%sTRY PRO FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' ); ?>
+				$upgrade_url = add_query_arg(
+					array(
+						'utm_source' => 'Smush-Free',
+						'utm_medium' => 'Banner',
+						'utm_campaign'=> 'pro-only-stats'
+					),
+					$wpsmushit_admin->upgrade_url
+				);
+				$pro_only = sprintf( esc_html__( '%sTRY PRO FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' ); ?>
+				<!-- Make a hidden div if not stats found -->
+				<div id="smush-avg-pro-savings" <?php echo ( $savings > 0 && $show_pro_savings ) ? '' : 'style="display: none;"'; ?>>
 					<hr />
 					<div class="row smush-avg-pro-savings" tooltip="<?php esc_html_e("BASED ON AVERAGE SAVINGS IF YOU UPGRADE TO PRO", "wp-smushit"); ?>">
 						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PRO SAVINGS ESTIMATE", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
@@ -245,8 +246,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<span class="wp-smush-stats-sep">/</span>
 							<span class="wp-smush-stats-percent"><?php echo number_format_i18n( $savings, 1, '.', '' );  ?></span>%
 						</span>
-					</div><?php
-				}
+					</div>
+				</div><?php
 			}
 			/**
 			 * Allows you to output any content within the stats box at the end
