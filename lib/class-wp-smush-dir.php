@@ -120,6 +120,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			 * id -> Auto Increment ID
 			 * path -> Absolute path to the image file
 			 * resize -> Whether the image was resized or not
+			 * lossy -> Whether the image was super-smushed/lossy or not
 			 * image_size -> Current image size post optimisation
 			 * orig_size -> Original image size before optimisation
 			 * file_time -> Unix time for the file creation, to match it against the current creation time,
@@ -133,6 +134,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
 				path text NOT NULL,
 				resize varchar(55),
+				lossy varchar(55),
 				error varchar(55) DEFAULT NULL,
 				image_size int(10) unsigned,
 				orig_size int(10) unsigned,
@@ -180,7 +182,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			global $wpdb, $WpSmush;
 
 			// If super-smush enabled, add meta condition.
-			$lossy_condition = $WpSmush->lossy_enabled ? '(image_size IS NULL OR meta IS NULL)' : 'image_size IS NULL';
+			$lossy_condition = $WpSmush->lossy_enabled ? '(image_size IS NULL OR lossy <> 1)' : 'image_size IS NULL';
 
 			$query   = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}smush_dir_images WHERE $lossy_condition && last_scan = (SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images t2 )  GROUP BY id ORDER BY id LIMIT %d", 1 );
 			$results = $wpdb->get_col( $query );
@@ -957,9 +959,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$total = ! empty( $total ) && is_array( $total ) ? $total[0] : 0;
 
 			// If super-smush enabled, add meta condition.
-			$meta_condition = $WpSmush->lossy_enabled ? 'AND meta IS NOT NULL' : '';
+			$lossy_condition = $WpSmush->lossy_enabled ? 'AND lossy = 1' : '';
 
-			while ( $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL $meta_condition LIMIT $offset, $limit ", ARRAY_A ) ) {
+			while ( $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL $lossy_condition LIMIT $offset, $limit ", ARRAY_A ) ) {
 				if ( ! empty( $results ) ) {
 					$images = array_merge( $images, $results );
 				}
@@ -1115,19 +1117,12 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			//Get file time
 			$file_time = @filectime( $path );
 
-			// All good, Update the stats
 			// If super-smush enabled, update supersmushed meta value also.
-			if ( $WpSmush->lossy_enabled ) {
-				// Serialize the meta value.
-				//@todo: Make meta values searchable by changing serialized form, if new properties are added in future.
-				$meta = serialize( array( 'lossy' => 1 ) );
+			$lossy = $WpSmush->lossy_enabled ? 1 : 0;
 
-				$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, meta=%s WHERE id=%d LIMIT 1";
-				$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $file_time, $meta, $id );
-			} else {
-				$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d WHERE id=%d LIMIT 1";
-				$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $file_time, $id );
-			}
+			// All good, Update the stats.
+			$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, lossy=%s WHERE id=%d LIMIT 1";
+			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $file_time, $lossy, $id );
 			$wpdb->query( $query );
 
 			//Get Total stats
