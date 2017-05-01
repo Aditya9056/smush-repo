@@ -126,29 +126,25 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 *
 		 * @param $attachment_id
 		 *
-		 * @param $file_path
-		 *
 		 * @return bool|false|string
 		 *
 		 */
-		function is_image_on_s3( $attachment_id ) {
+		function is_image_on_s3( $attachment_id = '' ) {
 			global $as3cf;
 			if ( empty( $attachment_id ) ) {
 				return false;
 			}
 
 			//If we only have the attachment id
-			if ( ! empty( $attachment_id ) ) {
-				$full_url = get_attached_file( $attachment_id );
-				//If the filepath contains S3, get the s3 URL for the file
-				if ( strpos( $full_url, 's3' ) !== false ) {
-					$full_url = $as3cf->get_attachment_url( $attachment_id );
-				}
-
-				return $full_url;
+			$full_url = $as3cf->is_attachment_served_by_s3( $attachment_id );
+			//If the filepath contains S3, get the s3 URL for the file
+			if ( !empty( $full_url ) ) {
+				$full_url = $as3cf->get_attachment_url( $attachment_id );
+			} else {
+				$full_url = false;
 			}
 
-			return false;
+			return $full_url;
 
 		}
 
@@ -232,6 +228,49 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 
 			return false;
+		}
+
+		/**
+		 * Check if file exists for the given path
+		 *
+		 * @param string $attachment_id
+		 * @param string $file_path
+		 *
+		 * @return bool
+		 */
+		function does_image_exists( $attachment_id = '', $file_path = '' ) {
+			global $as3cf;
+			if ( empty( $attachment_id ) || empty( $file_path ) ) {
+				return false;
+			}
+			//Return if method doesn't exists
+			if ( ! method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
+				error_log( "Couldn't find method is_attachment_served_by_s3." );
+
+				return false;
+			}
+			//Get s3 object for the file
+			$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id );
+
+			$size_prefix      = dirname( $s3_object['key'] );
+			$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
+
+			//Get the File path using basename for given attachment path
+			$s3_object['key'] = path_join( $size_file_prefix, wp_basename( $file_path ) );
+
+			//Get bucket details
+			$bucket = $as3cf->get_setting( 'bucket' );
+			$region = $as3cf->get_setting( 'region' );
+
+			if ( is_wp_error( $region ) ) {
+				return false;
+			}
+
+			$s3client = $as3cf->get_s3client( $region );
+
+			$file_exists = $s3client->doesObjectExist( $bucket, $s3_object['key'] );
+
+			return $file_exists;
 		}
 
 	}
