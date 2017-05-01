@@ -1584,7 +1584,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return bool
 		 */
 		function show_restore_option( $image_id, $attachment_data ) {
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpsmush_s3;
 
 			//No Attachment data, don't go ahead
 			if ( empty( $attachment_data ) ) {
@@ -1593,9 +1593,32 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Get the image path for all sizes
 			$file = get_attached_file( $image_id );
+			$uf_file = get_attached_file( $image_id, true );
 
-			//Check backup for Full size
-			$backup = $wpsmushit_admin->get_image_backup_path( $file );
+			//Get stored backup path, if any
+			$backup_sizes = get_post_meta( $image_id, '_wp_attachment_backup_sizes', true );
+
+			//Check if we've a backup path
+			if( !empty( $backup_sizes ) && ( !empty( $backup_sizes['smush-full']) || !empty( $backup_sizes['smush_png_path']) ) ) {
+				//Check for PNG backup
+				$backup = !empty( $backup_sizes['smush_png_path'] ) ? $backup_sizes['smush_png_path'] : '';
+
+				//Check for original full size image backup
+				$backup = empty( $backup ) && !empty( $backup_sizes['smush-full'] ) ? $backup_sizes['smush-full'] : '';
+
+				$backup = !empty( $backup['file'] ) ? $backup['file'] : '';
+			}
+
+			//If we still don't have a backup path, use traditional method to get it
+			if( empty( $backup ) ) {
+				//Check backup for Full size
+				$backup = $wpsmushit_admin->get_image_backup_path( $file );
+			}
+
+			//If the file is on S3, Check if backup image object exists
+			if( $wpsmush_s3->is_image_on_s3( $image_id ) ) {
+				return $wpsmush_s3->does_image_exists( $image_id, $backup );
+			}
 
 			//Check for backup of full image
 			if ( file_exists( $backup ) ) {
@@ -1605,6 +1628,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Additional Backup Check for JPEGs converted from PNG
 			$pngjpg_savings = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
 			if ( ! empty( $pngjpg_savings ) ) {
+
 				//Get the original File path and check if it exists
 				$backup = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
 				$backup = $this->original_file( $backup );
