@@ -2298,8 +2298,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function wp_smush_handle_other_uploads( $id ) {
 
-			// Our async task runs when action is upload-attachment. So do not run when this action found.
-			if ( ! empty( $id ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] ) {
+			// Our async task runs when action is upload-attachment and post_id found. So do not run on these conditions.
+			if ( empty( $id ) || ( ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] ) || ( ! empty( $_POST ) && isset( $_POST['post_id'] ) ) ) {
 				return;
 			}
 
