@@ -140,6 +140,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Handle the Async optimisation
 			add_action( 'wp_async_wp_save_image_editor_file', array( $this, 'wp_smush_handle_editor_async' ), '', 2 );
 
+			// Handle other file uploads optimisation
+			add_action( 'add_attachment', array( $this, 'wp_smush_handle_other_uploads' ) );
+
 		}
 
 		/**
@@ -2282,6 +2285,31 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Update Stats
 			update_post_meta( $post_data['postid'], $this->smushed_meta_key, $smush_stats );
+		}
+
+		/**
+		 * Support uploads/import through other methods.
+		 *
+		 * Handle image optimization for other upload sources, using
+		 * WP upload functions. For eg: WP RSS Aggregator importing images.
+		 * Note: This is not an async task.
+		 *
+		 * @param $id Attchment ID.
+		 */
+		function wp_smush_handle_other_uploads( $id ) {
+
+			// Our async task runs when action is upload-attachment. So do not run when this action found.
+			if ( ! empty( $id ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] ) {
+				return;
+			}
+
+			// Do not continue if attachment is an image.
+			if ( ! wp_attachment_is_image( $id ) ) {
+				return;
+			}
+
+			// Run additional checks then smush.
+			$this->wp_smush_handle_async( $id );
 		}
 	}
 
