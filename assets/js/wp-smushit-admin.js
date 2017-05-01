@@ -1225,7 +1225,7 @@ jQuery(function ($) {
                 add_smush_dir_notice();
             } else {
                 // Hide images list.
-                $('.wp-smush-image-list').hide();
+                $('ul.wp-smush-image-list').hide();
                 //Show All done notice
                 $('.wp-smush-notice.wp-smush-dir-all-done').show();
 
