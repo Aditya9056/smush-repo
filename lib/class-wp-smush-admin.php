@@ -619,7 +619,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Take Backup
 			global $wpsmush_backup;
-			$wpsmush_backup->create_backup( $attachment_file_path );
+			$wpsmush_backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 			if ( ! $send_error ) {
 				//Proceed only if Smushing Transient is not set for the given attachment id
@@ -790,7 +790,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Take Backup
 			global $wpsmush_backup;
-			$wpsmush_backup->create_backup( $attachment_file_path );
+			$wpsmush_backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 			//Get the image metadata from $_POST
 			$original_meta = ! empty( $_POST['metadata'] ) ? $_POST['metadata'] : '';
