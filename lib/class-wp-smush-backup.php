@@ -132,7 +132,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 		 * @return bool
 		 */
 		function restore_image( $attachment = '', $resp = true ) {
-			global $WpSmush, $wpsmush_helper, $wpsmush_s3;
+			global $WpSmush, $wpsmush_helper;
 			//If no attachment id is provided, check $_POST variable for attachment_id
 			if ( empty( $attachment ) ) {
 				//Check Empty fields
@@ -192,19 +192,22 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 					//If we don't have a backup path, check for legacy backup naming convention
 					$backup_path = $WpSmush->get_image_backup_path( $file_path );
 				}
+				$backup_path = is_array( $backup_path ) && !empty( $backup_path['file'] ) ? $backup_path['file'] : $backup_path;
 			}
+
+			$backup_full_path = str_replace( wp_basename( $file_path ), wp_basename( $backup_path ), $file_path );
 
 			//Finally, if we have the backup path, perform the restore operation
 			if ( ! empty( $backup_path ) ) {
 
-				//Download if file not exists and served by S3
-				if ( ! file_exists( $backup_path ) && $wpsmush_s3->is_image_on_s3( $attachment_id ) ) {
-					$wpsmush_s3->download_file( $attachment_id, '', $backup_path );
-				}
+				/**
+				 * Allows S3 to hook, check and download the file
+				 */
+				do_action('smush_file_exists', $backup_path, $attachment_id, array() );
 
 				if ( $restore_png ) {
 					//restore PNG full size and all other image sizes
-					$restored = $this->restore_png( $attachment_id, $backup_path, $file_path );
+					$restored = $this->restore_png( $attachment_id, $backup_full_path, $file_path );
 
 					//JPG file is already deleted, Update backup sizes
 					if ( $restored ) {
@@ -213,7 +216,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				} else {
 					//If file exists, corresponding to our backup path
 					//Restore
-					$restored = @copy( $backup_path, $file_path );
+					$restored = @copy( $backup_full_path, $file_path );
 
 					//Remove the backup, if we were able to restore the image
 					if ( $restored ) {
@@ -222,7 +225,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 						$this->remove_from_backup_sizes( $attachment_id, '', $backup_sizes );
 
 						//Delete the backup
-						$this->remove_backup( $attachment_id, $backup_path );
+						$this->remove_backup( $attachment_id, $backup_full_path );
 					}
 				}
 			} elseif ( file_exists( $file_path . '_backup' ) ) {
