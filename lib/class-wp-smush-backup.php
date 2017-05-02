@@ -132,7 +132,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 		 * @return bool
 		 */
 		function restore_image( $attachment = '', $resp = true ) {
-			global $WpSmush, $wpsmush_helper, $wpsmush_s3;
+			global $WpSmush, $wpsmush_helper;
 			//If no attachment id is provided, check $_POST variable for attachment_id
 			if ( empty( $attachment ) ) {
 				//Check Empty fields
@@ -200,10 +200,10 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			//Finally, if we have the backup path, perform the restore operation
 			if ( ! empty( $backup_path ) ) {
 
-				//Download if file not exists and served by S3
-				if ( ! file_exists( $backup_full_path ) && $wpsmush_s3->is_image_on_s3( $attachment_id ) ) {
-					var_dump( $wpsmush_s3->download_file( $attachment_id, '', $backup_full_path ) );
-				}
+				/**
+				 * Allows S3 to hook, check and download the file
+				 */
+				do_action('smush_file_exists', $backup_path, $attachment_id, array() );
 
 				if ( $restore_png ) {
 					//restore PNG full size and all other image sizes
