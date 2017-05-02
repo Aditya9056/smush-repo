@@ -327,7 +327,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function resize_from_meta_data( $meta, $ID = null ) {
 
-			global $wpsmush_settings, $wpsmush_helper;
+			global $wpsmush_settings, $wpsmush_helper, $wpsmushit_admin;
 
 			//Flag to check, if original size image should be smushed or not
 			$original   = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'original', false );
@@ -376,7 +376,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$finfo = false;
 				}
 
-				global $wpsmushit_admin, $wpsmush_s3, $wpsmush_helper;
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					//Check if registered size is supposed to be Smushed or not
@@ -388,9 +387,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					// path. So just get the dirname and replace the filename.
 					$attachment_file_path_size = path_join( dirname( $attachment_file_path ), $size_data['file'] );
 
-					if ( ! file_exists( $attachment_file_path_size ) ) {
-						$wpsmush_s3->download_file( $ID, $size_data, $attachment_file_path_size );
-					}
+					/**
+					 * Allows S3 to hook over here and check if the given file path exists else download the file
+					 */
+					do_action('smush_file_exists', $attachment_file_path_size, $ID, $size_data );
 
 					if ( $finfo ) {
 						$ext = is_file( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
@@ -1587,7 +1587,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return bool
 		 */
 		function show_restore_option( $image_id, $attachment_data ) {
-			global $wpsmushit_admin, $wpsmush_s3;
+			global $wpsmushit_admin;
 
 			//No Attachment data, don't go ahead
 			if ( empty( $attachment_data ) ) {
@@ -1618,13 +1618,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$backup = $wpsmushit_admin->get_image_backup_path( $file );
 			}
 
-			//If the file is on S3, Check if backup image object exists
-			if( $wpsmush_s3->is_image_on_s3( $image_id ) ) {
-				return $wpsmush_s3->does_image_exists( $image_id, $backup );
-			}
+			$file_exists = apply_filters( 'smush_backup_exists', file_exists( $backup ), $image_id, $backup );
 
-			//Check for backup of full image
-			if ( file_exists( $backup ) ) {
+			if( $file_exists ) {
 				return true;
 			}
 
