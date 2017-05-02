@@ -34,6 +34,13 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 			$this->check_client();
 
+			//Check if the file exists for the given path and download
+			add_action( 'smush_file_exists', array( $this, 'maybe_download_file' ), '', 3 );
+
+			//Check if the backup file exists
+			add_filter( 'smush_backup_exists', array( $this, 'backup_exists_on_s3' ), '', 3 );
+
+
 		}
 
 		/**
@@ -138,7 +145,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			//If we only have the attachment id
 			$full_url = $as3cf->is_attachment_served_by_s3( $attachment_id );
 			//If the filepath contains S3, get the s3 URL for the file
-			if ( !empty( $full_url ) ) {
+			if ( ! empty( $full_url ) ) {
 				$full_url = $as3cf->get_attachment_url( $attachment_id );
 			} else {
 				$full_url = false;
@@ -273,6 +280,43 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			return $file_exists;
 		}
 
+		/**
+		 * Check if the file is served by S3 and download the file for given path
+		 *
+		 * @param string $file_path Full file path
+		 * @param string $attachment_id
+		 * @param array $size_details Array of width and height for the image
+		 *
+		 * @return bool|string False/ File Path
+		 */
+		function maybe_download_file( $file_path = '', $attachment_id = '', $size_details = array() ) {
+			if ( empty( $file_path ) || empty( $attachment_id ) ) {
+				return false;
+			}
+			//Download if file not exists and served by S3
+			if ( ! file_exists( $file_path ) && $this->is_image_on_s3( $attachment_id ) ) {
+				return $this->download_file( $attachment_id, $size_details, $file_path );
+			}
+
+			return false;
+		}
+
+		/**
+		 * Checks if we've backup on S3 for the given attachment id and backup path
+		 *
+		 * @param string $attachment_id
+		 * @param string $backup_path
+		 *
+		 * @return bool
+		 */
+		function backup_exists_on_s3( $attachment_id = '', $backup_path = '' ) {
+			//If the file is on S3, Check if backup image object exists
+			if ( $this->is_image_on_s3( $attachment_id ) ) {
+				return $this->does_image_exists( $attachment_id, $backup_path );
+			}
+
+			return false;
+		}
 	}
 
 	global $wpsmush_s3;
