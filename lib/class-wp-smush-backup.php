@@ -56,6 +56,8 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 		function create_backup( $file_path = '', $backup_path = '', $attachment_id = '' ) {
 			global $WpSmush, $wpsmush_pngjpg;
 
+			$copied = false;
+
 			if ( empty( $file_path ) ) {
 				return '';
 			}
@@ -157,6 +159,9 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			//Process Now
 			$attachment_id = empty( $attachment ) ? absint( (int) $_POST['attachment_id'] ) : $attachment;
 
+			//Set a transient to avoid the smush-restore-smush loop
+			set_transient( "wp-smush-restore-$attachment_id", true, 60 );
+
 			//Restore Full size -> get other image sizes -> restore other images
 
 			//Get the Original Path
@@ -185,12 +190,14 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				}
 
 				// 2. If we don't have a backup path from PNG->JPG, check for normal smush backup path
-				if ( empty( $backup_path ) && ! empty( $backup_sizes[ $this->backup_key ] ) ) {
+				if ( empty( $backup_path ) ) {
 
-					$backup_path = $backup_sizes[ $this->backup_key ];
-				} else {
-					//If we don't have a backup path, check for legacy backup naming convention
-					$backup_path = $WpSmush->get_image_backup_path( $file_path );
+					if ( ! empty( $backup_sizes[ $this->backup_key ] ) ) {
+						$backup_path = $backup_sizes[ $this->backup_key ];
+					} else {
+						//If we don't have a backup path, check for legacy backup naming convention
+						$backup_path = $WpSmush->get_image_backup_path( $file_path );
+					}
 				}
 				$backup_path = is_array( $backup_path ) && !empty( $backup_path['file'] ) ? $backup_path['file'] : $backup_path;
 			}
@@ -233,14 +240,8 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				$restored = @copy( $file_path . '_backup', $file_path );
 			}
 
-			//Set a transient to avoid the smush-restore-smush loop
-			set_transient( "wp-smush-restore-$attachment_id", true, 90 );
-
 			//Generate all other image size, and update attachment metadata
 			$metadata = wp_generate_attachment_metadata( $attachment_id, $file_path );
-
-			//Remove the transient
-			delete_transient( "wp-smush-restore-$attachment_id" );
 
 			//Update metadata to db if it was successfully generated
 			if ( ! empty( $metadata ) && ! is_wp_error( $metadata ) ) {
@@ -262,12 +263,17 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				//Get the Button html without wrapper
 				$button_html = $WpSmush->set_status( $attachment_id, false, false, false );
 
+				//Remove the transient
+				delete_transient( "wp-smush-restore-$attachment_id" );
+
 				if ( $resp ) {
 					wp_send_json_success( array( 'button' => $button_html ) );
 				} else {
 					return true;
 				}
 			}
+			//Remove the transient
+			delete_transient( "wp-smush-restore-$attachment_id" );
 			if ( $resp ) {
 				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to restore image", "wp-smushit" ) . '</div>' ) );
 			}
@@ -326,7 +332,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				/**
 				 *  Perform a action after the image URL is updated in post content
 				 */
-				do_action( 'wp_smush_image_url_updated', $image_id, $file_path, $original_file, $size );
+				do_action( 'wp_smush_image_url_updated', $image_id, $file_path, $original_file );
 			}
 			//Update Meta
 			if ( ! empty( $meta ) ) {
