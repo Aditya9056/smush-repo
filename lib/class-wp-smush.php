@@ -600,7 +600,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $ID, true, 5 * MINUTE_IN_SECONDS );
+			set_transient( 'smush-in-progress-' . $ID, true, WP_SMUSH_TIMEOUT );
 
 			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_settings;
 

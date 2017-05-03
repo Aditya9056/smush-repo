@@ -588,7 +588,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( ! get_transient( 'smush-in-progress-' . $attachment_id ) ) {
 
 					//Set a transient to avoid multiple request
-					set_transient( 'smush-in-progress-' . $attachment_id, true, 5 * MINUTE_IN_SECONDS );
+					set_transient( 'smush-in-progress-' . $attachment_id, true, WP_SMUSH_TIMEOUT );
 
 					$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
@@ -741,7 +741,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $attachment_id, true, 5 * MINUTE_IN_SECONDS );
+			set_transient( 'smush-in-progress-' . $attachment_id, true, WP_SMUSH_TIMEOUT );
 
 			global $WpSmush, $wpsmush_pngjpg, $wpsmush_helper;
 

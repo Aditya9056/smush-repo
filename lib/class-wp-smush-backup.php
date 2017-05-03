@@ -205,12 +205,12 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			$backup_full_path = str_replace( wp_basename( $file_path ), wp_basename( $backup_path ), $file_path );
 
 			//Finally, if we have the backup path, perform the restore operation
-			if ( ! empty( $backup_path ) ) {
+			if ( ! empty( $backup_full_path ) ) {
 
 				/**
 				 * Allows S3 to hook, check and download the file
 				 */
-				do_action('smush_file_exists', $backup_path, $attachment_id, array() );
+				do_action('smush_file_exists', $backup_full_path, $attachment_id, array() );
 
 				if ( $restore_png ) {
 					//restore PNG full size and all other image sizes
