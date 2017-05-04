@@ -1035,15 +1035,22 @@ small.smush-setting-description strong {
     padding: 10px;
 }
 
-.wpmud .wp-smush-stats .button-small.wp-smush-lossy-enable, .wpmud .wp-smush-dir-link, .wpmud .wp-smush-stats .button-small.wp-smush-resize-enable {
+.wpmud .wp-smush-stats .button-small.wp-smush-lossy-enable,
+.wpmud .wp-smush-dir-link,
+.wpmud .wp-smush-stats .button-small.wp-smush-resize-enable {
     border-radius: 3px;
     font: 500 12px/20px 'Roboto' !important;
     padding: 5px 16px !important;
     vertical-align: top;
 }
 
-.wpmud .wp-smush-lossy-enable:hover, .wpmud .wp-smush-lossy-enable:active, .wpmud .wp-smush-lossy-enable:focus, .wpmud .wp-smush-dir-link,
-.wpmud .wp-smush-resize-enable:hover, .wpmud .wp-smush-resize-enable:active, .wpmud .wp-smush-resize-enable:focus {
+.wpmud .wp-smush-lossy-enable:hover,
+.wpmud .wp-smush-lossy-enable:active,
+.wpmud .wp-smush-lossy-enable:focus,
+.wpmud .wp-smush-dir-link,
+.wpmud .wp-smush-resize-enable:hover,
+.wpmud .wp-smush-resize-enable:active,
+.wpmud .wp-smush-resize-enable:focus {
     background-color: #0093B1;
     color: #FFF;
     box-shadow: none;
