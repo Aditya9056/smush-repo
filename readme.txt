@@ -137,6 +137,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Fixed:
 
     * Issue with WP Smush Pro membership check
+    * Rating message
 
 = 2.6.3 =
 
