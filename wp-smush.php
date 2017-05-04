@@ -90,7 +90,7 @@ if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 	function wp_smush_rating_message( $message ) {
 		global $wpsmushit_admin, $wpsmush_db;
 		$savings     = $wpsmushit_admin->global_stats_from_ids();
-		$image_count = $wpsmush_db->total_count();
+		$image_count = $wpsmush_db->smushed_count();
 		$show_stats  = false;
 
 		//If there is any saving, greater than 1Mb, show stats

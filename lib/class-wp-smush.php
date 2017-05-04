@@ -324,7 +324,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function resize_from_meta_data( $meta, $ID = null ) {
 
-			global $wpsmush_settings, $wpsmush_helper;
+			global $wpsmush_settings, $wpsmush_helper, $wpsmushit_admin;
 
 			//Flag to check, if original size image should be smushed or not
 			$original   = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'original', false );
@@ -373,7 +373,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$finfo = false;
 				}
 
-				global $wpsmushit_admin, $wpsmush_s3, $wpsmush_helper;
 				foreach ( $meta['sizes'] as $size_key => $size_data ) {
 
 					//Check if registered size is supposed to be Smushed or not
@@ -385,9 +384,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					// path. So just get the dirname and replace the filename.
 					$attachment_file_path_size = path_join( dirname( $attachment_file_path ), $size_data['file'] );
 
-					if ( ! file_exists( $attachment_file_path_size ) ) {
-						$wpsmush_s3->download_file( $ID, $size_data, $attachment_file_path_size );
-					}
+					/**
+					 * Allows S3 to hook over here and check if the given file path exists else download the file
+					 */
+					do_action('smush_file_exists', $attachment_file_path_size, $ID, $size_data );
 
 					if ( $finfo ) {
 						$ext = is_file( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
@@ -580,8 +580,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $meta;
 			}
 
-			//Check if we're restoring the image
-			if ( get_transient( "wp-smush-restore-$ID" ) ) {
+			//Check if we're restoring the image Or already smushing the image
+			if ( get_transient( "wp-smush-restore-$ID" ) || get_transient( "smush-in-progress-$ID" ) || get_transient( "wp-smush-restore-$ID" ) ) {
 				return $meta;
 			}
 
@@ -599,13 +599,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			//If the smushing transient is already set, return the status
-			if ( get_transient( 'smush-in-progress-' . $ID ) ) {
-				return $meta;
-			}
-
 			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $ID, true, 5 * MINUTE_IN_SECONDS );
+			set_transient( 'smush-in-progress-' . $ID, true, WP_SMUSH_TIMEOUT );
 
 			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_settings;
 
@@ -1593,18 +1588,41 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Get the image path for all sizes
 			$file = get_attached_file( $image_id );
+			$uf_file = get_attached_file( $image_id, true );
 
-			//Check backup for Full size
-			$backup = $wpsmushit_admin->get_image_backup_path( $file );
+			//Get stored backup path, if any
+			$backup_sizes = get_post_meta( $image_id, '_wp_attachment_backup_sizes', true );
 
-			//Check for backup of full image
-			if ( file_exists( $backup ) ) {
+			//Check if we've a backup path
+			if( !empty( $backup_sizes ) && ( !empty( $backup_sizes['smush-full']) || !empty( $backup_sizes['smush_png_path']) ) ) {
+				//Check for PNG backup
+				$backup = !empty( $backup_sizes['smush_png_path'] ) ? $backup_sizes['smush_png_path'] : '';
+
+				//Check for original full size image backup
+				$backup = empty( $backup ) && !empty( $backup_sizes['smush-full'] ) ? $backup_sizes['smush-full'] : '';
+
+				$backup = !empty( $backup['file'] ) ? $backup['file'] : '';
+			}
+
+			//If we still don't have a backup path, use traditional method to get it
+			if( empty( $backup ) ) {
+				//Check backup for Full size
+				$backup = $wpsmushit_admin->get_image_backup_path( $file );
+			}else{
+				//Get the full path for file backup
+				$backup = str_replace( wp_basename( $file ), wp_basename( $backup ), $file );
+			}
+
+			$file_exists = apply_filters( 'smush_backup_exists', file_exists( $backup ), $image_id, $backup );
+
+			if( $file_exists ) {
 				return true;
 			}
 
 			//Additional Backup Check for JPEGs converted from PNG
 			$pngjpg_savings = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
 			if ( ! empty( $pngjpg_savings ) ) {
+
 				//Get the original File path and check if it exists
 				$backup = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
 				$backup = $this->original_file( $backup );
@@ -2155,17 +2173,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function wp_smush_handle_async( $id ) {
 
 			//If we don't have image id, or the smush is already in progress for the image, return
-			if ( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) ) {
+			if ( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) || get_transient( "wp-smush-restore-$id" )  ) {
 				return;
 			}
 
 			//If auto Smush is disabled
 			if ( ! $this->is_auto_smush_enabled() ) {
-				return;
-			}
-
-			//Check if we're restoring the image
-			if ( get_transient( "wp-smush-restore-$id" ) ) {
 				return;
 			}
 
@@ -2196,7 +2209,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function wp_smush_handle_editor_async( $id, $post_data ) {
 
 			//If we don't have image id, or the smush is already in progress for the image, return
-			if ( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) ) {
+			if ( empty( $id ) || get_transient( "smush-in-progress-$id" ) || get_transient( "wp-smush-restore-$id" ) ) {
 				return;
 			}
 

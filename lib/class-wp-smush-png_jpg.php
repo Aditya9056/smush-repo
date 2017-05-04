@@ -442,13 +442,17 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		}
 
 		/**
-		 * Convert a PNG to JPG Lossless conversion, if we have any savings
+		 * Convert a PNG to JPG, Lossless Conversion, if we have any savings
 		 *
-		 * @param $id
+		 * @param string $id
+		 * @param string $meta
 		 *
-		 * @param $meta
+		 * @uses WpSmushBackup::add_to_image_backup_sizes()
+		 *
+		 * @return mixed|string
 		 */
 		function png_to_jpg( $id = '', $meta = '' ) {
+			global $wpsmush_backup;
 
 			//If we don't have meta or ID
 			if ( empty( $id ) || empty( $meta ) ) {
@@ -506,8 +510,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				}
 
 				//Save the original File URL
-				$o_file = ! empty( $meta['file'] ) ? $meta['file'] : get_post_meta( $id, '_wp_attached_file', true );
-				update_post_meta( $id, WP_SMUSH_PREFIX . 'original_file', $o_file );
+				$o_file = ! empty( $file ) ? $file : get_post_meta( $id, '_wp_attached_file', true );
+				$wpsmush_backup->add_to_image_backup_sizes( $id, $o_file, 'smush_png_path' );
 
 				/**
 				 * Do action, if the PNG to JPG conversion was successful

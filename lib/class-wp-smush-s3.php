@@ -34,6 +34,13 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 			$this->check_client();
 
+			//Check if the file exists for the given path and download
+			add_action( 'smush_file_exists', array( $this, 'maybe_download_file' ), 10, 3 );
+
+			//Check if the backup file exists
+			add_filter( 'smush_backup_exists', array( $this, 'backup_exists_on_s3' ), 10, 3 );
+
+
 		}
 
 		/**
@@ -126,29 +133,25 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 *
 		 * @param $attachment_id
 		 *
-		 * @param $file_path
-		 *
 		 * @return bool|false|string
 		 *
 		 */
-		function is_image_on_s3( $attachment_id ) {
+		function is_image_on_s3( $attachment_id = '' ) {
 			global $as3cf;
 			if ( empty( $attachment_id ) ) {
 				return false;
 			}
 
 			//If we only have the attachment id
-			if ( ! empty( $attachment_id ) ) {
-				$full_url = get_attached_file( $attachment_id );
-				//If the filepath contains S3, get the s3 URL for the file
-				if ( strpos( $full_url, 's3' ) !== false ) {
-					$full_url = $as3cf->get_attachment_url( $attachment_id );
-				}
-
-				return $full_url;
+			$full_url = $as3cf->is_attachment_served_by_s3( $attachment_id );
+			//If the filepath contains S3, get the s3 URL for the file
+			if ( ! empty( $full_url ) ) {
+				$full_url = $as3cf->get_attachment_url( $attachment_id );
+			} else {
+				$full_url = false;
 			}
 
-			return false;
+			return $full_url;
 
 		}
 
@@ -179,11 +182,14 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			//If we have plugin method available, us that otherwise check it ourselves
 			if ( method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
-				$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id );
+				$s3_object        = $as3cf->is_attachment_served_by_s3( $attachment_id );
+				$size_prefix      = dirname( $s3_object['key'] );
+				$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
 				if ( ! empty( $size_details ) && is_array( $size_details ) ) {
-					$size_prefix      = dirname( $s3_object['key'] );
-					$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
 					$s3_object['key'] = path_join( $size_file_prefix, $size_details['file'] );
+				} elseif ( ! empty( $uf_file_path ) ) {
+					//Get the File path using basename for given attachment path
+					$s3_object['key'] = path_join( $size_file_prefix, wp_basename( $uf_file_path ) );
 				}
 
 				//Try to download the attachment
@@ -206,8 +212,14 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 					return false;
 				}
 
-				//If size details are available, Update the URL to get the image for the specified size
-				$s3_url = str_replace( wp_basename( $s3_url ), $size_details['file'], $s3_url );
+				if ( ! empty( $size_details ) ) {
+					//If size details are available, Update the URL to get the image for the specified size
+					$s3_url = str_replace( wp_basename( $s3_url ), $size_details['file'], $s3_url );
+				} elseif ( ! empty( $uf_file_path ) ) {
+					//Get the File path using basename for given attachment path
+					$s3_url = str_replace( wp_basename( $s3_url ), wp_basename( $uf_file_path ), $s3_url );
+				}
+
 				//Download the file
 				$temp_file = download_url( $s3_url );
 				if ( ! is_wp_error( $temp_file ) ) {
@@ -225,6 +237,85 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			return false;
 		}
 
+		/**
+		 * Check if file exists for the given path
+		 *
+		 * @param string $attachment_id
+		 * @param string $file_path
+		 *
+		 * @return bool
+		 */
+		function does_image_exists( $attachment_id = '', $file_path = '' ) {
+			global $as3cf;
+			if ( empty( $attachment_id ) || empty( $file_path ) ) {
+				return false;
+			}
+			//Return if method doesn't exists
+			if ( ! method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
+				error_log( "Couldn't find method is_attachment_served_by_s3." );
+
+				return false;
+			}
+			//Get s3 object for the file
+			$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id );
+
+			$size_prefix      = dirname( $s3_object['key'] );
+			$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
+
+			//Get the File path using basename for given attachment path
+			$s3_object['key'] = path_join( $size_file_prefix, wp_basename( $file_path ) );
+
+			//Get bucket details
+			$bucket = $as3cf->get_setting( 'bucket' );
+			$region = $as3cf->get_setting( 'region' );
+
+			if ( is_wp_error( $region ) ) {
+				return false;
+			}
+
+			$s3client = $as3cf->get_s3client( $region );
+
+			$file_exists = $s3client->doesObjectExist( $bucket, $s3_object['key'] );
+			return $file_exists;
+		}
+
+		/**
+		 * Check if the file is served by S3 and download the file for given path
+		 *
+		 * @param string $file_path Full file path
+		 * @param string $attachment_id
+		 * @param array $size_details Array of width and height for the image
+		 *
+		 * @return bool|string False/ File Path
+		 */
+		function maybe_download_file( $file_path = '', $attachment_id = '', $size_details = array() ) {
+			if ( empty( $file_path ) || empty( $attachment_id ) ) {
+				return false;
+			}
+			//Download if file not exists and served by S3
+			if ( ! file_exists( $file_path ) && $this->is_image_on_s3( $attachment_id ) ) {
+				return $this->download_file( $attachment_id, $size_details, $file_path );
+			}
+
+			return false;
+		}
+
+		/**
+		 * Checks if we've backup on S3 for the given attachment id and backup path
+		 *
+		 * @param string $attachment_id
+		 * @param string $backup_path
+		 *
+		 * @return bool
+		 */
+		function backup_exists_on_s3( $exists, $attachment_id = '', $backup_path = '' ) {
+			//If the file is on S3, Check if backup image object exists
+			if ( $this->is_image_on_s3( $attachment_id ) ) {
+				return $this->does_image_exists( $attachment_id, $backup_path );
+			}
+
+			return $exists;
+		}
 	}
 
 	global $wpsmush_s3;
