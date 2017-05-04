@@ -602,7 +602,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( ! get_transient( 'smush-in-progress-' . $attachment_id ) ) {
 
 					//Set a transient to avoid multiple request
-					set_transient( 'smush-in-progress-' . $attachment_id, true, 5 * MINUTE_IN_SECONDS );
+					set_transient( 'smush-in-progress-' . $attachment_id, true, WP_SMUSH_TIMEOUT );
 
 					$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
@@ -744,7 +744,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function smush_single( $attachment_id, $return = false ) {
 
 			//If the smushing transient is already set, return the status
-			if ( get_transient( 'smush-in-progress-' . $attachment_id ) ) {
+			if ( get_transient( 'smush-in-progress-' . $attachment_id ) || get_transient( "wp-smush-restore-$attachment_id" ) ) {
 				//Get the button status
 				$status = $this->set_status( $attachment_id, false, true );
 				if ( $return ) {
@@ -755,7 +755,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $attachment_id, true, 5 * MINUTE_IN_SECONDS );
+			set_transient( 'smush-in-progress-' . $attachment_id, true, WP_SMUSH_TIMEOUT );
 
 			global $WpSmush, $wpsmush_pngjpg, $wpsmush_helper;
 
@@ -1252,7 +1252,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $WpSmush;
 
 			//Show Temporary Status, For Async Optimisation, No Good workaround
-			if ( ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $WpSmush->is_auto_smush_enabled() ) {
+			if ( ! get_transient( "wp-smush-restore-$id" ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $WpSmush->is_auto_smush_enabled() ) {
 				// the status
 				$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
 
@@ -1585,6 +1585,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							 *
 							 */
 							global $wpsmush_resize;
+							// Initialize resize class.
+							$wpsmush_resize->initialize();
 							$should_resmush = $wpsmush_resize->should_resize( $attachment );
 						}
 
