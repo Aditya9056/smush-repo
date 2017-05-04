@@ -580,8 +580,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $meta;
 			}
 
-			//Check if we're restoring the image
-			if ( get_transient( "wp-smush-restore-$ID" ) ) {
+			//Check if we're restoring the image Or already smushing the image
+			if ( get_transient( "wp-smush-restore-$ID" ) || get_transient( "smush-in-progress-$ID" ) || get_transient( "wp-smush-restore-$ID" ) ) {
 				return $meta;
 			}
 
@@ -599,13 +599,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			//If the smushing transient is already set, return the status
-			if ( get_transient( 'smush-in-progress-' . $ID ) ) {
-				return $meta;
-			}
-
 			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $ID, true, 5 * MINUTE_IN_SECONDS );
+			set_transient( 'smush-in-progress-' . $ID, true, WP_SMUSH_TIMEOUT );
 
 			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_settings;
 
@@ -1613,6 +1608,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if( empty( $backup ) ) {
 				//Check backup for Full size
 				$backup = $wpsmushit_admin->get_image_backup_path( $file );
+			}else{
+				//Get the full path for file backup
+				$backup = str_replace( wp_basename( $file ), wp_basename( $backup ), $file );
 			}
 
 			$file_exists = apply_filters( 'smush_backup_exists', file_exists( $backup ), $image_id, $backup );
@@ -2175,17 +2173,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function wp_smush_handle_async( $id ) {
 
 			//If we don't have image id, or the smush is already in progress for the image, return
-			if ( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) ) {
+			if ( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) || get_transient( "wp-smush-restore-$id" )  ) {
 				return;
 			}
 
 			//If auto Smush is disabled
 			if ( ! $this->is_auto_smush_enabled() ) {
-				return;
-			}
-
-			//Check if we're restoring the image
-			if ( get_transient( "wp-smush-restore-$id" ) ) {
 				return;
 			}
 
@@ -2216,7 +2209,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function wp_smush_handle_editor_async( $id, $post_data ) {
 
 			//If we don't have image id, or the smush is already in progress for the image, return
-			if ( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) ) {
+			if ( empty( $id ) || get_transient( "smush-in-progress-$id" ) || get_transient( "wp-smush-restore-$id" ) ) {
 				return;
 			}
 
