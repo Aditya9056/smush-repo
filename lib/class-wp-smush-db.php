@@ -180,7 +180,10 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				$posts = wp_cache_get( 'media_attachments', 'wp-smush' );
 				$count = ! empty( $posts ) ? sizeof( $posts ) : 0;
 
-				return $return_count ? $count : $posts;
+				//Return results only if we've got any
+				if( $count ) {
+					return $return_count ? $count : $posts;
+				}
 			}
 
 			//Else Get it Fresh!!
