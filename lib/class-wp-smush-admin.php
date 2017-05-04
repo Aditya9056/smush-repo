@@ -1025,19 +1025,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			// Add directory smush image bytes.
-			if ( ! empty( $this->dir_stats['bytes'] && $this->dir_stats['bytes'] > 0 ) ) {
+			if ( ! empty( $this->dir_stats['bytes'] ) && $this->dir_stats['bytes'] > 0 ) {
 				$smush_data['bytes'] += $this->dir_stats['bytes'];
 			}
 			// Add directory smush image total size.
-			if ( ! empty( $this->dir_stats['orig_size'] && $this->dir_stats['orig_size'] > 0 ) ) {
+			if ( ! empty( $this->dir_stats['orig_size'] ) && $this->dir_stats['orig_size'] > 0 ) {
 				$smush_data['size_before'] += $this->dir_stats['orig_size'];
 			}
 			// Add directory smush saved size.
-			if ( ! empty( $this->dir_stats['image_size'] && $this->dir_stats['image_size'] > 0 ) ) {
+			if ( ! empty( $this->dir_stats['image_size'] ) && $this->dir_stats['image_size'] > 0 ) {
 				$smush_data['size_after'] += $this->dir_stats['image_size'];
 			}
 			// Add directory smushed images.
-			if ( ! empty( $this->dir_stats['optimised'] && $this->dir_stats['optimised'] > 0 ) ) {
+			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
 				$smush_data['total_images'] += $this->dir_stats['optimised'];
 			}
 
