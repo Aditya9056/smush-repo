@@ -510,7 +510,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				}
 
 				//Save the original File URL
-				$o_file = ! empty( $meta['file'] ) ? $meta['file'] : get_post_meta( $id, '_wp_attached_file', true );
+				$o_file = ! empty( $file ) ? $file : get_post_meta( $id, '_wp_attached_file', true );
 				$wpsmush_backup->add_to_image_backup_sizes( $id, $o_file, 'smush_png_path' );
 
 				/**
