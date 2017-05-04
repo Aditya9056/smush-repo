@@ -492,18 +492,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Set directory smush status.
 			$this->dir_stats = $wpsmush_dir->total_stats();
+
 			//Setup Attachments and total count
 			$wpsmush_db->total_count( true );
 
 			$this->stats = $this->global_stats( $force_update );
 			$smushed_count = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
+
 			// If directory smushed images are there, add those too.
 			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
 				$smushed_count += $this->dir_stats['optimised'];
 			}
 			// Set smushed count.
 			$this->smushed_count = $smushed_count;
-				//@todo: Rename to unsmushed_count
 			$this->remaining_count = $this->remaining_count();
 		}
 
@@ -640,7 +641,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$stats = $this->stats;
 
-			$stats['total'] = $wpsmush_db->total_count( true );
+			$stats['total'] = $this->total_count;
 
 			if ( isset( $smush ) && is_wp_error( $smush ) ) {
 
@@ -1475,7 +1476,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//If there aren't any images in the library, return the notice
-			if ( 0 == $wpsmush_db->total_count() ) {
+			if ( 0 == $wpsmush_db->get_media_attachments( true ) ) {
 				$notice = esc_html__( "We haven’t found any images in your media library yet so there’s no smushing to be done!", "wp-smushit" );
 				$resp   = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $notice . '
 				<i class="dev-icon dev-icon-cross"></i>

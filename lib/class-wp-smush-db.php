@@ -141,7 +141,49 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				return $count;
 			}
 
+			//Set Attachment ids, and total count
+			$wpsmushit_admin->attachments = $this->get_media_attachments( '', $force_update );
+
+			//Get total count from attachments
+			$total_count = ! empty( $posts ) && is_array( $posts ) ? sizeof( $posts ) : 0;
+
+			// Add directory smushed images too.
+			// NOTE: We adding only succesfully directory smushed images count to avoid confusion.
+			if ( ! empty( $wpsmushit_admin->dir_stats['optimised'] ) ) {
+				$total_count += $wpsmushit_admin->dir_stats['optimised'];
+			}
+
+			// Set total count.
+			$wpsmushit_admin->total_count = $total_count;
+
+			wp_cache_add( 'total_count', $total_count, 'wp-smush' );
+
+			// send the count
+			return $total_count;
+		}
+
+		/**
+		 * Get the media attachment Id/Count
+		 *
+		 * @param bool $return_count
+		 * @param bool $force_update
+		 *
+		 * @return array|bool|int|mixed
+		 */
+		function get_media_attachments( $return_count = false, $force_update = false ) {
+			global $wpsmushit_admin, $wpdb;
+
 			$posts  = array();
+
+			//Return results from cache
+			if ( ! $force_update ) {
+				$posts = wp_cache_get( 'media_attachments', 'wp-smush' );
+				$count = ! empty( $posts ) ? sizeof( $posts ) : 0;
+
+				return $return_count ? $count : $posts;
+			}
+
+			//Else Get it Fresh!!
 			$offset = 0;
 			$limit  = $wpsmushit_admin->query_limit();
 
@@ -167,23 +209,13 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				}
 			}
 
-			//If we have got the Query result
-			if ( ! empty( $posts ) && is_array( $posts ) ) {
-				wp_cache_add( 'smush_attachments', $posts, 'wp-smush' );
+			//Add the attachments to cache
+			wp_cache_add( 'media_attachments', $posts, 'wp-smushit' );
+
+			if ( $return_count ) {
+				return sizeof( $posts );
 			}
 
-			//Set Attachment ids, and total count
-			$wpsmushit_admin->attachments = $posts;
-			$total_count = ! empty( $posts ) && is_array( $posts ) ? sizeof( $posts ) : 0;
-			// Add directory smushed images too.
-			// NOTE: We adding only succesfully directory smushed images count to avoid confusion.
-			if ( ! empty( $wpsmushit_admin->dir_stats['optimised'] ) ) {
-				$total_count += $wpsmushit_admin->dir_stats['optimised'];
-			}
-			// Set total count.
-			$wpsmushit_admin->total_count = $total_count;
-
-			// send the count
 			return $posts;
 		}
 
