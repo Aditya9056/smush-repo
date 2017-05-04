@@ -51,6 +51,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $smushed_count;
 
 		/**
+		 * @var Smushed attachments from selected directories.
+		 */
+		public $dir_stats;
+
+		/**
 		 * @var Smushed attachments out of total attachments
 		 */
 		public $remaining_count;
@@ -305,8 +310,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function register() {
 
-			global $WpSmush;
-
 			//Main JS
 			wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
 				'jquery'
@@ -483,15 +486,25 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function setup_global_stats( $force_update = false ) {
-			global $wpsmush_db;
+			global $wpsmush_db, $wpsmush_dir;
+
+			// Set directory smush status.
+			$this->dir_stats = $wpsmush_dir->total_stats();
+
 			//Setup Attachments and total count
 			$wpsmush_db->total_count( true );
 
-			$this->stats           = $this->global_stats( $force_update );
+			$this->stats = $this->global_stats( $force_update );
 			// Set pro savings.
 			$this->set_pro_savings();
-			$this->smushed_count   = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
-			//@todo: Rename to unsmushed_count
+			$smushed_count = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
+
+			// If directory smushed images are there, add those too.
+			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
+				$smushed_count += $this->dir_stats['optimised'];
+			}
+			// Set smushed count.
+			$this->smushed_count = $smushed_count;
 			$this->remaining_count = $this->remaining_count();
 		}
 
@@ -626,7 +639,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( ! get_transient( 'smush-in-progress-' . $attachment_id ) ) {
 
 					//Set a transient to avoid multiple request
-					set_transient( 'smush-in-progress-' . $attachment_id, true, 5 * MINUTE_IN_SECONDS );
+					set_transient( 'smush-in-progress-' . $attachment_id, true, WP_SMUSH_TIMEOUT );
 
 					$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
@@ -664,7 +677,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$stats = $this->stats;
 
-			$stats['total'] = $wpsmush_db->total_count( true );
+			$stats['total'] = $this->total_count;
 
 			if ( isset( $smush ) && is_wp_error( $smush ) ) {
 
@@ -768,7 +781,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function smush_single( $attachment_id, $return = false ) {
 
 			//If the smushing transient is already set, return the status
-			if ( get_transient( 'smush-in-progress-' . $attachment_id ) ) {
+			if ( get_transient( 'smush-in-progress-' . $attachment_id ) || get_transient( "wp-smush-restore-$attachment_id" ) ) {
 				//Get the button status
 				$status = $this->set_status( $attachment_id, false, true );
 				if ( $return ) {
@@ -779,7 +792,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $attachment_id, true, 5 * MINUTE_IN_SECONDS );
+			set_transient( 'smush-in-progress-' . $attachment_id, true, WP_SMUSH_TIMEOUT );
 
 			global $WpSmush, $wpsmush_pngjpg, $wpsmush_helper;
 
@@ -903,7 +916,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return int
 		 */
 		function remaining_count() {
-			return ( $this->total_count - $this->smushed_count );
+
+			$smushed_count = $this->smushed_count;
+			// Add directory smush count.
+			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
+				$smushed_count += $this->dir_stats['optimised'];
+			}
+
+			return ( $this->total_count - $smushed_count );
 		}
 
 		/**
@@ -1039,6 +1059,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$query_next = false;
 				}
 
+			}
+
+			// Add directory smush image bytes.
+			if ( ! empty( $this->dir_stats['bytes'] ) && $this->dir_stats['bytes'] > 0 ) {
+				$smush_data['bytes'] += $this->dir_stats['bytes'];
+			}
+			// Add directory smush image total size.
+			if ( ! empty( $this->dir_stats['orig_size'] ) && $this->dir_stats['orig_size'] > 0 ) {
+				$smush_data['size_before'] += $this->dir_stats['orig_size'];
+			}
+			// Add directory smush saved size.
+			if ( ! empty( $this->dir_stats['image_size'] ) && $this->dir_stats['image_size'] > 0 ) {
+				$smush_data['size_after'] += $this->dir_stats['image_size'];
+			}
+			// Add directory smushed images.
+			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
+				$smush_data['total_images'] += $this->dir_stats['optimised'];
 			}
 
 			//Resize Savings
@@ -1252,7 +1289,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $WpSmush;
 
 			//Show Temporary Status, For Async Optimisation, No Good workaround
-			if ( ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $WpSmush->is_auto_smush_enabled() ) {
+			if ( ! get_transient( "wp-smush-restore-$id" ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $WpSmush->is_auto_smush_enabled() ) {
 				// the status
 				$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
 
@@ -1475,7 +1512,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//If there aren't any images in the library, return the notice
-			if ( 0 == $wpsmush_db->total_count() ) {
+			if ( 0 == $wpsmush_db->get_media_attachments( true ) ) {
 				$notice = esc_html__( "We haven’t found any images in your media library yet so there’s no smushing to be done!", "wp-smushit" );
 				$resp   = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $notice . '
 				<i class="dev-icon dev-icon-cross"></i>
@@ -1585,6 +1622,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							 *
 							 */
 							global $wpsmush_resize;
+							// Initialize resize class.
+							$wpsmush_resize->initialize();
 							$should_resmush = $wpsmush_resize->should_resize( $attachment );
 						}
 

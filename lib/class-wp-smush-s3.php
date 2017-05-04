@@ -35,10 +35,10 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$this->check_client();
 
 			//Check if the file exists for the given path and download
-			add_action( 'smush_file_exists', array( $this, 'maybe_download_file' ), '', 3 );
+			add_action( 'smush_file_exists', array( $this, 'maybe_download_file' ), 10, 3 );
 
 			//Check if the backup file exists
-			add_filter( 'smush_backup_exists', array( $this, 'backup_exists_on_s3' ), '', 3 );
+			add_filter( 'smush_backup_exists', array( $this, 'backup_exists_on_s3' ), 10, 3 );
 
 
 		}
@@ -276,7 +276,6 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$s3client = $as3cf->get_s3client( $region );
 
 			$file_exists = $s3client->doesObjectExist( $bucket, $s3_object['key'] );
-
 			return $file_exists;
 		}
 
@@ -309,13 +308,13 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 *
 		 * @return bool
 		 */
-		function backup_exists_on_s3( $attachment_id = '', $backup_path = '' ) {
+		function backup_exists_on_s3( $exists, $attachment_id = '', $backup_path = '' ) {
 			//If the file is on S3, Check if backup image object exists
 			if ( $this->is_image_on_s3( $attachment_id ) ) {
 				return $this->does_image_exists( $attachment_id, $backup_path );
 			}
 
-			return false;
+			return $exists;
 		}
 	}
 
