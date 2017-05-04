@@ -495,6 +495,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$wpsmush_db->total_count( true );
 
 			$this->stats = $this->global_stats( $force_update );
+
+			// Set pro savings.
+			$this->set_pro_savings();
+
 			$smushed_count = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
 
 			// If directory smushed images are there, add those too.
@@ -504,6 +508,48 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Set smushed count.
 			$this->smushed_count = $smushed_count;
 			$this->remaining_count = $this->remaining_count();
+		}
+
+		/**
+		 * Set pro savings stats if not premium user.
+		 *
+		 * For non-premium users, show expected avarage savings based
+		 * on the free version savings.
+		 */
+		function set_pro_savings() {
+
+			global $WpSmush;
+
+			// No need this already premium.
+			if ( $WpSmush->validate_install() ) {
+				return;
+			}
+
+			//Initialize
+			$this->stats['pro_savings'] = array(
+				'percent' => 0,
+				'savings' => 0,
+			);
+
+			// Default values.
+			$savings = $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0;
+			$savings_bytes = $this->stats['human'] > 0 ? $this->stats['bytes'] : "0";
+			// If the smush savings percent isn't empty and the percentage is below 45, double it.
+			if ( ! empty( $savings ) && $savings < 49 ) {
+				$savings = 2 * $savings;
+				$savings_bytes = 2 * $savings_bytes;
+			} elseif ( ! empty( $savings ) && $savings < 80  ) {
+				$savings = 1.1 * $savings;
+				$savings_bytes = 1.1 * $savings_bytes;
+			}
+
+			// Set pro savings in global stats.
+			if ( $savings > 0 ) {
+				$this->stats['pro_savings'] = array(
+					'percent' => number_format_i18n( $savings, 1, '.', '' ),
+					'savings' => size_format( $savings_bytes, 1 ),
+				);
+			}
 		}
 
 		/**

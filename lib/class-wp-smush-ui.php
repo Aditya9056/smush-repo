@@ -175,7 +175,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					if ( $WpSmush->lossy_enabled ) {
 						echo '<span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count;
 					} else {
-						printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
+						printf( esc_html__( "%sENABLE SUPER-SMUSH%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
 					} ?>
 				</span>
 				</div><?php
@@ -189,7 +189,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					}else{
 						if( !$wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize' ) ) {
 							//If Not enabled, Add a enable button
-							printf( esc_html__( "%sENABLE%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
+							printf( esc_html__( "%sENABLE IMAGE RESIZING%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
 						}else{
 							printf( esc_html__( "%sNO RESIZE SAVINGS AVAILABLE%s", "wp-smushit" ), '<span class="total-stats-label"><strong>', '</strong></span>' );
 						}
@@ -210,43 +210,37 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			do_action('stats_ui_after_resize_savings');
 			//Pro Savings Expected: For free Version
 			if ( ! $WpSmush->validate_install() ) {
-				$savings = $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0;
-				$savings_bytes = $wpsmushit_admin->stats['human'] > 0 ? $wpsmushit_admin->stats['bytes'] : "0";
-				$show_pro_savings = false;
-				//If the smush savings percent isn't empty and the percentage is below 45, double it
-				if( !empty( $savings ) && $savings < 49 ) {
-					$savings = 2 * $savings;
-					$savings_bytes = 2 * $savings_bytes;
-					$show_pro_savings = true;
-				}elseif( !empty( $savings ) && $savings < 80  ){
-					$savings = 1.1 * $savings;
-					$savings_bytes = 1.1 * $savings_bytes;
-					$show_pro_savings = true;
-				}
+			    //Initialize pro savings if not set already
+			    if( empty( $wpsmushit_admin->stats) || empty( $wpsmushit_admin->stats['pro_savings'] ) ) {
+			        $wpsmushit_admin->set_pro_savings();
+			    }
+			    $pro_savings = $wpsmushit_admin->stats['pro_savings'];
+			    $show_pro_savings = $pro_savings['savings'] > 0 ? true : false;
 
 				//If we have any savings
-				if( $savings > 0 && $show_pro_savings ) {
-					$upgrade_url = add_query_arg(
-						array(
-							'utm_source' => 'Smush-Free',
-							'utm_medium' => 'Banner',
-							'utm_campaign'=> 'pro-only-stats'
-						),
-						$wpsmushit_admin->upgrade_url
-					);
-					$pro_only = sprintf( esc_html__( '%sTRY PRO FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' ); ?>
+				$upgrade_url = add_query_arg(
+					array(
+						'utm_source' => 'Smush-Free',
+						'utm_medium' => 'Banner',
+						'utm_campaign'=> 'pro-only-stats'
+					),
+					$wpsmushit_admin->upgrade_url
+				);
+				$pro_only = sprintf( esc_html__( '%sTRY PRO FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' ); ?>
+				<!-- Make a hidden div if not stats found -->
+				<div id="smush-avg-pro-savings" <?php echo $show_pro_savings ? '' : 'style="display: none;"'; ?>>
 					<hr />
 					<div class="row smush-avg-pro-savings" tooltip="<?php esc_html_e("BASED ON AVERAGE SAVINGS IF YOU UPGRADE TO PRO", "wp-smushit"); ?>">
 						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PRO SAVINGS ESTIMATE", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
 						<span class="float-r wp-smush-stats">
 							<span class="wp-smush-stats-human">
-								<?php echo size_format( $savings_bytes, 1 ); ?>
+								<?php echo $show_pro_savings ? $pro_savings['savings']: '0.0 B'; ?>
 							</span>
 							<span class="wp-smush-stats-sep">/</span>
-							<span class="wp-smush-stats-percent"><?php echo number_format_i18n( $savings, 1, '.', '' );  ?></span>%
+							<span class="wp-smush-stats-percent"><?php echo $show_pro_savings ? $pro_savings['percent'] : 0;  ?></span>%
 						</span>
-					</div><?php
-				}
+					</div>
+				</div><?php
 			}
 			/**
 			 * Allows you to output any content within the stats box at the end

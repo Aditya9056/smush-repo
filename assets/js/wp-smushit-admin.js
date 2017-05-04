@@ -381,9 +381,30 @@ jQuery(function ($) {
                 var smush_resize_savings = $('.smush-resize-savings');
                 //Update Resize Savings
                 if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings ) && _res.data.stats.resize_savings != '') {
+                    // Get the resize savings in number.
+                    var savings_value = parseInt(_res.data.stats.resize_savings);
                     var resize_savings = smush_resize_savings.find('.wp-smush-stats');
-                    if (resize_savings.length > 0) {
+                    // Replace only if value is grater than 0.
+                    if (savings_value > 0 && resize_savings.length > 0) {
                         resize_savings.html(_res.data.stats.resize_savings);
+                    }
+                }
+
+                // Update avg pro savings stats.
+                if ('undefined' != typeof (_res.data.stats.pro_savings)) {
+                    // Make pro savings div visible if hidden.
+                    $('#smush-avg-pro-savings').show();
+                    // Pro stats section.
+                    var smush_pro_savings = $('.smush-avg-pro-savings');
+                    if (smush_pro_savings.length > 0) {
+                        var pro_savings_percent = smush_pro_savings.find('.wp-smush-stats-percent');
+                        var pro_savings_bytes = smush_pro_savings.find('.wp-smush-stats-human');
+                        if (pro_savings_percent.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.percent) && _res.data.stats.pro_savings.percent != '') {
+                            pro_savings_percent.html(_res.data.stats.pro_savings.percent);
+                        }
+                        if (pro_savings_bytes.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.savings) && _res.data.stats.pro_savings.savings != '') {
+                            pro_savings_bytes.html(_res.data.stats.pro_savings.savings);
+                        }
                     }
                 }
                 // increase the progress bar
@@ -1316,6 +1337,24 @@ jQuery(function ($) {
 
                     //Update Directory progress
                     update_dir_progress(ele);
+
+                    // Update dir savings stats.
+                    if ('undefined' != typeof (res.data.total.percent) && 'undefined' != typeof (res.data.total.human) && 'undefined' != typeof (res.data.total.bytes)) {
+                        // Directory stats section.
+                        var smush_dir_savings = $('.smush-dir-savings');
+                        if (smush_dir_savings.length > 0 && res.data.total.bytes > 0) {
+                            // Make separator visible if hidden.
+                            smush_dir_savings.find('.wp-smush-stats-sep').show();
+                            var dir_savings_percent = smush_dir_savings.find('.wp-smush-stats-percent');
+                            var dir_savings_human = smush_dir_savings.find('.wp-smush-stats-human');
+                            if (dir_savings_percent.length > 0) {
+                                dir_savings_percent.html(res.data.total.percent + '%');
+                            }
+                            if (dir_savings_human.length > 0) {
+                                dir_savings_human.html(res.data.total.human);
+                            }
+                        }
+                    }
                 } else {
                     //If there was an error optimising the image
                     ele.addClass('error');
@@ -1356,18 +1395,23 @@ jQuery(function ($) {
             var stats_human = $('div.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-human');
             var stats_percent = $('div.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-percent');
 
-            //Update Savings in bytes
-            if (stats_human.length > 0) {
-                stats_human.html(stats.dir_smush.human);
-            } else {
-                var span = '<span class="wp-smush-stats-human">' + stats.dir_smush.bytes + '</span>';
-            }
+            // Do not replace if 0 savings.
+            if (stats.dir_smush.bytes > 0) {
+                // Show size and percentage separator.
+                $('div.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-sep').show();
+                //Update Savings in bytes
+                if (stats_human.length > 0) {
+                    stats_human.html(stats.dir_smush.human);
+                } else {
+                    var span = '<span class="wp-smush-stats-human">' + stats.dir_smush.bytes + '</span>';
+                }
 
-            //Update Optimisation percentage
-            if (stats_percent.length > 0) {
-                stats_percent.html(stats.dir_smush.percent + '%');
-            } else {
-                var span = '<span class="wp-smush-stats-percent">' + stats.dir_smush.percent + '%' + '</span>';
+                //Update Optimisation percentage
+                if (stats_percent.length > 0) {
+                    stats_percent.html(stats.dir_smush.percent + '%');
+                } else {
+                    var span = '<span class="wp-smush-stats-percent">' + stats.dir_smush.percent + '%' + '</span>';
+                }
             }
         }
 
