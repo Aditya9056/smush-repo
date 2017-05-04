@@ -495,8 +495,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$wpsmush_db->total_count( true );
 
 			$this->stats = $this->global_stats( $force_update );
+
 			// Set pro savings.
 			$this->set_pro_savings();
+
 			$smushed_count = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
 
 			// If directory smushed images are there, add those too.
@@ -522,6 +524,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( $WpSmush->validate_install() ) {
 				return;
 			}
+
+			//Initialize
+			$this->stats['pro_savings'] = array(
+				'percent' => 0,
+				'savings' => 0,
+			);
 
 			// Default values.
 			$savings = $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0;
