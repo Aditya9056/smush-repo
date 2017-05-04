@@ -134,15 +134,18 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 * @return bool|int|mixed
 		 */
 		function total_count( $force_update = false ) {
-			global $wpsmushit_admin, $wpdb;
+			global $wpsmushit_admin;
 
 			//Retrieve from Cache
 			if ( ! $force_update && $count = wp_cache_get( 'total_count', 'wp-smush' ) ) {
-				return $count;
+				if( $count ) {
+					return $count;
+				}
 			}
 
 			//Set Attachment ids, and total count
-			$wpsmushit_admin->attachments = $this->get_media_attachments( '', $force_update );
+			$posts = $this->get_media_attachments( '', $force_update );
+			$wpsmushit_admin->attachments = $posts;
 
 			//Get total count from attachments
 			$total_count = ! empty( $posts ) && is_array( $posts ) ? sizeof( $posts ) : 0;
@@ -173,8 +176,6 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		function get_media_attachments( $return_count = false, $force_update = false ) {
 			global $wpsmushit_admin, $wpdb;
 
-			$posts  = array();
-
 			//Return results from cache
 			if ( ! $force_update ) {
 				$posts = wp_cache_get( 'media_attachments', 'wp-smush' );
@@ -184,7 +185,10 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				if( $count ) {
 					return $return_count ? $count : $posts;
 				}
+
 			}
+
+			$posts  = array();
 
 			//Else Get it Fresh!!
 			$offset = 0;
