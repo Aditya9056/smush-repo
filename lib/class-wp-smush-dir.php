@@ -86,19 +86,27 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
             <!-- Savings from Directory Smush -->
             <div class="row smush-dir-savings">
             <span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "DIRECTORY SMUSH SAVINGS", "wp-smushit" ); ?></strong></span>
-            <span class="float-r wp-smush-stats"><?php
-				if ( ! empty( $dir_smush_stats ) && $human == 0 && $percent < 1 ) {
-					//If smush percentage is lower, Show stats as < 1Kb
-					$human   = "< 1KB";
-					$percent = "< 1";
-				} ?>
-                <span class="spinner" style="visibility: visible"
-                      title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
-                        <span class="wp-smush-stats-human"><?php echo ! empty( $human ) ? $human : ''; ?></span><?php
-				if ( $percent > 1 ) { ?>
-                    <span class="wp-smush-stats-sep">/</span>
-                    <span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>%</span><?php
-				} ?>
+            <span class="float-r wp-smush-stats">
+	            <span class="spinner" style="visibility: visible" title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
+				<?php
+				if ( $human > 0 ) { ?>
+                    <span class="wp-smush-stats-human"> <?php echo $human; ?></span><?php
+                    //Output percentage only if > 1
+					if ( $percent > 1 ) { ?>
+                        <span class="wp-smush-stats-sep">/</span>
+                        <span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>
+                        %</span><?php
+					}
+				} else { ?>
+                    <span class="wp-smush-stats-human">
+		                <a href="#wp-smush-dir-browser">
+                            <button class="button button-small wp-smush-dir-link"
+                                    type="button"><?php esc_html_e( "SMUSH DIRECTORY", "wp-smushit" ); ?></button>
+                        </a>
+	                </span>
+                    <span class="wp-smush-stats-sep hidden">/</span>
+                    <span class="wp-smush-stats-percent"></span>
+				<?php } ?>
                 </span>
             </div><?php
 		}
@@ -258,7 +266,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                     </div>
                     <!-- Notices -->
                     <div class="wp-smush-notice wp-smush-dir-all-done hidden" tabindex="0">
-                        <i class="dev-icon dev-icon-tick"></i><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?>
+                        <i class="dev-icon dev-icon-tick"></i><?php esc_html_e( "All images for the selected directory are smushed and up to date. Awesome!", "wp-smushit" ); ?>
                     </div>
                     <div class="wp-smush-notice wp-smush-dir-remaining hidden" tabindex="0">
                         <i class="dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i><?php printf( esc_html__( "%s/%s image(s) were successfully smushed, however %s image(s) could not be smushed due to an error.", "wp-smushit" ), '<span class="wp-smush-dir-smushed"></span>', '<span class="wp-smush-dir-total"></span>', '<span class="wp-smush-dir-remaining"></span>' ); ?>
