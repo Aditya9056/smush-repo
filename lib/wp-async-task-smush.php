@@ -147,7 +147,7 @@ if ( ! class_exists( 'WP_Async_Task_Smush' ) ) {
 
 				//@todo: We've set sslverify to false
 				$request_args = array(
-					'timeout'   => 10,
+					'timeout'   => apply_filters( 'smush_async_time_out', 0 ),
 					'blocking'  => false,
 					'sslverify' => false,
 					'body'      => $this->_body_data,
