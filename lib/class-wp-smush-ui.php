@@ -212,7 +212,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if ( ! $WpSmush->validate_install() ) {
 			    //Initialize pro savings if not set already
 			    if( empty( $wpsmushit_admin->stats) || empty( $wpsmushit_admin->stats['pro_savings'] ) ) {
-			        $pro_savings = $wpsmushit_admin->set_pro_savings();
+			        $wpsmushit_admin->set_pro_savings();
 			    }
 			    $pro_savings = $wpsmushit_admin->stats['pro_savings'];
 			    $show_pro_savings = $pro_savings['savings'] > 0 ? true : false;
