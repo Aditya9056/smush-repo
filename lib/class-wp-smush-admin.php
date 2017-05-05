@@ -638,6 +638,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Get the file path for backup
 			$attachment_file_path = $wpsmush_helper->get_attached_file( $attachment_id );
 
+			//Download if not exists
+			do_action('smush_file_exists', $attachment_file_path, $attachment_id );
+
 			//Take Backup
 			global $wpsmush_backup;
 			$wpsmush_backup->create_backup( $attachment_file_path, '', $attachment_id );
@@ -808,6 +811,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Get the file path for backup
 			$attachment_file_path = $wpsmush_helper->get_attached_file( $attachment_id );
+
+			//Download file if not exists
+			do_action('smush_file_exists', $attachment_file_path, $attachment_id );
 
 			//Take Backup
 			global $wpsmush_backup;
