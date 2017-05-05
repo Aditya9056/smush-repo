@@ -2292,7 +2292,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
-			// Do not continue if attachment is an image.
+			// Do not continue if attachment is not an image.
 			if ( ! wp_attachment_is_image( $id ) ) {
 				return;
 			}
