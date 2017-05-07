@@ -200,6 +200,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 					}
 				}
 				$backup_path = is_array( $backup_path ) && !empty( $backup_path['file'] ) ? $backup_path['file'] : $backup_path;
+				var_dump( $backup_path );
 			}
 
 			$backup_full_path = str_replace( wp_basename( $file_path ), wp_basename( $backup_path ), $file_path );

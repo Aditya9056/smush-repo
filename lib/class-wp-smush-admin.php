@@ -525,6 +525,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 
+			//Initialize
+			$this->stats['pro_savings'] = array(
+				'percent' => 0,
+				'savings' => 0,
+			);
+
 			// Default values.
 			$savings = $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0;
 			$savings_bytes = $this->stats['human'] > 0 ? $this->stats['bytes'] : "0";
@@ -631,6 +637,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Get the file path for backup
 			$attachment_file_path = $wpsmush_helper->get_attached_file( $attachment_id );
+
+			//Download if not exists
+			do_action('smush_file_exists', $attachment_file_path, $attachment_id );
 
 			//Take Backup
 			global $wpsmush_backup;
@@ -802,6 +811,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Get the file path for backup
 			$attachment_file_path = $wpsmush_helper->get_attached_file( $attachment_id );
+
+			//Download file if not exists
+			do_action('smush_file_exists', $attachment_file_path, $attachment_id );
 
 			//Take Backup
 			global $wpsmush_backup;
