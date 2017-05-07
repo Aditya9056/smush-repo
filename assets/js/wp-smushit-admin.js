@@ -36,7 +36,7 @@ var dash_offset = function (percent) {
 }
 
 var update_dashoffset = function (stats) {
-    var total = stats.total.length;
+    var total = stats.total;
     if (total > 0) {
         var dashoffset = dash_offset(stats.smushed / total);
         var circle_progress = jQuery('.wp-smush-svg-circle-progress');
@@ -358,58 +358,12 @@ jQuery(function ($) {
             //if we have received the progress data, update the stats else skip
             if ('undefined' != typeof _res.data.stats) {
 
-                //Update Progress on Circle
-                update_dashoffset(_res.data.stats);
-
-                //Update stats
-                $('.wp-smush-savings .wp-smush-stats-percent').html(_res.data.stats.percent);
-                $('.wp-smush-savings .wp-smush-stats-human').html(_res.data.stats.human);
-
-                $('.wp-smush-images-smushed, .wp-smush-optimised').html(_res.data.stats.smushed);
-                if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed) {
-                    $('.super-smush-attachments .smushed-count').html(_res.data.stats.super_smushed);
-                }
-
-                var smush_conversion_savings = $('.smush-conversion-savings');
-                //Update Conversion Savings
-                if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.conversion_savings ) && _res.data.stats.conversion_savings != '') {
-                    var conversion_savings = smush_conversion_savings.find('.wp-smush-stats');
-                    if (conversion_savings.length > 0) {
-                        conversion_savings.html(_res.data.stats.conversion_savings);
-                    }
-                }
-                var smush_resize_savings = $('.smush-resize-savings');
-                //Update Resize Savings
-                if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings ) && _res.data.stats.resize_savings != '') {
-                    // Get the resize savings in number.
-                    var savings_value = parseInt(_res.data.stats.resize_savings);
-                    var resize_savings = smush_resize_savings.find('.wp-smush-stats');
-                    // Replace only if value is grater than 0.
-                    if (savings_value > 0 && resize_savings.length > 0) {
-                        resize_savings.html(_res.data.stats.resize_savings);
-                    }
-                }
-
-                // Update avg pro savings stats.
-                if ('undefined' != typeof (_res.data.stats.pro_savings)) {
-                    // Make pro savings div visible if hidden.
-                    $('#smush-avg-pro-savings').show();
-                    // Pro stats section.
-                    var smush_pro_savings = $('.smush-avg-pro-savings');
-                    if (smush_pro_savings.length > 0) {
-                        var pro_savings_percent = smush_pro_savings.find('.wp-smush-stats-percent');
-                        var pro_savings_bytes = smush_pro_savings.find('.wp-smush-stats-human');
-                        if (pro_savings_percent.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.percent) && _res.data.stats.pro_savings.percent != '') {
-                            pro_savings_percent.html(_res.data.stats.pro_savings.percent);
-                        }
-                        if (pro_savings_bytes.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.savings) && _res.data.stats.pro_savings.savings != '') {
-                            pro_savings_bytes.html(_res.data.stats.pro_savings.savings);
-                        }
-                    }
-                }
                 // increase the progress bar
                 this._update_progress(_res.data.stats.smushed, progress);
             }
+
+            // Update stats and counts.
+            update_stats(_res);
         };
 
         this._update_progress = function (count, width) {
@@ -1203,6 +1157,69 @@ jQuery(function ($) {
     };
 
     /**
+     * Update all stats sections based on the response.
+     *
+     * @param _res Ajax response data.
+     */
+    var update_stats = function (_res) {
+
+        // If we have received the stats data, procced.
+        if ('undefined' != typeof _res.data.stats) {
+
+            // Update Progress on Circle.
+            update_dashoffset(_res.data.stats);
+
+            // Update main stats.
+            $('.wp-smush-savings .wp-smush-stats-percent').html(_res.data.stats.percent);
+            $('.wp-smush-savings .wp-smush-stats-human').html(_res.data.stats.human);
+
+            $('.wp-smush-images-smushed, .wp-smush-optimised').html(_res.data.stats.smushed);
+            $('.wp-smush-images-total').html(_res.data.stats.total);
+            if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed) {
+                $('.super-smush-attachments .smushed-count').html(_res.data.stats.super_smushed);
+            }
+
+            var smush_conversion_savings = $('.smush-conversion-savings');
+            //Update Conversion Savings
+            if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.conversion_savings ) && _res.data.stats.conversion_savings != '') {
+                var conversion_savings = smush_conversion_savings.find('.wp-smush-stats');
+                if (conversion_savings.length > 0) {
+                    conversion_savings.html(_res.data.stats.conversion_savings);
+                }
+            }
+            var smush_resize_savings = $('.smush-resize-savings');
+            //Update Resize Savings
+            if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings ) && _res.data.stats.resize_savings != '') {
+                // Get the resize savings in number.
+                var savings_value = parseInt(_res.data.stats.resize_savings);
+                var resize_savings = smush_resize_savings.find('.wp-smush-stats');
+                // Replace only if value is grater than 0.
+                if (savings_value > 0 && resize_savings.length > 0) {
+                    resize_savings.html(_res.data.stats.resize_savings);
+                }
+            }
+
+            // Updating pro savings stats.
+            if ('undefined' != typeof (_res.data.stats.pro_savings)) {
+                // Make pro savings div visible if hidden.
+                $('#smush-avg-pro-savings').show();
+                // Pro stats section.
+                var smush_pro_savings = $('.smush-avg-pro-savings');
+                if (smush_pro_savings.length > 0) {
+                    var pro_savings_percent = smush_pro_savings.find('.wp-smush-stats-percent');
+                    var pro_savings_bytes = smush_pro_savings.find('.wp-smush-stats-human');
+                    if (pro_savings_percent.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.percent) && _res.data.stats.pro_savings.percent != '') {
+                        pro_savings_percent.html(_res.data.stats.pro_savings.percent);
+                    }
+                    if (pro_savings_bytes.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.savings) && _res.data.stats.pro_savings.savings != '') {
+                        pro_savings_bytes.html(_res.data.stats.pro_savings.savings);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Update the progress and show notice when smush completes
      */
     var directory_smush_finished = function( notice_type ) {
@@ -1337,6 +1354,9 @@ jQuery(function ($) {
 
                     //Update Directory progress
                     update_dir_progress(ele);
+
+                    // Update stats.
+                    update_stats(res);
 
                     // Update dir savings stats.
                     if ('undefined' != typeof (res.data.total.percent) && 'undefined' != typeof (res.data.total.human) && 'undefined' != typeof (res.data.total.bytes)) {
