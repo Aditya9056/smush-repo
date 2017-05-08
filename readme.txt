@@ -145,6 +145,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * UI improvement for directory smush
     * Allow re-smushing directory images, if the lossy feature is turned on
     * Site Ground Staging - Disable Async smush for staging sites, admin URL for async request is incorrect because of the Apache module
+    * Image appearing in Re-Smush list even after smushing, if resize settings are kept on.
 
 * Added:
     * WP S3 Offload - Plugin Compatibility for Remove files from server feature ( Pro Version )

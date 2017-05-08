@@ -163,6 +163,12 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 
 			global $wpsmush_helper;
 
+			$savings = array(
+				'bytes'       => 0,
+				'size_before' => 0,
+				'size_after'  => 0
+			);
+
 			//Check if the image should be resized or not
 			$should_resize = $this->should_resize( $id, $meta );
 
@@ -196,7 +202,8 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			$resize = $this->perform_resize( $file_path, $original_file_size, $id, $meta );
 
 			//If resize wasn't successful
-			if ( ! $resize ) {
+			if ( ! $resize || $resize['filesize'] == $original_file_size ) {
+				update_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', $savings );
 				return $meta;
 			}
 
@@ -298,7 +305,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 					$this->maybe_unlink( $resize_path, $meta );
 				}
 
-				return false;
+				return $data['filesize'] = $file_size;;
 			}
 
 			//Store filesize
