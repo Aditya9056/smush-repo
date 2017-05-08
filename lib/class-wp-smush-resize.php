@@ -298,18 +298,14 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 
 			$data['file_path'] = $resize_path;
 
-			$file_size = filesize( $resize_path );
+			$file_size        = filesize( $resize_path );
+			$data['filesize'] = $file_size;
 			if ( $file_size > $original_file_size ) {
 				//Don't Unlink for nextgen images
 				if ( $unlink ) {
 					$this->maybe_unlink( $resize_path, $meta );
 				}
-
-				return $data['filesize'] = $file_size;;
 			}
-
-			//Store filesize
-			$data['filesize'] = $file_size;
 
 			return $data;
 		}

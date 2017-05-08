@@ -731,7 +731,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			$resized = $wpsmush_resize->perform_resize( $file_path, $original_file_size, $attachment_id, '', false );
 
 			//If resize wasn't successful
-			if ( ! $resized ) {
+			if ( ! $resized || $resized['filesize'] == $original_file_size ) {
 				//Unlink Image, if other size path is not similar
 				$this->maybe_unlink( $file_path, $sizes, $image, $storage );
 
