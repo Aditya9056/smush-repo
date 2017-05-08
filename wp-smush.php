@@ -55,6 +55,15 @@ if ( ! function_exists( 'deactivate_smush_org' ) ) {
  */
 $timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 90 );
 
+// To support smushing on staging sites like SiteGround staging where
+// staging site urls are different but redirects to main site url.
+// Remove the protocols and www, and get the domain name.
+$site_url = str_replace( array( 'http://', 'https://', 'www.' ), '', site_url() );
+// If current site's url is different from site_url, disable Async.
+if ( ( 0 !== strpos( $_SERVER['SERVER_NAME'], $site_url ) ) && ! defined( $prefix . 'ASYNC' ) ) {
+	define( $prefix . 'ASYNC', false );
+}
+
 $smush_constants = array(
 	'VERSION'           => $version,
 	'BASENAME'          => plugin_basename( __FILE__ ),
