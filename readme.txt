@@ -134,6 +134,9 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.6.4 =
 
+* Updated:
+    * Async request timeout, if you're having trouble with Auto Smush, set timeout using filter `smush_async_time_out`
+
 * Fixed:
 
     * Issue with WP Smush Pro membership check
