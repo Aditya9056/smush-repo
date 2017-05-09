@@ -658,13 +658,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				//Button Text
 				$button_content = esc_html__( "BULK SMUSH NOW", "wp-smushit" );
 
-				$remaining_count = $wpsmushit_admin->remaining_count;
-				// Add directory optimised count.
-				if ( ! empty( $wpsmushit_admin->dir_stats['optimised'] ) && $wpsmushit_admin->dir_stats['optimised'] > 0 ) {
-					$remaining_count += $wpsmushit_admin->dir_stats['optimised'];
-				}
 				//Show the notice only if there are remaining images and if we aren't showing a notice for resmush
-				if ( $remaining_count > 0 ) {
+				if ( $wpsmushit_admin->remaining_count > 0 ) {
 					$class = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' hidden' : '';
 					$upgrade_url = add_query_arg(
 						array(
