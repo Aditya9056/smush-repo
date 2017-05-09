@@ -505,6 +505,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
 				$smushed_count += $this->dir_stats['optimised'];
 			}
+
 			// Set smushed count.
 			$this->smushed_count = $smushed_count;
 			$this->remaining_count = $this->remaining_count();
@@ -931,13 +932,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function remaining_count() {
 
-			$smushed_count = $this->smushed_count;
-			// Add directory smush count.
-			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
-				$smushed_count += $this->dir_stats['optimised'];
-			}
-
-			return ( $this->total_count - $smushed_count );
+			return ( $this->total_count - $this->smushed_count );
 		}
 
 		/**

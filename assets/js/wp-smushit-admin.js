@@ -1429,11 +1429,11 @@ jQuery(function ($) {
             }
             //Update Smushed count
             if (c_stats.smushed_count) {
-                $('div.wp-smush-count-total span.wp-smush-optimised').html(c_stats.smushed_count);
+                // $('div.wp-smush-count-total span.wp-smush-optimised').html(c_stats.smushed_count);
             }
             //Update Total Attachment Count
             if (c_stats.total_count) {
-                $('div.wp-smush-count-total div.wp-smush-smush-stats-wrapper span:last-child').html(c_stats.total_count);
+                // $('div.wp-smush-count-total div.wp-smush-smush-stats-wrapper span:last-child').html(c_stats.total_count);
             }
             //Update Savings and Percent
             if (c_stats.savings) {
@@ -2159,7 +2159,7 @@ jQuery(function ($) {
                 return;
             } else {
                 //Update the stats
-                update_cummulative_stats(r.data);
+                // update_cummulative_stats(r.data);
             }
 
         });
