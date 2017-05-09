@@ -1264,6 +1264,8 @@ jQuery(function ($) {
             } else {
                 // Hide images list.
                 $('ul.wp-smush-image-list').hide();
+                $('div.dir-smush-button-wrap.top').hide();
+
                 //Show All done notice
                 $('.wp-smush-notice.wp-smush-dir-all-done').show();
 

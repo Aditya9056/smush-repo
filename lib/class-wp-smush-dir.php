@@ -969,11 +969,16 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			// If super-smush enabled, add meta condition.
 			$lossy_condition = $WpSmush->lossy_enabled ? 'AND lossy = 1' : '';
 
-			while ( $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL $lossy_condition LIMIT $offset, $limit ", ARRAY_A ) ) {
+			$continue = true;
+			while ( $continue && $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL $lossy_condition ORDER BY `id` LIMIT $offset, $limit", ARRAY_A ) ) {
 				if ( ! empty( $results ) ) {
 					$images = array_merge( $images, $results );
 				}
 				$offset += $limit;
+				//If offset is above total number, do not query
+				if( $offset > $total ) {
+				    $continue = false;
+                }
 			}
 
 			//Iterate over stats, Return Count and savings
