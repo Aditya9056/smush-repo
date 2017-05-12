@@ -98,8 +98,11 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
 if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 	function wp_smush_rating_message( $message ) {
 		global $wpsmushit_admin, $wpsmush_db;
-		$savings     = $wpsmushit_admin->global_stats_from_ids();
-		$image_count = ! empty( $wpsmushit_admin->smushed_attachments ) ? count( $wpsmushit_admin->smushed_attachments ) : $wpsmush_db->smushed_count();
+		if( empty( $wpsmushit_admin->stats ) ) {
+		    $wpsmushit_admin->setup_global_stats();
+        }
+		$savings     = $wpsmushit_admin->stats;
+		$image_count = $wpsmushit_admin->smushed_count;
 		$show_stats  = false;
 
 		//If there is any saving, greater than 1Mb, show stats
