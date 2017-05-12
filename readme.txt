@@ -1,6 +1,6 @@
 === Smush Image Compression and Optimization ===
 Plugin Name: Smush Image Compression and Optimization
-Version: 2.6.4-beta1
+Version: 2.6.4-beta2
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
@@ -146,6 +146,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Allow re-smushing directory images, if the lossy feature is turned on
     * Site Ground Staging - Disable Async smush for staging sites, admin URL for async request is incorrect because of the Apache module
     * Image appearing in Re-Smush list even after smushing, if resize settings are kept on.
+    * Updated query for smushed images count
 
 * Added:
     * WP S3 Offload - Plugin Compatibility for Remove files from server feature ( Pro Version )

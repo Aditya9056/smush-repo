@@ -234,42 +234,39 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 * @return array|int
 		 */
 		function smushed_count( $return_ids = false ) {
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpdb;
 
 			//Don't query again, if the variable is already set
 			if ( ! $return_ids && ! empty( $wpsmushit_admin->smushed_count ) && $wpsmushit_admin->smushed_count > 0 ) {
 				return $wpsmushit_admin->smushed_count;
 			}
 
-			$query = array(
-				'fields'         => array( 'ids', 'post_mime_type' ),
-				'post_type'      => 'attachment',
-				'post_status'    => 'inherit',
-				'order'          => 'ASC',
-				'posts_per_page' => - 1,
-				'meta_key'       => 'wp-smpro-smush-data',
-				'no_found_rows'  => true
-			);
+			/**
+			 * Allows to set a limit of mysql query
+			 * Default value is 2000
+			 */
+			$limit      = $wpsmushit_admin->query_limit();
+			$offset     = 0;
+			$query_next = true;
+
+			$posts = array();
 
 			//Remove the Filters added by WP Media Folder
 			$this->remove_filters();
+			while ( $query_next && $results = $wpdb->get_col($wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" )) ) {
+				if ( ! is_wp_error( $results ) && sizeof( $results ) > 0 ) {
 
-			$results = new WP_Query( $query );
-
-			if ( ! is_wp_error( $results ) && $results->post_count > 0 ) {
-
-				$posts = $this->filter_by_mime( $results->posts );
-
-				if ( ! $return_ids ) {
-					//return Post Count
-					return count( $posts );
-				} else {
-					//Return post ids
-					return $posts;
+					$posts = array_merge( $posts, $results );
 				}
-			} else {
-				return false;
+				//Update the offset
+				$offset += $limit;
+
+				//Compare the Offset value to total images
+				if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $offset ) {
+					$query_next = false;
+				}
 			}
+			return $return_ids ? $posts : count( $posts );
 		}
 
 		/**
