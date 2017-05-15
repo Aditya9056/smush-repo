@@ -253,7 +253,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 			//Remove the Filters added by WP Media Folder
 			$this->remove_filters();
-			while ( $query_next && $results = $wpdb->get_col($wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" )) ) {
+			while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
 				if ( ! is_wp_error( $results ) && sizeof( $results ) > 0 ) {
 
 					$posts = array_merge( $posts, $results );
@@ -266,6 +266,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 					$query_next = false;
 				}
 			}
+
 			return $return_ids ? $posts : count( $posts );
 		}
 

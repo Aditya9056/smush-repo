@@ -1602,7 +1602,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$backup = !empty( $backup_sizes['smush_png_path'] ) ? $backup_sizes['smush_png_path'] : '';
 
 				//Check for original full size image backup
-				$backup = empty( $backup ) && !empty( $backup_sizes['smush-full'] ) ? $backup_sizes['smush-full'] : '';
+				$backup = empty( $backup ) && !empty( $backup_sizes['smush-full'] ) ? $backup_sizes['smush-full'] : $backup;
 
 				$backup = !empty( $backup['file'] ) ? $backup['file'] : '';
 			}

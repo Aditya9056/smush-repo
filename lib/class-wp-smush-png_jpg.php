@@ -142,13 +142,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			$this->is_transparent = $this->is_transparent( $id, $file );
 
 			//If we are suppose to convert transaprent images, skip is transparent check
-			if ( $convert_transparent ) {
+			if ( $convert_transparent || !$this->is_transparent ) {
 				$should_convert = true;
-			} else {
-				if ( ! $this->is_transparent ) {
-					//If image is not transparent
-					$should_convert = true;
-				}
 			}
 
 			return $should_convert;
@@ -492,7 +487,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 						$should_convert = $this->can_be_converted( $id, $size_k, 'image/png', $s_file );
 
 						//Perform the conversion
-						if ( ! $should_convert = apply_filters( 'wp_smush_convert_to_jpg', $should_convert, $id, $file, $size_k ) ) {
+						if ( ! $should_convert ) {
 							continue;
 						}
 

@@ -321,13 +321,8 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				if ( ! empty( $meta['file'] ) && $original_file == $meta['file'] ) {
 					@unlink( $file_path );
 				}
-				//Generate all other image size, and update attachment metadata
-				$metadata = wp_generate_attachment_metadata( $image_id, $original_file_path );
 
-				//Update metadata to db if it was successfully generated
-				if ( ! empty( $metadata ) && ! is_wp_error( $metadata ) ) {
-					wp_update_attachment_metadata( $image_id, $metadata );
-				}
+				$meta = wp_generate_attachment_metadata( $image_id, $original_file_path );
 
 				/**
 				 *  Perform a action after the image URL is updated in post content

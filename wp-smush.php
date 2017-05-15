@@ -98,9 +98,9 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
 if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 	function wp_smush_rating_message( $message ) {
 		global $wpsmushit_admin, $wpsmush_db;
-		if( empty( $wpsmushit_admin->stats ) ) {
-		    $wpsmushit_admin->setup_global_stats();
-        }
+		if ( empty( $wpsmushit_admin->stats ) ) {
+			$wpsmushit_admin->setup_global_stats();
+		}
 		$savings     = $wpsmushit_admin->stats;
 		$image_count = $wpsmushit_admin->smushed_count;
 		$show_stats  = false;
