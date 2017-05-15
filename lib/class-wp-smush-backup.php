@@ -317,7 +317,8 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			if ( file_exists( $original_file_path ) ) {
 				//Update the path details in meta and attached file, replace the image
 				$meta = $wpsmush_pngjpg->update_image_path( $image_id, $file_path, $original_file_path, $meta, 'full', 'restore' );
-				//@todo: Add a check in meta if file was updated or not, before unlinking jpg
+
+				//Unlink JPG
 				if ( ! empty( $meta['file'] ) && $original_file == $meta['file'] ) {
 					@unlink( $file_path );
 				}
