@@ -501,11 +501,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$smushed_count = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
 
-			// If directory smushed images are there, add those too.
-			if ( ! empty( $this->dir_stats['optimised'] ) && $this->dir_stats['optimised'] > 0 ) {
-				$smushed_count += $this->dir_stats['optimised'];
-			}
-
 			// Set smushed count.
 			$this->smushed_count = $smushed_count;
 			$this->remaining_count = $this->remaining_count();

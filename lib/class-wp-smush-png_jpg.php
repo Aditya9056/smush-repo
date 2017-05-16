@@ -154,8 +154,12 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		 *
 		 * @param string $id Atachment id
 		 *
-		 * @return bool True/False Can be converted or not
+		 * @param string $id
+		 * @param string $size
+		 * @param string $mime
+		 * @param string $file
 		 *
+		 * @return bool True/False Can be converted or not
 		 */
 		function can_be_converted( $id = '', $size = 'full', $mime = '', $file = '' ) {
 
@@ -175,7 +179,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 			}
 
 			//If already tried the conversion
-			if ( get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', false ) ) {
+			if ( get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true ) ) {
 				return false;
 			}
 

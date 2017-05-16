@@ -764,13 +764,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				$meta['full']['height'] = ! empty( $resized['height'] ) ? $resized['height'] : $meta['height'];
 
 				/**
-				 * Called after the image have been successfully resized
+				 * Called after the image has been successfully resized
 				 * Can be used to update the stored stats
 				 */
 				do_action( 'wp_smush_image_nextgen_resized', $attachment_id, array( 'stats' => $savings ) );
 
 				/**
-				 * Called after the image have been successfully resized
+				 * Called after the image has been successfully resized
 				 * Can be used to update the stored stats
 				 */
 				do_action( 'wp_smush_image_resized', $attachment_id, $savings );

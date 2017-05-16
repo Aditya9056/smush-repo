@@ -102,7 +102,6 @@ if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 			$wpsmushit_admin->setup_global_stats();
 		}
 		$savings     = $wpsmushit_admin->stats;
-		$image_count = $wpsmushit_admin->smushed_count;
 		$show_stats  = false;
 
 		//If there is any saving, greater than 1Mb, show stats
@@ -114,7 +113,7 @@ if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 
 		//Conditionally Show stats in rating message
 		if ( $show_stats ) {
-			$message .= sprintf( " You've smushed <strong>%s</strong> from %d images already, improving the speed and SEO ranking of this site!", $savings['human'], $image_count );
+			$message .= sprintf( " You've smushed <strong>%s</strong> from %d images already, improving the speed and SEO ranking of this site!", $savings['human'], $savings['total_images'] );
 		}
 		$message .= " We've spent countless hours developing this free plugin for you, and we would really appreciate it if you dropped us a quick rating!";
 

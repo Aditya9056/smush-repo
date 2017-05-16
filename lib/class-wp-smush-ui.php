@@ -127,7 +127,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="box-content">
 			<div class="row smush-total-savings smush-total-reduction-percent">
 
-			<div class="wp-smush-current-progress" <?php echo $tooltip; ?> >
+			<div class="wp-smush-current-progress" >
 				<div class="wp-smushed-progress">
 					<div class="wp-smush-score inside">
 						<div class="tooltip-box">
@@ -146,7 +146,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 				<div class="wp-smush-count-total">
 					<div class="wp-smush-smush-stats-wrapper">
-						<span class="wp-smush-optimised"><?php echo $smushed_count; ?></span>/<span class="wp-smush-images-total"><?php echo $wpsmushit_admin->total_count; ?></span>
+						<span class="wp-smush-total-optimised"><?php echo $wpsmushit_admin->stats['total_images']; ?></span>
 					</div>
 					<span class="total-stats-label"><strong><?php esc_html_e( "IMAGES SMUSHED", "wp-smushit" ); ?></strong></span>
 				</div>
@@ -720,7 +720,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</div>
 				</div>
 				<div class="wp-smush-count tc">
-					<?php printf( esc_html__( "%s%d%s of %s%d%s attachments have been smushed." ), '<span class="wp-smush-images-smushed">', $smushed_count, '</span>', '<span class="wp-smush-images-total">', $count->total_count, '</span>' ); ?>
+					<?php printf( esc_html__( "%s%d%s of your media attachments has been smushed." ), '<span class="wp-smush-images-percent">', $smushed_pc, '</span>%' ); ?>
 				</div>
 			</div>
 			<hr class="wp-smush-sep">

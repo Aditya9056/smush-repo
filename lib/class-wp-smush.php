@@ -1838,7 +1838,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		/**
 		 * Checks the current settings and returns the value whether to enable or not the resmush option
 		 *
-		 * @param $show_resmush
+		 * @param $id
 		 * @param $wp_smush_data
 		 *
 		 * @return bool

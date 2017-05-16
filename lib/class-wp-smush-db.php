@@ -150,12 +150,6 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 			//Get total count from attachments
 			$total_count = ! empty( $posts ) && is_array( $posts ) ? sizeof( $posts ) : 0;
 
-			// Add directory smushed images too.
-			// NOTE: We adding only succesfully directory smushed images count to avoid confusion.
-			if ( ! empty( $wpsmushit_admin->dir_stats['optimised'] ) ) {
-				$total_count += $wpsmushit_admin->dir_stats['optimised'];
-			}
-
 			// Set total count.
 			$wpsmushit_admin->total_count = $total_count;
 
