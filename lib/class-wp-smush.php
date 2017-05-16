@@ -689,9 +689,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Temporary Increase the limit
 			@ini_set('memory_limit','256M');
 			$result  = wp_remote_post( $api_url, $args );
-			if( 200 != wp_remote_retrieve_response_code( $result ) ) {
-				error_log( print_r( $result, true ) );
-			}
 
 			unset( $file_data );//free memory
 			if ( is_wp_error( $result ) ) {
