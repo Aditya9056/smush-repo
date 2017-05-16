@@ -1163,40 +1163,45 @@ jQuery(function ($) {
         // If we have received the stats data, procced.
         if ('undefined' != typeof _res.data.stats) {
 
+            var stats = _res.data.stats;
             // Update Progress on Circle.
             update_dashoffset(_res.data.stats);
 
             // Update main stats.
-            $('.wp-smush-savings .wp-smush-stats-percent').html(_res.data.stats.percent);
-            $('.wp-smush-savings .wp-smush-stats-human').html(_res.data.stats.human);
+            $('.wp-smush-savings .wp-smush-stats-percent').html(stats.percent);
+            $('.wp-smush-savings .wp-smush-stats-human').html(stats.human);
 
-            $('.wp-smush-total-optimised').html(_res.data.stats.total_images);
-            if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof _res.data.stats.super_smushed) {
-                $('.super-smush-attachments .smushed-count').html(_res.data.stats.super_smushed);
+            var smush_percent = ( stats.smushed / stats.total ) * 100;
+            smush_percent = precise_round( smush_percent, 1 );
+
+            $('span.wp-smush-images-percent').html(smush_percent);
+            $('.wp-smush-total-optimised').html(stats.total_images);
+            if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof stats.super_smushed) {
+                $('.super-smush-attachments .smushed-count').html(stats.super_smushed);
             }
 
             var smush_conversion_savings = $('.smush-conversion-savings');
             //Update Conversion Savings
-            if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.conversion_savings ) && _res.data.stats.conversion_savings != '') {
+            if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( stats.conversion_savings ) && stats.conversion_savings != '') {
                 var conversion_savings = smush_conversion_savings.find('.wp-smush-stats');
                 if (conversion_savings.length > 0) {
-                    conversion_savings.html(_res.data.stats.conversion_savings);
+                    conversion_savings.html(stats.conversion_savings);
                 }
             }
             var smush_resize_savings = $('.smush-resize-savings');
             //Update Resize Savings
-            if (smush_resize_savings.length > 0 && 'undefined' != typeof ( _res.data.stats.resize_savings ) && _res.data.stats.resize_savings != '') {
+            if (smush_resize_savings.length > 0 && 'undefined' != typeof ( stats.resize_savings ) && stats.resize_savings != '') {
                 // Get the resize savings in number.
-                var savings_value = parseInt(_res.data.stats.resize_savings);
+                var savings_value = parseInt(stats.resize_savings);
                 var resize_savings = smush_resize_savings.find('.wp-smush-stats');
                 // Replace only if value is grater than 0.
                 if (savings_value > 0 && resize_savings.length > 0) {
-                    resize_savings.html(_res.data.stats.resize_savings);
+                    resize_savings.html(stats.resize_savings);
                 }
             }
 
             // Updating pro savings stats.
-            if ('undefined' != typeof (_res.data.stats.pro_savings)) {
+            if ('undefined' != typeof (stats.pro_savings)) {
                 // Make pro savings div visible if hidden.
                 $('#smush-avg-pro-savings').show();
                 // Pro stats section.
@@ -1204,11 +1209,11 @@ jQuery(function ($) {
                 if (smush_pro_savings.length > 0) {
                     var pro_savings_percent = smush_pro_savings.find('.wp-smush-stats-percent');
                     var pro_savings_bytes = smush_pro_savings.find('.wp-smush-stats-human');
-                    if (pro_savings_percent.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.percent) && _res.data.stats.pro_savings.percent != '') {
+                    if (pro_savings_percent.length > 0 && 'undefined' != typeof (stats.pro_savings.percent) && stats.pro_savings.percent != '') {
                         pro_savings_percent.html(_res.data.stats.pro_savings.percent);
                     }
-                    if (pro_savings_bytes.length > 0 && 'undefined' != typeof (_res.data.stats.pro_savings.savings) && _res.data.stats.pro_savings.savings != '') {
-                        pro_savings_bytes.html(_res.data.stats.pro_savings.savings);
+                    if (pro_savings_bytes.length > 0 && 'undefined' != typeof (stats.pro_savings.savings) && stats.pro_savings.savings != '') {
+                        pro_savings_bytes.html(stats.pro_savings.savings);
                     }
                 }
             }

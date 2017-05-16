@@ -2118,6 +2118,15 @@ div.wp-smush-info.notice {
 }
 
 /** Media Queries **/
+@media screen and (max-width: 1110px) {
+    .wpmud .row .col-half.wp-smushit-container-left,
+    .wpmud .row .col-half.wp-smushit-container-right {
+        padding-left: 0;
+        padding-right: 0;
+        width: 100%;
+    }
+}
+
 @media screen and (max-width: 1100px) {
     li.wp-smush-image-ul span.wp-smush-li-path {
         max-width: 75%;
@@ -2206,19 +2215,6 @@ div.wp-smush-info.notice {
 
     .wpmud .wp-smush-promo-content, .wpmud .wp-smush-promo-content-smaller {
         max-width: none;
-    }
-}
-
-@media only screen and (min-width: 800px) and ( max-width: 1100px ) {
-    .wp-smush-super-smush-promo {
-        background-size: 120px;
-    }
-
-    .wp-smush-super-smush-promo .wp-smush-super-smush-content {
-        font-size: 10px;
-        margin-left: 45%;
-        padding: 10px 20px;
-        width: 55%;
     }
 }
 
