@@ -530,13 +530,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Default values.
 			$savings = $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0;
 			$savings_bytes = $this->stats['human'] > 0 ? $this->stats['bytes'] : "0";
-			// If the smush savings percent isn't empty and the percentage is below 45, double it.
-			if ( ! empty( $savings ) && $savings < 49 ) {
-				$savings = 2 * $savings;
-				$savings_bytes = 2 * $savings_bytes;
-			} elseif ( ! empty( $savings ) && $savings < 80  ) {
-				$savings = 1.1 * $savings;
-				$savings_bytes = 1.1 * $savings_bytes;
+			$orig_diff = 2.22058824;
+			if ( ! empty( $savings ) && $savings < 80  ) {
+			   $orig_diff = 1.22054412;
+			}
+			//Calculate Pro savings
+			if( !empty( $savings ) ) {
+				$savings       = $orig_diff * $savings;
+				$savings_bytes = $orig_diff * $savings_bytes;
 			}
 
 			// Set pro savings in global stats.
