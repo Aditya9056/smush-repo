@@ -443,7 +443,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 						<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
 					</i>
 					<span class="wp-smush-notice-text">
-						<?php printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that need smushing!", $this->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $this->remaining_count, '</span>', '</strong>' ); ?>
+						<?php printf( _n( "%s, you have %s%s%d%s attachment%s that needs smushing!", "%s, you have %s%s%d%s attachments%s that need smushing!", $this->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $this->remaining_count, '</span>', '</strong>' ); ?>
 					</span>
 				</div>
 				<hr class="wp-smush-sep">
@@ -534,7 +534,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			</div>
 			<hr />
 			<div class="row wp-smush-savings">
-				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e("COMPRESSION SAVINGS", "wp-smushit");?></strong></span>
+				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e("TOTAL SAVINGS", "wp-smushit");?></strong></span>
 				<span class="float-r wp-smush-stats">
 				    <span class="wp-smush-stats-percent"><?php echo $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0; ?></span>%
 					<span class="wp-smush-stats-sep">/</span>

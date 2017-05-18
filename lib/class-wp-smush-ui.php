@@ -154,7 +154,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			</div>
 			<hr />
 			<div class="row wp-smush-savings">
-				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e("COMPRESSION SAVINGS", "wp-smushit");?></strong></span>
+				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e("TOTAL SAVINGS", "wp-smushit");?></strong></span>
 				<span class="float-r wp-smush-stats">
 					<span class="wp-smush-stats-human">
 						<?php echo $wpsmushit_admin->stats['human'] > 0 ? $wpsmushit_admin->stats['human'] : "0MB"; ?>
@@ -170,7 +170,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$wpsmushit_admin->super_smushed = $wpsmush_db->super_smushed_count(); ?>
 				<hr />
 				<div class="row super-smush-attachments">
-				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "IMAGES SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
+				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
 				<span class="float-r wp-smush-stats<?php echo $WpSmush->lossy_enabled ? '' : ' wp-smush-lossy-disabled-wrap' ?>"><?php
 					if ( $WpSmush->lossy_enabled ) {
 						echo '<span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count;
@@ -675,7 +675,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<img src="<?php echo WP_SMUSH_URL . 'assets/images/icon-gzip.svg'; ?>" width="14px">
 						</i>
 						<span class="wp-smush-notice-text"><?php
-							printf( _n( "%s, you have %s%s%d%s image%s that needs smushing!", "%s, you have %s%s%d%s images%s that need smushing!", $wpsmushit_admin->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' );
+							printf( _n( "%s, you have %s%s%d%s attachment%s that needs smushing!", "%s, you have %s%s%d%s attachments%s that need smushing!", $wpsmushit_admin->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' );
 							if( !$WpSmush->validate_install() ) {
 								printf( esc_html__(" %sUpgrade to Pro%s to bulk smush all your images with one click.", "wp-smushit") , '<a href="' . esc_url( $upgrade_url ). '" target="_blank" title="' . esc_html__("WP Smush Pro", "wp-smushit") . '">', '</a>' );
 								esc_html_e(" Free users can smush 50 images with each click.", "wp-smushit");
@@ -761,7 +761,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if ( $show ) {
 				return '<div class="wp-smush-notice wp-smush-resmush-notice wp-smush-remaining" tabindex="0">
 						<i class="dev-icon"><img src="' . WP_SMUSH_URL . 'assets/images/icon-gzip.svg" width="14px"></i>
-						<span class="wp-smush-notice-text">' . sprintf( _n( "%s, you have %s%s%d%s image%s that needs re-compressing!", "%s, you have %s%s%d%s images%s that need re-compressing!", $count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' ) . '</span>
+						<span class="wp-smush-notice-text">' . sprintf( _n( "%s, you have %s%s%d%s attachment%s that needs re-compressing!", "%s, you have %s%s%d%s attachments%s that need re-compressing!", $count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' ) . '</span>
 						<button class="button button-grey button-small wp-smush-skip-resmush">' . esc_html__( "Skip", "wp-smushit" ) . '</button>
 	                </div>';
 			}
