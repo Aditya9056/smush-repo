@@ -140,14 +140,14 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 * Fixed:
 
     * Issue with WP Smush Pro membership check
-    * Rating message shows incorrect image count
-    * Include directory smush stats in media stats
-    * UI improvement for directory smush
-    * Allow re-smushing directory images, if the lossy feature is turned on
+    * Stats: Rating message shows incorrect image count
+    * Stats: Include directory smush stats in media stats
+    * Directory Smush: UI improvement
+    * Directory Smush: Allow re-smushing directory images, if the lossy feature is turned on
+    * Directory Smush: Fixed empty query warning if there are more than 5k images
     * Site Ground Staging - Disable Async smush for staging sites, admin URL for async request is incorrect because of the Apache module
     * Image appearing in Re-Smush list even after smushing, if resize settings are kept on.
-    * Updated query for smushed images count
-
+    * Performance: Updated query for smushed images count
 * Added:
     * WP S3 Offload - Plugin Compatibility for Remove files from server feature ( Pro Version )
     * WP RSS Aggregator compatibility for Auto Smush

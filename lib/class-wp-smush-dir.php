@@ -551,8 +551,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				if ( $count >= 5000 ) {
 					$count = 0;
 					$query = $this->build_query( $values, $images );
+					$images = $values = array();
 					$wpdb->query( $query );
-					$images = array();
 				}
 			}
 
