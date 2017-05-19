@@ -135,7 +135,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 = 2.7 =
 
 * Updated:
-    * Async request timeout, if you're having trouble with Auto Smush, set timeout using filter `smush_async_time_out`
+    * Faster image uploads: Set async request timeout to 0, if you're having trouble with Auto Smush, set timeout using filter `smush_async_time_out`
 
 * Fixed:
 
