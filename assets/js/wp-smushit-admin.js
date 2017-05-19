@@ -1293,8 +1293,9 @@ jQuery(function ($) {
 
         var spinner = $('div.smush-page-wrap span.spinner:first').clone();
         spinner.addClass('is-active');
+        var unprocessed_child = jQuery('ul.wp-smush-image-list li.wp-smush-image-ele:not(".optimised, .processed")');
         //Update the Optimising status for the image
-        var first_child = $('ul.wp-smush-image-list li.wp-smush-image-ele:not(".optimised, .processed"):first');
+        var first_child = unprocessed_child.first();
 
         var parent = first_child.parents('li.wp-smush-image-ul');
 
@@ -1323,6 +1324,7 @@ jQuery(function ($) {
         var param = {
             action: 'optimise',
             image_id: first_child.attr('id'),
+            get_stats: unprocessed_child.length > 1 ? 0: 1,
             nonce: $('#wp-smush-all').val()
         };
 

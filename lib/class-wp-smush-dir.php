@@ -1068,6 +1068,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				wp_send_json_error( $error_msg );
 			}
 
+			// Get the last scan stats.
+			$last_scan = $this->last_scan_stats();
+			$stats = array();
+
 			//Check smush limit for free users
 			if ( ! $WpSmush->validate_install() ) {
 
@@ -1138,17 +1142,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $file_time, $lossy, $id );
 			$wpdb->query( $query );
 
-			// Get the last scan stats.
-			$last_scan = $this->last_scan_stats();
-			$stats = array();
-
 			// Get the global stats if current dir smush completed.
-			if ( $last_scan['smushed'] == $last_scan['total'] ) {
+			if ( isset( $_GET['get_stats'] ) && 1 == $_GET['get_stats'] ) {
 				// This will setup directory smush stats too.
 				$wpsmushit_admin->setup_global_stats();
-				$stats = $wpsmushit_admin->stats;
-				$stats['total'] = $wpsmushit_admin->total_count;
-				$resmush_count = empty( $wpsmushit_admin->resmush_ids ) ? count( $wpsmushit_admin->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $wpsmushit_admin->resmush_ids );
+				$stats            = $wpsmushit_admin->stats;
+				$stats['total']   = $wpsmushit_admin->total_count;
+				$resmush_count    = empty( $wpsmushit_admin->resmush_ids ) ? count( $wpsmushit_admin->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $wpsmushit_admin->resmush_ids );
 				$stats['smushed'] = ! empty( $wpsmushit_admin->resmush_ids ) ? $wpsmushit_admin->smushed_count - $resmush_count : $wpsmushit_admin->smushed_count;
 				if ( $lossy == 1 ) {
 					$stats['super_smushed'] = $wpsmushit_admin->super_smushed;
