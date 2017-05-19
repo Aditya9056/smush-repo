@@ -318,7 +318,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						</span>
 						<?php
 						 /**
-                          *  Perform a action after setting row content
+                         * Perform a action after setting row content
                          */
 						do_action('smush_setting_row_end', $setting_key );?>
 					</div>

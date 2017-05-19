@@ -1470,7 +1470,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
-		 * Load Plugin Modulesxwx
+		 * Load Plugin Modules
 		 *
 		 */
 		function load_modules() {

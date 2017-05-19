@@ -499,10 +499,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Set pro savings.
 			$this->set_pro_savings();
 
-			$smushed_count = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
-
-			// Set smushed count.
-			$this->smushed_count = $smushed_count;
+			// Set smushed count
+			$this->smushed_count = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
 			$this->remaining_count = $this->remaining_count();
 		}
 
@@ -528,10 +526,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			);
 
 			// Default values.
-			$savings = $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0;
+			$savings = $this->stats['percent'] > 0 ? $this->stats['percent'] : 0;
 			$savings_bytes = $this->stats['human'] > 0 ? $this->stats['bytes'] : "0";
 			$orig_diff = 2.22058824;
-			if ( ! empty( $savings ) && $savings < 80  ) {
+			if ( ! empty( $savings ) && $savings > 49  ) {
 			   $orig_diff = 1.22054412;
 			}
 			//Calculate Pro savings
@@ -543,39 +541,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Set pro savings in global stats.
 			if ( $savings > 0 ) {
 				$this->stats['pro_savings'] = array(
-					'percent' => number_format_i18n( $savings, 1, '.', '' ),
+					'percent' => number_format_i18n( $savings, 1 ),
 					'savings' => size_format( $savings_bytes, 1 ),
 				);
 			}
-		}
-
-		/**
-		 * Returns number of images of larger than 1Mb size
-		 *
-		 * @param bool $force_update Whether to Force update the Global Stats or not
-		 *
-		 * @return int
-		 */
-		function get_exceeding_items_count( $force_update = false ) {
-		    global $wpsmush_helper;
-			$count = wp_cache_get( 'exceeding_items', 'wp_smush' );
-			if ( ! $count || $force_update ) {
-				$count = 0;
-				//Check images bigger than 1Mb, used to display the count of images that can't be smushed
-				foreach ( $this->unsmushed_attachments as $attachment ) {
-				    $attachment = $wpsmush_helper->get_attached_file( $attachment );
-					if ( file_exists( $attachment ) ) {
-						$size = filesize( $attachment );
-					}
-					if ( empty( $size ) || ! ( ( $size / WP_SMUSH_MAX_BYTES ) > 1 ) ) {
-						continue;
-					}
-					$count ++;
-				}
-				wp_cache_set( 'exceeding_items', $count, 'wp_smush', 3000 );
-			}
-
-			return $count;
 		}
 
 		/**

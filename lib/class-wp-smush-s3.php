@@ -2,7 +2,7 @@
 /**
  * @package WP Smush
  * @subpackage S3
- * @version 2.6.4
+ * @version 2.7
  *
  * @author Umesh Kumar <umesh@incsub.com>
  *
