@@ -313,7 +313,7 @@ jQuery(function ($) {
                     return;
                 }
                 //handle progress for normal bulk smush
-                progress = ( _res.data.stats.smushed / _res.data.stats.total.length ) * 100;
+                progress = ( _res.data.stats.smushed / _res.data.stats.total ) * 100;
             } else {
                 //If the Request was successful, Update the progress bar
                 if (_res.success) {
