@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP Smush 2.7\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wp-smushit\n"
-"POT-Creation-Date: 2017-05-19 07:42:45+00:00\n"
+"POT-Creation-Date: 2017-05-22 04:14:20+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -478,11 +478,11 @@ msgstr ""
 msgid "Incorrect image id"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1097
+#: lib/class-wp-smush-dir.php:1101
 msgid "Could not find image id in last scanned images"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1110
+#: lib/class-wp-smush-dir.php:1114
 msgid "Image couldn't be optimised"
 msgstr ""
 
