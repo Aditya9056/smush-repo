@@ -35,10 +35,10 @@ var dash_offset = function (percent) {
     return dasharray - ( dasharray * percent );
 }
 
-var update_dashoffset = function (stats) {
-    var total = stats.total;
+var update_dashoffset = function () {
+    var total = wp_smushit_data.count_total;
     if (total > 0) {
-        var dashoffset = dash_offset(stats.smushed / total);
+        var dashoffset = dash_offset(wp_smushit_data.count_smushed / total);
         var circle_progress = jQuery('.wp-smush-svg-circle-progress');
         if (typeof dashoffset != 'undefined' && circle_progress.length) {
             circle_progress.css({'stroke-dashoffset': dashoffset});
@@ -308,12 +308,14 @@ jQuery(function ($) {
 
             var progress = '';
 
+            //Update localized stats
+            if (_res && ( 'undefined' != typeof _res.data || 'undefined' != typeof _res.data.stats )) {
+                update_localized_stats( _res.data.stats );
+            }
+
             if (!this.is_bulk_resmush) {
-                if (_res && ( 'undefined' == typeof _res.data || 'undefined' == typeof _res.data.stats )) {
-                    return;
-                }
                 //handle progress for normal bulk smush
-                progress = ( _res.data.stats.smushed / _res.data.stats.total ) * 100;
+                progress = ( wp_smushit_data.count_smushed / wp_smushit_data.count_total ) * 100;
             } else {
                 //If the Request was successful, Update the progress bar
                 if (_res.success) {
@@ -354,7 +356,7 @@ jQuery(function ($) {
             if ('undefined' != typeof _res.data.stats) {
 
                 // increase the progress bar
-                this._update_progress(_res.data.stats.smushed, progress);
+                this._update_progress(wp_smushit_data.count_smushed, progress);
             }
 
             // Update stats and counts.
@@ -719,6 +721,21 @@ jQuery(function ($) {
         return true;
 
     };
+
+    /**
+     * Convert bytes to human readable form
+     * @param a, Bytes
+     * @param b, Number of digits
+     * @returns {*} Formatted Bytes
+     */
+    function formatBytes(a, b) {
+        if (0 == a)return "0 Bytes";
+        var c = 1e3, d = b || 2, e = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
+            f = Math.floor(Math.log(a) / Math.log(c));
+        return parseFloat((a / Math.pow(c, f)).toFixed(d)) + " " + e[f]
+    }
+
+
     //Stackoverflow: http://stackoverflow.com/questions/1726630/formatting-a-number-with-exactly-two-decimals-in-javascript
     var precise_round = function (num, decimals) {
         var sign = num >= 0 ? 1 : -1;
@@ -926,52 +943,6 @@ jQuery(function ($) {
     }
 
     /**
-     * Appends the waiting message to child elements for a directory
-     * @param ele
-     */
-    var update_dir_ele_status = function (ele) {
-        //Get the parent element
-        var parent = ele.parents('li.wp-smush-image-ul');
-
-        //Spinner
-        var spinner = $('div.wp-smush-scan-result span.spinner:first').clone();
-
-        if (!parent.length) {
-            return;
-        }
-        //Check if the selected element is under expandable li
-        parent.removeClass('partial complete').addClass('active in-progress');
-
-        //Append a spinner, if parent doesn't have it
-        if (!parent.find('span.wp-smush-li-path span.spinner').length) {
-            parent.find('span.wp-smush-li-path').prepend(spinner.clone());
-        }
-
-        var list = parent.find('.wp-smush-image-list-inner');
-        list.addClass('show');
-
-        //Check if first image, Add a loader against directory path
-        var progress_wrap = parent.find('div.wp-smush-dir-progress-wrap');
-
-        var waiting_message = $('content').find('span.waiting-message').clone();
-
-        if (ele.is(':first-child')) {
-            progress_wrap.css({'display': 'inline-block'});
-            parent.find('a.wp-smush-exclude-dir').remove();
-        }
-
-        var child = parent.find('ul.wp-smush-image-list-inner li');
-
-        //Mark all the images inside a directory path, as waiting. Copy and append a single span from the page
-        var unsmushed = child.filter(":not('.optimised')");
-        if (unsmushed.length > 0) {
-            //Append a waiting message
-            unsmushed.append(waiting_message);
-            unsmushed.find(waiting_message).show();
-        }
-    }
-
-    /**
      * Check if all the elements in the directory are smushed or not
      *
      * @param parent directory selector
@@ -1154,6 +1125,78 @@ jQuery(function ($) {
     };
 
     /**
+     * Set pro savings stats if not premium user.
+     *
+     * For non-premium users, show expected avarage savings based
+     * on the free version savings.
+     */
+    var set_pro_savings = function() {
+
+        // Default values.
+        var savings = wp_smushit_data.savings_percent > 0 ? wp_smushit_data.savings_percent : 0;
+        var savings_bytes = wp_smushit_data.savings_bytes > 0 ? wp_smushit_data.savings_bytes : "0";
+        var orig_diff = 2.22058824;
+        if ( savings > 49  ) {
+            var orig_diff = 1.22054412;
+        }
+        //Calculate Pro savings
+        if( savings > 0 ) {
+            savings       = orig_diff * savings;
+            savings_bytes = orig_diff * savings_bytes;
+        }
+
+        wp_smushit_data.pro_savings = {
+            'percent': precise_round(savings, 1),
+            'savings_bytes': formatBytes(savings_bytes, 1)
+
+        }
+    }
+
+    /**
+     * Adds the stats for the current image to existing stats
+     *
+     * @param image_stats
+     *
+     */
+    var update_localized_stats = function (image_stats) {
+        //Increase the smush count
+        if ('undefined' == typeof wp_smushit_data) {
+            return;
+        }
+        wp_smushit_data.count_smushed = parseInt(wp_smushit_data.count_smushed) + 1;
+
+        //Increase smushed image count
+        wp_smushit_data.count_images = parseInt(wp_smushit_data.count_images) + parseInt(image_stats.count);
+
+        //Increase super smush count, if applicable
+        if (image_stats.is_lossy) {
+            wp_smushit_data.count_supersmushed = parseInt(wp_smushit_data.count_supersmushed) + 1;
+        }
+
+        //Update savings
+        wp_smushit_data.size_before = parseInt(wp_smushit_data.size_before) + parseInt(image_stats.size_before);
+        wp_smushit_data.size_after = parseInt(wp_smushit_data.size_after) + parseInt(image_stats.size_after);
+
+        //Calculate updated savings in bytes
+        wp_smushit_data.savings_bytes = parseInt(wp_smushit_data.size_before) - parseInt(wp_smushit_data.size_after);
+
+        //Percentage
+        wp_smushit_data.savings_percent = wp_smushit_data.size_before > 0 ? ( parseInt(wp_smushit_data.savings_bytes) / parseInt(wp_smushit_data.size_before) ) * 100 : 0;
+        wp_smushit_data.savings_percent = precise_round(wp_smushit_data.savings_percent, 1);
+
+        //Add to Resize Savings
+        wp_smushit_data.savings_resize = 'undefined' != typeof image_stats.savings_resize.bytes ? parseInt(wp_smushit_data.savings_resize) + parseInt(image_stats.savings_resize.bytes) : parseInt(wp_smushit_data.savings_resize);
+
+        //Add to Conversion Savings
+        wp_smushit_data.savings_conversion = 'undefined' != typeof image_stats.savings_conversion.bytes ? parseInt(wp_smushit_data.savings_conversion) + parseInt(image_stats.savings_conversion.bytes) : parseInt(wp_smushit_data.savings_conversion);
+
+        //Update Smush percent, Percentage images smushed
+        wp_smushit_data.smush_percent = ( wp_smushit_data.count_total > 0 ) ? ( parseInt(wp_smushit_data.count_smushed ) / parseInt(wp_smushit_data.count_total) ) * 100 : 0;
+        wp_smushit_data.smush_percent = precise_round(wp_smushit_data.smush_percent, 1);
+
+    }
+
+    /**
      * Update all stats sections based on the response.
      *
      * @param _res Ajax response data.
@@ -1163,45 +1206,44 @@ jQuery(function ($) {
         // If we have received the stats data, procced.
         if ('undefined' != typeof _res.data.stats) {
 
-            var stats = _res.data.stats;
             // Update Progress on Circle.
-            update_dashoffset(_res.data.stats);
+            update_dashoffset();
 
             // Update main stats.
-            $('.wp-smush-savings .wp-smush-stats-percent').html(stats.percent);
-            $('.wp-smush-savings .wp-smush-stats-human').html(stats.human);
+            $('.wp-smush-savings .wp-smush-stats-percent').html(wp_smushit_data.savings_percent);
+            $('.wp-smush-savings .wp-smush-stats-human').html( formatBytes( wp_smushit_data.savings_bytes, 1 ) );
 
-            var smush_percent = ( stats.smushed / stats.total ) * 100;
-            smush_percent = precise_round( smush_percent, 1 );
-
-            $('span.wp-smush-images-percent').html(smush_percent);
-            $('.wp-smush-total-optimised').html(stats.total_images);
-            if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof stats.super_smushed) {
-                $('.super-smush-attachments .smushed-count').html(stats.super_smushed);
+            $('span.wp-smush-images-percent').html(wp_smushit_data.smush_percent);
+            $('.wp-smush-total-optimised').html(wp_smushit_data.count_images);
+            if ($('.super-smush-attachments .smushed-count').length && 'undefined' != typeof wp_smushit_data.count_supersmushed ) {
+                $('.super-smush-attachments .smushed-count').html(wp_smushit_data.count_supersmushed);
             }
 
             var smush_conversion_savings = $('.smush-conversion-savings');
             //Update Conversion Savings
-            if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( stats.conversion_savings ) && stats.conversion_savings != '') {
+            if (smush_conversion_savings.length > 0 && 'undefined' != typeof ( wp_smushit_data.conversion_savings ) && wp_smushit_data.conversion_savings != '') {
                 var conversion_savings = smush_conversion_savings.find('.wp-smush-stats');
                 if (conversion_savings.length > 0) {
-                    conversion_savings.html(stats.conversion_savings);
+                    conversion_savings.html( formatBytes( wp_smushit_data.conversion_savings, 1 ) );
                 }
             }
             var smush_resize_savings = $('.smush-resize-savings');
             //Update Resize Savings
-            if (smush_resize_savings.length > 0 && 'undefined' != typeof ( stats.resize_savings ) && stats.resize_savings != '') {
+            if (smush_resize_savings.length > 0 && 'undefined' != typeof ( wp_smushit_data.savings_resize ) && wp_smushit_data.savings_resize != '') {
                 // Get the resize savings in number.
-                var savings_value = parseInt(stats.resize_savings);
+                var savings_value = parseInt(wp_smushit_data.savings_resize);
                 var resize_savings = smush_resize_savings.find('.wp-smush-stats');
                 // Replace only if value is grater than 0.
                 if (savings_value > 0 && resize_savings.length > 0) {
-                    resize_savings.html(stats.resize_savings);
+                    resize_savings.html( formatBytes( wp_smushit_data.savings_resize, 1 ) );
                 }
             }
 
+            //Update pro Savings
+            set_pro_savings();
+
             // Updating pro savings stats.
-            if ('undefined' != typeof (stats.pro_savings)) {
+            if ('undefined' != typeof (wp_smushit_data.pro_savings)) {
                 // Make pro savings div visible if hidden.
                 $('#smush-avg-pro-savings').show();
                 // Pro stats section.
@@ -1209,11 +1251,11 @@ jQuery(function ($) {
                 if (smush_pro_savings.length > 0) {
                     var pro_savings_percent = smush_pro_savings.find('.wp-smush-stats-percent');
                     var pro_savings_bytes = smush_pro_savings.find('.wp-smush-stats-human');
-                    if (pro_savings_percent.length > 0 && 'undefined' != typeof (stats.pro_savings.percent) && stats.pro_savings.percent != '') {
+                    if (pro_savings_percent.length > 0 && 'undefined' != typeof (wp_smushit_data.pro_savings.percent) && wp_smushit_data.pro_savings.percent != '') {
                         pro_savings_percent.html(_res.data.stats.pro_savings.percent);
                     }
-                    if (pro_savings_bytes.length > 0 && 'undefined' != typeof (stats.pro_savings.savings) && stats.pro_savings.savings != '') {
-                        pro_savings_bytes.html(stats.pro_savings.savings);
+                    if (pro_savings_bytes.length > 0 && 'undefined' != typeof (wp_smushit_data.pro_savings.savings_bytes) && wp_smushit_data.pro_savings.savings_bytes != '') {
+                        pro_savings_bytes.html(wp_smushit_data.pro_savings.savings_bytes);
                     }
                 }
             }

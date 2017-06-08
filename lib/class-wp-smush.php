@@ -768,7 +768,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Taken from http://www.php.net/manual/en/function.filesize.php#91477
 		 */
 		function format_bytes( $bytes, $precision = 1 ) {
-			$units = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+			$units = array( 'B', 'KiB', 'MiB', 'GiB', 'TiB' );
 			$bytes = max( $bytes, 0 );
 			$pow   = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
 			$pow   = min( $pow, count( $units ) - 1 );
@@ -1733,10 +1733,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		/**
 		 * Deletes all the backup files when an attachment is deleted
-		 * Update Resmush List
+		 * Update resmush List
 		 * Update Super Smush image count
 		 *
 		 * @param $image_id
+		 *
 		 */
 		function delete_images( $image_id ) {
 			global $wpsmush_db;
@@ -1758,6 +1759,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$wpsmushit_admin->update_resmush_list( $image_id, 'wp-smush-resmush-list' );
 			}
 
+			//Remove stats for the image from global stats
+//			$wpsmush_db->remove_from_global_stats( $image_id );
+
 			/** Delete Backups  **/
 
 			//Check if we have any smush data for image
@@ -1772,7 +1776,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function send_smush_stats() {
 			global $wpsmushit_admin;
 
-			$stats = $wpsmushit_admin->global_stats_from_ids();
+			$stats = $wpsmushit_admin->global_stats();
 
 			return $stats;
 

@@ -15,10 +15,15 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 	 */
 	class WpSmushDB {
 		function __construct() {
-			//Update resize savings
+			//Recalculate resize savings
 			add_action( 'wp_smush_image_resized', array( $this, 'resize_savings' ) );
+
 			//Update Conversion savings
 			add_action( 'wp_smush_png_jpg_converted', array( $this, 'conversion_savings' ) );
+
+//			//Update global stats
+//			add_action( 'wp_smush_image_optimised', array( $this, 'add_to_global_stats') );
+
 		}
 
 		/**
@@ -247,7 +252,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 			//Remove the Filters added by WP Media Folder
 			$this->remove_filters();
-			while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
+			while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
 				if ( ! is_wp_error( $results ) && sizeof( $results ) > 0 ) {
 
 					$posts = array_merge( $posts, $results );
@@ -332,7 +337,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 					$super_smushed['timestamp'] = current_time( 'timestamp' );
 
-					update_option( $key, $super_smushed );
+					update_option( $key, $super_smushed, false );
 				}
 
 				$count = ! empty( $super_smushed['ids'] ) ? count( $super_smushed['ids'] ) : 0;
@@ -777,6 +782,151 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 			} else {
 				return false;
 			}
+		}
+
+		/**
+		 * Add the stats for the image to global stats
+		 *
+		 * @param $attachment_id
+		 *
+		 */
+		function add_to_global_stats( $attachment_id ) {
+
+			//Return if there is not attachment id
+			if( empty( $attachment_id ) ) {
+				return;
+			}
+
+			global $WpSmush;
+			//Get the existing stats
+			$smush_stats      = get_post_meta( $attachment_id, $WpSmush->smushed_meta_key, true );
+			$resizing_stats   = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings', true );
+			$conversion_stats = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+
+			$global_stats = get_option('smush_global_stats');
+
+			if ( empty( $global_stats ) ) {
+				$global_stats = array(
+					'size_before'        => 0,
+					'size_after'         => 0,
+					'bytes'              => 0,
+					'human'              => '',
+					'percent'            => 0,
+					'total_images'       => 0,
+					'resize_savings'     => 0,
+					'conversion_savings' => 0
+				);
+			}
+
+			$conversion_savings = array(
+				'bytes'       => 0,
+				'size_before' => 0,
+				'size_after'  => 0
+			);
+
+			//Get cumulative conversion savings
+			if( !empty( $conversion_stats ) && is_array( $conversion_stats ) ) {
+				foreach( $conversion_stats as $size_savings ) {
+					if( !empty( $size_savings['bytes'] ) ) {
+						$conversion_savings['bytes'] += $size_savings['bytes'];
+						$conversion_savings['size_before'] += $size_savings['size_before'];
+						$conversion_savings['size_after'] += $size_savings['size_after'];
+					}
+				}
+			}
+
+			$global_stats['conversion_savings'] += $conversion_savings['bytes'];
+			$global_stats['resize_savings']     += ! empty( $resizing_stats ) && ! empty( $resizing_stats['bytes'] ) ? $resizing_stats['bytes'] : 0;
+
+			//Add Smush stats
+			$global_stats['size_before'] += ! empty( $smush_stats['stats'] ) && isset( $smush_stats['stats']['size_before'] ) ? $smush_stats['stats']['size_before'] : 0;
+			$global_stats['size_after']  += ! empty( $smush_stats['stats'] ) && isset( $smush_stats['stats']['size_after'] ) ? $smush_stats['stats']['size_after'] : 0;
+			$global_stats['bytes']       += ! empty( $smush_stats['stats'] ) && isset( $smush_stats['stats']['bytes'] ) ? $smush_stats['stats']['bytes'] : 0;
+
+			//Add Resizing stats
+			$global_stats['size_before'] += ! empty( $resizing_stats['size_before'] ) ? $resizing_stats['size_before'] : 0;
+			$global_stats['size_after']  += ! empty( $resizing_stats['size_after'] ) ? $resizing_stats['size_after'] : 0;
+			$global_stats['bytes']       += ! empty( $resizing_stats['bytes'] ) ? $resizing_stats['bytes'] : 0;
+
+			//Add conversion stats
+			$global_stats['size_before'] += ! empty( $conversion_stats['size_before'] ) ? $conversion_stats['size_before'] : 0;
+			$global_stats['size_after']  += ! empty( $conversion_stats['size_after'] ) ? $conversion_stats['size_after'] : 0;
+			$global_stats['bytes']       += ! empty( $conversion_stats['bytes'] ) ? $conversion_stats['bytes'] : 0;
+
+			$global_stats['total_images'] += !empty( $smush_stats['sizes'] ) ? count( $smush_stats['sizes'] ) : 0;
+
+			//Calculate Percentage
+			$global_stats['percent'] = ! empty( $global_stats['percent'] ) ? round( $global_stats['bytes'] / $global_stats['size_before'] * 100, 1 ) : $global_stats['percent'];
+
+			//Human
+			$global_stats['human'] = size_format( $global_stats['bytes'], 1 );
+
+			update_option( 'smush_global_stats', $global_stats );
+		}
+
+		/**
+		 * Remove image stats from global stats
+		 *
+		 * @param $attachment_id
+		 */
+		function remove_from_global_stats( $attachment_id ) {
+
+			//Return if there is not attachment id
+			if( empty( $attachment_id ) ) {
+				return;
+			}
+
+			global $WpSmush;
+			//Get the existing stats
+			$smush_stats      = get_post_meta( $attachment_id, $WpSmush->smushed_meta_key, true );
+			$resizing_stats   = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings', true );
+			$conversion_stats = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+
+			$conversion_savings = array();
+
+			$size_before = $size_after = $bytes = 0;
+			$global_stats = get_option('smush_global_stats');
+
+			//Get cumulative conversion savings
+			if( !empty( $conversion_stats ) && is_array( $conversion_stats ) ) {
+				foreach( $conversion_stats as $size_savings ) {
+					if( !empty( $size_savings['bytes'] ) ) {
+						$conversion_savings['bytes'] += $size_savings['bytes'];
+						$conversion_savings['size_before'] += $size_savings['size_before'];
+						$conversion_savings['size_after'] += $size_savings['size_after'];
+					}
+				}
+			}
+
+			$size_before += $conversion_savings['size_before'];
+			$size_after  += $conversion_savings['size_after'];
+			$bytes       += $conversion_savings['bytes'];
+			//Add the smush stats
+			if ( ! empty( $smush_stats['stats'] ) ) {
+				$size_before += $smush_stats['stats']['size_before'];
+				$size_after  += $smush_stats['stats']['size_after'];
+				$bytes       += $smush_stats['stats']['bytes'];
+			}
+			//Add the resizing stats
+			if ( ! empty( $resizing_stats ) ) {
+				$size_before += $resizing_stats['size_before'];
+				$size_after  += $resizing_stats['size_after'];
+				$bytes       += $resizing_stats['bytes'];
+			}
+
+			if ( ! empty( $global_stats ) ) {
+				$global_stats['bytes']              -= $bytes;
+				$global_stats['size_before']        -= $size_before;
+				$global_stats['size_after']         -= $size_after;
+				$global_stats['resize_savings']     -= $resizing_stats['bytes'];
+				$global_stats['conversion_savings'] -= $conversion_savings['bytes'];
+
+				$global_stats['percent']     = ! empty( $global_stats['percent'] ) ? round( ( $global_stats['bytes'] / $global_stats['size_before'] ) * 100, 1 ) : $global_stats['percent'];
+				$global_stats['human']       = size_format( $global_stats['bytes'], 1 );
+				$global_stats['total_image'] -= is_array( $smush_stats['sizes'] ) ? sizeof( $smush_stats['sizes'] ) : 0;
+			}
+			update_option( 'smush_global_stats', $global_stats );
+
 		}
 	}
 

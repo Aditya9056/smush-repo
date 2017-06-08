@@ -185,7 +185,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "RESIZE SAVINGS", "wp-smushit" ); ?></strong></span>
 				<span class="float-r wp-smush-stats"><?php
 					if( !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) {
-						echo $wpsmushit_admin->stats['resize_savings'];
+						echo size_format( $wpsmushit_admin->stats['resize_savings'], 1 );
 					}else{
 						if( !$wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize' ) ) {
 							//If Not enabled, Add a enable button
@@ -201,7 +201,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<hr />
 				<div class="row smush-conversion-savings">
 					<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PNG TO JPEG SAVINGS", "wp-smushit" ); ?></strong></span>
-					<span class="float-r wp-smush-stats"><?php echo $wpsmushit_admin->stats['conversion_savings'] > 0 ? $wpsmushit_admin->stats['conversion_savings'] : "0MB"; ?></span>
+					<span class="float-r wp-smush-stats"><?php echo $wpsmushit_admin->stats['conversion_savings'] > 0 ? size_format( $wpsmushit_admin->stats['conversion_savings'], 1 ) : "0MB"; ?></span>
 				</div><?php
 			}
 			/**
@@ -720,7 +720,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</div>
 				</div>
 				<div class="wp-smush-count tc">
-					<?php printf( esc_html__( "%s%d%s of your media attachments has been smushed." ), '<span class="wp-smush-images-percent">', $smushed_pc, '</span>%' ); ?>
+					<?php printf( esc_html__( "%s%d%s of your media attachments have been smushed." ), '<span class="wp-smush-images-percent">', $smushed_pc, '</span>%' ); ?>
 				</div>
 			</div>
 			<hr class="wp-smush-sep">

@@ -489,7 +489,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$base_dir = realpath( $base_dir );
 
 			//Store the path in option
-			update_option( 'wp-smush-dir_path', $base_dir );
+			update_option( 'wp-smush-dir_path', $base_dir, false );
 
 			//Directory Iterator, Exclude . and ..
 			$dirIterator = new RecursiveDirectoryIterator(

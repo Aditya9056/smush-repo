@@ -136,7 +136,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.7.1 =
 
-    * Fixed: Progress bar not being updated
+* Fixed: Progress bar not being updated
 
 = 2.7 =
 

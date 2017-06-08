@@ -622,7 +622,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			}
 
 			//Update Stats
-			update_option( 'wp_smush_stats_nextgen', $nextgen_stats );
+			update_option( 'wp_smush_stats_nextgen', $nextgen_stats, false );
 
 			//Remove from Super Smush list
 			$wpsmushit_admin->update_super_smush_count( $attachment_id, 'remove', 'wp-smush-super_smushed_nextgen' );

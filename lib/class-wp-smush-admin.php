@@ -29,7 +29,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	 * @property int $remaining_count
 	 * @property int $total_count
 	 * @property int $smushed_count
-	 * @property int $exceeding_items_count
 	 */
 	class WpSmushitAdmin extends WpSmush {
 
@@ -61,7 +60,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $remaining_count;
 
 		/**
-		 * @var Super Smushed attachments out of total attachments
+		 * @var Super Smushed attachments count
 		 */
 		public $super_smushed;
 
@@ -85,11 +84,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @var array Image ids that needs to be resmushed
 		 */
 		public $resmush_ids = array();
-
-		/**
-		 * @var int Number of attachments exceeding free limit
-		 */
-		public $exceeding_items_count = 0;
 
 		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/gif', 'image/png' );
 
@@ -442,17 +436,32 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				//Array of all smushed, unsmushed and lossless ids
 				$data = array(
-					'count_smushed' => $this->smushed_count,
-					'count_total'   => $this->total_count,
-					'unsmushed'     => $this->unsmushed_attachments,
-					'resmush'       => $this->resmush_ids,
+					'count_supersmushed' => $this->super_smushed,
+					'count_smushed'      => $this->smushed_count - count( $this->resmush_ids ),
+					'count_total'        => $this->total_count,
+					'count_images'       => $this->stats['total_images'],
+					'unsmushed'          => $this->unsmushed_attachments,
+					'resmush'            => $this->resmush_ids,
+					'size_before'        => $this->stats['size_before'],
+					'size_after'         => $this->stats['size_after'],
+					'savings_bytes'      => $this->stats['bytes'],
+					'savings_resize'     => $this->stats['resize_savings'],
+					'savings_conversion' => $this->stats['conversion_savings'],
+					'savings_dir_smush'  => $this->dir_stats
 				);
 			} else {
 				$data = array(
-					'count_smushed' => '',
-					'count_total'   => '',
-					'unsmushed'     => '',
-					'resmush'       => '',
+					'count_supersmushed' => '',
+					'count_smushed'      => '',
+					'count_total'        => '',
+					'count_images'       => '',
+					'unsmushed'          => '',
+					'resmush'            => '',
+					'savings_bytes'      => '',
+					'savings_resize'     => '',
+					'savings_conversion' => '',
+					'savings_supersmush' => '',
+					'pro_savings'        => ''
 				);
 
 			}
@@ -495,6 +504,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$wpsmush_db->total_count( true );
 
 			$this->stats = $this->global_stats( $force_update );
+
+			if ( empty( $this->smushed_attachments ) ) {
+				//Get smushed attachments
+				$this->smushed_attachments = $wpsmush_db->smushed_count( true );
+			}
+
+			//Get supersmushed iamges count
+			if ( empty( $this->super_smushed ) ) {
+				$this->super_smushed = $wpsmush_db->super_smushed_count();
+			}
 
 			// Set pro savings.
 			$this->set_pro_savings();
@@ -555,7 +574,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function process_smush_request() {
 
-			global $WpSmush, $wpsmush_db, $wpsmush_helper;
+			global $WpSmush, $wpsmush_helper;
 
 			// turn off errors for ajax result
 			@error_reporting( 0 );
@@ -649,12 +668,27 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				delete_transient( 'smush-in-progress-' . $attachment_id );
 			}
 
-			//Get the updated Global Stats
-			$this->setup_global_stats( true );
+			$smush_data         = get_post_meta( $attachment_id, $this->smushed_meta_key, true );
+			$resize_savings     = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings', true );
+			$conversion_savings = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
 
-			$stats = $this->stats;
+			$c_size_before = $c_size_after = 0;
+			if ( ! empty( $conversion_savings ) && is_array( $conversion_savings ) && sizeof( $conversion_savings ) > 0 ) {
+				foreach ( $conversion_savings as $savings ) {
+					$c_size_before += $savings['size_before'];
+					$c_size_after  += $savings['size_after'];
+				}
+				$c_savings = $c_size_before - $c_size_after;
+			}
 
-			$stats['total'] = $this->total_count;
+			$stats = array(
+				'count'              => ! empty( $smush_data['sizes'] ) ? count( $smush_data['sizes'] ) : 0,
+				'size_before'        => ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_before'] : 0,
+				'size_after'         => ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_after'] : 0,
+				'savings_resize'     => $resize_savings > 0 ? $resize_savings : 0,
+				'savings_conversion' => $c_savings > 0 ? $c_savings : 0,
+				'is_lossy'           => ! empty( $smush_data ['stats'] ) ? $smush_data['stats']['lossy'] : false
+			);
 
 			if ( isset( $smush ) && is_wp_error( $smush ) ) {
 
@@ -672,15 +706,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 
-			$resmush_count = empty( $this->resmush_ids ) ? count( $this->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $this->resmush_ids );
-
-			$stats['smushed'] = ! empty( $this->resmush_ids ) ? $this->smushed_count - $resmush_count : $this->smushed_count;
-
-			if ( $WpSmush->lossy_enabled ) {
-				$stats['super_smushed'] = $this->super_smushed;
+			if ( ! $send_error ) {
+				/**
+				 * Runs after a image is succesfully smushed
+				 */
+				do_action( 'image_smushed', $attachment_id, $stats );
 			}
-
-			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( __( "You've smushed %d images in total.", "wp-smushit" ), $stats['total_images'] ) : '';
 
 			/**
 			 * Used internally to modify the error message
@@ -966,10 +997,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @param bool $force_update , Whether to forcefully update the Cache
 		 *
 		 * @return array|bool|mixed
+		 *
+		 * @todo: remove id from global stats stored in db
+		 *
 		 */
 		function global_stats( $force_update = false ) {
 
-			if ( ! $force_update && $stats = wp_cache_get( 'smush_global_stats' ) ) {
+			if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
 				if ( ! empty( $stats ) ) {
 					return $stats;
 				}
@@ -981,7 +1015,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'size_before' => 0,
 				'size_after'  => 0,
 				'percent'     => 0,
-				'human'       => 0
+				'human'       => 0,
+				'bytes'       => 0
 			);
 
 			/**
@@ -1074,12 +1109,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smush_data['size_before'] += $conversion_savings['size_before'];
 			$smush_data['size_after'] += $conversion_savings['size_after'];
 
-			//Add the size before and after
-			$smush_data['resize_savings'] = size_format( $smush_data['resize_savings'], 1 );
-
-			//Conversion Savings
-			$smush_data['conversion_savings'] = size_format( $smush_data['conversion_savings'], 1 );
-
 			if ( $smush_data['size_before'] > 0 ) {
 				$smush_data['percent'] = ( $smush_data['bytes'] / $smush_data['size_before'] ) * 100;
 			}
@@ -1096,7 +1125,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->super_smushed = $supersmushed_count;
 
 			//Update Cache
-			wp_cache_set( 'smush_global_stats', $smush_data, '', DAY_IN_SECONDS );
+			update_option( 'smush_global_stats', $smush_data, false );
 
 			return $smush_data;
 		}
@@ -1110,7 +1139,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function global_stats_from_ids( $force_update = false ) {
 
-			if ( ! $force_update && $stats = wp_cache_get( 'smush_global_stats' ) ) {
+			if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
 				if ( ! empty( $stats ) ) {
 					return $stats;
 				}
@@ -1194,12 +1223,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$conversion_savings               = $wpsmush_db->conversion_savings( false );
 				$smush_data['conversion_savings'] = ! empty( $conversion_savings['bytes'] ) ? $conversion_savings['bytes'] : 0;
 
-				//Add the size before and after
-				$smush_data['resize_savings'] = size_format( $smush_data['resize_savings'], 1 );
-
-				//Conversion Savings
-				$smush_data['conversion_savings'] = size_format( $smush_data['conversion_savings'], 1 );
-
 				if ( $smush_data['size_before'] > 0 ) {
 					$smush_data['percent'] = ( $smush_data['bytes'] / $smush_data['size_before'] ) * 100;
 				}
@@ -1211,7 +1234,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			}
 			//Update Cache
-			wp_cache_set( 'smush_global_stats', $smush_data, '', DAY_IN_SECONDS );
+			update_option( 'smush_global_stats', $smush_data, false );
 
 			return $smush_data;
 		}
@@ -1640,7 +1663,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}//End Of Upfront loop
 
 				//Store the resmush list in Options table
-				update_option( $key, $resmush_list );
+				update_option( $key, $resmush_list, false );
 			}
 
 			//Delete resmush list if empty
@@ -1732,7 +1755,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Delete resmush list
 				delete_option( $mkey );
 			} else {
-				update_option( $mkey, $resmush_list );
+				update_option( $mkey, $resmush_list, false );
 			}
 		}
 
@@ -1803,7 +1826,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Add the timestamp
 			$super_smushed['timestamp'] = current_time( 'timestamp' );
 
-			update_option( $key, $super_smushed );
+			update_option( $key, $super_smushed, false );
 
 			//Update to database
 			return true;
