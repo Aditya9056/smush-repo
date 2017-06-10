@@ -1759,11 +1759,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$wpsmushit_admin->update_resmush_list( $image_id, 'wp-smush-resmush-list' );
 			}
 
-			//Remove stats for the image from global stats
-//			$wpsmush_db->remove_from_global_stats( $image_id );
-
 			/** Delete Backups  **/
-
 			//Check if we have any smush data for image
 			$this->delete_backup_files( $image_id );
 		}

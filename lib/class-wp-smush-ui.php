@@ -114,15 +114,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function smush_stats_container() {
 			global $WpSmush, $wpsmushit_admin, $wpsmush_db, $wpsmush_settings;
 
-			//@todo: Move this to Stats section, In order to have a proper count somewhere
-			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
-			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? $wpsmushit_admin->total_count - ( $resmush_count + $wpsmushit_admin->remaining_count ) : $wpsmushit_admin->smushed_count;
-			$smushed_count = $smushed_count > 0 ? $smushed_count : 0;
-
 			$button = '<span class="spinner"></span><button tooltip="' . esc_html__( "Lets you check if any images can be further optimised. Useful after changing settings.", "wp-smushit" ) . '" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
 			$this->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button );
 			$dasharray = 125.663706144;
-			$dash_offset = $wpsmushit_admin->total_count > 0 ? $dasharray - ( $dasharray * ( $smushed_count / $wpsmushit_admin->total_count) ) : $dasharray;
+			$dash_offset = $wpsmushit_admin->total_count > 0 ? $dasharray - ( $dasharray * ( $wpsmushit_admin->smushed_count / $wpsmushit_admin->total_count) ) : $dasharray;
 			$tooltip = $wpsmushit_admin->stats['total_images'] > 0 ? 'tooltip="' . sprintf( esc_html__("You've smushed %d images in total", "wp-smushit"), $wpsmushit_admin->stats['total_images'] ) . '"' : ''; ?>
 			<div class="box-content">
 			<div class="row smush-total-savings smush-total-reduction-percent">
@@ -167,7 +162,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			 * Allows to hide the Super Smush stats as it might be heavy for some users
 			 */
 			if ( $WpSmush->validate_install() && apply_filters( 'wp_smush_show_lossy_stats', true ) ) {
-				$wpsmushit_admin->super_smushed = $wpsmush_db->super_smushed_count(); ?>
+				$wpsmushit_admin->super_smushed = $wpsmush_db->super_smushed_count();?>
 				<hr />
 				<div class="row super-smush-attachments">
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "ATTACHMENTS SUPER-SMUSHED", "wp-smushit" ); ?></strong></span>
@@ -701,10 +696,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function progress_bar( $count ) {
 
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
-			$smushed_count = ( $resmush_count = count( $count->resmush_ids ) ) > 0 ? ( $count->total_count - ( $count->remaining_count + $resmush_count ) ) : $count->smushed_count;
+//			$smushed_count = ( $resmush_count = count( $count->resmush_ids ) ) > 0 ? ( $count->total_count - ( $count->remaining_count + $resmush_count ) ) : $count->smushed_count;
 			// calculate %ages, avoid divide by zero error with no attachments
 			if ( $count->total_count > 0 && $count->smushed_count > 0 ) {
-				$smushed_pc = $smushed_count / $count->total_count * 100;
+				$smushed_pc = $count->smushed_count / $count->total_count * 100;
 			} else {
 				$smushed_pc = 0;
 			} ?>
@@ -754,7 +749,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						$wpsmushit_admin->setup_global_stats();
 					}
 
-					$count += $wpsmushit_admin->remaining_count;
+					$count = $wpsmushit_admin->remaining_count;
 				}
 			}
 			//Show only if we have any images to ber resmushed

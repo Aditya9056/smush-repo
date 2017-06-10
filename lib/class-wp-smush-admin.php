@@ -415,6 +415,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Load the stats on selected screens only
 			if ( $current_page == 'media_page_wp-smush-bulk' ) {
 
+				//Get resmush list, If we have a resmush list already, localize those ids
+				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
+					//get the attachments, and get lossless count
+					$this->resmush_ids = $resmush_ids;
+				}
+
 				//Setup all the stats
 				$this->setup_global_stats( true );
 
@@ -426,18 +432,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$this->unsmushed_attachments = $this->remaining_count > 0 ? $wpsmush_db->get_unsmushed_attachments() : array();
 				}
 
-				//Get resmush list, If we have a resmush list already, localize those ids
-				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
-
-					//get the attachments, and get lossless count
-					$this->resmush_ids = $resmush_ids;
-
-				}
-
 				//Array of all smushed, unsmushed and lossless ids
 				$data = array(
 					'count_supersmushed' => $this->super_smushed,
-					'count_smushed'      => $this->smushed_count - count( $this->resmush_ids ),
+					'count_smushed'      => $this->smushed_count,
 					'count_total'        => $this->total_count,
 					'count_images'       => $this->stats['total_images'],
 					'unsmushed'          => $this->unsmushed_attachments,
@@ -512,6 +510,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Get supersmushed iamges count
 			if ( empty( $this->super_smushed ) ) {
+
 				$this->super_smushed = $wpsmush_db->super_smushed_count();
 			}
 
@@ -670,23 +669,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$smush_data         = get_post_meta( $attachment_id, $this->smushed_meta_key, true );
 			$resize_savings     = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings', true );
-			$conversion_savings = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
-
-			$c_size_before = $c_size_after = 0;
-			if ( ! empty( $conversion_savings ) && is_array( $conversion_savings ) && sizeof( $conversion_savings ) > 0 ) {
-				foreach ( $conversion_savings as $savings ) {
-					$c_size_before += $savings['size_before'];
-					$c_size_after  += $savings['size_after'];
-				}
-				$c_savings = $c_size_before - $c_size_after;
-			}
+			$conversion_savings = $wpsmush_helper->get_pngjpg_savings( $attachment_id );
 
 			$stats = array(
 				'count'              => ! empty( $smush_data['sizes'] ) ? count( $smush_data['sizes'] ) : 0,
 				'size_before'        => ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_before'] : 0,
 				'size_after'         => ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_after'] : 0,
 				'savings_resize'     => $resize_savings > 0 ? $resize_savings : 0,
-				'savings_conversion' => $c_savings > 0 ? $c_savings : 0,
+				'savings_conversion' => $conversion_savings['bytes'] > 0 ? $conversion_savings['bytes'] : 0,
 				'is_lossy'           => ! empty( $smush_data ['stats'] ) ? $smush_data['stats']['lossy'] : false
 			);
 
@@ -1027,15 +1017,21 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$offset     = 0;
 			$query_next = true;
 
-			$supersmushed_count         = 0;
-			$smush_data['total_images'] = 0;
-			$smush_data['id']           = array();
+			$supersmushed_count                = 0;
+			$smush_data['total_images']        = 0;
+			$smush_data['smushed_attachments'] = array();
 
 			while ( $query_next ) {
 
 				$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) );
 				if ( ! empty( $global_data ) ) {
 					foreach ( $global_data as $data ) {
+
+						//Skip attachment, if in re-smush list
+						if ( ! empty( $this->resmush_ids ) && in_array( $data->post_id, $this->resmush_ids ) ) {
+							continue;
+						}
+
 						$smush_data['id'][] = $data->post_id;
 						if ( ! empty( $data->meta_value ) ) {
 							$meta = maybe_unserialize( $data->meta_value );
@@ -1145,7 +1141,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 
-			global $wpsmush_db;
+			global $wpsmush_db, $wpsmush_helper;
 			if ( empty( $this->smushed_attachments ) ) {
 				$this->smushed_attachments = $wpsmush_db->smushed_count( true );
 			}
@@ -1165,7 +1161,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					//Get all the Savings for each image
 					$smush_stats        = get_post_meta( $attachment, 'wp-smpro-smush-data', true );
 					$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
-					$conversion_savings = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+					$conversion_savings = $wpsmush_helper->get_pngjpg_savings( $attachment );
 
 					$smush_data['count'] += 1;
 					$smush_data['total_images'] += ! empty( $smush_stats['sizes'] ) ? count( $smush_stats['sizes'] ) : 0;
@@ -1187,17 +1183,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 								}
 							}
 
-							//Add up conversion savings
-							if ( ! empty( $conversion_savings[ $size_k ] ) ) {
-								if ( ! empty( $conversion_savings[ $size_k ]['size_before'] ) && $conversion_savings[ $size_k ]['size_before'] > $size_before ) {
-									$size_before = $conversion_savings[ $size_k ]['size_before'];
-								}
-								if ( ! empty( $conversion_savings[ $size_k ]['size_after'] ) && $conversion_savings[ $size_k ]['size_after'] < $size_after ) {
-									$size_after = $conversion_savings[ $size_k ]['size_after'];
-								}
+							//Add conversion savings, if available
+							if ( ! empty( $conversion_savings['bytes'] ) ) {
+								$smush_data['size_before'] += $conversion_savings['size_before'];
+								$smush_data['size_after']  += $conversion_savings['size_after'];
 							}
-							$smush_data['size_before'] += $size_before;
-							$smush_data['size_after'] += $size_after;
 						}
 
 						//Resize Savings: If full image wasn't optimised, but resized, combine the stats
@@ -1496,7 +1486,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function scan_images() {
 
-			global $WpSmush, $wpsmushnextgenadmin, $wpsmush_db, $wpsmush_settings;
+			global $WpSmush, $wpsmushnextgenadmin, $wpsmush_db, $wpsmush_settings, $wpsmush_helper, $wpsmush_resize;
 
 			check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
@@ -1584,6 +1574,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Check if any of the smushed image needs to be resmushed
 			if ( ! empty( $attachments ) && is_array( $attachments ) ) {
+				$image_count = $super_smushed_count = 0;
+				$stats       = array(
+					'size_before'        => 0,
+					'size_after'         => 0,
+					'savings_resize'     => 0,
+					'savings_conversion' => 0
+				);
+
+				// Initialize resize class.
+				$wpsmush_resize->initialize();
+
 				foreach ( $attachments as $attachment_k => $attachment ) {
 
 					$should_resmush = false;
@@ -1614,13 +1615,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 						//If Image needs to be resized
 						if ( ! $should_resmush ) {
-							/**
-							 * Get the resize settings, get the image dimensions, and check if it needs to be resized
-							 *
-							 */
-							global $wpsmush_resize;
-							// Initialize resize class.
-							$wpsmush_resize->initialize();
 							$should_resmush = $wpsmush_resize->should_resize( $attachment );
 						}
 
@@ -1633,6 +1627,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						//If the image needs to be resmushed add it to the list
 						if ( $should_resmush ) {
 							$resmush_list[] = 'nextgen' == $type ? $attachment_k : $attachment;
+
+							if( 'nextgen' != $type ) {
+								$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
+								$conversion_savings = $wpsmush_helper->get_pngjpg_savings( $attachment );
+
+								//Get the image count
+								$image_count += ( ! empty( $smush_data['sizes'] ) && is_array( $smush_data['sizes'] ) ) ? sizeof( $smush_data['sizes'] ) : 0;
+
+								//If the image is in resmush list, and it was super smushed earlier
+								$super_smushed_count += ( $smush_data['stats']['lossy'] ) ? 1 : 0;
+
+								//Add to the stats
+								$stats['size_before']        += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_before'] : 0;
+								$stats['size_after']         += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_after'] : 0;
+								$stats['savings_resize']     += ! empty( $resize_savings ) ? $resize_savings['bytes'] : 0;
+								$stats['savings_conversion'] += ! empty( $conversion_savings ) ? $conversion_savings['bytes'] : 0;
+							}
 							continue;
 						}
 					}
@@ -1678,10 +1689,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					//Set the variables
 					$this->resmush_ids = $resmush_list;
 
-					$resmush_count = count( $this->resmush_ids );
-
-					$smushed = ! empty( $this->resmush_ids ) ? $this->smushed_count - $resmush_count : $this->smushed_count;
-
 				} else {
 					//To avoid the php warning
 					$wpsmushnextgenadmin->resmush_ids = $resmush_list;
@@ -1708,8 +1715,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//If there is a Ajax response return it, else return null
 			$return = ! empty( $ajax_response ) ? array(
-				"resmush_ids" => $resmush_list,
-				"content"     => $ajax_response
+				"resmush_ids"        => $resmush_list,
+				"content"            => $ajax_response,
+				'count_image'        => $image_count,
+				'count_supersmushed' => $super_smushed_count,
+				'size_before'        => $stats['size_before'],
+				'size_after'         => $stats['size_after'],
+				'savings_resize'     => $stats['savings_resize'],
+				'savings_conversion' => $stats['savings_conversion']
 			) : array();
 
 			//Include the count

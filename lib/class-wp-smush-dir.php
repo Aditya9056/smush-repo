@@ -1149,7 +1149,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				$stats            = $wpsmushit_admin->stats;
 				$stats['total']   = $wpsmushit_admin->total_count;
 				$resmush_count    = empty( $wpsmushit_admin->resmush_ids ) ? count( $wpsmushit_admin->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $wpsmushit_admin->resmush_ids );
-				$stats['smushed'] = ! empty( $wpsmushit_admin->resmush_ids ) ? $wpsmushit_admin->smushed_count - $resmush_count : $wpsmushit_admin->smushed_count;
+//				$stats['smushed'] = ! empty( $wpsmushit_admin->resmush_ids ) ? $wpsmushit_admin->smushed_count - $resmush_count : $wpsmushit_admin->smushed_count;
+				$stats['smushed'] = $wpsmushit_admin->smushed_count;
 				if ( $lossy == 1 ) {
 					$stats['super_smushed'] = $wpsmushit_admin->super_smushed;
 				}
@@ -1270,15 +1271,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			//Initialize Global Stats
 			$wpsmushit_admin->setup_global_stats();
 
-			//@todo: Redundant code, Move this to a single function
-			$smushed_count = ( $resmush_count = count( $wpsmushit_admin->resmush_ids ) ) > 0 ? $wpsmushit_admin->total_count - ( $resmush_count + $wpsmushit_admin->remaining_count ) : $wpsmushit_admin->smushed_count;
-			$smushed_count = $smushed_count > 0 ? $smushed_count : 0;
-
 			//Get the total/Smushed attachment count
 			$total_attachments = $wpsmushit_admin->total_count + $stats['total'];
 			$total_images      = $wpsmushit_admin->stats['total_images'] + $stats['total'];
 
-			$smushed     = $smushed_count + $stats['optimised'];
+			$smushed     = $wpsmushit_admin->smushed_count + $stats['optimised'];
 			$savings     = ! empty( $wpsmushit_admin->stats ) ? $wpsmushit_admin->stats['bytes'] + $stats['bytes'] : $stats['bytes'];
 			$size_before = ! empty( $wpsmushit_admin->stats ) ? $wpsmushit_admin->stats['size_before'] + $stats['orig_size'] : $stats['orig_size'];
 			$percent     = $size_before > 0 ? ( $savings / $size_before ) * 100 : 0;
