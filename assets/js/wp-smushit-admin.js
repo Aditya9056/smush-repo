@@ -731,10 +731,17 @@ jQuery(function ($) {
      * @returns {*} Formatted Bytes
      */
     var formatBytes = function (a, b) {
-        if (0 == a)return "0 Bytes";
-        var c = 1e3, d = b || 2, e = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
-            f = Math.floor(Math.log(a) / Math.log(c));
-        return parseFloat((a / Math.pow(c, f)).toFixed(d)) + " " + e[f];
+        var thresh = 1024;
+        if(Math.abs(a) < thresh) {
+            return a + ' B';
+        }
+        var units = ['KB','MB','GB','TB','PB'];
+        var u = -1;
+        do {
+            a /= thresh;
+            ++u;
+        } while(Math.abs(a) >= thresh && u < units.length - 1);
+        return a.toFixed(b)+' '+units[u];
     }
 
 
@@ -828,8 +835,8 @@ jQuery(function ($) {
                         wp_smushit_data.count_images = 'undefined' != typeof r.data.count_image ? parseInt(wp_smushit_data.count_images) - r.data.count_image : 0;
                         wp_smushit_data.size_before = 'undefined' != typeof r.data.size_before ? parseInt(wp_smushit_data.size_before) - r.data.size_before : 0;
                         wp_smushit_data.size_after = 'undefined' != typeof r.data.size_after ? parseInt(wp_smushit_data.size_after) - r.data.size_after : 0;
-                        wp_smushit_data.savings_resize = 'undefined' != typeof wp_smushit_data.savings_resize ? parseInt(wp_smushit_data.savings_resize) - r.data.savings_resize : 0;
-                        wp_smushit_data.savings_conversion = 'undefined' != typeof wp_smushit_data.savings_conversion ? parseInt(wp_smushit_data.savings_conversion) - r.data.savings_conversion : 0;
+                        wp_smushit_data.savings_resize = 'undefined' != typeof r.data.savings_resize ? parseInt(wp_smushit_data.savings_resize) - r.data.savings_resize : 0;
+                        wp_smushit_data.savings_conversion = 'undefined' != typeof r.data.savings_conversion ? parseInt(wp_smushit_data.savings_conversion) - r.data.savings_conversion : 0;
                     }
 
                     //Update it in stats bar
@@ -872,6 +879,7 @@ jQuery(function ($) {
                         $('.super-smush-attachments .wp-smush-stats').html(r.data.super_smush_stats);
                     }
                 }
+                update_stats();
             }
 
         }).always(function () {
@@ -1211,13 +1219,13 @@ jQuery(function ($) {
         // Update Progress on Circle.
         update_dashoffset();
 
-        //Update the savings percent
-        wp_smushit_data.savings_percent = precise_round(( parseInt(wp_smushit_data.savings_bytes) / parseInt(wp_smushit_data.size_before) ) * 100, 1);
-        $('.wp-smush-savings .wp-smush-stats-percent').html(wp_smushit_data.savings_percent);
-
         //Calculate updated savings in bytes
         wp_smushit_data.savings_bytes = parseInt(wp_smushit_data.size_before) - parseInt(wp_smushit_data.size_after);
         $('.wp-smush-savings .wp-smush-stats-human').html(formatBytes(wp_smushit_data.savings_bytes, 1));
+
+        //Update the savings percent
+        wp_smushit_data.savings_percent = precise_round(( parseInt(wp_smushit_data.savings_bytes) / parseInt(wp_smushit_data.size_before) ) * 100, 1);
+        $('.wp-smush-savings .wp-smush-stats-percent').html(wp_smushit_data.savings_percent);
 
         //Update Savings in share message
         $('span.smush-share-savings').html( formatBytes(wp_smushit_data.savings_bytes, 1) );
