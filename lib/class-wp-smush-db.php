@@ -794,6 +794,76 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				return false;
 			}
 		}
+
+		/**
+		 * Get the savings for the given set of attachments
+		 *
+		 * @param array $attachments Array of attachment ids
+		 *
+		 * @return array Stats
+		 *  array(
+		 * 'size_before' => 0,
+		 * 'size_after'    => 0,
+		 * 'savings_resize' => 0,
+		 * 'savings_conversion' => 0
+		 *  )
+		 *
+		 *
+		 */
+		function get_savings_for_attachments( $attachments = array() ) {
+			//@todo: Add image_count, lossy count, count_smushed
+			$stats = array(
+				'size_before'        => 0,
+				'size_after'         => 0,
+				'savings_resize'     => 0,
+				'savings_conversion' => 0,
+				'count_images'       => 0,
+				'count_supersmushed' => 0,
+				'count_smushed'      => 0
+			);
+
+			//If we don't have any attachments, return empty array
+			if( empty( $attachments ) || !is_array( $attachments ) ) {
+				return $stats;
+			}
+
+			global $WpSmush, $wpsmush_helper;
+
+			//Loop over all the attachments to get the cummulative savings
+			foreach ( $attachments as $attachment ) {
+				$smush_stats        = get_post_meta( $attachment, $WpSmush->smushed_meta_key, true );
+				$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
+				$conversion_savings = $wpsmush_helper->get_pngjpg_savings( $attachment );
+
+				if ( ! empty( $smush_stats['stats'] ) ) {
+					//Combine all the stats, and keep the resize and send conversion settings separately
+					$stats['size_before'] += ! empty( $smush_stats['stats']['size_before'] ) ? $smush_stats['stats']['size_before'] : 0;
+					$stats['size_after']  += ! empty( $smush_stats['stats']['size_after'] ) ? $smush_stats['stats']['size_after'] : 0;
+				}
+
+				$stats['count_images'] += ! empty( $smush_stats['sizes'] ) && is_array( $smush_stats['sizes'] ) ? sizeof( $smush_stats['sizes'] ) : 0;
+				$stats['count_supersmushed'] + ! empty( $smush_stats['stats'] ) && $smush_stats['stats']['lossy'] ? 1 : 0;
+
+				//Add resize saving stats
+				if ( ! empty( $resize_savings ) ) {
+					//Add resize and conversion savings
+					$stats['savings_resize'] += ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
+					$stats['size_before']    += ! empty( $resize_savings['size_before'] ) ? ! empty( $resize_savings['size_before'] ) : 0;
+					$stats['size_after']     += ! empty( $resize_savings['size_after'] ) ? ! empty( $resize_savings['size_after'] ) : 0;
+				}
+
+				//Add conversion saving stats
+				if ( ! empty( $resize_savings ) ) {
+					//Add resize and conversion savings
+					$stats['savings_conversion'] += ! empty( $conversion_savings['bytes'] ) ? $conversion_savings['bytes'] : 0;
+					$stats['size_before']        += ! empty( $conversion_savings['size_before'] ) ? ! empty( $conversion_savings['size_before'] ) : 0;
+					$stats['size_after']         += ! empty( $conversion_savings['size_after'] ) ? ! empty( $conversion_savings['size_after'] ) : 0;
+				}
+				$stats['count_smushed'] += 1;
+			}
+
+			return $stats;
+		}
 	}
 
 	/**

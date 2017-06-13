@@ -1639,8 +1639,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 								$super_smushed_count += ( $smush_data['stats']['lossy'] ) ? 1 : 0;
 
 								//Add to the stats
-								$stats['size_before']        += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_before'] : 0;
-								$stats['size_after']         += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_after'] : 0;
+								$stats['size_before'] += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_before'] : 0;
+								$stats['size_before'] += ! empty( $resize_savings['size_before'] ) ? $resize_savings['size_before'] : 0;
+								$stats['size_before'] += ! empty( $conversion_savings['size_before'] ) ? $conversion_savings['size_before'] : 0;
+
+								$stats['size_after'] += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_after'] : 0;
+								$stats['size_after'] += ! empty( $resize_savings['size_after'] ) ? $resize_savings['size_after'] : 0;
+								$stats['size_after'] += ! empty( $conversion_savings['size_after'] ) ? $conversion_savings['size_after'] : 0;
+
 								$stats['savings_resize']     += ! empty( $resize_savings ) ? $resize_savings['bytes'] : 0;
 								$stats['savings_conversion'] += ! empty( $conversion_savings ) ? $conversion_savings['bytes'] : 0;
 							}
@@ -1881,13 +1887,26 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 		/**
 		 * Delete the resmush list for Nextgen or the Media Library
+		 *
+		 * Return Stats in ajax response
+		 *
 		 */
 		function delete_resmush_list() {
 
-			$key = ! empty( $_POST['type'] ) && 'nextgen' == $_POST['type'] ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
+			global $wpsmush_db;
+			$stats = array();
+
+			$key   = ! empty( $_POST['type'] ) && 'nextgen' == $_POST['type'] ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
+			if ( 'nextgen' != $_POST['type'] ) {
+				$resmush_list = get_option( $key );
+				if ( ! empty( $resmush_list ) && is_array( $resmush_list ) ) {
+					$stats = $wpsmush_db->get_savings_for_attachments( $resmush_list );
+				}
+			}
+
 			//Delete the resmush list
 			delete_option( $key );
-			wp_send_json_success();
+			wp_send_json_success( array( 'stats' => $stats ) );
 		}
 
 		/**

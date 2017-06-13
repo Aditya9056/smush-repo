@@ -831,12 +831,12 @@ jQuery(function ($) {
                     //Update wp_smushit_data ( Smushed count, Smushed Percent, Image count, Super smush count, resize savings, conversion savings )
                     if ('undefinied' != typeof wp_smushit_data) {
                         wp_smushit_data.count_smushed = smushed_count;
-                        wp_smushit_data.count_supersmushed = 'undefined' != typeof r.data.count_supersmushed ? parseInt(wp_smushit_data.count_supersmushed) - r.data.count_supersmushed : 0;
-                        wp_smushit_data.count_images = 'undefined' != typeof r.data.count_image ? parseInt(wp_smushit_data.count_images) - r.data.count_image : 0;
-                        wp_smushit_data.size_before = 'undefined' != typeof r.data.size_before ? parseInt(wp_smushit_data.size_before) - r.data.size_before : 0;
-                        wp_smushit_data.size_after = 'undefined' != typeof r.data.size_after ? parseInt(wp_smushit_data.size_after) - r.data.size_after : 0;
-                        wp_smushit_data.savings_resize = 'undefined' != typeof r.data.savings_resize ? parseInt(wp_smushit_data.savings_resize) - r.data.savings_resize : 0;
-                        wp_smushit_data.savings_conversion = 'undefined' != typeof r.data.savings_conversion ? parseInt(wp_smushit_data.savings_conversion) - r.data.savings_conversion : 0;
+                        wp_smushit_data.count_supersmushed = 'undefined' != typeof r.data.count_supersmushed ? parseInt(wp_smushit_data.count_supersmushed) - r.data.count_supersmushed : wp_smushit_data.count_supersmushed;
+                        wp_smushit_data.count_images = 'undefined' != typeof r.data.count_image ? parseInt(wp_smushit_data.count_images) - r.data.count_image : wp_smushit_data.count_images;
+                        wp_smushit_data.size_before = 'undefined' != typeof r.data.size_before ? parseInt(wp_smushit_data.size_before) - r.data.size_before : wp_smushit_data.size_before;
+                        wp_smushit_data.size_after = 'undefined' != typeof r.data.size_after ? parseInt(wp_smushit_data.size_after) - r.data.size_after : wp_smushit_data.size_after;
+                        wp_smushit_data.savings_resize = 'undefined' != typeof r.data.savings_resize ? parseInt(wp_smushit_data.savings_resize) - r.data.savings_resize : wp_smushit_data.savings_resize;
+                        wp_smushit_data.savings_conversion = 'undefined' != typeof r.data.savings_conversion ? parseInt(wp_smushit_data.savings_conversion) - r.data.savings_conversion : wp_smushit_data.savings_conversion;
                     }
 
                     //Update it in stats bar
@@ -1799,8 +1799,24 @@ jQuery(function ($) {
             action: 'delete_resmush_list',
             type: type
         }
-        //Delete resmush list
-        $.post(ajaxurl, params);
+        //Delete resmush list, @todo: update stats from the ajax response
+        $.post(ajaxurl, params, function (res) {
+            //Remove the whole li element on success
+            if (res.success && 'undefined' != typeof res.data.stats ) {
+                var stats = res.data.stats;
+                //Update wp_smushit_data ( Smushed count, Smushed Percent, Image count, Super smush count, resize savings, conversion savings )
+                if ('undefinied' != typeof wp_smushit_data) {
+                    wp_smushit_data.count_smushed = 'undefined' != typeof stats.count_smushed ? parseInt(wp_smushit_data.count_smushed) + stats.count_smushed : wp_smushit_data.count_smushed;
+                    wp_smushit_data.count_supersmushed = 'undefined' != typeof stats.count_supersmushed ? parseInt(wp_smushit_data.count_supersmushed) + stats.count_supersmushed : wp_smushit_data.count_supersmushed;
+                    wp_smushit_data.count_images = 'undefined' != typeof stats.count_images ? parseInt(wp_smushit_data.count_images) + stats.count_images : wp_smushit_data.count_images;
+                    wp_smushit_data.size_before = 'undefined' != typeof stats.size_before ? parseInt(wp_smushit_data.size_before) + stats.size_before : wp_smushit_data.size_before;
+                    wp_smushit_data.size_after = 'undefined' != typeof stats.size_after ? parseInt(wp_smushit_data.size_after) + stats.size_after : wp_smushit_data.size_after;
+                    wp_smushit_data.savings_resize = 'undefined' != typeof stats.savings_resize ? parseInt(wp_smushit_data.savings_resize) + stats.savings_resize : wp_smushit_data.savings_resize;
+                    wp_smushit_data.savings_conversion = 'undefined' != typeof stats.savings_conversion ? parseInt(wp_smushit_data.savings_conversion) + stats.savings_conversion : wp_smushit_data.savings_conversion;
+                }
+                update_stats();
+            }
+        });
 
     });
 
