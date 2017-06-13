@@ -202,7 +202,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			$resize = $this->perform_resize( $file_path, $original_file_size, $id, $meta );
 
 			//If resize wasn't successful
-			if ( ! $resize || $resize['filesize'] == $original_file_size ) {
+			if ( ! $resize || $resize['filesize'] >= $original_file_size ) {
 				update_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', $savings );
 				return $meta;
 			}
