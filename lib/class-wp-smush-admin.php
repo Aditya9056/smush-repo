@@ -1574,7 +1574,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Check if any of the smushed image needs to be resmushed
 			if ( ! empty( $attachments ) && is_array( $attachments ) ) {
-				$image_count = $super_smushed_count = 0;
+				$image_count = $super_smushed_count = $smushed_count = 0;
 				$stats       = array(
 					'size_before'        => 0,
 					'size_after'         => 0,
@@ -1627,10 +1627,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						//If the image needs to be resmushed add it to the list
 						if ( $should_resmush ) {
 							$resmush_list[] = 'nextgen' == $type ? $attachment_k : $attachment;
-
-							if( 'nextgen' != $type ) {
+							continue;
+						} else {
+							if ( 'nextgen' != $type ) {
 								$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
 								$conversion_savings = $wpsmush_helper->get_pngjpg_savings( $attachment );
+
+								//Increase the smushed count
+								$smushed_count += 1;
 
 								//Get the image count
 								$image_count += ( ! empty( $smush_data['sizes'] ) && is_array( $smush_data['sizes'] ) ) ? sizeof( $smush_data['sizes'] ) : 0;
@@ -1650,7 +1654,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 								$stats['savings_resize']     += ! empty( $resize_savings ) ? $resize_savings['bytes'] : 0;
 								$stats['savings_conversion'] += ! empty( $conversion_savings ) ? $conversion_savings['bytes'] : 0;
 							}
-							continue;
 						}
 					}
 				}
@@ -1719,12 +1722,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						</div>';
 			}
 
+			//Append the directory smush stats
+            $dir_smush_stats = get_option('dir_smush_stats');
+			if ( ! empty( $dir_smush_stats ) && is_array( $dir_smush_stats ) ) {
+				$dir_smush_stats      = $dir_smush_stats['dir_smush'];
+				$image_count          += $dir_smush_stats['optimised'];
+				$stats['size_before'] += $dir_smush_stats['orig_size'];
+				$stats['size_after']  += $dir_smush_stats['image_size'];
+			}
+
 			//If there is a Ajax response return it, else return null
 			$return = ! empty( $ajax_response ) ? array(
 				"resmush_ids"        => $resmush_list,
 				"content"            => $ajax_response,
 				'count_image'        => $image_count,
 				'count_supersmushed' => $super_smushed_count,
+				'count_smushed'      => $smushed_count,
 				'size_before'        => $stats['size_before'],
 				'size_after'         => $stats['size_after'],
 				'savings_resize'     => $stats['savings_resize'],
