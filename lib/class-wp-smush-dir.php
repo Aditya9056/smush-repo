@@ -1165,13 +1165,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			//Show the image wise stats
 			$image = array(
 				'id'        => $id,
-				'orig_size' => $image['orig_size'],
-				'img_size'  => $smush_results['data']->after_size
+				'size_before' => $image['orig_size'],
+				'size_after'  => $smush_results['data']->after_size
 			);
 
-			$bytes            = $image['orig_size'] - $image['img_size'];
+			$bytes            = $image['size_before'] - $image['size_after'];
 			$image['savings'] = size_format( $bytes, 1 );
-			$image['percent'] = number_format_i18n( ( ( $bytes / $image['orig_size'] ) * 100 ), 1 ) . '%';
+			$image['percent'] = $image['size_before'] > 0 ? number_format_i18n( ( ( $bytes / $image['size_before'] ) * 100 ), 1 ) . '%' : 0;
 
 			$data = array(
 				'image'       => $image,

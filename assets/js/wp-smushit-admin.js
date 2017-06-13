@@ -1184,10 +1184,11 @@ jQuery(function ($) {
         if ('undefined' == typeof wp_smushit_data) {
             return;
         }
-        wp_smushit_data.count_smushed = parseInt(wp_smushit_data.count_smushed) + 1;
 
         //No need to increase attachment count, resize, conversion savings for directory smush
         if ('directory_smush' != type) {
+            wp_smushit_data.count_smushed = parseInt(wp_smushit_data.count_smushed) + 1;
+
             //Increase smushed image count
             wp_smushit_data.count_images = parseInt(wp_smushit_data.count_images) + parseInt(image_stats.count);
 
@@ -1201,11 +1202,17 @@ jQuery(function ($) {
 
             //Add to Conversion Savings
             wp_smushit_data.savings_conversion = 'undefined' != typeof image_stats.savings_conversion.bytes ? parseInt(wp_smushit_data.savings_conversion) + parseInt(image_stats.savings_conversion.bytes) : parseInt(wp_smushit_data.savings_conversion);
+        } else {
+            //Increase smushed image count
+            wp_smushit_data.count_images = parseInt(wp_smushit_data.count_images) + 1;
         }
 
-        //Update savings
-        wp_smushit_data.size_before = parseInt(wp_smushit_data.size_before) + parseInt(image_stats.size_before);
-        wp_smushit_data.size_after = parseInt(wp_smushit_data.size_after) + parseInt(image_stats.size_after);
+        //If we have savings
+        if (image_stats.size_before > image_stats.size_after) {
+            //Update savings
+            wp_smushit_data.size_before = 'undefined' != typeof image_stats.size_before ? parseInt(wp_smushit_data.size_before) + parseInt(image_stats.size_before) : parseInt(wp_smushit_data.size_before);
+            wp_smushit_data.size_after = 'undefined' != typeof image_stats.size_after ? parseInt(wp_smushit_data.size_after) + parseInt(image_stats.size_after) : parseInt(wp_smushit_data.size_after);
+        }
 
     }
 
@@ -1456,9 +1463,9 @@ jQuery(function ($) {
 
 
                 //@todo: Fixed stats UI
-                if ('undefined' != typeof _res.data.stats) {
+                if ('undefined' != typeof res.data.total) {
                     //Update localized stats, Need to modify function to not increase count, and just update image count, and savings
-                    update_localized_stats( _res.data.stats, 'directory_smush' );
+                    update_localized_stats( res.data.image, 'directory_smush' );
                     // Update stats.
                     update_stats();
                 }
