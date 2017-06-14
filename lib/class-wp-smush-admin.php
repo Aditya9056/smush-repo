@@ -676,7 +676,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'size_before'        => ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_before'] : 0,
 				'size_after'         => ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_after'] : 0,
 				'savings_resize'     => $resize_savings > 0 ? $resize_savings : 0,
-				'savings_conversion' => $conversion_savings['bytes'] > 0 ? $conversion_savings['bytes'] : 0,
+				'savings_conversion' => $conversion_savings['bytes'] > 0 ? $conversion_savings : 0,
 				'is_lossy'           => ! empty( $smush_data ['stats'] ) ? $smush_data['stats']['lossy'] : false
 			);
 
@@ -1727,8 +1727,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! empty( $dir_smush_stats ) && is_array( $dir_smush_stats ) ) {
 				$dir_smush_stats      = $dir_smush_stats['dir_smush'];
 				$image_count          += $dir_smush_stats['optimised'];
-				$stats['size_before'] += $dir_smush_stats['orig_size'];
-				$stats['size_after']  += $dir_smush_stats['image_size'];
+
+				//Add directory smush stats if not empty
+				if( !empty( $dir_smush_stats ) ) {
+					$stats['size_before'] += $dir_smush_stats['orig_size'];
+					$stats['size_after']  += $dir_smush_stats['image_size'];
+				}
 			}
 
 			//If there is a Ajax response return it, else return null

@@ -853,11 +853,11 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				}
 
 				//Add conversion saving stats
-				if ( ! empty( $resize_savings ) ) {
+				if ( ! empty( $conversion_savings ) ) {
 					//Add resize and conversion savings
 					$stats['savings_conversion'] += ! empty( $conversion_savings['bytes'] ) ? $conversion_savings['bytes'] : 0;
-					$stats['size_before']        += ! empty( $conversion_savings['size_before'] ) ? ! empty( $conversion_savings['size_before'] ) : 0;
-					$stats['size_after']         += ! empty( $conversion_savings['size_after'] ) ? ! empty( $conversion_savings['size_after'] ) : 0;
+					$stats['size_before']        += ! empty( $conversion_savings['size_before'] ) ? $conversion_savings['size_before'] : 0;
+					$stats['size_after']         += ! empty( $conversion_savings['size_after'] ) ? $conversion_savings['size_after']  : 0;
 				}
 				$stats['count_smushed'] += 1;
 			}
