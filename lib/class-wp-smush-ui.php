@@ -114,7 +114,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function smush_stats_container() {
 			global $WpSmush, $wpsmushit_admin, $wpsmush_db, $wpsmush_settings;
 
-			$button = '<span class="spinner"></span><button tooltip="' . esc_html__( "Lets you check if any images can be further optimised. Useful after changing settings.", "wp-smushit" ) . '" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
+			$button = '<span class="spinner"></span><button tooltip="' . esc_html__( "Lets you check if any images can be further optimized. Useful after changing settings.", "wp-smushit" ) . '" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
 			$this->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button );
 			$dasharray = 125.663706144;
 			$dash_offset = $wpsmushit_admin->total_count > 0 ? $dasharray - ( $dasharray * ( $wpsmushit_admin->smushed_count / $wpsmushit_admin->total_count) ) : $dasharray;
@@ -422,7 +422,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					if( !empty( $sizes ) ) { ?>
 						<!-- List of image sizes recognised by WP Smush -->
 						<div class="wp-smush-image-size-list">
-							<p><?php esc_html_e("The following image sizes will be optimised by WP Smush:", "wp-smushit"); ?></p><?php
+							<p><?php esc_html_e("The following image sizes will be optimized by WP Smush:", "wp-smushit"); ?></p><?php
 							foreach ( $sizes as $size_k => $size ) {
 								//If image sizes array isn't set, mark all checked ( Default Values )
 								if ( false === $image_sizes ) {

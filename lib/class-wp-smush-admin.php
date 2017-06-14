@@ -394,7 +394,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'resmush'                 => esc_html__( 'Super-Smush', 'wp-smushit' ),
 				'smush_now'               => esc_html__( 'Smush Now', 'wp-smushit' ),
 				'error_in_bulk'           => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				'all_resmushed'           => esc_html__( 'All images are fully optimised.', 'wp-smushit' ),
+				'all_resmushed'           => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
 				'restore'                 => esc_html__( "Restoring image..", "wp-smushit" ),
 				'smushing'                => esc_html__( "Smushing image..", "wp-smushit" ),
 				'checking'                => esc_html__( "Checking images..", "wp-smushit" ),
@@ -404,7 +404,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Used by Directory Smush
 				'unfinished_smush_single' => esc_html__( "image could not be smushed.", "wp-smushit" ),
 				'unfinished_smush'        => esc_html__( "images could not be smushed.", "wp-smushit" ),
-				'already_optimised'       => esc_html__( "Already Optimised", "wp-smushit" ),
+				'already_optimised'       => esc_html__( "Already Optimized", "wp-smushit" ),
 				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
@@ -1516,7 +1516,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Default Notice, to be displayed at the top of page
 			//Show a message, at the top
-			$message = esc_html__( 'Yay! All images are optimised as per your current settings.', 'wp-smushit' );
+			$message = esc_html__( 'Yay! All images are optimized as per your current settings.', 'wp-smushit' );
 			$resp    = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
 				<i class="dev-icon dev-icon-cross"></i>
 				</div>';

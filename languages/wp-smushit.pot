@@ -483,7 +483,7 @@ msgid "Could not find image id in last scanned images"
 msgstr ""
 
 #: lib/class-wp-smush-dir.php:1114
-msgid "Image couldn't be optimised"
+msgid "Image couldn't be optimized"
 msgstr ""
 
 #: lib/class-wp-smush-dir.php:1234

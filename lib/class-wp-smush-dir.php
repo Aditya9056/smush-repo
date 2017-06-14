@@ -1111,7 +1111,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				$error_msg = $smush_results->get_error_message();
 			} else if ( empty( $smush_results['data'] ) ) {
 				//If there are no stats
-				$error_msg = esc_html__( "Image couldn't be optimised", "wp-smushit" );
+				$error_msg = esc_html__( "Image couldn't be optimized", "wp-smushit" );
 			}
 
 			if ( ! empty( $error_msg ) ) {
