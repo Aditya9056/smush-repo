@@ -823,14 +823,9 @@ jQuery(function ($) {
                 if ('undefined' != typeof r.data.resmush_ids) {
                     wp_smushit_data.resmush = r.data.resmush_ids;
 
-                    //Update the Smushed image count, if we have got any resmush ids
-                    var smushed_count = parseInt( wp_smushit_data.count_smushed ) - r.data.resmush_ids.length;
-                    var smush_percent = ( smushed_count / wp_smushit_data.count_total ) * 100;
-                    smush_percent = precise_round( smush_percent, 1 );
-
                     //Update wp_smushit_data ( Smushed count, Smushed Percent, Image count, Super smush count, resize savings, conversion savings )
                     if ('undefinied' != typeof wp_smushit_data) {
-                        wp_smushit_data.count_smushed = smushed_count;
+                        wp_smushit_data.count_smushed = 'undefined' != typeof r.data.count_smushed ? r.data.count_smushed : wp_smushit_data.count_smushed;
                         wp_smushit_data.count_supersmushed = 'undefined' != typeof r.data.count_supersmushed ? r.data.count_supersmushed : wp_smushit_data.count_supersmushed;
                         wp_smushit_data.count_images = 'undefined' != typeof r.data.count_image ? r.data.count_image : wp_smushit_data.count_images;
                         wp_smushit_data.size_before = 'undefined' != typeof r.data.size_before ? r.data.size_before : wp_smushit_data.size_before;
@@ -838,6 +833,9 @@ jQuery(function ($) {
                         wp_smushit_data.savings_resize = 'undefined' != typeof r.data.savings_resize ? r.data.savings_resize : wp_smushit_data.savings_resize;
                         wp_smushit_data.savings_conversion = 'undefined' != typeof r.data.savings_conversion ? r.data.savings_conversion : wp_smushit_data.savings_conversion;
                     }
+
+                    var smush_percent = ( wp_smushit_data.count_smushed / wp_smushit_data.count_total ) * 100;
+                    smush_percent = precise_round( smush_percent, 1 );
 
                     //Update it in stats bar
                     $('.wp-smush-images-percent').html(smush_percent);

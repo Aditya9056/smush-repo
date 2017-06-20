@@ -1501,7 +1501,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function scan_images() {
 
-			global $WpSmush, $wpsmushnextgenadmin, $wpsmush_db, $wpsmush_settings, $wpsmush_helper, $wpsmush_resize;
+			global $WpSmush, $wpsmushnextgenadmin, $wpsmush_db, $wpsmush_settings, $wpsmush_helper, $wpsmush_resize, $wpsmushit_admin;
 
 			check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
@@ -1602,6 +1602,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				foreach ( $attachments as $attachment_k => $attachment ) {
 
+					//Skip if already in resmuhs list
+					if ( ! empty( $wpsmushit_admin->resmush_ids ) && in_array( $attachment, $wpsmushit_admin->resmush_ids ) ) {
+						continue;
+					}
 					$should_resmush = false;
 
 					//For NextGen we get the metadata in the attachment data itself
