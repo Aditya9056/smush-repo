@@ -1041,11 +1041,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 								if ( 1 == $meta['stats']['lossy'] ) {
 									$supersmushed_count += 1;
 								}
-								//Total Image Smushed
-								$smush_data['total_images'] += ! empty( $meta['sizes'] ) ? count( $meta['sizes'] ) : 0;
 
-								$smush_data['size_before'] += ! empty( $meta['stats']['size_before'] ) ? (int) $meta['stats']['size_before'] : 0;
-								$smush_data['size_after'] += ! empty( $meta['stats']['size_after'] ) ? (int) $meta['stats']['size_after'] : 0;
+								//If the image was optimised
+								if ( !empty( $meta['stats'] ) && $meta['stats']['size_before'] > $meta['stats']['size_after'] ) {
+									//Total Image Smushed
+									$smush_data['total_images'] += ! empty( $meta['sizes'] ) ? count( $meta['sizes'] ) : 0;
+
+									$smush_data['size_before'] += ! empty( $meta['stats']['size_before'] ) ? (int) $meta['stats']['size_before'] : 0;
+									$smush_data['size_after']  += ! empty( $meta['stats']['size_after'] ) ? (int) $meta['stats']['size_after'] : 0;
+								}
 							}
 						}
 					}
