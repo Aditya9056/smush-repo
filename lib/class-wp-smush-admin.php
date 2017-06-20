@@ -918,6 +918,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function remaining_count() {
 
+			//Check if the resmush count is equal to remaining count
+			$resmush_count = count( $this->resmush_ids );
+			if ( $resmush_count == $this->smushed_count ) {
+				return $resmush_count;
+			}
+
 			return ( $this->total_count - $this->smushed_count );
 		}
 
@@ -994,7 +1000,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function global_stats( $force_update = false ) {
 
 			if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
-				if ( ! empty( $stats ) ) {
+				if ( ! empty( $stats ) && ! empty( $stats['size_before'] ) ) {
 					return $stats;
 				}
 			}
