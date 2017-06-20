@@ -170,7 +170,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					if ( $WpSmush->lossy_enabled ) {
 						echo '<span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count;
 					} else {
-						printf( esc_html__( "%sENABLE SUPER-SMUSH%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
+					    //Output a button/link to enable respective setting
+					    if( !is_multisite() || !get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) ) {
+                            //@todo:Print a link to settings page for network sites
+                            printf( esc_html__( "%sENABLE SUPER-SMUSH%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
+						}else {
+					        $settings_link = $wpsmushit_admin->settings_link( array(), true );
+                            printf( esc_html__( "%sENABLE SUPER-SMUSH%s", "wp-smushit" ), '<a href="' . $settings_link .'" class="wp-smush-lossy-enable button button-small">', '</a>' );
+						}
 					} ?>
 				</span>
 				</div><?php
@@ -183,8 +190,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						echo size_format( $wpsmushit_admin->stats['resize_savings'], 1 );
 					}else{
 						if( !$wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize' ) ) {
-							//If Not enabled, Add a enable button
-							printf( esc_html__( "%sENABLE IMAGE RESIZING%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
+						    //Output a button/link to enable respective setting
+                            if( !is_multisite() || !get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) ) {
+                                printf( esc_html__( "%sENABLE IMAGE RESIZING%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
+                            }else {
+                                $settings_link = $wpsmushit_admin->settings_link( array(), true );
+                                printf( esc_html__( "%sENABLE IMAGE RESIZING%s", "wp-smushit" ), '<a href="' . $settings_link .'" class="wp-smush-lossy-enable button button-small">', '</a>' );
+                            }
 						}else{
 							printf( esc_html__( "%sNO RESIZE SAVINGS AVAILABLE%s", "wp-smushit" ), '<span class="total-stats-label"><strong>', '</strong></span>' );
 						}

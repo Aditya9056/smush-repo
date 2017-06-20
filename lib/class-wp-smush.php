@@ -274,7 +274,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$stat  = stat( dirname( $file_path ) );
 				$perms = $stat['mode'] & 0000666; //same permissions as parent folder, strip off the executable bits
 			}
-			@ chmod( $file_path, $perms );
+			@chmod( $file_path, $perms );
 
 			return $response;
 		}

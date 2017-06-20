@@ -136,10 +136,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.7.2 =
 
-    *Updated:
-        * Use JS for stats calculation while using Bulk Smush, to remove the additonal time lost
-    *Fixed:
-        * images keep appearing in the re-smush list
+    * Updated:
+        * Use JS for stats calculation while using Bulk Smush, to reduce the Ajax time
+    * Fixed:
+        * Some Images would keep appearing in the re-smush list, if "Resize original images" is enabled
+        * Enable buttons in settings redirects to network smush settings page in a subsite if networkwide settings are enabled
 
 = 2.7.1 =
 

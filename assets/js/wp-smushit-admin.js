@@ -1201,7 +1201,7 @@ jQuery(function ($) {
             wp_smushit_data.savings_resize = 'undefined' != typeof image_stats.savings_resize.bytes ? parseInt(wp_smushit_data.savings_resize) + parseInt(image_stats.savings_resize.bytes) : parseInt(wp_smushit_data.savings_resize);
 
             //Add to Conversion Savings
-            wp_smushit_data.savings_conversion = 'undefined' != typeof image_stats.savings_conversion ? parseInt(wp_smushit_data.savings_conversion) + parseInt(image_stats.savings_conversion.bytes ) : parseInt(wp_smushit_data.savings_conversion);
+            wp_smushit_data.savings_conversion = 'undefined' != typeof image_stats.savings_conversion && 'undefined' != typeof image_stats.savings_conversion.bytes ? parseInt(wp_smushit_data.savings_conversion) + parseInt(image_stats.savings_conversion.bytes ) : parseInt(wp_smushit_data.savings_conversion);
         } else {
             //Increase smushed image count
             wp_smushit_data.count_images = parseInt(wp_smushit_data.count_images) + 1;
@@ -1838,7 +1838,7 @@ jQuery(function ($) {
     });
 
     //Enable Super Smush
-    $('.wp-smush-lossy-enable').on('click', function (e) {
+    $('button.wp-smush-lossy-enable').on('click', function (e) {
         e.preventDefault();
 
         //Enable Super Smush
