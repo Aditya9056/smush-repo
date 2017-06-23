@@ -17,6 +17,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 		var $total_count = 0;
 		var $smushed_count = 0;
+		var $image_count = 0;
 		var $remaining_count = 0;
 		var $super_smushed = 0;
 		var $bulk_page_handle;
@@ -169,6 +170,9 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//Initialize Stats
 			$this->setup_stats();
 
+			//Get the Latest Stats
+			$this->stats = $wpsmushnextgenstats->get_smush_stats();
+
 			//Get the unsmushed ids, used for localized stats as well as normal localization
 			$unsmushed = $wpsmushnextgenstats->get_ngg_images( 'unsmushed' );
 			$unsmushed = ( ! empty( $unsmushed ) && is_array( $unsmushed ) ) ? array_keys( $unsmushed ) : '';
@@ -192,10 +196,16 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$data = array(
 				'count_smushed' => $this->smushed_count,
 				'count_total'   => $this->total_count,
+				'count_images'  => $this->image_count,
 				'smushed'       => $smushed,
 				'unsmushed'     => $unsmushed,
-				'resmush'       => $this->resmush_ids
+				'resmush'       => $this->resmush_ids,
 			);
+
+			//Add the stats to arrray
+			if ( ! empty( $this->stats ) && is_array( $this->stats ) ) {
+				$data = array_merge( $data, $this->stats );
+			}
 
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
 
@@ -496,9 +506,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
 			$smushed_count = ( $resmush_count = count( $this->resmush_ids ) ) > 0 ? ( $this->total_count - ( $resmush_count + $this->remaining_count ) ) : $this->smushed_count;
 
-			//NextGen Stats
-			$this->stats = $wpsmushnextgenstats->get_smush_stats();
-
 			$button = '<span class="spinner"></span><button tooltip="' . esc_html__( "Lets you check if any images can be further optimized. Useful after changing settings.", "wp-smushit" ) . '" data-type="nextgen" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
 			$this->bulk_ui->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button );
 			$dasharray = 125.663706144;
@@ -526,7 +533,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 					<div class="wp-smush-count-total">
 						<div class="wp-smush-smush-stats-wrapper">
-							<span class="wp-smush-optimised"><?php echo $smushed_count; ?></span>/<span><?php echo $this->total_count; ?></span>
+							<span class="wp-smush-total-optimised"><?php echo $this->image_count; ?></span>
 						</div>
 						<span class="total-stats-label"><strong><?php esc_html_e( "IMAGES SMUSHED", "wp-smushit" ); ?></strong></span>
 					</div>
@@ -586,9 +593,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Fetch the stats for the given attachment id, and subtract them from Global stats
 		 *
 		 * @param $attachment_id
+		 *
+		 * @return bool
 		 */
 		function update_nextgen_stats( $attachment_id ) {
-			global $WpSmush, $wpsmushit_admin;
+			global $wpsmushit_admin;
 
 			if ( empty( $attachment_id ) ) {
 				return false;
@@ -648,10 +657,40 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function setup_stats() {
 			global $wpsmushnextgenstats;
+
+			$smushed_images = $wpsmushnextgenstats->get_ngg_images( 'smushed' );
+
 			//Set the counts
 			$this->total_count     = $wpsmushnextgenstats->total_count();
-			$this->smushed_count   = $wpsmushnextgenstats->get_ngg_images( 'smushed', true );
+			$this->image_count     = $this->get_image_count( $smushed_images );
+			$this->smushed_count   = count( $smushed_images );
 			$this->remaining_count = $wpsmushnextgenstats->get_ngg_images( 'unsmushed', true );
+		}
+
+		/**
+		 * Get the image count for nextgen images
+		 *
+		 * @param array $smushed_images
+		 *
+		 * @return int
+		 */
+		function get_image_count( $smushed_images = array() ) {
+			if ( empty( $smushed_images ) || ! is_array( $smushed_images ) ) {
+				return 0;
+			}
+			$image_count = 0;
+			foreach ( $smushed_images as $image ) {
+				//If there are no smush stats, skip
+				if ( empty( $image['wp_smush'] ) ) {
+					continue;
+				}
+				//Get the image count
+				if ( ! empty( $image['wp_smush']['sizes'] ) ) {
+					$image_count += count( $image['wp_smush']['sizes'] );
+				}
+			}
+
+			return $image_count;
 		}
 
 		/**
