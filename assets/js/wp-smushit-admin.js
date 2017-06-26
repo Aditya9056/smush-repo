@@ -124,10 +124,14 @@ jQuery(function ($) {
             this.deferred.errors = [];
 
             var ids = wp_smushit_data.resmush.length > 0 && !skip_resmush ? ( wp_smushit_data.unsmushed.length > 0 ? wp_smushit_data.resmush.concat(wp_smushit_data.unsmushed) : wp_smushit_data.resmush ) : wp_smushit_data.unsmushed;
-            //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
-            this.ids = ids.filter(function(itm, i, a) {
-                return i == a.indexOf(itm);
-            });
+            if ('object' == typeof ids) {
+                //If button has resmush class, and we do have ids that needs to resmushed, put them in the list
+                this.ids = ids.filter(function (itm, i, a) {
+                    return i == a.indexOf(itm);
+                });
+            } else {
+                this.ids = ids;
+            }
 
             this.is_bulk_resmush = wp_smushit_data.resmush.length > 0 && !skip_resmush ? true : false;
 
