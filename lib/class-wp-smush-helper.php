@@ -41,6 +41,43 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 
 			return $file_path;
 		}
+
+		/**
+		 * Iterate over PNG->JPG Savings to return cummulative savings for an image
+		 *
+		 * @param string $attachment_id
+		 *
+		 * @return array|bool
+		 */
+		function get_pngjpg_savings( $attachment_id = '' ) {
+			//Initialize empty array
+			$savings = array(
+				'bytes'       => 0,
+				'size_before' => 0,
+				'size_after'  => 0
+			);
+
+			//Return empty array if attaachment id not provided
+			if( empty( $attachment_id ) ) {
+				return $savings;
+			}
+
+			$pngjpg_savings = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+			if( empty( $pngjpg_savings ) || !is_array( $pngjpg_savings )) {
+				return $savings;
+			}
+
+			foreach ( $pngjpg_savings as $size => $s_savings ) {
+				if( empty( $s_savings ) ) {
+					continue;
+				}
+				$savings['size_before'] += $s_savings['size_before'];
+				$savings['size_after'] += $s_savings['size_after'];
+			}
+			$savings['bytes'] = $savings['size_before'] - $savings['size_after'];
+
+			return $savings;
+		}
 	}
 
 	global $wpsmush_helper;

@@ -274,7 +274,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$stat  = stat( dirname( $file_path ) );
 				$perms = $stat['mode'] & 0000666; //same permissions as parent folder, strip off the executable bits
 			}
-			@ chmod( $file_path, $perms );
+			@chmod( $file_path, $perms );
 
 			return $response;
 		}
@@ -768,7 +768,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Taken from http://www.php.net/manual/en/function.filesize.php#91477
 		 */
 		function format_bytes( $bytes, $precision = 1 ) {
-			$units = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+			$units = array( 'B', 'KiB', 'MiB', 'GiB', 'TiB' );
 			$bytes = max( $bytes, 0 );
 			$pow   = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
 			$pow   = min( $pow, count( $units ) - 1 );
@@ -1733,10 +1733,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 		/**
 		 * Deletes all the backup files when an attachment is deleted
-		 * Update Resmush List
+		 * Update resmush List
 		 * Update Super Smush image count
 		 *
 		 * @param $image_id
+		 *
 		 */
 		function delete_images( $image_id ) {
 			global $wpsmush_db;
@@ -1759,7 +1760,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			/** Delete Backups  **/
-
 			//Check if we have any smush data for image
 			$this->delete_backup_files( $image_id );
 		}
@@ -1772,7 +1772,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function send_smush_stats() {
 			global $wpsmushit_admin;
 
-			$stats = $wpsmushit_admin->global_stats_from_ids();
+			$stats = $wpsmushit_admin->global_stats();
 
 			return $stats;
 

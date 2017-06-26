@@ -449,6 +449,8 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 		 * @uses WpSmushBackup::add_to_image_backup_sizes()
 		 *
 		 * @return mixed|string
+		 *
+		 * @todo: Save cummulative savings
 		 */
 		function png_to_jpg( $id = '', $meta = '' ) {
 			global $wpsmush_backup;

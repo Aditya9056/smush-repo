@@ -54,7 +54,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$plugin_url     = esc_url( "https://wordpress.org/plugins/amazon-s3-and-cloudfront/" );
 			$settings['s3'] = array(
 				'label' => esc_html__( 'Amazon S3 support', 'wp-smushit' ),
-				'desc'  => sprintf( esc_html__( 'Optimise your images stored on Amazon S3. This feature uses the %sWP Offload S3%s plugin and is needed if the option %sRemove Files From Server%s is enabled. Images will be smushed as per your current settings.', 'wp-smushit' ), "<a href='" . $plugin_url . "' target = '_blank'>", "</a>", "<b>", "</b>" )
+				'desc'  => sprintf( esc_html__( 'Optimize your images stored on Amazon S3. This feature uses the %sWP Offload S3%s plugin and is needed if the option %sRemove Files From Server%s is enabled. Images will be smushed as per your current settings.', 'wp-smushit' ), "<a href='" . $plugin_url . "' target = '_blank'>", "</a>", "<b>", "</b>" )
 			);
 
 			return $settings;
