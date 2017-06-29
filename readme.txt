@@ -134,6 +134,10 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.7.4 =
+
+    * Fixed: Pro user unable to login to WPMU DEV Dashboard plugin when Smush is active
+
 = 2.7.3 =
 
     *Fixed:

@@ -1001,6 +1001,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
 				if ( ! empty( $stats ) && ! empty( $stats['size_before'] ) ) {
+					if ( isset( $stats['id'] ) ) {
+						unset( $stats['id'] );
+					}
+
 					return $stats;
 				}
 			}
@@ -1025,7 +1029,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$supersmushed_count                = 0;
 			$smush_data['total_images']        = 0;
-			$smush_data['smushed_attachments'] = array();
 
 			while ( $query_next ) {
 
@@ -1129,6 +1132,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Super Smushed attachment count
 			$this->super_smushed = $supersmushed_count;
+
+			//Remove ids from stats
+			unset( $smush_data['id'] );
 
 			//Update Cache
 			update_option( 'smush_global_stats', $smush_data, false );
@@ -1748,7 +1754,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$image_count          += $dir_smush_stats['optimised'];
 
 				//Add directory smush stats if not empty
-				if( !empty( $dir_smush_stats ) ) {
+				if ( ! empty( $dir_smush_stats ) && ! empty( $dir_smush_stats['orig_size'] ) ) {
 					$stats['size_before'] += $dir_smush_stats['orig_size'];
 					$stats['size_after']  += $dir_smush_stats['image_size'];
 				}
