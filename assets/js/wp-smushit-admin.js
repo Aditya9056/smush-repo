@@ -138,7 +138,7 @@ jQuery(function ($) {
             this.$status = this.$button.parent().find('.smush-status');
 
             //Added for NextGen support
-            this.smush_type = typeof smush_type ? smush_type : 'media';
+            this.smush_type = 'undefined' != typeof smush_type ? smush_type : 'media';
             this.single_ajax_suffix = 'nextgen' == this.smush_type ? 'smush_manual_nextgen' : 'wp_smushit_manual';
             this.bulk_ajax_suffix = 'nextgen' == this.smush_type ? 'wp_smushit_nextgen_bulk' : 'wp_smushit_bulk';
             this.url = this.is_bulk ? smushAddParams(this.url, {action: this.bulk_ajax_suffix}) : smushAddParams(this.url, {action: this.single_ajax_suffix});
