@@ -349,23 +349,23 @@ if ( class_exists( 'AS3CF_Plugin_Compatibility' ) && ! class_exists( 'wp_smush_s
 
 			//Return if integration is disabled, or not a pro user
 			if ( ! $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 's3', false ) || ! $WpSmush->validate_install() ) {
-				return;
+				return $url;
 			}
 
 			//If we already have the local file at specified path
 			if ( file_exists( $file ) ) {
-				return;
+				return $url;
 			}
 
 			//Download image for Manual and Bulk Smush
 			$action = ! empty( $_GET['action'] ) ? $_GET['action'] : '';
 			if ( empty( $action ) || ! in_array( $action, array( 'wp_smushit_manual', 'wp_smushit_bulk' ) ) ) {
-				return;
+				return $url;
 			}
 
 			//If the plugin compat object is not available, or the method has been updated
 			if ( ! is_object( $as3cf->plugin_compat ) || ! method_exists( $as3cf->plugin_compat, 'copy_image_to_server_on_action' ) ) {
-				return;
+				return $url;
 			}
 
 			$as3cf->plugin_compat->copy_image_to_server_on_action( $action, true, $url, $file, $s3_object );
