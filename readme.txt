@@ -137,6 +137,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 = 2.7.3.1 =
 
     * Fixed: Pro user unable to login to WPMU DEV Dashboard plugin when Smush is active, Error: "Your key is invalid."
+    * Updated: S3 Integration, return URL for any error, 'as3cf_get_attached_file'
 
 = 2.7.3 =
 
