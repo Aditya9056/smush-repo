@@ -1209,6 +1209,7 @@ jQuery(function ($) {
             wp_smushit_data.count_images = parseInt(wp_smushit_data.count_images) + 1;
         }else if( 'nextgen' == type ) {
             wp_smushit_data.count_smushed = parseInt(wp_smushit_data.count_smushed) + 1;
+            wp_smushit_data.count_supersmushed = parseInt(wp_smushit_data.count_supersmushed) + 1;
 
             //Increase smushed image count
             wp_smushit_data.count_images = parseInt(wp_smushit_data.count_images) + parseInt(image_stats.count);
