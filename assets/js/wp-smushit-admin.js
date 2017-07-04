@@ -196,7 +196,7 @@ jQuery(function ($) {
             this.$button.prop("disabled", false);
             //For Bulk process, Enable other buttons
             $('button.wp-smush-all').removeAttr('disabled');
-            $('button.wp-smush-scan').removeAttr('disabled');
+            $('button.wp-smush-scan, button.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings').removeAttr('disabled');
         };
 
         this.show_loader = function () {
@@ -564,7 +564,7 @@ jQuery(function ($) {
         $('.wp-smush-notice.wp-smush-settings-updated').remove();
 
         //Disable Resmush and scan button
-        $('.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button').attr('disabled', 'disabled');
+        $('.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button, button.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings').attr('disabled', 'disabled');
 
         //Check for ids, if there is none (Unsmushed or lossless), don't call smush function
         if (typeof wp_smushit_data == 'undefined' ||
