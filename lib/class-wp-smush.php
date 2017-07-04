@@ -570,9 +570,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function smush_image( $meta, $ID = null ) {
 
 			// Our async task runs when action is upload-attachment and post_id found. So do not run on these conditions.
-			if ( ( ( ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] ) || ( isset( $_POST['post_id'] ) ) )
+			if ( ( ( ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] ) || isset( $_POST['post_id'] ) )
 			     // And, check if Async is enabled.
-			     && ( defined( 'WP_SMUSH_ASYNC' ) && WP_SMUSH_ASYNC )
+			     && defined( 'WP_SMUSH_ASYNC' ) && WP_SMUSH_ASYNC
 			) {
 				return $meta;
 			}
