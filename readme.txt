@@ -1,6 +1,6 @@
 === Smush Image Compression and Optimization ===
 Plugin Name: Smush Image Compression and Optimization
-Version: 2.7.4-beta1
+Version: 2.7.3.1
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
@@ -134,9 +134,10 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.7.4 =
+= 2.7.3.1 =
 
     * Fixed: Pro user unable to login to WPMU DEV Dashboard plugin when Smush is active, Error: "Your key is invalid."
+    * Updated: S3 Integration, return URL for any error, 'as3cf_get_attached_file'
 
 = 2.7.3 =
 

@@ -192,14 +192,18 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				$this->resmush_ids = $resmush_ids;
 			}
 
+			$super_smushed = get_option('wp-smush-super_smushed_nextgen', array() );
+			$super_smushed = !empty( $super_smushed['ids'] ) ? $super_smushed['ids'] : array();
+
 			//Array of all smushed, unsmushed and lossless ids
 			$data = array(
-				'count_smushed' => $this->smushed_count,
-				'count_total'   => $this->total_count,
-				'count_images'  => $this->image_count,
-				'smushed'       => $smushed,
-				'unsmushed'     => $unsmushed,
-				'resmush'       => $this->resmush_ids,
+				'count_smushed'      => $this->smushed_count,
+				'count_supersmushed' => count( $super_smushed ),
+				'count_total'        => $this->total_count,
+				'count_images'       => $this->image_count,
+				'smushed'            => $smushed,
+				'unsmushed'          => $unsmushed,
+				'resmush'            => $this->resmush_ids,
 			);
 
 			//Add the stats to arrray
