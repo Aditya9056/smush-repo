@@ -113,7 +113,13 @@ Smush button transformation
 }
 
 input#wp-smush-save-settings {
+    background: #17A8E3;
+    float: right;
     margin: 10px 0 5px;
+}
+
+input#wp-smush-save-settings:hover {
+    background: #0A9BD6;
 }
 
 .wp-smush-welcome #wp-smush-save-settings {
