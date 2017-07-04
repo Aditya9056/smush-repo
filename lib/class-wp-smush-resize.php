@@ -42,17 +42,20 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 
 		/**
 		 * Get the settings for resizing
+		 *
+		 * @param bool $bypass Should bypass additional checks?
 		 */
-		function initialize() {
+		function initialize( $bypass = false ) {
+
 			//Do not initialize unless in the WP Backend Or On one of the smush pages
-			if ( ! is_user_logged_in() || ! is_admin() ) {
+			if ( ! is_user_logged_in() || ( ! is_admin() && ! $bypass ) ) {
 				return;
 			}
 
 			global $wpsmush_settings, $wpsmushit_admin;
 			$current_screen = get_current_screen();
 
-			if( !empty( $current_screen ) ) {
+			if( ! empty( $current_screen ) && ! $bypass ) {
 				//Do not Proceed if not on one of the required screens
 				$current_page = $current_screen->base;
 				if ( ! in_array( $current_page, $wpsmushit_admin->pages ) ) {
