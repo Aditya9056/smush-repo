@@ -1754,7 +1754,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$image_count          += $dir_smush_stats['optimised'];
 
 				//Add directory smush stats if not empty
-				if ( ! empty( $dir_smush_stats ) && ! empty( $dir_smush_stats['orig_size'] ) ) {
+				if ( ! empty( $dir_smush_stats['image_size'] ) && ! empty( $dir_smush_stats['orig_size'] ) ) {
 					$stats['size_before'] += $dir_smush_stats['orig_size'];
 					$stats['size_after']  += $dir_smush_stats['image_size'];
 				}
