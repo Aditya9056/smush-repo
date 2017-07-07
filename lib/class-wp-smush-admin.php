@@ -1593,9 +1593,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			}
 
+			$image_count = $super_smushed_count = $smushed_count = 0;
 			//Check if any of the smushed image needs to be resmushed
 			if ( ! empty( $attachments ) && is_array( $attachments ) ) {
-				$image_count = $super_smushed_count = $smushed_count = 0;
 				$stats       = array(
 					'size_before'        => 0,
 					'size_after'         => 0,
@@ -1750,11 +1750,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Append the directory smush stats
             $dir_smush_stats = get_option('dir_smush_stats');
 			if ( ! empty( $dir_smush_stats ) && is_array( $dir_smush_stats ) ) {
-				$dir_smush_stats      = $dir_smush_stats['dir_smush'];
-				$image_count          += $dir_smush_stats['optimised'];
+
+				if ( ! empty( $dir_smush_stats['dir_smush'] ) && ! empty( $dir_smush_stats['optimised'] ) ) {
+					$dir_smush_stats = $dir_smush_stats['dir_smush'];
+					$image_count += $dir_smush_stats['optimised'];
+				}
 
 				//Add directory smush stats if not empty
-				if ( ! empty( $dir_smush_stats ) && ! empty( $dir_smush_stats['orig_size'] ) ) {
+				if ( ! empty( $dir_smush_stats['image_size'] ) && ! empty( $dir_smush_stats['orig_size'] ) ) {
 					$stats['size_before'] += $dir_smush_stats['orig_size'];
 					$stats['size_after']  += $dir_smush_stats['image_size'];
 				}
