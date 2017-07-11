@@ -215,6 +215,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			* Allows to output Directory Smush stats
             */
 			do_action('stats_ui_after_resize_savings');
+			/**
+			 * Allows you to output any content within the stats box at the end
+			 */
+			do_action( 'wp_smush_after_stats' );
+			echo "</div>";
 			//Pro Savings Expected: For free Version
 			if ( ! $WpSmush->validate_install() ) {
 			    //Initialize pro savings if not set already
@@ -233,12 +238,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					),
 					$wpsmushit_admin->upgrade_url
 				);
-				$pro_only = sprintf( esc_html__( '%sTRY PRO FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' ); ?>
+				$pro_only = sprintf( esc_html__( '%sPRO FEATURE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" tooltip="'. esc_html__( "Join WPMU DEV to try Smush Pro for free.", "wp-smushit" ) .'">', '</a>' ); ?>
 				<!-- Make a hidden div if not stats found -->
-				<div id="smush-avg-pro-savings" <?php echo $show_pro_savings ? '' : 'style="display: none;"'; ?>>
-					<hr />
-					<div class="row smush-avg-pro-savings" tooltip="<?php esc_html_e("BASED ON AVERAGE SAVINGS IF YOU UPGRADE TO PRO", "wp-smushit"); ?>">
-						<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PRO SAVINGS ESTIMATE", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
+				<div class="row" id="smush-avg-pro-savings" <?php echo $show_pro_savings ? '' : 'style="display: none;"'; ?>>
+					<div class="row smush-avg-pro-savings">
+						<span class="float-l wp-smush-stats-label"><strong tooltip="<?php esc_html_e("BASED ON AVERAGE SAVINGS IF YOU UPGRADE TO PRO", "wp-smushit"); ?>"><?php esc_html_e( "PRO SAVINGS ESTIMATE", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
 						<span class="float-r wp-smush-stats">
 							<span class="wp-smush-stats-human">
 								<?php echo $show_pro_savings ? $pro_savings['savings']: '0.0 B'; ?>
@@ -249,11 +253,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</div>
 				</div><?php
 			}
-			/**
-			 * Allows you to output any content within the stats box at the end
-			 */
-			do_action( 'wp_smush_after_stats' );
-			echo "</div></section>";
+			echo "</section>";
 		}
 
 		/**
@@ -282,7 +282,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					),
 					$wpsmushit_admin->upgrade_url
 				);
-				$pro_only = sprintf( esc_html__( '%sTRY PRO FEATURES FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank">', '</a>' );
+				$pro_only = sprintf( esc_html__( '%sPRO FEATURE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" tooltip="'. esc_html__( "Join WPMU DEV to try Smush Pro for free.", "wp-smushit" ) .'">', '</a>' );
 
 				$this->container_header( 'wp-smush-premium', 'wp-smush-pro-settings-box', esc_html__( "ADVANCED SETTINGS", "wp-smushit" ), $pro_only, false ); ?>
 				<div class="box-content"><?php
