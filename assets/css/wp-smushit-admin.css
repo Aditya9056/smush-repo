@@ -921,11 +921,20 @@ div.wp-smush-dir-limit .wdv-icon-info-sign:before {
 }
 
 .wpmud .bulk-smush-wrapper .wp-smush-remaining button.wp-smush-skip-resmush:not(.wph-button):not(#collapse-button) {
+    background-color: transparent;
+    border: solid 2px #AEAEAE;
+    color: #AEAEAE;
     display: block !important;
     font-size: 12px;
+    font-weight: 600;
     margin-left: 27px !important;
     margin-top: 10px !important;
     padding: 5px 16px;
+}
+.wpmud .bulk-smush-wrapper .wp-smush-remaining button.wp-smush-skip-resmush:not(.wph-button):not(#collapse-button):not([tooltip]):hover {
+    background-color: transparent !important;
+    border: solid 2px #9e9e9e;
+    color: #9e9e9e;
 }
 
 .wp-smush-pro-trial {
