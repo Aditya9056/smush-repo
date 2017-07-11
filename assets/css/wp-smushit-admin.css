@@ -285,10 +285,9 @@ input#wp-smush-save-settings:hover {
 }
 
 div#smush-avg-pro-savings {
-    background: #f2f2f2;
+    background: rgba(242, 242, 242, 0.5);;
     border-top: 1px solid #ddd;
     margin-top: 12px;
-    opacity: 0.5;
     padding: 14px 28px 12px 30px;
 }
 
@@ -299,6 +298,9 @@ div#smush-avg-pro-savings:before, div#smush-avg-pro-savings:after {
 div.row.smush-avg-pro-savings {
     padding-bottom: 8px;
     padding-top: 19px;
+}
+div.row.smush-avg-pro-savings span.wp-smush-stats-label strong, div.row.smush-avg-pro-savings span.wp-smush-stats {
+    opacity: 0.5;
 }
 
 .wpmud .wp-smushit-container-right .smush-stats-wrapper .wp-smush-container-header {
