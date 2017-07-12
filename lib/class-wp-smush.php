@@ -139,9 +139,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Handle the Async optimisation
 			add_action( 'wp_async_wp_save_image_editor_file', array( $this, 'wp_smush_handle_editor_async' ), '', 2 );
 
-			// Handle other file uploads optimisation
-			add_action( 'add_attachment', array( $this, 'wp_smush_handle_other_uploads' ) );
-
 		}
 
 		/**
@@ -572,8 +569,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function smush_image( $meta, $ID = null ) {
 
-			//Check if Async is Enabled, Do not run
-			if ( defined( 'WP_SMUSH_ASYNC' ) && WP_SMUSH_ASYNC ) {
+			// Our async task runs when action is upload-attachment and post_id found. So do not run on these conditions.
+			if ( ( ( ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] ) || isset( $_POST['post_id'] ) )
+			     // And, check if Async is enabled.
+			     && defined( 'WP_SMUSH_ASYNC' ) && WP_SMUSH_ASYNC
+			) {
 				return $meta;
 			}
 
@@ -605,6 +605,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			set_transient( 'smush-in-progress-' . $ID, true, WP_SMUSH_TIMEOUT );
 
 			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_settings;
+
+			// While uploading from Mobile App or other sources, admin_init action may not fire.
+			// So we need to manually initialize those.
+			$this->initialise();
+			$wpsmush_resize->initialize( true );
 
 			//Check if auto is enabled
 			$auto_smush = $this->is_auto_smush_enabled();
@@ -2262,31 +2267,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Update Stats
 			update_post_meta( $post_data['postid'], $this->smushed_meta_key, $smush_stats );
-		}
-
-		/**
-		 * Support uploads/import through other methods.
-		 *
-		 * Handle image optimization for other upload sources, using
-		 * WP upload functions. For eg: WP RSS Aggregator importing images.
-		 * Note: This is not an async task.
-		 *
-		 * @param $id Attchment ID.
-		 */
-		function wp_smush_handle_other_uploads( $id ) {
-
-			// Our async task runs when action is upload-attachment and post_id found. So do not run on these conditions.
-			if ( empty( $id ) || ( ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] ) || ( ! empty( $_POST ) && isset( $_POST['post_id'] ) ) ) {
-				return;
-			}
-
-			// Do not continue if attachment is not an image.
-			if ( ! wp_attachment_is_image( $id ) ) {
-				return;
-			}
-
-			// Run additional checks then smush.
-			$this->wp_smush_handle_async( $id );
 		}
 	}
 
