@@ -355,7 +355,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			}
 
 			//Unlink directly if meta value is not specified
-			if ( empty( $meta ) || empty( $meta['sizes'] ) ) {
+			if ( empty( $meta['sizes'] ) ) {
 				@unlink( $path );
 			}
 
@@ -363,11 +363,13 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			//Check if the file name is similar to one of the image sizes
 			$path_parts = pathinfo( $path );
 			$filename   = ! empty( $path_parts['basename'] ) ? $path_parts['basename'] : $path_parts['filename'];
-			foreach ( $meta['sizes'] as $image_size ) {
-				if ( false === strpos( $image_size['file'], $filename ) ) {
-					continue;
+			if ( ! empty( $meta['sizes'] ) ) {
+				foreach ( $meta['sizes'] as $image_size ) {
+					if ( false === strpos( $image_size['file'], $filename ) ) {
+						continue;
+					}
+					$unlink = false;
 				}
-				$unlink = false;
 			}
 			if ( $unlink ) {
 				@unlink( $path );
