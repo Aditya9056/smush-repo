@@ -134,6 +134,13 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.7.4 =
+
+    * Update: Minor UI changes
+    * Fixed: Images not being resized when image is uploaded via Mobile App
+    * Fixed: Notices and Warnings
+    * Fixed: S3 offload Integration - Original Image not being deleted in some cases
+
 = 2.7.3.1 =
 
     * Fixed: Pro user unable to login to WPMU DEV Dashboard plugin when Smush is active, Error: "Your key is invalid."

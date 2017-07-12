@@ -652,7 +652,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					if ( $should_resize = apply_filters( 'wp_smush_resize_media_image', true, $attachment_id ) ) {
 						$updated_meta  = $this->resize_image( $attachment_id, $original_meta );
 						$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
-						wp_update_attachment_metadata( $attachment_id, $original_meta );
 					}
 
 					global $wpsmush_pngjpg;
@@ -661,6 +660,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$original_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
 
 					$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
+					wp_update_attachment_metadata( $attachment_id, $original_meta );
 				}
 
 				//Delete Transient
