@@ -43,19 +43,19 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		/**
 		 * Get the settings for resizing
 		 *
-		 * @param bool $bypass Should bypass additional checks?
+		 * @param bool $skip_check Added for Mobile APP uploads
 		 */
-		function initialize( $bypass = false ) {
+		function initialize( $skip_check = false ) {
 
 			//Do not initialize unless in the WP Backend Or On one of the smush pages
-			if ( ! is_user_logged_in() || ( ! is_admin() && ! $bypass ) ) {
+			if ( ! is_user_logged_in() || ( ! is_admin() && ! $skip_check ) ) {
 				return;
 			}
 
 			global $wpsmush_settings, $wpsmushit_admin;
 			$current_screen = get_current_screen();
 
-			if( ! empty( $current_screen ) && ! $bypass ) {
+			if ( ! empty( $current_screen ) && ! $skip_check ) {
 				//Do not Proceed if not on one of the required screens
 				$current_page = $current_screen->base;
 				if ( ! in_array( $current_page, $wpsmushit_admin->pages ) ) {
