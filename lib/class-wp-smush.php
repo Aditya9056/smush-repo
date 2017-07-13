@@ -797,7 +797,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed|string
 		 */
 		function validate_install() {
-			
+
 			if ( isset( $this->is_pro ) ) {
 				return $this->is_pro;
 			}
