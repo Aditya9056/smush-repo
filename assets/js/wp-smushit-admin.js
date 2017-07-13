@@ -1308,7 +1308,7 @@ jQuery(function ($) {
                 var pro_savings_percent = smush_pro_savings.find('.wp-smush-stats-percent');
                 var pro_savings_bytes = smush_pro_savings.find('.wp-smush-stats-human');
                 if (pro_savings_percent.length > 0 && 'undefined' != typeof (wp_smushit_data.pro_savings.percent) && wp_smushit_data.pro_savings.percent != '') {
-                    pro_savings_percent.html(_res.data.stats.pro_savings.percent);
+                    pro_savings_percent.html(wp_smushit_data.pro_savings.percent);
                 }
                 if (pro_savings_bytes.length > 0 && 'undefined' != typeof (wp_smushit_data.pro_savings.savings_bytes) && wp_smushit_data.pro_savings.savings_bytes != '') {
                     pro_savings_bytes.html(wp_smushit_data.pro_savings.savings_bytes);
