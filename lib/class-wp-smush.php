@@ -797,7 +797,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return mixed|string
 		 */
 		function validate_install() {
-
+			
 			if ( isset( $this->is_pro ) ) {
 				return $this->is_pro;
 			}
@@ -1501,7 +1501,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$opt_nextgen_val = $wpsmush_settings->get_setting( $opt_nextgen, false );
 
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
-			if ( ! $opt_nextgen_val ) {
+			// Do not continue if integration not enabled or not a pro user.
+			if ( ! $opt_nextgen_val || ! $this->validate_install() ) {
 				return;
 			}
 			require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-admin.php' );
