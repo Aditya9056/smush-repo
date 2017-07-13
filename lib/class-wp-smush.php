@@ -945,6 +945,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return string|void
 		 */
 		function set_status( $id, $echo = true, $text_only = false, $wrapper = true ) {
+			global $wpsmush_s3_compat;
 			$status_txt  = $button_txt = $stats = '';
 			$show_button = $show_resmush = false;
 
@@ -956,6 +957,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$combined_stats = $this->combine_conversion_stats( $combined_stats, $conversion_savings );
 
+			//Remove Smush s3 hook, as it downloads the file again
+			remove_filter('as3cf_get_attached_file', array( $wpsmush_s3_compat, 'smush_download_file'), 11, 4 );
 			$attachment_data = wp_get_attachment_metadata( $id );
 
 			// if the image is smushed
