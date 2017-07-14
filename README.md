@@ -12,9 +12,15 @@ So it's important that, you don't merge pro branch to master, although you can p
 
 ** Release Process **
 
+
+Maintain two separate projects on local, wp-smushit and wp-smush-pro. wp-smushit contains master and dev branch, wp-smush-pro is cloned only from pro branch.
+
+
 Develop on dev branch, make whatever changes you want, if it's going to be a pro only feature, make sure you include proper check in code, as the codebase is same for free and pro version.
 
-After you're done with the final changes and ready to release, push the code to dev branch, checkout to pro branch in your local and pull the dev and merge the code. Ideally there shouldn't be any conflict at all.
+After you're done with the final changes and ready to release, push the code to dev branch.
+
+For free version, merge it in Master, For pro version, go to folder wp-smush-pro, pull code from dev branch. Resolve any conflicts, for pot file and readme, accept the pro branch code.
 
 Push the code to pro branch. 
 
