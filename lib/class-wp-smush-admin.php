@@ -427,9 +427,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Localize smushit_ids variable, if there are fix number of ids
 				$this->unsmushed_attachments = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : array();
 
-				if( empty( $this->unsmushed_attachments ) ) {
+				if ( empty( $this->unsmushed_attachments ) ) {
 					//Get attachments if all the images are not smushed
 					$this->unsmushed_attachments = $this->remaining_count > 0 ? $wpsmush_db->get_unsmushed_attachments() : array();
+					$this->unsmushed_attachments = ! empty( $this->unsmushed_attachments ) && is_array( $this->unsmushed_attachments ) ? array_values( $this->unsmushed_attachments ) : $this->unsmushed_attachments;
 				}
 
 				//Array of all smushed, unsmushed and lossless ids
