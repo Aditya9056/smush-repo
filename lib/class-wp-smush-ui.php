@@ -242,7 +242,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<!-- Make a hidden div if not stats found -->
 				<div class="row" id="smush-avg-pro-savings" <?php echo $show_pro_savings ? '' : 'style="display: none;"'; ?>>
 					<div class="row smush-avg-pro-savings">
-						<span class="float-l wp-smush-stats-label"><strong tooltip="<?php esc_html_e("BASED ON AVERAGE SAVINGS IF YOU UPGRADE TO PRO", "wp-smushit"); ?>"><?php esc_html_e( "PRO SAVINGS ESTIMATE", "wp-smushit" ); ?></strong><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
+						<span class="float-l wp-smush-stats-label"><span tooltip="<?php esc_html_e("BASED ON AVERAGE SAVINGS IF YOU UPGRADE TO PRO", "wp-smushit"); ?>"><strong><?php esc_html_e( "PRO SAVINGS ESTIMATE", "wp-smushit" ); ?></strong></span><span class="wp-smush-stats-try-pro roboto-regular"><?php echo $pro_only; ?></span></span>
 						<span class="float-r wp-smush-stats">
 							<span class="wp-smush-stats-human">
 								<?php echo $show_pro_savings ? $pro_savings['savings']: '0.0 B'; ?>
