@@ -28,7 +28,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			//Filters the setting variable to add S3 setting in premium features
 			add_filter( 'wp_smush_pro_settings', array( $this, 'add_setting' ), 6 );
 
-			// S3 configuration notice.
+			// S3 support notice.
 			add_action( 'admin_notices', array( $this, 's3_support_required_notice' ) );
 			add_action( 'network_admin_notices', array( $this, 's3_support_required_notice' ) );
 
