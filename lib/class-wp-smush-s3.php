@@ -156,6 +156,11 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return true;
 			}
 
+			// If already dismissed, do not show.
+			if ( 1 == get_site_option( 'wp-smush-hide_s3support_alert' ) ) {
+				return true;
+			}
+
 			// Return early, if support is not required.
 			if ( ! $this->s3_support_required() ) {
 				return true;
@@ -169,12 +174,14 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				$message = sprintf( __( 'You have enabled "<i><strong>Remove Files From Server</strong></i>" option in <strong>WP S3 Offload</strong> plugin. Please enable <strong>Amazon S3 support</strong> in <a href="%s">Smush settings</a> to optimise S3 images.', 'wp-smushit' ), $settings_link );
 			} else {
 				// If not a premium user.
-				$message = sprintf( __( 'You have enabled "<i><strong>Remove Files From Server</strong></i>" option in <strong>WP S3 Offload</strong> plugin. You need <strong>WP Smush Pro</strong> to enable Amazon S3 support and optimse S3 images.', 'wp-smushit' ), $settings_link );
+				$message = sprintf( __( 'You have enabled "<i><strong>Remove Files From Server</strong></i>" option in <strong>WP S3 Offload</strong> plugin. You need <a href="%s"><strong>WP Smush Pro</strong></a> to enable Amazon S3 support and optimse S3 images.', 'wp-smushit' ), esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro' ) );
 			}
 
-			echo '<div class="notice notice-error">';
+			echo '<div class="notice notice-error is-dismissible wp-smush-s3support-alert">';
 			echo '<p>' . $message . '</p>';
 			echo '</div>';
+
+			wp_enqueue_script( 'wp-smushit-notice-js', '', array(), '', true );
 		}
 
 		/**

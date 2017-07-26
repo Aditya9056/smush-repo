@@ -40,14 +40,20 @@ jQuery(function () {
     //Store the preference in db
     jQuery('.wp-smush-update-info').on('click', '.notice-dismiss', function (e) {
         e.preventDefault();
-        var $el = jQuery(this);
-        $el.fadeTo( 100, 0, function() {
-            $el.slideUp( 100, function() {
-                $el.remove();
-            });
-        });
+        el_notice = jQuery(this);
+        remove_notice();
         var param = {
             action: 'dismiss_update_info'
+        };
+        jQuery.post(ajaxurl, param);
+    });
+
+    // Dismiss S3 support alert.
+    jQuery('.wp-smush-s3support-alert').on('click', '.notice-dismiss', function (e) {
+        el_notice = jQuery(this);
+        remove_notice();
+        var param = {
+            action: 'dismiss_s3support_alert'
         };
         jQuery.post(ajaxurl, param);
     });

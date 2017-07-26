@@ -39,6 +39,11 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 				}
 			}
 
+			// Delete S3 alert flag, if S3 option is disabled again.
+			if ( ! isset( $_POST['wp-smush-s3'] ) && $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 's3' ) ) {
+				delete_site_option( 'wp-smush-hide_s3support_alert' );
+			}
+
 			// process each setting and update options
 			foreach ( $wpsmushit_admin->settings as $name => $text ) {
 
