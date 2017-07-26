@@ -145,7 +145,8 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			global $wpsmushit_admin;
 
 			// Do not display it for other users.
-			if ( ! is_super_admin() || ! current_user_can( 'manage_options' ) ) {
+			// Do not display on network screens, if networkwide option is disabled.
+			if ( ! current_user_can( 'manage_options' ) || ( is_network_admin() && ! get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ) ) {
 				return true;
 			}
 
@@ -161,7 +162,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 
 			// Settings link.
-			$settings_link = is_multisite() ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
+			$settings_link = is_multisite() && get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
 
 			if ( $wpsmushit_admin->validate_install() ) {
 				// If premium user, but S3 support is not enabled.
