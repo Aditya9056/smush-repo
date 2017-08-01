@@ -186,6 +186,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle the smush pro dismiss features notice ajax
 			add_action( 'wp_ajax_dismiss_update_info', array( $this, 'dismiss_update_info' ) );
 
+			// Handle ajax request to dismiss the s3 warning.
+			add_action( 'wp_ajax_dismiss_s3support_alert', array( $this, 'dismiss_s3support_alert' ) );
+
 			//Update the Super Smush count, after the smushing
 			add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
 
@@ -1459,6 +1462,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				update_site_option( 'wp-smush-hide_update_info', 1 );
 			}
 
+		}
+
+		/**
+		 * Hide S3 support alert by setting a flag.
+		 */
+		function dismiss_s3support_alert() {
+
+			// Just set a flag.
+			update_site_option( 'wp-smush-hide_s3support_alert', 1 );
 		}
 
 		/**

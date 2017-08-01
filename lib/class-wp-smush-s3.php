@@ -28,6 +28,10 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			//Filters the setting variable to add S3 setting in premium features
 			add_filter( 'wp_smush_pro_settings', array( $this, 'add_setting' ), 6 );
 
+			// S3 support notice.
+			add_action( 'admin_notices', array( $this, 's3_support_required_notice' ) );
+			add_action( 'network_admin_notices', array( $this, 's3_support_required_notice' ) );
+
 			//return if not a pro user
 			if ( ! $WpSmush->validate_install() ) {
 				return;
@@ -126,6 +130,76 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return null;
 			}
 			echo "<div class='wp-smush-notice smush-s3-setup-error'><i class='dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign'></i><p>$this->setup_error</p></div>";
+		}
+
+		/**
+		 * Error message to show when S3 support is required.
+		 *
+		 * Show a error message to admins, if they need to enable S3 support. If "remove files from
+		 * server" option is enabled in WP S3 Offload plugin, we need WP Smush Pro to enable S3 support.
+		 *
+		 * @return mixed
+		 */
+		function s3_support_required_notice() {
+
+			global $wpsmushit_admin;
+
+			// Do not display it for other users.
+			// Do not display on network screens, if networkwide option is disabled.
+			if ( ! current_user_can( 'manage_options' ) || ( is_network_admin() && ! get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ) ) {
+				return true;
+			}
+
+			// Do not display the notice on Bulk Smush Screen.
+			global $current_screen;
+			if ( ! empty( $current_screen->base ) && ( 'media_page_wp-smush-bulk' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base || 'settings_page_wp-smush-network' == $current_screen->base ) ) {
+				return true;
+			}
+
+			// If already dismissed, do not show.
+			if ( 1 == get_site_option( 'wp-smush-hide_s3support_alert' ) ) {
+				return true;
+			}
+
+			// Return early, if support is not required.
+			if ( ! $this->s3_support_required() ) {
+				return true;
+			}
+
+			// Settings link.
+			$settings_link = is_multisite() && get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
+
+			if ( $wpsmushit_admin->validate_install() ) {
+				// If premium user, but S3 support is not enabled.
+				$message = sprintf( __( 'You have enabled "<i><strong>Remove Files From Server</strong></i>" option in <strong>WP S3 Offload</strong> plugin. Please enable <strong>Amazon S3 support</strong> in <a href="%s">Smush settings</a> to optimise S3 images.', 'wp-smushit' ), $settings_link );
+			} else {
+				// If not a premium user.
+				$message = sprintf( __( 'You have enabled "<i><strong>Remove Files From Server</strong></i>" option in <strong>WP S3 Offload</strong> plugin. You need <a href="%s"><strong>WP Smush Pro</strong></a> to enable Amazon S3 support and optimse S3 images.', 'wp-smushit' ), esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro' ) );
+			}
+
+			echo '<div class="notice notice-error is-dismissible wp-smush-s3support-alert">';
+			echo '<p>' . $message . '</p>';
+			echo '</div>';
+
+			wp_enqueue_script( 'wp-smushit-notice-js', '', array(), '', true );
+		}
+
+		/**
+		 * Check if S3 support is required for Smush.
+		 *
+		 * @return bool
+		 */
+		function s3_support_required() {
+
+			global $wpsmush_settings, $wpsmushit_admin, $as3cf;
+
+			// Check if S3 offload plugin is active and delete file from server option is enabled.
+			if ( ! is_object( $as3cf ) || ! method_exists( $as3cf, 'get_setting' ) || ! $as3cf->get_setting( 'remove-local-file' ) ) {
+				return false;
+			}
+
+			// If not Pro user or S3 support is disabled.
+			return ( ! $wpsmushit_admin->validate_install() || ! $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 's3' ) );
 		}
 
 		/**
