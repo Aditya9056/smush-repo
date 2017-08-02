@@ -152,7 +152,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			// Do not display the notice on Bulk Smush Screen.
 			global $current_screen;
-			if ( ! empty( $current_screen->base ) && ( 'media_page_wp-smush-bulk' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base || 'settings_page_wp-smush-network' == $current_screen->base ) ) {
+			if ( ! empty( $current_screen->base ) && 'media_page_wp-smush-bulk' != $current_screen->base && 'gallery_page_wp-smush-nextgen-bulk' != $current_screen->base && 'settings_page_wp-smush-network' != $current_screen->base ) {
 				return true;
 			}
 
@@ -171,17 +171,15 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			if ( $wpsmushit_admin->validate_install() ) {
 				// If premium user, but S3 support is not enabled.
-				$message = sprintf( __( 'You have enabled "<i><strong>Remove Files From Server</strong></i>" option in <strong>WP S3 Offload</strong> plugin. Please enable <strong>Amazon S3 support</strong> in <a href="%s">Smush settings</a> to optimise S3 images.', 'wp-smushit' ), $settings_link );
+				$message = sprintf( __( "We can see you have WP S3 Offload installed with the <strong>Remove Files From Server</strong> option activated. If you want to optimize your S3 images you'll need to enable the <a href='%s'><strong>Amazon S3 Support</strong></a> feature in Smush's settings.", 'wp-smushit' ), $settings_link );
 			} else {
 				// If not a premium user.
-				$message = sprintf( __( 'You have enabled "<i><strong>Remove Files From Server</strong></i>" option in <strong>WP S3 Offload</strong> plugin. You need <a href="%s"><strong>WP Smush Pro</strong></a> to enable Amazon S3 support and optimse S3 images.', 'wp-smushit' ), esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro' ) );
+				$message = sprintf( __( "We can see you have WP S3 Offload installed with the <strong>Remove Files From Server</strong> option activated. If you want to optimize your S3 images you'll need to <a href='%s'><strong>upgrade to Smush Pro</strong></a>", 'wp-smushit' ), esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro' ) );
 			}
 
-			echo '<div class="notice notice-error is-dismissible wp-smush-s3support-alert">';
+			echo '<div class="wp-smush-notice wp-smush-s3support-alert">';
 			echo '<p>' . $message . '</p>';
 			echo '</div>';
-
-			wp_enqueue_script( 'wp-smushit-notice-js', '', array(), '', true );
 		}
 
 		/**

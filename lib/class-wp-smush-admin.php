@@ -2223,16 +2223,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function media_library_membership_notice() {
 
 			//No need to print it for free version
-			if( !$this->validate_install() ) {
-				return;
-			}
-			//Show it on Media Library page only
-			$screen = get_current_screen();
-			$screen_id = !empty( $screen ) ? $screen->id : '';
-			//Do not show notice anywhere else
-			if( empty( $screen ) || 'upload' != $screen_id ) {
-				return;
-			}
+//			if( !$this->validate_install() ) {
+//				return;
+//			}
+//			//Show it on Media Library page only
+//			$screen = get_current_screen();
+//			$screen_id = !empty( $screen ) ? $screen->id : '';
+//			//Do not show notice anywhere else
+//			if( empty( $screen ) || 'upload' != $screen_id ) {
+//				return;
+//			}
 
 			echo $this->bulk_ui->get_user_validation_message( $notice = true );
 		}
