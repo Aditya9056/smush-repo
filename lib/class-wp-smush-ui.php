@@ -810,7 +810,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Prints out the page header for Bulk Smush Page
 		 */
 		function smush_page_header() {
-			global $WpSmush, $wpsmushit_admin;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_s3;
+
 			//Include Shared UI
 			require_once WP_SMUSH_DIR . 'assets/shared-ui/plugin-ui.php';
 
@@ -841,6 +842,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				'</section>';
 			//Check if settings were updated and shoe a notice
 			$this->settings_updated();
+
+			//Show S3 integration message, if user hasn't enabled it
+			if( is_object( $wpsmush_s3 ) && method_exists( $wpsmush_s3, 's3_support_required_notice') ) {
+			    $wpsmush_s3->s3_support_required_notice();
+			}
 
 			echo '<div class="row wp-smushit-container-wrap">';
 		}

@@ -54,7 +54,7 @@ jQuery(function () {
     });
 
     // Dismiss S3 support alert.
-    jQuery('.wp-smush-s3support-alert').on('click', '.notice-dismiss', function (e) {
+    jQuery('div.wp-smush-s3support-alert').on('click', '.dev-icon-cross', function (e) {
         el_notice = jQuery(this);
         remove_notice();
         send_dismiss_request( 'dismiss_s3support_alert' );

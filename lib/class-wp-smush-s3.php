@@ -28,10 +28,6 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			//Filters the setting variable to add S3 setting in premium features
 			add_filter( 'wp_smush_pro_settings', array( $this, 'add_setting' ), 6 );
 
-			// S3 support notice.
-			add_action( 'admin_notices', array( $this, 's3_support_required_notice' ) );
-			add_action( 'network_admin_notices', array( $this, 's3_support_required_notice' ) );
-
 			//return if not a pro user
 			if ( ! $WpSmush->validate_install() ) {
 				return;
@@ -166,6 +162,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return true;
 			}
 
+			wp_enqueue_script( 'wp-smushit-notice-js' );
 			// Settings link.
 			$settings_link = is_multisite() && get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
 
@@ -177,9 +174,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				$message = sprintf( __( "We can see you have WP S3 Offload installed with the <strong>Remove Files From Server</strong> option activated. If you want to optimize your S3 images you'll need to <a href='%s'><strong>upgrade to Smush Pro</strong></a>", 'wp-smushit' ), esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro' ) );
 			}
 
-			echo '<div class="wp-smush-notice wp-smush-s3support-alert">';
-			echo '<p>' . $message . '</p>';
-			echo '</div>';
+			echo '<div class="wp-smush-notice wp-smush-s3support-alert notice"><span class="notice-message">' . $message . '</span><i class="dev-icon dev-icon-cross"></i></div>';
 		}
 
 		/**

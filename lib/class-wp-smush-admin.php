@@ -1471,6 +1471,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Just set a flag.
 			update_site_option( 'wp-smush-hide_s3support_alert', 1 );
+
+			wp_send_json_success();
 		}
 
 		/**

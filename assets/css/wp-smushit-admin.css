@@ -851,13 +851,30 @@ div.wp-smush-remaining,
 #wp-smush-invalid-member,
 div.wp-smush-dir-remaining,
 div.wp-smush-dir-limit,
-div.smush-s3-setup-error {
+div.smush-s3-setup-error,
+div.wp-smush-s3support-alert {
     background-color: #FFF5D5;
     border: none;
     color: #333333;
     line-height: 30px;
     font-size: 15px;
     letter-spacing: -0.015em;
+}
+
+div.wp-smush-s3support-alert {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+div.wp-smush-s3support-alert span.notice-message {
+    display: inline-block;
+    max-width: 96%;
+}
+
+div.wp-smush-s3support-alert .dev-icon-cross {
+    cursor: pointer;
+    float: right;
+    line-height: 2;
 }
 
 div.smush-s3-setup-error a {
