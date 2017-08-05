@@ -130,6 +130,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			'media_page_wp-smush-all'
 		);
 
+		public $basic_features = array(
+			'networkwide',
+			'auto',
+			'keep_exif',
+			'resize',
+		);
+
 		/**
 		 * Constructor
 		 */
@@ -216,14 +223,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'label' => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
 					'desc'  => esc_html__( 'When you upload images to the media library, we’ll automatically optimize them.', 'wp-smushit' )
 				),
-				'keep_exif'   => array(
-					'label' => esc_html__( 'Preserve image EXIF data', 'wp-smushit' ),
-					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
-				),
-				'resize'      => array(
-					'label' => esc_html__( 'Resize original images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Save a ton of space by not storing over-sized images on your server. Set image maximum width and height and large images will be automatically scaled before being added to the media library.', 'wp-smushit' )
-				),
 				'lossy'       => array(
 					'label' => esc_html__( 'Super-smush my images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
@@ -231,6 +230,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'original'    => array(
 					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
 					'desc'  => esc_html__( 'WordPress crops and resizes every image you upload for embedding on your site. By default, Smush only compresses these cropped and resized images, not your original full-size images. To save space on your server, activate this setting to smush your original images, too. Note: This doesn’t usually improve page speed.', 'wp-smushit' )
+				),
+				'keep_exif'   => array(
+					'label' => esc_html__( 'Preserve image EXIF data', 'wp-smushit' ),
+					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
+				),
+				'resize'      => array(
+					'label' => esc_html__( 'Resize original images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Save a ton of space by not storing over-sized images on your server. Set image maximum width and height and large images will be automatically scaled before being added to the media library.', 'wp-smushit' )
 				),
 				'backup'      => array(
 					'label' => esc_html__( 'Make a copy of my original images', 'wp-smushit' ),
@@ -244,7 +251,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/**
 			 * Allow to add other settings via filtering the variable
-             *
+			 *
+			 * Like Nextgen and S3 integration
+			 *
 			 */
 			$this->settings = apply_filters('wp_smush_settings', $this->settings );
 
@@ -317,6 +326,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'jquery'
 			), WP_SMUSH_VERSION );
 
+			//UI JS
+			wp_register_script( 'wp-smushit-ui-js', WP_SMUSH_URL . 'assets/js/ui.js', array(
+				'jquery'
+			), WP_SMUSH_VERSION );
+
 			/* Register Style */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), WP_SMUSH_VERSION );
 			//Notice CSS
@@ -356,13 +370,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					return;
 				}
 			}
-
+			$this->load_shared_ui( $current_page );
 			wp_enqueue_script( 'wp-smushit-admin-js' );
+			wp_enqueue_script( 'wp-smushit-ui-js' );
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
-
-			$this->load_shared_ui( $current_page );
 
 			//Enqueue Google Fonts for Tooltip On Media Pages, These are loaded by shared UI, but we
 			// aren't loading shared UI on media library pages
@@ -411,6 +424,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
+				'quick_setup_title'    => __( "QUICK SETUP", "wp-smushit" ) . '<form method="post" class="skip-setup float-r"><input type="hidden" name="action" value="skipSetup"/>' . wp_nonce_field( 'skipSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( "Skip", "wp-smushit" ) . '</button></form>',
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );

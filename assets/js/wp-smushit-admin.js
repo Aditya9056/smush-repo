@@ -1668,6 +1668,7 @@ jQuery(function ($) {
     });
 
     //Dismiss Welcome notice
+    //@todo: Use it for popup
     $('#wp-smush-welcome-box .smush-dismiss-welcome').on('click', function (e) {
         e.preventDefault();
         var $el = $(this).parents().eq(1);
