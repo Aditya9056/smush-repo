@@ -949,7 +949,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt  = $button_txt = $stats = '';
 			$show_button = $show_resmush = false;
 
-			// If variables are not initialized properly, initialize.
+			// If variables are not initialized properly, initialize it.
 			if ( ! has_action( 'admin_init', array( $this, 'admin_init' ) ) ) {
 				$this->initialise();
 			}
