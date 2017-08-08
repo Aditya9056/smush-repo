@@ -949,6 +949,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt  = $button_txt = $stats = '';
 			$show_button = $show_resmush = false;
 
+			// If variables are not initialized properly, initialize.
+			if ( ! has_action( 'admin_init', array( $this, 'admin_init' ) ) ) {
+				$this->initialise();
+			}
+
 			$wp_smush_data      = get_post_meta( $id, $this->smushed_meta_key, true );
 			$wp_resize_savings  = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
 			$conversion_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
