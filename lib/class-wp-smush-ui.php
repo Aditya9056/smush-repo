@@ -60,52 +60,61 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			//Header Of the Box ?>
 			<dialog id="smush-quick-setup" title="<?php esc_html_e( "QUICK SETUP", "wp-smushit" ); ?>" class="small">
-			    <p class="wp-smush-welcome-message end"><?php esc_html_e( 'Welcome to Smush - Winner of Torque Plugin Madness 2017! Let\'s quickly set up the basics for you, then you can fine tweak each setting as you go - our recommendations are on by default.', "wp-smushit" ); ?></p>
-			    <form method="post"><?php
-			    $exclude = array(
-			            'backup',
-			            'png_to_jpg',
-			            'nextgen',
-			            's3'
-			    );
-			    //Settings for free and pro version
-			    foreach( $wpsmushit_admin->settings as $name => $values ) {
-			        //Skip networkwide settings, we already printed it
-			        if( 'networkwide' == $name ) {
-			            continue;
-			        }
-			        //Skip premium features if not a member
-			        if( !in_array( $name, $wpsmushit_admin->basic_features ) && !$WpSmush->validate_install() ) {
-			            continue;
-			        }
-			        //Do not output settings listed in exclude array list
-			        if( in_array($name, $exclude ) ) {
-			            continue;
-			        }
-			        $setting_m_key = WP_SMUSH_PREFIX . $name;
-					$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;
-					//Set the default value 1 for auto smush
-					if( 'auto' == $name && false === $setting_val ) {
-					    $setting_val = 1;
-					} ?>
-					<div class='wp-smush-setting-row wp-smush-basic'>
-                        <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
-                            <span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span><br/>
-                            <small class="smush-setting-description">
-                                <?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
-                            </small>
-                        </label>
-                        <span class="toggle float-r">
-                            <input type="checkbox" class="toggle-checkbox"
-                               id="<?php echo $setting_m_key . '-quick-setup'; ?>"
-                               name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1" tabindex="0">
-                            <label class="toggle-label" for="<?php echo $setting_m_key . '-quick-setup'; ?>"></label>
-                        </span>
-				    </div>
-				    <hr /><?php
-			    }
-			    ?>
-				</form>
+				<p class="wp-smush-welcome-message end"><?php esc_html_e( 'Welcome to Smush - Winner of Torque Plugin Madness 2017! Let\'s quickly set up the basics for you, then you can fine tweak each setting as you go - our recommendations are on by default.', "wp-smushit" ); ?></p>
+				<div class="smush-quick-setup-settings">
+					<form method="post">
+					<input type="hidden" value="setupSmush" name="action"/><?php
+					wp_nonce_field( 'setupSmush' );
+					    $exclude = array(
+					            'backup',
+					            'png_to_jpg',
+					            'nextgen',
+					            's3'
+					    );
+					    //Settings for free and pro version
+					    foreach( $wpsmushit_admin->settings as $name => $values ) {
+					        //Skip networkwide settings, we already printed it
+					        if( 'networkwide' == $name ) {
+					            continue;
+					        }
+					        //Skip premium features if not a member
+					        if( !in_array( $name, $wpsmushit_admin->basic_features ) && !$WpSmush->validate_install() ) {
+					            continue;
+					        }
+					        //Do not output settings listed in exclude array list
+					        if( in_array($name, $exclude ) ) {
+					            continue;
+					        }
+					        $setting_m_key = WP_SMUSH_PREFIX . $name;
+							$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;
+							//Set the default value 1 for auto smush
+							if( 'auto' == $name && false === $setting_val ) {
+							    $setting_val = 1;
+							} ?>
+							<div class='wp-smush-setting-row wp-smush-basic'>
+								<label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
+									<span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span><br/>
+									<small class="smush-setting-description">
+		                                <?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
+		                            </small>
+		                        </label>
+		                        <span class="toggle float-r">
+		                            <input type="checkbox" class="toggle-checkbox"
+		                               id="<?php echo $setting_m_key . '-quick-setup'; ?>"
+		                               name="smush_settings[]" <?php checked( $setting_val, 1, true ); ?> value="<?php echo $setting_m_key; ?>" tabindex="0">
+		                            <label class="toggle-label" for="<?php echo $setting_m_key . '-quick-setup'; ?>"></label>
+		                        </span>
+							</div>
+							<hr /><?php
+						}
+						?>
+						<div class="columns last">
+							<div class="column is-3 tr">
+								<button type="submit" class="button"><?php _e( "Get Started", "wp-smushit" ) ?></button>
+							</div>
+						</div>
+					</form>
+				</div>
 			</dialog><?php
 		}
 
@@ -479,7 +488,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function ui() {
 
-			global $WpSmush, $wpsmushit_admin;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
 
 			if( !$WpSmush->validate_install() ) {
 				//Reset Transient
@@ -491,7 +500,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			if( !$is_network ) {
 				//Show Configure screen for only a new installation and for only network admins
-				if ( ( 1 != get_site_option( 'wp-smush-hide_smush_quick_setup' ) && 1 != get_site_option( 'wp-smush-hide_smush_welcome' ) && 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && 0 >= $wpsmushit_admin->smushed_count && is_super_admin() ) {
+				if ( ( 1 != $wpsmush_settings->get_setting( 'skip-smush-setup' ) && 1 != get_site_option( 'wp-smush-hide_smush_welcome' ) && 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && 0 >= $wpsmushit_admin->smushed_count && is_super_admin() ) {
 					echo '<div class="block float-l">';
 					$this->quick_setup();
 					echo '</div>';

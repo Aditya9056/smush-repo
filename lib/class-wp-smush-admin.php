@@ -196,6 +196,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Handle ajax request to dismiss the s3 warning.
 			add_action( 'wp_ajax_dismiss_s3support_alert', array( $this, 'dismiss_s3support_alert' ) );
 
+			// Ajax request for quick Setup
+			add_action( 'wp_ajax_setupSmush', array( $this, 'setupSmush' ) );
+
 			//Update the Super Smush count, after the smushing
 			add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
 
@@ -424,7 +427,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
-				'quick_setup_title'    => __( "QUICK SETUP", "wp-smushit" ) . '<form method="post" class="skip-setup float-r"><input type="hidden" name="action" value="skipSetup"/>' . wp_nonce_field( 'skipSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( "Skip", "wp-smushit" ) . '</button></form>',
+				'quick_setup_title'    => __( "QUICK SETUP", "wp-smushit" ) . '<form method="post" class="smush-skip-setup float-r"><input type="hidden" name="action" value="skipSmushSetup"/>' . wp_nonce_field( 'skipSmushSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( "Skip", "wp-smushit" ) . '</button></form>',
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -2320,6 +2323,77 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$error = apply_filters( 'wp_smush_error', $error, $attachment_id );
 
 			return $error;
+		}
+
+		/**
+		 * Process ajax action for Skipping Smush setup
+		 */
+		public function skipSmushSetup() {
+
+			//Check for nonce
+			if ( ! empty( $_POST['_wpnonce'] ) && ! wp_verify_nonce( $_POST['_wpnonce'], 'skipSmushSetup' ) ) {
+				return;
+			}
+
+			update_site_option( 'skip-smush-setup', 1 );
+			wp_send_json_success();
+		}
+
+		/**
+		 * Ajax action to save settings from quick setup
+		 *
+		 */
+		function setupSmush() {
+
+			if ( ! empty( $_POST['_wpnonce'] ) && ! wp_verify_nonce( $_POST['_wpnonce'], 'setupSmush' ) ) {
+				wp_send_json_error("Nonce verification failed");
+			}
+
+			global $wpsmush_settings, $wpsmushit_admin, $WpSmush;
+
+			//Get the settings from $_POST
+			if ( ! empty( $_POST['smush_settings'] ) && is_array( $_POST['smush_settings'] ) ) {
+				$quick_settings = $_POST['smush_settings'];
+			}
+
+			//Check the last settings stored in db
+			$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+
+			//Available settings for free/pro version
+			$exclude = array(
+				'networkwide',
+				'backup',
+				'png_to_jpg',
+				'nextgen',
+				's3'
+			);
+
+			foreach( $wpsmushit_admin->settings as $name => $values ) {
+
+				//Update only specified settings
+				if( in_array( $name, $exclude ) ) {
+					continue;
+				}
+
+				//Skip premium features if not a member
+				if ( ! in_array( $name, $wpsmushit_admin->basic_features ) && ! $WpSmush->validate_install() ) {
+					continue;
+				}
+
+				//Update value in settings
+				if( in_array( WP_SMUSH_PREFIX . $name , $quick_settings ) ) {
+					$settings[$name] = 1;
+				}else{
+					$settings[$name] = 0;
+				}
+			}
+
+			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
+
+			$wpsmush_settings->update_setting('skip-smush-setup', 1 );
+
+			wp_send_json_success();
+
 		}
 
 	}

@@ -2325,6 +2325,50 @@ jQuery(function ($) {
         }
     });
 
+    //Quick Setup - Form Submit
+    $('body').on('submit', '.smush-quick-setup-settings form', function () {
+        var self = $(this);
+        $.ajax({
+            type: 'POST',
+            url: ajaxurl,
+            data: self.serialize(),
+            beforeSend: function () {
+                //Show loader
+
+                //Disable the button
+                self.find('.button').attr('disabled', 'disabled');
+            },
+            success: function (data) {
+                //Enable the button
+                self.find('.button').removeAttr('disabled');
+                //Remove loader
+                if (data.success == 1) {
+                    //remove skip button
+                    $('.smush-skip-setup').hide();
+                }
+                //Reload the Page
+                // location.reload();
+            }
+        });
+        return false;
+    });
+    //Quick Setup - Skip button
+    $('body').on('submit', '.smush-skip-setup', function () {
+        var self = $(this);
+        $.ajax({
+            type: 'POST',
+            url: ajaxurl,
+            data: self.serialize(),
+            beforeSend: function () {
+                self.find('.button').attr('disabled', 'disabled');
+            },
+            success: function (data) {
+                location.reload();
+            }
+        });
+        return false;
+    });
+
 });
 (function ($) {
     var Smush = function (element, options) {
