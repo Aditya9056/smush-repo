@@ -965,7 +965,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wpsmush_settings, $wpsmushit_admin;
 
 			//Check the last settings stored in db
-			$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', '' );
+			$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
 
 			//Get current settings
 			$c_settings = $wpsmushit_admin->get_serialised_settings();

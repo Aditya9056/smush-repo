@@ -17,7 +17,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 				return false;
 			}
 
-			global $wpsmushit_admin, $wpsmush_settings;
+			global $wpsmushit_admin;
 
 			//Store that we need not redirect again on plugin activation
 			update_site_option( 'wp-smush-hide_smush_welcome', true );
@@ -25,8 +25,14 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			// var to temporarily assign the option value
 			$setting = null;
 
-			//Store Option Name and their values in an array
-			$settings = array();
+			//Check the last settings stored in db
+			$settings = $this->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+
+			//If not saved earlier, get it from stored options
+			if ( empty( $settings ) || 0 == sizeof( $settings ) ) {
+				$settings = $wpsmushit_admin->get_serialised_settings();
+				$settings = maybe_unserialize( $settings );
+			}
 
 			//Save whether to use the settings networkwide or not ( Only if in network admin )
 			if ( ! empty( $_POST['action'] ) && 'save_settings' == $_POST['action'] ) {
@@ -40,7 +46,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			}
 
 			// Delete S3 alert flag, if S3 option is disabled again.
-			if ( ! isset( $_POST['wp-smush-s3'] ) && $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 's3' ) ) {
+			if ( ! isset( $_POST['wp-smush-s3'] ) && $this->get_setting( WP_SMUSH_PREFIX . 's3' ) ) {
 				delete_site_option( 'wp-smush-hide_s3support_alert' );
 			}
 
@@ -56,26 +62,29 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 				$settings[ $opt_name ] = $setting;
 
 				// update the new value
-				$wpsmush_settings->update_setting( $opt_name, $setting );
+				$this->update_setting( $opt_name, $setting );
 
 				// unset the var for next loop
 				unset( $setting );
 			}
 
+			//Save serialised settings
+			$this->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
+
 			//Save the selected image sizes
 			$image_sizes = ! empty( $_POST['wp-smush-image_sizes'] ) ? $_POST['wp-smush-image_sizes'] : array();
 			$image_sizes = array_filter( array_map( "sanitize_text_field", $image_sizes ) );
-			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
+			$this->update_setting( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
 
 			//Update Resize width and height settings if set
 			$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0;
 			$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0;
 
 			// update the resize sizes
-			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+			$this->update_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
 
 			//Store the option in table
-			$wpsmush_settings->update_setting( 'wp-smush-settings_updated', 1 );
+			$this->update_setting( 'wp-smush-settings_updated', 1 );
 
 			//Delete Show Resmush option
 			if ( isset( $_POST['wp-smush-keep_exif'] ) && ! isset( $_POST['wp-smush-original'] ) && ! isset( $_POST['wp-smush-lossy'] ) ) {
