@@ -266,8 +266,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			}
 
 			//Check if Lossy enabled
-			$opt_lossy     = WP_SMUSH_PREFIX . 'lossy';
-			$opt_lossy_val = $wpsmush_settings->get_setting( $opt_lossy, false );
+			$opt_lossy_val = $wpsmush_settings->settings['lossy'];
 
 			//Check if premium user, compression was lossless, and lossy compression is enabled
 			if ( !$show_resmush && $this->is_pro_user && ! $is_lossy && $opt_lossy_val && ! empty( $image_type ) && $image_type != 'image/gif' ) {

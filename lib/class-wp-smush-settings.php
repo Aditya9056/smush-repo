@@ -3,7 +3,90 @@
 if ( ! class_exists( 'WpSmushSettings' ) ) {
 	class WpSmushSettings {
 
+		/**
+		 * List of all the features enabled/disabled
+		 *
+		 * @var array
+		 */
+		var $settings = array(
+			'auto'       => 1,
+			'lossy'      => 0,
+			'original'   => 0,
+			'keep_exif'  => 0,
+			'resize'     => 0,
+			'backup'     => 0,
+			'png_to_jpg' => 0,
+			'nextgen'    => 0,
+			's3'         => 0
+		);
+
 		function __construct() {
+
+			//Save Settings
+			add_action( 'wp_ajax_save_settings', array( $this, 'save_settings' ) );
+
+			$this->init_settings();
+		}
+
+		/**
+		 * Initialize settings
+		 *
+		 * @return array|mixed
+		 */
+		function init_settings() {
+
+			$last_settings = $this->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+			if( empty( $last_settings ) ) {
+				$last_settings = $this->get_serialised_settings();
+			}
+			$this->settings = maybe_unserialize( $last_settings );
+			return $this->settings;
+
+		}
+
+		/**
+		 * Save settings, Used for networkwide option
+		 */
+		function save_settings() {
+			//Validate Ajax request
+			check_ajax_referer( 'save_wp_smush_options', 'nonce' );
+
+			//Save Settings
+			$this->process_options();
+			wp_send_json_success();
+
+		}
+
+		/**
+		 * Returns a serialised string of current settings
+		 *
+		 * @return Serialised string of settings
+		 *
+		 */
+		function get_serialised_settings() {
+			$settings = array();
+			foreach ( $this->settings as $key => $val ) {
+				$settings[ $key ] = $this->get_setting( WP_SMUSH_PREFIX . $key );
+			}
+			$settings = maybe_serialize( $settings );
+
+			return $settings;
+		}
+
+		/**
+		 * Stores the latest settings in serialised form in DB For the current settings
+		 *
+		 * No need to store the serialised settings, if network wide settings is disabled
+		 * because the site would run the scan when settings are saved
+		 *
+		 */
+		function save_serialized_settings() {
+			//Return -> Single Site | If network settings page | Networkwide Settings Disabled
+			if ( ! is_multisite() || is_network_admin() || ! $this->settings['networkwide'] ) {
+				return;
+			}
+			$c_settings = $this->get_serialised_settings();
+			$this->update_setting( WP_SMUSH_PREFIX . 'last_settings', $c_settings );
 		}
 
 		/**
@@ -30,23 +113,25 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 
 			//If not saved earlier, get it from stored options
 			if ( empty( $settings ) || 0 == sizeof( $settings ) ) {
-				$settings = $wpsmushit_admin->get_serialised_settings();
+				$settings = $this->get_serialised_settings();
 				$settings = maybe_unserialize( $settings );
 			}
 
 			//Save whether to use the settings networkwide or not ( Only if in network admin )
 			if ( ! empty( $_POST['action'] ) && 'save_settings' == $_POST['action'] ) {
 				if ( ! isset( $_POST['wp-smush-networkwide'] ) ) {
+					$settings['networkwide'] = 0;
 					//Save the option to disable nwtwork wide settings and return
 					update_site_option( WP_SMUSH_PREFIX . 'networkwide', 0 );
 				} else {
+					$settings['networkwide'] = 1;
 					//Save the option to disable nwtwork wide settings and return
 					update_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 );
 				}
 			}
 
 			// Delete S3 alert flag, if S3 option is disabled again.
-			if ( ! isset( $_POST['wp-smush-s3'] ) && $this->get_setting( WP_SMUSH_PREFIX . 's3' ) ) {
+			if ( ! isset( $_POST['wp-smush-s3'] ) && $this->settings['s3'] ) {
 				delete_site_option( 'wp-smush-hide_s3support_alert' );
 			}
 
@@ -59,7 +144,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 				// get the value to be saved
 				$setting = isset( $_POST[ $opt_name ] ) ? 1 : 0;
 
-				$settings[ $opt_name ] = $setting;
+				$settings[ $name ] = $setting;
 
 				// update the new value
 				$this->update_setting( $opt_name, $setting );
@@ -98,14 +183,14 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 		 * @todo: Check in subdirectory installation as well
 		 */
 		function is_network_enabled() {
+			global $wpsmush_settings;
 			//If Single site return true
 			if ( ! is_multisite() ) {
 				return true;
 			}
 
 			//Check if the settings are network wide or site wise
-			$networkwide = get_site_option( WP_SMUSH_PREFIX . 'networkwide', true );
-			if ( $networkwide ) {
+			if ( $wpsmush_settings->settings['networkwide'] ) {
 				return true;
 			}
 

@@ -216,10 +216,14 @@ if ( ! function_exists( 'smush_deactivated' ) ) {
 }
 
 if ( ! function_exists( 'smush_activated' ) ) {
-//Check if a existing install or new
+	/**
+	 * Check if a existing install or new
+	 */
 	function smush_activated() {
+		global $wpsmush_settings;
 
 		$version = get_site_option( WP_SMUSH_PREFIX . 'version' );
+		$settings = !empty( $wpsmush_settings->settings ) ? $wpsmush_settings->settings : $wpsmush_settings->init_settings();
 
 		//If the version is not saved or if the version is not same as the current version,
 		if ( ! $version || WP_SMUSH_VERSION != $version ) {
@@ -232,7 +236,7 @@ if ( ! function_exists( 'smush_activated' ) ) {
 				update_site_option( 'wp-smush-install-type', 'existing' );
 			} else {
 				//Check for existing settings
-				if ( false !== get_site_option( WP_SMUSH_PREFIX . 'auto' ) || false !== get_option( WP_SMUSH_PREFIX . 'auto' ) ) {
+				if ( false !== $settings['auto'] ) {
 					update_site_option( 'wp-smush-install-type', 'existing' );
 				}
 			}

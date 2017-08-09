@@ -149,16 +149,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			global $wpsmush_settings;
 
 			//Check if Lossy enabled
-			$opt_lossy           = WP_SMUSH_PREFIX . 'lossy';
-			$this->lossy_enabled = $this->validate_install() && $wpsmush_settings->get_setting( $opt_lossy, false );
+			$this->lossy_enabled = $this->validate_install() && $wpsmush_settings->settings['lossy'];
 
 			//Check if Smush Original enabled
-			$opt_original         = WP_SMUSH_PREFIX . 'original';
-			$this->smush_original = $this->validate_install() && $wpsmush_settings->get_setting( $opt_original, false );
+			$this->smush_original = $this->validate_install() && $wpsmush_settings->settings['original'];
 
 			//Check Whether to keep exif or not
-			$opt_keep_exif   = WP_SMUSH_PREFIX . 'keep_exif';
-			$this->keep_exif = $wpsmush_settings->get_setting( $opt_keep_exif, false );
+			$this->keep_exif = $wpsmush_settings->settings['keep_exif'];
 		}
 
 		function admin_init() {
@@ -325,8 +322,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			global $wpsmush_settings, $wpsmush_helper, $wpsmushit_admin;
 
+			$settings =  $wpsmush_settings->settings;
 			//Flag to check, if original size image should be smushed or not
-			$original   = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'original', false );
+			$original   = $settings['original'];
 			$smush_full = ( $this->validate_install() && $original == 1 ) ? true : false;
 
 			$errors = new WP_Error();
@@ -1499,9 +1497,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			global $wpsmush_settings;
 
 			//Check if integration is Enabled or not
-			//Smush NextGen key
-			$opt_nextgen     = WP_SMUSH_PREFIX . 'nextgen';
-			$opt_nextgen_val = $wpsmush_settings->get_setting( $opt_nextgen, false );
+			$opt_nextgen_val = $wpsmush_settings->settings['nextgen'];
 
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
 			// Do not continue if integration not enabled or not a pro user.
@@ -1684,10 +1680,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			global $wpsmush_settings;
 
-			$auto_smush = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'auto', false );
+			$auto_smush = $wpsmush_settings->settings['auto'];
 
 			//Keep the auto smush on by default
-			if ( $auto_smush === false ) {
+			if ( $auto_smush === false || empty( $auto_smush ) || 0 == $auto_smush ) {
 				$auto_smush = 1;
 			}
 

@@ -163,9 +163,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Scan images as per the latest settings
 			add_action( 'wp_ajax_scan_for_resmush', array( $this, 'scan_images' ) );
 
-			//Save Settings
-			add_action( 'wp_ajax_save_settings', array( $this, 'save_settings' ) );
-
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
 				'settings_link'
@@ -492,15 +489,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
 
 			//Check if settings were changed for a multisite, and localize whether to run re-check on page load
-			if ( is_multisite() && get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) && ! is_network_admin() ) {
-				//Check the last settings stored in db
-				$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', '' );
+			if ( is_multisite() && $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) {
 
+				//@todo: Fix this, it won't work anymore
 				//Get current settings
-				$c_settings = $this->get_serialised_settings();
+				$c_settings = $wpsmush_settings->get_serialised_settings();
 
 				//If not same, Set a variable to run re-check on page load
-				if( $settings != $c_settings ) {
+				if( $wpsmush_settings->settings != $c_settings ) {
 					wp_localize_script( 'wp-smushit-admin-js', 'wp_smush_run_re_check', array( 1 ) );
 				}
 			}
@@ -1558,9 +1554,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<i class="dev-icon dev-icon-cross"></i>
 				</div>';
 
-				//Save serialized settings
-				$this->save_serialized_settings();
-
 				wp_send_json_success( array(
 					'notice'      => $resp,
 					'super_smush' => $WpSmush->lossy_enabled
@@ -1604,8 +1597,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			if ( 0 == $remaining_count && ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
 				delete_option( $key );
-				//Save serialized settings
-				$this->save_serialized_settings();
 				wp_send_json_success( array( 'notice' => $resp ) );
 			}
 
@@ -1819,9 +1810,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$ss_count                    = $wpsmush_db->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
 				$return['super_smush_stats'] = sprintf( '<strong><span class="smushed-count">%d</span>/%d</strong>', $ss_count, $wpsmushnextgenadmin->total_count );
 			}
-
-			//Save serialized settings
-			$this->save_serialized_settings();
 
 			wp_send_json_success( $return );
 
@@ -2254,54 +2242,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 //			}
 
 			echo $this->bulk_ui->get_user_validation_message( $notice = true );
-		}
-
-		/**
-		 * Save settings, Used for networkwide option
-		 */
-		function save_settings() {
-			//Validate Ajax request
-			check_ajax_referer( 'save_wp_smush_options', 'nonce' );
-
-			global $wpsmush_settings;
-			//Save Settings
-			$wpsmush_settings->process_options();
-			wp_send_json_success();
-
-		}
-
-		/**
-		 * Returns a serialised string of current settings
-		 *
-		 * @return Serialised string of settings
-		 *
-		 */
-		function get_serialised_settings() {
-			global $wpsmush_settings;
-			$settings = array();
-			foreach ( $this->settings as $key => $val ) {
-				$settings[ $key ] = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . $key );
-			}
-			$settings = maybe_serialize( $settings );
-
-			return $settings;
-		}
-
-		/**
-		 * Stores the latest settings in serialised form in DB For the current settings
-		 *
-		 * No need to store the serialised settings, if network wide settings is disabled
-		 * because the site would run the scan when settings are saved
-		 *
-		 */
-		function save_serialized_settings() {
-			//Return -> Single Site | If network settings page | Networkwide Settings Disabled
-			if ( ! is_multisite() || is_network_admin() || ! get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ) {
-				return;
-			}
-			global $wpsmush_settings;
-			$c_settings = $this->get_serialised_settings();
-			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $c_settings );
 		}
 
 		/**

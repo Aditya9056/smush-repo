@@ -157,6 +157,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function smush_stats_container() {
 			global $WpSmush, $wpsmushit_admin, $wpsmush_db, $wpsmush_settings;
 
+			$settings = $wpsmush_settings->settings;
+
 			$button = '<span class="spinner"></span><button tooltip="' . esc_html__( "Lets you check if any images can be further optimized. Useful after changing settings.", "wp-smushit" ) . '" class="wp-smush-title button button-grey button-small wp-smush-scan">' . esc_html__( "RE-CHECK IMAGES", "wp-smushit" ) . '</button>';
 			$this->container_header( 'smush-stats-wrapper', 'wp-smush-stats-box', esc_html__( "STATS", "wp-smushit" ), $button );
 			$dasharray = 125.663706144;
@@ -214,7 +216,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						echo '<span class="smushed-count">' . intval( $wpsmushit_admin->super_smushed ) . '</span>/' . $wpsmushit_admin->total_count;
 					} else {
 					    //Output a button/link to enable respective setting
-					    if( !is_multisite() || !get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) ) {
+					    if( !is_multisite() || !$settings['networkwide'] ) {
                             //@todo:Print a link to settings page for network sites
                             printf( esc_html__( "%sENABLE SUPER-SMUSH%s", "wp-smushit" ), '<button class="wp-smush-lossy-enable button button-small">', '</button>' );
 						}else {
@@ -232,9 +234,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					if( !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) {
 						echo size_format( $wpsmushit_admin->stats['resize_savings'], 1 );
 					}else{
-						if( !$wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize' ) ) {
-						    //Output a button/link to enable respective setting
-                            if( !is_multisite() || !get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) ) {
+						if( !$settings['resize'] ) {
+							//Output a button/link to enable respective setting
+                            if( !is_multisite() || !$settings['networkwide'] ) {
                                 printf( esc_html__( "%sENABLE IMAGE RESIZING%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
                             }else {
                                 $settings_link = $wpsmushit_admin->settings_link( array(), true );
@@ -322,7 +324,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				do_action('wp_smush_before_advanced_settings');
 				//Network settings wrapper
 				if( is_multisite() && is_network_admin() ) {
-					$class = get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) ? '' : ' hidden'; ?>
+					$class = $wpsmush_settings->settings['networkwide'] ? '' : ' hidden'; ?>
 					<div class="network-settings-wrapper<?php echo $class; ?>"><?php
 				}
 				$upgrade_url = add_query_arg(
@@ -388,35 +390,19 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function options_ui( $configure_screen = false ) {
 			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
+
+			$settings = !empty( $wpsmush_settings->settings ) ? $wpsmush_settings->settings : $wpsmush_settings->init_settings();
+
 			echo '<div class="box-container">
 				<form id="wp-smush-settings-form" method="post">';
 
 			//Use settings networkwide,@uses get_site_option() and not get_option
 			$opt_networkwide = WP_SMUSH_PREFIX . 'networkwide';
-			$opt_networkwide_val = get_site_option( $opt_networkwide, true );
-
-			//Smush auto key
-			$opt_auto = WP_SMUSH_PREFIX . 'auto';
-			//Auto value
-			$opt_auto_val = $wpsmush_settings->get_setting( $opt_auto, false );
-
-			//If value is not set for auto smushing set it to 1
-			if ( $opt_auto_val === false ) {
-				//default to checked
-				$opt_auto_val = 1;
-			}
-
-			//Keep Exif
-			$opt_keep_exif = WP_SMUSH_PREFIX . 'keep_exif';
-			$opt_keep_exif_val = $wpsmush_settings->get_setting( $opt_keep_exif, false );
-
-			 //Resize images
-			$opt_resize = WP_SMUSH_PREFIX . 'resize';
-			$opt_resize_val = $wpsmush_settings->get_setting( $opt_resize, false );
+			$opt_networkwide_val = $wpsmush_settings->settings['networkwide'];
 
 			//Option to enable/disable networkwide settings
 			if( is_multisite() && is_network_admin() ) {
-				$class = get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) ? '' : ' hidden'; ?>
+				$class = $wpsmush_settings->settings['networkwide'] ? '' : ' hidden'; ?>
 				<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 				<div class='wp-smush-setting-row wp-smush-basic'>
 					<label class="inline-label" for="<?php echo $opt_networkwide; ?>" tabindex="0">
@@ -440,7 +426,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 
 			//Do not print settings in network page if networkwide settings are disabled
-			if( ! is_multisite() || ( ! get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) && !is_network_admin() ) || is_network_admin() ) {
+			if( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && !is_network_admin() ) || is_network_admin() ) {
 			    foreach( $wpsmushit_admin->settings as $name => $values ) {
 			        //Skip networkwide settings, we already printed it
 			        if( 'networkwide' == $name ) {
@@ -451,9 +437,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			            continue;
 			        }
 			        $setting_m_key = WP_SMUSH_PREFIX . $name;
-					$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;
+					$setting_val   = !empty( $settings[$name] ) ? $settings[$name] : 0;
 					//Set the default value 1 for auto smush
-					if( 'auto' == $name && false === $setting_val ) {
+					if( 'auto' == $name && ( false === $setting_val || 0 == $setting_val || empty( $setting_val ) ) ) {
 					    $setting_val = 1;
 					}?>
 			        <div class='wp-smush-setting-row wp-smush-basic'>
@@ -539,7 +525,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="row"><?php
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
 				//Check if a network site and networkwide settings is enabled
-				if( ! is_multisite() || ( is_multisite() && ! get_site_option( WP_SMUSH_PREFIX . 'networkwide', true ) ) || ( is_multisite() && is_network_admin() ) ) {
+				if( ! is_multisite() || ( is_multisite() && ! $wpsmush_settings->settings['networkwide'] ) || ( is_multisite() && is_network_admin() ) ) {
 					$this->settings_ui();
 				}
 
@@ -757,7 +743,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wpsmushit_admin, $wpsmush_settings;
 
 			//Check if Networkwide settings are enabled, Do not show settings updated message
-			if( is_multisite() && get_site_option( WP_SMUSH_PREFIX . 'networkwide', 1 ) && !is_network_admin() ) {
+			if( is_multisite() && $wpsmush_settings->settings['networkwide'] && !is_network_admin() ) {
 				return;
 			}
 
@@ -958,17 +944,17 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		}
 
 		function get_recheck_message() {
+			global $wpsmush_settings;
 			//Return if not multisite, or on network settings page, Netowrkwide settings is disabled
-			if( ! is_multisite() || is_network_admin() || ! get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ) {
+			if( ! is_multisite() || is_network_admin() || ! $wpsmush_settings->settings['networkwide'] ) {
 				return;
 			}
-			global $wpsmush_settings, $wpsmushit_admin;
 
 			//Check the last settings stored in db
 			$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
 
-			//Get current settings
-			$c_settings = $wpsmushit_admin->get_serialised_settings();
+			//Get current settings, //@todo: Fix this
+			$c_settings = $wpsmush_settings->get_serialised_settings();
 
 			//If not same, Display notice
 			if( $settings == $c_settings ) {

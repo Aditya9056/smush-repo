@@ -86,8 +86,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			global $as3cf, $WpSmush, $wpsmush_settings;
 			$show_error = false;
 			//If S3 integration is not enabled, return
-			$setting_m_key = WP_SMUSH_PREFIX . 's3';
-			$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;
+			$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->settings['s3'] : 0;
 
 			if ( ! $setting_val ) {
 				return;
@@ -138,11 +137,11 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 */
 		function s3_support_required_notice() {
 
-			global $wpsmushit_admin;
+			global $wpsmushit_admin, $wpsmush_settings;
 
 			// Do not display it for other users.
 			// Do not display on network screens, if networkwide option is disabled.
-			if ( ! current_user_can( 'manage_options' ) || ( is_network_admin() && ! get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ) ) {
+			if ( ! current_user_can( 'manage_options' ) || ( is_network_admin() && ! $wpsmush_settings->settings['networkwide'] ) ) {
 				return true;
 			}
 
@@ -164,7 +163,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			wp_enqueue_script( 'wp-smushit-notice-js' );
 			// Settings link.
-			$settings_link = is_multisite() && get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
+			$settings_link = is_multisite() && $wpsmush_settings->settings['networkwide'] ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
 
 			if ( $wpsmushit_admin->validate_install() ) {
 				// If premium user, but S3 support is not enabled.
@@ -192,7 +191,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 
 			// If not Pro user or S3 support is disabled.
-			return ( ! $wpsmushit_admin->validate_install() || ! $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 's3' ) );
+			return ( ! $wpsmushit_admin->validate_install() || ! $wpsmush_settings->settings['s3'] );
 		}
 
 		/**
@@ -237,7 +236,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 */
 		function download_file( $attachment_id, $size_details = array(), $uf_file_path = '' ) {
 			global $WpSmush, $wpsmush_settings;
-			if ( empty( $attachment_id ) || ! $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 's3', false ) || ! $WpSmush->validate_install() ) {
+			if ( empty( $attachment_id ) || ! $wpsmush_settings->settings['s3'] || ! $WpSmush->validate_install() ) {
 				return false;
 			}
 
@@ -415,7 +414,7 @@ if ( class_exists( 'AS3CF_Plugin_Compatibility' ) && ! class_exists( 'wp_smush_s
 			global $as3cf, $wpsmush_settings, $WpSmush;
 
 			//Return if integration is disabled, or not a pro user
-			if ( ! $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 's3', false ) || ! $WpSmush->validate_install() ) {
+			if ( ! $wpsmush_settings->settings['s3'] || ! $WpSmush->validate_install() ) {
 				return $url;
 			}
 
