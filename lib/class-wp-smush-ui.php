@@ -951,13 +951,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 
 			//Check the last settings stored in db
-			$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
-
-			//Get current settings, //@todo: Fix this
-			$c_settings = $wpsmush_settings->get_serialised_settings();
+			$run_recheck = get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false );
 
 			//If not same, Display notice
-			if( $settings == $c_settings ) {
+			if( !$run_recheck ) {
 				return;
 			}
 			$message = '<div class="wp-smush-notice wp-smush-re-check-message">' . esc_html__( "Smush settings were updated, performing a quick scan to check if any of the images need to be Smushed again.", "wp-smushit") . '<i class="dev-icon dev-icon-cross"></i></div>';

@@ -490,13 +490,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Check if settings were changed for a multisite, and localize whether to run re-check on page load
 			if ( is_multisite() && $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) {
-
-				//@todo: Fix this, it won't work anymore
-				//Get current settings
-				$c_settings = $wpsmush_settings->get_serialised_settings();
-
 				//If not same, Set a variable to run re-check on page load
-				if( $wpsmush_settings->settings != $c_settings ) {
+				if( get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false ) ) {
 					wp_localize_script( 'wp-smushit-admin-js', 'wp_smush_run_re_check', array( 1 ) );
 				}
 			}
@@ -1554,10 +1549,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<i class="dev-icon dev-icon-cross"></i>
 				</div>';
 
+				delete_site_option( WP_SMUSH_PREFIX . 'run_recheck');
 				wp_send_json_success( array(
 					'notice'      => $resp,
 					'super_smush' => $WpSmush->lossy_enabled
 				) );
+
 			}
 
 			//Default Notice, to be displayed at the top of page
@@ -1597,6 +1594,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			if ( 0 == $remaining_count && ! $WpSmush->lossy_enabled && ! $WpSmush->smush_original && $WpSmush->keep_exif && ! $upfront_active ) {
 				delete_option( $key );
+				delete_site_option( WP_SMUSH_PREFIX . 'run_recheck');
 				wp_send_json_success( array( 'notice' => $resp ) );
 			}
 
@@ -1811,6 +1809,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$return['super_smush_stats'] = sprintf( '<strong><span class="smushed-count">%d</span>/%d</strong>', $ss_count, $wpsmushnextgenadmin->total_count );
 			}
 
+			delete_site_option( WP_SMUSH_PREFIX . 'run_recheck');
 			wp_send_json_success( $return );
 
 		}

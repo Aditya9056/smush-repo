@@ -154,7 +154,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			}
 
 			//Save serialised settings
-			$this->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
+			$resp = $this->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
 
 			//Save the selected image sizes
 			$image_sizes = ! empty( $_POST['wp-smush-image_sizes'] ) ? $_POST['wp-smush-image_sizes'] : array();
@@ -170,6 +170,11 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 
 			//Store the option in table
 			$this->update_setting( 'wp-smush-settings_updated', 1 );
+
+			if( $resp ) {
+				//Run a re-check on next page load
+				update_site_option( WP_SMUSH_PREFIX . 'run_recheck', 1 );
+			}
 
 			//Delete Show Resmush option
 			if ( isset( $_POST['wp-smush-keep_exif'] ) && ! isset( $_POST['wp-smush-original'] ) && ! isset( $_POST['wp-smush-lossy'] ) ) {
