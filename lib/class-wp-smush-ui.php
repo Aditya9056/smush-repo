@@ -109,7 +109,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						}
 						?>
 						<div class="columns last">
-							<div class="column is-3 tr">
+							<div class="column is-3 tr submit-button-wrap">
 								<button type="submit" class="button"><?php _e( "Get Started", "wp-smushit" ) ?></button>
 							</div>
 						</div>

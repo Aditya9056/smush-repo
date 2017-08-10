@@ -2328,6 +2328,7 @@ jQuery(function ($) {
     //Quick Setup - Form Submit
     $('body').on('submit', '.smush-quick-setup-settings form', function () {
         var self = $(this);
+        var submit_button = self.find('button[type="submit"]');
         $.ajax({
             type: 'POST',
             url: ajaxurl,
@@ -2336,18 +2337,23 @@ jQuery(function ($) {
                 //Show loader
 
                 //Disable the button
-                self.find('.button').attr('disabled', 'disabled');
+                submit_button.attr('disabled', 'disabled');
+
+                //Show loader
+                $('<span class="spinner is-active"></span>').insertAfter( submit_button );
             },
             success: function (data) {
                 //Enable the button
-                self.find('.button').removeAttr('disabled');
-                //Remove loader
+                submit_button.removeAttr('disabled');
+                //Remove the loader
+                submit_button.parent(). find('span.spinner').remove();
+
                 if (data.success == 1) {
                     //remove skip button
                     $('.smush-skip-setup').hide();
                 }
                 //Reload the Page
-                // location.reload();
+                location.reload();
             }
         });
         return false;

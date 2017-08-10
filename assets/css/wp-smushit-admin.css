@@ -792,6 +792,18 @@ Quick Setup Dialog
     border-bottom: 1px solid #E6E6E6;
 }
 
+div.smush-quick-setup-settings div.submit-button-wrap {
+    overflow: hidden;
+}
+
+div.smush-quick-setup-settings div.submit-button-wrap button {
+    float: right;
+}
+
+div.smush-quick-setup-settings div.submit-button-wrap span.spinner {
+    margin-top: 11px;
+}
+
 /**
  Skip Button
  */
