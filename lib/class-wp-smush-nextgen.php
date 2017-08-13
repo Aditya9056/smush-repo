@@ -64,6 +64,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		function register( $settings ) {
 			$settings['nextgen'] = array(
 				'label' => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
+                'short_label' => esc_html__( 'NextGen Gallery', 'wp-smushit' ),
 				'desc'  => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' )
 			);
 

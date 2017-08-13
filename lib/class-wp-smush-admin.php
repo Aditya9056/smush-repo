@@ -37,6 +37,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public $settings;
 
+		/**
+		 * @var
+		 */
+		public $test;
+
 		public $bulk;
 
 		/**
@@ -91,8 +96,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @array Stores the stats for all the images
 		 */
 		public $stats;
-
-		public $bulk_ui = '';
 
 		/**
 		 * @var int Limit for allowed number of images per bulk request
@@ -209,8 +212,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			add_action( 'admin_notices', array( $this, 'media_library_membership_notice' ) );
 
-			$this->bulk_ui = new WpSmushBulkUi();
-
 		}
 
 		function init_settings() {
@@ -221,31 +222,38 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				),
 				'auto'        => array(
 					'label' => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
-					'desc'  => esc_html__( 'When you upload images to the media library, we’ll automatically optimize them.', 'wp-smushit' )
+					'short_label' => esc_html__( 'Automatic Smush', 'wp-smushit' ),
+					'desc'  => esc_html__( 'When you upload images to your site, Smush will automatically optimize them for you.', 'wp-smushit' )
 				),
 				'lossy'       => array(
 					'label' => esc_html__( 'Super-smush my images', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Super-smush', 'wp-smushit' ),
 					'desc'  => esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
 				),
 				'original'    => array(
-					'label' => esc_html__( 'Include my original full-size images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'WordPress crops and resizes every image you upload for embedding on your site. By default, Smush only compresses these cropped and resized images, not your original full-size images. To save space on your server, activate this setting to smush your original images, too. Note: This doesn’t usually improve page speed.', 'wp-smushit' )
+					'label' => esc_html__( 'Smush my original full-size images', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed.', 'wp-smushit' )
 				),
 				'keep_exif'   => array(
-					'label' => esc_html__( 'Preserve image EXIF data', 'wp-smushit' ),
+					'label' => esc_html__( 'Preserve my image EXIF data', 'wp-smushit' ),
+                    'short_label' => esc_html__( 'EXIF data', 'wp-smushit' ),
 					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
 				),
 				'resize'      => array(
-					'label' => esc_html__( 'Resize original images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Save a ton of space by not storing over-sized images on your server. Set image maximum width and height and large images will be automatically scaled before being added to the media library.', 'wp-smushit' )
+					'label' => esc_html__( 'Resize my full size images', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically resized before they are added to the media gallery.', 'wp-smushit' )
 				),
 				'backup'      => array(
-					'label' => esc_html__( 'Make a copy of my original images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Save your original full-size images so you can restore them at any point. Note: Activating this setting will significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' )
+					'label' => esc_html__( 'Make a copy of my full size images', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
+					'desc'  => esc_html__( 'Save your original full-size images separately so you can restore them at any point. Note: Keeping a copy of your original files can significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' )
 				),
 				'png_to_jpg'  => array(
-					'label' => esc_html__( 'Convert PNG to JPEG (lossy)', 'wp-smushit' ),
-					'desc'  => sprintf( esc_html__( "When you compress a PNG file, Smush will check if converting the file to JPEG will further reduce its size. %s Note: PNGs with transparency will be ignored and Smush will only convert the file format if it results in a smaller file size. This will change the file’s name and extension, and any hard-coded URLs will need to be updated.%s", 'wp-smushit' ), "<br /><strong>", "</strong>" )
+					'label' => esc_html__( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
+                    'short_label' => esc_html__( 'PNG to JPEG conversion', 'wp-smushit' ),
+					'desc'  =>  esc_html__( "When you compress a PNG file, Smush will check if converting the file to JPEG will further reduce its size.", 'wp-smushit' )
 				)
 			);
 
@@ -289,11 +297,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Add Bulk option settings page
 		 */
 		function screen() {
-			global $admin_page_suffix;
+			global $admin_page_suffix, $wpsmush_bulkui;
 
 			//Bulk Smush Page for each site
 			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smush-bulk', array(
-				$this->bulk_ui,
+				$wpsmush_bulkui,
 				'ui'
 			) );
 
@@ -302,7 +310,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$cap  = 'manage_network_options';
 
 			add_submenu_page( $page, 'WP Smush', 'WP Smush', $cap, 'wp-smush', array(
-				$this->bulk_ui,
+				$wpsmush_bulkui,
 				'ui'
 			) );
 
@@ -1354,6 +1362,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Shows Notice for free users, displays a discount coupon
 		 */
 		function smush_upgrade() {
+		    global $wpsmush_bulkui;
 
 			//Return, If a pro user, or not super admin, or don't have the admin privilleges
 			if ( $this->validate_install() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
@@ -1382,7 +1391,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Container Header
-			echo $this->bulk_ui->installation_notice();
+			echo $wpsmush_bulkui->installation_notice();
 		}
 
 		/**
@@ -1530,7 +1539,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function scan_images() {
 
-			global $WpSmush, $wpsmushnextgenadmin, $wpsmush_db, $wpsmush_settings, $wpsmush_helper, $wpsmush_resize, $wpsmushit_admin;
+			global $WpSmush, $wpsmushnextgenadmin, $wpsmush_db, $wpsmush_settings, $wpsmush_helper, $wpsmush_resize, $wpsmushit_admin, $wpsmush_bulkui;
 
 			check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
@@ -1756,7 +1765,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 						$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
 
-						$ajax_response = $this->bulk_ui->bulk_resmush_content( $count, $show );
+						$ajax_response = $wpsmush_bulkui->bulk_resmush_content( $count, $show );
 					}
 				}
 			}
@@ -2227,6 +2236,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function media_library_membership_notice() {
+		    global $wpsmush_bulkui;
 
 			//No need to print it for free version
 //			if( !$this->validate_install() ) {
@@ -2240,7 +2250,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 //				return;
 //			}
 
-			echo $this->bulk_ui->get_user_validation_message( $notice = true );
+			echo $wpsmush_bulkui->get_user_validation_message( $notice = true );
 		}
 
 		/**

@@ -19,6 +19,16 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 	 */
 	class WpSmushBulkUi {
 
+	    public $setting_group = array(
+	      'resize',
+	      'original',
+	      'backup'
+	    );
+
+	    function __construct() {
+	        add_action('smush_setting_column_right_end', array( $this, 'full_size_options' ), '', 2 );
+	    }
+
 		/**
 		 * Prints the Header Section for a container as per the Shared UI
 		 *
@@ -98,7 +108,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		                                <?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
 		                            </small>
 		                        </label>
-		                        <span class="toggle float-r">
+		                        <span class="toggle float-l">
 		                            <input type="checkbox" class="toggle-checkbox"
 		                               id="<?php echo $setting_m_key . '-quick-setup'; ?>"
 		                               name="smush_settings[]" <?php checked( $setting_val, 1, true ); ?> value="<?php echo $setting_m_key; ?>" tabindex="0">
@@ -236,8 +246,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					}else{
 						if( !$settings['resize'] ) {
 							//Output a button/link to enable respective setting
-                            if( !is_multisite() || !$settings['networkwide'] ) {
-                                printf( esc_html__( "%sENABLE IMAGE RESIZING%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
+							if( !is_multisite() || !$settings['networkwide'] ) {
+							    printf( esc_html__( "%sENABLE IMAGE RESIZING%s", "wp-smushit" ), '<button class="wp-smush-resize-enable button button-small">', '</button>' );
                             }else {
                                 $settings_link = $wpsmushit_admin->settings_link( array(), true );
                                 printf( esc_html__( "%sENABLE IMAGE RESIZING%s", "wp-smushit" ), '<a href="' . $settings_link .'" class="wp-smush-lossy-enable button button-small">', '</a>' );
@@ -340,35 +350,59 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$this->container_header( 'wp-smush-premium', 'wp-smush-pro-settings-box', esc_html__( "ADVANCED SETTINGS", "wp-smushit" ), $pro_only, false ); ?>
 				<div class="box-content"><?php
 
-			    $pro_settings = apply_filters( 'wp_smush_pro_settings', $pro_settings );
-                //Iterate Over all the available settings, and print a row for each of them
+				$pro_settings = apply_filters( 'wp_smush_pro_settings', $pro_settings );
+				//Iterate Over all the available settings, and print a row for each of them
                 foreach ( $pro_settings as $setting_key ) {
+                    //Output the Full size setting option only once
+					if( in_array( $setting_key, $this->setting_group ) ) {
+					    if( ( 'original' != $setting_key ) ) {
+					        continue;
+					    }
+					}
+
                     if ( isset( $wpsmushit_admin->settings[ $setting_key ] ) ) {
                         $setting_m_key = WP_SMUSH_PREFIX . $setting_key;
-                        $setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0; ?>
+                        $label = !empty( $wpsmushit_admin->settings[ $setting_key ]['short_label'] ) ? $wpsmushit_admin->settings[ $setting_key ]['short_label'] : $wpsmushit_admin->settings[ $setting_key ]['label'];
+                        $setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;?>
                         <div class='wp-smush-setting-row wp-smush-advanced'>
-                            <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
-                            <span
-                                class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $setting_key ]['label']; ?></span>
-                                <br/>
-                                <small class="smush-setting-description">
-                                    <?php echo $wpsmushit_admin->settings[ $setting_key ]['desc']; ?>
-                                </small>
-                            </label>
-                            <span class="toggle float-r">
-                                <input type="checkbox" class="toggle-checkbox"
-                                       id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?>
-                                       value="1"
-                                       name="<?php echo $setting_m_key; ?>" tabindex= "0">
-                                <label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
-                            </span>
+                            <div class="column column-left">
+                                <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
+                                    <span class="wp-smush-setting-label"><?php echo $label; ?></span>
+                                    <br/>
+                                    <small class="smush-setting-description">
+                                        <?php echo $wpsmushit_admin->settings[ $setting_key ]['desc']; ?>
+                                    </small>
+                                </label>
+                            </div>
+                            <div class="column column-right"><?php
+						    //Do not print for Resize, Smush Original, Backup
+						    if( !in_array( $setting_key, $this->setting_group ) ) { ?>
+                                <span class="toggle float-l">
+                                    <input type="checkbox" class="toggle-checkbox"
+                                           id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?>
+                                           value="1"
+                                           name="<?php echo $setting_m_key; ?>" tabindex= "0">
+                                    <label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
+                                </span>
+                                <div class="column-right-content">
+                                    <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
+                                        <span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $setting_key ]['label']; ?></span><br/><?php
+                                        $this->settings_desc( $setting_key );
+                                        do_action('smush_setting_label_end', $setting_key);
+                                        ?>
+                                    </label>
+                                </div><?php
+                            }
+                            do_action( 'smush_setting_column_right_end', $setting_key, 'advanced' );
+                            ?>
+
+                            </div>
                             <?php
-                             /**
-                             * Perform a action after setting row content
-                             */
-                            do_action('smush_setting_row_end', $setting_key );?>
-                        </div>
-                        <hr><?php
+	                             /**
+	                             * Perform a action after setting row content
+	                             */
+	                            do_action('smush_setting_row_end', $setting_key );?>
+                        </div><?php
                     }
                 }
 			}
@@ -386,7 +420,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		}
 
 		/**
-		 * Process and display the options form
+		 * Process and display the Settings
+		 * Since Free and Pro version have different sequence of settings, we've a separate method advanced_settings(),
+		 * Which prints out pro settings fro free version, otherwise all settings are printed via the current function
+		 *
+		 * To print Full size smush, resize and backup in group, we hook at `smush_setting_column_right_end`
+		 *
 		 */
 		function options_ui( $configure_screen = false ) {
 			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
@@ -413,7 +452,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<?php echo $wpsmushit_admin->settings['networkwide']['desc']; ?>
 						</small>
 					</label>
-					<span class="toggle float-r">
+					<span class="toggle float-l">
 						<input type="checkbox" class="toggle-checkbox"
 					       id="<?php echo $opt_networkwide; ?>"
 					       name="<?php echo $opt_networkwide; ?>" <?php checked( $opt_networkwide_val, 1, true ); ?> value="1" tabindex="0">
@@ -427,37 +466,70 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			//Do not print settings in network page if networkwide settings are disabled
 			if( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && !is_network_admin() ) || is_network_admin() ) {
-			    foreach( $wpsmushit_admin->settings as $name => $values ) {
-			        //Skip networkwide settings, we already printed it
-			        if( 'networkwide' == $name ) {
-			            continue;
-			        }
+				foreach( $wpsmushit_admin->settings as $name => $values ) {
+
+					//Skip networkwide settings, we already printed it
+					if( 'networkwide' == $name ) {
+						continue;
+					}
+
 			        //Skip premium features if not a member
 			        if( !in_array( $name, $wpsmushit_admin->basic_features ) && !$WpSmush->validate_install() ) {
 			            continue;
 			        }
+
 			        $setting_m_key = WP_SMUSH_PREFIX . $name;
 					$setting_val   = !empty( $settings[$name] ) ? $settings[$name] : 0;
+
 					//Set the default value 1 for auto smush
 					if( 'auto' == $name && ( false === $setting_val || 0 == $setting_val || empty( $setting_val ) ) ) {
 					    $setting_val = 1;
-					}?>
-			        <div class='wp-smush-setting-row wp-smush-basic'>
-                        <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
-                            <span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span><br/>
-                            <small class="smush-setting-description">
-                                <?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
-                            </small>
-                        </label>
-                        <span class="toggle float-r">
-                            <input type="checkbox" class="toggle-checkbox"
-                               id="<?php echo $setting_m_key; ?>"
-                               name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1" tabindex="0">
-                            <label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
-                        </span><?php
-                        $this->image_sizes(); ?>
+					}
+
+					//Group Original, Resize and Backup for pro users
+					if( in_array( $name, $this->setting_group ) ) {
+					    if( ( 'original' != $name && $WpSmush->validate_install() ) || ( !$WpSmush->validate_install() && 'resize' != $name ) ) {
+					        continue;
+					    }
+					}
+
+					$label = !empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label']; ?>
+					<div class='wp-smush-setting-row wp-smush-basic'>
+						<div class="column column-left">
+							<label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
+	                            <span class="wp-smush-setting-label"><?php echo $label; ?></span><br/>
+	                            <small class="smush-setting-description"><?php
+	                                //For pro settings, print a different description for group setting
+	                                if( 'original' != $name ) {
+	                                    echo $wpsmushit_admin->settings[ $name ]['desc'];
+	                                }?>
+	                            </small>
+	                        </label>
+                        </div>
+						<div class="column column-right"><?php
+						    //Do not print for Resize, Smush Original, Backup
+						    if( !in_array( $name, $this->setting_group ) ) { ?>
+                                <span class="toggle float-l">
+                                    <input type="checkbox" class="toggle-checkbox"
+                                       id="<?php echo $setting_m_key; ?>"
+                                       name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1" tabindex="0">
+                                    <label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
+                                </span>
+                                <div class="column-right-content">
+                                    <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
+                                        <span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span><br/>
+                                    </label><?php
+                                    $this->settings_desc( $name );
+                                    $this->image_sizes( $name );?>
+                                </div><?php
+                            }
+                            /**
+                            * Print/Perform action in right setting column, Used to group Pro settings
+                            */
+                            do_action('smush_setting_column_right_end', $name); ?>
+                        </div>
 				    </div>
-				<hr/><?php
+				    <?php
 				}
 				do_action( 'wp_smush_after_basic_settings' );
 				$this->advanced_settings( $configure_screen );
@@ -474,7 +546,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function ui() {
 
-			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_settings, $wpsmush_dir;
 
 			if( !$WpSmush->validate_install() ) {
 				//Reset Transient
@@ -518,6 +590,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$wpsmush_share->share_widget(); ?>
 				</div>
 			<?php
+			$wpsmush_dir->ui();
 			//End of "!is_network()' check
 			}?>
 
@@ -928,11 +1001,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 
 			$div_end .=
-			'<div class="wp-smush-submit-wrap">
+			'<span class="wp-smush-submit-wrap">
 				<input type="submit" id="wp-smush-save-settings" class="button button-grey"
 				       value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
 		        <span class="spinner"></span>
-		        </div>
+		        <span class="smush-submit-note">' . esc_html__( "Smush will automatically check for any images that need re-smushing.", "wp-smsuhit") . '</span>
+		        </span>
 			</form>';
 
 			//For Configuration screen we need to show the advanced settings in single box
@@ -962,16 +1036,48 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			return $message;
 		}
 
-        function image_sizes( $name = '' ) {
-                if( empty( $name ) || 'auto' != $name ) {
-                    return;
-                }
-                global $wpsmushit_admin, $wpsmush_settings;
-                //Additional Image sizes
-                $image_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
-                $sizes = $wpsmushit_admin->image_dimensions();
+		/**
+        * Prints all the registererd image sizes, to be selected/unselected for smushing
+        *
+        * @param string $name
+        */
+		function image_sizes( $name = '' ) {
+            if( empty( $name ) || 'auto' != $name ) {
+                return;
+            }
+            global $wpsmushit_admin, $wpsmush_settings;
+            //Additional Image sizes
+            $image_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
+            $sizes = $wpsmushit_admin->image_dimensions();
+            if( !empty( $sizes ) ) { ?>
+                <!-- List of image sizes recognised by WP Smush -->
+                <div class="wp-smush-image-size-list">
+                    <p><?php printf( esc_html__("Every time you upload an image to your site, WordPress generates a resized version of that image for every default and/or custom image size that your theme has registered. This means there are multiple versions of your images in your media library.%sChoose the images size/s below that you would like optimized:%s", "wp-smushit"), "<br /> <br />", "<br />"); ?></p><?php
+                    foreach ( $sizes as $size_k => $size ) {
+                        //If image sizes array isn't set, mark all checked ( Default Values )
+                        if ( false === $image_sizes ) {
+                            $checked = true;
+                        }else{
+                            $checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes ) : false;
+                        } ?>
+                        <label>
+                            <input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>"><?php
+                            if( isset( $size['width'], $size['height'] ) ) {
+                                echo $size_k . " (" . $size['width'] . "x" . $size['height'] . ") ";
+                            } ?>
+                        </label><?php
+                    } ?>
+                </div><?php
             }
 
+        }
+
+        /**
+        * Prints Dimensions required for Resizing
+        *
+        * @param string $name
+        * @param int $setting_status
+         */
         function resize_settings( $name = '', $setting_status = 0 ) {
             if( empty( $name ) || 'resize' != $name ) {
                 return;
@@ -996,5 +1102,76 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                 <div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-height hidden"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
             </div><?php
         }
+
+        /**
+        * Prints Resize, Smush Original, and Backup Settings
+        *
+        * @param string $name Name of the current setting being processed
+        */
+        function full_size_options( $name = '', $section = '' ) {
+		    if( 'original' != $name && 'resize' != $name ) {
+		        return;
+		    }
+		    global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
+		    foreach( $this->setting_group as $name ) {
+		        //Do not print Smush Original, Backup for free users
+		        if( !$WpSmush->validate_install() ) {
+		            if( 'resize' == $name && !empty( $section ) ) {
+		             continue;
+		            }elseif( empty( $section ) && 'resize' != $name ) {
+		                continue;
+		            }
+		        }
+		        $setting_val = $wpsmush_settings->settings[$name];
+		        //Turn off settings for free users
+                if( !in_array( $name, $wpsmushit_admin->basic_features ) && !$WpSmush->validate_install() ) {
+                    $setting_val = 0;
+                }
+		        ?>
+		        <div class="smush-sub-setting-wrapper">
+                     <span class="toggle float-l">
+                        <input type="checkbox" class="toggle-checkbox"
+                               id="<?php echo WP_SMUSH_PREFIX . $name ; ?>" <?php checked( $setting_val, 1, true ); ?>
+                               value="1"
+                               name="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex= "0">
+                        <label class="toggle-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>"></label>
+                    </span>
+                    <div class="column-right-content">
+                        <label class="inline-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex="0">
+                            <span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span><br/>
+                        </label>
+                        <span class="wp-smush-setting-desc"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span><br/>
+                    </div>
+                </div><?php
+		    }
+        }
+
+        /**
+        *
+        * @param string $setting_key
+        */
+        function settings_desc( $setting_key = '' ) {
+            if( empty( $setting_key ) ) {
+                return;
+            } ?>
+            <div class="column-right-content-description"><?php
+                switch ( $setting_key ) {
+
+                    case 'keep_exif':
+                        esc_html_e("Note: This data, called EXIF, adds to the size of the image. While this information might be important to photographers, it’s unnecessary for most users and safe to remove.", "wp-smushit");
+                        break;
+                    case 'png_to_jpg':
+                        esc_html_e("Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and any hard-coded URLs on your site that contain the original PNG filename will need to be updated.", "wp-smushit");
+                        break;
+                    case 's3':
+                        esc_html_e("Note: For this process to happen automatically you need automatic smushing enabled.", "wp-smushit");
+                        break;
+                    case 'default':
+                        break;
+                } ?>
+            </div><?php
+        }
     }
+    global $wpsmush_bulkui;
+	$wpsmush_bulkui = new WpSmushBulkUi();
 }

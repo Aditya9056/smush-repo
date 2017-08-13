@@ -30,12 +30,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				return;
 			}
 
-			//Hook early for free version, in order to display it before the advanced settings
-			add_action( 'wp_smush_before_advanced_settings', array( $this, 'ui' ) );
-
-			//Hook UI at the end of Settings UI
-			add_action( 'smush_settings_ui_bottom', array( $this, 'ui' ) );
-
 			//Output Stats after Resize savings
 			add_action( 'stats_ui_after_resize_savings', array( $this, 'stats_ui' ) );
 
@@ -223,18 +217,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * Output the required UI for WP Smush All page
 		 */
 		function ui() {
-			global $WpSmush, $wpsmushit_admin;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_bulkui;
 
 			//Print Directory Smush UI, if not a network site
 			if ( is_network_admin() ) {
 				return;
-			}
-
-			//Remove the early hook
-			if ( $WpSmush->validate_install() ) {
-				remove_action( 'wp_smush_before_advanced_settings', array( $this, 'ui' ) );
-			} else {
-				remove_action( 'smush_settings_ui_bottom', array( $this, 'ui' ) );
 			}
 
 			//Reset the bulk limit
@@ -248,7 +235,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$upgrade_link = '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ) . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
 			/** Directory Browser and Image List **/
-			$wpsmushit_admin->bulk_ui->container_header( 'wp-smush-dir-browser', 'wp-smush-dir-browser', esc_html__( "DIRECTORY SMUSH", "wp-smushit" ) ); ?>
+			$wpsmush_bulkui->container_header( 'wp-smush-dir-browser', 'wp-smush-dir-browser', esc_html__( "DIRECTORY SMUSH", "wp-smushit" ) ); ?>
             <div class="box-content">
             <div class="row">
                 <div class="wp-smush-dir-desc roboto-regular">

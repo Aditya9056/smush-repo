@@ -54,7 +54,8 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$plugin_url     = esc_url( "https://wordpress.org/plugins/amazon-s3-and-cloudfront/" );
 			$settings['s3'] = array(
 				'label' => esc_html__( 'Enable Amazon S3 support', 'wp-smushit' ),
-				'desc'  => sprintf( esc_html__( 'Storing your image on S3 buckets using %sWP Offload S3%s? Smush can detect and smush those assets for you, including when you\re removing files from your host server. Note: For this process to happen automatically for new images you need automatic smushing enabled.2', 'wp-smushit' ), "<a href='" . $plugin_url . "' target = '_blank'>", "</a>", "<b>", "</b>" )
+                'short_label' => esc_html__( 'Amazon S3', 'wp-smushit' ),
+				'desc'  => sprintf( esc_html__( 'Storing your image on S3 buckets using %sWP Offload S3%s? Smush can detect and smush those assets for you, including when you\re removing files from your host server.', 'wp-smushit' ), "<a href='" . $plugin_url . "' target = '_blank'>", "</a>", "<b>", "</b>" )
 			);
 
 			return $settings;

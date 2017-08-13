@@ -33,7 +33,7 @@ var dash_offset = function (percent) {
     //Get the dasharray value
     var dasharray = jQuery('.wp-smush-svg-circle-progress').attr('stroke-dasharray');
     return dasharray - ( dasharray * percent );
-}
+};
 
 var update_dashoffset = function () {
     var total = wp_smushit_data.count_total;
@@ -305,7 +305,7 @@ jQuery(function ($) {
                     $('.bulk-smush-wrapper .wp-smush-remaining-count').html(self.ids.length);
                 }
             }
-        }
+        };
 
         this.update_progress = function (_res) {
             //If not bulk
@@ -541,7 +541,7 @@ jQuery(function ($) {
                     wp_smushit_data.resmush.splice(index, 1);
                 }
             }
-        }
+        };
 
         this.start();
         this.run();
@@ -677,7 +677,7 @@ jQuery(function ($) {
         }
 
         var width_error = false;
-        var height_error = false
+        var height_error = false;
 
         //If resize settings is not enabled, return true
         if (!resize_checkbox.is(':checked')) {
@@ -746,7 +746,7 @@ jQuery(function ($) {
             ++u;
         } while(Math.abs(a) >= thresh && u < units.length - 1);
         return a.toFixed(b)+' '+units[u];
-    }
+    };
 
 
     //Stackoverflow: http://stackoverflow.com/questions/1726630/formatting-a-number-with-exactly-two-decimals-in-javascript
@@ -901,7 +901,7 @@ jQuery(function ($) {
                 remove_element($('.wp-smush-re-check-message'));
             }
         });
-    }
+    };
 
     /**
      * Get directory list using Ajax
@@ -924,7 +924,7 @@ jQuery(function ($) {
             async: false
         });
         return res;
-    }
+    };
     /**
      * Hide the popup and reset the opacity for the button
      *
@@ -940,7 +940,7 @@ jQuery(function ($) {
         //Reset the opacity for content and scan button
         $('.wp-smush-select-dir, .wp-smush-list-dialog .box .content').css({'opacity': '1'});
         $('.wp-smush-select-button-wrap .spinner').removeClass('is-active');
-    }
+    };
 
     /**
      * Initialize accordion
@@ -963,7 +963,7 @@ jQuery(function ($) {
                 }
             }
         }
-    }
+    };
 
     /**
      * Check if all the elements in the directory are smushed or not
@@ -1055,7 +1055,7 @@ jQuery(function ($) {
             parent.removeClass('active').find('.wp-smush-image-list-inner').removeClass("show");
         }
 
-    }
+    };
 
     /**
      * Add choose directory button at the top
@@ -1233,7 +1233,7 @@ jQuery(function ($) {
             wp_smushit_data.size_before = 'undefined' != typeof image_stats.savings_conversion.size_before ? parseInt(wp_smushit_data.size_before) + parseInt(image_stats.savings_conversion.size_before) : parseInt(wp_smushit_data.size_before);
             wp_smushit_data.size_after = 'undefined' != typeof image_stats.savings_conversion.size_after ? parseInt(wp_smushit_data.size_after) + parseInt(image_stats.savings_conversion.size_after) : parseInt(wp_smushit_data.size_after);
         }
-    }
+    };
 
     /**
      * Update all stats sections based on the response.
@@ -1343,7 +1343,7 @@ jQuery(function ($) {
 
         if( '' == notice_type ) {
             //Get the Total and Optimised image count
-            var image_ele = $('li.wp-smush-image-ele')
+            var image_ele = $('li.wp-smush-image-ele');
             var total = image_ele.length;
             var remaning = image_ele.filter(':not(.optimised)').length;
             var smushed = total - remaning;
@@ -1380,7 +1380,7 @@ jQuery(function ($) {
         //Update Directory progress and remove any loaders still in there
         update_smush_progress();
 
-    }
+    };
 
     /**
      * Start Optimising all the images listed in last directory scan
@@ -1501,7 +1501,7 @@ jQuery(function ($) {
             }
 
         });
-    }
+    };
 
     //Scroll the element to top of the page
     var goToByScroll = function (selector) {
@@ -1803,7 +1803,7 @@ jQuery(function ($) {
         var type = $('.wp-smush-scan').data('type');
         type = 'undefined' == typeof type ? 'media' : type;
 
-        var smushed_count = 'undefined' != typeof wp_smushit_data.count_smushed ? wp_smushit_data.count_smushed : 0
+        var smushed_count = 'undefined' != typeof wp_smushit_data.count_smushed ? wp_smushit_data.count_smushed : 0;
 
         var smush_percent = ( smushed_count / wp_smushit_data.count_total ) * 100;
         smush_percent = precise_round( smush_percent, 1 );
@@ -1826,7 +1826,7 @@ jQuery(function ($) {
         var params = {
             action: 'delete_resmush_list',
             type: type
-        }
+        };
         //Delete resmush list, @todo: update stats from the ajax response
         $.post(ajaxurl, params, function (res) {
             //Remove the whole li element on success
@@ -2287,7 +2287,7 @@ jQuery(function ($) {
         //Update Directory Smush, as soon as the page loads
         var stats_param = {
             action: 'get_dir_smush_stats'
-        }
+        };
         $.get(ajaxurl, stats_param, function (r) {
 
             //Hide the spinner
@@ -2304,7 +2304,7 @@ jQuery(function ($) {
                 //Append the text
                 $('div.smush-dir-savings span.wp-smush-stats').append(wp_smush_msgs.ajax_error);
                 $('div.smush-dir-savings span.wp-smush-stats span').hide();
-                return;
+
             } else {
                 //Update the stats
                 update_cummulative_stats(r.data);
