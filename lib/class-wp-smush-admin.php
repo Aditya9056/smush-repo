@@ -1553,7 +1553,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//If there aren't any images in the library, return the notice
 			if ( 0 == $wpsmush_db->get_media_attachments( true ) ) {
-				$notice = esc_html__( "We haven’t found any images in your media library yet so there’s no smushing to be done!", "wp-smushit" );
+				$notice = esc_html__( "We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" );
 				$resp   = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $notice . '
 				<i class="dev-icon dev-icon-cross"></i>
 				</div>';

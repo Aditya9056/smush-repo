@@ -29,23 +29,6 @@ var progress_bar = function (cur_ele, txt, state) {
     }
 };
 
-var dash_offset = function (percent) {
-    //Get the dasharray value
-    var dasharray = jQuery('.wp-smush-svg-circle-progress').attr('stroke-dasharray');
-    return dasharray - ( dasharray * percent );
-};
-
-var update_dashoffset = function () {
-    var total = wp_smushit_data.count_total;
-    if (total > 0) {
-        var dashoffset = dash_offset(wp_smushit_data.count_smushed / total);
-        var circle_progress = jQuery('.wp-smush-svg-circle-progress');
-        if (typeof dashoffset != 'undefined' && circle_progress.length) {
-            circle_progress.css({'stroke-dashoffset': dashoffset});
-        }
-    }
-};
-
 var membership_validity = function (data) {
     var member_validity_notice = jQuery('#wp-smush-invalid-member');
 
@@ -196,7 +179,7 @@ jQuery(function ($) {
             this.$button.prop("disabled", false);
             //For Bulk process, Enable other buttons
             $('button.wp-smush-all').removeAttr('disabled');
-            $('button.wp-smush-scan, button.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings').removeAttr('disabled');
+            $('button.wp-smush-scan, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings').removeAttr('disabled');
         };
 
         this.show_loader = function () {
@@ -564,7 +547,7 @@ jQuery(function ($) {
         $('.wp-smush-notice.wp-smush-settings-updated').remove();
 
         //Disable Resmush and scan button
-        $('.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button, button.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings').attr('disabled', 'disabled');
+        $('.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings').attr('disabled', 'disabled');
 
         //Check for ids, if there is none (Unsmushed or lossless), don't call smush function
         if (typeof wp_smushit_data == 'undefined' ||
@@ -1242,9 +1225,6 @@ jQuery(function ($) {
      */
     var update_stats = function () {
 
-        // Update Progress on Circle.
-        update_dashoffset();
-
         //Calculate updated savings in bytes
         wp_smushit_data.savings_bytes = parseInt(wp_smushit_data.size_before) - parseInt(wp_smushit_data.size_after);
 
@@ -1550,10 +1530,6 @@ jQuery(function ($) {
             var smush_percent = ( c_stats.smushed / c_stats.total_count ) * 100;
             smush_percent = precise_round( smush_percent, 1 );
 
-            //Update Circle Progress
-            if (c_stats.dash_offset) {
-                $('circle.wp-smush-svg-circle-progress').css({'stroke-dashoffset': c_stats.dash_offset});
-            }
             //Smushed Percent
             if (smush_percent) {
                 $('div.wp-smush-count-total span.wp-smush-images-percent').html(smush_percent);
@@ -1847,7 +1823,7 @@ jQuery(function ($) {
     });
 
     //Enable Super Smush
-    $('button.wp-smush-lossy-enable').on('click', function (e) {
+    $('a.wp-smush-lossy-enable').on('click', function (e) {
         e.preventDefault();
 
         //Enable Super Smush

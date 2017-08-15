@@ -441,6 +441,8 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 *
 		 * @param bool $format Format the Bytes in readable format
 		 *
+		 * @param bool $return_count Return the resized image count, Set to false by default
+		 *
 		 * @return array|bool|mixed|string Array of {
 		 *      'bytes',
 		 *      'before_size',
@@ -448,11 +450,19 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 * }
 		 *
 		 */
-		function resize_savings( $force_update = true, $format = false ) {
+		function resize_savings( $force_update = true, $format = false, $return_count =  false ) {
 			$savings = '';
 
 			if ( ! $force_update ) {
 				$savings = wp_cache_get( WP_SMUSH_PREFIX . 'resize_savings', 'wp-smush' );
+			}
+
+			$count = wp_cache_get( WP_SMUSH_PREFIX . 'resize_count', 'wp-smush' );
+
+			//If resize image count is not stored in db, recalculate
+			if( $return_count && !$count ) {
+				$count = 0;
+				$force_update = true;
 			}
 
 			global $wpsmushit_admin;
@@ -488,6 +498,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 									$savings['size_after'] += $meta['size_after'];
 								}
 							}
+							$count++;
 						}
 					}
 					//Update the offset
@@ -507,9 +518,10 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				}
 
 				wp_cache_set( WP_SMUSH_PREFIX . 'resize_savings', $savings, 'wp-smush' );
+				wp_cache_set( WP_SMUSH_PREFIX . 'resize_count', $count, 'wp-smush' );
 			}
 
-			return $savings;
+			return $return_count ? $count : $savings;
 		}
 
 		/**

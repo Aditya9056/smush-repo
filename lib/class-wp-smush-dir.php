@@ -30,6 +30,12 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				return;
 			}
 
+			//Hook early for free version, in order to display it before the advanced settings
+			add_action( 'wp_smush_before_advanced_settings', array( $this, 'ui' ) );
+
+			//Hook UI at the end of Settings UI
+			add_action( 'smush_settings_ui_bottom', array( $this, 'ui' ) );
+
 			//Output Stats after Resize savings
 			add_action( 'stats_ui_after_resize_savings', array( $this, 'stats_ui' ) );
 
@@ -74,13 +80,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$dir_smush_stats = get_option( 'dir_smush_stats' );
 			$human           = $percent = 0;
 			if ( ! empty( $dir_smush_stats ) && ! empty( $dir_smush_stats['dir_smush'] ) ) {
-				$human   = ! empty( $dir_smush_stats['dir_smush']['percent'] ) && ! $dir_smush_stats['dir_smush']['percent'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
+				$human   = ! empty( $dir_smush_stats['dir_smush']['bytes'] ) && $dir_smush_stats['dir_smush']['bytes'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
 				$percent = ! empty( $dir_smush_stats['dir_smush']['percent'] ) && $dir_smush_stats['dir_smush']['percent'] > 0 ? number_format_i18n( $dir_smush_stats['dir_smush']['percent'], 1, '.', '' ) : 0;
-			} ?>
+			}?>
             <!-- Savings from Directory Smush -->
             <div class="row smush-dir-savings">
-            <span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "DIRECTORY SMUSH SAVINGS", "wp-smushit" ); ?></strong></span>
-            <span class="float-r wp-smush-stats">
+            <span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "Directory-smush savings", "wp-smushit" ); ?></strong></span>
+            <span class="wp-smush-stats<?php echo $human > 0 ? ' float-r' : ' float-l'?>">
 	            <span class="spinner" style="visibility: visible" title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
 				<?php
 				if ( $human > 0 ) { ?>
@@ -92,11 +98,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                         %</span><?php
 					}
 				} else { ?>
-                    <span class="wp-smush-stats-human">
-		                <a href="#wp-smush-dir-browser">
-                            <button class="button button-small wp-smush-dir-link"
-                                    type="button"><?php esc_html_e( "SMUSH DIRECTORY", "wp-smushit" ); ?></button>
-                        </a>
+                    <span class="wp-smush-stats-human  settings-desc"><?php esc_html_e("Smush images that aren't located in your uploads folder.", "wp-smushit"); ?>
+		                <a href="#wp-smush-dir-browser" class="wp-smush-dir-link"><?php esc_html_e( "Choose directory", "wp-smushit" ); ?></a>
 	                </span>
                     <span class="wp-smush-stats-sep hidden">/</span>
                     <span class="wp-smush-stats-percent"></span>
