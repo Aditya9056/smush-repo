@@ -2300,6 +2300,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $wpsmush_settings, $wpsmushit_admin, $WpSmush;
 
+			$quick_settings = array();
 			//Get the settings from $_POST
 			if ( ! empty( $_POST['smush_settings'] ) && is_array( $_POST['smush_settings'] ) ) {
 				$quick_settings = $_POST['smush_settings'];

@@ -698,6 +698,10 @@ table.wp-smush-stats-holder tr td:first-child {
     padding: 0 30px 30px;
 }
 
+.wpmud .smush-page-wrap .dev-box.bulk-smush-wrapper .box-container {
+    padding: 0 30px;
+}
+
 .wpmud .smush-page-wrap .dev-box .box-title {
     height: 67px;
     margin: 0 0px 28px;
@@ -853,11 +857,17 @@ Quick Setup Dialog
     border-bottom: 1px solid #E6E6E6;
 }
 
+div.smush-quick-setup-settings div.columns.last {
+    margin-top: 25px;
+}
+
 div.smush-quick-setup-settings div.submit-button-wrap {
+    background: none;
     overflow: hidden;
 }
 
-div.smush-quick-setup-settings div.submit-button-wrap button {
+.wpmud div.smush-quick-setup-settings div.submit-button-wrap button {
+    background-color: #00AEEF;
     float: right;
 }
 
@@ -1404,9 +1414,7 @@ a.wp-smush-lossy-enable {
 }
 
 .wpmud .wp-smush-hb-cta .button.button-cta {
-    background-color: #FFEA00;
     box-shadow: none;
-    color: #4e4b10;
     width: 100%;
 }
 
@@ -1414,8 +1422,6 @@ a.wp-smush-lossy-enable {
 .wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:active,
 .wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:focus {
     box-shadow: none;
-    background: #f7e303 !important;
-    color: #4e4b10 !important;
 }
 
 /** Re Smush **/
@@ -1568,10 +1574,10 @@ a.wp-smush-lossy-enable {
 /** Super Smush Content **/
 
 .wp-smush-super-smush-promo {
-    background-image: url(../images/welcome-notice.png);
+    background-image: url(../images/smush-promo.png);
     background-repeat: no-repeat;
-    background-position: 0 bottom;
-    height: 180px;
+    background-position: 0 18px;
+    height: 165px;
     margin-top: 8px;
     overflow: hidden;
 }
@@ -1585,6 +1591,17 @@ a.wp-smush-lossy-enable {
     padding: 20px 30px;
     position: relative;
     width: 58%;
+}
+
+.dev-box.wp-smush-premium .wp-smush-super-smush-promo {
+    background-image: url('../images/smush-promo.png');
+    background-position: 30px 12px;
+    height: 135px;
+    margin-top: 0;
+}
+.dev-box.wp-smush-premium .wp-smush-super-smush-content {
+    margin: 30px 30px 20px 200px;
+    width: auto;
 }
 
 /** Arrow **/

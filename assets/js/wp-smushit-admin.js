@@ -649,7 +649,7 @@ jQuery(function ($) {
      *
      */
     var validate_resize_settings = function (wrapper_div, width_only, height_only) {
-        var resize_checkbox = wrapper_div.find('#wp-smush-resize');
+        var resize_checkbox = wrapper_div.parent().find('#wp-smush-resize');
         if (!height_only) {
             var width_input = wrapper_div.find('#wp-smush-resize_width');
             var width_error_note = wrapper_div.find('.wp-smush-size-info.wp-smush-update-width');
