@@ -1185,6 +1185,9 @@ jQuery(function ($) {
             //Add to Resize Savings
             wp_smushit_data.savings_resize = 'undefined' != typeof image_stats.savings_resize.bytes ? parseInt(wp_smushit_data.savings_resize) + parseInt(image_stats.savings_resize.bytes) : parseInt(wp_smushit_data.savings_resize);
 
+            //Update Resize count
+            wp_smushit_data.count_resize = 'undefined' != typeof image_stats.savings_resize.bytes ? parseInt(wp_smushit_data.count_resize) + 1 : wp_smushit_data.count_resize;
+
             //Add to Conversion Savings
             wp_smushit_data.savings_conversion = 'undefined' != typeof image_stats.savings_conversion && 'undefined' != typeof image_stats.savings_conversion.bytes ? parseInt(wp_smushit_data.savings_conversion) + parseInt(image_stats.savings_conversion.bytes ) : parseInt(wp_smushit_data.savings_conversion);
         } else if( 'directory_smush' == type ) {
@@ -1246,6 +1249,12 @@ jQuery(function ($) {
 
         //Update image count in share message
         $('span.smush-share-image-count').html( wp_smushit_data.count_images );
+
+        //Update Resize image count
+        $('div.wp-smush-count-resize-total span.wp-smush-total-optimised').html( wp_smushit_data.count_resize );
+
+        //Update Attachment image count
+        $('div.wp-smush-count-attachment-total span.wp-smush-total-optimised').html( wp_smushit_data.count_smushed );
 
         //Update image count in share message
 
@@ -1985,7 +1994,7 @@ jQuery(function ($) {
     }
 
     //WP Smush all : Scan Images
-    $('div.row').on('click', 'button.wp-smush-browse', function (e) {
+    $('div.row').on('click', 'button.wp-smush-browse, a.wp-smush-dir-link', function (e) {
 
         e.preventDefault();
 
@@ -2101,6 +2110,8 @@ jQuery(function ($) {
 
             //Clone and add Smush button
             add_smush_button();
+
+            window.location.hash = '#wp-smush-dir-browser';
 
         });
     });

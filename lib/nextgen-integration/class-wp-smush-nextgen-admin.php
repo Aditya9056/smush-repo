@@ -334,55 +334,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		}
 
 		/**
-		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not
-		 *
-		 * @return array
-		 */
-
-		private function button_state( $resmush ) {
-			$button = array(
-				'cancel' => false,
-			);
-
-			$button['text'] = __( 'Bulk Smush Now', 'wp-smushit' );
-
-			//If not resmush and All the images are already smushed
-			if ( ! $resmush && $this->smushed_count === $this->total_count ) {
-				$button['text']     = __( 'All Done!', 'wp-smushit' );
-				$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
-				$button['disabled'] = 'disabled';
-			} elseif ( $resmush ) {
-				$button['class'] = 'wp-smush-button wp-smush-resmush wp-smush-nextgen-bulk';
-			} else {
-				$button['class'] = 'wp-smush-button wp-smush-nextgen-bulk';
-			}
-
-			return $button;
-		}
-
-		/**
-		 * Display the bulk smushing button
-		 *
-		 * @param bool $resmush
-		 * @param bool $return Whether to echo the button content or echo it
-		 *
-		 * @return string If return is set to true, return the button content,
-		 * else echo it
-		 *
-		 */
-		function setup_button( $resmush = false, $return = false ) {
-			$button   = $this->button_state( $resmush );
-			$disabled = ! empty( $button['disabled'] ) ? ' disabled="disabled"' : '';
-			$content  = '<button class="button button-primary ' . $button['class'] . '" name="smush-all-nextgen" ' . $disabled . '>
-				<span>' . $button['text'] . '</span>
-			</button>';
-			if ( $return ) {
-				return $content;
-			}
-			echo $content;
-		}
-
-		/**
 		 *
 		 */
 		function bulk_smush_ui() {
@@ -447,7 +398,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' hidden' : ''; ?>"><?php
 				//If all the images in media library are smushed
 				//Button Text
-				$button_content = esc_html__( "BULK SMUSH NOW", "wp-smushit" );
+				$button_content = esc_html__( "BULK SMUSH", "wp-smushit" );
 				// DO not show the remaining notice if we have resmush ids
 				?>
 				<div class="wp-smush-notice wp-smush-remaining  <?php echo count( $this->resmush_ids ) > 0 ? ' hidden' : ''; ?>">

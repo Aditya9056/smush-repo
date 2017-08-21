@@ -1683,7 +1683,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$auto_smush = $wpsmush_settings->settings['auto'];
 
 			//Keep the auto smush on by default
-			if ( $auto_smush === false || empty( $auto_smush ) || 0 == $auto_smush ) {
+			if ( $auto_smush === false || !isset( $auto_smush )  ) {
 				$auto_smush = 1;
 			}
 
@@ -2173,6 +2173,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
+			error_log( "Auto smush enabled");
+			error_log( $this->is_auto_smush_enabled() );
 			//If auto Smush is disabled
 			if ( ! $this->is_auto_smush_enabled() ) {
 				return;

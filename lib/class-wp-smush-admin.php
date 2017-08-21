@@ -464,6 +464,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'count_smushed'      => $this->smushed_count,
 					'count_total'        => $this->total_count,
 					'count_images'       => $this->stats['total_images'],
+					'count_resize'       => $this->stats['resize_count'],
 					'unsmushed'          => $this->unsmushed_attachments,
 					'resmush'            => $this->resmush_ids,
 					'size_before'        => $this->stats['size_before'],
@@ -983,31 +984,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Display the bulk smushing button
-		 *
-		 * @param bool $resmush
-		 *
-		 * @param bool $return Whether to return the button content or print it
-		 *
-		 * @return Returns or Echo the content
-		 */
-		function setup_button( $resmush = false, $return = false ) {
-			$button   = $this->button_state( $resmush );
-			$disabled = ! empty( $button['disabled'] ) ? ' disabled="disabled"' : '';
-			$content  = '<button class="button button-primary ' . $button['class'] . '"
-			        name="smush-all" ' . $disabled . '>
-				<span>' . $button['text'] . '</span>
-			</button>';
-
-			//If We need to return the content
-			if ( $return ) {
-				return $content;
-			}
-
-			echo $content;
-		}
-
-		/**
 		 * Get all the attachment meta, sum up the stats and return
 		 *
 		 * @param bool $force_update , Whether to forcefully update the Cache
@@ -1119,6 +1095,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Resize Savings
 			$resize_savings               = $wpsmush_db->resize_savings( false );
 			$smush_data['resize_savings'] = ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
+			$smush_data['resize_count']   = $wpsmush_db->resize_savings( false, false, true );
 
 			//Conversion Savings
 			$conversion_savings               = $wpsmush_db->conversion_savings( false );
@@ -1263,42 +1240,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			update_option( 'smush_global_stats', $smush_data, false );
 
 			return $smush_data;
-		}
-
-		/**
-		 * Returns Bulk smush button id and other details, as per if bulk request is already sent or not
-		 *
-		 * @param $resmush
-		 *
-		 * @return array
-		 */
-
-		private function button_state( $resmush ) {
-			$button = array(
-				'cancel' => false,
-			);
-			if ( $this->validate_install() && $resmush ) {
-
-				$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-				$button['class'] = 'wp-smush-button wp-smush-resmush wp-smush-all';
-
-			} else {
-
-				// if we have nothing left to smush, disable the buttons
-				if ( $this->smushed_count === $this->total_count ) {
-					$button['text']     = __( 'All Done!', 'wp-smushit' );
-					$button['class']    = 'wp-smush-finished disabled wp-smush-finished';
-					$button['disabled'] = 'disabled';
-
-				} else {
-
-					$button['text']  = __( 'Bulk Smush Now', 'wp-smushit' );
-					$button['class'] = 'wp-smush-button';
-
-				}
-			}
-
-			return $button;
 		}
 
 		/**
