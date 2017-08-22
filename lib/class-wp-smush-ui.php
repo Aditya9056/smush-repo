@@ -174,6 +174,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$resize_count = $wpsmush_db->resize_savings( false, false, true );
 			$resize_count = !$resize_count ? 0 : $resize_count;
 
+			$compression_savings = 0;
+
 			if( !empty( $wpsmushit_admin->stats ) && !empty( $wpsmushit_admin->stats['bytes'] ) ) {
     			$compression_savings = $wpsmushit_admin->stats['bytes'] - $wpsmushit_admin->stats['resize_savings'];
 			}

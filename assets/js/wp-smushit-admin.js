@@ -1228,6 +1228,8 @@ jQuery(function ($) {
      */
     var update_stats = function () {
 
+        var super_savings = 0;
+
         //Calculate updated savings in bytes
         wp_smushit_data.savings_bytes = parseInt(wp_smushit_data.size_before) - parseInt(wp_smushit_data.size_after);
 
@@ -1243,6 +1245,14 @@ jQuery(function ($) {
         //Update Smush percent
         wp_smushit_data.smush_percent = precise_round(( parseInt(wp_smushit_data.count_smushed) / parseInt(wp_smushit_data.count_total) ) * 100, 1);
         $('span.wp-smush-images-percent').html(wp_smushit_data.smush_percent);
+
+        //Super-Smush Savings
+        if ('undefined' != typeof wp_smushit_data.savings_bytes && 'undefined' != typeof wp_smushit_data.savings_resize) {
+            super_savings = parseInt(wp_smushit_data.savings_bytes) - parseInt(wp_smushit_data.savings_resize);
+            if (super_savings > 0) {
+                $('div.super-smush-attachments span.smushed-savings').html(formatBytes(super_savings, 1));
+            }
+        }
 
         //Update Image count
         $('span.wp-smush-total-optimised').html(wp_smushit_data.count_images);

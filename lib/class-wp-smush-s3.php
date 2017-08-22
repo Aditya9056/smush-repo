@@ -12,7 +12,8 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 	class WpSmushS3 {
 
-		private $setup_error = '';
+		private $setup_notice = '';
+		private $message_type = 'error';
 
 		function __construct() {
 			$this->init();
@@ -98,34 +99,45 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			if ( ! is_object( $as3cf ) || ! method_exists( $as3cf, 'is_plugin_setup' ) ) {
 				$show_error        = true;
 				$support_url       = esc_url( "https://premium.wpmudev.org/contact" );
-				$this->setup_error = sprintf( esc_html__( "We are having trouble interacting with WP S3 Offload, make sure the plugin is activated. Or you can %sreport a bug%s.", "wp-smushit" ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
+				$this->setup_notice = sprintf( esc_html__( "We are having trouble interacting with WP S3 Offload, make sure the plugin is activated. Or you can %sreport a bug%s.", "wp-smushit" ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
 			}
 
 			//Plugin is not setup, or some information is missing
 			if ( ! $as3cf->is_plugin_setup() ) {
 				$show_error        = true;
 				$configure_url     = $as3cf->get_plugin_page_url();
-				$this->setup_error = sprintf( esc_html__( "It seems you haven't finished setting up WP S3 Offload yet, %sConfigure%s it now to enable Amazon S3 support.", "wp-smushit" ), "<a href='" . $configure_url . "' target='_blank'>", "</a>" );
+				$this->setup_notice = sprintf( esc_html__( "It seems you haven't finished setting up WP S3 Offload yet. %sConfigure%s it now to enable Amazon S3 support.", "wp-smushit" ), "<a href='" . $configure_url . "' target='_blank'>", "</a>" );
+			}else{
+
+				$this->message_type = 'notice';
+				$this->setup_notice = esc_html__( "Amazon S3 support is active.", "wp-smushit" );
+
+				//Hook at the end of setting row to output a error div
+				add_action( 'smush_setting_column_right_end', array( $this, 's3_setup_message' ) );
 			}
 			//Return Early if we don't need to do anything
 			if ( ! $show_error ) {
 				return;
 			}
 			//Hook at the end of setting row to output a error div
-			add_action( 'smush_setting_row_end', array( $this, 's3_setup_error' ) );
+			add_action( 'smush_setting_column_right_end', array( $this, 's3_setup_message' ) );
 
 		}
 
 		/**
-		 * Prints the error message if any
+		 * Prints the message for S3 setup
+		 *
+		 * @param $setting_key
 		 *
 		 * @return null
 		 */
-		function s3_setup_error( $setting_key ) {
-			if ( empty( $this->setup_error ) || 's3' != $setting_key ) {
+		function s3_setup_message( $setting_key ) {
+			if ( empty( $this->setup_notice ) || 's3' != $setting_key ) {
 				return null;
 			}
-			echo "<div class='wp-smush-notice smush-s3-setup-error'><i class='dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign'></i><p>$this->setup_error</p></div>";
+			$class = 'error' == $this->message_type ? ' smush-s3-setup-error' : ' smush-s3-setup-message';
+			$icon_class = 'error' == $this->message_type ? ' dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign' : ' dev-icon dev-icon-tick';
+			echo "<div class='wp-smush-notice" . $class . "'><i class='" . $icon_class . "'></i><p>$this->setup_notice</p></div>";
 		}
 
 		/**

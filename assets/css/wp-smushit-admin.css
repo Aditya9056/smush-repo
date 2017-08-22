@@ -1000,6 +1000,7 @@ div.wp-smush-remaining,
 div.wp-smush-dir-remaining,
 div.wp-smush-dir-limit,
 div.smush-s3-setup-error,
+div.smush-s3-setup-message,
 div.wp-smush-s3support-alert {
     background-color: #FFF5D5;
     border: none;
@@ -1007,6 +1008,10 @@ div.wp-smush-s3support-alert {
     line-height: 30px;
     font-size: 15px;
     letter-spacing: -0.015em;
+}
+
+div.smush-s3-setup-message {
+    background-color: #DFF6FA;
 }
 
 div.wp-smush-s3support-alert {
@@ -1028,6 +1033,7 @@ div.wp-smush-s3support-alert .dev-icon-cross {
 div.smush-s3-setup-error a {
     color: #333;
     cursor: pointer;
+    font-weight: 500;
     text-decoration: underline;
 }
 
@@ -1704,15 +1710,17 @@ a.wp-smush-lossy-enable {
     border-color: #fd8b8b;
 }
 
-.wpmud .smush-s3-setup-error {
+.wpmud .smush-s3-setup-error, .wpmud .smush-s3-setup-message {
     margin-top: 15px;
+    margin-left: 50px;
 }
 
-.wpmud .smush-s3-setup-error p {
+.wpmud .smush-s3-setup-error p, .wpmud .smush-s3-setup-message p {
     color: #333;
     display: inline-block;
     font-size: 15px;
     margin-top: 0;
+    width: 90%;
 }
 
 .wp-smush-settings-info {
@@ -2095,12 +2103,27 @@ div.wp-smush-scan-result div.wp-smush-notice {
 
 div.wp-smush-scan-result div.wp-smush-notice .wdv-icon,
 div.wp-smush-scan-result div.wp-smush-notice .dev-icon,
-div.smush-s3-setup-error i.dev-icon {
+div.smush-s3-setup-error i.dev-icon,
+div.smush-s3-setup-message i.dev-icon{
     display: inline-block;
     font-size: 22px;
     margin-right: 5px;
     margin-top: -3px;
     vertical-align: middle;
+}
+
+div.smush-s3-setup-error i.dev-icon,
+div.smush-s3-setup-message i.dev-icon {
+    margin-top: 1px;
+    vertical-align: top;
+}
+
+div.smush-s3-setup-message i.dev-icon {
+    margin-top: 4px;
+}
+
+div.smush-s3-setup-message i.dev-icon:before {
+    color: #17A8E3;
 }
 
 div.wp-smush-scan-result hr.primary-separator {
