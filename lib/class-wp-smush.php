@@ -1771,12 +1771,20 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		/**
 		 * Return Global stats
 		 *
+		 * Stats sent
+		 * 
+		 *  array( 'total_images','bytes', 'human', 'percent')
+		 *
 		 * @return array|bool|mixed
 		 */
 		function send_smush_stats() {
 			global $wpsmushit_admin;
 
 			$stats = $wpsmushit_admin->global_stats();
+
+			$required_stats = array( 'total_images', 'bytes', 'human', 'percent' );
+
+			$stats = is_array( $stats ) ? array_intersect_key( $stats, array_flip( $required_stats ) ) : array();
 
 			return $stats;
 

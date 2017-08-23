@@ -282,10 +282,18 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 */
 		function super_smushed_count( $type = 'media', $attachments = array() ) {
 
+			global $wpsmushnextgenstats;
+
 			if ( 'media' == $type ) {
 				$count = $this->get_super_smushed_attachments();
 			} else {
 				$key = 'wp-smush-super_smushed_nextgen';
+
+				//Clear up the stats, if there are no images
+				if( is_object( $wpsmushnextgenstats ) && method_exists( $wpsmushnextgenstats, 'total_count') && 0 == $wpsmushnextgenstats->total_count() ) {
+					delete_option($key);
+				}
+
 
 				//Flag to check if we need to re-evaluate the count
 				$revaluate = false;
