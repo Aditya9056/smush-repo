@@ -604,15 +604,16 @@ table.wp-smush-stats-holder tr td:first-child {
 
 /** End of Font Family Variations **/
 
-.wpmud .wp-smush-page-heading {
+.wpmud #header .wp-smush-page-heading {
+    color: #333;
     float: left;
     font-size: 30px;
-    font-weight: normal;
 }
 
 .wp-smush-auto-message {
+    color: #888888;
     float: right;
-    font-size: 15px;
+    font-size: 13px;
     letter-spacing: -0.015em;
     line-height: 1.7;
     margin: 1.2em auto;
@@ -725,7 +726,7 @@ table.wp-smush-stats-holder tr td:first-child {
     float: right;
     font-weight: normal;
     margin: 1.5em auto;
-    max-width: 60%;
+    max-width: 64%;
 }
 
 .smush-page-wrap .wp-smush-premium.dev-box .wp-smush-container-header {
@@ -1205,6 +1206,11 @@ div.smush-cancel-button-wrapper {
     font-weight: 500;
     margin-top: 25px;
     padding: 3px 13px;
+}
+
+.wpmud div.smush-page-wrap button.wp-smush-cancel-bulk:not(.wph-button):not(#collapse-button):hover:not(:focus):not(:active):not(.wph-button):not(#collapse-button):not([tooltip]) {
+    background-color: transparent;
+    color: #666;
 }
 
 .wp-smush-ajax-error {
@@ -2372,6 +2378,14 @@ div.wp-smush-info.notice {
 /* Bulk Smush button*/
 button.wp-smush-all.wp-smush-button {
     float: right;
+}
+
+.wpmud span.wp-smush-upload-images a.button {
+    box-shadow: none;
+}
+
+.wpmud span.wp-smush-upload-images a.button:hover:not(:focus):not(:active):not(.wph-button):not(#collapse-button):not([tooltip]) {
+    background: #0A9BD6;
 }
 
 .wpmud div.smush-page-wrap button:hover:not(:focus):not(:active):not(.wph-button):not(#collapse-button):not([tooltip]),

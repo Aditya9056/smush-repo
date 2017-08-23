@@ -2173,8 +2173,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
-			error_log( "Auto smush enabled");
-			error_log( $this->is_auto_smush_enabled() );
 			//If auto Smush is disabled
 			if ( ! $this->is_auto_smush_enabled() ) {
 				return;

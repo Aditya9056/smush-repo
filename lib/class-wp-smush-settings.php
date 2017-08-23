@@ -9,15 +9,16 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 		 * @var array
 		 */
 		var $settings = array(
-			'auto'       => 1,
-			'lossy'      => 0,
-			'original'   => 0,
-			'keep_exif'  => 0,
-			'resize'     => 0,
-			'backup'     => 0,
-			'png_to_jpg' => 0,
-			'nextgen'    => 0,
-			's3'         => 0
+			'networkwide' => 0,
+			'auto'        => 1,
+			'lossy'       => 0,
+			'original'    => 0,
+			'keep_exif'   => 0,
+			'resize'      => 0,
+			'backup'      => 0,
+			'png_to_jpg'  => 0,
+			'nextgen'     => 0,
+			's3'          => 0
 		);
 
 		function __construct() {
@@ -195,7 +196,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			}
 
 			//Check if the settings are network wide or site wise
-			if ( $wpsmush_settings->settings['networkwide'] ) {
+			if ( !empty( $wpsmush_settings->settings ) && $wpsmush_settings->settings['networkwide'] ) {
 				return true;
 			}
 

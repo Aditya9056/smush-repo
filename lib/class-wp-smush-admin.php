@@ -218,7 +218,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->settings = array(
 				'networkwide' => array(
 					'label' => esc_html__( 'Enable Network wide settings', 'wp-smushit' ),
-					'desc'  => esc_html__( 'If disabled sub sites can override the individual Smush settings.', 'wp-smushit' )
+					'desc'  => esc_html__( 'If kept disabled sub sites can override the individual Smush settings.', 'wp-smushit' )
 				),
 				'auto'        => array(
 					'label' => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
@@ -1133,109 +1133,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Remove ids from stats
 			unset( $smush_data['id'] );
 
-			//Update Cache
-			update_option( 'smush_global_stats', $smush_data, false );
-
-			return $smush_data;
-		}
-
-		/**
-		 * Get all the attachment meta, sum up the stats and return
-		 *
-		 * @param bool $force_update , Whether to forcefully update the Cache
-		 *
-		 * @return array|bool|mixed Stats
-		 */
-		function global_stats_from_ids( $force_update = false ) {
-
-			if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
-				if ( ! empty( $stats ) ) {
-					return $stats;
-				}
-			}
-
-			global $wpsmush_db, $wpsmush_helper;
-			if ( empty( $this->smushed_attachments ) ) {
-				$this->smushed_attachments = $wpsmush_db->smushed_count( true );
-			}
-
-			$smush_data                 = array(
-				'size_before' => 0,
-				'size_after'  => 0,
-				'percent'     => 0,
-				'human'       => 0
-			);
-			$smush_data['count']        = 0;
-			$smush_data['total_images'] = 0;
-
-			if ( ! empty( $this->smushed_attachments ) && is_array( $this->smushed_attachments ) ) {
-				//Iterate over all the attachments
-				foreach ( $this->smushed_attachments as $attachment ) {
-					//Get all the Savings for each image
-					$smush_stats        = get_post_meta( $attachment, 'wp-smpro-smush-data', true );
-					$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
-					$conversion_savings = $wpsmush_helper->get_pngjpg_savings( $attachment );
-
-					$smush_data['count'] += 1;
-					$smush_data['total_images'] += ! empty( $smush_stats['sizes'] ) ? count( $smush_stats['sizes'] ) : 0;
-
-					//Sum up all the stats
-					if ( ! empty( $smush_stats['sizes'] ) ) {
-						foreach ( $smush_stats['sizes'] as $size_k => $size_savings ) {
-							//size_before from optimisation stats
-							$size_before = $size_savings->size_before;
-							$size_after  = $size_savings->size_after;
-							if ( 'full' == $size_k ) {
-								//Check for savings from resizing for the original image
-								if ( ! empty( $resize_savings['size_before'] ) && $resize_savings['size_before'] > $size_before ) {
-									$size_before = $resize_savings['size_before'];
-								}
-								//Check for savings from resizing for the original image
-								if ( ! empty( $resize_savings['size_after'] ) && $resize_savings['size_after'] < $size_after ) {
-									$size_after = $resize_savings['size_after'];
-								}
-							}
-
-							//Add conversion savings, if available
-							if ( ! empty( $conversion_savings['bytes'] ) ) {
-								$smush_data['size_before'] += $conversion_savings['size_before'];
-								$smush_data['size_after']  += $conversion_savings['size_after'];
-							}
-						}
-
-						//Resize Savings: If full image wasn't optimised, but resized, combine the stats
-						if ( empty( $smush_stats['sizes']['full'] ) && ! empty( $resize_savings ) && $resize_savings['bytes'] > 0 ) {
-							$smush_data['size_before'] += $resize_savings['size_before'];
-							$smush_data['size_after'] += $resize_savings['size_after'];
-						}
-
-						//Conversion Savings: If full image wasn't optimised, but Conversion saved few bytes
-						if ( empty( $smush_stats['sizes']['full'] ) && ! empty( $conversion_savings['full'] ) && $conversion_savings['full']['bytes'] > 0 ) {
-							$smush_data['size_before'] += $conversion_savings['full']['size_before'];
-							$smush_data['size_after'] += $conversion_savings['full']['size_after'];
-						}
-					}
-				}
-				$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
-
-				//Resize Savings
-				$resize_savings               = $wpsmush_db->resize_savings( false );
-				$smush_data['resize_savings'] = ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
-
-				//Conversion Savings
-				$conversion_savings               = $wpsmush_db->conversion_savings( false );
-				$smush_data['conversion_savings'] = ! empty( $conversion_savings['bytes'] ) ? $conversion_savings['bytes'] : 0;
-
-				if ( $smush_data['size_before'] > 0 ) {
-					$smush_data['percent'] = ( $smush_data['bytes'] / $smush_data['size_before'] ) * 100;
-				}
-
-				//Round off precentage
-				$smush_data['percent'] = round( $smush_data['percent'], 1 );
-
-				$smush_data['human'] = size_format( $smush_data['bytes'], 1 );
-
-			}
 			//Update Cache
 			update_option( 'smush_global_stats', $smush_data, false );
 

@@ -786,7 +786,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
             </div>
             <div class="smush-cancel-button-wrapper">
                 <button type="button"
-                        class="button button-grey wp-smush-cancel-bulk"><?php esc_html_e( "CANCEL", "wp-smushit" ); ?></button>
+                        class="button button-grey wp-smush-cancel-bulk" tooltip="<?php esc_html_e( "Stop current bulk smush process.", "wp-smushit"); ?>"><?php esc_html_e( "CANCEL", "wp-smushit" ); ?></button>
             </div>
 			</div>
 			<div class="smush-final-log notice notice-warning inline hidden"></div><?php
