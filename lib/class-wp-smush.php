@@ -1782,7 +1782,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$stats = $wpsmushit_admin->global_stats();
 
-			return $stats;
+			// Required value for hub.
+			$required_values = array( 'total_images', 'bytes', 'human', 'percent' );
+
+			$final_stats = array();
+
+			// Get only the required values.
+			foreach ( $required_values as $key ) {
+				if ( isset( $stats[ $key ] ) ) {
+					$final_stats[ $key ] = $stats[ $key ];
+				}
+			}
+
+			return $final_stats;
 
 		}
 
