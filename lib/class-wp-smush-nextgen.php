@@ -17,7 +17,12 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		/**
 		 * @var array Contains the total Stats, for displaying it on bulk page
 		 */
-		var $stats = array();
+		var $stats = array(
+			'savings_bytes'   => 0,
+			'size_before'     => 0,
+			'size_after'      => 0,
+			'savings_percent' => 0
+		);
 
 		var $is_nextgen_active = false;
 
