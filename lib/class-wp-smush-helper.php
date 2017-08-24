@@ -78,6 +78,28 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 
 			return $savings;
 		}
+
+		/**
+		 * Multiple Needles in an array
+		 *
+		 * @param $haystack
+		 * @param $needle
+		 * @param int $offset
+		 *
+		 * @return bool
+		 */
+		function strposa( $haystack, $needle, $offset = 0 ) {
+			if ( ! is_array( $needle ) ) {
+				$needle = array( $needle );
+			}
+			foreach ( $needle as $query ) {
+				if ( strpos( $haystack, $query, $offset ) !== false ) {
+					return true;
+				} // stop on first true result
+			}
+
+			return false;
+		}
 	}
 
 	global $wpsmush_helper;

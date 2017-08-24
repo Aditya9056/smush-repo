@@ -872,6 +872,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		function generate_markup( $images ) {
 
+		    global $wpsmush_helper;
+
 			if ( empty( $images ) || empty( $images['files_arr'] ) || empty( $images['image_items'] ) ) {
 				return null;
 			}
@@ -886,6 +888,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$index     = 1;
 			$files_arr = $images['files_arr'];
 
+			$plugin_path = array(
+				path_join( WP_PLUGIN_DIR, 'wp-smushit' ),
+				path_join( WP_PLUGIN_DIR, 'wp-smush-pro' ),
+			);
+
 			foreach ( $files_arr as $image_path => $image ) {
 				$count         = sizeof( $image );
 				$wrapper_class = '';
@@ -896,6 +903,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 					if ( $optimised_count > 0 ) {
 						$wrapper_class = $count == $optimised_count ? 'complete' : 'partial';
+					}
+					//Mark Smush plugin images optimised
+					if ( false !== $wpsmush_helper->strposa( $image_path, $plugin_path ) ) {
+						$wrapper_class = 'complete';
 					}
 
 					$div .= "<li class='wp-smush-image-ul {$wrapper_class}'>";
@@ -909,6 +920,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					foreach ( $image as $item ) {
 						//Check if the image is already in optimised list
 						$class = is_array( $this->optimised_images ) && array_key_exists( $item, $this->optimised_images ) ? ' optimised' : '';
+						//Mark Smush images optimised
+						if ( false !== $wpsmush_helper->strposa( $item, $plugin_path ) ) {
+							$class = ' optimised';
+						}
 
 						$image_id = $this->get_image_id( $item, $images['image_items'] );
 						$div .= "<li class='wp-smush-image-ele{$class}' id='{$image_id}'><span class='wp-smush-image-ele-status'></span><span class='wp-smush-image-path'>{$item}</span>";
