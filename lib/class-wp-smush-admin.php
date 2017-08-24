@@ -212,6 +212,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			add_action( 'admin_notices', array( $this, 'media_library_membership_notice' ) );
 
+			/**
+			 * Handle Skip Quick Setup action
+			 */
+			add_action( 'wp_ajax_skipSmushSetup', array( $this, 'skipSmushSetup' ) );
+
 		}
 
 		function init_settings() {
@@ -1204,17 +1209,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Return, If a pro user, or not super admin, or don't have the admin privilleges
 			if ( $this->validate_install() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
-				return;
+//				return;
 			}
 
 			//No need to show it on bulk smush
 			if ( isset( $_GET['page'] ) && 'wp-smush-bulk' == $_GET['page'] ) {
-				return;
+//				return;
 			}
 
 			//Return if notice is already dismissed
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
-				return;
+//				return;
 			}
 
 			$install_type = get_site_option( 'wp-smush-install-type', false );

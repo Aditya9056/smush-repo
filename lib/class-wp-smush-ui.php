@@ -923,12 +923,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			if ( 'new' == $install_type  ) {
 				$notice_heading = esc_html__( "Thanks for installing Smush. We hope you like it!", "wp-smushit" );
-				$notice_content = esc_html__( "And hey, if you do, you can now try out Smush Pro for double the smushy goodness (benchmarked), entirely for free!", "wp-smushit" );
-				$button_content = esc_html__( "Try Smush Pro for Free", "wp-smushit" );
+				$notice_content = esc_html__( "And hey, if you do, you can join WPMU DEV for a free 30 day trial and get access to even more features!", "wp-smushit" );
+				$button_content = esc_html__( "Try Smush Pro Free", "wp-smushit" );
 			} else {
-				$notice_heading = esc_html__( "Thanks for updating Smush. Did you know that you can now try the Smush Pro for FREE?!", "wp-smushit" );
-				$notice_content = '<br />' . esc_html__( "Yep, Super Smush your images for double the savings, save originals and batch Smush thousands of images all at once.... no charge!", "wp-smushit" );
-				$button_content = esc_html__( "Try Smush Pro for Free", "wp-smushit" );
+				$notice_heading = esc_html__( "Thanks for upgrading Smush!", "wp-smushit" );
+				$notice_content = 'Did you know she has secret super powers? Yes, she can super-smush images for double the savings, store original images, and bulk smush thousands of images in one go. Get started with a free WPMU DEV trial to access these advanced features.';
+				$button_content = esc_html__( "Try Smush Pro Free", "wp-smushit" );
 			}
 			$upgrade_url = add_query_arg(
 				array(
@@ -1025,7 +1025,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$wpmu_contact = sprintf( '<a href="%s" target="_blank">', esc_url("https://premium.wpmudev.org/contact") );
 			$attr_message = esc_html__("Validating..", "wp-smushit");
 			$recheck_link = '<a href="#" id="wp-smush-revalidate-member" data-message="%s">';
-			$message = sprintf( esc_html__( "It looks like Smush couldn’t verify your WPMU DEV membership so Pro features like Super-Smush may not work correctly. If you think this is an error, run a %sre-check%s or get in touch with our %ssupport team%s.", "wp-smushit"), $recheck_link, '</a>', $wpmu_contact, '</a>' ) ;
+			$message = sprintf( esc_html__( "It looks like Smush couldn’t verify your WPMU DEV membership so Pro features have been disabled for now. If you think this is an error, run a %sre-check%s or get in touch with our %ssupport team%s.", "wp-smushit"), $recheck_link, '</a>', $wpmu_contact, '</a>' ) ;
 			$content = sprintf( '<div id="wp-smush-invalid-member" data-message="%s" class="hidden' . $notice_class . '"><div class="message">%s</div></div>', $attr_message, $message );
 			return $content;
 		}

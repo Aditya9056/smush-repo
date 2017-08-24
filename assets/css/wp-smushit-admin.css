@@ -805,8 +805,11 @@ Quick Setup Dialog
  */
 
 .wp-smush-overlay.no-close {
+    left: 0;
     max-width: none;
     margin: 0;
+    top: 0;
+    z-index: 9999;
 }
 
 .wp-smush-overlay {
@@ -836,21 +839,31 @@ Quick Setup Dialog
     padding: 30px;
 }
 
+.wpmud .dev-overlay.small .box:after {
+    background: url(../images/smush-quicksetup.png) no-repeat 0 0;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 180px;
+    margin: 0 auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    width: 248px;
+}
+
 .wpmud .dev-overlay .box .title {
     margin: -30px -30px 30px -30px;
     padding: 0 30px;
 }
 
-.wpmud .wd-activator .box {
-    background-image: url(../img/scanning-man.svg);
-    background-repeat: no-repeat;
-    background-position: 50% 102%;
-    padding-bottom: 110px !important;
-}
-
 .wpmud .dev-overlay .box .title h3 {
     color: #333;
     font-size: 15px;
+}
+
+.wpmud .dev-overlay .box .content {
+    padding-bottom: 180px;
 }
 
 .wpmud .wp-smush-welcome-message {
@@ -944,6 +957,17 @@ div.smush-quick-setup-settings div.submit-button-wrap span.spinner {
     margin-bottom: 30px;
     padding: 15px 30px;
     letter-spacing: -0.015em;
+}
+
+div.smush-notice-cta a.smush-notice-act.button-primary {
+    background-color: #00B0DB;
+    box-shadow: none;
+    border: 1px solid #0087B9;
+    border-radius: 2px;
+    text-shadow: none;
+    font-weight: normal;
+    box-shadow: inset 0 1px 0 0 #4BC4E4, 0 1px 0 0 #DBDBDB;
+    -webkit-font-smoothing: antialiased;
 }
 
 .wp-smush-resmush-message,
