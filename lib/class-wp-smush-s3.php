@@ -17,6 +17,10 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 		function __construct() {
 			$this->init();
+
+			//Hook at the end of setting row to output a error div
+			add_action( 'smush_setting_column_right_end', array( $this, 's3_setup_message' ) );
+
 		}
 
 		function init() {
@@ -33,7 +37,6 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			if ( ! $WpSmush->validate_install() ) {
 				return;
 			}
-			$this->check_client();
 
 			//Check if the file exists for the given path and download
 			add_action( 'smush_file_exists', array( $this, 'maybe_download_file' ), 10, 3 );
@@ -54,9 +57,9 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		function register( $settings ) {
 			$plugin_url     = esc_url( "https://wordpress.org/plugins/amazon-s3-and-cloudfront/" );
 			$settings['s3'] = array(
-				'label' => esc_html__( 'Enable Amazon S3 support', 'wp-smushit' ),
-                'short_label' => esc_html__( 'Amazon S3', 'wp-smushit' ),
-				'desc'  => sprintf( esc_html__( 'Storing your image on S3 buckets using %sWP Offload S3%s? Smush can detect and smush those assets for you, including when you\re removing files from your host server.', 'wp-smushit' ), "<a href='" . $plugin_url . "' target = '_blank'>", "</a>", "<b>", "</b>" )
+				'label'       => esc_html__( 'Enable Amazon S3 support', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Amazon S3', 'wp-smushit' ),
+				'desc'        => sprintf( esc_html__( 'Storing your image on S3 buckets using %sWP Offload S3%s? Smush can detect and smush those assets for you, including when you\re removing files from your host server.', 'wp-smushit' ), "<a href='" . $plugin_url . "' target = '_blank'>", "</a>", "<b>", "</b>" )
 			);
 
 			return $settings;
@@ -79,16 +82,24 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		}
 
 		/**
-		 * Check if WP S3 Offload is configured properly or not
+		 * Prints the message for S3 setup
 		 *
-		 * If not, hook at the end of setting row to show a error message
+		 * @param $setting_key
+		 *
+		 * @return null
 		 */
-		function check_client() {
+		function s3_setup_message( $setting_key ) {
+
+			//Return if not S3
+			if( 's3' != $setting_key ) {
+				return;
+			}
 
 			global $as3cf, $WpSmush, $wpsmush_settings;
 			$show_error = false;
+
 			//If S3 integration is not enabled, return
-			$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->settings['s3'] : 0;
+			$setting_val = $WpSmush->validate_install() ? $wpsmush_settings->settings['s3'] : 0;
 
 			if ( ! $setting_val ) {
 				return;
@@ -97,45 +108,29 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			//Check if plugin is setup or not
 			//In case for some reason, we couldn't find the function
 			if ( ! is_object( $as3cf ) || ! method_exists( $as3cf, 'is_plugin_setup' ) ) {
-				$show_error        = true;
-				$support_url       = esc_url( "https://premium.wpmudev.org/contact" );
+				$show_error         = true;
+				$support_url        = esc_url( "https://premium.wpmudev.org/contact" );
 				$this->setup_notice = sprintf( esc_html__( "We are having trouble interacting with WP S3 Offload, make sure the plugin is activated. Or you can %sreport a bug%s.", "wp-smushit" ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
 			}
 
 			//Plugin is not setup, or some information is missing
 			if ( ! $as3cf->is_plugin_setup() ) {
-				$show_error        = true;
-				$configure_url     = $as3cf->get_plugin_page_url();
+				$show_error         = true;
+				$configure_url      = $as3cf->get_plugin_page_url();
 				$this->setup_notice = sprintf( esc_html__( "It seems you haven't finished setting up WP S3 Offload yet. %sConfigure%s it now to enable Amazon S3 support.", "wp-smushit" ), "<a href='" . $configure_url . "' target='_blank'>", "</a>" );
-			}else{
+			} else {
 
 				$this->message_type = 'notice';
 				$this->setup_notice = esc_html__( "Amazon S3 support is active.", "wp-smushit" );
 
-				//Hook at the end of setting row to output a error div
-				add_action( 'smush_setting_column_right_end', array( $this, 's3_setup_message' ) );
 			}
+
 			//Return Early if we don't need to do anything
-			if ( ! $show_error ) {
+			if ( empty( $this->setup_notice ) ) {
 				return;
 			}
-			//Hook at the end of setting row to output a error div
-			add_action( 'smush_setting_column_right_end', array( $this, 's3_setup_message' ) );
 
-		}
-
-		/**
-		 * Prints the message for S3 setup
-		 *
-		 * @param $setting_key
-		 *
-		 * @return null
-		 */
-		function s3_setup_message( $setting_key ) {
-			if ( empty( $this->setup_notice ) || 's3' != $setting_key ) {
-				return null;
-			}
-			$class = 'error' == $this->message_type ? ' smush-s3-setup-error' : ' smush-s3-setup-message';
+			$class      = 'error' == $this->message_type ? ' smush-s3-setup-error' : ' smush-s3-setup-message';
 			$icon_class = 'error' == $this->message_type ? ' dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign' : ' dev-icon dev-icon-tick';
 			echo "<div class='wp-smush-notice" . $class . "'><i class='" . $icon_class . "'></i><p>$this->setup_notice</p></div>";
 		}
@@ -355,6 +350,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$s3client = $as3cf->get_s3client( $region );
 
 			$file_exists = $s3client->doesObjectExist( $bucket, $s3_object['key'] );
+
 			return $file_exists;
 		}
 

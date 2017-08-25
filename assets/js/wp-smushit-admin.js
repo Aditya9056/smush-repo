@@ -735,6 +735,8 @@ jQuery(function ($) {
     //Stackoverflow: http://stackoverflow.com/questions/1726630/formatting-a-number-with-exactly-two-decimals-in-javascript
     var precise_round = function (num, decimals) {
         var sign = num >= 0 ? 1 : -1;
+        //Keep the percentage below 100
+        num = num > 100 ? 100 : num;
         return (Math.round((num * Math.pow(10, decimals)) + (sign * 0.001)) / Math.pow(10, decimals));
     };
 

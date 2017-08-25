@@ -139,6 +139,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Handle the Async optimisation
 			add_action( 'wp_async_wp_save_image_editor_file', array( $this, 'wp_smush_handle_editor_async' ), '', 2 );
 
+			//Register Function for sending unsmushed image count to hub
+			add_filter( 'wdp_register_hub_action', array( $this, 'smush_stats' ) );
+
 		}
 
 		/**
@@ -1485,6 +1488,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				add_action( 'aws_init', array( $this, 'load_s3' ), 120 );
 			}
 		}
+
 		/**
 		 * Check if NextGen is active or not
 		 * Include and instantiate classes
@@ -1497,7 +1501,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			global $wpsmush_settings;
 
 			//Check if integration is Enabled or not
-			$opt_nextgen_val = $wpsmush_settings->settings['nextgen'];
+			//Smush NextGen key
+			$opt_nextgen     = WP_SMUSH_PREFIX . 'nextgen';
+			$opt_nextgen_val = $wpsmush_settings->get_setting( $opt_nextgen, false );
 
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
 			// Do not continue if integration not enabled or not a pro user.
@@ -2275,6 +2281,29 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Update Stats
 			update_post_meta( $post_data['postid'], $this->smushed_meta_key, $smush_stats );
+		}
+
+		/**
+		 * Registers smush action for HUB API
+		 *
+		 * @param $actions
+		 *
+		 * @return mixed
+		 */
+		function smush_stats( $actions ) {
+			$actions['smush_get_stats'] = array( $this, 'smush_attachment_count');
+
+			return $actions; //always return at least the original array so we don't mess up other integrations
+		}
+
+		/**
+		 *
+		 */
+		function smush_attachment_count() {
+
+			global $wpsmushit_admin;
+			error_log( print_r( $wpsmushit_admin, true ) );
+
 		}
 	}
 

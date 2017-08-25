@@ -1776,6 +1776,10 @@ a.wp-smush-lossy-enable {
     margin: 10px 20px 0 2px;
 }
 
+.wpmud div.smush-page-wrap #header {
+    margin-bottom: 0;
+}
+
 .wpmud .row div.share-widget-wrapper {
     padding-left: 0;
 }
