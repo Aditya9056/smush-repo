@@ -2297,13 +2297,32 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		}
 
 		/**
+		 * Send stats to Hub
 		 *
+		 * @return array An array containing Total, Smushed, Unsmushed Images count and savings if images are alreay smushed
 		 */
 		function smush_attachment_count() {
 
-			global $wpsmushit_admin;
-			error_log( print_r( $wpsmushit_admin, true ) );
+			$stats = array(
+				'count_total'     => 0,
+				'count_smushed'   => 0,
+				'count_unsmushed' => 0,
+				'savings'         => array()
+			);
 
+			global $wpsmushit_admin;
+			if ( ! isset( $wpsmushit_admin->stats ) ) {
+				//Setup stats, if not set already
+				$wpsmushit_admin->setup_global_stats();
+			}
+			// Total, Smushed, Unsmushed, Savings
+			$stats['count_total']   = $wpsmushit_admin->total_count;
+			$stats['count_smushed'] = $wpsmushit_admin->smushed_count;
+			//Considering the images to be resmushed
+			$stats['count_unsmushed'] = $wpsmushit_admin->remaining_count;
+			$stats['savings']         = $wpsmushit_admin->stats;
+
+			return $stats;
 		}
 	}
 
