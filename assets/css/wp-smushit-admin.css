@@ -1451,7 +1451,7 @@ a.wp-smush-lossy-enable {
 }
 
 .wpmud .wp-smush-promo-content {
-    color: #555555;
+    color: #666666;
     line-height: 1.7;
     margin: auto;
     text-align: center;
@@ -1465,8 +1465,10 @@ a.wp-smush-lossy-enable {
     box-shadow: none !important;
 }
 
-.wpmud .wp-smush-pro-cta .button.button-cta:hover {
-    background: #0A9BD6 !important;
+.wpmud .wp-smush-pro-cta .button.button-cta:hover,
+.wpmud .wp-smush-pro-cta .button.button-cta:active,
+.wpmud .wp-smush-pro-cta .button.button-cta:focus {
+    background: #17b394 !important;
 }
 
 .wpmud .wp-smush-hb-cta .button.button-cta {
@@ -1474,9 +1476,9 @@ a.wp-smush-lossy-enable {
     width: 100%;
 }
 
-.wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:hover,
-.wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:active,
-.wpmud .box-content .wp-smush-hb-cta .button.button-cta.button-yellow:focus {
+.wpmud .box-content .wp-smush-hb-cta .button.button-cta:hover,
+.wpmud .box-content .wp-smush-hb-cta .button.button-cta:active,
+.wpmud .box-content .wp-smush-hb-cta .button.button-cta:focus {
     box-shadow: none;
 }
 
@@ -1502,6 +1504,7 @@ a.wp-smush-lossy-enable {
 /** No Caps for the tooltips **/
 .wp-admin.wpmud [tooltip]:after {
     text-transform: none !important;
+    text-shadow: none;
 }
 
 .compat-item .compat-field-wp_smush {
@@ -2401,6 +2404,12 @@ div.wp-smush-info.notice {
 .wpmud div.smush-page-wrap button:not(.wph-button):not(#collapse-button),
 .wpmud div.smush-page-wrap .button {
     background-color: #17A8E3;
+}
+
+.wpmud div.smush-page-wrap div.wp-smush-pro-for-free .button {
+    background-color: #1ABC9C;
+    border-radius: 4px;
+    padding: 10px 20px
 }
 
 /* Bulk Smush button*/

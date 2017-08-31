@@ -248,7 +248,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'resize'      => array(
 					'label' => esc_html__( 'Resize my full size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically resized before they are added to the media gallery.', 'wp-smushit' )
+					'desc'  => esc_html__( 'Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically resized before they are added to the media gallery. This setting does not apply to images smushed using Directory Smush feature.', 'wp-smushit' )
 				),
 				'backup'      => array(
 					'label' => esc_html__( 'Make a copy of my full size images', 'wp-smushit' ),
@@ -946,11 +946,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Check if the resmush count is equal to remaining count
 			$resmush_count = count( $this->resmush_ids );
+			$remaining_count = $this->total_count - $this->smushed_count;
 			if ( $resmush_count > 0 && $resmush_count == $this->smushed_count ) {
-				return $resmush_count;
+				return $resmush_count + $remaining_count ;
 			}
 
-			return ( $this->total_count - $this->smushed_count );
+			return $remaining_count;
 		}
 
 		/**
@@ -993,14 +994,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @param bool $force_update , Whether to forcefully update the Cache
 		 *
+		 * @param bool $exclude_resmush , Whether to exclude the resmush ids or not, if set to false cache won't be updated
+		 *
 		 * @return array|bool|mixed
 		 *
 		 * @todo: remove id from global stats stored in db
 		 *
 		 */
-		function global_stats( $force_update = false ) {
+		function global_stats( $force_update = false, $exclude_resmush = false ) {
 
-			if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
+			if ( $exclude_resmush && ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
 				if ( ! empty( $stats ) && ! empty( $stats['size_before'] ) ) {
 					if ( isset( $stats['id'] ) ) {
 						unset( $stats['id'] );
@@ -1038,7 +1041,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					foreach ( $global_data as $data ) {
 
 						//Skip attachment, if in re-smush list
-						if ( ! empty( $this->resmush_ids ) && in_array( $data->post_id, $this->resmush_ids ) ) {
+						if ( $exclude_resmush && ! empty( $this->resmush_ids ) && in_array( $data->post_id, $this->resmush_ids ) ) {
 							continue;
 						}
 
@@ -1138,8 +1141,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Remove ids from stats
 			unset( $smush_data['id'] );
 
-			//Update Cache
-			update_option( 'smush_global_stats', $smush_data, false );
+			if( !$exclude_resmush ) {
+				//Update Cache
+				update_option( 'smush_global_stats', $smush_data, false );
+			}
 
 			return $smush_data;
 		}

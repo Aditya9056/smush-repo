@@ -917,7 +917,7 @@ jQuery(function ($) {
     var close_dialog = function () {
         //Hide the dialog
         $('.wp-smush-list-dialog').hide();
-        $('.wp-smush-select-dir, button.wp-smush-browse, button.wp-smush-resume').removeAttr('disabled');
+        $('.wp-smush-select-dir, button.wp-smush-browse, button.wp-smush-resume, a.wp-smush-dir-link').removeAttr('disabled');
 
         //Remove the spinner
         $('div.dir-smush-button-wrap span.spinner').removeClass('is-active');

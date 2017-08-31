@@ -672,7 +672,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Check if premium member, add API key
 			$api_key = $this->_get_api_key();
-			if ( ! empty( $api_key ) ) {
+			if ( ! empty( $api_key ) && $this->validate_install() ) {
 				$headers['apikey'] = $api_key;
 			}
 
