@@ -193,7 +193,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 			$limit  = $wpsmushit_admin->query_limit();
 
 			$mime  = implode( "', '", $wpsmushit_admin->mime_types );
-			$query = "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status != 'trash' AND post_mime_type IN ('$mime') LIMIT %d, %d";
+			$query = "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status != 'trash' AND post_mime_type IN ('$mime') ORDER BY `ID` DESC LIMIT %d, %d";
 			//Remove the Filters added by WP Media Folder
 			$this->remove_filters();
 
@@ -251,7 +251,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 			//Remove the Filters added by WP Media Folder
 			$this->remove_filters();
-			while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
+			while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s ORDER BY `post_id` DESC LIMIT $offset, $limit", "wp-smpro-smush-data" ) ) ) {
 				if ( ! is_wp_error( $results ) && sizeof( $results ) > 0 ) {
 
 					$posts = array_merge( $posts, $results );
