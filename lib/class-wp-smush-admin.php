@@ -217,6 +217,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			add_action( 'wp_ajax_skipSmushSetup', array( $this, 'skipSmushSetup' ) );
 
+			/**
+			 * Hide Pagespeed Suggestion
+			 */
+			add_action( 'wp_ajax_hide_pagespeed_suggestion', array( $this, 'hide_pagespeed_suggestion' ) );
+
 		}
 
 		function init_settings() {
@@ -2192,6 +2197,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_send_json_success();
 
+		}
+
+		/**
+		 * Store user preference for Pagespeed suggestions
+		 */
+		function hide_pagespeed_suggestion() {
+			update_network_option( get_current_network_id(), WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion', true );
+			wp_send_json_success();
 		}
 
 	}

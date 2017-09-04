@@ -267,7 +267,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							    printf( esc_html__( "Save storage space by resizing your full sized uploads down to a maximum size. %sEnable image resizing%s", "wp-smushit" ), '<a class="wp-smush-resize-enable" href="#">', '</a>' );
                             }else {
                                 $settings_link = $wpsmushit_admin->settings_link( array(), true );
-                                printf( esc_html__( "Save storage space by resizing your full sized uploads down to a maximum size. %sEnable image resizing%s", "wp-smushit" ), '<a href="' . $settings_link .'" class="wp-smush-lossy-enable">', '</a>' );
+                                printf( esc_html__( "Save storage space by resizing your full sized uploads down to a maximum size. %sEnable image resizing%s", "wp-smushit" ), '<a href="' . $settings_link .'" class="wp-smush-resize-enable">', '</a>' );
                             }
 						}else{
 							printf( esc_html__( "No resize savings available", "wp-smushit" ), '<span class="total-stats-label"><strong>', '</strong></span>' );
@@ -696,11 +696,22 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function bulk_smush_content() {
 
-			global $WpSmush, $wpsmushit_admin;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
 
 			$all_done = ( $wpsmushit_admin->smushed_count == $wpsmushit_admin->total_count ) && 0 == count( $wpsmushit_admin->resmush_ids );
 
 			echo $this->bulk_resmush_content();
+			$upgrade_url = add_query_arg(
+				array(
+				'utm_source' => 'Smush-Free',
+				'utm_medium' => 'Banner',
+				'utm_campaign' => 'try-pro-free'
+				),
+				$wpsmushit_admin->upgrade_url
+			);
+
+			//Check whether to show pagespeed recommendation or not
+			$hide_pagespeed = get_network_option(get_current_network_id(), WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion');
 
 			//If there are no images in Media Library
 			if ( 0 >= $wpsmushit_admin->total_count ) { ?>
@@ -717,7 +728,26 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<!-- Hide All done div if there are images pending -->
 				<div class="wp-smush-notice wp-smush-all-done<?php echo $all_done ? '' : ' hidden' ?>" tabindex="0">
 					<i class="dev-icon dev-icon-tick"></i><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?>
-				</div>
+				</div><?php
+				if( !$hide_pagespeed ) {?>
+                    <div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' hidden' ?>">
+                        <span class="smush-recommendation-title roboto-medium"><?php esc_html_e("Still having trouble with PageSpeed tests? Give these a go…", "wp-smsuhit"); ?></span>
+                        <ol class="smush-recommendation-list"><?php
+                         if( !$WpSmush->validate_install() ) { ?>
+                            <li class="smush-recommendation-lossy"><?php printf( esc_html__("Upgrade to Smush Pro for advanced lossy compression. %sTry pro free%s.", "wp-smushit"), '<a href="' . $upgrade_url .'" target="_blank">', '</a>' ); ?></li><?php
+                         }elseif ( !$wpsmush_settings->settings['lossy'] ) {?>
+                             <li class="smush-recommendation-lossy"><?php printf( esc_html__("Enable %sSuper-smush%s for advanced lossy compression to optimise images further with almost no visible drop in quality.", "wp-smushit"), '<a href="#" class="wp-smush-lossy-enable">', "</a>" ); ?></li><?php
+                         }?>
+                         <li class="smush-recommendation-resize"><?php printf( esc_html__("Make sure your images are the right size for your theme. %sLearn more%s.", "wp-smushit"), '<a href="'. esc_url("https://goo.gl/kCqWxS") .'" target="_blank">', '</a>' ); ?></li><?php
+                         if( !$wpsmush_settings->settings['resize'] ) {
+                             //Check if resize original is disabled ?>
+                             <li class="smush-recommendation-resize-original"><?php printf( esc_html__("Enable %sResize Original Images%s to scale big images down to a reasonable size and save a ton of space.", "wp-smushit"), '<a href="#" class="wp-smush-resize-enable">', "</a>"); ?></li><?php
+                         }
+                         ?>
+                        </ol>
+                        <span class="dismiss-recommendation"><i class="dev-icon dev-icon-cross"></i><?php esc_html_e("DISMISS", "wp-smushit"); ?></span>
+                    </div><?php
+				} ?>
 				<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' hidden' : ''; ?>"><?php
 				//If all the images in media library are smushed
 				//Button Text

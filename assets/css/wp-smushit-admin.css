@@ -115,7 +115,7 @@ Smush button transformation
 
 .wpmud .wp-smushit-container-wrap {
     display: inline-block;
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .wpmud .row .col-half.wp-smushit-container-right {
@@ -629,7 +629,7 @@ table.wp-smush-stats-holder tr td:first-child {
 
 .wp-smush-page-header {
     overflow: hidden;
-    margin: 0 0 20px;
+    margin: 0 0 10px;
     width: 100%;
 }
 
@@ -694,7 +694,7 @@ table.wp-smush-stats-holder tr td:first-child {
     padding: 0;
 }
 
-.wpmud .smush-page-wrap .dev-box.bulk-smush-wrapper {
+.wpmud .smush-page-wrap .dev-box.bulk-smush-wrapper.wp-smush-pro-install {
     padding: 0 0 30px;
 }
 
@@ -1015,6 +1015,57 @@ div.smush-notice-cta a.smush-notice-act.button-primary {
     vertical-align: middle;
 }
 
+div.wp-smush-pagespeed-recommendation {
+    background-color: #F8F8F8;
+    margin: 0 -30px 20px;
+    padding: 20px 30px;
+}
+
+.wpmud span.smush-recommendation-title {
+    color: #666666;
+    font-size: 13px;
+    line-height: 22px;
+}
+
+ol.smush-recommendation-list {
+    color: #888;
+    font-size: 13px;
+    margin-left: 13px;
+    line-height: 16px;
+}
+
+.wpmud ol.smush-recommendation-list a,
+.wpmud .wp-smushit-container-wrap .row a,
+.wpmud .wp-smushit-container-wrap .smush-container-subheading a {
+    color: #17A8E3;
+    font-weight: 500;
+}
+
+.wpmud ol.smush-recommendation-list a:hover,
+.wpmud .wp-smushit-container-wrap .row a:hover,
+.wpmud .wp-smushit-container-wrap .smush-container-subheading a:hover {
+    color: #0A9BD6;
+}
+
+ol.smush-recommendation-list li {
+    line-height: 1.5;
+}
+
+.wpmud .dismiss-recommendation {
+    color: #333;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    margin-left: -2px;
+    opacity: 0.5;
+}
+
+.wpmud .dev-icon {
+    line-height: 1.5;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
 .wp-smush-bulk-wrapper {
     overflow: hidden;
 }
@@ -1221,7 +1272,7 @@ div.smush-cancel-button-wrapper {
     text-align: center;
 }
 
-.wpmud div.smush-page-wrap button.wp-smush-cancel-bulk:not(.wph-button):not(#collapse-button){
+.wpmud div.smush-page-wrap button.wp-smush-cancel-bulk:not(.wph-button):not(#collapse-button) {
     border: 2px solid #888888;
     border-radius: 4px;
     background: transparent;
@@ -2141,7 +2192,7 @@ div.wp-smush-scan-result div.wp-smush-notice {
 div.wp-smush-scan-result div.wp-smush-notice .wdv-icon,
 div.wp-smush-scan-result div.wp-smush-notice .dev-icon,
 div.smush-s3-setup-error i.dev-icon,
-div.smush-s3-setup-message i.dev-icon{
+div.smush-s3-setup-message i.dev-icon {
     display: inline-block;
     font-size: 22px;
     margin-right: 5px;

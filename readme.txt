@@ -148,6 +148,15 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.7.5 =
+
+* Updated:
+    * UI/UX has been updated for Bulk Smush page
+* Fixed:
+    * Start from latest image while Bulk Smushing
+    * S3 config error if AWS keys are defined in wp-config.php
+    * NextGen smush page not working properly
+
 = 2.7.4.1 =
 
 * Fixed:
