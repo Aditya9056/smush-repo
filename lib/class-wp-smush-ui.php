@@ -96,7 +96,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					            continue;
 					        }
 					        $setting_m_key = WP_SMUSH_PREFIX . $name;
-							$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;
+							$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : false;
 							//Set the default value 1 for auto smush
 							if( 'auto' == $name && false === $setting_val ) {
 							    $setting_val = 1;
@@ -107,6 +107,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 									<small class="smush-setting-description">
 		                                <?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
 		                            </small>
+		                            <?php $this->resize_settings($name ); ?>
 		                        </label>
 		                        <span class="toggle float-r">
 		                            <input type="checkbox" class="toggle-checkbox"
@@ -1167,10 +1168,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
             //Placeholder width and Height
             $p_width = $p_height = 2048; ?>
             <div class="wp-smush-resize-settings-wrap<?php echo $setting_status ? '' : ' hidden'?>">
-                <label for="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>"><?php esc_html_e("Max width", "wp-smushit"); ?>
+                <label class="resize-width-label" for="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>"><span class = "label-text"><?php esc_html_e("Max width", "wp-smushit"); ?></span>
                 <input type="text" id="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>" placeholder="<?php echo $p_width; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" tabindex="0" width=100 /> px
                 </label>
-                <label for"<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>"><?php esc_html_e("Max height", "wp-smushit"); ?>
+                <label class="resize-height-label" for"<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>"><span class = "label-text"><?php esc_html_e("Max height", "wp-smushit"); ?></span>
                 <input type="text" id="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>" placeholder="<?php echo $p_height; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" tabindex="0" width=100 /> px
                 </label>
                 <div class="wp-smush-resize-note"><?php printf( esc_html__("Currently, your largest image size is set at %s%dpx wide x %dpx high%s.", "wp-smushit"), '<strong>', $max_sizes['width'], $max_sizes['height'], '</strong>' ); ?></div>

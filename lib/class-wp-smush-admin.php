@@ -2191,6 +2191,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 
+			//Update Resize width and height settings if set
+			$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0;
+			$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0;
+
+			// update the resize sizes
+			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+
 			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
 
 			$wpsmush_settings->update_setting('skip-smush-setup', 1 );

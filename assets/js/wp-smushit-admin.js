@@ -649,7 +649,7 @@ jQuery(function ($) {
      *
      */
     var validate_resize_settings = function (wrapper_div, width_only, height_only) {
-        var resize_checkbox = wrapper_div.parent().find('#wp-smush-resize');
+        var resize_checkbox = wrapper_div.parent().find('#wp-smush-resize, #wp-smush-resize-quick-setup');
         if (!height_only) {
             var width_input = wrapper_div.find('#wp-smush-resize_width');
             var width_error_note = wrapper_div.find('.wp-smush-size-info.wp-smush-update-width');
@@ -1888,7 +1888,7 @@ jQuery(function ($) {
     });
 
     //Re-Validate Resize Width And Height
-    $('.wp-smush-resize-input').blur(function () {
+    $('body').on('blur', '.wp-smush-resize-input', function () {
 
         var self = $(this);
 
@@ -1900,7 +1900,7 @@ jQuery(function ($) {
     });
 
     //Handle Resize Checkbox toggle, to show/hide width, height settings
-    $('#wp-smush-resize').click(function () {
+    $('body').on('click', '#wp-smush-resize, #wp-smush-resize-quick-setup', function () {
         var self = $(this);
         var settings_wrap = $('.wp-smush-resize-settings-wrap');
 

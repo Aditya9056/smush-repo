@@ -1771,6 +1771,15 @@ a.wp-smush-lossy-enable {
     overflow: hidden;
 }
 
+.wpmud .wp-smush-resize-settings-wrap label.resize-height-label {
+    padding-left: 0;
+}
+
+span.label-text {
+    display: inline-block;
+    width: 75px;
+}
+
 .wpmud .wp-smush-png_to_jpg-wrap label {
     font-weight: 400;
 }
@@ -1792,6 +1801,12 @@ a.wp-smush-lossy-enable {
 
 .wpmud .wp-smush-resize-input.error, .wpmud #png_to_jpg_background.error {
     border-color: #fd8b8b;
+}
+
+div.wp-smush-resize-note {
+    color: #555;
+    font-size: 13px;
+    font-weight: 400;
 }
 
 .wpmud .smush-s3-setup-error, .wpmud .smush-s3-setup-message {
