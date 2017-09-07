@@ -1509,11 +1509,22 @@ jQuery(function ($) {
         });
     };
 
+    //Finds y value of given object
+    function findPos(obj) {
+        var curtop = 0;
+        if (obj.offsetParent) {
+            do {
+                curtop += obj.offsetTop;
+            } while (obj = obj.offsetParent);
+            return [curtop];
+        }
+    }
+
     //Scroll the element to top of the page
     var goToByScroll = function (selector) {
         // Scroll
         $('html,body').animate({
-                scrollTop: selector.offset().top
+                scrollTop: $(selector).offset().top - 100
             },
             'slow');
     };
@@ -1864,8 +1875,8 @@ jQuery(function ($) {
 
         //Enable Super Smush
         $('#wp-smush-resize').prop('checked', true);
-        //Induce Setting button save click
-        $('#wp-smush-save-settings').click();
+        //Scroll down to settings area
+        goToByScroll(".wp-smush-resize-label");
     });
 
     //Trigger Bulk
@@ -2010,8 +2021,15 @@ jQuery(function ($) {
         run_re_check($('.wp-smush-scan'), false);
     }
 
+    //Stats Section Choose Directory Link
+    $('body').on('click', 'a.wp-smush-dir-link', function(e) {
+        e.preventDefault();
+        goToByScroll('#wp-smush-dir-browser');
+        $('div.row button.wp-smush-browse').click();
+    });
+
     //WP Smush all : Scan Images
-    $('div.row').on('click', 'button.wp-smush-browse, a.wp-smush-dir-link', function (e) {
+    $('div.row').on('click', 'button.wp-smush-browse', function (e) {
 
         e.preventDefault();
 

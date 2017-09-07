@@ -227,6 +227,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				return;
 			}
 
+			//Remove the early hook
+			if ( $WpSmush->validate_install() ) {
+				remove_action( 'wp_smush_before_advanced_settings', array( $this, 'ui' ) );
+			} else {
+				remove_action( 'smush_settings_ui_bottom', array( $this, 'ui' ) );
+			}
+
 			//Reset the bulk limit
 			if ( ! $WpSmush->validate_install() ) {
 				//Reset Transient

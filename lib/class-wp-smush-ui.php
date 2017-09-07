@@ -248,7 +248,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div><?php
 			} ?>
 			<hr /><?php
-			    if( !$settings['resize'] ) {
+			    if( true || !$settings['resize'] ) {
 			        $class = ' settings-desc float-l';
 			    }elseif ( empty( $wpsmushit_admin->stats['resize_savings'] ) ) {
 			        $class = ' settings-desc float-r';
@@ -259,10 +259,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="row smush-resize-savings">
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "Resize savings", "wp-smushit" ); ?></strong></span>
 				<span class="wp-smush-stats<?php echo $class; ?>"><?php
-					if( !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) {
+					if( false && !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) {
 						echo size_format( $wpsmushit_admin->stats['resize_savings'], 1 );
 					}else{
-						if( !$settings['resize'] ) {
+						if( true || !$settings['resize'] ) {
 							//Output a button/link to enable respective setting
 							if( !is_multisite() || !$settings['networkwide'] ) {
 							    printf( esc_html__( "Save storage space by resizing your full sized uploads down to a maximum size. %sEnable image resizing%s", "wp-smushit" ), '<a class="wp-smush-resize-enable" href="#">', '</a>' );
@@ -1006,8 +1006,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$wpsmushit_admin->upgrade_url
 			); ?>
 			<div class="wp-smush-super-smush-promo">
-				<div class="wp-smush-super-smush-content"><?php
-					printf( esc_html__("Did you know WP Smush Pro delivers up to 2x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s", "wp-smushit"), '<a href="' . esc_url( $upgrade_url ). '" target="_blank" title="' . esc_html__("Try WP Smush Pro for FREE", "wp-smushit") . '">', '</a>' ); ?>
+			    <div class="wp-smush-super-smush-content-wrapper">
+                    <div class="wp-smush-super-smush-content"><?php
+                        printf( esc_html__("Did you know WP Smush Pro delivers up to 2x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s", "wp-smushit"), '<a href="' . esc_url( $upgrade_url ). '" target="_blank" title="' . esc_html__("Try WP Smush Pro for FREE", "wp-smushit") . '">', '</a>' ); ?>
+                    </div>
 				</div>
 			</div>
 			<?php
@@ -1211,7 +1213,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                id="<?php echo WP_SMUSH_PREFIX . $name ; ?>" <?php checked( $setting_val, 1, true ); ?>
                                value="1"
                                name="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex= "0">
-                        <label class="toggle-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>"></label>
+                        <label class="toggle-label <?php echo WP_SMUSH_PREFIX . $name ; ?>-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>"></label>
                     </span>
                     <div class="column-right-content">
                         <label class="inline-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex="0">
