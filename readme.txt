@@ -156,6 +156,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Start from latest image while Bulk Smushing
     * S3 config error if AWS keys are defined in wp-config.php
     * NextGen smush page not working properly
+    * Do not redirect to settings page on activation is WP CLI is installed
 
 = 2.7.4.1 =
 

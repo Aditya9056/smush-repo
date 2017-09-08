@@ -227,43 +227,44 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function init_settings() {
 			$this->settings = array(
 				'networkwide' => array(
-					'label' => esc_html__( 'Enable Network wide settings', 'wp-smushit' ),
-					'desc'  => esc_html__( 'If kept disabled sub sites can override the individual Smush settings.', 'wp-smushit' )
+					'label'       => esc_html__( 'Allow sub-sites control over Smush’s settings', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Multisite Control', 'wp-smushit' ),
+					'desc'        => esc_html__( 'Choose whether you want your sub-site admins to be able to control Smush’s settings.', 'wp-smushit' )
 				),
 				'auto'        => array(
-					'label' => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
+					'label'       => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Automatic Smush', 'wp-smushit' ),
-					'desc'  => esc_html__( 'When you upload images to your site, Smush will automatically optimize them for you.', 'wp-smushit' )
+					'desc'        => esc_html__( 'When you upload images to your site, Smush will automatically optimize them for you.', 'wp-smushit' )
 				),
 				'lossy'       => array(
-					'label' => esc_html__( 'Super-smush my images', 'wp-smushit' ),
+					'label'       => esc_html__( 'Super-smush my images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Super-smush', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
 				),
 				'original'    => array(
-					'label' => esc_html__( 'Smush my original full-size images', 'wp-smushit' ),
+					'label'       => esc_html__( 'Smush my original full-size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed.', 'wp-smushit' )
 				),
 				'keep_exif'   => array(
-					'label' => esc_html__( 'Preserve my image EXIF data', 'wp-smushit' ),
-                    'short_label' => esc_html__( 'EXIF data', 'wp-smushit' ),
-					'desc'  => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
+					'label'       => esc_html__( 'Preserve my image EXIF data', 'wp-smushit' ),
+					'short_label' => esc_html__( 'EXIF data', 'wp-smushit' ),
+					'desc'        => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
 				),
 				'resize'      => array(
-					'label' => esc_html__( 'Resize my full size images', 'wp-smushit' ),
+					'label'       => esc_html__( 'Resize my full size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically resized before they are added to the media gallery. This setting does not apply to images smushed using Directory Smush feature.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically resized before they are added to the media gallery. This setting does not apply to images smushed using Directory Smush feature.', 'wp-smushit' )
 				),
 				'backup'      => array(
-					'label' => esc_html__( 'Make a copy of my full size images', 'wp-smushit' ),
+					'label'       => esc_html__( 'Make a copy of my full size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'  => esc_html__( 'Save your original full-size images separately so you can restore them at any point. Note: Keeping a copy of your original files can significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Save your original full-size images separately so you can restore them at any point. Note: Keeping a copy of your original files can significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' )
 				),
 				'png_to_jpg'  => array(
-					'label' => esc_html__( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
-                    'short_label' => esc_html__( 'PNG to JPEG conversion', 'wp-smushit' ),
-					'desc'  =>  esc_html__( "When you compress a PNG file, Smush will check if converting the file to JPEG will further reduce its size.", 'wp-smushit' )
+					'label'       => esc_html__( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
+					'short_label' => esc_html__( 'PNG to JPEG conversion', 'wp-smushit' ),
+					'desc'        => esc_html__( "When you compress a PNG file, Smush will check if converting the file to JPEG will further reduce its size.", 'wp-smushit' )
 				)
 			);
 
@@ -718,7 +719,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$error = $smush->get_error_message();
 				//Check for timeout error and suggest to filter timeout
 				if ( strpos( $error, 'timed out' ) ) {
-					$error = esc_html__( "Smush request timed out, You can try setting a higher value for `WP_SMUSH_API_TIMEOUT`.", "wp-smushit" );
+					$error = esc_html__( "Skipped due to a timeout error, You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`", "wp-smushit" );
 				}
 			} else {
 				//Check if a resmush request, update the resmush list

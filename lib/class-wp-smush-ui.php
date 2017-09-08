@@ -241,7 +241,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                             printf( esc_html__( "Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s", "wp-smushit" ), '<a class="wp-smush-lossy-enable" href="#">', '</a>' );
 						}else {
 					        $settings_link = $wpsmushit_admin->settings_link( array(), true );
-                            printf( esc_html__( "%sENABLE SUPER-SMUSH%s", "wp-smushit" ), '<a href="' . $settings_link .'" class="wp-smush-lossy-enable button button-small">', '</a>' );
+                            printf( esc_html__( "Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s", "wp-smushit" ), '<a class="wp-smush-lossy-enable-network" href="'. $settings_link .'">', '</a>' );
 						}
 					} ?>
 				</span>
@@ -463,23 +463,31 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$class = $wpsmush_settings->settings['networkwide'] ? '' : ' hidden'; ?>
 				<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 				<div class='wp-smush-setting-row wp-smush-basic'>
-					<label class="inline-label" for="<?php echo $opt_networkwide; ?>" tabindex="0">
-						<span class="wp-smush-setting-label">
-							<?php echo $wpsmushit_admin->settings['networkwide']['label']; ?>
-						</span><br/>
-						<small class="smush-setting-description">
-							<?php echo $wpsmushit_admin->settings['networkwide']['desc']; ?>
-						</small>
-					</label>
-					<span class="toggle float-l">
-						<input type="checkbox" class="toggle-checkbox"
-					       id="<?php echo $opt_networkwide; ?>"
-					       name="<?php echo $opt_networkwide; ?>" <?php checked( $opt_networkwide_val, 1, true ); ?> value="1" tabindex="0">
-						<label class="toggle-label" for="<?php echo $opt_networkwide; ?>"></label>
-					</span>
+				    <div class="column column-left"">
+                        <label class="inline-label" for="<?php echo $opt_networkwide; ?>" tabindex="0">
+                            <span class="wp-smush-setting-label">
+                                <?php echo $wpsmushit_admin->settings['networkwide']['short_label']; ?>
+                            </span><br/>
+                            <small class="smush-setting-description">
+                                <?php echo $wpsmushit_admin->settings['networkwide']['desc']; ?>
+                            </small>
+                        </label>
+					</div>
+					<div class="column column-right">
+                        <span class="toggle float-l">
+                            <input type="checkbox" class="toggle-checkbox"
+                               id="<?php echo $opt_networkwide; ?>"
+                               name="<?php echo $opt_networkwide; ?>" <?php checked( $opt_networkwide_val, 1, true ); ?> value="1" tabindex="0">
+                            <label class="toggle-label" for="<?php echo $opt_networkwide; ?>"></label>
+                        </span>
+                        <div class="column-right-content">
+                            <label class="inline-label" for="<?php echo $opt_networkwide; ?>" tabindex="0">
+                                <span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['networkwide']['label']; ?></span><br/>
+                            </label>
+                        </div>
+					</div>
 				</div>
 				<input type="hidden" name="setting-type" value="network">
-				<hr />
 				<div class="network-settings-wrapper<?php echo $class; ?>"><?php
 			}
 
@@ -794,13 +802,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function progress_bar( $count ) {
 
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
-//			$smushed_count = ( $resmush_count = count( $count->resmush_ids ) ) > 0 ? ( $count->total_count - ( $count->remaining_count + $resmush_count ) ) : $count->smushed_count;
+			$smushed_count = ( $resmush_count = count( $count->resmush_ids ) ) > 0 ? ( $count->total_count - ( $count->remaining_count + $resmush_count ) ) : $count->smushed_count;
 			// calculate %ages, avoid divide by zero error with no attachments
-			if ( $count->total_count > 0 && $count->smushed_count > 0 ) {
-				$smushed_pc = $count->smushed_count / $count->total_count * 100;
+
+			if ( $count->total_count > 0 && $smushed_count > 0 ) {
+				$smushed_pc = $smushed_count / $count->total_count * 100;
 			} else {
 				$smushed_pc = 0;
-			} ?>
+			}
+			?>
 			<div class="wp-smush-bulk-progress-bar-wrapper hidden">
 			<p class="wp-smush-bulk-active roboto-medium"><?php printf( esc_html__( "%sBulk smush is currently running.%s You need to keep this page open for the process to complete.", "wp-smushit" ), '<strong>', '</strong>' ); ?></p>
 			<div class="wp-smush-progress-wrap">
@@ -847,7 +857,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						$wpsmushit_admin->setup_global_stats();
 					}
 
-					$count = $wpsmushit_admin->remaining_count;
+					$count = $count + $wpsmushit_admin->remaining_count;
 				}
 			}
 			//Show only if we have any images to ber resmushed

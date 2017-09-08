@@ -115,8 +115,9 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			//If not saved earlier, get it from stored options
 			if ( empty( $settings ) || 0 == sizeof( $settings ) ) {
 				$settings = $this->get_serialised_settings();
-				$settings = maybe_unserialize( $settings );
 			}
+
+			$settings = !is_array( $settings ) ? maybe_unserialize( $settings ) : $settings ;
 
 			//Save whether to use the settings networkwide or not ( Only if in network admin )
 			if ( ! empty( $_POST['action'] ) && 'save_settings' == $_POST['action'] ) {
@@ -193,6 +194,11 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			//If Single site return true
 			if ( ! is_multisite() ) {
 				return true;
+			}
+
+			//Get directly from db
+			if( empty( $wpsmush_settings->settings ) && is_multisite() ){
+				return get_site_option(WP_SMUSH_PREFIX . 'networkwide' );
 			}
 
 			//Check if the settings are network wide or site wise

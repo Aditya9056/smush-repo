@@ -705,8 +705,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					//Update DB for using http protocol
 					$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'use_http', 1 );
 				}
-				//Handle error
-				$data['message'] = sprintf( __( 'Error posting to API: %s', 'wp-smushit' ), $result->get_error_message() );
+				//Check for timeout error and suggest to filter timeout
+				if ( strpos( $er_msg, 'timed out' ) ) {
+					$data['message'] = esc_html__( "Skipped due to a timeout error, You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`.", "wp-smushit" );
+				}else {
+					//Handle error
+					$data['message'] = sprintf( __( 'Error posting to API: %s', 'wp-smushit' ), $result->get_error_message() );
+				}
 				$data['success'] = false;
 				unset( $result ); //free memory
 				return $data;
@@ -1953,6 +1958,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				return true;
+			}
+
+			//Do not perform redirect if WP ClI is there, as it generates warning and causes issue
+			if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				return true;
 			}
 
