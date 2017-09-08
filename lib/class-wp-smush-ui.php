@@ -857,7 +857,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						$wpsmushit_admin->setup_global_stats();
 					}
 
-					$count = $count + $wpsmushit_admin->remaining_count;
+					$count = $wpsmushit_admin->remaining_count;
 				}
 			}
 			//Show only if we have any images to ber resmushed

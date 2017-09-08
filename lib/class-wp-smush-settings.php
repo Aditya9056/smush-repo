@@ -133,7 +133,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			}
 
 			// Delete S3 alert flag, if S3 option is disabled again.
-			if ( ! isset( $_POST['wp-smush-s3'] ) && $this->settings['s3'] ) {
+			if ( ! isset( $_POST['wp-smush-s3'] ) && isset( $this->settings['s3'] ) && $this->settings['s3'] ) {
 				delete_site_option( 'wp-smush-hide_s3support_alert' );
 			}
 
@@ -190,23 +190,13 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 		 * @todo: Check in subdirectory installation as well
 		 */
 		function is_network_enabled() {
-			global $wpsmush_settings;
 			//If Single site return true
 			if ( ! is_multisite() ) {
 				return true;
 			}
 
 			//Get directly from db
-			if( empty( $wpsmush_settings->settings ) && is_multisite() ){
-				return get_site_option(WP_SMUSH_PREFIX . 'networkwide' );
-			}
-
-			//Check if the settings are network wide or site wise
-			if ( !empty( $wpsmush_settings->settings ) && $wpsmush_settings->settings['networkwide'] ) {
-				return true;
-			}
-
-			return false;
+			return get_site_option(WP_SMUSH_PREFIX . 'networkwide' );
 		}
 
 		/**

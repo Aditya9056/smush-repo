@@ -833,6 +833,7 @@ jQuery(function ($) {
                     var notices = $('.bulk-smush-wrapper .wp-smush-notice');
                     if (notices.length > 0) {
                         notices.hide();
+                        $('.wp-smush-pagespeed-recommendation').hide();
                     }
                     //remove existing Re-Smush notices
                     $('.wp-smush-resmush-notice').remove();
@@ -1230,7 +1231,7 @@ jQuery(function ($) {
      */
     var update_stats = function () {
 
-        var super_savings = 0;
+        var super_savings = smushed_count = 0;
 
         //Calculate updated savings in bytes
         wp_smushit_data.savings_bytes = parseInt(wp_smushit_data.size_before) - parseInt(wp_smushit_data.size_after);

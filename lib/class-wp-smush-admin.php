@@ -1007,7 +1007,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @todo: remove id from global stats stored in db
 		 *
 		 */
-		function global_stats( $force_update = false, $exclude_resmush = false ) {
+		function global_stats( $force_update = false, $exclude_resmush = true ) {
 
 			if ( $exclude_resmush && ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
 				if ( ! empty( $stats ) && ! empty( $stats['size_before'] ) ) {
@@ -1147,10 +1147,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Remove ids from stats
 			unset( $smush_data['id'] );
 
-			if( !$exclude_resmush ) {
-				//Update Cache
-				update_option( 'smush_global_stats', $smush_data, false );
-			}
+			//Update Cache
+			update_option( 'smush_global_stats', $smush_data, false );
 
 			return $smush_data;
 		}
@@ -2093,16 +2091,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		    global $wpsmush_bulkui;
 
 			//No need to print it for free version
-//			if( !$this->validate_install() ) {
-//				return;
-//			}
-//			//Show it on Media Library page only
-//			$screen = get_current_screen();
-//			$screen_id = !empty( $screen ) ? $screen->id : '';
-//			//Do not show notice anywhere else
-//			if( empty( $screen ) || 'upload' != $screen_id ) {
-//				return;
-//			}
+			if( !$this->validate_install() ) {
+				return;
+			}
+			//Show it on Media Library page only
+			$screen = get_current_screen();
+			$screen_id = !empty( $screen ) ? $screen->id : '';
+			//Do not show notice anywhere else
+			if( empty( $screen ) || 'upload' != $screen_id ) {
+				return;
+			}
 
 			echo $wpsmush_bulkui->get_user_validation_message( $notice = true );
 		}
