@@ -585,7 +585,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			if( !$is_network ) {
 				//Show Configure screen for only a new installation and for only network admins
-				if ( ( 1 != $wpsmush_settings->get_setting( 'skip-smush-setup' ) && 1 != get_site_option( 'wp-smush-hide_smush_welcome' ) && 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && is_super_admin() ) {
+				if ( ( 1 != get_site_option( 'skip-smush-setup' ) && 1 != get_site_option( 'wp-smush-hide_smush_welcome' ) && 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && is_super_admin() ) {
 					echo '<div class="block float-l">';
 					$this->quick_setup();
 					echo '</div>';

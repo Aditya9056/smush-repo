@@ -1418,6 +1418,10 @@ a.wp-smush-lossy-enable {
     padding: 0;
 }
 
+.wp-smush-stats-human.settings-desc {
+    font-size: 18px;
+}
+
 .wpmud .row .col-third.wp-smushit-container-right {
     padding-right: 0;
     width: 38%;

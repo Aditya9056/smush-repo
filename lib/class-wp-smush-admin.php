@@ -2199,7 +2199,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
 
-			$wpsmush_settings->update_setting('skip-smush-setup', 1 );
+			update_site_option('skip-smush-setup', 1 );
 
 			wp_send_json_success();
 

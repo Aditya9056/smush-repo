@@ -1586,6 +1586,15 @@ jQuery(function ($) {
         }
     };
 
+    //Remove span tag from URL
+    function removeSpan(url) {
+        var url = url.slice(url.indexOf('?') + 1).split('&');
+        for (var i = 0; i < url.length; i++) {
+            var urlparam = decodeURI( url[i] ).split(/=(.+)/)[1];
+            return urlparam.replace(/<(?:.|\n)*?>/gm, '');
+        }
+    }
+
     /**
      * Handle the Smush Stats link click
      */
@@ -1947,11 +1956,15 @@ jQuery(function ($) {
     //Handle Twitter Share
     $('#wp-smush-twitter-share').on('click', function (e) {
         e.preventDefault();
+        var url = this.href;
+        var text = removeSpan(url);
+        //Update text in URL
+        url = url.replace(/(text=)[^\&]+/, '$1' + text);
         var width = 550,
             height = 420,
             left = ($(window).width() - width) / 2,
             top = ($(window).height() - height) / 2,
-            url = this.href,
+            url = url,
             opts = 'status=1' +
                 ',width=' + width +
                 ',height=' + height +
