@@ -611,9 +611,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			@error_reporting( 0 );
 
 			$should_continue = true;
+			$send_error = false;
 
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
-				wp_send_json_error( 'missing id' );
+				wp_send_json_error(
+					array(
+						'error'         => 'missing_id',
+						'error_message' => sprintf( esc_html__( "%s%d%s Attachment(s) could not be smushed, as no ID was received.", "wp-smushit" ), '<span class="image-error-count">', 1, '</span>'),
+						'error_class'   => 'no_id'
+					)
+				);
 			}
 
 			if ( ! $this->validate_install() ) {
@@ -625,14 +632,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! $should_continue ) {
 				wp_send_json_error(
 					array(
-						'error'    => 'bulk_request_image_limit_exceeded',
-						'continue' => false
+						'error'         => 'bulk_request_image_limit_exceeded',
+						'error_message' => esc_html__( "You've exceeded Bulk Smush limit of 50 images at once for standard users. Click on Bulk Smush to continue.", "wp-smushit" ),
+						'error_class'   => 'limit_exceeded',
+						'continue'      => false
 					)
 				);
 			}
 
-			$error = '';
-			$send_error = false;
+			$error = $error_class = '';
 
 			$attachment_id = (int) ( $_REQUEST['attachment_id'] );
 
@@ -648,7 +656,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			if ( ! apply_filters( 'wp_smush_image', true, $attachment_id ) ) {
 				$send_error = true;
-				$error = $this->filter_error( esc_html__( "Attachment $attachment_id was skipped.", "wp-smushit" ), $attachment_id );
+				$error = 'skipped';
+				$error_message = $this->filter_error( sprintf( esc_html__( "%s%d%s Attachment(s) were skipped.", "wp-smushit" ), $attachment_id ), '<span class="image-error-count">', 1, '</span>');
+				$error_class = 'skipped';
 			}
 
 			//Get the file path for backup
@@ -716,10 +726,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 				$send_error = true;
 
-				$error = $smush->get_error_message();
+				$error_message = $smush->get_error_message();
 				//Check for timeout error and suggest to filter timeout
-				if ( strpos( $error, 'timed out' ) ) {
-					$error = esc_html__( "Skipped due to a timeout error, You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`", "wp-smushit" );
+				if ( strpos( $error_message, 'timed out' ) ) {
+				    $error = 'timeout';
+					$error_message = sprintf( esc_html__( "%s%d%s Attachment(s) were not smushed due to a timeout error, You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`", "wp-smushit" ), '<span class="image-error-count">', 1,"</span>");
+					$error_class = ' timeout';
 				}
 			} else {
 				//Check if a resmush request, update the resmush list
@@ -739,10 +751,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 * Used internally to modify the error message
 			 *
 			 */
-			$error = $this->filter_error( $error, $attachment_id );
+			$error_message = $this->filter_error( $error_message, $attachment_id, $error );
 
 			//Wrap the error message in div
-			$error = !empty( $error ) ? sprintf( '<p class="wp-smush-error-message">%s</p>', $error ) : $error;
+//			$error = !empty( $error ) ? sprintf( '<p class="wp-smush-error-message'. $error_class .'">%s</p>', $error ) : $error;
 
 			if ( ! $send_error ) {
 				//Update the bulk Limit count
@@ -752,7 +764,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Send ajax response
 			$send_error ? wp_send_json_error( array(
 				'stats'        => $stats,
-				'error_msg'    => $error,
+				'error'        => $error,
+				'error_message' => $error_message,
+				'error_class'  => $error_class,
 				'show_warning' => intval( $this->show_warning() )
 
 			) ) : wp_send_json_success( array(

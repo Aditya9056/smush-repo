@@ -410,9 +410,22 @@ jQuery(function ($) {
                     }
                     //If no response or success is false, do not process further
                     if (typeof res == 'undefined' || !res || !res.success) {
-                        if ('undefined' !== typeof res && 'undefined' !== typeof res.data && typeof res.data.error_msg !== 'undefined') {
-                            //Print the error on screen
-                            self.$log.append(res.data.error_msg);
+                        //@todo: Handle Bulk Smush limit error message
+                        //@todo: Handle Attachment Ids list
+                        if ('undefined' !== typeof res && 'undefined' !== typeof res.data && typeof res.data.error !== 'undefined') {
+                            var error_class = 'undefined' != typeof res.data.error_class ? 'smush-error-message ' + res.data.error_class : 'smush-error-message';
+                            var error_msg = '<p class="' + error_class + '">' + res.data.error + '</p>';
+                            if( 'undefined' != typeof res.data.error_class && $('div.smush-final-log ' + error_class ).length > 0 ) {
+                                var error_count = $( error_class + ' p.wp-smush-error-message .image-error-count');
+                                //Get the error count, increase and append
+                                var image_count = error_count.html();
+                                image_count = parseInt( image_count ) + 1;
+                                //Append the updated image count
+                                error_count.html( image_count );
+                            }else {
+                                //Print the error on screen
+                                self.$log.append(error_msg);
+                            }
                             self.$log.removeClass('hidden');
                         }
                     }
