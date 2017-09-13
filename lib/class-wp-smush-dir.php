@@ -508,6 +508,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$count     = 0;
 			$timestamp = gmdate( 'Y-m-d H:i:s' );
 			$values = array();
+			//Temporary Increase the limit
+			@ini_set('memory_limit','256M');
 			foreach ( $iterator as $path ) {
 
 				//Used in place of Skip Dots, For php 5.2 compatability
