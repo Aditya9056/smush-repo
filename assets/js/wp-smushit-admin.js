@@ -1904,16 +1904,17 @@ jQuery(function ($) {
 
         //Enable Super Smush
         $('#wp-smush-lossy').prop('checked', true);
-        //Induce Setting button save click
-        $('#wp-smush-save-settings').click();
+        goToByScroll(".wp-smush-lossy-label");
     });
 
     //Enable Resize
     $('.wp-smush-resize-enable').on('click', function (e) {
         e.preventDefault();
 
-        //Enable Super Smush
+        //Enable Resize, Show resize settings
         $('#wp-smush-resize').prop('checked', true);
+        $('div.wp-smush-resize-settings-wrap').show();
+
         //Scroll down to settings area
         goToByScroll(".wp-smush-resize-label");
     });
