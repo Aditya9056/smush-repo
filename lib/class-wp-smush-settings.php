@@ -158,6 +158,9 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			//Save serialised settings
 			$resp = $this->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
 
+			//Update initialised settings
+			$this->settings = $settings;
+
 			//Save the selected image sizes
 			$image_sizes = ! empty( $_POST['wp-smush-image_sizes'] ) ? $_POST['wp-smush-image_sizes'] : array();
 			$image_sizes = array_filter( array_map( "sanitize_text_field", $image_sizes ) );
