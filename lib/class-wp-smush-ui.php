@@ -400,7 +400,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                            id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?>
                                            value="1"
                                            name="<?php echo $setting_m_key; ?>" tabindex= "0">
-                                    <label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
+                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>"></label>
                                 </span>
                                 <div class="column-right-content">
                                     <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
@@ -540,7 +540,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                     <input type="checkbox" class="toggle-checkbox"
                                        id="<?php echo $setting_m_key; ?>"
                                        name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1" tabindex="0">
-                                    <label class="toggle-label" for="<?php echo $setting_m_key; ?>"></label>
+                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>"></label>
                                 </span>
                                 <div class="column-right-content">
                                     <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
