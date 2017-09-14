@@ -1272,6 +1272,12 @@ div.wp-smush-dir-limit .wdv-icon-info-sign:before {
     padding: 10px;
 }
 
+.wpmud .smush-final-log .smush-error-message {
+    color: #888888;
+    font-size: 13px;
+    line-height: 20px;
+}
+
 div.smush-cancel-button-wrapper {
     text-align: center;
 }

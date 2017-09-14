@@ -633,7 +633,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_send_json_error(
 					array(
 						'error'         => 'bulk_request_image_limit_exceeded',
-						'error_message' => esc_html__( "You've exceeded Bulk Smush limit of 50 images at once for standard users. Click on Bulk Smush to continue.", "wp-smushit" ),
+						'error_message' => sprintf( esc_html__( "You've exceeded Bulk Smush limit of %d images at once for standard users. Click on Bulk Smush to continue.", "wp-smushit" ), $this->max_free_bulk ),
 						'error_class'   => 'limit_exceeded',
 						'continue'      => false
 					)
@@ -657,7 +657,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! apply_filters( 'wp_smush_image', true, $attachment_id ) ) {
 				$send_error = true;
 				$error = 'skipped';
-				$error_message = $this->filter_error( sprintf( esc_html__( "%s%d%s Attachment(s) were skipped.", "wp-smushit" ), $attachment_id ), '<span class="image-error-count">', 1, '</span>');
+				$error_message = $this->filter_error( sprintf( esc_html__( "%s%d%s Attachment(s) were skipped.", "wp-smushit" ), '<span class="image-error-count">', 1, '</span>' ) );
 				$error_class = 'skipped';
 			}
 
@@ -722,7 +722,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'is_lossy'           => ! empty( $smush_data ['stats'] ) ? $smush_data['stats']['lossy'] : false
 			);
 
-			if ( isset( $smush ) && is_wp_error( $smush ) ) {
+			if ( true || isset( $smush ) && is_wp_error( $smush ) ) {
 
 				$send_error = true;
 

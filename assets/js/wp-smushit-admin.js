@@ -167,6 +167,13 @@ jQuery(function ($) {
 
             //Remove any Global Notices if there
             $('.wp-smush-notice.wp-smush-resmush-message').remove();
+
+            //Hide the Bulk Limit message
+            $('p.smush-error-message.limit_exceeded').remove();
+            //Hide parent wrapper, if there are no other messages
+            if( $('div.smush-final-log p').length <= 0 ) {
+                $('div.smush-final-log').hide();
+            }
         };
 
         this.single_start = function () {
@@ -404,35 +411,44 @@ jQuery(function ($) {
                 .error(function () {
                     self.increment_errors(self.current_id);
                 }).done(function (res) {
-                    //Increase the error count if any
+                    //Increase the error count except if bulk request limit excceded
                     if (typeof res.success === "undefined" || ( typeof res.success !== "undefined" && typeof res.success.data !== "undefined" && res.success === false && res.data.error !== 'bulk_request_image_limit_exceeded' )) {
                         self.increment_errors(self.current_id);
                     }
                     //If no response or success is false, do not process further
-                    if (typeof res == 'undefined' || !res || !res.success) {
+                    if (!res || !res.success) {
                         //@todo: Handle Bulk Smush limit error message
-                        //@todo: Handle Attachment Ids list
                         if ('undefined' !== typeof res && 'undefined' !== typeof res.data && typeof res.data.error !== 'undefined') {
                             var error_class = 'undefined' != typeof res.data.error_class ? 'smush-error-message ' + res.data.error_class : 'smush-error-message';
-                            var error_msg = '<p class="' + error_class + '">' + res.data.error + '</p>';
-                            if( 'undefined' != typeof res.data.error_class && $('div.smush-final-log ' + error_class ).length > 0 ) {
-                                var error_count = $( error_class + ' p.wp-smush-error-message .image-error-count');
+                            var error_msg = '<p class="' + error_class + '">' + res.data.error_message + '</p>';
+                            if ('undefined' != typeof res.data.error && 'bulk_request_image_limit_exceeded' == res.data.error) {
+                                var ajax_error_message = $('.wp-smush-ajax-error');
+                                //If we have ajax error message div, append after it
+                                if (ajax_error_message.length > 0) {
+                                    ajax_error_message.after(error_msg);
+                                } else {
+                                    //Otherwise prepend
+                                    self.$log.prepend(error_msg);
+                                }
+                            } else if ('undefined' != typeof res.data.error_class && $('div.smush-final-log .' + res.data.error_class).length > 0) {
+                                var error_count = $('p.smush-error-message.' + res.data.error_class +  ' .image-error-count');
                                 //Get the error count, increase and append
                                 var image_count = error_count.html();
-                                image_count = parseInt( image_count ) + 1;
+                                image_count = parseInt(image_count) + 1;
                                 //Append the updated image count
-                                error_count.html( image_count );
-                            }else {
+                                error_count.html(image_count);
+                            } else {
                                 //Print the error on screen
                                 self.$log.append(error_msg);
                             }
-                            self.$log.removeClass('hidden');
+                            self.$log.show();
                         }
                     }
 
                     //Check whether to show the warning notice or not
                     membership_validity(res.data);
 
+                    //Bulk Smush Limit Exceeded: Stop ajax requests, remove progress bar, append the last image id back to smush variable, and reset variables to allow the user to continue bulk smush
                     if (typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved()) {
                         //Add a data attribute to the smush button, to stop sending ajax
                         self.$button.attr('continue_smush', false);
@@ -868,7 +884,7 @@ jQuery(function ($) {
                     $('.wp-smush-page-header').after(r.data.notice);
                 }
                 //Hide errors
-                $('.smush-final-log').hide();
+                $('div.smush-final-log').hide();
 
                 //Hide Super Smush notice if it's enabled in media settings
                 if ('undefined' != typeof r.data.super_smush && r.data.super_smush) {
