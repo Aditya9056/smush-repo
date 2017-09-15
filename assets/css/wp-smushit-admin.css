@@ -2229,12 +2229,12 @@ div.smush-s3-setup-message i.dev-icon {
 
 div.smush-s3-setup-error i.dev-icon,
 div.smush-s3-setup-message i.dev-icon {
-    margin-top: 1px;
+    margin-top: -1px;
     vertical-align: top;
 }
 
-div.smush-s3-setup-message i.dev-icon {
-    margin-top: 4px;
+div.smush-s3-setup-error i.dev-icon {
+    margin-top: -2px;
 }
 
 div.smush-s3-setup-message i.dev-icon:before {

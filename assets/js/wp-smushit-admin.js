@@ -2219,7 +2219,7 @@ jQuery(function ($) {
         $('input[name="wp-smush-continue-ajax"]').val(0);
 
         //Enable the smush button, disable Pause button
-        pause_button.attr('disabled', 'disabled');
+        pause_button.hide().attr('disabled', 'disabled');
 
         //Enable the smush button, hide the spinner
         $('button.wp-smush-start, button.wp-smush-browse').show().removeAttr('disabled');
