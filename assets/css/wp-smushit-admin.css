@@ -1828,6 +1828,7 @@ div.wp-smush-resize-note {
 .wpmud .smush-s3-setup-error, .wpmud .smush-s3-setup-message {
     margin-top: 15px;
     margin-left: 50px;
+    width: 100%;
 }
 
 .wpmud .smush-s3-setup-error p, .wpmud .smush-s3-setup-message p {
@@ -2235,12 +2236,12 @@ div.smush-s3-setup-message i.dev-icon {
 
 div.smush-s3-setup-error i.dev-icon,
 div.smush-s3-setup-message i.dev-icon {
-    margin-top: 1px;
+    margin-top: -1px;
     vertical-align: top;
 }
 
-div.smush-s3-setup-message i.dev-icon {
-    margin-top: 4px;
+div.smush-s3-setup-error i.dev-icon {
+    margin-top: -2px;
 }
 
 div.smush-s3-setup-message i.dev-icon:before {
