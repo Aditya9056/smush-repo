@@ -387,8 +387,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                 <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
                                     <span class="wp-smush-setting-label"><?php echo $label; ?></span>
                                     <br/>
-                                    <small class="smush-setting-description">
-                                        <?php echo $wpsmushit_admin->settings[ $setting_key ]['desc']; ?>
+                                    <small class="smush-setting-description"><?php
+                                        if( 'original' != $setting_key ) {
+                                            echo $wpsmushit_admin->settings[ $setting_key ]['desc'];
+                                        }else{
+                                            esc_html_e("By default, Smush only compresses your cropped image sizes, not your original full-size images.", "wp-smushit");
+                                        }
+                                    ?>
                                     </small>
                                 </label>
                             </div>
@@ -527,8 +532,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 	                            <span class="wp-smush-setting-label"><?php echo $label; ?></span><br/>
 	                            <small class="smush-setting-description"><?php
 	                                //For pro settings, print a different description for group setting
-	                                if( 'original' != $name ) {
+	                                if( 'original' != $name && 'resize' != $name ) {
 	                                    echo $wpsmushit_admin->settings[ $name ]['desc'];
+	                                }else{
+	                                    esc_html_e("Save a ton of space by not storing over-sized images on your server.", "wp-smushit");
 	                                }?>
 	                            </small>
 	                        </label>
@@ -802,11 +809,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function progress_bar( $count ) {
 
 			//If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count
-			$smushed_count = ( $resmush_count = count( $count->resmush_ids ) ) > 0 ? ( $count->total_count - ( $count->remaining_count + $resmush_count ) ) : $count->smushed_count;
+//			$smushed_count = ( $resmush_count = count( $count->resmush_ids ) ) > 0 ? ( $count->total_count - ( $count->remaining_count + $resmush_count ) ) : $count->smushed_count;
 			// calculate %ages, avoid divide by zero error with no attachments
 
-			if ( $count->total_count > 0 && $smushed_count > 0 ) {
-				$smushed_pc = $smushed_count / $count->total_count * 100;
+			if ( $count->total_count > 0 && $count->smushed_count > 0 ) {
+				$smushed_pc = $count->smushed_count / $count->total_count * 100;
 			} else {
 				$smushed_pc = 0;
 			}

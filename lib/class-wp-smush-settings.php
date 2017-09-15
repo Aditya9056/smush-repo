@@ -40,7 +40,9 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			if( empty( $last_settings ) ) {
 				$last_settings = $this->get_serialised_settings();
 			}
-			$this->settings = maybe_unserialize( $last_settings );
+			$last_settings = maybe_unserialize( $last_settings );
+			//Merge with the existing settings
+			$this->settings = array_merge( $this->settings, $last_settings );
 			return $this->settings;
 
 		}
@@ -157,6 +159,9 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 
 			//Save serialised settings
 			$resp = $this->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
+
+			//Update initialised settings
+			$this->settings = $settings;
 
 			//Save the selected image sizes
 			$image_sizes = ! empty( $_POST['wp-smush-image_sizes'] ) ? $_POST['wp-smush-image_sizes'] : array();

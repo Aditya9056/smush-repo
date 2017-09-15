@@ -98,7 +98,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                         %</span><?php
 					}
 				} else { ?>
-                    <span class="wp-smush-stats-human  settings-desc"><?php esc_html_e("Smush images that aren't located in your uploads folder.", "wp-smushit"); ?>
+                    <span class="wp-smush-stats-human settings-desc"><?php esc_html_e("Smush images that aren't located in your uploads folder.", "wp-smushit"); ?>
 		                <a href="#wp-smush-dir-browser" class="wp-smush-dir-link"><?php esc_html_e( "Choose directory", "wp-smushit" ); ?></a>
 	                </span>
                     <span class="wp-smush-stats-sep hidden">/</span>
@@ -508,52 +508,50 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$count     = 0;
 			$timestamp = gmdate( 'Y-m-d H:i:s' );
 			$values = array();
-			if( is_array( $iterator ) ) {
-				foreach ( array_chunk( $iterator, 500 ) as $iterator_path ) {
-					foreach ( $iterator_path as $path ) {
+			//Temporary Increase the limit
+			@ini_set('memory_limit','256M');
+			foreach ( $iterator as $path ) {
 
-						//Used in place of Skip Dots, For php 5.2 compatability
-						if ( basename( $path ) == '..' || basename( $path ) == '.' ) {
-							continue;
+				//Used in place of Skip Dots, For php 5.2 compatability
+				if ( basename( $path ) == '..' || basename( $path ) == '.' ) {
+					continue;
+				}
+				if ( $path->isFile() ) {
+					$file_path = $path->getPathname();
+					$file_name = $path->getFilename();
+
+					if ( $this->is_image( $file_path ) && ! $this->is_media_library_file( $file_path ) && strpos( $path, '.bak' ) === false ) {
+
+						/**  To generate Markup **/
+						$dir_name = dirname( $file_path );
+
+						//Initialize if dirname doesn't exists in array already
+						if ( ! isset( $files_arr[ $dir_name ] ) ) {
+							$files_arr[ $dir_name ] = array();
 						}
-						if ( $path->isFile() ) {
-							$file_path = $path->getPathname();
-							$file_name = $path->getFilename();
+						$files_arr[ $dir_name ][ $file_name ] = $file_path;
+						/** End */
 
-							if ( $this->is_image( $file_path ) && ! $this->is_media_library_file( $file_path ) && strpos( $path, '.bak' ) === false ) {
+						//Get the file modification time
+						$file_time = @filectime( $file_path );
 
-								/**  To generate Markup **/
-								$dir_name = dirname( $file_path );
-
-								//Initialize if dirname doesn't exists in array already
-								if ( ! isset( $files_arr[ $dir_name ] ) ) {
-									$files_arr[ $dir_name ] = array();
-								}
-								$files_arr[ $dir_name ][ $file_name ] = $file_path;
-								/** End */
-
-								//Get the file modification time
-								$file_time = @filectime( $file_path );
-
-								/** To be stored in DB, Part of code inspired from Ewwww Optimiser  */
-								$image_size = $path->getSize();
-								$images []  = $file_path;
-								$images []  = $image_size;
-								$images []  = $file_time;
-								$images []  = $timestamp;
-								$values[]   = '(%s, %d, %d, %s)';
-								$count ++;
-							}
-						}
+						/** To be stored in DB, Part of code inspired from Ewwww Optimiser  */
+						$image_size = $path->getSize();
+						$images []  = $file_path;
+						$images []  = $image_size;
+						$images []  = $file_time;
+						$images []  = $timestamp;
+						$values[]   = '(%s, %d, %d, %s)';
+						$count ++;
 					}
+				}
 
-					//Store the Images in db at an interval of 5k
-					if ( $count >= 5000 ) {
-						$count  = 0;
-						$query  = $this->build_query( $values, $images );
-						$images = $values = array();
-						$wpdb->query( $query );
-					}
+				//Store the Images in db at an interval of 5k
+				if ( $count >= 5000 ) {
+					$count  = 0;
+					$query  = $this->build_query( $values, $images );
+					$images = $values = array();
+					$wpdb->query( $query );
 				}
 			}
 
