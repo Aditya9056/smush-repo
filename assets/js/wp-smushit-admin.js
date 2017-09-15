@@ -1293,7 +1293,7 @@ jQuery(function ($) {
             var resize_savings = smush_resize_savings.find('.wp-smush-stats');
             // Replace only if value is grater than 0.
             if (savings_value > 0 && resize_savings.length > 0) {
-                resize_savings.html(formatBytes(wp_smushit_data.savings_resize, 1));
+                resize_savings.removeClass('settings-desc float-l').addClass('float-r').html(formatBytes(wp_smushit_data.savings_resize, 1));
             }
         }
 
