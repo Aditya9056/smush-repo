@@ -427,7 +427,7 @@ jQuery(function ($) {
                         self.free_exceeded();
 
                         //Reinsert the current id
-                        wp_smushit_data.unsmushed.push(self.current_id);
+                        wp_smushit_data.unsmushed.unshift(self.current_id);
 
                         //Update the remaining count to length of remaining ids + 1 (Current id)
                         self.update_remaining_count();
@@ -500,6 +500,7 @@ jQuery(function ($) {
                 self.request.abort();
                 self.enable_button();
                 self.$button.removeClass('wp-smush-started');
+                wp_smushit_data.unsmushed.unshift(self.current_id);
                 $('.wp-smush-bulk-wrapper').show();
 
                 //Hide the Progress Bar
