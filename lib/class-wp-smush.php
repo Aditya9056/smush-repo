@@ -2316,7 +2316,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return array An array containing Total, Smushed, Unsmushed Images count and savings if images are alreay smushed
 		 */
-		function smush_attachment_count() {
+		function smush_attachment_count( $params, $action, $request ) {
 
 			$stats = array(
 				'count_total'     => 0,
@@ -2337,7 +2337,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$stats['count_unsmushed'] = $wpsmushit_admin->remaining_count;
 			$stats['savings']         = $wpsmushit_admin->stats;
 
-			return $stats;
+			$request->send_json_success( $stats );
 		}
 	}
 

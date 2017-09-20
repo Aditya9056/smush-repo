@@ -227,9 +227,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function init_settings() {
 			$this->settings = array(
 				'networkwide' => array(
-					'label'       => esc_html__( 'Allow sub-sites control over Smush’s settings', 'wp-smushit' ),
+					'label'       => esc_html__( 'Use network settings for all the sub-sites.', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Multisite Control', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Choose whether you want your sub-site admins to be able to control Smush’s settings.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Choose whether you want to use network settings for all sub-sites or whether sub-site admins can control Smush’s settings.', 'wp-smushit' )
 				),
 				'auto'        => array(
 					'label'       => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
@@ -875,6 +875,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					) );
 				}
 			} else {
+				$this->update_resmush_list( $attachment_id );
 				if ( $return ) {
 					return $status;
 				} else {

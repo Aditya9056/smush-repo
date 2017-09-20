@@ -1822,6 +1822,7 @@ div.wp-smush-resize-note {
 .wpmud .smush-s3-setup-error, .wpmud .smush-s3-setup-message {
     margin-top: 15px;
     margin-left: 50px;
+    width: 100%;
 }
 
 .wpmud .smush-s3-setup-error p, .wpmud .smush-s3-setup-message p {
