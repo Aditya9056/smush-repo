@@ -596,6 +596,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					echo '<div class="block float-l">';
 					$this->quick_setup();
 					echo '</div>';
+				}
+				//If free version
+				if( !$WpSmush->validate_install() ) {
+				    $this->smush_pro_modal();
 				} ?>
 
 				<!-- Bulk Smush Progress Bar -->
@@ -676,8 +680,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				Get access to the tools that will win you more clients and help you spend less time working.
 				Start a free WPMU DEV trial today.</p>
 				<span class="wp-smush-pro-cta tc">
-					<a href="<?php echo esc_url( $upgrade_url ); ?>"
-					   class="button button-cta button-green" target="_blank">GET STARTED</a>
+					<a href="#smush-pro-features" class="button button-cta button-green get-smush-pro-cta" rel="dialog" target="_blank"><?php esc_html_e("GET STARTED", "wp-smushit"); ?></a>
 				</span>
 			</div><?php
 			echo "</section>";
@@ -1267,6 +1270,42 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                         break;
                 } ?>
             </div><?php
+        }
+
+        function smush_pro_modal() {
+            //Header Of the Box ?>
+			<dialog id="smush-pro-features" title="<?php esc_html_e( "GET SMUSH PRO", "wp-smushit" ); ?><a href='#' class='smush-pro-link small'><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a>" class="small">
+				<p class="smush-pro-features-message end"><?php esc_html_e( 'Here’s what you’ll get by uprading to Smush Pro.', "wp-smushit" ); ?></p>
+				<ul class="smush-pro-features">
+				    <li class="smush-pro-feature-row">
+				        <div class="smush-pro-feature-title">
+				        <?php esc_html_e("Double the compression", "wp-smushit"); ?></div>
+				        <div class="smush-pro-feature-desc"><?php esc_html_e("Optimize images 2x more than regular smushing and with no visible loss in quality using Smush’s intelligent multi-pass lossy compression.", "wp-smushit"); ?></div>
+				    </li>
+				    <li class="smush-pro-feature-row">
+				        <div class="smush-pro-feature-title">
+				        <?php esc_html_e("No limits", "wp-smushit"); ?></div>
+				        <div class="smush-pro-feature-desc"><?php esc_html_e("The free version allows you to Smush up to 1Mb images, and 50 at a time. The Pro version releases all those limits so you can smush all the things.", "wp-smushit"); ?></div>
+				    </li>
+				    <li class="smush-pro-feature-row">
+				        <div class="smush-pro-feature-title">
+				        <?php esc_html_e("Include your originals", "wp-smushit"); ?></div>
+				        <div class="smush-pro-feature-desc"><?php esc_html_e("The free version of Smush only compresses your automatically generated image thumbnails. With Pro you can compress your original size images too - in case you want to use them in your theme.", "wp-smushit"); ?></div>
+				    </li>
+				    <li class="smush-pro-feature-row">
+				        <div class="smush-pro-feature-title">
+				        <?php esc_html_e("Convert PNGs to JPEGs", "wp-smushit"); ?></div>
+				        <div class="smush-pro-feature-desc"><?php esc_html_e("If any of your non-transparent PNGs can be made smaller by converting to JPEG, Smush will automatically convert them to JPEGs so they load faster for your visitors.", "wp-smushit"); ?></div>
+				    </li>
+				    <li class="smush-pro-feature-row">
+				        <div class="smush-pro-feature-title">
+				        <?php esc_html_e("Integration with NextGen Gallery", "wp-smushit"); ?></div>
+				        <div class="smush-pro-feature-desc"><?php esc_html_e("Using the NextGen Gallery plugin? The Pro version allows you to compress images directly through NextGen Gallery’s settings.", "wp-smushit"); ?></div>
+				    </li>
+				</ul>
+				<p class="smush-pro-upsell-text"><?php esc_html_e("Get all of this, plus heaps more as a part of a WPMU DEV membership.", "wp-smushit"); ?></p>
+				<a href="#" class="smush-pro-link"><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a>
+			</dialog><?php
         }
     }
     global $wpsmush_bulkui;
