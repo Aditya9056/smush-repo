@@ -100,6 +100,39 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 
 			return false;
 		}
+
+
+		/**
+		 * Checks if file for given attachment id exists on s3, otherwise looks for local path
+		 *
+		 * @param $id
+		 * @param $file_path
+		 *
+		 * @return bool
+		 */
+		function file_exists( $id, $file_path ) {
+
+			//If not attachment id is given return false
+			if ( empty( $id ) ) {
+				return false;
+			}
+
+			//Get file path, if not provided
+			if ( empty( $file_path ) ) {
+				$file_path = $this->get_attached_file( $id );
+			}
+
+			global $wpsmush_s3;
+
+			//If S3 is enabled
+			if ( is_object( $wpsmush_s3 ) && method_exists( $wpsmush_s3, 'is_image_on_s3' ) && $wpsmush_s3->is_image_on_s3( $id ) ) {
+				$file_exists = true;
+			} else {
+				$file_exists = file_exists( $file_path );
+			}
+
+			return $file_exists;
+		}
 	}
 
 	global $wpsmush_helper;

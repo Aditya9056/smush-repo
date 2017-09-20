@@ -103,8 +103,11 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 					return false;
 				}
 
+				$file_exists = $wpsmush_helper->file_exists( $id, $file_path );
+
 				//If file doesn't exists, return
-				if ( ! file_exists( $file_path ) ) {
+				if ( ! $file_exists ) {
+
 					return false;
 				}
 
