@@ -1041,14 +1041,18 @@ ol.smush-recommendation-list {
 
 .wpmud ol.smush-recommendation-list a,
 section.bulk-smush-wrapper div.smush-container-subheading a,
-.wpmud .wp-smush-stats-human a {
+.wpmud .wp-smush-stats-human a,
+a.wp-smush-resize-enable,
+a.wp-smush-lossy-enable {
     color: #17A8E3;
     font-weight: 500;
 }
 
 .wpmud ol.smush-recommendation-list a:hover,
 section.bulk-smush-wrapper div.smush-container-subheading a:hover,
-.wpmud .wp-smush-stats-human a:hover {
+.wpmud .wp-smush-stats-human a:hover,
+a.wp-smush-resize-enable:hover,
+a.wp-smush-lossy-enable:hover {
     color: #0A9BD6;
 }
 

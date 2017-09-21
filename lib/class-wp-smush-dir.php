@@ -89,13 +89,12 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
             <span class="wp-smush-stats<?php echo $human > 0 ? ' float-r' : ' float-l'?>">
 	            <span class="spinner" style="visibility: visible" title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
 				<?php
-				if ( $human > 0 ) { ?>
-                    <span class="wp-smush-stats-human"> <?php echo $human; ?></span><?php
+				if ( $human < 0 ) { ?>
+                    <span class="wp-smush-stats-human"> <?php echo size_format( $human,1 ); ?></span><?php
                     //Output percentage only if > 1
 					if ( $percent > 1 ) { ?>
                         <span class="wp-smush-stats-sep">/</span>
-                        <span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>
-                        %</span><?php
+                        <span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>%</span><?php
 					}
 				} else { ?>
                     <span class="wp-smush-stats-human settings-desc"><?php esc_html_e("Smush images that aren't located in your uploads folder.", "wp-smushit"); ?>

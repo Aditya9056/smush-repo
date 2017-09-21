@@ -1063,7 +1063,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 								}
 
 								//If the image was optimised
-								if ( !empty( $meta['stats'] ) && $meta['stats']['size_before'] > $meta['stats']['size_after'] ) {
+								if ( !empty( $meta['stats'] ) && $meta['stats']['size_before'] >= $meta['stats']['size_after'] ) {
 									//Total Image Smushed
 									$smush_data['total_images'] += ! empty( $meta['sizes'] ) ? count( $meta['sizes'] ) : 0;
 
