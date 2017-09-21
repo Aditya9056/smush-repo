@@ -18,7 +18,7 @@ if ( ! class_exists( 'WpSmushShare' ) ) {
 			$savings     = $wpsmushit_admin->stats;
 
 			//If there is any saving, greater than 1Mb, show stats
-			if ( empty( $savings ) || empty( $savings['bytes'] ) || $savings['bytes'] <= 100 || $savings['total_images'] <= 1 || ! is_super_admin() ) {
+			if ( empty( $savings ) || empty( $savings['bytes'] ) || $savings['bytes'] <= 1048576 || $savings['total_images'] <= 1 || ! is_super_admin() ) {
 				return false;
 			}
 

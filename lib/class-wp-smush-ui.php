@@ -248,7 +248,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div><?php
 			} ?>
 			<hr /><?php
-			    if( true || !$settings['resize'] ) {
+			    if( !$settings['resize'] ) {
 			        $class = ' settings-desc float-l';
 			    }elseif ( empty( $wpsmushit_admin->stats['resize_savings'] ) ) {
 			        $class = ' settings-desc float-r';
@@ -259,10 +259,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="row smush-resize-savings">
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "Resize savings", "wp-smushit" ); ?></strong></span>
 				<span class="wp-smush-stats<?php echo $class; ?>"><?php
-					if( false && !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) {
+					if( !empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) {
 						echo size_format( $wpsmushit_admin->stats['resize_savings'], 1 );
 					}else{
-						if( true || !$settings['resize'] ) {
+						if( !$settings['resize'] ) {
 							//Output a button/link to enable respective setting
 							if( !is_multisite() || !$settings['networkwide'] ) {
 							    printf( esc_html__( "Save storage space by resizing your full sized uploads down to a maximum size. %sEnable image resizing%s", "wp-smushit" ), '<a class="wp-smush-resize-enable" href="#">', '</a>' );

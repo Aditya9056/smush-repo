@@ -1507,7 +1507,7 @@ jQuery(function ($) {
                                 dir_savings_percent.html(res.data.total.percent + '%');
                             }
                             if (dir_savings_human.length > 0) {
-                                dir_savings_human.html(res.data.total.human);
+                                dir_savings_human.html(res.data.total.human).removeClass('settings-desc');
                             }
                         }
                     }
@@ -1573,20 +1573,23 @@ jQuery(function ($) {
 
             // Do not replace if 0 savings.
             if (stats.dir_smush.bytes > 0) {
-                // Show size and percentage separator.
-                $('div.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-sep').show();
                 //Update Savings in bytes
                 if (stats_human.length > 0) {
-                    stats_human.html(stats.dir_smush.human);
+                    stats_human.html(stats.dir_smush.human).removeClass('settings-desc');
                 } else {
                     var span = '<span class="wp-smush-stats-human">' + stats.dir_smush.bytes + '</span>';
                 }
 
-                //Update Optimisation percentage
-                if (stats_percent.length > 0) {
-                    stats_percent.html(stats.dir_smush.percent + '%');
-                } else {
-                    var span = '<span class="wp-smush-stats-percent">' + stats.dir_smush.percent + '%' + '</span>';
+                //Percentage section
+                if (stats.dir_smush.percent > 0) {
+                    // Show size and percentage separator.
+                    $('div.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-sep').show();
+                    //Update Optimisation percentage
+                    if (stats_percent.length > 0) {
+                        stats_percent.html(stats.dir_smush.percent + '%');
+                    } else {
+                        var span = '<span class="wp-smush-stats-percent">' + stats.dir_smush.percent + '%' + '</span>';
+                    }
                 }
             }
         }
