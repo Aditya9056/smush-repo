@@ -350,7 +350,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			//Get the Root path for a main site or subsite
 			$root = $this->get_root_path();
 
-			$postDir = rawurldecode( $root . ( isset( $_GET['dir'] ) ? realpath( $_GET['dir'] ) : null ) );
+			$postDir = rawurldecode( $root . ( isset( $_GET['dir'] ) ? $_GET['dir'] : null ) );
 
 			$supported_image = array(
 				'gif',
@@ -476,7 +476,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function get_image_list( $path = '' ) {
 			global $wpdb;
 
-			$base_dir = empty( $path ) ? realpath( $_GET['path'] ) : $path;
+			$base_dir = empty( $path ) ? $_GET['path'] : $path;
 			//Directory Path
 			$base_dir = realpath( $base_dir );
 
@@ -621,7 +621,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			}
 
 			//Get the File list
-			$files = $this->get_image_list( realpath( $_GET['smush_path'] ) );
+			$files = $this->get_image_list( $_GET['smush_path'] );
 
 			//If files array is empty, send a message
 			if ( empty( $files['files_arr'] ) ) {
