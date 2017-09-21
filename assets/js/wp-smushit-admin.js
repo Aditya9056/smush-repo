@@ -2106,9 +2106,7 @@ jQuery(function ($) {
 
         $(".wp-smush-list-dialog .content").fileTree({
             script: getDirectoryList,
-            //folderEvent: 'dblclick',
             multiFolder: false
-            //onlyFolders: true
         });
 
     });

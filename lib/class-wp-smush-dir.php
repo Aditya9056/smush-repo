@@ -350,7 +350,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			//Get the Root path for a main site or subsite
 			$root = $this->get_root_path();
 
-			$postDir = rawurldecode( $root . ( isset( $_GET['dir'] ) ? $_GET['dir'] : null ) );
+			$postDir = rawurldecode( $root . ( isset( $_GET['dir'] ) ? realpath( $_GET['dir'] ) : null ) );
 
 			$supported_image = array(
 				'gif',
@@ -360,10 +360,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			);
 
 			$list = '';
-
-			// set checkbox if multiSelect set to true
-			$onlyFolders = ( '/' == $_GET['dir'] || isset( $_GET['onlyFolders'] ) && $_GET['onlyFolders'] == 'true' ) ? true : false;
-			$onlyFiles   = ( isset( $_GET['onlyFiles'] ) && $_GET['onlyFiles'] == 'true' ) ? true : false;
 
 			if ( file_exists( $postDir ) ) {
 
@@ -381,10 +377,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						$ext      = preg_replace( '/^.*\./', '', $file );
 
 						if ( file_exists( $postDir . $file ) && $file != '.' && $file != '..' ) {
-							if ( is_dir( $postDir . $file ) && ( ! $onlyFiles || $onlyFolders ) && ! $this->skip_dir( $postDir . $file ) ) {
+							if ( is_dir( $postDir . $file ) && ! $this->skip_dir( $postDir . $file ) ) {
 								//Skip Uploads folder - Media Files
 								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/'>" . $htmlName . "</a></li><br />";
-							} else if ( ( ! $onlyFolders || $onlyFiles ) && in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $postDir . $file ) ) {
+							} else if ( in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $postDir . $file ) ) {
 								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "'>" . $htmlName . "</a></li><br />";
 							}
 						}
@@ -480,7 +476,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function get_image_list( $path = '' ) {
 			global $wpdb;
 
-			$base_dir = empty( $path ) ? $_GET['path'] : $path;
+			$base_dir = empty( $path ) ? realpath( $_GET['path'] ) : $path;
 			//Directory Path
 			$base_dir = realpath( $base_dir );
 
@@ -625,7 +621,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			}
 
 			//Get the File list
-			$files = $this->get_image_list( $_GET['smush_path'] );
+			$files = $this->get_image_list( realpath( $_GET['smush_path'] ) );
 
 			//If files array is empty, send a message
 			if ( empty( $files['files_arr'] ) ) {

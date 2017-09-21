@@ -1274,7 +1274,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
         function smush_pro_modal() {
             //Header Of the Box ?>
-			<dialog id="smush-pro-features" title="<?php esc_html_e( "GET SMUSH PRO", "wp-smushit" ); ?><a href='#' class='smush-pro-link small'><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a>" class="small">
+			<dialog id="smush-pro-features" title="<?php esc_html_e( "GET SMUSH PRO", "wp-smushit" ); ?>" class="wp-smush-get-pro small">
 				<p class="smush-pro-features-message end"><?php esc_html_e( 'Here’s what you’ll get by uprading to Smush Pro.', "wp-smushit" ); ?></p>
 				<ul class="smush-pro-features">
 				    <li class="smush-pro-feature-row">
@@ -1304,7 +1304,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				    </li>
 				</ul>
 				<p class="smush-pro-upsell-text"><?php esc_html_e("Get all of this, plus heaps more as a part of a WPMU DEV membership.", "wp-smushit"); ?></p>
-				<a href="#" class="smush-pro-link"><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a>
+				<div class="smush-pro-link-wrap"><a href="#" class="smush-pro-link button button-cta button-green"><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a></div>
 			</dialog><?php
         }
     }

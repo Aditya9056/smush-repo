@@ -1496,6 +1496,69 @@ a.wp-smush-lossy-enable {
     display: block;
 }
 
+.wpmud .dev-overlay {
+    -webkit-font-smoothing: antialiased;
+}
+
+.wpmud div.dev-overlay.wp-smush-get-pro .box div.title {
+    margin-top: -30px;
+}
+
+ul.smush-pro-features {
+    margin-bottom: 30px;
+}
+
+li.smush-pro-feature-row {
+    margin-bottom: 20px;
+}
+
+div.smush-pro-feature-title,
+div.smush-pro-feature-desc {
+    padding-left: 30px;
+    position: relative;
+}
+
+div.smush-pro-feature-title {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 30px;
+}
+
+div.smush-pro-feature-desc {
+    color: #888888;
+    font-size: 13px;
+    line-height: 22px;
+}
+
+.wpmud .smush-pro-feature-title:before {
+    content: '\67';
+    color: #17A8E3;
+    left: 0;
+    top: 55%;
+}
+
+p.smush-pro-upsell-text {
+    color: #666666;
+    font-size: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+div.smush-pro-link-wrap {
+    text-align: center;
+}
+
+.wpmud a.button.button-green.smush-pro-link {
+    background-color: #1ABC9C;
+    border-radius: 4px;
+    box-shadow: none;
+    color: #fff;
+}
+
+.wpmud a.button.button-green.smush-pro-link:hover {
+    background-color: #17b394 !important;
+}
+
 .wp-smush-pro-cta {
     overflow: hidden;
     display: block;
@@ -2368,7 +2431,8 @@ li.wp-smush-image-ele span.wp-smush-image-path {
     vertical-align: middle;
 }
 
-.wp-smush-image-ele-status:after {
+.wp-smush-image-ele-status:after,
+.smush-pro-feature-title:before {
     box-shadow: none;
     content: url("../images/image.svg");
     font-family: 'WPMU-DEV-App-Icons';
@@ -2757,6 +2821,7 @@ button.wp-smush-all.wp-smush-button {
         width: 100%;
     }
 }
+
 @media screen and (max-width: 480px) {
     div.wp-smush-super-smush-promo {
         background: none;
