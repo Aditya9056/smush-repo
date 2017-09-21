@@ -37,11 +37,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public $settings;
 
-		/**
-		 * @var
-		 */
-		public $test;
-
 		public $bulk;
 
 		/**
