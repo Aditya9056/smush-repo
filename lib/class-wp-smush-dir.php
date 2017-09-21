@@ -361,10 +361,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$list = '';
 
-			// set checkbox if multiSelect set to true
-			$onlyFolders = ( '/' == $_GET['dir'] || isset( $_GET['onlyFolders'] ) && $_GET['onlyFolders'] == 'true' ) ? true : false;
-			$onlyFiles   = ( isset( $_GET['onlyFiles'] ) && $_GET['onlyFiles'] == 'true' ) ? true : false;
-
 			if ( file_exists( $postDir ) ) {
 
 				$files     = scandir( $postDir );
@@ -381,10 +377,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						$ext      = preg_replace( '/^.*\./', '', $file );
 
 						if ( file_exists( $postDir . $file ) && $file != '.' && $file != '..' ) {
-							if ( is_dir( $postDir . $file ) && ( ! $onlyFiles || $onlyFolders ) && ! $this->skip_dir( $postDir . $file ) ) {
+							if ( is_dir( $postDir . $file ) && ! $this->skip_dir( $postDir . $file ) ) {
 								//Skip Uploads folder - Media Files
 								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/'>" . $htmlName . "</a></li><br />";
-							} else if ( ( ! $onlyFolders || $onlyFiles ) && in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $postDir . $file ) ) {
+							} else if ( in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $postDir . $file ) ) {
 								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "'>" . $htmlName . "</a></li><br />";
 							}
 						}
