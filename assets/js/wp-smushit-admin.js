@@ -2383,7 +2383,7 @@ jQuery(function ($) {
     //Close Directory smush modal, if pressed esc
     $(document).keyup(function (e) {
         if (e.keyCode === 27) {
-            var modal = $('div.dev-overlay.wp-smush-list-dialog');
+            var modal = $('div.dev-overlay.wp-smush-list-dialog, div.dev-overlay.wp-smush-get-pro');
             //If the Directory dialog is not visible
             if (!modal.is(':visible')) {
                 return;

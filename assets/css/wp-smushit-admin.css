@@ -853,6 +853,12 @@ Quick Setup Dialog
     width: 248px;
 }
 
+.wpmud .dev-overlay.small.wp-smush-get-pro .box:after {
+    background: url(../images/dev-team.png) no-repeat 0 0;
+    height: 176px;
+    width: 500px;
+}
+
 .wpmud .dev-overlay .box .title {
     margin: -35px -30px 30px -30px;
     padding: 0 30px;
