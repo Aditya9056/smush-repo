@@ -1416,8 +1416,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//If there aren't any images in the library, return the notice
 			if ( 0 == $wpsmush_db->get_media_attachments( true ) ) {
 				$notice = esc_html__( "We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" );
-				$resp   = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $notice . '
-				<i class="dev-icon dev-icon-cross"></i>
+				$resp   = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="icon-fi-check-tick"></i> ' . $notice . '
+				<i class="icon-fi-cross-close"></i>
 				</div>';
 
 				delete_site_option( WP_SMUSH_PREFIX . 'run_recheck');
@@ -1431,8 +1431,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Default Notice, to be displayed at the top of page
 			//Show a message, at the top
 			$message = esc_html__( 'Yay! All images are optimized as per your current settings.', 'wp-smushit' );
-			$resp    = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
-				<i class="dev-icon dev-icon-cross"></i>
+			$resp    = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="icon-fi-check-tick"></i> ' . $message . '
+				<i class="icon-fi-cross-close"></i>
 				</div>';
 
 			//Scanning for NextGen or Media Library
@@ -1634,8 +1634,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			if ( ! empty( $resmush_list ) || $remaining_count > 0 ) {
 				$message = sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
-				$resp    = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending" tabindex="0"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
-							<i class="dev-icon dev-icon-cross"></i>
+				$resp    = '<div class="wp-smush-notice wp-smush-resmush-message wp-smush-resmush-pending" tabindex="0"><i class="icon-fi-check-tick"></i> ' . $message . '
+							<i class="icon-fi-cross-close"></i>
 						</div>';
 			}
 

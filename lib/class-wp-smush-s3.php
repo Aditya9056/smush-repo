@@ -131,7 +131,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 
 			$class      = 'error' == $this->message_type ? ' smush-s3-setup-error' : ' smush-s3-setup-message';
-			$icon_class = 'error' == $this->message_type ? ' dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign' : ' dev-icon dev-icon-tick';
+			$icon_class = 'error' == $this->message_type ? ' icon-fi-warning-alert' : ' icon-fi-check-tick';
 			echo "<div class='wp-smush-notice" . $class . "'><i class='" . $icon_class . "'></i><p>$this->setup_notice</p></div>";
 		}
 
@@ -181,7 +181,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				$message = sprintf( __( "We can see you have WP S3 Offload installed with the <strong>Remove Files From Server</strong> option activated. If you want to optimize your S3 images you'll need to <a href='%s'><strong>upgrade to Smush Pro</strong></a>", 'wp-smushit' ), esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro' ) );
 			}
 
-			echo '<div class="wp-smush-notice wp-smush-s3support-alert notice"><span class="notice-message">' . $message . '</span><i class="dev-icon dev-icon-cross"></i></div>';
+			echo '<div class="wp-smush-notice wp-smush-s3support-alert notice"><span class="notice-message">' . $message . '</span><i class="icon-fi-cross-close"></i></div>';
 		}
 
 		/**

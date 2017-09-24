@@ -262,13 +262,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                     </div>
                     <!-- Notices -->
                     <div class="wp-smush-notice wp-smush-dir-all-done hidden" tabindex="0">
-                        <i class="dev-icon dev-icon-tick"></i><?php esc_html_e( "All images for the selected directory are smushed and up to date. Awesome!", "wp-smushit" ); ?>
+                        <i class="icon-fi-check-tick"></i><?php esc_html_e( "All images for the selected directory are smushed and up to date. Awesome!", "wp-smushit" ); ?>
                     </div>
                     <div class="wp-smush-notice wp-smush-dir-remaining hidden" tabindex="0">
-                        <i class="dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i><?php printf( esc_html__( "%s/%s image(s) were successfully smushed, however %s image(s) could not be smushed due to an error.", "wp-smushit" ), '<span class="wp-smush-dir-smushed"></span>', '<span class="wp-smush-dir-total"></span>', '<span class="wp-smush-dir-remaining"></span>' ); ?>
+                        <i class="icon-fi-warning-alert"></i><?php printf( esc_html__( "%s/%s image(s) were successfully smushed, however %s image(s) could not be smushed due to an error.", "wp-smushit" ), '<span class="wp-smush-dir-smushed"></span>', '<span class="wp-smush-dir-total"></span>', '<span class="wp-smush-dir-remaining"></span>' ); ?>
                     </div>
                     <div class="wp-smush-notice wp-smush-dir-limit hidden" tabindex="0">
-                        <i class="dev-icon wdv-icon wdv-icon-fw wdv-icon-info-sign"></i><?php printf( esc_html__( " %sUpgrade to pro%s to bulk smush all your directory images with one click. Free users can smush 50 images with each click.", "wp-smushit" ), '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ) . '" target="_blank" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">', '</a>' ); ?>
+                        <i class="icon-fi-info"></i><?php printf( esc_html__( " %sUpgrade to pro%s to bulk smush all your directory images with one click. Free users can smush 50 images with each click.", "wp-smushit" ), '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ) . '" target="_blank" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">', '</a>' ); ?>
                     </div>
                     <div class="wp-smush-all-button-wrap bottom">
                         <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->

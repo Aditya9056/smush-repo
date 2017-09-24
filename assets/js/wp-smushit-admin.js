@@ -1041,7 +1041,7 @@ jQuery(function ($) {
         if (is_last_element(parent)) {
             if (smushed < total) {
                 var unsmushed = total - smushed;
-                var message = '<div class="wp-smush-dir-notice"><i class="dev-icon wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i>' + unsmushed + ' ' + ( 1 == unsmushed ? wp_smush_msgs.unfinished_smush_single : wp_smush_msgs.unfinished_smush ) + '</div>';
+                var message = '<div class="wp-smush-dir-notice"><i class="icon-fi-warning-alert"></i>' + unsmushed + ' ' + ( 1 == unsmushed ? wp_smush_msgs.unfinished_smush_single : wp_smush_msgs.unfinished_smush ) + '</div>';
 
                 //If the notice is already displayed, remove it
                 var notice = parent.find('div.wp-smush-dir-notice');
@@ -1738,7 +1738,7 @@ jQuery(function ($) {
     });
 
     //Remove Notice
-    $('body').on('click', '.wp-smush-notice .dev-icon-cross', function (e) {
+    $('body').on('click', '.wp-smush-notice .icon-fi-cross-close', function (e) {
         e.preventDefault();
         var $el = $(this).parent();
         remove_element($el);

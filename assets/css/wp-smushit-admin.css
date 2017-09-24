@@ -873,6 +873,10 @@ Quick Setup Dialog
     padding-bottom: 180px;
 }
 
+.wpmud .wp-smush-get-pro.dev-overlay .box .content {
+    padding-bottom: 176px;
+}
+
 .wpmud .wp-smush-welcome-message {
     color: #444;
     padding-bottom: 30px;
@@ -996,29 +1000,24 @@ div.smush-notice-cta a.smush-notice-act.button-primary {
     text-decoration: underline;
 }
 
-.wp-smush-resmush-message .dev-icon,
-.wp-smush-settings-updated .dev-icon,
-.wp-smush-re-check-message .dev-icon {
-    font-size: 22px;
-}
-
-.wp-smush-resmush-message .dev-icon-tick,
-.wp-smush-settings-updated .dev-icon-tick {
+.wp-smush-resmush-message .icon-fi-check-tick,
+.wp-smush-settings-updated .icon-fi-check-tick,
+.wp-smush-re-check-message .icon-fi-check-tick {
     font-size: 22px;
     margin-right: 5px;
     vertical-align: middle;
 }
 
-.wp-smush-resmush-message .dev-icon-cross,
-.wp-smush-settings-updated .dev-icon-cross,
-.wp-smush-re-check-message .dev-icon-cross {
+.wp-smush-resmush-message .icon-fi-cross-close,
+.wp-smush-settings-updated .icon-fi-cross-close,
+.wp-smush-re-check-message .icon-fi-cross-close {
     cursor: pointer;
     float: right;
     font-size: 16px;
     margin-top: 8px;
 }
 
-.wp-smush-all-done .dev-icon-tick {
+.wp-smush-all-done .icon-fi-check-tick {
     display: inline-block;
     font-size: 22px;
     margin-right: 10px;
@@ -1115,7 +1114,7 @@ div.wp-smush-s3support-alert span.notice-message {
     max-width: 96%;
 }
 
-div.wp-smush-s3support-alert .dev-icon-cross {
+div.wp-smush-s3support-alert .icon-fi-cross-close {
     cursor: pointer;
     float: right;
     line-height: 2;
@@ -1132,10 +1131,9 @@ div.wp-smush-dir-limit {
     background-color: #dff6fa;
 }
 
-div.wp-smush-notice .dev-icon-tick:before,
-div.wp-smush-all-done .dev-icon-tick:before,
-div.wp-smush-dir-all-done .dev-icon-tick:before {
-    content: "\67";
+div.wp-smush-notice .icon-fi-check-tick:before,
+div.wp-smush-all-done .icon-fi-check-tick:before,
+div.wp-smush-dir-all-done .icon-fi-check-tick:before {
     color: #1ABC9C;
 }
 
@@ -1145,12 +1143,12 @@ div.wp-smush-dir-all-done .dev-icon-tick:before {
     text-decoration: underline;
 }
 
-div.wp-smush-dir-remaining .wdv-icon-exclamation-sign:before,
-div.smush-s3-setup-error .wdv-icon-exclamation-sign:before {
+div.wp-smush-dir-remaining .icon-fi-warning-alert:before,
+div.smush-s3-setup-error .icon-fi-warning-alert:before {
     color: #FECF2F;
 }
 
-div.wp-smush-dir-limit .wdv-icon-info-sign:before {
+div.wp-smush-dir-limit .icon-fi-info:before {
     color: #333;
 }
 
@@ -1158,12 +1156,14 @@ div.wp-smush-dir-limit .wdv-icon-info-sign:before {
     padding: 10px 50px;
 }
 
-.wpmud .bulk-smush-wrapper .wp-smush-remaining .wdv-icon {
-    color: #fecf2f;
+.wpmud .bulk-smush-wrapper .wp-smush-remaining .icon-fi-warning-alert {
     font-size: 20px;
     margin-right: 8px;
     line-height: 30px;
     vertical-align: top;
+}
+.wpmud .bulk-smush-wrapper .wp-smush-remaining .icon-fi-warning-alert:before {
+    color: #fecf2f;
 }
 
 .wpmud .bulk-smush-wrapper .dev-icon img {
@@ -1449,10 +1449,6 @@ a.wp-smush-lossy-enable {
     line-height: 30px;
 }
 
-.wp-smush-stats-label .wdv-icon.wdv-icon-question-sign {
-    margin-left: 3px;
-}
-
 .wpmud .wp-smush-stats-try-pro {
     font-size: 12px;
     font-weight: 500;
@@ -1537,7 +1533,7 @@ div.smush-pro-feature-desc {
 }
 
 .wpmud .smush-pro-feature-title:before {
-    content: '\67';
+    content: '\5f';
     color: #17A8E3;
     left: 0;
     top: 55%;
@@ -1561,8 +1557,13 @@ div.smush-pro-link-wrap {
     color: #fff;
 }
 
-.wpmud a.button.button-green.smush-pro-link:hover {
+.wpmud a.button.button-green.smush-pro-link:hover,
+.wpmud a.button.button-green.smush-pro-link:focus,
+.wpmud a.button.button-green.smush-pro-link:active
+{
     background-color: #17b394 !important;
+    background-image: none;
+    box-shadow: none;
 }
 
 .wp-smush-pro-cta {
@@ -2002,7 +2003,8 @@ div.wp-smush-resize-note {
     font-weight: 400;
 }
 
-.wp-smush-share-button .dev-icon {
+.wp-smush-share-button .icon-fi-social-twitter,
+.wp-smush-share-button .icon-fi-social-facebook {
     margin-right: 12px;
 }
 
@@ -2247,7 +2249,7 @@ li.wp-smush-image-ul.complete span.wp-smush-li-path:before,
 li.wp-smush-image-ul.partial span.wp-smush-li-path:before {
     box-shadow: none;
     color: #1ABC9C;
-    content: '\67';
+    content: '\5f';
     font-family: 'WPMU-DEV-App-Icons';
     font-size: 20px;
     font-style: normal;
@@ -2272,8 +2274,7 @@ li.wp-smush-image-ul.partial span.wp-smush-li-path:before {
 
 li.wp-smush-image-ul.partial span.wp-smush-li-path:before {
     color: #ffd000;
-    content: '\f06a';
-    font-family: 'FontAwesomeWdv';
+    content: '\21';
     font-size: 22px;
     margin-left: 1px;
 }
@@ -2296,10 +2297,10 @@ div.wp-smush-scan-result div.wp-smush-notice {
 
 }
 
-div.wp-smush-scan-result div.wp-smush-notice .wdv-icon,
-div.wp-smush-scan-result div.wp-smush-notice .dev-icon,
-div.smush-s3-setup-error i.dev-icon,
-div.smush-s3-setup-message i.dev-icon {
+div.wp-smush-scan-result div.wp-smush-notice .icon-fi-check-tick,
+div.wp-smush-scan-result div.wp-smush-notice .icon-fi-warning-alert,
+div.smush-s3-setup-error i.icon-fi-warning-alert,
+div.smush-s3-setup-message .icon-fi-check-tick {
     display: inline-block;
     font-size: 22px;
     margin-right: 5px;
@@ -2307,17 +2308,17 @@ div.smush-s3-setup-message i.dev-icon {
     vertical-align: middle;
 }
 
-div.smush-s3-setup-error i.dev-icon,
-div.smush-s3-setup-message i.dev-icon {
-    margin-top: -1px;
+div.smush-s3-setup-error i. icon-fi-warning-alert,
+div.smush-s3-setup-message .icon-fi-check-tick {
+    margin-top: 3px;
     vertical-align: top;
 }
 
-div.smush-s3-setup-error i.dev-icon {
+div.smush-s3-setup-error i. icon-fi-warning-alert {
     margin-top: -2px;
 }
 
-div.smush-s3-setup-message i.dev-icon:before {
+div.smush-s3-setup-message .icon-fi-check-tick:before {
     color: #17A8E3;
 }
 
@@ -2468,7 +2469,7 @@ li.wp-smush-image-ele.in-progress .wp-smush-image-ele-status {
 
 /** Optimised Image **/
 li.wp-smush-image-ele.optimised .wp-smush-image-ele-status:after {
-    content: '\67';
+    content: '\5f';
     color: #1ABC9C;
 }
 
@@ -2487,12 +2488,12 @@ div.wp-smush-dir-notice {
     font-weight: 500;
 }
 
-div.wp-smush-dir-notice .wdv-icon-exclamation-sign {
+div.wp-smush-dir-notice .icon-fi-warning-alert {
     margin-right: 10px;
     vertical-align: middle;
 }
 
-div.wp-smush-dir-notice .wdv-icon-exclamation-sign:before {
+div.wp-smush-dir-notice .icon-fi-warning-alert:before {
     color: #ffd000;
     content: '\f06a';
     font-family: 'FontAwesomeWdv';

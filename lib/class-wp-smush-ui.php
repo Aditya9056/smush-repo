@@ -54,7 +54,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if ( $dismissible ) { ?>
 				<div class="float-r smush-dismiss-welcome">
 				<a href="#" title="<?php esc_html_e( "Dismiss Welcome notice", "wp-smushit" ); ?>">
-					<i class="wdv-icon wdv-icon-fw wdv-icon-remove"></i>
+					<i class="icon-fi-cross-close"></i>
 				</a>
 				</div><?php
 			} ?>
@@ -746,7 +746,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			} else { ?>
 				<!-- Hide All done div if there are images pending -->
 				<div class="wp-smush-notice wp-smush-all-done<?php echo $all_done ? '' : ' hidden' ?>" tabindex="0">
-					<i class="dev-icon dev-icon-tick"></i><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?>
+					<i class="icon-fi-check-tick"></i><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?>
 				</div><?php
 				if( !$hide_pagespeed ) {?>
                     <div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' hidden' ?>">
@@ -764,7 +764,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                          }
                          ?>
                         </ol>
-                        <span class="dismiss-recommendation"><i class="dev-icon dev-icon-cross"></i><?php esc_html_e("DISMISS", "wp-smushit"); ?></span>
+                        <span class="dismiss-recommendation"><i class="icon-fi-cross-close"></i><?php esc_html_e("DISMISS", "wp-smushit"); ?></span>
                     </div><?php
 				} ?>
 				<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' hidden' : ''; ?>"><?php
@@ -785,7 +785,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					);
 					?>
 					<div class="wp-smush-notice wp-smush-remaining<?php echo $class; ?>" tabindex="0">
-					    <i class="wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i>
+					    <i class="icon-fi-warning-alert"></i>
 						<span class="wp-smush-notice-text"><?php
 							printf( _n( "%s, you have %s%s%d%s attachment%s that needs smushing!", "%s, you have %s%s%d%s attachments%s that need smushing!", $wpsmushit_admin->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' );
 							if( !$WpSmush->validate_install() && $wpsmushit_admin->remaining_count > 50 ) {
@@ -873,7 +873,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//Show only if we have any images to ber resmushed
 			if ( $show ) {
 				return '<div class="wp-smush-notice wp-smush-resmush-notice wp-smush-remaining" tabindex="0">
-						<i class="wdv-icon wdv-icon-fw wdv-icon-exclamation-sign"></i>
+						<i class="icon-fi-warning-alert"></i>
 						<span class="wp-smush-notice-text">' . sprintf( _n( "%s, you have %s%s%d%s attachment%s that needs re-compressing!", "%s, you have %s%s%d%s attachments%s that need re-compressing!", $count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' ) . '</span>
 						<button class="button button-grey button-small wp-smush-skip-resmush">' . esc_html__( "Skip", "wp-smushit" ) . '</button>
 	                </div>';
@@ -904,8 +904,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				if ( $smush_count || $resmush_count ) {
 					$message .= ' ' . sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 				}
-				echo '<div class="wp-smush-notice wp-smush-settings-updated"><i class="dev-icon dev-icon-tick"></i> ' . $message . '
-				<i class="dev-icon dev-icon-cross"></i>
+				echo '<div class="wp-smush-notice wp-smush-settings-updated"><i class="icon-fi-check-tick"></i> ' . $message . '
+				<i class="icon-fi-cross-close"></i>
 				</div>';
 
 				//Remove the option
@@ -1128,7 +1128,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if( !$run_recheck ) {
 				return;
 			}
-			$message = '<div class="wp-smush-notice wp-smush-re-check-message">' . esc_html__( "Smush settings were updated, performing a quick scan to check if any of the images need to be Smushed again.", "wp-smushit") . '<i class="dev-icon dev-icon-cross"></i></div>';
+			$message = '<div class="wp-smush-notice wp-smush-re-check-message">' . esc_html__( "Smush settings were updated, performing a quick scan to check if any of the images need to be Smushed again.", "wp-smushit") . '<i class="icon-fi-cross-close"></i></div>';
 
 			return $message;
 		}
@@ -1273,7 +1273,17 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
         }
 
         function smush_pro_modal() {
-            //Header Of the Box ?>
+            //Header Of the Box
+            global $wpsmushit_admin;
+            //If we have any savings
+				$upgrade_url = add_query_arg(
+					array(
+						'utm_source' => 'Smush-Free',
+						'utm_medium' => 'Banner',
+						'utm_campaign'=> 'pro-only-stats'
+					),
+					$wpsmushit_admin->upgrade_url
+				);?>
 			<dialog id="smush-pro-features" title="<?php esc_html_e( "GET SMUSH PRO", "wp-smushit" ); ?>" class="wp-smush-get-pro small">
 				<p class="smush-pro-features-message end"><?php esc_html_e( 'Here’s what you’ll get by uprading to Smush Pro.', "wp-smushit" ); ?></p>
 				<ul class="smush-pro-features">
@@ -1304,7 +1314,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				    </li>
 				</ul>
 				<p class="smush-pro-upsell-text"><?php esc_html_e("Get all of this, plus heaps more as a part of a WPMU DEV membership.", "wp-smushit"); ?></p>
-				<div class="smush-pro-link-wrap"><a href="#" class="smush-pro-link button button-cta button-green"><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a></div>
+				<div class="smush-pro-link-wrap"><a href="<?php echo $upgrade_url; ?>" class="smush-pro-link button button-cta button-green" target="_blank"><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a></div>
 			</dialog><?php
         }
     }
