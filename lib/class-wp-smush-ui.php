@@ -54,7 +54,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if ( $dismissible ) { ?>
 				<div class="float-r smush-dismiss-welcome">
 				<a href="#" title="<?php esc_html_e( "Dismiss Welcome notice", "wp-smushit" ); ?>">
-					<i class="icon-fi-cross-close"></i>
+					<i class="icon-fi-close"></i>
 				</a>
 				</div><?php
 			} ?>
@@ -748,7 +748,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="wp-smush-notice wp-smush-all-done<?php echo $all_done ? '' : ' hidden' ?>" tabindex="0">
 					<i class="icon-fi-check-tick"></i><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?>
 				</div><?php
-				if( !$hide_pagespeed ) {?>
+				if( true || !$hide_pagespeed ) {?>
                     <div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' hidden' ?>">
                         <span class="smush-recommendation-title roboto-medium"><?php esc_html_e("Still having trouble with PageSpeed tests? Give these a go…", "wp-smsuhit"); ?></span>
                         <ol class="smush-recommendation-list"><?php
@@ -905,7 +905,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$message .= ' ' . sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 				}
 				echo '<div class="wp-smush-notice wp-smush-settings-updated"><i class="icon-fi-check-tick"></i> ' . $message . '
-				<i class="icon-fi-cross-close"></i>
+				<i class="icon-fi-close"></i>
 				</div>';
 
 				//Remove the option
@@ -1128,7 +1128,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if( !$run_recheck ) {
 				return;
 			}
-			$message = '<div class="wp-smush-notice wp-smush-re-check-message">' . esc_html__( "Smush settings were updated, performing a quick scan to check if any of the images need to be Smushed again.", "wp-smushit") . '<i class="icon-fi-cross-close"></i></div>';
+			$message = '<div class="wp-smush-notice wp-smush-re-check-message">' . esc_html__( "Smush settings were updated, performing a quick scan to check if any of the images need to be Smushed again.", "wp-smushit") . '<i class="icon-fi-close"></i></div>';
 
 			return $message;
 		}

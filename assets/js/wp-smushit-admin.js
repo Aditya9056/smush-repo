@@ -1738,7 +1738,7 @@ jQuery(function ($) {
     });
 
     //Remove Notice
-    $('body').on('click', '.wp-smush-notice .icon-fi-cross-close', function (e) {
+    $('body').on('click', '.wp-smush-notice .icon-fi-close', function (e) {
         e.preventDefault();
         var $el = $(this).parent();
         remove_element($el);
