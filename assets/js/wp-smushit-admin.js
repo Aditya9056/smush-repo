@@ -430,7 +430,7 @@ jQuery(function ($) {
                                     //Otherwise prepend
                                     self.$log.prepend(error_msg);
                                 }
-                            } else if ('undefined' != typeof res.data.error_class && $('div.smush-final-log .' + res.data.error_class).length > 0) {
+                            } else if ('undefined' != typeof res.data.error_class && "" != res.data.error_class && $('div.smush-final-log .' + res.data.error_class).length > 0) {
                                 var error_count = $('p.smush-error-message.' + res.data.error_class +  ' .image-error-count');
                                 //Get the error count, increase and append
                                 var image_count = error_count.html();

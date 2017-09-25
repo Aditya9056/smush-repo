@@ -2027,6 +2027,14 @@ div.wp-smush-resize-note {
     margin-right: 12px;
 }
 
+.wp-smush-share-button .icon-fi-social-twitter:before,
+.wp-smush-share-button .icon-fi-social-facebook:before {
+    color: #fff;
+    display: inline-block;
+    margin-top: -1px;
+    vertical-align: top;
+}
+
 /** Override WP Footer Styling, Hide it on WPMU pages only, if we really need to **/
 .wp-admin #wpfooter {
     display: block;
