@@ -170,7 +170,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'settings_link'
 			) );
 			//Attachment status, Grid view
-			add_filter( 'attachment_fields_to_edit', array( $this, 'filter_attachment_fields_to_edit' ), 10, 2 );
+//			add_filter( 'attachment_fields_to_edit', array( $this, 'filter_attachment_fields_to_edit' ), 10, 2 );
 
 			// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
@@ -216,6 +216,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 * Hide Pagespeed Suggestion
 			 */
 			add_action( 'wp_ajax_hide_pagespeed_suggestion', array( $this, 'hide_pagespeed_suggestion' ) );
+
+			// Attachment screens/modals
+			add_action( 'load-upload.php', array( $this, 'media_view_scripts' ), 11 );
+
+			//Return Smush status for attachment opened in Grid view
+			add_action( 'wp_ajax_smush_get_attachment_details', array( $this, 'smush_send_status') );
 
 		}
 
@@ -340,11 +346,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'jquery'
 			), WP_SMUSH_VERSION );
 
-			//UI JS
-			wp_register_script( 'wp-smushit-ui-js', WP_SMUSH_URL . 'assets/js/ui.js', array(
-				'jquery'
-			), WP_SMUSH_VERSION );
-
 			/* Register Style */
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), WP_SMUSH_VERSION );
 			//Notice CSS
@@ -386,7 +387,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 			$this->load_shared_ui( $current_page );
 			wp_enqueue_script( 'wp-smushit-admin-js' );
-			wp_enqueue_script( 'wp-smushit-ui-js' );
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
@@ -2221,6 +2221,46 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function hide_pagespeed_suggestion() {
 			update_network_option( get_current_network_id(), WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion', true );
 			wp_send_json_success();
+		}
+
+		/**
+		 * Load media assets.
+		 */
+		public function media_view_scripts() {
+			wp_enqueue_script( 'smush-media-view', WP_SMUSH_URL . 'assets/js/media.js', array(
+				'jquery',
+				'media-views',
+				'media-grid',
+				'wp-util',
+			) );
+
+			wp_localize_script( 'smush-media-view', 'smush_vars', array(
+				'strings' => array(
+					'stats_label' => esc_html__( "Smush Stats", "wp-smushit" )
+				),
+				'nonce'   => array(
+					'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
+				),
+			) );
+		}
+
+		/**
+		 * Return Smush status of an attachment
+		 *
+		 * @param $id
+		 */
+		function smush_send_status() {
+			if ( ! isset( $_POST['id'] ) ) {
+				return;
+			}
+
+			check_ajax_referer( 'get-smush-status', '_nonce' );
+
+			$id = intval( $_POST['id'] );
+
+		    //Validate nonce
+			$status = $this->smush_status( $id );
+			wp_send_json_success( $status );
 		}
 
 	}

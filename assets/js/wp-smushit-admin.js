@@ -65,6 +65,23 @@ var remove_element = function (el, timeout) {
 };
 
 jQuery(function ($) {
+
+    /**
+     * Remove the quick setup dialog
+     */
+    function remove_dialog() {
+        $('dialog#smush-quick-setup').remove();
+    }
+
+    //Show the Quick Setup Dialog
+    if ($('#smush-quick-setup').size() > 0) {
+        WDP.showOverlay("#smush-quick-setup", {
+            title: wp_smush_msgs.quick_setup_title,
+            class: 'no-close wp-smush-overlay'
+        });
+        remove_dialog();
+    }
+
     var smushAddParams = function (url, data) {
         if (!$.isEmptyObject(data)) {
             url += ( url.indexOf('?') >= 0 ? '&' : '?' ) + $.param(data);
@@ -171,7 +188,7 @@ jQuery(function ($) {
             //Hide the Bulk Limit message
             $('p.smush-error-message.limit_exceeded').remove();
             //Hide parent wrapper, if there are no other messages
-            if( $('div.smush-final-log p').length <= 0 ) {
+            if ($('div.smush-final-log p').length <= 0) {
                 $('div.smush-final-log').hide();
             }
         };
@@ -307,7 +324,7 @@ jQuery(function ($) {
 
             //Update localized stats
             if (_res && ( 'undefined' != typeof _res.data || 'undefined' != typeof _res.data.stats )) {
-                update_localized_stats( _res.data.stats, this.smush_type );
+                update_localized_stats(_res.data.stats, this.smush_type);
             }
 
             if (!this.is_bulk_resmush) {
@@ -431,7 +448,7 @@ jQuery(function ($) {
                                     self.$log.prepend(error_msg);
                                 }
                             } else if ('undefined' != typeof res.data.error_class && "" != res.data.error_class && $('div.smush-final-log .' + res.data.error_class).length > 0) {
-                                var error_count = $('p.smush-error-message.' + res.data.error_class +  ' .image-error-count');
+                                var error_count = $('p.smush-error-message.' + res.data.error_class + ' .image-error-count');
                                 //Get the error count, increase and append
                                 var image_count = error_count.html();
                                 image_count = parseInt(image_count) + 1;
@@ -749,16 +766,16 @@ jQuery(function ($) {
      */
     var formatBytes = function (a, b) {
         var thresh = 1024;
-        if(Math.abs(a) < thresh) {
+        if (Math.abs(a) < thresh) {
             return a + ' B';
         }
-        var units = ['KB','MB','GB','TB','PB'];
+        var units = ['KB', 'MB', 'GB', 'TB', 'PB'];
         var u = -1;
         do {
             a /= thresh;
             ++u;
-        } while(Math.abs(a) >= thresh && u < units.length - 1);
-        return a.toFixed(b)+' '+units[u];
+        } while (Math.abs(a) >= thresh && u < units.length - 1);
+        return a.toFixed(b) + ' ' + units[u];
     };
 
 
@@ -854,7 +871,7 @@ jQuery(function ($) {
                     }
 
                     var smush_percent = ( wp_smushit_data.count_smushed / wp_smushit_data.count_total ) * 100;
-                    smush_percent = precise_round( smush_percent, 1 );
+                    smush_percent = precise_round(smush_percent, 1);
 
                     //Update it in stats bar
                     $('.wp-smush-images-percent').html(smush_percent);
@@ -989,9 +1006,9 @@ jQuery(function ($) {
      * @returns {boolean}
      *
      */
-    var is_last_element = function(parent) {
+    var is_last_element = function (parent) {
         var elements = parent.find('li.wp-smush-image-ele:not(.optimised,.error)');
-        if( elements.length <= 0 ) {
+        if (elements.length <= 0) {
             return true;
         }
         return false;
@@ -1045,7 +1062,7 @@ jQuery(function ($) {
 
                 //If the notice is already displayed, remove it
                 var notice = parent.find('div.wp-smush-dir-notice');
-                if( notice.length  ) {
+                if (notice.length) {
                     notice.remove();
                 }
 
@@ -1079,7 +1096,7 @@ jQuery(function ($) {
      */
     var add_dir_browser_button = function () {
         //Get the content div length, if less than 1500, Skip
-        if( $('div.wp-smush-scan-result div.content').height() < 1500 || $('div.dir-smush-button-wrap.top').length >= 1 ) {
+        if ($('div.wp-smush-scan-result div.content').height() < 1500 || $('div.dir-smush-button-wrap.top').length >= 1) {
             return;
         }
 
@@ -1088,9 +1105,9 @@ jQuery(function ($) {
         $('div.wp-smush-scan-result div.content').prepend(choose_button);
     };
 
-    var add_smush_button = function() {
+    var add_smush_button = function () {
         //Get the content div length, if less than 1500, Skip
-        if( $('div.wp-smush-scan-result div.content').height() < 1500 || $('div.wp-smush-all-button-wrap.top').length >= 1 ) {
+        if ($('div.wp-smush-scan-result div.content').height() < 1500 || $('div.wp-smush-all-button-wrap.top').length >= 1) {
             return;
         }
 
@@ -1108,18 +1125,18 @@ jQuery(function ($) {
      *  smush_limit - If Free users exceeded limit
      *
      */
-    var add_smush_dir_notice = function ( notice_type ) {
+    var add_smush_dir_notice = function (notice_type) {
         //Get the content div length, if less than 1500, Skip
-        if( $('div.wp-smush-scan-result div.content').height() < 1500 || $('div.wp-smush-scan-result div.wp-smush-notice.top').length >= 1 ) {
+        if ($('div.wp-smush-scan-result div.content').height() < 1500 || $('div.wp-smush-scan-result div.wp-smush-notice.top').length >= 1) {
             return;
         }
         var notice = '';
         //Clone and append the notice
-        if( 'all_done' == notice_type ) {
+        if ('all_done' == notice_type) {
             notice = $('div.wp-smush-notice.wp-smush-dir-all-done').clone();
-        }else if( 'smush_limit' == notice_type ){
+        } else if ('smush_limit' == notice_type) {
             notice = $('div.wp-smush-notice.wp-smush-dir-limit').clone();
-        }else{
+        } else {
             notice = $('div.wp-smush-notice.wp-smush-dir-remaining').clone();
         }
 
@@ -1127,14 +1144,14 @@ jQuery(function ($) {
         notice.addClass('top');
 
         //Append the notice
-        $('div.wp-smush-scan-result div.dir-smush-button-wrap').after( notice );
+        $('div.wp-smush-scan-result div.dir-smush-button-wrap').after(notice);
     };
 
-    var update_smush_progress = function() {
+    var update_smush_progress = function () {
         var in_progress_path = $('ul.wp-smush-image-list li.in-progress');
         in_progress_path.removeClass('in-progress active');
-        if( in_progress_path.length > 0 ) {
-            in_progress_path.each( function( index, ele ) {
+        if (in_progress_path.length > 0) {
+            in_progress_path.each(function (index, ele) {
                 if ($(ele).hasClass('wp-smush-image-ul')) {
                     //Remove Spinner
                     $(ele).find('span.spinner').remove();
@@ -1148,14 +1165,14 @@ jQuery(function ($) {
                         var error = in_progress_ele.filter('.error').length;
                         //if all the elements are optimised
                         if (optimised == in_progress_ele.length) {
-                            $( ele ).addClass('complete');
+                            $(ele).addClass('complete');
                         } else if (0 < optimised || 0 < error) {
                             //If there are images that needs to be smushed, add the class partial
-                            $( ele ).addClass('partial');
+                            $(ele).addClass('partial');
                         }
                     }
 
-                }else{
+                } else {
                     //Remove spinner for the element
                     $(ele).find('span.spinner').remove();
                 }
@@ -1169,18 +1186,18 @@ jQuery(function ($) {
      * For non-premium users, show expected avarage savings based
      * on the free version savings.
      */
-    var set_pro_savings = function() {
+    var set_pro_savings = function () {
 
         // Default values.
         var savings = wp_smushit_data.savings_percent > 0 ? wp_smushit_data.savings_percent : 0;
         var savings_bytes = wp_smushit_data.savings_bytes > 0 ? wp_smushit_data.savings_bytes : 0;
         var orig_diff = 2.22058824;
-        if ( savings > 49  ) {
+        if (savings > 49) {
             var orig_diff = 1.22054412;
         }
         //Calculate Pro savings
-        if( savings > 0 ) {
-            savings       = orig_diff * savings;
+        if (savings > 0) {
+            savings = orig_diff * savings;
             savings_bytes = orig_diff * savings_bytes;
         }
 
@@ -1197,7 +1214,7 @@ jQuery(function ($) {
      * @param image_stats
      *
      */
-    var update_localized_stats = function (image_stats, type ) {
+    var update_localized_stats = function (image_stats, type) {
         //Increase the smush count
         if ('undefined' == typeof wp_smushit_data) {
             return;
@@ -1222,11 +1239,11 @@ jQuery(function ($) {
             wp_smushit_data.count_resize = 'undefined' != typeof image_stats.savings_resize.bytes ? parseInt(wp_smushit_data.count_resize) + 1 : wp_smushit_data.count_resize;
 
             //Add to Conversion Savings
-            wp_smushit_data.savings_conversion = 'undefined' != typeof image_stats.savings_conversion && 'undefined' != typeof image_stats.savings_conversion.bytes ? parseInt(wp_smushit_data.savings_conversion) + parseInt(image_stats.savings_conversion.bytes ) : parseInt(wp_smushit_data.savings_conversion);
-        } else if( 'directory_smush' == type ) {
+            wp_smushit_data.savings_conversion = 'undefined' != typeof image_stats.savings_conversion && 'undefined' != typeof image_stats.savings_conversion.bytes ? parseInt(wp_smushit_data.savings_conversion) + parseInt(image_stats.savings_conversion.bytes) : parseInt(wp_smushit_data.savings_conversion);
+        } else if ('directory_smush' == type) {
             //Increase smushed image count
             wp_smushit_data.count_images = parseInt(wp_smushit_data.count_images) + 1;
-        }else if( 'nextgen' == type ) {
+        } else if ('nextgen' == type) {
             wp_smushit_data.count_smushed = parseInt(wp_smushit_data.count_smushed) + 1;
             wp_smushit_data.count_supersmushed = parseInt(wp_smushit_data.count_supersmushed) + 1;
 
@@ -1241,13 +1258,13 @@ jQuery(function ($) {
             wp_smushit_data.size_after = 'undefined' != typeof image_stats.size_after ? parseInt(wp_smushit_data.size_after) + parseInt(image_stats.size_after) : parseInt(wp_smushit_data.size_after);
         }
         //Add stats for resizing
-        if( 'undefined' != typeof image_stats.savings_resize ) {
+        if ('undefined' != typeof image_stats.savings_resize) {
             //Update savings
             wp_smushit_data.size_before = 'undefined' != typeof image_stats.savings_resize.size_before ? parseInt(wp_smushit_data.size_before) + parseInt(image_stats.savings_resize.size_before) : parseInt(wp_smushit_data.size_before);
             wp_smushit_data.size_after = 'undefined' != typeof image_stats.savings_resize.size_after ? parseInt(wp_smushit_data.size_after) + parseInt(image_stats.savings_resize.size_after) : parseInt(wp_smushit_data.size_after);
         }
         //Add stats for Conversion
-        if( 'undefined' != typeof image_stats.savings_conversion ) {
+        if ('undefined' != typeof image_stats.savings_conversion) {
             //Update savings
             wp_smushit_data.size_before = 'undefined' != typeof image_stats.savings_conversion.size_before ? parseInt(wp_smushit_data.size_before) + parseInt(image_stats.savings_conversion.size_before) : parseInt(wp_smushit_data.size_before);
             wp_smushit_data.size_after = 'undefined' != typeof image_stats.savings_conversion.size_after ? parseInt(wp_smushit_data.size_after) + parseInt(image_stats.savings_conversion.size_after) : parseInt(wp_smushit_data.size_after);
@@ -1273,7 +1290,7 @@ jQuery(function ($) {
         $('.wp-smush-savings .wp-smush-stats-percent').html(wp_smushit_data.savings_percent);
 
         //Update Savings in share message
-        $('span.smush-share-savings').html( formatBytes(wp_smushit_data.savings_bytes, 1) );
+        $('span.smush-share-savings').html(formatBytes(wp_smushit_data.savings_bytes, 1));
 
         //Update Smush percent
         wp_smushit_data.smush_percent = precise_round(( parseInt(wp_smushit_data.count_smushed) / parseInt(wp_smushit_data.count_total) ) * 100, 1);
@@ -1291,13 +1308,13 @@ jQuery(function ($) {
         $('span.wp-smush-total-optimised').html(wp_smushit_data.count_images);
 
         //Update image count in share message
-        $('span.smush-share-image-count').html( wp_smushit_data.count_images );
+        $('span.smush-share-image-count').html(wp_smushit_data.count_images);
 
         //Update Resize image count
-        $('div.wp-smush-count-resize-total span.wp-smush-total-optimised').html( wp_smushit_data.count_resize );
+        $('div.wp-smush-count-resize-total span.wp-smush-total-optimised').html(wp_smushit_data.count_resize);
 
         //Update Attachment image count
-        $('div.wp-smush-count-attachment-total span.wp-smush-total-optimised').html( wp_smushit_data.count_smushed );
+        $('div.wp-smush-count-attachment-total span.wp-smush-total-optimised').html(wp_smushit_data.count_smushed);
 
         //Update image count in share message
 
@@ -1319,7 +1336,7 @@ jQuery(function ($) {
         var smush_resize_savings = $('.smush-resize-savings');
         if (smush_resize_savings.length > 0 && 'undefined' != typeof ( wp_smushit_data.savings_resize ) && wp_smushit_data.savings_resize != '') {
             // Get the resize savings in number.
-            var savings_value = parseInt(wp_smushit_data.savings_resize );
+            var savings_value = parseInt(wp_smushit_data.savings_resize);
             var resize_savings = smush_resize_savings.find('.wp-smush-stats');
             // Replace only if value is grater than 0.
             if (savings_value > 0 && resize_savings.length > 0) {
@@ -1352,7 +1369,7 @@ jQuery(function ($) {
     /**
      * Update the progress and show notice when smush completes
      */
-    var directory_smush_finished = function( notice_type ) {
+    var directory_smush_finished = function (notice_type) {
         //If there are no images left
         $('div.wp-smush-all-button-wrap span.spinner').remove();
         $('button.wp-smush-pause').hide().attr('disabled', 'disabled');
@@ -1373,7 +1390,7 @@ jQuery(function ($) {
         //Clone and add Smush button
         add_smush_button();
 
-        if( '' == notice_type ) {
+        if ('' == notice_type) {
             //Get the Total and Optimised image count
             var image_ele = $('li.wp-smush-image-ele');
             var total = image_ele.length;
@@ -1402,7 +1419,7 @@ jQuery(function ($) {
                 //Show notice on top if required
                 add_smush_dir_notice('all_done');
             }
-        }else{
+        } else {
             //Show Bulk Limit Notice
             $('.wp-smush-notice.wp-smush-dir-limit').show();
             //Show notice on top if required
@@ -1444,7 +1461,7 @@ jQuery(function ($) {
         }
 
         //If all the elements are optimised, No need to send ajax request
-        if( first_child.length == 0 ) {
+        if (first_child.length == 0) {
             directory_smush_finished('');
             return;
         }
@@ -1453,7 +1470,7 @@ jQuery(function ($) {
         var param = {
             action: 'optimise',
             image_id: first_child.attr('id'),
-            get_stats: unprocessed_child.length > 1 ? 0: 1,
+            get_stats: unprocessed_child.length > 1 ? 0 : 1,
             nonce: $('#wp-smush-all').val()
         };
 
@@ -1463,7 +1480,7 @@ jQuery(function ($) {
             //Check, if limit is exceeded for free version
             if (typeof res.data !== "undefined" && res.data.error == 'dir_smush_limit_exceeded') {
                 //Show error, Bulk Smush limit exceeded
-                directory_smush_finished( 'wp-smush-dir-limit' );
+                directory_smush_finished('wp-smush-dir-limit');
                 return;
             }
 
@@ -1494,7 +1511,7 @@ jQuery(function ($) {
                         // Directory stats section.
                         var smush_dir_savings = $('div.smush-dir-savings');
                         var stats_wrapper = smush_dir_savings.find('span.wp-smush-stats');
-                        if( stats_wrapper.hasClass('float-l') ) {
+                        if (stats_wrapper.hasClass('float-l')) {
                             //Right float the stats
                             stats_wrapper.removeClass('float-l').addClass('float-r');
                         }
@@ -1522,14 +1539,14 @@ jQuery(function ($) {
                 //@todo: Fixed stats UI
                 if ('undefined' != typeof res.data.total) {
                     //Update localized stats, Need to modify function to not increase count, and just update image count, and savings
-                    update_localized_stats( res.data.image, 'directory_smush' );
+                    update_localized_stats(res.data.image, 'directory_smush');
                     // Update stats.
                     update_stats();
                 }
             }
 
             //If user haven't paused the Smushing
-            if ( 1 == $('input[name="wp-smush-continue-ajax"]').val() ) {
+            if (1 == $('input[name="wp-smush-continue-ajax"]').val()) {
                 //Loop
                 smush_all(false);
             } else {
@@ -1599,7 +1616,7 @@ jQuery(function ($) {
             var c_stats = stats.combined_stats;
 
             var smush_percent = ( c_stats.smushed / c_stats.total_count ) * 100;
-            smush_percent = precise_round( smush_percent, 1 );
+            smush_percent = precise_round(smush_percent, 1);
 
             //Smushed Percent
             if (smush_percent) {
@@ -1623,7 +1640,7 @@ jQuery(function ($) {
     function removeSpan(url) {
         var url = url.slice(url.indexOf('?') + 1).split('&');
         for (var i = 0; i < url.length; i++) {
-            var urlparam = decodeURI( url[i] ).split(/=(.+)/)[1];
+            var urlparam = decodeURI(url[i]).split(/=(.+)/)[1];
             return urlparam.replace(/<(?:.|\n)*?>/gm, '');
         }
     }
@@ -1840,8 +1857,8 @@ jQuery(function ($) {
         container.find('.wp-smush-all').attr('data-smush', 'skip_resmush');
 
         //Update Smushed count
-        wp_smushit_data.count_smushed = parseInt( wp_smushit_data.count_smushed ) + wp_smushit_data.resmush.length;
-        wp_smushit_data.count_supersmushed = parseInt( wp_smushit_data.count_supersmushed ) + wp_smushit_data.resmush.length;
+        wp_smushit_data.count_smushed = parseInt(wp_smushit_data.count_smushed) + wp_smushit_data.resmush.length;
+        wp_smushit_data.count_supersmushed = parseInt(wp_smushit_data.count_supersmushed) + wp_smushit_data.resmush.length;
 
         //Update Stats
         if (wp_smushit_data.count_smushed == wp_smushit_data.count_total) {
@@ -1862,7 +1879,7 @@ jQuery(function ($) {
         var smushed_count = 'undefined' != typeof wp_smushit_data.count_smushed ? wp_smushit_data.count_smushed : 0;
 
         var smush_percent = ( smushed_count / wp_smushit_data.count_total ) * 100;
-        smush_percent = precise_round( smush_percent, 1 );
+        smush_percent = precise_round(smush_percent, 1);
 
         $('.wp-smush-images-percent').html(smush_percent);
 
@@ -1886,7 +1903,7 @@ jQuery(function ($) {
         //Delete resmush list, @todo: update stats from the ajax response
         $.post(ajaxurl, params, function (res) {
             //Remove the whole li element on success
-            if (res.success && 'undefined' != typeof res.data.stats ) {
+            if (res.success && 'undefined' != typeof res.data.stats) {
                 var stats = res.data.stats;
                 //Update wp_smushit_data ( Smushed count, Smushed Percent, Image count, Super smush count, resize savings, conversion savings )
                 if ('undefinied' != typeof wp_smushit_data) {
@@ -2070,7 +2087,7 @@ jQuery(function ($) {
     }
 
     //Stats Section Choose Directory Link
-    $('body').on('click', 'a.wp-smush-dir-link', function(e) {
+    $('body').on('click', 'a.wp-smush-dir-link', function (e) {
         e.preventDefault();
         goToByScroll('#wp-smush-dir-browser');
         $('div.row button.wp-smush-browse').click();
@@ -2160,10 +2177,10 @@ jQuery(function ($) {
 
         //Get the List of images
         $.get(ajaxurl, param, function (res) {
-            if( !res.success && 'undefined' !== typeof ( res.data.message ) ) {
-                $('div.wp-smush-scan-result div.content').html(res.data.message );
-            }else {
-                $('div.wp-smush-scan-result div.content').html(res.data );
+            if (!res.success && 'undefined' !== typeof ( res.data.message )) {
+                $('div.wp-smush-scan-result div.content').html(res.data.message);
+            } else {
+                $('div.wp-smush-scan-result div.content').html(res.data);
                 wp_smush_dir_image_ids = res.data.ids;
             }
             set_accordion();
@@ -2174,7 +2191,7 @@ jQuery(function ($) {
         }).done(function (res) {
 
             //If there was no image list, return
-            if( !res.success ) {
+            if (!res.success) {
                 //Hide the smush button
                 $('div.wp-smush-all-button-wrap.bottom').hide();
                 return;
@@ -2408,13 +2425,13 @@ jQuery(function ($) {
                 submit_button.attr('disabled', 'disabled');
 
                 //Show loader
-                $('<span class="spinner is-active"></span>').insertAfter( submit_button );
+                $('<span class="spinner is-active"></span>').insertAfter(submit_button);
             },
             success: function (data) {
                 //Enable the button
                 submit_button.removeAttr('disabled');
                 //Remove the loader
-                submit_button.parent(). find('span.spinner').remove();
+                submit_button.parent().find('span.spinner').remove();
 
                 if (data.success == 1) {
                     //remove skip button
@@ -2444,16 +2461,18 @@ jQuery(function ($) {
     });
 
     //Dismiss Smush recommendation
-    $('span.dismiss-recommendation').on('click', function(e) {
+    $('span.dismiss-recommendation').on('click', function (e) {
         e.preventDefault();
         var parent = $(this).parent();
         //remove div and save preference in db
-        parent.hide('slow', function(){ parent.remove(); });
+        parent.hide('slow', function () {
+            parent.remove();
+        });
         $.ajax({
             type: 'POST',
             url: ajaxurl,
             data: {
-                'action' : 'hide_pagespeed_suggestion'
+                'action': 'hide_pagespeed_suggestion'
             }
         });
     })
