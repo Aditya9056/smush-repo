@@ -242,7 +242,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
 			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' );
 
-			$upgrade_link = '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ) . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
 			/** Directory Browser and Image List **/
 			$wpsmush_bulkui->container_header( 'wp-smush-dir-browser', 'wp-smush-dir-browser', esc_html__( "DIRECTORY SMUSH", "wp-smushit" ) ); ?>
             <div class="box-content">
