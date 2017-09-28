@@ -248,7 +248,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div><?php
 			} ?>
 			<hr /><?php
-			    if( !$settings['resize'] ) {
+			    if( !$settings['resize'] && empty( $wpsmushit_admin->stats['resize_savings'] ) ) {
 			        $class = ' settings-desc float-l';
 			    }elseif ( empty( $wpsmushit_admin->stats['resize_savings'] ) ) {
 			        $class = ' settings-desc float-r';

@@ -265,6 +265,11 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				}
 			}
 
+			//Remove resmush ids from the list
+			if ( ! empty( $wpsmushit_admin->resmush_ids ) && is_array( $wpsmushit_admin->resmush_ids ) ) {
+				$posts = array_diff( $posts, $wpsmushit_admin->resmush_ids );
+			}
+
 			return $return_ids ? $posts : count( $posts );
 		}
 
@@ -839,7 +844,8 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				'savings_conversion' => 0,
 				'count_images'       => 0,
 				'count_supersmushed' => 0,
-				'count_smushed'      => 0
+				'count_smushed'      => 0,
+				'count_resize'       => 0
 			);
 
 			//If we don't have any attachments, return empty array
@@ -870,6 +876,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 					$stats['savings_resize'] += ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
 					$stats['size_before']    += ! empty( $resize_savings['size_before'] ) ? ! empty( $resize_savings['size_before'] ) : 0;
 					$stats['size_after']     += ! empty( $resize_savings['size_after'] ) ? ! empty( $resize_savings['size_after'] ) : 0;
+					$stats['count_resize']   += 1;
 				}
 
 				//Add conversion saving stats

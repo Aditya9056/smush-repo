@@ -1003,9 +1003,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @todo: remove id from global stats stored in db
 		 *
 		 */
-		function global_stats( $force_update = false, $exclude_resmush = true ) {
+		function global_stats( $force_update = false ) {
 
-			if ( $exclude_resmush && ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
+			if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
 				if ( ! empty( $stats ) && ! empty( $stats['size_before'] ) ) {
 					if ( isset( $stats['id'] ) ) {
 						unset( $stats['id'] );
@@ -1043,7 +1043,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					foreach ( $global_data as $data ) {
 
 						//Skip attachment, if in re-smush list
-						if ( $exclude_resmush && ! empty( $this->resmush_ids ) && in_array( $data->post_id, $this->resmush_ids ) ) {
+						if ( ! empty( $this->resmush_ids ) && in_array( $data->post_id, $this->resmush_ids ) ) {
 							continue;
 						}
 
@@ -1826,7 +1826,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Delete the resmush list
-			delete_option( $key );
+//			delete_option( $key );
 			wp_send_json_success( array( 'stats' => $stats ) );
 		}
 

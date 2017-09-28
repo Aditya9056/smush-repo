@@ -2017,7 +2017,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$backup_name = $this->get_image_backup_path( $file );
 
 			//If file exists, corresponding to our backup path, delete it
-			@ unlink( $backup_name );
+			@unlink( $backup_name );
 
 			//Check meta for rest of the sizes
 			if ( ! empty( $meta ) && ! empty( $meta['sizes'] ) ) {
