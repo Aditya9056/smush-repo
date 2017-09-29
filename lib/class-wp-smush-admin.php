@@ -1029,7 +1029,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 
-			global $wpdb, $wpsmush_db;
+			global $wpdb, $wpsmush_db, $WpSmush;
 
 			$smush_data = array(
 				'size_before' => 0,
@@ -1052,7 +1052,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			while ( $query_next ) {
 
-				$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", "wp-smpro-smush-data" ) );
+				$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", $WpSmush->smushed_meta_key ) );
 				if ( ! empty( $global_data ) ) {
 					foreach ( $global_data as $data ) {
 

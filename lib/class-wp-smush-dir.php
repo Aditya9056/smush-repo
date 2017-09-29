@@ -347,9 +347,16 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			check_ajax_referer( 'smush_get_dir_list', 'list_nonce' );
 
 			//Get the Root path for a main site or subsite
-			$root = $this->get_root_path();
+			$root = realpath( $this->get_root_path() );
 
-			$postDir = rawurldecode( $root . ( isset( $_GET['dir'] ) ? $_GET['dir'] : null ) );
+			$dir     = isset( $_GET['dir'] ) ? ltrim( $_GET['dir'], '/' ) : null;
+			$postDir = strlen( $dir ) > 1 ? path_join( $root, $dir ) : $root . $dir;
+			$postDir = realpath( rawurldecode( $postDir ) );
+
+			//If the final path doesn't contains the root path, bail out.
+			if ( !$root || $postDir === false || strpos( $postDir, $root ) !== 0 ) {
+				wp_send_json_error( "Unauthorized" );
+			}
 
 			$supported_image = array(
 				'gif',
@@ -371,15 +378,16 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					$list = "<ul class='jqueryFileTree'>";
 					foreach ( $files as $file ) {
 
-						$htmlRel  = htmlentities( $returnDir . $file );
+						$htmlRel  = htmlentities( ltrim( path_join( $returnDir , $file ), '/' ) );
 						$htmlName = htmlentities( $file );
 						$ext      = preg_replace( '/^.*\./', '', $file );
 
-						if ( file_exists( $postDir . $file ) && $file != '.' && $file != '..' ) {
-							if ( is_dir( $postDir . $file ) && ! $this->skip_dir( $postDir . $file ) ) {
+						$file_path = path_join( $postDir, $file );
+						if ( file_exists( $file_path ) && $file != '.' && $file != '..' ) {
+							if ( is_dir( $file_path ) && ! $this->skip_dir( $file_path ) ) {
 								//Skip Uploads folder - Media Files
 								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/'>" . $htmlName . "</a></li><br />";
-							} else if ( in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $postDir . $file ) ) {
+							} else if ( in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $file_path ) ) {
 								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "'>" . $htmlName . "</a></li><br />";
 							}
 						}
@@ -475,9 +483,12 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function get_image_list( $path = '' ) {
 			global $wpdb;
 
-			$base_dir = empty( $path ) ? $_GET['path'] : $path;
-			//Directory Path
-			$base_dir = realpath( $base_dir );
+			$base_dir = empty( $path ) ? ltrim( $_GET['path'], '/' ) : $path;
+			$base_dir = realpath( rawurldecode( $base_dir ) );
+
+			if ( !$base_dir ) {
+				wp_send_json_error( "Unauthorized" );
+			}
 
 			//Store the path in option
 			update_option( 'wp-smush-dir_path', $base_dir, false );

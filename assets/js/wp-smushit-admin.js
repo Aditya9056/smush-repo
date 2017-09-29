@@ -1913,7 +1913,7 @@ jQuery(function ($) {
                     wp_smushit_data.savings_resize = 'undefined' != typeof stats.savings_resize ? parseInt(wp_smushit_data.savings_resize) + stats.savings_resize : wp_smushit_data.savings_resize;
                     wp_smushit_data.savings_conversion = 'undefined' != typeof stats.savings_conversion ? parseInt(wp_smushit_data.savings_conversion) + stats.savings_conversion : wp_smushit_data.savings_conversion;
                     wp_smushit_data.size_before = 'undefined' != typeof stats.savings_resize ? parseInt(wp_smushit_data.size_before) + stats.savings_resize : wp_smushit_data.size_before;
-                    wp_smushit_data.count_resize = 'undefined' != typeof stats.count_resize ? stats.count_resize : wp_smushit_data.count_resize;
+                    wp_smushit_data.count_resize = 'undefined' != typeof stats.count_resize ? parseInt( wp_smushit_data.count_resize ) + stats.count_resize : wp_smushit_data.count_resize;
                 }
                 update_stats();
             }
@@ -2168,7 +2168,7 @@ jQuery(function ($) {
         var abs_path = $('input[name="wp-smush-base-path"]').val();
 
         //Fill in the input field
-        $('.wp-smush-dir-path').val(abs_path + path);
+        $('.wp-smush-dir-path').val(abs_path + '/' + path);
 
         //Send a ajax request to get a list of all the image files
         var param = {
