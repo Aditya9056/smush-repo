@@ -2119,7 +2119,7 @@ jQuery(function ($) {
         var abs_path = $('input[name="wp-smush-base-path"]').val();
 
         //Fill in the input field
-        $('.wp-smush-dir-path').val(abs_path + path);
+        $('.wp-smush-dir-path').val(abs_path + "/" + path);
 
         //Send a ajax request to get a list of all the image files
         var param = {
