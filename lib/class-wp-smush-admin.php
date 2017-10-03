@@ -1840,7 +1840,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Delete the resmush list
-//			delete_option( $key );
+			delete_option( $key );
 			wp_send_json_success( array( 'stats' => $stats ) );
 		}
 

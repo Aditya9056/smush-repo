@@ -874,8 +874,8 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				if ( ! empty( $resize_savings ) ) {
 					//Add resize and conversion savings
 					$stats['savings_resize'] += ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
-					$stats['size_before']    += ! empty( $resize_savings['size_before'] ) ? ! empty( $resize_savings['size_before'] ) : 0;
-					$stats['size_after']     += ! empty( $resize_savings['size_after'] ) ? ! empty( $resize_savings['size_after'] ) : 0;
+					$stats['size_before']    += ! empty( $resize_savings['size_before'] ) ? $resize_savings['size_before'] : 0;
+					$stats['size_after']     += ! empty( $resize_savings['size_after'] ) ? $resize_savings['size_after'] : 0;
 					$stats['count_resize']   += 1;
 				}
 
