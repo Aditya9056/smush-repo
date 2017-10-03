@@ -91,14 +91,14 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				<?php
 				if ( $human < 0 ) { ?>
                     <span class="wp-smush-stats-human"> <?php echo size_format( $human,1 ); ?></span><?php
-                    //Output percentage only if > 1
+					//Output percentage only if > 1
 					if ( $percent > 1 ) { ?>
                         <span class="wp-smush-stats-sep">/</span>
                         <span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>%</span><?php
 					}
 				} else { ?>
                     <span class="wp-smush-stats-human settings-desc"><?php esc_html_e("Smush images that aren't located in your uploads folder.", "wp-smushit"); ?>
-		                <a href="#wp-smush-dir-browser" class="wp-smush-dir-link"><?php esc_html_e( "Choose directory", "wp-smushit" ); ?></a>
+                        <a href="#wp-smush-dir-browser" class="wp-smush-dir-link"><?php esc_html_e( "Choose directory", "wp-smushit" ); ?></a>
 	                </span>
                     <span class="wp-smush-stats-sep hidden">/</span>
                     <span class="wp-smush-stats-percent"></span>
@@ -886,7 +886,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		function generate_markup( $images ) {
 
-		    global $wpsmush_helper;
+			global $wpsmush_helper;
 
 			if ( empty( $images ) || empty( $images['files_arr'] ) || empty( $images['image_items'] ) ) {
 				return null;
@@ -996,8 +996,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				$offset += $limit;
 				//If offset is above total number, do not query
 				if( $offset > $total ) {
-				    $continue = false;
-                }
+					$continue = false;
+				}
 			}
 
 			//Iterate over stats, Return Count and savings
