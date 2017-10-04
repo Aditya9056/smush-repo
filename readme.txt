@@ -151,7 +151,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.7.6 =
 
-* Security: Sanitize GET/POST variables ( Important update ). Thanks @neorichi
+* Security: Fixed path traversal vulnerability. Thanks Ricardo Sánchez(@neorichi) for responsible disclosure.
 
 = 2.7.5 =
 

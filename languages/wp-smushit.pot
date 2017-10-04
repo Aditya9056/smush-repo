@@ -2,8 +2,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP Smush\n"
-"POT-Creation-Date: 2017-09-28 12:43+0530\n"
-"PO-Revision-Date: 2017-09-28 12:43+0530\n"
+"POT-Creation-Date: 2017-10-04 09:34+0530\n"
+"PO-Revision-Date: 2017-10-04 09:34+0530\n"
 "Last-Translator: Umesh <umeshsingla05@gmail.com>\n"
 "Language-Team: Umesh <umeshsingla05@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -573,41 +573,41 @@ msgstr ""
 msgid "ADD DIRECTORY"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:463
+#: lib/class-wp-smush-dir.php:471
 msgid "Exclude directory from Smush List"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:599
+#: lib/class-wp-smush-dir.php:610
 msgid "We could not find any images in the selected directory."
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:920
+#: lib/class-wp-smush-dir.php:931
 #, php-format
 msgid "%d images"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:953
+#: lib/class-wp-smush-dir.php:964
 msgid "Waiting.."
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1075
+#: lib/class-wp-smush-dir.php:1086
 msgid "Incorrect image id"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1109
+#: lib/class-wp-smush-dir.php:1120
 msgid "Could not find image id in last scanned images"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1122
+#: lib/class-wp-smush-dir.php:1133
 msgid "Image couldn't be optimized"
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1166 lib/class-wp-smush-dir.php:1299
+#: lib/class-wp-smush-dir.php:1177 lib/class-wp-smush-dir.php:1310
 #, php-format
 msgid "You've smushed %d images in total."
 msgstr ""
 
-#: lib/class-wp-smush-dir.php:1243
+#: lib/class-wp-smush-dir.php:1254
 msgid ""
 "We were unable to retrieve the image list from last scan, please continue "
 "with a latest scan"
