@@ -1752,7 +1752,9 @@ label.setting.smush-stats [tooltip]:before,
     pointer-events: none;
 }
 
-.smushit [tooltip]:after, .compat-field-wp_smush [tooltip]:after {
+.smushit [tooltip]:after,
+label.setting.smush-stats [tooltip]:after
+.compat-field-wp_smush [tooltip]:after {
     content: attr(tooltip);
     position: absolute;
     background: #0B2F3F;
@@ -1773,14 +1775,18 @@ label.setting.smush-stats [tooltip]:before,
     pointer-events: none;
 }
 
-.smushit .smush-skipped [tooltip]:before, .compat-field-wp_smush .smush-skipped [tooltip]:before {
+.smushit .smush-skipped [tooltip]:before,
+label.setting.smush-stats .smush-skipped [tooltip]:before,
+.compat-field-wp_smush .smush-skipped [tooltip]:before {
     border-top-color: transparent;
     border-left-color: #0B2F3F;
     bottom: 0;
     left: 0;
 }
 
-.smushit .smush-skipped [tooltip]:after, .compat-field-wp_smush .smush-skipped [tooltip]:after {
+.smushit .smush-skipped [tooltip]:after,
+label.setting.smush-stats .smush-skipped [tooltip]:after,
+.compat-field-wp_smush .smush-skipped [tooltip]:after {
     margin-left: 0;
     left: -195px;
     top: -35px;
@@ -1788,12 +1794,16 @@ label.setting.smush-stats [tooltip]:before,
     margin-bottom: 5px;
 }
 
-.smushit [tooltip].tooltip-s:after, .compat-field-wp_smush [tooltip].tooltip-s:after {
+.smushit [tooltip].tooltip-s:after,
+label.setting.smush-stats [tooltip].tooltip-s:after,
+.compat-field-wp_smush [tooltip].tooltip-s:after {
     width: 150px;
     margin-left: -75px;
 }
 
-.smushit [tooltip].tooltip-l:after, .compat-field-wp_smush [tooltip].tooltip-l:after {
+.smushit [tooltip].tooltip-l:after,
+label.setting.smush-stats [tooltip].tooltip-l:after,
+.compat-field-wp_smush [tooltip].tooltip-l:after {
     width: 280px;
     margin-left: -140px;
 }
@@ -1826,14 +1836,18 @@ label.setting.smush-stats [tooltip]:before,
     margin-bottom: 0;
 }
 
-.smushit [tooltip]:hover:before, .compat-field-wp_smush [tooltip]:hover:before {
+.smushit [tooltip]:hover:before,
+label.setting.smush-stats [tooltip]:hover:before,
+.compat-field-wp_smush [tooltip]:hover:before {
     z-index: 1;
     margin-bottom: 0;
     opacity: 1;
     transition: margin .2s, opacity .2s;
 }
 
-.smushit [tooltip]:hover:after, .compat-field-wp_smush [tooltip]:hover:after {
+.smushit [tooltip]:hover:after,
+label.setting.smush-stats [tooltip]:hover:after,
+.compat-field-wp_smush [tooltip]:hover:after {
     opacity: 1;
     z-index: 1;
     margin-bottom: 10px;
@@ -1842,6 +1856,8 @@ label.setting.smush-stats [tooltip]:before,
 
 .smushit .disabled[tooltip]:before,
 .smushit .disabled[tooltip]:after,
+label.setting.smush-stats .disabled[tooltip]:before,
+label.setting.smush-stats .disabled[tooltip]:after,
 .compat-field-wp_smush .disabled[tooltip]:before,
 .compat-field-wp_smush .disabled[tooltip]:after {
     display: none;
