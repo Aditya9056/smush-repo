@@ -436,6 +436,11 @@ table.wp-smush-stats-holder td, table.wp-smush-stats-holder th,
     border: 1px solid #CECECE;
 }
 
+.attachment-details table.wp-smush-stats-holder td span {
+    float: none;
+    padding-top: 0;
+}
+
 #ngg-listimages .column-7 {
     width: 300px;
 }
