@@ -217,9 +217,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			add_action( 'wp_ajax_hide_pagespeed_suggestion', array( $this, 'hide_pagespeed_suggestion' ) );
 
-			// Attachment screens/modals
-			add_action( 'load-upload.php', array( $this, 'media_view_scripts' ), 11 );
-
 			//Return Smush status for attachment opened in Grid view
 			add_action( 'wp_ajax_smush_get_attachment_details', array( $this, 'smush_send_status') );
 
@@ -386,11 +383,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			}
 			$this->load_shared_ui( $current_page );
+			$this->media_view_scripts();
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
+			//@todo: Don't load this anymore, since we're switching to different font
 			//Enqueue Google Fonts for Tooltip On Media Pages, These are loaded by shared UI, but we
 			// aren't loading shared UI on media library pages
 			if ( ! wp_style_is( 'wdev-plugin-google_fonts', 'enqueued' ) ) {

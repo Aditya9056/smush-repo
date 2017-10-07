@@ -70,7 +70,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			//Header Of the Box ?>
 			<dialog id="smush-quick-setup" title="<?php esc_html_e( "QUICK SETUP", "wp-smushit" ); ?>" class="small">
-				<p class="wp-smush-welcome-message end"><?php esc_html_e( 'Welcome to Smush - Winner of Torque Plugin Madness 2017! Let\'s quickly set up the basics for you, then you can fine tweak each setting as you go - our recommendations are on by default.', "wp-smushit" ); ?></p>
+				<p class="wp-smush-welcome-message end"><?php esc_html_e( 'Welcome to Smush - Winner of Torque Plugin Madness 2017! Let\'s quickly set up the basics for you, then you can fine tune each setting as you go - our recommendations are on by default.', "wp-smushit" ); ?></p>
 				<div class="smush-quick-setup-settings">
 					<form method="post">
 					<input type="hidden" value="setupSmush" name="action"/><?php
@@ -930,7 +930,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//Page Heading for Free and Pro Version
 			$page_heading = $WpSmush->validate_install() ? esc_html__( 'WP Smush Pro', 'wp-smushit' ) : esc_html__( 'WP Smush', 'wp-smushit' );
 
-			$auto_smush_message = $WpSmush->is_auto_smush_enabled() ? sprintf( esc_html__( "Automatic smushing is %senabled%s. Newly uploaded images will be automagically compressed." ), '<span class="wp-smush-auto-enabled">', '</span>' ) : sprintf( esc_html__( "Automatic smushing is %sdisabled%s. Newly uploaded images will need to be manually smushed." ), '<span class="wp-smush-auto-disabled">', '</span>' );
+			$auto_smush_message = $WpSmush->is_auto_smush_enabled() ? sprintf( esc_html__( "Automatic smushing is %senabled%s. Newly uploaded images will be automagically compressed.", "wp-smushit" ), '<span class="wp-smush-auto-enabled">', '</span>' ) : sprintf( esc_html__( "Automatic smushing is %sdisabled%s. Newly uploaded images will need to be manually smushed.", "wp-smushit" ), '<span class="wp-smush-auto-disabled">', '</span>' );
 
 			//User API check, and display a message if not valid
 			$user_validation = $this->get_user_validation_message();
@@ -1102,7 +1102,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<input type="submit" id="wp-smush-save-settings" class="button button-grey"
 				       value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
 		        <span class="spinner"></span>
-		        <span class="smush-submit-note">' . esc_html__( "Smush will automatically check for any images that need re-smushing.", "wp-smsuhit") . '</span>
+		        <span class="smush-submit-note">' . esc_html__( "Smush will automatically check for any images that need re-smushing.", "wp-smushit") . '</span>
 		        </span>
 			</form>';
 

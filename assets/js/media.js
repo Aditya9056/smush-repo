@@ -12,13 +12,12 @@
     var smushMediaTwoColumn = media.view.Attachment.Details.TwoColumn;
 
 	/**
-	 * Add S3 details to attachment.
+	 * Add Smush details to attachment.
 	 */
     media.view.Attachment.Details.TwoColumn = smushMediaTwoColumn.extend( {
 
 		render: function() {
-			// Retrieve the S3 details for the attachment
-			// before we render the view
+			// Get Smush status for the image
 			this.getSmushDetails( this.model.get( 'id' ) );
 		},
 
@@ -57,5 +56,54 @@
             return html;
         }
 	} );
+
+    // Local instance of the Attachment Details TwoColumn used in the edit attachment modal view
+    var smushAttachmentDetails = media.view.Attachment.Details;
+
+    /**
+     * Add Smush details to attachment.
+     */
+    media.view.Attachment.Details = smushAttachmentDetails.extend( {
+
+        render: function() {
+            // Get Smush status for the image
+            this.getSmushDetails( this.model.get('id') );
+        },
+
+        getSmushDetails: function( id ) {
+            wp.ajax.send( 'smush_get_attachment_details', {
+                data: {
+                    _nonce: smush_vars.nonce.get_smush_status,
+                    id: id
+                }
+            } ).done( _.bind( this.renderSmush, this ) );
+        },
+
+        renderSmush: function( response ) {
+            // Render parent media.view.Settings.AttachmentDisplay
+            smushAttachmentDetails.prototype.render.apply( this );
+
+            this.renderSmushStatus( response );
+        },
+
+        renderSmushStatus: function( response ) {
+            if ( ! response ) {
+                return;
+            }
+            var $detailsHtml = this.$el.parent().find('.compat-item');
+            var html = this.generateHTML( response );
+            $detailsHtml.append( html );
+        },
+
+        generateHTML: function (response) {
+            var template = _.template('<label class="setting smush-stats" data-setting="description"><span class="name"><%= label %></span><span class="value"><%= value %></span></label>');
+            var html = template({
+                label: smush_vars.strings['stats_label'],
+                value: response
+            });
+
+            return html;
+        }
+    } );
 
 })( jQuery, _ );
