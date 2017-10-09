@@ -167,7 +167,7 @@ Smush button transformation
 .smush-submit-note {
     color: #9B9B9B;
     float: left;
-    font-family: Roboto;
+    font-family: 'Roboto', sans-serif;
     font-size: 13px;
     line-height: 22px;
     margin-top: 10px;
@@ -527,7 +527,8 @@ label.setting.smush-stats .wp-smush-stats-holder th {
     text-align: center;
 }
 
-label.setting.smush-stats span.value {
+label.setting.smush-stats span.value,
+.media-sidebar td.smush-skipped span {
     padding-top: 0;
 }
 
@@ -1504,7 +1505,7 @@ a.wp-smush-lossy-enable {
 .wp-smush-stats.settings-desc,
 .wp-smush-stats-human.settings-desc {
     color: #888888;
-    font-family: Roboto;
+    font-family: 'Roboto', sans-serif;
     font-size: 13px;
     line-height: 22px;
     padding: 0;
@@ -1763,24 +1764,26 @@ label.setting.smush-stats [tooltip]:before,
 .smushit [tooltip]:after,
 label.setting.smush-stats [tooltip]:after,
 .compat-field-wp_smush [tooltip]:after {
-    content: attr(tooltip);
-    position: absolute;
     background: #0B2F3F;
-    color: #FFF;
+    border-radius: 4px;
     bottom: 100%;
+    color: #FFF;
+    content: attr(tooltip);
+    font-size: 13px;
+    font-weight: 400;
     left: 50%;
-    width: 180px;
+    line-height: 20px;
     margin-left: -100px;
     margin-bottom: 5px;
-    text-align: center;
-    padding: 5px;
-    border-radius: 4px;
-    font: 400 13px/20px 'Roboto Condensed';
     opacity: 0;
-    z-index: -1;
+    padding: 5px;
+    pointer-events: none;
+    position: absolute;
+    width: 180px;
+    text-align: center;
     transition: margin .2s, opacity .2s, z-index .2s linear .2s;
     white-space: pre-wrap;
-    pointer-events: none;
+    z-index: -1;
 }
 
 .smushit .smush-skipped [tooltip]:before,
@@ -1800,6 +1803,20 @@ label.setting.smush-stats .smush-skipped [tooltip]:after,
     top: -35px;
     bottom: inherit;
     margin-bottom: 5px;
+}
+
+label.setting.smush-stats .smush-skipped [tooltip]:after {
+    top: -98px;
+}
+
+div.media-sidebar label.setting.smush-stats .smush-skipped [tooltip]:after {
+    left: -188px;
+    padding-left: 10px;
+    width: 170px;
+}
+
+div.media-sidebar label.setting.smush-stats .smush-skipped [tooltip]:before {
+    margin-left: -3px;
 }
 
 .smushit [tooltip].tooltip-s:after,

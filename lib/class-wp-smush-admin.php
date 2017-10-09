@@ -389,16 +389,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
-			//@todo: Don't load this anymore, since we're switching to different font
-			//Enqueue Google Fonts for Tooltip On Media Pages, These are loaded by shared UI, but we
-			// aren't loading shared UI on media library pages
-			if ( ! wp_style_is( 'wdev-plugin-google_fonts', 'enqueued' ) ) {
-				wp_enqueue_style(
-					'wdev-plugin-google_fonts',
-					'https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,500,300,300italic'
-				);
-			}
-
 			//Load on Smush all page only
 			if ( 'media_page_wp-smush-bulk' == $current_page ) {
 				//Load Jquery tree on specified page

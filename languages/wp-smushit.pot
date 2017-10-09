@@ -1184,8 +1184,8 @@ msgstr ""
 #: lib/class-wp-smush.php:1402
 #, php-format
 msgid ""
-"When you upload an image to WordPress it automatically creates %s thumbnail "
-"sizes that are commonly used in your pages. WordPress also stores the "
+"When you upload an image to your site, WordPress automatically creates %s thumbnail "
+"sizes that are commonly used in your pages. It also stores the "
 "original full-size image, but because these are not usually embedded on your "
 "site we don’t Smush them. Pro users can override this."
 msgstr ""
