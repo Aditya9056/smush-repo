@@ -748,6 +748,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$data['success'] = true;
 					$data['data']    = $response->data;
 				}
+
+				//Check for API message and store in db
+				if( isset( $response->data->api_message ) && !empty( $response->data->api_message ) ) {
+					$this->add_api_message( $response->data->api_message );
+				}
+
 				//If is_premium is set in response, send it over to check for member validity
 				if ( ! empty( $response->data ) && isset( $response->data->is_premium ) ) {
 					$wpsmushit_admin->api_headers['is_premium'] = $response->data->is_premium;
@@ -2338,6 +2344,32 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$stats['savings']         = $wpsmushit_admin->stats;
 
 			$request->send_json_success( $stats );
+		}
+
+		/**
+		 * Replace the old API message with the latest one if it doesn't exists already
+		 *
+		 * @param array $api_message
+		 *
+		 * @return null
+		 */
+		function add_api_message( $api_message = array() ) {
+			if ( empty( $api_message ) || ! sizeof( $api_message ) || empty( $api_message['timestamp'] ) || empty( $api_message['message'] ) ) {
+				return null;
+			}
+			$o_api_message = get_site_option(WP_SMUSH_PREFIX . 'api_message', array() );
+			if( array_key_exists( $api_message['timestamp'], $o_api_message ) ){
+				return null;
+			}
+			$api_message['status'] = 'show';
+
+			$message = array();
+			$message[$api_message['timestamp']] = array(
+				'message'   => sanitize_text_field( $api_message['message'] ),
+				'type'      => sanitize_text_field( $api_message['type'] ),
+				'status'    => 'show'
+			);
+			update_site_option( WP_SMUSH_PREFIX . 'api_message', $message );
 		}
 	}
 

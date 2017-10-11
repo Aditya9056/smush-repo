@@ -1048,7 +1048,8 @@ div.smush-notice-cta a.smush-notice-act.button-primary {
 
 .wp-smush-resmush-message,
 .wp-smush-settings-updated,
-.wp-smush-re-check-message {
+.wp-smush-re-check-message,
+.wp-smush-api-message {
     border: none;
     margin-bottom: 25px;
     padding: 18px 50px;
@@ -1071,12 +1072,20 @@ div.smush-notice-cta a.smush-notice-act.button-primary {
 
 .wp-smush-resmush-message .icon-fi-close,
 .wp-smush-settings-updated .icon-fi-close,
-.wp-smush-re-check-message .icon-fi-close {
+.wp-smush-re-check-message .icon-fi-close,
+.wp-smush-api-message .icon-fi-close {
     cursor: pointer;
     color: #888888;
     float: right;
     font-size: 16px;
     margin-top: 4px;
+}
+
+.wp-smush-resmush-message .icon-fi-close:before,
+.wp-smush-settings-updated .icon-fi-close:before,
+.wp-smush-re-check-message .icon-fi-close:before,
+.wp-smush-api-message .icon-fi-close:before {
+    color: #666;
 }
 
 .wp-smush-all-done .icon-fi-check-tick {
@@ -1159,7 +1168,8 @@ div.wp-smush-dir-remaining,
 div.wp-smush-dir-limit,
 div.smush-s3-setup-error,
 div.smush-s3-setup-message,
-div.wp-smush-s3support-alert {
+div.wp-smush-s3support-alert,
+div.wp-smush-notice.wp-smush-api-message.warning{
     background-color: #FFF5D5;
     border: none;
     color: #333333;
@@ -1175,8 +1185,17 @@ div.wp-smush-notice.wp-smush-dir-limit i.icon-fi-info {
     vertical-align: top;
 }
 
-div.smush-s3-setup-message {
+div.smush-s3-setup-message,
+div.wp-smush-notice.wp-smush-api-message.info {
     background-color: #DFF6FA;
+}
+
+div.wp-smush-api-message.info i.icon-fi-info {
+    font-size: 20px;
+}
+
+div.wp-smush-api-message.info i.icon-fi-info:before {
+    color: #17A8E3;
 }
 
 div.wp-smush-s3support-alert {
@@ -1231,7 +1250,8 @@ div.wp-smush-dir-limit .icon-fi-info:before {
     padding: 10px 50px;
 }
 
-.wpmud .bulk-smush-wrapper .wp-smush-remaining .icon-fi-warning-alert {
+.wpmud .bulk-smush-wrapper .wp-smush-remaining .icon-fi-warning-alert,
+.wp-smush-api-message .icon-fi-warning-alert{
     display: inline-block;
     font-size: 20px;
     margin-right: 8px;
@@ -1239,7 +1259,8 @@ div.wp-smush-dir-limit .icon-fi-info:before {
     vertical-align: top;
 }
 
-.wpmud .bulk-smush-wrapper .wp-smush-remaining .icon-fi-warning-alert:before {
+.wpmud .bulk-smush-wrapper .wp-smush-remaining .icon-fi-warning-alert:before,
+.wp-smush-api-message .icon-fi-warning-alert:before {
     color: #fecf2f;
 }
 

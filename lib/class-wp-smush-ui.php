@@ -730,7 +730,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			);
 
 			//Check whether to show pagespeed recommendation or not
-			$hide_pagespeed = get_network_option(get_current_network_id(), WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion');
+			$hide_pagespeed = get_site_option(WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion');
 
 			//If there are no images in Media Library
 			if ( 0 >= $wpsmushit_admin->total_count ) { ?>
@@ -947,6 +947,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$user_validation .
 					$recheck_notice .
 				'</section>';
+
+			//Check for any stored API message and show it
+			$this->show_api_message();
+
 			//Check if settings were updated and shoe a notice
 			$this->settings_updated();
 
@@ -1316,6 +1320,37 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<p class="smush-pro-upsell-text"><?php esc_html_e("Get all of this, plus heaps more as a part of a WPMU DEV membership.", "wp-smushit"); ?></p>
 				<div class="smush-pro-link-wrap"><a href="<?php echo $upgrade_url; ?>" class="smush-pro-link button button-cta button-green" target="_blank"><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a></div>
 			</dialog><?php
+        }
+
+        /**
+        * Display a stored API message
+        * @return null
+        */
+        function show_api_message() {
+
+            //Do not show message for any other users
+            if( !is_network_admin() && !is_super_admin() ) {
+                return null;
+            }
+
+            $message_icon_class = '';
+            $api_message = get_site_option( WP_SMUSH_PREFIX . 'api_message', array() );
+            $api_message = current( $api_message );
+
+            //Return if the API message is not set or user dismissed it earlier
+            if( empty( $api_message ) || !is_array( $api_message ) || $api_message['status'] != 'show' ) {
+                return null;
+            }
+
+            $message = !empty( $api_message['message'] ) ? $api_message['message'] : '';
+            $message_type = is_array( $api_message ) && !empty( $api_message['type'] ) ? $api_message['type'] : 'info';
+
+            if( 'warning' == $message_type ) {
+                $message_icon_class = "icon-fi-warning-alert";
+            }else if( 'info' == $message_type ) {
+                $message_icon_class = "icon-fi-info";
+            }
+            echo '<div class="wp-smush-notice wp-smush-api-message '. $message_type .'"><i class="'. $message_icon_class .'"></i>' . $message . '<i class="icon-fi-close"></i></div>';
         }
     }
     global $wpsmush_bulkui;

@@ -217,6 +217,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			add_action( 'wp_ajax_hide_pagespeed_suggestion', array( $this, 'hide_pagespeed_suggestion' ) );
 
+			/**
+			 * Hide API Message
+			 */
+			add_action( 'wp_ajax_hide_api_message', array( $this, 'hide_api_message' ) );
+
 			//Return Smush status for attachment opened in Grid view
 			add_action( 'wp_ajax_smush_get_attachment_details', array( $this, 'smush_send_status') );
 
@@ -2208,7 +2213,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Store user preference for Pagespeed suggestions
 		 */
 		function hide_pagespeed_suggestion() {
-			update_network_option( get_current_network_id(), WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion', true );
+			update_site_option(WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion', true );
+			wp_send_json_success();
+		}
+
+		/**
+		 * Hide API Message
+		 */
+		function hide_api_message() {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+			$api_message = get_site_option( WP_SMUSH_PREFIX . 'api_message', array() );
+			if ( ! empty( $api_message ) && is_array( $api_message ) ) {
+				$api_message[ key( $api_message ) ]['status'] = 'hide';
+			}
+			update_site_option( WP_SMUSH_PREFIX . 'api_message', true );
 			wp_send_json_success();
 		}
 
