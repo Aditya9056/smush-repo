@@ -155,7 +155,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Handle Smush Single Ajax
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_manual' ) );
 
-			//Handle Restore operation
+			//Handle resmush operation
 			add_action( 'wp_ajax_smush_resmush_image', array( $this, 'resmush_image' ) );
 
 			//Scan images as per the latest settings
@@ -1384,7 +1384,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			} elseif ( ! empty( $smushed['error'] ) ) {
 
 				//Send Error Message
-				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to smush image", "wp-smushit" ) . '</div>' ) );
+				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . $smushed['error'] . '</div>' ) );
 
 			}
 		}

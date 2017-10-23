@@ -1304,6 +1304,16 @@ div.wp-smush-dir-limit .icon-fi-info:before {
     padding: 20px 15px 20px 30px;
 }
 
+.wp-smush-progress-wrap i.icon-fi-loader {
+    font-size: 20px;
+}
+
+.wp-smush-progress-wrap i.icon-fi-loader:before {
+    animation: spin 2s infinite linear;
+    -webkit-animation: spin 2s infinite linear;
+    display: inline-block;
+}
+
 .wp-smush-progress-wrap img {
     vertical-align: middle;
 }

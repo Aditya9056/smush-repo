@@ -824,7 +824,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="wp-smush-bulk-progress-bar-wrapper hidden">
 			<p class="wp-smush-bulk-active roboto-medium"><?php printf( esc_html__( "%sBulk smush is currently running.%s You need to keep this page open for the process to complete.", "wp-smushit" ), '<strong>', '</strong>' ); ?></p>
 			<div class="wp-smush-progress-wrap">
-				<img src="<?php echo WP_SMUSH_URL . 'assets/images/loading.gif'; ?>" alt="<?php esc_html_e("Working..", "wp-smushit"); ?>" width="20px">
+			    <i class="icon-fi-loader"></i>
 				<div class="wp-smush-progress-bar-wrap">
 					<div class="wp-smush-progress-bar">
 						<div class="wp-smush-progress-inner" style="width: <?php echo $smushed_pc; ?>%;">

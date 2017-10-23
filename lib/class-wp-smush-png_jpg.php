@@ -298,7 +298,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 				$n_url = dirname( $o_url ) . '/' . basename( $n_file );
 			}
 
-			//Update In Post Content
+			//Update In Post Content, Loop Over a set of posts to avoid the query failure for large sites
 			global $wpdb;
 			$query = $wpdb->prepare( "UPDATE $wpdb->posts SET post_content = REPLACE(post_content, '%s', '%s');", $o_url, $n_url );
 			$wpdb->query( $query );
