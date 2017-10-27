@@ -149,10 +149,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.8 =
+= 2.7.8 =
 
 * Updates:
     * Minor UI Changes
+    * PNG to JPG: Iterate over rows while URL replacement to make sure all the occurrences are updated
 
 * Fixed:
     * Skip button doesn't skips images
