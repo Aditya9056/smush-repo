@@ -292,10 +292,6 @@ jQuery(function ($) {
                     message_holder.html(progress_message);
                 }
             );
-
-            $('.bulk-smush-wrapper .wp-smush-all-done, .wp-smush-pagespeed-recommendation').show();
-            $('.wp-smush-bulk-wrapper').hide();
-
         };
 
         /** After the Bulk Smushing has been Finished **/
@@ -400,6 +396,8 @@ jQuery(function ($) {
             //Show Bulk Wrapper and Smush Notice
             if (self.ids.length == 0) {
                 this.sync_stats();
+                $('.bulk-smush-wrapper .wp-smush-all-done, .wp-smush-pagespeed-recommendation').show();
+                $('.wp-smush-bulk-wrapper').hide();
             }
 
             //Update remaining count
