@@ -659,14 +659,14 @@ msgstr ""
 #: lib/class-wp-smush-s3.php:113
 #, php-format
 msgid ""
-"We are having trouble interacting with WP S3 Offload, make sure the plugin "
+"We are having trouble interacting with WP Offload S3, make sure the plugin "
 "is activated. Or you can %sreport a bug%s."
 msgstr ""
 
 #: lib/class-wp-smush-s3.php:120
 #, php-format
 msgid ""
-"It seems you haven't finished setting up WP S3 Offload yet. %sConfigure%s it "
+"It seems you haven't finished setting up WP Offload S3 yet. %sConfigure%s it "
 "now to enable Amazon S3 support."
 msgstr ""
 
@@ -677,7 +677,7 @@ msgstr ""
 #: lib/class-wp-smush-s3.php:178
 #, php-format
 msgid ""
-"We can see you have WP S3 Offload installed with the <strong>Remove Files "
+"We can see you have WP Offload S3 installed with the <strong>Remove Files "
 "From Server</strong> option activated. If you want to optimize your S3 "
 "images you'll need to enable the <a href='%s'><strong>Amazon S3 Support</"
 "strong></a> feature in Smush's settings."
@@ -686,7 +686,7 @@ msgstr ""
 #: lib/class-wp-smush-s3.php:181
 #, php-format
 msgid ""
-"We can see you have WP S3 Offload installed with the <strong>Remove Files "
+"We can see you have WP Offload installed with the <strong>Remove Files "
 "From Server</strong> option activated. If you want to optimize your S3 "
 "images you'll need to <a href='%s'><strong>upgrade to Smush Pro</strong></a>"
 msgstr ""

@@ -2,7 +2,7 @@
 Plugin Name: Smush Image Compression and Optimization
 Version: 2.8-beta1
 Author: WPMU DEV
-Author URI: http://premium.wpmudev.org/
+Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: image, resize, optimize, compress, performance, lossless, lossy, photo, pictures, optimize JPG, compress PNG, Smush WordPress Compression, Smush.it
 Requires at least: 4.2
@@ -228,7 +228,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Image appearing in Re-Smush list even after smushing, if resize settings are kept on.
     * Performance: Updated query for smushed images count
 * Added:
-    * WP S3 Offload - Plugin Compatibility for Remove files from server feature ( Pro Version )
+    * WP Offload S3 - Plugin Compatibility for Remove files from server feature ( Pro Version )
     * WP RSS Aggregator compatibility for Auto Smush
     * WordPress mobile app Auto smush compatibility
 
@@ -489,7 +489,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 = 2.0 =
 * Complete rewrite to use WPMU DEV's new fast and reliable API service.
 * New: One-click bulk smushing of all your images.
-* New: "Super-Smush" your images with our intelligent multi-pass lossy compression. Get over 2x more compression with almost no noticeable quality loss! (Pro)
+* New: "Super-Smush" your images with our intelligent multi-pass lossy compression. Get over 2x more compression with almost no visible drop in quality! (Pro)
 * New: Keep a backup of your original un-smushed images in case you want to restore later. (Pro)
 * UX/UI updated with overall stats, progress bar.
 

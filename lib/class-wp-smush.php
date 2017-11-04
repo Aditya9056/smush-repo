@@ -707,7 +707,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 				//Check for timeout error and suggest to filter timeout
 				if ( strpos( $er_msg, 'timed out' ) ) {
-					$data['message'] = esc_html__( "Skipped due to a timeout error, You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`.", "wp-smushit" );
+					$data['message'] = esc_html__( "Skipped due to a timeout error. You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`.", "wp-smushit" );
 				}else {
 					//Handle error
 					$data['message'] = sprintf( __( 'Error posting to API: %s', 'wp-smushit' ), $result->get_error_message() );
@@ -1408,7 +1408,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$smush_orgnl_txt = sprintf( esc_html__( "When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this.", 'wp_smushit' ), $count );
 			$skip_msg        = array(
 				'large_size' => $smush_orgnl_txt,
-				'size_limit' => esc_html__( "Image couldn't be smushed as it exceeded the 1Mb size limit, Pro users can smush images with size upto 32Mb.", "wp-smushit" )
+				'size_limit' => esc_html__( "Image couldn't be smushed as it exceeded the 1Mb size limit, Pro users can smush images with size up to 32Mb.", "wp-smushit" )
 			);
 			$skip_rsn        = ! empty( $skip_msg[ $msg_id ] ) ? esc_html__( " Skipped", 'wp-smushit', 'wp-smushit' ) : '';
 			$skip_rsn        = ! empty( $skip_rsn ) ? $skip_rsn . '<span tooltip="' . $skip_msg[ $msg_id ] . '"><i class="dashicons dashicons-editor-help"></i></span>' : '';
@@ -1545,7 +1545,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function load_s3() {
 
-			//If we don't have free or pro verison for WP S3 Offload, return
+			//If we don't have free or pro verison for WP Offload S3, return
 			if ( ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) {
 				return;
 			}

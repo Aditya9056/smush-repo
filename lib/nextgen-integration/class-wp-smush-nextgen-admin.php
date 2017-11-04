@@ -422,7 +422,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 						),
 						$url
 					); ?>
-					<p class="wp-smush-enable-lossy"><?php printf( esc_html__( "Enable Super-smush in the %sSettings%s area to get even more savings with almost no noticeable quality loss.", "wp-smushit" ), '<a href="' . $url .'" target="_blank">', "</a>"); ?></p><?php
+					<p class="wp-smush-enable-lossy"><?php printf( esc_html__( "Enable Super-smush in the %sSettings%s area to get even more savings with almost no visible drop in quality.", "wp-smushit" ), '<a href="' . $url .'" target="_blank">', "</a>"); ?></p><?php
 				} ?>
 				</div><?php
 				$wpsmush_bulkui->progress_bar( $this );

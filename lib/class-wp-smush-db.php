@@ -91,7 +91,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 					while ( $get_posts ) {
 
 						//Remove the Filters added by WP Media Folder
-						$wpsmush_db->remove_filters();
+						$this->remove_filters();
 
 						$query = new WP_Query( $args );
 

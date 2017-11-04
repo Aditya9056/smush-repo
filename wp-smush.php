@@ -5,7 +5,7 @@ Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
 Version: 2.7.6
-Author URI: http://premium.wpmudev.org/
+Author URI: https://premium.wpmudev.org/
 Text Domain: wp-smushit
 */
 
@@ -101,8 +101,8 @@ if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 		if ( empty( $wpsmushit_admin->stats ) ) {
 			$wpsmushit_admin->setup_global_stats();
 		}
-		$savings     = $wpsmushit_admin->stats;
-		$show_stats  = false;
+		$savings    = $wpsmushit_admin->stats;
+		$show_stats = false;
 
 		//If there is any saving, greater than 1Mb, show stats
 		if ( ! empty( $savings ) && ! empty( $savings['bytes'] ) && $savings['bytes'] > 1048576 ) {
@@ -207,9 +207,9 @@ add_action( 'admin_notices', 'smush_deactivated' );
 if ( ! function_exists( 'smush_deactivated' ) ) {
 	function smush_deactivated() {
 		if ( get_site_option( 'smush_deactivated' ) && is_super_admin() ) { ?>
-			<div class="updated">
-				<p><?php esc_html_e( 'WP Smush Free was deactivated. You have WP Smush Pro active!', 'wp-smushit' ); ?></p>
-			</div> <?php
+            <div class="updated">
+                <p><?php esc_html_e( 'WP Smush Free was deactivated. You have WP Smush Pro active!', 'wp-smushit' ); ?></p>
+            </div> <?php
 			delete_site_option( 'smush_deactivated' );
 		}
 	}
@@ -222,8 +222,8 @@ if ( ! function_exists( 'smush_activated' ) ) {
 	function smush_activated() {
 		global $wpsmush_settings;
 
-		$version = get_site_option( WP_SMUSH_PREFIX . 'version' );
-		$settings = !empty( $wpsmush_settings->settings ) ? $wpsmush_settings->settings : $wpsmush_settings->init_settings();
+		$version  = get_site_option( WP_SMUSH_PREFIX . 'version' );
+		$settings = ! empty( $wpsmush_settings->settings ) ? $wpsmush_settings->settings : $wpsmush_settings->init_settings();
 
 		//If the version is not saved or if the version is not same as the current version,
 		if ( ! $version || WP_SMUSH_VERSION != $version ) {
@@ -289,7 +289,7 @@ if ( ! function_exists( 'smush_sanitize_hex_color_no_hash' ) ) {
 }
 //Load Translation files
 add_action( 'plugins_loaded', 'smush_i18n' );
-if( !function_exists('smush_i18n')) {
+if ( ! function_exists( 'smush_i18n' ) ) {
 	function smush_i18n() {
 		$path = path_join( dirname( plugin_basename( __FILE__ ) ), 'languages/' );
 		load_plugin_textdomain( 'wp-smushit', false, $path );

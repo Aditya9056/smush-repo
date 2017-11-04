@@ -1251,7 +1251,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			//If we don't get an error path, return an error message
 			if ( empty( $dir_path ) ) {
-				$message = "<div class='error'>" . esc_html__( "We were unable to retrieve the image list from last scan, please continue with a latest scan", "wp-smushit" ) . "</div>";
+				$message = "<div class='error'>" . esc_html__( "We were unable to retrieve the image list from last scan, please continue with the latest scan", "wp-smushit" ) . "</div>";
 				wp_send_json_error( array( 'message' => $message ) );
 			}
 

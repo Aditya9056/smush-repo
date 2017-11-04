@@ -800,7 +800,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$this->progress_bar( $wpsmushit_admin );
 				//Enable Super Smush
 				if ( $WpSmush->validate_install() && ! $WpSmush->lossy_enabled ) { ?>
-					<p class="wp-smush-enable-lossy hidden"><?php esc_html_e( "Tip: Enable Super-smush in the Settings area to get even more savings with almost no noticeable quality loss.", "wp-smushit" ); ?></p><?php
+					<p class="wp-smush-enable-lossy hidden"><?php esc_html_e( "Tip: Enable Super-smush in the Settings area to get even more savings with almost no visible drop in quality.", "wp-smushit" ); ?></p><?php
 				}
 				$this->super_smush_promo();
 			}

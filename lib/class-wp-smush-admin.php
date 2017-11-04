@@ -225,6 +225,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Return Smush status for attachment opened in Grid view
 			add_action( 'wp_ajax_smush_get_attachment_details', array( $this, 'smush_send_status') );
 
+			//Send smush stats
+			add_action( 'wp_ajax_get_stats', array( $this, 'get_stats') );
+
 		}
 
 		function init_settings() {
@@ -247,7 +250,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'original'    => array(
 					'label'       => esc_html__( 'Smush my original full-size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every default and/or custom image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed.', 'wp-smushit' )
 				),
 				'keep_exif'   => array(
 					'label'       => esc_html__( 'Preserve my image EXIF data', 'wp-smushit' ),
@@ -432,7 +435,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
-				'quick_setup_title'    => __( "QUICK SETUP", "wp-smushit" ) . '<form method="post" class="smush-skip-setup float-r"><input type="hidden" name="action" value="skipSmushSetup"/>' . wp_nonce_field( 'skipSmushSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( "Skip", "wp-smushit" ) . '</button></form>',
+				'quick_setup_title'       => __( "QUICK SETUP", "wp-smushit" ) . '<form method="post" class="smush-skip-setup float-r"><input type="hidden" name="action" value="skipSmushSetup"/>' . wp_nonce_field( 'skipSmushSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( "Skip", "wp-smushit" ) . '</button></form>',
+				'sync_stats'              => esc_html__( "Give us a moment while we sync the stats.", "wp-smushit")
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -601,6 +605,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$should_continue = true;
 			$send_error = false;
+			$error_message = '';
 
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
 				wp_send_json_error(
@@ -711,7 +716,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'is_lossy'           => ! empty( $smush_data ['stats'] ) ? $smush_data['stats']['lossy'] : false
 			);
 
-			if ( true || isset( $smush ) && is_wp_error( $smush ) ) {
+			if ( isset( $smush ) && is_wp_error( $smush ) ) {
 
 				$send_error = true;
 
@@ -736,11 +741,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				do_action( 'image_smushed', $attachment_id, $stats );
 			}
 
-			/**
-			 * Used internally to modify the error message
-			 *
-			 */
-			$error_message = $this->filter_error( $error_message, $attachment_id, $error );
+			if( !empty( $error_message ) ) {
+				/**
+				 * Used internally to modify the error message
+				 *
+				 */
+				$error_message = $this->filter_error( $error_message, $attachment_id, $error );
+			}
 
 			//Wrap the error message in div
 //			$error = !empty( $error ) ? sprintf( '<p class="wp-smush-error-message'. $error_class .'">%s</p>', $error ) : $error;
@@ -2272,6 +2279,28 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_send_json_success( $status );
 		}
 
+		/**
+		 * Return Latest stats
+         *
+		 */
+		function get_stats() {
+			if ( empty( $this->stats ) ) {
+				$this->setup_global_stats(true);
+			}
+			$stats = array(
+				'count_images'       => ! empty( $this->stats ) && isset( $this->stats['total_images'] ) ? $this->stats['total_images'] : 0,
+				'count_resize'       => ! empty( $this->stats ) && isset( $this->stats['resize_count'] ) ? $this->stats['resize_count'] : 0,
+				'count_smushed'      => $this->smushed_count,
+				'count_supersmushed' => $this->super_smushed,
+				'count_total'        => $this->total_count,
+				'savings_bytes'      => ! empty( $this->stats ) && isset( $this->stats['bytes'] ) ? $this->stats['bytes'] : 0,
+				'savings_conversion' => ! empty( $this->stats ) && isset( $this->stats['conversion_savings'] ) ? $this->stats['conversion_savings'] : 0,
+				'savings_resize'     => ! empty( $this->stats ) && isset( $this->stats['resize_savings'] ) ? $this->stats['resize_savings'] : 0,
+				'size_before'        => ! empty( $this->stats ) && isset( $this->stats['size_before'] ) ? $this->stats['size_before'] : 0,
+				'size_after'         => ! empty( $this->stats ) && isset( $this->stats['size_after'] ) ? $this->stats['size_after'] : 0,
+			);
+			wp_send_json_success( $stats );
+		}
 	}
 
 	global $wpsmushit_admin;

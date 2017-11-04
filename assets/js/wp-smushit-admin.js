@@ -256,6 +256,48 @@ jQuery(function ($) {
 
         };
 
+        this.sync_stats = function() {
+            var message_holder = $('div.wp-smush-bulk-progress-bar-wrapper div.wp-smush-count.tc');
+            //Store the existing content in a variable
+            var progress_message = message_holder.html();
+            message_holder.html( wp_smush_msgs.sync_stats );
+
+            //Send ajax
+            $.ajax({
+                type: "GET",
+                url: ajaxurl,
+                data: {
+                    'action': 'get_stats'
+                },
+                success: function (response) {
+                    if (response && 'undefined' != typeof response) {
+                        response = response.data;
+                        $.extend( wp_smushit_data, {
+                            count_images:  response.count_images,
+                            count_smushed: response.count_smushed,
+                            count_total: response.count_total,
+                            count_resize: response.count_resize,
+                            count_supersmushed: response.count_supersmushed,
+                            savings_bytes: response.savings_bytes,
+                            savings_conversion: response.savings_conversion,
+                            savings_resize: response.savings_resize,
+                            size_before: response.size_before,
+                            size_after: response.size_after
+                        });
+                        //Got the stats, Update it
+                        update_stats();
+                    }
+                }
+            }).always( function() {
+                    message_holder.html(progress_message);
+                }
+            );
+
+            $('.bulk-smush-wrapper .wp-smush-all-done, .wp-smush-pagespeed-recommendation').show();
+            $('.wp-smush-bulk-wrapper').hide();
+
+        };
+
         /** After the Bulk Smushing has been Finished **/
         this.bulk_done = function () {
             if (!this.is_bulk) return;
@@ -357,10 +399,7 @@ jQuery(function ($) {
 
             //Show Bulk Wrapper and Smush Notice
             if (self.ids.length == 0) {
-                //Hide the bulk wrapper
-                $('.wp-smush-bulk-wrapper').hide();
-                //Show All done notice
-                $('.wp-smush-notice.wp-smush-all-done, .wp-smush-pagespeed-recommendation').show();
+                this.sync_stats();
             }
 
             //Update remaining count
@@ -542,6 +581,9 @@ jQuery(function ($) {
             $('.wp-smush-cancel-bulk').on('click', function () {
                 //Add a data attribute to the smush button, to stop sending ajax
                 self.$button.attr('continue_smush', false);
+                //Sync and update stats
+                self.sync_stats();
+                update_stats();
 
                 self.request.abort();
                 self.enable_button();
