@@ -33,7 +33,7 @@ var membership_validity = function (data) {
     var member_validity_notice = jQuery('#wp-smush-invalid-member');
 
     //Check for Membership warning
-    if ('undefined' != typeof ( data.show_warning ) && member_validity_notice.length > 0) {
+    if ('undefined' != typeof ( data ) && 'undefined' != typeof ( data.show_warning ) && member_validity_notice.length > 0) {
         if (data.show_warning) {
             member_validity_notice.show();
         } else {

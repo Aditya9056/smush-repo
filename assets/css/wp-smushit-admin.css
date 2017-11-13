@@ -893,6 +893,7 @@ Quick Setup Dialog
 }
 
 .wpmud .dev-overlay.small .box {
+    display: block;
     position: relative;
     margin: 30px auto;
     width: 100%;
@@ -1569,6 +1570,7 @@ a.wp-smush-lossy-enable {
     border-radius: 13px;
     color: #1ABC9C;
     padding: 4px 10px;
+    white-space: nowrap;
 }
 
 .wpmud .wp-smush-stats-try-pro:hover > a, .wpmud .wp-smush-stats-try-pro a:hover {
