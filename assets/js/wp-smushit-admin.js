@@ -77,7 +77,7 @@ jQuery(function ($) {
     if ($('#smush-quick-setup').size() > 0) {
         WDP.showOverlay("#smush-quick-setup", {
             title: wp_smush_msgs.quick_setup_title,
-            class: 'no-close wp-smush-overlay'
+            class: 'no-close wp-smush-overlay wp-smush-quick-setup'
         });
         remove_dialog();
     }
@@ -1676,6 +1676,15 @@ jQuery(function ($) {
         }
     };
 
+    /**
+     * Show directory list popup and foucs on close button
+     */
+    var showDialog = function() {
+        //Shows the directories available
+        $('.wp-smush-list-dialog').show();
+        $('.wp-smush-list-dialog a.close').focus();
+    };
+
     //Remove span tag from URL
     function removeSpan(url) {
         var url = url.slice(url.indexOf('?') + 1).split('&');
@@ -2160,8 +2169,7 @@ jQuery(function ($) {
         //Remove Notice
         $('div.wp-smush-info').remove();
 
-        //Shows the directories available
-        $('.wp-smush-list-dialog').show();
+        showDialog();
 
         //Display the loader
         $('button.dir-smush-button-wrap span.spinner').addClass('is-active');
@@ -2450,7 +2458,7 @@ jQuery(function ($) {
             if (!modal.is(':visible')) {
                 return;
             }
-            modal.find('div.close').click();
+            modal.find('a.close').click();
 
         }
     });

@@ -102,6 +102,20 @@ Smush button transformation
     margin-top: -8px;
 }
 
+.wpmud .toggle .toggle-checkbox {
+    display: inline-block;
+    height: 1px;
+    margin-left: -16px;
+    margin-right: 0;
+    opacity: 0;
+    width: 1px;
+}
+
+.wpmud .toggle .toggle-checkbox:focus {
+    border: none;
+
+}
+
 .wpmud .toggle .toggle-checkbox:checked + .toggle-label:after {
     margin-left: 23px;
 }
@@ -179,7 +193,8 @@ input#wp-smush-save-settings {
     margin: 0;
 }
 
-input#wp-smush-save-settings:hover {
+input#wp-smush-save-settings:hover,
+input#wp-smush-save-settings:focus {
     background: #0A9BD6;
 }
 
@@ -902,7 +917,7 @@ Quick Setup Dialog
     padding: 30px;
 }
 
-.wpmud .dev-overlay.small .box:after {
+.wpmud .dev-overlay.small.wp-smush-overlay .box:after {
     background: url(../images/smush-quicksetup.png) no-repeat 0 0;
     bottom: 0;
     content: "";
@@ -962,7 +977,9 @@ div.smush-quick-setup-settings div.submit-button-wrap {
     float: right;
 }
 
-.wpmud div.smush-quick-setup-settings div.submit-button-wrap button:hover {
+.wpmud div.smush-quick-setup-settings div.submit-button-wrap button:hover,
+.wpmud div.smush-quick-setup-settings div.submit-button-wrap button:focus
+{
     background-color: #0A9BD6 !important;
 }
 
@@ -984,7 +1001,8 @@ div.smush-quick-setup-settings div.submit-button-wrap span.spinner {
     padding: 5px 27px;
 }
 
-.wpmud .box button.skip-button.button-small:hover {
+.wpmud .box button.skip-button.button-small:hover,
+.wpmud .box button.skip-button.button-small:focus {
     background: #666666 !important;
 }
 
@@ -2207,18 +2225,20 @@ div.wp-smush-dir-desc {
     width: 150px;
 }
 
+.wpmud .dev-overlay.wp-smush-list-dialog {
+    left: 0;
+    max-width: none;
+    margin: 0;
+    top: 0;
+    z-index: 9999;
+}
+
 .wpmud .dev-overlay.wp-smush-list-dialog .title h3 {
     padding: 15px 0;
 }
 
 .wp-smush-list-dialog .box-scroll {
     margin-top: 80px;
-}
-
-.wpmud .dev-overlay.wp-smush-list-dialog .box {
-    margin-left: -300px;
-    padding: 35px 35px 30px;
-    width: 600px;
 }
 
 .wp-smush-select-dir {
@@ -2533,7 +2553,8 @@ div.dir-smush-button-wrap span {
     background-color: #AEAEAE !important;
 }
 
-.wpmud button.wp-smush-browse:hover {
+.wpmud button.wp-smush-browse:hover,
+.wpmud button.wp-smush-browse:focus {
     background-color: #9E9E9E !important;
 }
 

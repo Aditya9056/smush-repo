@@ -405,7 +405,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                            id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?>
                                            value="1"
                                            name="<?php echo $setting_m_key; ?>" tabindex= "0">
-                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>"></label>
+                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>" tabindex="0"></label>
                                 </span>
                                 <div class="column-right-content">
                                     <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
@@ -547,7 +547,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                     <input type="checkbox" class="toggle-checkbox"
                                        id="<?php echo $setting_m_key; ?>"
                                        name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1" tabindex="0">
-                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>"></label>
+                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>" tabindex="0"></label>
                                 </span>
                                 <div class="column-right-content">
                                     <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
@@ -795,7 +795,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						</span>
 					</div><?php
 				} ?>
-				<button type="button" class="wp-smush-all wp-smush-button"><?php echo $button_content; ?></button>
+				<button type="button" class="wp-smush-all wp-smush-button" title="<?php esc_html_e("Click to start Bulk Smushing images in Media Library", "wp-smushit"); ?>"><?php echo $button_content; ?></button>
 				</div><?php
 				$this->progress_bar( $wpsmushit_admin );
 				//Enable Super Smush
@@ -875,7 +875,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				return '<div class="wp-smush-notice wp-smush-resmush-notice wp-smush-remaining" tabindex="0">
 						<i class="icon-fi-warning-alert"></i>
 						<span class="wp-smush-notice-text">' . sprintf( _n( "%s, you have %s%s%d%s attachment%s that needs re-compressing!", "%s, you have %s%s%d%s attachments%s that need re-compressing!", $count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' ) . '</span>
-						<button class="button button-grey button-small wp-smush-skip-resmush">' . esc_html__( "Skip", "wp-smushit" ) . '</button>
+						<button class="button button-grey button-small wp-smush-skip-resmush" title="' . esc_html__("Skip re-smushing the images", "wp-smushit") . '">' . esc_html__( "Skip", "wp-smushit" ) . '</button>
 	                </div>';
 			}
 		}
@@ -1237,7 +1237,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                id="<?php echo WP_SMUSH_PREFIX . $name ; ?>" <?php checked( $setting_val, 1, true ); ?>
                                value="1"
                                name="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex= "0">
-                        <label class="toggle-label <?php echo WP_SMUSH_PREFIX . $name ; ?>-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>"></label>
+                        <label class="toggle-label <?php echo WP_SMUSH_PREFIX . $name ; ?>-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex="0"></label>
                     </span>
                     <div class="column-right-content">
                         <label class="inline-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex="0">
