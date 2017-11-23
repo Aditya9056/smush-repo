@@ -469,7 +469,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 				<div class='wp-smush-setting-row wp-smush-basic'>
 				    <div class="column column-left"">
-                        <label class="inline-label" for="<?php echo $opt_networkwide; ?>" tabindex="0">
+                        <label class="inline-label" for="<?php echo $opt_networkwide; ?>">
                             <span class="wp-smush-setting-label">
                                 <?php echo $wpsmushit_admin->settings['networkwide']['short_label']; ?>
                             </span><br/>
@@ -482,11 +482,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                         <span class="toggle float-l">
                             <input type="checkbox" class="toggle-checkbox"
                                id="<?php echo $opt_networkwide; ?>"
-                               name="<?php echo $opt_networkwide; ?>" <?php checked( $opt_networkwide_val, 1, true ); ?> value="1" tabindex="0">
+                               name="<?php echo $opt_networkwide; ?>" <?php checked( $opt_networkwide_val, 1, true ); ?> value="1">
                             <label class="toggle-label" for="<?php echo $opt_networkwide; ?>"></label>
                         </span>
                         <div class="column-right-content">
-                            <label class="inline-label" for="<?php echo $opt_networkwide; ?>" tabindex="0">
+                            <label class="inline-label" for="<?php echo $opt_networkwide; ?>">
                                 <span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings['networkwide']['label']; ?></span><br/>
                             </label>
                         </div>
@@ -528,7 +528,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$label = !empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label']; ?>
 					<div class='wp-smush-setting-row wp-smush-basic'>
 						<div class="column column-left">
-							<label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
+							<label class="inline-label" for="<?php echo 'column-' . $setting_m_key; ?>">
 	                            <span class="wp-smush-setting-label"><?php echo $label; ?></span><br/>
 	                            <small class="smush-setting-description"><?php
 	                                //For pro settings, print a different description for group setting
@@ -540,17 +540,17 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 	                            </small>
 	                        </label>
                         </div>
-						<div class="column column-right"><?php
+						<div class="column column-right" id="column-<?php echo $setting_m_key; ?>"><?php
 						    //Do not print for Resize, Smush Original, Backup
 						    if( !in_array( $name, $this->setting_group ) ) { ?>
                                 <span class="toggle float-l">
                                     <input type="checkbox" class="toggle-checkbox"
                                        id="<?php echo $setting_m_key; ?>"
-                                       name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1" tabindex="0">
-                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>" tabindex="0"></label>
+                                       name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1">
+                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>"></label>
                                 </span>
                                 <div class="column-right-content">
-                                    <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
+                                    <label class="inline-label" for="<?php echo $setting_m_key; ?>">
                                         <span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span><br/>
                                     </label><?php
                                     $this->settings_desc( $name );
@@ -748,7 +748,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="wp-smush-notice wp-smush-all-done<?php echo $all_done ? '' : ' hidden' ?>" tabindex="0">
 					<i class="icon-fi-check-tick"></i><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?>
 				</div><?php
-				if( true || !$hide_pagespeed ) {?>
+				if( !$hide_pagespeed ) {?>
                     <div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' hidden' ?>">
                         <span class="smush-recommendation-title roboto-medium"><?php esc_html_e("Still having trouble with PageSpeed tests? Give these a go…", "wp-smsuhit"); ?></span>
                         <ol class="smush-recommendation-list"><?php
@@ -795,7 +795,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						</span>
 					</div><?php
 				} ?>
-				<button type="button" class="wp-smush-all wp-smush-button" title="<?php esc_html_e("Click to start Bulk Smushing images in Media Library", "wp-smushit"); ?>"><?php echo $button_content; ?></button>
+				<button type="button" class="wp-smush-all wp-smush-button" title="<?php esc_html_e('Click to start Bulk Smushing images in Media Library', 'wp-smushit'); ?>"><?php echo $button_content; ?></button>
 				</div><?php
 				$this->progress_bar( $wpsmushit_admin );
 				//Enable Super Smush
@@ -1161,7 +1161,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                         }else{
                             $checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes ) : false;
                         } ?>
-                        <label>
+                        <label aria-hidden="true">
                             <input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>"><?php
                             if( isset( $size['width'], $size['height'] ) ) {
                                 echo $size_k . " (" . $size['width'] . "x" . $size['height'] . ") ";

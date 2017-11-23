@@ -1682,7 +1682,7 @@ jQuery(function ($) {
     var showDialog = function() {
         //Shows the directories available
         $('.wp-smush-list-dialog').show();
-        $('.wp-smush-list-dialog a.close').focus();
+        $('.wp-smush-list-dialog div.close').focus();
     };
 
     //Remove span tag from URL
@@ -2458,7 +2458,7 @@ jQuery(function ($) {
             if (!modal.is(':visible')) {
                 return;
             }
-            modal.find('a.close').click();
+            modal.find('div.close').click();
 
         }
     });
