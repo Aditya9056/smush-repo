@@ -169,8 +169,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$this,
 				'settings_link'
 			) );
-			//Attachment status, Grid view
-//			add_filter( 'attachment_fields_to_edit', array( $this, 'filter_attachment_fields_to_edit' ), 10, 2 );
 
 			// Smush Upgrade
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
@@ -284,30 +282,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Initialize Image dimensions
 			$this->image_sizes = $this->image_dimensions();
-		}
-
-		/**
-		 * Adds smush button and status to attachment modal and edit page if it's an image
-		 *
-		 *
-		 * @param array $form_fields
-		 * @param WP_Post $post
-		 *
-		 * @return array $form_fields
-		 */
-		function filter_attachment_fields_to_edit( $form_fields, $post ) {
-			if ( ! wp_attachment_is_image( $post->ID ) ) {
-				return $form_fields;
-			}
-			$form_fields['wp_smush'] = array(
-				'label'         => __( 'WP Smush', 'wp-smushit' ),
-				'input'         => 'html',
-				'html'          => $this->smush_status( $post->ID ),
-				'show_in_edit'  => true,
-				'show_in_modal' => true,
-			);
-
-			return $form_fields;
 		}
 
 		/**

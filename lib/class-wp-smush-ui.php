@@ -102,7 +102,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							    $setting_val = 1;
 							} ?>
 							<div class='wp-smush-setting-row wp-smush-basic'>
-								<label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
+								<label class="inline-label" for="<?php echo $setting_m_key . '-quick-setup'; ?>" tabindex="0">
 									<span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span><br/>
 									<small class="smush-setting-description">
 		                                <?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
@@ -384,7 +384,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                         $setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;?>
                         <div class='wp-smush-setting-row wp-smush-advanced'>
                             <div class="column column-left">
-                                <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
+                                <label class="inline-label" for="<?php echo $setting_m_key; ?>" aria-hidden="true">
                                     <span class="wp-smush-setting-label"><?php echo $label; ?></span>
                                     <br/>
                                     <small class="smush-setting-description"><?php
@@ -469,7 +469,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<!-- A tab index of 0 keeps the element in tab flow with other elements with an unspecified tab index which are still tabbable.) -->
 				<div class='wp-smush-setting-row wp-smush-basic'>
 				    <div class="column column-left"">
-                        <label class="inline-label" for="<?php echo $opt_networkwide; ?>">
+                        <label class="inline-label" for="<?php echo $opt_networkwide; ?>" aria-hidden="true">
                             <span class="wp-smush-setting-label">
                                 <?php echo $wpsmushit_admin->settings['networkwide']['short_label']; ?>
                             </span><br/>
@@ -528,7 +528,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$label = !empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label']; ?>
 					<div class='wp-smush-setting-row wp-smush-basic'>
 						<div class="column column-left">
-							<label class="inline-label" for="<?php echo 'column-' . $setting_m_key; ?>">
+							<label class="inline-label" for="<?php echo 'column-' . $setting_m_key; ?>" aria-hidden="true">
 	                            <span class="wp-smush-setting-label"><?php echo $label; ?></span><br/>
 	                            <small class="smush-setting-description"><?php
 	                                //For pro settings, print a different description for group setting
@@ -544,7 +544,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						    //Do not print for Resize, Smush Original, Backup
 						    if( !in_array( $name, $this->setting_group ) ) { ?>
                                 <span class="toggle float-l">
-                                    <input type="checkbox" class="toggle-checkbox"
+                                    <input type="checkbox" class="toggle-checkbox" aria-describedby="<?php echo $setting_m_key . '-desc'?>"
                                        id="<?php echo $setting_m_key; ?>"
                                        name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1">
                                     <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>"></label>
@@ -1153,7 +1153,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
             if( !empty( $sizes ) ) { ?>
                 <!-- List of image sizes recognised by WP Smush -->
                 <div class="wp-smush-image-size-list">
-                    <p><?php printf( esc_html__("Every time you upload an image to your site, WordPress generates a resized version of that image for every default and/or custom image size that your theme has registered. This means there are multiple versions of your images in your media library.%sChoose the images size/s below that you would like optimized:%s", "wp-smushit"), "<br /> <br />", "<br />"); ?></p><?php
+                    <span id="wp-smush-auto-desc"><?php printf( esc_html__("Every time you upload an image to your site, WordPress generates a resized version of that image for every default and/or custom image size that your theme has registered. This means there are multiple versions of your images in your media library.%sChoose the images size/s below that you would like optimized:%s", "wp-smushit"), "<br /> <br />", "<br />"); ?></span><?php
                     foreach ( $sizes as $size_k => $size ) {
                         //If image sizes array isn't set, mark all checked ( Default Values )
                         if ( false === $image_sizes ) {
@@ -1161,7 +1161,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                         }else{
                             $checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes ) : false;
                         } ?>
-                        <label aria-hidden="true">
+                        <label>
                             <input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>"><?php
                             if( isset( $size['width'], $size['height'] ) ) {
                                 echo $size_k . " (" . $size['width'] . "x" . $size['height'] . ") ";
@@ -1236,14 +1236,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                         <input type="checkbox" class="toggle-checkbox"
                                id="<?php echo WP_SMUSH_PREFIX . $name ; ?>" <?php checked( $setting_val, 1, true ); ?>
                                value="1"
-                               name="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex= "0">
-                        <label class="toggle-label <?php echo WP_SMUSH_PREFIX . $name ; ?>-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex="0"></label>
+                               name="<?php echo WP_SMUSH_PREFIX . $name; ?>" aria-describedby="<?php echo WP_SMUSH_PREFIX . $name . "-desc" ;?>">
+                        <label class="toggle-label <?php echo WP_SMUSH_PREFIX . $name ; ?>-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>"></label>
                     </span>
                     <div class="column-right-content">
-                        <label class="inline-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>" tabindex="0">
+                        <label class="inline-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>">
                             <span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span><br/>
                         </label>
-                        <span class="wp-smush-setting-desc"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span><br/><?php
+                        <span class="wp-smush-setting-desc" id="<?php echo WP_SMUSH_PREFIX . $name . "-desc" ;?>"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span><br/><?php
                         $this->resize_settings( $name );?>
                     </div>
                 </div><?php
@@ -1255,10 +1255,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
         * @param string $setting_key
         */
         function settings_desc( $setting_key = '' ) {
-            if( empty( $setting_key ) ) {
+            if( empty( $setting_key ) || !in_array( $setting_key, array( 'keep_exif', 'png_to_jpg', 's3')) ) {
                 return;
             } ?>
-            <div class="column-right-content-description"><?php
+            <div class="column-right-content-description" id="<?php echo WP_SMUSH_PREFIX . $setting_key . "-desc"; ?>"><?php
                 switch ( $setting_key ) {
 
                     case 'keep_exif':

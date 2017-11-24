@@ -354,6 +354,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			if ( file_exists( $postDir ) ) {
 
 				$files     = scandir( $postDir );
+				//Exclude hidden files
+				if ( ! empty( $files ) ) {
+					$files = preg_grep( '/^([^.])/', $files );
+				}
 				$returnDir = substr( $postDir, strlen( $root ) );
 
 				natcasesort( $files );
@@ -1325,16 +1329,17 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
          *
 		 */
 		function directory_list_dialog() {
-		    $current_screen = get_current_screen();
-		    if( empty( $current_screen ) || empty( $current_screen->base ) || 'media_page_wp-smush-bulk' != $current_screen->base ) {
-		        return;
-		    }?>
+			$current_screen = get_current_screen();
+			if ( empty( $current_screen ) || empty( $current_screen->base ) || 'media_page_wp-smush-bulk' != $current_screen->base ) {
+				return;
+			} ?>
             <div class="dev-overlay small wp-smush-list-dialog roboto-regular">
                 <div class="back"></div>
                 <div class="box-scroll">
                     <div class="box">
                         <div class="title"><h3><?php esc_html_e( "Directory list", "wp-smushit" ); ?></h3>
-                            <div aria-hidden="true" class="close">&times;</div><button class="wpdui-sr-only"><span class="wpdui-sr-only">Close</span></button>
+                            <div aria-hidden="true" class="close">&times;</div>
+                            <button class="wpdui-sr-only"><span class="wpdui-sr-only">Close</span></button>
                         </div>
                         <div class="wp-smush-instruct"><?php esc_html_e( "Choose the folder you wish to smush.", "wp-smushit" ); ?></div>
                         <div class="content">

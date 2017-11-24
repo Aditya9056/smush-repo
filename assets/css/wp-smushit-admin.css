@@ -105,7 +105,7 @@ Smush button transformation
 .wpmud .toggle .toggle-checkbox {
     display: inline-block;
     height: 1px;
-    margin-left: -16px;
+    margin-left: -20px;
     margin-right: 0;
     opacity: 0;
     width: 1px;
@@ -2019,7 +2019,7 @@ div.wp-smush-super-smush-content-wrapper {
     line-height: 22px;
 }
 
-.wpmud .wp-smush-image-size-list p {
+.wpmud .wp-smush-image-size-list span#wp-smush-auto-desc {
     color: #888888;
     font-family: Roboto;
     font-size: 13px;
