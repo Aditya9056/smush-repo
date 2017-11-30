@@ -96,25 +96,25 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					            continue;
 					        }
 					        $setting_m_key = WP_SMUSH_PREFIX . $name;
-							$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : false;
+							$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->settings[$name] : false;
 							//Set the default value 1 for auto smush
 							if( 'auto' == $name && false === $setting_val ) {
 							    $setting_val = 1;
 							} ?>
 							<div class='wp-smush-setting-row wp-smush-basic'>
-								<label class="inline-label" for="<?php echo $setting_m_key . '-quick-setup'; ?>" tabindex="0">
+								<label class="inline-label" for="<?php echo $setting_m_key . '-quick-setup'; ?>">
 									<span class="wp-smush-setting-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span><br/>
 									<small class="smush-setting-description">
 		                                <?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
 		                            </small>
-		                            <?php $this->resize_settings($name ); ?>
 		                        </label>
 		                        <span class="toggle float-r">
 		                            <input type="checkbox" class="toggle-checkbox"
 		                               id="<?php echo $setting_m_key . '-quick-setup'; ?>"
 		                               name="smush_settings[]" <?php checked( $setting_val, 1, true ); ?> value="<?php echo $setting_m_key; ?>" tabindex="0">
-		                            <label class="toggle-label" for="<?php echo $setting_m_key . '-quick-setup'; ?>"></label>
+		                            <label class="toggle-label" for="<?php echo $setting_m_key . '-quick-setup'; ?>" aria-hidden="true"></label>
 		                        </span>
+		                        <?php $this->resize_settings( $name, 'quick-setup-' ); ?>
 							</div><?php
 						}
 						?>
@@ -405,7 +405,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                            id="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?>
                                            value="1"
                                            name="<?php echo $setting_m_key; ?>" tabindex= "0">
-                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>" tabindex="0"></label>
+                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>" aria-hidden="true"></label>
                                 </span>
                                 <div class="column-right-content">
                                     <label class="inline-label" for="<?php echo $setting_m_key; ?>" tabindex="0">
@@ -483,7 +483,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                             <input type="checkbox" class="toggle-checkbox"
                                id="<?php echo $opt_networkwide; ?>"
                                name="<?php echo $opt_networkwide; ?>" <?php checked( $opt_networkwide_val, 1, true ); ?> value="1">
-                            <label class="toggle-label" for="<?php echo $opt_networkwide; ?>"></label>
+                            <label class="toggle-label" for="<?php echo $opt_networkwide; ?>" aria-hidden="true"></label>
                         </span>
                         <div class="column-right-content">
                             <label class="inline-label" for="<?php echo $opt_networkwide; ?>">
@@ -547,7 +547,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                     <input type="checkbox" class="toggle-checkbox" aria-describedby="<?php echo $setting_m_key . '-desc'?>"
                                        id="<?php echo $setting_m_key; ?>"
                                        name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1">
-                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>"></label>
+                                    <label class="toggle-label <?php echo $setting_m_key . '-label'; ?>" for="<?php echo $setting_m_key; ?>" aria-hidden="true"></label>
                                 </span>
                                 <div class="column-right-content">
                                     <label class="inline-label" for="<?php echo $setting_m_key; ?>">
@@ -1051,7 +1051,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				array(
 				'utm_source' => 'Smush-Free',
 				'utm_medium' => 'Banner',
-				'utm_campaign' => 'smush-lady-upgrade'
+				'utm_campaign' => 'smush-advanced-settings-upsell'
 				),
 				$wpsmushit_admin->upgrade_url
 			); ?>
@@ -1177,9 +1177,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
         * Prints Dimensions required for Resizing
         *
         * @param string $name
+        * @param string $class_prefix, To avoid element id repetition on settings page
+        *
         * @param int $setting_status
          */
-        function resize_settings( $name = '' ) {
+        function resize_settings( $name = '', $class_prefix = '' ) {
             if( empty( $name ) || 'resize' != $name ) {
                 return;
             }
@@ -1191,18 +1193,20 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
             $setting_status = !empty( $wpsmush_settings->settings['resize'] ) ? $wpsmush_settings->settings['resize'] : 0;
 
+            $prefix = !empty( $class_prefix ) ? $class_prefix : WP_SMUSH_PREFIX;
+
             //Placeholder width and Height
             $p_width = $p_height = 2048; ?>
             <div class="wp-smush-resize-settings-wrap<?php echo $setting_status ? '' : ' hidden'?>">
-                <label class="resize-width-label" for="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>"><span class = "label-text"><?php esc_html_e("Max width", "wp-smushit"); ?></span>
-                <input type="text" id="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>" placeholder="<?php echo $p_width; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" tabindex="0" width=100 /> px
+                <label class="resize-width-label" aria-labelledby="<?php echo $prefix; ?>label-max-width" for="<?php echo $prefix . $name . '_width'; ?>"><span class = "label-text" id="<?php echo $prefix; ?>label-max-width"><?php esc_html_e("Max width", "wp-smushit"); ?></span>
+                    <input aria-required="true" type="text" aria-describedby="<?php echo $prefix; ?>wp-smush-resize-note" id="<?php echo $prefix . $name . '_width'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" tabindex="0" width=100 /> px
                 </label>
-                <label class="resize-height-label" for"<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>"><span class = "label-text"><?php esc_html_e("Max height", "wp-smushit"); ?></span>
-                <input type="text" id="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>" placeholder="<?php echo $p_height; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" tabindex="0" width=100 /> px
+                <label class="resize-height-label" aria-labelledby="<?php echo $prefix; ?>label-max-height" for = "<?php echo $prefix . $name . '_height'; ?>"><span class = "label-text" id="<?php echo $prefix; ?>label-max-height"><?php esc_html_e("Max height", "wp-smushit"); ?></span>
+                    <input aria-required="true" type="text" aria-describedby="<?php echo $prefix; ?>wp-smush-resize-note" id="<?php echo $prefix . $name . '_height'; ?>" class="wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" tabindex="0" width=100 /> px
                 </label>
-                <div class="wp-smush-resize-note"><?php printf( esc_html__("Currently, your largest image size is set at %s%dpx wide x %dpx high%s.", "wp-smushit"), '<strong>', $max_sizes['width'], $max_sizes['height'], '</strong>' ); ?></div>
-                <div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-width hidden"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
-                <div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-height hidden"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
+                <div class="wp-smush-resize-note" id="<?php echo $prefix; ?>wp-smush-resize-note"><?php printf( esc_html__("Currently, your largest image size is set at %s%dpx wide %s %dpx high%s.", "wp-smushit"), '<strong>', $max_sizes['width'], '&times;', $max_sizes['height'], '</strong>' ); ?></div>
+                <div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-width hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
+                <div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-height hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
             </div><?php
         }
 
@@ -1237,7 +1241,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                                id="<?php echo WP_SMUSH_PREFIX . $name ; ?>" <?php checked( $setting_val, 1, true ); ?>
                                value="1"
                                name="<?php echo WP_SMUSH_PREFIX . $name; ?>" aria-describedby="<?php echo WP_SMUSH_PREFIX . $name . "-desc" ;?>">
-                        <label class="toggle-label <?php echo WP_SMUSH_PREFIX . $name ; ?>-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>"></label>
+                        <label class="toggle-label <?php echo WP_SMUSH_PREFIX . $name ; ?>-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>" aria-hidden="true"></label>
                     </span>
                     <div class="column-right-content">
                         <label class="inline-label" for="<?php echo WP_SMUSH_PREFIX . $name; ?>">

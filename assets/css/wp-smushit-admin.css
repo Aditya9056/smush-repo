@@ -917,6 +917,10 @@ Quick Setup Dialog
     padding: 30px;
 }
 
+.wpmud .dev-overlay.wp-smush-get-pro .box{
+    padding-bottom: 0;
+}
+
 .wpmud .dev-overlay.small.wp-smush-overlay .box:after {
     background: url(../images/smush-quicksetup.png) no-repeat 0 0;
     bottom: 0;
@@ -932,8 +936,14 @@ Quick Setup Dialog
 
 .wpmud .dev-overlay.small.wp-smush-get-pro .box:after {
     background: url(../images/dev-team.png) no-repeat 0 0;
+    background-position: center bottom;
+    background-size: 90%;
+    overflow: hidden;
+    bottom: 0;
+    content: '';
+    display: block;
     height: 176px;
-    width: 500px;
+    margin-top: 30px;
 }
 
 .wpmud .dev-overlay .box .title {
@@ -951,7 +961,7 @@ Quick Setup Dialog
 }
 
 .wpmud .wp-smush-get-pro.dev-overlay .box .content {
-    padding-bottom: 176px;
+    padding-bottom: 0;
 }
 
 .wpmud .wp-smush-welcome-message {
@@ -1224,13 +1234,15 @@ div.wp-smush-s3support-alert {
 
 div.wp-smush-s3support-alert span.notice-message {
     display: inline-block;
+    margin-right: 10px;
     max-width: 96%;
 }
 
-div.wp-smush-s3support-alert .icon-fi-cross-close {
+div.wp-smush-s3support-alert .icon-fi-close {
     cursor: pointer;
     float: right;
     line-height: 2;
+    margin-right: 0;
 }
 
 div.smush-s3-setup-error a {
@@ -2876,7 +2888,8 @@ button.wp-smush-all.wp-smush-button {
 }
 
 @media only screen and (max-width: 960px) {
-    .wpmud .dev-overlay.wp-smush-list-dialog {
+    .wpmud .dev-overlay.wp-smush-list-dialog,
+    .wpmud .dev-overlay.wp-smush-get-pro {
         left: 35px;
     }
 }
@@ -2898,7 +2911,8 @@ button.wp-smush-all.wp-smush-button {
 }
 
 @media only screen and (max-width: 782px) {
-    .wpmud .dev-overlay.wp-smush-list-dialog {
+    .wpmud .dev-overlay.wp-smush-list-dialog,
+    .wpmud .dev-overlay.wp-smush-get-pro {
         left: 0;
     }
 }

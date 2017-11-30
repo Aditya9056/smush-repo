@@ -738,11 +738,11 @@ jQuery(function ($) {
     var validate_resize_settings = function (wrapper_div, width_only, height_only) {
         var resize_checkbox = wrapper_div.parent().find('#wp-smush-resize, #wp-smush-resize-quick-setup');
         if (!height_only) {
-            var width_input = wrapper_div.find('#wp-smush-resize_width');
+            var width_input = wrapper_div.find('#wp-smush-resize_width, #quick-setup-resize_width');
             var width_error_note = wrapper_div.find('.wp-smush-size-info.wp-smush-update-width');
         }
         if (!width_only) {
-            var height_input = wrapper_div.find('#wp-smush-resize_height');
+            var height_input = wrapper_div.find('#wp-smush-resize_height, #quick-setup-resize_height');
             var height_error_note = wrapper_div.find('.wp-smush-size-info.wp-smush-update-height');
         }
 
@@ -1978,7 +1978,7 @@ jQuery(function ($) {
         e.preventDefault();
 
         //Enable Super Smush
-        $('#wp-smush-lossy').prop('checked', true);
+        $('#wp-smush-lossy').prop('checked', true).focus();
         goToByScroll(".wp-smush-lossy-label");
     });
 
@@ -1987,7 +1987,7 @@ jQuery(function ($) {
         e.preventDefault();
 
         //Enable Resize, Show resize settings
-        $('#wp-smush-resize').prop('checked', true);
+        $('#wp-smush-resize').prop('checked', true).focus();
         $('div.wp-smush-resize-settings-wrap').show();
 
         //Scroll down to settings area

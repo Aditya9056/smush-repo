@@ -987,15 +987,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$percent        = isset( $combined_stats['stats']['percent'] ) ? $combined_stats['stats']['percent'] : 0;
 				$percent        = $percent < 0 ? 0 : $percent;
 
-				if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
-					$status_txt  = __( 'Already Optimized', 'wp-smushit' );
+				//Show resmush link, if the settings were changed
+				$show_resmush = $this->show_resmush( $id, $wp_smush_data );
+
+				if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
+					$status_txt = __( 'Already Optimized', 'wp-smushit' );
+					if ( $show_resmush ) {
+						$status_txt .= '<br />' . $this->get_resmsuh_link( $id );
+					}
 					$show_button = false;
 				} else {
 					if ( $bytes == 0 || $percent == 0 ) {
 						$status_txt = __( 'Already Optimized', 'wp-smushit' );
 
-						//Show resmush link, if the settings were changed
-						$show_resmush = $this->show_resmush( $id, $wp_smush_data );
 						if ( $show_resmush ) {
 							$status_txt .= '<br />' . $this->get_resmsuh_link( $id );
 						}
@@ -1878,6 +1882,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return bool
 		 */
 		function show_resmush( $id = '', $wp_smush_data ) {
+			global $wpsmush_resize;
 			//Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
 			//Or: If keep exif is unchecked and the smushed image have exif
 			//PNG To JPEG
@@ -1886,6 +1891,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
 					return true;
 				}
+			}
+
+			//If image needs to be resized
+			if( $wpsmush_resize->should_resize( $id ) ) {
+				return true;
 			}
 
 			//EXIF Check
@@ -2086,11 +2096,22 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $smush_stats;
 			}
 
+			//Initialize key full if not there already
+			if( !isset( $smush_stats['sizes']['full'] ) ) {
+				$smush_stats['sizes']['full'] = new stdClass();
+				$smush_stats['sizes']['full']->bytes = 0;
+				$smush_stats['sizes']['full']->size_before = 0;
+				$smush_stats['sizes']['full']->size_after = 0;
+				$smush_stats['sizes']['full']->percent = 0;
+			}
+
 			//Full Image
 			if ( ! empty( $smush_stats['sizes']['full'] ) ) {
 				$smush_stats['sizes']['full']->bytes       = ! empty( $resize_savings['bytes'] ) ? $smush_stats['sizes']['full']->bytes + $resize_savings['bytes'] : $smush_stats['sizes']['full']->bytes;
 				$smush_stats['sizes']['full']->size_before = ! empty( $resize_savings['size_before'] ) && ( $resize_savings['size_before'] > $smush_stats['sizes']['full']->size_before ) ? $resize_savings['size_before'] : $smush_stats['sizes']['full']->size_before;
 				$smush_stats['sizes']['full']->percent     = ! empty( $smush_stats['sizes']['full']->bytes ) && $smush_stats['sizes']['full']->size_before > 0 ? ( $smush_stats['sizes']['full']->bytes / $smush_stats['sizes']['full']->size_before ) * 100 : $smush_stats['sizes']['full']->percent;
+
+				$smush_stats['sizes']['full']->size_after = $smush_stats['sizes']['full']->size_before - $smush_stats['sizes']['full']->bytes;
 
 				$smush_stats['sizes']['full']->percent = round( $smush_stats['sizes']['full']->percent, 1 );
 			}
@@ -2113,6 +2134,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return $stats;
 			}
 			foreach ( $conversion_savings as $size_k => $savings ) {
+
+				//Initialize Object for size
+				if ( empty( $stats['sizes'][ $size_k ] ) ) {
+					$stats['sizes'][ $size_k ]              = new stdClass();
+					$stats['sizes'][ $size_k ]->bytes       = 0;
+					$stats['sizes'][ $size_k ]->size_before = 0;
+					$stats['sizes'][ $size_k ]->size_after  = 0;
+					$stats['sizes'][ $size_k ]->percent     = 0;
+				}
+
 				if ( ! empty( $stats['sizes'][ $size_k ] ) && ! empty( $savings ) ) {
 					$stats['sizes'][ $size_k ]->bytes       = $stats['sizes'][ $size_k ]->bytes + $savings['bytes'];
 					$stats['sizes'][ $size_k ]->size_before = $stats['sizes'][ $size_k ]->size_before > $savings['size_before'] ? $stats['sizes'][ $size_k ]->size_before : $savings['size_before'];
