@@ -182,7 +182,7 @@ if ( is_admin() ) {
 			'wdev-email-message-' . plugin_basename( __FILE__ ),
 			'wp_smush_email_message'
 		);
-	} elseif ( strpos( $dir_path, 'wp-smush-pro' ) !== false ) {
+	} elseif ( strpos( $dir_path, 'wp-smush-pro' ) !== false && file_exists( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' ) ) {
 
 		//Only for WPMU DEV Members
 		require_once( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' );
