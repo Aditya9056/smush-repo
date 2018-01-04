@@ -530,6 +530,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 					'message' => esc_html__( "Error in processing restore action, Fields empty.", "wp-smushit" )
 				) );
 			}
+
 			//Check Nonce
 			if ( ! wp_verify_nonce( $_POST['_nonce'], "wp-smush-restore-" . $_POST['attachment_id'] ) ) {
 				wp_send_json_error( array(

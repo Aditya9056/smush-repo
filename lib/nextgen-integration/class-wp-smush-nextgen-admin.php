@@ -644,7 +644,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$smush_stats    = ! empty( $metadata['wp_smush'] ) ? $metadata['wp_smush'] : '';
 			$resize_savings = ! empty( $metadata['wp_smush_resize_savings'] ) ? $metadata['wp_smush_resize_savings'] : '';
 
-			if ( empty( $resize_savings ) ) {
+			if ( empty( $resize_savings ) || empty( $smush_stats ) ) {
 				return $metadata;
 			}
 

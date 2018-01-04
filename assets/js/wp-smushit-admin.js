@@ -694,10 +694,16 @@ jQuery(function ($) {
         //Hide stats
         $('.smush-stats-wrapper').hide();
 
+        var mode = '';
+        if( 'smush_restore_image' == smush_action ) {
+            mode = window.location.search.indexOf('item') > -1 ? 'grid' : 'list';
+        }
+
         //Get the image ID and nonce
         var params = {
             action: smush_action,
             attachment_id: current_button.data('id'),
+            mode: mode,
             _nonce: current_button.data('nonce')
         };
 

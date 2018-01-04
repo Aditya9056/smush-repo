@@ -1162,8 +1162,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 				}
 			}
+			$mode_class = ! empty( $_POST['mode'] ) && 'grid' == $_POST['mode'] ? ' button-primary' : '';
 			if ( ! $echo ) {
-				$button_class = $wrapper ? 'button button-primary wp-smush-send' : 'button wp-smush-send';
+				$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button wp-smush-send';
 				$html .= '
 				<button  class="' . $button_class . '" data-id="' . $id . '">
 	                <span>' . $button_txt . '</span>
@@ -1179,7 +1180,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				return $html;
 			} else {
-				$html .= '<button class="button wp-smush-send" data-id="' . $id . '">
+				$html .= '<button class="button wp-smush-send' . $mode_class . '" data-id="' . $id . '">
                     <span>' . $button_txt . '</span>
 				</button>';
 				$html = $html . $this->progress_bar();
