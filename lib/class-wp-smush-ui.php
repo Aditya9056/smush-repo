@@ -1292,7 +1292,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					),
 					$wpsmushit_admin->upgrade_url
 				);?>
-			<dialog id="smush-pro-features" title="<?php esc_html_e( "GET SMUSH PRO", "wp-smushit" ); ?>" class="wp-smush-get-pro small">
+			<dialog id="smush-pro-features" title='<?php esc_html_e( "GET SMUSH PRO", "wp-smushit" ); ?><a href="<?php echo $upgrade_url; ?>" class="smush-pro-link button button-small button-cta button-green" target="_blank"><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a>' class="wp-smush-get-pro small">
 				<p class="smush-pro-features-message end"><?php esc_html_e( 'Here’s what you’ll get by uprading to Smush Pro.', "wp-smushit" ); ?></p>
 				<ul class="smush-pro-features">
 				    <li class="smush-pro-feature-row">
@@ -1321,7 +1321,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				        <div class="smush-pro-feature-desc"><?php esc_html_e("Using the NextGen Gallery plugin? The Pro version allows you to compress images directly through NextGen Gallery’s settings.", "wp-smushit"); ?></div>
 				    </li>
 				</ul>
-				<p class="smush-pro-upsell-text"><?php esc_html_e("Get all of this, plus heaps more as a part of a WPMU DEV membership.", "wp-smushit"); ?></p>
+				<p class="smush-pro-upsell-text"><?php esc_html_e("Get all of this including 200% faster smushing, Amazon S3 support and heaps more as part of a WPMU DEV membership.", "wp-smushit"); ?></p>
 				<div class="smush-pro-link-wrap"><a href="<?php echo $upgrade_url; ?>" class="smush-pro-link button button-cta button-green" target="_blank"><?php esc_html_e("LEARN MORE", "wp-smushit"); ?></a></div>
 			</dialog><?php
         }

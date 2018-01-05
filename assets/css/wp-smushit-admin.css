@@ -921,6 +921,20 @@ Quick Setup Dialog
     padding-bottom: 0;
 }
 
+.wpmud div.wp-smush-get-pro .title .button.smush-pro-link {
+    padding: 7px 16px;
+    font-size: 12px;
+    line-height: 16px;
+    font-family: "Roboto", sans-serif;
+    letter-spacing: -0.1px;
+    float: right;
+    margin-right: 26px;
+}
+
+.wpmud div.wp-smush-get-pro.dev-overlay .title div.close {
+    top: -2px;
+}
+
 .wpmud .dev-overlay.small.wp-smush-overlay .box:after {
     background: url(../images/smush-quicksetup.png) no-repeat 0 0;
     bottom: 0;
