@@ -1860,6 +1860,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$image_sizes = get_intermediate_image_sizes();
 
+			//If image sizes are filtered and no image size list is returned
+			if( empty( $image_sizes ) ) {
+				return array(
+					'width'  => $width,
+					'height' => $height
+				);
+            }
 			// Create the full array with sizes and crop info
 			foreach ( $image_sizes as $size ) {
 				if ( in_array( $size, array( 'thumbnail', 'medium', 'medium_large', 'large' ) ) ) {
@@ -2039,6 +2046,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$additional_sizes = get_intermediate_image_sizes();
 			$sizes = array();
 
+			if ( empty( $additional_sizes ) ) {
+				return $sizes;
+			}
+
 			// Create the full array with sizes and crop info
 			foreach( $additional_sizes as $_size ) {
 				if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ) ) ) {
@@ -2178,6 +2189,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Update Resize width and height settings if set
 			$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0;
 			$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0;
+
+			//@todo: Improve the hardcoded 500 value
+			$resize_sizes['width'] =  $resize_sizes['width'] > 0 && $resize_sizes['width'] < 500 ? 500 : $resize_sizes['width'];
+			$resize_sizes['height'] =  $resize_sizes['height'] > 0 && $resize_sizes['height'] < 500 ? 500 : $resize_sizes['height'];
 
 			// update the resize sizes
 			$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
