@@ -2694,6 +2694,7 @@ li.wp-smush-image-ele.error .wp-smush-image-ele-status:after {
     color: #ffd000;
     content: '\f06a';
     font-family: 'FontAwesomeWdv';
+    margin-top: -10px;
 }
 
 div.wp-smush-dir-notice {

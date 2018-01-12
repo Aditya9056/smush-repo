@@ -909,6 +909,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					//Mark Smush plugin images optimised
 					if ( false !== $wpsmush_helper->strposa( $image_path, $plugin_path ) ) {
 						$wrapper_class = 'complete';
+						//Show 100% progress bar for Smush
+						$optimised_count = $count;
 					}
 
 					$div .= "<li class='wp-smush-image-ul {$wrapper_class}'>";
