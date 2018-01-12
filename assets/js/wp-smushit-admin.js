@@ -395,7 +395,10 @@ jQuery(function ($) {
 
             //Show Bulk Wrapper and Smush Notice
             if (self.ids.length == 0) {
-                this.sync_stats();
+                //Sync stats for Bulk smush media Library ( Skip for Nextgen )
+                if ('nextgen' != this.smush_type) {
+                    this.sync_stats();
+                }
                 $('.bulk-smush-wrapper .wp-smush-all-done, .wp-smush-pagespeed-recommendation').show();
                 $('.wp-smush-bulk-wrapper').hide();
             }

@@ -2426,10 +2426,11 @@ span.wp-smush-li-path {
 
 li.wp-smush-image-ul span.wp-smush-li-path {
     background: url("../images/folder-closed.svg") no-repeat;
-    background-position-y: 3px;
-    line-height: 1.5;
-    padding: 4px 30px 3px;
-
+    background-position-y: 6px;
+    display: inline-block;
+    line-height: 2;
+    padding: 0 30px;
+    max-width: 87%;
 }
 
 li.wp-smush-image-ul.in-progress span.wp-smush-li-path {
@@ -2452,6 +2453,10 @@ li.wp-smush-image-ul li.wp-smush-image-ele.in-progress span.spinner {
     margin-right: 11px;
 }
 
+li.wp-smush-image-ul.in-progress span.spinner {
+    margin-top: 5px;
+}
+
 li.wp-smush-image-ul.complete span.wp-smush-li-path:before,
 li.wp-smush-image-ul.partial span.wp-smush-li-path:before {
     box-shadow: none;
@@ -2465,7 +2470,7 @@ li.wp-smush-image-ul.partial span.wp-smush-li-path:before {
     height: 22px;
     left: 0;
     line-height: 22px;
-    margin-top: -8px;
+    margin-top: -11px;
     opacity: 1;
     position: absolute;
     speak: none;
@@ -2489,8 +2494,9 @@ li.wp-smush-image-ul.partial span.wp-smush-li-path:before {
 .wp-smush-image-count {
     background: #f2f2f2;
     border-radius: 20px;
+    display: inline-block;
     margin-left: 10px;
-    padding: 5px 10px;
+    padding: 3px 10px;
     vertical-align: middle;
 }
 
@@ -2534,6 +2540,10 @@ div.wp-smush-scan-result hr.primary-separator {
 
 div.wp-smush-scan-result hr {
     margin: 20px 0;
+}
+
+div.wp-smush-scan-result li.wp-smush-image-ul hr {
+    margin: 17px 0;
 }
 
 div.wp-smush-scan-result div.content {
