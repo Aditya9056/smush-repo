@@ -605,7 +605,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Set a transient to avoid multiple request
 			set_transient( 'smush-in-progress-' . $ID, true, WP_SMUSH_TIMEOUT );
 
-			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_settings;
+			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_settings, $wpsmush_helper;
 
 			// While uploading from Mobile App or other sources, admin_init action may not fire.
 			// So we need to manually initialize those.
@@ -614,6 +614,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Check if auto is enabled
 			$auto_smush = $this->is_auto_smush_enabled();
+
+			//Get the file path for backup
+			$attachment_file_path = $wpsmush_helper->get_attached_file( $ID );
+
+			//Take Backup
+			global $wpsmush_backup;
+			$wpsmush_backup->create_backup( $attachment_file_path, '', $ID );
 
 			//Optionally Resize Images
 			$meta = $wpsmush_resize->auto_resize( $ID, $meta );

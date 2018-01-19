@@ -469,7 +469,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 					<div class="wp-smush-count-total">
 						<div class="wp-smush-smush-stats-wrapper">
-							<span class="wp-smush-total-optimised"><?php echo $this->image_count; ?></span>
+							<span class="wp-smush-total-optimised"><?php echo $smushed_count; ?></span>
 						</div>
 						<span class="total-stats-label"><?php esc_html_e( "Images smushed", "wp-smushit" ); ?></span>
 					</div>

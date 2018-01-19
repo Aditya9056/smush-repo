@@ -918,8 +918,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						$div .= "<hr/>";
 					}
 
-					$div .= "<span class='wp-smush-li-path'>{$image_path} <span class='wp-smush-image-count'>" . sprintf( esc_html__( "%d images", "wp-smushit" ), $count ) . "</span></span>";
-					$div .= $this->progress_ui( $count, $optimised_count, $image_path );
+					$div .= "<div class='image-list-wrapper'><span class='wp-smush-li-path'>{$image_path} <span class='wp-smush-image-count'>" . sprintf( esc_html__( "%d images", "wp-smushit" ), $count ) . "</span></span>";
+					$div .= $this->progress_ui( $count, $optimised_count, $image_path ) . '</div>';
 					$div .= "<ul class='wp-smush-image-list-inner' tabindex='0'>";
 					foreach ( $image as $item ) {
 						//Check if the image is already in optimised list

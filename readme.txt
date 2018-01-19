@@ -1,6 +1,6 @@
 === Smush Image Compression and Optimization ===
 Plugin Name: Smush Image Compression and Optimization
-Version: 2.7.7
+Version: 2.7.7-beta3
 Author: WPMU DEV
 Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
@@ -160,6 +160,8 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Show updated smush status in Media Grid attachment modal
     * Font issue in WordPress backend for Ubuntu systems
     * Fatal Error: get_current_network
+    * Async Smush not working for subdirectory sites
+    * File backups were not being created for Auto Smush if Async smush is disabled
 
 = 2.7.6 =
 

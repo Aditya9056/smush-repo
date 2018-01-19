@@ -1035,7 +1035,7 @@ jQuery(function ($) {
 
         for (i = 0; i < acc.length; i++) {
             acc[i].onclick = function () {
-                var parent = $(this).parent();
+                var parent = $(this).parents().eq(1);
                 if (parent.hasClass('active')) {
                     parent.removeClass('active');
                     parent.find('.wp-smush-image-list-inner').removeClass("show");
@@ -1085,6 +1085,7 @@ jQuery(function ($) {
         var total = child.length;
         var smushed = child.filter('.optimised').length;
         var smush_progress = progress_wrap.find('.wp-smush-dir-progress');
+        progress_wrap.removeClass('hidden');
         if (smushed > 0 && total > 0) {
             var percent = ( smushed / total ) * 100;
             percent = precise_round(percent, 1);
