@@ -193,7 +193,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 			$limit  = $wpsmushit_admin->query_limit();
 
 			$mime  = implode( "', '", $wpsmushit_admin->mime_types );
-			$query = "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status != 'trash' AND post_mime_type IN ('$mime') ORDER BY `ID` DESC LIMIT %d, %d";
+			$query = "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_mime_type IN ('$mime') ORDER BY `ID` DESC LIMIT %d, %d";
 			//Remove the Filters added by WP Media Folder
 			$this->remove_filters();
 
