@@ -149,6 +149,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Network Settings Page
 			add_action( 'network_admin_menu', array( $this, 'screen' ) );
 
+			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
+
 			//Handle Smush Bulk Ajax
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
 
@@ -359,7 +361,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				/** @var $pages List of screens where script needs to be loaded */
 
 				//Do not enqueue, unless it is one of the required screen
-				if ( ! $enqueue_smush || ! in_array( $current_page, $this->pages ) ) {
+				if ( ! $enqueue_smush || ( ! in_array( $current_page, $this->pages ) && ! did_action( 'wp_enqueue_media' ) ) ) {
 
 					return;
 				}

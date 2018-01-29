@@ -549,6 +549,9 @@ label.setting.smush-stats span.value,
 
 label.setting.smush-stats button {
     box-shadow: none;
+    padding: 0 10px 1px;
+    line-height: 26px;
+    text-transform: none;
 }
 
 label.setting.smush-stats button.wp-smush-send span {
@@ -558,7 +561,7 @@ label.setting.smush-stats button.wp-smush-send span {
 }
 
 .media-modal .media-sidebar label.setting.smush-stats button.wp-smush-send span {
-    padding-top: 0;
+    /*padding-top: 0;*/
 }
 
 label.setting.smush-stats button.wp-smush-send[disabled] span {
