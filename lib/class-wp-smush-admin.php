@@ -149,7 +149,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Network Settings Page
 			add_action( 'network_admin_menu', array( $this, 'screen' ) );
 
-			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
+//			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
 
 			//Handle Smush Bulk Ajax
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
