@@ -361,7 +361,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				/** @var $pages List of screens where script needs to be loaded */
 
 				//Do not enqueue, unless it is one of the required screen
-				if ( ! $enqueue_smush || ( ! in_array( $current_page, $this->pages ) && ! did_action( 'wp_enqueue_media' ) ) ) {
+				if ( ! $enqueue_smush || ! in_array( $current_page, $this->pages ) ) {
 
 					return;
 				}
