@@ -2281,28 +2281,21 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function get_stats() {
-			if ( ! empty( $_GET['type'] ) && 'nextgen' == $_GET['type'] ) {
-				global $wpsmushnextgenstats, $wpsmushnextgenadmin;
-				$stats                 = $wpsmushnextgenstats->get_smush_stats();
-				$stats['count_images'] = $wpsmushnextgenadmin->smushed_count;
-
-			} else {
-				if ( empty( $this->stats ) ) {
-					$this->setup_global_stats( true );
-				}
-				$stats = array(
-					'count_images'       => ! empty( $this->stats ) && isset( $this->stats['total_images'] ) ? $this->stats['total_images'] : 0,
-					'count_resize'       => ! empty( $this->stats ) && isset( $this->stats['resize_count'] ) ? $this->stats['resize_count'] : 0,
-					'count_smushed'      => $this->smushed_count,
-					'count_supersmushed' => $this->super_smushed,
-					'count_total'        => $this->total_count,
-					'savings_bytes'      => ! empty( $this->stats ) && isset( $this->stats['bytes'] ) ? $this->stats['bytes'] : 0,
-					'savings_conversion' => ! empty( $this->stats ) && isset( $this->stats['conversion_savings'] ) ? $this->stats['conversion_savings'] : 0,
-					'savings_resize'     => ! empty( $this->stats ) && isset( $this->stats['resize_savings'] ) ? $this->stats['resize_savings'] : 0,
-					'size_before'        => ! empty( $this->stats ) && isset( $this->stats['size_before'] ) ? $this->stats['size_before'] : 0,
-					'size_after'         => ! empty( $this->stats ) && isset( $this->stats['size_after'] ) ? $this->stats['size_after'] : 0,
-				);
+			if ( empty( $this->stats ) ) {
+				$this->setup_global_stats(true);
 			}
+			$stats = array(
+				'count_images'       => ! empty( $this->stats ) && isset( $this->stats['total_images'] ) ? $this->stats['total_images'] : 0,
+				'count_resize'       => ! empty( $this->stats ) && isset( $this->stats['resize_count'] ) ? $this->stats['resize_count'] : 0,
+				'count_smushed'      => $this->smushed_count,
+				'count_supersmushed' => $this->super_smushed,
+				'count_total'        => $this->total_count,
+				'savings_bytes'      => ! empty( $this->stats ) && isset( $this->stats['bytes'] ) ? $this->stats['bytes'] : 0,
+				'savings_conversion' => ! empty( $this->stats ) && isset( $this->stats['conversion_savings'] ) ? $this->stats['conversion_savings'] : 0,
+				'savings_resize'     => ! empty( $this->stats ) && isset( $this->stats['resize_savings'] ) ? $this->stats['resize_savings'] : 0,
+				'size_before'        => ! empty( $this->stats ) && isset( $this->stats['size_before'] ) ? $this->stats['size_before'] : 0,
+				'size_after'         => ! empty( $this->stats ) && isset( $this->stats['size_after'] ) ? $this->stats['size_after'] : 0,
+			);
 			wp_send_json_success( $stats );
 		}
 	}
