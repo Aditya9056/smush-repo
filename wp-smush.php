@@ -15,7 +15,7 @@ http://dialect.ca/
 */
 
 /*
-Copyright 2007-2016 Incsub (http://incsub.com)
+Copyright 2007-2018 Incsub (http://incsub.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
