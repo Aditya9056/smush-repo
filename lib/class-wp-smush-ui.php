@@ -645,69 +645,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$this->settings_ui();
 				}
 
-				do_action('smush_settings_ui_bottom');
-
-				//Validate Membership
-				if( !$wpsmushit_admin->validate_install() ) {?>
-					<div class="wp-smush-pro-for-free wp-smushit-container-left col-half float-l"><?php
-						$this->wp_smush_promo();?>
-					</div>
-					<div class="wp-smushit-container-left col-half float-l"><?php
-						$this->wp_smush_hummingbird_promo(); ?>
-					</div><?php
-				} ?>
+				do_action('smush_settings_ui_bottom'); ?>
 			</div><?php
 			$this->smush_page_footer();
-		}
-
-		/**
-		 * Pro Version
-		 */
-		function wp_smush_promo() {
-			global $wpsmushit_admin;
-			$this->container_header( 'wp-smush-pro-adv', 'wp-smush-pro-promo', "READY TO LEVEL UP YOUR WEB DEVELOPMENT?" );
-			$upgrade_url = add_query_arg(
-				array(
-				'utm_source' => 'Smush-Free',
-				'utm_medium' => 'Banner',
-				'utm_campaign' => 'settings-sidebar'
-				),
-				$wpsmushit_admin->upgrade_url
-			);
-			?>
-			<div class="box-content">
-				<p class="wp-smush-promo-content wp-smush-promo-content-2 roboto">Create amazing websites, automate your workflow, and run your business like a well-oiled machine.
-				Get access to the tools that will win you more clients and help you spend less time working.
-				Start a free WPMU DEV trial today.</p>
-				<span class="wp-smush-pro-cta tc">
-					<a href="#smush-pro-features" class="button button-cta button-green get-smush-pro-cta" rel="dialog" target="_blank"><?php esc_html_e("GET STARTED", "wp-smushit"); ?></a>
-				</span>
-			</div><?php
-			echo "</section>";
-		}
-
-		/**
-		 * HummingBird Promo
-		 */
-		function wp_smush_hummingbird_promo() {
-			//Plugin Already Installed
-			if ( class_exists( 'WP_Hummingbird' ) ) {
-				return;
-			}
-			$this->container_header( 'wp-smush-hb-adv', 'wp-smush-hb-promo', "OH YEAH, SMUSHING ON STEROIDS!" ); ?>
-			<div class="box-content">
-			<span class="wp-smush-hummingbird-image tc">
-					<img src="<?php echo WP_SMUSH_URL . 'assets/images/hummingbird.png'; ?>"
-					     alt="<?php esc_html_e( "BOOST YOUR PERFORMANCE - HUMMINGBIRD", "wp-smushit" ); ?>">
-	        </span>
-			<p class="wp-smush-promo-content tc roboto">Hummingbird goes beyond Smush compression with
-				minification, caching, performance monitoring and more - every millisecond counts!</p>
-			<span class="wp-smush-hb-cta tc roboto-medium">
-				<a href="<?php echo esc_url( "https://premium.wpmudev.org/project/wp-hummingbird/" ); ?>"
-				   class="button button-cta" target="_blank">TRY HUMMINGBIRD FOR FREE</a>
-			</span>
-			</div><?php
-			echo "</section>";
 		}
 
 		/**

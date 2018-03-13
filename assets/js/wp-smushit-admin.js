@@ -41,17 +41,6 @@ var membership_validity = function (data) {
         }
     }
 };
-/**
- * Resize Background width
- */
-var resize_width = function () {
-    var width = jQuery('.wp-smush-pro-for-free').width();
-    if ('undefined' != typeof ( width ) && 500 < width) {
-        jQuery('.wpmud .wp-smush-pro-adv').css({'background-size': '500px'});
-    } else {
-        jQuery('.wpmud .wp-smush-pro-adv').css({'background-size': '90%'});
-    }
-};
 
 var remove_element = function (el, timeout) {
     if (typeof timeout == 'undefined') {
@@ -2112,15 +2101,6 @@ jQuery(function ($) {
         return false;
     });
 
-    //Adjust background image size if required
-    if ($('.wp-smush-pro-for-free').length) {
-        //On Page load
-        resize_width();
-        //Adjust background image
-        $(window).resize(function () {
-            resize_width();
-        });
-    }
     //Handle Re-check button functionality
     $("#wp-smush-revalidate-member").on('click', function (e) {
         e.preventDefault();
@@ -2353,7 +2333,7 @@ jQuery(function ($) {
         e.preventDefault();
 
         var self = $(this);
-        var parent = self.parent();
+        var parent = self.parents().eq(1);
 
         //Hide the link
         self.hide();
@@ -2384,6 +2364,12 @@ jQuery(function ($) {
                     parent.siblings('li.wp-smush-image-ul:first').prepend('<hr />');
                 }
                 parent.remove();
+
+                //Remove the bottom bulk smsuh button if there are no more directories left in scan results
+                if( 0 == $('ul.wp-smush-image-list li').length ) {
+                    $('div.wp-smush-all-button-wrap.bottom').hide();
+                    $('div.wp-smush-scan-result').hide();
+                }
             }
         });
     });

@@ -34,7 +34,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			add_action( 'wp_smush_before_advanced_settings', array( $this, 'ui' ) );
 
 			//Hook UI at the end of Settings UI
-			add_action( 'smush_settings_ui_bottom', array( $this, 'ui' ) );
+			add_action( 'smush_settings_ui_bottom', array( $this, 'ui' ), 11 );
 
 			//Output Stats after Resize savings
 			add_action( 'stats_ui_after_resize_savings', array( $this, 'stats_ui' ) );
