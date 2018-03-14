@@ -2228,11 +2228,8 @@ div.wp-smush-dir-desc {
     vertical-align: top;
 }
 
-.jqueryFileTree li {
-    display: inline-block;
-}
-
 .wpmud UL.jqueryFileTree LI {
+    display: inline-block;
     padding: 0 0 5px 20px;
 }
 
