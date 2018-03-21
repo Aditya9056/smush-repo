@@ -2735,7 +2735,8 @@ button.wp-smush-all.wp-smush-button {
 WordPress.org Recommendation Styling
  */
 section.smush-recommendation-section {
-    margin: 30px 0;
+    margin: 30px auto;
+    max-width: 980px;
 }
 
 div.smush-recommender-separator {
@@ -2863,7 +2864,7 @@ div.smush-plugin-description {
     font-family: "Roboto", 'sans-serif';
     font-size: 13px;
     line-height: 22px;
-    padding-left: 15px;
+    padding: 0 30px;
 }
 
 a.smush-plugin-link {

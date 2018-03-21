@@ -53,7 +53,7 @@ if ( ! function_exists( 'deactivate_smush_org' ) ) {
 /**
  * Set the default timeout for API request and AJAX timeout
  */
-$timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 90 );
+$timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 );
 
 // To support smushing on staging sites like SiteGround staging where
 // staging site urls are different but redirects to main site url.
@@ -194,7 +194,7 @@ if ( is_admin() ) {
 			'name'    => 'WP Smush Pro',
 			'screens' => array(
 				'upload',
-				'media_page_wp-smush-bulk'
+				'toplevel_page_smush'
 			)
 		);
 	}

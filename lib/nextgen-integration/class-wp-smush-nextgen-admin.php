@@ -418,7 +418,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					$url = admin_url( 'upload.php' );
 					$url = add_query_arg(
 						array(
-							'page'  => 'wp-smush-bulk#wp-smush-settings-box'
+							'page'  => 'smush#wp-smush-settings-box'
 						),
 						$url
 					); ?>

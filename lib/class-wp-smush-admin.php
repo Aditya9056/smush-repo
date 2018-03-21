@@ -116,16 +116,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			'post',
 			'post-new',
 			'upload',
-			'settings_page_wp-smush-network',
-			'media_page_wp-smush-bulk',
-			'media_page_wp-smush-all'
+			'toplevel_page_smush-network',
+			'toplevel_page_smush',
 		);
 
 		public $plugin_pages = array(
 			'gallery_page_wp-smush-nextgen-bulk',
-			'settings_page_wp-smush-network',
-			'media_page_wp-smush-bulk',
-			'media_page_wp-smush-all'
+			'toplevel_page_smush-network',
+			'toplevel_page_smush'
 		);
 
 		public $basic_features = array(
@@ -288,22 +286,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Add Bulk option settings page
 		 */
 		function screen() {
-			global $admin_page_suffix, $wpsmush_bulkui;
+			global $wpsmush_bulkui;
 
-			//Bulk Smush Page for each site
-			$admin_page_suffix = add_media_page( 'Bulk WP Smush', 'WP Smush', 'edit_others_posts', 'wp-smush-bulk', array(
+			$cap        = is_multisite() ? 'manage_network_options' : 'manage_options';
+			$title = $this->validate_install() ? esc_html__( "Smush Pro", "wp-smushit" ) : esc_html__( "Smush", "wp-smushit" );
+			add_menu_page( $title, $title, $cap, 'smush', array(
 				$wpsmush_bulkui,
 				'ui'
-			) );
-
-			//Network Settings Page
-			$page = 'settings.php';
-			$cap  = 'manage_network_options';
-
-			add_submenu_page( $page, 'WP Smush', 'WP Smush', $cap, 'wp-smush', array(
-				$wpsmush_bulkui,
-				'ui'
-			) );
+			), $this->get_menu_icon() );
 
 			//For Nextgen gallery Pages, check later in enqueue function
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
@@ -371,7 +361,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
 			//Load on Smush all page only
-			if ( 'media_page_wp-smush-bulk' == $current_page ) {
+			if ( 'toplevel_page_smush' == $current_page ) {
 				//Load Jquery tree on specified page
 				wp_enqueue_script( 'jqft-js' );
 				wp_enqueue_style( 'jqft-css' );
@@ -415,7 +405,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
 			//Load the stats on selected screens only
-			if ( $current_page == 'media_page_wp-smush-bulk' ) {
+			if ( $current_page == 'toplevel_page_smush' ) {
 
 				//Get resmush list, If we have a resmush list already, localize those ids
 				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
@@ -1177,7 +1167,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function settings_link( $links, $url_only = false ) {
 
-			$settings_page = is_multisite() ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
+			$settings_page = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
 			$settings      = '<a href="' . $settings_page . '">' . __( 'Settings', 'wp-smushit' ) . '</a>';
 
 			//Return Only settings page link
@@ -1203,17 +1193,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Return, If a pro user, or not super admin, or don't have the admin privilleges
 			if ( $this->validate_install() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
-				return;
+				return false;
 			}
 
 			//No need to show it on bulk smush
-			if ( isset( $_GET['page'] ) && 'wp-smush-bulk' == $_GET['page'] ) {
-				return;
+			if ( isset( $_GET['page'] ) && 'smush' == $_GET['page'] ) {
+				return false;
 			}
 
 			//Return if notice is already dismissed
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
-				return;
+				return false;
 			}
 
 			$install_type = get_site_option( 'wp-smush-install-type', false );
@@ -1982,7 +1972,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Do not display the notice on Bulk Smush Screen
 			global $current_screen;
-			if ( ! empty( $current_screen->base ) && ( 'media_page_wp-smush-bulk' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base || 'settings_page_wp-smush-network' == $current_screen->base ) ) {
+			if ( ! empty( $current_screen->base ) && ( 'toplevel_page_smush' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base || 'toplevel_page_smush-network' == $current_screen->base ) ) {
 				return true;
 			}
 
@@ -1994,7 +1984,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				),
 				$this->upgrade_url
 			);
-			$settings_link = is_multisite() ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
+			$settings_link = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
 
 			$settings_link = '<a href="' . $settings_link . '" title="' . esc_html__( "Review your setting now.", "wp-smushit" ) . '">';
 			$upgrade_link  = '<a href="' . esc_url( $upgrade_url ) . '" title="' . esc_html__( "WP Smush Pro", "wp-smushit" ) . '">';
@@ -2297,6 +2287,31 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'size_after'         => ! empty( $this->stats ) && isset( $this->stats['size_after'] ) ? $this->stats['size_after'] : 0,
 			);
 			wp_send_json_success( $stats );
+		}
+
+		/**
+		 * Smush icon svg image
+		 * @return string
+         *
+		 */
+		private function get_menu_icon() {
+			ob_start();
+			?>
+            <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <!-- Generator: Sketch 49.1 (51147) - http://www.bohemiancoding.com/sketch -->
+                <title>icon-smush</title>
+                <desc>Created with Sketch.</desc>
+                <defs></defs>
+                <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="WP-/-Menu---Free" transform="translate(-12.000000, -428.000000)" fill="#FFFFFF;">
+                        <path d="M26.9310561,432.026782 C27.2629305,432.598346 27.5228884,433.217017 27.7109375,433.882812 C27.9036468,434.565108 28,435.27083 28,436 C28,437.104172 27.7916687,438.14062 27.375,439.109375 C26.9479145,440.07813 26.3750036,440.924476 25.65625,441.648438 C24.9374964,442.372399 24.0937548,442.942706 23.125,443.359375 C22.1562452,443.78646 21.1197972,444 20.015625,444 L26.9310562,432.026782 L26.9310561,432.026782 Z M26.9310561,432.026782 C26.9228316,432.012617 26.9145629,431.998482 26.90625,431.984375 L26.9375,432.015625 L26.9310562,432.026782 L26.9310561,432.026782 Z M16.625,433.171875 L23.375,433.171875 L20,439.03125 L16.625,433.171875 Z M14.046875,430.671875 L14.046875,430.65625 C14.4114602,430.249998 14.8177061,429.88021 15.265625,429.546875 C15.7031272,429.223957 16.1744766,428.945314 16.6796875,428.710938 C17.1848984,428.476561 17.7187472,428.296876 18.28125,428.171875 C18.8333361,428.046874 19.406247,427.984375 20,427.984375 C20.593753,427.984375 21.1666639,428.046874 21.71875,428.171875 C22.2812528,428.296876 22.8151016,428.476561 23.3203125,428.710938 C23.8255234,428.945314 24.3020811,429.223957 24.75,429.546875 C25.1875022,429.88021 25.5937481,430.255206 25.96875,430.671875 L14.046875,430.671875 Z M13.0625,432.03125 L19.984375,444 C18.8802028,444 17.8437548,443.78646 16.875,443.359375 C15.9062452,442.942706 15.0625036,442.372399 14.34375,441.648438 C13.6249964,440.924476 13.0572937,440.07813 12.640625,439.109375 C12.2239563,438.14062 12.015625,437.104172 12.015625,436 C12.015625,435.27083 12.1067699,434.567712 12.2890625,433.890625 C12.4713551,433.213538 12.729165,432.593753 13.0625,432.03125 Z" id="icon-smush"></path>
+                    </g>
+                </g>
+            </svg>
+			<?php
+			$svg = ob_get_clean();
+
+			return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 		}
 	}
 

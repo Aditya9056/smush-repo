@@ -155,7 +155,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			// Do not display the notice on Bulk Smush Screen.
 			global $current_screen;
-			if ( ! empty( $current_screen->base ) && 'media_page_wp-smush-bulk' != $current_screen->base && 'gallery_page_wp-smush-nextgen-bulk' != $current_screen->base && 'settings_page_wp-smush-network' != $current_screen->base ) {
+			if ( ! empty( $current_screen->base ) && 'toplevel_page_smush' != $current_screen->base && 'gallery_page_wp-smush-nextgen-bulk' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base ) {
 				return true;
 			}
 
@@ -171,7 +171,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			wp_enqueue_script( 'wp-smushit-notice-js' );
 			// Settings link.
-			$settings_link = is_multisite() && $wpsmush_settings->settings['networkwide'] ? network_admin_url( 'settings.php?page=wp-smush' ) : admin_url( 'upload.php?page=wp-smush-bulk' );
+			$settings_link = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
 
 			if ( $wpsmushit_admin->validate_install() ) {
 				// If premium user, but S3 support is not enabled.

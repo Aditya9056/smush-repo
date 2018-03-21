@@ -703,6 +703,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$result  = wp_remote_post( $api_url, $args );
 
 			unset( $file_data );//free memory
+			error_log( print_r( wp_remote_retrieve_response_message( $result ), true ) );
 			if ( is_wp_error( $result ) ) {
 
 				$er_msg = $result->get_error_message();

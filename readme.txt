@@ -161,7 +161,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 * Fixed:
     * Conflict with plugin Download Manager, Embed any document
-    * 
+    *
 
 = 2.7.8 =
 
