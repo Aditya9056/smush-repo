@@ -1,0 +1,10 @@
+# Ignore hidden files and directories
+.DS_Store
+.idea
+
+# Ignore system files
+composer.lock
+npm-debug.log
+
+# Ignore build directories and tmp folders
+node_modules
