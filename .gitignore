@@ -1,6 +1,7 @@
 # Ignore hidden files and directories
 .DS_Store
 .idea
+.svn
 
 # Ignore system files
 composer.lock

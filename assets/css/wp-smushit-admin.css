@@ -2734,162 +2734,28 @@ button.wp-smush-all.wp-smush-button {
 /**
 WordPress.org Recommendation Styling
  */
-section.smush-recommendation-section {
-    margin: 30px auto;
-    max-width: 980px;
-}
-
-div.smush-recommender-separator {
-    display: flex;
-    justify-content: space-between;
-    margin: 30px 0 28px;
-    text-align: center;
-}
-
-div.smush-recommender-separator span, div.smush-recommender-separator i {
-    vertical-align: middle;
-}
-
-div.smush-recommender-separator i.icon-fi-plugin-2 {
-    color: #AAAAAA;
-    font-size: 16px;
-    margin: 0 20px !important;
-}
-
-div.smush-recommender-separator span.outer-line {
-    border-bottom: 1px solid #E6E6E6;
-    height: 12px;
-    width: 47.6%;
-}
-
-.wpmud h4.smush-recommender-title {
-    color: #333333;
-    font-family: "Roboto Condensed", 'sans-serif';
-    font-size: 22px;
-    font-weight: bold;
-    line-height: 30px;
-    text-align: center;
-    text-transform: none;
-}
-
-div.smush-recommendations-wrapper.row {
-    margin: 30px 0;
-}
-
-div.smush-recommendations-wrapper.row .col-third {
-    margin: 30px 0;
-}
-
-div.smush-recommendations-wrapper.row .col-third:first-child {
-    margin-left: 0;
-}
-
-div.smush-recommendations-wrapper.row .col-third:last-child {
-    margin-right: 0;
-}
-
-div.smush-recommendation-box div.smush-plugin-inner-wrap {
-    border-radius: 5px;
-    background-color: #FFFFFF;
-    box-shadow: 0 2px 0 0 #E9E9E9;
-    padding-bottom: 20px;
-    text-align: center;
-}
-
-div.smush-plugin-banner {
-    background-repeat: no-repeat;
-    -webkit-background-size: 100% 100%;
-    background-size: cover;
-    border-radius: 5px 5px 0 0;
-    display: inline-block;
-    font-size: 0;
-    min-height: 150px;
-    line-height: 0;
-    position: relative;
-    vertical-align: middle;
-    width: 100%;
-}
-
-div.smush-plugin-icon {
-    background-color: #DFDFDF;
-    background-size: 50px 50px;
-    background-repeat: no-repeat;
-    box-sizing: border-box;
-    border: 3px solid #FFFFFF;
-    border-radius: 27px;
-    bottom: 0;
-    box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.25);
-    height: 56px;
-    margin: 0 0 20px 20px;
-    position: absolute;
-    width: 56px;
-}
-
-div.smush-plugin-hummingbird div.smush-plugin-banner {
+.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-hummingbird {
     background-image: url(../images/hb-banner.jpg);
 }
 
-div.smush-plugin-defender div.smush-plugin-banner {
+.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-defender {
     background-image: url(../images/df-banner.jpg);
 }
 
-div.smush-plugin-smartcrawl div.smush-plugin-banner {
+.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-smartcrawl {
     background-image: url(../images/sc-banner.png);
 }
 
-div.smush-plugin-hummingbird div.smush-plugin-icon {
+.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-hummingbird>span {
     background-image: url(../images/hb-icon.png);
 }
 
-div.smush-plugin-defender div.smush-plugin-icon {
+.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-defender>span {
     background-image: url(../images/df-icon.png);
 }
 
-div.smush-plugin-smartcrawl div.smush-plugin-icon {
+.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-smartcrawl>span {
     background-image: url(../images/sc-icon.png);
-}
-
-.wpmud h5.smush-plugin-title {
-    color: #333333;
-    font-family: "Roboto Condensed", 'sans-serif';
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 30px;
-    margin: 30px auto 20px;
-    max-width: 246px;
-}
-
-div.smush-plugin-description {
-    color: #888888;
-    font-family: "Roboto", 'sans-serif';
-    font-size: 13px;
-    line-height: 22px;
-    padding: 0 30px;
-}
-
-a.smush-plugin-link {
-    border: 2px solid #E6E6E6;
-    border-radius: 4px;
-    color: #888888;
-    display: inline-block;
-    font-family: 'Roboto', 'sans-serif';
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 16px;
-    margin: 30px auto 10px;
-    padding: 6px 12px 4px;
-    text-align: center;
-    vertical-align: middle;
-
-}
-
-a.smush-plugin-link i.icon-fi-arrow-right {
-    line-height: 15px;
-    margin: 0 0 0 5px;
-}
-
-a.smush-plugin-link:hover .smush-plugin-button-inner {
-    color: #737373;
 }
 
 /** Media Queries **/

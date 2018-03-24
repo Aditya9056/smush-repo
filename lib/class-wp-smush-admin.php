@@ -365,6 +365,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				//Load Jquery tree on specified page
 				wp_enqueue_script( 'jqft-js' );
 				wp_enqueue_style( 'jqft-css' );
+				wp_enqueue_style( 'wpmudev-sui', plugins_url( 'assets/shared-ui-2/css/admin.min.css', __DIR__ ) );
+				wp_enqueue_script(
+					'wpmudev-sui',
+					plugins_url( 'assets/shared-ui-2/js/admin.min.js', __DIR__ ),
+					array( 'jquery' ),
+					null,
+					true
+				);
 			}
 
 			// localize translatable strings for js
