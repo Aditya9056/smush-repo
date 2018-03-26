@@ -16,11 +16,6 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 	class WpSmushRecommender {
 
 		function __construct() {
-
-			if ( ! $this->should_continue() ) {
-				return;
-			}
-
 			//Hook UI at the end of Settings UI
 			add_action( 'smush_settings_ui_bottom', array( $this, 'ui' ), 12 );
 
@@ -47,101 +42,69 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 		 * Output the required UI for Plugin recommendations
 		 */
 		function ui() {
-			global $wpsmushit_admin; ?>
+			global $wpsmushit_admin;
+			if ( $this->should_continue() ) { ?>
 
-            <div class="sui-row" id="sui-cross-sell-footer">
-                <div><span class="sui-icon-plugin-2"></span></div>
-                <h3>Check out our other free wordpress.org plugins!</h3>
-            </div>
-            <div class="sui-row sui-cross-sell-modules"><?php
-				$upgrade_url = add_query_arg(
-					array(
-						'utm_source'   => 'Smush-Free',
-						'utm_medium'   => 'Banner',
-						'utm_campaign' => 'settings-sidebar'
-					),
-					$wpsmushit_admin->upgrade_url
-				);
-				//Hummingbird
-				$hb_title   = esc_html__( "Hummingbird Page Speed Optimization", "wp-smushit" );
-				$hb_content = esc_html__( "Performance Tests, File Optimization & Compression, Page, Browser & Gravatar Caching, GZIP Compression, CloudFlare Integration & more.", "wp-smushit" );
-				$hb_class   = "hummingbird";
-				$hb_url     = esc_url( "https://wordpress.org/plugins/hummingbird-performance/" );
-				echo $this->recommendation_box( $hb_title, $hb_content, $hb_url, $hb_class, 1 );
-				//Defender
-				$df_title   = esc_html__( "Defender Security, Monitoring, and Hack Protection", "wp-smushit" );
-				$df_content = esc_html__( "Security Tweaks & Recommendations, File & Malware Scanning, Login & 404 Lockout Protection, Two-Factor Authentication & more.", "wp-smushit" );
-				$df_class   = "defender";
-				$df_url     = esc_url( "https://wordpress.org/plugins/defender-security/" );
-				echo $this->recommendation_box( $df_title, $df_content, $df_url, $df_class, 2 );
-				//SmartCrawl
-				$sc_title   = esc_html__( "SmartCrawl Search Engine Optimization", "wp-smushit" );
-				$sc_content = esc_html__( "Customize Titles & Meta Data, OpenGraph, Twitter & Pinterest Support, Auto-Keyword Linking, SEO & Readability Analysis, Sitemaps, URL Crawler & more.", "wp-smushit" );
-				$sc_class   = "smartcrawl";
-				$sc_url     = esc_url( "https://wordpress.org/plugins/smartcrawl" );
-				echo $this->recommendation_box( $sc_title, $sc_content, $sc_url, $sc_class, 3 );
-				?>
-            </div>
-            <div class="sui-cross-sell-bottom">
+                <div class="sui-row" id="sui-cross-sell-footer">
+                    <div><span class="sui-icon-plugin-2"></span></div>
+                    <h3><?php esc_html__( "Check out our other free wordpress.org plugins!", "wp-smushit" ); ?></h3>
+                </div>
+                <div class="sui-row sui-cross-sell-modules"><?php
+					$upgrade_url = add_query_arg(
+						array(
+							'utm_source'   => 'Smush-Free',
+							'utm_medium'   => 'Banner',
+							'utm_campaign' => 'settings-sidebar'
+						),
+						$wpsmushit_admin->upgrade_url
+					);
+					//Hummingbird
+					$hb_title   = esc_html__( "Hummingbird Page Speed Optimization", "wp-smushit" );
+					$hb_content = esc_html__( "Performance Tests, File Optimization & Compression, Page, Browser & Gravatar Caching, GZIP Compression, CloudFlare Integration & more.", "wp-smushit" );
+					$hb_class   = "hummingbird";
+					$hb_url     = esc_url( "https://wordpress.org/plugins/hummingbird-performance/" );
+					echo $this->recommendation_box( $hb_title, $hb_content, $hb_url, $hb_class, 1 );
+					//Defender
+					$df_title   = esc_html__( "Defender Security, Monitoring, and Hack Protection", "wp-smushit" );
+					$df_content = esc_html__( "Security Tweaks & Recommendations, File & Malware Scanning, Login & 404 Lockout Protection, Two-Factor Authentication & more.", "wp-smushit" );
+					$df_class   = "defender";
+					$df_url     = esc_url( "https://wordpress.org/plugins/defender-security/" );
+					echo $this->recommendation_box( $df_title, $df_content, $df_url, $df_class, 2 );
+					//SmartCrawl
+					$sc_title   = esc_html__( "SmartCrawl Search Engine Optimization", "wp-smushit" );
+					$sc_content = esc_html__( "Customize Titles & Meta Data, OpenGraph, Twitter & Pinterest Support, Auto-Keyword Linking, SEO & Readability Analysis, Sitemaps, URL Crawler & more.", "wp-smushit" );
+					$sc_class   = "smartcrawl";
+					$sc_url     = esc_url( "https://wordpress.org/plugins/smartcrawl" );
+					echo $this->recommendation_box( $sc_title, $sc_content, $sc_url, $sc_class, 3 );
+					$site_url = esc_url( "https://premium.wpmudev.org/projects/" );
+					$site_url = add_query_arg(
+						array(
+							'utm_source'   => 'smush',
+							'utm_medium'   => 'plugin',
+							'utm_campaign' => 'smush_footer_upsell_notice'
+						),
+						$site_url
+					);
+					?>
+                </div>
+                <div class="sui-cross-sell-bottom">
                 <h3>WPMU DEV - Your WordPress Toolkit</h3>
                 <p>Pretty much everything you need for developing and managing WordPress based websites, and then
                     some.</p>
 
-                <a class="sui-button sui-button-green" href="#sui-upgrade-membership-modal"
-                   id="dash-uptime-update-membership" rel="dialog">
+                <a class="sui-button sui-button-green" href="<?php echo $site_url; ?>"
+                   id="dash-uptime-update-membership" target="_blank">
                     Learn more
                 </a>
 
                 <img class="sui-image"
-                     src="<?php echo plugins_url("assets/images/dev-team.png", __DIR__ ); ?>"
-                     srcset="<?php echo plugins_url("assets/images/dev-team@2x.png", __DIR__ ); ?> 2x"
+                     src="<?php echo plugins_url( "assets/images/dev-team.png", __DIR__ ); ?>"
+                     srcset="<?php echo plugins_url( "assets/images/dev-team@2x.png", __DIR__ ); ?> 2x"
                      alt="Try pro features for free!">
-            </div>
-            <div class="sui-footer">Made with <i class="sui-icon-heart"></i> by WPMU DEV</div>
-            <dialog id="sui-upgrade-membership-modal" class="sui-modal" title="Upgrade Membership">
-
-                <p>Here's what you'll get by upgrading to Hummingbird Pro.</p>
-
-                <ul class="sui-listing">
-                    <li>
-                        <strong>Automation</strong>
-                        <p>Schedule Hummingbird to run regular performance tests daily, weekly or monthly and get
-                            email reports delivered straight to your inbox.</p>
-                    </li>
-                    <li>
-                        <strong>Enhanced Minify Compression</strong>
-                        <p>Compress your minified files up to 2x more than regular optimization and reuce your page
-                            load speed even further.</p>
-                    </li>
-                    <li>
-                        <strong>WPMU DEV CDN</strong>
-                        <p>By default we minify your files via our API and send them back to your server. Pro users
-                            can host their files on WPMU DEV’s secure and hyper fast CDN, which will mean less load
-                            on your server and a fast visitor experience.</p>
-                    </li>
-                    <li>
-                        <strong>Smush Pro</strong>
-                        <p>A membership for Hummingbird Pro also gets you the award winning Smush Pro with unlimited
-                            advanced lossy compression that’ll give image heavy websites a speed boost.</p>
-                    </li>
-                </ul>
-
-                <p class="sui-block-content-center">Get all of this, plus heaps more as part of a WPMU DEV
-                    membership.</p>
-
-                <div class="sui-block-content-center">
-                    <a target="_blank" href="" class="sui-button sui-button-green">Upgrade
-                        Membership</a>
-                </div>
-
-                <div class="sui-modal-image sui-modal-image-bottom dev-man">
-                    <img class="sui-image sui-image-center"
-                         src="<?php echo plugins_url("assets/images/dev-team.png", __DIR__ ); ?>"
-                         srcset="<?php echo plugins_url("assets/images/dev-team@2x.png", __DIR__ ); ?> 2x"
-                         alt="WPMU DEV Team">
-                </div>
-
-            </dialog><?php
+                </div><?php
+			}
+                ?>
+            <div class="sui-footer">Made with <i class="sui-icon-heart"></i> by WPMU DEV</div><?php
 
 		}
 
@@ -156,17 +119,17 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 		function recommendation_box( $title, $content, $link, $plugin_class, $seq ) {
 			//Put bg to box parent div ?>
             <div class="sui-col-md-4">
-                <div class="sui-cross-<?php echo $seq; ?> sui-cross-<?php echo $plugin_class; ?>"><span></span></div>
-                <div class="sui-box">
-                    <div class="sui-box-body">
-                        <h3><?php echo $title; ?></h3>
-                        <p><?php echo $content; ?></p>
-                        <a href="<?php echo esc_url( $link ); ?>" class="sui-button sui-button-ghost"
-                           target="_blank">
-                            View features   <i class="sui-icon-arrow-right"></i>
-                        </a>
-                    </div>
+            <div class="sui-cross-<?php echo $seq; ?> sui-cross-<?php echo $plugin_class; ?>"><span></span></div>
+            <div class="sui-box">
+                <div class="sui-box-body">
+                    <h3><?php echo $title; ?></h3>
+                    <p><?php echo $content; ?></p>
+                    <a href="<?php echo esc_url( $link ); ?>" class="sui-button sui-button-ghost"
+                       target="_blank">
+                        View features <i class="sui-icon-arrow-right"></i>
+                    </a>
                 </div>
+            </div>
             </div><?php
 		}
 

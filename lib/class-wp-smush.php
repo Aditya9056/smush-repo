@@ -191,7 +191,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function do_smushit( $file_path = '' ) {
 			$errors   = new WP_Error();
-			$dir_name = dirname( $file_path );
+			$dir_name = trailingslashit( dirname( $file_path ) );
 
 			//Check if file exists and the directory is writable
 			if ( empty( $file_path ) ) {
@@ -782,7 +782,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * the `manage_media_columns` hook.
 		 */
 		function columns( $defaults ) {
-			$defaults['smushit'] = 'WP Smush';
+			$defaults['smushit'] = 'Smush';
 
 			return $defaults;
 		}

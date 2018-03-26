@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: WP Smush
+Plugin Name: Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
@@ -130,7 +130,7 @@ if ( ! function_exists( 'wp_smush_rating_message' ) ) {
  */
 if ( ! function_exists( 'wp_smush_email_message' ) ) {
 	function wp_smush_email_message( $message ) {
-		$message = "You're awesome for installing %s! Site speed isn't all image optimization though, so we've collected all the best speed resources we know in a single email - just for users of WP Smush!";
+		$message = "You're awesome for installing %s! Site speed isn't all image optimization though, so we've collected all the best speed resources we know in a single email - just for users of Smush!";
 
 		return $message;
 	}
@@ -208,7 +208,7 @@ if ( ! function_exists( 'smush_deactivated' ) ) {
 	function smush_deactivated() {
 		if ( get_site_option( 'smush_deactivated' ) && is_super_admin() ) { ?>
             <div class="updated">
-                <p><?php esc_html_e( 'WP Smush Free was deactivated. You have WP Smush Pro active!', 'wp-smushit' ); ?></p>
+                <p><?php esc_html_e( 'Smush Free was deactivated. You have Smush Pro active!', 'wp-smushit' ); ?></p>
             </div> <?php
 			delete_site_option( 'smush_deactivated' );
 		}

@@ -68,7 +68,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function wp_smush_bulk_menu() {
 			if ( defined( 'NGGFOLDER' ) ) {
-				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, esc_html__( 'Bulk WP Smush', 'wp-smushit' ), esc_html__( 'WP Smush', 'wp-smushit' ), 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
+				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, esc_html__( 'Bulk Smush', 'wp-smushit' ), esc_html__( 'Smush', 'wp-smushit' ), 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
 					&$this,
 					'wp_smush_bulk'
 				) );
@@ -87,9 +87,9 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		function wp_smush_image_column_name( $columns ) {
 			//Latest next gen takes string, while the earlier WP Smush plugin shows there use to be a array
 			if ( is_array( $columns ) ) {
-				$columns['wp_smush_image'] = esc_html__( 'WP Smush', 'wp-smushit' );
+				$columns['wp_smush_image'] = esc_html__( 'Smush', 'wp-smushit' );
 			} else {
-				$columns = esc_html__( 'WP Smush', 'wp-smushit' );
+				$columns = esc_html__( 'Smush', 'wp-smushit' );
 			}
 
 			return $columns;
