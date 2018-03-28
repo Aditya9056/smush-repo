@@ -23,6 +23,11 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 
 		function __construct() {
 
+			//Do not initialize if not in admin area
+			if ( ! is_admin() ) {
+				return null;
+			}
+
 			//Save Settings
 			add_action( 'wp_ajax_save_settings', array( $this, 'save_settings' ) );
 

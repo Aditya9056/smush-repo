@@ -857,7 +857,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Prints out the page header for Bulk Smush Page
 		 */
 		function smush_page_header() {
-			global $WpSmush, $wpsmushit_admin, $wpsmush_s3;
+			global $WpSmush, $wpsmushit_admin, $wpsmush_s3, $wpsmush_dir;
 
 			//Include Shared UI
 			require_once WP_SMUSH_DIR . 'assets/shared-ui/plugin-ui.php';
@@ -886,6 +886,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</div>' .
 					$user_validation .
 					$recheck_notice .
+					$wpsmush_dir->check_for_table_error();
 				'</section>';
 
 			//Check for any stored API message and show it

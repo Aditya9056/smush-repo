@@ -666,7 +666,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return bool|array array containing success status, and stats
 		 */
 		function _post( $file_path, $file_size ) {
-			global $wpsmushit_admin, $wpsmush_settings;
+			global $wpsmushit_admin, $wpsmush_settings, $wpsmush_helper;
 
 			$data = false;
 
@@ -699,7 +699,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				'user-agent' => WP_SMUSH_UA,
 			);
 			//Temporary Increase the limit
-			@ini_set('memory_limit','256M');
+			$wpsmush_helper->increase_memory_limit();
 			$result  = wp_remote_post( $api_url, $args );
 
 			unset( $file_data );//free memory
@@ -2222,7 +2222,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function wp_smush_async() {
 
 			//Don't load the Async task, if user not logged in or not in backend
-			if ( ! is_user_logged_in() || ! is_admin() ) {
+			if ( ! is_admin() || ! is_user_logged_in() ) {
 				return;
 			}
 

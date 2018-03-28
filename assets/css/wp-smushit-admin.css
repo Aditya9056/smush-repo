@@ -1216,7 +1216,8 @@ div.wp-smush-dir-limit,
 div.smush-s3-setup-error,
 div.smush-s3-setup-message,
 div.wp-smush-s3support-alert,
-div.wp-smush-notice.wp-smush-api-message.warning {
+div.wp-smush-notice.wp-smush-api-message.warning,
+div.wp-smush-notice.missing_table{
     background-color: #FFF5D5;
     border: none;
     color: #333333;
