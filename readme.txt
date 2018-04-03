@@ -161,7 +161,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 * Fixed:
     * Conflict with plugin Download Manager, Embed any document
-    * Settings link incorrect for subsites
+    * Settings link incorrect for sub sites
     * Don't load smush settings in front-end
     * Increase php memory limit only if lesser than required
     * Display a warning if custom table isn't created

@@ -523,7 +523,8 @@ label.setting.smush-stats .wp-smush-stats-holder td,
     word-wrap: break-word;
 }
 
-label.setting.smush-stats a.wp-smush-action.wp-smush-title {
+label.setting.smush-stats a.wp-smush-action.wp-smush-title,
+div.smush-status-links a.wp-smush-action.wp-smush-title {
     display: inline-block;
 }
 
@@ -1539,10 +1540,16 @@ div.smush-sub-setting-wrapper:last-child {
 div.smush-sub-setting-wrapper span.wp-smush-setting-desc {
     color: #888888;
     display: inline-block;
+    font-family: "Roboto", "sans-serif";
     font-size: 13px;
     line-height: 22px;
     margin-top: 10px;
 }
+
+div.smush-sub-setting-wrapper span.wp-smush-setting-desc.desc-note{
+    font-weight: 500;
+}
+
 
 /** Stats Container **/
 .wpmud .dev-box.smush-stats-wrapper {

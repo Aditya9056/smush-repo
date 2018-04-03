@@ -1379,7 +1379,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			if ( ! $smush_table ) {
 				//Display a notice
 				$notice = '<div class="wp-smush-notice missing_table"><p>';
-				$notice .= esc_html__( 'Directory Smush requires custom table to work properly, it seems there was an error creating the table. Please contact us on support forums.', "wp-smushit" );
+				$notice .= esc_html__( 'Directory smushing requires custom tables and it seems there was an error creating tables. For help, please contact our team on the support forums', "wp-smushit" );
 				$notice .= '</p></div>';
 			}
 

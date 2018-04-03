@@ -966,8 +966,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function set_status( $id, $echo = true, $text_only = false, $wrapper = true ) {
 			global $wpsmush_s3_compat;
-			$status_txt  = $button_txt = $stats = '';
+			$status_txt  = $button_txt = $stats = $links = '';
 			$show_button = $show_resmush = false;
+
+			$links = "<div class='smush-status-links'>";
 
 			// If variables are not initialized properly, initialize it.
 			if ( ! has_action( 'admin_init', array( $this, 'admin_init' ) ) ) {
@@ -1001,7 +1003,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
 					$status_txt = __( 'Already Optimized', 'wp-smushit' );
 					if ( $show_resmush ) {
-						$status_txt .= '<br />' . $this->get_resmsuh_link( $id );
+						$links .= $this->get_resmsuh_link( $id );
 					}
 					$show_button = false;
 				} else {
@@ -1009,7 +1011,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$status_txt = __( 'Already Optimized', 'wp-smushit' );
 
 						if ( $show_resmush ) {
-							$status_txt .= '<br />' . $this->get_resmsuh_link( $id );
+							$links .= $this->get_resmsuh_link( $id );
 						}
 
 					} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
@@ -1030,7 +1032,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$show_resmush = $this->show_resmush( $id, $wp_smush_data );
 
 						if ( $show_resmush ) {
-							$status_txt .= '<br />' . $this->get_resmsuh_link( $id );
+							$links .= $this->get_resmsuh_link( $id );
 						}
 
 						//Restore Image: Check if we need to show the restore image option
@@ -1039,12 +1041,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						if ( $show_restore ) {
 							if ( $show_resmush ) {
 								//Show Separator
-								$status_txt .= ' | ';
-							} else {
-								//Show the link in next line
-								$status_txt .= '<br />';
+								$links .= ' | ';
 							}
-							$status_txt .= $this->get_restore_link( $id );
+							$links .= $this->get_restore_link( $id );
 						}
 
 						//Detailed Stats: Show detailed stats if available
@@ -1052,24 +1051,23 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 							if ( $show_resmush || $show_restore ) {
 								//Show Separator
-								$status_txt .= ' | ';
-							} else {
-								//Show the link in next line
-								$status_txt .= '<br />';
+								$links .= ' | ';
 							}
 
 							//Detailed Stats Link
-							$status_txt .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" tooltip="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
+							$links .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" tooltip="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
 
 							//Stats
 							$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
 
 							if ( ! $text_only ) {
-								$status_txt .= $stats;
+								$links .= $stats;
 							}
 						}
 					}
 				}
+				$links .= "</div>";
+				$status_txt .= $links;
 				/** Super Smush Button  */
 				//IF current compression is lossy
 				if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {

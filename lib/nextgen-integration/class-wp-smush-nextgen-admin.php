@@ -285,7 +285,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		/**
 		 * Print the column html
 		 *
-		 * @param string $id Media id
+		 * @param string $pid Media id
 		 * @param string $status_txt Status text
 		 * @param string $button_txt Button label
 		 * @param boolean $show_button Whether to shoe the button
