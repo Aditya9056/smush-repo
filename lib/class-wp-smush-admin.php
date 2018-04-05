@@ -218,8 +218,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			add_action( 'wp_ajax_hide_api_message', array( $this, 'hide_api_message' ) );
 
-			//Return Smush status for attachment opened in Grid view
-			add_action( 'wp_ajax_smush_get_attachment_details', array( $this, 'smush_send_status' ) );
+			add_filter('wp_prepare_attachment_for_js', array( $this, 'smush_send_status' ), 99, 3 );
 
 			//Send smush stats
 			add_action( 'wp_ajax_get_stats', array( $this, 'get_stats' ) );
@@ -407,7 +406,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
 				'quick_setup_title'       => __( "QUICK SETUP", "wp-smushit" ) . '<form method="post" class="smush-skip-setup float-r"><input type="hidden" name="action" value="skipSmushSetup"/>' . wp_nonce_field( 'skipSmushSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( "Skip", "wp-smushit" ) . '</button></form>',
-				'sync_stats'              => esc_html__( "Give us a moment while we sync the stats.", "wp-smushit" )
+				'sync_stats'              => esc_html__( "Give us a moment while we sync the stats.", "wp-smushit" ),
+				'add_image'               => esc_html__( "ADD IMAGE", "wp-smushit" ),
+				'add_images'              => esc_html__( "ADD IMAGES", "wp-smushit" ),
+				'add_dir'                 => esc_html__( "ADD DIRECTORY", "wp-smushit" ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -2236,17 +2238,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Load media assets.
 		 */
 		public function extend_media_modal() {
-			if ( ! wp_script_is( 'smush-media-view', 'enqueued' ) ) {
-				wp_enqueue_script( 'smush-media-view', WP_SMUSH_URL . 'assets/js/media.js', array(
+			if ( ! wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
+				wp_enqueue_script( 'smush-backbone-extension', WP_SMUSH_URL . 'assets/js/media.js', array(
 					'jquery',
 					'media-views',
 					'media-grid',
 					'wp-util',
 				), $this->version, true );
 
-				wp_localize_script( 'smush-media-view', 'smush_vars', array(
+				wp_localize_script( 'smush-backbone-extension', 'smush_vars', array(
 					'strings' => array(
-						'stats_label' => esc_html__( "Smush Stats", "wp-smushit" )
+						'stats_label' => esc_html__( "Smush", "wp-smushit" )
 					),
 					'nonce'   => array(
 						'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
@@ -2256,22 +2258,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Return Smush status of an attachment
+		 * Send smush status for attachment
 		 *
-		 * @param $id
+		 * @param $response
+		 * @param $attachment
+		 *
+		 * @return mixed
 		 */
-		function smush_send_status() {
-			if ( ! isset( $_POST['id'] ) ) {
-				return;
+		function smush_send_status( $response, $attachment ) {
+			if ( ! isset( $attachment->ID ) ) {
+				return $response;
 			}
 
-			check_ajax_referer( 'get-smush-status', '_nonce' );
-
-			$id = intval( $_POST['id'] );
-
 			//Validate nonce
-			$status = $this->smush_status( $id );
-			wp_send_json_success( $status );
+			$status            = $this->smush_status( $attachment->ID );
+			$response['smush'] = $status;
+
+			return $response;
 		}
 
 		/**

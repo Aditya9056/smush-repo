@@ -2264,7 +2264,8 @@ div.wp-smush-dir-desc {
     background: url(../images/folder-open-selected.svg) left top no-repeat;
 }
 
-.wpmud UL.jqueryFileTree LI.expanded.selected > a {
+.wpmud UL.jqueryFileTree LI.expanded.selected > a,
+.wpmud UL.jqueryFileTree LI.file.selected a {
     color: #17a8e3;
 }
 

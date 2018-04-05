@@ -165,6 +165,8 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Don't load smush settings in front-end
     * Increase php memory limit only if lesser than required
     * Display a warning if custom table isn't created
+    * Attachment details not being displayed when uploading image in post edit screen
+    * Conflict with getty plugin
 
 * Updated:
     * Settings are moved to a separate top-level menu "Smush" in dashboard menu area.
