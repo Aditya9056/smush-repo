@@ -323,8 +323,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 		/**
 		 * Return a directory/File list
-         *
-         * PHP Connector
+		 *
+		 * PHP Connector
 		 */
 		function directory_list() {
 			//Check For Permission

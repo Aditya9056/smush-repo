@@ -406,10 +406,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
 				'quick_setup_title'       => __( "QUICK SETUP", "wp-smushit" ) . '<form method="post" class="smush-skip-setup float-r"><input type="hidden" name="action" value="skipSmushSetup"/>' . wp_nonce_field( 'skipSmushSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( "Skip", "wp-smushit" ) . '</button></form>',
-				'sync_stats'              => esc_html__( "Give us a moment while we sync the stats.", "wp-smushit" ),
-				'add_image'               => esc_html__( "ADD IMAGE", "wp-smushit" ),
-				'add_images'              => esc_html__( "ADD IMAGES", "wp-smushit" ),
-				'add_dir'                 => esc_html__( "ADD DIRECTORY", "wp-smushit" ),
+				'sync_stats'              => esc_html__( "Give us a moment while we sync the stats.", "wp-smushit" )
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );

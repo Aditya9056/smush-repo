@@ -2174,13 +2174,6 @@ jQuery(function ($) {
                 multiFolder: false
             },
             function () {
-                //Check the number of images selected
-                var img_count = $('ul.jqueryFileTree li.file.selected').length;
-                var btn_txt = img_count > 1 ? wp_smush_msgs.add_images : wp_smush_msgs.add_image;
-                $('button.wp-smush-select-dir').html(btn_txt);
-                if( 0 == img_count ) {
-                    $('button.wp-smush-select-dir').html(wp_smush_msgs.add_dir);
-                }
             }
         );
 
