@@ -119,6 +119,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function create_table() {
 			global $wpdb;
 
+			//Run the query only on directory smush page
+			if ( ! isset( $_GET['page'] ) || 'smush' != $_GET['page'] ) {
+				return null;
+			}
+
 			$charset_collate = $wpdb->get_charset_collate();
 
 			//Use a lower index size

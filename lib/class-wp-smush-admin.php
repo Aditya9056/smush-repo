@@ -223,6 +223,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Send smush stats
 			add_action( 'wp_ajax_get_stats', array( $this, 'get_stats' ) );
 
+			//Load js and css on pages with Media Uploader - WP Enqueue Media
+            add_action('wp_enqueue_media', array( $this, 'enqueue') );
+
 		}
 
 		function init_settings() {
@@ -347,8 +350,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->validate_install() ) {
 				/** @var $pages List of screens where script needs to be loaded */
 
-				//Do not enqueue, unless it is one of the required screen
-				if ( ! $enqueue_smush || ! in_array( $current_page, $this->pages ) ) {
+				//Do not enqueue, unless it is one of the required screen, or not in wordpress backend
+				if ( ! $enqueue_smush || !is_admin() || ( ! in_array( $current_page, $this->pages ) && ! did_action( 'wp_enqueue_media' ) ) ) {
 
 					return;
 				}

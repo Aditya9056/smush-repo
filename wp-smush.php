@@ -206,7 +206,8 @@ add_action( 'admin_notices', 'smush_deactivated' );
 //Display a admin Notice about plugin deactivation
 if ( ! function_exists( 'smush_deactivated' ) ) {
 	function smush_deactivated() {
-		if ( get_site_option( 'smush_deactivated' ) && is_super_admin() ) { ?>
+		//Display only in backend for administrators
+		if ( is_admin() && is_super_admin() && get_site_option( 'smush_deactivated' ) ) { ?>
             <div class="updated">
                 <p><?php esc_html_e( 'Smush Free was deactivated. You have Smush Pro active!', 'wp-smushit' ); ?></p>
             </div> <?php

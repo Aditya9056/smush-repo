@@ -686,9 +686,13 @@ jQuery(function ($) {
         //Hide stats
         $('.smush-stats-wrapper').hide();
 
-        var mode = '';
+        var mode = 'grid';
         if( 'smush_restore_image' == smush_action ) {
-            mode = window.location.search.indexOf('item') > -1 ? 'grid' : 'list';
+            if( $(document).find('div.media-modal.wp-core-ui').length > 0 ) {
+                mode = 'grid';
+            }else {
+                mode = window.location.search.indexOf('item') > -1 ? 'grid' : 'list';
+            }
         }
 
         //Get the image ID and nonce
@@ -1757,6 +1761,11 @@ jQuery(function ($) {
         var current_button = $(this);
         var smush_action = 'smush_restore_image';
         process_smush_action(e, current_button, smush_action, 'restore');
+        //Change the class oa parent div ( Level 2 )
+        var parent = current_button.parents().eq(1);
+        if (parent.hasClass('smushed')) {
+            parent.removeClass('smushed').addClass('unsmushed');
+        }
     });
 
     /** Resmush: Media Library **/

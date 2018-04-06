@@ -178,6 +178,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( empty( $wpsmush_dir ) && class_exists( 'WpSmushDir' ) ) {
 				$wpsmush_dir = new WpSmushDir();
 			}
+			//Run only on wp smush page
 			$wpsmush_dir->create_table();
 		}
 
