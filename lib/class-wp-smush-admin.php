@@ -224,7 +224,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_ajax_get_stats', array( $this, 'get_stats' ) );
 
 			//Load js and css on pages with Media Uploader - WP Enqueue Media
-            add_action('wp_enqueue_media', array( $this, 'enqueue') );
+			add_action('wp_enqueue_media', array( $this, 'enqueue') );
 
 		}
 

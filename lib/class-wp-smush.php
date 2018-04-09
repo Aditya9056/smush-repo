@@ -121,17 +121,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Enqueue Scripts, And Initialize variables
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 
-			//Load NextGen Gallery, S3, if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
-			add_action( 'plugins_loaded', array( $this, 'load_modules' ), 90 );
-
 			//Send Smush Stats for pro members
 			add_filter( 'wpmudev_api_project_extra_data-912164', array( $this, 'send_smush_stats' ) );
 
 			//Send Smush Stats for pro members
 			add_action( 'wp_ajax_smush_show_warning', array( $this, 'show_warning_ajax' ) );
 
-			//Instanitate the Async class
-			add_action( 'plugins_loaded', array( $this, 'wp_smush_async' ) );
+			////Load NextGen Gallery, Instanitate the Async class. if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
+			add_action( 'plugins_loaded', array( $this, 'load_libs'), 90 );
+
+			//Load S3 library
+			add_action( 'aws_init', array( $this, 'load_s3' ), 15 );
+			add_action( 'as3cf_init', array( $this, 'load_s3' ), 15 );
 
 			//Handle the Async optimisation
 			add_action( 'wp_async_wp_generate_attachment_metadata', array( $this, 'wp_smush_handle_async' ) );
@@ -1508,12 +1509,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Load Plugin Modules
 		 *
 		 */
-		function load_modules() {
+		function load_libs() {
+
+			//Load Nextgen lib, and initialize wp smush async class
 			$this->load_nextgen();
-			//Load S3
-			if( has_action('aws_init') ) {
-				add_action( 'aws_init', array( $this, 'load_s3' ), 120 );
-			}
+			$this->wp_smush_async();
 		}
 
 		/**

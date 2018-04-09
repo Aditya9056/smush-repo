@@ -167,6 +167,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Display a warning if custom table isn't created
     * Attachment details not being displayed when uploading image in post edit screen
     * Conflict with getty plugin
+    * Compatibility with WP Offload S3 latest version
 
 * Updated:
     * Settings are moved to a separate top-level menu "Smush" in dashboard menu area.

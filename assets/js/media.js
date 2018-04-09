@@ -14,6 +14,7 @@
         var smushMediaTwoColumn = smush_media.view.Attachment.Details.TwoColumn;
 
         /**
+        /*
          * Add Smush details to attachment.
          */
         smush_media.view.Attachment.Details.TwoColumn = smushMediaTwoColumn.extend({
