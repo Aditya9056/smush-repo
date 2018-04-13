@@ -912,6 +912,10 @@ jQuery(function ($) {
                         wp_smushit_data.savings_conversion = 'undefined' != typeof r.data.savings_conversion ? r.data.savings_conversion : wp_smushit_data.savings_conversion;
                     }
 
+                    if( 'nextgen' == scan_type ) {
+                        wp_smushit_data.bytes = parseInt( wp_smushit_data.size_before ) - parseInt( wp_smushit_data.size_after )
+                    }
+
                     var smush_percent = ( wp_smushit_data.count_smushed / wp_smushit_data.count_total ) * 100;
                     smush_percent = precise_round(smush_percent, 1);
 
@@ -1713,7 +1717,7 @@ jQuery(function ($) {
         e.preventDefault();
         //Replace the `+` with a `-`
         var slide_symbol = $(this).find('.stats-toggle');
-        $(this).parents().eq(1).find('.smush-stats-wrapper').slideToggle();
+        $(this).parents().eq(2).find('.smush-stats-wrapper').slideToggle();
         slide_symbol.text(slide_symbol.text() == '+' ? '-' : '+');
 
 
@@ -1972,7 +1976,7 @@ jQuery(function ($) {
                     wp_smushit_data.savings_resize = 'undefined' != typeof stats.savings_resize ? parseInt(wp_smushit_data.savings_resize) + stats.savings_resize : wp_smushit_data.savings_resize;
                     wp_smushit_data.savings_conversion = 'undefined' != typeof stats.savings_conversion ? parseInt(wp_smushit_data.savings_conversion) + stats.savings_conversion : wp_smushit_data.savings_conversion;
                     //Add directory smush stats
-                    if( 'undefined' != typeof ( wp_smushit_data.savings_dir_smush.orig_size ) ) {
+                    if( 'undefined' != typeof ( wp_smushit_data.savings_dir_smush ) && 'undefined' != typeof ( wp_smushit_data.savings_dir_smush.orig_size ) ) {
                         wp_smushit_data.size_before = 'undefined' != typeof wp_smushit_data.savings_dir_smush ? parseInt(wp_smushit_data.size_before) + parseInt(wp_smushit_data.savings_dir_smush.orig_size) : wp_smushit_data.size_before;
                         wp_smushit_data.size_after = 'undefined' != typeof wp_smushit_data.savings_dir_smush ? parseInt(wp_smushit_data.size_after) + parseInt(wp_smushit_data.savings_dir_smush.image_size) : wp_smushit_data.size_after;
                     }

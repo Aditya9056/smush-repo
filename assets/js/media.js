@@ -14,7 +14,7 @@
         var smushMediaTwoColumn = smush_media.view.Attachment.Details.TwoColumn;
 
         /**
-        /*
+         /*
          * Add Smush details to attachment.
          */
         smush_media.view.Attachment.Details.TwoColumn = smushMediaTwoColumn.extend({
@@ -65,7 +65,6 @@
             // Always make sure that our content is up to date.
             this.model.on('change', this.render, this);
         },
-
         render: function () {
             // Ensure that the main attachment fields are rendered.
             smush_media.view.Attachment.prototype.render.apply(this, arguments);

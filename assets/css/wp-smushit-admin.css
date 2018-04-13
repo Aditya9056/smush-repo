@@ -847,6 +847,10 @@ label.setting.smush-stats div.wp-smush-progress span {
     color: #fff;
 }
 
+div.smush-status-links div.smush-stats-wrapper {
+    margin-top: 15px;
+}
+
 .smush-stats-wrapper .smush-container-subheading {
     margin: 1.2em 0 0.9em;
     max-width: 90%;

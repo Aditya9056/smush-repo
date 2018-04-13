@@ -33,7 +33,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			add_action( 'wp_smush_nextgen_image_stats', array( $this, 'update_cache' ) );
 
 			//Add the resizing stats to Global stats
-			add_action( 'wp_smush_image_nextgen_resized',  array( $this, 'update_stats' ), '', 2 );
+			add_action( 'wp_smush_image_nextgen_resized', array( $this, 'update_stats' ), '', 2 );
 
 			//Get the stats for single image, update the global stats
 			add_action( 'wp_smush_nextgen_image_stats', array( $this, 'update_stats' ), '', 2 );
@@ -190,7 +190,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$percent        = $percent < 0 ? 0 : $percent;
 
 			if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
-				$status_txt  = __( 'Already Optimized', 'wp-smushit' );
+				$status_txt = __( 'Already Optimized', 'wp-smushit' );
 			} else {
 				if ( $bytes == 0 || $percent == 0 ) {
 					$status_txt = __( 'Already Optimized', 'wp-smushit' );
@@ -269,7 +269,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$opt_lossy_val = $wpsmush_settings->settings['lossy'];
 
 			//Check if premium user, compression was lossless, and lossy compression is enabled
-			if ( !$show_resmush && $this->is_pro_user && ! $is_lossy && $opt_lossy_val && ! empty( $image_type ) && $image_type != 'image/gif' ) {
+			if ( ! $show_resmush && $this->is_pro_user && ! $is_lossy && $opt_lossy_val && ! empty( $image_type ) && $image_type != 'image/gif' ) {
 				// the button text
 				$button_txt  = __( 'Super-Smush', 'wp-smushit' );
 				$show_button = true;
@@ -297,16 +297,11 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 */
 		function update_stats( $image_id, $stats ) {
 
-			global $WpSmush;
-
 			$stats = ! empty( $stats['stats'] ) ? $stats['stats'] : '';
 
 			$smush_stats = get_option( 'wp_smush_stats_nextgen', array() );
 
 			if ( ! empty( $stats ) ) {
-
-				//Compression Bytes
-				$smush_stats['bytes'] = ! empty( $smush_stats['bytes'] ) ? ( $smush_stats['bytes'] + $stats['bytes'] ) : $stats['bytes'];
 
 				//Human Readable
 				$smush_stats['human'] = ! empty( $smush_stats['bytes'] ) ? size_format( $smush_stats['bytes'], 1 ) : '';
@@ -317,8 +312,10 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				//Size of image after compression
 				$smush_stats['size_after'] = ! empty( $smush_stats['size_after'] ) ? ( $smush_stats['size_after'] + $stats['size_after'] ) : $stats['size_after'];
 
+				$smush_stats['bytes'] = ! empty( $smush_stats['size_before'] ) && !empty( $smush_stats['size_after'] ) ? ( $smush_stats['size_before'] - $smush_stats['size_after'] ) : 0;
+
 				//Compression Percentage
-				$smush_stats['percent'] = ! empty( $smush_stats['size_before'] ) && !empty( $smush_stats['size_after'] ) && $smush_stats['size_before'] > 0 ? ( $smush_stats['bytes'] / $smush_stats['size_before'] ) * 100 : $stats['percent'];
+				$smush_stats['percent'] = ! empty( $smush_stats['size_before'] ) && ! empty( $smush_stats['size_after'] ) && $smush_stats['size_before'] > 0 ? ( $smush_stats['bytes'] / $smush_stats['size_before'] ) * 100 : $stats['percent'];
 			}
 
 			update_option( 'wp_smush_stats_nextgen', $smush_stats, false );
@@ -355,7 +352,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				$smush_stats['size_after'] = ! empty( $smush_stats['size_after'] ) ? ( $smush_stats['size_after'] + $stats['size_after'] ) : $stats['size_after'];
 
 				//Compression Percentage
-				$smush_stats['percent'] = ! empty( $smush_stats['size_before'] ) && !empty( $smush_stats['size_after'] ) && $smush_stats['size_before'] > 0 ? ( $smush_stats['bytes'] / $smush_stats['size_before'] ) * 100 : $stats['percent'];
+				$smush_stats['percent'] = ! empty( $smush_stats['size_before'] ) && ! empty( $smush_stats['size_after'] ) && $smush_stats['size_before'] > 0 ? ( $smush_stats['bytes'] / $smush_stats['size_before'] ) * 100 : $stats['percent'];
 			}
 			update_option( 'wp_smush_stats_nextgen', $smush_stats, false );
 
@@ -364,10 +361,42 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		}
 
 		/**
+		 * Get the attachment stats for a image
+		 *
+		 * @param $id
+		 *
+		 * @return null
+		 */
+		function get_attachment_stats( $id ) {
+			// Registry Object for NextGen Gallery
+			$registry = C_Component_Registry::get_instance();
+
+			//Gallery Storage Object
+			$storage = $registry->get_utility( 'I_Gallery_Storage' );
+
+			//We'll get the image object in $id itself, else fetch it using Gallery Storage
+			if ( is_object( $id ) ) {
+				$image = $id;
+			} else {
+				// get an image object
+				$image = $storage->object->_image_mapper->find( $id );
+			}
+
+			//Check if we've smush stats, return it
+			if ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) {
+				return $image->meta_data['wp_smush'];
+			}
+
+			return null;
+		}
+
+		/**
 		 * Get the Nextgen Smush stats
 		 * @return bool|mixed|void
 		 */
 		function get_smush_stats() {
+
+			global $wpsmushnextgenadmin;
 
 			$smushed_stats = array(
 				'savings_bytes'   => 0,
@@ -377,8 +406,8 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			);
 
 			//Clear up the stats
-			if( 0 == $this->total_count() ) {
-				delete_option('wp_smush_stats_nextgen');
+			if ( 0 == $this->total_count() ) {
+				delete_option( 'wp_smush_stats_nextgen' );
 				wp_cache_delete( 'wp_smush_stats_nextgen', 'nextgen' );
 			}
 
@@ -410,6 +439,13 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 			$smushed_stats = array_merge( $smushed_stats, $stats );
 
+			//Gotta remove the stats for re-smush ids
+			if ( is_array( $wpsmushnextgenadmin->resmush_ids ) && ! empty( $wpsmushnextgenadmin->resmush_ids ) ) {
+				$resmush_stats = $this->get_stats_for_resmush_ids( $wpsmushnextgenadmin->resmush_ids );
+				//Recalculate stats, Remove stats for resmush ids
+				$smushed_stats = $this->recalculate_stats( 'sub', $smushed_stats, $resmush_stats );
+			}
+
 			return $smushed_stats;
 		}
 
@@ -422,6 +458,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 		/**
 		 * Returns the Stats for a image formatted into a nice table
+		 *
 		 * @param $image_id
 		 * @param $wp_smush_data
 		 * @param $attachment_metadata
@@ -453,7 +490,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				if ( ! empty( $skipped ) ) {
 					foreach ( $skipped as $img_data ) {
 						$skip_class = $img_data['reason'] == 'size_limit' ? ' error' : '';
-						$stats .= '<tr>
+						$stats      .= '<tr>
 					<td>' . strtoupper( $img_data['size'] ) . '</td>
 					<td class="smush-skipped' . $skip_class . '">' . $WpSmush->skip_reason( $img_data['reason'] ) . '</td>
 				</tr>';
@@ -476,7 +513,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					$stats .= " ( $size_value->percent% )";
 				}
 
-				$stats .='</td>
+				$stats .= '</td>
 				</tr>';
 			}
 			$stats .= '</tbody>
@@ -553,6 +590,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 		/**
 		 * Check if image can be resmushed
+		 *
 		 * @param $status_txt
 		 *
 		 * @return string
@@ -574,6 +612,80 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			}
 
 			return $show_resmush;
+		}
+
+		/**
+		 * Get the combined stats for Resmush Ids
+		 *
+		 * @param $resmush_ids
+		 *
+		 * @return array Array of Stats for all the resmush ids
+		 *
+		 */
+		function get_stats_for_resmush_ids( $resmush_ids = array() ) {
+			//Check for resmush ids
+			if( empty( $resmush_ids ) ) {
+				$resmush_ids = get_option( "wp-smush-nextgen-resmush-list", false );
+			}
+
+			//Initialize the Stats array
+			$stats = array(
+				'bytes'       => 0,
+				'size_before' => 0,
+				'size_after'  => 0
+			);
+			//Calculate the stats, Expensive Operation
+			foreach ( $resmush_ids as $id ) {
+				$image_stats = $this->get_attachment_stats( $id );
+				//Add the stats to $stats
+				foreach ( $stats as $k => $value ) {
+					if ( empty( $image_stats['stats'] ) || empty( $image_stats['stats'][ $k ] ) ) {
+						continue;
+					}
+					$stats[ $k ] += $image_stats['stats'][ $k ];
+				}
+			}
+
+			return $stats;
+		}
+
+		/**
+		 * Add/Subtract the values from 2nd array to First array
+		 * This function is very specific to current requirement of stats re-calculation
+		 *
+		 * @param string $op 'add', 'sub' Add or Subtract the values
+		 * @param array $a1
+		 * @param array $a2
+		 *
+		 * @return array Return $a1
+		 */
+		function recalculate_stats( $op = 'add', $a1 = array(), $a2 = array() ) {
+			//If the first array itself is not set, return
+			if ( empty( $a1 ) ) {
+				return $a1;
+			}
+
+			//Iterate over keys in first array, and add/subtract the values
+			foreach ( $a1 as $k => $v ) {
+				//If the key is not set in 2nd array, skip
+				if ( empty( $a2[ $k ] ) ) {
+					continue;
+				}
+				//Else perform the operation, Considers the value to be integer, doesn't performs a check
+				if ( 'sub' == $op ) {
+					//Subtract the value
+					$a1[ $k ] -= $a2[ $k ];
+				} elseif ( 'add' == $op ) {
+					//add the value
+					$a1[ $k ] += $a2[ $k ];
+				}
+			}
+
+			//Recalculate percentage and human savings
+			$a1['percent'] =  !empty( $a1['size_before'] ) ? ( ( $a1['bytes'] / $a1['size_before'] ) * 100 ) : 0;
+			$a1['human'] =  !empty( $a1['bytes'] ) ? size_format( $a1['bytes'], 1 ) : 0;
+
+			return $a1;
 		}
 
 	}//End of Class

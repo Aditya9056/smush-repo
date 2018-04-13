@@ -835,13 +835,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 
 			//Smush the image
-			$smush = $WpSmush->resize_from_meta_data( $original_meta, $attachment_id );
+			$smush = $this->resize_from_meta_data( $original_meta, $attachment_id );
 
 			//Update the details, after smushing, so that latest image is used in hook
 			wp_update_attachment_metadata( $attachment_id, $original_meta );
 
 			//Get the button status
-			$status = $WpSmush->set_status( $attachment_id, false, true );
+			$status = $this->set_status( $attachment_id, false, true );
 
 			//Delete the transient after attachment meta is updated
 			delete_transient( 'smush-in-progress-' . $attachment_id );
@@ -1373,6 +1373,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Scans all the smushed attachments to check if they need to be resmushed as per the
 		 * current settings, as user might have changed one of the configurations "Lossy", "Keep Original", "Preserve Exif"
+		 * @todo: Needs some refactoring big time
 		 */
 		function scan_images() {
 
@@ -1382,6 +1383,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$resmush_list = array();
 
+			//Scanning for NextGen or Media Library
+			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
+
 			//Save settings only if networkwide settings are disabled
 			if ( ( ! is_multisite() || ! $wpsmush_settings->is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
 				//Save Settings
@@ -1389,7 +1393,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//If there aren't any images in the library, return the notice
-			if ( 0 == $wpsmush_db->get_media_attachments( true ) ) {
+			if ( 0 == $wpsmush_db->get_media_attachments( true ) && 'nextgen' != $type ) {
 				$notice = esc_html__( "We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" );
 				$resp   = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="icon-fi-check-tick"></i> ' . $notice . '
 				<i class="icon-fi-close"></i>
@@ -1410,9 +1414,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				<i class="icon-fi-close"></i>
 				</div>';
 
-			//Scanning for NextGen or Media Library
-			$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
-
 			//If a user manually runs smush check
 			$return_ui = isset( $_REQUEST['get_ui'] ) && 'true' == $_REQUEST['get_ui'] ? true : false;
 
@@ -1431,7 +1432,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Intialize NextGen Stats
 			if ( 'nextgen' == $type && is_object( $wpsmushnextgenadmin ) && empty( $wpsmushnextgenadmin->remaining_count ) ) {
-				$wpsmushnextgenadmin->setup_stats();
+				$wpsmushnextgenadmin->setup_image_counts();
 			}
 
 			$key = 'nextgen' == $type ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
@@ -1548,34 +1549,25 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 							}
 						}
 					}
-				}
+				}# End of Foreach Loop
 
 				//Check for Upfront images that needs to be smushed
 				if ( $upfront_active && 'nextgen' != $type ) {
-					$upfront_attachments = $wpsmush_db->get_upfront_images( $resmush_list );
-					if ( ! empty( $upfront_attachments ) && is_array( $upfront_attachments ) ) {
-						foreach ( $upfront_attachments as $u_attachment_id ) {
-							if ( ! in_array( $u_attachment_id, $resmush_list ) ) {
-								//Check if not smushed
-								$upfront_images = get_post_meta( $u_attachment_id, 'upfront_used_image_sizes', true );
-								if ( ! empty( $upfront_images ) && is_array( $upfront_images ) ) {
-									//Iterate over all the images
-									foreach ( $upfront_images as $image ) {
-										//If any of the element image is not smushed, add the id to resmush list
-										//and skip to next image
-										if ( empty( $image['is_smushed'] ) || 1 != $image['is_smushed'] ) {
-											$resmush_list[] = $u_attachment_id;
-											break;
-										}
-									}
-								}
-							}
-						}
-					}
+					$resmush_list = $this->get_upfront_resmush_list( $resmush_list );
 				}//End Of Upfront loop
 
 				//Store the resmush list in Options table
 				update_option( $key, $resmush_list, false );
+			}
+			//Get updated stats for Nextgen
+			if ( 'nextgen' == $type ) {
+				#Reinitialize Nextgen stats
+				$wpsmushnextgenadmin->setup_image_counts();
+				//Image count, Smushed Count, Supersmushed Count, Savings
+				$stats               = $wpsmushnextgenstats->get_smush_stats();
+				$image_count         = $wpsmushnextgenadmin->image_count;
+				$smushed_count       = $wpsmushnextgenadmin->smushed_count;
+				$super_smushed_count = $wpsmushnextgenadmin->super_smushed;
 			}
 
 			//Delete resmush list if empty
@@ -1614,19 +1606,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						</div>';
 			}
 
-			//Append the directory smush stats
-			$dir_smush_stats = get_option( 'dir_smush_stats' );
-			if ( ! empty( $dir_smush_stats ) && is_array( $dir_smush_stats ) ) {
+			##Directory Smush Stats
+			//Include directory smush stats if not requested for nextgen
+			if ( 'nextgen' != $type ) {
+				//Append the directory smush stats
+				$dir_smush_stats = get_option( 'dir_smush_stats' );
+				if ( ! empty( $dir_smush_stats ) && is_array( $dir_smush_stats ) ) {
 
-				if ( ! empty( $dir_smush_stats['dir_smush'] ) && ! empty( $dir_smush_stats['optimised'] ) ) {
-					$dir_smush_stats = $dir_smush_stats['dir_smush'];
-					$image_count     += $dir_smush_stats['optimised'];
-				}
+					if ( ! empty( $dir_smush_stats['dir_smush'] ) && ! empty( $dir_smush_stats['optimised'] ) ) {
+						$dir_smush_stats = $dir_smush_stats['dir_smush'];
+						$image_count     += $dir_smush_stats['optimised'];
+					}
 
-				//Add directory smush stats if not empty
-				if ( ! empty( $dir_smush_stats['image_size'] ) && ! empty( $dir_smush_stats['orig_size'] ) ) {
-					$stats['size_before'] += $dir_smush_stats['orig_size'];
-					$stats['size_after']  += $dir_smush_stats['image_size'];
+					//Add directory smush stats if not empty
+					if ( ! empty( $dir_smush_stats['image_size'] ) && ! empty( $dir_smush_stats['orig_size'] ) ) {
+						$stats['size_before'] += $dir_smush_stats['orig_size'];
+						$stats['size_after']  += $dir_smush_stats['image_size'];
+					}
 				}
 			}
 
@@ -1639,8 +1635,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'count_smushed'      => $smushed_count,
 				'size_before'        => $stats['size_before'],
 				'size_after'         => $stats['size_after'],
-				'savings_resize'     => $stats['savings_resize'],
-				'savings_conversion' => $stats['savings_conversion']
+				'savings_resize'     => ! empty( $stats['savings_resize'] ) ? $stats['savings_resize'] : 0,
+				'savings_conversion' => ! empty( $stats['savings_conversion'] ) ? $stats['savings_conversion'] : 0
 			) : array();
 
 			//Include the count
@@ -1815,9 +1811,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 			} else {
 				//For Nextgen. Get the stats
-				$stats = $wpsmushnextgenstats->get_smush_stats();
+				$stats = $wpsmushnextgenstats->get_stats_for_resmush_ids();
 
-				$stats['count_images'] = $wpsmushnextgenadmin->smushed_count;
+				$resmush_ids = get_option( "wp-smush-nextgen-resmush-list", false );
+
+				$stats['count_images'] = $wpsmushnextgenadmin->get_image_count( $resmush_ids, false );
 			}
 
 			//Delete the resmush list
@@ -2323,6 +2321,39 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$svg = ob_get_clean();
 
 			return 'data:image/svg+xml;base64,' . base64_encode( $svg );
+		}
+
+		/**
+		 * Checks if upfront images needs to be resmushed
+		 *
+		 * @param $resmush_list
+		 *
+		 * @return array Returns the list of image ids that needs to be re-smushed
+		 */
+		function get_upfront_resmush_list( $resmush_list ) {
+			global $wpsmush_db;
+			$upfront_attachments = $wpsmush_db->get_upfront_images( $resmush_list );
+			if ( ! empty( $upfront_attachments ) && is_array( $upfront_attachments ) ) {
+				foreach ( $upfront_attachments as $u_attachment_id ) {
+					if ( ! in_array( $u_attachment_id, $resmush_list ) ) {
+						//Check if not smushed
+						$upfront_images = get_post_meta( $u_attachment_id, 'upfront_used_image_sizes', true );
+						if ( ! empty( $upfront_images ) && is_array( $upfront_images ) ) {
+							//Iterate over all the images
+							foreach ( $upfront_images as $image ) {
+								//If any of the element image is not smushed, add the id to resmush list
+								//and skip to next image
+								if ( empty( $image['is_smushed'] ) || 1 != $image['is_smushed'] ) {
+									$resmush_list[] = $u_attachment_id;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return $resmush_list;
 		}
 	}
 
