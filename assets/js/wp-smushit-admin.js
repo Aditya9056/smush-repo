@@ -1335,7 +1335,7 @@ jQuery(function ($) {
         $('.wp-smush-savings .wp-smush-stats-human').html(formatBytes(wp_smushit_data.savings_bytes, 1));
 
         //Update the savings percent
-        wp_smushit_data.savings_percent = precise_round(( parseInt(wp_smushit_data.savings_bytes) / parseInt(wp_smushit_data.size_before) ) * 100, 1);
+        wp_smushit_data.savings_percent = parseInt(wp_smushit_data.savings_bytes) > 0 ? precise_round(( parseInt(wp_smushit_data.savings_bytes) / parseInt(wp_smushit_data.size_before) ) * 100, 1) : 0;
         $('.wp-smush-savings .wp-smush-stats-percent').html(wp_smushit_data.savings_percent);
 
         //Update Savings in share message
@@ -1528,6 +1528,7 @@ jQuery(function ($) {
 
             //Check, if limit is exceeded for free version
             if (typeof res.data !== "undefined" && res.data.error == 'dir_smush_limit_exceeded') {
+                first_child.removeClass('processed');
                 //Show error, Bulk Smush limit exceeded
                 directory_smush_finished('wp-smush-dir-limit');
                 return;

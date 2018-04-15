@@ -632,8 +632,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Get the image count for nextgen images
 		 *
 		 * @param array $images Array of attachments to get the image count for
-         *
-         * @param bool $exclude_resmush_ids Whether to exclude resmush ids or not
+		 *
+		 * @param bool $exclude_resmush_ids Whether to exclude resmush ids or not
 		 *
 		 * @return int
 		 */

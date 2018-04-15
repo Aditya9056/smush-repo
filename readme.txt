@@ -159,15 +159,23 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 = 2.7.9 =
 
+* Update:
+    * Smush settings moved to separate top level page in dashboard ( Smush/Smush Pro )
+
 * Fixed:
-    * Conflict with plugin Download Manager, Embed any document
+    * Conflict with plugin Download Manager, Embed any document, Getty
     * Settings link incorrect for sub sites
     * Don't load smush settings in front-end
     * Increase php memory limit only if lesser than required
     * Display a warning if custom table isn't created
     * Attachment details not being displayed when uploading image in post edit screen
-    * Conflict with getty plugin
     * Compatibility with WP Offload S3 latest version
+    * Directory Smush skips 1 image for every iteration of 50 images ( Free version )
+    * Nextgen Gallery Stats not updated properly ( Pro Version )
+    * Added instructions for Resize Image feature - It works independent of Auto Smush, If "Automatic Smush" is off and
+      "Resize my full size image" is kept on, the image would be resized
+    * Smush button doesn not appears in Media Modal window for Ultimate Branding
+    
 
 * Updated:
     * Settings are moved to a separate top-level menu "Smush" in dashboard menu area.
