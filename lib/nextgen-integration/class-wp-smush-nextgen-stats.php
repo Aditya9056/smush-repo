@@ -55,8 +55,10 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 * @param bool $force_refresh Optional. Whether to force the cache to be refreshed.
 		 * Default false.
 		 *
-		 * @return int|WP_Error Total Image count,
-		 * WP_Error object otherwise.
+		 * @param bool $return_ids Whether to return the ids array, set to false by default
+		 *
+		 * @return int|mixed|void Returns the images ids or the count
+		 *
 		 */
 		function total_count( $force_refresh = false, $return_ids = false ) {
 			// Check for the  wp_smush_images in the 'nextgen' group.
@@ -76,13 +78,6 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			return $return_ids ? $attachment_ids : count( $attachment_ids );
 		}
 
-		/**
-		 *
-		 *
-		 * @param bool $return_ids Whether to return the ids array, set to false by default
-		 *
-		 * @return int|mixed|void Returns the images ids or the count
-		 */
 		/**
 		 * Returns the ngg images list(id and meta ) or count
 		 *
@@ -319,9 +314,6 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			}
 
 			update_option( 'wp_smush_stats_nextgen', $smush_stats, false );
-
-			//Cahce the results, we don't need a timed cache expiration.
-			wp_cache_set( 'wp_smush_stats_nextgen', $smush_stats, 'nextgen' );
 		}
 
 		/**
@@ -355,9 +347,6 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				$smush_stats['percent'] = ! empty( $smush_stats['size_before'] ) && ! empty( $smush_stats['size_after'] ) && $smush_stats['size_before'] > 0 ? ( $smush_stats['bytes'] / $smush_stats['size_before'] ) * 100 : $stats['percent'];
 			}
 			update_option( 'wp_smush_stats_nextgen', $smush_stats, false );
-
-			//Cahce the results, we don't need a timed cache expiration.
-			wp_cache_set( 'wp_smush_stats_nextgen', $smush_stats, 'nextgen' );
 		}
 
 		/**
@@ -368,23 +357,32 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 * @return null
 		 */
 		function get_attachment_stats( $id ) {
-			// Registry Object for NextGen Gallery
-			$registry = C_Component_Registry::get_instance();
-
-			//Gallery Storage Object
-			$storage = $registry->get_utility( 'I_Gallery_Storage' );
 
 			//We'll get the image object in $id itself, else fetch it using Gallery Storage
-			if ( is_object( $id ) ) {
+			if ( is_object( $id ) || is_array( $id ) ) {
 				$image = $id;
 			} else {
+				// Registry Object for NextGen Gallery
+				$registry = C_Component_Registry::get_instance();
+
+				//Gallery Storage Object
+				$storage = $registry->get_utility( 'I_Gallery_Storage' );
+
 				// get an image object
 				$image = $storage->object->_image_mapper->find( $id );
 			}
 
 			//Check if we've smush stats, return it
-			if ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) {
-				return $image->meta_data['wp_smush'];
+			if ( is_object( $image ) ) {
+				if ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) {
+					return $image->meta_data['wp_smush'];
+				}
+			} elseif ( is_array( $image ) ) {
+				if ( ! empty( $image['wp_smush'] ) ) {
+					return $image['wp_smush'];
+				} else if ( ! empty( $image['meta_data'] ) && ! empty( $image['meta_data']['wp_smush'] ) ) {
+					return $image['meta_data']['wp_smush'];
+				}
 			}
 
 			return null;
@@ -408,22 +406,11 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			//Clear up the stats
 			if ( 0 == $this->total_count() ) {
 				delete_option( 'wp_smush_stats_nextgen' );
-				wp_cache_delete( 'wp_smush_stats_nextgen', 'nextgen' );
 			}
 
-			// Check for the  wp_smush_images_smushed in the 'nextgen' group.
-			$stats = wp_cache_get( 'wp_smush_stats_nextgen', 'nextgen' );
+			// Check for the  wp_smush_images in the 'nextgen' group.
+			$stats = get_option( 'wp_smush_stats_nextgen', array() );
 
-			// If nothing is found, build the object.
-			if ( false === $stats ) {
-				// Check for the  wp_smush_images in the 'nextgen' group.
-				$stats = get_option( 'wp_smush_stats_nextgen', array() );
-
-				if ( ! is_wp_error( $stats ) ) {
-					// In this case we don't need a timed cache expiration.
-					wp_cache_set( 'wp_smush_stats_nextgen', $stats, 'nextgen' );
-				}
-			}
 			if ( empty( $stats['bytes'] ) || $stats['bytes'] < 0 ) {
 				$stats['bytes'] = 0;
 			}
@@ -441,7 +428,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 
 			//Gotta remove the stats for re-smush ids
 			if ( is_array( $wpsmushnextgenadmin->resmush_ids ) && ! empty( $wpsmushnextgenadmin->resmush_ids ) ) {
-				$resmush_stats = $this->get_stats_for_resmush_ids( $wpsmushnextgenadmin->resmush_ids );
+				$resmush_stats = $this->get_stats_for_ids( $wpsmushnextgenadmin->resmush_ids );
 				//Recalculate stats, Remove stats for resmush ids
 				$smushed_stats = $this->recalculate_stats( 'sub', $smushed_stats, $resmush_stats );
 			}
@@ -615,27 +602,26 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		}
 
 		/**
-		 * Get the combined stats for Resmush Ids
+		 * Get the combined stats for given Ids
 		 *
-		 * @param $resmush_ids
+		 * @param $ids
 		 *
-		 * @return array Array of Stats for all the resmush ids
+		 * @return array Array of Stats for the given ids
 		 *
 		 */
-		function get_stats_for_resmush_ids( $resmush_ids = array() ) {
-			//Check for resmush ids
-			if( empty( $resmush_ids ) ) {
-				$resmush_ids = get_option( "wp-smush-nextgen-resmush-list", false );
+		function get_stats_for_ids( $ids = array() ) {
+			//Return if we don't have an array or no ids
+			if ( ! is_array( $ids ) || empty( $ids ) ) {
+				return false;
 			}
 
 			//Initialize the Stats array
 			$stats = array(
-				'bytes'       => 0,
 				'size_before' => 0,
 				'size_after'  => 0
 			);
 			//Calculate the stats, Expensive Operation
-			foreach ( $resmush_ids as $id ) {
+			foreach ( $ids as $id ) {
 				$image_stats = $this->get_attachment_stats( $id );
 				//Add the stats to $stats
 				foreach ( $stats as $k => $value ) {
@@ -644,6 +630,11 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 					}
 					$stats[ $k ] += $image_stats['stats'][ $k ];
 				}
+			}
+
+			//Calculate savings
+			if ( ! empty( $stats['size_before'] ) && ! empty( $stats['size_after'] ) ) {
+				$stats['bytes'] = $stats['size_before'] - $stats['size_after'];
 			}
 
 			return $stats;
@@ -686,6 +677,30 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$a1['human'] =  !empty( $a1['bytes'] ) ? size_format( $a1['bytes'], 1 ) : 0;
 
 			return $a1;
+		}
+
+		/**
+		 * Recalculate stats for the given smushed ids and update the cache
+		 *
+		 */
+		function update_stats_cache() {
+
+			//Get the Image ids
+			$smushed_images = $this->get_ngg_images( 'smushed' );
+			$stats          = $this->get_stats_for_ids( $smushed_images );
+
+			if ( empty( $stats['bytes'] ) && ! empty( $stats['size_before'] ) ) {
+				$stats['bytes'] = $stats['size_before'] - $stats['size_after'];
+			}
+			$stats['human'] = size_format( $stats['bytes'] );
+			if ( ! empty( $stats['size_before'] ) ) {
+				$stats['percent'] = ( $stats['bytes'] / $stats['size_before'] ) * 100;
+				$stats['percent'] = round( $stats['percent'], 2 );
+			}
+
+			//Update Stats Cache
+			update_option('wp_smush_stats_nextgen', $stats, false);
+
 		}
 
 	}//End of Class

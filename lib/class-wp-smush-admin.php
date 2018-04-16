@@ -1810,10 +1810,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$stats = $wpsmush_db->get_savings_for_attachments( $resmush_list );
 				}
 			} else {
-				//For Nextgen. Get the stats
-				$stats = $wpsmushnextgenstats->get_stats_for_resmush_ids();
-
-				$resmush_ids = get_option( "wp-smush-nextgen-resmush-list", false );
+				//For Nextgen. Get the stats( Get the resmush ids )
+				$resmush_ids = get_option( "wp-smush-nextgen-resmush-list", array() );
+				$stats = $wpsmushnextgenstats->get_stats_for_ids( $resmush_ids );
 
 				$stats['count_images'] = $wpsmushnextgenadmin->get_image_count( $resmush_ids, false );
 			}

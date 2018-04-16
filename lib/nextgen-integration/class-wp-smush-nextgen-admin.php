@@ -33,6 +33,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 		function __construct() {
 
+			global $wpsmushnextgenstats;
+
 			//Update the number of columns
 			add_filter( 'ngg_manage_images_number_of_columns', array(
 				&$this,
@@ -52,7 +54,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			add_action( 'ngg_delete_picture', array( $this, 'update_nextgen_stats' ) );
 
 			//Update Stats, Lists -  if a NextGen Gallery is deleted
-//			add_action( 'ngg_delete_gallery', array( $this, 'update_stats' ) );
+			add_action( 'ngg_delete_gallery', array( $wpsmushnextgenstats, 'update_stats_cache' ) );
 
 			//Update the Super Smush count, after the smushing
 			add_action( 'wp_smush_image_optimised_nextgen', array( $this, 'update_lists' ), '', 2 );
@@ -713,18 +715,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			return $metadata;
 
-		}
-
-		function update_stats( $id = '' ) {
-			if ( empty( $id ) ) {
-				return;
-			}
-			//Get the list of images for Gallery
-			if ( class_exists( 'C_Image_Mapper' ) ) {
-				$image_mapper = C_Image_Mapper::get_instance();
-				$images       = $image_mapper->find_all_for_gallery( $id );
-			}
-			exit;
 		}
 
 	}//End of Class

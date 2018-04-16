@@ -175,7 +175,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
     * Added instructions for Resize Image feature - It works independent of Auto Smush, If "Automatic Smush" is off and
       "Resize my full size image" is kept on, the image would be resized
     * Smush button doesn not appears in Media Modal window for Ultimate Branding
-    
+    * NextGen Integration: Smush stats not updated after image deletion
 
 * Updated:
     * Settings are moved to a separate top-level menu "Smush" in dashboard menu area.
