@@ -298,21 +298,24 @@ if ( ! function_exists( 'smush_i18n' ) ) {
 }
 
 //Add Share UI Class
-add_filter( 'admin_body_class', 'admin_body_classes' );
-function admin_body_classes( $classes ) {
-    //Exit if function doesn't exists
-	if ( ! function_exists( 'get_current_screen' ) ) {
-		return $classes;
-	}
-	$current_screen = get_current_screen();
-	//If not on plugin page
-	if ( 'toplevel_page_smush' != $current_screen->id ) {
-		return $classes;
-	}
-	$classes .= 'sui-2-1-0';
+add_filter( 'admin_body_class', 'smush_body_classes' );
 
-	return $classes;
+if ( ! function_exists( 'smush_body_classes' ) ) {
+	function smush_body_classes( $classes ) {
+		//Exit if function doesn't exists
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return $classes;
+		}
+		$current_screen = get_current_screen();
+		//If not on plugin page
+		if ( 'toplevel_page_smush' != $current_screen->id ) {
+			return $classes;
+		}
+		$classes .= 'sui-2-1-0';
 
+		return $classes;
+
+	}
 }
 
 register_activation_hook( __FILE__, 'smush_activated' );

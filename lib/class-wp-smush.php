@@ -2004,13 +2004,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			$url = admin_url( 'upload.php' );
-			$url = add_query_arg(
-				array(
-					'page' => 'wp-smush-bulk'
-				),
-				$url
-			);
+			$url = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
 
 			//Store that we need not redirect again
 			add_site_option( 'wp-smush-skip-redirect', true );
