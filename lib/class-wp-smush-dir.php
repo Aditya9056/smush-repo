@@ -1341,7 +1341,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		function directory_list_dialog() {
 			$current_screen = get_current_screen();
-			if ( empty( $current_screen ) || empty( $current_screen->base ) || 'toplevel_page_smush' != $current_screen->base ) {
+			if ( empty( $current_screen ) || empty( $current_screen->base ) || 'toplevel_page_smush' != $current_screen->base || 'toplevel_page_smush-network' != $current_screen->base ) {
 				return;
 			} ?>
             <div class="dev-overlay small wp-smush-list-dialog roboto-regular">
@@ -1378,7 +1378,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			global $wpdb;
 			$notice = '';
 			$current_screen = get_current_screen();
-			if ( 'toplevel_page_smush' != $current_screen->id ) {
+			if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
 				return $notice;
 			}
 			$sql         = $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->esc_like( $wpdb->prefix . 'smush_dir_images' ) );

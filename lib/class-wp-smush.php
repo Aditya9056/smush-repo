@@ -2004,12 +2004,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			$url = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
+			//Do not use menu_page_url(), by the time menu is not registered and it returns a empty URL, and in turn wp_redirect() gives a fatal error
+			$url = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : admin_url( 'admin.php?page=smush' );
 
 			//Store that we need not redirect again
 			add_site_option( 'wp-smush-skip-redirect', true );
 
-			exit( wp_redirect( $url ) );
+			wp_redirect( $url );
+			exit;
 		}
 
 		/**

@@ -155,7 +155,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			// Do not display the notice on Bulk Smush Screen.
 			global $current_screen;
-			if ( ! empty( $current_screen->base ) && 'toplevel_page_smush' != $current_screen->base && 'gallery_page_wp-smush-nextgen-bulk' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base ) {
+			if ( ! empty( $current_screen->base ) && 'toplevel_page_smush' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base && 'gallery_page_wp-smush-nextgen-bulk' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base ) {
 				return true;
 			}
 

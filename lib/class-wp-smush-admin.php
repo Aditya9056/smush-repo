@@ -363,7 +363,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
 			//Load on Smush all page only
-			if ( 'toplevel_page_smush' == $current_page ) {
+			if ( 'toplevel_page_smush' == $current_page || 'toplevel_page_smush-network' == $current_page ) {
 				//Load Jquery tree on specified page
 				wp_enqueue_script( 'jqft-js' );
 				wp_enqueue_style( 'jqft-css' );
@@ -415,7 +415,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
 			//Load the stats on selected screens only
-			if ( $current_page == 'toplevel_page_smush' ) {
+			if ( $current_page == 'toplevel_page_smush' || $current_page == 'toplevel_page_smush-network' ) {
 
 				//Get resmush list, If we have a resmush list already, localize those ids
 				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
@@ -1979,7 +1979,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Do not display the notice on Bulk Smush Screen
 			global $current_screen;
-			if ( ! empty( $current_screen->base ) && ( 'toplevel_page_smush' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base || 'toplevel_page_smush-network' == $current_screen->base ) ) {
+			if ( ! empty( $current_screen->base ) && ( 'toplevel_page_smush' == $current_screen->base || 'toplevel_page_smush-network' == $current_screen->base || 'gallery_page_wp-smush-nextgen-bulk' == $current_screen->base || 'toplevel_page_smush-network' == $current_screen->base ) ) {
 				return true;
 			}
 
