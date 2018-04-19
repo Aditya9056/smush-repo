@@ -756,7 +756,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// calculate %ages, avoid divide by zero error with no attachments
 
 			if ( $count->total_count > 0 && $count->smushed_count > 0 ) {
-				$smushed_pc = $count->smushed_count / $count->total_count * 100;
+				$smushed_pc = ( $count->smushed_count / $count->total_count ) * 100;
 			} else {
 				$smushed_pc = 0;
 			}

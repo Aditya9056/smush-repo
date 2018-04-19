@@ -415,7 +415,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
 			//Load the stats on selected screens only
-			if ( $current_page == 'toplevel_page_smush' || $current_page == 'toplevel_page_smush-network' ) {
+			if ( $current_page == 'toplevel_page_smush' ) {
 
 				//Get resmush list, If we have a resmush list already, localize those ids
 				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {

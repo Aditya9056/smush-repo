@@ -625,7 +625,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$this->image_count = $this->get_image_count( $smushed_images );
 
 			//Count of images ( Attachments ), Does not includes additioanl sizes that might have been created
-			$this->smushed_count = $smushed_images && is_array( $smushed_images ) ? count( $smushed_images ) : $smushed_images;
+			$this->smushed_count = isset( $smushed_images ) && is_array( $smushed_images ) ? sizeof( $smushed_images ) : $smushed_images;
 
 			$this->remaining_count = $wpsmushnextgenstats->get_ngg_images( 'unsmushed', true );
 		}
