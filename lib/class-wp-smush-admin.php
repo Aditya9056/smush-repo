@@ -779,6 +779,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				) );
 			}
 
+			$this->initialise();
 			//Pass on the attachment id to smush single function
 			$this->smush_single( $attachemnt_id );
 		}
@@ -1151,7 +1152,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Show Temporary Status, For Async Optimisation, No Good workaround
 			if ( ! get_transient( "wp-smush-restore-$id" ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $WpSmush->is_auto_smush_enabled() ) {
 				// the status
-				$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
+				$status_txt = '<p class="smush-status">'. __( 'Smushing in progress..', 'wp-smushit' ) . "</p>";
 
 				// we need to show the smush button
 				$show_button = false;
@@ -1461,7 +1462,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			}
 
-			$image_count = $super_smushed_count = $smushed_count = 0;
+			$image_count = $super_smushed_count = $smushed_count = $resized_count = 0;
 			//Check if any of the smushed image needs to be resmushed
 			if ( ! empty( $attachments ) && is_array( $attachments ) ) {
 				$stats = array(
@@ -1528,6 +1529,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 								//Increase the smushed count
 								$smushed_count += 1;
+								//Get the resized image count
+								if( !empty( $resize_savings ) ) {
+									$resized_count += 1;
+								}
 
 								//Get the image count
 								$image_count += ( ! empty( $smush_data['sizes'] ) && is_array( $smush_data['sizes'] ) ) ? sizeof( $smush_data['sizes'] ) : 0;
@@ -1633,6 +1638,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'count_image'        => $image_count,
 				'count_supersmushed' => $super_smushed_count,
 				'count_smushed'      => $smushed_count,
+				'count_resize'       => $resized_count,
 				'size_before'        => $stats['size_before'],
 				'size_after'         => $stats['size_after'],
 				'savings_resize'     => ! empty( $stats['savings_resize'] ) ? $stats['savings_resize'] : 0,
@@ -1807,7 +1813,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( 'nextgen' != $_POST['type'] ) {
 				$resmush_list = get_option( $key );
 				if ( ! empty( $resmush_list ) && is_array( $resmush_list ) ) {
-					$stats = $wpsmush_db->get_savings_for_attachments( $resmush_list );
+					$stats = $wpsmush_db->get_stats_for_attachments( $resmush_list );
 				}
 			} else {
 				//For Nextgen. Get the stats( Get the resmush ids )

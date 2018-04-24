@@ -847,7 +847,13 @@ label.setting.smush-stats div.wp-smush-progress span {
     color: #fff;
 }
 
-div.smush-status-links div.smush-stats-wrapper {
+.attachment-details .setting div.smush-status-links {
+    float: none;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+div.attachment-details .setting div.smush-status-links.smush-status-links div.smush-stats-wrapper {
     margin-top: 15px;
 }
 

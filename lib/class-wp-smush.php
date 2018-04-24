@@ -668,6 +668,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return bool|array array containing success status, and stats
 		 */
 		function _post( $file_path, $file_size ) {
+
 			global $wpsmushit_admin, $wpsmush_settings, $wpsmush_helper;
 
 			$data = false;
@@ -684,8 +685,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( ! empty( $api_key ) && $this->validate_install() ) {
 				$headers['apikey'] = $api_key;
 			}
-
-			if ( $this->lossy_enabled && $this->validate_install() ) {
+			if ( $this->lossy_enabled ) {
 				$headers['lossy'] = 'true';
 			} else {
 				$headers['lossy'] = 'false';
@@ -970,7 +970,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt  = $button_txt = $stats = $links = '';
 			$show_button = $show_resmush = false;
 
-			$links = "<div class='smush-status-links'>";
+			$links = "";
 
 			// If variables are not initialized properly, initialize it.
 			if ( ! has_action( 'admin_init', array( $this, 'admin_init' ) ) ) {
@@ -1067,8 +1067,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						}
 					}
 				}
-				$links .= "</div>";
-				$status_txt .= $links;
+				//Wrap links if not empty
+				$links = !empty( $links ) ? "<div class='smush-status-links'>" . $links . "</div>" : '';
+
 				/** Super Smush Button  */
 				//IF current compression is lossy
 				if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
@@ -1081,7 +1082,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				//Check if premium user, compression was lossless, and lossy compression is enabled
 				//If we are displaying the resmush option already, no need to show the Super Smush button
-				if ( ! $show_resmush && $this->validate_install() && ! $is_lossy && $this->lossy_enabled && $image_type != 'image/gif' ) {
+				if ( ! $show_resmush && ! $is_lossy && $this->lossy_enabled && $image_type != 'image/gif' ) {
 					// the button text
 					$button_txt  = __( 'Super-Smush', 'wp-smushit' );
 					$show_button = true;
@@ -1110,6 +1111,12 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				// the button text
 				$button_txt = __( 'Smush Now!', 'wp-smushit' );
 			}
+
+			$class = $wp_smush_data ? '' : ' hidden';
+			$status_txt  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
+
+			$status_txt .= $links;
+
 			if ( $text_only ) {
 				//For ajax response
 				return array(
@@ -1143,7 +1150,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return string|void
 		 */
-		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
+		function column_html( $id, $html = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
 			$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
 
 			// don't proceed if attachment is not image, or if image is not a jpg, png or gif
@@ -1151,8 +1158,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
-			$class = $smushed ? '' : ' hidden';
-			$html  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
 			// if we aren't showing the button
 			if ( ! $show_button ) {
 				if ( $echo ) {
@@ -1170,6 +1175,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 			$mode_class = ! empty( $_POST['mode'] ) && 'grid' == $_POST['mode'] ? ' button-primary' : '';
+
 			if ( ! $echo ) {
 				$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button wp-smush-send';
 				$html .= '

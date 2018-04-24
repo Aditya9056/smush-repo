@@ -209,8 +209,17 @@ jQuery(function ($) {
             this.hide_loader();
             this.request.done(function (response) {
                 if (typeof response.data != 'undefined') {
-                    //Append the smush stats or error
-                    self.$status.html(response.data);
+
+                    //Check if stats div exists
+                    var parent = self.$status.parent();
+                    var stats_div = parent.find('.smush-stats-wrapper');
+
+                    //If we've updated status, replace the content
+                    if (response.data.status) {
+                        //remove Links
+                        parent.find('.smush-status-links').remove()
+                        self.$status.replaceWith(response.data.status);
+                    }
 
                     //Check whether to show membership validity notice or not
                     membership_validity(response.data);
@@ -224,12 +233,6 @@ jQuery(function ($) {
                         self.$status.html(response.data.error_msg);
                         self.$status.show();
                     }
-                    if (response.data.status) {
-                        self.$status.html(response.data.status);
-                    }
-                    //Check if stats div exists
-                    var parent = self.$status.parent();
-                    var stats_div = parent.find('.smush-stats-wrapper');
                     if ('undefined' != stats_div && stats_div.length) {
                         stats_div.replaceWith(response.data.stats);
                     } else {
@@ -508,8 +511,13 @@ jQuery(function ($) {
                         self.update_remaining_count();
                     } else {
 
-                        if (self.is_bulk && res.success) {
-                            self.update_progress(res);
+                        if (self.is_bulk) {
+                            if (res.success) {
+                                self.update_progress(res);
+                            } else if (self.ids.length == 0) {
+                                //Sync stats anyway
+                                self.sync_stats();
+                            }
                         }
                     }
                     self.single_done();
@@ -910,6 +918,7 @@ jQuery(function ($) {
                         wp_smushit_data.size_after = 'undefined' != typeof r.data.size_after ? r.data.size_after : wp_smushit_data.size_after;
                         wp_smushit_data.savings_resize = 'undefined' != typeof r.data.savings_resize ? r.data.savings_resize : wp_smushit_data.savings_resize;
                         wp_smushit_data.savings_conversion = 'undefined' != typeof r.data.savings_conversion ? r.data.savings_conversion : wp_smushit_data.savings_conversion;
+                        wp_smushit_data.count_resize = 'undefined' != typeof r.data.count_resize ? r.data.count_resize : wp_smushit_data.count_resize;
                     }
 
                     if( 'nextgen' == scan_type ) {
@@ -1983,6 +1992,10 @@ jQuery(function ($) {
                     }
 
                     wp_smushit_data.count_resize = 'undefined' != typeof stats.count_resize ? parseInt( wp_smushit_data.count_resize ) + stats.count_resize : wp_smushit_data.count_resize;
+                }
+                //Smush Notice
+                if ($('.bulk-smush-wrapper .wp-smush-remaining-count').length && 'undefined' != typeof wp_smushit_data.unsmushed ) {
+                    $('.bulk-smush-wrapper .wp-smush-remaining-count').html(wp_smushit_data.unsmushed.length);
                 }
                 update_stats();
             }
