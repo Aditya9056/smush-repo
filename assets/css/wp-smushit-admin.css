@@ -1684,13 +1684,6 @@ div.smush-pro-feature-desc {
     line-height: 22px;
 }
 
-.wpmud .smush-pro-feature-title:before {
-    content: '\5f';
-    color: #17A8E3;
-    left: 0;
-    top: 55%;
-}
-
 p.smush-pro-upsell-text {
     color: #666666;
     font-size: 15px;
@@ -2297,31 +2290,6 @@ li.directory.selected.expanded ul.jqueryFileTree {
     overflow: hidden;
 }
 
-/** Smush Button Wrapper **/
-.wp-smush-all-button-wrap {
-    display: inline-block;
-    float: right;
-    overflow: hidden;
-}
-
-.wp-smush-all-button-wrap.top {
-    display: inline-block;
-    margin-bottom: 20px;
-}
-
-div.wp-smush-all-button-wrap.bottom {
-    margin-top: 14px;
-}
-
-.wp-smush-all-button-wrap .spinner {
-    margin-top: 12px;
-}
-
-.wp-smush-start {
-    float: right;
-    vertical-align: top;
-}
-
 .wpmud button.wp-smush-pause {
     cursor: pointer;
     float: right;
@@ -2480,10 +2448,6 @@ div.smush-s3-setup-message .icon-fi-check-tick:before {
     color: #17A8E3;
 }
 
-div.wp-smush-scan-result hr.primary-separator {
-    margin: 10px 0 28px;
-}
-
 div.wp-smush-scan-result hr {
     margin: 20px 0;
 }
@@ -2529,15 +2493,6 @@ div.dir-smush-button-wrap button, div.dir-smush-button-wrap span {
 
 div.dir-smush-button-wrap span {
     margin-top: 10px;
-}
-
-.wpmud button.wp-smush-browse {
-    background-color: #AEAEAE !important;
-}
-
-.wpmud button.wp-smush-browse:hover,
-.wpmud button.wp-smush-browse:focus {
-    background-color: #9E9E9E !important;
 }
 
 .wp-smush-loading-text {

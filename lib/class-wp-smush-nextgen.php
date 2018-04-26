@@ -36,7 +36,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			add_filter( 'wp_smush_settings', array( $this, 'register' ), 5 );
 
 			//Filters the setting variable to add S3 setting in premium features
-			add_filter( 'wp_smush_pro_settings', array( $this, 'add_setting' ), 5 );
+			add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 5 );
 
 			//Check if integration is Enabled or not
 			//Smush NextGen key

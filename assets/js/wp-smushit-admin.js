@@ -1881,7 +1881,12 @@ jQuery(function ($) {
             $('.wp-smush-hex-notice').hide();
 
             //If Preserve Exif is Checked, and all other settings are off, just save the settings
-            if (keep_exif.checked && !super_smush.checked && !smush_original.checked && !resize_images.checked && !smush_pngjpg.checked) {
+            if ( ( keep_exif === null || keep_exif.checked )
+                && ( super_smush === null || ! super_smush.checked )
+                && ( smush_original === null || ! smush_original.checked )
+                && ( resize_images ===null || ! resize_images.checked )
+                && ( smush_pngjpg === null || ! smush_pngjpg.checked )
+            ) {
                 update_button_txt = false;
             }
 
@@ -2083,8 +2088,14 @@ jQuery(function ($) {
     $('#wp-smush-networkwide').on('click', function (e) {
         if ($(this).is(':checked')) {
             $('.network-settings-wrapper').show();
+            $('.sui-vertical-tabs li').not('.smush-bulk').each(function(n) {
+                $(this).removeClass('hidden');
+            });
         } else {
             $('.network-settings-wrapper').hide();
+            $('.sui-vertical-tabs li').not('.smush-bulk').each(function(n) {
+                $(this).addClass('hidden');
+            });
         }
     });
 
@@ -2165,11 +2176,11 @@ jQuery(function ($) {
     $('body').on('click', 'a.wp-smush-dir-link', function (e) {
         e.preventDefault();
         goToByScroll('#wp-smush-dir-browser');
-        $('div.row button.wp-smush-browse').click();
+        $('div.sui-wrap button.wp-smush-browse').click();
     });
 
     //WP Smush all : Scan Images
-    $('div.row').on('click', 'button.wp-smush-browse', function (e) {
+    $('div.sui-wrap').on('click', 'button.wp-smush-browse', function (e) {
 
         e.preventDefault();
 
@@ -2268,15 +2279,18 @@ jQuery(function ($) {
             $('.wp-smush-scan-result').removeClass('hidden');
         }).done(function (res) {
 
+            // Show select directory button on top.
+            $('div.sui-box-header button.wp-smush-browse').removeClass('hidden');
+
             //If there was no image list, return
             if (!res.success) {
                 //Hide the smush button
-                $('div.wp-smush-all-button-wrap.bottom').hide();
+                $('div.wp-smush-all-button-wrap.bottom').addClass('hidden');
                 return;
             }
 
             //Show the smush button
-            $('div.wp-smush-all-button-wrap.bottom').show();
+            $('div.wp-smush-all-button-wrap.bottom').removeClass('hidden');
 
             //Remove disabled attribute for the button
             $('button.wp-smush-start').removeAttr('disabled');
@@ -2295,7 +2309,7 @@ jQuery(function ($) {
     /**
      * Handle the Smush Now button click
      */
-    $('div.wp-smush-scan-result').on('click', 'button.wp-smush-start', function (e) {
+    $('#wp-smush-dir-wrap-box').on('click', 'button.wp-smush-start', function (e) {
         e.preventDefault();
 
         //Check if we have images to be optimised
@@ -2495,13 +2509,13 @@ jQuery(function ($) {
     });
 
     //Quick Setup - Form Submit
-    $('body').on('submit', '.smush-quick-setup-settings form', function () {
+    $('#smush-quick-setup-submit').on('click', function () {
         var self = $(this);
         var submit_button = self.find('button[type="submit"]');
         $.ajax({
             type: 'POST',
             url: ajaxurl,
-            data: self.serialize(),
+            data: $('#smush-quick-setup-form').serialize(),
             beforeSend: function () {
                 //Show loader
 

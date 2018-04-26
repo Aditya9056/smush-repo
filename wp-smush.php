@@ -312,7 +312,7 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 		if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
 			return $classes;
 		}
-		$classes .= 'sui-2-1-0';
+		$classes .= 'sui-2-1-7';
 
 		return $classes;
 

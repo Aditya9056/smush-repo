@@ -16,9 +16,9 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 	class WpSmushRecommender {
 
 		function __construct() {
-			//Hook UI at the end of Settings UI
-			add_action( 'smush_settings_ui_bottom', array( $this, 'ui' ), 12 );
 
+			// Hook UI at the end of Settings UI.
+			add_action( 'smush_admin_ui_bottom', array( $this, 'ui' ), 12 );
 		}
 
 		/**
@@ -47,7 +47,7 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 
                 <div class="sui-row" id="sui-cross-sell-footer">
                     <div><span class="sui-icon-plugin-2"></span></div>
-                    <h3><?php esc_html__( "Check out our other free wordpress.org plugins!", "wp-smushit" ); ?></h3>
+                    <h3><?php esc_html_e( "Check out our other free wordpress.org plugins!", "wp-smushit" ); ?></h3>
                 </div>
                 <div class="sui-row sui-cross-sell-modules"><?php
 					$upgrade_url = add_query_arg(

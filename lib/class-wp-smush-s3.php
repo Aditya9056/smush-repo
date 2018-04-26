@@ -19,8 +19,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$this->init();
 
 			//Hook at the end of setting row to output a error div
-			add_action( 'smush_setting_column_right_end', array( $this, 's3_setup_message' ) );
-
+			add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ) );
 		}
 
 		function init() {
@@ -31,7 +30,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			add_filter( 'wp_smush_settings', array( $this, 'register' ), 6 );
 
 			//Filters the setting variable to add S3 setting in premium features
-			add_filter( 'wp_smush_pro_settings', array( $this, 'add_setting' ), 6 );
+			add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 1 );
 
 			//return if not a pro user
 			if ( ! $WpSmush->validate_install() ) {
@@ -91,7 +90,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		function s3_setup_message( $setting_key ) {
 
 			//Return if not S3
-			if( 's3' != $setting_key ) {
+			if ( 's3' !== $setting_key ) {
 				return;
 			}
 
@@ -109,20 +108,19 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			//In case for some reason, we couldn't find the function
 			if ( ! is_object( $as3cf ) || ! method_exists( $as3cf, 'is_plugin_setup' ) ) {
 				$show_error         = true;
-				$support_url        = esc_url( "https://premium.wpmudev.org/contact" );
-				$this->setup_notice = sprintf( esc_html__( "We are having trouble interacting with WP Offload S3, make sure the plugin is activated. Or you can %sreport a bug%s.", "wp-smushit" ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
+				$support_url        = esc_url( 'https://premium.wpmudev.org/contact' );
+				$this->setup_notice = sprintf( esc_html__( 'We are having trouble interacting with WP Offload S3, make sure the plugin is activated. Or you can %sreport a bug%s.', 'wp-smushit' ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
 			}
 
 			//Plugin is not setup, or some information is missing
 			if ( ! $as3cf->is_plugin_setup() ) {
 				$show_error         = true;
 				$configure_url      = $as3cf->get_plugin_page_url();
-				$this->setup_notice = sprintf( esc_html__( "It seems you haven't finished setting up WP Offload S3 yet. %sConfigure%s it now to enable Amazon S3 support.", "wp-smushit" ), "<a href='" . $configure_url . "' target='_blank'>", "</a>" );
+				$this->setup_notice = sprintf( esc_html__( 'It seems you haven’t finished setting up WP S3 Offload yet. %sConfigure it now%s to enable Amazon S3 support.', 'wp-smushit' ), '<a href="' . $configure_url . '" target="_blank">', '</a>' );
 			} else {
 
 				$this->message_type = 'notice';
-				$this->setup_notice = esc_html__( "Amazon S3 support is active.", "wp-smushit" );
-
+				$this->setup_notice = esc_html__( 'Amazon S3 support is active.', 'wp-smushit' );
 			}
 
 			//Return Early if we don't need to do anything
@@ -130,9 +128,8 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return;
 			}
 
-			$class      = 'error' == $this->message_type ? ' smush-s3-setup-error' : ' smush-s3-setup-message';
-			$icon_class = 'error' == $this->message_type ? ' icon-fi-warning-alert' : ' icon-fi-check-tick';
-			echo "<div class='wp-smush-notice" . $class . "'><i class='" . $icon_class . "'></i><p>$this->setup_notice</p></div>";
+			$class = 'error' == $this->message_type ? ' sui-notice-warning' : ' sui-notice-info';
+			echo '<div class="sui-notice' . $class . ' smush-notice-sm"><p>' . $this->setup_notice . '</p></div>';
 		}
 
 		/**

@@ -131,6 +131,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			'auto',
 			'keep_exif',
 			'resize',
+			's3',
 		);
 
 		/**
@@ -238,38 +239,43 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'auto'            => array(
 					'label'       => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Automatic Smush', 'wp-smushit' ),
-					'desc'        => esc_html__( 'When you upload images to your site, Smush will automatically optimize them for you.', 'wp-smushit' )
+					'desc'        => esc_html__( 'When you upload images to your site, Smush will automatically optimize and compress them for you.', 'wp-smushit' )
 				),
 				'lossy'           => array(
 					'label'       => esc_html__( 'Super-smush my images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Super-smush', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Optimize images up to 2x more than regular smush with our multi-pass lossy compression.', 'wp-smushit' )
 				),
 				'original'        => array(
 					'label'       => esc_html__( 'Smush my original full-size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every default and/or custom image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Save a ton of space by not storing over-sized images on your server.', 'wp-smushit' )
 				),
 				'keep_exif'       => array(
-					'label'       => esc_html__( 'Preserve my image EXIF data', 'wp-smushit' ),
-					'short_label' => esc_html__( 'EXIF data', 'wp-smushit' ),
-					'desc'        => esc_html__( 'EXIF data stores camera settings, focal length, date, time and location information in image files. EXIF data makes image files larger but if you are a photographer you may want to preserve this information.', 'wp-smushit' )
+					'label'       => esc_html__( 'Strip my image meta data', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Meta data', 'wp-smushit' ),
+					'desc'        => esc_html__( 'Whenever you take a photo, your camera stores metadata, such as focal length, date, time and location, within the image.', 'wp-smushit' )
 				),
 				'resize'          => array(
 					'label'       => esc_html__( 'Resize my full size images', 'wp-smushit' ),
-					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically resized before they are added to the media gallery. This setting does not apply to images smushed using Directory Smush feature.', 'wp-smushit' )
+					'short_label' => esc_html__( 'Image resizing', 'wp-smushit' ),
+					'desc'        => esc_html__( 'Detect unnecessarly large oversize images on your pages to reduce their size and decrease load times.', 'wp-smushit' ),
 				),
 				'backup'          => array(
 					'label'       => esc_html__( 'Make a copy of my full size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Save your original full-size images separately so you can restore them at any point. Note: Keeping a copy of your original files can significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Save a ton of space by not storing over-sized images on your server.', 'wp-smushit' )
 				),
 				'png_to_jpg'      => array(
 					'label'       => esc_html__( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
 					'short_label' => esc_html__( 'PNG to JPEG conversion', 'wp-smushit' ),
-					'desc'        => esc_html__( "When you compress a PNG file, Smush will check if converting the file to JPEG will further reduce its size.", 'wp-smushit' )
-				)
+					'desc'        => esc_html__( 'When you compress a PNG, Smush will check if converting it to JPEG could further reduce its size.', 'wp-smushit' )
+				),
+				'detection'      => array(
+					'label'       => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
+					'desc'        => esc_html__( 'This will add functionality to your website that highlights images that are either too large or too small for their containers. Note: The highlighting will only be visible to administrators – visitors won’t see the highlighting.', 'wp-smushit' )
+				),
 			);
 
 			/**

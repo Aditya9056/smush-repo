@@ -2426,3 +2426,6 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-dir.php';
 
 //Include Plugin Recommendations
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-recommender.php';
+
+// Include Directory Smush.
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';

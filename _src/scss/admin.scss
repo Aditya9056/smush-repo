@@ -1,1 +1,129 @@
 @import "~@wpmudev/shared-ui/scss/shared-ui.scss";
+
+@include body-class {
+
+  .sui-wrap {
+
+    .tc {
+      text-align: center;
+    }
+
+    .sui-box-body {
+
+      .sui-box-settings-row {
+
+        .sui-box-settings-col-1 {
+          width: 30%;
+        }
+
+        .sui-box-settings-col-2 {
+
+          display: flex;
+          flex-wrap: wrap;
+          .column-right-content {
+            display: inline-grid;
+            min-width: 30%;
+            max-width: 94%;
+            margin-bottom: 15px;
+
+            .smush-settings-right-label {
+              margin-left: 0;
+            }
+          }
+
+          .smush-col-2-content {
+            width: 100%;
+            display: flex;
+          }
+        }
+
+        .sui-notice {
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+      }
+
+      &.smush-quick-setup-settings {
+
+        .sui-box-settings-row {
+
+          .sui-box-settings-col-1 {
+            width: 85%;
+          }
+        }
+      }
+    }
+
+    .wp-smush-resize-settings-wrap,
+    .wp-smush-png_to_jpg-wrap,
+    .wp-smush-image-size-list {
+      background-color: #FFFFFF;
+      border: 1px solid #E6E6E6;
+      border-radius: 5px;
+      color: #555;
+      margin: 1.5em 0 0;
+      overflow: hidden;
+      padding: 30px;
+      vertical-align: middle;
+
+      .sui-checkbox {
+
+        .sui-description {
+          font-size: 13px;
+        }
+      }
+    }
+
+    .hidden, button.hidden {
+      display: none;
+    }
+
+    .sui-summary-smush {
+      background-image: url(../images/smush.png);
+    }
+
+    .smush-pro-features {
+
+      .smush-pro-feature-title {
+        font-weight: 500;
+        line-height: 30px;
+        color: #333;
+        padding: 0 0 0 30px;
+        position: relative;
+        &:before {
+          color: $notice-info-icon-color;
+          vertical-align: middle;
+          margin-left: -30px;
+          margin-right: 10px;
+          font-size: 20px;
+        }
+        @include icon(before, check-tick, true);
+      }
+
+      .smush-pro-feature-desc {
+        color: #888888;
+        font-size: 13px;
+        line-height: 22px;
+        padding: 0 0 0 33px;
+      }
+    }
+
+    .sui-upsell-row {
+      margin-top: 60px;
+      .sui-upsell-image {
+        &.sui-upsell-image-smush {
+          bottom: -30px;
+          width: 85px;
+        }
+      }
+    }
+
+    .sui-notice {
+      &.smush-notice-sm {
+        p {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
