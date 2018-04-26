@@ -299,7 +299,7 @@ if ( ! function_exists( 'smush_i18n' ) ) {
 }
 
 //Add Share UI Class
-add_filter( 'admin_body_class', 'smush_body_classes' );
+add_filter( 'admin_body_class', 'smush_body_classes', 15 );
 
 if ( ! function_exists( 'smush_body_classes' ) ) {
 	function smush_body_classes( $classes ) {
@@ -312,6 +312,10 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 		if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
 			return $classes;
 		}
+
+		// Remove old wpmud class from body of smush page.
+		$classes = str_replace( 'wpmud', '', $classes );
+
 		$classes .= 'sui-2-1-7';
 
 		return $classes;
