@@ -206,6 +206,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$this->super_smushed = get_option( 'wp-smush-super_smushed_nextgen', array() );
 			$this->super_smushed = ! empty( $this->super_smushed['ids'] ) ? $this->super_smushed['ids'] : array();
 
+			#If we have images to be resmushed, Update supersmush list
+			if ( ! empty( $this->resmush_ids ) && ! empty( $this->super_smushed ) ) {
+				$this->super_smushed = array_diff( $this->super_smushed, $this->resmush_ids );
+			}
+
 			//Array of all smushed, unsmushed and lossless ids
 			$data = array(
 				'count_smushed'      => $this->smushed_count,
@@ -509,7 +514,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
                 <span class="float-r wp-smush-stats">
 						<?php
 						if ( $WpSmush->lossy_enabled ) {
-							$count = $wpsmush_db->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
+							$smushed_image = $wpsmushnextgenstats->get_ngg_images( 'smushed' );
+							if ( ! empty( $smushed_image ) && is_array( $smushed_image ) && ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) {
+								//Get smushed images excluding resmush ids
+								$smushed_image = array_diff_key( $smushed_image, array_flip( $this->resmush_ids ) );
+							}
 							echo '<span class="smushed-count">' . $count . '</span>/' . $this->total_count;
 						} else {
 							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );

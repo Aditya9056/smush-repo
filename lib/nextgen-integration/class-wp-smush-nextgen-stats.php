@@ -680,14 +680,48 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		}
 
 		/**
+		 * Get Super smushed images from the given images array
+		 *
+		 * @param array $images Array of images containing metadata
+		 *
+		 * @return array Array containing ids of supersmushed images
+		 */
+		function get_super_smushed_images( $images = array() ) {
+			if ( empty( $images ) ) {
+				return array();
+			}
+			$super_smushed = array();
+			//Iterate Over all the images
+			foreach ( $images as $image_k => $image ) {
+				if ( empty( $image ) || ! is_array( $image ) || ! isset( $image['wp_smush'] ) ) {
+					continue;
+				}
+				//Check for lossy compression
+				if ( ! empty( $image['wp_smush']['stats'] ) && ! empty( $image['wp_smush']['stats']['lossy'] ) ) {
+					$super_smushed[] = $image_k;
+				}
+
+			}
+			return $super_smushed;
+		}
+
+		/**
 		 * Recalculate stats for the given smushed ids and update the cache
+		 * Update Super smushed image ids
 		 *
 		 */
 		function update_stats_cache() {
 
+			global  $wpsmushnextgenadmin;
 			//Get the Image ids
 			$smushed_images = $this->get_ngg_images( 'smushed' );
-			$stats          = $this->get_stats_for_ids( $smushed_images );
+			$super_smushed  = array(
+				'ids'       => array(),
+				'timestamp' => ''
+			);
+
+			$stats = $this->get_stats_for_ids( $smushed_images );
+			$lossy = $this->get_super_smushed_images( $smushed_images );
 
 			if ( empty( $stats['bytes'] ) && ! empty( $stats['size_before'] ) ) {
 				$stats['bytes'] = $stats['size_before'] - $stats['size_after'];
@@ -698,8 +732,22 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				$stats['percent'] = round( $stats['percent'], 2 );
 			}
 
+			$super_smushed['ids']       = $lossy;
+			$super_smushed['timestamp'] = current_time( 'timestamp' );
+
+			//Update Re-smush list
+			if( is_array( $wpsmushnextgenadmin->resmush_ids ) ) {
+				$resmush_ids = array_intersect( $wpsmushnextgenadmin->resmush_ids, $smushed_images );
+			}
+
+			//Update re-smush images to db
+			update_option( 'wp-smush-nextgen-resmush-list', $resmush_ids, false );
+
+			//Update Super smushed images in db
+			update_option( 'wp-smush-super_smushed_nextgen', $super_smushed, false );
+
 			//Update Stats Cache
-			update_option('wp_smush_stats_nextgen', $stats, false);
+			update_option( 'wp_smush_stats_nextgen', $stats, false );
 
 		}
 
