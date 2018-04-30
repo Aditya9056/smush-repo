@@ -178,11 +178,11 @@
   ul {
 
     &.jqueryFileTree {
-      background: #f8f8f8;
       color: #888888;
       font-family: "Roboto", sans-serif;
       font-size: 14px;
       font-weight: 500;
+      margin-top: 5px;
 
       .wp-smush-list {
         margin-top: 2px;
@@ -205,11 +205,11 @@
           background: url(../images/image.svg) left top no-repeat;
         }
 
-        .directory {
+        &.directory {
           background: url(../images/folder-closed.svg) left top no-repeat;
         }
 
-        .expanded {
+        &.expanded {
           background: url(../images/folder-open.svg) left top no-repeat;
 
           &.selected {
@@ -230,16 +230,6 @@
 
         &.selected > a {
           font-weight: 500;
-        }
-
-        &.selected {
-          .expanded {
-            ul {
-              &.jqueryFileTree {
-                margin-top: 10px;
-              }
-            }
-          }
         }
       }
     }

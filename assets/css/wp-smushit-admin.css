@@ -2231,51 +2231,6 @@ div.wp-smush-dir-desc {
     vertical-align: top;
 }
 
-.wpmud UL.jqueryFileTree LI {
-    display: inline-block;
-    padding: 0 0 5px 20px;
-}
-
-.wpmud UL.jqueryFileTree LI.ext_tif,
-.wpmud UL.jqueryFileTree LI.ext_tiff,
-.wpmud UL.jqueryFileTree LI.ext_png,
-.wpmud UL.jqueryFileTree LI.ext_pcx,
-.wpmud UL.jqueryFileTree LI.ext_jpeg,
-.wpmud UL.jqueryFileTree LI.ext_jpg,
-.wpmud UL.jqueryFileTree LI.ext_gif,
-.wpmud UL.jqueryFileTree LI.ext_bmp {
-    background: url(../images/image.svg) left top no-repeat
-}
-
-.wpmud UL.jqueryFileTree LI.directory {
-    background: url(../images/folder-closed.svg) left top no-repeat;
-}
-
-.wpmud UL.jqueryFileTree LI.expanded {
-    background: url(../images/folder-open.svg) left top no-repeat;
-}
-
-.wpmud UL.jqueryFileTree LI.expanded.selected {
-    background: url(../images/folder-open-selected.svg) left top no-repeat;
-}
-
-.wpmud UL.jqueryFileTree LI.expanded.selected > a,
-.wpmud UL.jqueryFileTree LI.file.selected a {
-    color: #17a8e3;
-}
-
-.wpmud UL.jqueryFileTree LI.expanded.selected #Folder-22px-Solid-3-Open {
-    fill: #17a8e3;
-}
-
-.wpmud UL.jqueryFileTree LI.selected > a {
-    font-weight: 500;
-}
-
-li.directory.selected.expanded ul.jqueryFileTree {
-    margin-top: 10px;
-}
-
 /** Image List **/
 .wpmud .wp-smush-div-heading {
     display: inline-block;
