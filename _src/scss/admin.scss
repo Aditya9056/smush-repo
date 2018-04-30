@@ -77,16 +77,20 @@
         padding-top: 5px;
       }
 
-      .sui-accordion-item-title.sui-success .wp-smush-li-path {
+      .wp-smush-dir-progress-wrap {
         background: none;
-        &:before {
-          color: $notice-success-icon-color;
-          vertical-align: middle;
-          margin-left: -30px;
-          margin-right: 10px;
-          font-size: 20px;
+        height: inherit;
+        padding: unset;
+        &.sui-success {
+          &:after {
+            color: $notice-success-icon-color;
+            vertical-align: middle;
+            margin-left: -30px;
+            margin-right: 10px;
+            font-size: 20px;
+          }
+          @include icon(after, check-tick, true);
         }
-        @include icon(before, check-tick, true);
       }
 
       tr, td {

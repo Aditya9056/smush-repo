@@ -2561,31 +2561,9 @@ div.wp-smush-dir-notice .icon-fi-warning-alert:before {
     vertical-align: middle;
 }
 
-div.wp-smush-dir-progress-wrap {
-    display: flex;
-    font-weight: 600;
-    padding-top: 4px;
-}
-
-div.wp-smush-dir-progress-wrap.hidden {
-    display: none;
-}
-
 span.smush-percent {
     text-align: right;
     width: 34px;
-}
-
-div.wp-smush-dir-progress-wrap-inner {
-    background: #e6e6e6;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-    height: 10px;
-    margin-left: 10px;
-    margin-top: 4px;
-    position: relative;
-    width: 100px;
 }
 
 .wp-smush-dir-progress {

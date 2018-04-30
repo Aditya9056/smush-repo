@@ -443,14 +443,12 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$width = ( $optimised > 0 ) ? ( $optimised / $count ) * 100 : 0;
 
-			$class   = 0 < $width && 100 == $width ? '<i aria-hidden="true" class="sui-icon-check-tick sui-success"></i>' : '';
-			$o_class = 0 == $width ? 'hidden' : '';
+			$class = $count === $optimised ? ' sui-success' : '';
+			$o_class = 0 == $width ? ' hidden' : '';
 
-			$content = "<div class='wp-smush-dir-progress-wrap {$o_class}'>";
-			$content .= $class;
-		    $content .= "</div>";
-
-			$content .= 0 == $width ? '<div class="sui-progress-block sui-progress-can-close"><button class="sui-progress-close sui-tooltip wp-smush-exclude-dir" data-path="' . $dir_path . '" type="button" data-tooltip="' . esc_html__( 'Exclude directory from Smush List', 'wp-smushit' ) . '"><i class="sui-icon-close"></i></button></div>' : '';
+			$content = "<div class='wp-smush-dir-progress-wrap sui-progress-block sui-progress-can-close{$o_class}{$class}'>";
+			$content .= 0 == $width ? '<button class="sui-progress-close sui-tooltip wp-smush-exclude-dir" data-path="' . $dir_path . '" type="button" data-tooltip="' . esc_html__( 'Exclude directory from Smush List', 'wp-smushit' ) . '"><i class="sui-icon-close"></i></button>' : '';
+			$content .= "</div>";
 
 			return $content;
 		}
@@ -894,6 +892,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 				$count = sizeof( $image );
 				$wrapper_class = 'sui-warning';
+				$smush_image = false;
+				//Mark Smush plugin images optimised
+				if ( false !== $wpsmush_helper->strposa( $image_path, $plugin_path ) ) {
+					$smush_image = true;
+				}
 				if ( is_array( $image ) && $count > 1 ) {
 
 					//Get the number of optimised images for the given image array
@@ -905,8 +908,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						$tag_class = $count == $optimised_count ? 'sui-tag-inactive' : 'sui-tag-warning';
 					}
 					//Mark Smush plugin images optimised
-					if ( false !== $wpsmush_helper->strposa( $image_path, $plugin_path ) ) {
+					if ( $smush_image ) {
 						$wrapper_class = 'sui-success';
+						$tag_class = 'sui-tag-inactive';
 						//Show 100% progress bar for Smush
 						$optimised_count = $count;
 					}
@@ -933,7 +937,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						endif;
 
 						$div .= '<li class="wp-smush-image-ele" id="' . $image_id . '">';
-						$div .= '<span class="wp-smush-image-ele-status"></span><span class="wp-smush-image-path">' . $item . '</span>';
+						$div .= '<span class="wp-smush-image-ele-status ' . $class . '"></span><span class="wp-smush-image-path">' . $item . '</span>';
 						$div .= '</li>';
 						if ( $count === $item_count ) :
 							$div .= '</ul></div></div></td></tr>';
@@ -946,7 +950,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					$image_p = array_pop( $image );
 
 					// Check if the image is already in optimised list.
-					$class = is_array( $this->optimised_images ) && array_key_exists( $image_p, $this->optimised_images ) ? 'sui-success' : 'sui-warning';
+					$class = ( is_array( $this->optimised_images ) && array_key_exists( $image_p, $this->optimised_images ) ) || $smush_image ? 'sui-success' : 'sui-warning';
 					$image_id = $this->get_image_id( $image_p, $images['image_items'] );
 
 					// Add new table row for images.
@@ -986,6 +990,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			foreach ( $files_arr as $image_path => $image ) {
 				$count         = sizeof( $image );
 				$wrapper_class = '';
+				$smush_image = false;
+				//Mark Smush plugin images optimised
+				if ( false !== $wpsmush_helper->strposa( $image_path, $plugin_path ) ) {
+					$smush_image = true;
+				}
 				if ( is_array( $image ) && $count > 1 ) {
 
 					//Get the number of optimised images for the given image array
@@ -995,7 +1004,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						$wrapper_class = $count == $optimised_count ? 'complete' : 'partial';
 					}
 					//Mark Smush plugin images optimised
-					if ( false !== $wpsmush_helper->strposa( $image_path, $plugin_path ) ) {
+					if ( $smush_image ) {
 						$wrapper_class = 'complete';
 						//Show 100% progress bar for Smush
 						$optimised_count = $count;
