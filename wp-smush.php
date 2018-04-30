@@ -4,7 +4,7 @@ Plugin Name: Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-Version: 2.7.9-beta1
+Version: 2.7.8
 Author URI: https://premium.wpmudev.org/
 Text Domain: wp-smushit
 */
@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix  = 'WP_SMUSH_';
-$version = '2.7.9-beta1';
+$version = '2.7.8-beta1';
 
 //Deactivate the .org version, if pro version is active
 add_action( 'admin_init', 'deactivate_smush_org' );
@@ -194,8 +194,7 @@ if ( is_admin() ) {
 			'name'    => 'WP Smush Pro',
 			'screens' => array(
 				'upload',
-				'toplevel_page_smush',
-				'toplevel_page_smush-network'
+				'toplevel_page_smush'
 			)
 		);
 	}
@@ -209,9 +208,9 @@ if ( ! function_exists( 'smush_deactivated' ) ) {
 	function smush_deactivated() {
 		//Display only in backend for administrators
 		if ( is_admin() && is_super_admin() && get_site_option( 'smush_deactivated' ) ) { ?>
-            <div class="updated">
-                <p><?php esc_html_e( 'Smush Free was deactivated. You have Smush Pro active!', 'wp-smushit' ); ?></p>
-            </div> <?php
+			<div class="updated">
+				<p><?php esc_html_e( 'Smush Free was deactivated. You have Smush Pro active!', 'wp-smushit' ); ?></p>
+			</div> <?php
 			delete_site_option( 'smush_deactivated' );
 		}
 	}
@@ -299,28 +298,27 @@ if ( ! function_exists( 'smush_i18n' ) ) {
 }
 
 //Add Share UI Class
-add_filter( 'admin_body_class', 'smush_body_classes', 15 );
-
-if ( ! function_exists( 'smush_body_classes' ) ) {
-	function smush_body_classes( $classes ) {
-		//Exit if function doesn't exists
-		if ( ! function_exists( 'get_current_screen' ) ) {
-			return $classes;
-		}
-		$current_screen = get_current_screen();
-		//If not on plugin page
-		if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
-			return $classes;
-		}
-
-		// Remove old wpmud class from body of smush page.
-		$classes = str_replace( 'wpmud', '', $classes );
-
-		$classes .= 'sui-2-1-7';
-
+add_filter( 'admin_body_class', 'admin_body_classes', 100 );
+function admin_body_classes( $classes ) {
+	//Exit if function doesn't exists
+	if ( ! function_exists( 'get_current_screen' ) ) {
 		return $classes;
-
 	}
+	$current_screen = get_current_screen();
+	//If not on plugin page
+	if ( 'toplevel_page_smush' != $current_screen->id
+	     && 'toplevel_page_smush-network' != $current_screen->id
+	) {
+		return $classes;
+	}
+
+	// Remove old wpmud class from body of smush page.
+	$classes = str_replace( 'wpmud ', '', $classes );
+
+	$classes .= 'sui-2-1-7';
+
+	return $classes;
+
 }
 
 register_activation_hook( __FILE__, 'smush_activated' );

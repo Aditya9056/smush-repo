@@ -90,7 +90,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		function s3_setup_message( $setting_key ) {
 
 			//Return if not S3
-			if ( 's3' !== $setting_key ) {
+			if ( 's3' != $setting_key ) {
 				return;
 			}
 
@@ -101,7 +101,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$setting_val = $WpSmush->validate_install() ? $wpsmush_settings->settings['s3'] : 0;
 
 			if ( ! $setting_val ) {
-				return;
+				//return;
 			}
 
 			//Check if plugin is setup or not
@@ -118,7 +118,6 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				$configure_url      = $as3cf->get_plugin_page_url();
 				$this->setup_notice = sprintf( esc_html__( 'It seems you haven’t finished setting up WP S3 Offload yet. %sConfigure it now%s to enable Amazon S3 support.', 'wp-smushit' ), '<a href="' . $configure_url . '" target="_blank">', '</a>' );
 			} else {
-
 				$this->message_type = 'notice';
 				$this->setup_notice = esc_html__( 'Amazon S3 support is active.', 'wp-smushit' );
 			}
@@ -152,7 +151,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			// Do not display the notice on Bulk Smush Screen.
 			global $current_screen;
-			if ( ! empty( $current_screen->base ) && 'toplevel_page_smush' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base && 'gallery_page_wp-smush-nextgen-bulk' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base ) {
+			if ( ! empty( $current_screen->base ) && 'toplevel_page_smush' != $current_screen->base && 'gallery_page_wp-smush-nextgen-bulk' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base ) {
 				return true;
 			}
 

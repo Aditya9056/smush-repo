@@ -30,7 +30,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				return;
 			}
 
-			// Hook UI at the end of Settings UI.
+			//Hook UI at the end of Settings UI
 			add_action( 'smush_directory_settings_ui', array( $this, 'ui' ), 11 );
 
 			//Output Stats after Resize savings
@@ -56,7 +56,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			//Add Directory list overlay at the end of content
 			add_action( 'admin_footer', array( $this, 'directory_list_dialog' ) );
-
 		}
 
 		/**
@@ -76,38 +75,38 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		}
 
 		function stats_ui() { ?>
-            <hr/><?php
+			<hr/><?php
 			$dir_smush_stats = get_option( 'dir_smush_stats' );
 			$human           = $percent = 0;
 			if ( ! empty( $dir_smush_stats ) && ! empty( $dir_smush_stats['dir_smush'] ) ) {
 				$human   = ! empty( $dir_smush_stats['dir_smush']['bytes'] ) && $dir_smush_stats['dir_smush']['bytes'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
 				$percent = ! empty( $dir_smush_stats['dir_smush']['percent'] ) && $dir_smush_stats['dir_smush']['percent'] > 0 ? number_format_i18n( $dir_smush_stats['dir_smush']['percent'], 1, '.', '' ) : 0;
 			} ?>
-            <!-- Savings from Directory Smush -->
-            <div class="row smush-dir-savings">
-            <span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "Directory-smush savings", "wp-smushit" ); ?></strong></span>
-            <span class="wp-smush-stats<?php echo $human > 0 ? ' float-r' : ' float-l' ?>">
+			<!-- Savings from Directory Smush -->
+			<div class="row smush-dir-savings">
+			<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "Directory-smush savings", "wp-smushit" ); ?></strong></span>
+			<span class="wp-smush-stats<?php echo $human > 0 ? ' float-r' : ' float-l' ?>">
 	            <span class="spinner" style="visibility: visible"
-                      title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
+	                  title="<?php esc_html_e( "Updating Stats", "wp-smushit" ); ?>"></span>
 				<?php
 				if ( $human < 0 ) { ?>
-                    <span class="wp-smush-stats-human"> <?php echo size_format( $human, 1 ); ?></span><?php
+					<span class="wp-smush-stats-human"> <?php echo size_format( $human, 1 ); ?></span><?php
 					//Output percentage only if > 1
 					if ( $percent > 1 ) { ?>
-                        <span class="wp-smush-stats-sep">/</span>
-                        <span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>
-                        %</span><?php
+						<span class="wp-smush-stats-sep">/</span>
+						<span class="wp-smush-stats-percent"><?php echo ! empty( $percent ) ? $percent : ''; ?>
+						%</span><?php
 					}
 				} else { ?>
-                    <span class="wp-smush-stats-human settings-desc"><?php esc_html_e( "Smush images that aren't located in your uploads folder.", "wp-smushit" ); ?>
-                        <a href="#wp-smush-dir-browser" class="wp-smush-dir-link"
-                           title="<?php esc_html_e( "Select a directory you'd like to Smush.", "wp-smushit" ); ?>"><?php esc_html_e( "Choose directory", "wp-smushit" ); ?></a>
+					<span class="wp-smush-stats-human settings-desc"><?php esc_html_e( "Smush images that aren't located in your uploads folder.", "wp-smushit" ); ?>
+						<a href="#wp-smush-dir-browser" class="wp-smush-dir-link"
+						   title="<?php esc_html_e( "Select a directory you'd like to Smush.", "wp-smushit" ); ?>"><?php esc_html_e( "Choose directory", "wp-smushit" ); ?></a>
 	                </span>
-                    <span class="wp-smush-stats-sep hidden">/</span>
-                    <span class="wp-smush-stats-percent"></span>
+					<span class="wp-smush-stats-sep hidden">/</span>
+					<span class="wp-smush-stats-percent"></span>
 				<?php } ?>
                 </span>
-            </div><?php
+			</div><?php
 		}
 
 		/**
@@ -220,13 +219,14 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				return null;
 			}
 			//Print the button ?>
-            <button class="wp-smush-resume wp-smush-button button"><?php esc_html_e( "RESUME LAST SCAN", "wp-smushit" ); ?></button><?php
+			<button class="wp-smush-resume wp-smush-button button"><?php esc_html_e( "RESUME LAST SCAN", "wp-smushit" ); ?></button><?php
 		}
 
 		/**
-		 * Output the required UI for WP Smush All page
+		 * Bulk Smush UI and progress bar.
 		 */
 		public function ui() {
+
 			global $WpSmush, $wpsmushit_admin, $wpsmush_bulkui;
 
 			//Print Directory Smush UI, if not a network site
@@ -443,17 +443,14 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$width = ( $optimised > 0 ) ? ( $optimised / $count ) * 100 : 0;
 
-			$class   = 0 < $width && 100 == $width ? 'complete' : 'partial';
+			$class   = 0 < $width && 100 == $width ? '<i aria-hidden="true" class="sui-icon-check-tick sui-success"></i>' : '';
 			$o_class = 0 == $width ? 'hidden' : '';
 
 			$content = "<div class='wp-smush-dir-progress-wrap {$o_class}'>";
-			$content .= '<span class="smush-percent">' . number_format_i18n( $width, 0 ) . '% </span>';
-			$content .= "<div class='wp-smush-dir-progress-wrap-inner'>
-		        <span class='wp-smush-dir-progress {$class}' style='width: {$width}px'></span>
-		        </div>
-		    </div>";
+			$content .= $class;
+		    $content .= "</div>";
 
-			$content .= 0 == $width ? "<a href='#' class='wp-smush-exclude-dir' data-path='" . $dir_path . "' title='" . esc_html__( "Exclude directory from Smush List", "wp-smushit" ) . "'>&times;</a>" : '';
+			$content .= 0 == $width ? '<div class="sui-progress-block sui-progress-can-close"><button class="sui-progress-close sui-tooltip wp-smush-exclude-dir" data-path="' . $dir_path . '" type="button" data-tooltip="' . esc_html__( 'Exclude directory from Smush List', 'wp-smushit' ) . '"><i class="sui-icon-close"></i></button></div>' : '';
 
 			return $content;
 		}
@@ -872,6 +869,98 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * @note Work in progress.
 		 */
 		function generate_markup( $images ) {
+
+			global $wpsmush_helper;
+
+			if ( empty( $images ) || empty( $images['files_arr'] ) || empty( $images['image_items'] ) ) {
+				return null;
+			}
+
+			$this->total_stats();
+
+			$div = wp_nonce_field( 'wp-smush-exclude-path', 'exclude-path-nonce', '', false );
+			$div .= '<table class="sui-table sui-accordion wp-smush-image-list smush-dir-smush-accordion">';
+			$div .= '<thead><tr><th colspan="2">' . __( 'Folder', 'wp-smushit' ) . '</th></tr></thead><tbody>';
+			//Flag - Not to print hr tag, if first element is ul in the scanned image list
+			$index     = 1;
+			$files_arr = $images['files_arr'];
+
+			$plugin_path = array(
+				path_join( WP_PLUGIN_DIR, 'wp-smushit' ),
+				path_join( WP_PLUGIN_DIR, 'wp-smush-pro' ),
+			);
+
+			foreach ( $files_arr as $image_path => $image ) {
+
+				$count = sizeof( $image );
+				$wrapper_class = 'sui-warning';
+				if ( is_array( $image ) && $count > 1 ) {
+
+					//Get the number of optimised images for the given image array
+					$optimised_count = $this->optimised_count( $image );
+
+					$tag_class = '';
+					if ( $optimised_count > 0 ) {
+						$wrapper_class = $count == $optimised_count ? 'sui-success' : 'sui-warning';
+						$tag_class = $count == $optimised_count ? 'sui-tag-inactive' : 'sui-tag-warning';
+					}
+					//Mark Smush plugin images optimised
+					if ( false !== $wpsmush_helper->strposa( $image_path, $plugin_path ) ) {
+						$wrapper_class = 'sui-success';
+						//Show 100% progress bar for Smush
+						$optimised_count = $count;
+					}
+
+					$div .= '<tr class="sui-accordion-item">';
+					$div .= '<td class="sui-accordion-item-title ' . $wrapper_class . '"><div class="image-list-wrapper"><span class="wp-smush-li-path">' . $image_path . ' <span class="sui-tag ' . $tag_class . '">' . $count . '</span></span></div></td>';
+					$div .= '<td>' . $this->progress_ui( $count, $optimised_count, $image_path ) . '</td>';
+					$div .= '</tr>';
+					$item_count = 1;
+
+					foreach ( $image as $item ) {
+						//Check if the image is already in optimised list
+						$class = is_array( $this->optimised_images ) && array_key_exists( $item, $this->optimised_images ) ? 'sui-success' : 'sui-warning';
+						//Mark Smush images optimised
+						if ( false !== $wpsmush_helper->strposa( $item, $plugin_path ) ) {
+							$class = ' sui-success';
+						}
+
+						$image_id = $this->get_image_id( $item, $images['image_items'] );
+
+						if ( $item_count === 1 ) :
+							$div .= '<tr class="sui-accordion-item-content">';
+							$div .= '<td colspan="2" class="' . $class . '" id="' . $image_id . '"><div class="sui-box"><div class="sui-box-body"><ul tabindex="0">';
+						endif;
+
+						$div .= '<li class="wp-smush-image-ele" id="' . $image_id . '">';
+						$div .= '<span class="wp-smush-image-ele-status"></span><span class="wp-smush-image-path">' . $item . '</span>';
+						$div .= '</li>';
+						if ( $count === $item_count ) :
+							$div .= '</ul></div></div></td></tr>';
+						endif;
+						$item_count++;
+					}
+
+				} else {
+
+					$image_p = array_pop( $image );
+
+					// Check if the image is already in optimised list.
+					$class = is_array( $this->optimised_images ) && array_key_exists( $image_p, $this->optimised_images ) ? 'sui-success' : 'sui-warning';
+					$image_id = $this->get_image_id( $image_p, $images['image_items'] );
+
+					// Add new table row for images.
+					$div .= '<tr id="' . $image_id . '">';
+					$div .= '<td colspan="3" class="wp-smush-image-ele ' . $class . '"><span class="wp-smush-image-ele-status"></span><span class="wp-smush-image-path">' . $image_p . '</span>';
+					$div .= '</td></tr>';
+				}
+			}
+			$div .= '</tbody></table>';
+
+			return $div;
+		}
+
+		function generate_markup2( $images ) {
 
 			global $wpsmush_helper;
 
@@ -1330,34 +1419,37 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 *
 		 */
 		function directory_list_dialog() {
+
 			$current_screen = get_current_screen();
+
 			if ( empty( $current_screen ) || empty( $current_screen->base ) || 'toplevel_page_smush' != $current_screen->base ) {
 				return;
-			} ?>
+			}
+			?>
 
 			<div class="sui-dialog wp-smush-list-dialog" id="wp-smush-list-dialog">
 
-				<div class="sui-dialog-overlay sui-fade-in" tabindex="-1" data-a11y-dialog-hide=""></div>
+				<div class="sui-dialog-overlay sui-fade-in" tabindex="-1" data-a11y-dialog-hide></div>
 
-				<div class="sui-dialog-content sui-bounce-in" aria-labelledby="dialogTitle" aria-describedby="dialogDescription" role="dialog">
+				<div class="sui-dialog-content sui-bounce-in" role="dialog">
 
 					<div class="sui-box" role="document">
 
 						<div class="sui-box-header">
 							<h3 class="sui-box-title" id="dialogTitle"><?php esc_html_e( 'Choose Directory', 'wp-smushit' ); ?></h3>
 							<div class="sui-actions-right">
-								<button data-a11y-dialog-hide="" class="sui-dialog-close" aria-label="Close this dialog window"></button>
+								<button data-a11y-dialog-hide class="sui-dialog-close" aria-label="<?php esc_html_e( 'Close', 'wp-smushit' ); ?>"></button>
 							</div>
 						</div>
 
 						<div class="sui-box-body">
-							<p><?php esc_html_e( 'Choose which folder you wish to smush. Smush will automatically include any images in subfolders of your selected folder..', 'wp-smushit' ); ?></p>
+							<p><?php esc_html_e( 'Choose which folder you wish to smush. Smush will automatically include any images in subfolders of your selected folder.', 'wp-smushit' ); ?></p>
 							<div class="content"></div>
 						</div>
 
 						<div class="sui-box-footer">
 							<div class="sui-actions-right">
-								<button class="sui-modal-close sui-button wp-smush-select-dir"><?php esc_html_e( 'ADD FOLDER', 'wp-smushit' ); ?></button>
+								<button class="sui-modal-close sui-button wp-smush-select-dir" data-a11y-dialog-hide><?php esc_html_e( 'ADD FOLDER', 'wp-smushit' ); ?></button>
 							</div>
 						</div>
 
@@ -1380,7 +1472,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			global $wpdb;
 			$notice = '';
 			$current_screen = get_current_screen();
-			if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
+			if ( 'toplevel_page_smush' != $current_screen->id ) {
 				return $notice;
 			}
 			$sql         = $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->esc_like( $wpdb->prefix . 'smush_dir_images' ) );

@@ -17,7 +17,7 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 
 		function __construct() {
 
-			// Hook UI at the end of Settings UI.
+			//Hook UI at the end of Settings UI
 			add_action( 'smush_admin_ui_bottom', array( $this, 'ui' ), 12 );
 		}
 
@@ -45,11 +45,11 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 			global $wpsmushit_admin;
 			if ( $this->should_continue() ) { ?>
 
-                <div class="sui-row" id="sui-cross-sell-footer">
-                    <div><span class="sui-icon-plugin-2"></span></div>
-                    <h3><?php esc_html_e( "Check out our other free wordpress.org plugins!", "wp-smushit" ); ?></h3>
-                </div>
-                <div class="sui-row sui-cross-sell-modules"><?php
+				<div class="sui-row" id="sui-cross-sell-footer">
+					<div><span class="sui-icon-plugin-2"></span></div>
+					<h3><?php esc_html_e( "Check out our other free wordpress.org plugins!", "wp-smushit" ); ?></h3>
+				</div>
+				<div class="sui-row sui-cross-sell-modules"><?php
 					$upgrade_url = add_query_arg(
 						array(
 							'utm_source'   => 'Smush-Free',
@@ -86,25 +86,25 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 						$site_url
 					);
 					?>
-                </div>
-                <div class="sui-cross-sell-bottom">
-                <h3>WPMU DEV - Your WordPress Toolkit</h3>
-                <p>Pretty much everything you need for developing and managing WordPress based websites, and then
-                    some.</p>
+				</div>
+				<div class="sui-cross-sell-bottom">
+				<h3>WPMU DEV - Your WordPress Toolkit</h3>
+				<p>Pretty much everything you need for developing and managing WordPress based websites, and then
+					some.</p>
 
-                <a class="sui-button sui-button-green" href="<?php echo $site_url; ?>"
-                   id="dash-uptime-update-membership" target="_blank">
-                    Learn more
-                </a>
+				<a class="sui-button sui-button-green" href="<?php echo $site_url; ?>"
+				   id="dash-uptime-update-membership" target="_blank">
+					Learn more
+				</a>
 
-                <img class="sui-image"
-                     src="<?php echo plugins_url( "assets/images/dev-team.png", __DIR__ ); ?>"
-                     srcset="<?php echo plugins_url( "assets/images/dev-team@2x.png", __DIR__ ); ?> 2x"
-                     alt="Try pro features for free!">
-                </div><?php
+				<img class="sui-image"
+				     src="<?php echo plugins_url( "assets/images/dev-team.png", __DIR__ ); ?>"
+				     srcset="<?php echo plugins_url( "assets/images/dev-team@2x.png", __DIR__ ); ?> 2x"
+				     alt="Try pro features for free!">
+				</div><?php
 			}
-                ?>
-            <div class="sui-footer">Made with <i class="sui-icon-heart"></i> by WPMU DEV</div><?php
+			?>
+			<div class="sui-footer">Made with <i class="sui-icon-heart"></i> by WPMU DEV</div><?php
 
 		}
 
@@ -118,19 +118,19 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 		 */
 		function recommendation_box( $title, $content, $link, $plugin_class, $seq ) {
 			//Put bg to box parent div ?>
-            <div class="sui-col-md-4">
-            <div class="sui-cross-<?php echo $seq; ?> sui-cross-<?php echo $plugin_class; ?>"><span></span></div>
-            <div class="sui-box">
-                <div class="sui-box-body">
-                    <h3><?php echo $title; ?></h3>
-                    <p><?php echo $content; ?></p>
-                    <a href="<?php echo esc_url( $link ); ?>" class="sui-button sui-button-ghost"
-                       target="_blank">
-                        View features <i class="sui-icon-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-            </div><?php
+			<div class="sui-col-md-4">
+			<div class="sui-cross-<?php echo $seq; ?> sui-cross-<?php echo $plugin_class; ?>"><span></span></div>
+			<div class="sui-box">
+				<div class="sui-box-body">
+					<h3><?php echo $title; ?></h3>
+					<p><?php echo $content; ?></p>
+					<a href="<?php echo esc_url( $link ); ?>" class="sui-button sui-button-ghost"
+					   target="_blank">
+						View features <i class="sui-icon-arrow-right"></i>
+					</a>
+				</div>
+			</div>
+			</div><?php
 		}
 
 	}

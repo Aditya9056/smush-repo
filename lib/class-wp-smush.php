@@ -668,7 +668,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * @return bool|array array containing success status, and stats
 		 */
 		function _post( $file_path, $file_size ) {
-
 			global $wpsmushit_admin, $wpsmush_settings, $wpsmush_helper;
 
 			$data = false;
@@ -685,7 +684,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( ! empty( $api_key ) && $this->validate_install() ) {
 				$headers['apikey'] = $api_key;
 			}
-			if ( $this->lossy_enabled ) {
+
+			if ( $this->lossy_enabled && $this->validate_install() ) {
 				$headers['lossy'] = 'true';
 			} else {
 				$headers['lossy'] = 'false';
@@ -819,6 +819,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		function validate_install() {
 
+			//return true;
 			if ( isset( $this->is_pro ) ) {
 				return $this->is_pro;
 			}
@@ -970,7 +971,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt  = $button_txt = $stats = $links = '';
 			$show_button = $show_resmush = false;
 
-			$links = "";
+			$links = "<div class='smush-status-links'>";
 
 			// If variables are not initialized properly, initialize it.
 			if ( ! has_action( 'admin_init', array( $this, 'admin_init' ) ) ) {
@@ -1067,9 +1068,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						}
 					}
 				}
-				//Wrap links if not empty
-				$links = !empty( $links ) ? "<div class='smush-status-links'>" . $links . "</div>" : '';
-
+				$links .= "</div>";
+				$status_txt .= $links;
 				/** Super Smush Button  */
 				//IF current compression is lossy
 				if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
@@ -1082,7 +1082,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 				//Check if premium user, compression was lossless, and lossy compression is enabled
 				//If we are displaying the resmush option already, no need to show the Super Smush button
-				if ( ! $show_resmush && ! $is_lossy && $this->lossy_enabled && $image_type != 'image/gif' ) {
+				if ( ! $show_resmush && $this->validate_install() && ! $is_lossy && $this->lossy_enabled && $image_type != 'image/gif' ) {
 					// the button text
 					$button_txt  = __( 'Super-Smush', 'wp-smushit' );
 					$show_button = true;
@@ -1111,12 +1111,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				// the button text
 				$button_txt = __( 'Smush Now!', 'wp-smushit' );
 			}
-
-			$class = $wp_smush_data ? '' : ' hidden';
-			$status_txt  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
-
-			$status_txt .= $links;
-
 			if ( $text_only ) {
 				//For ajax response
 				return array(
@@ -1150,7 +1144,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 *
 		 * @return string|void
 		 */
-		function column_html( $id, $html = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
+		function column_html( $id, $status_txt = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
 			$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
 
 			// don't proceed if attachment is not image, or if image is not a jpg, png or gif
@@ -1158,6 +1152,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return;
 			}
 
+			$class = $smushed ? '' : ' hidden';
+			$html  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
 			// if we aren't showing the button
 			if ( ! $show_button ) {
 				if ( $echo ) {
@@ -1175,7 +1171,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				}
 			}
 			$mode_class = ! empty( $_POST['mode'] ) && 'grid' == $_POST['mode'] ? ' button-primary' : '';
-
 			if ( ! $echo ) {
 				$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button wp-smush-send';
 				$html .= '
@@ -1811,7 +1806,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 * Return Global stats
 		 *
 		 * Stats sent
-		 * 
+		 *
 		 *  array( 'total_images','bytes', 'human', 'percent')
 		 *
 		 * @return array|bool|mixed
@@ -2010,14 +2005,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				return false;
 			}
 
-			//Do not use menu_page_url(), by the time menu is not registered and it returns a empty URL, and in turn wp_redirect() gives a fatal error
-			$url = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : admin_url( 'admin.php?page=smush' );
+			$url = admin_url( 'upload.php' );
+			$url = add_query_arg(
+				array(
+					'page' => 'wp-smush-bulk'
+				),
+				$url
+			);
 
 			//Store that we need not redirect again
 			add_site_option( 'wp-smush-skip-redirect', true );
 
-			wp_redirect( $url );
-			exit;
+			exit( wp_redirect( $url ) );
 		}
 
 		/**
@@ -2424,8 +2423,8 @@ require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-admin.php' );
 //Include Directory Smush
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-dir.php';
 
+//Include Directory Smush
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';
+
 //Include Plugin Recommendations
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-recommender.php';
-
-// Include Directory Smush.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';

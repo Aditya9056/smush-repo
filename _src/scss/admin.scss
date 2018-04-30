@@ -52,6 +52,54 @@
           }
         }
       }
+
+      span {
+        &.wp-smush-li-path {
+          background: url(../images/folder-closed.svg) no-repeat;
+          background-position-y: 6px;
+          line-height: 2;
+          padding: 0 30px;
+          max-width: 87%;
+          font-size: 13px;
+          background-position-y: inherit;
+
+          .sui-tag {
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+
+    .smush-dir-smush-accordion {
+
+      .sui-box-body {
+        padding-bottom: 5px;
+        padding-top: 5px;
+      }
+
+      .sui-accordion-item-title.sui-success .wp-smush-li-path {
+        background: none;
+        &:before {
+          color: $notice-success-icon-color;
+          vertical-align: middle;
+          margin-left: -30px;
+          margin-right: 10px;
+          font-size: 20px;
+        }
+        @include icon(before, check-tick, true);
+      }
+
+      tr, td {
+        &.sui-success {
+          border-left: 2px #1abc9c solid;
+          color: inherit;
+        }
+
+        &.sui-warning {
+          border-left: 2px #fecf2f solid;
+          color: inherit;
+        }
+      }
     }
 
     .wp-smush-resize-settings-wrap,
@@ -124,6 +172,84 @@
           font-size: 13px;
         }
       }
+    }
+  }
+
+  ul {
+
+    &.jqueryFileTree {
+      background: #f8f8f8;
+      color: #888888;
+      font-family: "Roboto", sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+
+      .wp-smush-list {
+        margin-top: 2px;
+        vertical-align: top;
+      }
+
+      li {
+        display: inline-block;
+        padding: 0 0 5px 20px;
+
+        .ext_tif,
+        .ext_tif,
+        .ext_tiff,
+        .ext_png,
+        .ext_pcx,
+        .ext_jpeg,
+        .ext_jpg,
+        .ext_gif,
+        .ext_bmp {
+          background: url(../images/image.svg) left top no-repeat;
+        }
+
+        .directory {
+          background: url(../images/folder-closed.svg) left top no-repeat;
+        }
+
+        .expanded {
+          background: url(../images/folder-open.svg) left top no-repeat;
+
+          &.selected {
+            background: url(../images/folder-open-selected.svg) left top no-repeat;
+
+            > a,
+            .file.selected {
+              a {
+                color: #17a8e3;
+              }
+            }
+
+            #Folder-22px-Solid-3-Open {
+              fill: #17a8e3;
+            }
+          }
+        }
+
+        &.selected > a {
+          font-weight: 500;
+        }
+
+        &.selected {
+          .expanded {
+            ul {
+              &.jqueryFileTree {
+                margin-top: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &.jqueryFileTree a:hover {
+      background: #f8f8f8;
+      color: #888888;
+      font-family: "Roboto", sans-serif;
+      font-size: 14px;
+      font-weight: 500;
     }
   }
 }

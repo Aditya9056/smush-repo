@@ -1395,12 +1395,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$this->current_tab = isset( $_GET['tab'] ) && in_array( $_GET['tab'], array_keys( $this->tabs ) ) ? $_GET['tab'] : 'bulk';
 
 			// If no integration found, set current tab as bulk smush.
-			if ( empty( $this->intgration_group ) && 'integrations' === $this->current_tab ) {
-				$this->current_tab = 'bulk';
-			} elseif ( $is_network && ! $is_networkwide ) {
-				// If networkwide option is disabled and network admin.
-				$this->current_tab = 'bulk';
-			} elseif ( ! $is_network && $is_networkwide && ! in_array( $this->current_tab, $this->subsite_tabs ) ) {
+			if (  ( empty( $this->intgration_group ) && 'integrations' === $this->current_tab ) ||
+			      ( $is_network && ! $is_networkwide ) ||
+			      ( ! $is_network && $is_networkwide && ! in_array( $this->current_tab, $this->subsite_tabs ) )
+			) {
 				// If networkwide option is enabled only show bulk and directory smush.
 				$this->current_tab = 'bulk';
 			}
