@@ -72,37 +72,76 @@
 
     .smush-dir-smush-accordion {
 
+      border: 1px solid #e6e6e6;
+
+      &:after {
+        content: unset;
+      }
+
       .sui-box-body {
         padding-bottom: 5px;
         padding-top: 5px;
+
+        p {
+          font-size: 13px;
+        }
+      }
+
+      tr, td {
+        &.optimised {
+          border-left: 2px #1abc9c solid;
+          color: inherit;
+        }
+
+        &.partial {
+          border-left: 2px #fecf2f solid;
+          color: inherit;
+        }
+
+        &.error {
+          border-left: 2px #ff6d6d solid;
+          color: inherit;
+        }
+
+        .sui-actions-right {
+          float: right;
+        }
       }
 
       .wp-smush-dir-progress-wrap {
         background: none;
         height: inherit;
-        padding: unset;
-        &.sui-success {
-          &:after {
-            color: $notice-success-icon-color;
-            vertical-align: middle;
-            margin-left: -30px;
-            margin-right: 10px;
-            font-size: 20px;
+        padding-right: 35px;
+
+        &.sui-progress-block {
+          float: right;
+          width: auto;
+          padding: inherit;
+        }
+
+        .wp-smush-image-dir-progress {
+          &.optimised {
+            &:before {
+              color: $notice-success-icon-color;
+              vertical-align: middle;
+              margin-right: 10px;
+              font-size: 18px;
+            }
+            @include icon(before, check-tick, true);
           }
-          @include icon(after, check-tick, true);
+        }
+
+        .wp-smush-image-progress-percent {
+          padding-right: 10px;
         }
       }
 
-      tr, td {
-        &.sui-success {
-          border-left: 2px #1abc9c solid;
-          color: inherit;
-        }
+      li.wp-smush-image-ele {
+        padding: 5px;
+      }
 
-        &.sui-warning {
-          border-left: 2px #fecf2f solid;
-          color: inherit;
-        }
+      .wp-smush-image-ele-progress {
+        float: right;
       }
     }
 
@@ -126,10 +165,6 @@
       }
     }
 
-    .hidden, button.hidden {
-      display: none;
-    }
-
     .sui-summary-smush {
       background-image: url(../images/smush.png);
     }
@@ -147,7 +182,7 @@
           vertical-align: middle;
           margin-left: -30px;
           margin-right: 10px;
-          font-size: 20px;
+          font-size: 18px;
         }
         @include icon(before, check-tick, true);
       }
@@ -176,6 +211,14 @@
           font-size: 13px;
         }
       }
+    }
+
+    .hidden, button.hidden {
+      display: none;
+    }
+
+    .sui-loading {
+      font-size: 18px;
     }
   }
 
@@ -244,6 +287,13 @@
       font-family: "Roboto", sans-serif;
       font-size: 14px;
       font-weight: 500;
+    }
+  }
+
+  span {
+    &.add-dir-loader {
+      padding-right: 10px;
+      font-size: 18px;
     }
   }
 }
