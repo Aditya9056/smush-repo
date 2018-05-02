@@ -1009,14 +1009,8 @@ jQuery( function ( $ ) {
 	 */
 	var close_dialog = function () {
 
-		// Get dialog.
-		var dialog = SUI.dialogs['wp-smush-list-dialog'];
-		// If dialog already set, hide.
-		if ( dialog.length > 0 ) {
-			dialog.hide();
-		} else {
-			return;
-		}
+		// Close the dialog.
+		SUI.dialogs['wp-smush-list-dialog'].hide();
 
 		$( '.wp-smush-select-dir, button.wp-smush-browse, button.wp-smush-resume, a.wp-smush-dir-link' ).removeAttr( 'disabled' );
 
@@ -1109,7 +1103,7 @@ jQuery( function ( $ ) {
 			}
 			//Remove the loader and percentage.
 			ele_dir_progress.removeClass( 'sui-icon-loader sui-loading' );
-			ele_dir_progress_percent.html( '' ).addClass( 'hidden' );
+			ele_dir_progress_percent.html( '' );
 			ele_tr.find( 'td' ).removeClass( 'partial' ).addClass( 'optimised' );
 			ele_prev_tr.find( 'td' ).removeClass( 'partial' ).addClass( 'optimised' );
 		}

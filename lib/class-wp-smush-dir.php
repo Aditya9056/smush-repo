@@ -974,7 +974,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$content = '<span class="wp-smush-dir-progress-wrap sui-progress-block sui-progress-can-close">';
 			$content .= '<span class="wp-smush-image-progress-percent ' . $class . ' hidden">' . $percent_text . '</span>';
 			$content .= '<span class="wp-smush-image-dir-progress ' . $class . '"></span>';
-			$content .= 0 == $width ? '<button class="sui-progress-close sui-tooltip wp-smush-exclude-dir" data-path="' . $dir_path . '" type="button" data-tooltip="' . esc_html__( 'Remove', 'wp-smushit' ) . '"><i class="sui-icon-close"></i></button>' : '';
+			$content .= $width !== 100 ? '<button class="sui-progress-close sui-tooltip wp-smush-exclude-dir" data-path="' . $dir_path . '" type="button" data-tooltip="' . esc_html__( 'Remove', 'wp-smushit' ) . '"><i class="sui-icon-close"></i></button>' : '';
 			$content .= "</span>";
 
 			return $content;

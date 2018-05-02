@@ -116,7 +116,14 @@
         &.sui-progress-block {
           float: right;
           width: auto;
-          padding: inherit;
+        }
+
+        .wp-smush-exclude-dir {
+          margin-right: 10px;
+
+          i {
+            margin-right: 0;
+          }
         }
 
         .wp-smush-image-dir-progress {
@@ -124,7 +131,6 @@
             &:before {
               color: $notice-success-icon-color;
               vertical-align: middle;
-              margin-right: 10px;
               font-size: 18px;
             }
             @include icon(before, check-tick, true);
@@ -133,6 +139,7 @@
 
         .wp-smush-image-progress-percent {
           padding-right: 10px;
+          font-size: 13px;
         }
       }
 
