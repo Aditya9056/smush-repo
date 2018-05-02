@@ -305,9 +305,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				//If we have any savings
 				$upgrade_url = add_query_arg(
 					array(
-						'utm_source' => 'Smush-Free',
-						'utm_medium' => 'Banner',
-						'utm_campaign'=> 'pro-only-stats'
+						'utm_source' => 'smush',
+						'utm_medium' => 'plugin',
+						'utm_campaign'=> 'smush_stats_prosavings_tag'
 					),
 					$wpsmushit_admin->upgrade_url
 				);
@@ -357,9 +357,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				}
 				$upgrade_url = add_query_arg(
 					array(
-						'utm_source' => 'Smush-Free',
-						'utm_medium' => 'Banner',
-						'utm_campaign'=> 'pro-only-advanced-settings'
+						'utm_source' => 'smush',
+						'utm_medium' => 'plugin',
+						'utm_campaign'=> 'smush_advancedsettings_profeature_tag'
 					),
 					$wpsmushit_admin->upgrade_url
 				);
@@ -717,9 +717,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$class = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' hidden' : '';
 					$upgrade_url = add_query_arg(
 						array(
-						'utm_source' => 'Smush-Free',
-						'utm_medium' => 'Banner',
-						'utm_campaign' => 'yellow-bulk-smush-upsell'
+						'utm_source' => 'smush',
+						'utm_medium' => 'plugin',
+						'utm_campaign' => 'smush_advancedsettings_profeature_tag'
 						),
 						$wpsmushit_admin->upgrade_url
 					);
@@ -964,9 +964,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 			$upgrade_url = add_query_arg(
 				array(
-				'utm_source' => 'Smush-Free',
-				'utm_medium' => 'Banner',
-				'utm_campaign' => 'smush-lady-upgrade'
+				'utm_source' => 'smush',
+				'utm_medium' => 'plugin',
+				'utm_campaign' => 'smush_advancedsettings_upsell_notice'
 				),
 				$wpsmushit_admin->upgrade_url
 			); ?>
@@ -1228,9 +1228,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
             //If we have any savings
 				$upgrade_url = add_query_arg(
 					array(
-						'utm_source' => 'Smush-Free',
-						'utm_medium' => 'Banner',
-						'utm_campaign'=> 'pro-only-stats'
+						'utm_source' => 'smush',
+						'utm_medium' => 'plugin',
+						'utm_campaign'=> 'smush_stats_prosavings_tag'
 					),
 					$wpsmushit_admin->upgrade_url
 				);?>

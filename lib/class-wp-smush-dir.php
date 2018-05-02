@@ -253,6 +253,14 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
 			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' );
 
+			$upgrade_url = add_query_arg(
+				array(
+					'utm_source'   => 'smush',
+					'utm_medium'   => 'plugin',
+					'utm_campaign' => 'smush_directorysmush_limit_notice'
+				),
+				$wpsmushit_admin->upgrade_url
+			);
 			/** Directory Browser and Image List **/
 			$wpsmush_bulkui->container_header( 'wp-smush-dir-browser', 'wp-smush-dir-browser', esc_html__( "DIRECTORY SMUSH", "wp-smushit" ) ); ?>
             <div class="box-content">
@@ -278,7 +286,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
                         <i class="icon-fi-warning-alert"></i><?php printf( esc_html__( "%s/%s image(s) were successfully smushed, however %s image(s) could not be smushed due to an error.", "wp-smushit" ), '<span class="wp-smush-dir-smushed"></span>', '<span class="wp-smush-dir-total"></span>', '<span class="wp-smush-dir-remaining"></span>' ); ?>
                     </div>
                     <div class="wp-smush-notice wp-smush-dir-limit hidden">
-                        <i class="icon-fi-info"></i><?php printf( esc_html__( " %sUpgrade to pro%s to bulk smush all your directory images with one click. Free users can smush 50 images with each click.", "wp-smushit" ), '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ) . '" target="_blank" title="' . esc_html__( "Smush Pro", "wp-smushit" ) . '">', '</a>' ); ?>
+                        <i class="icon-fi-info"></i><?php printf( esc_html__( " %sUpgrade to pro%s to bulk smush all your directory images with one click. Free users can smush 50 images with each click.", "wp-smushit" ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( "Smush Pro", "wp-smushit" ) . '">', '</a>' ); ?>
                     </div>
                     <div class="wp-smush-all-button-wrap bottom">
                         <!-- @todo: Check status of the images in last scan and do not show smush now button, if already finished -->
@@ -480,11 +488,16 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function get_image_list( $path = '' ) {
 			global $wpdb, $wpsmush_helper;
 
+			//Return Error if not a valid directory path
+			if ( ! is_dir( $path ) ) {
+				wp_send_json_error( array( "message" => "Not a valid directory path" ) );
+			}
+
 			$base_dir = empty( $path ) ? ltrim( $_GET['path'], '/' ) : $path;
 			$base_dir = realpath( rawurldecode( $base_dir ) );
 
 			if ( ! $base_dir ) {
-				wp_send_json_error( "Unauthorized" );
+				wp_send_json_error( array( "message" => "Unauthorized" ) );
 			}
 
 			//Store the path in option
@@ -939,9 +952,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						}
 
 						$image_id = $this->get_image_id( $item, $images['image_items'] );
-						$div      .= "<li class='wp-smush-image-ele{$class}' id='{$image_id}'><span class='wp-smush-image-ele-status'></span><span class='wp-smush-image-path'>{$item}</span>";
-						//Close LI
-						$div .= "</li>";
+						if( !empty( $image_id ) ) {
+							$div .= "<li class='wp-smush-image-ele{$class}' id='{$image_id}'><span class='wp-smush-image-ele-status'></span><span class='wp-smush-image-path'>{$item}</span>";
+							//Close LI
+							$div .= "</li>";
+						}
 					}
 					$div .= "</ul>
 					<hr />

@@ -362,15 +362,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Style
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
+			$dir = defined('__DIR__') ? __DIR__ : dirname(__FILE__);
+
 			//Load on Smush all page only
 			if ( 'toplevel_page_smush' == $current_page || 'toplevel_page_smush-network' == $current_page ) {
 				//Load Jquery tree on specified page
 				wp_enqueue_script( 'jqft-js' );
 				wp_enqueue_style( 'jqft-css' );
-				wp_enqueue_style( 'wpmudev-sui', plugins_url( 'assets/shared-ui-2/css/admin.min.css', __DIR__ ) );
+				wp_enqueue_style( 'wpmudev-sui', plugins_url( 'assets/shared-ui-2/css/admin.min.css', $dir ) );
 				wp_enqueue_script(
 					'wpmudev-sui',
-					plugins_url( 'assets/shared-ui-2/js/admin.min.js', __DIR__ ),
+					plugins_url( 'assets/shared-ui-2/js/admin.min.js', $dir ),
 					array( 'jquery' ),
 					null,
 					true
