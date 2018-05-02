@@ -1009,11 +1009,14 @@ jQuery( function ( $ ) {
 	 */
 	var close_dialog = function () {
 
-		// Modal dialog.
-		$( '#wp-smush-list-dialog' ).hide();
-
-		// Remove overlay class to document body.
-		document.getElementsByTagName( 'html' )[0].classList.remove( 'sui-has-overlay' );
+		// Get dialog.
+		var dialog = SUI.dialogs['wp-smush-list-dialog'];
+		// If dialog already set, hide.
+		if ( dialog.length > 0 ) {
+			dialog.hide();
+		} else {
+			return;
+		}
 
 		$( '.wp-smush-select-dir, button.wp-smush-browse, button.wp-smush-resume, a.wp-smush-dir-link' ).removeAttr( 'disabled' );
 
@@ -1102,13 +1105,13 @@ jQuery( function ( $ ) {
 			} else {
 				ele_dir_progress.removeClass( 'partial sui-icon-loader sui-loading' ).addClass( 'optimised' );
 				// Update the count tag class.
-				ele_dir_count.removeClass('sui-tag-warning').addClass('sui-tag-inactive');
+				ele_dir_count.removeClass( 'sui-tag-warning' ).addClass( 'sui-tag-inactive' );
 			}
 			//Remove the loader and percentage.
 			ele_dir_progress.removeClass( 'sui-icon-loader sui-loading' );
 			ele_dir_progress_percent.html( '' ).addClass( 'hidden' );
-			ele_tr.find('td').removeClass( 'partial' ).addClass('optimised');
-			ele_prev_tr.find('td').removeClass( 'partial' ).addClass('optimised');
+			ele_tr.find( 'td' ).removeClass( 'partial' ).addClass( 'optimised' );
+			ele_prev_tr.find( 'td' ).removeClass( 'partial' ).addClass( 'optimised' );
 		}
 
 	};
@@ -1476,7 +1479,7 @@ jQuery( function ( $ ) {
 		}
 
 		// Show waiting message.
-		$( '.wp-smush-image-progress-percent' ).not('.optimised').removeClass('hidden');
+		$( '.wp-smush-image-progress-percent' ).not( '.optimised' ).removeClass( 'hidden' );
 
 		//Append and show spinner
 		img_progress.addClass( 'sui-icon-loader sui-loading' );
@@ -1513,7 +1516,7 @@ jQuery( function ( $ ) {
 				//Mark Optimised
 				var ele = jQuery( document.getElementById( data.image.id ) );
 				var ele_img_progress = ele.find( '.wp-smush-image-ele-progress' );
-				console.log(ele);
+				console.log( ele );
 
 				ele.removeClass( 'partial' );
 				ele_img_progress.removeClass( 'sui-icon-loader sui-loading' );
