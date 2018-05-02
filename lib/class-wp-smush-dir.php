@@ -219,7 +219,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				return null;
 			}
 			//Print the button ?>
-			<button class="wp-smush-resume wp-smush-button button"><?php esc_html_e( "RESUME LAST SCAN", "wp-smushit" ); ?></button><?php
+			<button type="button" class="sui-button wp-smush-resume tc"><?php esc_html_e( 'RESUME LAST SCAN', 'wp-smushit' ); ?></button>
+			<span class="wp-smush-resume-loder sui-icon-loader sui-loading hidden" aria-hidden="true"></span>
+			<?php
 		}
 
 		/**
@@ -264,8 +266,24 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						<p class="wp-smush-no-images-content tc roboto-regular"><?php esc_html_e( 'In addition to smushing your media uploads, you may want to also smush images living outside your uploads directory. Add any folders you wish to smush and bulk smush away!', 'wp-smushit' ); ?></p>
 						<span class="wp-smush-upload-images tc">
 							<button type="button" class="sui-button sui-button-primary wp-smush-browse tc" data-a11y-dialog-show="wp-smush-list-dialog"><?php esc_html_e( 'CHOOSE FOLDER', 'wp-smushit' ); ?></button>
+							<?php $this->show_resume_button(); ?>
 						</span>
 					</div>
+					<table class="smush-dir-smush-done sui-table hidden">
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'Folder', 'wp-smushit' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="smush-notice-content"><div class="sui-notice sui-notice-info smush-no-images hidden"><p><?php esc_html_e( 'You haven’t added any folders to smush.', 'wp-smushit' ); ?></p></div></td>
+							</tr>
+							<tr>
+								<td><button type="button" class="sui-button wp-smush-browse wp-smush-browse-top" data-a11y-dialog-show="wp-smush-list-dialog"><?php esc_html_e( 'ADD FOLDER', 'wp-smushit' ); ?></button></td>
+							</tr>
+						</tbody>
+					</table>
 					<!-- Notices -->
 					<div class="sui-notice sui-notice-success wp-smush-dir-all-done hidden">
 						<p><?php esc_html_e( "All images for the selected directory are smushed and up to date. Awesome!", "wp-smushit" ); ?></p>
@@ -946,8 +964,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$actions_class = $total_pending_count > 0 ? '' : ' hidden';
 			$div .= '<tr><td>';
 			$div .= '<div class="sui-actions-right wp-smush-all-button-wrap' . $actions_class . '">';
-			$div .= '<button class="sui-button sui-button-primary wp-smush-start">' . esc_html__( "BULK SMUSH", "wp-smushit" ) . '</button>';
-			$div .= '<button type="button" title="' . esc_html__( "Click to stop the directory smushing process.", "wp-smushit" ) . '" class="sui-button sui-button-ghost wp-smush-pause hidden">' . esc_html__( "CANCEL", "wp-smushit" ) . '</button>';
+			$div .= '<button class="sui-button sui-button-primary wp-smush-start">' . esc_html__( 'BULK SMUSH', 'wp-smushit' ) . '</button>';
+			$div .= '<button type="button" title="' . esc_html__( 'Click to stop the directory smushing process.', 'wp-smushit' ) . '" class="sui-button sui-button-ghost wp-smush-pause hidden">' . esc_html__( 'CANCEL', 'wp-smushit' ) . '</button>';
 			$div .= '</div>';
 			$div .= '</td></tr>';
 			$div .= '</tbody></table>';

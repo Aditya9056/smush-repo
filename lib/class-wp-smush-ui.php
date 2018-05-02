@@ -797,21 +797,21 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$is_network = is_network_admin();
 			$networkwide = $wpsmush_settings->settings['networkwide'];
 
-			// Count stat for nav bar.
-			$count_status = '<i class="sui-icon-check-tick" aria-hidden="true"></i>';
-			if ( $is_network ) {
-				$count_status = '';
-			} elseif ( $remaining > 0 ) {
-				$count_status = '<span class="sui-tag sui-tag-warning">' . $remaining . '</span>';
-			} elseif ( $this->current_tab === 'bulk' ) {
-				$count_status = '<i aria-hidden="true" class="sui-icon-check-tick sui-success"></i>';
+			$bulk_tag_content = $bulk_tag_class = '';
+			if ( $remaining > 0 && ! $is_network ) {
+				$bulk_tag_class = ' sui-tag sui-tag-warning';
+				$bulk_tag_content = $remaining;
 			}
 
 			?>
-			<div class="sui-sidenav">
+			<div class="sui-sidenav smush-sidenav">
 				<?php $main_nav_li = $select_nav = $mob_nav_li = ''; ?>
-				<?php $class = ''; ?>
 				<?php foreach ( $this->tabs as $tab => $label ) : ?>
+					<?php $class = $tag_content = $tag_class = ''; ?>
+					<?php if ( $tab === 'bulk' && ! $is_network ) : ?>
+						<?php $tag_content = $bulk_tag_content; ?>
+						<?php $tag_class = $bulk_tag_class; ?>
+					<?php endif; ?>
 					<?php if ( ( $tab === 'directory' && $is_network )|| ( $tab === 'integrations' && empty( $this->intgration_group ) ) ) : ?>
 						<?php continue; ?>
 					<?php endif; ?>
@@ -827,7 +827,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					// This is to avoid duplicate foreach loop.
 					$main_nav_li .= '<li class="sui-vertical-tab smush-' . $tab . $class . ( $tab === $this->current_tab ? ' current' : '' ) . '">';
 					$main_nav_li .= '<a href="' . add_query_arg( 'tab', $tab ) . '">' . $label . '</a>';
-					$main_nav_li .= $tab === 'bulk' ? $count_status : '';
+					$main_nav_li .= '<span class="smush-nav-icon ' . $tab . $tag_class . '">' . $tag_content . '</span>';
 					$main_nav_li .= '</li>';
 					// Mobile nav
 					$select_nav .= '<option class="' . $class . '" value="' . $tab . '" ' . selected( $tab, $this->current_tab, false ) . '>' . $label . '</option>';

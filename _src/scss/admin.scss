@@ -70,6 +70,33 @@
       }
     }
 
+    .smush-sidenav {
+
+      .smush-nav-icon {
+
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        display: inline-block;
+        &.bulk:not(.sui-tag) {
+          &:before {
+             color: $notice-default-icon-color;
+            vertical-align: middle;
+            font-size: 18px;
+          }
+          @include icon(before, check-tick, true);
+        }
+      }
+
+      .current {
+        .bulk:not(.sui-tag) {
+          &:before {
+            color: $notice-success-icon-color;
+          }
+        }
+      }
+    }
+
     .smush-dir-smush-accordion {
 
       border: 1px solid #e6e6e6;
@@ -105,6 +132,10 @@
 
         .sui-actions-right {
           float: right;
+        }
+
+        .sui-notice {
+          margin: 30px 0;
         }
       }
 
@@ -156,10 +187,6 @@
         }
       }
 
-      li.wp-smush-image-ele {
-        padding: 5px;
-      }
-
       .wp-smush-image-ele {
         .wp-smush-image-ele-progress {
           font-size: 18px;
@@ -183,6 +210,14 @@
 
       .wp-smush-image-ele-progress {
         float: right;
+        padding-right: 35px;
+      }
+
+      li.wp-smush-image-ele {
+        padding: 5px;
+        .wp-smush-image-ele-progress {
+          padding-right: 0;
+        }
       }
     }
 
