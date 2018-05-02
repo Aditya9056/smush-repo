@@ -2509,13 +2509,6 @@ li.wp-smush-image-ele.in-progress .wp-smush-image-ele-status {
     display: none;
 }
 
-li.wp-smush-image-ele.error .wp-smush-image-ele-status:before {
-    color: #ffd000;
-    content: '\f06a';
-    font-family: 'FontAwesomeWdv';
-    margin-top: -10px;
-}
-
 span.smush-percent {
     text-align: right;
     width: 34px;

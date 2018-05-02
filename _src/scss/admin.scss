@@ -111,11 +111,16 @@
       .wp-smush-dir-progress-wrap {
         background: none;
         height: inherit;
+        padding: 0;
         padding-right: 35px;
 
         &.sui-progress-block {
           float: right;
           width: auto;
+        }
+
+        .wp-smush-image-dir-exclude {
+          display: inline-block;
         }
 
         .wp-smush-exclude-dir {
@@ -135,6 +140,14 @@
             }
             @include icon(before, check-tick, true);
           }
+
+          &.partial {
+            font-size: 18px;
+            &:before {
+              color: $notice-warning-icon-color;
+            }
+            @include icon(before, warning-alert, true);
+          }
         }
 
         .wp-smush-image-progress-percent {
@@ -145,6 +158,27 @@
 
       li.wp-smush-image-ele {
         padding: 5px;
+      }
+
+      .wp-smush-image-ele {
+        .wp-smush-image-ele-progress {
+          font-size: 18px;
+          &.partial {
+            &:before {
+              color: $notice-warning-icon-color;
+            }
+            @include icon(before, warning-alert, true);
+          }
+
+          &.optimised {
+            &:before {
+              color: $notice-success-icon-color;
+              vertical-align: middle;
+              font-size: 18px;
+            }
+            @include icon(before, check-tick, true);
+          }
+        }
       }
 
       .wp-smush-image-ele-progress {

@@ -1037,7 +1037,7 @@ jQuery( function ( $ ) {
 	 *
 	 */
 	var is_last_element = function ( parent ) {
-		var elements = parent.find( 'li.wp-smush-image-ele:not(.optimised,.error)' );
+		var elements = parent.find( 'li.wp-smush-image-ele:not(.optimised,.processed,.error)' );
 		if ( elements.length <= 0 ) {
 			return true;
 		}
@@ -1057,6 +1057,7 @@ jQuery( function ( $ ) {
 		var ele_dir_progress = ele_prev_tr.find( '.wp-smush-image-dir-progress' );
 		var ele_dir_progress_percent = ele_prev_tr.find( '.wp-smush-image-progress-percent' );
 		var ele_dir_count = ele_prev_tr.find( '.sui-tag' );
+		var ele_exclude_btn = ele_prev_tr.find( '.wp-smush-exclude-dir' );
 
 		var children = ele.closest( 'tr' ).find( '.wp-smush-image-ele' );
 		var parent = ele.is( 'li' ) ? ele.parent() : '';
@@ -1082,6 +1083,7 @@ jQuery( function ( $ ) {
 		if ( parent.length === 0 ) {
 			return;
 		}
+
 		//Check if last image, and if all the images are not smushed under the specified directory path, add a generic warning message
 		if ( is_last_element( parent ) ) {
 			if ( smushed < total ) {
@@ -1096,16 +1098,20 @@ jQuery( function ( $ ) {
 
 				//Append message to 2nd parent i.e li
 				parent.find( 'ul.wp-smush-image-list-inner' ).after( message );
+				ele_dir_progress.removeClass( 'sui-icon-loader sui-loading' ).addClass( 'partial' );
+				ele_tr.find( 'td' ).addClass( 'partial' );
+				ele_prev_tr.find( 'td' ).addClass( 'partial' );
 			} else {
 				ele_dir_progress.removeClass( 'partial sui-icon-loader sui-loading' ).addClass( 'optimised' );
 				// Update the count tag class.
 				ele_dir_count.removeClass( 'sui-tag-warning' ).addClass( 'sui-tag-inactive' );
+				ele_exclude_btn.hide();
+				ele_tr.find( 'td' ).removeClass( 'partial' ).addClass( 'optimised' );
+				ele_prev_tr.find( 'td' ).removeClass( 'partial' ).addClass( 'optimised' );
 			}
 			//Remove the loader and percentage.
 			ele_dir_progress.removeClass( 'sui-icon-loader sui-loading' );
 			ele_dir_progress_percent.html( '' );
-			ele_tr.find( 'td' ).removeClass( 'partial' ).addClass( 'optimised' );
-			ele_prev_tr.find( 'td' ).removeClass( 'partial' ).addClass( 'optimised' );
 		}
 
 	};
@@ -1510,7 +1516,6 @@ jQuery( function ( $ ) {
 				//Mark Optimised
 				var ele = jQuery( document.getElementById( data.image.id ) );
 				var ele_img_progress = ele.find( '.wp-smush-image-ele-progress' );
-				console.log( ele );
 
 				ele.removeClass( 'partial' );
 				ele_img_progress.removeClass( 'sui-icon-loader sui-loading' );
@@ -1518,6 +1523,7 @@ jQuery( function ( $ ) {
 				if ( res.success ) {
 
 					ele.addClass( 'optimised' );
+					ele_img_progress.addClass( 'optimised' );
 
 					//Update Directory progress
 					update_dir_progress( ele );
@@ -1525,7 +1531,8 @@ jQuery( function ( $ ) {
 					// @todo Update stats.
 				} else {
 					//If there was an error optimising the image
-					ele.addClass( 'error' );
+					ele.addClass( 'processed' );
+					ele_img_progress.addClass( 'partial' );
 					//Update Directory progress
 					update_dir_progress( ele );
 				}
@@ -2292,6 +2299,9 @@ jQuery( function ( $ ) {
 		//Enable the smush button, hide the spinner
 		$( 'button.wp-smush-start, button.wp-smush-browse' ).show().removeAttr( 'disabled' );
 		$( 'span.wp-smush-image-dir-progress, span.wp-smush-image-ele-progress' ).removeClass( 'sui-icon-loader sui-loading' );
+
+		// Hide the waiting message.
+		$( '.wp-smush-image-progress-percent' ).addClass( 'hidden' );
 
 		//Show directory exclude option
 		$( '.wp-smush-exclude-dir' ).show();

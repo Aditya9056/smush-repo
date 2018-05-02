@@ -892,23 +892,26 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					$item_count = 1;
 
 					foreach ( $image as $item ) {
+						$class = ' partial';
+						$img_progress_class = '';
 						//Check if the image is already in optimised list
-						$class = is_array( $this->optimised_images ) && array_key_exists( $item, $this->optimised_images ) ? 'optimised' : 'partial';
-						//Mark Smush images optimised
-						if ( false !== $wpsmush_helper->strposa( $item, $plugin_path ) ) {
-							$class = ' optimised';
+						if ( is_array( $this->optimised_images ) && array_key_exists( $item, $this->optimised_images ) ) {
+							$class = $img_progress_class = ' optimised';
+						} elseif ( false !== $wpsmush_helper->strposa( $item, $plugin_path ) ) {
+							//Mark Smush images optimised
+							$class = $img_progress_class = ' optimised';
 						}
 
 						$image_id = $this->get_image_id( $item, $images['image_items'] );
 
 						if ( $item_count === 1 ) :
 							$div .= '<tr class="sui-accordion-item-content">';
-							$div .= '<td class="' . $class . '"><div class="sui-box"><div class="sui-box-body"><ul class="wp-smush-image-list-inner" tabindex="0">';
+							$div .= '<td class="' . $wrapper_class . '"><div class="sui-box"><div class="sui-box-body"><ul class="wp-smush-image-list-inner" tabindex="0">';
 						endif;
 
-						$div .= '<li class="wp-smush-image-ele ' . $class . '" id="' . $image_id . '">';
-						$div .= '<span class="wp-smush-image-ele-progress"></span></span>';
-						$div .= '<span class="wp-smush-image-ele-status ' . $class . '"></span>';
+						$div .= '<li class="wp-smush-image-ele' . $class . '" id="' . $image_id . '">';
+						$div .= '<span class="wp-smush-image-ele-progress' . $img_progress_class . '"></span>';
+						$div .= '<span class="wp-smush-image-ele-status"></span>';
 						$div .= '<span class="wp-smush-image-path">' . $item . '</span>';
 						$div .= '</li>';
 						if ( $count === $item_count ) :
@@ -921,10 +924,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 					$image_p = array_pop( $image );
 
-					$class = 'partial';
+					$class = ' partial';
+					$img_progress_class = '';
 					// Check if the image is already in optimised list.
 					if ( ( is_array( $this->optimised_images ) && array_key_exists( $image_p, $this->optimised_images ) ) || $smush_image ) {
-						$class = 'optimised';
+						$class = $img_progress_class = ' optimised';
 					} else {
 						$total_pending_count = $total_pending_count + 1;
 					}
@@ -933,9 +937,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 					// Add new table row for images.
 					$div .= '<tr>';
-					$div .= '<td id="' . $image_id . '" class="wp-smush-image-ele ' . $class . '">';
-					$div .= '<span class="wp-smush-image-ele-status ' . $class . '"></span><span class="wp-smush-image-path">' . $image_p . '</span>';
-					$div .= '<span class="wp-smush-image-ele-progress"></span>';
+					$div .= '<td id="' . $image_id . '" class="wp-smush-image-ele' . $class . '">';
+					$div .= '<span class="wp-smush-image-ele-status"></span><span class="wp-smush-image-path">' . $image_p . '</span>';
+					$div .= '<span class="wp-smush-image-ele-progress' . $img_progress_class . '"></span>';
 					$div .= '</td></tr>';
 				}
 			}
@@ -971,11 +975,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$class = $count === $optimised ? ' optimised' : '';
 			$percent_text = 0 == $width ? esc_html__( 'Waiting...' ) : $width . '%';
 
-			$content = '<span class="wp-smush-dir-progress-wrap sui-progress-block sui-progress-can-close">';
+			$content = '<div class="wp-smush-dir-progress-wrap sui-progress-block sui-progress-can-close">';
 			$content .= '<span class="wp-smush-image-progress-percent ' . $class . ' hidden">' . $percent_text . '</span>';
 			$content .= '<span class="wp-smush-image-dir-progress ' . $class . '"></span>';
+			$content .= '<span class="wp-smush-image-dir-exclude">';
 			$content .= $width !== 100 ? '<button class="sui-progress-close sui-tooltip wp-smush-exclude-dir" data-path="' . $dir_path . '" type="button" data-tooltip="' . esc_html__( 'Remove', 'wp-smushit' ) . '"><i class="sui-icon-close"></i></button>' : '';
-			$content .= "</span>";
+			$content .= '</span>';
+			$content .= "</div>";
 
 			return $content;
 		}
