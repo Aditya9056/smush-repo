@@ -857,33 +857,28 @@ jQuery( function ( $ ) {
 	};
 
 	var run_re_check = function ( button, process_settings ) {
-		var spinner = button.parent().find( '.spinner' );
+
+		// Empty the button text and add loader class.
+		button.text( '' ).addClass( 'sui-button-onload sui-icon-loader sui-loading' ).blur();
 
 		//Check if type is set in data attributes
 		var scan_type = button.data( 'type' );
 		scan_type = 'undefined' == typeof scan_type ? 'media' : scan_type;
 
-		//Show spinner
-		spinner.addClass( 'is-active' );
-
 		//Remove the Skip resmush attribute from button
 		$( 'button.wp-smush-all' ).removeAttr( 'data-smush' );
 
 		//remove notices
-		var el = $( '.wp-smush-notice.wp-smush-resmush-message, .wp-smush-notice.wp-smush-settings-updated' );
+		var el = $( '.sui-notice.wp-smush-resmush-message, .sui-notice.wp-smush-settings-updated' );
 		el.slideUp( 100, function () {
 			el.remove();
 		} );
 
 		//Disable Bulk smush button and itself
-		button.attr( 'disabled', 'disabled' );
 		$( '.wp-smush-button' ).attr( 'disabled', 'disabled' );
 
 		//Hide Settings changed Notice
 		$( '.wp-smush-settings-changed' ).hide();
-
-		//Show Loading Animation
-		jQuery( '.bulk-resmush-wrapper .wp-smush-progress-bar-wrap' ).removeClass( 'hidden' );
 
 		//Ajax Params
 		var params = {
@@ -920,7 +915,7 @@ jQuery( function ( $ ) {
 					$( '.wp-smush-images-percent' ).html( smush_percent );
 
 					//Hide the Existing wrapper
-					var notices = $( '.bulk-smush-wrapper .wp-smush-notice' );
+					var notices = $( '.bulk-smush-wrapper .sui-notice' );
 					if ( notices.length > 0 ) {
 						notices.hide();
 						$( '.wp-smush-pagespeed-recommendation' ).hide();
@@ -965,11 +960,17 @@ jQuery( function ( $ ) {
 			//Hide the progress bar
 			jQuery( '.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper' ).hide();
 
-			//Enable the Bulk Smush Button and itself
-			button.removeAttr( 'disabled' );
+			// Add check complete status to button.
+			button.text( wp_smush_msgs.resmush_complete )
+				.removeClass( 'sui-button-onload sui-icon-loader sui-loading' )
+				.addClass( 'smush-button-check-success' );
 
-			//Hide Spinner
-			spinner.removeClass( 'is-active' );
+			// Remove success message from button.
+			setTimeout( function () {
+				button.removeClass( 'smush-button-check-success' )
+					.text( wp_smush_msgs.resmush_check );
+			}, 2000 );
+
 			$( '.wp-smush-button' ).removeAttr( 'disabled' );
 
 			//If wp-smush-re-check-message is there, remove it
@@ -1441,8 +1442,8 @@ jQuery( function ( $ ) {
 				//Show success image notice
 				var message = $( '.sui-notice.wp-smush-dir-all-done' ).clone().show();
 				// Hide images list.
-				$('.wp-smush-image-list tbody tr').not(':first').not(':last').hide();
-				$('.wp-smush-image-list tbody tr:first td').html(message).removeClass('partial optimised');
+				$( '.wp-smush-image-list tbody tr' ).not( ':first' ).not( ':last' ).hide();
+				$( '.wp-smush-image-list tbody tr:first td' ).html( message ).removeClass( 'partial optimised' );
 
 				//Show notice on top if required
 				add_smush_dir_notice( 'all_done' );
@@ -1745,7 +1746,6 @@ jQuery( function ( $ ) {
 
 		//Run the Re-check
 		run_re_check( $( this ), false );
-
 	} );
 
 	//Dismiss Welcome notice

@@ -415,7 +415,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
 				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
 				'quick_setup_title'       => __( "QUICK SETUP", "wp-smushit" ) . '<form method="post" class="smush-skip-setup float-r"><input type="hidden" name="action" value="skipSmushSetup"/>' . wp_nonce_field( 'skipSmushSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( "Skip", "wp-smushit" ) . '</button></form>',
-				'sync_stats'              => esc_html__( "Give us a moment while we sync the stats.", "wp-smushit" )
+				'sync_stats'              => esc_html__( "Give us a moment while we sync the stats.", "wp-smushit" ),
+				// Button text
+				'resmush_check'           => esc_html__( 'RE-CHECK IMAGES', 'wp-smushit' ),
+				'resmush_complete'        => esc_html__( 'CHECK COMPLETE', 'wp-smushit' ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -1417,9 +1420,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Default Notice, to be displayed at the top of page
 			//Show a message, at the top
 			$message = esc_html__( 'Yay! All images are optimized as per your current settings.', 'wp-smushit' );
-			$resp    = '<div class="wp-smush-notice wp-smush-resmush-message" tabindex="0"><i class="icon-fi-check-tick"></i> ' . $message . '
-				<i class="icon-fi-close"></i>
-				</div>';
+			$resp    = '<div class="sui-notice sui-notice-success wp-smush-resmush-message" tabindex="0"><p>' . $message . '
+				</p></div>';
 
 			//If a user manually runs smush check
 			$return_ui = isset( $_REQUEST['get_ui'] ) && 'true' == $_REQUEST['get_ui'] ? true : false;

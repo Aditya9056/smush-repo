@@ -372,4 +372,20 @@
       font-size: 18px;
     }
   }
+
+  .sui-button {
+
+    &.smush-button-check-success,
+    &.smush-button-check-success:hover {
+      background: #d1f1ea;
+      color: #1abc9c;
+      pointer-events: none;
+      @include icon(before, check-tick, true);
+
+      &:before {
+        padding-right: 5px;
+        color: $notice-success-icon-color;
+      }
+    }
+  }
 }
