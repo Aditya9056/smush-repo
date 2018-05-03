@@ -1123,8 +1123,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<h1 class="sui-header-title"><?php echo $page_heading; ?></h1>
 				<div class="sui-actions-right">
 					<?php if ( ! is_network_admin() ) : ?>
-						<!--<button class="sui-button wp-smush-scan smush-button-check-success">CHECK COMPLETE</button>
-						<button class="sui-button wp-smush-scan sui-button-onload sui-icon-loader sui-loading"></button>-->
 						<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_html_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>"><?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?></button>
 					<?php endif; ?>
 					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#product-usage" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>

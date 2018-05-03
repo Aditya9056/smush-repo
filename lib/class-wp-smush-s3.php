@@ -177,7 +177,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				$message = sprintf( __( "We can see you have WP Offload S3 installed with the <strong>Remove Files From Server</strong> option activated. If you want to optimize your S3 images you'll need to <a href='%s'><strong>upgrade to Smush Pro</strong></a>", 'wp-smushit' ), esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro' ) );
 			}
 
-			echo '<div class="wp-smush-notice wp-smush-s3support-alert notice"><span class="notice-message">' . $message . '</span><i class="icon-fi-close"></i></div>';
+			echo '<div class="sui-notice sui-notice-warning wp-smush-s3support-alert"><p>' . $message . '</p><span class="sui-notice-dismiss"><a href="#">' . esc_html__( 'Dismiss', 'wp-smushit' ) . '</a></span></div>';
 		}
 
 		/**

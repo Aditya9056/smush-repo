@@ -411,8 +411,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
                 </span><?php
 			} else { ?>
                 <!-- Hide All done div if there are images pending -->
-                <div class="wp-smush-notice wp-smush-all-done<?php echo $all_done ? '' : ' hidden' ?>">
-                    <i class="icon-fi-check-tick"></i><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?>
+                <div class="sui-notice sui-notice-success wp-smush-all-done<?php echo $all_done ? '' : ' hidden' ?>">
+                    <p><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?></p>
                 </div>
                 <div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' hidden' : ''; ?>"><?php
 				//If all the images in media library are smushed
@@ -420,14 +420,14 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				$button_content = esc_html__( "BULK SMUSH", "wp-smushit" );
 				// DO not show the remaining notice if we have resmush ids
 				?>
-                <div class="wp-smush-notice wp-smush-remaining  <?php echo count( $this->resmush_ids ) > 0 ? ' hidden' : ''; ?>">
-                    <i class="icon-fi-warning-alert"></i>
+                <div class="sui-notice sui-notice-warning wp-smush-remaining  <?php echo count( $this->resmush_ids ) > 0 ? ' hidden' : ''; ?>">
+                    <p>
                     <span class="wp-smush-notice-text">
 						<?php printf( _n( "%s, you have %s%s%d%s attachment%s that needs smushing!", "%s, you have %s%s%d%s attachments%s that need smushing!", $this->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $this->remaining_count, '</span>', '</strong>' ); ?>
 					</span>
+                    </p>
                 </div>
-                <button type="button"
-                        class="wp-smush-button wp-smush-nextgen-bulk float-r"><?php echo $button_content; ?></button><?php
+                <button type="button" class="wp-smush-button wp-smush-nextgen-bulk float-r"><?php echo $button_content; ?></button><?php
 
 				//Enable Super Smush
 				if ( ! $WpSmush->lossy_enabled ) {

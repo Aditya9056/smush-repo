@@ -1439,7 +1439,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$smush_table = ( $wpdb->get_var( $sql ) != null );
 			if ( ! $smush_table ) {
 				//Display a notice
-				$notice = '<div class="wp-smush-notice missing_table"><p>';
+				$notice = '<div class="sui-notice sui-notice-warning missing_table"><p>';
 				$notice .= esc_html__( 'Directory smushing requires custom tables and it seems there was an error creating tables. For help, please contact our team on the support forums', "wp-smushit" );
 				$notice .= '</p></div>';
 			}
