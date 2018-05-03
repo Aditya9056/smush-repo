@@ -315,7 +315,7 @@ function admin_body_classes( $classes ) {
 	// Remove old wpmud class from body of smush page.
 	$classes = str_replace( 'wpmud ', '', $classes );
 
-	$classes .= 'sui-2-1-7';
+	$classes .= 'sui-2-2-0';
 
 	return $classes;
 
