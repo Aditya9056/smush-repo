@@ -586,7 +586,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Check if we're restoring the image Or already smushing the image
-			if ( get_transient( "wp-smush-restore-$ID" ) || get_transient( "smush-in-progress-$ID" ) || get_transient( "wp-smush-restore-$ID" ) ) {
+			if ( get_option( "wp-smush-restore-$ID", false ) || get_option( "smush-in-progress-$ID", false ) ) {
 				return $meta;
 			}
 
@@ -605,7 +605,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $ID, true, WP_SMUSH_TIMEOUT );
+			update_option( 'smush-in-progress-' . $ID, true, false );
 
 			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_settings, $wpsmush_helper;
 
@@ -653,7 +653,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Delete Transient
-			delete_transient( 'smush-in-progress-' . $ID );
+			delete_option( 'smush-in-progress-' . $ID );
 
 			return $meta;
 		}
@@ -1088,7 +1088,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 					$show_button = true;
 				}
 
-			} elseif ( get_transient( 'smush-in-progress-' . $id ) ) {
+			} elseif ( get_option( 'smush-in-progress-' . $id, false ) ) {
 				// the status
 				$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
 
@@ -2244,7 +2244,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function wp_smush_handle_async( $id ) {
 
 			//If we don't have image id, or the smush is already in progress for the image, return
-			if ( empty( $id ) || get_transient( 'smush-in-progress-' . $id ) || get_transient( "wp-smush-restore-$id" )  ) {
+			if ( empty( $id ) || get_option( 'smush-in-progress-' . $id, false ) || get_option( "wp-smush-restore-$id", false )  ) {
 				return;
 			}
 
@@ -2280,7 +2280,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		function wp_smush_handle_editor_async( $id, $post_data ) {
 
 			//If we don't have image id, or the smush is already in progress for the image, return
-			if ( empty( $id ) || get_transient( "smush-in-progress-$id" ) || get_transient( "wp-smush-restore-$id" ) ) {
+			if ( empty( $id ) || get_option( "smush-in-progress-$id", false ) || get_option( "wp-smush-restore-$id", false ) ) {
 				return;
 			}
 

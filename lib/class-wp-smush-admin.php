@@ -642,10 +642,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			if ( ! $send_error ) {
 				//Proceed only if Smushing Transient is not set for the given attachment id
-				if ( ! get_transient( 'smush-in-progress-' . $attachment_id ) ) {
+				if ( ! get_option( 'smush-in-progress-' . $attachment_id, false ) ) {
 
 					//Set a transient to avoid multiple request
-					set_transient( 'smush-in-progress-' . $attachment_id, true, WP_SMUSH_TIMEOUT );
+					update_option( 'smush-in-progress-' . $attachment_id, true, false );
 
 					$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
@@ -675,7 +675,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 
 				//Delete Transient
-				delete_transient( 'smush-in-progress-' . $attachment_id );
+				delete_option( 'smush-in-progress-' . $attachment_id );
 			}
 
 			$smush_data         = get_post_meta( $attachment_id, $this->smushed_meta_key, true );
@@ -797,7 +797,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function smush_single( $attachment_id, $return = false ) {
 
 			//If the smushing transient is already set, return the status
-			if ( get_transient( 'smush-in-progress-' . $attachment_id ) || get_transient( "wp-smush-restore-$attachment_id" ) ) {
+			if ( get_option( 'smush-in-progress-' . $attachment_id, false ) || get_option( "wp-smush-restore-$attachment_id", false ) ) {
 				//Get the button status
 				$status = $this->set_status( $attachment_id, false, true );
 				if ( $return ) {
@@ -808,7 +808,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Set a transient to avoid multiple request
-			set_transient( 'smush-in-progress-' . $attachment_id, true, WP_SMUSH_TIMEOUT );
+			update_option( 'smush-in-progress-' . $attachment_id, true, false );
 
 			global $WpSmush, $wpsmush_pngjpg, $wpsmush_helper;
 
@@ -847,7 +847,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$status = $this->set_status( $attachment_id, false, true );
 
 			//Delete the transient after attachment meta is updated
-			delete_transient( 'smush-in-progress-' . $attachment_id );
+			delete_option( 'smush-in-progress-' . $attachment_id );
 
 			//Send Json response if we are not suppose to return the results
 
@@ -1152,7 +1152,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $WpSmush;
 
 			//Show Temporary Status, For Async Optimisation, No Good workaround
-			if ( ! get_transient( "wp-smush-restore-$id" ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $WpSmush->is_auto_smush_enabled() ) {
+			if ( ! get_option( "wp-smush-restore-$id", false ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $WpSmush->is_auto_smush_enabled() ) {
 				// the status
 				$status_txt = '<p class="smush-status">'. __( 'Smushing in progress..', 'wp-smushit' ) . "</p>";
 

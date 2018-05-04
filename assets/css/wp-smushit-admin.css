@@ -2466,8 +2466,8 @@ div.smush-s3-setup-message .icon-fi-check-tick {
     vertical-align: middle;
 }
 
-div.smush-s3-setup-error i. icon-fi-warning-alert,
-div.smush-s3-setup-message .icon-fi-check-tick {
+div.smush-s3-setup-error i.icon-fi-warning-alert,
+div.smush-s3-setup-message i.icon-fi-check-tick {
     margin-top: 3px;
     vertical-align: top;
 }
