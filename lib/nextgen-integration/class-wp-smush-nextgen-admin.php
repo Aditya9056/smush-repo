@@ -163,13 +163,16 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$handle = 'wp-smushit-admin-js';
 
 			$wp_smush_msgs = array(
-				'resmush'       => esc_html__( 'Super-Smush', 'wp-smushit' ),
-				'smush_now'     => esc_html__( 'Smush Now', 'wp-smushit' ),
-				"error_in_bulk" => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
-				"all_resmushed" => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
-				'restore'       => esc_html__( "Restoring image..", "wp-smushit" ),
-				'smushing'      => esc_html__( "Smushing image..", "wp-smushit" ),
-				'checking'      => esc_html__( "Checking images..", "wp-smushit" )
+				'resmush'          => esc_html__( 'Super-Smush', 'wp-smushit' ),
+				'smush_now'        => esc_html__( 'Smush Now', 'wp-smushit' ),
+				"error_in_bulk"    => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				"all_resmushed"    => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
+				'restore'          => esc_html__( "Restoring image..", "wp-smushit" ),
+				'smushing'         => esc_html__( "Smushing image..", "wp-smushit" ),
+				'checking'         => esc_html__( "Checking images..", "wp-smushit" ),
+				// Button text
+				'resmush_check'    => esc_html__( 'RE-CHECK IMAGES', 'wp-smushit' ),
+				'resmush_complete' => esc_html__( 'CHECK COMPLETE', 'wp-smushit' ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -376,70 +379,67 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Outputs the Content for Bulk Smush Div
 		 */
 		function bulk_smush_content() {
+
 			global $wpsmushit_admin, $WpSmush, $wpsmush_bulkui;
 
-			//If all the images are smushed
+			// If all the images are smushed.
 			$all_done = ( $this->smushed_count == $this->total_count ) && 0 == count( $this->resmush_ids );
 
-			$resmush_ids = get_option( "wp-smush-nextgen-resmush-list", false );
+			$resmush_ids = get_option( 'wp-smush-nextgen-resmush-lis', false );
 
 			$count = $resmush_ids ? count( $resmush_ids ) : 0;
 
-			//Whether to show the remaining re-smush notice
+			// Whether to show the remaining re-smush notice.
 			$show = $count > 0 ? true : false;
 
 			$count += $this->remaining_count;
 
-			//Get the counts
+			// Get the counts.
 			echo $wpsmush_bulkui->bulk_resmush_content( $count, $show );
 
-			/** End Of Re-Smush Notice */
-
 			//If there are no images in Media Library
-			if ( 0 >= $this->total_count ) { ?>
-                <span class="wp-smush-no-image tc">
-					<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-no-media.png'; ?>"
-                         alt="<?php esc_html_e( "No attachments found - Upload some images", "wp-smushit" ); ?>">
+			if ( 0 >= $this->total_count ) : ?>
+				<span class="wp-smush-no-image tc">
+					<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-no-media.png'; ?>" alt="<?php esc_html_e( 'No attachments found - Upload some images', 'wp-smushit' ); ?>">
 		        </span>
-                <p class="wp-smush-no-images-content tc roboto-regular"><?php printf( esc_html__( "We haven’t found any images in your %sgallery%s yet, so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" ), '<a href="' . esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ) . '">', '</a>' ); ?></p>
+                <p class="wp-smush-no-images-content tc"><?php printf( esc_html__( 'We haven’t found any images in your %sgallery%s yet, so there’s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' ), '<a href="' . esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ) . '">', '</a>' ); ?></p>
                 <span class="wp-smush-upload-images tc">
-                <a class="button button-cta"
-                   href="<?php echo esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ); ?>"><?php esc_html_e( "UPLOAD IMAGES", "wp-smushit" ); ?></a>
-                </span><?php
-			} else { ?>
+                <a class="sui-button sui-button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ); ?>"><?php esc_html_e( "UPLOAD IMAGES", "wp-smushit" ); ?></a>
+                </span>
+			<?php else : ?>
                 <!-- Hide All done div if there are images pending -->
                 <div class="sui-notice sui-notice-success wp-smush-all-done<?php echo $all_done ? '' : ' hidden' ?>">
-                    <p><?php esc_html_e( "All images are smushed and up to date. Awesome!", "wp-smushit" ); ?></p>
+                    <p><?php esc_html_e( 'All images are smushed and up to date. Awesome!', 'wp-smushit' ); ?></p>
                 </div>
-                <div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' hidden' : ''; ?>"><?php
-				//If all the images in media library are smushed
-				//Button Text
-				$button_content = esc_html__( "BULK SMUSH", "wp-smushit" );
+                <div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' hidden' : ''; ?>">
+				<?php
 				// DO not show the remaining notice if we have resmush ids
 				?>
                 <div class="sui-notice sui-notice-warning wp-smush-remaining  <?php echo count( $this->resmush_ids ) > 0 ? ' hidden' : ''; ?>">
                     <p>
-                    <span class="wp-smush-notice-text">
-						<?php printf( _n( "%s, you have %s%s%d%s attachment%s that needs smushing!", "%s, you have %s%s%d%s attachments%s that need smushing!", $this->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $this->remaining_count, '</span>', '</strong>' ); ?>
-					</span>
+	                    <span class="wp-smush-notice-text">
+							<?php printf( _n( '%s, you have %s%s%d%s attachment%s that needs smushing!', '%s, you have %s%s%d%s attachments%s that need smushing!', $this->remaining_count, 'wp-smushit' ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $this->remaining_count, '</span>', '</strong>' ); ?>
+						</span>
                     </p>
                 </div>
-                <button type="button" class="wp-smush-button wp-smush-nextgen-bulk float-r"><?php echo $button_content; ?></button><?php
-
+                <div class="sui-actions-right">
+                    <button type="button" class="sui-button sui-button-primary wp-smush-nextgen-bulk"><?php esc_html_e( 'BULK SMUSH', 'wp-smushit' ); ?></button>
+                </div>
+                <?php
 				//Enable Super Smush
-				if ( ! $WpSmush->lossy_enabled ) {
+				if ( ! $WpSmush->lossy_enabled ) :
 					$url = admin_url( 'upload.php' );
-					$url = add_query_arg(
-						array(
-							'page' => 'smush#wp-smush-settings-box'
-						),
-						$url
-					); ?>
-                    <p class="wp-smush-enable-lossy"><?php printf( esc_html__( "Enable Super-smush in the %sSettings%s area to get even more savings with almost no visible drop in quality.", "wp-smushit" ), '<a href="' . $url . '" target="_blank">', "</a>" ); ?></p><?php
-				} ?>
-                </div><?php
+					$url = add_query_arg( array(
+						'page' => 'smush#wp-smush-settings-box'
+						), $url
+					);
+					?>
+                    <span class="wp-smush-enable-lossy"><?php printf( esc_html__( 'Enable Super-smush in the %sSettings%s area to get even more savings with almost no visible drop in quality.', 'wp-smushit' ), '<a href="' . $url . '" target="_blank">', '</a>' ); ?></span>
+					<?php
+				endif;
+				echo '</div>';
 				$wpsmush_bulkui->progress_bar( $this );
-			}
+			endif;
 		}
 
 		/**
@@ -482,61 +482,82 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		public function smush_stats_container() {
 
+			global $wpsmush_bulkui;
+
+			echo '<div class="sui-col">';
+			echo '<div class="sui-box sui-summary sui-summary-smush-nextgen">';
+
+			// Container header.
+			$wpsmush_bulkui->container_header( esc_html__( 'Stats', 'wp-smushit' ) );
+
+			echo '<div class="sui-box-body smush-summary-box-body">';
+
+			$this->smush_stats_content();
+
+			// Allows you to output any content within the stats box at the end.
+			do_action( 'wp_smush_after_stats' );
+
+			echo '</div>';
+			echo '</div>';
+			echo '</div>';
+		}
+
+		/**
+		 * Outputs the smush stats for the site.
+		 *
+		 * @todo Implement this
+		 *
+		 * @return void
+		 */
+		public function smush_stats_content() {
+
 			global $WpSmush, $wpsmushnextgenstats;
 
 			?>
-			<div class="sui-col">
-				<div class="sui-box sui-summary sui-summary-smush">
-					<div class="sui-box-body">
-					<div class="sui-summary-image-space">
-					</div>
-					<div class="sui-summary-segment">
-						<div class="sui-summary-details">
-							<span class="sui-summary-large wp-smush-total-optimised"><?php echo $this->image_count; ?></span>
-							<i class="sui-icon-info sui-success sui-lg"></i>
-							<span class="sui-summary-sub"><?php esc_html_e( 'Images smushed', 'wp-smushit' ); ?></span>
-						</div>
-					</div>
-					<div class="sui-summary-segment">
-						<ul class="sui-list">
-							<li>
-								<div class="wp-smush-savings">
-									<span class="sui-list-label"><?php esc_html_e( 'Total savings', 'wp-smushit' ); ?></span>
-									<span class="sui-list-detail wp-smush-stats">
-										<span class="wp-smush-stats-percent"><?php echo $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0; ?>%</span>
-										<span class="wp-smush-stats-sep">/</span>
-										<span class="wp-smush-stats-human"><?php echo $this->stats['human'] > 0 ? $this->stats['human'] : '0MB'; ?></span>
-									</span>
-								</div>
-								<?php wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '' ); ?>
-							</li>
-							<?php if ( apply_filters( 'wp_smush_show_nextgen_lossy_stats', true ) ) : ?>
-								<li>
-									<div class="super-smush-attachments">
-										<span class="sui-list-label"><?php esc_html_e( 'Super-smushed images', 'wp-smushit' ); ?></span>
-										<span class="sui-list-detail">
-											<?php if ( $WpSmush->lossy_enabled ) : ?>
-												<?php $smushed_image = $wpsmushnextgenstats->get_ngg_images( 'smushed' ); ?>
-												<?php if ( ! empty( $smushed_image ) && is_array( $smushed_image ) && ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) : ?>
-													<?php $smushed_image = array_diff_key( $smushed_image, array_flip( $this->resmush_ids ) ); ?>
-												<?php endif; ?>
-												<span class="sui-tag sui-tag-success"><?php echo $smushed_image; ?></span>
-											<?php else : ?>
-												<span class="sui-tag sui-tag-disabled"><?php esc_html_e( 'Disabled', 'wp-smushit' ); ?></span>
-											<?php endif; ?>
-										</span>
-									</div
-								</li>
-							<?php endif; ?>
-							<li>
-								<span class="sui-list-label"><?php esc_html_e( 'Last Smushed', 'wp-smushit' ); ?></span>
-								<span class="sui-list-detail">January 10, 2018 1:05 pm</span>
-							</li>
-						</ul>
-					</div>
+			<div class="sui-summary-image-space"></div>
+			<div class="sui-summary-segment">
+				<div class="sui-summary-details">
+					<span class="sui-summary-large wp-smush-total-optimised"><?php echo $this->image_count; ?></span>
+					<i class="sui-icon-info sui-success sui-lg"></i>
+					<span class="sui-summary-sub"><?php esc_html_e( 'Images smushed', 'wp-smushit' ); ?></span>
 				</div>
-					</div>
-				<?php do_action( 'wp_smush_after_stats' ); // Allows you to output any content within the stats box at the end. ?>
+			</div>
+			<div class="sui-summary-segment">
+				<ul class="sui-list">
+					<li>
+						<div class="wp-smush-savings">
+							<span class="sui-list-label"><?php esc_html_e( 'Total savings', 'wp-smushit' ); ?></span>
+							<span class="sui-list-detail wp-smush-stats">
+								<span class="wp-smush-stats-percent"><?php echo $this->stats['percent'] > 0 ? number_format_i18n( $this->stats['percent'], 1, '.', '' ) : 0; ?>%</span>
+								<span class="wp-smush-stats-sep">/</span>
+								<span class="wp-smush-stats-human"><?php echo $this->stats['human'] > 0 ? $this->stats['human'] : '0MB'; ?></span>
+							</span>
+						</div>
+						<?php wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '' ); ?>
+					</li>
+					<?php if ( apply_filters( 'wp_smush_show_nextgen_lossy_stats', true ) ) : ?>
+						<li>
+							<div class="super-smush-attachments">
+								<span class="sui-list-label"><?php esc_html_e( 'Super-smushed images', 'wp-smushit' ); ?></span>
+								<span class="sui-list-detail">
+									<?php if ( $WpSmush->lossy_enabled ) : ?>
+										<?php $smushed_image = $wpsmushnextgenstats->get_ngg_images( 'smushed' ); ?>
+										<?php if ( ! empty( $smushed_image ) && is_array( $smushed_image ) && ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) : ?>
+											<?php $smushed_image = array_diff_key( $smushed_image, array_flip( $this->resmush_ids ) ); ?>
+										<?php endif; ?>
+										<span class="sui-tag sui-tag-success"><?php echo $smushed_image; ?></span>
+									<?php else : ?>
+										<span class="sui-tag sui-tag-disabled"><?php esc_html_e( 'Disabled', 'wp-smushit' ); ?></span>
+									<?php endif; ?>
+								</span>
+							</div
+						</li>
+					<?php endif; ?>
+					<li>
+						<span class="sui-list-label"><?php esc_html_e( 'Last Smushed', 'wp-smushit' ); ?></span>
+						<span class="sui-list-detail">January 10, 2018 1:05 pm</span>
+					</li>
+				</ul>
 			</div>
 			<?php
 		}

@@ -1323,7 +1323,9 @@ jQuery( function ( $ ) {
 
 		//Update the savings percent
 		wp_smushit_data.savings_percent = precise_round( ( parseInt( wp_smushit_data.savings_bytes ) / parseInt( wp_smushit_data.size_before ) ) * 100, 1 );
-		$( '.wp-smush-savings .wp-smush-stats-percent' ).html( wp_smushit_data.savings_percent );
+		if ( ! isNaN( wp_smushit_data.savings_percent ) ) {
+			$( '.wp-smush-savings .wp-smush-stats-percent' ).html( wp_smushit_data.savings_percent );
+		}
 
 		//Update Savings in share message
 		$( 'span.smush-share-savings' ).html( formatBytes( wp_smushit_data.savings_bytes, 1 ) );

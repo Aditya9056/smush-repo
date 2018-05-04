@@ -1105,6 +1105,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			global $wpsmushit_admin, $wpsmush_dir;
 
+			$current_screen = get_current_screen();
+
 			if( $wpsmushit_admin->remaining_count === 0 || $wpsmushit_admin->smushed_count === 0 ) {
 				// Initialize global stats.
 				$wpsmushit_admin->setup_global_stats();
@@ -1123,7 +1125,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<h1 class="sui-header-title"><?php echo $page_heading; ?></h1>
 				<div class="sui-actions-right">
 					<?php if ( ! is_network_admin() ) : ?>
-						<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_html_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>"><?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?></button>
+						<?php $data_type = 'gallery_page_wp-smush-nextgen-bulk' === $current_screen->id ? ' data-type="nextgen"' : ''; ?>
+						<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_html_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>"<?php echo $data_type; ?>><?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?></button>
 					<?php endif; ?>
 					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#product-usage" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>
 				</div>
