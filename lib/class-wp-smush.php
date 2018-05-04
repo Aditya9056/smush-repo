@@ -605,7 +605,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			}
 
 			//Set a transient to avoid multiple request
-			update_option( 'smush-in-progress-' . $ID, true, false );
+			update_option( 'smush-in-progress-' . $ID, true );
 
 			global $wpsmush_resize, $wpsmush_pngjpg, $wpsmush_settings, $wpsmush_helper;
 

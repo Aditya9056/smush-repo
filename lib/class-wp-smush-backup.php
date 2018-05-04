@@ -163,8 +163,8 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			//Process Now
 			$attachment_id = empty( $attachment ) ? absint( (int) $_POST['attachment_id'] ) : $attachment;
 
-			//Set a transient to avoid the smush-restore-smush loop
-			update_option( "wp-smush-restore-$attachment_id", true, false );
+			//Set a Option to avoid the smush-restore-smush loop
+			update_option( "wp-smush-restore-$attachment_id", true );
 
 			//Restore Full size -> get other image sizes -> restore other images
 
@@ -278,7 +278,8 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			}
 			//Remove the transient
 			delete_option( "wp-smush-restore-$attachment_id" );
-			if ( $resp ) {
+
+			if ( !$resp ) {
 				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( "Unable to restore image", "wp-smushit" ) . '</div>' ) );
 			}
 

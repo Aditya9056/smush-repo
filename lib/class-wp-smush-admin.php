@@ -645,7 +645,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( ! get_option( 'smush-in-progress-' . $attachment_id, false ) ) {
 
 					//Set a transient to avoid multiple request
-					update_option( 'smush-in-progress-' . $attachment_id, true, false );
+					update_option( 'smush-in-progress-' . $attachment_id, true );
 
 					$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
@@ -796,7 +796,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function smush_single( $attachment_id, $return = false ) {
 
-			//If the smushing transient is already set, return the status
+			//If the smushing option is already set, return the status
 			if ( get_option( 'smush-in-progress-' . $attachment_id, false ) || get_option( "wp-smush-restore-$attachment_id", false ) ) {
 				//Get the button status
 				$status = $this->set_status( $attachment_id, false, true );
@@ -808,7 +808,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			//Set a transient to avoid multiple request
-			update_option( 'smush-in-progress-' . $attachment_id, true, false );
+			update_option( 'smush-in-progress-' . $attachment_id, true );
 
 			global $WpSmush, $wpsmush_pngjpg, $wpsmush_helper;
 
