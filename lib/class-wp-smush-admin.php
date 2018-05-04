@@ -369,10 +369,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
 			//Load on Smush all page only
-			if ( 'toplevel_page_smush' == $current_page || 'toplevel_page_smush-network' == $current_page ) {
+			if ( in_array( $current_page, $this->plugin_pages ) ) {
 				//Load Jquery tree on specified page
-				wp_enqueue_script( 'jqft-js' );
-				wp_enqueue_style( 'jqft-css' );
+				if ( 'gallery_page_wp-smush-nextgen-bulk' !== $current_page ) {
+					wp_enqueue_script( 'jqft-js' );
+					wp_enqueue_style( 'jqft-css' );
+				}
 				wp_enqueue_style( 'wpmudev-sui', plugins_url( 'assets/shared-ui-2/css/admin.min.css', __DIR__ ) );
 				wp_enqueue_script(
 					'wpmudev-sui',
