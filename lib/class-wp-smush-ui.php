@@ -799,7 +799,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			$bulk_tag_content = $bulk_tag_class = '';
 			if ( $remaining > 0 && ! $is_network ) {
-				$bulk_tag_class = ' sui-tag sui-tag-warning';
+				$bulk_tag_class = ' sui-tag sui-tag-warning wp-smush-remaining-count';
 				$bulk_tag_content = $remaining;
 			}
 
@@ -873,7 +873,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-progress-block sui-progress-can-close">
 					<div class="sui-progress">
 						<div class="sui-progress-text sui-icon-loader sui-loading">
-							<span><?php echo $smushed_pc; ?></span>
+							<span class="wp-smush-images-percent"><?php echo round( $smushed_pc, 1 ); ?></span><span>%</span>
 						</div>
 						<div class="sui-progress-bar">
 							<span class="wp-smush-progress-inner" style="width: <?php echo $smushed_pc; ?>%"></span>

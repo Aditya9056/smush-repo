@@ -339,6 +339,15 @@ jQuery( function ( $ ) {
 					$( '.bulk-smush-wrapper .wp-smush-remaining-count' ).html( self.ids.length );
 				}
 			}
+
+			// Update sidebar count.
+			if ( $( '.smush-sidenav .wp-smush-remaining-count' ).length && 'undefined' != typeof self.ids ) {
+				if ( self.ids.length > 0 ) {
+					$( '.smush-sidenav .wp-smush-remaining-count' ).html( self.ids.length );
+				} else {
+					$( '.smush-sidenav .wp-smush-remaining-count' ).removeClass( 'sui-tag sui-tag-warning' ).html('');
+				}
+			}
 		};
 
 		this.update_progress = function ( _res ) {
