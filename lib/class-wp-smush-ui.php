@@ -921,8 +921,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Show only if we have any images to ber resmushed.
 			if ( $show ) {
-				return '<div class="sui-notice sui-notice-warning wp-smush-resmush-notice wp-smush-remaining">
-						<p><span class="wp-smush-notice-text">' . sprintf( _n( '%s, you have %s%s%d%s image%s that need smushing!', '%s, you have %s%s%d%s images%s that need smushing!', $count, 'wp-smushit' ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' ) . '</span></p>
+				return '<div class="sui-notice sui-notice-warning wp-smush-resmush-notice wp-smush-remaining" tabindex="0">
+						<p><span class="wp-smush-notice-text">' . sprintf( _n( '%s, you have %s%s%d%s attachment%s that needs re-compressing!', '%s, you have %s%s%d%s attachments%s that need re-compressing!', $count, 'wp-smushit' ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $count, '</span>', '</strong>' ) . '</span>
+						<button class="sui-button sui-button-ghost wp-smush-skip-resmush sui-tooltip" data-tooltip="' . esc_html__( 'Skip re-smushing the images', 'wp-smushit' ) . '">' . esc_html__( 'Skip', 'wp-smushit' ) . '</button></p>
 	                </div>';
 			}
 		}

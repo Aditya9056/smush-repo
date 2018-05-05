@@ -942,7 +942,7 @@ jQuery( function ( $ ) {
 				}
 				//If content is received, Prepend it
 				if ( 'undefined' != typeof r.data.content ) {
-					$( '.bulk-smush-wrapper .box-container' ).prepend( r.data.content );
+					$( '.bulk-smush-wrapper .sui-box-body' ).prepend( r.data.content );
 				}
 				//If we have any notice to show
 				if ( 'undefined' != typeof r.data.notice ) {
@@ -1918,7 +1918,8 @@ jQuery( function ( $ ) {
 		$progress_bar.css( 'width', smush_percent + '%' );
 
 		//Show the default bulk smush notice
-		$( '.wp-smush-bulk-wrapper .wp-smush-notice' ).show();
+		$( '.wp-smush-bulk-wrapper' ).show();
+		$( '.wp-smush-bulk-wrapper .sui-notice' ).show();
 
 		var params = {
 			action: 'delete_resmush_list',

@@ -407,5 +407,13 @@
         color: $notice-success-icon-color;
       }
     }
+
+    &.wp-smush-skip-resmush,
+    &.wp-smush-skip-resmush:hover {
+      display: block;
+      background: transparent !important;
+      border: 2px solid #888 !important;
+      color: #888 !important;
+    }
   }
 }

@@ -385,7 +385,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			// If all the images are smushed.
 			$all_done = ( $this->smushed_count == $this->total_count ) && 0 == count( $this->resmush_ids );
 
-			$resmush_ids = get_option( 'wp-smush-nextgen-resmush-lis', false );
+			$resmush_ids = get_option( 'wp-smush-nextgen-resmush-list', false );
 
 			$count = $resmush_ids ? count( $resmush_ids ) : 0;
 
@@ -511,7 +511,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		public function smush_stats_content() {
 
-			global $WpSmush, $wpsmushnextgenstats;
+			global $WpSmush, $wpsmushnextgenstats, $wpsmush_db;
 
 			?>
 			<div class="sui-summary-image-space"></div>
@@ -541,11 +541,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 								<span class="sui-list-label"><?php esc_html_e( 'Super-smushed images', 'wp-smushit' ); ?></span>
 								<span class="sui-list-detail">
 									<?php if ( $WpSmush->lossy_enabled ) : ?>
-										<?php $smushed_image = $wpsmushnextgenstats->get_ngg_images( 'smushed' ); ?>
-										<?php if ( ! empty( $smushed_image ) && is_array( $smushed_image ) && ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) : ?>
-											<?php $smushed_image = array_diff_key( $smushed_image, array_flip( $this->resmush_ids ) ); ?>
-										<?php endif; ?>
-										<span class="sui-tag sui-tag-success"><?php echo $smushed_image; ?></span>
+										<?php $count = $wpsmush_db->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) ); ?>
+										<span class="sui-tag sui-tag-success"><span class="smushed-count"><?php echo $count; ?></span> / <?php echo $this->total_count; ?></span>
 									<?php else : ?>
 										<span class="sui-tag sui-tag-disabled"><?php esc_html_e( 'Disabled', 'wp-smushit' ); ?></span>
 									<?php endif; ?>
