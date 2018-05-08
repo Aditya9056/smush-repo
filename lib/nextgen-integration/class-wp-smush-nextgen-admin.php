@@ -75,8 +75,10 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Add a WP Smush page for bulk smush and settings related to Nextgen gallery
 		 */
 		function wp_smush_bulk_menu() {
+		    global $WpSmush;
 			if ( defined( 'NGGFOLDER' ) ) {
-				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, esc_html__( 'Bulk Smush', 'wp-smushit' ), esc_html__( 'Smush', 'wp-smushit' ), 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
+				$title = $WpSmush->validate_install() ? esc_html__( "Smush Pro", "wp-smushit" ) : esc_html__( "Smush", "wp-smushit" );
+				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, $title, $title, 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
 					&$this,
 					'wp_smush_bulk'
 				) );
@@ -519,7 +521,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 								//Get smushed images excluding resmush ids
 								$smushed_image = array_diff_key( $smushed_image, array_flip( $this->resmush_ids ) );
 							}
-							echo '<span class="smushed-count">' . $count . '</span>/' . $this->total_count;
+							$smushed_image_count = is_array( $smushed_image ) ? sizeof( $smushed_image ) : 0;
+							echo '<span class="smushed-count">' . $smushed_image_count . '</span>/' . $this->total_count;
 						} else {
 							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
 						} ?>

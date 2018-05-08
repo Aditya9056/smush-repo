@@ -258,7 +258,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'resize'          => array(
 					'label'       => esc_html__( 'Resize my full size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically resized before they are added to the media gallery. This setting does not apply to images smushed using Directory Smush feature.', 'wp-smushit' )
+					'desc'        => esc_html__( 'Save a ton of space by not storing over-sized images on your server. Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically resized before they are added to the media gallery.', 'wp-smushit' )
 				),
 				'backup'          => array(
 					'label'       => esc_html__( 'Make a copy of my full size images', 'wp-smushit' ),

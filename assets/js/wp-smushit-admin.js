@@ -2265,7 +2265,7 @@ jQuery(function ($) {
             close_dialog();
 
             //Show Scan result
-            $('.wp-smush-scan-result').removeClass('hidden');
+            $('.wp-smush-scan-result').removeClass('hidden').show();
         }).done(function (res) {
 
             //If there was no image list, return

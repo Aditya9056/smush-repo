@@ -1534,9 +1534,13 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			global $wpsmush_settings;
 
 			//Check if integration is Enabled or not
-			//Smush NextGen key
-			$opt_nextgen     = WP_SMUSH_PREFIX . 'nextgen';
-			$opt_nextgen_val = $wpsmush_settings->get_setting( $opt_nextgen, false );
+			if ( ! empty( $wpsmush_settings->settings ) ) {
+				$opt_nextgen_val = $wpsmush_settings->settings['nextgen'];
+			} else {
+				//Smush NextGen key
+				$opt_nextgen     = WP_SMUSH_PREFIX . 'nextgen';
+				$opt_nextgen_val = $wpsmush_settings->get_setting( $opt_nextgen, false );
+			}
 
 			require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
 			// Do not continue if integration not enabled or not a pro user.

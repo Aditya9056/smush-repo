@@ -592,7 +592,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			if( !$is_network ) {
 				//Show Configure screen for only a new installation and for only network admins
-				if ( ( 1 != get_site_option( 'skip-smush-setup' ) && 1 != get_site_option( 'wp-smush-hide_smush_welcome' ) && 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && is_super_admin() ) {
+				if ( ( 1 != get_site_option( 'skip-smush-setup' ) && 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && is_super_admin() ) {
 					echo '<div class="block float-l">';
 					$this->quick_setup();
 					echo '</div>';
@@ -1149,7 +1149,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                 <div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-width hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
                 <div class="wp-smush-settings-info wp-smush-size-info wp-smush-update-height hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
             </div>
-            <span class="wp-smush-setting-desc desc-note"><?php esc_html_e("Note: Image resizing happens automatically when you upload attachments. To support retina devices, we recommend using 2x the dimensions of your image size.", "wp-smushit"); ?></span><?php
+            <span class="wp-smush-setting-desc desc-note"><?php esc_html_e("Note: Image resizing happens automatically when you upload attachments. This setting does not apply to images smushed using Directory Smush feature. To support retina devices, we recommend using 2x the dimensions of your image size.", "wp-smushit"); ?></span><?php
         }
 
         /**

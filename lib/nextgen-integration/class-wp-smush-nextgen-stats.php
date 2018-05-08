@@ -736,8 +736,8 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 			$super_smushed['timestamp'] = current_time( 'timestamp' );
 
 			//Update Re-smush list
-			if( is_array( $wpsmushnextgenadmin->resmush_ids ) ) {
-				$resmush_ids = array_intersect( $wpsmushnextgenadmin->resmush_ids, $smushed_images );
+			if ( is_array( $wpsmushnextgenadmin->resmush_ids ) && is_array( $smushed_images ) ) {
+				$resmush_ids = array_intersect( $wpsmushnextgenadmin->resmush_ids, array_keys( $smushed_images ) );
 			}
 
 			//Update re-smush images to db
