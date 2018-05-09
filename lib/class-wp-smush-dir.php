@@ -126,9 +126,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			$charset_collate = $wpdb->get_charset_collate();
 
-			//Use a lower index size
-			$path_index_size = 191;
-
 			/**
 			 * Table: wp_smush_dir_images
 			 * Columns:
@@ -148,6 +145,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$sql = "CREATE TABLE {$wpdb->prefix}smush_dir_images (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
 				path text NOT NULL,
+				path_hash CHAR(32),
 				resize varchar(55),
 				lossy varchar(55),
 				error varchar(55) DEFAULT NULL,
@@ -157,7 +155,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				last_scan timestamp DEFAULT '0000-00-00 00:00:00',
 				meta text,
 				UNIQUE KEY id (id),
-				UNIQUE KEY path (path($path_index_size)),
+				UNIQUE KEY path_hash (path_hash),
 				KEY image_size (image_size)
 			) $charset_collate;";
 
@@ -553,10 +551,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						/** To be stored in DB, Part of code inspired from Ewwww Optimiser  */
 						$image_size = $path->getSize();
 						$images []  = $file_path;
+						$images []  = md5($file_path );
 						$images []  = $image_size;
 						$images []  = $file_time;
 						$images []  = $timestamp;
-						$values[]   = '(%s, %d, %d, %s)';
+						$values[]   = '(%s, %s, %d, %d, %s)';
 						$count ++;
 					}
 				}
@@ -606,7 +605,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$values = implode( ',', $values );
 
 			//Replace with image path and respective parameters
-			$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path,orig_size,file_time,last_scan) VALUES $values ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size ), file_time = IF( file_time < VALUES(file_time), VALUES(file_time), file_time ), last_scan = VALUES( last_scan )";
+			$query = "INSERT INTO {$wpdb->prefix}smush_dir_images (path, path_hash, orig_size,file_time,last_scan) VALUES $values ON DUPLICATE KEY UPDATE image_size = IF( file_time < VALUES(file_time), NULL, image_size ), file_time = IF( file_time < VALUES(file_time), VALUES(file_time), file_time ), last_scan = VALUES( last_scan )";
 			$query = $wpdb->prepare( $query, $images );
 
 			return $query;

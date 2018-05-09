@@ -86,6 +86,18 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		 */
 		var $media_type = 'wp';
 
+		const
+			OPTION_NAME = 'smush_option',
+			VERSION     =  WP_SMUSH_VERSION;
+
+		protected
+			$options  = null,
+
+			// default options and values go here
+			$defaults = array(
+			'version'     => self::VERSION, // this one should not change
+		);
+
 		/**
 		 * Constructor
 		 */
@@ -175,12 +187,19 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			//Initialize variables
 			$this->initialise();
 
+			#Localize version, Update
+			$this->getOptions();
+
 			//Create a clas object, if doesn't exists
 			if ( empty( $wpsmush_dir ) && class_exists( 'WpSmushDir' ) ) {
 				$wpsmush_dir = new WpSmushDir();
 			}
 			//Run only on wp smush page
 			$wpsmush_dir->create_table();
+
+			#Run the Directory Smush table update
+			$this->update_dir_path_hash();
+
 		}
 
 		/**
@@ -2415,6 +2434,97 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			);
 			update_site_option( WP_SMUSH_PREFIX . 'api_message', $message );
 		}
+
+		/**
+		 * Store/Perform updates as per the plugin version
+		 *
+		 * @uses $wpsmush_helper, $wpdb, $wpsmush_dir
+		 *
+		 * @return array|mixed|null|void
+		 *
+		 * Source: Stackoverflow
+		 * https://wordpress.stackexchange.com/a/49797/32466
+		 *
+		 */
+		public function getOptions() {
+
+			// already did the checks
+			if ( isset( $this->options ) ) {
+				return $this->options;
+			}
+
+			// first call, get the options
+			$options = get_option( self::OPTION_NAME );
+
+			// options exist
+			if ( $options !== false ) {
+
+				$new_version = version_compare( $options['version'], self::VERSION, '!=' );
+//				$desync      = array_diff_key( $this->defaults, $options ) !== array_diff_key( $options, $this->defaults );
+
+				// update options if version changed
+				if ( $new_version ) {
+
+					$new_options = array();
+
+					// check for new options and set defaults if necessary
+					foreach ( $this->defaults as $option => $value ) {
+						$new_options[ $option ] = isset( $options[ $option ] ) ? $options[ $option ] : $value;
+					}
+
+					// update version info
+					$new_options['version'] = self::VERSION;
+
+					update_option( self::OPTION_NAME, $new_options );
+					$this->options = $new_options;
+
+					// no update was required
+				} else {
+					$this->options = $options;
+				}
+
+				// new install (plugin was just activated)
+			} else {
+				//Store the version details
+				update_option( self::OPTION_NAME, $this->defaults );
+				$this->options = $this->defaults;
+			}
+
+			return $this->options;
+
+		}
+
+		/**
+		 * Update path_hash, and store a flag if all the rows were updated
+		 *
+		 * @return null
+		 *
+		 * @todo, Stop running this function after 2-3 updates using version check
+		 *
+		 */
+		function update_dir_path_hash() {
+			//If we've already performed the update
+			if ( get_option( 'smush-directory-path-hash-updated', false ) ) {
+				return null;
+			}
+			global $wpsmush_helper, $wpdb;
+			//Check if Column exists
+			if ( ! $wpsmush_helper->table_column_exists( $wpdb->prefix . 'smush_dir_images', 'path_hash' ) ) {
+				return null;
+			}
+
+			## Update the rows
+			$query = "UPDATE {$wpdb->prefix}smush_dir_images SET path_hash = MD5(path) WHERE path IS NOT NULL";
+			$wpdb->query( $query );
+
+			## Check if there are any pending rows that needs to be updated
+			$pending_rows = "SELECT count(*) FROM {$wpdb->prefix}smush_dir_images WHERE path_hash is NULL AND path IS NOT NULL";
+			if ( ! $wpdb->get_var( $pending_rows ) ) {
+				$wpsmush_helper->drop_index( $wpdb->prefix. 'smush_dir_images', 'path' );
+				update_option( 'smush-directory-path-hash-updated', 1 );
+			}
+		}
+
 	}
 
 	global $WpSmush;
