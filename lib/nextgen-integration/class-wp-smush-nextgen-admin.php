@@ -73,6 +73,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 */
 		function wp_smush_bulk_menu() {
 
+			global $WpSmush;
+			
 			if ( defined( 'NGGFOLDER' ) ) {
 				$title = $WpSmush->validate_install() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, $title, $title, 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
