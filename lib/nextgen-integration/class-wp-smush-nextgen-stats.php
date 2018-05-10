@@ -740,8 +740,11 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 				$resmush_ids = array_intersect( $wpsmushnextgenadmin->resmush_ids, array_keys( $smushed_images ) );
 			}
 
-			//Update re-smush images to db
-			update_option( 'wp-smush-nextgen-resmush-list', $resmush_ids, false );
+			//If we have resmush ids, add it to db
+			if( !empty( $resmush_ids ) ) {
+				//Update re-smush images to db
+				update_option( 'wp-smush-nextgen-resmush-list', $resmush_ids, false );
+			}
 
 			//Update Super smushed images in db
 			update_option( 'wp-smush-super_smushed_nextgen', $super_smushed, false );
