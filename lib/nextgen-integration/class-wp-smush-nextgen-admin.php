@@ -72,21 +72,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Add a WP Smush page for bulk smush and settings related to Nextgen gallery
 		 */
 		function wp_smush_bulk_menu() {
-
 			if ( defined( 'NGGFOLDER' ) ) {
-
-				$this->bulk_page_handle = add_submenu_page(
-					NGGFOLDER,
-					esc_html__( 'Bulk Smush', 'wp-smushit' ),
-					esc_html__( 'WP Smush', 'wp-smushit' ),
-					'NextGEN Manage gallery',
-					'wp-smush-nextgen-bulk',
-					array(
-						&$this,
-						'ui'
-					)
-				);
-
+				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, esc_html__( 'Bulk Smush', 'wp-smushit' ), esc_html__( 'Smush', 'wp-smushit' ), 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
+					&$this,
+					'ui'
+				) );
 				// Enqueue js on Post screen (Edit screen for media )
 				add_action( 'admin_print_scripts-' . $this->bulk_page_handle, array( $this, 'localize' ) );
 			}
@@ -433,7 +423,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
                     </p>
                 </div>
                 <div class="sui-actions-right">
-                    <button type="button" class="sui-button sui-button-primary wp-smush-nextgen-bulk wp-smush-all"><?php esc_html_e( 'BULK SMUSH', 'wp-smushit' ); ?></button>
+                    <button type="button" class="sui-button sui-button-primary wp-smush-nextgen-bulk"><?php esc_html_e( 'BULK SMUSH', 'wp-smushit' ); ?></button>
                 </div>
                 <?php
 				//Enable Super Smush

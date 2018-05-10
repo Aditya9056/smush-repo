@@ -1218,7 +1218,7 @@ div.smush-s3-setup-error,
 div.smush-s3-setup-message,
 div.wp-smush-s3support-alert,
 div.wp-smush-notice.wp-smush-api-message.warning,
-div.wp-smush-notice.missing_table{
+div.wp-smush-notice.missing_table {
     background-color: #FFF5D5;
     border: none;
     color: #333333;
@@ -1530,7 +1530,8 @@ div.smush-sub-setting-wrapper:last-child {
     margin-bottom: 0;
 }
 
-div.smush-sub-setting-wrapper span.wp-smush-setting-desc {
+div.smush-sub-setting-wrapper span.wp-smush-setting-desc,
+div.smush-quick-setup-settings span.wp-smush-setting-desc {
     color: #888888;
     display: inline-block;
     font-family: "Roboto", "sans-serif";
@@ -1539,10 +1540,9 @@ div.smush-sub-setting-wrapper span.wp-smush-setting-desc {
     margin-top: 10px;
 }
 
-div.smush-sub-setting-wrapper span.wp-smush-setting-desc.desc-note{
+div.smush-sub-setting-wrapper span.wp-smush-setting-desc.desc-note {
     font-weight: 500;
 }
-
 
 /** Stats Container **/
 .wpmud .dev-box.smush-stats-wrapper {
@@ -2359,8 +2359,8 @@ div.smush-s3-setup-message .icon-fi-check-tick {
     vertical-align: middle;
 }
 
-div.smush-s3-setup-error i. icon-fi-warning-alert,
-div.smush-s3-setup-message .icon-fi-check-tick {
+div.smush-s3-setup-error i.icon-fi-warning-alert,
+div.smush-s3-setup-message i.icon-fi-check-tick {
     margin-top: 3px;
     vertical-align: top;
 }
@@ -2484,7 +2484,8 @@ li.wp-smush-image-ele span.wp-smush-image-path {
     font-weight: normal;
     height: 22px;
     line-height: 22px;
-    margin-top: -12px;
+    margin-left: 1px;
+    margin-top: -11px;
     opacity: 1;
     position: absolute;
     speak: none;
@@ -2578,15 +2579,15 @@ WordPress.org Recommendation Styling
     background-image: url(../images/sc-banner.png);
 }
 
-.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-hummingbird>span {
+.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-hummingbird > span {
     background-image: url(../images/hb-icon.png);
 }
 
-.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-defender>span {
+.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-defender > span {
     background-image: url(../images/df-icon.png);
 }
 
-.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-smartcrawl>span {
+.sui-2-1-0 .sui-cross-sell-modules .sui-col-md-4 .sui-cross-smartcrawl > span {
     background-image: url(../images/sc-icon.png);
 }
 

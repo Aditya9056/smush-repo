@@ -271,17 +271,17 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					</div>
 					<table class="smush-dir-smush-done sui-table hidden">
 						<thead>
-							<tr>
-								<th><?php esc_html_e( 'Folder', 'wp-smushit' ); ?></th>
-							</tr>
+						<tr>
+							<th><?php esc_html_e( 'Folder', 'wp-smushit' ); ?></th>
+						</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td class="smush-notice-content"><div class="sui-notice sui-notice-info smush-no-images hidden"><p><?php esc_html_e( 'You haven’t added any folders to smush.', 'wp-smushit' ); ?></p></div></td>
-							</tr>
-							<tr>
-								<td><button type="button" class="sui-button wp-smush-browse wp-smush-browse-top" data-a11y-dialog-show="wp-smush-list-dialog"><?php esc_html_e( 'ADD FOLDER', 'wp-smushit' ); ?></button></td>
-							</tr>
+						<tr>
+							<td class="smush-notice-content"><div class="sui-notice sui-notice-info smush-no-images hidden"><p><?php esc_html_e( 'You haven’t added any folders to smush.', 'wp-smushit' ); ?></p></div></td>
+						</tr>
+						<tr>
+							<td><button type="button" class="sui-button wp-smush-browse wp-smush-browse-top" data-a11y-dialog-show="wp-smush-list-dialog"><?php esc_html_e( 'ADD FOLDER', 'wp-smushit' ); ?></button></td>
+						</tr>
 						</tbody>
 					</table>
 					<!-- Notices -->

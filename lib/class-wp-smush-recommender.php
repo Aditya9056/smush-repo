@@ -42,22 +42,13 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 		 * Output the required UI for Plugin recommendations
 		 */
 		function ui() {
-			global $wpsmushit_admin;
 			if ( $this->should_continue() ) { ?>
 
-				<div class="sui-row" id="sui-cross-sell-footer">
-					<div><span class="sui-icon-plugin-2"></span></div>
-					<h3><?php esc_html_e( "Check out our other free wordpress.org plugins!", "wp-smushit" ); ?></h3>
-				</div>
-				<div class="sui-row sui-cross-sell-modules"><?php
-					$upgrade_url = add_query_arg(
-						array(
-							'utm_source'   => 'Smush-Free',
-							'utm_medium'   => 'Banner',
-							'utm_campaign' => 'settings-sidebar'
-						),
-						$wpsmushit_admin->upgrade_url
-					);
+                <div class="sui-row" id="sui-cross-sell-footer">
+                    <div><span class="sui-icon-plugin-2"></span></div>
+                    <h3><?php esc_html_e( "Check out our other free wordpress.org plugins!", "wp-smushit" ); ?></h3>
+                </div>
+                <div class="sui-row sui-cross-sell-modules"><?php
 					//Hummingbird
 					$hb_title   = esc_html__( "Hummingbird Page Speed Optimization", "wp-smushit" );
 					$hb_content = esc_html__( "Performance Tests, File Optimization & Compression, Page, Browser & Gravatar Caching, GZIP Compression, CloudFlare Integration & more.", "wp-smushit" );
@@ -74,7 +65,7 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 					$sc_title   = esc_html__( "SmartCrawl Search Engine Optimization", "wp-smushit" );
 					$sc_content = esc_html__( "Customize Titles & Meta Data, OpenGraph, Twitter & Pinterest Support, Auto-Keyword Linking, SEO & Readability Analysis, Sitemaps, URL Crawler & more.", "wp-smushit" );
 					$sc_class   = "smartcrawl";
-					$sc_url     = esc_url( "https://wordpress.org/plugins/smartcrawl" );
+					$sc_url     = esc_url( "https://wordpress.org/plugins/smartcrawl-seo" );
 					echo $this->recommendation_box( $sc_title, $sc_content, $sc_url, $sc_class, 3 );
 					$site_url = esc_url( "https://premium.wpmudev.org/projects/" );
 					$site_url = add_query_arg(
@@ -85,6 +76,7 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 						),
 						$site_url
 					);
+					$dir = defined('__DIR__') ? __DIR__ : dirname(__FILE__);
 					?>
 				</div>
 				<div class="sui-cross-sell-bottom">
@@ -97,11 +89,11 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 					Learn more
 				</a>
 
-				<img class="sui-image"
-				     src="<?php echo plugins_url( "assets/images/dev-team.png", __DIR__ ); ?>"
-				     srcset="<?php echo plugins_url( "assets/images/dev-team@2x.png", __DIR__ ); ?> 2x"
-				     alt="Try pro features for free!">
-				</div><?php
+                <img class="sui-image"
+                     src="<?php echo plugins_url( "assets/images/dev-team.png", $dir ); ?>"
+                     srcset="<?php echo plugins_url( "assets/images/dev-team@2x.png", $dir ); ?> 2x"
+                     alt="Try pro features for free!">
+                </div><?php
 			}
 			?>
 			<div class="sui-footer">Made with <i class="sui-icon-heart"></i> by WPMU DEV</div><?php

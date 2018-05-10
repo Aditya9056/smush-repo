@@ -47,7 +47,8 @@ $smushit_keys = array(
 	'networkwide',
 	'dir_path',
 	'scan',
-	'last_settings'
+	'last_settings',
+	's3'
 );
 
 //Cache Keys
