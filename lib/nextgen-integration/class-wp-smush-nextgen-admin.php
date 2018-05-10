@@ -72,8 +72,10 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Add a WP Smush page for bulk smush and settings related to Nextgen gallery
 		 */
 		function wp_smush_bulk_menu() {
+
 			if ( defined( 'NGGFOLDER' ) ) {
-				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, esc_html__( 'Bulk Smush', 'wp-smushit' ), esc_html__( 'Smush', 'wp-smushit' ), 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
+				$title = $WpSmush->validate_install() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
+				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, $title, $title, 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
 					&$this,
 					'ui'
 				) );
@@ -541,8 +543,12 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 								<span class="sui-list-label"><?php esc_html_e( 'Super-smushed images', 'wp-smushit' ); ?></span>
 								<span class="sui-list-detail">
 									<?php if ( $WpSmush->lossy_enabled ) : ?>
-										<?php $count = $wpsmush_db->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) ); ?>
-										<span class="sui-tag sui-tag-success"><span class="smushed-count"><?php echo $count; ?></span> / <?php echo $this->total_count; ?></span>
+										<?php $smushed_image = $wpsmushnextgenstats->get_ngg_images( 'smushed' ); ?>
+										<?php if ( ! empty( $smushed_image ) && is_array( $smushed_image ) && ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) : ?>
+											<?php $smushed_image = array_diff_key( $smushed_image, array_flip( $this->resmush_ids ) ); //Get smushed images excluding resmush ids. ?>
+										<?php endif; ?>
+										<?php $smushed_image_count = is_array( $smushed_image ) ? sizeof( $smushed_image ) : 0; ?>
+										<span class="sui-tag sui-tag-success"><span class="smushed-count"><?php echo $smushed_image_count; ?></span> / <?php echo $this->total_count; ?></span>
 									<?php else : ?>
 										<span class="sui-tag sui-tag-disabled"><?php esc_html_e( 'Disabled', 'wp-smushit' ); ?></span>
 									<?php endif; ?>
