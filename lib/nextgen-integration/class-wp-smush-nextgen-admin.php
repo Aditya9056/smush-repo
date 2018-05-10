@@ -86,7 +86,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 						'ui'
 					)
 				);
-				
+
 				// Enqueue js on Post screen (Edit screen for media )
 				add_action( 'admin_print_scripts-' . $this->bulk_page_handle, array( $this, 'localize' ) );
 			}
@@ -433,7 +433,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
                     </p>
                 </div>
                 <div class="sui-actions-right">
-                    <button type="button" class="sui-button sui-button-primary wp-smush-nextgen-bulk"><?php esc_html_e( 'BULK SMUSH', 'wp-smushit' ); ?></button>
+                    <button type="button" class="sui-button sui-button-primary wp-smush-nextgen-bulk wp-smush-all"><?php esc_html_e( 'BULK SMUSH', 'wp-smushit' ); ?></button>
                 </div>
                 <?php
 				//Enable Super Smush
