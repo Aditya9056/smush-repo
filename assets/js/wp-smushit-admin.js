@@ -1977,7 +1977,7 @@ jQuery( function ( $ ) {
 		e.preventDefault();
 		//Induce Setting button save click
 		$( 'button.wp-smush-all' ).click();
-
+		$( 'span.sui-notice-dismiss' ).click();
 	} );
 
 	//Allow the checkboxes to be Keyboard Accessible

@@ -15,6 +15,9 @@ require_once WP_SMUSH_DIR . "lib/class-wp-smush-db.php";
 //Include Resize class
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
 
+//Include Resize class
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize-detection.php';
+
 //Include PNG to JPG Converter
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
 
@@ -154,9 +157,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			//Register Function for sending unsmushed image count to hub
 			add_filter( 'wdp_register_hub_action', array( $this, 'smush_stats' ) );
-
-			// Load js file that is required in public facing pages.
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public' ) );
 		}
 
 		/**
@@ -202,27 +202,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			#Run the Directory Smush table update
 			$this->update_dir_path_hash();
 
-		}
-
-		/**
-		 * Enqueque JS files required in public pages.
-		 *
-		 * @return void
-		 */
-		function enqueue_public() {
-
-			wp_enqueue_script(
-				'smush-public',
-				plugins_url( 'assets/shared-ui-2/js/public.min.js', __DIR__ ),
-				array( 'jquery' ),
-				null,
-				true
-			);
-
-			wp_enqueue_style(
-				'smush-public',
-				plugins_url( 'assets/shared-ui-2/css/public.min.css', __DIR__ )
-			);
 		}
 
 		/**
