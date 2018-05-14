@@ -1,16 +1,16 @@
 <?php
 /**
  * @package WP Smush
- * @subpackage CDN
+ * @subpackage AutoResize
  * @version 2.7
  *
  * @author Umesh Kumar <umesh@incsub.com>
  *
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
-if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
+if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 
-	class WpSmushResizeDetection {
+	class WpSmushAutoResize {
 
 		/**
 		 * Is auto detection and resize enabled.
@@ -27,7 +27,7 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 		protected $can_auto_resize = false;
 
 		/**
-		 * WpSmushResizeDetection constructor.
+		 * WpSmushAutoResize constructor.
 		 */
 		public function __construct() {
 
@@ -44,7 +44,10 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 			add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
 
 			// Handle auto resize request.
-			add_action( 'wp_ajax_smush_auto_resize', array( $this, 'smush_auto_resize' ) );
+			add_action( 'wp_ajax_smush_auto_resize', array( $this, 'set_smush_auto_resize' ) );
+
+			// Responsive image srcset substitution.
+			//add_filter( 'wp_calculate_image_srcset', array( $this, 'filter_srcset_array' ), 1001, 5 );
 		}
 
 		/**
@@ -79,7 +82,7 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 
 			// Define ajaxurl var.
 			wp_localize_script( 'smush-resize-detection', 'wp_smush_resize_vars', array(
-				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'ajaxurl'    => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce' => wp_create_nonce( 'smush_resize_nonce' ),
 			) );
 		}
@@ -120,7 +123,7 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 		 */
 		public function set_attachment_ids( $images ) {
 
-			$dir = wp_upload_dir();
+			$dir         = wp_upload_dir();
 			$mata_values = $files = array();
 
 			// Loop through each image.
@@ -141,9 +144,9 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 				$files[ $file ] = $image;
 				// Set meta query for current image.
 				$mata_values[] = array(
-					'value' => $file,
+					'value'   => $file,
 					'compare' => 'LIKE',
-					'key' => '_wp_attachment_metadata',
+					'key'     => '_wp_attachment_metadata',
 				);
 			}
 
@@ -151,14 +154,14 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 			$mata_values['relation'] = 'OR';
 			// Set query arguments.
 			$query_args = array(
-				'post_type' => 'attachment',
+				'post_type'   => 'attachment',
 				'post_status' => 'inherit',
-				'fields' => 'ids',
-				'meta_query' => array(
+				'fields'      => 'ids',
+				'meta_query'  => array(
 					'relation' => 'AND',
 					$mata_values,
 					array(
-						'key' => 'smush_auto_resize',
+						'key'     => 'smush_auto_resize',
 						'compare' => 'NOT EXISTS',
 					)
 				),
@@ -174,7 +177,7 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 					$original_file = basename( $meta['file'] );
 					// Get cropped versions of the attachment.
 					$cropped_image_files = wp_list_pluck( $meta['sizes'], 'file' );
-					$common = array_intersect( array_keys( $files ), $cropped_image_files );
+					$common              = array_intersect( array_keys( $files ), $cropped_image_files );
 					// If current image is found in our files.
 					if ( ! empty( $files[ $original_file ] ) ) {
 						$files[ $original_file ]->setAttribute( 'data-attachment-id', $post_id );
@@ -217,7 +220,7 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 				return $content;
 			}
 
-			$content = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
+			$content  = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
 			$document = new \DOMDocument();
 			libxml_use_internal_errors( true );
 			$document->loadHTML( utf8_decode( $content ) );
@@ -237,7 +240,7 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 		 *
 		 * @return json
 		 */
-		public function smush_auto_resize() {
+		public function set_smush_auto_resize() {
 
 			// We need attachment id.
 			if ( ! isset( $_GET['attachment_id'] ) ) {
@@ -281,7 +284,7 @@ if ( ! class_exists( 'WpSmushResizeDetection' ) ) {
 		}
 	}
 
-	global $wpsmush_resize_detection;
+	global $wpsmush_auto_resize;
 
-	$wpsmush_resize_detection = new WpSmushResizeDetection();
+	$wpsmush_auto_resize = new WpSmushAutoResize();
 }
