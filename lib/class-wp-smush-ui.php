@@ -719,7 +719,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						array(
 						'utm_source' => 'smush',
 						'utm_medium' => 'plugin',
-						'utm_campaign' => 'smush_advancedsettings_profeature_tag'
+						'utm_campaign' => 'smush_bulksmush_limit_notice'
 						),
 						$wpsmushit_admin->upgrade_url
 					);
@@ -966,7 +966,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				array(
 				'utm_source' => 'smush',
 				'utm_medium' => 'plugin',
-				'utm_campaign' => 'smush_advancedsettings_upsell_notice'
+				'utm_campaign' => 'smush_bulksmush_upsell_notice'
 				),
 				$wpsmushit_admin->upgrade_url
 			); ?>
