@@ -5,10 +5,14 @@ Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
 <<<<<<< HEAD
+<<<<<<< HEAD
 Version: 2.7.8
 =======
 Version: 2.7.9-beta2
 >>>>>>> b188e20129996fdf01779479f3ef601661d7afbe
+=======
+Version: 2.7.9-beta3
+>>>>>>> 6b6408ae0b18b853ffb3132181929f010acf8017
 Author URI: https://premium.wpmudev.org/
 Text Domain: wp-smushit
 */
@@ -40,7 +44,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 $prefix  = 'WP_SMUSH_';
 
-$version = '2.7.9-beta2';
+$version = '2.8.0';
 
 //Deactivate the .org version, if pro version is active
 add_action( 'admin_init', 'deactivate_smush_org' );

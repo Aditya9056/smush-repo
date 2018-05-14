@@ -556,7 +556,7 @@ label.setting.smush-stats button.wp-smush-send span {
 }
 
 .media-modal .media-sidebar label.setting.smush-stats button.wp-smush-send span {
-    /*padding-top: 0;*/
+    padding-top: 0;
 }
 
 label.setting.smush-stats button.wp-smush-send[disabled] span {
@@ -1618,7 +1618,7 @@ a.wp-smush-lossy-enable {
 
 .wpmud .wp-smush-stats-try-pro:hover > a, .wpmud .wp-smush-stats-try-pro a:hover {
     background-color: #1ABC9C;
-    color: #fff;
+    color: #fff !important;
     cursor: pointer;
 }
 
