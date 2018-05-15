@@ -242,6 +242,15 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			wp_nonce_field( 'smush_get_dir_list', 'list_nonce' );
 			wp_nonce_field( 'smush_get_image_list', 'image_list_nonce' );
 
+			$upgrade_url = add_query_arg(
+				array(
+					'utm_source'   => 'smush',
+					'utm_medium'   => 'plugin',
+					'utm_campaign' => 'smush_directorysmush_limit_notice'
+				),
+				$wpsmushit_admin->upgrade_url
+			);
+
 			$dir_button = '<button class="sui-button wp-smush-browse hidden" data-a11y-dialog-show="wp-smush-list-dialog">' . esc_html__( 'ADD FOLDER', 'wp-smushit' ) . '</button>';
 
 			echo '<div class="sui-box" id="wp-smush-dir-wrap-box">';
@@ -289,7 +298,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						<p><?php printf( esc_html__( "%s/%s image(s) were successfully smushed, however %s image(s) could not be smushed due to an error.", "wp-smushit" ), '<span class="wp-smush-dir-smushed"></span>', '<span class="wp-smush-dir-total"></span>', '<span class="wp-smush-dir-remaining"></span>' ); ?></p>
 					</div>
 					<div class="sui-notice sui-notice-info wp-smush-dir-limit hidden">
-						<p><?php printf( esc_html__( " %sUpgrade to pro%s to bulk smush all your directory images with one click. Free users can smush 50 images with each click.", "wp-smushit" ), '<a href="' . esc_url( $wpsmushit_admin->upgrade_url ) . '" target="_blank" title="' . esc_html__( "Smush Pro", "wp-smushit" ) . '">', '</a>' ); ?></p>
+						<p><?php printf( esc_html__( " %sUpgrade to pro%s to bulk smush all your directory images with one click. Free users can smush 50 images with each click.", "wp-smushit" ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( "Smush Pro", "wp-smushit" ) . '">', '</a>' ); ?></p>
 					</div>
 					<?php
 					//Nonce Field
@@ -925,11 +934,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 							$div .= '<td class="' . $wrapper_class . '"><div class="sui-box"><div class="sui-box-body"><ul class="wp-smush-image-list-inner" tabindex="0">';
 						endif;
 
-						$div .= '<li class="wp-smush-image-ele' . $class . '" id="' . $image_id . '">';
-						$div .= '<span class="wp-smush-image-ele-progress' . $img_progress_class . '"></span>';
-						$div .= '<span class="wp-smush-image-ele-status"></span>';
-						$div .= '<span class="wp-smush-image-path">' . $item . '</span>';
-						$div .= '</li>';
+						if( !empty( $image_id ) ) {
+							$div .= '<li class="wp-smush-image-ele' . $class . '" id="' . $image_id . '">';
+							$div .= '<span class="wp-smush-image-ele-progress' . $img_progress_class . '"></span>';
+							$div .= '<span class="wp-smush-image-ele-status"></span>';
+							$div .= '<span class="wp-smush-image-path">' . $item . '</span>';
+							$div .= '</li>';
+						}
 						if ( $count === $item_count ) :
 							$div .= '</ul></div></div></td></tr>';
 						endif;
@@ -1378,8 +1389,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function directory_list_dialog() {
 
 			$current_screen = get_current_screen();
-
-			if ( empty( $current_screen ) || empty( $current_screen->base ) || 'toplevel_page_smush' != $current_screen->base ) {
+			if ( empty( $current_screen ) || empty( $current_screen->base ) || ( 'toplevel_page_smush' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base ) ) {
 				return;
 			}
 			?>
@@ -1430,7 +1440,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			global $wpdb;
 			$notice = '';
 			$current_screen = get_current_screen();
-			if ( 'toplevel_page_smush' != $current_screen->id ) {
+			if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
 				return $notice;
 			}
 			$sql         = $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->esc_like( $wpdb->prefix . 'smush_dir_images' ) );

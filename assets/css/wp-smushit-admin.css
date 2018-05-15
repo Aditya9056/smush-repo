@@ -841,6 +841,16 @@ label.setting.smush-stats div.wp-smush-progress span {
     color: #fff;
 }
 
+.attachment-details .setting div.smush-status-links {
+    float: none;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+div.attachment-details .setting div.smush-status-links.smush-status-links div.smush-stats-wrapper {
+    margin-top: 15px;
+}
+
 .smush-stats-wrapper .smush-container-subheading {
     margin: 1.2em 0 0.9em;
     max-width: 90%;
@@ -1660,8 +1670,6 @@ div.smush-pro-feature-desc {
     font-size: 13px;
     line-height: 22px;
 }
-
-
 
 p.smush-pro-upsell-text {
     color: #666666;

@@ -4,15 +4,7 @@ Plugin Name: Smush
 Plugin URI: http://wordpress.org/extend/plugins/wp-smushit/
 Description: Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
 Author: WPMU DEV
-<<<<<<< HEAD
-<<<<<<< HEAD
-Version: 2.7.8
-=======
-Version: 2.7.9-beta2
->>>>>>> b188e20129996fdf01779479f3ef601661d7afbe
-=======
 Version: 2.7.9-beta3
->>>>>>> 6b6408ae0b18b853ffb3132181929f010acf8017
 Author URI: https://premium.wpmudev.org/
 Text Domain: wp-smushit
 */
@@ -203,7 +195,8 @@ if ( is_admin() ) {
 			'name'    => 'WP Smush Pro',
 			'screens' => array(
 				'upload',
-				'toplevel_page_smush'
+				'toplevel_page_smush',
+				'toplevel_page_smush-network'
 			)
 		);
 	}
@@ -307,28 +300,28 @@ if ( ! function_exists( 'smush_i18n' ) ) {
 }
 
 //Add Share UI Class
-add_filter( 'admin_body_class', 'admin_body_classes', 100 );
-function admin_body_classes( $classes ) {
+add_filter( 'admin_body_class', 'smush_body_classes' );
 
-	global $wpsmushit_admin;
+if ( ! function_exists( 'smush_body_classes' ) ) {
+	function smush_body_classes( $classes ) {
+		//Exit if function doesn't exists
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return $classes;
+		}
+		$current_screen = get_current_screen();
+		//If not on plugin page
+		if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
+			return $classes;
+		}
 
-	//Exit if function doesn't exists
-	if ( ! function_exists( 'get_current_screen' ) ) {
+		// Remove old wpmud class from body of smush page to avoid style conflict.
+		$classes = str_replace( 'wpmud ', '', $classes );
+
+		$classes .= 'sui-2-2-0';
+
 		return $classes;
+
 	}
-	$current_screen = get_current_screen();
-	//If not on plugin page
-	if ( ! in_array( $current_screen->id, $wpsmushit_admin->plugin_pages ) ) {
-		return $classes;
-	}
-
-	// Remove old wpmud class from body of smush page to avoid style conflict.
-	$classes = str_replace( 'wpmud ', '', $classes );
-
-	$classes .= 'sui-2-2-0';
-
-	return $classes;
-
 }
 
 register_activation_hook( __FILE__, 'smush_activated' );
