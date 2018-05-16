@@ -375,10 +375,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					wp_enqueue_script( 'jqft-js' );
 					wp_enqueue_style( 'jqft-css' );
 				}
-				wp_enqueue_style( 'wpmudev-sui', plugins_url( 'assets/shared-ui-2/css/admin.min.css', __DIR__ ) );
+				wp_enqueue_style( 'wpmudev-sui', plugins_url( 'assets/css/shared-ui.min.css', __DIR__ ) );
+				wp_enqueue_style( 'smush-admin', plugins_url( 'assets/css/admin.min.css', __DIR__ ) );
 				wp_enqueue_script(
 					'wpmudev-sui',
-					plugins_url( 'assets/shared-ui-2/js/admin.min.js', __DIR__ ),
+					plugins_url( 'assets/js/shared-ui.min.js', __DIR__ ),
+					array( 'jquery' ),
+					null,
+					true
+				);
+				wp_enqueue_script(
+					'smush-admin',
+					plugins_url( 'assets/js/admin.min.js', __DIR__ ),
 					array( 'jquery' ),
 					null,
 					true
