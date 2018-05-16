@@ -13,14 +13,85 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 	class WpSmushCDN {
 
 		/**
+		 * Smush CDN base url.
+		 *
+		 * @var null|string
+		 */
+		var $cdn_base = null;
+
+		/**
+		 * Flag to check if CDN is active.
+		 *
+		 * @var bool
+		 */
+		var $cdn_active = false;
+
+		/**
+		 * WPMUDEV API key for the member.
+		 *
+		 * @var null
+		 */
+		var $api_key = null;
+
+		/**
 		 * WpSmushCDN constructor.
 		 */
 		public function __construct() {
+
+			// Set auto resize flag.
+			add_action( 'wp', array( $this, 'init_flags' ) );
+
+			// Set Smush API config.
+			add_action( 'init', array( $this, 'set_cdn_url' ) );
+
+			// Start an output buffer before any output starts.
+			add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
 
 			// Hook into CDN settings section.
 			add_action( 'smush_cdn_settings_ui', array( $this, 'ui' ) );
 		}
 
+		/**
+		 * Set the API base for the member.
+		 *
+		 * @return void
+		 */
+		public function set_cdn_url() {
+
+			// Get the user id of current member.
+			// @todo handle this.
+			$user_id = 522431;
+
+			// Site id to help mapping multisite installations.
+			$site_id = get_current_blog_id();
+
+			// This is member's custom cdn path.
+			$this->cdn_base = trailingslashit( "https://{$user_id}.smushcdn.com/{$site_id}" );
+		}
+
+		/**
+		 * Initialize required flags.
+		 *
+		 * @return void
+		 */
+		public function init_flags() {
+
+			global $WpSmush;
+
+			// @todo handle this after implementing CDN settings.
+			$this->cdn_active = true;
+
+			// All these are members only feature.
+			if ( ! $WpSmush->validate_install() ) {
+				return;
+			}
+		}
+
+		/**
+		 * Admin UI section for the CDN settings.
+		 *
+		 * @return void
+		 */
 		public function ui() {
 
 			global $wpsmush_bulkui;
@@ -34,9 +105,147 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 
 			echo '</div>';
 		}
+
+		/**
+		 * Generate CDN url from given image url.
+		 *
+		 * @param string $src Image url.
+		 * @param array $args Query parameters.
+		 *
+		 * @return string
+		 */
+		public function generate_cdn_url( $src, $args = array() ) {
+
+			global $WpSmush;
+
+			// Parse url to get all parts.
+			$url_parts = parse_url( $src );
+
+			// If path not found, do not continue.
+			if ( empty( $url_parts['path'] ) ) {
+				return $src;
+			}
+
+			// Arguments for CDN.
+			$pro_args = array(
+				'lossy' => $WpSmush->lossy_enabled ? 1 : 0,
+				'strip' => $WpSmush->keep_exif ? 0 : 1,
+				'webp'  => 0,
+			);
+
+			$args = wp_parse_args( $pro_args, $args );
+
+			// Replace base url with cdn base.
+			$url = $this->cdn_base . ltrim( $url_parts['path'], '/' );
+
+			// Now we need to add our CDN parameters for resizing.
+			$url = add_query_arg( $args, $url );
+
+			return $url;
+		}
+
+		/**
+		 * Starts an output buffer and register the callback function.
+		 *
+		 * Register callback function that adds attachment ids of images
+		 * those are from media library and has an attachment id.
+		 *
+		 * @uses ob_start()
+		 *
+		 * @return void
+		 */
+		public function process_buffer() {
+
+			ob_start( array( $this, 'process_img_tags' ) );
+		}
+
+		/**
+		 * Process images from current buffer content.
+		 *
+		 * Use DOMDocument class to find all available images
+		 * in current HTML content and set attachmet id attribute.
+		 *
+		 * @param string $content Current buffer content.
+		 *
+		 * @return string
+		 */
+		public function process_img_tags( $content ) {
+
+			// Do not continue if CDN is not active.
+			if ( ! $this->cdn_active ) {
+				return $content;
+			}
+
+			$content  = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
+			$document = new \DOMDocument();
+			libxml_use_internal_errors( true );
+			$document->loadHTML( utf8_decode( $content ) );
+
+			// Get images from current DOM elements.
+			$images = $document->getElementsByTagName( 'img' );
+			// If images found, set attachment ids.
+			if ( ! empty( $images ) ) {
+				$this->process_images( $images );
+
+				/**
+				 * Action hook to modify DOM images.
+				 *
+				 * Images are saved at the end of this function. So no need
+				 * to return anything in this hook.
+				 */
+				do_action( 'smush_images_from_content', $images );
+			}
+
+			return $document->saveHTML();
+		}
+
+		/**
+		 * Set attachment IDs of images as data.
+		 *
+		 * Get attachment ids from urls and set new data
+		 * property to img.
+		 * We can use WP_Query to find attachment ids of
+		 * all images on current page content.
+		 *
+		 * @param array $images Current page images.
+		 *
+		 * @return void
+		 */
+		public function process_images( $images ) {
+
+			$dir = wp_upload_dir();
+
+			// Loop through each image.
+			foreach ( $images as $key => $image ) {
+
+				// Get the src value.
+				$src = $image->getAttribute( 'src' );
+
+				// Make sure this image is inside upload directory.
+				if ( false === strpos( $src, $dir['baseurl'] . '/' ) ) {
+					continue;
+				}
+
+				/**
+				 * Filter hook to alter image src before going through cdn.
+				 */
+				$src = apply_filters( 'smush_image_src_before_cdn', $src );
+
+				// Generate cdn url from local url.
+				$src = $this->generate_cdn_url( $src );
+
+				/**
+				 * Filter hook to alter image src after replacing with CDN base.
+				 */
+				$src = apply_filters( 'smush_image_src_after_cdn', $src );
+
+				// Update src with cdn url.
+				$image->setAttribute( 'src', $src );
+			}
+		}
 	}
 
 	global $wpsmush_cdn;
-	$wpsmush_cdn = new WpSmushCDN();
 
+	$wpsmush_cdn = new WpSmushCDN();
 }

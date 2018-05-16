@@ -10,21 +10,38 @@
  */
 if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 
+	/**
+	 * Class WpSmushAutoResize
+	 *
+	 * Reference: EWWW Optimizer.
+	 */
 	class WpSmushAutoResize {
 
 		/**
-		 * Is auto detection and resize enabled.
+		 * Is auto detection enabled.
 		 *
 		 * @var bool
 		 */
-		protected $detection_enabled = false;
+		var $can_auto_detect = false;
 
 		/**
 		 * Can auto resize.
 		 *
 		 * @var bool
 		 */
-		protected $can_auto_resize = false;
+		var $can_auto_resize = false;
+
+		/**
+		 * These are the supported file extensions.
+		 *
+		 * @var array
+		 */
+		var $supported_extensions = array(
+			'gif',
+			'jpg',
+			'jpeg',
+			'png',
+		);
 
 		/**
 		 * WpSmushAutoResize constructor.
@@ -32,7 +49,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		public function __construct() {
 
 			// Set auto resize flag.
-			add_action( 'wp', array( $this, 'can_auto_resize' ) );
+			add_action( 'init', array( $this, 'init_flags' ) );
 
 			// Load js file that is required in public facing pages.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_resize_assets' ) );
@@ -40,14 +57,14 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			// Add new admin bar item on front end.
 			add_action( 'admin_bar_menu', array( $this, 'resize_detection_button' ), 99 );
 
-			// Start an output buffer before any output starts.
-			add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
-
 			// Handle auto resize request.
 			add_action( 'wp_ajax_smush_auto_resize', array( $this, 'set_smush_auto_resize' ) );
 
-			// Responsive image srcset substitution.
-			//add_filter( 'wp_calculate_image_srcset', array( $this, 'filter_srcset_array' ), 1001, 5 );
+			// Update responsive image srcset if required.
+			add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 1001, 5 );
+
+			// Set attachment ids to media library images.
+			add_action( 'smush_images_from_content', array( $this, 'set_attachment_ids' ) );
 		}
 
 		/**
@@ -61,7 +78,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 */
 		public function enqueue_resize_assets() {
 
-			if ( ! $this->can_auto_resize ) {
+			if ( ! $this->can_auto_detect ) {
 				return;
 			}
 
@@ -96,7 +113,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 */
 		public function resize_detection_button() {
 
-			if ( ! $this->can_auto_resize ) {
+			if ( ! $this->can_auto_detect ) {
 				return;
 			}
 
@@ -123,7 +140,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 */
 		public function set_attachment_ids( $images ) {
 
-			$dir         = wp_upload_dir();
+			$dir = wp_upload_dir();
 			$mata_values = $files = array();
 
 			// Loop through each image.
@@ -190,52 +207,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		}
 
 		/**
-		 * Starts an output buffer and register the callback function.
-		 *
-		 * Register callback function that adds attachment ids of images
-		 * those are from media library and has an attachment id.
-		 *
-		 * @uses ob_start()
-		 *
-		 * @return void
-		 */
-		public function process_buffer() {
-
-			ob_start( array( $this, 'process_images' ) );
-		}
-
-		/**
-		 * Process images from current buffer content.
-		 *
-		 * Use DOMDocument class to find all available images
-		 * in current HTML content and set attachmet id attribute.
-		 *
-		 * @param string $content Current buffer content.
-		 *
-		 * @return string
-		 */
-		public function process_images( $content ) {
-
-			if ( ! $this->can_auto_resize ) {
-				return $content;
-			}
-
-			$content  = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
-			$document = new \DOMDocument();
-			libxml_use_internal_errors( true );
-			$document->loadHTML( utf8_decode( $content ) );
-
-			// Get images from current DOM elements.
-			$images = $document->getElementsByTagName( 'img' );
-			// If images found, set attachment ids.
-			if ( ! empty( $images ) ) {
-				$this->set_attachment_ids( $images );
-			}
-
-			return $document->saveHTML();
-		}
-
-		/**
 		 * Handle auto resize ajax request for an attachment.
 		 *
 		 * @return json
@@ -266,21 +237,108 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 *
 		 * @return bool
 		 */
-		public function can_auto_resize() {
+		private function init_flags() {
 
-			global $wpsmush_settings;
+			global $wpsmush_settings, $WpSmush, $wpsmush_cdn;
+
+			// All these are members only feature.
+			if ( ! $WpSmush->validate_install() ) {
+				return;
+			}
 
 			// We need smush settings.
 			$wpsmush_settings->init_settings();
 
+			// Check if auto detection is enabled.
 			$this->detection_enabled = (bool) $wpsmush_settings->settings['detection'];
 
-			// Only required for admin users and when auto detection is required..
+			// Only required for admin users.
 			if ( $this->detection_enabled && current_user_can( 'manage_options' ) ) {
-				$this->can_auto_resize = true;
+				$this->can_auto_detect = true;
 			}
 
-			return $this->can_auto_resize;
+			// @todo add other checks if required.
+			if ( $wpsmush_cdn->cdn_active && $this->detection_enabled ) {
+				$this->can_auto_resize = true;
+			}
+		}
+
+		/**
+		 * Filters an array of image srcset values, replacing each URL with resized CDN urls.
+		 *
+		 * Keep the existing srcset sizes if already added by WP, then calculate extra sizes
+		 * if required.
+		 *
+		 * @param array $sources An array of image urls and widths.
+		 * @param array $size_array Array of width and height values in pixels.
+		 * @param string $image_src The src of the image.
+		 * @param array $image_meta The image metadata.
+		 * @param int $attachment_id Image attachment ID.
+		 *
+		 * @return array $sources
+		 */
+		public function update_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id = 0 ) {
+
+			global $wpsmush_cdn;
+
+			// Loop through each image.
+			foreach ( $sources as $i => $source ) {
+
+				$img_url = $source['url'];
+
+				// @todo Validate image before continue.
+
+				// Filter to skip a single image.
+				if ( apply_filters( 'smush_auto_resize_skip', false, $img_url, $source ) ) {
+					continue;
+				}
+
+				// Set https if required.
+				if ( 0 === strpos( $img_url, '//' ) ) {
+					$img_url = ( is_ssl() ? 'https:' : 'http:' ) . $img_url;
+				}
+
+				list( $width, $height ) = $this->get_size_from_file_name( $img_url );
+
+				$args = array(
+					'size' => $width . ',' . $height,
+				);
+
+				$sources[ $i ]['url'] = $wpsmush_cdn->generate_cdn_url( $source['url'], $args );
+			}
+
+			return $sources;
+		}
+
+		/**
+		 * Try to determine height and width from strings WP appends to resized image filenames.
+		 *
+		 * @param string $src The image URL.
+		 *
+		 * @return array An array consisting of width and height.
+		 */
+		private function get_size_from_file_name( $src ) {
+
+			$size = array();
+
+			if ( preg_match( '#-(\d+)x(\d+)(@2x)?\.(?:' . implode( '|', $this->supported_extensions ) . '){1}(?:\?.+)?$#i', $src, $size ) ) {
+				// Get size and width.
+				$width  = (int) isset( $size[1] ) ? $size[1] : 0;
+				$height = (int) isset( $size[2] ) ? $size[2] : 0;
+
+				// Handle retina images.
+				if ( strpos( $src, '@2x' ) ) {
+					$width  = 2 * $width;
+					$height = 2 * $height;
+				}
+
+				// Return width and height as array.
+				if ( $width && $height ) {
+					return array( $width, $height );
+				}
+			}
+
+			return array( false, false );
 		}
 	}
 
