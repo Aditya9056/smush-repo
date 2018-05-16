@@ -77,7 +77,6 @@ const jsConfig = {
 	entry: {
 		'shared-ui': './_src/js/shared-ui.js',
 		'admin': './_src/js/admin-index.js',
-		'resize-detection': './_src/js/public-resize-detection.js'
 	},
 	output: {
 		filename: '[name].min.js',
@@ -129,4 +128,4 @@ const resizeJsConfig = {
 	},
 };
 
-module.exports = [scssConfig, jsConfig];
+module.exports = [scssConfig, jsConfig, resizeJsConfig];
