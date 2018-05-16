@@ -713,9 +713,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// Show re-smush notice.
 			echo $this->bulk_resmush_content();
 			$upgrade_url = add_query_arg( array(
-				'utm_source' => 'Smush-Free',
-				'utm_medium' => 'Banner',
-				'utm_campaign' => 'try-pro-free'
+				'utm_source' => 'smush',
+				'utm_medium' => 'plugin',
+				'utm_campaign' => 'smush_stats_enable_lossy'
 			), $wpsmushit_admin->upgrade_url
 			);
 
@@ -756,11 +756,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' hidden' : ''; ?>"><?php
 				if ( $wpsmushit_admin->remaining_count > 0 ) :
 					$class = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' hidden' : '';
-					$upgrade_url = add_query_arg( array(
-						'utm_source' => 'Smush-Free',
-						'utm_medium' => 'Banner',
-						'utm_campaign' => 'yellow-bulk-smush-upsell'
-					), $wpsmushit_admin->upgrade_url
+					$upgrade_url = add_query_arg(
+						array(
+							'utm_source' => 'smush',
+							'utm_medium' => 'plugin',
+							'utm_campaign' => 'smush_bulksmush_limit_notice'
+						),
+						$wpsmushit_admin->upgrade_url
 					); ?>
 					<div class="sui-notice sui-notice-warning<?php echo $class; ?>" tabindex="0">
 						<p>
@@ -943,11 +945,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 
 			// Upgrade url with analytics keys.
-			$upgrade_url = add_query_arg( array(
-				'utm_source' => 'Smush-Free',
-				'utm_medium' => 'Banner',
-				'utm_campaign' => 'smush-lady-upgrade'
-			), $wpsmushit_admin->upgrade_url
+			$upgrade_url = add_query_arg(
+				array(
+					'utm_source' => 'smush',
+					'utm_medium' => 'plugin',
+					'utm_campaign' => 'smush_advancedsettings_profeature_tag'
+				),
+				$wpsmushit_admin->upgrade_url
 			);
 
 			?>
@@ -1162,7 +1166,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				switch ( $setting_key ) {
 
 					case 'resize':
-						esc_html_e( 'Save a ton of space by not storing over-sized images on your server. Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically scaled down to a reasonable size. Note: This setting does not apply to images smushed using the Directory Smush feature.', 'wp-smushit' );
+						esc_html_e( 'Save a ton of space by not storing over-sized images on your server. Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically scaled down to a reasonable size. Note: Image resizing happens automatically when you upload attachments. This setting does not apply to images smushed using Directory Smush feature. To support retina devices, we recommend using 2x the dimensions of your image size.', 'wp-smushit' );
 						break;
 					case 'original':
 						esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed, unless your website uses the original images in full size.', 'wp-smushit' );
@@ -1286,11 +1290,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$button_content = esc_html__( 'Try Smush Pro Free', 'wp-smushit' );
 			}
 
-			$upgrade_url = add_query_arg( array(
-				'utm_source' => 'Smush-Free',
-				'utm_medium' => 'Banner',
-				'utm_campaign' => 'try-pro-free'
-			), $wpsmushit_admin->upgrade_url
+			$upgrade_url = add_query_arg(
+				array(
+					'utm_source' => 'smush',
+					'utm_medium' => 'plugin',
+					'utm_campaign' => 'smush_dashboard_upgrade_notice'
+				),
+				$wpsmushit_admin->upgrade_url
 			);
 			?>
 			<div class="notice smush-notice" style="display: none;">
@@ -1329,9 +1335,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Upgrade url with analytics keys.
 			$upgrade_url = add_query_arg( array(
-				'utm_source' => 'Smush-Free',
-				'utm_medium' => 'Banner',
-				'utm_campaign' => 'smush-lady-upgrade'
+				'utm_source' => 'smush',
+				'utm_medium' => 'plugin',
+				'utm_campaign' => 'smush_bulksmush_upsell_notice'
 			), $wpsmushit_admin->upgrade_url
 			);
 

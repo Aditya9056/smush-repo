@@ -101,7 +101,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$setting_val = $WpSmush->validate_install() ? $wpsmush_settings->settings['s3'] : 0;
 
 			if ( ! $setting_val ) {
-				//return;
+				return;
 			}
 
 			//Check if plugin is setup or not
@@ -116,7 +116,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			if ( ! $as3cf->is_plugin_setup() ) {
 				$show_error         = true;
 				$configure_url      = $as3cf->get_plugin_page_url();
-				$this->setup_notice = sprintf( esc_html__( 'It seems you haven’t finished setting up WP S3 Offload yet. %sConfigure it now%s to enable Amazon S3 support.', 'wp-smushit' ), '<a href="' . $configure_url . '" target="_blank">', '</a>' );
+				$this->setup_notice = sprintf( esc_html__( 'It seems you haven’t finished setting up WP Offload S3 yet. %sConfigure it now%s to enable Amazon S3 support.', 'wp-smushit' ), '<a href="' . $configure_url . '" target="_blank">', '</a>' );
 			} else {
 				$this->message_type = 'notice';
 				$this->setup_notice = esc_html__( 'Amazon S3 support is active.', 'wp-smushit' );

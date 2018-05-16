@@ -59,7 +59,8 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 		function __construct() {
 
 			//Do not initialize if not in admin area
-			if ( ! is_admin() ) {
+			#wp_head runs specifically in the frontend, good check to make sure we're accidentally not loading settings on required pages
+			if ( ! is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) && did_action('wp_head') ) {
 				return null;
 			}
 

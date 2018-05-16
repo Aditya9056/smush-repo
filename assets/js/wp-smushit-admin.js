@@ -209,8 +209,16 @@ jQuery( function ( $ ) {
 			this.hide_loader();
 			this.request.done( function ( response ) {
 				if ( typeof response.data != 'undefined' ) {
-					//Append the smush stats or error
-					self.$status.html( response.data );
+                    //Check if stats div exists
+                    var parent = self.$status.parent();
+                    var stats_div = parent.find('.smush-stats-wrapper');
+
+                    //If we've updated status, replace the content
+                    if (response.data.status) {
+                        //remove Links
+                        parent.find('.smush-status-links').remove()
+                        self.$status.replaceWith(response.data.status);
+                    }
 
 					//Check whether to show membership validity notice or not
 					membership_validity( response.data );
@@ -224,13 +232,7 @@ jQuery( function ( $ ) {
 						self.$status.html( response.data.error_msg );
 						self.$status.show();
 					}
-					if ( response.data.status ) {
-						self.$status.html( response.data.status );
-					}
-					//Check if stats div exists
-					var parent = self.$status.parent();
-					var stats_div = parent.find( '.smush-stats-wrapper' );
-					if ( 'undefined' != stats_div && stats_div.length ) {
+					if ('undefined' != stats_div && stats_div.length ) {
 						stats_div.replaceWith( response.data.stats );
 					} else {
 						parent.append( response.data.stats );
@@ -519,7 +521,10 @@ jQuery( function ( $ ) {
 
 						if ( self.is_bulk && res.success ) {
 							self.update_progress( res );
-						}
+						}else if (self.ids.length == 0) {
+                            //Sync stats anyway
+                            self.sync_stats();
+                        }
 					}
 					self.single_done();
 				} ).complete( function () {
@@ -578,7 +583,6 @@ jQuery( function ( $ ) {
 		 **/
 		this.cancel_ajax = function () {
 			$( '.wp-smush-cancel-bulk' ).on( 'click', function () {
-				alert( 'ddd' );
 				//Add a data attribute to the smush button, to stop sending ajax
 				self.$button.attr( 'continue_smush', false );
 				//Sync and update stats
@@ -915,7 +919,12 @@ jQuery( function ( $ ) {
 						wp_smushit_data.size_after = 'undefined' != typeof r.data.size_after ? r.data.size_after : wp_smushit_data.size_after;
 						wp_smushit_data.savings_resize = 'undefined' != typeof r.data.savings_resize ? r.data.savings_resize : wp_smushit_data.savings_resize;
 						wp_smushit_data.savings_conversion = 'undefined' != typeof r.data.savings_conversion ? r.data.savings_conversion : wp_smushit_data.savings_conversion;
+                        wp_smushit_data.count_resize = 'undefined' != typeof r.data.count_resize ? r.data.count_resize : wp_smushit_data.count_resize;
 					}
+
+                    if( 'nextgen' == scan_type ) {
+                        wp_smushit_data.bytes = parseInt( wp_smushit_data.size_before ) - parseInt( wp_smushit_data.size_after )
+                    }
 
 					var smush_percent = ( wp_smushit_data.count_smushed / wp_smushit_data.count_total ) * 100;
 					smush_percent = precise_round( smush_percent, 1 );
@@ -1514,6 +1523,8 @@ jQuery( function ( $ ) {
 
 			//Check, if limit is exceeded for free version
 			if ( typeof res.data !== "undefined" && res.data.error == 'dir_smush_limit_exceeded' ) {
+				//@todo: Check if this is required anymore
+                first_child.removeClass('processed');
 				//Show error, Bulk Smush limit exceeded
 				directory_smush_finished( 'wp-smush-dir-limit' );
 				return;
@@ -2224,7 +2235,7 @@ jQuery( function ( $ ) {
 			spinner.removeClass( 'sui-icon-loader sui-loading' );
 
 			//Show Scan result
-			$( '.wp-smush-scan-result' ).removeClass( 'hidden' );
+			$( '.wp-smush-scan-result' ).removeClass( 'hidden' ).show();
 		} ).done( function ( res ) {
 
 			// Show select directory button on top.
