@@ -400,8 +400,8 @@
 
     &.smush-button-check-success,
     &.smush-button-check-success:hover {
-      background: #d1f1ea;
-      color: #1abc9c;
+      background: #d1f1ea !important;
+      color: #1abc9c !important;
       pointer-events: none;
       @include smush_tick_icon;
 
