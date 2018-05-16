@@ -1,0 +1,22 @@
+@mixin smush_tick_icon($position: before) {
+  @if $position == both {
+    $position: 'before, &:after';
+  }
+  &:#{$position} {
+    content: '\e90f';
+    font-family: 'wpmudev-plugin-icons' !important;
+    speak: none;
+    font-size: 1em;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    text-rendering: auto;
+    display: inline-block;
+    color: $icon-color;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @content;
+  }
+}

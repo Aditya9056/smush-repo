@@ -1,4 +1,7 @@
-@import "~@wpmudev/shared-ui/scss/shared-ui.scss";
+@import "~@wpmudev/shared-ui/scss/_mixins";
+@import "~@wpmudev/shared-ui/scss/_colors";
+@import "~@wpmudev/shared-ui/scss/_variables";
+@import "common/mixins";
 
 @include body-class {
 
@@ -61,7 +64,7 @@
 
         span {
           &.wp-smush-li-path {
-            background: url(../images/folder-closed.svg) no-repeat;
+            background: url(../../assets/images/folder-closed.svg) no-repeat;
             background-position-y: 6px;
             line-height: 2;
             padding: 0 30px;
@@ -102,7 +105,7 @@
             vertical-align: middle;
             font-size: 18px;
           }
-          @include icon(before, check-tick, true);
+          @include smush_tick_icon;
         }
       }
 
@@ -188,7 +191,7 @@
               vertical-align: middle;
               font-size: 18px;
             }
-            @include icon(before, check-tick, true);
+            @include smush_tick_icon;
           }
 
           &.partial {
@@ -196,7 +199,7 @@
             &:before {
               color: $notice-warning-icon-color;
             }
-            @include icon(before, warning-alert, true);
+            @include smush_tick_icon;
           }
         }
 
@@ -213,7 +216,7 @@
             &:before {
               color: $notice-warning-icon-color;
             }
-            @include icon(before, warning-alert, true);
+            @include smush_tick_icon;
           }
 
           &.optimised {
@@ -222,7 +225,7 @@
               vertical-align: middle;
               font-size: 18px;
             }
-            @include icon(before, check-tick, true);
+            @include smush_tick_icon;
           }
         }
       }
@@ -262,7 +265,7 @@
 
     .sui-summary-smush,
     .sui-summary-smush-nextgen {
-      background-image: url(../images/smush.png);
+      background-image: url(../../assets/images/smush.png);
     }
 
     .smush-pro-features {
@@ -280,7 +283,7 @@
           margin-right: 10px;
           font-size: 18px;
         }
-        @include icon(before, check-tick, true);
+        @include smush_tick_icon;
       }
 
       .smush-pro-feature-desc {
@@ -345,18 +348,18 @@
         .ext_jpg,
         .ext_gif,
         .ext_bmp {
-          background: url(../images/image.svg) left top no-repeat;
+          background: url(../../assets/images/image.svg) left top no-repeat;
         }
 
         &.directory {
-          background: url(../images/folder-closed.svg) left top no-repeat;
+          background: url(../../assets/images/folder-closed.svg) left top no-repeat;
         }
 
         &.expanded {
-          background: url(../images/folder-open.svg) left top no-repeat;
+          background: url(../../assets/images/folder-open.svg) left top no-repeat;
 
           &.selected {
-            background: url(../images/folder-open-selected.svg) left top no-repeat;
+            background: url(../../assets/images/folder-open-selected.svg) left top no-repeat;
 
             > a,
             .file.selected {
@@ -400,7 +403,7 @@
       background: #d1f1ea;
       color: #1abc9c;
       pointer-events: none;
-      @include icon(before, check-tick, true);
+      @include smush_tick_icon;
 
       &:before {
         padding-right: 5px;

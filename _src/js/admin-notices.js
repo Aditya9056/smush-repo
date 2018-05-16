@@ -1,5 +1,3 @@
-import '@wpmudev/shared-ui';
-
 jQuery( function ( $ ) {
 
 	// Remove dismissable notices
