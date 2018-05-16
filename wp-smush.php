@@ -300,17 +300,20 @@ if ( ! function_exists( 'smush_i18n' ) ) {
 }
 
 //Add Share UI Class
-add_filter( 'admin_body_class', 'smush_body_classes' );
+add_filter( 'admin_body_class', 'smush_body_classes', 99 );
 
 if ( ! function_exists( 'smush_body_classes' ) ) {
 	function smush_body_classes( $classes ) {
+
+		global $wpsmushit_admin;
+
 		//Exit if function doesn't exists
 		if ( ! function_exists( 'get_current_screen' ) ) {
 			return $classes;
 		}
 		$current_screen = get_current_screen();
 		//If not on plugin page
-		if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
+		if ( ! in_array( $current_screen->id, $wpsmushit_admin->plugin_pages ) ) {
 			return $classes;
 		}
 
