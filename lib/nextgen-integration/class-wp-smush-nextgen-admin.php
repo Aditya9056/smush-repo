@@ -26,6 +26,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		var $image_count = 0;
 		var $remaining_count = 0;
 		var $super_smushed = 0;
+		var $smushed = array();
 		var $bulk_page_handle;
 
 		//Stores all lossless smushed ids
@@ -198,6 +199,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$smushed = $wpsmushnextgenstats->get_ngg_images();
 			$smushed = ( ! empty( $smushed ) && is_array( $smushed ) ) ? array_keys( $smushed ) : '';
 
+			$this->smushed = $smushed;
 			if ( ! empty( $_REQUEST['ids'] ) ) {
 				//Sanitize the ids and assign it to a variable
 				$this->ids = array_map( 'intval', explode( ',', $_REQUEST['ids'] ) );
@@ -211,6 +213,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			#If we have images to be resmushed, Update supersmush list
 			if ( ! empty( $this->resmush_ids ) && ! empty( $this->super_smushed ) ) {
 				$this->super_smushed = array_diff( $this->super_smushed, $this->resmush_ids );
+			}
+
+			//If supersmushedimages are more than total, clean it up
+			if ( sizeof( $this->super_smushed ) > $this->total_count ) {
+				$this->super_smushed = $this->cleanup_super_smush_data();
 			}
 
 			//Array of all smushed, unsmushed and lossless ids
@@ -334,7 +341,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			}
 			if ( ! $echo ) {
 				$html .= '
-				<button  class="button wp-smush-nextgen-send" data-id="' . $pid . '">
+				<button  class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
 	                <span>' . $button_txt . '</span>
 				</button>';
 				if ( ! $smushed ) {
@@ -347,7 +354,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 				return $html;
 			} else {
-				$html .= '<button class="button wp-smush-nextgen-send" data-id="' . $pid . '">
+				$html .= '<button class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
                     <span>' . $button_txt . '</span>
 				</button>';
 				echo $html . $WpSmush->progress_bar();
@@ -516,12 +523,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
                 <span class="float-r wp-smush-stats">
 						<?php
 						if ( $WpSmush->lossy_enabled ) {
-							$smushed_image = $wpsmushnextgenstats->get_ngg_images( 'smushed' );
-							if ( ! empty( $smushed_image ) && is_array( $smushed_image ) && ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) {
+							if ( ! empty( $this->super_smushed ) && is_array( $this->super_smushed ) && ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) {
 								//Get smushed images excluding resmush ids
-								$smushed_image = array_diff_key( $smushed_image, array_flip( $this->resmush_ids ) );
+								$this->super_smushed = array_diff_key( $this->super_smushed, array_flip( $this->resmush_ids ) );
 							}
-							$smushed_image_count = is_array( $smushed_image ) ? sizeof( $smushed_image ) : 0;
+							$smushed_image_count = is_array( $this->super_smushed ) ? sizeof( $this->super_smushed ) : 0;
 							echo '<span class="smushed-count">' . $smushed_image_count . '</span>/' . $this->total_count;
 						} else {
 							printf( esc_html__( "%sDISABLED%s", "wp-smushit" ), '<span class="wp-smush-lossy-disabled">', '</span>' );
@@ -726,6 +732,26 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$metadata['wp_smush'] = $smush_stats;
 
 			return $metadata;
+
+		}
+
+		/**
+		 * Cleanup Super-smush images array against the all ids in gallery
+		 *
+		 * @return array|mixed|void
+		 */
+		function cleanup_super_smush_data() {
+			global $wpsmushnextgenstats;
+			$super_smushed = get_option( 'wp-smush-super_smushed_nextgen', array() );
+			$ids           = $wpsmushnextgenstats->total_count( false, true );
+
+			if ( is_array( $super_smushed ) && !empty( $super_smushed['ids'] ) && is_array( $ids ) ) {
+				$super_smushed['ids'] = array_intersect( $super_smushed['ids'], $ids );
+			}
+
+			update_option( 'wp-smush-super_smushed_nextgen', $super_smushed );
+
+			return $super_smushed['ids'];
 
 		}
 

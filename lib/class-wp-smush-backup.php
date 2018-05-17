@@ -264,6 +264,9 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				//Remove Original File
 				delete_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'original_file' );
 
+				//Delete resize savings
+				delete_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings' );
+
 				//Get the Button html without wrapper
 				$button_html = $WpSmush->set_status( $attachment_id, false, false, false );
 
