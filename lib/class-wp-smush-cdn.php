@@ -259,7 +259,7 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 		public function dns_prefetch( $urls, $relation_type ) {
 
 			// Add only if CDN active.
-			if ( 'dns-prefetch' === $relation_type && $this->cdn_active ) {
+			if ( 'dns-prefetch' === $relation_type && $this->cdn_active && ! empty( $this->cdn_base ) ) {
 				$urls[] = $this->cdn_base;
 			}
 
