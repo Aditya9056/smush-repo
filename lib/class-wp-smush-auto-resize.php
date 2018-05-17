@@ -134,6 +134,8 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			wp_localize_script( 'smush-resize-detection', 'wp_smush_resize_vars', array(
 				'ajaxurl'    => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce' => wp_create_nonce( 'smush_resize_nonce' ),
+				'large_image' => sprintf( __( 'This image is too large for it’s container. Adjust the image dimensions to %s x %spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
+				'small_image' => sprintf( __( 'This image is too small for it’s container. Adjust the image dimensions to %s x %spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
 			) );
 		}
 

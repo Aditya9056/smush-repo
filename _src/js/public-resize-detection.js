@@ -42,8 +42,8 @@ jQuery( function ( $ ) {
 				css_height = ele.css( 'height' ).replace( 'px', '' ),
 				img_width = ele.prop( 'naturalWidth' ),
 				img_height = ele.prop( 'naturalHeight' ),
-				higher_width = css_width < img_width,
-				higher_height = css_height < img_height,
+				higher_width = ( css_width * 1.5 ) < img_width,
+				higher_height = ( css_height * 1.5 ) < img_height,
 				smaller_width = css_width > img_width,
 				smaller_height = css_height > img_height,
 				attachment_id = ele.data( 'attachment-id' );
@@ -58,11 +58,20 @@ jQuery( function ( $ ) {
 				return true;
 			}
 
+			if ( higher_width || higher_height ) {
+				var tooltip_text = wp_smush_resize_vars.large_image;
+			} else if ( smaller_width || smaller_height ) {
+				var tooltip_text = wp_smush_resize_vars.small_image;
+			}
+
+			tooltip_text = tooltip_text.replace( 'width', css_width );
+			tooltip_text = tooltip_text.replace( 'height', css_height );
+
 			// Create HTML content to append.
-			var before_content = '<div class="smush-resize-box">' +
-				'<span class="smush-tag">' + img_width + 'px × ' + img_height + 'px</span>' +
+			var before_content = '<div class="smush-resize-box smush-tooltip smush-tooltip-constrained" data-tooltip="' + tooltip_text + '">' +
+				'<span class="smush-tag">' + img_width + ' × ' + img_height + 'px</span>' +
 				'<i class="smush-front-icons smush-front-icon-arrows-in" aria-hidden="true"></i>' +
-				'<span class="smush-tag smush-tag-success">' + css_width + 'px × ' + css_height + 'px</span>' +
+				'<span class="smush-tag smush-tag-success">' + css_width + ' × ' + css_height + 'px</span>' +
 				'<i class="smush-front-icons smush-front-icon-arrow-right smush-resize-submit" data-attachment-id="' + attachment_id + '" aria-hidden="true"></i>' +
 				'</div>';
 
