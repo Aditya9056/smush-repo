@@ -68,6 +68,38 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		}
 
 		/**
+		 * Check if auto resize can be performed.
+		 *
+		 * Allow only if current user is admin and auto resize
+		 * detection is enabled in settings.
+		 *
+		 * @return bool
+		 */
+		public function init_flags() {
+
+			global $wpsmush_settings, $WpSmush, $wpsmush_cdn;
+
+			$is_pro = $WpSmush->validate_install();
+
+			// All these are members only feature.
+			// @todo add other checks if required.
+			if ( $is_pro && $wpsmush_cdn->cdn_active ) {
+				$this->can_auto_resize = true;
+			}
+
+			// Auto detection is required only for free users.
+			if ( ! $is_pro ) {
+				// We need smush settings.
+				$wpsmush_settings->init_settings();
+
+				// Only required for admin users.
+				if ( (bool) $wpsmush_settings->settings['detection'] && current_user_can( 'manage_options' ) ) {
+					$this->can_auto_detect = true;
+				}
+			}
+		}
+
+		/**
 		 * Enqueque JS files required in public pages.
 		 *
 		 * Enque resize detection js and css files to public
@@ -78,6 +110,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 */
 		public function enqueue_resize_assets() {
 
+			// Required only if auto detection is required.
 			if ( ! $this->can_auto_detect ) {
 				return;
 			}
@@ -85,7 +118,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			// Required scripts for front end.
 			wp_enqueue_script(
 				'smush-resize-detection',
-				plugins_url( 'assets/shared-ui-2/js/resize-detection.min.js', __DIR__ ),
+				plugins_url( 'assets/js/resize-detection.min.js', __DIR__ ),
 				array( 'jquery' ),
 				null,
 				true
@@ -94,7 +127,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			// Required styles for front end.
 			wp_enqueue_style(
 				'smush-resize-detection',
-				plugins_url( 'assets/shared-ui-2/css/resize-detection.min.css', __DIR__ )
+				plugins_url( 'assets/css/resize-detection.min.css', __DIR__ )
 			);
 
 			// Define ajaxurl var.
@@ -139,6 +172,11 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * @return void
 		 */
 		public function set_attachment_ids( $images ) {
+
+			// No need to add attachment id if auto detection is not enabled.
+			if ( ! $this->can_auto_detect ) {
+				return;
+			}
 
 			$dir = wp_upload_dir();
 			$mata_values = $files = array();
@@ -230,40 +268,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		}
 
 		/**
-		 * Check if auto resize can be performed.
-		 *
-		 * Allow only if current user is admin and auto resize
-		 * detection is enabled in settings.
-		 *
-		 * @return bool
-		 */
-		private function init_flags() {
-
-			global $wpsmush_settings, $WpSmush, $wpsmush_cdn;
-
-			// All these are members only feature.
-			if ( ! $WpSmush->validate_install() ) {
-				return;
-			}
-
-			// We need smush settings.
-			$wpsmush_settings->init_settings();
-
-			// Check if auto detection is enabled.
-			$this->detection_enabled = (bool) $wpsmush_settings->settings['detection'];
-
-			// Only required for admin users.
-			if ( $this->detection_enabled && current_user_can( 'manage_options' ) ) {
-				$this->can_auto_detect = true;
-			}
-
-			// @todo add other checks if required.
-			if ( $wpsmush_cdn->cdn_active && $this->detection_enabled ) {
-				$this->can_auto_resize = true;
-			}
-		}
-
-		/**
 		 * Filters an array of image srcset values, replacing each URL with resized CDN urls.
 		 *
 		 * Keep the existing srcset sizes if already added by WP, then calculate extra sizes
@@ -285,6 +289,15 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			foreach ( $sources as $i => $source ) {
 
 				$img_url = $source['url'];
+				$args = array();
+
+				// If don't have attachment id, get original image by removing dimensions from url.
+				if ( empty( $attachment_id ) ) {
+					$url = $this->get_url_without_dimensions( $img_url );
+				} else {
+					// Or get from attachment id.
+					$url = wp_get_attachment_url( $attachment_id );
+				}
 
 				// @todo Validate image before continue.
 
@@ -293,18 +306,18 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 					continue;
 				}
 
-				// Set https if required.
-				if ( 0 === strpos( $img_url, '//' ) ) {
-					$img_url = ( is_ssl() ? 'https:' : 'http:' ) . $img_url;
-				}
-
 				list( $width, $height ) = $this->get_size_from_file_name( $img_url );
 
-				$args = array(
-					'size' => $width . ',' . $height,
-				);
+				// If we got size from url, add them.
+				if ( ! empty( $width ) && ! empty( $height ) ) {
+					// Set size arg.
+					$args = array(
+						'size' => $width . ',' . $height,
+					);
+				}
 
-				$sources[ $i ]['url'] = $wpsmush_cdn->generate_cdn_url( $source['url'], $args );
+				// Replace with CDN url.
+				$sources[ $i ]['url'] = $wpsmush_cdn->generate_cdn_url( $url, $args );
 			}
 
 			return $sources;
@@ -339,6 +352,31 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			}
 
 			return array( false, false );
+		}
+
+		/**
+		 * Get full size image url from resized one.
+		 *
+		 * @param string $src Image URL.
+		 *
+		 * @return string
+		 **/
+		private function get_url_without_dimensions( $src ) {
+
+			// Build URL, first removing WP's resized string so we pass the original image to ExactDN.
+			if ( preg_match( '#(-\d+x\d+)\.(' . implode( '|', $this->supported_extensions ) . '){1}(?:\?.+)?$#i', $src, $src_parts ) ) {
+				$orginal_src = str_replace( $src_parts[1], '', $src );
+				// Upload directory.
+				$upload_dir = wp_get_upload_dir();
+				// Extracts the file path to the image minus the base url.
+				$file_path = substr( $orginal_src, strlen( $upload_dir['baseurl'] ) );
+				// Continue only if the file exists.
+				if ( file_exists( $upload_dir['basedir'] . $file_path ) ) {
+					$src = $orginal_src;
+				}
+			}
+
+			return $src;
 		}
 	}
 

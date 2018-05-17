@@ -185,7 +185,6 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 			$images = $document->getElementsByTagName( 'img' );
 			// If images found, set attachment ids.
 			if ( ! empty( $images ) ) {
-				$this->process_images( $images );
 
 				/**
 				 * Action hook to modify DOM images.
@@ -194,6 +193,8 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 				 * to return anything in this hook.
 				 */
 				do_action( 'smush_images_from_content', $images );
+
+				$this->process_images( $images );
 			}
 
 			return $document->saveHTML();
