@@ -49,6 +49,9 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 
 			// Hook into CDN settings section.
 			add_action( 'smush_cdn_settings_ui', array( $this, 'ui' ) );
+
+			// Add cdn url to dns prefetch.
+			add_filter( 'wp_resource_hints', array ( $this, 'dns_prefetch' ), 99, 2 );
 		}
 
 		/**
@@ -243,6 +246,24 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 				// Update src with cdn url.
 				$image->setAttribute( 'src', $src );
 			}
+		}
+
+		/**
+		 * Add CDN url to header for better speed.
+		 *
+		 * @param array $urls URLs to print for resource hints.
+		 * @param string $relation_type The relation type the URLs are printed.
+		 *
+		 * @return array
+		 */
+		public function dns_prefetch( $urls, $relation_type ) {
+
+			// Add only if CDN active.
+			if ( 'dns-prefetch' === $relation_type && $this->cdn_active ) {
+				$urls[] = $this->cdn_base;
+			}
+
+			return $urls;
 		}
 	}
 
