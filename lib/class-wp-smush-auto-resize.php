@@ -273,6 +273,8 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 				$url = $this->get_url_without_dimensions( $image_src );
 			}
 
+			error_log(print_r($size_array, true));
+
 			// We need to add additional dimensions.
 			$full_width     = $image_meta['width'];
 			$full_height    = $image_meta['height'];
@@ -321,7 +323,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 
 				// Arguments for cdn url.
 				$args = array(
-					'size' => $current_width . ',' . $current_height,
+					'size' => $new_width,
 				);
 
 				// Add new srcset item.
