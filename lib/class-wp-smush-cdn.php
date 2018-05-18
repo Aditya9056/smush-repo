@@ -70,6 +70,8 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 
 			// This is member's custom cdn path.
 			$this->cdn_base = trailingslashit( "https://{$user_id}.smushcdn.com/{$site_id}" );
+
+			//$this->cdn_base = trailingslashit( "http://localhost" );
 		}
 
 		/**
@@ -120,6 +122,11 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 		public function generate_cdn_url( $src, $args = array() ) {
 
 			global $WpSmush;
+
+			// Do not continue incase we try this when cdn is disabled.
+			if ( ! $this->cdn_active ) {
+				return $src;
+			}
 
 			// Parse url to get all parts.
 			$url_parts = parse_url( $src );
@@ -174,11 +181,6 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 		 */
 		public function process_img_tags( $content ) {
 
-			// Do not continue if CDN is not active.
-			if ( ! $this->cdn_active ) {
-				return $content;
-			}
-
 			$content  = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
 			$document = new \DOMDocument();
 			libxml_use_internal_errors( true );
@@ -231,17 +233,47 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 				}
 
 				/**
-				 * Filter hook to alter image src before going through cdn.
+				 * Filter to skip a single image from cdn.
+				 *
+				 * @param bool false Should skip?
+				 * @param string $img_url Image url.
+				 * @param array|bool $image Image object or false.
 				 */
-				$src = apply_filters( 'smush_image_src_before_cdn', $src );
-
-				// Generate cdn url from local url.
-				$src = $this->generate_cdn_url( $src );
+				if ( apply_filters( 'smush_skip_image_from_cdn', false, $src, $image ) ) {
+					continue;
+				}
 
 				/**
-				 * Filter hook to alter image src after replacing with CDN base.
+				 * Filter hook to alter image src arguments before going through cdn.
+				 *
+				 * @param array $args Arguments.
+				 * @param string $src Image src.
+				 * @param object $image Image tag object.
 				 */
-				$src = apply_filters( 'smush_image_src_after_cdn', $src );
+				$args = apply_filters( 'smush_image_cdn_args', array(), $image );
+
+				/**
+				 * Filter hook to alter image src before going through cdn.
+				 *
+				 * @param string $src Image src.
+				 * @param object $image Image tag object.
+				 */
+				$src = apply_filters( 'smush_image_src_before_cdn', $src, $image );
+
+				// Do not continue if CDN is not active.
+				if ( $this->cdn_active ) {
+
+					// Generate cdn url from local url.
+					$src = $this->generate_cdn_url( $src, $args );
+
+					/**
+					 * Filter hook to alter image src after replacing with CDN base.
+					 *
+					 * @param string $src Image src.
+					 * @param object $image Image tag object.
+					 */
+					$src = apply_filters( 'smush_image_src_after_cdn', $src, $image );
+				}
 
 				// Update src with cdn url.
 				$image->setAttribute( 'src', $src );
