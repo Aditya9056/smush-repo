@@ -552,6 +552,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 			//Calculate Pro savings
 			if ( ! empty( $savings ) ) {
+				//Reduce the savings if it is above 44%
+				if ( $savings >= 44 ) {
+					$savings       = 44;
+					$savings_bytes = $savings_bytes - ( ( $savings_bytes * 15 ) / 100 );
+				}
 				$savings       = $orig_diff * $savings;
 				$savings_bytes = $orig_diff * $savings_bytes;
 			}
