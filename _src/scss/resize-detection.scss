@@ -21,6 +21,7 @@
   margin-top: 20px;
   margin-bottom: 20px;
   border-radius: 30px;
+  cursor: pointer;
 
   .smush-front-icons {
     margin-left: 10px;
@@ -40,28 +41,10 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    &.smush-front-icon-arrow-right {
-      margin-right: 8px;
-      &:before {
-        content: '\af';
-      }
-    }
-
     &.smush-front-icon-arrows-in {
       &:before {
         content: '\2264';
       }
-    }
-
-    &.smush-front-icon-loader {
-      &:before {
-        content: '\e9be';
-        animation: spin 1.3s linear infinite;
-      }
-    }
-
-    &.smush-resize-submit {
-      cursor: pointer;
     }
   }
 
@@ -77,7 +60,6 @@
     text-align: center;
     font-weight: 500;
     padding: 0 10px;
-    cursor: default;
 
     &.smush-tag-success {
       background-color: #1abc9c;
