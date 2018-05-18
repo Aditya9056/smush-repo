@@ -523,10 +523,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
                 <span class="float-r wp-smush-stats">
 						<?php
 						if ( $WpSmush->lossy_enabled ) {
-							if ( ! empty( $this->super_smushed ) && is_array( $this->super_smushed ) && ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) {
-								//Get smushed images excluding resmush ids
-								$this->super_smushed = array_diff_key( $this->super_smushed, array_flip( $this->resmush_ids ) );
-							}
 							$smushed_image_count = is_array( $this->super_smushed ) ? sizeof( $this->super_smushed ) : 0;
 							echo '<span class="smushed-count">' . $smushed_image_count . '</span>/' . $this->total_count;
 						} else {
