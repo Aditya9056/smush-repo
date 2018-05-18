@@ -26,11 +26,13 @@ jQuery( function ( $ ) {
 	 */
 	var detect_wrong_imgs = function () {
 
+		// Loop through all images which has data-smush-image attribute.
 		$( 'body img[data-smush-image]' ).each( function () {
 
 			var ele = $( this );
 
 			// If width attribute is not set, do not continue.
+			// @todo We need to check if we can detect images in other way.
 			if ( ele.css( 'width' ) === null || ele.css( 'height' ) === null ) {
 				return true;
 			}
@@ -60,17 +62,14 @@ jQuery( function ( $ ) {
 			tooltip_text = tooltip_text.replace( 'height', css_height );
 
 			// Create HTML content to append.
-			var before_content = '<div class="smush-resize-box smush-tooltip smush-tooltip-constrained" data-tooltip="' + tooltip_text + '">' +
+			var content = '<div class="smush-resize-box smush-tooltip smush-tooltip-constrained" data-tooltip="' + tooltip_text + '">' +
 				'<span class="smush-tag">' + img_width + ' × ' + img_height + 'px</span>' +
 				'<i class="smush-front-icons smush-front-icon-arrows-in" aria-hidden="true"></i>' +
 				'<span class="smush-tag smush-tag-success">' + css_width + ' × ' + css_height + 'px</span>' +
 				'</div>';
 
-			var after_content = '';
-
 			// Append resize box to image.
-			ele.before( before_content );
-			ele.after( after_content );
+			ele.before( content );
 
 			// Add a class to image.
 			ele.addClass( 'smush-detected-img' );
