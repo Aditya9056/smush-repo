@@ -277,11 +277,13 @@
         padding: 0 0 0 30px;
         position: relative;
         &:before {
-          color: $notice-info-icon-color;
+          color: #43a9e4;
           vertical-align: middle;
           margin-left: -30px;
           margin-right: 10px;
+          margin-top: 0;
           font-size: 18px;
+          position: relative;
         }
         @include smush_tick_icon;
       }
