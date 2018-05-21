@@ -525,7 +525,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @uses WpSmushNextGenAdmin::wp_smush_column_options()
 		 */
 		function restore_image() {
-			global $WpSmush, $wpsmushnextgenadmin, $wpsmushit_admin;
+			global $WpSmush, $wpsmushnextgenadmin;
 
 			//Check Empty fields
 			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
@@ -606,7 +606,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			if ( in_array( true, $restored ) ) {
 
 				//Update the global Stats
-				$wpsmushit_admin->update_nextgen_stats( $image_id );
+				$wpsmushnextgenadmin->update_nextgen_stats( $image_id );
 
 				//Remove the Meta, And send json success
 				$image->meta_data['wp_smush'] = '';

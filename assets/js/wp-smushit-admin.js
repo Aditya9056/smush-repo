@@ -724,9 +724,15 @@ jQuery(function ($) {
             //reset all functionality
             enable_links(current_button);
 
-            if (r.success && 'undefined' != typeof( r.data.button )) {
-                //Show the smush button, and remove stats and restore option
-                current_button.parents().eq(1).html(r.data.button);
+            if (r.success && 'undefined' != typeof(r.data.button)) {
+                //Replace in immediate parent for nextgen
+                if ('undefined' != typeof (this.data) && this.data.indexOf('nextgen') > -1) {
+                    //Show the smush button, and remove stats and restore option
+                    current_button.parent().html(r.data.button);
+                } else {
+                    //Show the smush button, and remove stats and restore option
+                    current_button.parents().eq(1).html(r.data.button);
+                }
             } else {
                 if (r.data.message) {
                     //show error

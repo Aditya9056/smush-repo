@@ -990,8 +990,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 			$upgrade_url = add_query_arg(
 				array(
-				'utm_source' => 'Smush-Free',
-				'utm_medium' => 'Banner',
+				'utm_source' => 'smush',
+				'utm_medium' => 'plugin',
 				'utm_campaign' => 'smush-advanced-settings-upsell'
 				),
 				$wpsmushit_admin->upgrade_url
