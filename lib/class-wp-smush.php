@@ -2519,7 +2519,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			## Check if there are any pending rows that needs to be updated
 			$pending_rows = "SELECT count(*) FROM {$wpdb->prefix}smush_dir_images WHERE path_hash is NULL AND path IS NOT NULL";
-			if ( ! $wpdb->get_var( $pending_rows ) ) {
+			$index_exists = "SHOW INDEX FROM {$wpdb->prefix}smush_dir_images WHERE KEY_NAME = 'path'";
+			//If all the rows are updated and Index exists
+			if ( ! $wpdb->get_var( $pending_rows ) && $wpdb->get_var( $index_exists ) != null ) {
 				$wpsmush_helper->drop_index( $wpdb->prefix. 'smush_dir_images', 'path' );
 				update_option( 'smush-directory-path-hash-updated', 1 );
 			}

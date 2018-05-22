@@ -2167,6 +2167,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Check the last settings stored in db
 			$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+			$settings = maybe_unserialize( $settings );
 
 			//Available settings for free/pro version
 			$exclude = array(

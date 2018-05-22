@@ -217,7 +217,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 
 			//If we only have the attachment id
-			$full_url = $as3cf->is_attachment_served_by_s3( $attachment_id );
+			$full_url = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
 			//If the filepath contains S3, get the s3 URL for the file
 			if ( ! empty( $full_url ) ) {
 				$full_url = $as3cf->get_attachment_url( $attachment_id );
@@ -256,7 +256,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			//If we have plugin method available, us that otherwise check it ourselves
 			if ( method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
-				$s3_object        = $as3cf->is_attachment_served_by_s3( $attachment_id );
+				$s3_object        = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
 				$size_prefix      = dirname( $s3_object['key'] );
 				$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
 				if ( ! empty( $size_details ) && is_array( $size_details ) ) {
@@ -331,7 +331,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return false;
 			}
 			//Get s3 object for the file
-			$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id );
+			$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
 
 			$size_prefix      = dirname( $s3_object['key'] );
 			$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
