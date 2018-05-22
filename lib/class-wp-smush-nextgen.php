@@ -605,6 +605,9 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			//If any of the image is restored, we count it as success
 			if ( in_array( true, $restored ) ) {
 
+				//Update the global Stats
+				$wpsmushnextgenadmin->update_nextgen_stats( $image_id );
+
 				//Remove the Meta, And send json success
 				$image->meta_data['wp_smush'] = '';
 				nggdb::update_image_meta( $image->pid, $image->meta_data );
