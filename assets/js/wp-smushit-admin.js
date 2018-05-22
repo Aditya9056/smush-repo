@@ -752,14 +752,15 @@ jQuery( function ( $ ) {
 	 *
 	 */
 	var validate_resize_settings = function ( wrapper_div, width_only, height_only ) {
-		var resize_checkbox = wrapper_div.parent().find( '#wp-smush-resize, #wp-smush-resize-quick-setup' );
+		var resize_checkbox = wrapper_div.find( '#wp-smush-resize, #wp-smush-resize-quick-setup' );
+        console.log(resize_checkbox);
 		if ( !height_only ) {
-			var width_input = wrapper_div.find( '#wp-smush-resize_width, #quick-setup-resize_width' );
-			var width_error_note = wrapper_div.find( '.wp-smush-size-info.wp-smush-update-width' );
+			var width_input = wrapper_div.find( '#wp-smush-resize_width' );
+			var width_error_note = wrapper_div.find( '.sui-notice-info.wp-smush-update-width' );
 		}
 		if ( !width_only ) {
-			var height_input = wrapper_div.find( '#wp-smush-resize_height, #quick-setup-resize_height' );
-			var height_error_note = wrapper_div.find( '.wp-smush-size-info.wp-smush-update-height' );
+			var height_input = wrapper_div.find( '#wp-smush-resize_height' );
+			var height_error_note = wrapper_div.find( '.sui-notice-info.wp-smush-update-height' );
 		}
 
 		var width_error = false;
@@ -778,12 +779,12 @@ jQuery( function ( $ ) {
 
 		//Check for width
 		if ( !height_only && 'undefined' != typeof width_input && parseInt( wp_smushit_data.resize_sizes.width ) > parseInt( width_input.val() ) ) {
-			width_input.addClass( 'error' );
+            width_input.parent().addClass('sui-form-field-error');
 			width_error_note.show( 'slow' );
 			width_error = true;
 		} else {
 			//Remove error class
-			width_input.removeClass( 'error' );
+            width_input.parent().removeClass('sui-form-field-error');
 			width_error_note.hide();
 			if ( height_input.hasClass( 'error' ) ) {
 				height_error_note.show( 'slow' );
@@ -792,7 +793,7 @@ jQuery( function ( $ ) {
 
 		//Check for height
 		if ( !width_only && 'undefined' != typeof height_input && parseInt( wp_smushit_data.resize_sizes.height ) > parseInt( height_input.val() ) ) {
-			height_input.addClass( 'error' );
+            height_input.parent().addClass('sui-form-field-error');
 			//If we are not showing the width error already
 			if ( !width_error ) {
 				height_error_note.show( 'slow' );
@@ -800,7 +801,7 @@ jQuery( function ( $ ) {
 			height_error = true;
 		} else {
 			//Remove error class
-			height_input.removeClass( 'error' );
+            height_input.parent().removeClass('sui-form-field-error');
 			height_error_note.hide();
 			if ( width_input.hasClass( 'error' ) ) {
 				width_error_note.show( 'slow' );
@@ -2007,11 +2008,10 @@ jQuery( function ( $ ) {
 
 		var self = $( this );
 
-		var wrapper_div = self.parents().eq( 2 );
+		var wrapper_div = self.parents().eq( 4 );
 
 		//Initiate the check
 		validate_resize_settings( wrapper_div, false, false ); // run the validation
-
 	} );
 
 	//Handle Resize Checkbox toggle, to show/hide width, height settings

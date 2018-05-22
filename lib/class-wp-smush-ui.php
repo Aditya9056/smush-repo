@@ -91,6 +91,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
 			add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
+			add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
 			add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
 			add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
 			add_action( 'smush_settings_ui_bottom', array( $this, 'pro_features_container' ) );
@@ -1260,6 +1261,52 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div><?php
 			}
 
+		}
+
+		/**
+		 * Prints Dimensions required for Resizing
+		 *
+		 * @param string $name
+		 *
+		 * @return void
+		 */
+		public function resize_settings( $name = '' ) {
+
+		    // Add only to full size settings.
+			if ( 'resize' !== $name ) {
+				return;
+			}
+
+			global $wpsmush_settings, $wpsmushit_admin;
+
+			// Dimensions.
+			$resize_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes', array( 'width' => '', 'height' => '' ) );
+
+			//Get max dimensions.
+			$max_sizes = $wpsmushit_admin->get_max_image_dimensions();
+
+			$setting_status = empty( $wpsmush_settings->settings['resize'] ) ? 0 : $wpsmush_settings->settings['resize'];
+
+			$prefix = WP_SMUSH_PREFIX;
+
+			// Placeholder width and Height.
+			$p_width = $p_height = 2048; ?>
+            <div class="wp-smush-resize-settings-wrap<?php echo $setting_status ? '' : ' hidden'?>">
+                <div class="sui-row">
+                    <div class="sui-col">
+                        <label aria-labelledby="<?php echo WP_SMUSH_PREFIX; ?>label-max-width" for="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" class="sui-label"><?php esc_html_e('Max width', 'wp-smushit' ); ?></label>
+                        <input aria-required="true" type="number" aria-describedby="<?php echo WP_SMUSH_PREFIX; ?>wp-smush-resize-note" id="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>">
+                    </div>
+                    <div class="sui-col">
+                        <label aria-labelledby="<?php echo WP_SMUSH_PREFIX; ?>label-max-height" for="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" class="sui-label"><?php esc_html_e('Max height', 'wp-smushit' ); ?></label>
+                        <input aria-required="true" type="number" aria-describedby="<?php echo WP_SMUSH_PREFIX; ?>wp-smush-resize-note" id="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>">
+                    </div>
+                </div>
+                <div class="sui-description" id="<?php echo WP_SMUSH_PREFIX; ?>wp-smush-resize-note"><?php printf( esc_html__("Currently, your largest image size is set at %s%dpx wide %s %dpx high%s.", "wp-smushit"), '<strong>', $max_sizes['width'], '&times;', $max_sizes['height'], '</strong>' ); ?></div>
+                <div class="sui-description sui-notice sui-notice-info wp-smush-update-width hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
+                <div class="sui-description sui-notice sui-notice-info wp-smush-update-height hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
+            </div>
+            <span class="sui-description"><?php esc_html_e("Note: Image resizing happens automatically when you upload attachments. To support retina devices, we recommend using 2x the dimensions of your image size.", "wp-smushit"); ?></span><?php
 		}
 
 		/**
