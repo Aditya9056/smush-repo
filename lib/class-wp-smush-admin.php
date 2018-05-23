@@ -829,7 +829,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Set a transient to avoid multiple request
 			update_option( 'smush-in-progress-' . $attachment_id, true );
 
-			global $WpSmush, $wpsmush_pngjpg, $wpsmush_helper;
+			global $wpsmush_pngjpg, $wpsmush_helper;
 
 			$attachment_id = absint( (int) ( $attachment_id ) );
 
@@ -2185,6 +2185,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Check the last settings stored in db
 			$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+			$settings = maybe_unserialize( $settings );
 
 			//Available settings for free/pro version
 			$exclude = array(

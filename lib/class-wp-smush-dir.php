@@ -141,6 +141,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$sql = "CREATE TABLE {$wpdb->prefix}smush_dir_images (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
 				path text NOT NULL,
+				path_hash CHAR(32),
 				resize varchar(55),
 				lossy varchar(55),
 				error varchar(55) DEFAULT NULL,
@@ -454,11 +455,16 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function get_image_list( $path = '' ) {
 			global $wpdb, $wpsmush_helper;
 
+			//Return Error if not a valid directory path
+			if ( ! is_dir( $path ) ) {
+				wp_send_json_error( array( "message" => "Not a valid directory path" ) );
+			}
+
 			$base_dir = empty( $path ) ? ltrim( $_GET['path'], '/' ) : $path;
 			$base_dir = realpath( rawurldecode( $base_dir ) );
 
 			if ( ! $base_dir ) {
-				wp_send_json_error( "Unauthorized" );
+				wp_send_json_error( array( "message" => "Unauthorized" ) );
 			}
 
 			//Store the path in option
