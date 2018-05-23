@@ -173,9 +173,8 @@ Smush button transformation
     padding-top: 0;
 }
 
-.wp-smush-submit-wrap .spinner {
-    float: right;
-    margin: 10px 1em 0;
+.wp-smush-submit-wrap {
+    padding: 4px;
 }
 
 .smush-submit-note {
@@ -184,7 +183,7 @@ Smush button transformation
     font-family: 'Roboto', sans-serif;
     font-size: 13px;
     line-height: 22px;
-    margin-top: 10px;
+    margin-top: 4px;
 }
 
 input#wp-smush-save-settings {

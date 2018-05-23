@@ -391,7 +391,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// Footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
 				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
-		        <span class="spinner"></span>
+		        <span class="sui-icon-loader sui-loading hidden"></span>
 		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
@@ -1427,7 +1427,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				}
 
 				echo '<div class="sui-notice sui-notice-success wp-smush-settings-updated">
-						<p>' . $message . '</p><i class="icon-fi-close"></i>
+						<p>' . $message . '</p><span class="sui-notice-dismiss">
+		<a href="#">Dismiss</a>
+	</span>
 					</div>';
 
 				// Remove the option.

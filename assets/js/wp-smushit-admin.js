@@ -1811,7 +1811,7 @@ jQuery( function ( $ ) {
 
         //Show the spinner
         var self = $( this );
-        self.parent().find( 'span.spinner' ).addClass( 'is-active' );
+        self.parent().find( 'span.sui-icon-loader.sui-loading' ).removeClass( 'hidden' );
 
         //Save settings if in network admin
         if ( '' != setting_type && 'network' == setting_type ) {
