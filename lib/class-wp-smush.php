@@ -704,13 +704,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( ! empty( $api_key ) && $this->validate_install() ) {
 				$headers['apikey'] = $api_key;
 			}
-			if ( $this->lossy_enabled ) {
+
+			if ( $this->validate_install() && $wpsmush_settings->settings['lossy'] ) {
 				$headers['lossy'] = 'true';
 			} else {
 				$headers['lossy'] = 'false';
 			}
 
-			$headers['exif'] = $this->keep_exif ? 'true' : 'false';
+			$headers['exif'] = $wpsmush_settings->settings['keep_exif'] ? 'true' : 'false';
 
 			$api_url = defined( 'WP_SMUSH_API_HTTP' ) ? WP_SMUSH_API_HTTP : WP_SMUSH_API;
 			$args    = array(
