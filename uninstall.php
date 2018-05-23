@@ -48,7 +48,11 @@ $smushit_keys = array(
 	'dir_path',
 	'scan',
 	'last_settings',
-	's3'
+	's3',
+	'smush_option',
+	'smush-directory-path-hash-updated',
+	'smush_global_stats',
+	'skip-smush-setup'
 );
 
 //Cache Keys
