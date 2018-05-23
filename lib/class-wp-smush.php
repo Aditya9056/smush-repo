@@ -705,13 +705,14 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			if ( ! empty( $api_key ) && $this->validate_install() ) {
 				$headers['apikey'] = $api_key;
 			}
-			if ( $this->lossy_enabled ) {
+
+			if ( $this->validate_install() && $wpsmush_settings->settings['lossy'] ) {
 				$headers['lossy'] = 'true';
 			} else {
 				$headers['lossy'] = 'false';
 			}
 
-			$headers['exif'] = $this->keep_exif ? 'true' : 'false';
+			$headers['exif'] = $wpsmush_settings->settings['keep_exif'] ? 'true' : 'false';
 
 			$api_url = defined( 'WP_SMUSH_API_HTTP' ) ? WP_SMUSH_API_HTTP : WP_SMUSH_API;
 			$args    = array(
@@ -2519,7 +2520,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			## Check if there are any pending rows that needs to be updated
 			$pending_rows = "SELECT count(*) FROM {$wpdb->prefix}smush_dir_images WHERE path_hash is NULL AND path IS NOT NULL";
-			if ( ! $wpdb->get_var( $pending_rows ) ) {
+			$index_exists = "SHOW INDEX FROM {$wpdb->prefix}smush_dir_images WHERE KEY_NAME = 'path'";
+			//If all the rows are updated and Index exists
+			if ( ! $wpdb->get_var( $pending_rows ) && $wpdb->get_var( $index_exists ) != null ) {
 				$wpsmush_helper->drop_index( $wpdb->prefix. 'smush_dir_images', 'path' );
 				update_option( 'smush-directory-path-hash-updated', 1 );
 			}

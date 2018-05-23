@@ -313,7 +313,7 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 		}
 		$current_screen = get_current_screen();
 		//If not on plugin page
-		if ( ! in_array( $current_screen->id, $wpsmushit_admin->plugin_pages ) ) {
+		if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
 			return $classes;
 		}
 
