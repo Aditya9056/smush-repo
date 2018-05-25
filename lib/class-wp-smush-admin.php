@@ -337,13 +337,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function enqueue() {
 
-			$current_screen = get_current_screen();
-			$current_page   = $current_screen->base;
+			$current_page = '';
+			if ( function_exists( 'get_current_screen' ) ) {
+				$current_screen = get_current_screen();
+				$current_page   = $current_screen->base;
+			}
 
-			/**
-			 * Allows to disable enqueuing smush files on a particular page
-			 */
-			$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
+			$enqueue_smush = true;
 
 			//Load js and css on all admin pages, in order t display install/upgrade notice
 			// And If upgrade/install message is dismissed or for pro users, Do not enqueue script
@@ -351,11 +351,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				/** @var $pages List of screens where script needs to be loaded */
 
 				//Do not enqueue, unless it is one of the required screen, or not in wordpress backend
-				if ( ! $enqueue_smush || !is_admin() || ( ! in_array( $current_page, $this->pages ) && ! did_action( 'wp_enqueue_media' ) ) ) {
+				if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, $this->pages ) && ! did_action( 'wp_enqueue_media' ) ) ) {
 
-					return;
+					$enqueue_smush = false;
 				}
 			}
+			/**
+			 * Allows to disable enqueuing smush files on a particular page
+			 */
+			$enqueue_smush = apply_filters( 'wp_smush_enqueue', $enqueue_smush );
+
+			if ( ! $enqueue_smush ) {
+				return;
+			}
+
 			$this->load_shared_ui( $current_page );
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 

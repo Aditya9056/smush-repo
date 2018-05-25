@@ -1,6 +1,6 @@
 === Smush Image Compression and Optimization ===
 Plugin Name: Smush Image Compression and Optimization
-Version: 2.7.9
+Version: 2.7.9.1
 Author: WPMU DEV
 Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
@@ -163,6 +163,10 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 
 == Changelog ==
+
+= 2.7.9.1 =
+
+* Fixed: Conflict with front-end editors
 
 = 2.7.9 =
 
