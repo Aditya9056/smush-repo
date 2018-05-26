@@ -1,6 +1,6 @@
 === Smush Image Compression and Optimization ===
 Plugin Name: Smush Image Compression and Optimization
-Version: 2.7.9
+Version: 2.7.9.1
 Author: WPMU DEV
 Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
@@ -90,6 +90,13 @@ Smush can take care of all your image compression needs, for free!
 
 However, if you'd like Super Smush lossy compression, the ability to optimize images up to 32MB, bulk smush optimization for all your images in just one-click, auto-convert PNG to JPEG, the ability to Smush and make a copy of your full-sized images (to restore them at any point) you can always take the next step with <a href="https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme">WP Smush Pro</a>.
 
+= Privacy =
+
+Smush does not interact with end users on your website. The only input option Smush has is to a newsletter subscription for site admins only.
+
+Smush uses a third-party email service (Drip) to send informational emails ( Opt-in) to the site administrator. The administrator's email address is sent to Drip and a cookie is set by the service. Only administrator information is collected by Drip.
+
+Smush sends images to the WPMU DEV servers to optimize them for web use. This includes the transfer of EXIF data. The EXIF data will either be stripped or returned as it is. It is not stored on the WPMU DEV servers.
 
 == Frequently Asked Questions ==
 
@@ -157,10 +164,15 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.7.9.1 =
+
+* Fixed: Conflict with front-end editors
+
 = 2.7.9 =
 
 * Update:
     * Smush settings moved to separate top level page in dashboard ( Smush/Smush Pro )
+    * Added Privacy Policy content for Smush in Privacy Policy Guide
 
 * Fixed:
     * Conflict with plugin Download Manager, Embed any document, Getty
