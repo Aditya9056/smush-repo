@@ -343,6 +343,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function enqueue() {
 
+		    global $wpsmushit_admin;
+
 			$current_screen = get_current_screen();
 			$current_page   = $current_screen->base;
 
@@ -371,7 +373,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$dir = defined('__DIR__') ? __DIR__ : dirname(__FILE__);
 
 			//Load on Smush all page only
-			if ( 'toplevel_page_smush' == $current_page || 'toplevel_page_smush-network' == $current_page ) {
+			if ( in_array( $current_screen->id, $wpsmushit_admin->plugin_pages ) ) {
 				//Load Jquery tree on specified page
 				if ( 'gallery_page_wp-smush-nextgen-bulk' !== $current_page ) {
 					wp_enqueue_script( 'jqft-js' );

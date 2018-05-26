@@ -441,7 +441,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// Box footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
 				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
-		        <span class="spinner"></span>
+		        <span class="sui-icon-loader sui-loading hidden"></span>
 		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
@@ -621,7 +621,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 				// For subsite admins show only if networkwide options is not enabled.
 				if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
-					foreach( $this->intgration_group as $name ) {
+				    foreach( $this->intgration_group as $name ) {
 
 						// Skip premium features if not a member.
 						if ( ! in_array( $name, $wpsmushit_admin->basic_features ) && ! $WpSmush->validate_install() ) {
