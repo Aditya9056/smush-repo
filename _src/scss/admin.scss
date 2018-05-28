@@ -273,6 +273,7 @@
     .smush-pro-features {
 
       .smush-pro-feature-title {
+        @include smush_tick_icon;
         font-weight: 500;
         line-height: 30px;
         color: #333;
@@ -287,7 +288,6 @@
           font-size: 18px;
           position: relative;
         }
-        @include smush_tick_icon;
       }
 
       .smush-pro-feature-desc {
