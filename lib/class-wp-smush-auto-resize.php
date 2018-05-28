@@ -151,7 +151,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 */
 		public function resize_detection_button() {
 
-			if ( ! $this->can_auto_detect ) {
+			if ( ! $this->can_auto_detect || is_admin() ) {
 				return;
 			}
 
