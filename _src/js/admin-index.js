@@ -1,1 +1,1 @@
-require('./admin-notices.js');
+require('./admin-bulk-smush.js');
