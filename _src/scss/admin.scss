@@ -122,6 +122,7 @@
     .sui-actions-right {
       float: right;
       display: inline-block;
+      font-size: 13px;
     }
 
     .smush-dir-smush-accordion {
@@ -420,6 +421,15 @@
       background: transparent !important;
       border: 2px solid #888 !important;
       color: #888 !important;
+    }
+  }
+
+  .wp-smush-pagespeed-recommendation {
+    font-size: 13px;
+
+    .smush-recommendation-title,
+    .dismiss-recommendation {
+      font-weight: 500;
     }
   }
 }
