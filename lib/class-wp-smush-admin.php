@@ -246,11 +246,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'short_label' => esc_html__( 'Super-smush', 'wp-smushit' ),
 					'desc'        => esc_html__( 'Optimize images up to 2x more than regular smush with our multi-pass lossy compression.', 'wp-smushit' )
 				),
-				'original'        => array(
-					'label'       => esc_html__( 'Smush my original full-size images', 'wp-smushit' ),
-					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Save a ton of space by not storing over-sized images on your server.', 'wp-smushit' )
-				),
 				'keep_exif'       => array(
 					'label'       => esc_html__( 'Strip my image meta data', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Meta data', 'wp-smushit' ),
@@ -261,6 +256,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'short_label' => esc_html__( 'Image resizing', 'wp-smushit' ),
 					'desc'        => esc_html__( 'Detect unnecessarly large oversize images on your pages to reduce their size and decrease load times.', 'wp-smushit' ),
 				),
+				'detection'      => array(
+					'label'       => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
+					'desc'        => esc_html__( 'This will add functionality to your website that highlights images that are either too large or too small for their containers. Note: The highlighting will only be visible to administrators – visitors won’t see the highlighting.', 'wp-smushit' )
+				),
+				'original'        => array(
+					'label'       => esc_html__( 'Smush my original full-size images', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
+					'desc'        => esc_html__( 'Save a ton of space by not storing over-sized images on your server.', 'wp-smushit' )
+				),
 				'backup'          => array(
 					'label'       => esc_html__( 'Make a copy of my full size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
@@ -270,11 +275,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'label'       => esc_html__( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
 					'short_label' => esc_html__( 'PNG to JPEG conversion', 'wp-smushit' ),
 					'desc'        => esc_html__( 'When you compress a PNG, Smush will check if converting it to JPEG could further reduce its size.', 'wp-smushit' )
-				),
-				'detection'      => array(
-					'label'       => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
-					'short_label' => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
-					'desc'        => esc_html__( 'This will add functionality to your website that highlights images that are either too large or too small for their containers. Note: The highlighting will only be visible to administrators – visitors won’t see the highlighting.', 'wp-smushit' )
 				),
 			);
 

@@ -1130,7 +1130,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="sui-header wp-smush-page-header">
 				<h1 class="sui-header-title"><?php echo $page_heading; ?></h1>
 				<div class="sui-actions-right">
-					<?php if ( ! is_network_admin() ) : ?>
+					<?php if ( ! is_network_admin() && 'bulk' === $this->current_tab ) : ?>
 						<?php $data_type = 'gallery_page_wp-smush-nextgen-bulk' === $current_screen->id ? ' data-type="nextgen"' : ''; ?>
 						<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_html_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>"<?php echo $data_type; ?>><?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?></button>
 					<?php endif; ?>
@@ -1233,11 +1233,20 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				return;
 			}
 
-			global $wpsmushit_admin, $wpsmush_settings;
+			global $wpsmushit_admin, $wpsmush_settings, $WpSmush;
 
 			// Additional Image sizes.
 			$image_sizes = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
 			$sizes = $wpsmushit_admin->image_dimensions();
+
+			/**
+			 * Add an additional item for full size.
+			 * Do not use intermediate_image_sizes filter.
+			 */
+			$sizes['full'] = array();
+
+			$is_pro = $WpSmush->validate_install();
+			$disabled = '';
 
 			if ( ! empty( $sizes ) ) { ?>
 				<!-- List of image sizes recognised by WP Smush -->
@@ -1249,12 +1258,23 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						$checked = true;
 					} else {
 						$checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes ) : false;
-					} ?>
-					<label class="sui-checkbox">
-					<input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>">
+					}
+					// For free users, disable full size option.
+					if ( $size_k === 'full' ) {
+						$disabled = $is_pro ? '' : 'disabled';
+						$checked = $is_pro ? $checked : false;
+					}?>
+					<label class="sui-checkbox sui-description">
+					<input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>" <?php echo $disabled; ?>>
 					<span aria-hidden="true"></span>
 					<?php if( isset( $size['width'], $size['height'] ) ) { ?>
 						<span class="sui-description"><?php echo $size_k . " (" . $size['width'] . "x" . $size['height'] . ") "; ?></span>
+					<?php } else { ?>
+						<span class="sui-description"><?php echo $size_k; ?>
+							<?php if ( ! $is_pro ) { ?>
+								<span class="sui-tag sui-tag-pro">PRO</span>
+							<?php } ?>
+						</span>
 					<?php } ?>
 					</label><?php
 				} ?>
@@ -1286,8 +1306,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$max_sizes = $wpsmushit_admin->get_max_image_dimensions();
 
 			$setting_status = empty( $wpsmush_settings->settings['resize'] ) ? 0 : $wpsmush_settings->settings['resize'];
-
-			$prefix = WP_SMUSH_PREFIX;
 
 			// Placeholder width and Height.
 			$p_width = $p_height = 2048; ?>
@@ -1427,9 +1445,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				}
 
 				echo '<div class="sui-notice sui-notice-success wp-smush-settings-updated">
-						<p>' . $message . '</p><span class="sui-notice-dismiss">
-		<a href="#">Dismiss</a>
-	</span>
+						<p>' . $message . '</p><span class="sui-notice-dismiss"><a href="#">' . __( 'Dismiss', 'wp-smushit' ) . '</a></span>
 					</div>';
 
 				// Remove the option.
