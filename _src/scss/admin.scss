@@ -1,6 +1,7 @@
+@import "~@wpmudev/shared-ui/scss/_functions";
+@import "~@wpmudev/shared-ui/scss/_variables";
 @import "~@wpmudev/shared-ui/scss/_mixins";
 @import "~@wpmudev/shared-ui/scss/_colors";
-@import "~@wpmudev/shared-ui/scss/_variables";
 @import "common/mixins";
 
 @include body-class {
@@ -83,7 +84,7 @@
         }
 
         .wp-smush-enable-lossy {
-          color: #888888;
+          color: #888;
           font-size: 13px;
           line-height: 22px;
           margin-top: 20px;
@@ -100,19 +101,19 @@
         top: 4px;
         display: inline-block;
         &.bulk:not(.sui-tag) {
+          @include smush_tick_icon;
           &:before {
              color: $notice-default-icon-color;
             vertical-align: middle;
             font-size: 18px;
           }
-          @include smush_tick_icon;
         }
       }
 
       .current {
         .bulk:not(.sui-tag) {
           &:before {
-            color: #1ABC9C;
+            color: $notice-success-icon-color;
           }
         }
       }
@@ -142,17 +143,17 @@
 
       tr, td {
         &.optimised {
-          border-left: 2px #1abc9c solid;
+          border-left: 2px $notice-success-icon-color solid;
           color: inherit;
         }
 
         &.partial {
-          border-left: 2px #fecf2f solid;
+          border-left: 2px $notice-warning-icon-color solid;
           color: inherit;
         }
 
         &.error {
-          border-left: 2px #ff6d6d solid;
+          border-left: 2px $notice-error-icon-color solid;
           color: inherit;
         }
 
@@ -186,20 +187,20 @@
 
         .wp-smush-image-dir-progress {
           &.optimised {
+            @include smush_tick_icon;
             &:before {
               color: $notice-success-icon-color;
               vertical-align: middle;
               font-size: 18px;
             }
-            @include smush_tick_icon;
           }
 
           &.partial {
             font-size: 18px;
+            @include smush_tick_icon;
             &:before {
               color: $notice-warning-icon-color;
             }
-            @include smush_tick_icon;
           }
         }
 
@@ -213,19 +214,19 @@
         .wp-smush-image-ele-progress {
           font-size: 18px;
           &.partial {
+            @include smush_tick_icon;
             &:before {
               color: $notice-warning-icon-color;
             }
-            @include smush_tick_icon;
           }
 
           &.optimised {
+            @include smush_tick_icon;
             &:before {
               color: $notice-success-icon-color;
               vertical-align: middle;
               font-size: 18px;
             }
-            @include smush_tick_icon;
           }
         }
       }
