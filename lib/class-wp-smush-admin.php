@@ -380,7 +380,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$dir = defined('__DIR__') ? __DIR__ : dirname(__FILE__);
 
 			//Load on Smush all page only
-			if ( in_array( $current_screen->id, $wpsmushit_admin->plugin_pages ) ) {
+			if ( in_array( $current_screen->id, $this->plugin_pages ) ) {
 				//Load Jquery tree on specified page
 				if ( 'gallery_page_wp-smush-nextgen-bulk' !== $current_page ) {
 					wp_enqueue_script( 'jqft-js' );
