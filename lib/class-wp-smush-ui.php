@@ -302,7 +302,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 										continue;
 									}
 									$setting_m_key = WP_SMUSH_PREFIX . $name;
-									$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->settings[$name] : false;
+									$setting_val   = $wpsmush_settings->settings[ $name ];
 									// Set the default value 1 for auto smush.
 									if( 'auto' === $name && false === $setting_val ) {
 										$setting_val = 1;
