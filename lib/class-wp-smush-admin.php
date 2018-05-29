@@ -340,7 +340,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$current_page = '';
 			if ( function_exists( 'get_current_screen' ) ) {
 				$current_screen = get_current_screen();
-				$current_page   = $current_screen->base;
+				$current_page   = !empty( $current_screen ) ? $current_screen->base : $current_page;
 			}
 
 			$enqueue_smush = true;
