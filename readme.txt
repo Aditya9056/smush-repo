@@ -1,13 +1,13 @@
 === Smush Image Compression and Optimization ===
 Plugin Name: Smush Image Compression and Optimization
-Version: 2.7.8.1
+Version: 2.7.9.1
 Author: WPMU DEV
 Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: image, resize, optimize, optimise, compress, performance, optimisation, optimise JPG, photo, pictures, optimizer, Smush WordPress Compression, Smush.it
 Requires at least: 4.6
 Tested up to: 4.9.6
-Stable tag: 2.7.8.1
+Stable tag: 2.7.9.1
 Requires PHP: 5.2.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -164,9 +164,35 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.7.8.1 =
+= 2.7.9.1 =
 
-* Added Privacy Policy content for Smush in Privacy Policy Guide
+* Fixed: Conflict with front-end editors
+
+= 2.7.9 =
+
+* Update:
+    * Smush settings moved to separate top level page in dashboard ( Smush/Smush Pro )
+    * Added Privacy Policy content for Smush in Privacy Policy Guide
+
+* Fixed:
+    * Conflict with plugin Download Manager, Embed any document, Getty
+    * Settings link incorrect for sub sites
+    * Don't load smush settings in front-end
+    * Increase php memory limit only if lesser than required
+    * Display a warning if custom table isn't created
+    * Attachment details not being displayed when uploading image in post edit screen
+    * Compatibility with WP Offload S3 latest version
+    * Directory Smush skips 1 image for every iteration of 50 images ( Free version )
+    * Nextgen Gallery Stats not updated properly ( Pro Version )
+    * Added instructions for Resize Image feature - It works independent of Auto Smush, If "Automatic Smush" is off and
+      "Resize my full size image" is kept on, the image would be resized
+    * Smush button doesn not appears in Media Modal window for Ultimate Branding
+    * NextGen Integration: Smush stats not updated after image deletion
+    * Warning/Error for settings on initial setup
+
+* Integrations:
+    * Updated WP Offload S3 integration to smush images with Cloudfront enabled
+
 
 = 2.7.8 =
 
