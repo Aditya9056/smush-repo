@@ -317,7 +317,7 @@
       }
     }
 
-    .hidden, button.hidden {
+    .sui-hidden, button.sui-hidden {
       display: none;
     }
 
@@ -431,6 +431,32 @@
     .smush-recommendation-title,
     .dismiss-recommendation {
       font-weight: 500;
+    }
+  }
+
+  .smush-align-left  {
+    float: left;
+  }
+
+  .smush-align-right  {
+    float: right;
+  }
+
+  .smushed-items-count {
+    margin: 5px;
+
+    .smush-align-right  {
+      margin-left: 50px;
+    }
+  }
+
+  .sui-summary-detail {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 22px;
+
+    &.wp-smush-savings {
+      margin-left: -20px;
     }
   }
 }

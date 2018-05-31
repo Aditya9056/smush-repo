@@ -387,16 +387,6 @@ div.row.smush-avg-pro-savings span.wp-smush-stats-label strong, div.row.smush-av
     padding: 0 30px 15px;
 }
 
-.wp-smush-count-total {
-    display: inline-block;
-    float: left;
-    line-height: 1;
-    margin-top: 20px;
-    overflow: hidden;
-    text-align: left;
-    width: 48%;
-}
-
 .wp-smush-stats-other {
     display: inline-block;
     text-align: left;
@@ -407,7 +397,7 @@ div.row.smush-avg-pro-savings span.wp-smush-stats-label strong, div.row.smush-av
     font-size: 13px;
 }
 
-.wp-smush-stats-other .wp-smush-total-optimised {
+.wp-smush-stats-other {
     font-size: 15px;
 }
 
@@ -1168,7 +1158,6 @@ ol.smush-recommendation-list {
 
 .wpmud ol.smush-recommendation-list a,
 section.bulk-smush-wrapper div.smush-container-subheading a,
-.wpmud .wp-smush-stats-human a,
 a.wp-smush-resize-enable,
 a.wp-smush-lossy-enable {
     color: #17A8E3;
@@ -1177,7 +1166,6 @@ a.wp-smush-lossy-enable {
 
 .wpmud ol.smush-recommendation-list a:hover,
 section.bulk-smush-wrapper div.smush-container-subheading a:hover,
-.wpmud .wp-smush-stats-human a:hover,
 a.wp-smush-resize-enable:hover,
 a.wp-smush-lossy-enable:hover {
     color: #0A9BD6;
@@ -1586,17 +1574,12 @@ a.wp-smush-lossy-enable {
 }
 
 .wpmud .wp-smush-lossy-disabled-wrap,
-.wp-smush-stats.settings-desc,
-.wp-smush-stats-human.settings-desc {
+.wp-smush-stats.settings-desc {
     color: #888888;
     font-family: 'Roboto', sans-serif;
     font-size: 13px;
     line-height: 22px;
     padding: 0;
-}
-
-.wp-smush-stats-human.settings-desc {
-    font-size: 13px;
 }
 
 .wpmud .row .col-third.wp-smushit-container-right {

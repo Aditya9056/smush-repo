@@ -1154,6 +1154,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$smush_data['human'] = size_format( $smush_data['bytes'], 1 );
 
+			// Set size and size format.
+			$smush_data['human_format'] = preg_replace( '/[^A-Z]+/', '', $smush_data['human'] );
+			$smush_data['human_size'] = preg_replace( '/[^0-9.]+/', '', $smush_data['human'] );
+
 			//Setup Smushed attachment ids
 			$this->smushed_attachments = ! empty( $smush_data['id'] ) ? $smush_data['id'] : '';
 
