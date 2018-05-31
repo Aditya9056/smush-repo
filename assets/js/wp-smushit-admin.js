@@ -62,6 +62,33 @@ jQuery(function ($) {
         $('dialog#smush-quick-setup').remove();
     }
 
+
+	/**
+	 * Update image size in attachment info panel.
+	 *
+	 * @since 2.8
+	 *
+	 * @param new_size
+	 */
+	function update_image_stats( new_size ) {
+		if ( 0 === new_size ) {
+			return;
+		}
+
+		var attachmentSize = $('.attachment-info .file-size');
+		var currentSize = attachmentSize.contents().filter(function() {
+			return this.nodeType == 3;
+		}).text();
+
+		// There is a space before the size.
+		if ( currentSize !== ( ' ' + new_size ) ) {
+			var sizeStrongEl = attachmentSize.contents().filter(function() {
+				return this.nodeType == 1;
+			}   ).text();
+			attachmentSize.html( '<strong>' + sizeStrongEl + '</strong> ' + new_size );
+		}
+	}
+
     //Show the Quick Setup Dialog
     if ($('#smush-quick-setup').size() > 0) {
         WDP.showOverlay("#smush-quick-setup", {
@@ -210,18 +237,18 @@ jQuery(function ($) {
             this.request.done(function (response) {
                 if (typeof response.data != 'undefined') {
 
-                    //Check if stats div exists
+                    // Check if stats div exists.
                     var parent = self.$status.parent();
                     var stats_div = parent.find('.smush-stats-wrapper');
 
-                    //If we've updated status, replace the content
+                    // If we've updated status, replace the content.
                     if (response.data.status) {
                         //remove Links
-                        parent.find('.smush-status-links').remove()
+                        parent.find('.smush-status-links').remove();
                         self.$status.replaceWith(response.data.status);
                     }
 
-                    //Check whether to show membership validity notice or not
+                    // Check whether to show membership validity notice or not.
                     membership_validity(response.data);
 
                     if (response.success && response.data !== "Not processed") {
@@ -238,6 +265,9 @@ jQuery(function ($) {
                     } else {
                         parent.append(response.data.stats);
                     }
+
+                    // Update image size in attachment info panel.
+					update_image_stats(response.data.new_size);
                 }
                 self.enable_button();
             }).error(function (response) {
@@ -732,6 +762,10 @@ jQuery(function ($) {
                 } else {
                     //Show the smush button, and remove stats and restore option
                     current_button.parents().eq(1).html(r.data.button);
+                }
+
+                if ( 'undefined' != typeof (r.data) && 'restore' === action ) {
+					update_image_stats(r.data.new_size);
                 }
             } else {
                 if (r.data.message) {

@@ -1009,11 +1009,11 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			$combined_stats = $this->combine_conversion_stats( $combined_stats, $conversion_savings );
 
-			//Remove Smush s3 hook, as it downloads the file again
+			// Remove Smush s3 hook, as it downloads the file again.
 			remove_filter('as3cf_get_attached_file', array( $wpsmush_s3_compat, 'smush_download_file'), 11, 4 );
 			$attachment_data = wp_get_attachment_metadata( $id );
 
-			// if the image is smushed
+			// If the image is smushed.
 			if ( ! empty( $wp_smush_data ) ) {
 
 				$image_count    = count( $wp_smush_data['sizes'] );
@@ -1022,7 +1022,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 				$percent        = isset( $combined_stats['stats']['percent'] ) ? $combined_stats['stats']['percent'] : 0;
 				$percent        = $percent < 0 ? 0 : $percent;
 
-				//Show resmush link, if the settings were changed
+				// Show resmush link, if the settings were changed.
 				$show_resmush = $this->show_resmush( $id, $wp_smush_data );
 
 				if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
@@ -1049,8 +1049,9 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						$file_path = get_attached_file( $id );
 						$size      = file_exists( $file_path ) ? filesize( $file_path ) : 0;
 						if ( $size > 0 ) {
-							$size       = size_format( $size, 1 );
-							$image_size = sprintf( __( "<br /> Image Size: %s", "wp-smushit" ), $size );
+							$update_size = size_format( $size, 0 ); // Used in js to update image stat.
+							$size        = size_format( $size, 1 );
+							$image_size  = sprintf( __( "<br /> Image Size: %s", "wp-smushit" ), $size );
 							$status_txt .= $image_size;
 						}
 
@@ -1060,7 +1061,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							$links .= $this->get_resmsuh_link( $id );
 						}
 
-						//Restore Image: Check if we need to show the restore image option
+						// Restore Image: Check if we need to show the restore image option.
 						$show_restore = $this->show_restore_option( $id, $attachment_data );
 
 						if ( $show_restore ) {
@@ -1071,7 +1072,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 							$links .= $this->get_restore_link( $id );
 						}
 
-						//Detailed Stats: Show detailed stats if available
+						// Detailed Stats: Show detailed stats if available.
 						if ( ! empty( $wp_smush_data['sizes'] ) ) {
 
 							if ( $show_resmush || $show_restore ) {
@@ -1079,10 +1080,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 								$links .= ' | ';
 							}
 
-							//Detailed Stats Link
+							// Detailed Stats Link.
 							$links .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" tooltip="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
 
-							//Stats
+							// Stats.
 							$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
 
 							if ( ! $text_only ) {
@@ -1091,21 +1092,21 @@ if ( ! class_exists( 'WpSmush' ) ) {
 						}
 					}
 				}
-				//Wrap links if not empty
-				$links = !empty( $links ) ? "<div class='smush-status-links'>" . $links . "</div>" : '';
+				// Wrap links if not empty.
+				$links = ! empty( $links ) ? "<div class='smush-status-links'>" . $links . "</div>" : '';
 
 				/** Super Smush Button  */
-				//IF current compression is lossy
+				// IF current compression is lossy.
 				if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
 					$lossy    = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
 					$is_lossy = $lossy == 1 ? true : false;
 				}
 
-				//Check image type
+				// Check image type.
 				$image_type = get_post_mime_type( $id );
 
-				//Check if premium user, compression was lossless, and lossy compression is enabled
-				//If we are displaying the resmush option already, no need to show the Super Smush button
+				// Check if premium user, compression was lossless, and lossy compression is enabled.
+				// If we are displaying the resmush option already, no need to show the Super Smush button.
 				if ( ! $show_resmush && ! $is_lossy && $this->lossy_enabled && $image_type != 'image/gif' ) {
 					// the button text
 					$button_txt  = __( 'Super-Smush', 'wp-smushit' );
@@ -1142,15 +1143,16 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			$status_txt .= $links;
 
 			if ( $text_only ) {
-				//For ajax response
+				// For ajax response.
 				return array(
 					'status'       => $status_txt,
 					'stats'        => $stats,
-					'show_warning' => intval( $this->show_warning() )
+					'show_warning' => intval( $this->show_warning() ),
+					'new_size'     => isset( $update_size ) ? $update_size : 0,
 				);
 			}
 
-			//If we are not showing smush button, append progree bar, else it is already there
+			// If we are not showing smush button, append progree bar, else it is already there.
 			if ( ! $show_button ) {
 				$status_txt .= $this->progress_bar();
 			}
