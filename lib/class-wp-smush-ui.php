@@ -95,6 +95,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
 			add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
 			add_action( 'smush_settings_ui_bottom', array( $this, 'pro_features_container' ) );
+
+			// Add stats to stats box.
+			add_action( 'stats_ui_after_resize_savings', array( $this, 'pro_savings_stats' ), 15 );
+			add_action( 'stats_ui_after_resize_savings', array( $this, 'conversion_savings_stats' ), 15 );
 		}
 
 		/**
@@ -159,6 +163,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Load the settings nav.
 			$this->settings_nav();
+
+			// Nonce field.
+			wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '' );
 
 			// If networkwide option is disabled, show only bulk page.
 			if ( $is_network && ! $is_networkwide ) {
@@ -468,15 +475,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			global $WpSmush, $wpsmushit_admin, $wpsmush_db, $wpsmush_settings, $wpsmush_dir;
 
-			$settings     = $wpsmush_settings->settings;
-			$resize_count = $wpsmush_db->resize_savings( false, false, true );
-			$resize_count = ! $resize_count ? 0 : $resize_count;
-
-			$compression_savings = 0;
-
-			if ( ! empty( $wpsmushit_admin->stats ) && ! empty( $wpsmushit_admin->stats['bytes'] ) ) {
-				$compression_savings = $wpsmushit_admin->stats['bytes'] - $wpsmushit_admin->stats['resize_savings'];
-			}
+			$settings       = $wpsmush_settings->settings;
+			$networkwide    = (bool) $settings['networkwide'];
+			$resize_enabled = (bool) $settings['resize'];
+			$resize_count   = $wpsmush_db->resize_savings( false, false, true );
+			$resize_count   = ! $resize_count ? 0 : $resize_count;
 
 			?>
 
@@ -497,35 +500,40 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 								<span class="sui-summary-detail wp-smush-total-optimised"><?php echo $wpsmushit_admin->stats['total_images']; ?></span>
 								<span class="sui-summary-sub"><?php _e( 'Images Smushed', 'wp-smushit' ); ?></span>
 							</span>
-							<span class="smush-align-right wp-smush-count-resize-total">
-								<span class="sui-summary-detail wp-smush-total-optimised"><?php echo $resize_count; ?></span>
-								<span class="sui-summary-sub"><?php _e( 'Images Resized', 'wp-smushit' ); ?></span>
-							</span>
+							<?php if ( $resize_count > 0 ) { ?>
+								<span class="smush-align-right wp-smush-count-resize-total">
+									<span class="sui-summary-detail wp-smush-total-optimised"><?php echo $resize_count; ?></span>
+									<span class="sui-summary-sub"><?php _e( 'Images Resized', 'wp-smushit' ); ?></span>
+								</span>
+							<?php } ?>
 						</span>
 					</div>
 				</div>
 				<div class="sui-summary-segment">
-					<ul class="sui-list">
+					<ul class="sui-list smush-stats-list">
 						<li>
-							<span class="sui-list-label"><?php _e( 'Image Resize Savings', 'wp-smushit' ); ?></span>
 							<?php
+							$resize_savings = 0;
+							// Get current resize savings.
 							if ( ! empty( $wpsmushit_admin->stats['resize_savings'] ) && $wpsmushit_admin->stats['resize_savings'] > 0 ) {
 								$resize_savings = size_format( $wpsmushit_admin->stats['resize_savings'], 1 );
-							} else {
-								if ( ! $settings['resize'] ) {
-									// Output a button/link to enable respective setting.
-									if ( ! is_multisite() || ! $settings['networkwide'] ) {
-										$resize_savings = sprintf( esc_html__( 'Save storage space by resizing your full sized uploads down to a maximum size. %sEnable image resizing%s', 'wp-smushit' ), '<a class="wp-smush-resize-enable" href="#">', '</a>' );
-									} else {
-										$settings_link = $wpsmushit_admin->settings_link( array(), true );
-										$resize_savings = sprintf( esc_html__( 'Save storage space by resizing your full sized uploads down to a maximum size. %sEnable image resizing%s', 'wp-smushit' ), '<a href="' . $settings_link . '" class="wp-smush-resize-enable">', '</a>' );
-									}
-								} else {
-									$resize_savings = sprintf( esc_html__( 'No resize savings available', 'wp-smushit' ), '<span class="total-stats-label"><strong>', '</strong></span>' );
-								}
 							}
 							?>
-							<span class="sui-list-detail"><?php echo $resize_savings; ?></span>
+							<span class="sui-list-label">
+								<?php _e( 'Image Resize Savings', 'wp-smushit' ); ?>
+								<?php if ( ! $resize_enabled && $resize_savings <= 0 ) { ?>
+									<p class="wp-smush-stats-label-message">
+										<?php
+										$settings_link = is_multisite() && $networkwide ? $wpsmushit_admin->settings_link( array(), true, true ) : '#';
+										$link_class = is_multisite() && $networkwide ? 'wp-smush-resize-enable-network' : 'wp-smush-resize-enable';
+										printf( esc_html__( 'Save a ton of space by not storing over-sized images on your server. %sEnable image resizing%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
+										?>
+									</p>
+								<?php } ?>
+							</span>
+							<?php if ( $resize_enabled || $resize_savings > 0 ) { ?>
+								<span class="sui-list-detail"><?php echo $resize_savings > 0 ? $resize_savings : __( 'No resize savings available', 'wp-smushit' ); ?></span>
+							<?php } ?>
 						</li>
 						<?php
 						/**
@@ -533,14 +541,88 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						 */
 						do_action( 'stats_ui_after_resize_savings' );
 						?>
-						<li>
-							<span class="sui-list-label"><?php _e( 'Pro Savings', 'wp-smushit' ); ?></span>
-							<span class="sui-list-detail">1.98Mb / 48.9%</span>
-						</li>
 					</ul>
 				</div>
 			</div>
 			<?php
+		}
+
+		/**
+		 * Show super smush stats in stats section.
+		 *
+		 * If a pro member and super smush is enabled, show super smushed
+		 * stats else show message that encourage them to enable super smush.
+		 * If free user show the avg savings that can be achived using Pro.
+		 *
+		 * @return void
+		 */
+		public function pro_savings_stats() {
+
+			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
+
+			$settings = $wpsmush_settings->settings;
+
+			$networkwide = (bool) $settings['networkwide'];
+
+			if ( ! $WpSmush->validate_install() ) {
+				if ( empty( $wpsmushit_admin->stats ) || empty( $wpsmushit_admin->stats['pro_savings'] ) ) {
+					$wpsmushit_admin->set_pro_savings();
+				}
+				$pro_savings      = $wpsmushit_admin->stats['pro_savings'];
+				$show_pro_savings = $pro_savings['savings'] > 0 ? true : false;
+				?>
+
+				<li class="smush-avg-pro-savings">
+					<span class="sui-list-label"><?php _e( 'Pro Savings', 'wp-smushit' ); ?></span>
+					<span class="sui-list-detail wp-smush-stats">
+						<span class="wp-smush-stats-human"><?php echo $show_pro_savings ? $pro_savings['savings'] : '0.0 B'; ?></span>
+						<span class="wp-smush-stats-sep">/</span>
+						<span class="wp-smush-stats-percent"><?php echo $show_pro_savings ? $pro_savings['percent'] : 0; ?></span>%
+					</span>
+				</li>
+
+				<?php
+			} else {
+				$compression_savings = 0;
+				if ( ! empty( $wpsmushit_admin->stats ) && ! empty( $wpsmushit_admin->stats['bytes'] ) ) {
+					$compression_savings = $wpsmushit_admin->stats['bytes'] - $wpsmushit_admin->stats['resize_savings'];
+				}
+				?>
+				<li class="super-smush-attachments">
+					<span class="sui-list-label">
+						<?php _e( 'Super-Smush Savings', 'wp-smushit' ); ?>
+						<?php if ( ! $WpSmush->lossy_enabled ) { ?>
+							<p class="wp-smush-stats-label-message">
+								<?php
+								$settings_link = is_multisite() && $networkwide ? $wpsmushit_admin->settings_link( array(), true, true ) : '#';
+								$link_class = is_multisite() && $networkwide ? 'wp-smush-lossy-enable-network' : 'wp-smush-lossy-enable';
+								printf( esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
+								?>
+							</p>
+						<?php } ?>
+					</span>
+					<?php if ( $WpSmush->lossy_enabled ) { ?>
+						<span class="sui-list-detail wp-smush-stats">
+							<span class="smushed-savings"><?php echo size_format( $compression_savings, 1 ); ?></span>
+						</span>
+					<?php } ?>
+				</li>
+				<?php
+			}
+		}
+
+		public function conversion_savings_stats() {
+
+			global $WpSmush, $wpsmushit_admin;
+
+			if ( $WpSmush->validate_install() && ! empty( $wpsmushit_admin->stats['conversion_savings'] ) && $wpsmushit_admin->stats['conversion_savings'] > 0 ) {
+				?>
+				<li class="smush-conversion-savings">
+					<span class="sui-list-label"><?php esc_html_e( 'PNG to JPEG savings', 'wp-smushit' ); ?></span>
+					<span class="sui-list-detail"><?php echo $wpsmushit_admin->stats['conversion_savings'] > 0 ? size_format( $wpsmushit_admin->stats['conversion_savings'], 1 ) : '0MB'; ?></span>
+				</li>
+				<?php
+			}
 		}
 
 		/**
@@ -565,9 +647,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<form id="wp-smush-settings-form" method="post">
 
 			<input type="hidden" name="setting_form" id="setting_form" value="bulk">
-
-			<!-- Nonce field -->
-			<?php wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true ); ?>
 
 			<?php $opt_networkwide = WP_SMUSH_PREFIX . 'networkwide'; ?>
 			<?php $opt_networkwide_val = $wpsmush_settings->settings['networkwide']; ?>
