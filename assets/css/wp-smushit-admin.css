@@ -350,26 +350,6 @@ label.setting.smush-stats .smush-wrap,
     padding-top: 0;
 }
 
-div#smush-avg-pro-savings {
-    background: rgba(242, 242, 242, 0.5);;
-    border-top: 1px solid #ddd;
-    margin-top: 12px;
-    padding: 14px 28px 12px 30px;
-}
-
-div#smush-avg-pro-savings:before, div#smush-avg-pro-savings:after {
-    margin: 0 -10px;
-}
-
-div.row.smush-avg-pro-savings {
-    padding-bottom: 8px;
-    padding-top: 19px;
-}
-
-div.row.smush-avg-pro-savings span.wp-smush-stats-label strong, div.row.smush-avg-pro-savings span.wp-smush-stats {
-    opacity: 0.5;
-}
-
 .wpmud .wp-smushit-container-right .smush-stats-wrapper .wp-smush-container-header {
     padding: 0 30px;
 }
