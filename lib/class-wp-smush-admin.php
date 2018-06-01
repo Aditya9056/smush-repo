@@ -1210,9 +1210,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @return array
 		 */
-		function settings_link( $links, $url_only = false ) {
+		function settings_link( $links, $url_only = false, $networkwide = false ) {
 
 			$settings_page = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
+			// If networkwide setting url is needed.
+			$settings_page = $url_only && $networkwide && is_multisite() ? network_admin_url( 'admin.php?page=smush' ) : $settings_page;
 			$settings      = '<a href="' . $settings_page . '">' . __( 'Settings', 'wp-smushit' ) . '</a>';
 
 			//Return Only settings page link
