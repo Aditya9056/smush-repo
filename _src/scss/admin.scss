@@ -442,21 +442,31 @@
     float: right;
   }
 
-  .smushed-items-count {
-    margin: 5px;
+  .sui-summary-smush {
+    .smushed-items-count {
+      margin: 5px;
 
-    .smush-align-right  {
-      margin-left: 50px;
+      .smush-align-right {
+        margin-left: 50px;
+      }
     }
-  }
 
-  .sui-summary-detail {
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 22px;
+    .sui-summary-detail {
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 22px;
 
-    &.wp-smush-savings {
-      margin-left: -20px;
+      &.wp-smush-savings {
+        margin-left: -20px;
+      }
+    }
+
+    .wp-smush-stats-label-message {
+      font-size: 13px;
+    }
+
+    .smush-stats-list {
+      min-height: 185px;
     }
   }
 }
