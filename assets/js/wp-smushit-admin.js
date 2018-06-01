@@ -1632,10 +1632,12 @@ jQuery( function ( $ ) {
         //Update Directory Smush Stats
         if ( 'undefined' != typeof ( stats.dir_smush ) ) {
             var stats_human = $( 'li.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-human' );
-            //var stats_percent = $( 'li.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-percent' );
+            var stats_percent = $( 'li.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-percent' );
 
             // Do not replace if 0 savings.
             if ( stats.dir_smush.bytes > 0 ) {
+                // Hide selector.
+                $( 'li.smush-dir-savings .wp-smush-stats-label-message' ).hide();
                 //Update Savings in bytes
                 if ( stats_human.length > 0 ) {
                     stats_human.html( stats.dir_smush.human );
@@ -1644,16 +1646,16 @@ jQuery( function ( $ ) {
                 }
 
                 //Percentage section
-                /*if ( stats.dir_smush.percent > 0 ) {
+                if ( stats.dir_smush.percent > 0 ) {
                     // Show size and percentage separator.
-                    $( 'div.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-sep' ).show();
+                    $( 'li.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-sep' ).removeClass('sui-hidden');
                     //Update Optimisation percentage
                     if ( stats_percent.length > 0 ) {
                         stats_percent.html( stats.dir_smush.percent + '%' );
                     } else {
                         var span = '<span class="wp-smush-stats-percent">' + stats.dir_smush.percent + '%' + '</span>';
                     }
-                }*/
+                }
             }
         }
 
@@ -2001,7 +2003,7 @@ jQuery( function ( $ ) {
 
         //Enable Super Smush
         $( '#wp-smush-lossy' ).prop( 'checked', true ).focus();
-        goToByScroll( ".wp-smush-lossy-label" );
+        goToByScroll( "#column-wp-smush-lossy" );
     } );
 
     //Enable Resize
@@ -2013,7 +2015,7 @@ jQuery( function ( $ ) {
         $( 'div.wp-smush-resize-settings-wrap' ).show();
 
         //Scroll down to settings area
-        goToByScroll( ".wp-smush-resize-label" );
+        goToByScroll( "#column-wp-smush-resize" );
     } );
 
     //Trigger Bulk
