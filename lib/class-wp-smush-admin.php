@@ -1628,7 +1628,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				}
 
 				if ( ( $count = count( $resmush_list ) ) > 0 || $this->remaining_count > 0 ) {
-
 					if ( $count ) {
 						$show = true;
 
@@ -2142,7 +2141,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 
-			echo $wpsmush_bulkui->get_user_validation_message( $notice = true );
+			echo $wpsmush_bulkui->get_user_validation_message( false );
 		}
 
 		/**

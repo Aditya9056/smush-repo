@@ -480,6 +480,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$resize_enabled = (bool) $settings['resize'];
 			$resize_count   = $wpsmush_db->resize_savings( false, false, true );
 			$resize_count   = ! $resize_count ? 0 : $resize_count;
+			$remaining      = $wpsmushit_admin->remaining_count;
 
 			?>
 
@@ -489,7 +490,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-summary-segment">
 					<div class="sui-summary-details">
 						<span class="sui-summary-large wp-smush-stats-human"><?php echo $wpsmushit_admin->stats['human_size']; ?></span>
-						<i class="sui-icon-info sui-warning"></i>
+						<i class="sui-icon-info sui-warning smush-stats-icon <?php echo $remaining > 0 ? '' : 'sui-hidden'; ?>"></i>
 						<span class="sui-summary-detail wp-smush-savings">
 							<span class="wp-smush-stats-human"><?php echo $wpsmushit_admin->stats['human_format']; ?></span> /
 							<span class="wp-smush-stats-percent"><?php echo $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0; ?></span>%
@@ -511,7 +512,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 				<div class="sui-summary-segment">
 					<ul class="sui-list smush-stats-list">
-						<li>
+						<li class="smush-resize-savings">
 							<?php
 							$resize_savings = 0;
 							// Get current resize savings.
@@ -531,9 +532,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 									</p>
 								<?php } ?>
 							</span>
+							<span class="sui-list-detail wp-smush-stats">
 							<?php if ( $resize_enabled || $resize_savings > 0 ) { ?>
-								<span class="sui-list-detail"><?php echo $resize_savings > 0 ? $resize_savings : __( 'No resize savings available', 'wp-smushit' ); ?></span>
+								<?php echo $resize_savings > 0 ? $resize_savings : __( 'No resize savings available', 'wp-smushit' ); ?>
 							<?php } ?>
+							</span>
 						</li>
 						<?php
 						/**
@@ -572,7 +575,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$show_pro_savings = $pro_savings['savings'] > 0 ? true : false;
 				?>
 
-				<li class="smush-avg-pro-savings">
+				<li class="smush-avg-pro-savings<?php echo $show_pro_savings ? '' : ' sui-hidden'; ?>" id="smush-avg-pro-savings">
 					<span class="sui-list-label"><?php _e( 'Pro Savings', 'wp-smushit' ); ?></span>
 					<span class="sui-list-detail wp-smush-stats">
 						<span class="wp-smush-stats-human"><?php echo $show_pro_savings ? $pro_savings['savings'] : '0.0 B'; ?></span>
@@ -611,6 +614,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			}
 		}
 
+		/**
+		 * Show conversion savings stats in stats section.
+		 *
+		 * Show Png to Jpg conversion savings in stats box if the
+		 * settings enabled or savings found.
+		 *
+		 * @return void
+		 */
 		public function conversion_savings_stats() {
 
 			global $WpSmush, $wpsmushit_admin;
@@ -619,7 +630,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				?>
 				<li class="smush-conversion-savings">
 					<span class="sui-list-label"><?php esc_html_e( 'PNG to JPEG savings', 'wp-smushit' ); ?></span>
-					<span class="sui-list-detail"><?php echo $wpsmushit_admin->stats['conversion_savings'] > 0 ? size_format( $wpsmushit_admin->stats['conversion_savings'], 1 ) : '0MB'; ?></span>
+					<span class="sui-list-detail wp-smush-stats"><?php echo $wpsmushit_admin->stats['conversion_savings'] > 0 ? size_format( $wpsmushit_admin->stats['conversion_savings'], 1 ) : '0MB'; ?></span>
 				</li>
 				<?php
 			}
@@ -1133,12 +1144,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		public function get_user_validation_message( $notice = true ) {
 
-			$notice_class = $notice ? ' sui-notice sui-notice-warning' : '';
+			$notice_class = $notice ? ' sui-notice sui-notice-warning' : ' notice notice-warning is-dismissible';
 			$wpmu_contact = sprintf( '<a href="%s" target="_blank">', esc_url( 'https://premium.wpmudev.org/contact' ) );
 			$attr_message = esc_html__( 'Validating..', 'wp-smsuhit' );
 			$recheck_link = '<a href="#" id="wp-smush-revalidate-member" data-message="%s">';
 			$message      = sprintf( esc_html__( 'It looks like Smush couldn’t verify your WPMU DEV membership so Pro features have been disabled for now. If you think this is an error, run a %sre-check%s or get in touch with our %ssupport team%s.', 'wp-smsuhit' ), $recheck_link, '</a>', $wpmu_contact, '</a>' );
-			$content      = sprintf( '<div id="wp-smush-invalid-member" data-message="%s" class="sui-hidden' . $notice_class . '"><p>%s</p></div>', $attr_message, $message );
+			$content      = sprintf( '<div id="wp-smush-invalid-member" data-message="%s" class="sui-hidden hidden' . $notice_class . '"><p>%s</p></div>', $attr_message, $message );
 
 			return $content;
 		}

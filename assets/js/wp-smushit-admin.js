@@ -310,6 +310,13 @@ jQuery( function ( $ ) {
 
             //Enable Resmush and scan button
             $( '.wp-resmush.wp-smush-action, .wp-smush-scan' ).removeAttr( 'disabled' );
+
+            // Show loader.
+            if ( self.ids.length == 0 ) {
+                $( '.sui-summary-smush .smush-stats-icon' ).addClass( 'sui-hidden' );
+            } else {
+                $( '.sui-summary-smush .smush-stats-icon' ).removeClass( 'sui-icon-loader sui-loading sui-hidden' ).addClass( 'sui-icon-info sui-warning' );
+            }
         };
 
         this.is_resolved = function () {
@@ -347,6 +354,7 @@ jQuery( function ( $ ) {
                 if ( self.ids.length > 0 ) {
                     $( '.smush-sidenav .wp-smush-remaining-count' ).html( self.ids.length );
                 } else {
+                    $( '.sui-summary-smush .smush-stats-icon' ).addClass( 'sui-hidden' );
                     $( '.smush-sidenav .wp-smush-remaining-count' ).removeClass( 'sui-tag sui-tag-warning' ).html('');
                 }
             }
@@ -652,6 +660,9 @@ jQuery( function ( $ ) {
         }
 
         $( ".wp-smush-remaining" ).hide();
+
+        // Show loader.
+        $( '.sui-summary-smush .smush-stats-icon' ).removeClass( 'sui-icon-info sui-warning' ).addClass( 'sui-icon-loader sui-loading' );
 
         new WP_Smush.Smush( $( this ), true );
 
@@ -1366,7 +1377,7 @@ jQuery( function ( $ ) {
         }
 
         //Update Savings in share message
-        $( 'span.smush-share-savings' ).html( formatBytes( wp_smushit_data.savings_bytes, 1 ) );
+        //$( 'span.smush-share-savings' ).html( formatBytes( wp_smushit_data.savings_bytes, 1 ) );
 
         //Update Smush percent
         wp_smushit_data.smush_percent = precise_round( ( parseInt( wp_smushit_data.count_smushed ) / parseInt( wp_smushit_data.count_total ) ) * 100, 1 );
@@ -1376,7 +1387,7 @@ jQuery( function ( $ ) {
         if ( 'undefined' != typeof wp_smushit_data.savings_bytes && 'undefined' != typeof wp_smushit_data.savings_resize ) {
             super_savings = parseInt( wp_smushit_data.savings_bytes ) - parseInt( wp_smushit_data.savings_resize );
             if ( super_savings > 0 ) {
-                $( 'div.super-smush-attachments span.smushed-savings' ).html( formatBytes( super_savings, 1 ) );
+                $( 'li.super-smush-attachments span.smushed-savings' ).html( formatBytes( super_savings, 1 ) );
             }
         }
 
@@ -1395,8 +1406,8 @@ jQuery( function ( $ ) {
         //Update image count in share message
 
         //Update supersmushed image count
-        if ( $( '.super-smush-attachments .smushed-count' ).length && 'undefined' != typeof wp_smushit_data.count_supersmushed ) {
-            $( '.super-smush-attachments .smushed-count' ).html( wp_smushit_data.count_supersmushed );
+        if ( $( 'li.super-smush-attachments .smushed-count' ).length && 'undefined' != typeof wp_smushit_data.count_supersmushed ) {
+            $( 'li.super-smush-attachments .smushed-count' ).html( wp_smushit_data.count_supersmushed );
         }
 
         //Update Conversion Savings
@@ -1414,9 +1425,14 @@ jQuery( function ( $ ) {
             // Get the resize savings in number.
             var savings_value = parseInt( wp_smushit_data.savings_resize );
             var resize_savings = smush_resize_savings.find( '.wp-smush-stats' );
+            var resize_message = smush_resize_savings.find( '.wp-smush-stats-label-message' );
             // Replace only if value is grater than 0.
             if ( savings_value > 0 && resize_savings.length > 0 ) {
-                resize_savings.removeClass( 'settings-desc float-l' ).addClass( 'float-r' ).html( formatBytes( wp_smushit_data.savings_resize, 1 ) );
+                // Hide message.
+                if ( resize_message.length > 0 ) {
+                    resize_message.hide();
+                }
+                resize_savings.html( formatBytes( wp_smushit_data.savings_resize, 1 ) );
             }
         }
 
@@ -1426,7 +1442,7 @@ jQuery( function ( $ ) {
         // Updating pro savings stats.
         if ( 'undefined' != typeof (wp_smushit_data.pro_savings) ) {
             // Make pro savings div visible if hidden.
-            $( '#smush-avg-pro-savings' ).show();
+            $( '#smush-avg-pro-savings' ).removeClass( 'sui-hidden' );
             // Pro stats section.
             var smush_pro_savings = $( '.smush-avg-pro-savings' );
             if ( smush_pro_savings.length > 0 ) {
