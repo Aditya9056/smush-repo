@@ -381,8 +381,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Load on Smush all page only
 			if ( in_array( $current_screen->id, $this->plugin_pages ) ) {
-				//Load Jquery tree on specified page
-				if ( 'gallery_page_wp-smush-nextgen-bulk' !== $current_page ) {
+				// Load Jquery tree on specified page.
+				if ( 'toplevel_page_smush' === $current_page ) {
 					wp_enqueue_script( 'jqft-js' );
 					wp_enqueue_style( 'jqft-css' );
 				}
