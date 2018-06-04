@@ -1519,14 +1519,6 @@ a.wp-smush-lossy-enable {
     cursor: pointer;
 }
 
-.wp-smush-lossy-disabled {
-    color: #adadad;
-    background: #fafafa;
-    border-radius: 3px;
-    font-size: 11px;
-    padding: 10px;
-}
-
 .wpmud .wp-smush-lossy-disabled-wrap {
     color: #888888;
     font-family: 'Roboto', sans-serif;

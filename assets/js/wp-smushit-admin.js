@@ -1007,7 +1007,7 @@ jQuery( function ( $ ) {
                         $( '.super-smush-attachments .wp-smush-stats' ).html( r.data.super_smush_stats );
                     }
                 }
-                update_stats();
+                update_stats( scan_type );
             }
 
         } ).always( function () {
@@ -1356,9 +1356,9 @@ jQuery( function ( $ ) {
     /**
      * Update all stats sections based on the response.
      *
-     * @param _res Ajax response data.
+     * @param scan_type Current scan type.
      */
-    var update_stats = function () {
+    var update_stats = function ( scan_type ) {
 
         var super_savings = smushed_count = 0;
 
@@ -1367,8 +1367,12 @@ jQuery( function ( $ ) {
 
         var formatted_size = formatBytes( wp_smushit_data.savings_bytes, 1 );
 
-        $( '.wp-smush-savings .wp-smush-stats-human' ).html( getFormatFromString( formatted_size ) );
-        $( '.sui-summary-large.wp-smush-stats-human' ).html( getSizeFromString( formatted_size ) );
+        if ( 'undefined' != typeof scan_type && 'nextgen' == scan_type ) {
+            $( '.wp-smush-savings .wp-smush-stats-human' ).html( formatted_size );
+        } else {
+            $( '.wp-smush-savings .wp-smush-stats-human' ).html( getFormatFromString( formatted_size ) );
+            $( '.sui-summary-large.wp-smush-stats-human' ).html( getSizeFromString( formatted_size ) );
+        }
 
         //Update the savings percent
         wp_smushit_data.savings_percent = precise_round( ( parseInt( wp_smushit_data.savings_bytes ) / parseInt( wp_smushit_data.size_before ) ) * 100, 1 );
