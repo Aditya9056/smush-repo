@@ -84,7 +84,7 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 			global $WpSmush;
 
 			// @todo handle this after implementing CDN settings.
-			$this->cdn_active = true;
+			$this->cdn_active = false;
 
 			// All these are members only feature.
 			if ( ! $WpSmush->validate_install() ) {
