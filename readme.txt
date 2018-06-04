@@ -164,6 +164,11 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
+= 2.8.0 =
+
+* Fixed:
+    * File size not updated at attachment details modal during Smush and restore of an image
+
 = 2.7.9.1 =
 
 * Fixed: Conflict with front-end editors

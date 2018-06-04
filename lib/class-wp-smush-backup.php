@@ -21,10 +21,10 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 		 * Constructor
 		 */
 		function __construct() {
-			//Initialize Variables and perform other operations
+			// Initialize Variables and perform other operations.
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 
-			//Handle Restore operation
+			// Handle Restore operation.
 			add_action( 'wp_ajax_smush_restore_image', array( $this, 'restore_image' ) );
 		}
 
@@ -139,20 +139,20 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 		 */
 		function restore_image( $attachment = '', $resp = true ) {
 			global $WpSmush, $wpsmush_helper;
-			//If no attachment id is provided, check $_POST variable for attachment_id
+			// If no attachment id is provided, check $_POST variable for attachment_id.
 			if ( empty( $attachment ) ) {
-				//Check Empty fields
+				// Check Empty fields.
 				if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
 					wp_send_json_error( array(
 						'error'   => 'empty_fields',
-						'message' => esc_html__( "Error in processing restore action, Fields empty.", "wp-smushit" )
+						'message' => esc_html__( 'Error in processing restore action, Fields empty.', 'wp-smushit' ),
 					) );
 				}
-				//Check Nonce
+				// Check Nonce.
 				if ( ! wp_verify_nonce( $_POST['_nonce'], "wp-smush-restore-" . $_POST['attachment_id'] ) ) {
 					wp_send_json_error( array(
 						'error'   => 'empty_fields',
-						'message' => esc_html__( "Image not restored, Nonce verification failed.", "wp-smushit" )
+						'message' => esc_html__( "Image not restored, Nonce verification failed.", "wp-smushit" ),
 					) );
 				}
 			}
@@ -274,7 +274,15 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				delete_option( "wp-smush-restore-$attachment_id" );
 
 				if ( $resp ) {
-					wp_send_json_success( array( 'button' => $button_html ) );
+					$size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
+					if ( $size > 0 ) {
+						$update_size = size_format( $size, 0 ); // Used in js to update image stat.
+					}
+
+					wp_send_json_success( array(
+						'button'   => $button_html,
+						'new_size' => isset( $update_size ) ? $update_size : 0,
+					) );
 				} else {
 					return true;
 				}
