@@ -1,6 +1,7 @@
-const ETP     = require('extract-text-webpack-plugin');
-const path    = require('path');
-const webpack = require('webpack');
+const path         = require('path');
+const webpack      = require('webpack');
+const autoprefixer = require('autoprefixer');
+const ETP          = require('mini-css-extract-plugin');
 
 const config = {
 	source:{},
@@ -24,36 +25,46 @@ config.output.imagesDirectory = '../images/';            // Trailing slash requi
 config.output.fontsDirectory  = '../fonts/';             // Trailing slash required.
 
 const scssConfig = {
+	mode: 'production',
+
 	entry: config.source.scss,
+
 	output: {
 		filename: config.output.scssFileName,
 		path: path.resolve(__dirname, config.output.scssDirectory)
 	},
+
 	module: {
 		rules: [
 			{
 				test: /\.scss$/,
 				exclude: /node_modules/,
-				use: ETP.extract({
-					fallback: 'style-loader',
-					use: [
-						{
-							loader: 'css-loader'
-						},
-						{
-							loader: 'postcss-loader'
-						},
-						{
-							loader: 'resolve-url-loader'
-						},
-						{
-							loader: 'sass-loader',
-							options: {
-								sourceMap: true
-							}
+				use: [ ETP.loader,
+					{
+						loader: 'css-loader'
+					},
+					{
+						loader: 'postcss-loader',
+						options: {
+							plugins: [
+								autoprefixer({
+									browsers:['ie >= 8', 'last 3 version']
+								})
+							],
+							sourceMap: true
 						}
-					]
-				})
+					},
+					{
+						loader: 'resolve-url-loader'
+					},
+					{
+						loader: 'sass-loader',
+						options: {
+							sourceMap: true
+						}
+					}
+
+				]
 			},
 			{
 				test: /\.(png|jpg|gif)$/,
@@ -77,17 +88,22 @@ const scssConfig = {
 			}
 		]
 	},
+
 	plugins: [
 		new ETP(config.output.scssFileName)
 	]
 };
 
 const jsConfig = {
+	mode: 'production',
+
 	entry: config.source.js,
+
 	output: {
 		filename: config.output.jsFileName,
 		path: path.resolve(__dirname, config.output.jsDirectory)
 	},
+
 	module: {
 		rules: [
 			{
@@ -102,7 +118,9 @@ const jsConfig = {
 			}
 		]
 	},
+
 	devtool: 'source-map',
+
 	plugins: [
 		// Automatically load modules instead of having to import or require them everywhere.
 		new webpack.ProvidePlugin({

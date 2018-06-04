@@ -1,31 +1,58 @@
 {
   "name": "wp-smushit",
+  "private": true,
   "version": "2.7.9",
   "description": "Resize, optimize, optimise and compress all of your images with the incredibly powerful and 100% free WordPress image smusher, brought to you by the superteam at WPMU DEV!",
-  "author": "WPMU DEV",
+  "keywords": [
+    "image",
+    "resize",
+    "optimize",
+    "optimise",
+    "compress",
+    "performance",
+    "optimisation",
+    "optimise JPG",
+    "photo",
+    "pictures",
+    "optimizer",
+    "Smush WordPress Compression",
+    "Smush.it"
+  ],
+  "homepage": "https://premium.wpmudev.org/project/wp-smush-pro/",
   "license": "GPL-2.0",
-  "private": true,
-  "devDependencies": {
-    "@wpmudev/shared-ui": "2.1.0",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.1",
-    "css-loader": "^0.28.9",
-    "extract-text-webpack-plugin": "^3.0.2",
-    "file-loader": "^1.1.6",
-    "node-sass": "^4.7.2",
-    "postcss-loader": "^2.0.10",
-    "resolve-url-loader": "^2.2.1",
-    "sass-loader": "^6.0.6",
-    "style-loader": "^0.20.1",
-    "url-loader": "^0.6.2",
-    "webpack": "^3.10.0",
-    "ajv-keywords": "^3.1.0",
-    "ajv": "6.0.0"
+  "author": {
+    "name": "WPMU DEV",
+    "url": "https://premium.wpmudev.org"
+  },
+  "main": "wp-smush.php",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/incsub/wp-smushit.git"
   },
   "scripts": {
-    "build": "webpack -p",
-    "watch": "webpack --watch"
+    "build": "clear && webpack -p --mode production",
+    "watch": "clear && webpack --watch --mode development"
+  },
+  "dependencies": {
+    "@wpmudev/shared-ui": "2.2.3"
+  },
+  "devDependencies": {
+    "ajv": "6.5.0",
+    "ajv-keywords": "^3.2.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "mini-css-extract-plugin": "^0.4.0",
+    "node-sass": "^4.9.0",
+    "postcss-loader": "^2.1.5",
+    "resolve-url-loader": "^2.3.0",
+    "sass-loader": "^7.0.2",
+    "style-loader": "^0.21.0",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.10.2",
+    "webpack-command": "^0.2.0"
   },
   "browserslist": [
     "> 1%",
