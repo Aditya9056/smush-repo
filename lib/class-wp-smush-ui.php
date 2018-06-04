@@ -1409,7 +1409,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<?php } else { ?>
 						<span class="sui-description"><?php echo $size_k; ?>
 							<?php if ( ! $is_pro ) { ?>
-								<span class="sui-tag sui-tag-pro">PRO</span>
+								<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'PRO', 'wp-smushit' ); ?></span>
 							<?php } ?>
 						</span>
 					<?php } ?>
