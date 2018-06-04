@@ -276,7 +276,7 @@ jQuery( function ( $ ) {
                             size_after: response.size_after
                         } );
                         //Got the stats, Update it
-                        update_stats();
+                        update_stats( this.smush_type );
                     }
                 }
             } ).always( function () {
@@ -421,7 +421,7 @@ jQuery( function ( $ ) {
                 this._update_progress( wp_smushit_data.count_smushed, progress );
             }
             // Update stats and counts.
-            update_stats();
+            update_stats( this.smush_type );
         };
 
         this._update_progress = function ( count, width ) {
@@ -595,7 +595,7 @@ jQuery( function ( $ ) {
                 self.$button.attr( 'continue_smush', false );
                 //Sync and update stats
                 self.sync_stats();
-                update_stats();
+                update_stats( this.smush_type );
 
                 self.request.abort();
                 self.enable_button();
@@ -1361,13 +1361,14 @@ jQuery( function ( $ ) {
     var update_stats = function ( scan_type ) {
 
         var super_savings = smushed_count = 0;
+        var is_nextgen = 'undefined' != typeof scan_type && 'nextgen' == scan_type;
 
         //Calculate updated savings in bytes
         wp_smushit_data.savings_bytes = parseInt( wp_smushit_data.size_before ) - parseInt( wp_smushit_data.size_after );
 
         var formatted_size = formatBytes( wp_smushit_data.savings_bytes, 1 );
 
-        if ( 'undefined' != typeof scan_type && 'nextgen' == scan_type ) {
+        if ( is_nextgen ) {
             $( '.wp-smush-savings .wp-smush-stats-human' ).html( formatted_size );
         } else {
             $( '.wp-smush-savings .wp-smush-stats-human' ).html( getFormatFromString( formatted_size ) );
@@ -1396,7 +1397,12 @@ jQuery( function ( $ ) {
         }
 
         //Update Image count
-        $( 'span.smushed-items-count span.wp-smush-count-total span.wp-smush-total-optimised' ).html( wp_smushit_data.count_images );
+        if ( is_nextgen ) {
+            console.log(wp_smushit_data.count_images);
+            $( '.sui-summary-details span.wp-smush-total-optimised' ).html( wp_smushit_data.count_images );
+        } else {
+            $( 'span.smushed-items-count span.wp-smush-count-total span.wp-smush-total-optimised' ).html( wp_smushit_data.count_images );
+        }
 
         //Update image count in share message
         //$( 'span.smush-share-image-count' ).html( wp_smushit_data.count_images );

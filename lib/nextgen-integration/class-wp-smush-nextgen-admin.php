@@ -532,7 +532,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			<div class="sui-summary-segment">
 				<div class="sui-summary-details">
 					<span class="sui-summary-large wp-smush-total-optimised"><?php echo $this->image_count; ?></span>
-					<i class="sui-icon-info sui-success sui-lg"></i>
 					<span class="sui-summary-sub"><?php esc_html_e( 'Images smushed', 'wp-smushit' ); ?></span>
 				</div>
 			</div>
