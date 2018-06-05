@@ -138,63 +138,62 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Constructor
 		 */
 		public function __construct() {
-
-			// hook scripts and styles
+			// Hook scripts and styles.
 			add_action( 'admin_init', array( $this, 'register' ) );
 
-			// hook custom screen
+			// Hook custom screen.
 			add_action( 'admin_menu', array( $this, 'screen' ) );
 
-			//Network Settings Page
+			// Network Settings Page.
 			add_action( 'network_admin_menu', array( $this, 'screen' ) );
 
-			//Handle Smush Bulk Ajax
+			// Handle Smush Bulk Ajax.
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
 
-			//Handle Smush Single Ajax
+			// Handle Smush Single Ajax.
 			add_action( 'wp_ajax_wp_smushit_manual', array( $this, 'smush_manual' ) );
 
-			//Handle resmush operation
+			// Handle resmush operation.
 			add_action( 'wp_ajax_smush_resmush_image', array( $this, 'resmush_image' ) );
 
-			//Scan images as per the latest settings
+			// Scan images as per the latest settings.
 			add_action( 'wp_ajax_scan_for_resmush', array( $this, 'scan_images' ) );
 
 			add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
-				'settings_link'
+				'settings_link',
 			) );
 			add_filter( 'network_admin_plugin_action_links_' . WP_SMUSH_BASENAME, array(
 				$this,
-				'settings_link'
+				'settings_link',
 			) );
 
-			// Smush Upgrade
+			// Smush Upgrade.
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
-			// New Features Notice
-//			add_action( 'admin_notices', array( $this, 'smush_updated' ) );
-//			add_action( 'network_admin_notices', array( $this, 'smush_updated' ) );
+			// New Features Notice.
+			//add_action( 'admin_notices', array( $this, 'smush_updated' ) );
+			//add_action( 'network_admin_notices', array( $this, 'smush_updated' ) );
 
-			//Handle the smush pro dismiss features notice ajax
+			// Handle the smush pro dismiss features notice ajax.
 			add_action( 'wp_ajax_dismiss_upgrade_notice', array( $this, 'dismiss_upgrade_notice' ) );
 
-			//Handle the smush pro dismiss features notice ajax
+			// Handle the smush pro dismiss features notice ajax.
 			add_action( 'wp_ajax_dismiss_welcome_notice', array( $this, 'dismiss_welcome_notice' ) );
 
-			//Handle the smush pro dismiss features notice ajax
+			// Handle the smush pro dismiss features notice ajax.
 			add_action( 'wp_ajax_dismiss_update_info', array( $this, 'dismiss_update_info' ) );
 
 			// Handle ajax request to dismiss the s3 warning.
 			add_action( 'wp_ajax_dismiss_s3support_alert', array( $this, 'dismiss_s3support_alert' ) );
 
-			// Ajax request for quick Setup
+			// Ajax request for quick Setup.
 			add_action( 'wp_ajax_setupSmush', array( $this, 'setupSmush' ) );
 
-			//Update the Super Smush count, after the smushing
+			// Update the Super Smush count, after the smushing.
 			add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
 
-			//Delete ReSmush list
+			// Delete ReSmush list.
 			add_action( 'wp_ajax_delete_resmush_list', array( $this, 'delete_resmush_list' ), '', 2 );
 
 			add_action( 'admin_init', array( $this, 'init_settings' ) );
@@ -219,14 +218,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			add_action( 'wp_ajax_hide_api_message', array( $this, 'hide_api_message' ) );
 
-			add_filter('wp_prepare_attachment_for_js', array( $this, 'smush_send_status' ), 99, 3 );
+			add_filter( 'wp_prepare_attachment_for_js', array( $this, 'smush_send_status' ), 99, 3 );
 
-			//Send smush stats
+			// Send smush stats.
 			add_action( 'wp_ajax_get_stats', array( $this, 'get_stats' ) );
 
-			//Load js and css on pages with Media Uploader - WP Enqueue Media
-			add_action('wp_enqueue_media', array( $this, 'enqueue') );
-
+			// Load js and css on pages with Media Uploader - WP Enqueue Media.
+			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
 		}
 
 		function init_settings() {
@@ -823,8 +821,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return array|string|void
 		 */
 		function smush_single( $attachment_id, $return = false ) {
-
-			//If the smushing option is already set, return the status
+			// If the smushing option is already set, return the status.
 			if ( get_option( 'smush-in-progress-' . $attachment_id, false ) || get_option( "wp-smush-restore-$attachment_id", false ) ) {
 				//Get the button status
 				$status = $this->set_status( $attachment_id, false, true );
