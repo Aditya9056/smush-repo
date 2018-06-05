@@ -881,7 +881,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 								<li class="smush-recommendation-resize-original"><?php printf( esc_html__( 'Enable %sResize Full Size Images%s to scale big images down to a reasonable size and save a ton of space.', 'wp-smsuhit' ), '<a href="#" class="wp-smush-resize-enable">', '</a>' ); ?></li>
 							<?php endif; ?>
 						</ol>
-						<span class="dismiss-recommendation"><?php esc_html_e( 'DISMISS', 'wp-smsuhit' ); ?></span>
+						<span class="dismiss-recommendation"><?php esc_html_e( 'DISMISS', 'wp-smushit' ); ?></span>
 					</div>
 				<?php endif; ?>
 				<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' sui-hidden' : ''; ?>"><?php
