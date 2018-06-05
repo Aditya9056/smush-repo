@@ -8,4 +8,5 @@ composer.lock
 npm-debug.log
 
 # Ignore build directories and tmp folders
+build
 node_modules

@@ -1,7 +1,7 @@
 {
   "name": "wp-smushit",
-  "private": true,
   "version": "2.7.9",
+  "private": true,
   "description": "Resize, optimize, optimise and compress all of your images with the incredibly powerful and 100% free WordPress image smusher, brought to you by the superteam at WPMU DEV!",
   "keywords": [
     "image",
@@ -25,13 +25,13 @@
     "url": "https://premium.wpmudev.org"
   },
   "main": "wp-smush.php",
-  "repository": {
-    "type": "git",
-    "url": "https://bitbucket.org/incsub/wp-smushit.git"
-  },
+  "repository": "git+https://bitbucket.org/incsub/wp-smushit.git",
   "scripts": {
-    "build": "clear && webpack -p --mode production",
-    "watch": "clear && webpack --watch --mode development"
+    "watch": "clear && webpack --watch --mode development",
+    "compile": "clear && grunt clean && webpack -p --progress",
+    "build:pro": "npm run compile && grunt prepare && grunt build",
+    "build:free": "npm run compile && grunt prepare && grunt build:wporg",
+    "build": "npm run compile && grunt prepare && grunt build && grunt build:wporg"
   },
   "dependencies": {
     "@wpmudev/shared-ui": "2.2.3"
@@ -44,6 +44,13 @@
     "babel-preset-env": "^1.7.0",
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
+    "grunt": "^1.0.3",
+    "grunt-checktextdomain": "^1.0.1",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-compress": "^1.4.3",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-wp-i18n": "^1.0.2",
+    "load-grunt-tasks": "^4.0.0",
     "mini-css-extract-plugin": "^0.4.0",
     "node-sass": "^4.9.0",
     "postcss-loader": "^2.1.5",
@@ -53,9 +60,5 @@
     "url-loader": "^1.0.1",
     "webpack": "^4.10.2",
     "webpack-command": "^0.2.0"
-  },
-  "browserslist": [
-    "> 1%",
-    "ie > 9"
-  ]
+  }
 }

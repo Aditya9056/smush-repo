@@ -1,7 +1,7 @@
-const path         = require('path');
-const webpack      = require('webpack');
-const autoprefixer = require('autoprefixer');
-const ETP          = require('mini-css-extract-plugin');
+const path    = require('path');
+const webpack = require('webpack');
+const AP      = require('autoprefixer');
+const ETP     = require('mini-css-extract-plugin');
 
 const config = {
 	source:{},
@@ -47,8 +47,8 @@ const scssConfig = {
 						loader: 'postcss-loader',
 						options: {
 							plugins: [
-								autoprefixer({
-									browsers:['ie >= 8', 'last 3 version']
+								AP({
+									browsers: ['ie > 9', '> 1%']
 								})
 							],
 							sourceMap: true
