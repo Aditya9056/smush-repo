@@ -311,7 +311,7 @@ if ( ! function_exists( 'smush_i18n' ) ) {
 }
 
 // Add Share UI Class.
-add_filter( 'admin_body_class', 'smush_body_classes' );
+add_filter( 'admin_body_class', 'smush_body_classes', 99 );
 
 if ( ! function_exists( 'smush_body_classes' ) ) {
 	/**
