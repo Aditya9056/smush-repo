@@ -11,11 +11,13 @@ module.exports = function( grunt ) {
 	];
 
 	var includeFilesPro = commonFiles.slice(0).concat([
-		'changelog.txt'
+		'changelog.txt',
+		'!extras/free-dashboard/**'
 	]);
 
 	var includeFilesFree = commonFiles.slice(0).concat([
-		'readme.txt'
+		'readme.txt',
+		'!extras/dash-notice/**'
 	]);
 
 	var changelog = grunt.file.read('.changelog');
