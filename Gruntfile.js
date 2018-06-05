@@ -74,6 +74,11 @@ module.exports = function( grunt ) {
 				type: 'wp-plugin',
 				updateTimestamp: false // Update POT-Creation-Date header if no other changes are detected
 			},
+			main: {
+				options: {
+					cwd: ''
+				}
+			},
 			pro: {
 				options: {
 					cwd: 'build/wp-smush-pro'
@@ -135,9 +140,9 @@ module.exports = function( grunt ) {
 		},
 	});
 
-	grunt.registerTask('prepare', [
-		'checktextdomain'
-	]);
+	grunt.registerTask('prepare', ['checktextdomain']);
+
+	grunt.registerTask('translate', ['makepot:main']);
 
 	grunt.registerTask('build', [
 		'copy:pro',

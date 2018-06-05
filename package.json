@@ -29,6 +29,7 @@
   "scripts": {
     "watch": "clear && webpack --watch --mode development",
     "compile": "clear && grunt clean && webpack -p --progress",
+    "translate": "clear && grunt translate",
     "build:pro": "npm run compile && grunt prepare && grunt build",
     "build:free": "npm run compile && grunt prepare && grunt build:wporg",
     "build": "npm run compile && grunt prepare && grunt build && grunt build:wporg"
