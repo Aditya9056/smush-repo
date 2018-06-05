@@ -2403,31 +2403,38 @@ jQuery( function ( $ ) {
         smush_all( true );
     } );
 
-    //Handle the Pause button click
+    // Handle the Pause button click.
     $( 'div.wp-smush-scan-result' ).on( 'click', 'button.wp-smush-pause', function ( e ) {
         e.preventDefault();
 
         var pause_button = $( 'button.wp-smush-pause' );
-        //Return if the link is disabled
+        // Return if the link is disabled.
         if ( pause_button.hasClass( 'disabled' ) ) {
             return false;
         }
 
-        //Set the button status to 0, to cancel next ajax request
+        // Set the button status to 0, to cancel next ajax request.
         $( 'input[name="wp-smush-continue-ajax"]' ).val( 0 );
 
-        //Enable the smush button, disable Pause button
+        // Enable the smush button, disable Pause button.
         pause_button.addClass( 'sui-hidden' ).attr( 'disabled', 'disabled' );
 
-        //Enable the smush button, hide the spinner
+        // Enable the smush button, hide the spinner.
         $( 'button.wp-smush-start, button.wp-smush-browse' ).show().removeAttr( 'disabled' );
         $( 'span.wp-smush-image-dir-progress, span.wp-smush-image-ele-progress' ).removeClass( 'sui-icon-loader sui-loading' );
 
         // Hide the waiting message.
         $( '.wp-smush-image-progress-percent' ).addClass( 'sui-hidden' );
 
-        //Show directory exclude option
-        $( '.wp-smush-exclude-dir' ).show();
+	    // Show directory exclude option.
+	    $( '.wp-smush-exclude-dir' ).each( function() {
+		    if ( $( this ).parent().prevAll( '.optimised, .partial' ).length === 0 ) {
+			    $( this ).show();
+		    }
+	    });
+
+	    // Remove progress icon from navbar.
+	    $( '.smush-nav-icon.directory' ).removeClass( 'sui-icon-loader sui-loading' );
     } );
 
     //Exclude Directory from list - Handle Click
@@ -2483,8 +2490,6 @@ jQuery( function ( $ ) {
 
             //Hide the buttons
             $( 'button.wp-smush-resume' ).remove();
-            //Remove the loader for choose directory button
-            $( 'div.dir-smush-button-wrap span.spinner' ).remove();
             // Allow to select a new directory
             $( 'button.wp-smush-browse' ).removeAttr( 'disabled' );
             //Append the results
