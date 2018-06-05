@@ -878,7 +878,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<li class="smush-recommendation-resize"><?php printf( esc_html__( 'Make sure your images are the right size for your theme. %sLearn more%s.', 'wp-smsuhit' ), '<a href="' . esc_url( 'https://goo.gl/kCqWxS' ) . '" target="_blank">', '</a>' ); ?></li>
 							<?php if ( ! $wpsmush_settings->settings['resize'] ) : ?>
 								<?php // Check if resize original is disabled ?>
-								<li class="smush-recommendation-resize-original"><?php printf( esc_html__( 'Enable %sResize Original Images%s to scale big images down to a reasonable size and save a ton of space.', 'wp-smsuhit' ), '<a href="#" class="wp-smush-resize-enable">', '</a>' ); ?></li>
+								<li class="smush-recommendation-resize-original"><?php printf( esc_html__( 'Enable %sResize Full Size Images%s to scale big images down to a reasonable size and save a ton of space.', 'wp-smsuhit' ), '<a href="#" class="wp-smush-resize-enable">', '</a>' ); ?></li>
 							<?php endif; ?>
 						</ol>
 						<span class="dismiss-recommendation"><?php esc_html_e( 'DISMISS', 'wp-smsuhit' ); ?></span>
