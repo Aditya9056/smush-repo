@@ -1158,8 +1158,8 @@ jQuery( function ( $ ) {
         if ( children.length > 0 ) {
             var total = children.length;
             var smushed = children.filter( '.optimised' ).length;
-            ele_dir_progress_percent.removeClass( 'sui-hidden' );
             if ( smushed > 0 && total > 0 ) {
+                ele_dir_progress_percent.removeClass( 'sui-hidden' );
                 var percent = ( smushed / total ) * 100;
                 percent = precise_round( percent, 1 );
                 ele_dir_progress_percent.html( percent + '%' );
@@ -2390,7 +2390,7 @@ jQuery( function ( $ ) {
         $( '.wp-smush-exclude-dir' ).hide();
 
         /** All the Styling changes **/
-        button.addClass( 'sui-hidden' );
+        button.hide();
         parent.find( 'button.wp-smush-pause' ).removeClass( 'disabled sui-hidden' ).removeAttr( 'disabled' );
 
         //Disable Select Directory button
