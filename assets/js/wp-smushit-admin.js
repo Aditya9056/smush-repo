@@ -2122,6 +2122,19 @@ jQuery( function ( $ ) {
         }
     } );
 
+    // Handle auto detect checkbox toggle, to show/hide highlighting notice.
+    $( 'body' ).on( 'click', '#wp-smush-detection', function () {
+        var self = $( this );
+        var notice_wrap = $( '.smush-highlighting-notice' );
+
+        if ( self.is( ':checked' ) ) {
+            console.log(self);
+            notice_wrap.show();
+        } else {
+            notice_wrap.hide();
+        }
+    } );
+
     //Handle PNG to JPG Checkbox toggle, to show/hide Transparent image conversion settings
     $( '#wp-smush-png_to_jpg' ).click( function () {
         var self = $( this );

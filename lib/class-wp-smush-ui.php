@@ -1227,7 +1227,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						</label>
 						<span class="sui-description"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span>
 						<?php if ( 'detection' === $name ) { ?>
-							<div class="sui-notice sui-notice-info smush-notice-sm"><p><?php printf( esc_html__( 'Highlighting is active. %sView homepage%s.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?></p></div>
+							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo $setting_val === 1 ? '' : 'sui-hidden'; ?>"><p><?php printf( esc_html__( 'Highlighting is active. %sView homepage%s.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?></p></div>
 						<?php } ?>
 					</div>
 				</div>
