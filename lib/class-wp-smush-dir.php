@@ -29,7 +29,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			if ( ! $this->should_continue() ) {
 
 				// Remove directory smush from tabs if not required.
-				add_filter( 'smush_setting_tabs', array( $this, 'maybe_remove_directory_tab' ) );
+				add_filter( 'smush_setting_tabs', array( $this, 'remove_directory_tab' ) );
 
 				return;
 			}
@@ -1472,9 +1472,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 *
 		 * @return array
 		 */
-		public function maybe_remove_directory_tab( $tabs ) {
+		public function remove_directory_tab( $tabs ) {
 
-			if ( ! $this->should_continue() && isset( $tabs['directory'] ) ) {
+			if ( isset( $tabs['directory'] ) ) {
 				unset( $tabs['directory'] );
 			}
 
