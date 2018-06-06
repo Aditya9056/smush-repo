@@ -1117,7 +1117,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<div class="smush-pro-feature-desc"><?php esc_html_e( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' ); ?></div>
 						</li>
 					</ul>
-					<div class="sui-box-settings-row sui-upsell-row">
+					<div class="sui-upsell-row">
 						<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-promo.png'; ?>">
 						<div class="sui-upsell-notice">
 							<p><?php printf( esc_html__( 'Smush Pro gives you all these extra settings and absolutely not limits on smushing your images? Did we mention Smush Pro also gives you up to 2x better compression too? %sTry it all free%s with a WPMU DEV membership today!', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">', '</a>' ); ?></p>
@@ -1550,7 +1550,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			);
 
 			?>
-			<div class="sui-box-settings-row sui-upsell-row">
+			<div class="sui-upsell-row">
 				<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-promo.png'; ?>">
 				<div class="sui-upsell-notice">
 					<p><?php printf( esc_html__( 'Did you know WP Smush Pro delivers up to 2x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">', '</a>' ); ?></p>
