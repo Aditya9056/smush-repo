@@ -82,13 +82,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		public function __construct() {
 
-			$this->tabs = array(
-				'bulk'         => esc_html__( 'Bulk Smush', 'wp-smushit' ),
-				'directory'    => esc_html__( 'Directory Smush', 'wp-smushit' ),
-				'integrations' => esc_html__( 'Integrations', 'wp-smushit' ),
-				'cdn'          => esc_html__( 'CDN', 'wp-smushit' ),
-			);
-
 			add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
 			add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
 			add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
@@ -1214,6 +1207,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			foreach ( $this->resize_group as $name ) {
 
+				// Do not continue if setting is not found.
+				if ( ! isset( $wpsmush_settings->settings[ $name ] ) ) {
+					continue;
+				}
+
 				$setting_val = $wpsmush_settings->settings[ $name ];
 				$setting_key = WP_SMUSH_PREFIX . $name;
 				?>
@@ -1228,6 +1226,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<span class="sui-settings-label sui-toggle-label smush-settings-right-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span>
 						</label>
 						<span class="sui-description"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span>
+						<?php if ( 'detection' === $name ) { ?>
+							<div class="sui-notice sui-notice-info smush-notice-sm"><p><?php printf( esc_html__( 'Highlighting is active. %sView homepage%s.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?></p></div>
+						<?php } ?>
 					</div>
 				</div>
 				<?php
@@ -1602,7 +1603,19 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		public function set_current_tab() {
 
-			global $wpsmush_settings;
+			global $wpsmush_settings, $wpsmush_dir;
+
+			/**
+			 * Filter to alter setting tabs.
+			 *
+			 * @param array Tabs.
+			 */
+			$this->tabs = apply_filters( 'smush_setting_tabs', array(
+				'bulk'         => esc_html__( 'Bulk Smush', 'wp-smushit' ),
+				'directory'    => esc_html__( 'Directory Smush', 'wp-smushit' ),
+				'integrations' => esc_html__( 'Integrations', 'wp-smushit' ),
+				'cdn'          => esc_html__( 'CDN', 'wp-smushit' ),
+			) );
 
 			// Check if current page network admin page.
 			$is_network     = is_network_admin();
@@ -1614,11 +1627,19 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// If no integration found, set current tab as bulk smush.
 			if ( ( empty( $this->intgration_group ) && 'integrations' === $this->current_tab ) ||
 			     ( $is_network && ! $is_networkwide ) ||
-			     ( ! $is_network && $is_networkwide && ! in_array( $this->current_tab, $this->subsite_tabs ) )
+			     ( ! $is_network && $is_networkwide && ! in_array( $this->current_tab, $this->subsite_tabs ) ) ||
+			     ( 'directory' === $this->current_tab && ! $wpsmush_dir->should_continue() )
 			) {
 				// If networkwide option is enabled only show bulk and directory smush.
 				$this->current_tab = 'bulk';
 			}
+
+			/**
+			 * Filter to change current tab.
+			 *
+			 * @param string Current tab key.
+			 */
+			$this->current_tab = apply_filters( 'smush_setting_current_tab', $this->current_tab );
 		}
 
 		/**

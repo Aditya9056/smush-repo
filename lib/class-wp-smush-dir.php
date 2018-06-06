@@ -24,9 +24,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 */
 		public $stats;
 
-		function __construct() {
+		public function __construct() {
 
 			if ( ! $this->should_continue() ) {
+
+				// Remove directory smush from tabs if not required.
+				add_filter( 'smush_setting_tabs', array( $this, 'maybe_remove_directory_tab' ) );
+
 				return;
 			}
 
@@ -1457,6 +1461,24 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			}
 
 			return $notice;
+		}
+
+		/**
+		 * Remove directory smush from tabs.
+		 *
+		 * If not in main site, do not show directory smush.
+		 *
+		 * @param array $tabs Tabs.
+		 *
+		 * @return array
+		 */
+		public function maybe_remove_directory_tab( $tabs ) {
+
+			if ( ! $this->should_continue() && isset( $tabs['directory'] ) ) {
+				unset( $tabs['directory'] );
+			}
+
+			return $tabs;
 		}
 
 	}
