@@ -473,7 +473,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		public function smush_stats_container() {
 
-			global $WpSmush, $wpsmushit_admin, $wpsmush_db, $wpsmush_settings, $wpsmush_dir;
+			global $wpsmushit_admin, $wpsmush_db, $wpsmush_settings;
 
 			$settings       = $wpsmush_settings->settings;
 			$networkwide    = (bool) $settings['networkwide'];
@@ -481,7 +481,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$resize_count   = $wpsmush_db->resize_savings( false, false, true );
 			$resize_count   = ! $resize_count ? 0 : $resize_count;
 			$remaining      = $wpsmushit_admin->remaining_count;
-
 			?>
 
 			<div class="sui-box sui-summary sui-summary-smush">
@@ -490,7 +489,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-summary-segment">
 					<div class="sui-summary-details">
 						<span class="sui-summary-large wp-smush-stats-human"><?php echo $wpsmushit_admin->stats['human_size']; ?></span>
-						<i class="sui-icon-info sui-warning smush-stats-icon <?php echo $remaining > 0 ? '' : 'sui-hidden'; ?>"></i>
+						<i class="sui-icon-info sui-warning smush-stats-icon <?php echo $remaining > 0 ? '' : 'sui-hidden'; ?>" aria-hidden="true"></i>
 						<span class="sui-summary-detail wp-smush-savings">
 							<span class="wp-smush-stats-human"><?php echo $wpsmushit_admin->stats['human_format']; ?></span> /
 							<span class="wp-smush-stats-percent"><?php echo $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0; ?></span>%
@@ -576,7 +575,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				?>
 
 				<li class="smush-avg-pro-savings<?php echo $show_pro_savings ? '' : ' sui-hidden'; ?>" id="smush-avg-pro-savings">
-					<span class="sui-list-label"><?php _e( 'Pro Savings', 'wp-smushit' ); ?></span>
+					<span class="sui-list-label">
+						<?php _e( 'Pro Savings', 'wp-smushit' ); ?>
+						<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>"><?php esc_html_e( 'PRO', 'wp-smushit' ); ?></span>
+					</span>
 					<span class="sui-list-detail wp-smush-stats">
 						<span class="wp-smush-stats-human"><?php echo $show_pro_savings ? $pro_savings['savings'] : '0.0 B'; ?></span>
 						<span class="wp-smush-stats-sep">/</span>
@@ -1409,7 +1411,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<?php } else { ?>
 						<span class="sui-description"><?php echo $size_k; ?>
 							<?php if ( ! $is_pro ) { ?>
-								<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'PRO', 'wp-smushit' ); ?></span>
+								<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>"><?php esc_html_e( 'PRO', 'wp-smushit' ); ?></span>
 							<?php } ?>
 						</span>
 					<?php } ?>
