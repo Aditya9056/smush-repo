@@ -1402,7 +1402,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			}
 			?>
 
-			<div class="sui-dialog wp-smush-list-dialog" id="wp-smush-list-dialog">
+			<div class="sui-dialog wp-smush-list-dialog" aria-hidden="true" id="wp-smush-list-dialog">
 
 				<div class="sui-dialog-overlay sui-fade-in" tabindex="-1"></div>
 
