@@ -861,7 +861,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-notice sui-notice-success wp-smush-all-done<?php echo $all_done ? '' : ' sui-hidden' ?>" tabindex="0">
 					<p><?php esc_html_e( 'All attachments have been smushed. Awesome!', 'wp-smushit' ); ?></p>
 				</div>
-				<?php if ( $hide_pagespeed ) : ?>
+				<?php if ( ! $hide_pagespeed ) : ?>
 					<div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' sui-hidden' ?>">
 						<span class="smush-recommendation-title"><?php esc_html_e( 'Still having trouble with PageSpeed tests? Give these a go…', 'wp-smsuhit' ); ?></span>
 						<ol class="smush-recommendation-list">
