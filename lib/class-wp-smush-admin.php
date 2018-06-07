@@ -218,7 +218,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			 */
 			add_action( 'wp_ajax_hide_api_message', array( $this, 'hide_api_message' ) );
 
-			add_filter('wp_prepare_attachment_for_js', array( $this, 'smush_send_status' ), 99, 3 );
+			add_filter( 'wp_prepare_attachment_for_js', array( $this, 'smush_send_status' ), 99, 3 );
 
 			//Send smush stats
 			add_action( 'wp_ajax_get_stats', array( $this, 'get_stats' ) );

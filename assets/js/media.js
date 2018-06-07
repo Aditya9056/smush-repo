@@ -1,7 +1,5 @@
 /**
  * Adds a Smush Now button and displays stats in Media Attachment Details Screen
- *
- *
  */
 (function ($, _) {
 
@@ -14,7 +12,6 @@
         var smushMediaTwoColumn = smush_media.view.Attachment.Details.TwoColumn;
 
         /**
-         /*
          * Add Smush details to attachment.
          */
         smush_media.view.Attachment.Details.TwoColumn = smushMediaTwoColumn.extend({
@@ -51,6 +48,7 @@
                 return this;
             }
         });
+
     }
 
     // Local instance of the Attachment Details TwoColumn used in the edit attachment modal view
@@ -65,6 +63,7 @@
             // Always make sure that our content is up to date.
             this.model.on('change', this.render, this);
         },
+
         render: function () {
             // Ensure that the main attachment fields are rendered.
             smush_media.view.Attachment.prototype.render.apply(this, arguments);
@@ -77,6 +76,14 @@
             this.views.detach();
 
             var template = _.template('<label class="setting smush-stats" data-setting="description"><span class="name"><%= label %></span><span class="value"><%= value %></span></label>');
+
+            if ( this.model.get('smush').indexOf('wp-smush-progress') >= 0 ) {
+                console.log( this.model.get('smush') );
+                //this.model.trigger('change');
+				//setTimeout(this.model.trigger, 2000, 'change');
+				setTimeout(this.updateStats, 4000, this);
+            }
+
             var html = template({
                 label: smush_vars.strings['stats_label'],
                 value: this.model.get('smush')
@@ -88,7 +95,38 @@
             this.views.render();
 
             return this;
+        },
+
+        updateStats: function (obj) {
+			// Ensure that the main attachment fields are rendered.
+			smush_media.view.Attachment.prototype.render.apply(obj, arguments);
+
+			if (typeof (obj.model.get('smush')) == 'undefined') {
+				return obj;
+			}
+
+			if ( obj.model.get('smush').indexOf('wp-smush-progress') >= 0 ) {
+				console.log( obj.model.get('smush') );
+				setTimeout(obj.updateStats, 2000, obj);
+			}
+
+			obj.views.detach();
+
+			var template = _.template('<label class="setting smush-stats" data-setting="description"><span class="name"><%= label %></span><span class="value"><%= value %></span></label>');
+
+			var html = template({
+				label: smush_vars.strings['stats_label'],
+				value: obj.model.get('smush')
+			});
+
+			obj.$el.append(html);
+
+			obj.model.fetch();
+			obj.views.render();
+
+			return obj;
         }
+
     });
 
 })(jQuery, _);
