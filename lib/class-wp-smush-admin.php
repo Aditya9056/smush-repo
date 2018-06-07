@@ -2259,6 +2259,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'media-views',
 					'media-grid',
 					'wp-util',
+					'wp-api',
 				), $this->version, true );
 
 				wp_localize_script( 'smush-backbone-extension', 'smush_vars', array(
