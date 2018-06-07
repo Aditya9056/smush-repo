@@ -30,9 +30,9 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-async.php';
 // Include REST API integration.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-rest.php';
 
-if ( ! class_exists( 'WpSmush' ) ) {
+if ( ! class_exists( 'WP_Smush' ) ) {
 
-	class WpSmush {
+	class WP_Smush {
 
 		var $version = WP_SMUSH_VERSION;
 
@@ -2559,8 +2559,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 	}
 
-	global $WpSmush;
-	$WpSmush = new WpSmush();
+	global $wp_smush;
+	$wp_smush = new WP_Smush();
 
 }
 

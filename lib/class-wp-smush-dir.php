@@ -192,10 +192,10 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 *
 		 */
 		function get_unsmushed_image() {
-			global $wpdb, $WpSmush;
+			global $wpdb, $wp_smush;
 
 			// If super-smush enabled, add lossy check.
-			$lossy_condition = $WpSmush->lossy_enabled ? '(image_size IS NULL OR lossy <> 1)' : 'image_size IS NULL';
+			$lossy_condition = $wp_smush->lossy_enabled ? '(image_size IS NULL OR lossy <> 1)' : 'image_size IS NULL';
 
 			$query   = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}smush_dir_images WHERE $lossy_condition && last_scan = (SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images t2 )  GROUP BY id ORDER BY id LIMIT %d", 1 );
 			$results = $wpdb->get_col( $query );
@@ -228,7 +228,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * Output the required UI for WP Smush All page
 		 */
 		function ui() {
-			global $WpSmush, $wpsmushit_admin, $wpsmush_bulkui;
+			global $wp_smush, $wpsmushit_admin, $wpsmush_bulkui;
 
 			//Print Directory Smush UI, if not a network site
 			if ( is_network_admin() ) {
@@ -236,14 +236,14 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			}
 
 			//Remove the early hook
-			if ( $WpSmush->validate_install() ) {
+			if ( $wp_smush->validate_install() ) {
 				remove_action( 'wp_smush_before_advanced_settings', array( $this, 'ui' ) );
 			} else {
 				remove_action( 'smush_settings_ui_bottom', array( $this, 'ui' ), 11 );
 			}
 
 			//Reset the bulk limit
-			if ( ! $WpSmush->validate_install() ) {
+			if ( ! $wp_smush->validate_install() ) {
 				//Reset Transient
 				$wpsmushit_admin->check_bulk_limit( true, 'dir_sent_count' );
 			}
@@ -987,7 +987,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 *
 		 */
 		function total_stats() {
-			global $wpdb, $WpSmush;
+			global $wpdb, $wp_smush;
 
 			$offset    = 0;
 			$optimised = 0;
@@ -999,7 +999,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$total = ! empty( $total ) && is_array( $total ) ? $total[0] : 0;
 
 			// If super-smush enabled, add meta condition.
-			$lossy_condition = $WpSmush->lossy_enabled ? 'AND lossy = 1' : '';
+			$lossy_condition = $wp_smush->lossy_enabled ? 'AND lossy = 1' : '';
 
 			$continue = true;
 			while ( $continue && $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL $lossy_condition ORDER BY `id` LIMIT $offset, $limit", ARRAY_A ) ) {
@@ -1088,7 +1088,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * Handles the ajax request  for image optimisation in a folder
 		 */
 		function optimise() {
-			global $wpdb, $WpSmush, $wpsmushit_admin;
+			global $wpdb, $wp_smush, $wpsmushit_admin;
 
 			//Verify the ajax nonce
 			check_ajax_referer( 'wp_smush_all', 'nonce' );
@@ -1105,7 +1105,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$stats     = array();
 
 			//Check smush limit for free users
-			if ( ! $WpSmush->validate_install() ) {
+			if ( ! $wp_smush->validate_install() ) {
 
 				//Free version bulk smush, check the transient counter value
 				$should_continue = $wpsmushit_admin->check_bulk_limit( false, 'dir_sent_count' );
@@ -1137,7 +1137,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$path = $image['path'];
 
 			//We have the image path, optimise
-			$smush_results = $WpSmush->do_smushit( $path );
+			$smush_results = $wp_smush->do_smushit( $path );
 
 			if ( is_wp_error( $smush_results ) ) {
 				$error_msg = $smush_results->get_error_message();
@@ -1167,7 +1167,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$file_time = @filectime( $path );
 
 			// If super-smush enabled, update supersmushed meta value also.
-			$lossy = $WpSmush->lossy_enabled ? 1 : 0;
+			$lossy = $wp_smush->lossy_enabled ? 1 : 0;
 
 			// All good, Update the stats.
 			$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, lossy=%s WHERE id=%d LIMIT 1";

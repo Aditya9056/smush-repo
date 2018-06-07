@@ -84,15 +84,15 @@ class WP_Smush_Rest {
 	 * @return array|string|void
 	 */
 	public function register_image_stats( $image ) {
-		/* @var WpSmush $WpSmush */
-		global $WpSmush, $wpsmush_s3_compat;
+		/* @var WP_Smush $wp_smush */
+		global $wp_smush, $wpsmush_s3_compat;
 
 		if ( get_option( 'smush-in-progress-' . $image['id'], false ) ) {
 			$status_txt = __( 'Smushing in progress', 'wp-smushit' );
 			return $status_txt;
 		}
 
-		$wp_smush_data = get_post_meta( $image['id'], $WpSmush->smushed_meta_key, true );
+		$wp_smush_data = get_post_meta( $image['id'], $wp_smush->smushed_meta_key, true );
 
 		if ( empty( $wp_smush_data ) ) {
 			$status_txt = __( 'Not processed', 'wp-smushit' );
@@ -102,8 +102,8 @@ class WP_Smush_Rest {
 		$wp_resize_savings  = get_post_meta( $image['id'], WP_SMUSH_PREFIX . 'resize_savings', true );
 		$conversion_savings = get_post_meta( $image['id'], WP_SMUSH_PREFIX . 'pngjpg_savings', true );
 
-		$combined_stats = $WpSmush->combined_stats( $wp_smush_data, $wp_resize_savings );
-		$combined_stats = $WpSmush->combine_conversion_stats( $combined_stats, $conversion_savings );
+		$combined_stats = $wp_smush->combined_stats( $wp_smush_data, $wp_resize_savings );
+		$combined_stats = $wp_smush->combine_conversion_stats( $combined_stats, $conversion_savings );
 
 		// Remove Smush S3 hook, as it downloads the file again.
 		remove_filter( 'as3cf_get_attached_file', array( $wpsmush_s3_compat, 'smush_download_file' ), 11, 4 );
@@ -143,7 +143,7 @@ class WP_Smush_Rest {
 					$links = sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" tooltip="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
 
 					// Stats.
-					$stats = $WpSmush->get_detailed_stats( $image['id'], $wp_smush_data, $attachment_data );
+					$stats = $wp_smush->get_detailed_stats( $image['id'], $wp_smush_data, $attachment_data );
 				}
 
 				return $status_txt;

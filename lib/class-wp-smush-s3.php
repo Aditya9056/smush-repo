@@ -25,7 +25,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 		function init() {
 
-			global $WpSmush;
+			global $wp_smush;
 
 			//Filters the setting variable to add S3 setting title and description
 			add_filter( 'wp_smush_settings', array( $this, 'register' ), 6 );
@@ -34,7 +34,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			add_filter( 'wp_smush_pro_settings', array( $this, 'add_setting' ), 6 );
 
 			//return if not a pro user
-			if ( ! $WpSmush->validate_install() ) {
+			if ( ! $wp_smush->validate_install() ) {
 				return;
 			}
 
@@ -95,11 +95,11 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return;
 			}
 
-			global $as3cf, $WpSmush, $wpsmush_settings;
+			global $as3cf, $wp_smush, $wpsmush_settings;
 			$show_error = false;
 
 			//If S3 integration is not enabled, return
-			$setting_val = $WpSmush->validate_install() ? $wpsmush_settings->settings['s3'] : 0;
+			$setting_val = $wp_smush->validate_install() ? $wpsmush_settings->settings['s3'] : 0;
 
 			if ( ! $setting_val ) {
 				return;
@@ -243,8 +243,8 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 *
 		 */
 		function download_file( $attachment_id, $size_details = array(), $uf_file_path = '' ) {
-			global $WpSmush, $wpsmush_settings;
-			if ( empty( $attachment_id ) || ! $wpsmush_settings->settings['s3'] || ! $WpSmush->validate_install() ) {
+			global $wp_smush, $wpsmush_settings;
+			if ( empty( $attachment_id ) || ! $wpsmush_settings->settings['s3'] || ! $wp_smush->validate_install() ) {
 				return false;
 			}
 
@@ -420,10 +420,10 @@ if ( class_exists( 'AS3CF_Plugin_Compatibility' ) && ! class_exists( 'wp_smush_s
 		 */
 		function smush_download_file( $url, $file, $attachment_id, $s3_object ) {
 
-			global $as3cf, $wpsmush_settings, $WpSmush;
+			global $as3cf, $wpsmush_settings, $wp_smush;
 
 			//Return if integration is disabled, or not a pro user
-			if ( ! $wpsmush_settings->settings['s3'] || ! $WpSmush->validate_install() ) {
+			if ( ! $wpsmush_settings->settings['s3'] || ! $wp_smush->validate_install() ) {
 				return $url;
 			}
 
