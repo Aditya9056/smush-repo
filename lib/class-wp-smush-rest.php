@@ -1,11 +1,10 @@
 <?php
 /**
- * Smush integration with Rest API.
- *
- * @since 2.8
+ * Smush integration with Rest API: WP_Smush_Rest class
  *
  * @package WP Smush
  * @subpackage Admin
+ * @since 2.8.0
  *
  * @author Anton Vanyukov <anton@incsub.com>
  *
@@ -15,12 +14,13 @@
 /**
  * Singleton class WpSmushRest for extending the WordPress REST API interface.
  *
- * @since 2.8
+ * @since 2.8.0
  */
 class WP_Smush_Rest {
 	/**
 	 * Class instance variable.
 	 *
+	 * @since 2.8.0
 	 * @var null|WP_Smush_Rest
 	 */
 	private static $_instance = null;
@@ -33,6 +33,8 @@ class WP_Smush_Rest {
 	/**
 	 * Get class instance.
 	 *
+	 * @since 2.8.0
+	 *
 	 * @return null|WP_Smush_Rest
 	 */
 	public static function get_instance() {
@@ -44,7 +46,10 @@ class WP_Smush_Rest {
 	}
 
 	/**
-	 * Register smush meta field in the wp-json/wp/v2/media REST API endpoint.
+	 * Register smush meta fields and callbacks for the image object in the
+	 * wp-json/wp/v2/media REST API endpoint.
+	 *
+	 * @since 2.8.0
 	 */
 	public function register_metas() {
 		add_action( 'rest_api_init', function () {
@@ -65,7 +70,10 @@ class WP_Smush_Rest {
 	 * If image is Smushed, the stats from the meta can be queried, if the not - the status of Smushing
 	 * will be displayed as a string in the API.
 	 *
-	 * @see https://developer.wordpress.org/rest-api/reference/media/
+	 * @since 2.8.0
+	 *
+	 * @link https://developer.wordpress.org/rest-api/reference/media/
+	 * @global WP_Smush $wp_smush  Smush instance.
 	 *
 	 * @param array $image  Image array.
 	 *

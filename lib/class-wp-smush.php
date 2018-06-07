@@ -2167,7 +2167,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @param array $stats               Savings from Smushing the image.
 		 * @param array $conversion_savings  Savings from converting the PNG to JPG.
 		 *
-		 * @return Object Total Savings
+		 * @return Object|array Total Savings
 		 */
 		function combine_conversion_stats( $stats, $conversion_savings ) {
 			if ( empty( $stats ) || empty( $conversion_savings ) ) {
