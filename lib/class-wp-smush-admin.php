@@ -30,7 +30,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	 * @property int $total_count
 	 * @property int $smushed_count
 	 */
-	class WpSmushitAdmin extends WpSmush {
+	class WpSmushitAdmin extends WP_Smush {
 
 		/**
 		 * @var array Settings

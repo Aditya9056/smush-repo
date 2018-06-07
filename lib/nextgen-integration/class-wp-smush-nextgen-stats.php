@@ -167,7 +167,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		 * @param bool $text_only Return only text instead of button (Useful for Ajax)
 		 * @param bool $echo Whether to echo the stats or not
 		 *
-		 * @uses WpSmushNextGenAdmin::column_html(), WpSmush::get_restore_link(), WpSmush::get_resmush_link()
+		 * @uses WpSmushNextGenAdmin::column_html(), WP_Smush::get_restore_link(), WP_Smush::get_resmush_link()
 		 *
 		 * @return bool|null|string|void
 		 */

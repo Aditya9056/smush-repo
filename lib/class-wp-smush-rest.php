@@ -77,15 +77,19 @@ class WP_Smush_Rest {
 	/**
 	 * Add image stats to the wp-json/wp/v2/media REST API endpoint.
 	 *
+	 * Will add the stats from wp-smpro-smush-data image meta key to the media REST API endpoint.
+	 * If image is Smushed, the stats from the meta can be queried, if the not - the status of Smushing
+	 * will be displayed as a string in the API.
+	 *
 	 * @see https://developer.wordpress.org/rest-api/reference/media/
 	 *
 	 * @param array $image  Image array.
 	 *
-	 * @return array|string|void
+	 * @return array|string
 	 */
 	public function register_image_stats( $image ) {
 		/* @var WP_Smush $wp_smush */
-		global $wp_smush, $wpsmush_s3_compat;
+		global $wp_smush;
 
 		if ( get_option( 'smush-in-progress-' . $image['id'], false ) ) {
 			$status_txt = __( 'Smushing in progress', 'wp-smushit' );
@@ -105,62 +109,7 @@ class WP_Smush_Rest {
 		$combined_stats = $wp_smush->combined_stats( $wp_smush_data, $wp_resize_savings );
 		$combined_stats = $wp_smush->combine_conversion_stats( $combined_stats, $conversion_savings );
 
-		// Remove Smush S3 hook, as it downloads the file again.
-		remove_filter( 'as3cf_get_attached_file', array( $wpsmush_s3_compat, 'smush_download_file' ), 11, 4 );
-		$attachment_data = wp_get_attachment_metadata( $image['id'] );
-
-		$image_count    = count( $wp_smush_data['sizes'] );
-		$bytes          = isset( $combined_stats['stats']['bytes'] ) ? $combined_stats['stats']['bytes'] : 0;
-		$bytes_readable = ! empty( $bytes ) ? size_format( $bytes, 1 ) : '';
-		$percent        = isset( $combined_stats['stats']['percent'] ) ? $combined_stats['stats']['percent'] : 0;
-		$percent        = $percent < 0 ? 0 : $percent;
-
-		if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && 0 === $wp_smush_data['stats']['size_before'] && ! empty( $wp_smush_data['sizes'] ) ) {
-			$status_txt = __( 'Already Optimized', 'wp-smushit' );
-			return $status_txt;
-		} else {
-			if ( 0 === $bytes || 0 === $percent ) {
-				$status_txt = __( 'Already Optimized', 'wp-smushit' );
-				return $status_txt;
-			} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
-				$status_txt = $image_count > 1 ? sprintf( __( '%d images reduced ', 'wp-smushit' ), $image_count ) : __( 'Reduced ', 'wp-smushit' );
-
-				$stats_percent = number_format_i18n( $percent, 2, '.', '' );
-				$stats_percent = $stats_percent > 0 ? sprintf( '(  %01.1f%% )', $stats_percent ) : '';
-				$status_txt .= sprintf( __( 'by %s %s', 'wp-smushit' ), $bytes_readable, $stats_percent );
-
-				$file_path = get_attached_file( $image['id'] );
-				$size      = file_exists( $file_path ) ? filesize( $file_path ) : 0;
-				if ( $size > 0 ) {
-					$size       = size_format( $size, 1 );
-					$image_size = sprintf( __( '<br /> Image Size: %s', 'wp-smushit' ), $size );
-					$status_txt .= $image_size;
-				}
-
-				// Detailed Stats: Show detailed stats if available.
-				if ( ! empty( $wp_smush_data['sizes'] ) ) {
-					// Detailed Stats Link.
-					$links = sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" tooltip="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
-
-					// Stats.
-					$stats = $wp_smush->get_detailed_stats( $image['id'], $wp_smush_data, $attachment_data );
-				}
-
-				return $status_txt;
-			}
-		}
-
-		// IF current compression is lossy.
-		if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
-			$lossy    = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
-			$is_lossy = $lossy == 1 ? true : false;
-		}
-
-		return array(
-			'status'       => $status_txt,
-			'stats'        => $stats,
-			'show_warning' => intval( $this->show_warning() ),
-		);
+		return $combined_stats;
 	}
 
 }
