@@ -44,31 +44,15 @@ class WP_Smush_Rest {
 	}
 
 	/**
-	 * Register meta fields for images.
+	 * Register smush meta field in the wp-json/wp/v2/media REST API endpoint.
 	 */
 	public function register_metas() {
 		add_action( 'rest_api_init', function () {
 			register_rest_field( 'attachment', 'smush', array(
 				'get_callback' => array( $this, 'register_image_stats' ),
-				'update_callback' => function( $karma, $comment_obj ) {
-					$ret = wp_update_comment( array(
-						'comment_ID'    => $comment_obj->comment_ID,
-						'comment_karma' => $karma,
-					) );
-					if ( false === $ret ) {
-						return new WP_Error(
-							'rest_comment_karma_failed',
-							__( 'Failed to update comment karma.' ),
-							array(
-								'status' => 500,
-							)
-						);
-					}
-					return true;
-				},
 				'schema' => array(
-					'description' => __( 'Comment karma.' ),
-					'type'        => 'integer',
+					'description' => __( 'Smush data.' ),
+					'type'        => 'string',
 				),
 			) );
 		} );
