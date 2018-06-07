@@ -36,11 +36,30 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-/**
- * Constants
- */
-$prefix  = 'WP_SMUSH_';
 $version = '2.7.9.1';
+
+define( 'WP_SMUSH_VERSION', $version );
+define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
+define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
+define( 'WP_SMUSH_UA', 'WP Smush/' . $version . '; ' . network_home_url() );
+define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
+define( 'WP_SMUSH_MAX_BYTES', 1000000 );
+define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 32000000 );
+define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
+define( 'WP_SMUSH_TIMEOUT', apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 ) );
+
+/**
+ * To support Smushing on staging sites like SiteGround staging where staging site urls are different
+ * but redirects to main site url. Remove the protocols and www, and get the domain name.*
+ * If Set to false, WP Smush switch backs to the Old Sync Optimisation.
+ */
+$site_url = str_replace( array( 'http://', 'https://', 'www.' ), '', site_url() );
+if ( ! empty( $_SERVER['SERVER_NAME'] ) && ( 0 !== strpos( $site_url, $_SERVER['SERVER_NAME'] ) ) ) { // Input var ok.
+	define( 'WP_SMUSH_ASYNC', false );
+} else {
+	define( 'WP_SMUSH_ASYNC', true );
+}
 
 add_action( 'admin_init', 'deactivate_smush_org' );
 if ( ! function_exists( 'deactivate_smush_org' ) ) {
@@ -56,43 +75,8 @@ if ( ! function_exists( 'deactivate_smush_org' ) ) {
 	}
 }
 
-/**
- * Set the default timeout for API request and AJAX timeout
- */
-$timeout = apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 );
-
-/**
- * To support smushing on staging sites like SiteGround staging where
- * staging site urls are different but redirects to main site url.
- * Remove the protocols and www, and get the domain name.
- */
-$site_url = str_replace( array( 'http://', 'https://', 'www.' ), '', site_url() );
-// If current site's url is different from site_url, disable Async.
-if ( ! empty( $_SERVER['SERVER_NAME'] ) && ( 0 !== strpos( $site_url, $_SERVER['SERVER_NAME'] ) ) && ! defined( $prefix . 'ASYNC' ) ) {
-	define( $prefix . 'ASYNC', false );
-}
-
-$smush_constants = array(
-	'VERSION'           => $version,
-	'BASENAME'          => plugin_basename( __FILE__ ),
-	'API'               => 'https://smushpro.wpmudev.org/1.0/',
-	'UA'                => 'WP Smush/' . $version . '; ' . network_home_url(),
-	'DIR'               => plugin_dir_path( __FILE__ ),
-	'URL'               => plugin_dir_url( __FILE__ ),
-	'MAX_BYTES'         => 1000000,
-	'PREMIUM_MAX_BYTES' => 32000000,
-	'PREFIX'            => 'wp-smush-',
-	'TIMEOUT'           => $timeout,
-	'ASYNC'             => true, // If Set to false, WP Smush switch backs to the Old Sync Optimisation.
-);
-
-foreach ( $smush_constants as $const_name => $constant_val ) {
-	if ( ! defined( $prefix . $const_name ) ) {
-		define( $prefix . $const_name, $constant_val );
-	}
-}
-
 // Include main class.
+/* @noinspection PhpIncludeInspection */
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
 
 if ( ! function_exists( 'wp_smush_rating_message' ) ) {
@@ -104,7 +88,8 @@ if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 	 * @return string
 	 */
 	function wp_smush_rating_message( $message ) {
-		global $wpsmushit_admin, $wpsmush_db;
+		/* @var WpSmushitAdmin $wpsmushit_admin */
+		global $wpsmushit_admin;
 
 		if ( empty( $wpsmushit_admin->stats ) ) {
 			$wpsmushit_admin->setup_global_stats();
@@ -163,6 +148,7 @@ if ( is_admin() ) {
 
 	// Only for wordpress.org members.
 	if ( strpos( $dir_path, 'wp-smushit' ) !== false ) {
+		/* @noinspection PhpIncludeInspection */
 		require_once( WP_SMUSH_DIR . 'extras/free-dashboard/module.php' );
 
 		// Register the current plugin.
@@ -193,6 +179,7 @@ if ( is_admin() ) {
 		);
 	} elseif ( strpos( $dir_path, 'wp-smush-pro' ) !== false && file_exists( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' ) ) {
 		// Only for WPMU DEV Members.
+		/* @noinspection PhpIncludeInspection */
 		require_once( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' );
 
 		// Register items for the dashboard plugin.
@@ -233,6 +220,7 @@ if ( ! function_exists( 'smush_activated' ) ) {
 	 * Check if a existing install or new
 	 */
 	function smush_activated() {
+		/* @var WpSmushSettings $wpsmush_settings */
 		global $wpsmush_settings;
 
 		$version  = get_site_option( WP_SMUSH_PREFIX . 'version' );
@@ -262,7 +250,6 @@ if ( ! function_exists( 'smush_activated' ) ) {
 	}
 }
 
-
 if ( ! function_exists( 'smush_sanitize_hex_color' ) ) {
 	/**
 	 * Sanitizes a hex color.
@@ -280,6 +267,8 @@ if ( ! function_exists( 'smush_sanitize_hex_color' ) ) {
 		if ( preg_match( '|^#([A-Fa-f0-9]{3}){1,2}$|', $color ) ) {
 			return $color;
 		}
+
+		return false;
 	}
 }
 
@@ -329,7 +318,7 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 		}
 		$current_screen = get_current_screen();
 		// If not on plugin page.
-		if ( 'toplevel_page_smush' != $current_screen->id && 'toplevel_page_smush-network' != $current_screen->id ) {
+		if ( 'toplevel_page_smush' !== $current_screen->id && 'toplevel_page_smush-network' !== $current_screen->id ) {
 			return $classes;
 		}
 		$classes .= 'sui-2-1-0';

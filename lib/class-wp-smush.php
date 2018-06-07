@@ -2164,8 +2164,8 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		/**
 		 * Combine Savings from PNG to JPG conversion with smush stats
 		 *
-		 * @param $stats Savings from Smushing the image
-		 * @param $conversion_savings Savings from converting the PNG to JPG
+		 * @param array $stats               Savings from Smushing the image.
+		 * @param array $conversion_savings  Savings from converting the PNG to JPG.
 		 *
 		 * @return Object Total Savings
 		 */
