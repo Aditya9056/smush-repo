@@ -1124,7 +1124,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return string
 		 */
 		public function get_user_validation_message( $notice = true ) {
-
 			$notice_class = $notice ? ' sui-notice sui-notice-warning' : ' notice notice-warning is-dismissible';
 			$wpmu_contact = sprintf( '<a href="%s" target="_blank">', esc_url( 'https://premium.wpmudev.org/contact' ) );
 			$attr_message = esc_html__( 'Validating..', 'wp-smushit' );
@@ -1223,7 +1222,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function smush_page_header() {
-
 			global $wpsmushit_admin, $wpsmush_dir;
 
 			$current_screen = get_current_screen();
