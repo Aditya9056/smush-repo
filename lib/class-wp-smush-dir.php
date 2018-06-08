@@ -1007,7 +1007,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$width = ( $optimised > 0 ) ? ( $optimised / $count ) * 100 : 0;
 
 			$class = $count === $optimised ? ' optimised' : '';
-			$percent_text = 0 == $width ? esc_html__( 'Waiting...' ) : $width . '%';
+			$percent_text = 0 == $width ? esc_html__( 'Waiting...', 'wp-smushit' ) : $width . '%';
 
 			$content = '<div class="wp-smush-dir-progress-wrap sui-progress-block sui-progress-can-close">';
 			$content .= '<span class="wp-smush-image-progress-percent ' . $class . ' sui-hidden">' . $percent_text . '</span>';

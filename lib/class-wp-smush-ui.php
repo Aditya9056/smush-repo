@@ -850,17 +850,17 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 				<?php if ( ! $hide_pagespeed ) : ?>
 					<div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' sui-hidden' ?>">
-						<span class="smush-recommendation-title"><?php esc_html_e( 'Still having trouble with PageSpeed tests? Give these a go…', 'wp-smsuhit' ); ?></span>
+						<span class="smush-recommendation-title"><?php esc_html_e( 'Still having trouble with PageSpeed tests? Give these a go…', 'wp-smushit' ); ?></span>
 						<ol class="smush-recommendation-list">
 							<?php if ( ! $wp_smush->validate_install() ) : ?>
-								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Upgrade to Smush Pro for advanced lossy compression. %sTry pro free%s.', 'wp-smsuhit' ), '<a href="' . $upgrade_url . '" target="_blank">', '</a>' ); ?></li>
+								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Upgrade to Smush Pro for advanced lossy compression. %sTry pro free%s.', 'wp-smushit' ), '<a href="' . $upgrade_url . '" target="_blank">', '</a>' ); ?></li>
 							<?php elseif ( ! $wpsmush_settings->settings['lossy'] ) : ?>
-								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Enable %sSuper-smush%s for advanced lossy compression to optimise images further with almost no visible drop in quality.', 'wp-smsuhit' ), '<a href="#" class="wp-smush-lossy-enable">', '</a>' ); ?></li>
+								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Enable %sSuper-smush%s for advanced lossy compression to optimise images further with almost no visible drop in quality.', 'wp-smushit' ), '<a href="#" class="wp-smush-lossy-enable">', '</a>' ); ?></li>
 							<?php endif; ?>
-							<li class="smush-recommendation-resize"><?php printf( esc_html__( 'Make sure your images are the right size for your theme. %sLearn more%s.', 'wp-smsuhit' ), '<a href="' . esc_url( 'https://goo.gl/kCqWxS' ) . '" target="_blank">', '</a>' ); ?></li>
+							<li class="smush-recommendation-resize"><?php printf( esc_html__( 'Make sure your images are the right size for your theme. %sLearn more%s.', 'wp-smushit' ), '<a href="' . esc_url( 'https://goo.gl/kCqWxS' ) . '" target="_blank">', '</a>' ); ?></li>
 							<?php if ( ! $wpsmush_settings->settings['resize'] ) : ?>
 								<?php // Check if resize original is disabled ?>
-								<li class="smush-recommendation-resize-original"><?php printf( esc_html__( 'Enable %sResize Full Size Images%s to scale big images down to a reasonable size and save a ton of space.', 'wp-smsuhit' ), '<a href="#" class="wp-smush-resize-enable">', '</a>' ); ?></li>
+								<li class="smush-recommendation-resize-original"><?php printf( esc_html__( 'Enable %sResize Full Size Images%s to scale big images down to a reasonable size and save a ton of space.', 'wp-smushit' ), '<a href="#" class="wp-smush-resize-enable">', '</a>' ); ?></li>
 							<?php endif; ?>
 						</ol>
 						<span class="dismiss-recommendation"><?php esc_html_e( 'DISMISS', 'wp-smushit' ); ?></span>
@@ -1126,9 +1126,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		public function get_user_validation_message( $notice = true ) {
 			$notice_class = $notice ? ' sui-notice sui-notice-warning' : ' notice notice-warning is-dismissible';
 			$wpmu_contact = sprintf( '<a href="%s" target="_blank">', esc_url( 'https://premium.wpmudev.org/contact' ) );
-			$attr_message = esc_html__( 'Validating..', 'wp-smsuhit' );
+			$attr_message = esc_html__( 'Validating..', 'wp-smushit' );
 			$recheck_link = '<a href="#" id="wp-smush-revalidate-member" data-message="%s">';
-			$message      = sprintf( esc_html__( 'It looks like Smush couldn’t verify your WPMU DEV membership so Pro features have been disabled for now. If you think this is an error, run a %sre-check%s or get in touch with our %ssupport team%s.', 'wp-smsuhit' ), $recheck_link, '</a>', $wpmu_contact, '</a>' );
+			$message      = sprintf( esc_html__( 'It looks like Smush couldn’t verify your WPMU DEV membership so Pro features have been disabled for now. If you think this is an error, run a %sre-check%s or get in touch with our %ssupport team%s.', 'wp-smushit' ), $recheck_link, '</a>', $wpmu_contact, '</a>' );
 			$content      = sprintf( '<div id="wp-smush-invalid-member" data-message="%s" class="sui-hidden hidden' . $notice_class . '"><p>%s</p></div>', $attr_message, $message );
 
 			return $content;
