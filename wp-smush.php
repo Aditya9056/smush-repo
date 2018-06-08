@@ -304,7 +304,9 @@ if ( ! function_exists( 'smush_i18n' ) ) {
 	}
 }
 
-add_filter( 'admin_body_class', 'smush_body_classes' );
+// Add Share UI Class.
+add_filter( 'admin_body_class', 'smush_body_classes', 99 );
+
 if ( ! function_exists( 'smush_body_classes' ) ) {
 	/**
 	 * Add Share UI Class.
@@ -314,16 +316,25 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 	 * @return string
 	 */
 	function smush_body_classes( $classes ) {
+
+	    global $wpsmushit_admin;
+
 		// Exit if function doesn't exists.
 		if ( ! function_exists( 'get_current_screen' ) ) {
 			return $classes;
 		}
+
 		$current_screen = get_current_screen();
+
 		// If not on plugin page.
-		if ( 'toplevel_page_smush' !== $current_screen->id && 'toplevel_page_smush-network' !== $current_screen->id ) {
+		if ( ! in_array( $current_screen->id, $wpsmushit_admin->plugin_pages ) ) {
 			return $classes;
 		}
-		$classes .= 'sui-2-1-0';
+
+		// Remove old wpmud class from body of smush page to avoid style conflict.
+		$classes = str_replace( 'wpmud ', '', $classes );
+
+		$classes .= ' sui-2-2-2';
 
 		return $classes;
 	}

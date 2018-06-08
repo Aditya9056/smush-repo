@@ -16,9 +16,9 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 	class WpSmushRecommender {
 
 		function __construct() {
-			//Hook UI at the end of Settings UI
-			add_action( 'smush_settings_ui_bottom', array( $this, 'ui' ), 12 );
 
+			//Hook UI at the end of Settings UI
+			add_action( 'smush_admin_ui_bottom', array( $this, 'ui' ), 12 );
 		}
 
 		/**
@@ -42,7 +42,6 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 		 * Output the required UI for Plugin recommendations
 		 */
 		function ui() {
-			global $wpsmushit_admin;
 			if ( $this->should_continue() ) { ?>
 
                 <div class="sui-row" id="sui-cross-sell-footer">
@@ -79,16 +78,16 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 					);
 					$dir = defined('__DIR__') ? __DIR__ : dirname(__FILE__);
 					?>
-                </div>
-                <div class="sui-cross-sell-bottom">
-                <h3>WPMU DEV - Your WordPress Toolkit</h3>
-                <p>Pretty much everything you need for developing and managing WordPress based websites, and then
-                    some.</p>
+				</div>
+				<div class="sui-cross-sell-bottom">
+				<h3>WPMU DEV - Your WordPress Toolkit</h3>
+				<p>Pretty much everything you need for developing and managing WordPress based websites, and then
+					some.</p>
 
-                <a class="sui-button sui-button-green" href="<?php echo $site_url; ?>"
-                   id="dash-uptime-update-membership" target="_blank">
-                    Learn more
-                </a>
+				<a class="sui-button sui-button-green" href="<?php echo $site_url; ?>"
+				   id="dash-uptime-update-membership" target="_blank">
+					Learn more
+				</a>
 
                 <img class="sui-image"
                      src="<?php echo plugins_url( "assets/images/dev-team.png", $dir ); ?>"
@@ -96,8 +95,8 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
                      alt="Try pro features for free!">
                 </div><?php
 			}
-                ?>
-            <div class="sui-footer">Made with <i class="sui-icon-heart"></i> by WPMU DEV</div><?php
+			?>
+			<div class="sui-footer">Made with <i class="sui-icon-heart"></i> by WPMU DEV</div><?php
 
 		}
 
@@ -111,19 +110,19 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 		 */
 		function recommendation_box( $title, $content, $link, $plugin_class, $seq ) {
 			//Put bg to box parent div ?>
-            <div class="sui-col-md-4">
-            <div class="sui-cross-<?php echo $seq; ?> sui-cross-<?php echo $plugin_class; ?>"><span></span></div>
-            <div class="sui-box">
-                <div class="sui-box-body">
-                    <h3><?php echo $title; ?></h3>
-                    <p><?php echo $content; ?></p>
-                    <a href="<?php echo esc_url( $link ); ?>" class="sui-button sui-button-ghost"
-                       target="_blank">
-                        View features <i class="sui-icon-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-            </div><?php
+			<div class="sui-col-md-4">
+			<div class="sui-cross-<?php echo $seq; ?> sui-cross-<?php echo $plugin_class; ?>"><span></span></div>
+			<div class="sui-box">
+				<div class="sui-box-body">
+					<h3><?php echo $title; ?></h3>
+					<p><?php echo $content; ?></p>
+					<a href="<?php echo esc_url( $link ); ?>" class="sui-button sui-button-ghost"
+					   target="_blank">
+						View features <i class="sui-icon-arrow-right"></i>
+					</a>
+				</div>
+			</div>
+			</div><?php
 		}
 
 	}

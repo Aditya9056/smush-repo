@@ -18,10 +18,46 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			'backup'      => 0,
 			'png_to_jpg'  => 0,
 			'nextgen'     => 0,
-			's3'          => 0
+			's3'          => 0,
+			'detection'   => 0,
 		);
 
+		/**
+		 * List of fields in bulk smush form.
+		 *
+		 * @var array
+		 */
+		var $bulk_fields = array(
+			'networkwide',
+			'auto',
+			'lossy',
+			'original',
+			'keep_exif',
+			'resize',
+			'backup',
+			'png_to_jpg',
+			'detection',
+		);
+
+		/**
+		 * List of fields in integration form.
+		 *
+		 * @var array
+		 */
+		var $integration_fields = array(
+			'nextgen',
+			's3',
+		);
+
+		/**
+		 * List of fields in CDN form.
+		 *
+		 * @var array
+		 */
+		var $cdn_fields = array();
+
 		function __construct() {
+
 			//Do not initialize if not in admin area
 			#wp_head runs specifically in the frontend, good check to make sure we're accidentally not loading settings on required pages
 			if ( ! is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) && did_action('wp_head') ) {
@@ -124,6 +160,13 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 				return false;
 			}
 
+			// Continue only if form name is set.
+			if ( ! isset( $_POST['setting_form'] )
+			     || ! in_array( $_POST['setting_form'], array( 'bulk', 'integration', 'cdn' ) )
+			) {
+				return false;
+			}
+
 			global $wpsmushit_admin;
 
 			//Store that we need not redirect again on plugin activation
@@ -161,8 +204,17 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 				delete_site_option( 'wp-smush-hide_s3support_alert' );
 			}
 
+			// Current form fields.
+			$setting_form = $_POST['setting_form'] . '_fields';
+			$form_fields = $this->{$setting_form};
+
 			// process each setting and update options
 			foreach ( $wpsmushit_admin->settings as $name => $text ) {
+
+				// Do not update if field is not available in current form.
+				if ( ! in_array( $name, $form_fields ) ) {
+					continue;
+				}
 
 				// formulate the index of option
 				$opt_name = WP_SMUSH_PREFIX . $name;

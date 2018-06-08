@@ -32,11 +32,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 		function init() {
 			global $wp_smush, $wpsmush_settings;
-			//Filters the setting variable to add S3 setting title and description
-			add_filter( 'wp_smush_settings', array( $this, 'register' ), 5 );
-
-			//Filters the setting variable to add S3 setting in premium features
-			add_filter( 'wp_smush_pro_settings', array( $this, 'add_setting' ), 5 );
 
 			//Check if integration is Enabled or not
 			if ( ! empty( $wpsmush_settings->settings ) ) {
@@ -51,6 +46,12 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			if( ! $wp_smush->validate_install() || !$opt_nextgen_val ) {
 				return;
 			}
+
+			//Filters the setting variable to add S3 setting title and description
+			add_filter( 'wp_smush_settings', array( $this, 'register' ), 5 );
+
+			//Filters the setting variable to add S3 setting in premium features
+			add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 5 );
 
 			//Auto Smush image, if enabled, runs after Nextgen is finished uploading the image
 			//Allows to override whether to auto smush nextgen image or not
@@ -86,18 +87,19 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		}
 
 		/**
-		 * Append S3 in pro feature list
+		 * Append nextgen in pro feature list
 		 *
-		 * @param $pro_settings
+		 * @param array $int_settings Integration setting keys.
 		 *
 		 * @return array
 		 */
-		function add_setting( $pro_settings ) {
-			if ( ! isset( $pro_settings['nextgen'] ) ) {
-				$pro_settings[] = 'nextgen';
+		function add_setting( $int_settings ) {
+
+			if ( ! isset( $int_settings['nextgen'] ) ) {
+				$int_settings[] = 'nextgen';
 			}
 
-			return $pro_settings;
+			return $int_settings;
 		}
 
 		/**

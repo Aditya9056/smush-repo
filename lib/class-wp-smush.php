@@ -15,7 +15,10 @@ require_once WP_SMUSH_DIR . "lib/class-wp-smush-db.php";
 // Include Resize class.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
 
-// Include PNG to JPG Converter.
+//Include Resize class
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-auto-resize.php';
+
+//Include PNG to JPG Converter
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
 
 // Include Social Sharing.
@@ -694,7 +697,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @return bool|array array containing success status, and stats
 		 */
 		function _post( $file_path, $file_size ) {
-
 			global $wpsmushit_admin, $wpsmush_settings, $wpsmush_helper;
 
 			$data = false;
@@ -1203,7 +1205,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				}
 			}
 			$mode_class = ! empty( $_POST['mode'] ) && 'grid' == $_POST['mode'] ? ' button-primary' : '';
-
 			if ( ! $echo ) {
 				$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button wp-smush-send';
 				$html .= '
@@ -1843,7 +1844,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Return Global stats
 		 *
 		 * Stats sent
-		 * 
+		 *
 		 *  array( 'total_images','bytes', 'human', 'percent')
 		 *
 		 * @return array|bool|mixed
@@ -2570,6 +2571,9 @@ require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-admin.php' );
 
 //Include Directory Smush
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-dir.php';
+
+//Include CDN
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';
 
 //Include Plugin Recommendations
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-recommender.php';

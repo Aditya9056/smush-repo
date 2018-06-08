@@ -4,34 +4,26 @@ const AP      = require('autoprefixer');
 const ETP     = require('mini-css-extract-plugin');
 
 const config = {
-	source:{},
-	output:{}
+	output: {}
 };
 
-// Full path of main files that need to be ran through the bundler.
-config.source.scss           = './_src/scss/admin.scss';
-config.source.js             = './_src/js/index.js';
-
-// Path where the scss & js should be compiled to.
-config.output.scssDirectory  = 'assets/shared-ui-2/css';       // No trailing slash.
-config.output.jsDirectory    = 'assets/shared-ui-2/js';        // No trailing slash.
-
-// File names of the compiled scss & js.
-config.output.scssFileName   = 'admin.min.css';
-config.output.jsFileName     = 'admin.min.js';
-
 // The path where the Shared UI fonts & images should be sent. (relative to config.output.jsFileName)
-config.output.imagesDirectory = '../images/';            // Trailing slash required.
-config.output.fontsDirectory  = '../fonts/';             // Trailing slash required.
+config.output.imagesDirectory = '..//images'; // Trailing slash required.
+config.output.fontsDirectory = '../fonts'; // Trailing slash required.
 
 const scssConfig = {
 	mode: 'production',
 
-	entry: config.source.scss,
+	// Was: entry: config.source.scss,
+	entry: {
+		'shared-ui': './_src/scss/shared-ui.scss',
+		'admin': './_src/scss/admin.scss',
+		'resize-detection': './_src/scss/resize-detection.scss'
+	},
 
 	output: {
-		filename: config.output.scssFileName,
-		path: path.resolve(__dirname, config.output.scssDirectory)
+		filename: '[name].min.css',
+		path: path.resolve( __dirname, 'assets/css' )
 	},
 
 	module: {
@@ -90,18 +82,22 @@ const scssConfig = {
 	},
 
 	plugins: [
-		new ETP(config.output.scssFileName)
+		new ETP( '[name].min.css' )
 	]
 };
 
 const jsConfig = {
 	mode: 'production',
 
-	entry: config.source.js,
+	// Was: entry: config.source.js,
+	entry: {
+		'shared-ui': './_src/js/shared-ui.js',
+		'admin': './_src/js/admin-index.js',
+	},
 
 	output: {
-		filename: config.output.jsFileName,
-		path: path.resolve(__dirname, config.output.jsDirectory)
+		filename: '[name].min.js',
+		path: path.resolve( __dirname, 'assets/js' )
 	},
 
 	module: {
@@ -123,11 +119,33 @@ const jsConfig = {
 
 	plugins: [
 		// Automatically load modules instead of having to import or require them everywhere.
-		new webpack.ProvidePlugin({
+		new webpack.ProvidePlugin( {
 			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js',  // Cendor script in Shared UI.
-			A11yDialog:  '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
-		})
+			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
+		} )
 	]
 };
 
-module.exports = [scssConfig, jsConfig];
+const resizeJsConfig = {
+	entry: './_src/js/public-resize-detection.js',
+	output: {
+		filename: 'resize-detection.min.js',
+		path: path.resolve( __dirname, 'assets/js' )
+	},
+	module: {
+		rules: [
+			{
+				test: /\.js$/,
+				exclude: /node_modules/,
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: ['env']
+					}
+				}
+			}
+		]
+	},
+};
+
+module.exports = [scssConfig, jsConfig, resizeJsConfig];
