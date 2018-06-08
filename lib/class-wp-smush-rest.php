@@ -56,7 +56,7 @@ class WP_Smush_Rest {
 			register_rest_field( 'attachment', 'smush', array(
 				'get_callback' => array( $this, 'register_image_stats' ),
 				'schema' => array(
-					'description' => __( 'Smush data.' ),
+					'description' => __( 'Smush data.', 'wp-smushit' ),
 					'type'        => 'string',
 				),
 			) );
