@@ -20,50 +20,6 @@
 
       .sui-box-body {
 
-        .sui-box-settings-row {
-          margin-top: 30px;
-
-          .sui-box-settings-col-1 {
-            width: 30%;
-          }
-
-          .sui-box-settings-col-2 {
-
-            display: flex;
-            flex-wrap: wrap;
-            .column-right-content {
-              display: inline-grid;
-              min-width: 30%;
-              max-width: 94%;
-              margin-bottom: 15px;
-
-              .smush-settings-right-label {
-                margin-left: 0;
-              }
-            }
-
-            .smush-col-2-content {
-              width: 100%;
-              display: flex;
-            }
-          }
-
-          .sui-notice {
-            margin-top: 10px;
-            margin-bottom: 10px;
-          }
-        }
-
-        &.smush-quick-setup-settings {
-
-          .sui-box-settings-row {
-
-            .sui-box-settings-col-1 {
-              width: 85%;
-            }
-          }
-        }
-
         span {
           &.wp-smush-li-path {
             background: url(../../assets/images/folder-closed.svg) no-repeat;

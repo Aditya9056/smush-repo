@@ -674,8 +674,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<span class="sui-toggle-slider"></span>
 						<label class="toggle-label" for="<?php echo $opt_networkwide; ?>" aria-hidden="true"></label>
 					</label>
-					<label class="inline-label" for="<?php echo $opt_networkwide; ?>">
-						<span class="sui-settings-label sui-toggle-label"><?php echo $wpsmushit_admin->settings['networkwide']['label']; ?></span>
+					<label for="<?php echo $opt_networkwide; ?>">
+						<?php echo $wpsmushit_admin->settings['networkwide']['label']; ?>
 					</label>
 				</div>
 			</div>
@@ -791,27 +791,23 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			?>
 			<div class="sui-box-settings-row wp-smush-basic">
 				<div class="sui-box-settings-col-1">
-					<label for="<?php echo 'column-' . $setting_m_key; ?>" aria-hidden="true">
-						<span class="sui-settings-label"><?php echo $label; ?></span>
-						<span class="sui-description">
-							<?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
-						</span>
-					</label>
+					<span class="sui-settings-label"><?php echo $label; ?></span>
+					<span class="sui-description">
+						<?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
+					</span>
 				</div>
 				<div class="sui-box-settings-col-2" id="column-<?php echo $setting_m_key; ?>">
 					<?php if ( ! in_array( $name, $grouped_settings ) || $skip_group ) : ?>
-						<div class="smush-col-2-content">
+						<div class="sui-form-field">
 							<label class="sui-toggle">
 								<input type="checkbox" aria-describedby="<?php echo $setting_m_key . '-desc' ?>" id="<?php echo $setting_m_key; ?>" name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1">
 								<span class="sui-toggle-slider"></span>
 							</label>
-							<div class="column-right-content">
-								<label class="inline-label" for="<?php echo $setting_m_key; ?>">
-									<span class="sui-settings-label sui-toggle-label smush-settings-right-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span>
-								</label>
-								<!-- Print/Perform action in right setting column -->
-								<?php do_action( 'smush_setting_column_right_inside', $name ); ?>
-							</div>
+							<label for="<?php echo $setting_m_key; ?>">
+								<?php echo $wpsmushit_admin->settings[ $name ]['label']; ?>
+							</label>
+							<!-- Print/Perform action in right setting column -->
+							<?php do_action( 'smush_setting_column_right_inside', $name ); ?>
 						</div>
 					<?php endif; ?>
 					<!-- Print/Perform action in right setting column -->
@@ -1171,18 +1167,17 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$setting_val = $wpsmush_settings->settings[ $name ];
 				$setting_key = WP_SMUSH_PREFIX . $name;
 				?>
-				<div class="smush-col-2-content">
+				<div class="sui-form-field">
 					<label class="sui-toggle">
 						<input type="checkbox" aria-describedby="<?php echo $setting_key; ?>-desc" id="<?php echo $setting_key; ?>" name="<?php echo $setting_key; ?>" <?php checked( $setting_val, 1 ); ?> value="1">
 						<span class="sui-toggle-slider"></span>
 						<label class="toggle-label <?php echo $setting_key . '-label'; ?>" for="<?php echo $setting_key; ?>" aria-hidden="true"></label>
 					</label>
-					<div class="column-right-content">
-						<label class="inline-label" for="<?php echo $setting_key; ?>">
-							<span class="sui-settings-label sui-toggle-label smush-settings-right-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span>
-						</label>
-						<span class="sui-description"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span>
-					</div>
+					<label for="<?php echo $setting_key; ?>">
+						<?php echo $wpsmushit_admin->settings[ $name ]['label']; ?>
+					</label>
+					<span class="sui-description sui-toggle-description"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span>
+
 				</div>
 				<?php
 			}
@@ -1215,21 +1210,19 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$setting_val = $wpsmush_settings->settings[ $name ];
 				$setting_key = WP_SMUSH_PREFIX . $name;
 				?>
-				<div class="smush-col-2-content">
+				<div class="sui-form-field">
 					<label class="sui-toggle">
 						<input type="checkbox" aria-describedby="<?php echo $setting_key; ?>-desc" id="<?php echo $setting_key; ?>" name="<?php echo $setting_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1">
 						<span class="sui-toggle-slider"></span>
 						<label class="toggle-label <?php echo $setting_key . '-label'; ?>" for="<?php echo $setting_key; ?>" aria-hidden="true"></label>
 					</label>
-					<div class="column-right-content">
-						<label class="inline-label" for="<?php echo $setting_key; ?>">
-							<span class="sui-settings-label sui-toggle-label smush-settings-right-label"><?php echo $wpsmushit_admin->settings[ $name ]['label']; ?></span>
-						</label>
-						<span class="sui-description"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span>
-						<?php if ( 'detection' === $name ) { ?>
-							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo $setting_val === 1 ? '' : 'sui-hidden'; ?>"><p><?php printf( esc_html__( 'Highlighting is active. %sView homepage%s.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?></p></div>
-						<?php } ?>
-					</div>
+					<label for="<?php echo $setting_key; ?>">
+						<?php echo $wpsmushit_admin->settings[ $name ]['label']; ?>
+					</label>
+					<span class="sui-description sui-toggle-description"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span>
+					<?php if ( 'detection' === $name ) { ?>
+						<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo $setting_val === 1 ? '' : 'sui-hidden'; ?>"><p><?php printf( esc_html__( 'Highlighting is active. %sView homepage%s.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?></p></div>
+					<?php } ?>
 				</div>
 				<?php
 			}
@@ -1303,7 +1296,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				return;
 			}
 			?>
-			<span class="sui-description" id="<?php echo WP_SMUSH_PREFIX . $setting_key . "-desc"; ?>"><?php
+			<span class="sui-description sui-toggle-description" id="<?php echo WP_SMUSH_PREFIX . $setting_key . "-desc"; ?>"><?php
 				switch ( $setting_key ) {
 
 					case 'resize':
