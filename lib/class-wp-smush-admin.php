@@ -912,7 +912,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public function format_meta_from_post( $meta = array() ) {
 
-			// Do not continue incase meta is empty.
+			// Do not continue in case meta is empty.
 			if ( empty( $meta ) ) {
 				return $meta;
 			}
@@ -944,7 +944,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			/**
 			 * Allows to format single item in meta.
 			 *
-			 * This filter will be used only for Async post requests.
+			 * This filter will be used only for Async, post requests.
 			 *
 			 * @param mixed $value Meta item value.
 			 * @param string $key Meta item key.
