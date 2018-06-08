@@ -1,24 +1,30 @@
 <?php
+/**
+ * Smush core class: WP_Smush class
+ *
+ * @package WP Smush
+ */
 
 // Helper Class.
-require_once WP_SMUSH_DIR . "lib/class-wp-smush-helper.php";
+/* @noinspection PhpIncludeInspection */
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-helper.php';
 
 // Settings Class.
-require_once WP_SMUSH_DIR . "lib/class-wp-smush-settings.php";
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-settings.php';
 
 // Migration Class.
-require_once WP_SMUSH_DIR . "lib/class-wp-smush-migrate.php";
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-migrate.php';
 
 // Stats.
-require_once WP_SMUSH_DIR . "lib/class-wp-smush-db.php";
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-db.php';
 
 // Include Resize class.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
 
-//Include Resize class
+// Include Resize class.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-auto-resize.php';
 
-//Include PNG to JPG Converter
+// Include PNG to JPG Converter.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
 
 // Include Social Sharing.
@@ -34,130 +40,150 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-async.php';
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-rest.php';
 
 if ( ! class_exists( 'WP_Smush' ) ) {
-
+	/**
+	 * Class WP_Smush.
+	 */
 	class WP_Smush {
-
+		/**
+		 * Plugin version.
+		 *
+		 * @var string $version
+		 */
 		var $version = WP_SMUSH_VERSION;
 
 		/**
-		 * @var Stores the value of is_pro function
+		 * Stores the value of is_pro function.
+		 *
+		 * @var bool $is_pro
 		 */
 		private $is_pro;
 
 		/**
-		 * Api server url to check api key validity
+		 * API server url to check API key validity.
 		 *
+		 * @var string $api_server
 		 */
 		var $api_server = 'https://premium.wpmudev.org/api/smush/v1/check/';
 
 		/**
-		 * Meta key to save smush result to db
+		 * Meta key to save smush result to db.
 		 *
-		 *
+		 * @var string $smushed_meta_key
 		 */
 		var $smushed_meta_key = 'wp-smpro-smush-data';
 
 		/**
-		 * Meta key to save migrated version
+		 * Meta key to save migrated version.
 		 *
+		 * @var string $migrated_version_key
 		 */
-		var $migrated_version_key = "wp-smush-migrated-version";
+		var $migrated_version_key = 'wp-smush-migrated-version';
 
 		/**
-		 * Super Smush is enabled or not
-		 * @var bool
+		 * Super Smush is enabled or not.
+		 *
+		 * @var bool $lossy_enabled
 		 */
 		var $lossy_enabled = false;
 
 		/**
-		 * Whether to Smush the original Image
-		 * @var bool
+		 * Whether to Smush the original image.
+		 *
+		 * @var bool $smush_original
 		 */
 		var $smush_original = false;
 
 		/**
-		 * Whether to Preserver the exif data or not
-		 * @var bool
+		 * Whether to preserve the EXIF data or not.
+		 *
+		 * @var bool $keep_exif
 		 */
 		var $keep_exif = false;
 
-		/** @var  Attachment id for the Image being smushed currently */
-		var $attachment_id;
 		/**
-		 * Attachment type, being smushed currently
+		 * Attachment ID for the image being Smushed currently.
 		 *
-		 * @var string Possible values, "wp", "nextgen"
+		 * @var int $attachment_id
+		 */
+		var $attachment_id;
+
+		/**
+		 * Attachment type, being Smushed currently.
 		 *
+		 * @var string $media_type  Default: 'wp'. Accepts: 'wp', 'nextgen'.
 		 */
 		var $media_type = 'wp';
 
 		const
 			OPTION_NAME = 'smush_option',
-			VERSION     =  WP_SMUSH_VERSION;
+			VERSION     = WP_SMUSH_VERSION;
 
+		/**
+		 * Plugin options.
+		 *
+		 * @var null|array
+		 */
 		protected
 			$options  = null,
 
-			// default options and values go here
+			/**
+			 * Default options and values go here.
+			 *
+			 * @var array $defaults
+			 */
 			$defaults = array(
-			'version'     => self::VERSION, // this one should not change
-		);
+				'version' => self::VERSION, // This one should not change.
+			);
 
 		/**
-		 * Constructor
+		 * WP_Smush constructor.
 		 */
 		function __construct() {
-
-			//Redirect to Settings page
+			// Redirect to settings page.
 			add_action( 'activated_plugin', array( $this, 'wp_smush_redirect' ) );
 
 			/**
-			 * Smush image (Auto Smush ) when `wp_update_attachment_metadata` filter is fired
+			 * Smush image (Auto Smush) when `wp_update_attachment_metadata` filter is fired
 			 */
-			add_filter( 'wp_update_attachment_metadata', array(
-				$this,
-				'smush_image'
-			), 15, 2 );
+			add_filter( 'wp_update_attachment_metadata', array( $this, 'smush_image' ), 15, 2 );
 
-			//Delete Backup files
-			add_action( 'delete_attachment', array(
-				$this,
-				'delete_images'
-			), 12 );
+			// Delete backup files.
+			add_action( 'delete_attachment', array( $this, 'delete_images' ), 12 );
 
-			//Optimise WP Retina 2x images
+			// Optimise WP retina 2x images.
 			add_action( 'wr2x_retina_file_added', array( $this, 'smush_retina_image' ), 20, 3 );
 
-			//Add Smush Columns
+			// Add Smush Columns.
 			add_filter( 'manage_media_columns', array( $this, 'columns' ) );
 			add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
 			add_filter( 'manage_upload_sortable_columns', array( $this, 'sortable_column' ) );
-			//Manage column sorting
+			// Manage column sorting.
 			add_action( 'pre_get_posts', array( $this, 'smushit_orderby' ) );
 
-			//Enqueue Scripts, And Initialize variables
+			// Enqueue scripts and initialize variables.
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 
-			//Send Smush Stats for pro members
+			// Send Smush stats for PRO members.
 			add_filter( 'wpmudev_api_project_extra_data-912164', array( $this, 'send_smush_stats' ) );
-
-			//Send Smush Stats for pro members
 			add_action( 'wp_ajax_smush_show_warning', array( $this, 'show_warning_ajax' ) );
 
-			////Load NextGen Gallery, Instanitate the Async class. if hooked too late or early, auto smush doesn't works, also Load after settings have been saved on init action
-			add_action( 'plugins_loaded', array( $this, 'load_libs'), 90 );
+			/**
+			 * Load NextGen Gallery, instantiate the Async class. if hooked too late or early, auto Smush doesn't
+			 * work, also load after settings have been saved on init action.
+			 */
+			add_action( 'plugins_loaded', array( $this, 'load_libs' ), 90 );
 
-			//Load S3 library
+			// Load S3 library.
 			add_action( 'aws_init', array( $this, 'load_s3' ), 15 );
 			add_action( 'as3cf_init', array( $this, 'load_s3' ), 15 );
 
-			//Handle the Async optimisation
+			// Handle the Async optimisation.
 			add_action( 'wp_async_wp_generate_attachment_metadata', array( $this, 'wp_smush_handle_async' ) );
 
-			//Handle the Async optimisation
+			// Handle the Async optimisation.
 			add_action( 'wp_async_wp_save_image_editor_file', array( $this, 'wp_smush_handle_editor_async' ), '', 2 );
 
-			//Register Function for sending unsmushed image count to hub
+			// Register function for sending unsmushed image count to hub.
 			add_filter( 'wdp_register_hub_action', array( $this, 'smush_stats' ) );
 
 			/**
@@ -165,6 +191,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			 */
 			add_filter( 'wp_get_default_privacy_policy_content', array( $this, 'add_policy' ) );
 
+			// Register REST API metas.
 			WP_Smush_Rest::get_instance()->register_metas();
 		}
 
@@ -172,16 +199,15 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Initialise the setting variables
 		 */
 		function initialise() {
-
 			global $wpsmush_settings;
 
-			//Check if Lossy enabled
+			// Check if lossy enabled.
 			$this->lossy_enabled = $this->validate_install() && $wpsmush_settings->settings['lossy'];
 
-			//Check if Smush Original enabled
+			// Check if Smush original enabled.
 			$this->smush_original = $this->validate_install() && $wpsmush_settings->settings['original'];
 
-			//Check Whether to keep exif or not
+			// Check whether to keep EXIF data or not.
 			$this->keep_exif = $wpsmush_settings->settings['keep_exif'];
 		}
 
@@ -841,29 +867,28 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		}
 
 		/**
-		 * Check if user is premium member, check for api key
+		 * Check if user is premium member, check for API key.
 		 *
-		 * @return mixed|string True if a premium member, false if regular user
+		 * @return bool  True if a premium member, false if regular user.
 		 */
 		function validate_install() {
-
 			if ( isset( $this->is_pro ) ) {
 				return $this->is_pro;
 			}
 
-			//no api key set, always false
+			// No API key set, always false.
 			$api_key = $this->_get_api_key();
 
 			if ( empty( $api_key ) ) {
 				return false;
 			}
 
-			//Flag to check if we need to revalidate the key
+			// Flag to check if we need to revalidate the key.
 			$revalidate = false;
 
 			$api_auth = get_site_option( 'wp_smush_api_auth' );
 
-			//Check if need to revalidate
+			// Check if need to revalidate.
 			if ( ! $api_auth || empty( $api_auth ) || empty( $api_auth[ $api_key ] ) ) {
 				$revalidate = true;
 			} else {
@@ -872,54 +897,54 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 				$diff = current_time( 'timestamp' ) - $last_checked;
 
-				//Difference in hours
+				// Difference in hours.
 				$diff_h = $diff / 3600;
 
-				//Difference in minutes
+				// Difference in minutes.
 				$diff_m = $diff / 60;
 
 				switch ( $valid ) {
 					case 'valid':
-						//if last checked was more than 12 hours
+						// If last checked was more than 12 hours.
 						if ( $diff_h > 12 ) {
 							$revalidate = true;
 						}
 						break;
 					case 'invalid':
-						//if last checked was more than 24 hours
+						// If last checked was more than 24 hours.
 						if ( $diff_h > 24 ) {
 							$revalidate = true;
 						}
 						break;
 					case 'network_failure':
-						//if last checked was more than 5 minutes
+						// If last checked was more than 5 minutes.
 						if ( $diff_m > 5 ) {
 							$revalidate = true;
 						}
 						break;
 				}
 			}
-			//If we are suppose to validate api, update the results in options table
-			if ( $revalidate ) {
 
+			// If we are suppose to validate API, update the results in options table.
+			if ( $revalidate ) {
 				if ( empty( $api_auth[ $api_key ] ) ) {
-					//For api key resets
+					// For api key resets.
 					$api_auth[ $api_key ] = array();
 
-					//Storing it as valid, unless we really get to know from api call
+					// Storing it as valid, unless we really get to know from API call.
 					$api_auth[ $api_key ]['validity'] = 'valid';
 				}
 
-				//Aaron suggested to Update timestamp before making the api call, to avoid any concurrent calls, clever ;)
+				// Aaron suggested to Update timestamp before making the API call, to avoid any concurrent calls, clever ;)
 				$api_auth[ $api_key ]['timestamp'] = current_time( 'timestamp' );
 				update_site_option( 'wp_smush_api_auth', $api_auth );
 
-				// call api
+				// Call API.
 				$url = $this->api_server . $api_key;
 
 				$request = wp_remote_get( $url, array(
-						"user-agent" => WP_SMUSH_UA,
-						"timeout"    => 10
+						'user-agent' => WP_SMUSH_UA,
+						'timeout'    => 10,
 					)
 				);
 
@@ -930,24 +955,26 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 					} else {
 						$valid = 'invalid';
 					}
-
 				} else {
 					$valid = 'network_failure';
 				}
 
-				//Reset Value
+				// Reset value.
 				$api_auth = array();
 
-				//Add a fresh Timestamp
+				// Add a fresh timestamp.
 				$timestamp            = current_time( 'timestamp' );
-				$api_auth[ $api_key ] = array( 'validity' => $valid, 'timestamp' => $timestamp );
+				$api_auth[ $api_key ] = array(
+					'validity' => $valid,
+					'timestamp' => $timestamp,
+				);
 
-				//Update API validity
+				// Update API validity.
 				update_site_option( 'wp_smush_api_auth', $api_auth );
 
 			}
 
-			$this->is_pro = ( 'valid' == $valid );
+			$this->is_pro = ( 'valid' === $valid );
 
 			return $this->is_pro;
 		}
@@ -1250,7 +1277,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			global $wpdb;
 
-			$q       = $wpdb->prepare( "SELECT * FROM `" . $wpdb->postmeta . "` WHERE `meta_key`=%s AND `meta_value` LIKE %s ", "_wp_attachment_metadata", "%wp_smushit%" );
+			$q       = $wpdb->prepare( "SELECT * FROM {$wpdb->postmeta} WHERE meta_key=%s AND meta_value LIKE %s", '_wp_attachment_metadata', '%wp_smushit%' );
 			$results = $wpdb->get_results( $q );
 
 			if ( count( $results ) < 1 ) {
