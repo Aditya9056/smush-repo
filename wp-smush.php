@@ -1,21 +1,23 @@
 <?php
 /*
-Plugin Name:  Smush
-Plugin URI:   http://wordpress.org/extend/plugins/wp-smushit/
+Plugin Name:  Smush Pro
+Plugin URI:   http://premium.wpmudev.org/projects/wp-smush-pro/
 Description:  Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
-Version:      2.7.9.1
+Version:      2.8.0-beta.1
 Author:       WPMU DEV
 Author URI:   https://premium.wpmudev.org/
 License:      GPLv2
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:  wp-smushit
 Domain Path:  /languages
+WDP ID:       912164
 */
 
 /*
 This plugin was originally developed by Alex Dunae (http://dialect.ca/).
 
 Copyright 2007-2018 Incsub (http://incsub.com)
+Author - Aaron Edwards, Sam Najian, Umesh Kumar
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -36,7 +38,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Constants
  */
 $prefix  = 'WP_SMUSH_';
-$version = '2.7.9.1';
+$version = '2.8.0-beta.1';
 
 // Deactivate the .org version, if pro version is active.
 add_action( 'admin_init', 'deactivate_smush_org' );
