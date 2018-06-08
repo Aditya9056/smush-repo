@@ -31,7 +31,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		}
 
 		function init() {
-			global $WpSmush, $wpsmush_settings;
+			global $wp_smush, $wpsmush_settings;
 			//Filters the setting variable to add S3 setting title and description
 			add_filter( 'wp_smush_settings', array( $this, 'register' ), 5 );
 
@@ -48,13 +48,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 
 			//return if not a pro user, or nextgen integration is not enabled
-			if( !$WpSmush->validate_install() || !$opt_nextgen_val ) {
+			if( ! $wp_smush->validate_install() || !$opt_nextgen_val ) {
 				return;
 			}
 
 			//Auto Smush image, if enabled, runs after Nextgen is finished uploading the image
 			//Allows to override whether to auto smush nextgen image or not
-			if ( $auto_smush = apply_filters( 'smush_nextgen_auto', $WpSmush->is_auto_smush_enabled() ) ) {
+			if ( $auto_smush = apply_filters( 'smush_nextgen_auto', $wp_smush->is_auto_smush_enabled() ) ) {
 				add_action( 'ngg_added_new_image', array( &$this, 'auto_smush' ) );
 			}
 
@@ -192,11 +192,11 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @return mixed
 		 */
 		function resize_from_meta_data( $image ) {
-			global $WpSmush;
+			global $wp_smush;
 
 			$errors = new WP_Error();
 			$stats  = array(
-				"stats" => array_merge( $WpSmush->_get_size_signature(), array(
+				"stats" => array_merge( $wp_smush->_get_size_signature(), array(
 						'api_version' => - 1,
 						'lossy'       => - 1
 					)
@@ -228,7 +228,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				foreach ( $sizes as $size ) {
 
 					//Skip Full size, if smush original is not checked
-					if ( 'full' == $size && ! $WpSmush->smush_original ) {
+					if ( 'full' == $size && ! $wp_smush->smush_original ) {
 						continue;
 					}
 
@@ -273,7 +273,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 						continue;
 					}
 					//Store details for each size key
-					$response = $WpSmush->do_smushit( $attachment_file_path_size, $image->pid, 'nextgen' );
+					$response = $wp_smush->do_smushit( $attachment_file_path_size, $image->pid, 'nextgen' );
 
 					if ( is_wp_error( $response ) ) {
 						return $response;
@@ -289,7 +289,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 						continue;
 					}
 
-					$stats['sizes'][ $size ] = (object) $WpSmush->_array_fill_placeholders( $WpSmush->_get_size_signature(), (array) $response['data'] );
+					$stats['sizes'][ $size ] = (object) $wp_smush->_array_fill_placeholders( $wp_smush->_get_size_signature(), (array) $response['data'] );
 
 					if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
@@ -327,13 +327,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 								//Update compression percent and bytes saved for each size
 								$stats['sizes'][ $size_name ]->bytes = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->bytes;
 								//Calculate percentage
-								$stats['sizes'][ $size_name ]->percent = $WpSmush->calculate_percentage( $stats['sizes'][ $size_name ], $existing_stats_size );
+								$stats['sizes'][ $size_name ]->percent = $wp_smush->calculate_percentage( $stats['sizes'][ $size_name ], $existing_stats_size );
 							}
 						}
 					}
 				}
 				//Total Stats
-				$stats                 = $WpSmush->total_compression( $stats );
+				$stats                 = $wp_smush->total_compression( $stats );
 				$stats['total_images'] = ! empty( $stats['sizes'] ) ? count( $stats['sizes'] ) : 0;
 
 				//If there was any compression and there was no error in smushing
@@ -371,9 +371,9 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @return mixed Stats / Status / Error
 		 */
 		function smush_image( $pid = '', $image = '', $echo = true, $is_bulk = false ) {
-			global $wpsmushnextgenstats, $WpSmush;
+			global $wpsmushnextgenstats, $wp_smush;
 
-			$WpSmush->initialise();
+			$wp_smush->initialise();
 
 			//Get image, if we have image id
 			if ( ! empty( $pid ) ) {
@@ -476,7 +476,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @return bool
 		 */
 		function show_restore_option( $pid, $attachment_data ) {
-			global $WpSmush;
+			global $wp_smush;
 
 			// Registry Object for NextGen Gallery
 			$registry = C_Component_Registry::get_instance();
@@ -490,7 +490,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			$attachment_file_path = $storage->get_image_abspath( $image, 'full' );
 
 			//Get the backup path
-			$backup_path = $WpSmush->get_image_backup_path( $attachment_file_path );
+			$backup_path = $wp_smush->get_image_backup_path( $attachment_file_path );
 
 			//If one of the backup(Ours/NextGen) exists, show restore option
 			if ( file_exists( $backup_path ) || file_exists( $attachment_file_path . '_backup' ) ) {
@@ -509,7 +509,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				$attachment_size_file_path = $storage->get_image_abspath( $image, $size );
 
 				//Get the backup path
-				$backup_path = $WpSmush->get_image_backup_path( $attachment_size_file_path );
+				$backup_path = $wp_smush->get_image_backup_path( $attachment_size_file_path );
 
 				//If one of the backup(Ours/NextGen) exists, show restore option
 				if ( file_exists( $backup_path ) || file_exists( $attachment_size_file_path . '_backup' ) ) {
@@ -525,7 +525,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @uses WpSmushNextGenAdmin::wp_smush_column_options()
 		 */
 		function restore_image() {
-			global $WpSmush, $wpsmushnextgenadmin;
+			global $wp_smush, $wpsmushnextgenadmin;
 
 			//Check Empty fields
 			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
@@ -562,7 +562,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			$attachment_file_path = $storage->get_image_abspath( $image, 'full' );
 
 			//Get the backup path
-			$backup_path = $WpSmush->get_image_backup_path( $attachment_file_path );
+			$backup_path = $wp_smush->get_image_backup_path( $attachment_file_path );
 
 			//Restoring the full image
 			//If file exists, corresponding to our backup path
@@ -587,7 +587,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 					$attachment_size_file_path = $storage->get_image_abspath( $image, $size );
 
 					//Get the backup path
-					$backup_path = $WpSmush->get_image_backup_path( $attachment_size_file_path );
+					$backup_path = $wp_smush->get_image_backup_path( $attachment_size_file_path );
 
 					//If file exists, corresponding to our backup path
 					if ( file_exists( $backup_path ) ) {
@@ -855,13 +855,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 //Extend NextGen Mixin class to smush dynamic images
 if ( class_exists( 'WpSmushNextGen' ) ) {
-	global $WpSmush, $wpsmushnextgen;
+	global $wp_smush, $wpsmushnextgen;
 	if ( ! is_object( $wpsmushnextgen ) ) {
 		$wpsmushnextgen = new WpSmushNextGen();
 	}
 
 	//Extend Nextgen Mixin class and override the generate_image_size, to optimize dynamic thumbnails, generated by nextgen, check for auto smush
-	if ( ! class_exists( 'WpSmushNextGenDynamicThumbs' ) && class_exists( 'Mixin' ) && $WpSmush->is_auto_smush_enabled() ) {
+	if ( ! class_exists( 'WpSmushNextGenDynamicThumbs' ) && class_exists( 'Mixin' ) && $wp_smush->is_auto_smush_enabled() ) {
 
 		class WpSmushNextGenDynamicThumbs extends Mixin {
 
@@ -876,7 +876,7 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 			 * @return bool|object
 			 */
 			function generate_image_size( $image, $size, $params = null, $skip_defaults = false ) {
-				global $WpSmush;
+				global $wp_smush;
 				$image_id = ! empty( $image->pid ) ? $image->pid : '';
 				//Get image from storage object if we don't have it already
 				if ( empty( $image_id ) ) {
@@ -895,7 +895,7 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 					$filename = $success->fileName;
 					//Smush it, if it exists
 					if ( file_exists( $filename ) ) {
-						$response = $WpSmush->do_smushit( $filename, $image_id, 'nextgen' );
+						$response = $wp_smush->do_smushit( $filename, $image_id, 'nextgen' );
 
 						//If the image was smushed
 						if ( ! is_wp_error( $response ) && ! empty( $response['data'] ) && $response['data']->bytes_saved > 0 ) {
@@ -905,7 +905,7 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 							} else {
 								//Initialize stats array
 								$stats                = array(
-									"stats" => array_merge( $WpSmush->_get_size_signature(), array(
+									"stats" => array_merge( $wp_smush->_get_size_signature(), array(
 											'api_version' => - 1,
 											'lossy'       => - 1,
 											'keep_exif'   => false
@@ -919,7 +919,7 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 								$stats['size_before'] = $response['data']->before_size;
 								$stats['time']        = $response['data']->time;
 							}
-							$stats['sizes'][ $size ] = (object) $WpSmush->_array_fill_placeholders( $WpSmush->_get_size_signature(), (array) $response['data'] );
+							$stats['sizes'][ $size ] = (object) $wp_smush->_array_fill_placeholders( $wp_smush->_get_size_signature(), (array) $response['data'] );
 
 							if ( isset( $image->metadata ) ) {
 								$image->meta_data['wp_smush'] = $stats;

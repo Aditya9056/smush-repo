@@ -28,10 +28,10 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 		 *
 		 */
 		function should_continue() {
-			global $WpSmush;
+			global $wp_smush;
 
 			//Do not show directory smush, if not main site in a network
-			if ( $WpSmush->validate_install() ) {
+			if ( $wp_smush->validate_install() ) {
 				return false;
 			}
 

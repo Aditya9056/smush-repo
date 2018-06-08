@@ -1,36 +1,38 @@
 <?php
 
-//Helper Class
+// Helper Class.
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-helper.php";
 
-//Settings Class
+// Settings Class.
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-settings.php";
 
-//Migration Class
+// Migration Class.
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-migrate.php";
 
-//Stats
+// Stats.
 require_once WP_SMUSH_DIR . "lib/class-wp-smush-db.php";
 
-//Include Resize class
+// Include Resize class.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
 
-//Include PNG to JPG Converter
+// Include PNG to JPG Converter.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
 
-//Include Social Sharing
+// Include Social Sharing.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-share.php';
 
-//Include Image backup class
+// Include Image backup class.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-backup.php';
 
-//Include Smush Async class
+// Include Smush Async class.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-async.php';
 
+// Include REST API integration.
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-rest.php';
 
-if ( ! class_exists( 'WpSmush' ) ) {
+if ( ! class_exists( 'WP_Smush' ) ) {
 
-	class WpSmush {
+	class WP_Smush {
 
 		var $version = WP_SMUSH_VERSION;
 
@@ -160,6 +162,7 @@ if ( ! class_exists( 'WpSmush' ) ) {
 			 */
 			add_filter( 'wp_get_default_privacy_policy_content', array( $this, 'add_policy' ) );
 
+			WP_Smush_Rest::get_instance()->register_metas();
 		}
 
 		/**
@@ -204,7 +207,6 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 			#Run the Directory Smush table update
 			$this->update_dir_path_hash();
-
 		}
 
 		/**
@@ -2163,10 +2165,10 @@ if ( ! class_exists( 'WpSmush' ) ) {
 		/**
 		 * Combine Savings from PNG to JPG conversion with smush stats
 		 *
-		 * @param $stats Savings from Smushing the image
-		 * @param $conversion_savings Savings from converting the PNG to JPG
+		 * @param array $stats               Savings from Smushing the image.
+		 * @param array $conversion_savings  Savings from converting the PNG to JPG.
 		 *
-		 * @return Object Total Savings
+		 * @return Object|array Total Savings
 		 */
 		function combine_conversion_stats( $stats, $conversion_savings ) {
 			if ( empty( $stats ) || empty( $conversion_savings ) ) {
@@ -2558,8 +2560,8 @@ if ( ! class_exists( 'WpSmush' ) ) {
 
 	}
 
-	global $WpSmush;
-	$WpSmush = new WpSmush();
+	global $wp_smush;
+	$wp_smush = new WP_Smush();
 
 }
 

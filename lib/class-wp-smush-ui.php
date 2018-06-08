@@ -66,7 +66,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 *  Dismissible by default
 		 */
 		function quick_setup() {
-			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
+			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			//Header Of the Box ?>
 			<dialog id="smush-quick-setup" title="<?php esc_html_e( "QUICK SETUP", "wp-smushit" ); ?>" class="small">
@@ -88,7 +88,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					            continue;
 					        }
 					        //Skip premium features if not a member
-					        if( !in_array( $name, $wpsmushit_admin->basic_features ) && !$WpSmush->validate_install() ) {
+					        if( !in_array( $name, $wpsmushit_admin->basic_features ) && ! $wp_smush->validate_install() ) {
 					            continue;
 					        }
 					        //Do not output settings listed in exclude array list
@@ -96,7 +96,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					            continue;
 					        }
 					        $setting_m_key = WP_SMUSH_PREFIX . $name;
-							$setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->settings[$name] : false;
+							$setting_val   = $wp_smush->validate_install() ? $wpsmush_settings->settings[$name] : false;
 							//Set the default value 1 for auto smush
 							if( 'auto' == $name && false === $setting_val ) {
 							    $setting_val = 1;
@@ -132,12 +132,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Bulk Smush UI and Progress bar
 		 */
 		function bulk_smush_container() {
-			global $WpSmush;
+			global $wp_smush;
 
 			//Subheading content
 			$smush_individual_msg = sprintf( esc_html__( "Smush individual images via your %sMedia Library%s", "wp-smushit" ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '" title="' . esc_html__( 'Media Library', 'wp-smushit' ) . '">', '</a>' );
 
-			$class = $WpSmush->validate_install() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
+			$class = $wp_smush->validate_install() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 
 			//Contianer Header
 			$this->container_header( $class, 'wp-smush-bulk-wrap-box', esc_html__( "BULK SMUSH", "wp-smushit" ), $smush_individual_msg ); ?>
@@ -152,8 +152,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * All the settings for Basic and Advanced Users
 		 */
 		function settings_ui() {
-			global $WpSmush;
-			$class = $WpSmush->validate_install() ? 'smush-settings-wrapper wp-smush-pro' : 'smush-settings-wrapper';
+			global $wp_smush;
+			$class = $wp_smush->validate_install() ? 'smush-settings-wrapper wp-smush-pro' : 'smush-settings-wrapper';
 			$this->container_header( $class, 'wp-smush-settings-box', esc_html__( "SETTINGS", "wp-smushit" ), '' );
 			// display the options
 			$this->options_ui();
@@ -165,7 +165,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
         *
         */
 		function smush_stats_container() {
-			global $WpSmush, $wpsmushit_admin, $wpsmush_db, $wpsmush_settings, $wpsmush_dir;
+			global $wp_smush, $wpsmushit_admin, $wpsmush_db, $wpsmush_settings, $wpsmush_dir;
 
 			$settings = $wpsmush_settings->settings;
 
@@ -227,13 +227,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			/**
 			 * Allows to hide the Super Smush stats as it might be heavy for some users
 			 */
-			if ( $WpSmush->validate_install() && apply_filters( 'wp_smush_show_lossy_stats', true ) ) {
+			if ( $wp_smush->validate_install() && apply_filters( 'wp_smush_show_lossy_stats', true ) ) {
 				$wpsmushit_admin->super_smushed = $wpsmush_db->super_smushed_count();?>
 				<hr />
 				<div class="row super-smush-attachments">
 				<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "Super-smushed savings", "wp-smushit" ); ?></strong></span>
-				<span class="wp-smush-stats<?php echo $WpSmush->lossy_enabled ? ' float-r' : ' float-l wp-smush-lossy-disabled-wrap' ?>"><?php
-					if ( $WpSmush->lossy_enabled ) {
+				<span class="wp-smush-stats<?php echo $wp_smush->lossy_enabled ? ' float-r' : ' float-l wp-smush-lossy-disabled-wrap' ?>"><?php
+					if ( $wp_smush->lossy_enabled ) {
 						echo '<span class="smushed-savings">' . size_format( $compression_savings, 1 ) . '</span>';
 					} else {
 					    //Output a button/link to enable respective setting
@@ -277,7 +277,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</span>
 			</div>
 			<?php
-			if( $WpSmush->validate_install() && !empty( $wpsmushit_admin->stats['conversion_savings'] ) && $wpsmushit_admin->stats['conversion_savings'] > 0 ) { ?>
+			if( $wp_smush->validate_install() && !empty( $wpsmushit_admin->stats['conversion_savings'] ) && $wpsmushit_admin->stats['conversion_savings'] > 0 ) { ?>
 				<hr />
 				<div class="row smush-conversion-savings">
 					<span class="float-l wp-smush-stats-label"><strong><?php esc_html_e( "PNG to JPEG savings", "wp-smushit" ); ?></strong></span>
@@ -294,7 +294,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			do_action( 'wp_smush_after_stats' );
 			echo "</div>";
 			//Pro Savings Expected: For free Version
-			if ( ! $WpSmush->validate_install() ) {
+			if ( ! $wp_smush->validate_install() ) {
 			    //Initialize pro savings if not set already
 			    if( empty( $wpsmushit_admin->stats) || empty( $wpsmushit_admin->stats['pro_savings'] ) ) {
 			        $wpsmushit_admin->set_pro_savings();
@@ -333,7 +333,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Outputs the advanced settings for Pro users, Disabled for basic users by default
 		 */
 		function advanced_settings( $configure_screen = false ) {
-			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
+			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			//Content for the End of box container
 			$div_end = $this->save_button( $configure_screen );
@@ -347,7 +347,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			);
 
 			//For Basic User, Show advanced settings in a separate box
-			if ( ! $WpSmush->validate_install() ) {
+			if ( ! $wp_smush->validate_install() ) {
 				echo $div_end;
 				do_action('wp_smush_before_advanced_settings');
 				//Network settings wrapper
@@ -381,7 +381,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                     if ( isset( $wpsmushit_admin->settings[ $setting_key ] ) ) {
                         $setting_m_key = WP_SMUSH_PREFIX . $setting_key;
                         $label = !empty( $wpsmushit_admin->settings[ $setting_key ]['short_label'] ) ? $wpsmushit_admin->settings[ $setting_key ]['short_label'] : $wpsmushit_admin->settings[ $setting_key ]['label'];
-                        $setting_val   = $WpSmush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;?>
+                        $setting_val   = $wp_smush->validate_install() ? $wpsmush_settings->get_setting( $setting_m_key, false ) : 0;?>
                         <div class='wp-smush-setting-row wp-smush-advanced'>
                             <div class="column column-left">
                                 <label class="inline-label" for="<?php echo $setting_m_key; ?>" aria-hidden="true">
@@ -430,7 +430,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                 }
 			}
 			//Output Form end and Submit button for pro version
-			if ( $WpSmush->validate_install() ) {
+			if ( $wp_smush->validate_install() ) {
 				echo $div_end;
 			} else {
 				echo "</div><!-- Box Content -->";
@@ -438,7 +438,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				echo "</section><!-- Main Section -->";
 			}
 			//Close wrapper div
-			if( is_multisite() && is_network_admin() && !$WpSmush->validate_install() ) {
+			if( is_multisite() && is_network_admin() && ! $wp_smush->validate_install() ) {
 				echo "</div>";
 			}
 		}
@@ -452,7 +452,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 *
 		 */
 		function options_ui( $configure_screen = false ) {
-			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
+			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			$settings = !empty( $wpsmush_settings->settings ) ? $wpsmush_settings->settings : $wpsmush_settings->init_settings();
 
@@ -506,7 +506,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					}
 
 			        //Skip premium features if not a member
-			        if( !in_array( $name, $wpsmushit_admin->basic_features ) && !$WpSmush->validate_install() ) {
+			        if( !in_array( $name, $wpsmushit_admin->basic_features ) && ! $wp_smush->validate_install() ) {
 			            continue;
 			        }
 
@@ -520,7 +520,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 					//Group Original, Resize and Backup for pro users
 					if( in_array( $name, $this->setting_group ) ) {
-					    if( ( 'original' != $name && $WpSmush->validate_install() ) || ( !$WpSmush->validate_install() && 'resize' != $name ) ) {
+					    if( ( 'original' != $name && $wp_smush->validate_install() ) || ( ! $wp_smush->validate_install() && 'resize' != $name ) ) {
 					        continue;
 					    }
 					}
@@ -580,9 +580,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function ui() {
 
-			global $WpSmush, $wpsmushit_admin, $wpsmush_settings, $wpsmush_dir;
+			global $wp_smush, $wpsmushit_admin, $wpsmush_settings, $wpsmush_dir;
 
-			if( !$WpSmush->validate_install() ) {
+			if( ! $wp_smush->validate_install() ) {
 				//Reset Transient
 				$wpsmushit_admin->check_bulk_limit( true );
 			}
@@ -598,7 +598,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					echo '</div>';
 				}
 				//If free version
-				if( !$WpSmush->validate_install() ) {
+				if( ! $wp_smush->validate_install() ) {
 				    $this->smush_pro_modal();
 				} ?>
 
@@ -606,7 +606,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="wp-smushit-container-left col-half float-l"><?php
 					//Bulk Smush Container
 					$this->bulk_smush_container();
-    				if( $WpSmush->validate_install() ) { ?>
+    				if( $wp_smush->validate_install() ) { ?>
 	    			    <!-- Stats Share Widget -->
                         <div class="col-half share-widget-wrapper"><?php
                             global $wpsmush_share;
@@ -619,7 +619,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="wp-smushit-container-right col-half float-l"><?php
 					//Stats
 					$this->smush_stats_container();
-					if ( ! $WpSmush->validate_install() ) {
+					if ( ! $wp_smush->validate_install() ) {
 						/**
 						 * Allows to Hook in Additional Containers after Stats Box for free version
 						 * Pro Version has a full width settings box, so we don't want to do it there
@@ -627,7 +627,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						do_action( 'wp_smush_after_stats_box' );
 					} ?>
 				</div><!-- End Of Smushit Container right --><?php
-                    if( !$WpSmush->validate_install() ) {?>
+                    if( ! $wp_smush->validate_install() ) {?>
                         <!-- Stats Share Widget -->
                         <div class="row"><?php
                             global $wpsmush_share;
@@ -655,7 +655,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 */
 		function bulk_smush_content() {
 
-			global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
+			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			$all_done = ( $wpsmushit_admin->smushed_count == $wpsmushit_admin->total_count ) && 0 == count( $wpsmushit_admin->resmush_ids );
 
@@ -692,7 +692,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
                     <div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' hidden' ?>">
                         <span class="smush-recommendation-title roboto-medium"><?php esc_html_e("Still having trouble with PageSpeed tests? Give these a go…", "wp-smushit"); ?></span>
                         <ol class="smush-recommendation-list"><?php
-                         if( !$WpSmush->validate_install() ) { ?>
+                         if( ! $wp_smush->validate_install() ) { ?>
                             <li class="smush-recommendation-lossy"><?php printf( esc_html__("Upgrade to Smush Pro for advanced lossy compression. %sTry pro free%s.", "wp-smushit"), '<a href="' . $upgrade_url .'" target="_blank">', '</a>' ); ?></li><?php
                          }elseif ( !$wpsmush_settings->settings['lossy'] ) {?>
                              <li class="smush-recommendation-lossy"><?php printf( esc_html__("Enable %sSuper-smush%s for advanced lossy compression to optimise images further with almost no visible drop in quality.", "wp-smushit"), '<a href="#" class="wp-smush-lossy-enable">', "</a>" ); ?></li><?php
@@ -728,7 +728,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					    <i class="icon-fi-warning-alert"></i>
 						<span class="wp-smush-notice-text"><?php
 							printf( _n( "%s, you have %s%s%d%s attachment%s that needs smushing!", "%s, you have %s%s%d%s attachments%s that need smushing!", $wpsmushit_admin->remaining_count, "wp-smushit" ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' );
-							if( !$WpSmush->validate_install() && $wpsmushit_admin->remaining_count > 50 ) {
+							if( ! $wp_smush->validate_install() && $wpsmushit_admin->remaining_count > 50 ) {
 								printf( esc_html__(" %sUpgrade to Pro%s to bulk smush all your images with one click.", "wp-smushit") , '<a href="' . esc_url( $upgrade_url ). '" target="_blank" title="' . esc_html__("Smush Pro", "wp-smushit") . '">', '</a>' );
 								esc_html_e(" Free users can smush 50 images with each click.", "wp-smushit");
 							 }?>
@@ -739,7 +739,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div><?php
 				$this->progress_bar( $wpsmushit_admin );
 				//Enable Super Smush
-				if ( $WpSmush->validate_install() && ! $WpSmush->lossy_enabled ) { ?>
+				if ( $wp_smush->validate_install() && ! $wp_smush->lossy_enabled ) { ?>
 					<p class="wp-smush-enable-lossy hidden"><?php esc_html_e( "Tip: Enable Super-smush in the Settings area to get even more savings with almost no visible drop in quality.", "wp-smushit" ); ?></p><?php
 				}
 				$this->super_smush_promo();
@@ -857,7 +857,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Prints out the page header for Bulk Smush Page
 		 */
 		function smush_page_header() {
-			global $WpSmush, $wpsmushit_admin, $wpsmush_s3, $wpsmush_dir;
+			global $wp_smush, $wpsmushit_admin, $wpsmush_s3, $wpsmush_dir;
 
 			//Include Shared UI
 			require_once WP_SMUSH_DIR . 'assets/shared-ui/plugin-ui.php';
@@ -870,7 +870,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			//Page Heading for Free and Pro Version
 			$page_heading = esc_html__("DASHBOARD", "wp-smushit");
 
-			$auto_smush_message = $WpSmush->is_auto_smush_enabled() ? sprintf( esc_html__( "Automatic smushing is %senabled%s. Newly uploaded images will be automagically compressed.", "wp-smushit" ), '<span class="wp-smush-auto-enabled">', '</span>' ) : sprintf( esc_html__( "Automatic smushing is %sdisabled%s. Newly uploaded images will need to be manually smushed.", "wp-smushit" ), '<span class="wp-smush-auto-disabled">', '</span>' );
+			$auto_smush_message = $wp_smush->is_auto_smush_enabled() ? sprintf( esc_html__( "Automatic smushing is %senabled%s. Newly uploaded images will be automagically compressed.", "wp-smushit" ), '<span class="wp-smush-auto-enabled">', '</span>' ) : sprintf( esc_html__( "Automatic smushing is %sdisabled%s. Newly uploaded images will need to be manually smushed.", "wp-smushit" ), '<span class="wp-smush-auto-disabled">', '</span>' );
 
 			//User API check, and display a message if not valid
 			$user_validation = $this->get_user_validation_message();
@@ -958,8 +958,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Super Smush promo content
 		 */
 		function super_smush_promo() {
-			global $WpSmush, $wpsmushit_admin;
-			if ( $WpSmush->validate_install() ) {
+			global $wp_smush, $wpsmushit_admin;
+			if ( $wp_smush->validate_install() ) {
 				return;
 			}
 			$upgrade_url = add_query_arg(
@@ -984,8 +984,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * Super Smush promo content
 		 */
 		function super_smush_promo_post_settings() {
-			global $WpSmush, $wpsmushit_admin;
-			if ( $WpSmush->validate_install() ) {
+			global $wp_smush, $wpsmushit_admin;
+			if ( $wp_smush->validate_install() ) {
 				return;
 			}
 			$upgrade_url = add_query_arg(
@@ -1161,10 +1161,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		    if( 'original' != $name && 'resize' != $name ) {
 		        return;
 		    }
-		    global $WpSmush, $wpsmushit_admin, $wpsmush_settings;
+		    global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 		    foreach( $this->setting_group as $name ) {
 		        //Do not print Smush Original, Backup for free users
-		        if( !$WpSmush->validate_install() ) {
+		        if( ! $wp_smush->validate_install() ) {
 		            if( 'resize' == $name && !empty( $section ) ) {
 		             continue;
 		            }elseif( empty( $section ) && 'resize' != $name ) {
@@ -1173,7 +1173,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		        }
 		        $setting_val = $wpsmush_settings->settings[$name];
 		        //Turn off settings for free users
-                if( !in_array( $name, $wpsmushit_admin->basic_features ) && !$WpSmush->validate_install() ) {
+                if( !in_array( $name, $wpsmushit_admin->basic_features ) && ! $wp_smush->validate_install() ) {
                     $setting_val = 0;
                 }
 		        ?>

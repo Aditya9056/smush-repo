@@ -14,7 +14,7 @@ if ( ! class_exists( 'WpSmushShare' ) ) {
 		function __construct() {}
 
 		function share_widget() {
-			global $WpSmush, $wpsmushit_admin;
+			global $wp_smush, $wpsmushit_admin;
 			$savings     = $wpsmushit_admin->stats;
 
 			//If there is any saving, greater than 1Mb, show stats
