@@ -16,11 +16,13 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 	class WpSmushNextGenAdmin extends WpSmushNextGen {
 
 		var $total_count = 0;
-		/*
+
+		/**
 		 * @var int $smushed_count Count of images ( Attachments ), Does not includes additional sizes that might have been created
 		 */
 		var $smushed_count = 0;
-		/*
+
+		/**
 		 * @var int $image_count Includes the count of different sizes an image might have
 		 */
 		var $image_count = 0;
@@ -73,9 +75,10 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * Add a WP Smush page for bulk smush and settings related to Nextgen gallery
 		 */
 		function wp_smush_bulk_menu() {
-		    global $wp_smush;
+			global $wp_smush;
+
 			if ( defined( 'NGGFOLDER' ) ) {
-				$title = $wp_smush->validate_install() ? esc_html__( "Smush Pro", "wp-smushit" ) : esc_html__( "Smush", "wp-smushit" );
+				$title = $wp_smush->validate_install() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 				$this->bulk_page_handle = add_submenu_page( NGGFOLDER, $title, $title, 'NextGEN Manage gallery', 'wp-smush-nextgen-bulk', array(
 					&$this,
 					'ui'
@@ -298,7 +301,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		/**
 		 * Set send button status
 		 *
-		 * @param $id
+		 * @param $pid
 		 * @param bool $echo
 		 * @param bool $text_only
 		 *
@@ -410,7 +413,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				<span class="wp-smush-no-image tc">
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-no-media.png'; ?>" alt="<?php esc_html_e( 'No attachments found - Upload some images', 'wp-smushit' ); ?>">
 		        </span>
-                <p class="wp-smush-no-images-content tc"><?php printf( esc_html__( 'We haven’t found any images in your %sgallery%s yet, so there’s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' ), '<a href="' . esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ) . '">', '</a>' ); ?></p>
+                <p class="wp-smush-no-images-content tc"><?php printf( esc_html__( 'We havenвЂ™t found any images in your %sgallery%s yet, so thereвЂ™s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' ), '<a href="' . esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ) . '">', '</a>' ); ?></p>
                 <span class="wp-smush-upload-images tc">
                 <a class="sui-button sui-button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ); ?>"><?php esc_html_e( "UPLOAD IMAGES", "wp-smushit" ); ?></a>
                 </span>
@@ -435,7 +438,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
                 </div>
                 <?php
 				//Enable Super Smush
-				if ( ! $wp_smush->lossy_enabled ) {
+				if ( ! $wp_smush->lossy_enabled ) :
 					$url = admin_url( 'upload.php' );
 					$url = add_query_arg( array(
 						'page' => 'smush#wp-smush-settings-box'
@@ -456,7 +459,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @return void
 		 */
 		public function bulk_smush_container() {
-
 			global $wp_smush, $wpsmush_bulkui;
 
 			$smush_individual_msg = sprintf( esc_html__( 'Smush individual images via your %sManage Galleries%s section', 'wp-smushit' ), '<a href="' . esc_url( admin_url() . 'admin.php?page=nggallery-manage-gallery' ) . '" title="' . esc_html__( 'Manage Galleries', 'wp-smushit' ) . '">', '</a>' );
@@ -517,10 +519,8 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 *
 		 * @return void
 		 */
-		function smush_stats_container() {
-			global $wp_smush, $wpsmushnextgenstats, $wpsmush_bulkui, $wpsmush_db;
-
-			global $WpSmush, $wpsmushnextgenstats, $wpsmush_db;
+		public function smush_stats_content() {
+			global $wp_smush, $wpsmushnextgenstats, $wpsmush_db;
 
 			// If we have resmush list, smushed_count = totalcount - resmush count, else smushed_count.
 			$smushed_count = ( $resmush_count = count( $this->resmush_ids ) ) > 0 ? ( $this->total_count - ( $resmush_count + $this->remaining_count ) ) : $this->smushed_count;
@@ -551,7 +551,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 							<div class="super-smush-attachments">
 								<span class="sui-list-label"><?php esc_html_e( 'Super-smushed images', 'wp-smushit' ); ?></span>
 								<span class="sui-list-detail wp-smush-stats">
-									<?php if ( $WpSmush->lossy_enabled ) : ?>
+									<?php if ( $wp_smush->lossy_enabled ) : ?>
 										<?php $smushed_image = $wpsmushnextgenstats->get_ngg_images( 'smushed' ); ?>
 										<?php if ( ! empty( $smushed_image ) && is_array( $smushed_image ) && ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) : ?>
 											<?php $smushed_image = array_diff_key( $smushed_image, array_flip( $this->resmush_ids ) ); //Get smushed images excluding resmush ids. ?>

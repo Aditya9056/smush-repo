@@ -9,12 +9,11 @@ const config = {
 
 // The path where the Shared UI fonts & images should be sent. (relative to config.output.jsFileName)
 config.output.imagesDirectory = '..//images'; // Trailing slash required.
-config.output.fontsDirectory = '../fonts'; // Trailing slash required.
+config.output.fontsDirectory = '../fonts';    // Trailing slash required.
 
 const scssConfig = {
 	mode: 'production',
 
-	// Was: entry: config.source.scss,
 	entry: {
 		'shared-ui': './_src/scss/shared-ui.scss',
 		'admin': './_src/scss/admin.scss',
@@ -89,7 +88,6 @@ const scssConfig = {
 const jsConfig = {
 	mode: 'production',
 
-	// Was: entry: config.source.js,
 	entry: {
 		'shared-ui': './_src/js/shared-ui.js',
 		'admin': './_src/js/admin-index.js',
@@ -120,18 +118,22 @@ const jsConfig = {
 	plugins: [
 		// Automatically load modules instead of having to import or require them everywhere.
 		new webpack.ProvidePlugin( {
-			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js',  // Cendor script in Shared UI.
-			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
+			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js',  // Vendor script in Shared UI.
+			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js'  // Vendor script in Shared UI.
 		} )
 	]
 };
 
 const resizeJsConfig = {
+	mode: 'production',
+
 	entry: './_src/js/public-resize-detection.js',
+
 	output: {
 		filename: 'resize-detection.min.js',
 		path: path.resolve( __dirname, 'assets/js' )
 	},
+
 	module: {
 		rules: [
 			{

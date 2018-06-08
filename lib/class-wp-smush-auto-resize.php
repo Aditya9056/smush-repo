@@ -79,10 +79,9 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * @return bool
 		 */
 		public function init_flags() {
+			global $wpsmush_settings, $wp_smush, $wpsmush_cdn;
 
-			global $wpsmush_settings, $WpSmush, $wpsmush_cdn;
-
-			$is_pro = $WpSmush->validate_install();
+			$is_pro = $wp_smush->validate_install();
 
 			// All these are members only feature.
 			// @todo add other checks if required.

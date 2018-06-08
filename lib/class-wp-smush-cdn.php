@@ -80,14 +80,13 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 		 * @return void
 		 */
 		public function init_flags() {
-
-			global $WpSmush;
+			global $wp_smush;
 
 			// @todo handle this after implementing CDN settings.
 			$this->cdn_active = false;
 
 			// All these are members only feature.
-			if ( ! $WpSmush->validate_install() ) {
+			if ( ! $wp_smush->validate_install() ) {
 				return;
 			}
 		}
@@ -120,8 +119,7 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 		 * @return string
 		 */
 		public function generate_cdn_url( $src, $args = array() ) {
-
-			global $WpSmush;
+			global $wp_smush;
 
 			// Do not continue incase we try this when cdn is disabled.
 			if ( ! $this->cdn_active ) {
@@ -138,8 +136,8 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 
 			// Arguments for CDN.
 			$pro_args = array(
-				'lossy' => $WpSmush->lossy_enabled ? 1 : 0,
-				'strip' => $WpSmush->keep_exif ? 0 : 1,
+				'lossy' => $wp_smush->lossy_enabled ? 1 : 0,
+				'strip' => $wp_smush->keep_exif ? 0 : 1,
 				'webp'  => 0,
 			);
 
