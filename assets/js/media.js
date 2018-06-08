@@ -2,20 +2,6 @@
  * Adds a Smush Now button and displays stats in Media Attachment Details Screen
  */
 (function ($, _) {
-
-	/*
-	wp.api.loadPromise.done( function() {
-		var image = new wp.api.models.Media( { id: 96 } );
-		image.fetch( { attribute: 'smush' } ).done( function( status ) {
-			console.log( status.smush );
-
-			if ( typeof status.smush === 'object' ) {
-				console.log( 'we are done' );
-			}
-		});
-	});
-	*/
-
     // Local reference to the WordPress media namespace.
     var smush_media = wp.media;
 
