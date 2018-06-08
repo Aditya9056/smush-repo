@@ -850,7 +850,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$wpsmush_backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 			//Get the image metadata from $_POST
-			$original_meta = ! empty( $_POST['metadata'] ) ? $_POST['metadata'] : '';
+			$original_meta = ! empty( $_POST['metadata'] ) ? $this->format_meta_from_post( $_POST['metadata'] ) : '';
 
 			$original_meta = empty( $original_meta ) ? wp_get_attachment_metadata( $attachment_id ) : $original_meta;
 
@@ -894,6 +894,62 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					wp_send_json_success( $status );
 				}
 			}
+		}
+
+		/**
+		 * Format meta data from $_POST request.
+		 *
+		 * Post request in WordPress will convert all values
+		 * to string. Make sure image height and width are int.
+		 * This is required only when Async requests are used.
+		 * See - https://wordpress.org/support/topic/smushit-overwrites-image-meta-crop-sizes-as-string-instead-of-int/
+		 *
+		 * @since 2.8.0
+		 *
+		 * @param array $meta Meta data of attachment.
+		 *
+		 * @return array
+		 */
+		public function format_meta_from_post( $meta = array() ) {
+
+			// Do not continue incase meta is empty.
+			if ( empty( $meta ) ) {
+				return $meta;
+			}
+
+			// If meta data is array proceed.
+			if ( is_array( $meta ) ) {
+
+				// Walk through each items and format.
+				array_walk_recursive( $meta, array( $this, 'format_attachment_meta_item' ) );
+			}
+
+			return $meta;
+		}
+
+		/**
+		 * If current item is width or height, make sure it is int.
+		 *
+		 * @since 2.8.0
+		 *
+		 * @param mixed $value Meta item value.
+		 * @param string $key Meta item key.
+		 */
+		public function format_attachment_meta_item( &$value, $key ) {
+
+			if ( 'height' === $key || 'width' === $key ) {
+				$value = (int) $value;
+			}
+
+			/**
+			 * Allows to format single item in meta.
+			 *
+			 * This filter will be used only for Async post requests.
+			 *
+			 * @param mixed $value Meta item value.
+			 * @param string $key Meta item key.
+			 */
+			$value = apply_filters( 'wp_smush_format_attachment_meta_item', $value, $key );
 		}
 
 		/**
