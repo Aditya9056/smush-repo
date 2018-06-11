@@ -81,7 +81,9 @@ const scssConfig = {
 	},
 
 	plugins: [
-		new ETP( '[name].min.css' )
+		new ETP({
+            filename: '../css/[name].min.css'
+        })
 	]
 };
 
