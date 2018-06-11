@@ -334,7 +334,7 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 		// Remove old wpmud class from body of smush page to avoid style conflict.
 		$classes = str_replace( 'wpmud ', '', $classes );
 
-		$classes .= ' sui-2-2-2';
+		$classes .= ' sui-2-2-4';
 
 		return $classes;
 	}

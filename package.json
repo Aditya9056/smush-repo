@@ -35,7 +35,7 @@
     "build": "npm run compile && grunt prepare && grunt build && grunt build:wporg"
   },
   "dependencies": {
-    "@wpmudev/shared-ui": "2.2.2"
+    "@wpmudev/shared-ui": "2.2.4"
   },
   "devDependencies": {
     "ajv": "6.5.0",
