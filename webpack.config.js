@@ -8,7 +8,7 @@ const config = {
 };
 
 // The path where the Shared UI fonts & images should be sent. (relative to config.output.jsFileName)
-config.output.imagesDirectory = '..//images'; // Trailing slash required.
+config.output.imagesDirectory = '../images'; // Trailing slash required.
 config.output.fontsDirectory = '../fonts';    // Trailing slash required.
 
 const scssConfig = {
