@@ -2251,8 +2251,19 @@ jQuery( function ( $ ) {
     $( 'body' ).on( 'click', 'a.wp-smush-dir-link', function ( e ) {
         if ( $( 'div.sui-wrap button.wp-smush-browse' ).length > 0 ) {
             e.preventDefault();
-            goToByScroll( '#wp-smush-dir-wrap-box' );
-            $( 'div.sui-wrap button.wp-smush-browse' ).click();
+            SUI.dialogs["wp-smush-list-dialog"].show();
+            //Display the loader
+            $( 'button.dir-smush-button-wrap span.spinner' ).addClass( 'is-active' );
+
+            //Display File tree for Directory Smush
+            $( ".wp-smush-list-dialog .content" ).fileTree( {
+                    script: getDirectoryList,
+                    multiFolder: false
+                },
+                function () {
+                }
+            );
+
         }
     } );
 
