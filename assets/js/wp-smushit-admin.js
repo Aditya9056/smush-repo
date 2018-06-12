@@ -677,7 +677,7 @@ jQuery( function ( $ ) {
         // prevent the default action
         e.preventDefault();
 
-        $( '.wp-smush-notice.wp-smush-settings-updated' ).remove();
+        $( '.sui-notice-top.sui-notice-success' ).remove();
 
         //Disable Resmush and scan button
         $( '.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings' ).attr( 'disabled', 'disabled' );
@@ -955,7 +955,7 @@ jQuery( function ( $ ) {
         $( 'button.wp-smush-all' ).removeAttr( 'data-smush' );
 
         //remove notices
-        var el = $( '.sui-notice.wp-smush-resmush-message, .sui-notice.wp-smush-settings-updated' );
+        var el = $( '.sui-notice.wp-smush-resmush-message, .sui-notice-top.sui-notice-success' );
         el.slideUp( 100, function () {
             el.remove();
         } );
@@ -1968,33 +1968,33 @@ jQuery( function ( $ ) {
         }
     } );
 
-    //On Resmush click
+    // On Resmush click.
     $( 'body' ).on( 'click', '.wp-smush-skip-resmush', function ( e ) {
         e.preventDefault();
         var self = jQuery( this );
         var container = self.parents().eq( 1 );
 
-        //Remove Parent div
+        // Remove Parent div.
         var $el = self.parent();
         remove_element( $el );
 
-        //Remove Settings Notice
-        $( '.wp-smush-notice.wp-smush-settings-updated' ).remove();
+        // Remove Settings Notice.
+        $( '.sui-notice-top.sui-notice-success' ).remove();
 
-        //Set button attribute to skip re-smush ids
+        // Set button attribute to skip re-smush ids.
         container.find( '.wp-smush-all' ).attr( 'data-smush', 'skip_resmush' );
 
-        //Update Smushed count
+        // Update Smushed count.
         wp_smushit_data.count_smushed = parseInt( wp_smushit_data.count_smushed ) + wp_smushit_data.resmush.length;
         wp_smushit_data.count_supersmushed = parseInt( wp_smushit_data.count_supersmushed ) + wp_smushit_data.resmush.length;
 
-        //Update Stats
+        // Update Stats.
         if ( wp_smushit_data.count_smushed == wp_smushit_data.count_total ) {
 
-            //Show all done notice
+            // Show all done notice.
             $( '.wp-smush-notice.wp-smush-all-done, .wp-smush-pagespeed-recommendation' ).show();
 
-            //Hide Smush button
+            // Hide Smush button.
             $( '.wp-smush-bulk-wrapper ' ).hide()
 
         }
