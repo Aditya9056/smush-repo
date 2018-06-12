@@ -2099,21 +2099,33 @@ jQuery( function ( $ ) {
         } );
     } );
 
-    //Re-Validate Resize Width And Height
+    // Re-Validate Resize Width And Height.
     $( 'body' ).on( 'blur', '.wp-smush-resize-input', function () {
 
         var self = $( this );
 
         var wrapper_div = self.parents().eq( 4 );
 
-        //Initiate the check
-        validate_resize_settings( wrapper_div, false, false ); // run the validation
+        // Initiate the check.
+        validate_resize_settings( wrapper_div, false, false ); // run the validation.
     } );
 
-    //Handle Resize Checkbox toggle, to show/hide width, height settings
+    // Handle Resize Checkbox toggle, to show/hide width, height settings.
     $( 'body' ).on( 'click', '#wp-smush-resize, #wp-smush-resize-quick-setup', function () {
         var self = $( this );
         var settings_wrap = $( '.wp-smush-resize-settings-wrap' );
+
+        if ( self.is( ':checked' ) ) {
+            settings_wrap.show();
+        } else {
+            settings_wrap.hide();
+        }
+    } );
+
+    // Handle Automatic Smush Checkbox toggle, to show/hide image size settings.
+    $( 'body' ).on( 'click', '#wp-smush-auto', function () {
+        var self = $( this );
+        var settings_wrap = $( '.wp-smush-image-size-list' );
 
         if ( self.is( ':checked' ) ) {
             settings_wrap.show();
@@ -2135,7 +2147,7 @@ jQuery( function ( $ ) {
         }
     } );
 
-    //Handle PNG to JPG Checkbox toggle, to show/hide Transparent image conversion settings
+    // Handle PNG to JPG Checkbox toggle, to show/hide Transparent image conversion settings.
     $( '#wp-smush-png_to_jpg' ).click( function () {
         var self = $( this );
         var settings_wrap = $( '.wp-smush-png_to_jpg-wrap' );

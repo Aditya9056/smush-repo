@@ -1367,9 +1367,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$is_pro   = $wp_smush->validate_install();
 			$disabled = '';
 
+
+			$setting_status = empty( $wpsmush_settings->settings['auto'] ) ? 0 : $wpsmush_settings->settings['auto'];
+
 			if ( ! empty( $sizes ) ) { ?>
 				<!-- List of image sizes recognised by WP Smush -->
-				<div class="wp-smush-image-size-list">
+				<div class="wp-smush-image-size-list <?php echo $setting_status ? '' : ' sui-hidden' ?>">
 				<span class="sui-description"><?php esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every default and/or custom image size that your theme has registered. This means there are multiple versions of your images in your media library. Choose the images size/s below that you would like optimized:', 'wp-smushit' ); ?></span><?php
 				foreach ( $sizes as $size_k => $size ) {
 					// If image sizes array isn't set, mark all checked ( Default Values ).
