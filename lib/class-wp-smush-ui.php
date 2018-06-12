@@ -1572,8 +1572,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %sBulk smush now!%s', 'wp-smushit' ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 				}
 
-				echo '<div class="sui-notice sui-notice-success wp-smush-settings-updated">
-						<p>' . $message . '</p><span class="sui-notice-dismiss"><a href="#">' . __( 'Dismiss', 'wp-smushit' ) . '</a></span>
+				echo '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
+						<div class="sui-notice-content">
+							<p>' . $message . '</p>
+						</div>
+						<span class="sui-notice-dismiss">
+							<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check"></a>
+						</span>
 					</div>';
 
 				// Remove the option.
