@@ -33,6 +33,12 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		function init() {
 			global $wp_smush, $wpsmush_settings;
 
+			//Filters the setting variable to add S3 setting title and description
+			add_filter( 'wp_smush_settings', array( $this, 'register' ), 5 );
+
+			//Filters the setting variable to add S3 setting in premium features
+			add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 5 );
+
 			//Check if integration is Enabled or not
 			if ( ! empty( $wpsmush_settings->settings ) ) {
 				$opt_nextgen_val = $wpsmush_settings->settings['nextgen'];
@@ -46,12 +52,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			if( ! $wp_smush->validate_install() || !$opt_nextgen_val ) {
 				return;
 			}
-
-			//Filters the setting variable to add S3 setting title and description
-			add_filter( 'wp_smush_settings', array( $this, 'register' ), 5 );
-
-			//Filters the setting variable to add S3 setting in premium features
-			add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 5 );
 
 			//Auto Smush image, if enabled, runs after Nextgen is finished uploading the image
 			//Allows to override whether to auto smush nextgen image or not
