@@ -1,12 +1,7 @@
-@import "~@wpmudev/shared-ui/scss/_functions";
-@import "~@wpmudev/shared-ui/scss/_variables";
-@import "~@wpmudev/shared-ui/scss/_mixins";
-@import "~@wpmudev/shared-ui/scss/_colors";
-@import "common/mixins";
-
 @include body-class {
 
-  .sui-wrap {
+
+    .sui-wrap {
 
     .tc {
       text-align: center;
@@ -22,7 +17,7 @@
 
         span {
           &.wp-smush-li-path {
-            background: url(../../assets/images/folder-closed.svg) no-repeat;
+            background: url("../../assets/images/folder-closed.svg") no-repeat;
             background-position-y: 6px;
             line-height: 2;
             padding: 0 30px;
@@ -58,7 +53,7 @@
         top: 4px;
         display: inline-block;
         &.bulk:not(.sui-tag) {
-          @include smush_tick_icon;
+          @include icon(before, check-tick);
           &:before {
              color: $notice-default-icon-color;
             vertical-align: middle;
@@ -145,7 +140,7 @@
 
         .wp-smush-image-dir-progress {
           &.optimised {
-            @include smush_tick_icon;
+            @include icon(before, check-tick);
             &:before {
               color: $notice-success-icon-color;
               vertical-align: middle;
@@ -155,7 +150,7 @@
 
           &.partial {
             font-size: 18px;
-            @include smush_tick_icon;
+            @include icon(before, check-tick);
             &:before {
               color: $notice-warning-icon-color;
             }
@@ -172,14 +167,14 @@
         .wp-smush-image-ele-progress {
           font-size: 18px;
           &.partial {
-            @include smush_tick_icon;
+            @include icon(before, check-tick);
             &:before {
               color: $notice-warning-icon-color;
             }
           }
 
           &.optimised {
-            @include smush_tick_icon;
+            @include icon(before, check-tick);
             &:before {
               color: $notice-success-icon-color;
               vertical-align: middle;
@@ -224,13 +219,13 @@
 
     .sui-summary-smush,
     .sui-summary-smush-nextgen {
-      background-image: url(../../assets/images/smush.png);
+      background-image: url("../../assets/images/smush-graphic-dashboard-summary.svg");
     }
 
     .smush-pro-features {
 
       .smush-pro-feature-title {
-        @include smush_tick_icon;
+        @include icon(before, check-tick);
         font-weight: 500;
         line-height: 30px;
         color: #333;
@@ -309,18 +304,18 @@
         .ext_jpg,
         .ext_gif,
         .ext_bmp {
-          background: url(../../assets/images/image.svg) left top no-repeat;
+          background: url("../../assets/images/image.svg") left top no-repeat;
         }
 
         &.directory {
-          background: url(../../assets/images/folder-closed.svg) left top no-repeat;
+          background: url("../../assets/images/folder-closed.svg") left top no-repeat;
         }
 
         &.expanded {
-          background: url(../../assets/images/folder-open.svg) left top no-repeat;
+          background: url("../../assets/images/folder-open.svg") left top no-repeat;
 
           &.selected {
-            background: url(../../assets/images/folder-open-selected.svg) left top no-repeat;
+            background: url("../../assets/images/folder-open-selected.svg") left top no-repeat;
 
             > a,
             .file.selected {
@@ -364,7 +359,7 @@
       background: #d1f1ea !important;
       color: #1abc9c !important;
       pointer-events: none;
-      @include smush_tick_icon;
+      @include icon(before, check-tick);
 
       &:before {
         padding-right: 5px;

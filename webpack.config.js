@@ -1,7 +1,9 @@
 const path    = require('path');
 const webpack = require('webpack');
-const AP      = require('autoprefixer');
-const ETP     = require('mini-css-extract-plugin');
+const autoprefixer = require('autoprefixer');
+
+// As Webpack only understands JS, we'll use this plugin to extract the CSS to a file
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const config = {
 	output: {}
@@ -15,9 +17,8 @@ const scssConfig = {
 	mode: 'production',
 
 	entry: {
-		'shared-ui': './_src/scss/shared-ui.scss',
-		'admin': './_src/scss/admin.scss',
-		'resize-detection': './_src/scss/resize-detection.scss'
+		'admin': './_src/scss/app.scss',
+		// 'resize-detection': './_src/scss/resize-detection.scss'
 	},
 
 	output: {
@@ -30,7 +31,7 @@ const scssConfig = {
 			{
 				test: /\.scss$/,
 				exclude: /node_modules/,
-				use: [ ETP.loader,
+				use: [ MiniCssExtractPlugin.loader,
 					{
 						loader: 'css-loader'
 					},
@@ -38,7 +39,7 @@ const scssConfig = {
 						loader: 'postcss-loader',
 						options: {
 							plugins: [
-								AP({
+								autoprefixer({
 									browsers: ['ie > 9', '> 1%']
 								})
 							],
@@ -54,7 +55,6 @@ const scssConfig = {
 							sourceMap: true
 						}
 					}
-
 				]
 			},
 			{
@@ -81,7 +81,7 @@ const scssConfig = {
 	},
 
 	plugins: [
-		new ETP({
+		new MiniCssExtractPlugin({
             filename: '../css/[name].min.css'
         })
 	]
