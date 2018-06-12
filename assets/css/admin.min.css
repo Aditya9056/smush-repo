@@ -7406,7 +7406,7 @@ html.sui-has-overlay {
   border: 1px solid #E6E6E6;
   border-radius: 5px;
   color: #555;
-  margin: 1.5em 0 0;
+  margin-left: 48px;
   overflow: hidden;
   padding: 30px;
   vertical-align: middle;
@@ -7613,8 +7613,4 @@ html.sui-has-overlay {
 
 .sui-2-2-4 .sui-summary-smush-nextgen .smush-stats-list-nextgen {
   min-height: 150px;
-}
-
-.sui-2-2-4 .eljnac {
-  color: red;
 }
