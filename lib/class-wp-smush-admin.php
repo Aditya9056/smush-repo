@@ -1429,9 +1429,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//If there aren't any images in the library, return the notice
 			if ( 0 == $wpsmush_db->get_media_attachments( true ) && 'nextgen' != $type ) {
 				$notice = esc_html__( "We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!", "wp-smushit" );
-				$resp   = '<div class="sui-notice sui-notice-success wp-smush-resmush-message" tabindex="0"><p>' . $notice . '</p>
-				<span class="sui-notice-dismiss"><a href="#">' . esc_html__( 'Dismiss', 'wp-smushit' ) . '</a></span>
-				</div>';
+				$resp    = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
+						<div class="sui-notice-content">
+							<p>' . $notice . '</p>
+						</div>
+						<span class="sui-notice-dismiss">
+							<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check"></a>
+						</span>
+					</div>';
 
 				delete_site_option( WP_SMUSH_PREFIX . 'run_recheck' );
 				wp_send_json_success( array(
@@ -1444,8 +1449,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Default Notice, to be displayed at the top of page
 			//Show a message, at the top
 			$message = esc_html__( 'Yay! All images are optimized as per your current settings.', 'wp-smushit' );
-			$resp    = '<div class="sui-notice sui-notice-success wp-smush-resmush-message" tabindex="0"><p>' . $message . '</p>
-				<span class="sui-notice-dismiss"><a href="#">' . esc_html__( 'Dismiss', 'wp-smushit' ) . '</a></span></div>';
+			$resp    = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
+						<div class="sui-notice-content">
+							<p>' . $message . '</p>
+						</div>
+						<span class="sui-notice-dismiss">
+							<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check"></a>
+						</span>
+					</div>';
 
 			//If a user manually runs smush check
 			$return_ui = isset( $_REQUEST['get_ui'] ) && 'true' == $_REQUEST['get_ui'] ? true : false;
@@ -1637,9 +1648,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			if ( ! empty( $resmush_list ) || $remaining_count > 0 ) {
 				$message = sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
-				$resp    = '<div class="sui-notice sui-notice-success wp-smush-resmush-message wp-smush-resmush-pending" tabindex="0"><p>' . $message . '</p>
-							<span class="sui-notice-dismiss"><a href="#">' . esc_html__( 'Dismiss', 'wp-smushit' ) . '</a></span>
-						</div>';
+				$resp    = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
+						<div class="sui-notice-content">
+							<p>' . $message . '</p>
+						</div>
+						<span class="sui-notice-dismiss">
+							<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check"></a>
+						</span>
+					</div>';
 			}
 
 			##Directory Smush Stats

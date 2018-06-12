@@ -199,7 +199,7 @@ jQuery( function ( $ ) {
             $( '.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper' ).show();
 
             //Remove any Global Notices if there
-            $( '.wp-smush-notice.wp-smush-resmush-message' ).remove();
+            $( '.sui-notice-top' ).remove();
 
             //Hide the Bulk Limit message
             $( 'p.smush-error-message.limit_exceeded' ).remove();
@@ -955,7 +955,7 @@ jQuery( function ( $ ) {
         $( 'button.wp-smush-all' ).removeAttr( 'data-smush' );
 
         //remove notices
-        var el = $( '.sui-notice.wp-smush-resmush-message, .sui-notice-top.sui-notice-success' );
+        var el = $( '.sui-notice-top.sui-notice-success' );
         el.slideUp( 100, function () {
             el.remove();
         } );
