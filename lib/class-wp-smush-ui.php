@@ -945,7 +945,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					$main_nav_li .= '<span class="smush-nav-icon ' . $tab . $tag_class . '">' . $tag_content . '</span>';
 					$main_nav_li .= '</li>';
 					// Mobile nav
-					$select_nav .= '<option class="' . $class . '" value="' . $tab . '" ' . selected( $tab, $this->current_tab, false ) . '>' . $label . '</option>';
+					if ( is_multisite() && is_network_admin() ) {
+						$url = network_admin_url( 'admin.php?page=smush' . '&tab=' . $tab );
+					} else {
+						$url = admin_url( 'admin.php?page=smush' . '&tab=' . $tab );
+					}
+					$select_nav .= '<option class="' . $class . '" value="' . esc_url( $url ) . '" ' . selected( $tab, $this->current_tab, false ) . '>' . $label . '</option>';
 					$mob_nav_li .= '<li class="smush-' . $tab . $class . ( $tab === $this->current_tab ? ' current' : '' ) . '">' . $label . '</li>';
 					?>
 				<?php endforeach; ?>
@@ -953,20 +958,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<?php echo $main_nav_li; ?>
 				</ul>
 				<div class="sui-sidenav-hide-lg">
-					<div class="select-container sui-mobile-nav">
-						<span class="dropdown-handle">
-							<i class="sui-icon-chevron-down"></i>
-						</span>
-						<select class="sui-mobile-nav" style="display: none;">
-							<?php echo $select_nav; ?>
-						</select>
-						<div class="select-list-container">
-							<div class="list-value"><?php echo $this->tabs[ $this->current_tab ]; ?></div>
-							<ul class="list-results">
-								<?php echo $mob_nav_li; ?>
-							</ul>
-						</div>
-					</div>
+					<select class="sui-mobile-nav">
+						<?php echo $select_nav; ?>
+					</select>
 				</div>
 			</div>
 			<?php
