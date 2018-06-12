@@ -344,17 +344,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$current_page = '';
 			if ( function_exists( 'get_current_screen' ) ) {
 				$current_screen = get_current_screen();
-				$current_page   = !empty( $current_screen ) ? $current_screen->base : $current_page;
+				$current_page   = ! empty( $current_screen ) ? $current_screen->base : $current_page;
 			}
 
 			$enqueue_smush = true;
 
-			//Load js and css on all admin pages, in order t display install/upgrade notice
-			// And If upgrade/install message is dismissed or for pro users, Do not enqueue script
+			// Load js and css on all admin pages, in order t display install/upgrade notice.
+			// And If upgrade/install message is dismissed or for pro users, Do not enqueue script.
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->validate_install() ) {
 				/** @var $pages List of screens where script needs to be loaded */
 
-				//Do not enqueue, unless it is one of the required screen, or not in wordpress backend
+				// Do not enqueue, unless it is one of the required screen, or not in wordpress backend.
 				if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, $this->pages ) && ! did_action( 'wp_enqueue_media' ) ) ) {
 
 					$enqueue_smush = false;
@@ -372,19 +372,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$this->load_shared_ui( $current_page );
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 
-			//Style
+			// Style.
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
 			$dir = defined('__DIR__') ? __DIR__ : dirname(__FILE__);
 
-			//Load on Smush all page only
+			// Load on Smush all page only.
 			if ( in_array( $current_screen->id, $this->plugin_pages ) ) {
 				// Load Jquery tree on specified page.
 				if ( 'toplevel_page_smush' === $current_page ) {
 					wp_enqueue_script( 'jqft-js' );
 					wp_enqueue_style( 'jqft-css' );
 				}
-				wp_enqueue_style( 'wpmudev-sui', plugins_url( 'assets/css/shared-ui.min.css', __DIR__ ) );
+				// Smush admin (smush-admin) includes the Shared UI.
 				wp_enqueue_style( 'smush-admin', plugins_url( 'assets/css/admin.min.css', __DIR__ ) );
 				wp_enqueue_script(
 					'wpmudev-sui',
@@ -402,7 +402,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			}
 
-			// localize translatable strings for js
+			// Localize translatable strings for js.
 			$this->localize();
 			$this->extend_media_modal();
 		}
