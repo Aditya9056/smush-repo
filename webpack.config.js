@@ -84,7 +84,11 @@ const scssConfig = {
 		new MiniCssExtractPlugin({
             filename: '../css/[name].min.css'
         })
-	]
+	],
+
+	watchOptions: {
+		poll: 500
+	}
 };
 
 const jsConfig = {
@@ -123,7 +127,11 @@ const jsConfig = {
 			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js',  // Vendor script in Shared UI.
 			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js'  // Vendor script in Shared UI.
 		} )
-	]
+	],
+
+	watchOptions: {
+		poll: 500
+	}
 };
 
 const resizeJsConfig = {
@@ -150,6 +158,10 @@ const resizeJsConfig = {
 			}
 		]
 	},
+
+	watchOptions: {
+		poll: 500
+	}
 };
 
 module.exports = [scssConfig, jsConfig, resizeJsConfig];
