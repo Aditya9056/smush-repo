@@ -7223,7 +7223,6 @@ html.sui-has-overlay {
 
 .sui-2-2-4 .sui-wrap .sui-box .sui-box-body span.wp-smush-li-path {
   background: url(../fonts/folder-closed.svg) no-repeat;
-  background-position-y: 6px;
   line-height: 2;
   padding: 0 30px;
   max-width: 87%;
@@ -7316,8 +7315,7 @@ html.sui-has-overlay {
 .sui-2-2-4 .sui-wrap .smush-dir-smush-accordion .wp-smush-dir-progress-wrap {
   background: none;
   height: inherit;
-  padding: 0;
-  padding-right: 35px;
+  padding: 0 35px 0 0;
 }
 
 .sui-2-2-4 .sui-wrap .smush-dir-smush-accordion .wp-smush-dir-progress-wrap.sui-progress-block {
@@ -7421,6 +7419,7 @@ html.sui-has-overlay {
 .sui-2-2-4 .sui-wrap .sui-summary-smush,
 .sui-2-2-4 .sui-wrap .sui-summary-smush-nextgen {
   background-image: url(../fonts/smush-graphic-dashboard-summary.svg);
+  background-size: 200px;
 }
 
 .sui-2-2-4 .sui-wrap .smush-pro-features .smush-pro-feature-title {

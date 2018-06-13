@@ -1009,12 +1009,6 @@ div.smush-quick-setup-settings div.submit-button-wrap span.spinner {
     overflow: hidden;
 }
 
-.wpmud .wp-smush-no-images-content {
-    color: #514a30;
-    margin-top: 20px;
-    padding: 20px 10px;
-}
-
 .wp-smush-upload-images {
     display: block;
     overflow: hidden;

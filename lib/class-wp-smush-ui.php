@@ -840,8 +840,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<span class="wp-smush-no-image tc">
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-no-media.png'; ?>" alt="<?php esc_html_e( 'No attachments found - Upload some images', 'wp-smushit' ); ?>">
 		        </span>
-				<p class="wp-smush-no-images-content tc roboto-regular"><?php esc_html_e( 'We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' ); ?></p>
-				<span class="wp-smush-upload-images tc">
+				<p class="wp-smush-no-images-content tc roboto-regular">
+					<?php esc_html_e( 'We haven’t found any images in your media library yet so there’s no smushing to be done!', 'wp-smushit' ); ?><br>
+					<?php esc_html_e( 'Once you upload images, reload this page and start playing!', 'wp-smushit' ); ?>
+				</p>
+				<span class="wp-smush-upload-images sui-no-padding-bottom tc">
 					<a class="sui-button sui-button-primary tc" href="<?php echo esc_url( admin_url( 'media-new.php' ) ); ?>"><?php esc_html_e( 'UPLOAD IMAGES', 'wp-smushit' ); ?></a>
 				</span>
 			<?php else : ?>

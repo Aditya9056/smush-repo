@@ -1,7 +1,6 @@
 @include body-class {
 
-
-    .sui-wrap {
+  .sui-wrap {
 
     .tc {
       text-align: center;
@@ -18,7 +17,6 @@
         span {
           &.wp-smush-li-path {
             background: url("../../assets/images/folder-closed.svg") no-repeat;
-            background-position-y: 6px;
             line-height: 2;
             padding: 0 30px;
             max-width: 87%;
@@ -55,7 +53,7 @@
         &.bulk:not(.sui-tag) {
           @include icon(before, check-tick);
           &:before {
-             color: $notice-default-icon-color;
+            color: $notice-default-icon-color;
             vertical-align: middle;
             font-size: 18px;
           }
@@ -118,8 +116,7 @@
       .wp-smush-dir-progress-wrap {
         background: none;
         height: inherit;
-        padding: 0;
-        padding-right: 35px;
+        padding: 0 35px 0 0;
 
         &.sui-progress-block {
           float: right;
@@ -220,6 +217,7 @@
     .sui-summary-smush,
     .sui-summary-smush-nextgen {
       background-image: url("../../assets/images/smush-graphic-dashboard-summary.svg");
+      background-size: 200px;
     }
 
     .smush-pro-features {

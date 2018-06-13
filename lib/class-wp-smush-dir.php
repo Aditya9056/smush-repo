@@ -271,8 +271,11 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						<span class="wp-smush-no-image tc">
 							<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-no-media.png'; ?>" alt="<?php esc_html_e( 'Directory Smush - Choose Folder', 'wp-smushit' ); ?>">
 				        </span>
-						<p class="wp-smush-no-images-content tc roboto-regular"><?php esc_html_e( 'In addition to smushing your media uploads, you may want to also smush images living outside your uploads directory. Add any folders you wish to smush and bulk smush away!', 'wp-smushit' ); ?></p>
-						<span class="wp-smush-upload-images tc">
+						<p class="wp-smush-no-images-content tc roboto-regular">
+							<?php esc_html_e( 'In addition to smushing your media uploads, you may want to also smush images living outside your uploads directory.', 'wp-smushit' ); ?><br>
+							<?php esc_html_e( 'Add any folders you wish to smush and bulk smush away!', 'wp-smushit' ); ?>
+						</p>
+						<span class="wp-smush-upload-images sui-no-padding-bottom tc">
 							<button type="button" class="sui-button sui-button-primary wp-smush-browse tc" data-a11y-dialog-show="wp-smush-list-dialog"><?php esc_html_e( 'CHOOSE FOLDER', 'wp-smushit' ); ?></button>
 							<?php $this->show_resume_button(); ?>
 						</span>
