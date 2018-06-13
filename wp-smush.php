@@ -1,17 +1,27 @@
 <?php
-/*
-Plugin Name:  Smush Pro
-Plugin URI:   http://premium.wpmudev.org/projects/wp-smush-pro/
-Description:  Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
-Version:      2.8.0-beta.1
-Author:       WPMU DEV
-Author URI:   https://premium.wpmudev.org/
-License:      GPLv2
-License URI:  https://www.gnu.org/licenses/gpl-2.0.html
-Text Domain:  wp-smushit
-Domain Path:  /languages
-WDP ID:       912164
-*/
+/**
+ * WP Smush plugin
+ *
+ * Reduce image file sizes, improve performance and boost your SEO using the
+ * <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
+ *
+ * @link              http://premium.wpmudev.org/projects/wp-smush-pro/
+ * @since             1.0.0
+ * @package           WP_Smush
+ *
+ * @wordpress-plugin
+ * Plugin Name:       Smush Pro
+ * Plugin URI:        http://premium.wpmudev.org/projects/wp-smush-pro/
+ * Description:       Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
+ * Version:           2.8.0-beta.1
+ * Author:            WPMU DEV
+ * Author URI:        https://premium.wpmudev.org/
+ * License:           GPLv2
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       wp-smushit
+ * Domain Path:       /languages
+ * WDP ID:            912164
+ */
 
 /*
 This plugin was originally developed by Alex Dunae (http://dialect.ca/).
@@ -38,12 +48,11 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-$version = '2.7.9.1';
-
-define( 'WP_SMUSH_VERSION', $version );
+define( 'WP_SMUSH_VERSION', '2.8.0-beta.1' );
+define( 'WP_SHARED_UI_VERSION', 'sui-2-2-4' ); // Used to define body class.
 define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
 define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
-define( 'WP_SMUSH_UA', 'WP Smush/' . $version . '; ' . network_home_url() );
+define( 'WP_SMUSH_UA', 'WP Smush/' . WP_SMUSH_VERSION . '; ' . network_home_url() );
 define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_SMUSH_MAX_BYTES', 1000000 );
@@ -77,9 +86,9 @@ if ( ! function_exists( 'deactivate_smush_org' ) ) {
 	}
 }
 
-// Include main class.
+// Include core class.
 /* @noinspection PhpIncludeInspection */
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
+require_once plugin_dir_path( __FILE__ ) . 'lib/class-wp-smush.php';
 
 if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 	/**
@@ -334,7 +343,7 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 		// Remove old wpmud class from body of smush page to avoid style conflict.
 		$classes = str_replace( 'wpmud ', '', $classes );
 
-		$classes .= ' sui-2-2-4';
+		$classes .= ' ' . WP_SHARED_UI_VERSION;
 
 		return $classes;
 	}
