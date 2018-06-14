@@ -180,7 +180,7 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 		public function process_img_tags( $content ) {
 
 			$content  = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
-			$document = new \DOMDocument();
+			$document = new DOMDocument();
 			libxml_use_internal_errors( true );
 			$document->loadHTML( utf8_decode( $content ) );
 
