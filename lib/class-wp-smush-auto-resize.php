@@ -272,8 +272,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 				$url = $this->get_url_without_dimensions( $image_src );
 			}
 
-			error_log(print_r($size_array, true));
-
 			// We need to add additional dimensions.
 			$full_width     = $image_meta['width'];
 			$full_height    = $image_meta['height'];
