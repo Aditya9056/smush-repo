@@ -42,7 +42,7 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 		 * Output the required UI for Plugin recommendations
 		 */
 		function ui() {
-			if ( ! $this->should_continue() ) { ?>
+			if ( $this->should_continue() ) { ?>
 
                 <div class="sui-row" id="sui-cross-sell-footer">
                     <div><span class="sui-icon-plugin-2"></span></div>
