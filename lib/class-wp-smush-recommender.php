@@ -2,7 +2,7 @@
 /**
  * Displays the UI for .org plugin recommendations
  *
- * @package WP Smush
+ * @package WP_Smush
  * @subpackage Admin
  * @since 2.7.9
  *
@@ -76,7 +76,6 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 						),
 						$site_url
 					);
-					$dir = defined('__DIR__') ? __DIR__ : dirname(__FILE__);
 					?>
 				</div>
 				<div class="sui-cross-sell-bottom">
@@ -90,8 +89,8 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 				</a>
 
                 <img class="sui-image"
-                     src="<?php echo plugins_url( "assets/images/dev-team.png", $dir ); ?>"
-                     srcset="<?php echo plugins_url( "assets/images/dev-team@2x.png", $dir ); ?> 2x"
+                     src="<?php echo WP_SMUSH_URL . 'assets/images/dev-team.png'; ?>"
+                     srcset="<?php echo WP_SMUSH_URL . 'assets/images/dev-team@2x.png'; ?> 2x"
                      alt="Try pro features for free!">
                 </div><?php
 			}

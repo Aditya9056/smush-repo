@@ -90,6 +90,9 @@ if ( ! function_exists( 'deactivate_smush_org' ) ) {
 /* @noinspection PhpIncludeInspection */
 require_once plugin_dir_path( __FILE__ ) . 'lib/class-wp-smush.php';
 
+global $wp_smush;
+$wp_smush = WP_Smush::get_instance();
+
 if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 	/**
 	 * Filters the rating message, include stats if greater than 1Mb
@@ -325,8 +328,7 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 	 * @return string
 	 */
 	function smush_body_classes( $classes ) {
-
-	    global $wpsmushit_admin;
+		global $wpsmushit_admin;
 
 		// Exit if function doesn't exists.
 		if ( ! function_exists( 'get_current_screen' ) ) {
@@ -336,7 +338,7 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 		$current_screen = get_current_screen();
 
 		// If not on plugin page.
-		if ( ! in_array( $current_screen->id, $wpsmushit_admin->plugin_pages ) ) {
+		if ( ! in_array( $current_screen->id, $wpsmushit_admin->plugin_pages, true ) ) {
 			return $classes;
 		}
 

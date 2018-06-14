@@ -1,6 +1,6 @@
 <?php
 /**
- * @package WP Smush
+ * @package WP_Smush
  * @subpackage AutoResize
  * @version 2.7
  *

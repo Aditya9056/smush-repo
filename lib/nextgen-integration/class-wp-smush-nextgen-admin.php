@@ -3,7 +3,7 @@
 /**
  * Adds the Bulk Page and Smush Column to NextGen Gallery
  *
- * @package WP Smush
+ * @package WP_Smush
  * @subpackage NextGen Gallery
  * @version 1.0
  *

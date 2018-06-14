@@ -1,6 +1,6 @@
 <?php
 /**
- * @package WP Smush
+ * @package WP_Smush
  * @subpackage Admin
  * @version 1.0
  *
@@ -375,8 +375,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Style.
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
-			$dir = defined('__DIR__') ? __DIR__ : dirname(__FILE__);
-
 			// Load on Smush all page only.
 			if ( in_array( $current_screen->id, $this->plugin_pages ) ) {
 				// Load Jquery tree on specified page.
@@ -385,17 +383,17 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					wp_enqueue_style( 'jqft-css' );
 				}
 				// Smush admin (smush-admin) includes the Shared UI.
-				wp_enqueue_style( 'smush-admin', plugins_url( 'assets/css/admin.min.css', __DIR__ ) );
+				wp_enqueue_style( 'smush-admin', WP_SMUSH_URL . 'assets/css/admin.min.css' );
 				wp_enqueue_script(
 					'wpmudev-sui',
-					plugins_url( 'assets/js/shared-ui.min.js', __DIR__ ),
+					WP_SMUSH_URL . 'assets/js/shared-ui.min.js',
 					array( 'jquery' ),
 					null,
 					true
 				);
 				wp_enqueue_script(
 					'smush-admin',
-					plugins_url( 'assets/js/admin.min.js', __DIR__ ),
+					WP_SMUSH_URL . 'assets/js/admin.min.js',
 					array( 'jquery' ),
 					null,
 					true
@@ -2352,7 +2350,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'media-grid',
 					'wp-util',
 					'wp-api',
-				), $this->version, true );
+				), WP_SMUSH_VERSION, true );
 
 				wp_localize_script( 'smush-backbone-extension', 'smush_vars', array(
 					'strings' => array(

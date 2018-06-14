@@ -806,7 +806,7 @@ jQuery( function ( $ ) {
      */
     var validate_resize_settings = function ( wrapper_div, width_only, height_only ) {
         var resize_checkbox = wrapper_div.find( '#wp-smush-resize, #wp-smush-resize-quick-setup' );
-        console.log(resize_checkbox);
+
         if ( !height_only ) {
             var width_input = wrapper_div.find( '#wp-smush-resize_width' );
             var width_error_note = wrapper_div.find( '.sui-notice-info.wp-smush-update-width' );
@@ -1434,7 +1434,6 @@ jQuery( function ( $ ) {
 
         //Update Image count
         if ( is_nextgen ) {
-            console.log(wp_smushit_data.count_images);
             $( '.sui-summary-details span.wp-smush-total-optimised' ).html( wp_smushit_data.count_images );
         } else {
             $( 'span.smushed-items-count span.wp-smush-count-total span.wp-smush-total-optimised' ).html( wp_smushit_data.count_images );
@@ -2140,7 +2139,6 @@ jQuery( function ( $ ) {
         var notice_wrap = $( '.smush-highlighting-notice' );
 
         if ( self.is( ':checked' ) ) {
-            console.log(self);
             notice_wrap.show();
         } else {
             notice_wrap.hide();
