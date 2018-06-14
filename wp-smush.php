@@ -90,6 +90,9 @@ if ( ! function_exists( 'deactivate_smush_org' ) ) {
 /* @noinspection PhpIncludeInspection */
 require_once plugin_dir_path( __FILE__ ) . 'lib/class-wp-smush.php';
 
+global $wp_smush;
+$wp_smush = WP_Smush::get_instance();
+
 if ( ! function_exists( 'wp_smush_rating_message' ) ) {
 	/**
 	 * Filters the rating message, include stats if greater than 1Mb
