@@ -60,7 +60,7 @@ class WP_Smush_Rest {
 	 *
 	 * @since 2.8.0
 	 */
-	private function register_smush_meta() {
+	public function register_smush_meta() {
 		register_rest_field( 'attachment', 'smush', array(
 			'get_callback' => array( $this, 'register_image_stats' ),
 			'schema' => array(
