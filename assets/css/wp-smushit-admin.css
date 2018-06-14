@@ -296,6 +296,10 @@ input#wp-smush-save-settings {
     margin-bottom: 5px;
 }
 
+.attachment-info .wp-smush-error-message {
+    margin: 6px 0 1em;
+}
+
 /** If we have button-primary class, this style will be loaded already **/
 .compat-field-wp_smush button:not(.button-primary) {
     background: #0085ba;
