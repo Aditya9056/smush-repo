@@ -2,7 +2,7 @@
 /**
  * Displays the UI for .org plugin recommendations
  *
- * @package WP Smush
+ * @package WP_Smush
  * @subpackage Admin
  * @since 2.7.9
  *

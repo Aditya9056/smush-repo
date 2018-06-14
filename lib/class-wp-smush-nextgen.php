@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package WP Smush
+ * @package WP_Smush
  * @subpackage NextGen Gallery
  * @version 1.0
  *

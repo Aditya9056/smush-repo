@@ -1,6 +1,6 @@
 <?php
 /**
- * @package WP Smush
+ * @package WP_Smush
  *
  * @version 2.4
  *

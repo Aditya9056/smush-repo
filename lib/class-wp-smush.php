@@ -2,7 +2,7 @@
 /**
  * Smush core class: WP_Smush class
  *
- * @package WP Smush
+ * @package WP_Smush
  */
 
 // Helper Class.

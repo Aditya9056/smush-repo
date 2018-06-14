@@ -2,7 +2,7 @@
 /**
  * Smush integration with Rest API: WP_Smush_Rest class
  *
- * @package WP Smush
+ * @package WP_Smush
  * @subpackage Admin
  * @since 2.8.0
  *

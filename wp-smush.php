@@ -325,8 +325,7 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 	 * @return string
 	 */
 	function smush_body_classes( $classes ) {
-
-	    global $wpsmushit_admin;
+		global $wpsmushit_admin;
 
 		// Exit if function doesn't exists.
 		if ( ! function_exists( 'get_current_screen' ) ) {
@@ -336,7 +335,7 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 		$current_screen = get_current_screen();
 
 		// If not on plugin page.
-		if ( ! in_array( $current_screen->id, $wpsmushit_admin->plugin_pages ) ) {
+		if ( ! in_array( $current_screen->id, $wpsmushit_admin->plugin_pages, true ) ) {
 			return $classes;
 		}
 
