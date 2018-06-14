@@ -1212,7 +1212,14 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			// don't proceed if attachment is not image, or if image is not a jpg, png or gif
 			if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
-				return;
+				$status_txt = __( 'Not processed', 'wp-smushit' );
+				if ( $echo ) {
+					echo $status_txt;
+
+					return;
+				} else {
+					return $status_txt;
+				}
 			}
 
 			// if we aren't showing the button
