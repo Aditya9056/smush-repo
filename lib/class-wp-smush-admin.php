@@ -1701,8 +1701,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			if ( ! empty( $resmush_list ) || $remaining_count > 0 ) {
-				$message = sprintf( esc_html__( "You have images that need smushing. %sBulk smush now!%s", "wp-smushit" ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
-				$resp    = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
+				$message = sprintf( esc_html__( "Image check complete, you have %d images that need smushing. %sBulk smush now!%s", "wp-smushit" ), $count, '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
+				$resp    = '<div class="sui-notice-top sui-notice-warning sui-can-dismiss">
 						<div class="sui-notice-content">
 							<p>' . $message . '</p>
 						</div>
