@@ -351,7 +351,8 @@
 .sui-2-2-4 .sui-wrap .smush-dir-smush-accordion .wp-smush-image-ele .wp-smush-image-ele-progress.optimised:before,
 .sui-2-2-4 .sui-wrap .smush-pro-features .smush-pro-feature-title:before,
 .sui-2-2-4 .sui-button.smush-button-check-success:before,
-.sui-2-2-4 .sui-button.smush-button-check-success:hover:before {
+.sui-2-2-4 .sui-button.smush-button-check-success:hover:before,
+.sui-2-2-4 .wp-smush-pagespeed-recommendation .dismiss-recommendation:before {
   font-family: 'wpmudev-plugin-icons' !important;
   speak: none;
   font-size: 1em;
@@ -7578,6 +7579,14 @@ html.sui-has-overlay {
 
 .sui-2-2-4 .wp-smush-pagespeed-recommendation .dismiss-recommendation {
   cursor: pointer;
+}
+
+.sui-2-2-4 .wp-smush-pagespeed-recommendation .dismiss-recommendation:before {
+  content: ")";
+}
+
+.sui-2-2-4 .wp-smush-pagespeed-recommendation .dismiss-recommendation:before {
+  margin-right: 5px;
 }
 
 .sui-2-2-4 .smush-align-left {

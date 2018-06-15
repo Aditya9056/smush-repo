@@ -384,6 +384,10 @@
 
     .dismiss-recommendation {
       cursor: pointer;
+      @include icon(before, close);
+      &:before {
+        margin-right: 5px;
+      }
     }
   }
 
