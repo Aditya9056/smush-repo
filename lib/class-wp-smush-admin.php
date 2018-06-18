@@ -1283,12 +1283,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			//Return, If a pro user, or not super admin, or don't have the admin privilleges
 			if ( $this->validate_install() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
-				//return false;
+				return false;
 			}
 
 			//No need to show it on bulk smush
 			if ( isset( $_GET['page'] ) && 'smush' == $_GET['page'] ) {
-				//return false;
+				return false;
 			}
 
 			//Return if notice is already dismissed
