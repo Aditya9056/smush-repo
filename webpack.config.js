@@ -13,7 +13,6 @@ const scssConfig = {
 
 	entry: {
 		'admin': './_src/scss/app.scss',
-		// 'resize-detection': './_src/scss/resize-detection.scss'
 	},
 
 	output: {

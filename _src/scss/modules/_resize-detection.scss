@@ -1,13 +1,15 @@
+@import "variables";
+
 @font-face{
-  font-family:wpmudev-plugin-icons;
-  src:url(../fonts/wpmudev-plugin-icons.eot);
-  src:url(../fonts/wpmudev-plugin-icons.eot) format("embedded-opentype"),
-  url(../fonts/wpmudev-plugin-icons.ttf) format("truetype"),
-  url(../fonts/wpmudev-plugin-icons.woff) format("woff"),
-  url(../fonts/wpmudev-plugin-icons.woff2) format("woff2"),
-  url(../fonts/wpmudev-plugin-icons.svg) format("svg");
-  font-weight:400;
-  font-style:normal
+  font-family: 'wpmudev-plugin-icons';
+  src: url('#{$font--path}/wpmudev-plugin-icons.eot');
+  src: url('#{$font--path}/wpmudev-plugin-icons.eot') format('embedded-opentype'),
+  url('#{$font--path}/wpmudev-plugin-icons.ttf') format('truetype'),
+  url('#{$font--path}/wpmudev-plugin-icons.woff') format('woff'),
+  url('#{$font--path}/wpmudev-plugin-icons.woff2') format('woff2'),
+  url('#{$font--path}/wpmudev-plugin-icons.svg') format('svg');
+  font-weight: 400;
+  font-style: normal
 }
 
 .smush-detected-img {
@@ -16,21 +18,18 @@
 }
 
 .smush-resize-box {
-
   width: max-content;
   display: block;
   padding: 10px;
   box-shadow: 0 5px 25px 0 rgba(0,0,0,.15);
-  margin: 0 auto;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin: 20px auto;
   border-radius: 30px;
   cursor: pointer;
 
   .smush-front-icons {
     margin-left: 10px;
     &:before {
-      font-family: 'wpmudev-plugin-icons' !important;
+      font-family: 'wpmudev-plugin-icons', sans-serif !important;
       speak: none;
       font-size: 1em;
       font-style: normal;
