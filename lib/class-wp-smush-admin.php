@@ -12,11 +12,6 @@
 //Include Bulk UI
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-ui.php';
 
-//Load Shared UI
-if ( ! class_exists( 'WDEV_Plugin_Ui' ) ) {
-	//require_once WP_SMUSH_DIR . 'assets/shared-ui/plugin-ui.php';
-}
-
 if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	/**
 	 * Show settings in Media settings and add column to media library

@@ -1,10 +1,6 @@
 [submodule "extras/free-dashboard"]
 	path = extras/free-dashboard
 	url = git@bitbucket.org:incsub/free-dashboard.git
-[submodule "assets/shared-ui"]
-	path = assets/shared-ui
-	url = git@bitbucket.org:incsub/shared-ui.git
-	ignore = dirty
 [submodule "extras/dash-notice"]
 	path = extras/dash-notice
 	url = git@bitbucket.org:incsub/wpmudev-dashboard-notification.git
