@@ -364,7 +364,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 
-			$this->load_shared_ui( $current_page );
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 
 			// Style.
@@ -1932,23 +1931,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smushed_attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $wpsmush_db->smushed_count( true );
 			foreach ( $smushed_attachments as $attachment ) {
 				$wpsmush_backup->restore_image( $attachment->attachment_id, false );
-			}
-		}
-
-		/**
-		 * Loads the Shared UI to on all admin pages
-		 *
-		 * @param $current_page
-		 */
-		function load_shared_ui( $current_page ) {
-			//If class method exists, load shared UI
-			if ( class_exists( 'WDEV_Plugin_Ui' ) ) {
-
-				if ( method_exists( 'WDEV_Plugin_Ui', 'load' ) && in_array( $current_page, $this->plugin_pages ) ) {
-
-					//Load Shared UI
-					WDEV_Plugin_Ui::load( WP_SMUSH_URL . 'assets/shared-ui/', false );
-				}
 			}
 		}
 
