@@ -1396,7 +1396,8 @@ jQuery( function ( $ ) {
 	 */
 	var update_stats = function ( scan_type ) {
 
-		var super_savings = smushed_count = 0;
+		var super_savings = 0,
+			smushed_count = 0;
 		var is_nextgen = 'undefined' != typeof scan_type && 'nextgen' == scan_type;
 
 		//Calculate updated savings in bytes

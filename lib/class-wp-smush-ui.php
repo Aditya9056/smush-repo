@@ -1503,8 +1503,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 			</div>
 			<?php
-			// Notice JS.
-			wp_enqueue_script( 'wp-smushit-notice-js', '', array(), '', true );
 		}
 
 		/**

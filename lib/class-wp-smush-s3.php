@@ -165,7 +165,6 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return true;
 			}
 
-			wp_enqueue_script( 'wp-smushit-notice-js' );
 			// Settings link.
 			$settings_link = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
 
