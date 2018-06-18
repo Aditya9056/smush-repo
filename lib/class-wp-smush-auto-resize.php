@@ -1,5 +1,7 @@
 <?php
 /**
+ * Auto resize functionality: WpSmushAutoResize class
+ *
  * @package WP_Smush
  * @subpackage AutoResize
  * @version 2.7
@@ -8,15 +10,14 @@
  *
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
-if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 
+if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 	/**
 	 * Class WpSmushAutoResize
 	 *
 	 * Reference: EWWW Optimizer.
 	 */
 	class WpSmushAutoResize {
-
 		/**
 		 * Is auto detection enabled.
 		 *
@@ -47,7 +48,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * WpSmushAutoResize constructor.
 		 */
 		public function __construct() {
-
 			// Set auto resize flag.
 			add_action( 'init', array( $this, 'init_flags' ) );
 
@@ -75,10 +75,9 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 *
 		 * Allow only if current user is admin and auto resize
 		 * detection is enabled in settings.
-		 *
-		 * @return bool
 		 */
 		public function init_flags() {
+			/* @var WpSmushSettings $wpsmush_settings */
 			global $wpsmush_settings, $wp_smush, $wpsmush_cdn;
 
 			$is_pro = $wp_smush->validate_install();
@@ -111,7 +110,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * @return void
 		 */
 		public function enqueue_resize_assets() {
-
 			// Required only if auto detection is required.
 			if ( ! $this->can_auto_detect ) {
 				return;
@@ -136,8 +134,10 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			wp_localize_script( 'smush-resize-detection', 'wp_smush_resize_vars', array(
 				'ajaxurl'     => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce'  => wp_create_nonce( 'smush_resize_nonce' ),
-				'large_image' => sprintf( __( 'This image is too large for it’s container. Adjust the image dimensions to %s x %spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
-				'small_image' => sprintf( __( 'This image is too small for it’s container. Adjust the image dimensions to %s x %spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
+				// translators: %s - width, %s - height.
+				'large_image' => sprintf( __( 'This image is too large for it’s container. Adjust the image dimensions to %1$s x %2$spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
+				// translators: %s - width, %s - height.
+				'small_image' => sprintf( __( 'This image is too small for it’s container. Adjust the image dimensions to %1$s x %2$spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
 			) );
 		}
 
@@ -149,11 +149,11 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * @return void
 		 */
 		public function resize_detection_button() {
-
 			if ( ! $this->can_auto_detect || is_admin() ) {
 				return;
 			}
 
+			/* @var WP_Admin_Bar $wp_admin_bar */
 			global $wp_admin_bar;
 
 			$wp_admin_bar->add_menu( array(
@@ -172,10 +172,9 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * @param string $src Image src.
 		 * @param object $image Image tag object.
 		 *
-		 * @return void
+		 * @return mixed
 		 */
 		public function set_image_flag( $src, $image ) {
-
 			// No need to add attachment id if auto detection is not enabled.
 			if ( ! $this->can_auto_detect ) {
 				return $src;
@@ -193,16 +192,16 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * Keep the existing srcset sizes if already added by WP, then calculate extra sizes
 		 * if required.
 		 *
-		 * @param array $sources An array of image urls and widths.
-		 * @param array $size_array Array of width and height values in pixels.
-		 * @param string $image_src The src of the image.
-		 * @param array $image_meta The image metadata.
-		 * @param int $attachment_id Image attachment ID.
+		 * @param array  $sources        An array of image urls and widths.
+		 * @param array  $size_array     Array of width and height values in pixels.
+		 * @param string $image_src      The src of the image.
+		 * @param array  $image_meta     The image metadata.
+		 * @param int    $attachment_id  Image attachment ID.
 		 *
 		 * @return array $sources
 		 */
 		public function update_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id = 0 ) {
-
+			/* @var WpSmushCDN $wpsmush_cdn */
 			global $wpsmush_cdn;
 
 			$main_image_url = false;
@@ -223,9 +222,11 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 					$url = $this->get_url_without_dimensions( $img_url );
 				}
 
-				// @todo Validate image before continue.
+				/**
+				 * TODO: Validate image before continue.
+				 */
 
-				// Filter already documented in class-wp-smush-cdn.php
+				// Filter already documented in class-wp-smush-cdn.php.
 				if ( apply_filters( 'smush_skip_image_from_cdn', false, $img_url, $source ) ) {
 					continue;
 				}
@@ -253,16 +254,16 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		/**
 		 * Filters an array of image srcset values, and add additional values.
 		 *
-		 * @param array $sources An array of image urls and widths.
-		 * @param array $size_array Array of width and height values in pixels.
-		 * @param string $url Image URL.
-		 * @param array $image_meta The image metadata.
-		 * @param string $image_src The src of the image.
+		 * @param array  $sources     An array of image urls and widths.
+		 * @param array  $size_array  Array of width and height values in pixels.
+		 * @param string $url         Image URL.
+		 * @param array  $image_meta  The image metadata.
+		 * @param string $image_src   The src of the image.
 		 *
 		 * @return array $sources
 		 */
 		private function set_additional_srcset( $sources, $size_array, $url, $image_meta, $image_src ) {
-
+			/* @var WpSmushCDN $wpsmush_cdn */
 			global $wpsmush_cdn;
 
 			$content_width = $this->max_content_width();
@@ -302,7 +303,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			$additional_multipliers = apply_filters( 'smush_srcset_additional_multipliers', array( 0.2, 0.4, 0.6, 0.8, 1, 2, 3 ) );
 
 			// Continue only if additional multipliers found or not skipped.
-			// // Filter already documented in class-wp-smush-cdn.php
+			// Filter already documented in class-wp-smush-cdn.php.
 			if ( apply_filters( 'smush_skip_image_from_cdn', false, $url, false ) || empty( $additional_multipliers ) ) {
 				return $sources;
 			}
@@ -342,13 +343,12 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		/**
 		 * Add resize arguments to content image src.
 		 *
-		 * @param array $args Current arguments.
-		 * @param object $image Image tag object from DOM.
+		 * @param array  $args   Current arguments.
+		 * @param object $image  Image tag object from DOM.
 		 *
 		 * @return array $args
 		 */
 		public function update_cdn_image_src_args( $args, $image ) {
-
 			// Get registered image sizes.
 			$image_sizes = $this->get_image_sizes();
 
@@ -373,13 +373,12 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		/**
 		 * Update image sizes for responsive size.
 		 *
-		 * @param string $sizes A source size value for use in a 'sizes' attribute.
-		 * @param array $size Requested size.
+		 * @param string $sizes  A source size value for use in a 'sizes' attribute.
+		 * @param array  $size   Requested size.
 		 *
 		 * @return string
 		 */
 		public function update_image_sizes( $sizes, $size ) {
-
 			// Get maximum content width.
 			$content_width = $this->max_content_width();
 
@@ -403,7 +402,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * @return array An array consisting of width and height.
 		 */
 		private function get_size_from_file_name( $src ) {
-
 			$size = array();
 
 			// Using regex to get image size from file name.
@@ -435,7 +433,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * @return string
 		 **/
 		private function get_url_without_dimensions( $src ) {
-
 			// Build URL, first removing WP's resized string so we pass the original image to ExactDN.
 			if ( preg_match( '#(-\d+x\d+)\.(' . implode( '|', $this->supported_extensions ) . '){1}(?:\?.+)?$#i', $src, $src_parts ) ) {
 
@@ -460,7 +457,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * @return bool|string
 		 */
 		private function max_content_width() {
-
 			// Get global content width.
 			$content_width = isset( $GLOBALS['content_width'] ) ? $GLOBALS['content_width'] : false;
 
@@ -481,7 +477,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * @return array|bool|mixed
 		 */
 		private function get_image_sizes() {
-
 			// Get from cache if available to avoid duplicate looping.
 			$sizes = wp_cache_get( 'get_image_sizes', 'smush_image_sizes' );
 			if ( $sizes ) {
@@ -496,9 +491,9 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			// Get intermediate image sizes.
 			$get_intermediate_image_sizes = get_intermediate_image_sizes();
 
-			// Create the full array with sizes and crop info
+			// Create the full array with sizes and crop info.
 			foreach ( $get_intermediate_image_sizes as $_size ) {
-				if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ) ) ) {
+				if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ), true ) ) {
 					$sizes[ $_size ]['width']  = get_option( $_size . '_size_w' );
 					$sizes[ $_size ]['height'] = get_option( $_size . '_size_h' );
 					$sizes[ $_size ]['crop']   = (bool) get_option( $_size . '_crop' );
@@ -506,7 +501,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 					$sizes[ $_size ] = array(
 						'width'  => $_wp_additional_image_sizes[ $_size ]['width'],
 						'height' => $_wp_additional_image_sizes[ $_size ]['height'],
-						'crop'   => $_wp_additional_image_sizes[ $_size ]['crop']
+						'crop'   => $_wp_additional_image_sizes[ $_size ]['crop'],
 					);
 				}
 			}
@@ -519,6 +514,5 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 	}
 
 	global $wpsmush_auto_resize;
-
 	$wpsmush_auto_resize = new WpSmushAutoResize();
-}
+} // End if().
