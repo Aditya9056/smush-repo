@@ -6,6 +6,7 @@
 # Ignore system files
 composer.lock
 npm-debug.log
+package-lock.json
 
 # Ignore build directories and tmp folders
 build
