@@ -35,7 +35,8 @@
     "build": "npm run compile && grunt prepare && grunt build && grunt build:wporg"
   },
   "dependencies": {
-    "@wpmudev/shared-ui": "2.2.4"
+    "@wpmudev/shared-ui": "2.2.4",
+    "jqueryfiletree": "git+https://github.com/jqueryfiletree/jqueryfiletree.git"
   },
   "devDependencies": {
     "ajv": "6.5.1",

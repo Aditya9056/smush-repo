@@ -302,30 +302,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Register js and css
+		 * Register JS and CSS.
 		 */
 		function register() {
-
-			//Main JS
-			wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
-				'jquery'
-			), WP_SMUSH_VERSION );
-
-			//Notice JS
+			// Notice JS.
 			wp_register_script( 'wp-smushit-notice-js', WP_SMUSH_URL . 'assets/js/notice.js', array(
 				'jquery'
 			), WP_SMUSH_VERSION );
 
-			/* Register Style */
+			// Register stylesheet.
 			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), WP_SMUSH_VERSION );
 
-			//jQuery tree
-			wp_register_script( 'jqft-js', WP_SMUSH_URL . 'assets/js/jQueryFileTree.js', array(
-				'jquery'
-			), WP_SMUSH_VERSION, true );
-			wp_register_style( 'jqft-css', WP_SMUSH_URL . 'assets/css/jQueryFileTree.min.css', array(), WP_SMUSH_VERSION );
-
-			//Dismiss Update Info
+			// Dismiss update info.
 			$this->dismiss_update_info();
 		}
 
@@ -362,18 +350,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 
-			wp_enqueue_script( 'wp-smushit-admin-js' );
-
 			// Style.
 			wp_enqueue_style( 'wp-smushit-admin-css' );
 
 			// Load on Smush all page only.
 			if ( in_array( $current_screen->id, $this->plugin_pages ) ) {
-				// Load Jquery tree on specified page.
-				if ( 'toplevel_page_smush' === $current_page ) {
-					wp_enqueue_script( 'jqft-js' );
-					wp_enqueue_style( 'jqft-css' );
-				}
 				// Smush admin (smush-admin) includes the Shared UI.
 				wp_enqueue_style( 'smush-admin', WP_SMUSH_URL . 'assets/css/admin.min.css' );
 				wp_enqueue_script(
@@ -404,7 +385,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $current_screen, $wpsmush_settings, $wpsmush_db;
 			$current_page = ! empty( $current_screen ) ? $current_screen->base : '';
 
-			$handle = 'wp-smushit-admin-js';
+			$handle = 'smush-admin';
 
 			$wp_smush_msgs = array(
 				'resmush'                 => esc_html__( 'Super-Smush', 'wp-smushit' ),
@@ -490,13 +471,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$data['timeout'] = WP_SMUSH_TIMEOUT * 1000; //Convert it into ms
 
-			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
+			wp_localize_script( $handle, 'wp_smushit_data', $data );
 
 			//Check if settings were changed for a multisite, and localize whether to run re-check on page load
 			if ( is_multisite() && $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) {
 				//If not same, Set a variable to run re-check on page load
 				if ( get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false ) ) {
-					wp_localize_script( 'wp-smushit-admin-js', 'wp_smush_run_re_check', array( 1 ) );
+					wp_localize_script( $handle, 'wp_smush_run_re_check', array( 1 ) );
 				}
 			}
 

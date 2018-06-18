@@ -1,3 +1,5 @@
+@import "variables";
+
 @include body-class {
 
   .sui-wrap {
@@ -16,7 +18,7 @@
 
         span {
           &.wp-smush-li-path {
-            background: url("../../assets/images/folder-closed.svg") no-repeat;
+            background: url('#{$img--path}/folder-closed.svg') no-repeat;
             line-height: 2;
             padding: 0 30px;
             max-width: 87%;
@@ -216,7 +218,7 @@
 
     .sui-summary-smush,
     .sui-summary-smush-nextgen {
-      background-image: url("../../assets/images/smush-graphic-dashboard-summary.svg");
+      background-image: url('#{$img--path}/smush-graphic-dashboard-summary.svg');
       background-size: 200px;
     }
 
@@ -302,18 +304,18 @@
         .ext_jpg,
         .ext_gif,
         .ext_bmp {
-          background: url("../../assets/images/image.svg") left top no-repeat;
+          background: url('#{$img--path}/image.svg') left top no-repeat;
         }
 
         &.directory {
-          background: url("../../assets/images/folder-closed.svg") left top no-repeat;
+          background: url('#{$img--path}/folder-closed.svg') left top no-repeat;
         }
 
         &.expanded {
-          background: url("../../assets/images/folder-open.svg") left top no-repeat;
+          background: url('#{$img--path}/folder-open.svg') left top no-repeat;
 
           &.selected {
-            background: url("../../assets/images/folder-open-selected.svg") left top no-repeat;
+            background: url('#{$img--path}/folder-open-selected.svg') left top no-repeat;
 
             > a,
             .file.selected {

@@ -81,7 +81,8 @@ const scssConfig = {
 	],
 
 	watchOptions: {
-		poll: 500
+		ignored: /node_modules/,
+		poll: 1000
 	}
 };
 
@@ -89,8 +90,8 @@ const jsConfig = {
 	mode: 'production',
 
 	entry: {
-		'shared-ui': './_src/js/shared-ui.js',
-		'admin': './_src/js/admin-index.js',
+		'shared-ui': '@wpmudev/shared-ui',
+		'admin': './_src/js/app.js'
 	},
 
 	output: {
@@ -118,13 +119,14 @@ const jsConfig = {
 	plugins: [
 		// Automatically load modules instead of having to import or require them everywhere.
 		new webpack.ProvidePlugin( {
-			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js',  // Vendor script in Shared UI.
-			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js'  // Vendor script in Shared UI.
+			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js', // Vendor script in Shared UI.
+			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
 		} )
 	],
 
 	watchOptions: {
-		poll: 500
+		ignored: /node_modules/,
+		poll: 1000
 	}
 };
 
@@ -154,7 +156,8 @@ const resizeJsConfig = {
 	},
 
 	watchOptions: {
-		poll: 500
+		ignored: /node_modules/,
+		poll: 1000
 	}
 };
 
