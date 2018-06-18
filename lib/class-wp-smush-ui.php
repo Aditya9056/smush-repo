@@ -1459,7 +1459,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function installation_notice() {
-
 			global $wpsmushit_admin;
 
 			// Whether new/existing installation.
@@ -1504,8 +1503,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 			</div>
 			<?php
-			// Notice CSS.
-			wp_enqueue_style( 'wp-smushit-notice-css' );
 			// Notice JS.
 			wp_enqueue_script( 'wp-smushit-notice-js', '', array(), '', true );
 		}
