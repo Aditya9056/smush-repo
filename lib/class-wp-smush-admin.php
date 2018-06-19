@@ -390,20 +390,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'smush_now'               => esc_html__( 'Smush Now', 'wp-smushit' ),
 				'error_in_bulk'           => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
 				'all_resmushed'           => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
-				'restore'                 => esc_html__( "Restoring image..", "wp-smushit" ),
-				'smushing'                => esc_html__( "Smushing image..", "wp-smushit" ),
-				'checking'                => esc_html__( "Checking images..", "wp-smushit" ),
-				'membership_valid'        => esc_html__( "We successfully verified your membership, all the Pro features should work completely. ", "wp-smushit" ),
-				'membership_invalid'      => esc_html__( "Your membership couldn't be verified.", "wp-smushit" ),
-				'missing_path'            => esc_html__( "Missing file path.", "wp-smushit" ),
+				'restore'                 => esc_html__( 'Restoring image..', 'wp-smushit' ),
+				'smushing'                => esc_html__( 'Smushing image..', 'wp-smushit' ),
+				'checking'                => esc_html__( 'Checking images..', 'wp-smushit' ),
+				'membership_valid'        => esc_html__( 'We successfully verified your membership, all the Pro features should work completely. ', 'wp-smushit' ),
+				'membership_invalid'      => esc_html__( "Your membership couldn't be verified.", 'wp-smushit' ),
+				'missing_path'            => esc_html__( 'Missing file path.', 'wp-smushit' ),
 				// Used by Directory Smush.
-				'unfinished_smush_single' => esc_html__( "image could not be smushed.", "wp-smushit" ),
-				'unfinished_smush'        => esc_html__( "images could not be smushed.", "wp-smushit" ),
-				'already_optimised'       => esc_html__( "Already Optimized", "wp-smushit" ),
-				'ajax_error'              => esc_html__( "Ajax Error", "wp-smushit" ),
-				'all_done'                => esc_html__( "All Done!", "wp-smushit" ),
-				'quick_setup_title'       => __( "QUICK SETUP", "wp-smushit" ) . '<form method="post" class="smush-skip-setup float-r"><input type="hidden" name="action" value="skipSmushSetup"/>' . wp_nonce_field( 'skipSmushSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( "Skip", "wp-smushit" ) . '</button></form>',
-				'sync_stats'              => esc_html__( "Give us a moment while we sync the stats.", "wp-smushit" ),
+				'unfinished_smush_single' => esc_html__( 'image could not be smushed.', 'wp-smushit' ),
+				'unfinished_smush'        => esc_html__( 'images could not be smushed.', 'wp-smushit' ),
+				'already_optimised'       => esc_html__( 'Already Optimized', 'wp-smushit' ),
+				'ajax_error'              => esc_html__( 'Ajax Error', 'wp-smushit' ),
+				'all_done'                => esc_html__( 'All Done!', 'wp-smushit' ),
+				'quick_setup_title'       => __( 'QUICK SETUP', 'wp-smushit' ) . '<form method="post" class="smush-skip-setup float-r"><input type="hidden" name="action" value="skipSmushSetup"/>' . wp_nonce_field( 'skipSmushSetup', '_wpnonce', true, false ) . '<button type="submit" class="button button-small button-secondary skip-button">' . __( 'Skip', 'wp-smushit' ) . '</button></form>',
+				'sync_stats'              => esc_html__( 'Give us a moment while we sync the stats.', 'wp-smushit' ),
 				// Button text.
 				'resmush_check'           => esc_html__( 'RE-CHECK IMAGES', 'wp-smushit' ),
 				'resmush_complete'        => esc_html__( 'CHECK COMPLETE', 'wp-smushit' ),
@@ -411,28 +411,28 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
-			//Load the stats on selected screens only
-			if ( $current_page == 'toplevel_page_smush' ) {
+			// Load the stats on selected screens only.
+			if ( 'toplevel_page_smush' === $current_page ) {
 
-				//Get resmush list, If we have a resmush list already, localize those ids
+				// Get resmush list, If we have a resmush list already, localize those IDs.
 				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
-					//get the attachments, and get lossless count
+					// Get the attachments, and get lossless count.
 					$this->resmush_ids = $resmush_ids;
 				}
 
-				//Setup all the stats
+				// Setup all the stats.
 				$this->setup_global_stats( true );
 
-				//Localize smushit_ids variable, if there are fix number of ids
+				// Localize smushit_IDs variable, if there are fix number of IDs.
 				$this->unsmushed_attachments = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : array();
 
 				if ( empty( $this->unsmushed_attachments ) ) {
-					//Get attachments if all the images are not smushed
+					// Get attachments if all the images are not smushed.
 					$this->unsmushed_attachments = $this->remaining_count > 0 ? $wpsmush_db->get_unsmushed_attachments() : array();
 					$this->unsmushed_attachments = ! empty( $this->unsmushed_attachments ) && is_array( $this->unsmushed_attachments ) ? array_values( $this->unsmushed_attachments ) : $this->unsmushed_attachments;
 				}
 
-				//Array of all smushed, unsmushed and lossless ids
+				// Array of all smushed, unsmushed and lossless IDs.
 				$data = array(
 					'count_supersmushed' => $this->super_smushed,
 					'count_smushed'      => $this->smushed_count,
@@ -446,7 +446,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'savings_bytes'      => $this->stats['bytes'],
 					'savings_resize'     => $this->stats['resize_savings'],
 					'savings_conversion' => $this->stats['conversion_savings'],
-					'savings_dir_smush'  => $this->dir_stats
+					'savings_dir_smush'  => $this->dir_stats,
 				);
 			} else {
 				$data = array(
@@ -460,20 +460,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'savings_resize'     => '',
 					'savings_conversion' => '',
 					'savings_supersmush' => '',
-					'pro_savings'        => ''
+					'pro_savings'        => '',
 				);
-
-			}
+			} // End if().
 
 			$data['resize_sizes'] = $this->get_max_image_dimensions();
 
-			$data['timeout'] = WP_SMUSH_TIMEOUT * 1000; //Convert it into ms
+			// Convert it into ms.
+			$data['timeout'] = WP_SMUSH_TIMEOUT * 1000;
 
 			wp_localize_script( $handle, 'wp_smushit_data', $data );
 
-			//Check if settings were changed for a multisite, and localize whether to run re-check on page load
+			// Check if settings were changed for a multisite, and localize whether to run re-check on page load.
 			if ( is_multisite() && $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) {
-				//If not same, Set a variable to run re-check on page load
+				// If not same, Set a variable to run re-check on page load.
 				if ( get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false ) ) {
 					wp_localize_script( $handle, 'wp_smush_run_re_check', array( 1 ) );
 				}

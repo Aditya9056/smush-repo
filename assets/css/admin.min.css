@@ -7647,6 +7647,260 @@ html.sui-has-overlay {
   padding: 10px 0 40px;
 }
 
+/* ****************************************************************************
+ * MEDIA AREA SCSS FILE
+ */
+
+.sui-smush-media .sui-tooltip {
+  position: relative;
+}
+
+.sui-smush-media .sui-tooltip:before,
+.sui-smush-media .sui-tooltip:after {
+  content: "";
+  opacity: 0;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+  transition: margin .2s, opacity .2s;
+}
+
+.sui-smush-media .sui-tooltip:before {
+  border: 5px solid transparent;
+}
+
+.sui-smush-media .sui-tooltip:after {
+  content: attr(data-tooltip);
+  min-width: 40px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #333333;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  font: 500 12px/18px "Roboto", Arial, sans-serif;
+  text-transform: none;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.sui-smush-media .sui-tooltip:hover:before,
+.sui-smush-media .sui-tooltip:hover:after {
+  opacity: 1;
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-constrained:after {
+  min-width: 240px;
+  white-space: normal;
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-top:before,
+.sui-smush-media .sui-tooltip:before {
+  bottom: 100%;
+  left: 50%;
+  border-top-color: #333333;
+  transform: translateX(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-top:after,
+.sui-smush-media .sui-tooltip:after {
+  bottom: 100%;
+  left: 50%;
+  margin: 0 0 10px;
+  transform: translateX(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-top-right:after {
+  left: 0;
+  transform: translateX(0);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-top-left:after {
+  left: auto;
+  transform: translateX(0);
+  right: 0;
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-left:before,
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-right:before,
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom:before {
+  top: 100%;
+  bottom: inherit;
+  border-top-color: transparent;
+  border-bottom-color: #333333;
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-left:after,
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-right:after,
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom:after {
+  top: 100%;
+  bottom: inherit;
+  margin: 10px 0 0;
+  transform: translateX(0);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom:after {
+  transform: translateX(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-right:after {
+  left: 0;
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-left:after {
+  left: auto;
+  right: 0;
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-left:before {
+  top: 50%;
+  right: 100%;
+  bottom: inherit;
+  left: inherit;
+  border-top-color: transparent;
+  border-left-color: #333333;
+  transform: translateY(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-left:after {
+  top: 50%;
+  right: 100%;
+  bottom: inherit;
+  left: inherit;
+  margin: 0 10px 0 0;
+  transform: translateY(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-right:before {
+  top: 50%;
+  bottom: inherit;
+  left: 100%;
+  border-top-color: transparent;
+  border-right-color: #333333;
+  transform: translateY(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-right:after {
+  top: 50%;
+  bottom: inherit;
+  left: 100%;
+  margin: 0 0 0 10px;
+  transform: translateY(-50%);
+}
+
+/* ****************************************************************************
+ * MEDIA AREA STYLES
+ */
+
+.manage-column.column-smushit {
+  width: 260px;
+}
+
+.sui-smush-media .button {
+  margin-right: 5px;
+}
+
+.sui-smush-media .button:last-of-type {
+  margin-right: 0;
+}
+
+.sui-smush-media table.wp-smush-stats-holder {
+  width: 100%;
+  border: 1px solid #E6E6E6;
+  border-radius: 4px;
+  margin-top: 6px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.sui-smush-media table.wp-smush-stats-holder thead th.smush-stats-header {
+  padding: 8px 10px;
+  border-bottom: 1px solid #E6E6E6 !important;
+  color: #32373D;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: -0.23px;
+  line-height: 16px;
+}
+
+.sui-smush-media table.wp-smush-stats-holder td {
+  padding: 8px 10px;
+  color: #555555;
+  font-size: 11px;
+  letter-spacing: -0.21px;
+  line-height: 16px;
+  border-bottom: 1px solid #E6E6E6;
+}
+
+.sui-smush-media table.wp-smush-stats-holder td:first-of-type {
+  max-width: 110px;
+  font-weight: 500;
+}
+
+#the-list .sui-smush-media thead th.smush-stats-header {
+  border-bottom: 1px solid #E6E6E6 !important;
+}
+
+@media screen and (max-width: 1024px) {
+  .wp-list-table .smushit table.wp-smush-stats-holder th {
+    display: inline-block;
+    width: 50%;
+    box-sizing: border-box;
+  }
+
+  .wp-list-table .smushit table.wp-smush-stats-holder tr td:first-child {
+    border-right: none;
+    box-sizing: border-box;
+    display: inline-block !important;
+    width: 50% !important;
+  }
+
+  .wp-list-table .smushit table.wp-smush-stats-holder tr td:last-child {
+    box-sizing: border-box;
+    display: inline-block !important;
+    float: none;
+    overflow: visible;
+    width: 50% !important;
+  }
+}
+
+.iedit .wp-smush-action,
+.iedit .smush-stats-details {
+  font-size: 11px;
+}
+
+/*NextGen Gallery stats*/
+
+#ngg-listimages table.wp-smush-stats-holder {
+  table-layout: fixed;
+  border: 1px solid lightgray;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#ngg-listimages table.wp-smush-stats-holder td,
+#ngg-listimages table.wp-smush-stats-holder th {
+  border: 1px solid #CECECE;
+}
+
+#ngg-listimages .column-7 {
+  width: 300px;
+}
+
+/** NextGen Gallery tr height, to show the progress bar properly for alternate rows **/
+
+.alternate.iedit {
+  height: 120px;
+}
+
+/** Allows to click on button, otherwise row-actions from NextGen interferes **/
+
+.wp-smush-nextgen-send {
+  position: relative;
+  z-index: 2;
+}
+
 /**
  * CSS styles used Admin notice
  */
