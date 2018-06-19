@@ -270,7 +270,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 			?>
 
-			<div class="sui-dialog sui-dialog-lg" id="smush-quick-setup-dialog">
+			<div class="sui-dialog" id="smush-quick-setup-dialog">
 				<div class="sui-dialog-overlay sui-fade-in" tabindex="-1" data-a11y-dialog-hide=""></div>
 				<div class="sui-dialog-content sui-bounce-in"
 					 aria-labelledby="<?php esc_attr_e( 'QUICK SETUP', 'wp-smushit' ); ?>" role="dialog">
