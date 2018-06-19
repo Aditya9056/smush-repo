@@ -101,3 +101,37 @@ $sui-version: 'smush-media';
     }
   }
 }
+
+// NextGen Integration.
+.iedit .wp-smush-action,
+.iedit .smush-stats-details {
+  font-size: 11px;
+}
+
+/*NextGen Gallery stats*/
+#ngg-listimages {
+  table.wp-smush-stats-holder {
+    table-layout: fixed;
+    border: 1px solid lightgray;
+    border-collapse: collapse;
+    width: 100%;
+    td,
+    th {
+      border: 1px solid #CECECE;
+    }
+  }
+  .column-7 {
+    width: 300px;
+  }
+}
+
+/** NextGen Gallery tr height, to show the progress bar properly for alternate rows **/
+.alternate.iedit {
+  height: 120px;
+}
+
+/** Allows to click on button, otherwise row-actions from NextGen interferes **/
+.wp-smush-nextgen-send {
+  position: relative;
+  z-index: 2;
+}

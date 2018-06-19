@@ -1783,8 +1783,8 @@ class WP_Smush {
 			return false;
 		}
 
-		$class = 'wp-smush-action wp-smush-title sui-tooltip button';
-		$class .= 'wp' == $type ? ' wp-smush-restore' : ' wp-smush-nextgen-restore';
+		$class = 'wp-smush-action wp-smush-title sui-tooltip';
+		$class .= 'wp' == $type ? ' wp-smush-restore button' : ' wp-smush-nextgen-restore';
 
 		$ajax_nonce = wp_create_nonce( "wp-smush-restore-" . $image_id );
 
@@ -1831,8 +1831,8 @@ class WP_Smush {
 		if ( empty( $image_id ) ) {
 			return false;
 		}
-		$class = 'wp-smush-action wp-smush-title sui-tooltip sui-tooltip-constrained button';
-		$class .= 'wp' == $type ? ' wp-smush-resmush' : ' wp-smush-nextgen-resmush';
+		$class = 'wp-smush-action wp-smush-title sui-tooltip sui-tooltip-constrained';
+		$class .= 'wp' == $type ? ' wp-smush-resmush button' : ' wp-smush-nextgen-resmush';
 
 		$ajax_nonce = wp_create_nonce( "wp-smush-resmush-" . $image_id );
 
