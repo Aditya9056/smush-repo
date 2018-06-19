@@ -319,6 +319,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Main CSS.
 			wp_register_style( 'smush-admin', WP_SMUSH_URL . 'assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
 
+			// Styles that can be used on all pages in the WP backend.
+			wp_register_style( 'smush-admin-common', WP_SMUSH_URL . 'assets/css/common.min.css', array(), WP_SMUSH_VERSION );
+
 			// Dismiss update info.
 			$this->dismiss_update_info();
 		}
@@ -344,7 +347,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				 *
 				 * @var array $pages  List of screens where script needs to be loaded.
 				 */
-				if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, $this->pages ) && ! did_action( 'wp_enqueue_media' ) ) ) {
+				if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, $this->pages, true ) && ! did_action( 'wp_enqueue_media' ) ) ) {
 					return;
 				}
 			}
@@ -358,6 +361,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// We need it on media pages and Smush pages.
 			wp_enqueue_script( 'smush-admin' );
+			wp_enqueue_style( 'smush-admin-common' );
 
 			// Load on all Smush page only.
 			if ( in_array( $current_screen->id, $this->plugin_pages, true ) ) {
@@ -367,6 +371,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Localize translatable strings for js.
 			$this->localize();
+
 			$this->extend_media_modal();
 		}
 
@@ -2193,7 +2198,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 */
 		function setupSmush() {
-
 			if ( ! empty( $_POST['_wpnonce'] ) && ! wp_verify_nonce( $_POST['_wpnonce'], 'setupSmush' ) ) {
 				wp_send_json_error( "Nonce verification failed" );
 			}
@@ -2255,7 +2259,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			update_site_option( 'skip-smush-setup', 1 );
 
 			wp_send_json_success();
-
 		}
 
 		/**
@@ -2285,24 +2288,26 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Load media assets.
 		 */
 		public function extend_media_modal() {
-			if ( ! wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
-				wp_enqueue_script( 'smush-backbone-extension', WP_SMUSH_URL . 'assets/js/media.min.js', array(
-					'jquery',
-					'media-views',
-					'media-grid',
-					'wp-util',
-					'wp-api',
-				), WP_SMUSH_VERSION, true );
-
-				wp_localize_script( 'smush-backbone-extension', 'smush_vars', array(
-					'strings' => array(
-						'stats_label' => esc_html__( "Smush", "wp-smushit" )
-					),
-					'nonce'   => array(
-						'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
-					),
-				) );
+			if ( wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
+				return;
 			}
+
+			wp_enqueue_script( 'smush-backbone-extension', WP_SMUSH_URL . 'assets/js/media.min.js', array(
+				'jquery',
+				'media-views',
+				'media-grid',
+				'wp-util',
+				'wp-api',
+			), WP_SMUSH_VERSION, true );
+
+			wp_localize_script( 'smush-backbone-extension', 'smush_vars', array(
+				'strings' => array(
+					'stats_label' => esc_html__( "Smush", "wp-smushit" )
+				),
+				'nonce'   => array(
+					'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
+				),
+			) );
 		}
 
 		/**

@@ -29,6 +29,7 @@ const sharedConfig = {
 const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
 		'admin': './_src/scss/app.scss',
+		'common': './_src/scss/common.scss'
 	},
 
 	output: {
