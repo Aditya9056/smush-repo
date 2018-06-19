@@ -10,6 +10,7 @@
     * Smush progress during feature image upload
     * Image width and height converted to string in async request
     * Warnings on PHP 5.2
+    * Fixed wrong method name in S3 offload class. Thanks Tedy Warsitha
 
 = 2.7.9.1 =
 

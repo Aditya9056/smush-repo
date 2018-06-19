@@ -12,11 +12,6 @@
 //Include Bulk UI
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-ui.php';
 
-//Load Shared UI
-if ( ! class_exists( 'WDEV_Plugin_Ui' ) ) {
-	//require_once WP_SMUSH_DIR . 'assets/shared-ui/plugin-ui.php';
-}
-
 if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	/**
 	 * Show settings in Media settings and add column to media library
@@ -316,34 +311,35 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function register() {
 
-			//Main JS
+			// Main JS.
 			wp_register_script( 'wp-smushit-admin-js', WP_SMUSH_URL . 'assets/js/wp-smushit-admin.js', array(
-				'jquery'
+				'jquery',
 			), WP_SMUSH_VERSION );
 
-			//Notice JS
+			// Notice JS.
 			wp_register_script( 'wp-smushit-notice-js', WP_SMUSH_URL . 'assets/js/notice.js', array(
-				'jquery'
+				'jquery',
 			), WP_SMUSH_VERSION );
 
-			/* Register Style */
-//			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), WP_SMUSH_VERSION );
-			wp_register_style( 'wp-smushit-admin-media-css', WP_SMUSH_URL . 'assets/css/smush-media.min.css', array(), WP_SMUSH_VERSION );
-			//Notice CSS
-			wp_register_style( 'wp-smushit-notice-css', WP_SMUSH_URL . 'assets/css/notice.css', array(), WP_SMUSH_VERSION );
+			// Register Style.
+			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), WP_SMUSH_VERSION );
 
-			//jQuery tree
+			// Media Upload Area CSS .
+			wp_register_style( 'wp-smushit-admin-media-css', WP_SMUSH_URL . 'assets/css/smush-media.min.css', array(), WP_SMUSH_VERSION );
+
+			// jQuery tree.
 			wp_register_script( 'jqft-js', WP_SMUSH_URL . 'assets/js/jQueryFileTree.js', array(
-				'jquery'
+				'jquery',
 			), WP_SMUSH_VERSION, true );
+
 			wp_register_style( 'jqft-css', WP_SMUSH_URL . 'assets/css/jQueryFileTree.min.css', array(), WP_SMUSH_VERSION );
 
-			//Dismiss Update Info
+			// Dismiss Update Info.
 			$this->dismiss_update_info();
 		}
 
 		/**
-		 * enqueue js and css
+		 * Enqueue js and css
 		 */
 		function enqueue() {
 
@@ -379,11 +375,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 
-			$this->load_shared_ui( $current_page );
 			wp_enqueue_script( 'wp-smushit-admin-js' );
 
 			// Style.
-			wp_enqueue_style( 'wp-smushit-admin-css' );
 			wp_enqueue_style( 'wp-smushit-admin-media-css' );
 
 			// Load on Smush all page only.
@@ -1689,6 +1683,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				delete_option( $key );
 			}
 
+			$resmush_count = $count = count( $resmush_list );
+			$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
+
 			//Return the Remsmush list and UI to be appended to Bulk Smush UI
 			if ( $return_ui ) {
 				if ( 'nextgen' != $type ) {
@@ -1700,18 +1697,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$wpsmushnextgenadmin->resmush_ids = $resmush_list;
 				}
 
-				if ( ( $count = count( $resmush_list ) ) > 0 || $this->remaining_count > 0 ) {
-					if ( $count ) {
-						$show = true;
-
-						$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
-
-						$ajax_response = $wpsmush_bulkui->bulk_resmush_content( $count, $show );
-					}
+				if ( $resmush_count ) {
+					$ajax_response = $wpsmush_bulkui->bulk_resmush_content( $count, true );
 				}
 			}
 
-			if ( ! empty( $resmush_list ) || $remaining_count > 0 ) {
+			if ( ! empty( $count ) ) {
 				$message = sprintf( esc_html__( "Image check complete, you have %d images that need smushing. %sBulk smush now!%s", "wp-smushit" ), $count, '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 				$resp    = '<div class="sui-notice-top sui-notice-warning sui-can-dismiss">
 						<div class="sui-notice-content">
@@ -1948,23 +1939,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$smushed_attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $wpsmush_db->smushed_count( true );
 			foreach ( $smushed_attachments as $attachment ) {
 				$wpsmush_backup->restore_image( $attachment->attachment_id, false );
-			}
-		}
-
-		/**
-		 * Loads the Shared UI to on all admin pages
-		 *
-		 * @param $current_page
-		 */
-		function load_shared_ui( $current_page ) {
-			//If class method exists, load shared UI
-			if ( class_exists( 'WDEV_Plugin_Ui' ) ) {
-
-				if ( method_exists( 'WDEV_Plugin_Ui', 'load' ) && in_array( $current_page, $this->plugin_pages ) ) {
-
-					//Load Shared UI
-					WDEV_Plugin_Ui::load( WP_SMUSH_URL . 'assets/shared-ui/', false );
-				}
 			}
 		}
 

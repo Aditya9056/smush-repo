@@ -1459,7 +1459,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function installation_notice() {
-
 			global $wpsmushit_admin;
 
 			// Whether new/existing installation.
@@ -1504,8 +1503,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 			</div>
 			<?php
-			// Notice CSS.
-			wp_enqueue_style( 'wp-smushit-notice-css' );
 			// Notice JS.
 			wp_enqueue_script( 'wp-smushit-notice-js', '', array(), '', true );
 		}
@@ -1560,16 +1557,19 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 				// Default message.
 				$message = esc_html__( 'Your settings have been updated!', 'wp-smushit' );
+				// Notice class.
+				$message_class = ' sui-notice-success';
 
 				// Additonal message if we got work to do!
 				$resmush_count = is_array( $wpsmushit_admin->resmush_ids ) && count( $wpsmushit_admin->resmush_ids ) > 0;
 				$smush_count   = is_array( $wpsmushit_admin->remaining_count ) && $wpsmushit_admin->remaining_count > 0;
 
 				if ( $smush_count || $resmush_count ) {
+					$message_class = ' sui-notice-warning';
 					$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %sBulk smush now!%s', 'wp-smushit' ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 				}
 
-				echo '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
+				echo '<div class="sui-notice-top sui-can-dismiss' . $message_class . '">
 						<div class="sui-notice-content">
 							<p>' . $message . '</p>
 						</div>

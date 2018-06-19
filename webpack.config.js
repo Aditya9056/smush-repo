@@ -1,13 +1,8 @@
-const path    = require('path');
-const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
-
-// As Webpack only understands JS, we'll use this plugin to extract the CSS to a file
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
-const config = {
-	output: {}
-};
+const path       = require('path');
+const webpack    = require('webpack');
+const ATP        = require('autoprefixer');
+const CSSExtract = require("mini-css-extract-plugin");
+const config     = { output: {} };
 
 // The path where the Shared UI fonts & images should be sent. (relative to config.output.jsFileName)
 config.output.imagesDirectory = '../images'; // Trailing slash required.
@@ -32,7 +27,7 @@ const scssConfig = {
 			{
 				test: /\.scss$/,
 				exclude: /node_modules/,
-				use: [ MiniCssExtractPlugin.loader,
+				use: [ CSSExtract.loader,
 					{
 						loader: 'css-loader'
 					},
@@ -40,7 +35,7 @@ const scssConfig = {
 						loader: 'postcss-loader',
 						options: {
 							plugins: [
-								autoprefixer({
+								ATP({
 									browsers: ['ie > 9', '> 1%']
 								})
 							],
@@ -82,7 +77,7 @@ const scssConfig = {
 	},
 
 	plugins: [
-		new MiniCssExtractPlugin({
+		new CSSExtract({
             filename: '../css/[name].min.css'
         })
 	],
