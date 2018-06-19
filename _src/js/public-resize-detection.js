@@ -1,4 +1,5 @@
 jQuery( function ( $ ) {
+	'use strict';
 
 	/**
 	 * After page load, initialize toggle event.
@@ -8,14 +9,12 @@ jQuery( function ( $ ) {
 	 * Upon clicking again, remove highlights.
 	 */
 	$( window ).load( function () {
-
 		// Handle detect link click.
 		$( '#wp-admin-bar-smush-resize-detection' ).toggle( function () {
 			detect_wrong_imgs();
 		}, function () {
 			revert_detection();
 		} );
-
 	} );
 
 	/**
@@ -83,7 +82,6 @@ jQuery( function ( $ ) {
 	 * images. Also remove the resize box.
 	 */
 	var revert_detection = function () {
-
 		// Remove all detection boxes.
 		$( '.smush-resize-box' ).remove();
 
