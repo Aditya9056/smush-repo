@@ -23,8 +23,8 @@
          */
 		smush_media.view.Attachment.Details.TwoColumn = smushMediaTwoColumn.extend({
 			initialize: function () {
-				// Always make sure that our content is up to date.
-				this.model.on('change', this.render, this);
+				// Update the attachment details with Smush stats.
+				this.render();
 			},
 
 			render: function () {
