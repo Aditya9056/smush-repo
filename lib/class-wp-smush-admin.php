@@ -1,5 +1,7 @@
 <?php
 /**
+ * Smush admin functionality: WpSmushitAdmin class
+ *
  * @package WP_Smush
  * @subpackage Admin
  * @version 1.0
@@ -9,14 +11,10 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-//Include Bulk UI
+// Include Bulk UI.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-ui.php';
 
 if ( ! class_exists( 'WpSmushitAdmin' ) ) {
-	/**
-	 * Show settings in Media settings and add column to media library
-	 */
-
 	/**
 	 * Class WpSmushitAdmin
 	 *
@@ -25,8 +23,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	 * @property int $smushed_count
 	 */
 	class WpSmushitAdmin extends WP_Smush {
-
 		/**
+		 * Settings array.
+		 *
 		 * @var array Settings
 		 */
 		public $settings;
@@ -34,12 +33,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $bulk;
 
 		/**
-		 * @var Total count of Attachments for Smushing
+		 * Total count of Attachments for Smushing
+		 *
+		 * @var int $total_count
 		 */
 		public $total_count;
 
 		/**
-		 * @var Smushed attachments out of total attachments
+		 * Smushed attachments out of total attachments
+		 *
+		 * @var int $smushed_count
 		 */
 		public $smushed_count;
 
