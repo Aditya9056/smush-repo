@@ -96,13 +96,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $image_sizes = array();
 
 		/**
-		 * @var string Stores the headers returned by the latest API call
+		 * Stores the headers returned by the latest API call
+		 *
+		 * @var string $api_headers
 		 */
 		public $api_headers = array();
 
 		public $page_smush_all = '';
 
-		// List of pages where Smush needs to be loaded.
+		/**
+		 * List of pages where smush needs to be loaded.
+		 *
+		 * @var $pages array
+		 */
 		public $pages = array(
 			'nggallery-manage-images',
 			'gallery_page_wp-smush-nextgen-bulk',
@@ -1642,6 +1648,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				delete_option( $key );
 			}
 
+			$resmush_count = $count = count( $resmush_list );
+			$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
+
 			//Return the Remsmush list and UI to be appended to Bulk Smush UI
 			if ( $return_ui ) {
 				if ( 'nextgen' != $type ) {
@@ -1653,18 +1662,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$wpsmushnextgenadmin->resmush_ids = $resmush_list;
 				}
 
-				if ( ( $count = count( $resmush_list ) ) > 0 || $this->remaining_count > 0 ) {
-					if ( $count ) {
-						$show = true;
-
-						$count += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $this->remaining_count;
-
-						$ajax_response = $wpsmush_bulkui->bulk_resmush_content( $count, $show );
-					}
+				if ( $resmush_count ) {
+					$ajax_response = $wpsmush_bulkui->bulk_resmush_content( $count, true );
 				}
 			}
 
-			if ( ! empty( $resmush_list ) || $remaining_count > 0 ) {
+			if ( ! empty( $count ) ) {
 				$message = sprintf( esc_html__( "Image check complete, you have %d images that need smushing. %sBulk smush now!%s", "wp-smushit" ), $count, '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 				$resp    = '<div class="sui-notice-top sui-notice-warning sui-can-dismiss">
 						<div class="sui-notice-content">

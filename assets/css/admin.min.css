@@ -7425,10 +7425,14 @@ html.sui-has-overlay {
   font-size: 13px;
 }
 
-.sui-2-2-4 .sui-wrap .sui-summary-smush,
-.sui-2-2-4 .sui-wrap .sui-summary-smush-nextgen {
+.sui-2-2-4 .sui-wrap .sui-summary-smush {
   background-image: url(../fonts/smush-graphic-dashboard-summary.svg);
   background-size: 200px;
+}
+
+.sui-2-2-4 .sui-wrap .sui-summary-smush-nextgen {
+  background-image: url(../fonts/smush-graphic-dashboard-summary.svg);
+  background-size: 170px;
 }
 
 .sui-2-2-4 .sui-wrap .smush-pro-features .smush-pro-feature-title {
@@ -7630,6 +7634,17 @@ html.sui-has-overlay {
 
 .sui-2-2-4 .sui-summary-smush-nextgen .smush-stats-list-nextgen {
   min-height: 150px;
+}
+
+.sui-2-2-4 .wp-smush-no-image {
+  display: block;
+  overflow: hidden;
+}
+
+.sui-2-2-4 .wp-smush-upload-images {
+  display: block;
+  overflow: hidden;
+  padding: 10px 0 40px;
 }
 
 /**
