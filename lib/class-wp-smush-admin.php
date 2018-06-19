@@ -323,9 +323,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Main CSS.
 			wp_register_style( 'smush-admin', WP_SMUSH_URL . 'assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
 
-			// Register stylesheet.
-			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), WP_SMUSH_VERSION );
-
 			// Dismiss update info.
 			$this->dismiss_update_info();
 		}
@@ -364,7 +361,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			// Style.
-			wp_enqueue_style( 'wp-smushit-admin-css' );
 			wp_enqueue_script( 'wp-smushit-admin' );
 
 			// Load on Smush all page only.
