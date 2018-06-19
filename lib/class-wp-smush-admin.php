@@ -335,7 +335,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			/**
-			 * Load js and css on all admin pages, in order t display install/upgrade notice.
+			 * Load js and css on all admin pages, in order to display install/upgrade notice.
 			 * And If upgrade/install message is dismissed or for pro users, Do not enqueue script.
 			 */
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->validate_install() ) {
@@ -356,11 +356,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 
-			// Load on Smush all page only.
+			// We need it on media pages and Smush pages.
+			wp_enqueue_script( 'smush-admin' );
+
+			// Load on all Smush page only.
 			if ( in_array( $current_screen->id, $this->plugin_pages, true ) ) {
 				// Smush admin (smush-admin) includes the Shared UI.
 				wp_enqueue_style( 'smush-admin' );
-				wp_enqueue_script( 'smush-admin' );
 			}
 
 			// Localize translatable strings for js.

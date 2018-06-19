@@ -1805,7 +1805,6 @@ jQuery( function ( $ ) {
 
 	/** Handle smush button click **/
 	$( 'body' ).on( 'click', '.wp-smush-send:not(.wp-smush-resmush)', function ( e ) {
-
 		// prevent the default action
 		e.preventDefault();
 		new WP_Smush.Smush( $( this ), false );
@@ -1813,7 +1812,6 @@ jQuery( function ( $ ) {
 
 	/** Handle NextGen Gallery smush button click **/
 	$( 'body' ).on( 'click', '.wp-smush-nextgen-send', function ( e ) {
-
 		// prevent the default action
 		e.preventDefault();
 		new WP_Smush.Smush( $( this ), false, 'nextgen' );
@@ -1821,7 +1819,6 @@ jQuery( function ( $ ) {
 
 	/** Handle NextGen Gallery Bulk smush button click **/
 	$( 'body' ).on( 'click', '.wp-smush-nextgen-bulk', function ( e ) {
-
 		// prevent the default action
 		e.preventDefault();
 
