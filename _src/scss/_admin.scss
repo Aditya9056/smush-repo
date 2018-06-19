@@ -214,10 +214,13 @@
       }
     }
 
-    .sui-summary-smush,
-    .sui-summary-smush-nextgen {
+    .sui-summary-smush {
       background-image: url("../../assets/images/smush-graphic-dashboard-summary.svg");
       background-size: 200px;
+    }
+    .sui-summary-smush-nextgen {
+      background-image: url("../../assets/images/smush-graphic-dashboard-summary.svg");
+      background-size: 170px;
     }
 
     .smush-pro-features {
