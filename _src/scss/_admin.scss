@@ -432,4 +432,13 @@
       min-height: 150px;
     }
   }
+  .wp-smush-no-image {
+    display: block;
+    overflow: hidden;
+  }
+  .wp-smush-upload-images {
+    display: block;
+    overflow: hidden;
+    padding: 10px 0 40px;
+  }
 }

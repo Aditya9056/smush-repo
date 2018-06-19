@@ -7628,6 +7628,17 @@ html.sui-has-overlay {
   min-height: 150px;
 }
 
+.sui-2-2-4 .wp-smush-no-image {
+  display: block;
+  overflow: hidden;
+}
+
+.sui-2-2-4 .wp-smush-upload-images {
+  display: block;
+  overflow: hidden;
+  padding: 10px 0 40px;
+}
+
 /**
  * CSS styles used Admin notice
  */
