@@ -102,14 +102,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $image_sizes = array();
 
 		/**
-		 * @var string Stores the headers returned by the latest API call
+		 * Stores the headers returned by the latest API call
 		 *
+		 * @var string $api_headers
 		 */
 		public $api_headers = array();
 
 		public $page_smush_all = '';
 
-		//List of pages where smush needs to be loaded
+		/**
+		 * List of pages where smush needs to be loaded.
+		 *
+		 * @var $pages array
+		 */
 		public $pages = array(
 			'nggallery-manage-images',
 			'gallery_page_wp-smush-nextgen-bulk',
@@ -322,7 +327,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			), WP_SMUSH_VERSION );
 
 			/* Register Style */
-			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), WP_SMUSH_VERSION );
+//			wp_register_style( 'wp-smushit-admin-css', WP_SMUSH_URL . 'assets/css/wp-smushit-admin.css', array(), WP_SMUSH_VERSION );
+			wp_register_style( 'wp-smushit-admin-media-css', WP_SMUSH_URL . 'assets/css/smush-media.min.css', array(), WP_SMUSH_VERSION );
 			//Notice CSS
 			wp_register_style( 'wp-smushit-notice-css', WP_SMUSH_URL . 'assets/css/notice.css', array(), WP_SMUSH_VERSION );
 
@@ -352,10 +358,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Load js and css on all admin pages, in order t display install/upgrade notice.
 			// And If upgrade/install message is dismissed or for pro users, Do not enqueue script.
 			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || $this->validate_install() ) {
-				/** @var $pages List of screens where script needs to be loaded */
+				/**
+				 * List of screens where script needs to be loaded
+				 *
+				 * @var $this->pages array
+				 */
 
-				// Do not enqueue, unless it is one of the required screen, or not in wordpress backend.
-				if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, $this->pages ) && ! did_action( 'wp_enqueue_media' ) ) ) {
+				// Do not enqueue, unless it is one of the required screen, or not in WordPress backend.
+				if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, $this->pages, true ) && ! did_action( 'wp_enqueue_media' ) ) ) {
 
 					$enqueue_smush = false;
 				}
@@ -374,6 +384,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Style.
 			wp_enqueue_style( 'wp-smushit-admin-css' );
+			wp_enqueue_style( 'wp-smushit-admin-media-css' );
 
 			// Load on Smush all page only.
 			if ( in_array( $current_screen->id, $this->plugin_pages ) ) {

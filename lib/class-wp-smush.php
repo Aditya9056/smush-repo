@@ -1123,23 +1123,19 @@ class WP_Smush {
 					$show_restore = $this->show_restore_option( $id, $attachment_data );
 
 					if ( $show_restore ) {
-						if ( $show_resmush ) {
-							//Show Separator
-							$links .= ' | ';
-						}
 						$links .= $this->get_restore_link( $id );
 					}
 
 					// Detailed Stats: Show detailed stats if available.
 					if ( ! empty( $wp_smush_data['sizes'] ) ) {
 
-						if ( $show_resmush || $show_restore ) {
-							//Show Separator
-							$links .= ' | ';
-						}
 
 						// Detailed Stats Link.
-						$links .= sprintf( '<a href="#" class="wp-smush-action smush-stats-details wp-smush-title" tooltip="%s">%s [<span class="stats-toggle">+</span>]</a>', esc_html__( "Detailed stats for all the image sizes", "wp-smushit" ), esc_html__( "Smush stats", 'wp-smushit' ) );
+						$links .= sprintf(
+							'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-constrained button" data-tooltip="%s">%s</a>',
+							esc_html__( 'Detailed stats for all the image sizes', 'wp-smushit' ),
+							esc_html__( 'View Stats', 'wp-smushit' )
+						);
 
 						// Stats.
 						$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
@@ -1151,7 +1147,7 @@ class WP_Smush {
 				}
 			}
 			// Wrap links if not empty.
-			$links = ! empty( $links ) ? "<div class='smush-status-links'>" . $links . "</div>" : '';
+			$links = ! empty( $links ) ? "<div class='sui-smush-media smush-status-links'>" . $links . "</div>" : '';
 
 			/** Super Smush Button  */
 			// IF current compression is lossy.
@@ -1172,27 +1168,30 @@ class WP_Smush {
 			}
 
 		} elseif ( get_option( 'smush-in-progress-' . $id, false ) ) {
-			// the status
+			// The status.
 			$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
 
-			//Set WP Smush data to true in order to show the text
+			// Set WP Smush data to true in order to show the text.
 			$wp_smush_data = true;
 
-			// we need to show the smush button
+			// We need to show the smush button.
 			$show_button = false;
 
-			// the button text
+			// The button text.
 			$button_txt = '';
 		} else {
 
-			// the status
+			// Show status text
+			$wp_smush_data = true;
+
+			// The status.
 			$status_txt = __( 'Not processed', 'wp-smushit' );
 
-			// we need to show the smush button
+			// We need to show the smush button.
 			$show_button = true;
 
-			// the button text
-			$button_txt = __( 'Smush Now!', 'wp-smushit' );
+			// The button text.
+			$button_txt = __( 'Smush', 'wp-smushit' );
 		}
 
 		$class = $wp_smush_data ? '' : ' hidden';
@@ -1270,7 +1269,7 @@ class WP_Smush {
 			$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button wp-smush-send';
 			$html .= '
 			<button  class="' . $button_class . '" data-id="' . $id . '">
-                <span>' . $button_txt . '</span>
+                ' . $button_txt . '
 			</button>';
 			if ( ! $smushed ) {
 				$class = ' unsmushed';
@@ -1283,8 +1282,8 @@ class WP_Smush {
 
 			return $html;
 		} else {
-			$html .= '<button class="button wp-smush-send' . $mode_class . '" data-id="' . $id . '">
-                <span>' . $button_txt . '</span>
+			$html .= '<button class="button button-primary wp-smush-send' . $mode_class . '" data-id="' . $id . '">
+                ' . $button_txt . '
 			</button>';
 			$html = $html . $this->progress_bar();
 			echo $html;
@@ -1519,7 +1518,7 @@ class WP_Smush {
 			'size_limit' => esc_html__( "Image couldn't be smushed as it exceeded the 1Mb size limit, Pro users can smush images with size up to 32Mb.", "wp-smushit" )
 		);
 		$skip_rsn        = ! empty( $skip_msg[ $msg_id ] ) ? esc_html__( " Skipped", 'wp-smushit', 'wp-smushit' ) : '';
-		$skip_rsn        = ! empty( $skip_rsn ) ? $skip_rsn . '<span tooltip="' . $skip_msg[ $msg_id ] . '"><i class="dashicons dashicons-editor-help"></i></span>' : '';
+		$skip_rsn        = ! empty( $skip_rsn ) ? $skip_rsn . '<span class="sui-tooltip sui-tooltip-constrained sui-tooltip-left" data-tooltip="' . $skip_msg[ $msg_id ] . '"><i class="dashicons dashicons-editor-help"></i></span>' : '';
 
 		return $skip_rsn;
 	}
@@ -1536,18 +1535,18 @@ class WP_Smush {
 
 		global $wpsmushit_admin;
 
-		$stats      = '<div id="smush-stats-' . $image_id . '" class="smush-stats-wrapper hidden">
+		$stats      = '<div id="smush-stats-' . $image_id . '" class="sui-smush-media smush-stats-wrapper hidden">
 			<table class="wp-smush-stats-holder">
 				<thead>
 					<tr>
-						<th><strong>' . esc_html__( 'Image size', 'wp-smushit' ) . '</strong></th>
-						<th><strong>' . esc_html__( 'Savings', 'wp-smushit' ) . '</strong></th>
+						<th class="smush-stats-header">' . esc_html__( 'Image size', 'wp-smushit' ) . '</th>
+						<th class="smush-stats-header">' . esc_html__( 'Savings', 'wp-smushit' ) . '</th>
 					</tr>
 				</thead>
 				<tbody>';
 		$size_stats = $wp_smush_data['sizes'];
 
-		//Reorder Sizes as per the maximum savings
+		// Reorder Sizes as per the maximum savings.
 		uasort( $size_stats, array( $this, "cmp" ) );
 
 		if ( ! empty( $attachment_metadata['sizes'] ) ) {
@@ -1787,12 +1786,12 @@ class WP_Smush {
 			return false;
 		}
 
-		$class = 'wp-smush-action wp-smush-title';
+		$class = 'wp-smush-action wp-smush-title sui-tooltip button';
 		$class .= 'wp' == $type ? ' wp-smush-restore' : ' wp-smush-nextgen-restore';
 
 		$ajax_nonce = wp_create_nonce( "wp-smush-restore-" . $image_id );
 
-		return sprintf( '<a href="#" tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Restore original image.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Restore image", "wp-smushit" ) );
+		return sprintf( '<a href="#" data-tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Restore original image.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Restore", "wp-smushit" ) );
 	}
 
 	/**
@@ -1835,12 +1834,12 @@ class WP_Smush {
 		if ( empty( $image_id ) ) {
 			return false;
 		}
-		$class = 'wp-smush-action wp-smush-title';
+		$class = 'wp-smush-action wp-smush-title sui-tooltip sui-tooltip-constrained button';
 		$class .= 'wp' == $type ? ' wp-smush-resmush' : ' wp-smush-nextgen-resmush';
 
 		$ajax_nonce = wp_create_nonce( "wp-smush-resmush-" . $image_id );
 
-		return sprintf( '<a href="#" tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Smush image including original file.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Resmush image", "wp-smushit" ) );
+		return sprintf( '<a href="#" data-tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( "Smush image including original file.", "wp-smushit" ), $image_id, $ajax_nonce, $class, esc_html__( "Resmush", "wp-smushit" ) );
 	}
 
 	/**
