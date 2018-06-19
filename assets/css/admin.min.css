@@ -7214,6 +7214,14 @@ html.sui-has-overlay {
   }
 }
 
+/* ****************************************************************************
+ * MODULE: VARIABLES
+ */
+
+/* ****************************************************************************
+ * MODULE: VARIABLES
+ */
+
 .sui-2-2-4 .sui-wrap .tc {
   text-align: center;
 }
@@ -7639,182 +7647,568 @@ html.sui-has-overlay {
   padding: 10px 0 40px;
 }
 
-/**
- * CSS styles used Admin notice
+/* ****************************************************************************
+ * MEDIA AREA SCSS FILE
  */
 
-.wrap .smush-notice.notice {
-  padding: 0;
-  margin: 5px 0 10px;
-  border: 1px solid #E5E5E5;
-  background: #FFF;
-  overflow: hidden;
-  border-radius: 6px;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
+.sui-smush-media .sui-tooltip {
   position: relative;
-  z-index: 1;
-  min-height: 80px;
-  display: table;
-  /* The magic ingredient! */
-  font: 13px "Open Sans", sans-serif;
 }
 
-.wrap .smush-notice.notice.loading:before {
-  content: attr(data-message);
+.sui-smush-media .sui-tooltip:before,
+.sui-smush-media .sui-tooltip:after {
+  content: "";
+  opacity: 0;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  pointer-events: none;
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.7);
-  z-index: 5;
+  z-index: 1;
+  transition: margin .2s, opacity .2s;
+}
+
+.sui-smush-media .sui-tooltip:before {
+  border: 5px solid transparent;
+}
+
+.sui-smush-media .sui-tooltip:after {
+  content: attr(data-tooltip);
+  min-width: 40px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #333333;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  font: 500 12px/18px "Roboto", Arial, sans-serif;
+  text-transform: none;
   text-align: center;
-  line-height: 80px;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.smush-notice > div {
-  display: table-cell;
-  /* The magic ingredient! */
-  vertical-align: middle;
-  cursor: default;
-  line-height: 1.5;
-}
-
-.smush-notice.notice.loading > div {
-  -webkit-filter: blur(2px);
-  -moz-filter: blur(2px);
-  -o-filter: blur(2px);
-  -ms-filter: blur(2px);
-  filter: blur(2px);
-}
-
-.smush-notice-logo {
-  background: #0B2F3F url(data:image/png;base64,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) no-repeat 50% 50%;
-}
-
-.smush-notice-logo span {
-  display: block;
-  width: 80px;
-}
-
-.smush-notice-message {
-  color: #23282D;
-  font-size: 13px;
-  font-weight: normal;
-  line-height: 20px;
-  padding: 10px 20px;
-  -webkit-font-smoothing: antialiased;
-  width: 100%;
-}
-
-.smush-notice-cta {
-  border-left: 1px solid #E5E5E5;
-  background: #F8F8F8;
-  padding: 0 30px;
-  position: relative;
   white-space: nowrap;
 }
 
-.wp-core-ui .smush-notice-cta button,
-.wp-core-ui .smush-notice-cta .button-primary:active {
-  vertical-align: middle;
+.sui-smush-media .sui-tooltip:hover:before,
+.sui-smush-media .sui-tooltip:hover:after {
+  opacity: 1;
 }
 
-.wp-core-ui .smush-notice-cta input[type="email"] {
-  vertical-align: middle;
-  line-height: 20px;
-  margin: 0;
-  min-width: 50px;
-  max-width: 320px;
-  text-align: center;
-  padding-left: 0;
-  padding-right: 0;
+.sui-smush-media .sui-tooltip.sui-tooltip-constrained:after {
+  min-width: 240px;
+  white-space: normal;
 }
 
-.smush-notice-dismiss {
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  color: #C5C5C5;
-  -webkit-font-smoothing: antialiased;
+.sui-smush-media .sui-tooltip.sui-tooltip-top:before,
+.sui-smush-media .sui-tooltip:before {
+  bottom: 100%;
+  left: 50%;
+  border-top-color: #333333;
+  transform: translateX(-50%);
 }
 
-.smush-notice-dismiss:hover {
-  color: #666;
+.sui-smush-media .sui-tooltip.sui-tooltip-top:after,
+.sui-smush-media .sui-tooltip:after {
+  bottom: 100%;
+  left: 50%;
+  margin: 0 0 10px;
+  transform: translateX(-50%);
 }
 
-@media only all and (max-width: 1200px) {
-  .smush-notice-dismiss {
-    display: block;
-    margin: 0 auto;
-    line-height: 18px;
-    padding-top: 8px;
-    padding-bottom: 2px;
-  }
+.sui-smush-media .sui-tooltip.sui-tooltip-top-right:after {
+  left: 0;
+  transform: translateX(0);
 }
 
-@media only all and (max-width: 1000px) {
-  .wrap .smush-notice.notice {
-    display: block;
-    font-size: 13px;
-  }
+.sui-smush-media .sui-tooltip.sui-tooltip-top-left:after {
+  left: auto;
+  transform: translateX(0);
+  right: 0;
+}
 
-  .smush-notice > .smush-notice-logo {
-    float: left;
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-left:before,
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-right:before,
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom:before {
+  top: 100%;
+  bottom: inherit;
+  border-top-color: transparent;
+  border-bottom-color: #333333;
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-left:after,
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-right:after,
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom:after {
+  top: 100%;
+  bottom: inherit;
+  margin: 10px 0 0;
+  transform: translateX(0);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom:after {
+  transform: translateX(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-right:after {
+  left: 0;
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-bottom-left:after {
+  left: auto;
+  right: 0;
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-left:before {
+  top: 50%;
+  right: 100%;
+  bottom: inherit;
+  left: inherit;
+  border-top-color: transparent;
+  border-left-color: #333333;
+  transform: translateY(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-left:after {
+  top: 50%;
+  right: 100%;
+  bottom: inherit;
+  left: inherit;
+  margin: 0 10px 0 0;
+  transform: translateY(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-right:before {
+  top: 50%;
+  bottom: inherit;
+  left: 100%;
+  border-top-color: transparent;
+  border-right-color: #333333;
+  transform: translateY(-50%);
+}
+
+.sui-smush-media .sui-tooltip.sui-tooltip-right:after {
+  top: 50%;
+  bottom: inherit;
+  left: 100%;
+  margin: 0 0 0 10px;
+  transform: translateY(-50%);
+}
+
+/* ****************************************************************************
+ * MEDIA AREA STYLES
+ */
+
+.manage-column.column-smushit {
+  width: 260px;
+}
+
+.sui-smush-media .button {
+  margin-right: 5px;
+}
+
+.sui-smush-media .button:last-of-type {
+  margin-right: 0;
+}
+
+.sui-smush-media table.wp-smush-stats-holder {
+  width: 100%;
+  border: 1px solid #E6E6E6;
+  border-radius: 4px;
+  margin-top: 6px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.sui-smush-media table.wp-smush-stats-holder thead th.smush-stats-header {
+  padding: 8px 10px;
+  border-bottom: 1px solid #E6E6E6 !important;
+  color: #32373D;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: -0.23px;
+  line-height: 16px;
+}
+
+.sui-smush-media table.wp-smush-stats-holder td {
+  padding: 8px 10px;
+  color: #555555;
+  font-size: 11px;
+  letter-spacing: -0.21px;
+  line-height: 16px;
+  border-bottom: 1px solid #E6E6E6;
+}
+
+.sui-smush-media table.wp-smush-stats-holder td:first-of-type {
+  max-width: 110px;
+  font-weight: 500;
+}
+
+#the-list .sui-smush-media thead th.smush-stats-header {
+  border-bottom: 1px solid #E6E6E6 !important;
+}
+
+@media screen and (max-width: 1024px) {
+  .wp-list-table .smushit table.wp-smush-stats-holder th {
     display: inline-block;
-    height: 80px;
-    margin: 10px;
-    border-radius: 4px;
+    width: 50%;
+    box-sizing: border-box;
   }
 
-  .smush-notice > .smush-notice-message {
-    width: auto;
-    display: block;
-    padding: 10px;
-    min-height: 80px;
+  .wp-list-table .smushit table.wp-smush-stats-holder tr td:first-child {
+    border-right: none;
+    box-sizing: border-box;
+    display: inline-block !important;
+    width: 50% !important;
   }
 
-  .smush-notice > .smush-notice-cta {
-    display: block;
-    border-top: 1px solid #E5E5E5;
-    border-left: 0;
-    text-align: center;
-    white-space: normal;
-    line-height: 30px;
-    padding: 10px 20px;
-  }
-
-  .wp-core-ui .smush-notice > .smush-notice-cta > input[type="email"],
-  .smush-notice > .smush-notice-cta > button {
-    font-size: 14px;
-  }
-
-  .smush-notice > .smush-notice-cta > .smush-notice-dismiss {
-    display: inline-block;
+  .wp-list-table .smushit table.wp-smush-stats-holder tr td:last-child {
+    box-sizing: border-box;
+    display: inline-block !important;
     float: none;
-    line-height: 26px;
-    padding-top: 0;
-    padding-bottom: 0;
-    font-size: 13px;
+    overflow: visible;
+    width: 50% !important;
   }
 }
 
-@media only all and (max-width: 500px) {
-  .wp-core-ui .smush-notice > .smush-notice-cta > input[type="email"],
-  .smush-notice > .smush-notice-cta > button {
-    display: block;
-    width: 100% !important;
-    max-width: none;
-    margin-bottom: 4px;
-    font-size: 16px;
-    height: 34px;
-  }
+.iedit .wp-smush-action,
+.iedit .smush-stats-details {
+  font-size: 11px;
+}
 
-  .smush-notice > .smush-notice-cta > .smush-notice-dismiss {
-    margin-top: 5px;
-    font-size: 14px;
-    height: 23px;
-  }
+/*NextGen Gallery stats*/
+
+#ngg-listimages table.wp-smush-stats-holder {
+  table-layout: fixed;
+  border: 1px solid lightgray;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#ngg-listimages table.wp-smush-stats-holder td,
+#ngg-listimages table.wp-smush-stats-holder th {
+  border: 1px solid #CECECE;
+}
+
+#ngg-listimages .column-7 {
+  width: 300px;
+}
+
+/** NextGen Gallery tr height, to show the progress bar properly for alternate rows **/
+
+.alternate.iedit {
+  height: 120px;
+}
+
+/** Allows to click on button, otherwise row-actions from NextGen interferes **/
+
+.wp-smush-nextgen-send {
+  position: relative;
+  z-index: 2;
+}
+
+/* ****************************************************************************
+ * MODULE: VARIABLES
+ */
+
+@font-face {
+  font-family: 'wpmudev-plugin-icons';
+  src: url(../fonts/wpmudev-plugin-icons.eot);
+  src: url(../fonts/wpmudev-plugin-icons.eot) format("embedded-opentype"), url(../fonts/wpmudev-plugin-icons.ttf) format("truetype"), url(../fonts/wpmudev-plugin-icons.woff) format("woff"), url(../fonts/wpmudev-plugin-icons.woff2) format("woff2"), url(../fonts/wpmudev-plugin-icons.svg) format("svg");
+  font-weight: 400;
+  font-style: normal;
+}
+
+.smush-detected-img {
+  border: 5px solid #FECF2F;
+  border-radius: 5px;
+}
+
+.smush-resize-box {
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+  display: block;
+  padding: 10px;
+  box-shadow: 0 5px 25px 0 rgba(0, 0, 0, 0.15);
+  margin: 20px auto;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.smush-resize-box .smush-front-icons {
+  margin-left: 10px;
+}
+
+.smush-resize-box .smush-front-icons:before {
+  font-family: 'wpmudev-plugin-icons', sans-serif !important;
+  speak: none;
+  font-size: 1em;
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  text-rendering: auto;
+  display: inline-block;
+  color: #888;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.smush-resize-box .smush-front-icons.smush-front-icon-arrows-in:before {
+  content: '\2264';
+}
+
+.smush-resize-box .smush-tag {
+  display: inline-block;
+  background-color: #fecf2f;
+  color: #333;
+  border-radius: 15px;
+  min-width: 39px;
+  height: 26px;
+  font-size: 10px;
+  line-height: 26px;
+  text-align: center;
+  font-weight: 500;
+  padding: 0 10px;
+}
+
+.smush-resize-box .smush-tag.smush-tag-success {
+  background-color: #1abc9c;
+  color: #fff;
+  margin-left: 10px;
+}
+
+.smush-resize-box.smush-tooltip {
+  position: relative;
+}
+
+.smush-resize-box.smush-tooltip:before,
+.smush-resize-box.smush-tooltip:after {
+  content: "";
+  opacity: 0;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+  transition: margin .2s, opacity .2s;
+}
+
+.smush-resize-box.smush-tooltip:before {
+  border: 5px solid transparent;
+  bottom: 100%;
+  left: 50%;
+  border-top-color: #000000;
+  transform: translateX(-50%);
+}
+
+.smush-resize-box.smush-tooltip:after {
+  content: attr(data-tooltip);
+  min-width: 40px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #000000;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  font: 400 12px/18px "Roboto", Arial, sans-serif;
+  text-transform: none;
+  text-align: center;
+  white-space: nowrap;
+  bottom: 100%;
+  left: 50%;
+  margin: 0 0 10px;
+  transform: translateX(-50%);
+}
+
+.smush-resize-box.smush-tooltip:hover:before,
+.smush-resize-box.smush-tooltip:hover:after {
+  opacity: 1;
+}
+
+.smush-resize-box.smush-tooltip.smush-tooltip-constrained:after {
+  min-width: 240px;
+  white-space: normal;
+}
+
+/* ****************************************************************************
+ * MODULE: jQuery File Tree plugin styles.
+ */
+
+/* ****************************************************************************
+ * MODULE: VARIABLES
+ */
+
+UL.jqueryFileTree {
+  font-family: Verdana, sans-serif;
+  font-size: 11px;
+  line-height: 18px;
+  padding: 0;
+  margin: 0;
+  display: none;
+}
+
+UL.jqueryFileTree LI {
+  list-style: none;
+  padding: 0 0 0 20px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+UL.jqueryFileTree LI.selected > a {
+  font-weight: 700;
+}
+
+UL.jqueryFileTree LI.ext_bat,
+UL.jqueryFileTree LI.ext_com,
+UL.jqueryFileTree LI.ext_exe {
+  background: url(../images/application.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_afp,
+UL.jqueryFileTree LI.ext_afpa,
+UL.jqueryFileTree LI.ext_asp,
+UL.jqueryFileTree LI.ext_aspx,
+UL.jqueryFileTree LI.ext_c,
+UL.jqueryFileTree LI.ext_cfm,
+UL.jqueryFileTree LI.ext_cgi,
+UL.jqueryFileTree LI.ext_cpp,
+UL.jqueryFileTree LI.ext_h,
+UL.jqueryFileTree LI.ext_lasso,
+UL.jqueryFileTree LI.ext_vb,
+UL.jqueryFileTree LI.ext_xml {
+  background: url(../images/code.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_css {
+  background: url(../images/css.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_sql {
+  background: url(../images/db.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.directory {
+  background: url(../images/directory.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.directory-locked {
+  background: url(../images/directory-lock.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_doc {
+  background: url(../images/doc.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.file {
+  background: url(../images/file.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.file-locked {
+  background: url(../images/file-lock.png) left top no-repeat !important;
+}
+
+UL.jqueryFileTree LI.ext_3gp,
+UL.jqueryFileTree LI.ext_avi,
+UL.jqueryFileTree LI.ext_mov,
+UL.jqueryFileTree LI.ext_mp4,
+UL.jqueryFileTree LI.ext_mpeg,
+UL.jqueryFileTree LI.ext_mpg,
+UL.jqueryFileTree LI.ext_ogv,
+UL.jqueryFileTree LI.ext_webm,
+UL.jqueryFileTree LI.ext_wmv {
+  background: url(../images/film.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_fla,
+UL.jqueryFileTree LI.ext_swf {
+  background: url(../images/flash.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.expanded {
+  background: url(../images/folder_open.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_htm,
+UL.jqueryFileTree LI.ext_html {
+  background: url(../images/html.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_jar {
+  background: url(../images/java.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_rpm {
+  background: url(../images/linux.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_m4p,
+UL.jqueryFileTree LI.ext_mp3,
+UL.jqueryFileTree LI.ext_ogg,
+UL.jqueryFileTree LI.ext_wav {
+  background: url(../images/music.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_pdf {
+  background: url(../images/pdf.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_php {
+  background: url(../images/php.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_bmp,
+UL.jqueryFileTree LI.ext_gif,
+UL.jqueryFileTree LI.ext_jpeg,
+UL.jqueryFileTree LI.ext_jpg,
+UL.jqueryFileTree LI.ext_pcx,
+UL.jqueryFileTree LI.ext_png,
+UL.jqueryFileTree LI.ext_tif,
+UL.jqueryFileTree LI.ext_tiff {
+  background: url(../images/picture.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_ppt {
+  background: url(../images/ppt.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_psd {
+  background: url(../images/psd.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_rb,
+UL.jqueryFileTree LI.ext_rbx,
+UL.jqueryFileTree LI.ext_rhtml,
+UL.jqueryFileTree LI.ext_ruby {
+  background: url(../images/ruby.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_js,
+UL.jqueryFileTree LI.ext_pl,
+UL.jqueryFileTree LI.ext_py {
+  background: url(../images/script.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.wait {
+  background: url(../images/spinner.gif) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_log,
+UL.jqueryFileTree LI.ext_txt {
+  background: url(../images/txt.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_xls {
+  background: url(../images/xls.png) left top no-repeat;
+}
+
+UL.jqueryFileTree LI.ext_zip {
+  background: url(../images/zip.png) left top no-repeat;
+}
+
+UL.jqueryFileTree A {
+  color: #333;
+  text-decoration: none;
+  display: inline-block;
+  padding: 0 2px;
+  cursor: pointer;
+}
+
+UL.jqueryFileTree A:hover {
+  background: #BDF;
 }

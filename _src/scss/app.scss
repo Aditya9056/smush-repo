@@ -1,3 +1,9 @@
+// Share UI styles
 @import "~@wpmudev/shared-ui/scss/shared-ui.scss";
-@import "admin";
-@import "modules/notice";
+
+// App styles
+@import "modules/variables";
+@import "modules/admin";
+@import "modules/media";
+@import "modules/resize-detection";
+@import "modules/jquery-file-tree";

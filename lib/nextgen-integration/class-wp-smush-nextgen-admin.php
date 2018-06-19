@@ -166,7 +166,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		function localize() {
 			global $wpsmushnextgenstats;
 
-			$handle = 'wp-smushit-admin-js';
+			$handle = 'smush-admin';
 
 			$wp_smush_msgs = array(
 				'resmush'          => esc_html__( 'Super-Smush', 'wp-smushit' ),
@@ -239,7 +239,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 				$data = array_merge( $data, $this->stats );
 			}
 
-			wp_localize_script( 'wp-smushit-admin-js', 'wp_smushit_data', $data );
+			wp_localize_script( $handle, 'wp_smushit_data', $data );
 
 		}
 

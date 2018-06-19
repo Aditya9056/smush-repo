@@ -273,12 +273,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="sui-dialog" id="smush-quick-setup-dialog">
 				<div class="sui-dialog-overlay sui-fade-in" tabindex="-1" data-a11y-dialog-hide=""></div>
 				<div class="sui-dialog-content sui-bounce-in"
-				     aria-labelledby="<?php esc_html_e( 'QUICK SETUP', 'wp-smushit' ); ?>" role="dialog">
+					 aria-labelledby="<?php esc_attr_e( 'QUICK SETUP', 'wp-smushit' ); ?>" role="dialog">
 					<div class="sui-box" role="document">
 						<div class="sui-box-header">
 							<h3 class="sui-box-title"><?php esc_html_e( 'QUICK SETUP', 'wp-smushit' ); ?></h3>
 							<div class="sui-actions-right">
-								<button data-a11y-dialog-hide class="sui-button sui-button-ghost" aria-label="<?php esc_html_e( 'Skip this.', 'wp-smushit' ); ?>"><?php esc_html_e( 'SKIP', 'wp-smushit' ); ?></button>
+								<button data-a11y-dialog-hide class="sui-button sui-button-ghost" aria-label="<?php esc_html_e( 'Skip this.', 'wp-smushit' ); ?>">
+									<?php esc_html_e( 'SKIP', 'wp-smushit' ); ?>
+								</button>
 							</div>
 						</div>
 						<div class="sui-box-body smush-quick-setup-settings">
@@ -293,12 +295,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 									if ( 'networkwide' === $name ) {
 										continue;
 									}
-									//Skip premium features if not a member
-									if ( ! in_array( $name, $wpsmushit_admin->basic_features ) && ! $wp_smush->validate_install() ) {
+									// Skip premium features if not a member.
+									if ( ! in_array( $name, $wpsmushit_admin->basic_features, true ) && ! $wp_smush->validate_install() ) {
 										continue;
 									}
 									// Do not output settings listed in exclude array list.
-									if ( in_array( $name, $exclude ) ) {
+									if ( in_array( $name, $exclude, true ) ) {
 										continue;
 									}
 									$setting_m_key = WP_SMUSH_PREFIX . $name;
@@ -326,7 +328,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						</div>
 						<div class="sui-box-footer">
 							<div class="sui-actions-right">
-								<button type="submit" class="sui-button sui-button-lg sui-button-blue" id="smush-quick-setup-submit"><?php _e( 'Get Started', 'wp-smushit' ) ?></button>
+								<button type="submit" class="sui-button sui-button-lg sui-button-blue" id="smush-quick-setup-submit">
+									<?php esc_html_e( 'Get Started', 'wp-smushit' ) ?>
+								</button>
 							</div>
 						</div>
 					</div>
@@ -1508,8 +1512,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 			</div>
 			<?php
-			// Notice JS.
-			wp_enqueue_script( 'wp-smushit-notice-js', '', array(), '', true );
 		}
 
 		/**

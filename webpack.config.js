@@ -1,20 +1,35 @@
+const _          = require('lodash');
 const path       = require('path');
 const webpack    = require('webpack');
 const ATP        = require('autoprefixer');
 const CSSExtract = require("mini-css-extract-plugin");
-const config     = { output: {} };
 
-// The path where the Shared UI fonts & images should be sent. (relative to config.output.jsFileName)
-config.output.imagesDirectory = '../images'; // Trailing slash required.
-config.output.fontsDirectory = '../fonts';    // Trailing slash required.
+// The path where the Shared UI fonts & images should be sent.
+const config = {
+	output: {
+		imagesDirectory: '../images',
+		fontsDirectory: '../fonts'
+	}
+};
 
-const scssConfig = {
+const sharedConfig = {
 	mode: 'production',
 
+	stats: {
+		colors: true,
+		entrypoints: true
+	},
+
+	watchOptions: {
+		ignored: /node_modules/,
+		poll: 1000
+	}
+};
+
+const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
 		'admin': './_src/scss/app.scss',
-		'smush-media': './_src/scss/modules/_media.scss',
-		// 'resize-detection': './_src/scss/resize-detection.scss'
+		'common': './_src/scss/common.scss'
 	},
 
 	output: {
@@ -80,19 +95,15 @@ const scssConfig = {
 		new CSSExtract({
             filename: '../css/[name].min.css'
         })
-	],
+	]
+});
 
-	watchOptions: {
-		poll: 500
-	}
-};
-
-const jsConfig = {
-	mode: 'production',
-
+const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
-		'shared-ui': './_src/js/shared-ui.js',
-		'admin': './_src/js/admin-index.js',
+		'shared-ui': '@wpmudev/shared-ui',
+		'admin': './_src/js/app.js',
+		'media': './_src/js/media.js',
+		'resize-detection': './_src/js/public-resize-detection.js'
 	},
 
 	output: {
@@ -115,49 +126,15 @@ const jsConfig = {
 		]
 	},
 
-	devtool: 'source-map',
+	devtool: 'cheap-eval-source-map',
 
 	plugins: [
 		// Automatically load modules instead of having to import or require them everywhere.
 		new webpack.ProvidePlugin( {
-			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js',  // Vendor script in Shared UI.
-			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js'  // Vendor script in Shared UI.
+			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js', // Vendor script in Shared UI.
+			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
 		} )
-	],
+	]
+});
 
-	watchOptions: {
-		poll: 500
-	}
-};
-
-const resizeJsConfig = {
-	mode: 'production',
-
-	entry: './_src/js/public-resize-detection.js',
-
-	output: {
-		filename: 'resize-detection.min.js',
-		path: path.resolve( __dirname, 'assets/js' )
-	},
-
-	module: {
-		rules: [
-			{
-				test: /\.js$/,
-				exclude: /node_modules/,
-				use: {
-					loader: 'babel-loader',
-					options: {
-						presets: ['env']
-					}
-				}
-			}
-		]
-	},
-
-	watchOptions: {
-		poll: 500
-	}
-};
-
-module.exports = [scssConfig, jsConfig, resizeJsConfig];
+module.exports = [scssConfig, jsConfig];
