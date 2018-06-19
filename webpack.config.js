@@ -18,6 +18,7 @@ const scssConfig = {
 
 	entry: {
 		'admin': './_src/scss/app.scss',
+		'smush-media': './_src/scss/modules/_media.scss',
 		// 'resize-detection': './_src/scss/resize-detection.scss'
 	},
 
