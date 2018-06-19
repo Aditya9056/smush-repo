@@ -2295,7 +2295,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public function extend_media_modal() {
 			if ( ! wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
-				wp_enqueue_script( 'smush-backbone-extension', WP_SMUSH_URL . 'assets/js/media.js', array(
+				wp_enqueue_script( 'smush-backbone-extension', WP_SMUSH_URL . 'assets/js/media.min.js', array(
 					'jquery',
 					'media-views',
 					'media-grid',

@@ -2,14 +2,16 @@
  * Adds a Smush Now button and displays stats in Media Attachment Details Screen
  */
 (function ($, _) {
+	'use strict';
+
     // Local reference to the WordPress media namespace.
-    var smush_media    = wp.media,
-		sharedTemplate = "<label class='setting smush-stats' data-setting='description'><span class='name'><%= label %></span><span class='value'><%= value %></span></label>";
+    const smush_media    = wp.media,
+		  sharedTemplate = "<label class='setting smush-stats' data-setting='description'><span class='name'><%= label %></span><span class='value'><%= value %></span></label>";
 
     if ('undefined' !== typeof smush_media.view &&
         'undefined' !== typeof smush_media.view.Attachment.Details.TwoColumn) {
         // Local instance of the Attachment Details TwoColumn used in the edit attachment modal view
-        var smushMediaTwoColumn = smush_media.view.Attachment.Details.TwoColumn;
+        let smushMediaTwoColumn = smush_media.view.Attachment.Details.TwoColumn;
 
         /**
          * Add Smush details to attachment.
@@ -39,11 +41,11 @@
 				 */
 				this.views.detach();
 
-				var detailsHtml = this.$el.find('.settings');
+				let detailsHtml = this.$el.find('.settings');
 
 				// Create the template.
-				var template = _.template(sharedTemplate);
-				var html = template({
+				let template = _.template(sharedTemplate);
+				let html = template({
 					/**
 					 * @var {array}  smush_vars.strings  Localization strings.
 					 * @var {object} smush_vars          Object from wp_localize_script()
@@ -62,7 +64,7 @@
     }
 
     // Local instance of the Attachment Details TwoColumn used in the edit attachment modal view
-    var smushAttachmentDetails = smush_media.view.Attachment.Details;
+	let smushAttachmentDetails = smush_media.view.Attachment.Details;
 
     /**
      * Add Smush details to attachment.
@@ -91,8 +93,8 @@
 			 */
 			this.views.detach();
 
-			var template = _.template(sharedTemplate);
-			var html = template({
+			let template = _.template(sharedTemplate);
+			let html = template({
 				/**
 				 * @var {object} smush_vars          Object from wp_localize_script()
 				 * @var {array}  smush_vars.strings  Localization strings.
@@ -107,9 +109,9 @@
 		},
 
 		reCheckStatus(obj) {
-			var _this = obj;
+			let _this = obj;
 
-			var image = new wp.api.models.Media( { id: obj.model.get('id') } );
+			let image = new wp.api.models.Media( { id: obj.model.get('id') } );
 			image.fetch( { attribute: 'smush' } ).done( function( img ) {
 				/** @var {object|string} img.smush  Smush stats. */
 				if ( typeof img.smush === 'object' ) {

@@ -91,7 +91,8 @@ const jsConfig = {
 
 	entry: {
 		'shared-ui': '@wpmudev/shared-ui',
-		'admin': './_src/js/app.js'
+		'admin': './_src/js/app.js',
+		'media': './_src/js/media.js'
 	},
 
 	output: {
@@ -154,6 +155,8 @@ const resizeJsConfig = {
 			}
 		]
 	},
+
+	devtool: 'source-map',
 
 	watchOptions: {
 		ignored: /node_modules/,
