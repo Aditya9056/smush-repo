@@ -1268,7 +1268,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$this->settings_updated();
 
 			// Show S3 integration message, if user hasn't enabled it.
-			if( is_object( $wpsmush_s3 ) && method_exists( $wpsmush_s3, 's3_support_required_notice') ) {
+			if ( is_object( $wpsmush_s3 ) && method_exists( $wpsmush_s3, 's3_support_required_notice') ) {
 				$wpsmush_s3->s3_support_required_notice();
 			}
 		}
