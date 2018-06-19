@@ -316,10 +316,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Main JS.
 			wp_register_script( 'smush-admin', WP_SMUSH_URL . 'assets/js/admin.min.js', array( 'jquery', 'wpmudev-sui' ), WP_SMUSH_VERSION, true );
 
-			// Smush Admin
-			// TODO: Move this out to the main js file.
-			wp_register_script( 'wp-smushit-admin', WP_SMUSH_URL . 'assets/js/smush-admin.js', array( 'jquery' ), WP_SMUSH_VERSION, true );
-
 			// Main CSS.
 			wp_register_style( 'smush-admin', WP_SMUSH_URL . 'assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
 
@@ -360,9 +356,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				return;
 			}
 
-			// Style.
-			wp_enqueue_script( 'wp-smushit-admin' );
-
 			// Load on Smush all page only.
 			if ( in_array( $current_screen->id, $this->plugin_pages, true ) ) {
 				// Smush admin (smush-admin) includes the Shared UI.
@@ -382,7 +375,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $current_screen, $wpsmush_settings, $wpsmush_db;
 			$current_page = ! empty( $current_screen ) ? $current_screen->base : '';
 
-			$handle = 'wp-smushit-admin';
+			$handle = 'smush-admin';
 
 			$wp_smush_msgs = array(
 				'resmush'                 => esc_html__( 'Super-Smush', 'wp-smushit' ),

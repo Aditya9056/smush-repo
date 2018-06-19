@@ -3,37 +3,51 @@
  *
  * @author Umesh Kumar <umeshsingla05@gmail.com>
  *
+ * TODO: Use Element tag for all the class selectors
  */
-/**@todo: Use Element tag for all the class selectors **/
+let WP_Smush = WP_Smush || {};
 
-var WP_Smush = WP_Smush || {};
+/**
+ * Smush translation strings.
+ *
+ * @var {array} wp_smush_msgs
+ */
+if ( wp_smush_msgs ) {
+	const wp_smush_msgs = wp_smush_msgs;
+}
 
 /**
  * Show/hide the progress bar for Smushing/Restore/SuperSmush
  *
  * @param cur_ele
  * @param txt Message to be displayed
- * @param state show/hide
+ * @param {string} state show/hide
  */
-var progress_bar = function ( cur_ele, txt, state ) {
-
+let progress_bar = function ( cur_ele, txt, state ) {
 	//Update Progress bar text and show it
-	var progress_button = cur_ele.parents().eq( 1 ).find( '.wp-smush-progress' );
+	let progress_button = cur_ele.parents().eq( 1 ).find( '.wp-smush-progress' );
 
-	if ( 'show' == state ) {
+	if ( 'show' === state ) {
 		progress_button.find( 'span' ).html( txt );
 		progress_button.removeClass( 'sui-hidden' );
 	} else {
+		/** @var {string} wp_smush_msgs.all_done */
 		progress_button.find( 'span' ).html( wp_smush_msgs.all_done );
 		progress_button.hide();
 	}
 };
 
-var membership_validity = function ( data ) {
-	var member_validity_notice = jQuery( '#wp-smush-invalid-member' );
+/**
+ * Check membership validity
+ *
+ * @param {int} data.show_warning
+ */
+let membership_validity = function ( data ) {
+	const member_validity_notice = jQuery( '#wp-smush-invalid-member' );
 
 	//Check for Membership warning
-	if ( 'undefined' != typeof ( data ) && 'undefined' != typeof ( data.show_warning ) && member_validity_notice.length > 0 ) {
+
+	if ( 'undefined' !== typeof ( data ) && 'undefined' !== typeof ( data.show_warning ) && member_validity_notice.length > 0 ) {
 		if ( data.show_warning ) {
 			member_validity_notice.show();
 		} else {
@@ -42,8 +56,8 @@ var membership_validity = function ( data ) {
 	}
 };
 
-var remove_element = function ( el, timeout ) {
-	if ( typeof timeout == 'undefined' ) {
+let remove_element = function ( el, timeout ) {
+	if ( typeof timeout === 'undefined' ) {
 		timeout = 100;
 	}
 	el.fadeTo( timeout, 0, function () {
@@ -54,14 +68,14 @@ var remove_element = function ( el, timeout ) {
 };
 
 jQuery( function ( $ ) {
+	'use strict';
 
 	/**
 	 * Remove the quick setup dialog
 	 */
 	function remove_dialog() {
-		$( 'dialog#smush-quick-setup' ).remove();
+		$('dialog#smush-quick-setup').remove();
 	}
-
 
 	/**
 	 * Update image size in attachment info panel.
@@ -75,22 +89,23 @@ jQuery( function ( $ ) {
 			return;
 		}
 
-		var attachmentSize = $('.attachment-info .file-size');
-		var currentSize = attachmentSize.contents().filter(function() {
-			return this.nodeType == 3;
+		let attachmentSize = $('.attachment-info .file-size');
+		const currentSize = attachmentSize.contents().filter(function() {
+			return this.nodeType === 3;
 		}).text();
 
 		// There is a space before the size.
 		if ( currentSize !== ( ' ' + new_size ) ) {
-			var sizeStrongEl = attachmentSize.contents().filter(function() {
-				return this.nodeType == 1;
+			const sizeStrongEl = attachmentSize.contents().filter(function() {
+				return this.nodeType === 1;
 			}   ).text();
 			attachmentSize.html( '<strong>' + sizeStrongEl + '</strong> ' + new_size );
 		}
 	}
 
-	//Show the Quick Setup Dialog
+	// Show the Quick Setup dialog.
 	if ( $( '#smush-quick-setup' ).size() > 0 ) {
+		/** @var {string} wp_smush_msgs.quick_setup_title */
 		WDP.showOverlay( "#smush-quick-setup", {
 			title: wp_smush_msgs.quick_setup_title,
 			class: 'no-close wp-smush-overlay wp-smush-quick-setup'
@@ -98,16 +113,20 @@ jQuery( function ( $ ) {
 		remove_dialog();
 	}
 
-	var smushAddParams = function ( url, data ) {
+	let smushAddParams = function ( url, data ) {
 		if ( !$.isEmptyObject( data ) ) {
 			url += ( url.indexOf( '?' ) >= 0 ? '&' : '?' ) + $.param( data );
 		}
 
 		return url;
 	};
+
 	// url for smushing
 	WP_Smush.errors = [];
+
+	/** @var {array} wp_smushit_data */
 	WP_Smush.timeout = wp_smushit_data.timeout;
+
 	/**
 	 * Checks for the specified param in URL
 	 * @param arg
