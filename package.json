@@ -36,7 +36,9 @@
   },
   "dependencies": {
     "@wpmudev/shared-ui": "2.2.4",
-    "jqueryfiletree": "git+https://github.com/jqueryfiletree/jqueryfiletree.git"
+    "jqueryfiletree": "git+https://github.com/jqueryfiletree/jqueryfiletree.git",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
   },
   "devDependencies": {
     "ajv": "6.5.1",
@@ -44,6 +46,7 @@
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
     "grunt": "^1.0.3",
