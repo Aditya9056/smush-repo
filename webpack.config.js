@@ -126,7 +126,7 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 		]
 	},
 
-	devtool: 'cheap-eval-source-map',
+	devtool: 'source-map',
 
 	plugins: [
 		// Automatically load modules instead of having to import or require them everywhere.
