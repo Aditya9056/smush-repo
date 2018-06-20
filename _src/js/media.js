@@ -22,10 +22,6 @@
 		 * @see wp-includes/js/media-grid.js
          */
 		smush_media.view.Attachment.Details.TwoColumn = smushMediaTwoColumn.extend({
-			initialize: function () {
-				// Always make sure that our content is up to date.
-				this.model.on('change', this.render, this);
-			},
 
 			render: function () {
 				// Ensure that the main attachment fields are rendered.
