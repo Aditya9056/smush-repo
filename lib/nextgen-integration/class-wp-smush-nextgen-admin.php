@@ -264,11 +264,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			echo '<div class="sui-row">';
 
-			// Bulk smush container.
-			$this->bulk_smush_container();
-
 			// Show status box.
 			$this->smush_stats_container();
+
+			// Bulk smush container.
+			$this->bulk_smush_container();
 
 			echo '</div>';
 
@@ -466,7 +466,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			// Class for bulk smush box.
 			$class = $wp_smush->validate_install() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 
-			echo '<div class="sui-col">';
+			echo '<div class="sui-col-lg-6">';
 
 			echo '<div class="sui-box ' . $class . '" id="wp-smush-bulk-wrap-box">';
 
@@ -494,7 +494,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			global $wpsmush_bulkui;
 
-			echo '<div class="sui-col">';
+			echo '<div class="sui-col-lg-6">';
 			echo '<div class="sui-box sui-summary sui-summary-smush-nextgen">';
 
 			// Container header.
