@@ -28,6 +28,18 @@ $sui-version: 'smush-media';
   }
 }
 
+// Smush button loading icon.
+#ngg-listimages,
+.column-smushit {
+  .spinner {
+    float: none;
+
+    &.visible {
+      visibility: visible;
+    }
+  }
+}
+
 // Stats table.
 .sui-smush-media {
   table.wp-smush-stats-holder {

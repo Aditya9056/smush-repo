@@ -317,7 +317,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$show_button = true;
 
 			// the button text
-			$button_txt = __( 'Smush Now!', 'wp-smushit' );
+			$button_txt = __( 'Smush', 'wp-smushit' );
 			if ( $text_only ) {
 				return $status_txt;
 			}

@@ -419,55 +419,6 @@ label.setting.smush-stats .smush-wrap,
     font-size: 12px;
 }
 
-/** Progress Bar **/
-.wp-smush-progress {
-    width: 150px;
-    height: 20px;
-    background-color: #14485F;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    border-radius: 2px;
-    padding: 2px;
-    box-sizing: border-box;
-    text-align: left;
-    clear: left;
-    margin-top: 10px;
-}
-
-.wp-smush-progress span {
-    color: #14485F;
-    text-align: right;
-    font-size: 12px;
-    font-weight: bolder;
-    line-height: 15px;
-    box-sizing: border-box;
-    padding-right: 22px;
-    display: inline-block;
-    height: 100%;
-    width: 100%;
-    border-radius: 1px;
-    transition: width .4s ease-in-out;
-    background-color: #FECF2F;
-    background-size: 12px 10px;
-    background-image: linear-gradient(135deg, rgba(255, 255, 255, .15) 25%, transparent 25%,
-            transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%,
-            transparent 75%, transparent);
-    vertical-align: top;
-
-}
-
-.wp-smush-progress.animate span {
-    animation: animate-stripes 3s linear infinite;
-}
-
-@keyframes animate-stripes {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 60px 0;
-    }
-}
 
 /** Disabled Hyperlinks **/
 .smush-stats a[disabled] {
@@ -1164,76 +1115,6 @@ div.wp-smush-dir-limit .icon-fi-info:before {
     color: #9b9b9b;
 }
 
-/** Bulk Smush - Progress Bar **/
-.wp-smush-progress-wrap {
-    border-radius: 5px;
-    background-color: #f8f8f8;
-    line-height: 2;
-    padding: 20px 15px 20px 30px;
-}
-
-.wp-smush-progress-wrap i.icon-fi-loader {
-    font-size: 20px;
-}
-
-.wp-smush-progress-wrap i.icon-fi-loader:before {
-    animation: spin 2s infinite linear;
-    -webkit-animation: spin 2s infinite linear;
-    display: inline-block;
-}
-
-.wp-smush-progress-wrap img {
-    vertical-align: middle;
-}
-
-.wp-smush-progress-bar-wrap {
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    background-color: #E6E6E6;
-    display: inline-block;
-    height: 10px;
-    margin-left: 15px;
-    overflow: hidden;
-    vertical-align: middle;
-    width: 88%;
-}
-
-.wp-smush-progress-bar {
-    overflow: hidden;
-    animation: progress 10s;
-    -ms-animation: progress 10s;
-    -moz-animation: progress 10s;
-    -webkit-animation: progress 10s;
-}
-
-.wp-smush-progress-inner {
-    width: 100%;
-    height: 10px;
-    background-color: #17A8E3;
-    animation: movement 1s infinite linear;
-    -ms-animation: movement 1s infinite linear;
-    -moz-animation: movement 1s infinite linear;
-    -webkit-animation: movement 1s infinite linear;
-    transition: width 1s;
-    -webkit-transition: width 1s;
-    -moz-transition: width 1s;
-    -ms-transition: width 1s;
-    overflow: hidden;
-}
-
-@keyframes movement {
-    from {
-        background-position: 0 0;
-    }
-    to {
-        background-position: 24px 40px;
-    }
-}
-
 .wp-smush-count {
     color: #888888;
     font-size: 13px;
@@ -1243,14 +1124,6 @@ div.wp-smush-dir-limit .icon-fi-info:before {
 
 .wp-smush-sep {
     margin: 20px 0;
-}
-
-.wp-smush-progress-count {
-    color: #14485F;
-    font-weight: bold;
-    font-size: 14px;
-    margin: 11px auto;
-    text-align: center;
 }
 
 .smush-final-log {
@@ -2548,9 +2421,6 @@ WordPress.org Recommendation Styling
         float: right;
     }
 
-    .wp-smush-progress-bar-wrap {
-        width: 84%;
-    }
 
     .wpmud .wp-smush-setting-row .column-left,
     .wpmud .wp-smush-setting-row .column-right {
