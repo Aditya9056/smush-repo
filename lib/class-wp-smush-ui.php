@@ -1608,7 +1608,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				'bulk'         => esc_html__( 'Bulk Smush', 'wp-smushit' ),
 				'directory'    => esc_html__( 'Directory Smush', 'wp-smushit' ),
 				'integrations' => esc_html__( 'Integrations', 'wp-smushit' ),
-				'cdn'          => esc_html__( 'CDN', 'wp-smushit' ),
+				//'cdn'          => esc_html__( 'CDN', 'wp-smushit' ),
 			) );
 
 			// Check if current page network admin page.
