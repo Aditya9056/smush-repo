@@ -278,7 +278,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<div class="sui-box-header">
 							<h3 class="sui-box-title"><?php esc_html_e( 'QUICK SETUP', 'wp-smushit' ); ?></h3>
 							<div class="sui-actions-right">
-								<button data-a11y-dialog-hide class="sui-button sui-button-ghost" aria-label="<?php esc_html_e( 'Skip this.', 'wp-smushit' ); ?>">
+								<button data-a11y-dialog-hide class="sui-button sui-button-ghost smush-skip-setup" aria-label="<?php esc_html_e( 'Skip this.', 'wp-smushit' ); ?>">
 									<?php esc_html_e( 'SKIP', 'wp-smushit' ); ?>
 								</button>
 							</div>
