@@ -28,6 +28,18 @@ $sui-version: 'smush-media';
   }
 }
 
+// Smush button loading icon.
+#ngg-listimages,
+.column-smushit {
+  .spinner {
+    float: none;
+
+    &.visible {
+      visibility: visible;
+    }
+  }
+}
+
 // Stats table.
 .sui-smush-media {
   table.wp-smush-stats-holder {
@@ -49,6 +61,7 @@ $sui-version: 'smush-media';
       }
     }
     td {
+      vertical-align: middle;
       padding: 8px 10px;
       color: #555555;
       font-size: 11px;
@@ -79,23 +92,20 @@ $sui-version: 'smush-media';
   .wp-list-table .smushit {
     table.wp-smush-stats-holder {
       th {
-        display: inline-block;
-        width: 50%;
+        display: table-cell;
         box-sizing: border-box;
       }
       tr td {
+        word-wrap: break-word;
+        display: table-cell !important;
         &:first-child {
           border-right: none;
           box-sizing: border-box;
-          display: inline-block !important;
-          width: 50% !important;
         }
         &:last-child {
           box-sizing: border-box;
-          display: inline-block !important;
           float: none;
           overflow: visible;
-          width: 50% !important;
         }
       }
     }

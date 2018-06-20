@@ -133,7 +133,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			'auto',
 			'keep_exif',
 			'resize',
-			's3',
 		);
 
 		/**

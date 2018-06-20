@@ -1263,7 +1263,7 @@ class WP_Smush {
 		}
 		$mode_class = ! empty( $_POST['mode'] ) && 'grid' == $_POST['mode'] ? ' button-primary' : '';
 		if ( ! $echo ) {
-			$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button wp-smush-send';
+			$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button button-primary wp-smush-send';
 			$html .= '
 			<button  class="' . $button_class . '" data-id="' . $id . '">
                 ' . $button_txt . '
@@ -1797,7 +1797,7 @@ class WP_Smush {
 	 * @return string
 	 */
 	function progress_bar() {
-		return '<div class="wp-smush-progress animate hidden"><span></span></div>';
+		return '<span class="spinner wp-smush-progress"></span>';
 	}
 
 	/**

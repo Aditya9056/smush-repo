@@ -29,7 +29,7 @@ let progress_bar = function ( cur_ele, txt, state ) {
 
 	if ( 'show' === state ) {
 		progress_button.find( 'span' ).html( txt );
-		progress_button.removeClass( 'sui-hidden' );
+		progress_button.toggleClass( 'visible' );
 	} else {
 		/** @var {string} wp_smush_msgs.all_done */
 		progress_button.find( 'span' ).html( wp_smush_msgs.all_done );

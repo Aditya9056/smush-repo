@@ -1227,7 +1227,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function smush_page_header() {
-			global $wpsmushit_admin, $wpsmush_dir;
+			global $wpsmushit_admin, $wpsmush_dir, $wpsmush_s3;
 
 			$current_screen = get_current_screen();
 
@@ -1266,6 +1266,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$this->show_api_message();
 
 			$this->settings_updated();
+
+			// Show S3 integration message, if user hasn't enabled it.
+			if ( is_object( $wpsmush_s3 ) && method_exists( $wpsmush_s3, 's3_support_required_notice') ) {
+				$wpsmush_s3->s3_support_required_notice();
+			}
 		}
 
 		/**
