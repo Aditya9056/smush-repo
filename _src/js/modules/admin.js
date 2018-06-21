@@ -1506,8 +1506,6 @@ jQuery( function ( $ ) {
 
 		// Updating pro savings stats.
 		if ( 'undefined' != typeof (wp_smushit_data.pro_savings) ) {
-			// Make pro savings div visible if hidden.
-			$( '#smush-avg-pro-savings' ).removeClass( 'sui-hidden' );
 			// Pro stats section.
 			var smush_pro_savings = $( '.smush-avg-pro-savings' );
 			if ( smush_pro_savings.length > 0 ) {

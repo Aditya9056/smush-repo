@@ -563,21 +563,20 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				}
 				$pro_savings      = $wpsmushit_admin->stats['pro_savings'];
 				$show_pro_savings = $pro_savings['savings'] > 0 ? true : false;
-				?>
-
-				<li class="smush-avg-pro-savings<?php echo $show_pro_savings ? '' : ' sui-hidden'; ?>" id="smush-avg-pro-savings">
-					<span class="sui-list-label">
-						<?php _e( 'Pro Savings', 'wp-smushit' ); ?>
-						<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>"><?php esc_html_e( 'PRO', 'wp-smushit' ); ?></span>
-					</span>
-					<span class="sui-list-detail wp-smush-stats">
-						<span class="wp-smush-stats-human"><?php echo $show_pro_savings ? $pro_savings['savings'] : '0.0 B'; ?></span>
-						<span class="wp-smush-stats-sep">/</span>
-						<span class="wp-smush-stats-percent"><?php echo $show_pro_savings ? $pro_savings['percent'] : 0; ?></span>%
-					</span>
-				</li>
-
-				<?php
+				if ( true ) {
+					?>
+					<li class="smush-avg-pro-savings" id="smush-avg-pro-savings">
+						<span class="sui-list-label"><?php esc_html_e( 'Pro Savings', 'wp-smushit' ); ?>
+							<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>"><?php esc_html_e( 'PRO', 'wp-smushit' ); ?></span>
+						</span>
+						<span class="sui-list-detail wp-smush-stats">
+							<span class="wp-smush-stats-human"><?php echo esc_html( $pro_savings['savings'] ); ?></span>
+							<span class="wp-smush-stats-sep">/</span>
+							<span class="wp-smush-stats-percent"><?php echo esc_html( $pro_savings['percent'] ); ?></span>%
+						</span>
+					</li>
+					<?php
+				}
 			} else {
 				$compression_savings = 0;
 				if ( ! empty( $wpsmushit_admin->stats ) && ! empty( $wpsmushit_admin->stats['bytes'] ) ) {
@@ -586,7 +585,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				?>
 				<li class="super-smush-attachments">
 					<span class="sui-list-label">
-						<?php _e( 'Super-Smush Savings', 'wp-smushit' ); ?>
+						<?php esc_html_e( 'Super-Smush Savings', 'wp-smushit' ); ?>
 						<?php if ( ! $wp_smush->lossy_enabled ) { ?>
 							<p class="wp-smush-stats-label-message">
 								<?php
