@@ -86,7 +86,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
 			add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
 			add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
-			add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
+
+			// Not yet implemented so commented out to hide option.
+			// add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
 			add_action( 'smush_settings_ui_bottom', array( $this, 'pro_features_container' ) );
 
 			// Add stats to stats box.
