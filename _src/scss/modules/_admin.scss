@@ -56,8 +56,7 @@
           @include icon(before, check-tick);
           &:before {
             color: $notice-default-icon-color;
-            vertical-align: middle;
-            font-size: 18px;
+            font-size: 21px;
           }
         }
       }
