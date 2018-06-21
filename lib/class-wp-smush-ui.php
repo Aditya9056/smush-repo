@@ -1071,13 +1071,23 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$wpsmushit_admin->upgrade_url
 			);
 
+			// Upgrade url for upsell.
+			$upsell_url = add_query_arg(
+				array(
+					'utm_source'   => 'smush',
+					'utm_medium'   => 'plugin',
+					'utm_campaign' => 'smush-advanced-settings-upsell'
+				),
+				$wpsmushit_admin->upgrade_url
+			);
+
 			?>
 
 			<div class="sui-box">
 				<div class="sui-box-header">
 					<h3 class="sui-box-title"><?php esc_html_e( 'Pro Features', 'wp-smushit' ); ?></h3>
 					<div class="sui-actions-right">
-						<a class="sui-button sui-button-green"><?php esc_html_e( 'UPGRADE TO PRO', 'wp-smushit' ); ?></a>
+						<a class="sui-button sui-button-green sui-tooltip" target="_blank" href="<?php echo esc_url( $upgrade_url ); ?>" data-tooltip="<?php esc_html_e( 'Try Smush Pro for FREE', 'wp-smushit' ); ?>"><?php esc_html_e( 'UPGRADE TO PRO', 'wp-smushit' ); ?></a>
 					</div>
 				</div>
 				<div class="sui-box-body">
@@ -1111,7 +1121,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<div class="sui-upsell-row">
 						<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-promo.png'; ?>">
 						<div class="sui-upsell-notice">
-							<p><?php printf( esc_html__( 'Smush Pro gives you all these extra settings and absolutely not limits on smushing your images? Did we mention Smush Pro also gives you up to 2x better compression too? %sTry it all free%s with a WPMU DEV membership today!', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">', '</a>' ); ?></p>
+							<p><?php printf( esc_html__( 'Smush Pro gives you all these extra settings and absolutely not limits on smushing your images? Did we mention Smush Pro also gives you up to 2x better compression too? %sTry it all free%s with a WPMU DEV membership today!', 'wp-smushit' ), '<a href="' . esc_url( $upsell_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">', '</a>' ); ?></p>
 						</div>
 					</div>
 				</div>
