@@ -32,19 +32,54 @@ export function addAttribute( settings, blockName ) {
 	return settings;
 }
 
-export function addInspectorControl( element ) {
-	console.log( element );
-	console.log( element.originalContent );
 
-	return class extends element {
+var el = wp.element.createElement;
 
-	}
+var addInspectorControl = wp.element.createHigherOrderComponent( function( BlockEdit ) {
+	return function( props ) {
+		const image = new wp.api.models.Media( { id: props.attributes.id } );
+		let imageHTML = '';
+
+		image.fetch( { attribute: 'smush' } ).done( function( img ) {
+			/** @var {object|string} img.smush  Smush stats. */
+			if ( typeof img.smush !== 'object' ) {
+				return;
+			}
+
+			// Image data fetched.
+			for ( let key in img.smush.sizes ) {
+				if ( img.smush.sizes.hasOwnProperty( key ) ) {
+					imageHTML = imageHTML + '<div>' + key + ': ' + JSON.stringify( img.smush.sizes[key] ) + '</div>';
+					console.log( img.smush.sizes[key] );
+					console.log( imageHTML );
+				}
+			}
+		});
+
+		console.log( imageHTML );
+
+		return el(
+			wp.element.Fragment,
+			{},
+			el(
+				BlockEdit,
+				props
+			),
+			el(
+				wp.editor.InspectorControls,
+				{},
+				el(
+					wp.components.PanelBody,
+					{},
+					'My custom control'
+				)
+			)
+		);
+	};
+}, 'withInspectorControls' );
 
 
-	//return element;
-}
-
-
+// TODO: only do this for core/image
 wp.hooks.addFilter( 'blocks.registerBlockType', 'wp-smushit/smush-data', addAttribute );
 wp.hooks.addFilter( 'blocks.BlockEdit', 'wp-smushit/smush-data-control', addInspectorControl );
 
