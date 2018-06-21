@@ -349,7 +349,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			$s3client = $as3cf->get_s3client( $region );
 
-			$file_exists = $s3client->doesObjectExist( $bucket, $s3_object['key'] );
+			$file_exists = $s3client->does_object_exist( $bucket, $s3_object['key'] );
 
 			return $file_exists;
 		}

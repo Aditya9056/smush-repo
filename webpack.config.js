@@ -1,59 +1,71 @@
-const ETP     = require('extract-text-webpack-plugin');
-const path    = require('path');
-const webpack = require('webpack');
+const _          = require('lodash');
+const path       = require('path');
+const webpack    = require('webpack');
+const ATP        = require('autoprefixer');
+const CSSExtract = require("mini-css-extract-plugin");
 
+// The path where the Shared UI fonts & images should be sent.
 const config = {
-	source:{},
-	output:{}
+	output: {
+		imagesDirectory: '../images',
+		fontsDirectory: '../fonts'
+	}
 };
 
-// Full path of main files that need to be ran through the bundler.
-config.source.scss           = './_src/scss/admin.scss';
-config.source.js             = './_src/js/index.js';
+const sharedConfig = {
+	mode: 'production',
 
-// Path where the scss & js should be compiled to.
-config.output.scssDirectory  = 'assets/shared-ui-2/css';       // No trailing slash.
-config.output.jsDirectory    = 'assets/shared-ui-2/js';        // No trailing slash.
-
-// File names of the compiled scss & js.
-config.output.scssFileName   = 'admin.min.css';
-config.output.jsFileName     = 'admin.min.js';
-
-// The path where the Shared UI fonts & images should be sent. (relative to config.output.jsFileName)
-config.output.imagesDirectory = '../images/';            // Trailing slash required.
-config.output.fontsDirectory  = '../fonts/';             // Trailing slash required.
-
-const scssConfig = {
-	entry: config.source.scss,
-	output: {
-		filename: config.output.scssFileName,
-		path: path.resolve(__dirname, config.output.scssDirectory)
+	stats: {
+		colors: true,
+		entrypoints: true
 	},
+
+	watchOptions: {
+		ignored: /node_modules/,
+		poll: 1000
+	}
+};
+
+const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
+	entry: {
+		'admin': './_src/scss/app.scss'
+	},
+
+	output: {
+		filename: '[name].min.css',
+		path: path.resolve( __dirname, 'assets/shared-ui-2/css' )
+	},
+
 	module: {
 		rules: [
 			{
 				test: /\.scss$/,
 				exclude: /node_modules/,
-				use: ETP.extract({
-					fallback: 'style-loader',
-					use: [
-						{
-							loader: 'css-loader'
-						},
-						{
-							loader: 'postcss-loader'
-						},
-						{
-							loader: 'resolve-url-loader'
-						},
-						{
-							loader: 'sass-loader',
-							options: {
-								sourceMap: true
-							}
+				use: [ CSSExtract.loader,
+					{
+						loader: 'css-loader'
+					},
+					{
+						loader: 'postcss-loader',
+						options: {
+							plugins: [
+								ATP({
+									browsers: ['ie > 9', '> 1%']
+								})
+							],
+							sourceMap: true
 						}
-					]
-				})
+					},
+					{
+						loader: 'resolve-url-loader'
+					},
+					{
+						loader: 'sass-loader',
+						options: {
+							sourceMap: true
+						}
+					}
+				]
 			},
 			{
 				test: /\.(png|jpg|gif)$/,
@@ -77,17 +89,24 @@ const scssConfig = {
 			}
 		]
 	},
-	plugins: [
-		new ETP(config.output.scssFileName)
-	]
-};
 
-const jsConfig = {
-	entry: config.source.js,
-	output: {
-		filename: config.output.jsFileName,
-		path: path.resolve(__dirname, config.output.jsDirectory)
+	plugins: [
+		new CSSExtract({
+			filename: '../css/[name].min.css'
+		})
+	]
+});
+
+const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
+	entry: {
+		'admin': './_src/js/app.js'
 	},
+
+	output: {
+		filename: '[name].min.js',
+		path: path.resolve( __dirname, 'assets/shared-ui-2/js' )
+	},
+
 	module: {
 		rules: [
 			{
@@ -102,14 +121,16 @@ const jsConfig = {
 			}
 		]
 	},
+
 	devtool: 'source-map',
+
 	plugins: [
 		// Automatically load modules instead of having to import or require them everywhere.
-		new webpack.ProvidePlugin({
-			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js',  // Cendor script in Shared UI.
-			A11yDialog:  '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
-		})
+		new webpack.ProvidePlugin( {
+			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js', // Vendor script in Shared UI.
+			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
+		} )
 	]
-};
+});
 
 module.exports = [scssConfig, jsConfig];

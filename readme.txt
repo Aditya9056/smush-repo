@@ -1,13 +1,13 @@
 === Smush Image Compression and Optimization ===
 Plugin Name: Smush Image Compression and Optimization
-Version: 2.7.9.1
+Version: 2.7.9.2
 Author: WPMU DEV
 Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: image, resize, optimize, optimise, compress, performance, optimisation, optimise JPG, photo, pictures, optimizer, Smush WordPress Compression, Smush.it
 Requires at least: 4.6
 Tested up to: 4.9.6
-Stable tag: 2.7.9.1
+Stable tag: 2.7.9.2
 Requires PHP: 5.2.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -164,126 +164,7 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 == Changelog ==
 
-= 2.7.9.1 =
-
-* Fixed: Conflict with front-end editors
-
-= 2.7.9 =
-
-* Update:
-    * Smush settings moved to separate top level page in dashboard ( Smush/Smush Pro )
-    * Added Privacy Policy content for Smush in Privacy Policy Guide
-
-* Fixed:
-    * Conflict with plugin Download Manager, Embed any document, Getty
-    * Settings link incorrect for sub sites
-    * Don't load smush settings in front-end
-    * Increase php memory limit only if lesser than required
-    * Display a warning if custom table isn't created
-    * Attachment details not being displayed when uploading image in post edit screen
-    * Compatibility with WP Offload S3 latest version
-    * Directory Smush skips 1 image for every iteration of 50 images ( Free version )
-    * Nextgen Gallery Stats not updated properly ( Pro Version )
-    * Added instructions for Resize Image feature - It works independent of Auto Smush, If "Automatic Smush" is off and
-      "Resize my full size image" is kept on, the image would be resized
-    * Smush button doesn not appears in Media Modal window for Ultimate Branding
-    * NextGen Integration: Smush stats not updated after image deletion
-    * Warning/Error for settings on initial setup
-
-* Integrations:
-    * Updated WP Offload S3 integration to smush images with Cloudfront enabled
-
-
-= 2.7.8 =
-
-* Includes changes from update 2.7.7 and a fix for JS errors in custom posts screen disabling post editor tabs
-
-* Updates:
-    * Minor UI Changes ( Accessibility Fixes )
-    * PNG to JPG: Iterate over rows while URL replacement to make sure all the occurrences are updated
-
-* Fixed:
-    * Skip button doesn't skips images
-    * Show updated smush status in Media Grid attachment modal
-    * Font issue in WordPress backend for Ubuntu systems
-    * Fatal Error: get_current_network
-    * Async Smush not working for subdirectory sites
-    * File backups were not being created for Auto Smush if Async smush is disabled
-
-= 2.7.6 =
-
-* Security: Fixed path traversal vulnerability. Thanks Ricardo Sánchez(@neorichi) for responsible disclosure.
-
-= 2.7.5 =
-
-* Updated:
-    * UI/UX has been updated for Bulk Smush page
-
-* Fixed:
-    * Start from latest image while Bulk Smushing
-    * S3 config error if AWS keys are defined in wp-config.php
-    * NextGen smush page not working properly
-    * Do not redirect to settings page on activation if WP CLI is installed
-
-= 2.7.4.1 =
-
-* Fixed:
-    * `get_current_screen()` method causing error on some sites
-
-= 2.7.4 =
-
-* Update: Minor UI changes
-* Fixed:
-    * Images not being resized when image is uploaded via Mobile App
-    * Notices and Warnings
-    * S3 offload Integration - Original Image not being deleted in some cases
-
-= 2.7.3.1 =
-
-* Fixed: Pro user unable to login to WPMU DEV Dashboard plugin when Smush is active, Error: "Your key is invalid."
-* Updated: S3 Integration, return URL for any error, 'as3cf_get_attached_file'
-
-= 2.7.3 =
-
-* Fixed:
-    * Manual Smush not working
-    * Bulk Smush broken for few sites
-
-= 2.7.2 =
-
-* Updated:
-    * Use JS for stats calculation while using Bulk Smush, to reduce the Ajax time
-* Fixed:
-    * Some Images would keep appearing in the re-smush list, if "Resize original images" is enabled
-    * Enable buttons in settings redirects to network smush settings page in a subsite if networkwide settings are enabled
-
-= 2.7.1 =
-
-* Fixed: Progress bar not updating
-
-= 2.7 =
-
-* Updated:
-    * Faster image uploads: Set async request timeout to 0, if you're having trouble with Auto Smush, set timeout using filter `smush_async_time_out`
-
-* Fixed:
-
-    * Issue with WP Smush Pro membership check
-    * Stats: Rating message shows incorrect image count
-    * Stats: Include directory smush stats in media stats
-    * Directory Smush: UI improvement
-    * Directory Smush: Allow re-smushing directory images, if the lossy feature is turned on
-    * Directory Smush: Fixed empty query warning if there are more than 5k images
-    * Site Ground Staging - Disable Async smush for staging sites, admin URL for async request is incorrect because of the Apache module
-    * Image appearing in Re-Smush list even after smushing, if resize settings are kept on.
-    * Performance: Updated query for smushed images count
-* Added:
-    * WP S3 Offload - Plugin Compatibility for Remove files from server feature ( Pro Version )
-    * WP RSS Aggregator compatibility for Auto Smush
-    * WordPress mobile app Auto smush compatibility
-
-= Earlier versions =
-Please refer to the separate changelog.txt file.
+%%CHANGELOG%%
 
 == About Us ==
 WPMU DEV is a premium supplier of quality WordPress plugins and themes. For premium support with any WordPress related issues you can join us here:

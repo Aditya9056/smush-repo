@@ -1,37 +1,78 @@
-# README #
+# WP Smush
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Before starting development make sure you read and understand everything in this README.
 
-** Make sure to remove README from release, this is for Bitbucket usage only **
+## Build tasks (npm)
 
-### WP Smush - .org version and PRO version ###
+Everything (except unit tests) should be handled by npm. Note that you don't need to interact with Grunt in a direct way.
 
-* There isn't much difference between the .org version and the WPMU DEV version. So don't be confused, it's just few headers are different like, the Plugin Name, WDP ID is only stated in Pro version and the copyright text.
+Command | Action
+------- | ------
+`npm run watch` | Start watching JS files
+`npm run compile` | Compile assets
+`npm run translate` | Build pot file inside /languages/ folder
+`npm run build` | Build both versions, useful to provide packages to QA without doing all the release tasks
+`npm run build:pro` | Build only pro version
+`npm run build:free` | Build only wp.org version
 
-So it's important that, you don't merge pro branch to master, although you can pull master/dev to pro.
+## Versioning
 
-** Release Process **
+Follow semantic versioning [http://semver.org/](http://semver.org/) as `package.json` won't work otherwise. That's it:
 
+- `X.X.0` for mayor versions
+- `X.X.X` for minor versions
+- `X.X[.X||.0]-rc.1` for release candidates
+- `X.X[.X||.0]-beta.1` for betas (QA builds)
+- `X.X[.X||.0]-alpha.1` for alphas (design check tasks)
 
-Maintain two separate projects on local, wp-smushit and wp-smush-pro. wp-smushit contains master and dev branch, wp-smush-pro is cloned only from pro branch.
+## Workflow
 
+Do not commit on `master` branch (should always be synced with the latest released version). `dev` is the code
+that accumulates all the code for the next version. If multiple versions are developed at the same time, `qa` branch
+should contains code that is being tested by QA team.
 
-Develop on dev branch, make whatever changes you want, if it's going to be a pro only feature, make sure you include proper check in code, as the codebase is same for free and pro version.
+- Create a new branch from `dev` branch: `git checkout -b branch-name`. Try to give it a descriptive name. For example:
+    * `release/X.X.X` for next releases
+    * `new/some-feature` for new features
+    * `enhance/some-enhancement` for enhancements
+    * `fix/some-bug` for bug fixing
+- Make your commits and push the new branch: `git push -u origin branch-name`
+- File the new Pull Request against `dev` branch
+- Assign somebody to review your code.
+- Once the PR is approved and finished, merge it in `dev` branch.
+- Delete your branch locally and make sure that it does not longer exist remote.
 
-After you're done with the final changes and ready to release, push the code to dev branch.
+It's a good idea to create the Pull Request as soon as possible so everybody knows what's going on with the project
+from the PRs screen in Bitbucket.
 
-For free version, merge it in Master, For pro version, go to folder wp-smush-pro, pull code from dev branch. Resolve any conflicts, for pot file and readme, accept the pro branch code.
+If developing a PRO only feature, make sure you include proper check in code, as the codebase is same for wp.org and PRO versions.
 
-Push the code to pro branch. 
+## How to release PRO and wp.org versions
 
-After proper testing, follow the release process and release the pro plugin with same versioning as on .org.
-## Directory Naming ##
-**The pro version uses the wp-smush-pro directory name, it's important that is what is in the zip file!**
+Prior to release, code needs to be checked and tested by QA team. Merge all active Pull Requests into `dev` branch and
+sync to `qa` branch. Build the release with `npm run build` script and send the zip files to QA.
 
-For .org release, first update the local svn repo from .org, as their might be changes in readme.txt file, Copy that to your git repo. Sync the code to your .org svn repo in local, and follow the release process for .org version. The .org version uses the wp-smushit directory slug that we can't change.
+The release process always must start on `master` branch. Once QA gives green light to release, latest changes from `qa`
+branch are merged into `master`.
 
-Don't forget to create a tag for the release and push it on bitbucket.
+Follow these steps to make the release:
 
-### Who do I talk to? ###
+* Edit `.changelog` file. Grunt will extract it and put the contents in `changelog.txt` and `readme.txt`.
+* Once you have your `dev` branch ready, merge into `master`. Do not forget to update the version number. Always with
+format X.X.X. You'll need to update in `wp-smush.php` (header and $version variable) and also `package.json`
+* Execute `npm run build`. zips and files will be generated in `build` folder.
+* Do not forget to sync `master` on `dev` by checking out `dev` branch and then `git merge master`
+
+## Difference between versions
+
+PRO and wp.org versions are exactly the same, except some header strings, PRO version includes `extras/dash-notice`,
+while wp.org contains the `extras/free-dashboard` folder.
+
+## Directory Naming
+
+* `wp-smush-pro` PRO version
+* `wp-smush` wp.org version
+
+## Who do I talk to?
 
 * You can contact Umesh Kumar <umesh@incsub.com> or Aaron Edwards
