@@ -1087,7 +1087,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-box-header">
 					<h3 class="sui-box-title"><?php esc_html_e( 'Pro Features', 'wp-smushit' ); ?></h3>
 					<div class="sui-actions-right">
-						<a class="sui-button sui-button-green sui-tooltip" target="_blank" href="<?php echo esc_url( $upgrade_url ); ?>" data-tooltip="<?php esc_html_e( 'Try Smush Pro for FREE', 'wp-smushit' ); ?>"><?php esc_html_e( 'UPGRADE TO PRO', 'wp-smushit' ); ?></a>
+						<a class="sui-button sui-button-green sui-tooltip" target="_blank" href="<?php echo esc_url( $upgrade_url ); ?>" data-tooltip="<?php _e( 'Join WPMU DEV to try Smush Pro for free.', 'wp-smushit' ); ?>"><?php _e( 'UPGRADE TO PRO', 'wp-smushit' ); ?></a>
 					</div>
 				</div>
 				<div class="sui-box-body">
