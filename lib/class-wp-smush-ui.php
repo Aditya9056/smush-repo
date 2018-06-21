@@ -563,7 +563,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				}
 				$pro_savings      = $wpsmushit_admin->stats['pro_savings'];
 				$show_pro_savings = $pro_savings['savings'] > 0 ? true : false;
-				if ( true ) {
+				if ( $show_pro_savings ) {
 					?>
 					<li class="smush-avg-pro-savings" id="smush-avg-pro-savings">
 						<span class="sui-list-label"><?php esc_html_e( 'Pro Savings', 'wp-smushit' ); ?>
