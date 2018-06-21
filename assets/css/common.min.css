@@ -606,16 +606,8 @@ label.setting.smush-stats .smush-wrap,
   max-width: 100%;
 }
 
-.inactive {
-  position: relative;
-}
-
 .inactive .wp-smush-setting-row {
   opacity: .75;
-}
-
-.inactive-anim {
-  transition: opacity .3s;
 }
 
 .smush-stats-wrapper .row {
@@ -1942,11 +1934,6 @@ div.wp-smush-super-smush-content-wrapper {
 
 .wpmud .wp-smush-resize-settings-wrap label.resize-height-label {
   padding-left: 0;
-}
-
-span.label-text {
-  display: inline-block;
-  width: 75px;
 }
 
 .wpmud .wp-smush-png_to_jpg-wrap label {
