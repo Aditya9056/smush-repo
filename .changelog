@@ -1,16 +1,18 @@
 = 2.8.0 =
 
-* New:
-    * Improved UI
-    * Stats meta box
-* Fixed:
-    * File size not updated at attachment details modal during Smush and restore of an image
-    * Smush will have it's own section in the GDPR policy, instead of appending to the end of the policy text
-    * Directory Smush using mobile
-    * Smush progress during feature image upload
-    * Image width and height converted to string in async request
-    * Warnings on PHP 5.2
-    * Fixed wrong method name in S3 offload class. Thanks Tedy Warsitha
+* New: Improved UI
+* New: Stats meta box
+* Fixed: File size not updated at attachment details modal during Smush and restore of an image
+* Fixed: Smush will have it's own section in the GDPR policy, instead of appending to the end of the policy text
+* Fixed: Directory Smush using mobile
+* Fixed: Smush progress during feature image upload
+* Fixed: Image width and height converted to string in async request
+* Fixed: Warnings on PHP 5.2
+* Fixed: Fixed wrong method name in S3 offload class. Thanks Tedy Warsitha
+
+= 2.7.9.2 =
+
+* Fixed: Critical Error: Ajax returns Error 500 on media library in WP Offload S3
 
 = 2.7.9.1 =
 

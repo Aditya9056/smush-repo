@@ -86,7 +86,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
 			add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
 			add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
-			add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
+
+			// Not yet implemented so commented out to hide option.
+			// add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
 			add_action( 'smush_settings_ui_bottom', array( $this, 'pro_features_container' ) );
 
 			// Add stats to stats box.
@@ -563,21 +565,20 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				}
 				$pro_savings      = $wpsmushit_admin->stats['pro_savings'];
 				$show_pro_savings = $pro_savings['savings'] > 0 ? true : false;
-				?>
-
-				<li class="smush-avg-pro-savings<?php echo $show_pro_savings ? '' : ' sui-hidden'; ?>" id="smush-avg-pro-savings">
-					<span class="sui-list-label">
-						<?php _e( 'Pro Savings', 'wp-smushit' ); ?>
-						<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>"><?php esc_html_e( 'PRO', 'wp-smushit' ); ?></span>
-					</span>
-					<span class="sui-list-detail wp-smush-stats">
-						<span class="wp-smush-stats-human"><?php echo $show_pro_savings ? $pro_savings['savings'] : '0.0 B'; ?></span>
-						<span class="wp-smush-stats-sep">/</span>
-						<span class="wp-smush-stats-percent"><?php echo $show_pro_savings ? $pro_savings['percent'] : 0; ?></span>%
-					</span>
-				</li>
-
-				<?php
+				if ( $show_pro_savings ) {
+					?>
+					<li class="smush-avg-pro-savings" id="smush-avg-pro-savings">
+						<span class="sui-list-label"><?php esc_html_e( 'Pro Savings', 'wp-smushit' ); ?>
+							<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>"><?php esc_html_e( 'PRO', 'wp-smushit' ); ?></span>
+						</span>
+						<span class="sui-list-detail wp-smush-stats">
+							<span class="wp-smush-stats-human"><?php echo esc_html( $pro_savings['savings'] ); ?></span>
+							<span class="wp-smush-stats-sep">/</span>
+							<span class="wp-smush-stats-percent"><?php echo esc_html( $pro_savings['percent'] ); ?></span>%
+						</span>
+					</li>
+					<?php
+				}
 			} else {
 				$compression_savings = 0;
 				if ( ! empty( $wpsmushit_admin->stats ) && ! empty( $wpsmushit_admin->stats['bytes'] ) ) {
@@ -586,7 +587,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				?>
 				<li class="super-smush-attachments">
 					<span class="sui-list-label">
-						<?php _e( 'Super-Smush Savings', 'wp-smushit' ); ?>
+						<?php esc_html_e( 'Super-Smush Savings', 'wp-smushit' ); ?>
 						<?php if ( ! $wp_smush->lossy_enabled ) { ?>
 							<p class="wp-smush-stats-label-message">
 								<?php
@@ -1071,13 +1072,23 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$wpsmushit_admin->upgrade_url
 			);
 
+			// Upgrade url for upsell.
+			$upsell_url = add_query_arg(
+				array(
+					'utm_source'   => 'smush',
+					'utm_medium'   => 'plugin',
+					'utm_campaign' => 'smush-advanced-settings-upsell'
+				),
+				$wpsmushit_admin->upgrade_url
+			);
+
 			?>
 
 			<div class="sui-box">
 				<div class="sui-box-header">
 					<h3 class="sui-box-title"><?php esc_html_e( 'Pro Features', 'wp-smushit' ); ?></h3>
 					<div class="sui-actions-right">
-						<a class="sui-button sui-button-green"><?php esc_html_e( 'UPGRADE TO PRO', 'wp-smushit' ); ?></a>
+						<a class="sui-button sui-button-green sui-tooltip" target="_blank" href="<?php echo esc_url( $upgrade_url ); ?>" data-tooltip="<?php _e( 'Join WPMU DEV to try Smush Pro for free.', 'wp-smushit' ); ?>"><?php _e( 'UPGRADE TO PRO', 'wp-smushit' ); ?></a>
 					</div>
 				</div>
 				<div class="sui-box-body">
@@ -1111,7 +1122,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<div class="sui-upsell-row">
 						<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-promo.png'; ?>">
 						<div class="sui-upsell-notice">
-							<p><?php printf( esc_html__( 'Smush Pro gives you all these extra settings and absolutely not limits on smushing your images? Did we mention Smush Pro also gives you up to 2x better compression too? %sTry it all free%s with a WPMU DEV membership today!', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">', '</a>' ); ?></p>
+							<p><?php printf( esc_html__( 'Smush Pro gives you all these extra settings and absolutely not limits on smushing your images? Did we mention Smush Pro also gives you up to 2x better compression too? %sTry it all free%s with a WPMU DEV membership today!', 'wp-smushit' ), '<a href="' . esc_url( $upsell_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">', '</a>' ); ?></p>
 						</div>
 					</div>
 				</div>

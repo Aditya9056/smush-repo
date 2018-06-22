@@ -8,6 +8,14 @@
       text-align: center;
     }
 
+    .wp-smush-page-header {
+      .sui-actions-right {
+        .sui-button {
+          vertical-align: middle;
+        }
+      }
+    }
+
     .sui-box {
 
       &.sui-summary-smush-nextgen {
@@ -56,8 +64,7 @@
           @include icon(before, check-tick);
           &:before {
             color: $notice-default-icon-color;
-            vertical-align: middle;
-            font-size: 18px;
+            font-size: 21px;
           }
         }
       }
@@ -207,6 +214,7 @@
       overflow: hidden;
       padding: 30px;
       vertical-align: middle;
+      margin-top: 10px;
 
       .sui-checkbox {
 
@@ -254,7 +262,7 @@
     }
 
     .sui-upsell-row {
-      margin-top: 60px;
+      margin-top: 30px;
       .sui-upsell-image {
         &.sui-upsell-image-smush {
           bottom: -30px;
@@ -426,6 +434,10 @@
 
     .smush-stats-list {
       min-height: 185px;
+      .sui-tag-pro {
+        top: -1px;
+        margin-left: 5px;
+      }
     }
   }
 
