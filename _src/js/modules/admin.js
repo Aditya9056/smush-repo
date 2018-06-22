@@ -1693,14 +1693,14 @@ jQuery( function ( $ ) {
 		}
 	}
 
-	//Scroll the element to top of the page
+	// Scroll the element to top of the page.
 	var goToByScroll = function ( selector ) {
-		// Scroll
+		// Scroll if element found.
 		if ( $( selector ).length > 0 ) {
-			$( 'html,body' ).animate( {
+			$( 'html, body' ).animate( {
 					scrollTop: $( selector ).offset().top - 100
-				},
-				'slow' );
+				}, 'slow'
+			);
 		}
 	};
 
