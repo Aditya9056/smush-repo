@@ -2373,7 +2373,7 @@ jQuery( function ( $ ) {
 			} else {
 				$( '.wp-smush-scan-result .smush-dir-smush-done' ).addClass( 'sui-hidden' );
 				$( 'div.wp-smush-scan-result div.content' ).html( res.data );
-				wp_smush_dir_image_ids = res.data.ids;
+				var wp_smush_dir_image_ids = res.data.ids;
 			}
 			set_accordion();
 			close_dialog();
