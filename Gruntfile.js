@@ -86,7 +86,7 @@ module.exports = function( grunt ) {
 			},
 			free: {
 				options: {
-					cwd: 'build/wp-smush'
+					cwd: 'build/wp-smushit'
 				}
 			}
 		},
@@ -105,7 +105,7 @@ module.exports = function( grunt ) {
 			},
 			free: {
 				src:  includeFilesFree,
-				dest: 'build/wp-smush/',
+				dest: 'build/wp-smushit/',
 				options: {
 					noProcess: ['**/*.{png,gif,jpg,ico,svg}'],
 					process: function (content, srcpath) {
@@ -132,12 +132,12 @@ module.exports = function( grunt ) {
 			},
 			free: {
 				options: {
-					archive: './build/wp-smush-<%= pkg.version %>.zip'
+					archive: './build/wp-smushit-<%= pkg.version %>.zip'
 				},
 				expand: true,
-				cwd: 'build/wp-smush/',
+				cwd: 'build/wp-smushit/',
 				src: ['**/*'],
-				dest: 'wp-smush/'
+				dest: 'wp-smushit/'
 			}
 		},
 	});
