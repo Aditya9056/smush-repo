@@ -7226,6 +7226,10 @@ html.sui-has-overlay {
   text-align: center;
 }
 
+.sui-2-2-4 .sui-wrap .wp-smush-page-header .sui-actions-right .sui-button {
+  vertical-align: middle;
+}
+
 .sui-2-2-4 .sui-wrap .sui-box.sui-summary-smush-nextgen {
   padding: 0;
 }
@@ -7267,8 +7271,7 @@ html.sui-has-overlay {
 
 .sui-2-2-4 .sui-wrap .smush-sidenav .smush-nav-icon.bulk:not(.sui-tag):before {
   color: #888888;
-  vertical-align: middle;
-  font-size: 18px;
+  font-size: 21px;
 }
 
 .sui-2-2-4 .sui-wrap .smush-sidenav .current .bulk:not(.sui-tag):before {
@@ -7417,6 +7420,7 @@ html.sui-has-overlay {
   overflow: hidden;
   padding: 30px;
   vertical-align: middle;
+  margin-top: 10px;
 }
 
 .sui-2-2-4 .sui-wrap .wp-smush-resize-settings-wrap .sui-checkbox .sui-description,
@@ -7465,7 +7469,7 @@ html.sui-has-overlay {
 }
 
 .sui-2-2-4 .sui-wrap .sui-upsell-row {
-  margin-top: 60px;
+  margin-top: 30px;
 }
 
 .sui-2-2-4 .sui-wrap .sui-upsell-row .sui-upsell-image.sui-upsell-image-smush {
@@ -7630,6 +7634,11 @@ html.sui-has-overlay {
 
 .sui-2-2-4 .sui-summary-smush .smush-stats-list {
   min-height: 185px;
+}
+
+.sui-2-2-4 .sui-summary-smush .smush-stats-list .sui-tag-pro {
+  top: -1px;
+  margin-left: 5px;
 }
 
 .sui-2-2-4 .sui-summary-smush-nextgen .smush-stats-list-nextgen {
