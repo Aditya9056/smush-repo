@@ -518,8 +518,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 								<?php if ( ! $resize_enabled && $resize_savings <= 0 ) { ?>
 									<p class="wp-smush-stats-label-message">
 										<?php
-										$settings_link = is_multisite() && $networkwide ? $wpsmushit_admin->settings_link( array(), true, true ) : '#';
-										$link_class = is_multisite() && $networkwide ? 'wp-smush-resize-enable-network' : 'wp-smush-resize-enable';
+										$link_class = 'wp-smush-resize-enable-link';
+										if ( is_multisite() && $networkwide ) {
+											$settings_link = $wpsmushit_admin->settings_link( array(), true, true ) . '#enable-resize';
+										} elseif ( 'bulk' !== $this->current_tab ) {
+											$settings_link = $wpsmushit_admin->settings_link( array(), true ) . '#enable-resize';
+										} else {
+											$settings_link = '#';
+											$link_class = 'wp-smush-resize-enable';
+										}
 										printf( esc_html__( 'Save a ton of space by not storing over-sized images on your server. %sEnable image resizing%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
 										?>
 									</p>
@@ -591,8 +598,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<?php if ( ! $wp_smush->lossy_enabled ) { ?>
 							<p class="wp-smush-stats-label-message">
 								<?php
-								$settings_link = is_multisite() && $networkwide ? $wpsmushit_admin->settings_link( array(), true, true ) : '#';
-								$link_class = is_multisite() && $networkwide ? 'wp-smush-lossy-enable-network' : 'wp-smush-lossy-enable';
+								$link_class = 'wp-smush-lossy-enable-link';
+								if ( is_multisite() && $networkwide ) {
+									$settings_link = $wpsmushit_admin->settings_link( array(), true, true ) . '#enable-lossy';
+								} elseif ( 'bulk' !== $this->current_tab ) {
+									$settings_link = $wpsmushit_admin->settings_link( array(), true ) . '#enable-lossy';
+								} else {
+									$settings_link = '#';
+									$link_class = 'wp-smush-lossy-enable';
+								}
 								printf( esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
 								?>
 							</p>
