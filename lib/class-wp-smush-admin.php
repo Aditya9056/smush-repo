@@ -229,8 +229,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Register gutenberg block assets.
 			add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gb' ) );
-			// Get HTML stats for selected image.
-			add_action( 'wp_ajax_get_gb_stats', array( $this, 'get_gb_stats' ) );
 		}
 
 		function init_settings() {
@@ -347,56 +345,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				array( 'wp-blocks', 'wp-i18n', 'wp-element' ),
 				WP_SMUSH_VERSION
 			);
-		}
-
-		/**
-		 * Get image stats, formated as an HTML element.
-		 *
-		 * Stats are used in the Gutenberg image block.
-		 *
-		 * @since 2.9.0
-		 */
-		public function get_gb_stats() {
-			if ( ! isset( $_POST['id'] ) ) { // Input var ok.
-				return;
-			}
-
-			$attachment_id = absint( $_POST['id'] ); // Input var ok.
-/*
-			$html = $this->set_status( $attachment_id, false, true );
-
-			wp_send_json_success( array(
-				'status' => $html['status'],
-				'stats' => $html['stats'],
-			) );
-*/
-
-
-
-			/* @var WP_Smush $wp_smush */
-			global $wp_smush;
-
-			if ( get_option( 'smush-in-progress-' . $attachment_id, false ) ) {
-				$status_txt = __( 'Smushing in progress', 'wp-smushit' );
-				return $status_txt;
-			}
-
-			$wp_smush_data = get_post_meta( $attachment_id, $wp_smush->smushed_meta_key, true );
-
-			if ( empty( $wp_smush_data ) ) {
-				$status_txt = __( 'Not processed', 'wp-smushit' );
-				return $status_txt;
-			}
-
-			$wp_resize_savings  = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings', true );
-			$conversion_savings = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
-
-			$combined_stats = $wp_smush->combined_stats( $wp_smush_data, $wp_resize_savings );
-			$combined_stats = $wp_smush->combine_conversion_stats( $combined_stats, $conversion_savings );
-
-			wp_send_json_success( array(
-				'stats' => $combined_stats,
-			) );
 		}
 
 		/**
