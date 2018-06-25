@@ -1,5 +1,7 @@
 <?php
 /**
+ * S3 integration: WpSmushS3 class
+ *
  * @package WP_Smush
  * @subpackage S3
  * @version 2.7
@@ -8,71 +10,83 @@
  *
  * @copyright (c) 2017, Incsub (http://incsub.com)
  */
+
 if ( ! class_exists( 'WpSmushS3' ) ) {
 
+	/**
+	 * Class WpSmushS3
+	 */
 	class WpSmushS3 {
-
 		private $setup_notice = '';
 		private $message_type = 'error';
 
+		/**
+		 * WpSmushS3 constructor.
+		 */
 		function __construct() {
 			$this->init();
 
-			//Hook at the end of setting row to output a error div
+			// Hook at the end of setting row to output a error div.
 			add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ) );
+			add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
 		}
 
+		/**
+		 * Init actions
+		 */
 		function init() {
-
 			global $wp_smush;
 
-			//Filters the setting variable to add S3 setting title and description
+			// Filters the setting variable to add S3 setting title and description.
 			add_filter( 'wp_smush_settings', array( $this, 'register' ), 6 );
 
-			//Filters the setting variable to add S3 setting in premium features
+			// Filters the setting variable to add S3 setting in premium features.
 			add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 1 );
 
-			//return if not a pro user
+			// Return if not a pro user.
 			if ( ! $wp_smush->validate_install() ) {
 				return;
 			}
 
-			//Check if the file exists for the given path and download
+			// Check if the file exists for the given path and download.
 			add_action( 'smush_file_exists', array( $this, 'maybe_download_file' ), 10, 3 );
 
-			//Check if the backup file exists
+			// Check if the backup file exists.
 			add_filter( 'smush_backup_exists', array( $this, 'backup_exists_on_s3' ), 10, 3 );
-
-
 		}
 
 		/**
-		 * Filters the setting variable to add S3 setting title and description
+		 * Filters the setting variable to add S3 setting title and description.
 		 *
-		 * @param $settings
+		 * @param array $settings  Settings array.
 		 *
 		 * @return mixed
 		 */
 		function register( $settings ) {
-			$plugin_url     = esc_url( "https://wordpress.org/plugins/amazon-s3-and-cloudfront/" );
+			$plugin_url     = esc_url( 'https://wordpress.org/plugins/amazon-s3-and-cloudfront/' );
 			$settings['s3'] = array(
 				'label'       => esc_html__( 'Enable Amazon S3 support', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Amazon S3', 'wp-smushit' ),
-				'desc'        => sprintf( esc_html__( "Storing your image on S3 buckets using %sWP Offload S3%s? Smush can detect and smush those assets for you, including when you're removing files from your host server.", 'wp-smushit' ), "<a href='" . $plugin_url . "' target = '_blank'>", "</a>", "<b>", "</b>" )
+				'desc'        => sprintf(
+					esc_html__( "Storing your image on S3 buckets using %sWP Offload S3%s? Smush can detect and smush those assets for you, including when you're removing files from your host server.", 'wp-smushit' ),
+					"<a href='" . $plugin_url . "' target = '_blank'>",
+					'</a>',
+					'<b>',
+					'</b>'
+				),
 			);
 
 			return $settings;
 		}
 
 		/**
-		 * Append S3 in pro feature list
+		 * Append S3 in PRO feature list
 		 *
-		 * @param $pro_settings
+		 * @param array $pro_settings  Pro settings.
 		 *
 		 * @return array
 		 */
 		function add_setting( $pro_settings ) {
-
 			if ( ! isset( $pro_settings['s3'] ) ) {
 				$pro_settings[] = 's3';
 			}
@@ -83,38 +97,33 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		/**
 		 * Prints the message for S3 setup
 		 *
-		 * @param $setting_key
+		 * @param string $setting_key  Settings key.
 		 *
 		 * @return null
 		 */
 		function s3_setup_message( $setting_key ) {
-
-			//Return if not S3
-			if ( 's3' != $setting_key ) {
+			// Return if not S3.
+			if ( 's3' !== $setting_key ) {
 				return;
 			}
 
 			global $as3cf, $wp_smush, $wpsmush_settings;
-			$show_error = false;
 
-			//If S3 integration is not enabled, return
+			// If S3 integration is not enabled, return.
 			$setting_val = $wp_smush->validate_install() ? $wpsmush_settings->settings['s3'] : 0;
 
 			if ( ! $setting_val ) {
 				return;
 			}
 
-			//Check if plugin is setup or not
-			//In case for some reason, we couldn't find the function
+			// Check if plugin is setup or not in case for some reason, we couldn't find the function.
 			if ( ! is_object( $as3cf ) || ! method_exists( $as3cf, 'is_plugin_setup' ) ) {
-				$show_error         = true;
 				$support_url        = esc_url( 'https://premium.wpmudev.org/contact' );
 				$this->setup_notice = sprintf( esc_html__( 'We are having trouble interacting with WP Offload S3, make sure the plugin is activated. Or you can %sreport a bug%s.', 'wp-smushit' ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
 			}
 
-			//Plugin is not setup, or some information is missing
+			// Plugin is not setup, or some information is missing.
 			if ( ! $as3cf->is_plugin_setup() ) {
-				$show_error         = true;
 				$configure_url      = $as3cf->get_plugin_page_url();
 				$this->setup_notice = sprintf( esc_html__( 'It seems you haven’t finished setting up WP Offload S3 yet. %sConfigure it now%s to enable Amazon S3 support.', 'wp-smushit' ), '<a href="' . $configure_url . '" target="_blank">', '</a>' );
 			} else {
@@ -122,13 +131,32 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				$this->setup_notice = esc_html__( 'Amazon S3 support is active.', 'wp-smushit' );
 			}
 
-			//Return Early if we don't need to do anything
+			// Return early if we don't need to do anything.
 			if ( empty( $this->setup_notice ) ) {
 				return;
 			}
 
-			$class = 'error' == $this->message_type ? ' sui-notice-warning' : ' sui-notice-info';
+			$class = 'error' === $this->message_type ? ' sui-notice-warning' : ' sui-notice-info';
 			echo '<div class="sui-notice' . $class . ' smush-notice-sm"><p>' . $this->setup_notice . '</p></div>';
+		}
+
+		/**
+		 * Show additional notice if the required plugins are not istalled.
+		 *
+		 * @since 2.8.0
+		 *
+		 * @param string $name  Setting name.
+		 */
+		public static function additional_notice( $name ) {
+			// If we don't have free or pro version for WP Offload S3, return.
+			if ( 's3' === $name && ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) { ?>
+				<div class="sui-notice sui-notice-sm">
+					<p>
+						<?php esc_html_e( 'To use this feature you need to install WP Offload S3 and have an Amazon S3 account setup.', 'wp-smushit' ); ?>
+					</p>
+				</div>
+				<?php
+			}
 		}
 
 		/**
