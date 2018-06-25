@@ -34,7 +34,7 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 
 			// Do not show directory smush, if not main site in a network.
 			if ( $wp_smush->validate_install() ) {
-				//return false;
+				return false;
 			}
 
 			return true;
