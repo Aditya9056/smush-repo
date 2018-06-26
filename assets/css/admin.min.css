@@ -7780,6 +7780,7 @@ html.sui-has-overlay {
   line-height: 20px;
   padding: 0;
   margin: 0;
+  display: none;
 }
 
 .sui-2-2-5 ul.jqueryFileTree li {
@@ -7794,6 +7795,7 @@ html.sui-has-overlay {
   color: #666 !important;
   font-size: 13px;
   cursor: pointer;
+  padding-left: 5px;
 }
 
 .sui-2-2-5 ul.jqueryFileTree li .ext_tif,
@@ -7824,4 +7826,9 @@ html.sui-has-overlay {
 
 .sui-2-2-5 ul.jqueryFileTree li.expanded.selected {
   background: url(../fonts/folder-open-selected.svg) left 10px no-repeat;
+}
+
+.sui-2-2-5 ul.jqueryFileTree li.expanded.selected > a {
+  color: #17A8E3 !important;
+  background-color: #E1F6FF;
 }

@@ -2293,7 +2293,9 @@ jQuery( function ( $ ) {
 	/**
 	 * Init fileTree
 	 */
-	var initFileTree = function() {
+	//var initFileTree = function() {
+	function initFileTree() {
+		console.log( $( ".wp-smush-list-dialog .content" ) );
 		$( ".wp-smush-list-dialog .content" ).fileTree( {
 				script: getDirectoryList,
 				multiFolder: false
@@ -2303,10 +2305,11 @@ jQuery( function ( $ ) {
 			}
 		).on('filetreeexpanded', function(e, data) {
 			// Add a selected class to directory.
+			//console.log( 'expanded' );
 			data.container.find('li').removeClass('selected');
 			data.li.addClass('selected');
 		}).on('filetreeclicked', function(e, data) {
-			console.log( data.type );
+			//console.log( data );
 		});
 	};
 
