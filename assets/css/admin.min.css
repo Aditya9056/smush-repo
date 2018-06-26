@@ -7377,7 +7377,7 @@ html.sui-has-overlay {
 }
 
 .sui-2-2-5 .sui-wrap .smush-dir-smush-accordion .wp-smush-dir-progress-wrap .wp-smush-exclude-dir {
-  margin-right: 10px;
+  right: 0;
 }
 
 .sui-2-2-5 .sui-wrap .smush-dir-smush-accordion .wp-smush-dir-progress-wrap .wp-smush-exclude-dir i {
@@ -7619,6 +7619,10 @@ html.sui-has-overlay {
   background: transparent !important;
   border: 2px solid #888 !important;
   color: #888 !important;
+}
+
+.sui-2-2-5 .sui-wrap .sui-toggle + label {
+  font-weight: 500;
 }
 
 .sui-2-2-5 .wp-smush-pagespeed-recommendation {
@@ -8003,4 +8007,16 @@ html.sui-has-overlay {
 
 .sui-2-2-5 UL.jqueryFileTree A:hover {
   background: #BDF;
+}
+
+/* ****************************************************************************
+ * MODULE: Directory Smush styles.
+ */
+
+.sui-2-2-5 .wp-smush-list-dialog .jqueryFileTree:focus {
+  outline: 0 solid transparent;
+}
+
+.sui-2-2-5 .wp-smush-scan-result .wp-smush-image-list-inner:focus {
+  outline: 0 solid transparent;
 }

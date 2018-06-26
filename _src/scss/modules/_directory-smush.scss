@@ -1,0 +1,21 @@
+/* ****************************************************************************
+ * MODULE: Directory Smush styles.
+ */
+
+@include body-class {
+
+    .wp-smush-list-dialog {
+        // Remove border on focus.
+        .jqueryFileTree:focus {
+            outline: 0 solid transparent;
+        }
+    }
+
+    .wp-smush-scan-result {
+        // Remove border on focus.
+        .wp-smush-image-list-inner:focus {
+            outline: 0 solid transparent;
+        }
+    }
+
+}

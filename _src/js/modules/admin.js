@@ -2296,11 +2296,10 @@ jQuery( function ( $ ) {
 	var initFileTree = function() {
 		$( ".wp-smush-list-dialog .content" ).fileTree( {
 				script: getDirectoryList,
-				multiFolder: false,
-				multiSelect: true
+				multiFolder: false
 			},
 			function ( file ) {
-				console.log( file );
+				//console.log( file );
 			}
 		).on('filetreeexpanded', function(e, data) {
 			// Add a selected class to directory.
@@ -2385,7 +2384,6 @@ jQuery( function ( $ ) {
 		//Get the Selected directory path
 		var path = $( '.jqueryFileTree .selected a' ).attr( 'rel' );
 		path = 'undefined' == typeof (path) ? '' : path;
-		console.log( path );
 
 		//Absolute path
 		var abs_path = $( 'input[name="wp-smush-base-path"]' ).val();
