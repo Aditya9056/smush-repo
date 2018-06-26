@@ -228,7 +228,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
 
 			// Run upgrade script.
-			//add_action( 'plugins_loaded', array( $this, 'upgrade_settings' ) );
+			add_action( 'plugins_loaded', array( $this, 'upgrade_settings' ) );
 		}
 
 		function init_settings() {
@@ -2416,38 +2416,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Upgrade old settings to new if required.
 		 *
-		 * We have changed exif data setting key. Update the
-		 * existing value to new one.
+		 * We have changed exif data setting key from version 2.8.
+         * Update the existing value to new one.
 		 *
 		 * @since 2.8.0
 		 *
 		 * @return void
 		 */
 		public function upgrade_settings() {
-
 			global $wpsmush_settings;
 
-			// Get old exif setting value.
-			$keep_exif = $wpsmush_settings->get_setting['keep_exif'];
-
 			// If exif is not preserved, it will be stripped by default.
-			if ( $keep_exif ) {
-				// Set the strip exif value.
+			if ( $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'keep_exif' ) ) {
+				// Set not to strip exif value.
 				$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
 
-				// Delete the old keep exif setting.
+				// Delete the old exif setting.
 				$wpsmush_settings->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
-
-				// Check the last settings stored in db.
-				/*$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
-				$settings = maybe_unserialize( $settings );
-
-				if ( isset( $settings['keep_exif'] ) ) {
-				    unset( $settings['keep_exif'] );
-					$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
-                }
-
-				error_log(print_r($wpsmush_settings->settings, true));*/
 			}
 		}
 	}
