@@ -286,104 +286,104 @@
     .sui-loading {
       font-size: 18px;
     }
-  }
 
-  ul {
+    ul {
 
-    &.jqueryFileTree {
-      color: #888888;
-      font-family: "Roboto", sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      margin-top: 5px;
+      &.jqueryFileTree {
+        color: #888888;
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 5px;
 
-      .wp-smush-list {
-        margin-top: 2px;
-        vertical-align: top;
-      }
-
-      li {
-        display: inline-block;
-        padding: 0 0 5px 20px;
-
-        .ext_tif,
-        .ext_tif,
-        .ext_tiff,
-        .ext_png,
-        .ext_pcx,
-        .ext_jpeg,
-        .ext_jpg,
-        .ext_gif,
-        .ext_bmp {
-          background: url('#{$img--path}/image.svg') left top no-repeat;
+        .wp-smush-list {
+          margin-top: 2px;
+          vertical-align: top;
         }
 
-        &.directory {
-          background: url('#{$img--path}/folder-closed.svg') left top no-repeat;
-        }
+        li {
+          display: inline-block;
+          padding: 0 0 5px 20px;
 
-        &.expanded {
-          background: url('#{$img--path}/folder-open.svg') left top no-repeat;
+          .ext_tif,
+          .ext_tif,
+          .ext_tiff,
+          .ext_png,
+          .ext_pcx,
+          .ext_jpeg,
+          .ext_jpg,
+          .ext_gif,
+          .ext_bmp {
+            background: url('#{$img--path}/image.svg') left top no-repeat;
+          }
 
-          &.selected {
-            background: url('#{$img--path}/folder-open-selected.svg') left top no-repeat;
+          &.directory {
+            background: url('#{$img--path}/folder-closed.svg') left top no-repeat;
+          }
 
-            > a,
-            .file.selected {
-              a {
-                color: #17a8e3;
+          &.expanded {
+            background: url('#{$img--path}/folder-open.svg') left top no-repeat;
+
+            &.selected {
+              background: url('#{$img--path}/folder-open-selected.svg') left top no-repeat;
+
+              > a,
+              .file.selected {
+                a {
+                  color: #17a8e3;
+                }
+              }
+
+              #Folder-22px-Solid-3-Open {
+                fill: #17a8e3;
               }
             }
+          }
 
-            #Folder-22px-Solid-3-Open {
-              fill: #17a8e3;
-            }
+          &.selected > a {
+            font-weight: 500;
           }
         }
+      }
 
-        &.selected > a {
-          font-weight: 500;
+      &.jqueryFileTree a:hover {
+        background: #f8f8f8;
+        color: #888888;
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+
+    span {
+      &.add-dir-loader {
+        padding-right: 10px;
+        font-size: 18px;
+      }
+    }
+
+    .sui-button {
+
+      &.smush-button-check-success,
+      &.smush-button-check-success:hover {
+        background: #d1f1ea !important;
+        color: #1abc9c !important;
+        pointer-events: none;
+        @include icon(before, check-tick);
+
+        &:before {
+          padding-right: 5px;
+          color: $notice-success-icon-color;
         }
       }
-    }
 
-    &.jqueryFileTree a:hover {
-      background: #f8f8f8;
-      color: #888888;
-      font-family: "Roboto", sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-    }
-  }
-
-  span {
-    &.add-dir-loader {
-      padding-right: 10px;
-      font-size: 18px;
-    }
-  }
-
-  .sui-button {
-
-    &.smush-button-check-success,
-    &.smush-button-check-success:hover {
-      background: #d1f1ea !important;
-      color: #1abc9c !important;
-      pointer-events: none;
-      @include icon(before, check-tick);
-
-      &:before {
-        padding-right: 5px;
-        color: $notice-success-icon-color;
+      &.wp-smush-skip-resmush,
+      &.wp-smush-skip-resmush:hover {
+        display: block;
+        background: transparent !important;
+        border: 2px solid #888 !important;
+        color: #888 !important;
       }
-    }
-
-    &.wp-smush-skip-resmush,
-    &.wp-smush-skip-resmush:hover {
-      display: block;
-      background: transparent !important;
-      border: 2px solid #888 !important;
-      color: #888 !important;
     }
   }
 
