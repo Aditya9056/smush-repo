@@ -818,7 +818,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<p>
 						<?php printf(
 						/* translators: %1$s - a href tag, %2$s - a href closing tag */
-							esc_html__( 'We’ve detected you use NextGen Gallery. In addition to enhanced compression and heaps of cool features, Smush Pro allows optimizing NextGen Gallery images directly through NextGen Gallery settings? %1$sTry it free%2$s with a WPMU DEV membership today!', 'wp-smushit' ),
+							esc_html__( 'Smush Pro supports hosting images on Amazon S3 and optimizing NextGen Gallery images directly through NextGen Gallery settings. %1$sTry it free%2$s with a WPMU DEV membership today!', 'wp-smushit' ),
 							'<a href="' . esc_url( $upsell_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">',
 							'</a>'
 						); ?>
