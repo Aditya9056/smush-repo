@@ -7527,69 +7527,6 @@ html.sui-has-overlay {
   font-size: 18px;
 }
 
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree {
-  color: #888888;
-  font-family: "Roboto", sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  margin-top: 5px;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree .wp-smush-list {
-  margin-top: 2px;
-  vertical-align: top;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li {
-  display: inline-block;
-  padding: 0 0 5px 20px;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li .ext_tif,
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li .ext_tif,
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li .ext_tiff,
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li .ext_png,
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li .ext_pcx,
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li .ext_jpeg,
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li .ext_jpg,
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li .ext_gif,
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li .ext_bmp {
-  background: url(../fonts/image.svg) left top no-repeat;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li.directory {
-  background: url(../fonts/folder-closed.svg) left top no-repeat;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li.expanded {
-  background: url(../fonts/folder-open.svg) left top no-repeat;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li.expanded.selected {
-  background: url(../fonts/folder-open-selected.svg) left top no-repeat;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li.expanded.selected > a a,
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li.expanded.selected .file.selected a {
-  color: #17a8e3;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li.expanded.selected #Folder-22px-Solid-3-Open {
-  fill: #17a8e3;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree li.selected > a {
-  font-weight: 500;
-}
-
-.sui-2-2-5 .sui-wrap ul.jqueryFileTree a:hover {
-  background: #f8f8f8;
-  color: #888888;
-  font-family: "Roboto", sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-}
-
 .sui-2-2-5 .sui-wrap span.add-dir-loader {
   padding-right: 10px;
   font-size: 18px;
@@ -7823,193 +7760,6 @@ html.sui-has-overlay {
 }
 
 /* ****************************************************************************
- * MODULE: jQuery File Tree plugin styles.
- */
-
-/* ****************************************************************************
- * MODULE: VARIABLES
- */
-
-.sui-2-2-5 UL.jqueryFileTree {
-  font-family: Verdana, sans-serif;
-  font-size: 11px;
-  line-height: 18px;
-  padding: 0;
-  margin: 0;
-  display: none;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI {
-  list-style: none;
-  padding: 0 0 0 20px;
-  margin: 0;
-  white-space: nowrap;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.selected > a {
-  font-weight: 700;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_bat,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_com,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_exe {
-  background: url(../images/application.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_afp,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_afpa,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_asp,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_aspx,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_c,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_cfm,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_cgi,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_cpp,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_h,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_lasso,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_vb,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_xml {
-  background: url(../images/code.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_css {
-  background: url(../images/css.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_sql {
-  background: url(../images/db.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.directory {
-  background: url(../images/directory.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.directory-locked {
-  background: url(../images/directory-lock.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_doc {
-  background: url(../images/doc.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.file {
-  background: url(../images/file.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.file-locked {
-  background: url(../images/file-lock.png) left top no-repeat !important;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_3gp,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_avi,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_mov,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_mp4,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_mpeg,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_mpg,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_ogv,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_webm,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_wmv {
-  background: url(../images/film.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_fla,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_swf {
-  background: url(../images/flash.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.expanded {
-  background: url(../images/folder_open.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_htm,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_html {
-  background: url(../images/html.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_jar {
-  background: url(../images/java.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_rpm {
-  background: url(../images/linux.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_m4p,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_mp3,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_ogg,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_wav {
-  background: url(../images/music.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_pdf {
-  background: url(../images/pdf.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_php {
-  background: url(../images/php.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_bmp,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_gif,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_jpeg,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_jpg,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_pcx,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_png,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_tif,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_tiff {
-  background: url(../images/picture.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_ppt {
-  background: url(../images/ppt.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_psd {
-  background: url(../images/psd.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_rb,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_rbx,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_rhtml,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_ruby {
-  background: url(../images/ruby.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_js,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_pl,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_py {
-  background: url(../images/script.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.wait {
-  background: url(../images/spinner.gif) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_log,
-.sui-2-2-5 UL.jqueryFileTree LI.ext_txt {
-  background: url(../images/txt.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_xls {
-  background: url(../images/xls.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree LI.ext_zip {
-  background: url(../images/zip.png) left top no-repeat;
-}
-
-.sui-2-2-5 UL.jqueryFileTree A {
-  color: #333;
-  text-decoration: none;
-  display: inline-block;
-  padding: 0 2px;
-  cursor: pointer;
-}
-
-.sui-2-2-5 UL.jqueryFileTree A:hover {
-  background: #BDF;
-}
-
-/* ****************************************************************************
  * MODULE: Directory Smush styles.
  */
 
@@ -8019,4 +7769,59 @@ html.sui-has-overlay {
 
 .sui-2-2-5 .wp-smush-scan-result .wp-smush-image-list-inner:focus {
   outline: 0 solid transparent;
+}
+
+.sui-2-2-5 ul.jqueryFileTree {
+  color: #666;
+  font-family: "Roboto", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.25px;
+  line-height: 20px;
+  padding: 0;
+  margin: 0;
+}
+
+.sui-2-2-5 ul.jqueryFileTree li {
+  line-height: 40px;
+  padding: 0 0 0 20px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.sui-2-2-5 ul.jqueryFileTree li a,
+.sui-2-2-5 ul.jqueryFileTree li a:hover {
+  color: #666 !important;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.sui-2-2-5 ul.jqueryFileTree li .ext_tif,
+.sui-2-2-5 ul.jqueryFileTree li .ext_tif,
+.sui-2-2-5 ul.jqueryFileTree li .ext_tiff,
+.sui-2-2-5 ul.jqueryFileTree li .ext_png,
+.sui-2-2-5 ul.jqueryFileTree li .ext_pcx,
+.sui-2-2-5 ul.jqueryFileTree li .ext_jpeg,
+.sui-2-2-5 ul.jqueryFileTree li .ext_jpg,
+.sui-2-2-5 ul.jqueryFileTree li .ext_gif,
+.sui-2-2-5 ul.jqueryFileTree li .ext_bmp {
+  background: url(../fonts/image.svg) left 10px no-repeat;
+}
+
+.sui-2-2-5 ul.jqueryFileTree li.directory {
+  background: url(../fonts/folder-closed.svg) left 10px no-repeat;
+}
+
+.sui-2-2-5 ul.jqueryFileTree li.expanded {
+  background: url(../fonts/folder-open.svg) no-repeat left 10px;
+}
+
+.sui-2-2-5 ul.jqueryFileTree li.expanded > a {
+  display: block;
+  background-color: #F8F8F8;
+  border-radius: 4px;
+}
+
+.sui-2-2-5 ul.jqueryFileTree li.expanded.selected {
+  background: url(../fonts/folder-open-selected.svg) left 10px no-repeat;
 }

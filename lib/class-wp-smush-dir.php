@@ -399,9 +399,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						if ( file_exists( $file_path ) && $file != '.' && $file != '..' ) {
 							if ( is_dir( $file_path ) && ! $this->skip_dir( $file_path ) ) {
 								//Skip Uploads folder - Media Files
-								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/' tabindex='0'>" . $htmlName . "</a></li><br />";
+								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/' tabindex='0'>" . $htmlName . "</a></li>";
 							} else if ( in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $file_path ) ) {
-								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "' tabindex='0'>" . $htmlName . "</a></li><br />";
+								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "' tabindex='0'>" . $htmlName . "</a></li>";
 							}
 						}
 					}
