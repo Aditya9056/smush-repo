@@ -2416,8 +2416,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Upgrade old settings to new if required.
 		 *
-		 * We have changed exif data setting key from version 2.8.
-         * Update the existing value to new one.
+		 * We have changed exif data setting key from version 2.8
+		 * Update the existing value to new one.
 		 *
 		 * @since 2.8.0
 		 *
