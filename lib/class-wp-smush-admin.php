@@ -131,7 +131,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $basic_features = array(
 			'networkwide',
 			'auto',
-			'keep_exif',
+			'strip_exif',
 			'resize',
 		);
 
@@ -226,6 +226,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Load js and css on pages with Media Uploader - WP Enqueue Media.
 			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
+
+			// Run upgrade script.
+			add_action( 'plugins_loaded', array( $this, 'upgrade_settings' ) );
 		}
 
 		function init_settings() {
@@ -245,7 +248,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'short_label' => esc_html__( 'Super-smush', 'wp-smushit' ),
 					'desc'        => esc_html__( 'Optimize images up to 2x more than regular smush with our multi-pass lossy compression.', 'wp-smushit' ),
 				),
-				'keep_exif'       => array(
+				'strip_exif'      => array(
 					'label'       => esc_html__( 'Strip my image meta data', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Meta data', 'wp-smushit' ),
 					'desc'        => esc_html__( 'Whenever you take a photo, your camera stores metadata, such as focal length, date, time and location, within the image.', 'wp-smushit' ),
@@ -2408,6 +2411,39 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			return $resmush_list;
+		}
+
+		/**
+		 * Upgrade old settings to new if required.
+		 *
+		 * We have changed exif data setting key. Update the
+		 * existing value to new one.
+		 *
+		 * @since 2.8.0
+		 *
+		 * @return void
+		 */
+		public function upgrade_settings() {
+
+			global $wpsmush_settings;
+
+			// Get old exif setting value.
+			$keep_exif = (bool) $wpsmush_settings->settings['keep_exif'];
+
+			// If exif is not preserved, it will be stripped by default.
+			if ( $keep_exif ) {
+				// Set the strip exif value.
+				$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
+
+				// Delete the old keep exif setting.
+				$wpsmush_settings->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
+
+				// Check the last settings stored in db.
+				//$settings = $this->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+				//$settings = maybe_unserialize( $settings );
+
+				error_log(print_r($wpsmush_settings->settings, true));
+			}
 		}
 	}
 

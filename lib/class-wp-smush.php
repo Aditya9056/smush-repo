@@ -232,7 +232,7 @@ class WP_Smush {
 		$this->smush_original = $this->validate_install() && $wpsmush_settings->settings['original'];
 
 		// Check whether to keep EXIF data or not.
-		$this->keep_exif = $wpsmush_settings->settings['keep_exif'];
+		$this->keep_exif = empty( $wpsmush_settings->settings['strip_exif'] );
 	}
 
 	function admin_init() {
@@ -770,7 +770,7 @@ class WP_Smush {
 			$headers['lossy'] = 'false';
 		}
 
-		$headers['exif'] = $wpsmush_settings->settings['keep_exif'] ? 'true' : 'false';
+		$headers['exif'] = $wpsmush_settings->settings['strip_exif'] ? 'false' : 'true';
 
 		$api_url = defined( 'WP_SMUSH_API_HTTP' ) ? WP_SMUSH_API_HTTP : WP_SMUSH_API;
 		$args    = array(
