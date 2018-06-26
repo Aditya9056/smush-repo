@@ -1693,13 +1693,15 @@ jQuery( function ( $ ) {
 		}
 	}
 
-	//Scroll the element to top of the page
+	// Scroll the element to top of the page.
 	var goToByScroll = function ( selector ) {
-		// Scroll
-		$( 'html,body' ).animate( {
-				scrollTop: $( selector ).offset().top - 100
-			},
-			'slow' );
+		// Scroll if element found.
+		if ( $( selector ).length > 0 ) {
+			$( 'html, body' ).animate( {
+					scrollTop: $( selector ).offset().top - 100
+				}, 'slow'
+			);
+		}
 	};
 
 	var disable_buttons = function ( self ) {
@@ -2073,26 +2075,54 @@ jQuery( function ( $ ) {
 
 	} );
 
-	//Enable Super Smush
-	$( 'a.wp-smush-lossy-enable' ).on( 'click', function ( e ) {
-		e.preventDefault();
-
-		//Enable Super Smush
-		$( '#wp-smush-lossy' ).prop( 'checked', true ).focus();
-		goToByScroll( "#column-wp-smush-lossy" );
-	} );
-
-	//Enable Resize
-	$( '.wp-smush-resize-enable' ).on( 'click', function ( e ) {
-		e.preventDefault();
-
-		//Enable Resize, Show resize settings
+	/**
+	 * Enable resize in settings and scroll.
+	 */
+	var scroll_and_enable_resize = function () {
+		// Enable resize, show resize settings.
 		$( '#wp-smush-resize' ).prop( 'checked', true ).focus();
 		$( 'div.wp-smush-resize-settings-wrap' ).show();
 
-		//Scroll down to settings area
+		// Scroll down to settings area.
 		goToByScroll( "#column-wp-smush-resize" );
+	}
+
+	/**
+	 * Enable super smush in settings and scroll.
+	 */
+	var scroll_and_enable_lossy = function () {
+		// Enable super smush.
+		$( '#wp-smush-lossy' ).prop( 'checked', true ).focus();
+
+		// Scroll down to settings area.
+		goToByScroll( "#column-wp-smush-lossy" );
+	}
+
+	// Enable super smush on clicking link from stats area.
+	$( 'a.wp-smush-lossy-enable' ).on( 'click', function ( e ) {
+		e.preventDefault();
+
+		scroll_and_enable_lossy();
 	} );
+
+	// Enable resize on clicking link from stats area.
+	$( '.wp-smush-resize-enable' ).on( 'click', function ( e ) {
+		e.preventDefault();
+
+		scroll_and_enable_resize();
+	} );
+
+	// If settings string is found in url, enable and scroll.
+	if ( window.location.hash ) {
+		var setting_hash = window.location.hash.substring( 1 );
+		// Enable and scroll to resize settings.
+		if ( 'enable-resize' === setting_hash ) {
+			scroll_and_enable_resize();
+		} else if ( 'enable-lossy' === setting_hash ) {
+			// Enable and scroll to lossy settings.
+			scroll_and_enable_lossy();
+		}
+	}
 
 	//Trigger Bulk
 	$( 'body' ).on( 'click', '.wp-smush-trigger-bulk', function ( e ) {
