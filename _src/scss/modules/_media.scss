@@ -6,6 +6,7 @@
 @import "~@wpmudev/shared-ui/scss/variables";
 // Override body class
 $sui-version: 'smush-media';
+$sui-wrap-class: false;
 @import "~@wpmudev/shared-ui/scss/mixins";
 @import "~@wpmudev/shared-ui/scss/tooltips";
 
