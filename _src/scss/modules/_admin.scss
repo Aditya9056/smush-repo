@@ -385,6 +385,10 @@
         color: #888 !important;
       }
     }
+
+    .sui-toggle + label {
+      font-weight: 500;
+    }
   }
 
   .wp-smush-pagespeed-recommendation {
