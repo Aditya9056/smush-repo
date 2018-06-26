@@ -438,7 +438,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// Integration settings content.
 			$this->integrations_settings();
 
-			if ( 'smush-integrations-wrapper' === $class ) {
+			if ( ! $wp_smush->validate_install() ) {
 				$this->integrations_upsell();
 			}
 
@@ -446,7 +446,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Box footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
-				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
+				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $wp_smush->validate_install(), true, false ) . '>
 		        <span class="sui-icon-loader sui-loading sui-hidden"></span>
 		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
@@ -760,12 +760,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				// For subsite admins show only if networkwide options is not enabled.
 				if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
 					foreach ( $this->intgration_group as $name ) {
-
-						// Skip premium features if not a member.
-						if ( ! in_array( $name, $wpsmushit_admin->basic_features ) && ! $wp_smush->validate_install() ) {
-							//continue;
-						}
-
 						// Settings key.
 						$setting_m_key = WP_SMUSH_PREFIX . $name;
 						// Current setting value.
@@ -786,7 +780,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 						// Gray out row, disable setting.
 						$upsell = false;
-						if ( 'nextgen' === $name && ! $wp_smush->validate_install() ) {
+						if ( ! $wp_smush->validate_install() ) {
 							$upsell = true;
 							$setting_val = 0;
 						}
