@@ -228,7 +228,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
 
 			// Run upgrade script.
-			add_action( 'plugins_loaded', array( $this, 'upgrade_settings' ) );
+			//add_action( 'plugins_loaded', array( $this, 'upgrade_settings' ) );
 		}
 
 		function init_settings() {
@@ -2428,7 +2428,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $wpsmush_settings;
 
 			// Get old exif setting value.
-			$keep_exif = (bool) $wpsmush_settings->settings['keep_exif'];
+			$keep_exif = $wpsmush_settings->get_setting['keep_exif'];
 
 			// If exif is not preserved, it will be stripped by default.
 			if ( $keep_exif ) {
@@ -2439,10 +2439,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$wpsmush_settings->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
 
 				// Check the last settings stored in db.
-				//$settings = $this->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
-				//$settings = maybe_unserialize( $settings );
+				/*$settings = $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+				$settings = maybe_unserialize( $settings );
 
-				error_log(print_r($wpsmush_settings->settings, true));
+				if ( isset( $settings['keep_exif'] ) ) {
+				    unset( $settings['keep_exif'] );
+					$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
+                }
+
+				error_log(print_r($wpsmush_settings->settings, true));*/
 			}
 		}
 	}
