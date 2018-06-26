@@ -1,6 +1,7 @@
 <?php
-
 /**
+ * Nextgen integration: WpSmushNextGen class
+ *
  * @package WP_Smush
  * @subpackage NextGen Gallery
  * @version 1.0
@@ -9,13 +10,17 @@
  *
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
+
 if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
-
+	/**
+	 * Class WpSmushNextGen
+	 */
 	class WpSmushNextGen {
-
 		/**
-		 * @var array Contains the total Stats, for displaying it on bulk page
+		 * Contains the total Stats, for displaying it on bulk page
+		 *
+		 * @var array $stats
 		 */
 		var $stats = array(
 			'savings_bytes'   => 0,
@@ -26,8 +31,14 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 		var $is_nextgen_active = false;
 
+		/**
+		 * WpSmushNextGen constructor.
+		 */
 		function __construct() {
 			$this->init();
+
+			// Hook at the end of setting row to output a error div.
+			add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
 		}
 
 		/**
@@ -43,7 +54,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 5 );
 
 			// Check if integration is Enabled or not.
-			if ( ! empty( $wpsmush_settings->settings ) ) {
+			if ( ! empty( $wpsmush_settings->settings ) && $wp_smush->validate_install() ) {
 				$opt_nextgen_val = $wpsmush_settings->settings['nextgen'];
 			} else {
 				// Smush NextGen key.
@@ -74,6 +85,24 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		}
 
 		/**
+		 * Show additional notice if the required plugins are not istalled.
+		 *
+		 * @since 2.8.0
+		 *
+		 * @param string $name  Setting name.
+		 */
+		public static function additional_notice( $name ) {
+			if ( 'nextgen' === $name && ! class_exists( 'C_NextGEN_Bootstrap' ) ) { ?>
+				<div class="sui-notice sui-notice-sm">
+					<p>
+						<?php esc_html_e( 'To use this feature you need to install and activate NextGen Gallery.', 'wp-smushit' ); ?>
+					</p>
+				</div>
+				<?php
+			}
+		}
+
+		/**
 		 * Filters the setting variable to add NextGen setting title and description
 		 *
 		 * @param array $settings Settings.
@@ -98,7 +127,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @return array
 		 */
 		function add_setting( $int_settings ) {
-
 			if ( ! isset( $int_settings['nextgen'] ) ) {
 				$int_settings[] = 'nextgen';
 			}

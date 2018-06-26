@@ -64,9 +64,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 			// Handle Ajax request for directory smush stats.
 			add_action( 'wp_ajax_get_dir_smush_stats', array( $this, 'get_dir_smush_stats' ) );
-
-			// Add Directory list overlay at the end of content.
-			add_action( 'admin_footer', array( $this, 'directory_list_dialog' ) );
 		}
 
 		/**
@@ -319,6 +316,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				</div>
 				<input type="hidden" name="wp-smush-base-path" value="<?php echo $this->get_root_path(); ?>">
 			</div>
+			<?php $this->directory_list_dialog(); ?>
 			</div>
 			<?php
 		}
