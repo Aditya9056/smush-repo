@@ -49,7 +49,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 define( 'WP_SMUSH_VERSION', '2.8.0-alpha.1' );
-define( 'WP_SHARED_UI_VERSION', 'sui-2-2-4' ); // Used to define body class.
+define( 'WP_SHARED_UI_VERSION', 'sui-2-2-5' ); // Used to define body class.
 define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
 define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
 define( 'WP_SMUSH_UA', 'WP Smush/' . WP_SMUSH_VERSION . '; ' . network_home_url() );
