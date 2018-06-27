@@ -166,9 +166,7 @@ class WP_Smush {
 		// Redirect to settings page.
 		add_action( 'activated_plugin', array( $this, 'wp_smush_redirect' ) );
 
-		/**
-		 * Smush image (Auto Smush) when `wp_update_attachment_metadata` filter is fired
-		 */
+		// Smush image (Auto Smush) when `wp_update_attachment_metadata` filter is fired.
 		add_filter( 'wp_update_attachment_metadata', array( $this, 'smush_image' ), 15, 2 );
 
 		// Delete backup files.
@@ -197,14 +195,8 @@ class WP_Smush {
 		 */
 		add_action( 'plugins_loaded', array( $this, 'load_libs' ), 90 );
 
-		// Load S3 library.
-		add_action( 'aws_init', array( $this, 'load_s3' ), 15 );
-		add_action( 'as3cf_init', array( $this, 'load_s3' ), 15 );
-
 		// Handle the Async optimisation.
 		add_action( 'wp_async_wp_generate_attachment_metadata', array( $this, 'wp_smush_handle_async' ) );
-
-		// Handle the Async optimisation.
 		add_action( 'wp_async_wp_save_image_editor_file', array( $this, 'wp_smush_handle_editor_async' ), '', 2 );
 
 		// Register function for sending unsmushed image count to hub.
@@ -1599,10 +1591,8 @@ class WP_Smush {
 
 	/**
 	 * Load Plugin Modules
-	 *
 	 */
 	function load_libs() {
-
 		//Load Nextgen lib, and initialize wp smush async class
 		$this->load_nextgen();
 		$this->wp_smush_async();
@@ -1613,13 +1603,9 @@ class WP_Smush {
 	 * Include and instantiate classes
 	 */
 	function load_nextgen() {
-
-		if ( ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
-			return;
-		}
 		global $wpsmush_settings;
 
-		//Check if integration is Enabled or not
+		// Check if integration is enabled or not.
 		if ( ! empty( $wpsmush_settings->settings ) ) {
 			$opt_nextgen_val = $wpsmush_settings->settings['nextgen'];
 		} else {
@@ -1645,20 +1631,6 @@ class WP_Smush {
 		$wpsmushnextgenstats = new WpSmushNextGenStats();
 		$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 		new WPSmushNextGenBulk();
-	}
-
-	/**
-	 * Load S3 module if the respective plugin is active
-	 */
-	function load_s3() {
-
-		//If we don't have free or pro verison for WP Offload S3, return
-		if ( ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) {
-			return;
-		}
-
-		//Include Smush Async class
-		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-s3.php';
 	}
 
 	/**
@@ -2310,6 +2282,8 @@ class WP_Smush {
 	 * Initialize the Smush Async class
 	 */
 	function wp_smush_async() {
+		// Include Smush Async class.
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-s3.php';
 
 		//Don't load the Async task, if user not logged in or not in backend
 		if ( ! is_admin() || ! is_user_logged_in() ) {
