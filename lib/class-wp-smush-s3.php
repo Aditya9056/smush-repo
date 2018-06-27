@@ -43,8 +43,8 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			// Filters the setting variable to add S3 setting in premium features.
 			add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 1 );
 
-			// Return if not a pro user.
-			if ( ! $wp_smush->validate_install() ) {
+			// Return if not a pro user or the S3 plugin is not installed.
+			if ( ! $wp_smush->validate_install() || ( ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) ) {
 				return;
 			}
 
