@@ -2424,15 +2424,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return void
 		 */
 		public function upgrade_settings() {
-			global $wpsmush_settings;
+			// Get smush version from db.
+			$version = get_site_option( WP_SMUSH_PREFIX . 'version' );
 
-			// If exif is not preserved, it will be stripped by default.
-			if ( $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'keep_exif' ) ) {
-				// Set not to strip exif value.
-				$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
+			// We need to upgrade only if we are upgrading from older version.
+			if ( version_compare( $version, '2.8.0', '<' ) ) {
+				global $wpsmush_settings;
 
-				// Delete the old exif setting.
-				$wpsmush_settings->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
+				// If exif is not preserved, it will be stripped by default.
+				if ( $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'keep_exif' ) ) {
+					// Set not to strip exif value.
+					$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
+					// Delete the old exif setting.
+					$wpsmush_settings->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
+				}
+
+				// Store the latest plugin version in db.
+				update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
 			}
 		}
 	}
