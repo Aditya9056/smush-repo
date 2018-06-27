@@ -48,6 +48,10 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';
 //Include Plugin Recommendations
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-recommender.php';
 
+// Installer Class.
+/* @noinspection PhpIncludeInspection */
+include_once WP_SMUSH_DIR . 'lib/class-wp-smush-installer.php';
+
 /**
  * Class WP_Smush.
  */
@@ -202,13 +206,15 @@ class WP_Smush {
 		// Register function for sending unsmushed image count to hub.
 		add_filter( 'wdp_register_hub_action', array( $this, 'smush_stats' ) );
 
-		/**
-		 * Add information to privacy policy page (only during creation).
-		 */
+		// Add information to privacy policy page (only during creation).
 		add_action( 'admin_init', array( $this, 'add_policy' ) );
 
 		// Register REST API metas.
 		WP_Smush_Rest::get_instance()->register_metas();
+
+		if ( is_admin() ) {
+			add_action( 'admin_init', array( 'WP_Smush_Installer', 'upgrade_settings' ) );
+		}
 	}
 
 	/**

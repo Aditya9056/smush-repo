@@ -226,9 +226,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Load js and css on pages with Media Uploader - WP Enqueue Media.
 			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
-
-			// Run upgrade script.
-			add_action( 'plugins_loaded', array( $this, 'upgrade_settings' ) );
 		}
 
 		function init_settings() {
@@ -2411,37 +2408,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			return $resmush_list;
-		}
-
-		/**
-		 * Upgrade old settings to new if required.
-		 *
-		 * We have changed exif data setting key from version 2.8
-		 * Update the existing value to new one.
-		 *
-		 * @since 2.8.0
-		 *
-		 * @return void
-		 */
-		public function upgrade_settings() {
-			// Get smush version from db.
-			$version = get_site_option( WP_SMUSH_PREFIX . 'version' );
-
-			// We need to upgrade only if we are upgrading from older version.
-			if ( version_compare( $version, '2.8.0', '<' ) ) {
-				global $wpsmush_settings;
-
-				// If exif is not preserved, it will be stripped by default.
-				if ( $wpsmush_settings->get_setting( WP_SMUSH_PREFIX . 'keep_exif' ) ) {
-					// Set not to strip exif value.
-					$wpsmush_settings->update_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
-					// Delete the old exif setting.
-					$wpsmush_settings->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
-				}
-
-				// Store the latest plugin version in db.
-				update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
-			}
 		}
 	}
 
