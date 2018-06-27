@@ -2305,13 +2305,15 @@ jQuery( function ( $ ) {
 			}
 		).on('filetreeexpanded', function(e, data) {
 			// Add a selected class to directory.
-			//console.log( 'expanded' );
 			data.container.find('li').removeClass('selected');
 			data.li.addClass('selected');
-		}).on('filetreeclicked', function(e, data) {
-			//console.log( data );
+		}).on('filetreecollapsed', function(e, data) {
+			// Add a selected class to the closest expanded tree.
+			data.li.removeClass('selected');
+			const li = data.container.find( '[rel="' + data.rel + '"]' ).parent().closest('.expanded');
+			li.addClass('selected');
 		});
-	};
+	}
 
 	//Stats Section Choose Directory Link
 	$( 'body' ).on( 'click', 'a.wp-smush-dir-link', function ( e ) {

@@ -42,6 +42,11 @@
                 padding-left: 5px;
             }
 
+
+            &.wait {
+                background: url('#{$img--path}/spinner.gif') left 10px no-repeat !important;
+            }
+
             .ext_tif,
             .ext_tif,
             .ext_tiff,
@@ -70,7 +75,9 @@
                 &.selected {
                     background: url('#{$img--path}/folder-open-selected.svg') left 10px no-repeat;
 
-                    & > a {
+                    & > a,
+                    li.directory,
+                    li.file {
                         color: #17A8E3 !important;
                         background-color: #E1F6FF;
                     }

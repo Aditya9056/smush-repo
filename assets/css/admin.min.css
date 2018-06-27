@@ -7798,6 +7798,10 @@ html.sui-has-overlay {
   padding-left: 5px;
 }
 
+.sui-2-2-5 ul.jqueryFileTree li.wait {
+  background: url(../images/spinner.gif) left 10px no-repeat !important;
+}
+
 .sui-2-2-5 ul.jqueryFileTree li .ext_tif,
 .sui-2-2-5 ul.jqueryFileTree li .ext_tif,
 .sui-2-2-5 ul.jqueryFileTree li .ext_tiff,
@@ -7828,7 +7832,9 @@ html.sui-has-overlay {
   background: url(../fonts/folder-open-selected.svg) left 10px no-repeat;
 }
 
-.sui-2-2-5 ul.jqueryFileTree li.expanded.selected > a {
+.sui-2-2-5 ul.jqueryFileTree li.expanded.selected > a,
+.sui-2-2-5 ul.jqueryFileTree li.expanded.selected li.directory,
+.sui-2-2-5 ul.jqueryFileTree li.expanded.selected li.file {
   color: #17A8E3 !important;
   background-color: #E1F6FF;
 }
