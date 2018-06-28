@@ -1643,7 +1643,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 				if ( $smush_count || $resmush_count ) {
 					$message_class = ' sui-notice-warning';
-					$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %sBulk smush now!%s', 'wp-smushit' ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
+					// Show link to bulk smush tab from other tabs.
+					$bulk_smush_link = 'bulk' === $this->current_tab ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . $wpsmushit_admin->settings_link( array(), true ) . '">';
+					$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %sBulk smush now!%s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
 				}
 
 				echo '<div class="sui-notice-top sui-can-dismiss' . $message_class . '">
