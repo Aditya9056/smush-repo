@@ -42,7 +42,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		}
 
 		/**
-		 * Init actions.
+		 * Init filters and actions.
 		 */
 		function init() {
 			global $wp_smush, $wpsmush_settings;
