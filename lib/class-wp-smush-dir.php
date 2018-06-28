@@ -1,5 +1,7 @@
 <?php
 /**
+ * Directory Smush: WpSmushDir class
+ *
  * @package WP_Smush
  * @subpackage Admin
  * @since 2.6
@@ -10,54 +12,58 @@
  */
 
 if ( ! class_exists( 'WpSmushDir' ) ) {
-
+	/**
+	 * Class WpSmushDir
+	 */
 	class WpSmushDir {
-
 		/**
-		 * @var Contains a list of optimised images
+		 * Contains a list of optimised images.
+		 *
+		 * @var $optimised_images
 		 */
 		public $optimised_images;
 
 		/**
-		 * @var Total Stats for the image optimisation
+		 * Total Stats for the image optimisation.
 		 *
+		 * @var $stats
 		 */
 		public $stats;
 
+		/**
+		 * WpSmushDir constructor.
+		 */
 		public function __construct() {
-
 			if ( ! $this->should_continue() ) {
-
 				// Remove directory smush from tabs if not required.
 				add_filter( 'smush_setting_tabs', array( $this, 'remove_directory_tab' ) );
 
 				return;
 			}
 
-			//Hook UI at the end of Settings UI
+			// Hook UI at the end of Settings UI.
 			add_action( 'smush_directory_settings_ui', array( $this, 'ui' ), 11 );
 
-			//Output Stats after Resize savings
+			// Output Stats after Resize savings.
 			add_action( 'stats_ui_after_resize_savings', array( $this, 'stats_ui' ), 10 );
 
-			//Handle Ajax request 'smush_get_directory_list'
+			// Handle Ajax request 'smush_get_directory_list'.
 			add_action( 'wp_ajax_smush_get_directory_list', array( $this, 'directory_list' ) );
 
-			//Scan the given directory path for the list of images
+			// Scan the given directory path for the list of images.
 			add_action( 'wp_ajax_image_list', array( $this, 'image_list' ) );
 
-			//Handle Ajax Request to optimise images
+			// Handle Ajax Request to optimise images.
 			add_action( 'wp_ajax_optimise', array( $this, 'optimise' ) );
 
-			//Handle Exclude path request
+			// Handle Exclude path request.
 			add_action( 'wp_ajax_smush_exclude_path', array( $this, 'smush_exclude_path' ) );
 
-			//Handle Ajax request: resume scan
+			// Handle Ajax request: resume scan.
 			add_action( 'wp_ajax_resume_scan', array( $this, 'resume_scan' ) );
 
-			//Handle Ajax request for directory smush stats
+			// Handle Ajax request for directory smush stats.
 			add_action( 'wp_ajax_get_dir_smush_stats', array( $this, 'get_dir_smush_stats' ) );
-
 		}
 
 		/**
@@ -393,9 +399,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						if ( file_exists( $file_path ) && $file != '.' && $file != '..' ) {
 							if ( is_dir( $file_path ) && ! $this->skip_dir( $file_path ) ) {
 								//Skip Uploads folder - Media Files
-								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/' tabindex='0'>" . $htmlName . "</a></li><br />";
+								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/' tabindex='0'>" . $htmlName . "</a></li>";
 							} else if ( in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $file_path ) ) {
-								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "' tabindex='0'>" . $htmlName . "</a></li><br />";
+								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "' tabindex='0'>" . $htmlName . "</a></li>";
 							}
 						}
 					}
@@ -1268,7 +1274,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * Remove image/image from db based on path details
 		 */
 		function smush_exclude_path() {
-
 			//Validate Ajax nonce
 			check_ajax_referer( 'wp-smush-exclude-path', 'nonce' );
 

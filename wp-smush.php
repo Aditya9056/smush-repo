@@ -13,7 +13,7 @@
  * Plugin Name:       Smush Pro
  * Plugin URI:        http://premium.wpmudev.org/projects/wp-smush-pro/
  * Description:       Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
- * Version:           2.8.0-alpha.1
+ * Version:           2.8.0-alpha.2
  * Author:            WPMU DEV
  * Author URI:        https://premium.wpmudev.org/
  * License:           GPLv2
@@ -48,7 +48,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'WP_SMUSH_VERSION', '2.8.0-alpha.1' );
+define( 'WP_SMUSH_VERSION', '2.8.0-alpha.2' );
 define( 'WP_SHARED_UI_VERSION', 'sui-2-2-5' ); // Used to define body class.
 define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
 define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
@@ -229,41 +229,6 @@ if ( ! function_exists( 'smush_deactivated' ) ) {
 	}
 }
 
-if ( ! function_exists( 'smush_activated' ) ) {
-	/**
-	 * Check if a existing install or new
-	 */
-	function smush_activated() {
-		/* @var WpSmushSettings $wpsmush_settings */
-		global $wpsmush_settings;
-
-		$version  = get_site_option( WP_SMUSH_PREFIX . 'version' );
-		$settings = ! empty( $wpsmush_settings->settings ) ? $wpsmush_settings->settings : $wpsmush_settings->init_settings();
-
-		// If the version is not saved or if the version is not same as the current version,.
-		if ( ! $version || WP_SMUSH_VERSION !== $version ) {
-			global $wpdb;
-			// Check if there are any existing smush stats.
-			$results = $wpdb->get_var( $wpdb->prepare(
-				"SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT 1",
-				'wp-smpro-smush-data'
-			) ); // db call ok; no-cache ok.
-
-			if ( $results ) {
-				update_site_option( 'wp-smush-install-type', 'existing' );
-			} else {
-				// Check for existing settings.
-				if ( false !== $settings['auto'] ) {
-					update_site_option( 'wp-smush-install-type', 'existing' );
-				}
-			}
-
-			// Store the plugin version in db.
-			update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
-		}
-	}
-}
-
 if ( ! function_exists( 'smush_sanitize_hex_color' ) ) {
 	/**
 	 * Sanitizes a hex color.
@@ -351,4 +316,4 @@ if ( ! function_exists( 'smush_body_classes' ) ) {
 	}
 }
 
-register_activation_hook( __FILE__, 'smush_activated' );
+register_activation_hook( 'lib/class-wp-smush-installer.php', array( 'WP_Smush_Installer', 'smush_activated' ) );
