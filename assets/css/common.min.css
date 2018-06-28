@@ -364,7 +364,8 @@ input#wp-smush-save-settings {
   line-height: 29px;
 }
 
-#post-body-content .smush-status {
+#post-body-content .smush-status,
+.attachment-details .smush-status {
   margin: 4px 0;
 }
 
