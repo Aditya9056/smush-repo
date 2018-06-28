@@ -48,6 +48,10 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';
 //Include Plugin Recommendations
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-recommender.php';
 
+// Installer Class.
+/* @noinspection PhpIncludeInspection */
+include_once WP_SMUSH_DIR . 'lib/class-wp-smush-installer.php';
+
 /**
  * Class WP_Smush.
  */
@@ -202,13 +206,15 @@ class WP_Smush {
 		// Register function for sending unsmushed image count to hub.
 		add_filter( 'wdp_register_hub_action', array( $this, 'smush_stats' ) );
 
-		/**
-		 * Add information to privacy policy page (only during creation).
-		 */
+		// Add information to privacy policy page (only during creation).
 		add_action( 'admin_init', array( $this, 'add_policy' ) );
 
 		// Register REST API metas.
 		WP_Smush_Rest::get_instance()->register_metas();
+
+		if ( is_admin() ) {
+			add_action( 'admin_init', array( 'WP_Smush_Installer', 'upgrade_settings' ) );
+		}
 	}
 
 	/**
@@ -224,7 +230,7 @@ class WP_Smush {
 		$this->smush_original = $this->validate_install() && $wpsmush_settings->settings['original'];
 
 		// Check whether to keep EXIF data or not.
-		$this->keep_exif = $wpsmush_settings->settings['keep_exif'];
+		$this->keep_exif = empty( $wpsmush_settings->settings['strip_exif'] );
 	}
 
 	function admin_init() {
@@ -762,7 +768,7 @@ class WP_Smush {
 			$headers['lossy'] = 'false';
 		}
 
-		$headers['exif'] = $wpsmush_settings->settings['keep_exif'] ? 'true' : 'false';
+		$headers['exif'] = $wpsmush_settings->settings['strip_exif'] ? 'false' : 'true';
 
 		$api_url = defined( 'WP_SMUSH_API_HTTP' ) ? WP_SMUSH_API_HTTP : WP_SMUSH_API;
 		$args    = array(

@@ -1359,7 +1359,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if ( empty( $setting_key ) || ! in_array( $setting_key, array(
 					'resize',
 					'original',
-					'keep_exif',
+					'strip_exif',
 					'png_to_jpg',
 					's3'
 				) )
@@ -1376,7 +1376,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					case 'original':
 						esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed, unless your website uses the original images in full size.', 'wp-smushit' );
 						break;
-					case 'keep_exif':
+					case 'strip_exif':
 						esc_html_e( 'Note: This data adds to the size of the image. While this information might be important to photographers, it’s unnecessary for most users and safe to remove.', 'wp-smushit' );
 						break;
 					case 'png_to_jpg':

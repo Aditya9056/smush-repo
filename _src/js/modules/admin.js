@@ -1936,7 +1936,7 @@ jQuery( function ( $ ) {
 			var wrapper_div = self.parents().eq( 1 );
 
 			//Get all the main settings
-			var keep_exif = document.getElementById( "wp-smush-keep_exif" );
+			var strip_exif = document.getElementById( "wp-smush-strip_exif" );
 			var super_smush = document.getElementById( "wp-smush-lossy" );
 			var smush_original = document.getElementById( "wp-smush-original" );
 			var resize_images = document.getElementById( "wp-smush-resize" );
@@ -1947,7 +1947,7 @@ jQuery( function ( $ ) {
 			$( '.wp-smush-hex-notice' ).hide();
 
 			//If Preserve Exif is Checked, and all other settings are off, just save the settings
-			if ( ( keep_exif === null || keep_exif.checked )
+			if ( ( strip_exif === null || !strip_exif.checked )
 				&& ( super_smush === null || !super_smush.checked )
 				&& ( smush_original === null || !smush_original.checked )
 				&& ( resize_images === null || !resize_images.checked )
