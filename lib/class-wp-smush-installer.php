@@ -22,7 +22,7 @@ class WP_Smush_Installer {
 	 *
 	 * @since 2.8.0  Moved to this class from wp-smush.php file.
 	 */
-	public function smush_activated() {
+	public static function smush_activated() {
 		if ( ! defined( 'WP_SMUSH_ACTIVATING' ) ) {
 			define( 'WP_SMUSH_ACTIVATING', true );
 		}
@@ -61,7 +61,7 @@ class WP_Smush_Installer {
 	 *
 	 * @since 2.8.0
 	 */
-	public function upgrade_settings() {
+	public static function upgrade_settings() {
 		// Avoid to execute this over an over in same thread.
 		if ( defined( 'WP_SMUSH_ACTIVATING' ) || ( defined( 'WP_SMUSH_UPGRADING' ) && WP_SMUSH_UPGRADING ) ) {
 			return;
