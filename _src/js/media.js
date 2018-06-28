@@ -67,8 +67,7 @@
      */
 	smush_media.view.Attachment.Details = smushAttachmentDetails.extend({
 		initialize: function () {
-			this.listenTo(this.model, 'change', this.render);
-			this.listenTo(this.model, 'destroy', this.remove);
+			this.listenTo(this.model, 'change:smush', this.render);
 		},
 
 		render: function () {
@@ -113,7 +112,7 @@
 				if ( typeof img.smush === 'object' ) {
 					_this.model.fetch();
 				} else {
-					_this.render();
+					setTimeout(_this.reCheckStatus, 1000, _this);
 				}
 			});
 		}
