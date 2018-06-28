@@ -324,26 +324,14 @@ input#wp-smush-save-settings {
   margin-top: 10px;
 }
 
-.attachment-info .smush-status {
-  margin: 1px 0 0;
-  padding: 0;
-  line-height: 29px;
-}
-
-#post-body-content .smush-status {
-  margin: 4px 0;
+.compat-field-wp_smush button {
+  /** If we have button-primary class, this style will be loaded already **/
 }
 
 .compat-field-wp_smush button.wp-smush-send {
   float: left;
   margin-bottom: 5px;
 }
-
-.attachment-info .wp-smush-error-message {
-  margin: 6px 0 1em;
-}
-
-/** If we have button-primary class, this style will be loaded already **/
 
 .compat-field-wp_smush button:not(.button-primary) {
   background: #0085ba;
@@ -368,6 +356,20 @@ input#wp-smush-save-settings {
   box-shadow: none !important;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
   cursor: default;
+}
+
+.attachment-info .smush-status {
+  margin: 1px 0 0;
+  padding: 0;
+  line-height: 29px;
+}
+
+#post-body-content .smush-status {
+  margin: 4px 0;
+}
+
+.attachment-info .wp-smush-error-message {
+  margin: 6px 0 1em;
 }
 
 label.setting.smush-stats .smush-wrap,
@@ -464,6 +466,11 @@ label.setting.smush-stats .smush-wrap,
   font-size: 15px;
 }
 
+#wp-smush-invalid-member a {
+  color: #514a30;
+  text-decoration: underline;
+}
+
 #wp-smush-invalid-member.loading-notice > div,
 #wp-smush-invalid-member.loaded-notice > div {
   -webkit-filter: blur(2px);
@@ -471,11 +478,6 @@ label.setting.smush-stats .smush-wrap,
   -o-filter: blur(2px);
   -ms-filter: blur(2px);
   filter: blur(2px);
-}
-
-#wp-smush-invalid-member a {
-  color: #514a30;
-  text-decoration: underline;
 }
 
 .attachment-details .setting div.smush-status-links {
