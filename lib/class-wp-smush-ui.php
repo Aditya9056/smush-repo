@@ -437,7 +437,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Box body class.
 			$box_body_class = $is_pro ? 'sui-box-body' : 'sui-box-body sui-upsell-items';
-			echo '<div class="sui-box ' . esc_attr( $box_body_class ) . '">';
+			echo '<div class="' . esc_attr( $box_body_class ) . '">';
 
 			// Integration settings content.
 			$this->integrations_settings();
