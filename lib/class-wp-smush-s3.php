@@ -28,7 +28,6 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			// Hook at the end of setting row to output a error div.
 			add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ) );
-			add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
 		}
 
 		/**
@@ -53,6 +52,9 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			// Check if the backup file exists.
 			add_filter( 'smush_backup_exists', array( $this, 'backup_exists_on_s3' ), 10, 3 );
+
+
+			add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
 		}
 
 		/**
