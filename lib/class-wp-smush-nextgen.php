@@ -36,9 +36,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 */
 		function __construct() {
 			$this->init();
-
-			// Hook at the end of setting row to output a error div.
-			add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
 		}
 
 		/**
@@ -82,6 +79,9 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 			// Resmush Image: Handles the single/Manual resmush image request for NextGen Gallery.
 			add_action( 'wp_ajax_smush_resmush_nextgen_image', array( $this, 'resmush_image' ) );
+
+			// Hook at the end of setting row to output a error div.
+			add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
 		}
 
 		/**

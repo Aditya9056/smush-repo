@@ -242,7 +242,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function container_footer( $content = '', $sub_content = '' ) {
-
 			?>
 			<div class="sui-box-footer">
 				<?php echo $content; ?>
@@ -425,15 +424,20 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				return;
 			}
 
-			// Container box class.
-			$class = $wp_smush->validate_install() ? 'smush-integrations-wrapper wp-smush-pro' : 'smush-integrations-wrapper';
+			$is_pro = $wp_smush->validate_install();
 
-			echo '<div class="sui-box ' . $class . '" id="wp-smush-integrations-box">';
+			// Container box class.
+			$class = $is_pro ? 'smush-integrations-wrapper wp-smush-pro' : 'smush-integrations-wrapper';
+
+			echo '<div class="sui-box ' . esc_attr( $class ) . '" id="wp-smush-integrations-box">';
 
 			// Container header.
 			$this->container_header( esc_html__( 'Integrations', 'wp-smushit' ) );
 
-			echo '<div class="sui-box-body">';
+
+			// Box body class.
+			$box_body_class = $is_pro ? 'sui-box-body' : 'sui-box-body sui-upsell-items';
+			echo '<div class="' . esc_attr( $box_body_class ) . '">';
 
 			// Integration settings content.
 			$this->integrations_settings();
@@ -451,9 +455,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
-			// Container footer.
-			$this->container_footer( '', $div_end );
-
+			// Container footer if pro.
+			if ( $is_pro ) {
+				$this->container_footer( '', $div_end );
+			}
 			echo '</div>';
 
 			/**
@@ -748,14 +753,16 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			// Get settings values.
-			$settings = empty( $wpsmush_settings->settings ) ? $wpsmush_settings->init_settings() : $wpsmush_settings->settings; ?>
+			$settings = empty( $wpsmush_settings->settings ) ? $wpsmush_settings->init_settings() : $wpsmush_settings->settings;
+			?>
 
 			<!-- Start integration form -->
 			<form id="wp-smush-settings-form" method="post">
 
 				<input type="hidden" name="setting_form" id="setting_form" value="integration">
 
-				<?php wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
+				<?php
+				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
 
 				// For subsite admins show only if networkwide options is not enabled.
 				if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
@@ -812,16 +819,18 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				'utm_campaign' => 'smush-nextgen-settings-upsell',
 			), $wpsmushit_admin->upgrade_url );
 			?>
-			<div class="sui-upsell-row">
-				<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo esc_url( WP_SMUSH_URL . 'assets/images/smush-promo.png' ); ?>">
+			<div class="sui-box-settings-row sui-upsell-row">
+				<img class="sui-image sui-upsell-image sui-upsell-image-smush integrations-upsell-image" src="<?php echo esc_url( WP_SMUSH_URL . 'assets/images/smush-promo.png' ); ?>">
 				<div class="sui-upsell-notice">
 					<p>
-						<?php printf(
+						<?php
+						printf(
 						/* translators: %1$s - a href tag, %2$s - a href closing tag */
 							esc_html__( 'Smush Pro supports hosting images on Amazon S3 and optimizing NextGen Gallery images directly through NextGen Gallery settings. %1$sTry it free%2$s with a WPMU DEV membership today!', 'wp-smushit' ),
 							'<a href="' . esc_url( $upsell_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">',
 							'</a>'
-						); ?>
+						);
+						?>
 					</p>
 				</div>
 			</div>
@@ -1608,7 +1617,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			?>
 			<div class="sui-upsell-row">
-				<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-promo.png'; ?>">
+				<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-graphic-bulksmush-upsell@2x.png'; ?>">
 				<div class="sui-upsell-notice">
 					<p><?php printf( esc_html__( 'Did you know WP Smush Pro delivers up to 2x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">', '</a>' ); ?></p>
 				</div>
@@ -1643,7 +1652,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 				if ( $smush_count || $resmush_count ) {
 					$message_class = ' sui-notice-warning';
-					$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %sBulk smush now!%s', 'wp-smushit' ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
+					// Show link to bulk smush tab from other tabs.
+					$bulk_smush_link = 'bulk' === $this->current_tab ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . $wpsmushit_admin->settings_link( array(), true ) . '">';
+					$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %sBulk smush now!%s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
 				}
 
 				echo '<div class="sui-notice-top sui-can-dismiss' . $message_class . '">

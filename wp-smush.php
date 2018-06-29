@@ -51,7 +51,9 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'WP_SMUSH_VERSION', '2.8.0-alpha.2' );
 define( 'WP_SHARED_UI_VERSION', 'sui-2-2-5' ); // Used to define body class.
 define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
-define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
+if ( ! defined( 'WP_SMUSH_API' ) ) {
+	define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
+}
 define( 'WP_SMUSH_UA', 'WP Smush/' . WP_SMUSH_VERSION . '; ' . network_home_url() );
 define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
