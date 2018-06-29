@@ -1227,21 +1227,6 @@ jQuery( function ( $ ) {
 
 	};
 
-	/**
-	 * Add choose directory button at the top
-	 *
-	 */
-	var add_dir_browser_button = function () {
-		//Get the content div length, if less than 1500, Skip
-		if ( $( 'div.wp-smush-scan-result div.content' ).height() < 1500 || $( 'div.dir-smush-button-wrap.top' ).length >= 1 ) {
-			return;
-		}
-
-		var choose_button = $( 'div.dir-smush-button-wrap' ).clone();
-		choose_button.addClass( 'top' );
-		$( 'div.wp-smush-scan-result div.content' ).prepend( choose_button );
-	};
-
 	var add_smush_button = function () {
 		//Get the content div length, if less than 1500, Skip
 		if ( $( 'div.wp-smush-scan-result div.content' ).height() < 1500 || $( 'div.wp-smush-all-button-wrap.top' ).length >= 1 ) {
@@ -1279,42 +1264,6 @@ jQuery( function ( $ ) {
 
 		//Add class top
 		notice.addClass( 'top' );
-
-		//Append the notice
-		$( 'div.wp-smush-scan-result div.dir-smush-button-wrap' ).after( notice );
-	};
-
-	var update_smush_progress = function () {
-		var in_progress_path = $( 'ul.wp-smush-image-list li.in-progress' );
-		in_progress_path.removeClass( 'in-progress active' );
-		if ( in_progress_path.length > 0 ) {
-			in_progress_path.each( function ( index, ele ) {
-				if ( $( ele ).hasClass( 'wp-smush-image-ul' ) ) {
-					//Remove Spinner
-					$( ele ).find( 'span.spinner' ).remove();
-
-					//Check if images are pending
-					var in_progress_ele = $( ele ).find( 'li.wp-smush-image-ele' );
-
-					//If there are elements
-					if ( in_progress_ele.length > 0 ) {
-						var optimised = in_progress_ele.filter( '.optimised' ).length;
-						var error = in_progress_ele.filter( '.error' ).length;
-						//if all the elements are optimised
-						if ( optimised == in_progress_ele.length ) {
-							$( ele ).addClass( 'complete' );
-						} else if ( 0 < optimised || 0 < error ) {
-							//If there are images that needs to be smushed, add the class partial
-							$( ele ).addClass( 'partial' );
-						}
-					}
-
-				} else {
-					//Remove spinner for the element
-					$( ele ).find( 'span.spinner' ).remove();
-				}
-			} );
-		}
 	};
 
 	/**
@@ -2320,8 +2269,6 @@ jQuery( function ( $ ) {
 		if ( $( 'div.sui-wrap button.wp-smush-browse' ).length > 0 ) {
 			e.preventDefault();
 			SUI.dialogs["wp-smush-list-dialog"].show();
-			//Display the loader
-			$( 'button.dir-smush-button-wrap span.spinner' ).addClass( 'is-active' );
 			//Display File tree for Directory Smush
 			initFileTree();
 		}
@@ -2341,16 +2288,12 @@ jQuery( function ( $ ) {
 			//Disable Buttons
 			$( this ).attr( 'disabled', 'disabled' );
 			$( 'button.wp-smush-resume' ).attr( 'disabled', 'disabled' );
-			$( 'div.dir-smush-button-wrap span.spinner' ).addClass( 'is-active' );
 		}
 
 		//Remove Notice
 		$( 'div.wp-smush-info' ).remove();
 
 		showDialog();
-
-		//Display the loader
-		$( 'button.dir-smush-button-wrap span.spinner' ).addClass( 'is-active' );
 
 		//Display File tree for Directory Smush
 		initFileTree();
