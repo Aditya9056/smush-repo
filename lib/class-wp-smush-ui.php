@@ -1617,7 +1617,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			?>
 			<div class="sui-upsell-row">
-				<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-promo.png'; ?>">
+				<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-graphic-bulksmush-upsell@2x.png'; ?>">
 				<div class="sui-upsell-notice">
 					<p><?php printf( esc_html__( 'Did you know WP Smush Pro delivers up to 2x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">', '</a>' ); ?></p>
 				</div>
