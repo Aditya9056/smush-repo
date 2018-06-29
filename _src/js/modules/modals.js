@@ -1,4 +1,4 @@
-( function( $ ) {
+( function ( $ ) {
 	'use strict';
 
 	/**
@@ -34,7 +34,7 @@
 	 * Quick Setup - Skip button
 	 */
 	$( '.smush-skip-setup' ).on( 'click', function () {
-		const form = $('form#smush-quick-setup-form');
+		const form = $( 'form#smush-quick-setup-form' );
 
 		$.ajax( {
 			type: 'POST',

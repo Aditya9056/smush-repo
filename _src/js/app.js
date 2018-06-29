@@ -6,9 +6,9 @@ import 'jqueryfiletree/src/jQueryFileTree.js';
 /**
  * Admin modules
  */
-require('./modules/admin');
-require('./modules/bulk-smush');
-require('./modules/modals');
+require( './modules/admin' );
+require( './modules/bulk-smush' );
+require( './modules/modals' );
 
 /**
  * Notice scripts.
@@ -21,4 +21,4 @@ require('./modules/modals');
  *
  * TODO: should this be moved out in a separate file like common.scss?
  */
-require('./modules/notice');
+require( './modules/notice' );
