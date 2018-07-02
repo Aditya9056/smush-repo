@@ -3,6 +3,26 @@
  */
 @import "/modules/media";
 
+/**
+ * Smush buttons & stats in the media library, media upload and featured image modals.
+ *
+ * @since 2.8.0
+ */
+
+// Media Library Attachement details,
+.attachment-details .smush-wrap {
+	.smush-status {
+		margin: 0 0 1em;
+		padding: 0;
+		line-height: 16px;
+	}
+
+	.wp-smush-send {
+		float: left;
+	}
+}
+
+
 /*
  * Smush button transformation
  */
@@ -94,14 +114,7 @@ input#wp-smush-save-settings {
 	}
 }
 
-.attachment-info .smush-status {
-	margin: 1px 0 0;
-	padding: 0;
-	line-height: 29px;
-}
-
-#post-body-content .smush-status,
-.attachment-details .smush-status {
+#post-body-content .smush-status {
 	margin: 4px 0;
 }
 
@@ -404,14 +417,6 @@ div.smush-pro-link-wrap {
 	font-size: 13px;
 	line-height: 1.7;
 	padding: 20px;
-}
-
-.media-sidebar label.smush-stats span.name {
-	margin-top: 0.55em;
-}
-
-.media-sidebar label.setting.smush-stats .smush-wrap.unsmushed {
-	margin-top: 0.6em;
 }
 
 .compat-item .compat-field-wp_smush {
