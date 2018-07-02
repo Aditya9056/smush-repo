@@ -29,12 +29,12 @@ let progress_bar = function ( cur_ele, txt, state ) {
 
 	if ( 'show' === state ) {
 		progress_button.html( txt );
-		progress_button.toggleClass( 'visible' );
 	} else {
 		/** @var {string} wp_smush_msgs.all_done */
 		progress_button.html( wp_smush_msgs.all_done );
-		progress_button.hide();
 	}
+
+	progress_button.toggleClass( 'visible' );
 };
 
 /**
@@ -2647,4 +2647,4 @@ jQuery( function ( $ ) {
 		} );
 	};
 
-})( jQuery );
+})( jQuery );                                                                          
