@@ -8,8 +8,6 @@
  *
  * @since 2.8.0
  */
-
-// Media Library Attachement details,
 .attachment-details .smush-wrap {
 	.smush-status {
 		margin: 0 0 1em;
@@ -18,10 +16,29 @@
 	}
 
 	.wp-smush-send {
-		float: left;
+		display: block;
+	}
+
+	.spinner {
+		background-position: left;
+		padding: 0 0 0 25px;
+		width: auto;
+		margin: 10px 0 0;
+		line-height: 23px;
+	}
+
+	.spinner.visible {
+		visibility: visible;
 	}
 }
 
+.wp-list-table.media {
+	.spinner.visible {
+		width: 100%;
+		padding-left: 25px;
+		margin: 10px 0 0;
+	}
+}
 
 /*
  * Smush button transformation
@@ -233,7 +250,6 @@ label.setting.smush-stats .smush-wrap,
 .attachment-details .setting div.smush-status-links {
 	float: none;
 	text-align: left;
-	margin-bottom: 15px;
 }
 
 div.attachment-details .setting div.smush-status-links.smush-status-links div.smush-stats-wrapper {

@@ -2,6 +2,41 @@
 
 Before starting development make sure you read and understand everything in this README.
 
+## Working with Git
+
+Clone the plugin repo and checkout the dev branch
+
+```
+# git clone git@bitbucket.org:incsub/wp-smushit.git --recursive
+# git fetch && git checkout dev
+```
+
+Install/update the necessary submodules if the branch is already checked out
+
+```
+# git submodule init --
+# git submodule update  
+```
+
+## Installing dependencies and initial configuration
+
+Install Node
+```
+# curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+# sudo apt-get install -y nodejs build-essential
+```
+
+Install the necessary npm modules and packages
+```
+# npm install
+``` 
+
+Set up username and email for Git commits
+```
+# git config user.email "<your email>"
+# git config user.name "<your name>"
+```
+
 ## Build tasks (npm)
 
 Everything (except unit tests) should be handled by npm. Note that you don't need to interact with Grunt in a direct way.
@@ -14,6 +49,11 @@ Command | Action
 `npm run build` | Build both versions, useful to provide packages to QA without doing all the release tasks
 `npm run build:pro` | Build only pro version
 `npm run build:free` | Build only wp.org version
+
+**IMPORTANT!** After branch checkout, you need to run `npm run build` or `npm run compile` in order to build the assets
+(minified versions of css and js files). Precompiled assets are not included with the development version of the plugin.
+This is done so that the git commits are clean and do not include the built assets that are regenerated with every
+change in the css/js files.
 
 ## Versioning
 
@@ -71,8 +111,8 @@ while wp.org contains the `extras/free-dashboard` folder.
 ## Directory Naming
 
 * `wp-smush-pro` PRO version
-* `wp-smush` wp.org version
+* `wp-smushit` wp.org version
 
-## Who do I talk to?
-
-* You can contact Umesh Kumar <umesh@incsub.com> or Aaron Edwards
+## Documentation ##
+Documentation is available here:
+https://docs.google.com/document/d/1IdYywXU3rFAVjugl-Y4jL2t9EFIuQK5cZXA0s1rR89Q/edit?usp=sharing

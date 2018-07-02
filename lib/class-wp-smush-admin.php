@@ -1205,7 +1205,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Show Temporary Status, For Async Optimisation, No Good workaround
 			if ( ! get_option( "wp-smush-restore-$id", false ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $wp_smush->is_auto_smush_enabled() ) {
 				// the status
-				$status_txt = '<p class="smush-status">'. __( 'Smushing in progress..', 'wp-smushit' ) . "</p>";
+				$status_txt = '<p class="smush-status">' . __( 'Smushing in progress..', 'wp-smushit' ) . '</p>';
 
 				// we need to show the smush button
 				$show_button = false;
