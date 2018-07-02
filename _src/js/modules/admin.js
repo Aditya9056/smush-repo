@@ -28,11 +28,11 @@ let progress_bar = function ( cur_ele, txt, state ) {
 	let progress_button = cur_ele.parents().eq( 1 ).find( '.wp-smush-progress' );
 
 	if ( 'show' === state ) {
-		progress_button.find( 'span' ).html( txt );
+		progress_button.html( txt );
 		progress_button.toggleClass( 'visible' );
 	} else {
 		/** @var {string} wp_smush_msgs.all_done */
-		progress_button.find( 'span' ).html( wp_smush_msgs.all_done );
+		progress_button.html( wp_smush_msgs.all_done );
 		progress_button.hide();
 	}
 };
