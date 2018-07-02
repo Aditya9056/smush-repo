@@ -39,7 +39,7 @@
     "jqueryfiletree": "git+https://github.com/jqueryfiletree/jqueryfiletree.git"
   },
   "devDependencies": {
-    "ajv": "6.5.1",
+    "ajv": "6.5.2",
     "ajv-keywords": "^3.2.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
@@ -53,14 +53,14 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-wp-i18n": "^1.0.2",
     "load-grunt-tasks": "^4.0.0",
-    "mini-css-extract-plugin": "^0.4.0",
+    "mini-css-extract-plugin": "^0.4.1",
     "node-sass": "^4.9.0",
     "postcss-loader": "^2.1.5",
     "resolve-url-loader": "^2.3.0",
     "sass-loader": "^7.0.3",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
-    "webpack": "^4.12.0",
-    "webpack-command": "^0.2.1"
+    "webpack": "^4.14.0",
+    "webpack-command": "^0.3.1"
   }
 }

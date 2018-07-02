@@ -7509,7 +7509,7 @@ html.sui-has-overlay {
   margin-top: 30px;
 }
 
-.sui-2-2-5 .sui-wrap .sui-upsell-row .sui-upsell-image.sui-upsell-image-smush {
+.sui-2-2-5 .sui-wrap .sui-upsell-row .sui-upsell-image.sui-upsell-image-smush:not(.integrations-upsell-image) {
   bottom: -30px;
   width: 85px;
 }
