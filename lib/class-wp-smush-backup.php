@@ -139,7 +139,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 		 */
 		function restore_image( $attachment = '', $resp = true ) {
 			global $wp_smush, $wpsmush_helper;
-			//If no attachment id is provided, check $_POST variable for attachment_id
+			// If no attachment id is provided, check $_POST variable for attachment_id.
 			if ( empty( $attachment ) ) {
 				// Check Empty fields.
 				if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
@@ -157,7 +157,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 				}
 			}
 
-			//Store the restore success/failure for Full size image
+			// Store the restore success/failure for Full size image.
 			$restored = $restore_png = false;
 
 			//Process Now
@@ -203,7 +203,7 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 						$backup_path = $wp_smush->get_image_backup_path( $file_path );
 					}
 				}
-				$backup_path = is_array( $backup_path ) && !empty( $backup_path['file'] ) ? $backup_path['file'] : $backup_path;
+				$backup_path = is_array( $backup_path ) && ! empty( $backup_path['file'] ) ? $backup_path['file'] : $backup_path;
 			}
 
 			$backup_full_path = str_replace( wp_basename( $file_path ), wp_basename( $backup_path ), $file_path );

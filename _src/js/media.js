@@ -78,9 +78,14 @@
 				return this;
 			}
 
-			if ( !this.model.isNew() ) {
-				setTimeout( this.reCheckStatus, 2000, this );
-			}
+			let image = new wp.api.models.Media( {id: this.model.get( 'id' )} ),
+				self  = this;
+
+			image.fetch( {attribute: 'smush'} ).done( function ( img ) {
+				if ( typeof img.smush !== 'object' ) {
+					setTimeout( () => self.model.fetch(), 3000 );
+				}
+			});
 
 			/**
 			 * Detach the views, append our custom fields, make sure that our data is fully updated
@@ -101,20 +106,6 @@
 			this.$el.append( html );
 
 			return this;
-		},
-
-		reCheckStatus( obj ) {
-			let _this = obj;
-
-			let image = new wp.api.models.Media( {id: obj.model.get( 'id' )} );
-			image.fetch( {attribute: 'smush'} ).done( function ( img ) {
-				/** @var {object|string} img.smush  Smush stats. */
-				if ( typeof img.smush === 'object' ) {
-					_this.model.fetch();
-				} else {
-					setTimeout( _this.reCheckStatus, 1000, _this );
-				}
-			} );
 		}
 	} );
 
