@@ -442,7 +442,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// Integration settings content.
 			$this->integrations_settings();
 
-			if ( ! $wp_smush->validate_install() ) {
+			if ( ! $is_pro ) {
 				$this->integrations_upsell();
 			}
 
@@ -450,7 +450,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Box footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
-				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $wp_smush->validate_install(), true, false ) . '>
+				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $is_pro, true, false ) . '>
 		        <span class="sui-icon-loader sui-loading sui-hidden"></span>
 		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
@@ -897,6 +897,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
+			// Check if Pro user.
+			$is_pro = $wp_smush->validate_install();
+
 			// Check if all items are smushed.
 			$all_done = ( $wpsmushit_admin->smushed_count == $wpsmushit_admin->total_count ) && 0 == count( $wpsmushit_admin->resmush_ids );
 
@@ -932,7 +935,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' sui-hidden' ?>">
 						<span class="smush-recommendation-title"><?php esc_html_e( 'Still having trouble with PageSpeed tests? Give these a go…', 'wp-smushit' ); ?></span>
 						<ol class="smush-recommendation-list">
-							<?php if ( ! $wp_smush->validate_install() ) : ?>
+							<?php if ( ! $is_pro ) : ?>
 								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Upgrade to Smush Pro for advanced lossy compression. %sTry pro free%s.', 'wp-smushit' ), '<a href="' . $upgrade_url . '" target="_blank">', '</a>' ); ?></li>
 							<?php elseif ( ! $wpsmush_settings->settings['lossy'] ) : ?>
 								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Enable %sSuper-smush%s for advanced lossy compression to optimise images further with almost no visible drop in quality.', 'wp-smushit' ), '<a href="#" class="wp-smush-lossy-enable">', '</a>' ); ?></li>
@@ -960,7 +963,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<div class="sui-notice sui-notice-warning<?php echo $class; ?>" tabindex="0">
 						<p>
 							<?php printf( _n( '%s, you have %s%s%d%s attachment%s that needs smushing!', '%s, you have %s%s%d%s attachments%s that need smushing!', $wpsmushit_admin->remaining_count, 'wp-smushit' ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' ); ?>
-							<?php if ( ! $wp_smush->validate_install() && $wpsmushit_admin->remaining_count > 50 ) : ?>
+							<?php if ( ! $is_pro && $wpsmushit_admin->remaining_count > 50 ) : ?>
 								<?php printf( esc_html__( ' %sUpgrade to Pro%s to bulk smush all your images with one click.', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Smush Pro', 'wp-smushit' ) . '">', '</a>' ); ?>
 								<?php esc_html_e( ' Free users can smush 50 images with each click.', 'wp-smushit' ); ?>
 							<?php endif; ?>
@@ -970,7 +973,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<button type="button" class="wp-smush-all wp-smush-button sui-button sui-button-primary" title="<?php esc_html_e( 'Click to start Bulk Smushing images in Media Library', 'wp-smushit' ); ?>"><?php esc_html_e( 'BULK SMUSH NOW', 'wp-smushit' ); ?></button>
 				</div><?php
 				$this->progress_bar( $wpsmushit_admin );
-				if ( ! $wp_smush->validate_install() ) : ?>
+				if ( $is_pro && $wp_smush->lossy_enabled ) : ?>
 					<p class="wp-smush-enable-lossy tc sui-hidden"><?php esc_html_e( 'Tip: Enable Super-smush in the Settings area to get even more savings with almost no visible drop in quality.', 'wp-smushit' ); ?></p>
 				<?php endif;
 				$this->super_smush_promo();
