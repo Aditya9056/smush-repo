@@ -43,7 +43,7 @@ require_once( WP_SMUSH_DIR . 'lib/class-wp-smush-admin.php' );
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-dir.php';
 
 //Include CDN
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';
+//require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';
 
 //Include Plugin Recommendations
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-recommender.php';

@@ -58,16 +58,16 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			add_action( 'admin_bar_menu', array( $this, 'resize_detection_button' ), 99 );
 
 			// Update responsive image srcset if required.
-			add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
+			//add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
 
 			// Update responsive image sizes if required.
-			add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 10, 5 );
+			//add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 10, 5 );
 
 			// Set a flag to media library images.
 			add_action( 'smush_image_src_before_cdn', array( $this, 'set_image_flag' ), 99, 2 );
 
 			// Add resizing arguments to image src.
-			add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
+			//add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
 		}
 
 		/**
@@ -78,25 +78,26 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 */
 		public function init_flags() {
 			/* @var WpSmushSettings $wpsmush_settings */
-			global $wpsmush_settings, $wp_smush, $wpsmush_cdn;
+			global $wpsmush_settings, $wp_smush;//, $wpsmush_cdn;
 
 			$is_pro = $wp_smush->validate_install();
 
 			// All these are members only feature.
 			// @todo add other checks if required.
-			if ( $is_pro && $wpsmush_cdn->cdn_active ) {
+			// if ( $is_pro && $wpsmush_cdn->cdn_active ) {
+			if ( $is_pro ) {
 				$this->can_auto_resize = true;
+			}
+
+			// Only required for admin users.
+			if ( (bool) $wpsmush_settings->settings['detection'] && current_user_can( 'manage_options' ) ) {
+				$this->can_auto_detect = true;
 			}
 
 			// Auto detection is required only for free users.
 			if ( ! $is_pro ) {
 				// We need smush settings.
 				$wpsmush_settings->init_settings();
-
-				// Only required for admin users.
-				if ( (bool) $wpsmush_settings->settings['detection'] && current_user_can( 'manage_options' ) ) {
-					$this->can_auto_detect = true;
-				}
 			}
 		}
 
@@ -158,8 +159,9 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 
 			$wp_admin_bar->add_menu( array(
 				'id'     => 'smush-resize-detection',
-				'parent' => 'top-secondary',
 				'title'  => __( 'Detect Images', 'wp-smushit' ),
+				'parent' => 'top-secondary',
+				//'href'   => add_query_arg( 'detect-image-sizes', true, home_url() ),
 			) );
 		}
 
@@ -169,7 +171,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * In order to highlight images, let's set a flag to
 		 * image so that it can be easily detected in front end.
 		 *
-		 * @param string $src Image src.
+		 * @param string $src   Image src.
 		 * @param object $image Image tag object.
 		 *
 		 * @return mixed
@@ -192,11 +194,11 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 * Keep the existing srcset sizes if already added by WP, then calculate extra sizes
 		 * if required.
 		 *
-		 * @param array  $sources        An array of image urls and widths.
-		 * @param array  $size_array     Array of width and height values in pixels.
-		 * @param string $image_src      The src of the image.
-		 * @param array  $image_meta     The image metadata.
-		 * @param int    $attachment_id  Image attachment ID.
+		 * @param array  $sources       An array of image urls and widths.
+		 * @param array  $size_array    Array of width and height values in pixels.
+		 * @param string $image_src     The src of the image.
+		 * @param array  $image_meta    The image metadata.
+		 * @param int    $attachment_id Image attachment ID.
 		 *
 		 * @return array $sources
 		 */
@@ -254,11 +256,11 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		/**
 		 * Filters an array of image srcset values, and add additional values.
 		 *
-		 * @param array  $sources     An array of image urls and widths.
-		 * @param array  $size_array  Array of width and height values in pixels.
-		 * @param string $url         Image URL.
-		 * @param array  $image_meta  The image metadata.
-		 * @param string $image_src   The src of the image.
+		 * @param array  $sources    An array of image urls and widths.
+		 * @param array  $size_array Array of width and height values in pixels.
+		 * @param string $url        Image URL.
+		 * @param array  $image_meta The image metadata.
+		 * @param string $image_src  The src of the image.
 		 *
 		 * @return array $sources
 		 */
@@ -300,7 +302,15 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			 *
 			 * @param array|bool $additional_multipliers Additional multipliers.
 			 */
-			$additional_multipliers = apply_filters( 'smush_srcset_additional_multipliers', array( 0.2, 0.4, 0.6, 0.8, 1, 2, 3 ) );
+			$additional_multipliers = apply_filters( 'smush_srcset_additional_multipliers', array(
+				0.2,
+				0.4,
+				0.6,
+				0.8,
+				1,
+				2,
+				3
+			) );
 
 			// Continue only if additional multipliers found or not skipped.
 			// Filter already documented in class-wp-smush-cdn.php.
@@ -343,8 +353,8 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		/**
 		 * Add resize arguments to content image src.
 		 *
-		 * @param array  $args   Current arguments.
-		 * @param object $image  Image tag object from DOM.
+		 * @param array  $args  Current arguments.
+		 * @param object $image Image tag object from DOM.
 		 *
 		 * @return array $args
 		 */
@@ -373,8 +383,8 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		/**
 		 * Update image sizes for responsive size.
 		 *
-		 * @param string $sizes  A source size value for use in a 'sizes' attribute.
-		 * @param array  $size   Requested size.
+		 * @param string $sizes A source size value for use in a 'sizes' attribute.
+		 * @param array  $size  Requested size.
 		 *
 		 * @return string
 		 */

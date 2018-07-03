@@ -76,7 +76,6 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 		 * @return array|mixed
 		 */
 		function init_settings() {
-
 			#See if we've got serialised settings stored already
 			$last_settings = $this->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
 			if ( empty( $last_settings ) ) {

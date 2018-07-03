@@ -86,9 +86,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
 			add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
 			add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
-
-			// Not yet implemented so commented out to hide option.
-			// add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
+			add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
 			add_action( 'smush_settings_ui_bottom', array( $this, 'pro_features_container' ) );
 
 			// Add stats to stats box.
@@ -1271,7 +1269,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function detect_size_options( $name ) {
-
 			// Only add to resize setting.
 			if ( 'resize' !== $name ) {
 				return;
@@ -1280,7 +1277,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wpsmushit_admin, $wpsmush_settings;
 
 			foreach ( $this->resize_group as $name ) {
-
 				// Do not continue if setting is not found.
 				if ( ! isset( $wpsmush_settings->settings[ $name ] ) ) {
 					continue;
@@ -1298,10 +1294,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<label for="<?php echo $setting_key; ?>">
 						<?php echo $wpsmushit_admin->settings[ $name ]['label']; ?>
 					</label>
-					<span class="sui-description sui-toggle-description"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span>
-					<?php if ( 'detection' === $name ) { ?>
-						<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo $setting_val === 1 ? '' : 'sui-hidden'; ?>"><p><?php printf( esc_html__( 'Highlighting is active. %sView homepage%s.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?></p></div>
-					<?php } ?>
+					<span class="sui-description sui-toggle-description">
+						<?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
+						<?php if ( 'detection' === $name ) { ?>
+							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo $setting_val === 1 ? '' : 'sui-hidden'; ?>"><p><?php printf( esc_html__( 'Highlighting is active. %sView homepage%s.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?></p></div>
+						<?php } ?>
+					</span>
 				</div>
 				<?php
 			}
