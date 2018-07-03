@@ -17,8 +17,6 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 	 * Class WpSmushS3
 	 */
 	class WpSmushS3 {
-		private $setup_notice = '';
-		private $message_type = 'error';
 
 		/**
 		 * WpSmushS3 constructor.
@@ -118,28 +116,31 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return;
 			}
 
-			// Check if plugin is setup or not in case for some reason, we couldn't find the function.
-			if ( ! is_object( $as3cf ) || ! method_exists( $as3cf, 'is_plugin_setup' ) ) {
-				$support_url        = esc_url( 'https://premium.wpmudev.org/contact' );
-				$this->setup_notice = sprintf( esc_html__( 'We are having trouble interacting with WP Offload S3, make sure the plugin is activated. Or you can %sreport a bug%s.', 'wp-smushit' ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
-			}
+			$class = $message = '';
 
-			// Plugin is not setup, or some information is missing.
-			if ( ! $as3cf->is_plugin_setup() ) {
-				$configure_url      = $as3cf->get_plugin_page_url();
-				$this->setup_notice = sprintf( esc_html__( 'It seems you haven’t finished setting up WP Offload S3 yet. %sConfigure it now%s to enable Amazon S3 support.', 'wp-smushit' ), '<a href="' . $configure_url . '" target="_blank">', '</a>' );
+			// Check if plugin is setup or not in case for some reason, we couldn't find the function.
+			if ( ! is_object( $as3cf ) ) {
+				$message = __( 'To use this feature you need to install WP Offload S3 and have an Amazon S3 account setup.', 'wp-smushit' );
+			} elseif ( ! method_exists( $as3cf, 'is_plugin_setup' ) ) {
+				$class = ' sui-notice-warning';
+				$support_url = esc_url( 'https://premium.wpmudev.org/contact' );
+				$message = sprintf( esc_html__( 'We are having trouble interacting with WP Offload S3, make sure the plugin is activated. Or you can %sreport a bug%s.', 'wp-smushit' ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
+			} elseif ( $as3cf->is_plugin_setup() ) {
+				// Plugin is not setup, or some information is missing.
+				$class = ' sui-notice-warning';
+				$configure_url = $as3cf->get_plugin_page_url();
+				$message = sprintf( esc_html__( 'It seems you haven’t finished setting up WP Offload S3 yet. %sConfigure it now%s to enable Amazon S3 support.', 'wp-smushit' ), '<a href="' . $configure_url . '" target="_blank">', '</a>' );
 			} else {
-				$this->message_type = 'notice';
-				$this->setup_notice = esc_html__( 'Amazon S3 support is active.', 'wp-smushit' );
+				$class = ' sui-notice-info';
+				$message = __( 'Amazon S3 support is active.', 'wp-smushit' );
 			}
 
 			// Return early if we don't need to do anything.
-			if ( empty( $this->setup_notice ) ) {
+			if ( empty( $message ) ) {
 				return;
 			}
 
-			$class = 'error' === $this->message_type ? ' sui-notice-warning' : ' sui-notice-info';
-			echo '<div class="sui-notice' . $class . ' smush-notice-sm"><p>' . $this->setup_notice . '</p></div>';
+			echo '<div class="sui-notice' . $class . ' smush-notice-sm"><p>' . $message . '</p></div>';
 		}
 
 		/**
