@@ -756,7 +756,7 @@ button.wp-smush-all.wp-smush-button {
 /**
  * CSS styles used Admin notice
  */
-.wrap .smush-notice.notice {
+.smush-notice.notice {
 	padding: 0;
 	margin: 5px 0 10px;
 	border: 1px solid #E5E5E5;
@@ -773,7 +773,7 @@ button.wp-smush-all.wp-smush-button {
 	font: 13px "Open Sans", sans-serif;
 }
 
-.wrap .smush-notice.notice.loading:before {
+.smush-notice.notice.loading:before {
 	content: attr(data-message);
 	position: absolute;
 	left: 0;
@@ -869,7 +869,7 @@ button.wp-smush-all.wp-smush-button {
 }
 
 @media only all and (max-width: 1000px) {
-	.wrap .smush-notice.notice {
+	.smush-notice.notice {
 		display: block;
 		font-size: 13px;
 	}
