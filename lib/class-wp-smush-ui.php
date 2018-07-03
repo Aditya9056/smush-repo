@@ -392,9 +392,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
-				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
+				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" aria-describedby="smush-submit-description" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
 		        <span class="sui-icon-loader sui-loading sui-hidden"></span>
-		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
+		        <span class="smush-submit-note" id="smush-submit-description">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
 			// Container footer.
@@ -450,9 +450,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Box footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
-				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $is_pro, true, false ) . '>
+				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" aria-describedby="smush-submit-description" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $is_pro, true, false ) . '>
 		        <span class="sui-icon-loader sui-loading sui-hidden"></span>
-		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
+		        <span class="smush-submit-note" id="smush-submit-description">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
 			// Container footer if pro.
