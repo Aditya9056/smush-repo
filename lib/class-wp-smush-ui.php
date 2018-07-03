@@ -535,7 +535,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 											$settings_link = '#';
 											$link_class = 'wp-smush-resize-enable';
 										}
-										printf( esc_html__( 'Save a ton of space by not storing over-sized images on your server. %sEnable image resizing%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
+										printf(
+											esc_html__( 'Save a ton of space by not storing over-sized images on your server. %1$1sEnable image resizing%2$2s', 'wp-smushit' ),
+											'<a role="button" class="' . esc_attr( $link_class ) . '" href="' . esc_url( $settings_link ) . '">',
+											'<span class="sui-screen-reader-text">' . __( 'Clicking this link will toggle the Enable image resizing checkbox.', 'wp-smushit' ) . '</span></a>'
+										);
 										?>
 									</p>
 								<?php } ?>
