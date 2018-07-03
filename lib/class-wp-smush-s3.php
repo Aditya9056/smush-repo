@@ -237,7 +237,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 */
 		function is_image_on_s3( $attachment_id = '' ) {
 			global $as3cf;
-			if ( empty( $attachment_id ) ) {
+			if ( empty( $attachment_id ) || empty( $as3cf ) ) {
 				return false;
 			}
 
