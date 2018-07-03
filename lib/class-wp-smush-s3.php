@@ -118,10 +118,11 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			$class = $message = '';
 
-			// Check if plugin is setup or not in case for some reason, we couldn't find the function.
+			// If S3 offlocad global variable is not available, plugin is not active.
 			if ( ! is_object( $as3cf ) ) {
 				$message = __( 'To use this feature you need to install WP Offload S3 and have an Amazon S3 account setup.', 'wp-smushit' );
 			} elseif ( ! method_exists( $as3cf, 'is_plugin_setup' ) ) {
+				// Check if in case for some reason, we couldn't find the required function.
 				$class = ' sui-notice-warning';
 				$support_url = esc_url( 'https://premium.wpmudev.org/contact' );
 				$message = sprintf( esc_html__( 'We are having trouble interacting with WP Offload S3, make sure the plugin is activated. Or you can %sreport a bug%s.', 'wp-smushit' ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
@@ -131,6 +132,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				$configure_url = $as3cf->get_plugin_page_url();
 				$message = sprintf( esc_html__( 'It seems you haven’t finished setting up WP Offload S3 yet. %sConfigure it now%s to enable Amazon S3 support.', 'wp-smushit' ), '<a href="' . $configure_url . '" target="_blank">', '</a>' );
 			} else {
+				// S3 support is active.
 				$class = ' sui-notice-info';
 				$message = __( 'Amazon S3 support is active.', 'wp-smushit' );
 			}
