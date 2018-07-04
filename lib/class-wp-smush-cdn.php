@@ -2,9 +2,9 @@
 /**
  * @package WP_Smush
  * @subpackage CDN
- * @version 2.7
+ * @version 2.8.0
  *
- * @author Umesh Kumar <umesh@incsub.com>
+ * @author Joel James <joel@incsub.com>
  *
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
@@ -63,7 +63,7 @@ if ( ! class_exists( 'WpSmushCDN' ) ) {
 
 			// Get the user id of current member.
 			// @todo handle this.
-			$user_id = 522431;
+			$user_id = 0;
 
 			// Site id to help mapping multisite installations.
 			$site_id = get_current_blog_id();
