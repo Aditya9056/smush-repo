@@ -1159,10 +1159,8 @@ jQuery( function ( $ ) {
 	 * Update directory optimisation progress if the element has a parent
 	 *
 	 * @param ele
-	 *
 	 */
 	var update_dir_progress = function ( ele ) {
-
 		var ele_tr = ele.closest( 'tr' );
 		var ele_prev_tr = ele_tr.prev( 'tr' );
 		var ele_dir_progress = ele_prev_tr.find( '.wp-smush-image-dir-progress' );
@@ -2244,24 +2242,30 @@ jQuery( function ( $ ) {
 	 */
 	//var initFileTree = function() {
 	function initFileTree() {
-		console.log( $( ".wp-smush-list-dialog .content" ) );
-		$( ".wp-smush-list-dialog .content" ).fileTree( {
+		$('.wp-smush-list-dialog .content').fileTree({
 				script: getDirectoryList,
 				multiFolder: false
 			},
 			function ( file ) {
 				//console.log( file );
 			}
-		).on( 'filetreeexpanded', function ( e, data ) {
+		)
+		.on('filetreeclicked', function ( e, data ) {
+			//data.li.toggleClass( 'selected' );
+		})
+		.on('filetreeexpanded', function ( e, data ) {
 			// Add a selected class to directory.
 			data.container.find( 'li' ).removeClass( 'selected' );
 			data.li.addClass( 'selected' );
-		} ).on( 'filetreecollapsed', function ( e, data ) {
+			data.li.find( 'input' ).prop( 'checked', true );
+		})
+		.on('filetreecollapsed', function ( e, data ) {
 			// Add a selected class to the closest expanded tree.
 			data.li.removeClass( 'selected' );
-			const li = data.container.find( '[rel="' + data.rel + '"]' ).parent().closest( '.expanded' );
-			li.addClass( 'selected' );
-		} );
+			data.li.find( 'input' ).prop( 'checked', false );
+			data.container.find( '[rel="' + data.rel + '"]' ).parent()
+				.closest( '.expanded' ).addClass( 'selected' );
+		});
 	}
 
 	//Stats Section Choose Directory Link

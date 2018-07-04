@@ -252,7 +252,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				array(
 					'utm_source'   => 'smush',
 					'utm_medium'   => 'plugin',
-					'utm_campaign' => 'smush_directorysmush_limit_notice'
+					'utm_campaign' => 'smush_directorysmush_limit_notice',
 				),
 				$wpsmushit_admin->upgrade_url
 			);
@@ -274,7 +274,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						current optimised image -->
 						<span class="wp-smush-no-image tc">
 							<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-no-media.png'; ?>" alt="<?php esc_html_e( 'Directory Smush - Choose Folder', 'wp-smushit' ); ?>">
-				        </span>
+						</span>
 						<p class="wp-smush-no-images-content tc roboto-regular">
 							<?php esc_html_e( 'In addition to smushing your media uploads, you may want to also smush images living outside your uploads directory.', 'wp-smushit' ); ?><br>
 							<?php esc_html_e( 'Get started by adding files and folders you wish to optimize.', 'wp-smushit' ); ?>
@@ -348,65 +348,69 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * PHP Connector
 		 */
 		function directory_list() {
-			//Check For Permission
+			// Check For permission.
 			if ( ! current_user_can( 'manage_options' ) || ! is_user_logged_in() ) {
-				wp_send_json_error( "Unauthorized" );
+				wp_send_json_error( __( 'Unauthorized', 'wp-smushit' ) );
 			}
-			//Verify nonce
+			// Verify nonce/
 			check_ajax_referer( 'smush_get_dir_list', 'list_nonce' );
 
-			//Get the Root path for a main site or subsite
+			// Get the root path for a main site or subsite.
 			$root = realpath( $this->get_root_path() );
 
-			$dir     = isset( $_GET['dir'] ) ? ltrim( $_GET['dir'], '/' ) : null;
-			$postDir = strlen( $dir ) > 1 ? path_join( $root, $dir ) : $root . $dir;
-			$postDir = realpath( rawurldecode( $postDir ) );
+			$dir      = isset( $_GET['dir'] ) ? ltrim( $_GET['dir'], '/' ) : null;
+			$post_dir = strlen( $dir ) > 1 ? path_join( $root, $dir ) : $root . $dir;
+			$post_dir = realpath( rawurldecode( $post_dir ) );
 
-			//If the final path doesn't contains the root path, bail out.
-			if ( ! $root || $postDir === false || strpos( $postDir, $root ) !== 0 ) {
-				wp_send_json_error( "Unauthorized" );
+			// If the final path doesn't contains the root path, bail out.
+			if ( ! $root || false === $post_dir || 0 !== strpos( $post_dir, $root ) ) {
+				wp_send_json_error( __( 'Unauthorized', 'wp-smushit' ) );
 			}
 
 			$supported_image = array(
 				'gif',
 				'jpg',
 				'jpeg',
-				'png'
+				'png',
 			);
 
 			$list = '';
 
-			if ( file_exists( $postDir ) ) {
-
-				$files = scandir( $postDir );
-				//Exclude hidden files
+			if ( file_exists( $post_dir ) ) {
+				$files = scandir( $post_dir );
+				// Exclude hidden files.
 				if ( ! empty( $files ) ) {
 					$files = preg_grep( '/^([^.])/', $files );
 				}
-				$returnDir = substr( $postDir, strlen( $root ) );
+				$return_dir = substr( $post_dir, strlen( $root ) );
 
 				natcasesort( $files );
 
-				if ( count( $files ) > 2 ) {
-					$list = "<ul class='jqueryFileTree' tabindex='0'>";
+				if ( count( $files ) > 2 && ! $this->skip_dir( $post_dir ) ) {
+					$list = '<ul class="jqueryFileTree" tabindex="0">';
 					foreach ( $files as $file ) {
+						$html_rel  = htmlentities( ltrim( path_join( $return_dir, $file ), '/' ) );
+						$html_name = htmlentities( $file );
+						$ext       = preg_replace( '/^.*\./', '', $file );
 
-						$htmlRel  = htmlentities( ltrim( path_join( $returnDir, $file ), '/' ) );
-						$htmlName = htmlentities( $file );
-						$ext      = preg_replace( '/^.*\./', '', $file );
+						$file_path = path_join( $post_dir, $file );
+						if ( ! file_exists( $file_path ) || '.' == $file || '..' == $file ) {
+							continue;
+						}
 
-						$file_path = path_join( $postDir, $file );
-						if ( file_exists( $file_path ) && $file != '.' && $file != '..' ) {
-							if ( is_dir( $file_path ) && ! $this->skip_dir( $file_path ) ) {
-								//Skip Uploads folder - Media Files
-								$list .= "<li class='directory collapsed'><a rel='" . $htmlRel . "/' tabindex='0'>" . $htmlName . "</a></li>";
-							} else if ( in_array( $ext, $supported_image ) && ! $this->is_media_library_file( $file_path ) ) {
-								$list .= "<li class='file ext_{$ext}'><a rel='" . $htmlRel . "' tabindex='0'>" . $htmlName . "</a></li>";
+						if ( is_dir( $file_path ) ) {
+							// Skip Uploads folder - Media Files.
+							$classes = 'directory collapsed';
+							if ( $this->skip_dir( $file_path ) ) {
+								$classes .= ' disabled';
 							}
+
+							$list .= "<li class='{$classes}'><input type='checkbox'><a rel='{$html_rel}/' tabindex='0'>{$html_name}</a></li>";
+						} elseif ( in_array( $ext, $supported_image, true ) && ! $this->is_media_library_file( $file_path ) ) {
+							$list .= "<li class='file ext_{$ext}'><a rel='{$html_rel}' tabindex='0'>{$html_name}</a></li>";
 						}
 					}
-
-					$list .= "</ul>";
+					$list .= '</ul>';
 				}
 			}
 			echo $list;
@@ -672,7 +676,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * @return string
 		 *
 		 * Thanks @andrezrv (Github)
-		 *
+		 * TODO: this does not properly get the admin path in Bedrock
 		 */
 		function get_admin_path() {
 			// Replace the site base URL with the absolute path to its installation directory.
@@ -715,29 +719,26 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 *
 		 * Borrowed from Shortpixel - (y)
 		 *
-		 * @todo: Add a option to filter images if User have turned off the Year and Month Organize option
-		 *
+		 * TODO: Add a option to filter images if User have turned off the Year and Month Organize option
 		 */
 		public function skip_dir( $path ) {
-
-			//Admin Directory path
+			// Admin directory path.
 			$admin_dir = $this->get_admin_path();
 
-			//Includes directory path
+			// Includes directory path.
 			$includes_dir = ABSPATH . WPINC;
 
-			//Upload Directory
+			// Upload directory.
 			$upload_dir = wp_upload_dir();
 			$base_dir   = $upload_dir["basedir"];
 
 			$skip = false;
 
-			//Skip sites folder for Multisite
+			// Skip sites folder for multisite.
 			if ( false !== strpos( $path, $base_dir . '/sites' ) ) {
 				$skip = true;
-			} else if ( false !== strpos( $path, $base_dir ) ) {
-				//If matches the current upload path
-				//contains one of the year subfolders of the media library
+			} elseif ( false !== strpos( $path, $base_dir ) ) {
+				// If matches the current upload path contains one of the year subfolders of the media library.
 				$pathArr = explode( '/', str_replace( $base_dir . '/', "", $path ) );
 				if ( count( $pathArr ) >= 1
 				     && is_numeric( $pathArr[0] ) && $pathArr[0] > 1900 && $pathArr[0] < 2100 //contains the year subfolder
@@ -1401,7 +1402,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 *
 		 */
 		function directory_list_dialog() {
-
 			$current_screen = get_current_screen();
 			if ( empty( $current_screen ) || empty( $current_screen->base ) || ( 'toplevel_page_smush' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base ) ) {
 				return;

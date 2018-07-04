@@ -12,7 +12,7 @@
  */
 
 /**
- * Singleton class WpSmushRest for extending the WordPress REST API interface.
+ * Singleton class WP_Smush_Rest for extending the WordPress REST API interface.
  *
  * @since 2.8.0
  */

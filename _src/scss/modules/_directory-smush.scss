@@ -31,9 +31,13 @@
 
 		li {
 			line-height: 40px;
-			padding: 0 0 0 20px;
-			margin: 0;
+			margin: 0 0 0 30px;
 			white-space: nowrap;
+
+			input {
+				position: relative;
+				margin: -6px 20px 0 -20px;
+			}
 
 			a, a:hover {
 				color: #666 !important;
@@ -60,13 +64,22 @@
 
 			&.directory {
 				background: url('#{$img--path}/folder-closed.svg') left 10px no-repeat;
+
+				&.disabled {
+					background-color: #FFF !important;
+					opacity: 0.4;
+
+					& > a {
+						cursor: default;
+					}
+				}
 			}
 
 			&.expanded {
 				background: url('#{$img--path}/folder-open.svg') no-repeat left 10px;
 
 				& > a {
-					display: block;
+					//display: block;
 					background-color: #F8F8F8;
 					border-radius: 4px;
 				}
