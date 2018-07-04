@@ -1342,7 +1342,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<?php $data_type = 'gallery_page_wp-smush-nextgen-bulk' === $current_screen->id ? ' data-type="nextgen"' : ''; ?>
 						<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_html_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>"<?php echo $data_type; ?>><?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?></button>
 					<?php endif; ?>
-					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>
+					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>
 				</div>
 			</div>
 
