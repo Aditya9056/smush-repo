@@ -2589,6 +2589,12 @@ class WP_Smush {
 			'<p>'.__( 'Note: Smush does not interact with end users on your website. The only input option Smush has is to a newsletter subscription for site admins only. If you would like to notify your users of this in your privacy policy, you can use the information below.', 'wp-smushit' ) . '</p>';
 		$content .=
 			'<p>'. __( 'Smush sends images to the WPMU DEV servers to optimize them for web use. This includes the transfer of EXIF data. The EXIF data will either be stripped or returned as it is. It is not stored on the WPMU DEV servers.', 'wp-smushit' ) . '</p>';
+		$content .=
+			'<p>' . sprintf(
+				__( "Smush uses the Stackpath Content Delivery Network (CDN). Stackpath may store web log information of site visitors, including IPs, UA, referrer, Location and ISP info of site visitors for 7 days. Files and images served by the CDN may be stored and served from countries other than your own. Stackpath's privacy policy can be found %shere%s.", 'wp-smushit' ),
+				'<a href="https://www.stackpath.com/legal/privacy-statement/" target="_blank">',
+				'</a>'
+			) . '</p>';
 
 		$dir_path = get_plugin_dir();
 		if ( strpos( $dir_path, 'wp-smushit' ) !== false ) {
