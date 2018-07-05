@@ -2257,6 +2257,10 @@ jQuery( function ( $ ) {
 			// Add a selected class to directory.
 			data.container.find( 'li' ).removeClass( 'selected' );
 			data.li.addClass( 'selected' );
+
+			// Uncheck all inputs
+			data.container.find( 'input' ).prop( 'checked', false );
+			// Check only those under selected tree only under the selected li
 			data.li.find( 'input' ).prop( 'checked', true );
 		})
 		.on('filetreecollapse', function ( e, data ) {

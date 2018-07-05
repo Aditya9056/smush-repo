@@ -34,7 +34,7 @@
 			}
 
 			a, a:hover {
-				color: #666;
+				color: #666 !important;
 				font-size: 13px;
 				cursor: pointer;
 				padding-left: 5px;
@@ -71,8 +71,18 @@
 				animation: spin 1.3s linear infinite;
 			}
 
-			&.expanded:before {
-				content: '\BB';
+			&.expanded {
+				background-color: #F8F8F8;
+				padding-left: 30px;
+				margin-left: 10px;
+
+				&:before {
+					content: '\BB';
+				}
+
+				ul {
+					background-color: #fff;
+				}
 			}
 
 			&.selected:before,
@@ -99,8 +109,8 @@
 				padding-left: 30px;
 				margin-left: 10px;
 
-				a, a:active {
-					color: #17A8E3;
+				a, a:active, a:hover {
+					color: #17A8E3 !important;
 				}
 
 				ul.jqueryFileTree {
