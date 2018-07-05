@@ -778,11 +778,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						$disable = false;
 						if ( 's3' === $name && ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) {
 							$disable = true;
+							$setting_val = 0;
 						}
 
 						// If we don't have NextGen Gallery installed, disable.
 						if ( 'nextgen' === $name && ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
 							$disable = true;
+							$setting_val = 0;
 						}
 
 						// Gray out row, disable setting.
