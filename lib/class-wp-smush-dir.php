@@ -387,7 +387,9 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				natcasesort( $files );
 
 				if ( count( $files ) > 2 && ! $this->skip_dir( $post_dir ) ) {
-					$list = '<ul class="jqueryFileTree" tabindex="0">';
+					$build_ul = false;
+					$li_list  = '';
+
 					foreach ( $files as $file ) {
 						$html_rel  = htmlentities( ltrim( path_join( $return_dir, $file ), '/' ) );
 						$html_name = htmlentities( $file );
@@ -399,18 +401,26 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 						}
 
 						if ( is_dir( $file_path ) ) {
+							$build_ul = true;
 							// Skip Uploads folder - Media Files.
+							$skipped = $this->skip_dir( $file_path );
 							$classes = 'directory collapsed';
-							if ( $this->skip_dir( $file_path ) ) {
+							if ( $skipped ) {
 								$classes .= ' disabled';
 							}
 
-							$list .= "<li class='{$classes}'><input type='checkbox'><a rel='{$html_rel}/' tabindex='0'>{$html_name}</a></li>";
+							$li_list .= "<li class='{$classes}'><label class='sui-checkbox'><input type='checkbox' " . disabled( $skipped, true, false ) . "><span></span></label><a rel='{$html_rel}/' tabindex='0'>{$html_name}</a></li>";
 						} elseif ( in_array( $ext, $supported_image, true ) && ! $this->is_media_library_file( $file_path ) ) {
-							$list .= "<li class='file ext_{$ext}'><a rel='{$html_rel}' tabindex='0'>{$html_name}</a></li>";
+							$build_ul = true;
+							$li_list .= "<li class='file ext_{$ext}'><label class='sui-checkbox'><input type='checkbox'><span></span></label><a rel='{$html_rel}' tabindex='0'>{$html_name}</a></li>";
 						}
 					}
-					$list .= '</ul>';
+
+					if ( $build_ul ) {
+						$list  = '<ul class="jqueryFileTree" tabindex="0">';
+						$list .= $li_list;
+						$list .= '</ul>';
+					}
 				}
 			}
 			echo $list;

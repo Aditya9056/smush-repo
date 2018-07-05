@@ -2253,13 +2253,13 @@ jQuery( function ( $ ) {
 		.on('filetreeclicked', function ( e, data ) {
 			//data.li.toggleClass( 'selected' );
 		})
-		.on('filetreeexpanded', function ( e, data ) {
+		.on('filetreeexpand', function ( e, data ) {
 			// Add a selected class to directory.
 			data.container.find( 'li' ).removeClass( 'selected' );
 			data.li.addClass( 'selected' );
 			data.li.find( 'input' ).prop( 'checked', true );
 		})
-		.on('filetreecollapsed', function ( e, data ) {
+		.on('filetreecollapse', function ( e, data ) {
 			// Add a selected class to the closest expanded tree.
 			data.li.removeClass( 'selected' );
 			data.li.find( 'input' ).prop( 'checked', false );

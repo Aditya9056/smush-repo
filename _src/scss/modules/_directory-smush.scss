@@ -4,18 +4,10 @@
 
 @include body-class {
 
-	.wp-smush-list-dialog {
-		// Remove border on focus.
-		.jqueryFileTree:focus {
-			outline: 0 solid transparent;
-		}
-	}
-
-	.wp-smush-scan-result {
-		// Remove border on focus.
-		.wp-smush-image-list-inner:focus {
-			outline: 0 solid transparent;
-		}
+	// Remove border on focus.
+	.wp-smush-list-dialog .jqueryFileTree:focus,
+	.wp-smush-scan-result .wp-smush-image-list-inner:focus {
+		outline: 0 solid transparent;
 	}
 
 	ul.jqueryFileTree {
@@ -30,69 +22,115 @@
 		display: none;
 
 		li {
-			line-height: 40px;
-			margin: 0 0 0 30px;
+			line-height: 33px;
+			margin: 0 0 0 40px;
 			white-space: nowrap;
+			border-bottom: 5px solid #fff;
 
-			input {
+			.sui-checkbox {
 				position: relative;
-				margin: -6px 20px 0 -20px;
+				margin: 0 30px -4px -25px;
+				display: inline-block;
 			}
 
 			a, a:hover {
-				color: #666 !important;
+				color: #666;
 				font-size: 13px;
 				cursor: pointer;
 				padding-left: 5px;
 			}
 
-			&.wait {
-				background: url('#{$img--path}/spinner.gif') left 10px no-repeat !important;
+			.ext_tif:before,
+			.ext_tif:before,
+			.ext_tiff:before,
+			.ext_png:before,
+			.ext_pcx:before,
+			.ext_jpeg:before,
+			.ext_jpg:before,
+			.ext_gif:before,
+			.ext_bmp:before,
+			&.directory:before {
+				font-family: wpmudev-plugin-icons, sans-serif;
+				position: relative;
+				top: 2px;
+				left: 18px;
+				font-size: 16px;
+				content: 'D';
+				color: #17A8E3;
 			}
 
-			.ext_tif,
-			.ext_tif,
-			.ext_tiff,
-			.ext_png,
-			.ext_pcx,
-			.ext_jpeg,
-			.ext_jpg,
-			.ext_gif,
-			.ext_bmp {
-				background: url('#{$img--path}/image.svg') left 10px no-repeat;
+			&.directory:before {
+				top: 1px;
+				content: '\2D8';
+				color: #AAA;
 			}
 
-			&.directory {
-				background: url('#{$img--path}/folder-closed.svg') left 10px no-repeat;
+			&.directory.wait:before {
+				content: 'N';
+				display: inline-block;
+				animation: spin 1.3s linear infinite;
+			}
 
-				&.disabled {
-					background-color: #FFF !important;
-					opacity: 0.4;
+			&.expanded:before {
+				content: '\BB';
+			}
 
-					& > a {
-						cursor: default;
-					}
+			&.selected:before,
+			&.selected .collapsed:before {
+				color: #17A8E3;
+			}
+
+			&.selected,
+			&.expanded {
+				ul.jqueryFileTree {
+					border-top: 5px solid #fff;
+					margin-left: -30px;
+					padding-left: 20px;
+				}
+
+				li {
+					padding-left: 30px;
+					margin-left: 6px;
 				}
 			}
 
-			&.expanded {
-				background: url('#{$img--path}/folder-open.svg') no-repeat left 10px;
+			&.selected {
+				background-color: #E1F6FF;
+				padding-left: 30px;
+				margin-left: 10px;
+
+				a, a:active {
+					color: #17A8E3;
+				}
+
+				ul.jqueryFileTree {
+					background-color: #fff;
+				}
+
+				li {
+					background-position-x: 31px;
+					background-color: #E1F6FF;
+				}
+			}
+
+			// Overwrites for a disabled state.
+			// TODO: I know it's important and all, but remove them!
+			&.disabled {
+				background-color: #FFF !important;
+				opacity: 0.6;
+
+				&:before {
+					color: #DDD !important;
+				}
 
 				& > a {
-					//display: block;
-					background-color: #F8F8F8;
-					border-radius: 4px;
+					cursor: default;
+					color: #AAA !important;
 				}
 
-				&.selected {
-					background: url('#{$img--path}/folder-open-selected.svg') left 10px no-repeat;
-
-					& > a,
-					li.directory,
-					li.file {
-						color: #17A8E3 !important;
-						background-color: #E1F6FF;
-					}
+				.sui-checkbox > span {
+					background-color: #C2C2C2 !important;
+					border-color: #C2C2C2 !important;
 				}
 			}
 		}
