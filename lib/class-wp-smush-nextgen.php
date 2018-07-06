@@ -44,14 +44,22 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		function init() {
 			global $wp_smush, $wpsmush_settings;
 
+			$is_pro = $wp_smush->validate_install();
+
 			// Filters the setting variable to add Nextgen setting title and description.
 			add_filter( 'wp_smush_settings', array( $this, 'register' ), 5 );
 
 			// Filters the setting variable to add Nextgen setting in premium features.
 			add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 5 );
 
+			// Show alert message only if Pro user.
+			if ( $is_pro ) {
+				// Hook at the end of setting row to output a error div.
+				add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
+			}
+
 			// Check if integration is Enabled or not.
-			if ( ! empty( $wpsmush_settings->settings ) && $wp_smush->validate_install() ) {
+			if ( ! empty( $wpsmush_settings->settings ) && $is_pro ) {
 				$opt_nextgen_val = $wpsmush_settings->settings['nextgen'];
 			} else {
 				// Smush NextGen key.
@@ -60,7 +68,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 
 			// Return if not a pro user, or nextgen integration is not enabled.
-			if ( ! $wp_smush->validate_install() || ! $opt_nextgen_val ) {
+			if ( ! $is_pro || ! $opt_nextgen_val ) {
 				return;
 			}
 
@@ -79,9 +87,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 			// Resmush Image: Handles the single/Manual resmush image request for NextGen Gallery.
 			add_action( 'wp_ajax_smush_resmush_nextgen_image', array( $this, 'resmush_image' ) );
-
-			// Hook at the end of setting row to output a error div.
-			add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
 		}
 
 		/**
