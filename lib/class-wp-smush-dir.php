@@ -1408,18 +1408,18 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			}
 			?>
 
-			<div class="sui-dialog wp-smush-list-dialog" aria-hidden="true" id="wp-smush-list-dialog">
+			<div class="sui-dialog wp-smush-list-dialog" aria-hidden="true" tabindex="-1" id="wp-smush-list-dialog">
 
-				<div class="sui-dialog-overlay sui-fade-in" tabindex="0"></div>
+				<div class="sui-dialog-overlay sui-fade-in"></div>
 
-				<div class="sui-dialog-content sui-bounce-in" role="dialog">
+				<div class="sui-dialog-content sui-bounce-in" aria-labelledby="smush-dir-modal-title" role="dialog">
 
 					<div class="sui-box" role="document">
 
 						<div class="sui-box-header">
-							<h3 class="sui-box-title"><?php esc_html_e( 'Choose Directory', 'wp-smushit' ); ?></h3>
+							<h3 class="sui-box-title" id="smush-dir-modal-title"><?php esc_html_e( 'Choose Directory', 'wp-smushit' ); ?></h3>
 							<div class="sui-actions-right">
-								<button class="sui-dialog-close" aria-label="<?php esc_html_e( 'Close', 'wp-smushit' ); ?>"></button>
+								<button class="sui-dialog-close" data-a11y-dialog-hide aria-label="<?php esc_html_e( 'Close', 'wp-smushit' ); ?>"></button>
 							</div>
 						</div>
 
