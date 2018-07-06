@@ -136,7 +136,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				if ( ( '1' !== get_site_option( 'skip-smush-setup' ) && '1' !== get_option( 'wp-smush-hide_smush_welcome' ) ) && '1' !== get_option( 'hide_smush_features' ) && is_super_admin() ) {
 					$this->quick_setup();
 				}
-
 				// Show status box.
 				$this->smush_stats_container();
 
@@ -266,13 +265,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 			?>
 
-			<div class="sui-dialog" aria-hidden="true" id="smush-quick-setup-dialog">
-				<div class="sui-dialog-overlay sui-fade-in" tabindex="0" data-a11y-dialog-hide=""></div>
+			<div class="sui-dialog" aria-hidden="true" tabindex="-1" id="smush-quick-setup-dialog">
+				<div class="sui-dialog-overlay sui-fade-in" data-a11y-dialog-hide=""></div>
 				<div class="sui-dialog-content sui-bounce-in"
-					 aria-labelledby="<?php esc_attr_e( 'QUICK SETUP', 'wp-smushit' ); ?>" role="dialog">
+					 aria-labelledby="smush-quick-setup-modal-title"  role="dialog">
 					<div class="sui-box" role="document">
 						<div class="sui-box-header">
-							<h3 class="sui-box-title"><?php esc_html_e( 'QUICK SETUP', 'wp-smushit' ); ?></h3>
+							<h3 class="sui-box-title" id="smush-quick-setup-modal-title"><?php esc_html_e( 'QUICK SETUP', 'wp-smushit' ); ?></h3>
 							<div class="sui-actions-right">
 								<button data-a11y-dialog-hide class="sui-button sui-button-ghost smush-skip-setup" aria-label="<?php esc_html_e( 'Skip this.', 'wp-smushit' ); ?>">
 									<?php esc_html_e( 'SKIP', 'wp-smushit' ); ?>
