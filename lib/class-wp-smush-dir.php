@@ -1065,35 +1065,38 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					$images = array_merge( $images, $results );
 				}
 				$offset += $limit;
-				//If offset is above total number, do not query
+				// If offset is above total number, do not query.
 				if ( $offset > $total ) {
 					$continue = false;
 				}
 			}
 
-			//Iterate over stats, Return Count and savings
+			// Iterate over stats, return count and savings.
 			if ( ! empty( $images ) ) {
-				$this->stats                     = array_shift( $images );
-				$path                            = $this->stats['path'];
-				$this->optimised_images[ $path ] = $this->stats;
+				// Init the stats array.
+				$this->stats = array(
+					'path'       => '',
+					'image_size' => 0,
+					'orig_size'  => 0,
+				);
 
 				foreach ( $images as $im ) {
 					foreach ( $im as $key => $val ) {
-						if ( 'path' == $key ) {
+						if ( 'path' === $key ) {
 							$this->optimised_images[ $val ] = $im;
 							continue;
 						}
-						$this->stats[ $key ] += $val;
+						$this->stats[ $key ] += (int) $val;
 					}
-					$optimised ++;
+					$optimised++;
 				}
 			}
 
-			//Get the savings in bytes and percent
+			// Get the savings in bytes and percent.
 			if ( ! empty( $this->stats ) && ! empty( $this->stats['orig_size'] ) ) {
 				$this->stats['bytes']   = ( $this->stats['orig_size'] > $this->stats['image_size'] ) ? $this->stats['orig_size'] - $this->stats['image_size'] : 0;
 				$this->stats['percent'] = number_format_i18n( ( ( $this->stats['bytes'] / $this->stats['orig_size'] ) * 100 ), 1 );
-				//Convert to human readable form
+				// Convert to human readable form.
 				$this->stats['human'] = size_format( $this->stats['bytes'], 1 );
 			}
 
@@ -1101,7 +1104,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			$this->stats['optimised'] = $optimised;
 
 			return $this->stats;
-
 		}
 
 		/**
@@ -1238,7 +1240,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				$wpsmushit_admin->setup_global_stats();
 				$stats          = $wpsmushit_admin->stats;
 				$stats['total'] = $wpsmushit_admin->total_count;
-				$resmush_count  = empty( $wpsmushit_admin->resmush_ids ) ? count( $wpsmushit_admin->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $wpsmushit_admin->resmush_ids );
+//				$resmush_count  = empty( $wpsmushit_admin->resmush_ids ) ? count( $wpsmushit_admin->resmush_ids = get_option( "wp-smush-resmush-list" ) ) : count( $wpsmushit_admin->resmush_ids );
 //				$stats['smushed'] = ! empty( $wpsmushit_admin->resmush_ids ) ? $wpsmushit_admin->smushed_count - $resmush_count : $wpsmushit_admin->smushed_count;
 				$stats['smushed'] = $wpsmushit_admin->smushed_count;
 				if ( $lossy == 1 ) {
