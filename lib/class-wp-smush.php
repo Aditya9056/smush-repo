@@ -234,29 +234,28 @@ class WP_Smush {
 	}
 
 	function admin_init() {
-
 		global $wpsmush_dir;
 
-		//Handle Notice dismiss
+		// Handle notice dismiss.
 		$this->dismiss_smush_upgrade();
 
-		//Perform Migration if required
+		// Perform migration if required.
 		$this->migrate();
 
-		//Initialize variables
+		// Initialize variables.
 		$this->initialise();
 
-		#Localize version, Update
+		// Localize version, update.
 		$this->getOptions();
 
-		//Create a clas object, if doesn't exists
+		// Create a clas object, if doesn't exists.
 		if ( empty( $wpsmush_dir ) && class_exists( 'WpSmushDir' ) ) {
 			$wpsmush_dir = new WpSmushDir();
 		}
-		//Run only on wp smush page
+		// Run only on wp smush page.
 		$wpsmush_dir->create_table();
 
-		#Run the Directory Smush table update
+		// Run the Directory Smush table update.
 		$this->update_dir_path_hash();
 	}
 

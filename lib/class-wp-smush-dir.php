@@ -121,7 +121,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		function create_table() {
 			global $wpdb;
 
-			//Run the query only on directory smush page
+			// Run the query only on directory smush page.
 			if ( ! isset( $_GET['page'] ) || 'smush' != $_GET['page'] ) {
 				return null;
 			}
@@ -131,18 +131,17 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			/**
 			 * Table: wp_smush_dir_images
 			 * Columns:
-			 * id -> Auto Increment ID
-			 * path -> Absolute path to the image file
-			 * resize -> Whether the image was resized or not
-			 * lossy -> Whether the image was super-smushed/lossy or not
+			 * id         -> Auto Increment ID
+			 * path       -> Absolute path to the image file
+			 * resize     -> Whether the image was resized or not
+			 * lossy      -> Whether the image was super-smushed/lossy or not
 			 * image_size -> Current image size post optimisation
-			 * orig_size -> Original image size before optimisation
-			 * file_time -> Unix time for the file creation, to match it against the current creation time,
+			 * orig_size  -> Original image size before optimisation
+			 * file_time  -> Unix time for the file creation, to match it against the current creation time,
 			 *                  in order to confirm if it is optimised or not
-			 * last_scan -> Timestamp, Get images form last scan by latest timestamp
+			 * last_scan  -> Timestamp, Get images form last scan by latest timestamp
 			 *                  are from latest scan only and not the whole list from db
-			 * meta -> For any future use
-			 *
+			 * meta       -> For any future use
 			 */
 			$sql = "CREATE TABLE {$wpdb->prefix}smush_dir_images (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -161,7 +160,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				KEY image_size (image_size)
 			) $charset_collate;";
 
-			// include the upgrade library to initialize a table
+			// Include the upgrade library to initialize a table.
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 			dbDelta( $sql );
 		}
@@ -386,7 +385,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 				natcasesort( $files );
 
-				if ( count( $files ) > 2 && ! $this->skip_dir( $post_dir ) ) {
+				if ( count( $files ) !== 0 && ! $this->skip_dir( $post_dir ) ) {
 					$build_ul = false;
 					$li_list  = '';
 
