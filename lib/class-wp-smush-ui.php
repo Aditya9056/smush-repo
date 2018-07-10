@@ -485,8 +485,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$remaining      = $wpsmushit_admin->remaining_count;
 			// Split human size to get format and size.
 			$human = explode( ' ', $wpsmushit_admin->stats['human'] );
-			$human_size = empty( $human[ 0 ] ) ? 'B' : $human[ 0 ];
-			$human_format = empty( $human[ 1 ] ) ? '0' : $human[ 1 ];
+			$human_size = empty( $human[ 0 ] ) ? '0' : $human[ 0 ];
+			$human_format = empty( $human[ 1 ] ) ? 'B' : $human[ 1 ];
 			?>
 
 			<div class="sui-box sui-summary sui-summary-smush">
@@ -494,10 +494,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 				<div class="sui-summary-segment">
 					<div class="sui-summary-details">
-						<span class="sui-summary-large wp-smush-stats-human"><?php echo $wpsmushit_admin->stats['human_size']; ?></span>
+						<span class="sui-summary-large wp-smush-stats-human"><?php echo $human_size; ?></span>
 						<i class="sui-icon-info sui-warning smush-stats-icon <?php echo $remaining > 0 ? '' : 'sui-hidden'; ?>" aria-hidden="true"></i>
 						<span class="sui-summary-detail wp-smush-savings">
-							<span class="wp-smush-stats-human"><?php echo $wpsmushit_admin->stats['human_format']; ?></span> /
+							<span class="wp-smush-stats-human"><?php echo $human_format; ?></span> /
 							<span class="wp-smush-stats-percent"><?php echo $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0; ?></span>%
 						</span>
 						<span class="sui-summary-sub"><?php _e( 'Total Savings', 'wp-smushit' ); ?></span>
