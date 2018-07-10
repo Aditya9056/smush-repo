@@ -483,6 +483,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$resize_count   = $wpsmush_db->resize_savings( false, false, true );
 			$resize_count   = ! $resize_count ? 0 : $resize_count;
 			$remaining      = $wpsmushit_admin->remaining_count;
+			// Split human size to get format and size.
+			$human = explode( ' ', $wpsmushit_admin->stats['human'] );
+			$human_size = empty( $human[ 0 ] ) ? 'B' : $human[ 0 ];
+			$human_format = empty( $human[ 1 ] ) ? '0' : $human[ 1 ];
 			?>
 
 			<div class="sui-box sui-summary sui-summary-smush">
