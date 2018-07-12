@@ -1,7 +1,7 @@
 /**
  * jQueryFileTree plugin
  */
-import 'jqueryfiletree/src/jQueryFileTree.js';
+//import 'jqueryfiletree/src/jQueryFileTree.js';
 
 /**
  * Admin modules
@@ -9,6 +9,7 @@ import 'jqueryfiletree/src/jQueryFileTree.js';
 require( './modules/admin' );
 require( './modules/bulk-smush' );
 require( './modules/modals' );
+require( './modules/directory-smush' );
 
 /**
  * Notice scripts.

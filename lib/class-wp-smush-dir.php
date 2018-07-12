@@ -190,7 +190,6 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		 * Check if there is any unsmushed image from last scan
 		 *
 		 * @return bool True/False
-		 *
 		 */
 		function get_unsmushed_image() {
 			global $wpdb, $wp_smush;
@@ -221,7 +220,7 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			if ( ! $this->get_unsmushed_image() ) {
 				return null;
 			}
-			//Print the button ?>
+			// Print the button. ?>
 			<button type="button" class="sui-button wp-smush-resume tc"><?php esc_html_e( 'RESUME LAST SCAN', 'wp-smushit' ); ?></button>
 			<span class="wp-smush-resume-loder sui-icon-loader sui-loading sui-hidden" aria-hidden="true"></span>
 			<?php
@@ -357,6 +356,76 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			// Get the root path for a main site or subsite.
 			$root = realpath( $this->get_root_path() );
 
+			$dir      = ( isset( $_GET['dir'] ) && ! is_array( $_GET['dir'] ) ) ? ltrim( $_GET['dir'], '/' ) : null;
+			$post_dir = strlen( $dir ) > 1 ? path_join( $root, $dir ) : $root . $dir;
+			$post_dir = realpath( rawurldecode( $post_dir ) );
+
+			// If the final path doesn't contains the root path, bail out.
+			if ( ! $root || false === $post_dir || 0 !== strpos( $post_dir, $root ) ) {
+				wp_send_json_error( __( 'Unauthorized', 'wp-smushit' ) );
+			}
+
+			$supported_image = array(
+				'gif',
+				'jpg',
+				'jpeg',
+				'png',
+			);
+
+			if ( file_exists( $post_dir ) ) {
+				$files = scandir( $post_dir );
+				// Exclude hidden files.
+				if ( ! empty( $files ) ) {
+					$files = preg_grep( '/^([^.])/', $files );
+				}
+				$return_dir = substr( $post_dir, strlen( $root ) );
+
+				natcasesort( $files );
+
+				if ( count( $files ) !== 0 && ! $this->skip_dir( $post_dir ) ) {
+					$tree = array();
+
+					foreach ( $files as $file ) {
+						$html_rel  = htmlentities( ltrim( path_join( $return_dir, $file ), '/' ) );
+						$html_name = htmlentities( $file );
+						$ext       = preg_replace( '/^.*\./', '', $file );
+
+						$file_path = path_join( $post_dir, $file );
+						if ( ! file_exists( $file_path ) || '.' == $file || '..' == $file ) {
+							continue;
+						}
+
+						// Skip unsupported files and files that are already in the media library.
+						if ( ! is_dir( $file_path ) && ( ! in_array( $ext, $supported_image, true ) || $this->is_media_library_file( $file_path ) ) ) {
+							continue;
+						}
+
+						$tree[] = array(
+							'title'        => $html_name,
+							'key'          => $html_rel,
+							'folder'       => is_dir( $file_path ),
+							'lazy'         => true,
+							'checkbox'     => true,
+							'unselectable' => $this->skip_dir( $file_path ) // Skip Uploads folder - Media Files.
+						);
+					}
+
+					wp_send_json_success( $tree );
+				}
+			}
+		}
+		/*
+		function directory_list() {
+			// Check For permission.
+			if ( ! current_user_can( 'manage_options' ) || ! is_user_logged_in() ) {
+				wp_send_json_error( __( 'Unauthorized', 'wp-smushit' ) );
+			}
+			// Verify nonce/
+			check_ajax_referer( 'smush_get_dir_list', 'list_nonce' );
+
+			// Get the root path for a main site or subsite.
+			$root = realpath( $this->get_root_path() );
+
 			$dir      = isset( $_GET['dir'] ) ? ltrim( $_GET['dir'], '/' ) : null;
 			$post_dir = strlen( $dir ) > 1 ? path_join( $root, $dir ) : $root . $dir;
 			$post_dir = realpath( rawurldecode( $post_dir ) );
@@ -424,8 +493,8 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 			}
 			echo $list;
 			die();
-
 		}
+		*/
 
 		public function get_root_path() {
 			if ( is_main_site() ) {
@@ -470,112 +539,126 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		/**
 		 * Get the image list in a specified directory path
 		 *
-		 * @param string $path
+		 * @param string|array $paths
 		 *
-		 * @return string
+		 * @return array
 		 */
-		function get_image_list( $path = '' ) {
+		function get_image_list( $paths = '' ) {
 			global $wpdb, $wpsmush_helper;
 
-			//Return Error if not a valid directory path
-			if ( ! is_dir( $path ) ) {
-				wp_send_json_error( array( "message" => "Not a valid directory path" ) );
+			// Error with directory tree.
+			if ( ! is_array( $paths ) ) {
+				wp_send_json_error( array(
+					'message' => __( 'There was a problem getting the selected directories', 'wp-smushit' ),
+				) );
 			}
 
-			$base_dir = empty( $path ) ? ltrim( $_GET['path'], '/' ) : $path;
-			$base_dir = realpath( rawurldecode( $base_dir ) );
-
-			if ( ! $base_dir ) {
-				wp_send_json_error( array( "message" => "Unauthorized" ) );
-			}
-
-			//Store the path in option
-			update_option( 'wp-smush-dir_path', $base_dir, false );
-
-			//Directory Iterator, Exclude . and ..
-			$dirIterator = new RecursiveDirectoryIterator(
-				$base_dir
-			//PHP 5.2 compatibility
-			//RecursiveDirectoryIterator::SKIP_DOTS
-			);
-
-			$filtered_dir = new WPSmushRecursiveFilterIterator( $dirIterator );
-
-			//File Iterator
-			$iterator = new RecursiveIteratorIterator( $filtered_dir,
-				RecursiveIteratorIterator::CHILD_FIRST
-			);
-
-			//Iterate over the file List
-			$files_arr = array();
-			$images    = array();
-			$count     = 0;
-			$timestamp = gmdate( 'Y-m-d H:i:s' );
-			$values    = array();
-			//Temporary Increase the limit
-			$wpsmush_helper->increase_memory_limit();
-			foreach ( $iterator as $path ) {
-
-				//Used in place of Skip Dots, For php 5.2 compatability
-				if ( basename( $path ) == '..' || basename( $path ) == '.' ) {
+			foreach ( $paths as $dir ) {
+				// Skip if not a valid directory path.
+				if ( ! is_dir( $dir ) ) {
 					continue;
 				}
-				if ( $path->isFile() ) {
-					$file_path = $path->getPathname();
-					$file_name = $path->getFilename();
 
-					if ( $this->is_image( $file_path ) && ! $this->is_media_library_file( $file_path ) && strpos( $path, '.bak' ) === false ) {
+				$base_dir = empty( $dir ) ? ltrim( $_GET['path'], '/' ) : $dir;
+				$base_dir = realpath( rawurldecode( $base_dir ) );
 
-						/**  To generate Markup **/
-						$dir_name = dirname( $file_path );
+				if ( ! $base_dir ) {
+					wp_send_json_error( array(
+						'message' => __( 'Unauthorized', 'wp-smushit' ),
+					) );
+				}
 
-						//Initialize if dirname doesn't exists in array already
-						if ( ! isset( $files_arr[ $dir_name ] ) ) {
-							$files_arr[ $dir_name ] = array();
+				// Store the path in option.
+				update_option( 'wp-smush-dir_path', $base_dir, false );
+
+				// Directory Iterator, Exclude . and ..
+				$dirIterator = new RecursiveDirectoryIterator(
+					$base_dir
+				//PHP 5.2 compatibility
+				//RecursiveDirectoryIterator::SKIP_DOTS
+				);
+
+				$filtered_dir = new WPSmushRecursiveFilterIterator( $dirIterator );
+
+				// File Iterator.
+				$iterator = new RecursiveIteratorIterator( $filtered_dir,
+					RecursiveIteratorIterator::CHILD_FIRST
+				);
+
+				// Iterate over the file list.
+				$files_arr = array();
+				$images    = array();
+				$count     = 0;
+				$timestamp = gmdate( 'Y-m-d H:i:s' );
+				$values    = array();
+				// Temporary increase the limit.
+				$wpsmush_helper->increase_memory_limit();
+				foreach ( $iterator as $path ) {
+					//Used in place of Skip Dots, For php 5.2 compatability
+					if ( basename( $path ) == '..' || basename( $path ) == '.' ) {
+						continue;
+					}
+
+					if ( $path->isFile() ) {
+						$file_path = $path->getPathname();
+						$file_name = $path->getFilename();
+
+						if ( $this->is_image( $file_path ) && ! $this->is_media_library_file( $file_path ) && strpos( $path, '.bak' ) === false ) {
+							/**  To generate Markup **/
+							$dir_name = dirname( $file_path );
+
+							// Initialize if dirname doesn't exists in array already.
+							if ( ! isset( $files_arr[ $dir_name ] ) ) {
+								$files_arr[ $dir_name ] = array();
+							}
+							$files_arr[ $dir_name ][ $file_name ] = $file_path;
+							/** End */
+
+							//Get the file modification time
+							$file_time = @filectime( $file_path );
+
+							/** To be stored in DB, Part of code inspired from Ewwww Optimiser  */
+							$image_size = $path->getSize();
+							$images []  = $file_path;
+							$images []  = md5($file_path );
+							$images []  = $image_size;
+							$images []  = $file_time;
+							$images []  = $timestamp;
+							$values[]   = '(%s, %s, %d, %d, %s)';
+							$count ++;
 						}
-						$files_arr[ $dir_name ][ $file_name ] = $file_path;
-						/** End */
+					}
 
-						//Get the file modification time
-						$file_time = @filectime( $file_path );
-
-						/** To be stored in DB, Part of code inspired from Ewwww Optimiser  */
-						$image_size = $path->getSize();
-						$images []  = $file_path;
-						$images []  = md5($file_path );
-						$images []  = $image_size;
-						$images []  = $file_time;
-						$images []  = $timestamp;
-						$values[]   = '(%s, %s, %d, %d, %s)';
-						$count ++;
+					// Store the images in db at an interval of 5k.
+					if ( $count >= 5000 ) {
+						$count  = 0;
+						$query  = $this->build_query( $values, $images );
+						$images = $values = array();
+						$wpdb->query( $query );
 					}
 				}
 
-				//Store the Images in db at an interval of 5k
-				if ( $count >= 5000 ) {
-					$count  = 0;
-					$query  = $this->build_query( $values, $images );
-					$images = $values = array();
+				// Update rest of the images.
+				if ( ! empty( $images ) && $count > 0 ) {
+					$query = $this->build_query( $values, $images );
 					$wpdb->query( $query );
 				}
+
+				// Remove scanned images from cache.
+				wp_cache_delete( 'wp_smush_scanned_images' );
+
+				// Get the image ids.
+				$images = $this->get_scanned_images();
+
+				// Store scanned images in cache.
+				wp_cache_add( 'wp_smush_scanned_images', $images );
 			}
 
-			//Update rest of the images
-			if ( ! empty( $images ) && $count > 0 ) {
-				$query = $this->build_query( $values, $images );
-				$wpdb->query( $query );
-			}
-
-			//remove scanne dimages from cache
-			wp_cache_delete( 'wp_smush_scanned_images' );
-
-			//Get the image ids
-			$images = $this->get_scanned_images();
-
-			//Store scanned images in cache
-			wp_cache_add( 'wp_smush_scanned_images', $images );
-
-			return array( 'files_arr' => $files_arr, 'base_dir' => $base_dir, 'image_items' => $images );
+			return array(
+				'files_arr'   => $files_arr,
+				'base_dir'    => $base_dir,
+				'image_items' => $images,
+			);
 		}
 
 		/**

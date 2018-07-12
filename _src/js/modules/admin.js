@@ -1,3 +1,5 @@
+import { createTree } from 'jquery.fancytree';
+
 /**
  * Processes bulk smushing
  *
@@ -6,6 +8,7 @@
  * TODO: Use Element tag for all the class selectors
  */
 let WP_Smush = WP_Smush || {};
+window.WP_Smush = WP_Smush;
 
 /**
  * Smush translation strings.
@@ -1091,30 +1094,6 @@ jQuery( function ( $ ) {
 	};
 
 	/**
-	 * Get directory list using Ajax
-	 *
-	 * @param param
-	 * @returns {string}
-	 *
-	 */
-	var getDirectoryList = function ( param ) {
-		param.action = 'smush_get_directory_list';
-		param.list_nonce = jQuery( 'input[name="list_nonce"]' ).val();
-		var res = '';
-		$.ajax( {
-			type: "GET",
-			url: ajaxurl,
-			data: param,
-			success: function ( response ) {
-				res = response;
-			},
-			async: false
-		} );
-		//Update the button text
-		$( 'button.wp-smush-select-dir' ).html( wp_smush_msgs.add_dir );
-		return res;
-	};
-	/**
 	 * Hide the popup and reset the opacity for the button
 	 *
 	 */
@@ -1223,6 +1202,20 @@ jQuery( function ( $ ) {
 			ele_dir_progress_percent.html( '' );
 		}
 
+	};
+
+	/**
+	 * Add choose directory button at the top
+	 */
+	var add_dir_browser_button = function () {
+		//Get the content div length, if less than 1500, Skip
+		if ($('div.wp-smush-scan-result div.content').height() < 1500 || $('div.dir-smush-button-wrap.top').length >= 1) {
+			return;
+		}
+
+		var choose_button = $('div.dir-smush-button-wrap').clone();
+		choose_button.addClass('top');
+		$('div.wp-smush-scan-result div.content').prepend(choose_button);
 	};
 
 	var add_smush_button = function () {
@@ -1710,15 +1703,6 @@ jQuery( function ( $ ) {
 				$( 'span.wp-smush-savings span.wp-smush-stats-percent' ).html( c_stats.percent );
 			}
 		}
-	};
-
-	/**
-	 * Show directory list popup and foucs on close button
-	 */
-	var showDialog = function () {
-		//Shows the directories available
-		$( '.wp-smush-list-dialog' ).show();
-		$( '.wp-smush-list-dialog div.close' ).focus();
 	};
 
 	//Remove span tag from URL
@@ -2240,7 +2224,7 @@ jQuery( function ( $ ) {
 	/**
 	 * Init fileTree
 	 */
-	//var initFileTree = function() {
+	/*
 	function initFileTree() {
 		$('.wp-smush-list-dialog .content').fileTree({
 				script: getDirectoryList,
@@ -2271,132 +2255,12 @@ jQuery( function ( $ ) {
 				.closest( '.expanded' ).addClass( 'selected' );
 		});
 	}
-
-	//Stats Section Choose Directory Link
-	$( 'body' ).on( 'click', 'a.wp-smush-dir-link', function ( e ) {
-		if ( $( 'div.sui-wrap button.wp-smush-browse' ).length > 0 ) {
-			e.preventDefault();
-			SUI.dialogs["wp-smush-list-dialog"].show();
-			//Display File tree for Directory Smush
-			initFileTree();
-		}
-	} );
-
-	//WP Smush all : Scan Images
-	$( 'div.sui-wrap' ).on( 'click', 'button.wp-smush-browse', function ( e ) {
-		e.preventDefault();
-
-		// Hide all the notices.
-		$( 'div.wp-smush-scan-result div.wp-smush-notice' ).hide();
-
-		//If disabled, do not process
-		if ( $( this ).attr( 'disabled' ) ) {
-			return;
-		} else {
-			//Disable Buttons
-			$( this ).attr( 'disabled', 'disabled' );
-			$( 'button.wp-smush-resume' ).attr( 'disabled', 'disabled' );
-		}
-
-		//Remove Notice
-		$( 'div.wp-smush-info' ).remove();
-
-		showDialog();
-
-		//Display File tree for Directory Smush
-		initFileTree();
-	} );
+	*/
 
 	// On dialog close make browse btutton active.
 	$( '.sui-dialog-close' ).on( 'click', function ( e ) {
 		$( '.wp-smush-browse' ).removeAttr( 'disabled' );
 		close_dialog();
-	} );
-
-	//Image Directories: On Select button click
-	$( '.wp-smush-select-dir' ).on( 'click', function ( e ) {
-		e.preventDefault();
-
-		//If disabled, do not process
-		if ( $( this ).attr( 'disabled' ) ) {
-			return;
-		}
-
-		var button = $( this );
-
-		$( 'div.wp-smush-list-dialog div.sui-box-body' ).css( {'opacity': '0.8'} );
-		$( 'div.wp-smush-list-dialog div.sui-box-body a' ).unbind( 'click' );
-
-		//Remove resume button
-		$( 'button.wp-smush-resume' ).remove();
-
-		//Disable Button
-		button.attr( 'disabled', 'disabled' );
-
-		var spinner = button.parent().find( '.add-dir-loader' );
-		//Display the spinner
-		spinner.addClass( 'sui-icon-loader sui-loading' );
-
-		//Get the Selected directory path
-		var path = $( '.jqueryFileTree .selected a' ).attr( 'rel' );
-		path = 'undefined' == typeof (path) ? '' : path;
-
-		//Absolute path
-		var abs_path = $( 'input[name="wp-smush-base-path"]' ).val();
-
-		//Fill in the input field
-		$( '.wp-smush-dir-path' ).val( abs_path + '/' + path );
-
-		//Send a ajax request to get a list of all the image files
-		var param = {
-			action: 'image_list',
-			smush_path: $( '.wp-smush-dir-path' ).val(),
-			image_list_nonce: $( 'input[name="image_list_nonce"]' ).val()
-		};
-
-		//Get the List of images
-		$.get( ajaxurl, param, function ( res ) {
-			if ( !res.success && 'undefined' !== typeof ( res.data.message ) ) {
-				$( 'div.wp-smush-scan-result div.content' ).html( res.data.message );
-			} else {
-				$( '.wp-smush-scan-result .smush-dir-smush-done' ).addClass( 'sui-hidden' );
-				$( 'div.wp-smush-scan-result div.content' ).html( res.data );
-				var wp_smush_dir_image_ids = res.data.ids;
-			}
-			set_accordion();
-			close_dialog();
-
-			//Remove the spinner
-			spinner.removeClass( 'sui-icon-loader sui-loading' );
-
-			//Show Scan result
-			$( '.wp-smush-scan-result' ).removeClass( 'sui-hidden' ).show();
-		} ).done( function ( res ) {
-
-			// Show select directory button on top.
-			$( 'div.sui-box-header button.wp-smush-browse' ).removeClass( 'sui-hidden' );
-
-			//If there was no image list, return
-			if ( !res.success ) {
-				//Hide the smush button
-				$( 'div.wp-smush-all-button-wrap.bottom' ).addClass( 'sui-hidden' );
-				return;
-			}
-
-			//Show the smush button
-			$( 'div.wp-smush-all-button-wrap.bottom' ).removeClass( 'sui-hidden' );
-
-			//Remove disabled attribute for the button
-			$( 'button.wp-smush-start' ).removeAttr( 'disabled' );
-
-			//Append a Directory browser button at the top
-			add_dir_browser_button();
-
-			//Clone and add Smush button
-			add_smush_button();
-
-			window.location.hash = '#wp-smush-dir-browser';
-		} );
 	} );
 
 	/**
