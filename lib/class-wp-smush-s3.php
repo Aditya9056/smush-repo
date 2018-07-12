@@ -22,7 +22,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 * WpSmushS3 constructor.
 		 */
 		function __construct() {
-			$this->init();
+			add_action( 'admin_init', array( $this, 'init' ) );
 
 			// Hook at the end of setting row to output a error div.
 			add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ) );
