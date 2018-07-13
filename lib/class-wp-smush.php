@@ -1232,7 +1232,7 @@ class WP_Smush {
 	 * @return string|void
 	 */
 	function column_html( $id, $html = "", $button_txt = "", $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
-		$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif' );
+		$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png', 'image/gif' );
 
 		// don't proceed if attachment is not image, or if image is not a jpg, png or gif
 		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
