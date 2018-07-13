@@ -49,7 +49,6 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-dir.php';
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-recommender.php';
 
 // Installer Class.
-/* @noinspection PhpIncludeInspection */
 include_once WP_SMUSH_DIR . 'lib/class-wp-smush-installer.php';
 
 /**
@@ -261,6 +260,9 @@ class WP_Smush {
 
 		// Run the Directory Smush table update.
 		$this->update_dir_path_hash();
+
+		// Load integrations.
+		$this->load_integrations();
 	}
 
 	/**
@@ -282,20 +284,20 @@ class WP_Smush {
 			$errors->add( 'file_not_found', sprintf( __( 'Could not find %s', 'wp-smushit' ), $file_path ) );
 		} elseif ( ! is_writable( $dir_name ) ) {
 			// Check that the file is writable.
-			$errors->add( "not_writable", sprintf( __( "%s is not writable", 'wp-smushit' ), $dir_name ) );
+			$errors->add( 'not_writable', sprintf( __( '%s is not writable', 'wp-smushit' ), $dir_name ) );
 		}
 
 		$file_size = file_exists( $file_path ) ? filesize( $file_path ) : '';
 
-		//Check if premium user
+		// Check if premium user.
 		$max_size = $this->validate_install() ? WP_SMUSH_PREMIUM_MAX_BYTES : WP_SMUSH_MAX_BYTES;
 
-		//Check if file exists
+		// Check if file exists.
 		if ( $file_size == 0 ) {
-			$errors->add( "image_not_found", '<p>' . sprintf( __( 'Skipped (%s), image not found. Attachment: %s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
+			$errors->add( 'image_not_found', '<p>' . sprintf( __( 'Skipped (%s), image not found. Attachment: %s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
 		} elseif ( $file_size > $max_size ) {
-			//Check size limit
-			$errors->add( "size_limit", '<p>' . sprintf( __( 'Skipped (%s), size limit exceeded. Attachment: %s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
+			// Check size limit.
+			$errors->add( 'size_limit', '<p>' . sprintf( __( 'Skipped (%s), size limit exceeded. Attachment: %s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
 		}
 
 		if ( count( $errors->get_error_messages() ) ) {
@@ -1633,6 +1635,18 @@ class WP_Smush {
 		$wpsmushnextgenstats = new WpSmushNextGenStats();
 		$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 		new WPSmushNextGenBulk();
+	}
+
+	/**
+	 * Load integrations class.
+	 *
+	 * @since 2.8.0
+	 */
+	private function load_integrations() {
+		// Integrations class.
+		require_once WP_SMUSH_DIR . 'lib/integrations/class-wp-smush-common.php';
+
+		WP_Smush_Common::get_instance();
 	}
 
 	/**
