@@ -91,7 +91,7 @@ if ( ! class_exists( 'WpSmushRecommender' ) ) {
 				</div><?php
 			}
 			?>
-			<div class="sui-footer"><?php esc_html_e( 'Made with', 'wp-smushit' ); ?> <i class="sui-icon-heart"></i> <?php esc_html_e( 'by WPMU DEV', 'wp-smushit' ); ?></div>
+			<div class="sui-footer"><?php esc_html_e( 'Made with', 'wp-smushit' ); ?> <i class="sui-icon-heart" aria-hidden="true"></i> <?php esc_html_e( 'by WPMU DEV', 'wp-smushit' ); ?></div>
 			<?php
 		}
 

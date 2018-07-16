@@ -22,7 +22,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 		 * WpSmushS3 constructor.
 		 */
 		function __construct() {
-			$this->init();
+			add_action( 'admin_init', array( $this, 'init' ), 5 );
 
 			// Hook at the end of setting row to output a error div.
 			add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ) );
@@ -109,10 +109,13 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 
 			global $as3cf, $wp_smush, $wpsmush_settings;
 
-			// If S3 integration is not enabled, return.
-			$setting_val = $wp_smush->validate_install() ? $wpsmush_settings->settings['s3'] : 0;
+			$is_pro = $wp_smush->validate_install();
 
-			if ( ! $setting_val ) {
+			// If S3 integration is not enabled, return.
+			$setting_val = $is_pro ? $wpsmush_settings->settings['s3'] : 0;
+
+			// If integration is disabled when S3 offload is active, do not continue.
+			if ( ! $setting_val && is_object( $as3cf ) ) {
 				return;
 			}
 
@@ -126,7 +129,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				$class = ' sui-notice-warning';
 				$support_url = esc_url( 'https://premium.wpmudev.org/contact' );
 				$message = sprintf( esc_html__( 'We are having trouble interacting with WP Offload S3, make sure the plugin is activated. Or you can %sreport a bug%s.', 'wp-smushit' ), '<a href="' . $support_url . '" target="_blank">', '</a>' );
-			} elseif ( $as3cf->is_plugin_setup() ) {
+			} elseif ( ! $as3cf->is_plugin_setup() ) {
 				// Plugin is not setup, or some information is missing.
 				$class = ' sui-notice-warning';
 				$configure_url = $as3cf->get_plugin_page_url();
@@ -138,7 +141,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 
 			// Return early if we don't need to do anything.
-			if ( empty( $message ) ) {
+			if ( empty( $message ) || ! $is_pro ) {
 				return;
 			}
 

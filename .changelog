@@ -8,6 +8,7 @@
 * New: Stats meta box
 * Enhance: Smush will have it's own section in the GDPR policy, instead of appending to the end of the policy text
 * Enhance: Compatibility with AJAX Thumbnail Rebuild and ACF plugins
+* Enhance: Add support for image/x-png and image/x-citrix-jpeg mime types
 * Fixed: File size not updated inside the attachment details modal during Smush/restore of an image
 * Fixed: Directory Smush using mobile
 * Fixed: Smush progress during feature image upload

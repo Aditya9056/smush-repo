@@ -22,6 +22,9 @@
 		 * @see wp-includes/js/media-grid.js
 		 */
 		smush_media.view.Attachment.Details.TwoColumn = smushMediaTwoColumn.extend( {
+			initialize: function () {
+				this.listenTo( this.model, 'change:smush', this.render );
+			},
 
 			render: function () {
 				// Ensure that the main attachment fields are rendered.
@@ -30,6 +33,15 @@
 				if ( typeof this.model.get( 'smush' ) === 'undefined' ) {
 					return this;
 				}
+
+				let image = new wp.api.models.Media( {id: this.model.get( 'id' )} ),
+					self  = this;
+
+				image.fetch( {attribute: 'smush'} ).done( function ( img ) {
+					if ( typeof img.smush !== 'object' ) {
+						setTimeout( () => self.model.fetch(), 3000 );
+					}
+				});
 
 				/**
 				 * Detach the views, append our custom fields, make sure that our data is fully updated
