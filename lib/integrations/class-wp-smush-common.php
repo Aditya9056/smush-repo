@@ -29,18 +29,8 @@ class WP_Smush_Common {
 	 * WP_Smush_Common constructor.
 	 */
 	private function __construct() {
-		/*
-		add_filter( 'wp_smush_media_image', false, 'full' );
-		add_filter( 'wp_smush_media_image', false, 'medium' );
-		add_filter( 'wp_smush_media_image', false, 'thumb' );
-		add_filter( 'wp_smush_media_image', false, 'thumbnail' );
-		*/
-
-		// Actions that run during AJAX requests.
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			// AJAX Thumbnail Rebuild integration.
-			add_action( 'admin_init', array( $this, 'disable_smush' ), 5 );
-		}
+		// AJAX Thumbnail Rebuild integration.
+		add_filter( 'wp_smush_media_image', array( $this, 'skip_images' ), 10, 2 );
 	}
 
 	/**
@@ -65,23 +55,25 @@ class WP_Smush_Common {
 	 * (no need to regenerate everything else).
 	 *
 	 * @since 2.8.0
+	 *
+	 * @param string $smush_image  Image size.
+	 * @param string $size_key     Thumbnail size.
+	 *
+	 * @return bool
 	 */
-	public function disable_smush() {
-		// Check if this is the call from AJAX Thumbnail Rebuild plugin.
-		if ( ! isset( $_POST['action'] ) || 'ajax_thumbnail_rebuild' !== $_POST['action'] || ! isset( $_POST['thumbnails'] ) ) { // Input var ok.
-			return;
+	function skip_images( $smush_image, $size_key ) {
+		if ( empty( $_POST['regen'] ) || ! is_array( $_POST['regen'] ) ) { // Input var ok.
+			return $smush_image;
 		}
 
-		$image_sizes = get_intermediate_image_sizes();
-		array_push( $image_sizes, 'full' );
+		$smush_sizes = wp_unslash( $_POST['regen'] ); // Input var ok.
 
-		foreach ( $image_sizes as $size ) {
-			if ( in_array( $size, wp_unslash( $_POST['thumbnails'] ), true ) ) { // Input var ok.
-				continue;
-			}
-
-			add_filter( 'wp_smush_media_image', false, $size );
+		if ( in_array( $size_key, $smush_sizes, true ) ) {
+			return $smush_image;
 		}
+
+		// Do not regenrate other thumbnails for regenerate action.
+		return false;
 	}
 
 }
