@@ -2,8 +2,6 @@
  * BLOCK: extend image block
  */
 
-import React from 'react';
-
 import './style.scss';
 
 const { __ } = wp.i18n,
