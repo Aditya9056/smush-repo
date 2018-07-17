@@ -424,39 +424,6 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		}
 
 		/**
-		 * Exclude files/directories.
-		 *
-		 * TODO: do we need this?
-		 *
-		 * @param SplFileInfo                     $file      File.
-		 * @param mixed                           $key       Key.
-		 * @param RecursiveCallbackFilterIterator $iterator  Iterator.
-		 *
-		 * @return bool True if you need to recurse or if the item is acceptable
-		 */
-		function exclude( $file, $key, $iterator ) {
-			// Will exclude everything under these directories.
-			$exclude_dir = array( '.git', 'test' );
-
-			// Exclude from the list, if one of the media upload folders.
-			if ( $this->skip_dir( $file->getPath() ) ) {
-				return true;
-			}
-
-			// Exclude directories like git, and test.
-			if ( $iterator->hasChildren() && ! in_array( $file->getFilename(), $exclude_dir, true ) ) {
-				return true;
-			}
-
-			// Do not exclude, if image.
-			if ( $file->isFile() && $this->is_image_from_extension( $file->getPath() ) ) {
-				return true;
-			}
-
-			return $file->isFile();
-		}
-
-		/**
 		 * Get the image list in a specified directory path
 		 *
 		 * @param string|array $paths  Path where to look for images.

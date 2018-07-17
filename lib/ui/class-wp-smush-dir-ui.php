@@ -27,6 +27,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 		 * Bulk Smush UI and progress bar.
 		 */
 		public function ui() {
+			/* @var WP_Smush_Dir $wpsmush_dir */
 			global $wp_smush, $wpsmushit_admin, $wpsmush_bulkui, $wpsmush_dir;
 
 			// Print Directory Smush UI, if not a network site.
@@ -120,9 +121,8 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 				$this->directory_list_dialog();
 				$this->progress_dialog();
 			}
-			?>
-			</div>
-			<?php
+
+			echo '</div>';
 		}
 
 		/**
