@@ -622,7 +622,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 									$settings_link = '#';
 									$link_class = 'wp-smush-lossy-enable';
 								}
-								printf( esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
+								printf(
+									esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s', 'wp-smushit' ),
+									'<a role="button" class="' . esc_attr( $link_class ) . '" href="' . esc_url( $settings_link ) . '">',
+									'<span class="sui-screen-reader-text">' . __( 'Clicking this link will toggle the Super Smush checkbox.', 'wp-smushit' ) . '</span></a>'
+								);
 								?>
 							</p>
 						<?php } ?>
@@ -767,6 +771,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<form id="wp-smush-settings-form" method="post">
 
 				<input type="hidden" name="setting_form" id="setting_form" value="integration">
+				<?php if ( is_multisite() && is_network_admin() ) : ?>
+					<input type="hidden" name="wp-smush-networkwide" id="wp-smush-networkwide" value="1">
+					<input type="hidden" name="setting-type" value="network">
+				<?php endif; ?>
 
 				<?php
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
@@ -1034,7 +1042,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					// This is to avoid duplicate foreach loop.
 					$main_nav_li .= '<li class="sui-vertical-tab smush-' . $tab . $class . ( $tab === $this->current_tab ? ' current' : '' ) . '">';
 					$main_nav_li .= '<a href="' . add_query_arg( 'tab', $tab ) . '">' . $label . '</a>';
-					$main_nav_li .= '<span class="smush-nav-icon ' . $tab . $tag_class . '">' . $tag_content . '</span>';
+					$main_nav_li .= '<span class="smush-nav-icon ' . $tab . $tag_class . '" aria-hidden="true">' . $tag_content . '</span>';
 					$main_nav_li .= '</li>';
 					// Mobile nav
 					if ( is_multisite() && is_network_admin() ) {
