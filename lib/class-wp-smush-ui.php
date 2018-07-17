@@ -1551,7 +1551,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-description sui-notice sui-notice-info wp-smush-update-width sui-hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
 				<div class="sui-description sui-notice sui-notice-info wp-smush-update-height sui-hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
 			</div>
-			<span class="sui-description sui-toggle-description"><?php esc_html_e( "Note: Image resizing happens automatically when you upload attachments. To support retina devices, we recommend using 2x the dimensions of your image size.", "wp-smushit" ); ?></span><?php
+			<span class="sui-description sui-toggle-description">
+			<?php printf( esc_html__( "Note: Image resizing happens automatically when you upload attachments. To support retina devices, we recommend using 2x the dimensions of your image size. Animated GIFs will not be resized as they will lose their animation, please use a tool such as %s to resize then re-upload.", "wp-smushit" ), '<a href="http://gifgifs.com/resizer/" target="_blank">http://gifgifs.com/resizer/</a>' ); ?>
+			<?php esc_html_e( " ", "wp-smushit" ); ?>
+			</span><?php
 		}
 
 		/**
