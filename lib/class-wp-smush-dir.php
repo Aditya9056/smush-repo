@@ -417,18 +417,20 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		/**
 		 * Get root path of the installation.
 		 *
-		 * Sometimes content directories may reside outside
-		 * the installation sub directory. We need to make sure
-		 * we are selecting the root directory, not installation
-		 * directory.
-		 *
 		 * @return string Root path.
 		 */
 		public function get_root_path() {
 			// If main site.
 			if ( is_main_site() ) {
 
-				// Get content directory and explod.
+				/**
+				 * Sometimes content directories may reside outside
+				 * the installation sub directory. We need to make sure
+				 * we are selecting the root directory, not installation
+				 * directory.
+				 * @see https://xnau.com/finding-the-wordpress-root-path-for-an-alternate-directory-structure/
+				 * @see https://app.asana.com/0/14491813218786/487682361460247/f
+				 */
 				$content_path = explode( '/', WP_CONTENT_DIR );
 				// Get root path and explod.
 				$root_path = explode( '/', get_home_path() );
