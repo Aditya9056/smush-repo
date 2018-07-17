@@ -82,7 +82,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public $resmush_ids = array();
 
-		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/gif', 'image/png' );
+		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/x-citrix-jpeg', 'image/gif', 'image/png', 'image/x-png' );
 
 		/**
 		 * @array Stores the stats for all the images
@@ -1294,7 +1294,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $wpdb;
 
-			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/png' )";
+			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png' )";
 
 			$limit      = $this->query_limit();
 			$offset     = 0;

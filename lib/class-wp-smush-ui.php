@@ -136,7 +136,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				if ( ( '1' !== get_site_option( 'skip-smush-setup' ) && '1' !== get_option( 'wp-smush-hide_smush_welcome' ) ) && '1' !== get_option( 'hide_smush_features' ) && is_super_admin() ) {
 					$this->quick_setup();
 				}
-
 				// Show status box.
 				$this->smush_stats_container();
 
@@ -266,13 +265,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 			?>
 
-			<div class="sui-dialog" aria-hidden="true" id="smush-quick-setup-dialog">
-				<div class="sui-dialog-overlay sui-fade-in" tabindex="0" data-a11y-dialog-hide=""></div>
+			<div class="sui-dialog" aria-hidden="true" tabindex="-1" id="smush-quick-setup-dialog">
+				<div class="sui-dialog-overlay sui-fade-in" data-a11y-dialog-hide=""></div>
 				<div class="sui-dialog-content sui-bounce-in"
-					 aria-labelledby="<?php esc_attr_e( 'QUICK SETUP', 'wp-smushit' ); ?>" role="dialog">
+					 aria-labelledby="smush-quick-setup-modal-title"  role="dialog">
 					<div class="sui-box" role="document">
 						<div class="sui-box-header">
-							<h3 class="sui-box-title"><?php esc_html_e( 'QUICK SETUP', 'wp-smushit' ); ?></h3>
+							<h3 class="sui-box-title" id="smush-quick-setup-modal-title"><?php esc_html_e( 'QUICK SETUP', 'wp-smushit' ); ?></h3>
 							<div class="sui-actions-right">
 								<button data-a11y-dialog-hide class="sui-button sui-button-ghost smush-skip-setup" aria-label="<?php esc_html_e( 'Skip this.', 'wp-smushit' ); ?>">
 									<?php esc_html_e( 'SKIP', 'wp-smushit' ); ?>
@@ -392,9 +391,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
-				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
+				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" aria-describedby="smush-submit-description" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
 		        <span class="sui-icon-loader sui-loading sui-hidden"></span>
-		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
+		        <span class="smush-submit-note" id="smush-submit-description">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
 			// Container footer.
@@ -450,9 +449,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Box footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
-				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $is_pro, true, false ) . '>
+				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" aria-describedby="smush-submit-description" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $is_pro, true, false ) . '>
 		        <span class="sui-icon-loader sui-loading sui-hidden"></span>
-		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
+		        <span class="smush-submit-note" id="smush-submit-description">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
 			// Container footer if pro.
@@ -539,7 +538,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 											$settings_link = '#';
 											$link_class = 'wp-smush-resize-enable';
 										}
-										printf( esc_html__( 'Save a ton of space by not storing over-sized images on your server. %sEnable image resizing%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
+										printf(
+											esc_html__( 'Save a ton of space by not storing over-sized images on your server. %1$1sEnable image resizing%2$2s', 'wp-smushit' ),
+											'<a role="button" class="' . esc_attr( $link_class ) . '" href="' . esc_url( $settings_link ) . '">',
+											'<span class="sui-screen-reader-text">' . __( 'Clicking this link will toggle the Enable image resizing checkbox.', 'wp-smushit' ) . '</span></a>'
+										);
 										?>
 									</p>
 								<?php } ?>
@@ -782,11 +785,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						$disable = false;
 						if ( 's3' === $name && ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) {
 							$disable = true;
+							$setting_val = 0;
 						}
 
 						// If we don't have NextGen Gallery installed, disable.
 						if ( 'nextgen' === $name && ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
 							$disable = true;
+							$setting_val = 0;
 						}
 
 						// Gray out row, disable setting.
@@ -1342,7 +1347,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<?php $data_type = 'gallery_page_wp-smush-nextgen-bulk' === $current_screen->id ? ' data-type="nextgen"' : ''; ?>
 						<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_html_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>"<?php echo $data_type; ?>><?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?></button>
 					<?php endif; ?>
-					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>
+					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>
 				</div>
 			</div>
 
