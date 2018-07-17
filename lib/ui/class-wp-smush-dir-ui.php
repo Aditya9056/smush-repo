@@ -111,7 +111,6 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 						</p>
 					</div>
 					<?php wp_nonce_field( 'wp_smush_all', 'wp-smush-all' ); ?>
-					<input type="hidden" name="wp-smush-continue-ajax" value=1>
 				</div>
 				<input type="hidden" name="wp-smush-base-path" value="<?php echo esc_attr( $wpsmush_dir->get_root_path() ); ?>">
 			</div>

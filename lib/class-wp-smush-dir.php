@@ -850,6 +850,8 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 
 		/**
 		 * Handles the ajax request for image optimisation in a folder
+		 *
+		 * TODO: refactor this, don't think that we need all this stuff.
 		 */
 		public function optimise() {
 			global $wpdb, $wp_smush, $wpsmushit_admin;
@@ -952,11 +954,11 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 				$total = $this->total_stats();
 			}
 
-			// Show the image wise stats
+			// Show the image wise stats.
 			$image = array(
 				'id'          => $id,
 				'size_before' => $image['orig_size'],
-				'size_after'  => $smush_results['data']->after_size
+				'size_after'  => $smush_results['data']->after_size,
 			);
 
 			$bytes            = $image['size_before'] - $image['size_after'];
@@ -974,7 +976,7 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 				$data['stats'] = $stats;
 			}
 
-			//Update Bulk Limit Transient
+			// Update Bulk Limit Transient.
 			$wpsmushit_admin->update_smush_count( 'dir_sent_count' );
 
 			wp_send_json_success( $data );

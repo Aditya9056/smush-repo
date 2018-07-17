@@ -5,8 +5,7 @@
 @include body-class {
 
 	// Remove border on focus.
-	.wp-smush-list-dialog .jqueryFileTree:focus,
-	.wp-smush-scan-result .wp-smush-image-list-inner:focus {
+	.wp-smush-list-dialog .jqueryFileTree:focus {
 		outline: 0 solid transparent;
 	}
 

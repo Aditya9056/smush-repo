@@ -1,6 +1,5 @@
 import { createTree } from 'jquery.fancytree';
 import Scanner from './directory-scanner';
-import {getLink} from "../../../../wp-hummingbird/_src/js/utils/helpers";
 
 ( function( $ ) {
 	'use strict';
