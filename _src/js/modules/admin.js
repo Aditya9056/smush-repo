@@ -2221,42 +2221,6 @@ jQuery( function ( $ ) {
 		run_re_check( $( '.wp-smush-scan' ), false );
 	}
 
-	/**
-	 * Init fileTree
-	 */
-	/*
-	function initFileTree() {
-		$('.wp-smush-list-dialog .content').fileTree({
-				script: getDirectoryList,
-				multiFolder: false
-			},
-			function ( file ) {
-				//console.log( file );
-			}
-		)
-		.on('filetreeclicked', function ( e, data ) {
-			//data.li.toggleClass( 'selected' );
-		})
-		.on('filetreeexpand', function ( e, data ) {
-			// Add a selected class to directory.
-			data.container.find( 'li' ).removeClass( 'selected' );
-			data.li.addClass( 'selected' );
-
-			// Uncheck all inputs
-			data.container.find( 'input' ).prop( 'checked', false );
-			// Check only those under selected tree only under the selected li
-			data.li.find( 'input' ).prop( 'checked', true );
-		})
-		.on('filetreecollapse', function ( e, data ) {
-			// Add a selected class to the closest expanded tree.
-			data.li.removeClass( 'selected' );
-			data.li.find( 'input' ).prop( 'checked', false );
-			data.container.find( '[rel="' + data.rel + '"]' ).parent()
-				.closest( '.expanded' ).addClass( 'selected' );
-		});
-	}
-	*/
-
 	// On dialog close make browse btutton active.
 	$( '.sui-dialog-close' ).on( 'click', function ( e ) {
 		$( '.wp-smush-browse' ).removeAttr( 'disabled' );

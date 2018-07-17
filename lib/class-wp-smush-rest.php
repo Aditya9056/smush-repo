@@ -26,7 +26,7 @@ class WP_Smush_Rest {
 	private static $_instance = null;
 
 	/**
-	 * WpSmushRest constructor.
+	 * WP_Smush_Rest constructor.
 	 */
 	private function __construct() {}
 

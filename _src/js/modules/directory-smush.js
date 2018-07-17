@@ -1,4 +1,6 @@
 import { createTree } from 'jquery.fancytree';
+import Scanner from './directory-scanner';
+import {getLink} from "../../../../wp-hummingbird/_src/js/utils/helpers";
 
 ( function( $ ) {
 	'use strict';
@@ -9,7 +11,11 @@ import { createTree } from 'jquery.fancytree';
 		wp_smush_msgs: [],
 
 		init: function () {
-			let self = this;
+			const self = this;
+
+			// Init image scanner.
+			//console.log( 'Total steps/current step: ' + wp_smushit_data.dir_smush.totalSteps + ' ' + wp_smushit_data.dir_smush.currentScanStep );
+			//this.scanner = new Scanner( wp_smushit_data.dir_smush.totalSteps, wp_smushit_data.dir_smush.currentScanStep );
 
 			/**
 			 * Smush translation strings.
@@ -21,7 +27,7 @@ import { createTree } from 'jquery.fancytree';
 			}
 
 			/**
-			 * WP Smush all: Scan Images
+			 * Folder select: Choose Folder in Directory Smush tab clicked.
 			 */
 			$( 'div.sui-wrap' ).on( 'click', 'button.wp-smush-browse', function ( e ) {
 				e.preventDefault();
@@ -41,7 +47,7 @@ import { createTree } from 'jquery.fancytree';
 				// Remove notice.
 				$( 'div.wp-smush-info' ).remove();
 
-				self.showDialog();
+				self.showSmushDialog();
 
 				// Display file tree for directory Smush.
 				self.initFileTree();
@@ -60,7 +66,7 @@ import { createTree } from 'jquery.fancytree';
 			} );
 
 			/**
-			 * Image Directories: On select button click
+			 * Smush images: Smush in Choose Directory modal clicked
 			 */
 			$( '.wp-smush-select-dir' ).on( 'click', function ( e ) {
 				e.preventDefault();
@@ -93,17 +99,29 @@ import { createTree } from 'jquery.fancytree';
 					paths.push( abs_path + '/' + folder.key );
 				});
 
-				//Send a ajax request to get a list of all the image files
+				// Send a ajax request to get a list of all the image files
 				const param = {
 					action: 'image_list',
 					smush_path: paths,
 					image_list_nonce: $( 'input[name="image_list_nonce"]' ).val()
 				};
 
-				//Get the List of images
-				$.get( ajaxurl, param, function ( res ) {
-					console.log( res );
-					/*
+				$.get( ajaxurl, param, function ( response ) {
+					// Close the dialog.
+					SUI.dialogs['wp-smush-list-dialog'].hide();
+
+					// TODO: check for errors.
+					self.scanner = new Scanner( response.data, 0 );
+					self.showProgressDialog();
+					self.scanner.scan();
+				} );
+
+
+
+
+				/*
+				// Get the list of images
+				$.get( ajaxurl, param, function ( response ) {
 					if ( !res.success && 'undefined' !== typeof ( res.data.message ) ) {
 						$( 'div.wp-smush-scan-result div.content' ).html( res.data.message );
 					} else {
@@ -119,10 +137,7 @@ import { createTree } from 'jquery.fancytree';
 
 					//Show Scan result
 					$( '.wp-smush-scan-result' ).removeClass( 'sui-hidden' ).show();
-					*/
-				} ).done( function ( res ) {
-
-					/*
+				} ).done( function ( response ) {
 					// Show select directory button on top.
 					$( 'div.sui-box-header button.wp-smush-browse' ).removeClass( 'sui-hidden' );
 
@@ -145,11 +160,9 @@ import { createTree } from 'jquery.fancytree';
 					//Clone and add Smush button
 					add_smush_button();
 
-					*/
 					window.location.hash = '#wp-smush-dir-browser';
 				} );
 
-				/*
 				// Get the Selected directory path
 				let path = $( '.jqueryFileTree .selected a' ).attr( 'rel' );
 				path = ( 'undefined' === typeof path ) ? '' : path;
@@ -272,11 +285,43 @@ import { createTree } from 'jquery.fancytree';
 		/**
 		 * Show directory list popup and focus on close button.
 		 */
-		showDialog: function () {
+		showSmushDialog: function () {
 			// Shows the available directories.
-			$( '.wp-smush-list-dialog' ).show();
+			SUI.dialogs['wp-smush-list-dialog'].show();
 			$( '.wp-smush-list-dialog div.close' ).focus();
-		}
+		},
+
+		/**
+		 * Show progress dialog.
+		 */
+		showProgressDialog: function () {
+			SUI.dialogs['wp-smush-progress-dialog'].show();
+			$( '.wp-smush-progress-dialog div.close' ).focus();
+		},
+
+		/**
+		 * Update progress bar during directory smush.
+		 *
+		 * @param {int}     progress  Current progress in percent.
+		 * @param {boolean} cancel    Cancel status.
+		 */
+		updateProgressBar: function ( progress, cancel = false ) {
+			if ( progress > 100 ) {
+				progress = 100;
+			}
+
+			// Update progress bar
+			$( '.sui-progress-block .sui-progress-text span' ).text( progress + '%' );
+			$( '.sui-progress-block .sui-progress-bar span' ).width( progress + '%' );
+
+			if ( progress >= 90 ) {
+				$( '.sui-progress-state .sui-progress-state-text' ).text( 'Finalizing...' );
+			}
+
+			if ( cancel ) {
+				$( '.sui-progress-state .sui-progress-state-text' ).text( 'Cancelling...' );
+			}
+		},
 
 	};
 

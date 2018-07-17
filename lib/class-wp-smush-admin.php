@@ -378,7 +378,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Localize Translations
 		 */
 		function localize() {
-			global $current_screen, $wpsmush_settings, $wpsmush_db;
+			global $current_screen, $wpsmush_settings, $wpsmush_db, $wpsmush_dir;
 			$current_page = ! empty( $current_screen ) ? $current_screen->base : '';
 
 			$handle = 'smush-admin';
@@ -413,7 +413,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( 'toplevel_page_smush' === $current_page ) {
 
 				// Get resmush list, If we have a resmush list already, localize those IDs.
-				if ( $resmush_ids = get_option( "wp-smush-resmush-list" ) ) {
+				if ( $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
 					// Get the attachments, and get lossless count.
 					$this->resmush_ids = $resmush_ids;
 				}
@@ -445,6 +445,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'savings_resize'     => $this->stats['resize_savings'],
 					'savings_conversion' => $this->stats['conversion_savings'],
 					'savings_dir_smush'  => $this->dir_stats,
+					'dir_smush'          => array(
+						'currentScanStep' => $wpsmush_dir->scanner->get_current_scan_step(),
+						'totalSteps'      => $wpsmush_dir->scanner->get_scan_steps(),
+					),
 				);
 			} else {
 				$data = array(
