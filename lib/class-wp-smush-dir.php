@@ -437,14 +437,14 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				// Find the length of the shortest one.
 				$end = min( count( $content_path ), count( $root_path ) );
 				$i = 0;
-				$common = array();
+				$common_path = array();
 				// Add the component if they are the same in both paths.
 				while ( $content_path[ $i ] === $root_path[ $i ] && $i < $end ) {
-					$common[] = $content_path[ $i ];
+					$common_path[] = $content_path[ $i ];
 					$i++;
 				}
 
-				return implode( '/', $common );
+				return implode( '/', $common_path );
 			} else {
 				$up = wp_upload_dir();
 
