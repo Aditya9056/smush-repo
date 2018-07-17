@@ -106,7 +106,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function ui() {
-
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			// Hook into integration settings.
@@ -133,24 +132,21 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Show stats section only to subsite admins.
 			if ( ! $is_network ) {
-
 				// Show configure screen for only a new installation and for only network admins.
-				if ( ( 1 != get_site_option( 'skip-smush-setup' ) && 1 != get_option( 'wp-smush-hide_smush_welcome' ) ) && 1 != get_option( 'hide_smush_features' ) && is_super_admin() ) {
+				if ( ( '1' !== get_site_option( 'skip-smush-setup' ) && '1' !== get_option( 'wp-smush-hide_smush_welcome' ) ) && '1' !== get_option( 'hide_smush_features' ) && is_super_admin() ) {
 					$this->quick_setup();
 				}
-
 				// Show status box.
 				$this->smush_stats_container();
 
 				// If not a pro user.
 				if ( ! $wp_smush->validate_install() ) {
 					/**
-					 * Allows to jook in additional containers after stats box for free version
+					 * Allows to hook in additional containers after stats box for free version
 					 * Pro Version has a full width settings box, so we don't want to do it there.
 					 */
 					do_action( 'wp_smush_after_stats_box' );
 				}
-
 			}
 
 			// Start the nav bar for settings.
@@ -162,7 +158,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// Nonce field.
 			wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '' );
 
-			// If networkwide option is disabled, show only bulk page.
+			// If network wide option is disabled, show only bulk page.
 			if ( $is_network && ! $is_networkwide ) {
 				// Show settings box.
 				$this->settings_container();
@@ -198,7 +194,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						}
 						break;
 				}
-			}
+			} // End if().
 
 			// Close nav bar box.
 			echo '</div>';
@@ -215,20 +211,18 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		/**
 		 * Prints the header section for a container as per the Shared UI
 		 *
-		 * @param string $heading Box Heading
-		 * @param string $sub_heading Any additional text to be shown by the side of Heading
+		 * @param string $heading      Box Heading.
+		 * @param string $sub_heading  Any additional text to be shown by the side of Heading.
 		 *
-		 * @return void
+		 * @return string
 		 */
 		public function container_header( $heading = '', $sub_heading = '' ) {
-
 			if ( empty( $heading ) ) {
 				return '';
-			}
-			?>
+			} ?>
 
 			<div class="sui-box-header">
-				<h3 class="sui-box-title"><?php echo $heading; ?></h3>
+				<h3 class="sui-box-title"><?php echo esc_html( $heading ); ?></h3>
 				<?php if ( ! empty( $sub_heading ) ) : ?>
 					<div class="sui-actions-right">
 						<?php echo $sub_heading; ?>
@@ -241,13 +235,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		/**
 		 * Prints the footer section for a container as per the Shared UI
 		 *
-		 * @param string $content Footer content.
-		 * @param string $sub_content Any additional text to be shown by the side of footer
+		 * @param string $content      Footer content.
+		 * @param string $sub_content  Any additional text to be shown by the side of footer.
 		 *
 		 * @return void
 		 */
 		public function container_footer( $content = '', $sub_content = '' ) {
-
 			?>
 			<div class="sui-box-footer">
 				<?php echo $content; ?>
@@ -272,13 +265,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 			?>
 
-			<div class="sui-dialog" id="smush-quick-setup-dialog">
-				<div class="sui-dialog-overlay sui-fade-in" tabindex="-1" data-a11y-dialog-hide=""></div>
+			<div class="sui-dialog" aria-hidden="true" tabindex="-1" id="smush-quick-setup-dialog">
+				<div class="sui-dialog-overlay sui-fade-in" data-a11y-dialog-hide=""></div>
 				<div class="sui-dialog-content sui-bounce-in"
-					 aria-labelledby="<?php esc_attr_e( 'QUICK SETUP', 'wp-smushit' ); ?>" role="dialog">
+					 aria-labelledby="smush-quick-setup-modal-title"  role="dialog">
 					<div class="sui-box" role="document">
 						<div class="sui-box-header">
-							<h3 class="sui-box-title"><?php esc_html_e( 'QUICK SETUP', 'wp-smushit' ); ?></h3>
+							<h3 class="sui-box-title" id="smush-quick-setup-modal-title"><?php esc_html_e( 'QUICK SETUP', 'wp-smushit' ); ?></h3>
 							<div class="sui-actions-right">
 								<button data-a11y-dialog-hide class="sui-button sui-button-ghost smush-skip-setup" aria-label="<?php esc_html_e( 'Skip this.', 'wp-smushit' ); ?>">
 									<?php esc_html_e( 'SKIP', 'wp-smushit' ); ?>
@@ -349,7 +342,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		function bulk_smush_container() {
 			global $wp_smush;
 
-			$smush_individual_msg = sprintf( esc_html__( 'Smush individual images via your %1$sMedia Library%2$s', 'wp-smushit' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '" title="' . esc_html__( 'Media Library', 'wp-smushit' ) . '">', '</a>' );
+			$smush_individual_msg = sprintf(
+				/* translators: %1$s - a href opening tag, %2$s - a href closing tag */
+				esc_html__( 'Smush individual images via your %1$sMedia Library%2$s', 'wp-smushit' ),
+				'<a href="' . esc_url( admin_url( 'upload.php' ) ) . '" title="' . esc_html__( 'Media Library', 'wp-smushit' ) . '">', '</a>'
+			);
 
 			// Class for bulk smush box.
 			$class = $wp_smush->validate_install() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
@@ -394,9 +391,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// Footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
-				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
+				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" aria-describedby="smush-submit-description" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
 		        <span class="sui-icon-loader sui-loading sui-hidden"></span>
-		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
+		        <span class="smush-submit-note" id="smush-submit-description">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
 			// Container footer.
@@ -426,31 +423,41 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				return;
 			}
 
-			// Container box class.
-			$class = $wp_smush->validate_install() ? 'smush-integrations-wrapper wp-smush-pro' : 'smush-integrations-wrapper';
+			$is_pro = $wp_smush->validate_install();
 
-			echo '<div class="sui-box ' . $class . '" id="wp-smush-integrations-box">';
+			// Container box class.
+			$class = $is_pro ? 'smush-integrations-wrapper wp-smush-pro' : 'smush-integrations-wrapper';
+
+			echo '<div class="sui-box ' . esc_attr( $class ) . '" id="wp-smush-integrations-box">';
 
 			// Container header.
 			$this->container_header( esc_html__( 'Integrations', 'wp-smushit' ) );
 
-			echo '<div class="sui-box-body">';
+
+			// Box body class.
+			$box_body_class = $is_pro ? 'sui-box-body' : 'sui-box-body sui-upsell-items';
+			echo '<div class="' . esc_attr( $box_body_class ) . '">';
 
 			// Integration settings content.
 			$this->integrations_settings();
+
+			if ( ! $is_pro ) {
+				$this->integrations_upsell();
+			}
 
 			echo '</div>';
 
 			// Box footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
-				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '">
+				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" aria-describedby="smush-submit-description" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $is_pro, true, false ) . '>
 		        <span class="sui-icon-loader sui-loading sui-hidden"></span>
-		        <span class="smush-submit-note">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
+		        <span class="smush-submit-note" id="smush-submit-description">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
-			// Container footer.
-			$this->container_footer( '', $div_end );
-
+			// Container footer if pro.
+			if ( $is_pro ) {
+				$this->container_footer( '', $div_end );
+			}
 			echo '</div>';
 
 			/**
@@ -475,6 +482,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			$resize_count   = $wpsmush_db->resize_savings( false, false, true );
 			$resize_count   = ! $resize_count ? 0 : $resize_count;
 			$remaining      = $wpsmushit_admin->remaining_count;
+			// Split human size to get format and size.
+			$human = explode( ' ', $wpsmushit_admin->stats['human'] );
+			$human_size = empty( $human[ 0 ] ) ? '0' : $human[ 0 ];
+			$human_format = empty( $human[ 1 ] ) ? 'B' : $human[ 1 ];
 			?>
 
 			<div class="sui-box sui-summary sui-summary-smush">
@@ -482,10 +493,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 				<div class="sui-summary-segment">
 					<div class="sui-summary-details">
-						<span class="sui-summary-large wp-smush-stats-human"><?php echo $wpsmushit_admin->stats['human_size']; ?></span>
+						<span class="sui-summary-large wp-smush-stats-human"><?php echo $human_size; ?></span>
 						<i class="sui-icon-info sui-warning smush-stats-icon <?php echo $remaining > 0 ? '' : 'sui-hidden'; ?>" aria-hidden="true"></i>
 						<span class="sui-summary-detail wp-smush-savings">
-							<span class="wp-smush-stats-human"><?php echo $wpsmushit_admin->stats['human_format']; ?></span> /
+							<span class="wp-smush-stats-human"><?php echo $human_format; ?></span> /
 							<span class="wp-smush-stats-percent"><?php echo $wpsmushit_admin->stats['percent'] > 0 ? number_format_i18n( $wpsmushit_admin->stats['percent'], 1, '.', '' ) : 0; ?></span>%
 						</span>
 						<span class="sui-summary-sub"><?php _e( 'Total Savings', 'wp-smushit' ); ?></span>
@@ -518,9 +529,20 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 								<?php if ( ! $resize_enabled && $resize_savings <= 0 ) { ?>
 									<p class="wp-smush-stats-label-message">
 										<?php
-										$settings_link = is_multisite() && $networkwide ? $wpsmushit_admin->settings_link( array(), true, true ) : '#';
-										$link_class = is_multisite() && $networkwide ? 'wp-smush-resize-enable-network' : 'wp-smush-resize-enable';
-										printf( esc_html__( 'Save a ton of space by not storing over-sized images on your server. %sEnable image resizing%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
+										$link_class = 'wp-smush-resize-enable-link';
+										if ( is_multisite() && $networkwide ) {
+											$settings_link = $wpsmushit_admin->settings_link( array(), true, true ) . '#enable-resize';
+										} elseif ( 'bulk' !== $this->current_tab ) {
+											$settings_link = $wpsmushit_admin->settings_link( array(), true ) . '#enable-resize';
+										} else {
+											$settings_link = '#';
+											$link_class = 'wp-smush-resize-enable';
+										}
+										printf(
+											esc_html__( 'Save a ton of space by not storing over-sized images on your server. %1$1sEnable image resizing%2$2s', 'wp-smushit' ),
+											'<a role="button" class="' . esc_attr( $link_class ) . '" href="' . esc_url( $settings_link ) . '">',
+											'<span class="sui-screen-reader-text">' . __( 'Clicking this link will toggle the Enable image resizing checkbox.', 'wp-smushit' ) . '</span></a>'
+										);
 										?>
 									</p>
 								<?php } ?>
@@ -591,9 +613,20 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<?php if ( ! $wp_smush->lossy_enabled ) { ?>
 							<p class="wp-smush-stats-label-message">
 								<?php
-								$settings_link = is_multisite() && $networkwide ? $wpsmushit_admin->settings_link( array(), true, true ) : '#';
-								$link_class = is_multisite() && $networkwide ? 'wp-smush-lossy-enable-network' : 'wp-smush-lossy-enable';
-								printf( esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
+								$link_class = 'wp-smush-lossy-enable-link';
+								if ( is_multisite() && $networkwide ) {
+									$settings_link = $wpsmushit_admin->settings_link( array(), true, true ) . '#enable-lossy';
+								} elseif ( 'bulk' !== $this->current_tab ) {
+									$settings_link = $wpsmushit_admin->settings_link( array(), true ) . '#enable-lossy';
+								} else {
+									$settings_link = '#';
+									$link_class = 'wp-smush-lossy-enable';
+								}
+								printf(
+									esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s', 'wp-smushit' ),
+									'<a role="button" class="' . esc_attr( $link_class ) . '" href="' . esc_url( $settings_link ) . '">',
+									'<span class="sui-screen-reader-text">' . __( 'Clicking this link will toggle the Super Smush checkbox.', 'wp-smushit' ) . '</span></a>'
+								);
 								?>
 							</p>
 						<?php } ?>
@@ -731,24 +764,24 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			// Get settings values.
-			$settings = empty( $wpsmush_settings->settings ) ? $wpsmush_settings->init_settings() : $wpsmush_settings->settings; ?>
+			$settings = empty( $wpsmush_settings->settings ) ? $wpsmush_settings->init_settings() : $wpsmush_settings->settings;
+			?>
 
 			<!-- Start integration form -->
 			<form id="wp-smush-settings-form" method="post">
 
 				<input type="hidden" name="setting_form" id="setting_form" value="integration">
+				<?php if ( is_multisite() && is_network_admin() ) : ?>
+					<input type="hidden" name="wp-smush-networkwide" id="wp-smush-networkwide" value="1">
+					<input type="hidden" name="setting-type" value="network">
+				<?php endif; ?>
 
-				<?php wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
+				<?php
+				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
 
 				// For subsite admins show only if networkwide options is not enabled.
 				if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
 					foreach ( $this->intgration_group as $name ) {
-
-						// Skip premium features if not a member.
-						if ( ! in_array( $name, $wpsmushit_admin->basic_features ) && ! $wp_smush->validate_install() ) {
-							continue;
-						}
-
 						// Settings key.
 						$setting_m_key = WP_SMUSH_PREFIX . $name;
 						// Current setting value.
@@ -756,8 +789,29 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						// Current setting label.
 						$label = ! empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label'];
 
+						// If we don't have free or pro version for WP Offload S3, disable.
+						$disable = false;
+						if ( 's3' === $name && ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) {
+							$disable = true;
+							$setting_val = 0;
+						}
+
+						// If we don't have NextGen Gallery installed, disable.
+						if ( 'nextgen' === $name && ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
+							$disable = true;
+							$setting_val = 0;
+						}
+
+						// Gray out row, disable setting.
+						$upsell = false;
+						if ( ! $wp_smush->validate_install() ) {
+							$upsell = true;
+							$setting_val = 0;
+						}
+
 						// Show settings option.
-						$this->settings_row( $setting_m_key, $label, $name, $setting_val, true );
+						$this->settings_row( $setting_m_key, $label, $name, $setting_val, true, $disable, $upsell );
+
 					}
 					// Hook after showing integration settings.
 					do_action( 'wp_smush_after_integration_settings' );
@@ -768,24 +822,59 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		}
 
 		/**
+		 * Show upsell notice.
+		 *
+		 * @since 2.8.0
+		 */
+		public function integrations_upsell() {
+			global $wpsmushit_admin;
+
+			// Upgrade url for upsell.
+			$upsell_url = add_query_arg( array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => 'smush-nextgen-settings-upsell',
+			), $wpsmushit_admin->upgrade_url );
+			?>
+			<div class="sui-box-settings-row sui-upsell-row">
+				<img class="sui-image sui-upsell-image sui-upsell-image-smush integrations-upsell-image" src="<?php echo esc_url( WP_SMUSH_URL . 'assets/images/smush-promo.png' ); ?>">
+				<div class="sui-upsell-notice">
+					<p>
+						<?php
+						printf(
+						/* translators: %1$s - a href tag, %2$s - a href closing tag */
+							esc_html__( 'Smush Pro supports hosting images on Amazon S3 and optimizing NextGen Gallery images directly through NextGen Gallery settings. %1$sTry it free%2$s with a WPMU DEV membership today!', 'wp-smushit' ),
+							'<a href="' . esc_url( $upsell_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">',
+							'</a>'
+						);
+						?>
+					</p>
+				</div>
+			</div>
+			<?php
+		}
+
+		/**
 		 * Single settings row html content.
 		 *
-		 * @param string $setting_m_key Setting key.
-		 * @param string $label Setting label.
-		 * @param string $name Setting name.
-		 * @param mixed $setting_val Setting value.
+		 * @param string $setting_m_key  Setting key.
+		 * @param string $label          Setting label.
+		 * @param string $name           Setting name.
+		 * @param mixed  $setting_val    Setting value.
+		 * @param bool   $skip_group     Skip group settings.
+		 * @param bool   $disable        Disable the setting.
+		 * @param bool   $upsell         Gray out row to show upsell.
 		 *
 		 * @return void
 		 */
-		public function settings_row( $setting_m_key, $label, $name, $setting_val, $skip_group = false ) {
-
+		public function settings_row( $setting_m_key, $label, $name, $setting_val, $skip_group = false, $disable = false, $upsell = false ) {
 			global $wpsmushit_admin;
 
 			// Get all grouped settings that can be skipped.
 			$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->intgration_group );
 
 			?>
-			<div class="sui-box-settings-row wp-smush-basic">
+			<div class="sui-box-settings-row wp-smush-basic <?php echo $upsell ? 'sui-disabled' : ''; ?>">
 				<div class="sui-box-settings-col-1">
 					<span class="sui-settings-label"><?php echo $label; ?></span>
 					<span class="sui-description">
@@ -796,7 +885,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<?php if ( ! in_array( $name, $grouped_settings ) || $skip_group ) : ?>
 						<div class="sui-form-field">
 							<label class="sui-toggle">
-								<input type="checkbox" aria-describedby="<?php echo $setting_m_key . '-desc' ?>" id="<?php echo $setting_m_key; ?>" name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1">
+								<input type="checkbox" aria-describedby="<?php echo $setting_m_key . '-desc' ?>" id="<?php echo $setting_m_key; ?>" name="<?php echo $setting_m_key; ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
 								<span class="sui-toggle-slider"></span>
 							</label>
 							<label for="<?php echo $setting_m_key; ?>">
@@ -824,6 +913,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		public function bulk_smush_content() {
 
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
+
+			// Check if Pro user.
+			$is_pro = $wp_smush->validate_install();
 
 			// Check if all items are smushed.
 			$all_done = ( $wpsmushit_admin->smushed_count == $wpsmushit_admin->total_count ) && 0 == count( $wpsmushit_admin->resmush_ids );
@@ -860,7 +952,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' sui-hidden' ?>">
 						<span class="smush-recommendation-title"><?php esc_html_e( 'Still having trouble with PageSpeed tests? Give these a go…', 'wp-smushit' ); ?></span>
 						<ol class="smush-recommendation-list">
-							<?php if ( ! $wp_smush->validate_install() ) : ?>
+							<?php if ( ! $is_pro ) : ?>
 								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Upgrade to Smush Pro for advanced lossy compression. %sTry pro free%s.', 'wp-smushit' ), '<a href="' . $upgrade_url . '" target="_blank">', '</a>' ); ?></li>
 							<?php elseif ( ! $wpsmush_settings->settings['lossy'] ) : ?>
 								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Enable %sSuper-smush%s for advanced lossy compression to optimise images further with almost no visible drop in quality.', 'wp-smushit' ), '<a href="#" class="wp-smush-lossy-enable">', '</a>' ); ?></li>
@@ -888,7 +980,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<div class="sui-notice sui-notice-warning<?php echo $class; ?>" tabindex="0">
 						<p>
 							<?php printf( _n( '%s, you have %s%s%d%s attachment%s that needs smushing!', '%s, you have %s%s%d%s attachments%s that need smushing!', $wpsmushit_admin->remaining_count, 'wp-smushit' ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' ); ?>
-							<?php if ( ! $wp_smush->validate_install() && $wpsmushit_admin->remaining_count > 50 ) : ?>
+							<?php if ( ! $is_pro && $wpsmushit_admin->remaining_count > 50 ) : ?>
 								<?php printf( esc_html__( ' %sUpgrade to Pro%s to bulk smush all your images with one click.', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Smush Pro', 'wp-smushit' ) . '">', '</a>' ); ?>
 								<?php esc_html_e( ' Free users can smush 50 images with each click.', 'wp-smushit' ); ?>
 							<?php endif; ?>
@@ -898,7 +990,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<button type="button" class="wp-smush-all wp-smush-button sui-button sui-button-primary" title="<?php esc_html_e( 'Click to start Bulk Smushing images in Media Library', 'wp-smushit' ); ?>"><?php esc_html_e( 'BULK SMUSH NOW', 'wp-smushit' ); ?></button>
 				</div><?php
 				$this->progress_bar( $wpsmushit_admin );
-				if ( ! $wp_smush->validate_install() ) : ?>
+				if ( $is_pro && $wp_smush->lossy_enabled ) : ?>
 					<p class="wp-smush-enable-lossy tc sui-hidden"><?php esc_html_e( 'Tip: Enable Super-smush in the Settings area to get even more savings with almost no visible drop in quality.', 'wp-smushit' ); ?></p>
 				<?php endif;
 				$this->super_smush_promo();
@@ -950,7 +1042,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					// This is to avoid duplicate foreach loop.
 					$main_nav_li .= '<li class="sui-vertical-tab smush-' . $tab . $class . ( $tab === $this->current_tab ? ' current' : '' ) . '">';
 					$main_nav_li .= '<a href="' . add_query_arg( 'tab', $tab ) . '">' . $label . '</a>';
-					$main_nav_li .= '<span class="smush-nav-icon ' . $tab . $tag_class . '">' . $tag_content . '</span>';
+					$main_nav_li .= '<span class="smush-nav-icon ' . $tab . $tag_class . '" aria-hidden="true">' . $tag_content . '</span>';
 					$main_nav_li .= '</li>';
 					// Mobile nav
 					if ( is_multisite() && is_network_admin() ) {
@@ -1263,7 +1355,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<?php $data_type = 'gallery_page_wp-smush-nextgen-bulk' === $current_screen->id ? ' data-type="nextgen"' : ''; ?>
 						<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_html_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>"<?php echo $data_type; ?>><?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?></button>
 					<?php endif; ?>
-					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>
+					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>
 				</div>
 			</div>
 
@@ -1296,7 +1388,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			if ( empty( $setting_key ) || ! in_array( $setting_key, array(
 					'resize',
 					'original',
-					'keep_exif',
+					'strip_exif',
 					'png_to_jpg',
 					's3'
 				) )
@@ -1313,7 +1405,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					case 'original':
 						esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed, unless your website uses the original images in full size.', 'wp-smushit' );
 						break;
-					case 'keep_exif':
+					case 'strip_exif':
 						esc_html_e( 'Note: This data adds to the size of the image. While this information might be important to photographers, it’s unnecessary for most users and safe to remove.', 'wp-smushit' );
 						break;
 					case 'png_to_jpg':
@@ -1336,7 +1428,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return string|void
 		 */
 		public function get_recheck_message() {
-
 			global $wpsmush_settings;
 
 			// Return if not multisite, or on network settings page, Netowrkwide settings is disabled.
@@ -1423,7 +1514,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				} ?>
 				</div><?php
 			}
-
 		}
 
 		/**
@@ -1434,7 +1524,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function resize_settings( $name = '' ) {
-
 			// Add only to full size settings.
 			if ( 'resize' !== $name ) {
 				return;
@@ -1470,7 +1559,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-description sui-notice sui-notice-info wp-smush-update-width sui-hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
 				<div class="sui-description sui-notice sui-notice-info wp-smush-update-height sui-hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
 			</div>
-			<span class="sui-description sui-toggle-description"><?php esc_html_e( "Note: Image resizing happens automatically when you upload attachments. To support retina devices, we recommend using 2x the dimensions of your image size.", "wp-smushit" ); ?></span><?php
+			<span class="sui-description sui-toggle-description">
+			<?php printf( esc_html__( "Note: Image resizing happens automatically when you upload attachments. To support retina devices, we recommend using 2x the dimensions of your image size. Animated GIFs will not be resized as they will lose their animation, please use a tool such as %s to resize then re-upload.", "wp-smushit" ), '<a href="http://gifgifs.com/resizer/" target="_blank">http://gifgifs.com/resizer/</a>' ); ?>
+			<?php esc_html_e( " ", "wp-smushit" ); ?>
+			</span><?php
 		}
 
 		/**
@@ -1548,7 +1640,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			?>
 			<div class="sui-upsell-row">
-				<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-promo.png'; ?>">
+				<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo WP_SMUSH_URL . 'assets/images/smush-graphic-bulksmush-upsell@2x.png'; ?>">
 				<div class="sui-upsell-notice">
 					<p><?php printf( esc_html__( 'Did you know WP Smush Pro delivers up to 2x better compression, allows you to smush your originals and removes any bulk smushing limits? – %sTry it absolutely FREE%s', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">', '</a>' ); ?></p>
 				</div>
@@ -1562,7 +1654,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function settings_updated() {
-
 			global $wpsmushit_admin, $wpsmush_settings;
 
 			// Check if networkwide settings are enabled, do not show settings updated message.
@@ -1584,7 +1675,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 				if ( $smush_count || $resmush_count ) {
 					$message_class = ' sui-notice-warning';
-					$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %sBulk smush now!%s', 'wp-smushit' ), '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
+					// Show link to bulk smush tab from other tabs.
+					$bulk_smush_link = 'bulk' === $this->current_tab ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . $wpsmushit_admin->settings_link( array(), true ) . '">';
+					$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %sBulk smush now!%s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
 				}
 
 				echo '<div class="sui-notice-top sui-can-dismiss' . $message_class . '">
@@ -1607,7 +1700,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function set_current_tab() {
-
 			global $wpsmush_settings, $wpsmush_dir;
 
 			/**
@@ -1631,7 +1723,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			// If no integration found, set current tab as bulk smush.
 			if ( ( empty( $this->intgration_group ) && 'integrations' === $this->current_tab ) ||
-			     ( $is_network && ! $is_networkwide ) ||
+				 ( $is_network && ! $is_networkwide ) ||
 			     ( ! $is_network && $is_networkwide && ! in_array( $this->current_tab, $this->subsite_tabs ) ) ||
 			     ( 'directory' === $this->current_tab && ! $wpsmush_dir->should_continue() )
 			) {

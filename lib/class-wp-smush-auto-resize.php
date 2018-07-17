@@ -4,20 +4,23 @@
  *
  * @package WP_Smush
  * @subpackage AutoResize
- * @version 2.7
+ * @version 2.8.0
  *
- * @author Umesh Kumar <umesh@incsub.com>
+ * @author Joel James <joel@incsub.com>
+ * @author Anton Vanyukov <anton@incsub.com>
  *
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
 
 if ( ! class_exists( 'WpSmushAutoResize' ) ) {
+
 	/**
 	 * Class WpSmushAutoResize
 	 *
 	 * Reference: EWWW Optimizer.
 	 */
 	class WpSmushAutoResize {
+
 		/**
 		 * Is auto detection enabled.
 		 *
@@ -334,6 +337,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 
 			// Assign new srcset items to existing ones.
 			if ( ! empty( $new_sources ) ) {
+				// TODO: this will fail on php 5.2.
 				$sources = array_replace( $sources, $new_sources );
 			}
 

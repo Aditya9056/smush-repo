@@ -82,7 +82,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public $resmush_ids = array();
 
-		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/gif', 'image/png' );
+		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/x-citrix-jpeg', 'image/gif', 'image/png', 'image/x-png' );
 
 		/**
 		 * @array Stores the stats for all the images
@@ -131,7 +131,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $basic_features = array(
 			'networkwide',
 			'auto',
-			'keep_exif',
+			'strip_exif',
 			'resize',
 		);
 
@@ -248,7 +248,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'short_label' => esc_html__( 'Super-smush', 'wp-smushit' ),
 					'desc'        => esc_html__( 'Optimize images up to 2x more than regular smush with our multi-pass lossy compression.', 'wp-smushit' ),
 				),
-				'keep_exif'       => array(
+				'strip_exif'      => array(
 					'label'       => esc_html__( 'Strip my image meta data', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Meta data', 'wp-smushit' ),
 					'desc'        => esc_html__( 'Whenever you take a photo, your camera stores metadata, such as focal length, date, time and location, within the image.', 'wp-smushit' ),
@@ -1195,10 +1195,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$smush_data['human'] = size_format( $smush_data['bytes'], 1 );
 
-			// Set size and size format.
-			$smush_data['human_format'] = preg_replace( '/[^A-Z]+/', '', $smush_data['human'] );
-			$smush_data['human_size'] = preg_replace( '/[^0-9.]+/', '', $smush_data['human'] );
-
 			//Setup Smushed attachment ids
 			$this->smushed_attachments = ! empty( $smush_data['id'] ) ? $smush_data['id'] : '';
 
@@ -1227,7 +1223,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			//Show Temporary Status, For Async Optimisation, No Good workaround
 			if ( ! get_option( "wp-smush-restore-$id", false ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $wp_smush->is_auto_smush_enabled() ) {
 				// the status
-				$status_txt = '<p class="smush-status">'. __( 'Smushing in progress..', 'wp-smushit' ) . "</p>";
+				$status_txt = '<p class="smush-status">' . __( 'Smushing in progress..', 'wp-smushit' ) . '</p>';
 
 				// we need to show the smush button
 				$show_button = false;
@@ -1320,7 +1316,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $wpdb;
 
-			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/png' )";
+			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png' )";
 
 			$limit      = $this->query_limit();
 			$offset     = 0;

@@ -20,6 +20,7 @@ jQuery(function () {
 		remove_notice();
 		notify_wordpress(btn_act.data("msg"));
 	});
+
 	btn_dismiss.click(function (ev) {
 		remove_notice();
 		notify_wordpress(btn_act.data("msg"));

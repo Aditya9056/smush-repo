@@ -13,7 +13,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			'auto'        => 1,
 			'lossy'       => 0,
 			'original'    => 0,
-			'keep_exif'   => 0,
+			'strip_exif'  => 1,
 			'resize'      => 0,
 			'backup'      => 0,
 			'png_to_jpg'  => 0,
@@ -32,7 +32,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			'auto',
 			'lossy',
 			'original',
-			'keep_exif',
+			'strip_exif',
 			'resize',
 			'backup',
 			'png_to_jpg',
@@ -96,7 +96,6 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			}
 
 			return $this->settings;
-
 		}
 
 		/**
@@ -258,7 +257,7 @@ if ( ! class_exists( 'WpSmushSettings' ) ) {
 			}
 
 			//Delete Show Resmush option
-			if ( isset( $_POST['wp-smush-keep_exif'] ) && ! isset( $_POST['wp-smush-original'] ) && ! isset( $_POST['wp-smush-lossy'] ) ) {
+			if ( isset( $_POST['wp-smush-strip_exif'] ) && ! isset( $_POST['wp-smush-original'] ) && ! isset( $_POST['wp-smush-lossy'] ) ) {
 				//@todo: Update Resmush ids
 			}
 

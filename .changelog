@@ -1,14 +1,23 @@
+= 2.8.1 =
+* Enhance: Update GDPR policy text
+
 = 2.8.0 =
 
-* New: Improved UI
+* New: High-power API cluster for Smush Pro users
+* New: Updated and improved UI/UX
 * New: Stats meta box
-* Fixed: File size not updated at attachment details modal during Smush and restore of an image
-* Fixed: Smush will have it's own section in the GDPR policy, instead of appending to the end of the policy text
+* Enhance: Smush will have it's own section in the GDPR policy, instead of appending to the end of the policy text
+* Enhance: Compatibility with AJAX Thumbnail Rebuild and ACF plugins
+* Enhance: Add support for image/x-png and image/x-citrix-jpeg mime types
+* Fixed: File size not updated inside the attachment details modal during Smush/restore of an image
 * Fixed: Directory Smush using mobile
 * Fixed: Smush progress during feature image upload
 * Fixed: Image width and height converted to string in async request
 * Fixed: Warnings on PHP 5.2
+* Fixed: Warnings on PHP 7.1
 * Fixed: Fixed wrong method name in S3 offload class. Thanks Tedy Warsitha
+* Fixed: Issues when editing image attributes in the media library
+* Fixed: Missing translation strings
 
 = 2.7.9.2 =
 

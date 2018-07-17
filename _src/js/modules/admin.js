@@ -28,13 +28,13 @@ let progress_bar = function ( cur_ele, txt, state ) {
 	let progress_button = cur_ele.parents().eq( 1 ).find( '.wp-smush-progress' );
 
 	if ( 'show' === state ) {
-		progress_button.find( 'span' ).html( txt );
-		progress_button.toggleClass( 'visible' );
+		progress_button.html( txt );
 	} else {
 		/** @var {string} wp_smush_msgs.all_done */
-		progress_button.find( 'span' ).html( wp_smush_msgs.all_done );
-		progress_button.hide();
+		progress_button.html( wp_smush_msgs.all_done );
 	}
+
+	progress_button.toggleClass( 'visible' );
 };
 
 /**
@@ -74,7 +74,7 @@ jQuery( function ( $ ) {
 	 * Remove the quick setup dialog
 	 */
 	function remove_dialog() {
-		$('dialog#smush-quick-setup').remove();
+		$( 'dialog#smush-quick-setup' ).remove();
 	}
 
 	/**
@@ -89,16 +89,16 @@ jQuery( function ( $ ) {
 			return;
 		}
 
-		let attachmentSize = $('.attachment-info .file-size');
-		const currentSize = attachmentSize.contents().filter(function() {
+		let attachmentSize = $( '.attachment-info .file-size' );
+		const currentSize = attachmentSize.contents().filter( function () {
 			return this.nodeType === 3;
-		}).text();
+		} ).text();
 
 		// There is a space before the size.
 		if ( currentSize !== ( ' ' + new_size ) ) {
-			const sizeStrongEl = attachmentSize.contents().filter(function() {
+			const sizeStrongEl = attachmentSize.contents().filter( function () {
 				return this.nodeType === 1;
-			}   ).text();
+			} ).text();
 			attachmentSize.html( '<strong>' + sizeStrongEl + '</strong> ' + new_size );
 		}
 	}
@@ -259,12 +259,12 @@ jQuery( function ( $ ) {
 
 					// Check if stats div exists.
 					var parent = self.$status.parent();
-					var stats_div = parent.find('.smush-stats-wrapper');
+					var stats_div = parent.find( '.smush-stats-wrapper' );
 
 					// If we've updated status, replace the content.
 					if ( response.data.status ) {
 						//remove Links
-						parent.find('.smush-status-links').remove();
+						parent.find( '.smush-status-links' ).remove();
 						self.$status.replaceWith( response.data.status );
 					}
 
@@ -280,14 +280,14 @@ jQuery( function ( $ ) {
 						self.$status.html( response.data.error_msg );
 						self.$status.show();
 					}
-					if ('undefined' != stats_div && stats_div.length ) {
+					if ( 'undefined' != stats_div && stats_div.length ) {
 						stats_div.replaceWith( response.data.stats );
 					} else {
 						parent.append( response.data.stats );
 					}
 
 					// Update image size in attachment info panel.
-					update_image_stats(response.data.new_size);
+					update_image_stats( response.data.new_size );
 				}
 				self.enable_button();
 			} ).error( function ( response ) {
@@ -406,7 +406,7 @@ jQuery( function ( $ ) {
 					$( '.smush-sidenav .wp-smush-remaining-count' ).html( self.ids.length );
 				} else {
 					$( '.sui-summary-smush .smush-stats-icon' ).addClass( 'sui-hidden' );
-					$( '.smush-sidenav .wp-smush-remaining-count' ).removeClass( 'sui-tag sui-tag-warning' ).html('');
+					$( '.smush-sidenav .wp-smush-remaining-count' ).removeClass( 'sui-tag sui-tag-warning' ).html( '' );
 				}
 			}
 		};
@@ -580,7 +580,7 @@ jQuery( function ( $ ) {
 
 						if ( self.is_bulk && res.success ) {
 							self.update_progress( res );
-						}else if (self.ids.length == 0) {
+						} else if ( self.ids.length == 0 ) {
 							//Sync stats anyway
 							self.sync_stats();
 						}
@@ -792,18 +792,18 @@ jQuery( function ( $ ) {
 			//reset all functionality
 			enable_links( current_button );
 
-			if (r.success && 'undefined' != typeof(r.data.button)) {
+			if ( r.success && 'undefined' != typeof(r.data.button) ) {
 				//Replace in immediate parent for nextgen
-				if ('undefined' != typeof (this.data) && this.data.indexOf('nextgen') > -1) {
+				if ( 'undefined' != typeof (this.data) && this.data.indexOf( 'nextgen' ) > -1 ) {
 					//Show the smush button, and remove stats and restore option
-					current_button.parent().html(r.data.button);
+					current_button.parent().html( r.data.button );
 				} else {
 					//Show the smush button, and remove stats and restore option
-					current_button.parents().eq(1).html(r.data.button);
+					current_button.parents().eq( 1 ).html( r.data.button );
 				}
 
 				if ( 'undefined' != typeof (r.data) && 'restore' === action ) {
-					update_image_stats(r.data.new_size);
+					update_image_stats( r.data.new_size );
 				}
 			} else {
 				if ( r.data.message ) {
@@ -851,12 +851,12 @@ jQuery( function ( $ ) {
 
 		//Check for width
 		if ( !height_only && 'undefined' != typeof width_input && parseInt( wp_smushit_data.resize_sizes.width ) > parseInt( width_input.val() ) ) {
-			width_input.parent().addClass('sui-form-field-error');
+			width_input.parent().addClass( 'sui-form-field-error' );
 			width_error_note.show( 'slow' );
 			width_error = true;
 		} else {
 			//Remove error class
-			width_input.parent().removeClass('sui-form-field-error');
+			width_input.parent().removeClass( 'sui-form-field-error' );
 			width_error_note.hide();
 			if ( height_input.hasClass( 'error' ) ) {
 				height_error_note.show( 'slow' );
@@ -865,7 +865,7 @@ jQuery( function ( $ ) {
 
 		//Check for height
 		if ( !width_only && 'undefined' != typeof height_input && parseInt( wp_smushit_data.resize_sizes.height ) > parseInt( height_input.val() ) ) {
-			height_input.parent().addClass('sui-form-field-error');
+			height_input.parent().addClass( 'sui-form-field-error' );
 			//If we are not showing the width error already
 			if ( !width_error ) {
 				height_error_note.show( 'slow' );
@@ -873,7 +873,7 @@ jQuery( function ( $ ) {
 			height_error = true;
 		} else {
 			//Remove error class
-			height_input.parent().removeClass('sui-form-field-error');
+			height_input.parent().removeClass( 'sui-form-field-error' );
 			height_error_note.hide();
 			if ( width_input.hasClass( 'error' ) ) {
 				width_error_note.show( 'slow' );
@@ -1014,7 +1014,7 @@ jQuery( function ( $ ) {
 						wp_smushit_data.count_resize = 'undefined' != typeof r.data.count_resize ? r.data.count_resize : wp_smushit_data.count_resize;
 					}
 
-					if( 'nextgen' == scan_type ) {
+					if ( 'nextgen' == scan_type ) {
 						wp_smushit_data.bytes = parseInt( wp_smushit_data.size_before ) - parseInt( wp_smushit_data.size_after )
 					}
 
@@ -1227,21 +1227,6 @@ jQuery( function ( $ ) {
 
 	};
 
-	/**
-	 * Add choose directory button at the top
-	 *
-	 */
-	var add_dir_browser_button = function () {
-		//Get the content div length, if less than 1500, Skip
-		if ( $( 'div.wp-smush-scan-result div.content' ).height() < 1500 || $( 'div.dir-smush-button-wrap.top' ).length >= 1 ) {
-			return;
-		}
-
-		var choose_button = $( 'div.dir-smush-button-wrap' ).clone();
-		choose_button.addClass( 'top' );
-		$( 'div.wp-smush-scan-result div.content' ).prepend( choose_button );
-	};
-
 	var add_smush_button = function () {
 		//Get the content div length, if less than 1500, Skip
 		if ( $( 'div.wp-smush-scan-result div.content' ).height() < 1500 || $( 'div.wp-smush-all-button-wrap.top' ).length >= 1 ) {
@@ -1279,42 +1264,6 @@ jQuery( function ( $ ) {
 
 		//Add class top
 		notice.addClass( 'top' );
-
-		//Append the notice
-		$( 'div.wp-smush-scan-result div.dir-smush-button-wrap' ).after( notice );
-	};
-
-	var update_smush_progress = function () {
-		var in_progress_path = $( 'ul.wp-smush-image-list li.in-progress' );
-		in_progress_path.removeClass( 'in-progress active' );
-		if ( in_progress_path.length > 0 ) {
-			in_progress_path.each( function ( index, ele ) {
-				if ( $( ele ).hasClass( 'wp-smush-image-ul' ) ) {
-					//Remove Spinner
-					$( ele ).find( 'span.spinner' ).remove();
-
-					//Check if images are pending
-					var in_progress_ele = $( ele ).find( 'li.wp-smush-image-ele' );
-
-					//If there are elements
-					if ( in_progress_ele.length > 0 ) {
-						var optimised = in_progress_ele.filter( '.optimised' ).length;
-						var error = in_progress_ele.filter( '.error' ).length;
-						//if all the elements are optimised
-						if ( optimised == in_progress_ele.length ) {
-							$( ele ).addClass( 'complete' );
-						} else if ( 0 < optimised || 0 < error ) {
-							//If there are images that needs to be smushed, add the class partial
-							$( ele ).addClass( 'partial' );
-						}
-					}
-
-				} else {
-					//Remove spinner for the element
-					$( ele ).find( 'span.spinner' ).remove();
-				}
-			} );
-		}
 	};
 
 	/**
@@ -1433,7 +1382,7 @@ jQuery( function ( $ ) {
 
 		//Update the savings percent
 		wp_smushit_data.savings_percent = precise_round( ( parseInt( wp_smushit_data.savings_bytes ) / parseInt( wp_smushit_data.size_before ) ) * 100, 1 );
-		if ( ! isNaN( wp_smushit_data.savings_percent ) ) {
+		if ( !isNaN( wp_smushit_data.savings_percent ) ) {
 			$( '.wp-smush-savings .wp-smush-stats-percent' ).html( wp_smushit_data.savings_percent );
 		}
 
@@ -1632,7 +1581,7 @@ jQuery( function ( $ ) {
 			//Check, if limit is exceeded for free version
 			if ( typeof res.data !== "undefined" && res.data.error == 'dir_smush_limit_exceeded' ) {
 				//@todo: Check if this is required anymore
-				first_child.removeClass('processed');
+				first_child.removeClass( 'processed' );
 				//Show error, Bulk Smush limit exceeded
 				directory_smush_finished( 'wp-smush-dir-limit' );
 				return;
@@ -1693,13 +1642,15 @@ jQuery( function ( $ ) {
 		}
 	}
 
-	//Scroll the element to top of the page
+	// Scroll the element to top of the page.
 	var goToByScroll = function ( selector ) {
-		// Scroll
-		$( 'html,body' ).animate( {
-				scrollTop: $( selector ).offset().top - 100
-			},
-			'slow' );
+		// Scroll if element found.
+		if ( $( selector ).length > 0 ) {
+			$( 'html, body' ).animate( {
+					scrollTop: $( selector ).offset().top - 100
+				}, 'slow'
+			);
+		}
 	};
 
 	var disable_buttons = function ( self ) {
@@ -1727,7 +1678,7 @@ jQuery( function ( $ ) {
 				//Percentage section
 				if ( stats.dir_smush.percent > 0 ) {
 					// Show size and percentage separator.
-					$( 'li.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-sep' ).removeClass('sui-hidden');
+					$( 'li.smush-dir-savings span.wp-smush-stats span.wp-smush-stats-sep' ).removeClass( 'sui-hidden' );
 					//Update Optimisation percentage
 					if ( stats_percent.length > 0 ) {
 						stats_percent.html( stats.dir_smush.percent + '%' );
@@ -1934,7 +1885,7 @@ jQuery( function ( $ ) {
 			var wrapper_div = self.parents().eq( 1 );
 
 			//Get all the main settings
-			var keep_exif = document.getElementById( "wp-smush-keep_exif" );
+			var strip_exif = document.getElementById( "wp-smush-strip_exif" );
 			var super_smush = document.getElementById( "wp-smush-lossy" );
 			var smush_original = document.getElementById( "wp-smush-original" );
 			var resize_images = document.getElementById( "wp-smush-resize" );
@@ -1945,7 +1896,7 @@ jQuery( function ( $ ) {
 			$( '.wp-smush-hex-notice' ).hide();
 
 			//If Preserve Exif is Checked, and all other settings are off, just save the settings
-			if ( ( keep_exif === null || keep_exif.checked )
+			if ( ( strip_exif === null || !strip_exif.checked )
 				&& ( super_smush === null || !super_smush.checked )
 				&& ( smush_original === null || !smush_original.checked )
 				&& ( resize_images === null || !resize_images.checked )
@@ -2064,8 +2015,8 @@ jQuery( function ( $ ) {
 					wp_smushit_data.count_resize = 'undefined' != typeof stats.count_resize ? parseInt( wp_smushit_data.count_resize ) + stats.count_resize : wp_smushit_data.count_resize;
 				}
 				//Smush Notice
-				if ($('.bulk-smush-wrapper .wp-smush-remaining-count').length && 'undefined' != typeof wp_smushit_data.unsmushed ) {
-					$('.bulk-smush-wrapper .wp-smush-remaining-count').html(wp_smushit_data.unsmushed.length);
+				if ( $( '.bulk-smush-wrapper .wp-smush-remaining-count' ).length && 'undefined' != typeof wp_smushit_data.unsmushed ) {
+					$( '.bulk-smush-wrapper .wp-smush-remaining-count' ).html( wp_smushit_data.unsmushed.length );
 				}
 				update_stats();
 			}
@@ -2073,26 +2024,54 @@ jQuery( function ( $ ) {
 
 	} );
 
-	//Enable Super Smush
-	$( 'a.wp-smush-lossy-enable' ).on( 'click', function ( e ) {
-		e.preventDefault();
-
-		//Enable Super Smush
-		$( '#wp-smush-lossy' ).prop( 'checked', true ).focus();
-		goToByScroll( "#column-wp-smush-lossy" );
-	} );
-
-	//Enable Resize
-	$( '.wp-smush-resize-enable' ).on( 'click', function ( e ) {
-		e.preventDefault();
-
-		//Enable Resize, Show resize settings
+	/**
+	 * Enable resize in settings and scroll.
+	 */
+	var scroll_and_enable_resize = function () {
+		// Enable resize, show resize settings.
 		$( '#wp-smush-resize' ).prop( 'checked', true ).focus();
 		$( 'div.wp-smush-resize-settings-wrap' ).show();
 
-		//Scroll down to settings area
+		// Scroll down to settings area.
 		goToByScroll( "#column-wp-smush-resize" );
+	}
+
+	/**
+	 * Enable super smush in settings and scroll.
+	 */
+	var scroll_and_enable_lossy = function () {
+		// Enable super smush.
+		$( '#wp-smush-lossy' ).prop( 'checked', true ).focus();
+
+		// Scroll down to settings area.
+		goToByScroll( "#column-wp-smush-lossy" );
+	}
+
+	// Enable super smush on clicking link from stats area.
+	$( 'a.wp-smush-lossy-enable' ).on( 'click', function ( e ) {
+		e.preventDefault();
+
+		scroll_and_enable_lossy();
 	} );
+
+	// Enable resize on clicking link from stats area.
+	$( '.wp-smush-resize-enable' ).on( 'click', function ( e ) {
+		e.preventDefault();
+
+		scroll_and_enable_resize();
+	} );
+
+	// If settings string is found in url, enable and scroll.
+	if ( window.location.hash ) {
+		var setting_hash = window.location.hash.substring( 1 );
+		// Enable and scroll to resize settings.
+		if ( 'enable-resize' === setting_hash ) {
+			scroll_and_enable_resize();
+		} else if ( 'enable-lossy' === setting_hash ) {
+			// Enable and scroll to lossy settings.
+			scroll_and_enable_lossy();
+		}
+	}
 
 	//Trigger Bulk
 	$( 'body' ).on( 'click', '.wp-smush-trigger-bulk', function ( e ) {
@@ -2260,32 +2239,46 @@ jQuery( function ( $ ) {
 		run_re_check( $( '.wp-smush-scan' ), false );
 	}
 
+	/**
+	 * Init fileTree
+	 */
+	//var initFileTree = function() {
+	function initFileTree() {
+		console.log( $( ".wp-smush-list-dialog .content" ) );
+		$( ".wp-smush-list-dialog .content" ).fileTree( {
+				script: getDirectoryList,
+				multiFolder: false
+			},
+			function ( file ) {
+				//console.log( file );
+			}
+		).on( 'filetreeexpanded', function ( e, data ) {
+			// Add a selected class to directory.
+			data.container.find( 'li' ).removeClass( 'selected' );
+			data.li.addClass( 'selected' );
+		} ).on( 'filetreecollapsed', function ( e, data ) {
+			// Add a selected class to the closest expanded tree.
+			data.li.removeClass( 'selected' );
+			const li = data.container.find( '[rel="' + data.rel + '"]' ).parent().closest( '.expanded' );
+			li.addClass( 'selected' );
+		} );
+	}
+
 	//Stats Section Choose Directory Link
 	$( 'body' ).on( 'click', 'a.wp-smush-dir-link', function ( e ) {
 		if ( $( 'div.sui-wrap button.wp-smush-browse' ).length > 0 ) {
 			e.preventDefault();
 			SUI.dialogs["wp-smush-list-dialog"].show();
-			//Display the loader
-			$( 'button.dir-smush-button-wrap span.spinner' ).addClass( 'is-active' );
-
 			//Display File tree for Directory Smush
-			$( ".wp-smush-list-dialog .content" ).fileTree( {
-					script: getDirectoryList,
-					multiFolder: false
-				},
-				function () {
-				}
-			);
-
+			initFileTree();
 		}
 	} );
 
 	//WP Smush all : Scan Images
 	$( 'div.sui-wrap' ).on( 'click', 'button.wp-smush-browse', function ( e ) {
-
 		e.preventDefault();
 
-		//Hide all the notices
+		// Hide all the notices.
 		$( 'div.wp-smush-scan-result div.wp-smush-notice' ).hide();
 
 		//If disabled, do not process
@@ -2295,8 +2288,6 @@ jQuery( function ( $ ) {
 			//Disable Buttons
 			$( this ).attr( 'disabled', 'disabled' );
 			$( 'button.wp-smush-resume' ).attr( 'disabled', 'disabled' );
-			$( 'div.dir-smush-button-wrap span.spinner' ).addClass( 'is-active' );
-
 		}
 
 		//Remove Notice
@@ -2304,18 +2295,8 @@ jQuery( function ( $ ) {
 
 		showDialog();
 
-		//Display the loader
-		$( 'button.dir-smush-button-wrap span.spinner' ).addClass( 'is-active' );
-
 		//Display File tree for Directory Smush
-		$( ".wp-smush-list-dialog .content" ).fileTree( {
-				script: getDirectoryList,
-				multiFolder: false
-			},
-			function () {
-			}
-		);
-
+		initFileTree();
 	} );
 
 	// On dialog close make browse btutton active.
@@ -2326,7 +2307,6 @@ jQuery( function ( $ ) {
 
 	//Image Directories: On Select button click
 	$( '.wp-smush-select-dir' ).on( 'click', function ( e ) {
-
 		e.preventDefault();
 
 		//If disabled, do not process
@@ -2476,11 +2456,11 @@ jQuery( function ( $ ) {
 		$( '.wp-smush-image-progress-percent' ).addClass( 'sui-hidden' );
 
 		// Show directory exclude option.
-		$( '.wp-smush-exclude-dir' ).each( function() {
+		$( '.wp-smush-exclude-dir' ).each( function () {
 			if ( $( this ).parent().prevAll( '.optimised, .partial' ).length === 0 ) {
 				$( this ).show();
 			}
-		});
+		} );
 
 		// Remove progress icon from navbar.
 		$( '.smush-nav-icon.directory' ).removeClass( 'sui-icon-loader sui-loading' );
@@ -2536,7 +2516,6 @@ jQuery( function ( $ ) {
 
 		//Send Ajax request to load a list of images
 		$.get( ajaxurl, params, function ( r ) {
-
 			//Hide the buttons
 			$( 'button.wp-smush-resume' ).remove();
 			// Allow to select a new directory
@@ -2544,7 +2523,8 @@ jQuery( function ( $ ) {
 			//Append the results
 			if ( !r.success ) {
 				//Append the error message before the buttons
-				$( 'div.wp-smush-dir-desc' ).after( r.data.message );
+				$( 'p.wp-smush-no-images-content' ).after( r.data.message );
+				$( 'span.wp-smush-resume-loder' ).addClass( 'sui-hidden' );
 			} else {
 				//Append the image markup after the buttons
 				$( 'div.wp-smush-scan-result div.content' ).html( r.data );

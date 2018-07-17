@@ -1,8 +1,8 @@
-const _          = require('lodash');
-const path       = require('path');
-const webpack    = require('webpack');
-const ATP        = require('autoprefixer');
-const CSSExtract = require("mini-css-extract-plugin");
+const _          = require('lodash'),
+	  path       = require('path'),
+	  webpack    = require('webpack'),
+	  ATP        = require('autoprefixer'),
+	  CSSExtract = require("mini-css-extract-plugin");
 
 // The path where the Shared UI fonts & images should be sent.
 const config = {
