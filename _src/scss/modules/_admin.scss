@@ -136,14 +136,6 @@
 					display: inline-block;
 				}
 
-				.wp-smush-exclude-dir {
-					right: 0;
-
-					i {
-						margin-right: 0;
-					}
-				}
-
 				.wp-smush-image-dir-progress {
 					&.optimised {
 						@include icon(before, check-tick);

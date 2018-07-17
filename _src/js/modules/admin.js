@@ -1102,20 +1102,10 @@ jQuery( function ( $ ) {
 		// Close the dialog.
 		SUI.dialogs['wp-smush-list-dialog'].hide();
 
-		$( '.wp-smush-select-dir, button.wp-smush-browse, button.wp-smush-resume, a.wp-smush-dir-link' ).removeAttr( 'disabled' );
+		$( '.wp-smush-select-dir, button.wp-smush-browse, a.wp-smush-dir-link' ).removeAttr( 'disabled' );
 
 		// Reset the opacity for content and scan button
 		$( '.wp-smush-select-dir, .wp-smush-list-dialog .sui-box-body' ).css( {'opacity': '1'} );
-	};
-
-	/**
-	 * Initialize accordion
-	 *
-	 */
-	var set_accordion = function () {
-
-		// backward compat of instantiate new accordion
-		SUI.suiAccordion( $( '.sui-table.sui-accordion.smush-dir-smush-accordion' ) );
 	};
 
 	/**
@@ -2300,82 +2290,6 @@ jQuery( function ( $ ) {
 
 		// Remove progress icon from navbar.
 		$( '.smush-nav-icon.directory' ).removeClass( 'sui-icon-loader sui-loading' );
-	} );
-
-	//Exclude Directory from list - Handle Click
-	$( 'div.wp-smush-scan-result' ).on( 'click', '.wp-smush-exclude-dir', function ( e ) {
-		e.preventDefault();
-
-		var self = $( this );
-
-		//Hide the link
-		//self.hide();
-
-		var path = self.data( 'path' );
-		var param = {
-			action: 'smush_exclude_path',
-			path: path,
-			nonce: $( 'input[name="exclude-path-nonce"]' ).val()
-		};
-
-		//Send Ajax request to remove image for the given path from db
-		$.post( ajaxurl, param, function ( res ) {
-			//Remove the whole li element on success
-			if ( res.success ) {
-				// Remove content and parent rows.
-				self.closest( 'tr.sui-accordion-item' ).remove();
-				self.closest( 'tr.sui-accordion-item' ).next( 'tr.sui-accordion-item-content' ).remove();
-
-				//Remove the bottom bulk smsuh button if there are no more directories left in scan results
-				if ( 0 == $( '.wp-smush-image-ele:not(.optimised)' ).length ) {
-					$( 'div.wp-smush-all-button-wrap.bottom' ).hide();
-					$( 'div.wp-smush-scan-result' ).hide();
-				}
-			}
-		} );
-	} );
-
-	//Handle Click for Resume Last scan button
-	$( 'button.wp-smush-resume' ).on( 'click', function () {
-
-		var self = $( this );
-
-		//Disable buttons
-		disable_buttons( self );
-
-		//Show Spinner
-		$( 'span.wp-smush-resume-loder' ).removeClass( 'sui-hidden' );
-
-		var params = {
-			action: 'resume_scan',
-		};
-
-		//Send Ajax request to load a list of images
-		$.get( ajaxurl, params, function ( r ) {
-			//Hide the buttons
-			$( 'button.wp-smush-resume' ).remove();
-			// Allow to select a new directory
-			$( 'button.wp-smush-browse' ).removeAttr( 'disabled' );
-			//Append the results
-			if ( !r.success ) {
-				//Append the error message before the buttons
-				$( 'p.wp-smush-no-images-content' ).after( r.data.message );
-				$( 'span.wp-smush-resume-loder' ).addClass( 'sui-hidden' );
-			} else {
-				//Append the image markup after the buttons
-				$( 'div.wp-smush-scan-result div.content' ).html( r.data );
-				$( 'div.wp-smush-scan-result' ).removeClass( 'sui-hidden' );
-
-				set_accordion();
-			}
-		} ).done( function () {
-			//Add Choose dir browser button
-			add_dir_browser_button();
-
-			//Clone and add Smush button
-			add_smush_button();
-		} );
-
 	} );
 
 	if ( $( 'li.smush-dir-savings' ).length > 0 ) {

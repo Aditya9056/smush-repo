@@ -42,7 +42,6 @@ import {getLink} from "../../../../wp-hummingbird/_src/js/utils/helpers";
 
 				// Disable buttons.
 				$( this ).attr( 'disabled', 'disabled' );
-				$( 'button.wp-smush-resume' ).attr( 'disabled', 'disabled' );
 
 				// Remove notice.
 				$( 'div.wp-smush-info' ).remove();
@@ -80,9 +79,6 @@ import {getLink} from "../../../../wp-hummingbird/_src/js/utils/helpers";
 
 				$( 'div.wp-smush-list-dialog div.sui-box-body' ).css( { 'opacity': '0.8' } );
 				$( 'div.wp-smush-list-dialog div.sui-box-body a' ).unbind( 'click' );
-
-				// Remove resume button
-				$( 'button.wp-smush-resume' ).remove();
 
 				// Disable button
 				button.attr( 'disabled', 'disabled' );

@@ -24,34 +24,6 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 		}
 
 		/**
-		 * Check if there is any unsmushed image from last scan
-		 *
-		 * TODO: don't think we need this according to new design
-		 *
-		 * @return bool True/False
-		 */
-		private function get_unsmushed_image() {
-			global $wpdb, $wp_smush;
-
-			// If super-smush enabled, add lossy check.
-			$lossy_condition = $wp_smush->lossy_enabled ? '(image_size IS NULL OR lossy <> 1)' : 'image_size IS NULL';
-
-			$results = $wpdb->get_col( "SELECT id FROM {$wpdb->prefix}smush_dir_images WHERE {$lossy_condition} && last_scan = (SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images t2 )  GROUP BY id ORDER BY id LIMIT 1" );
-
-			// If the query went through.
-			if ( empty( $results ) ) {
-				return false;
-			}
-
-			if ( is_wp_error( $results ) ) {
-				error_log( sprintf( "WP Smush Query Error in %s at %s: %s", __FILE__, __LINE__, $results->get_error_message() ) );
-				return false;
-			}
-
-			return true;
-		}
-
-		/**
 		 * Bulk Smush UI and progress bar.
 		 */
 		public function ui() {
@@ -84,8 +56,6 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 				$wpsmushit_admin->upgrade_url
 			);
 
-			$dir_button = '<button class="sui-button wp-smush-browse sui-hidden" data-a11y-dialog-show="wp-smush-list-dialog">' . esc_html__( 'ADD FOLDER', 'wp-smushit' ) . '</button>';
-
 			echo '<div class="sui-box" id="wp-smush-dir-wrap-box">';
 
 			/**
@@ -93,7 +63,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 			 *
 			 * @var WpSmushBulkUi $wpsmush_bulkui
 			 */
-			$wpsmush_bulkui->container_header( esc_html__( 'Directory Smush', 'wp-smushit' ), $dir_button ); ?>
+			$wpsmush_bulkui->container_header( esc_html__( 'Directory Smush', 'wp-smushit' ) ); ?>
 
 			<div class="sui-box-body">
 				<!-- Directory Path -->
@@ -112,32 +82,8 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 						</p>
 						<span class="wp-smush-upload-images sui-no-padding-bottom tc">
 							<button type="button" class="sui-button sui-button-primary wp-smush-browse tc" data-a11y-dialog-show="wp-smush-list-dialog"><?php esc_html_e( 'CHOOSE FOLDER', 'wp-smushit' ); ?></button>
-							<?php $this->show_resume_button(); ?>
 						</span>
 					</div>
-					<table class="smush-dir-smush-done sui-table sui-hidden">
-						<thead>
-						<tr>
-							<th><?php esc_html_e( 'Folder', 'wp-smushit' ); ?></th>
-						</tr>
-						</thead>
-						<tbody>
-						<tr>
-							<td class="smush-notice-content">
-								<div class="sui-notice sui-notice-info smush-no-images sui-hidden">
-									<p><?php esc_html_e( 'You haven’t added any folders to smush.', 'wp-smushit' ); ?></p>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<button type="button" class="sui-button wp-smush-browse wp-smush-browse-top" data-a11y-dialog-show="wp-smush-list-dialog">
-									<?php esc_html_e( 'ADD FOLDER', 'wp-smushit' ); ?>
-								</button>
-							</td>
-						</tr>
-						</tbody>
-					</table>
 					<!-- Notices -->
 					<div class="sui-notice sui-notice-success wp-smush-dir-all-done sui-hidden">
 						<p><?php esc_html_e( 'All images for the selected directory are smushed and up to date. Awesome!', 'wp-smushit' ); ?></p>
@@ -166,26 +112,16 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 					<?php wp_nonce_field( 'wp_smush_all', 'wp-smush-all' ); ?>
 					<input type="hidden" name="wp-smush-continue-ajax" value=1>
 				</div>
-				<input type="hidden" name="wp-smush-base-path" value="<?php echo $wpsmush_dir->get_root_path(); ?>">
-			</div>
-			<?php $this->directory_list_dialog(); ?>
-			<?php $this->progress_dialog(); ?>
+				<input type="hidden" name="wp-smush-base-path" value="<?php echo esc_attr( $wpsmush_dir->get_root_path() ); ?>">
 			</div>
 			<?php
-		}
-
-		/**
-		 * Prints a resume button if required.
-		 */
-		public function show_resume_button() {
-			if ( ! $this->get_unsmushed_image() ) {
-				return null;
+			$current_screen = get_current_screen();
+			if ( ! empty( $current_screen ) && ! empty( $current_screen->base ) && ( 'toplevel_page_smush' === $current_screen->base || 'toplevel_page_smush-network' === $current_screen->base ) ) {
+				$this->directory_list_dialog();
+				$this->progress_dialog();
 			}
-			// Print the button. ?>
-			<button type="button" class="sui-button wp-smush-resume tc">
-				<?php esc_html_e( 'RESUME LAST SCAN', 'wp-smushit' ); ?>
-			</button>
-			<span class="wp-smush-resume-loder sui-icon-loader sui-loading sui-hidden" aria-hidden="true"></span>
+			?>
+			</div>
 			<?php
 		}
 
@@ -193,12 +129,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 		 * Output the content for Directory smush list dialog content
 		 */
 		public function directory_list_dialog() {
-			$current_screen = get_current_screen();
-			if ( empty( $current_screen ) || empty( $current_screen->base ) || ( 'toplevel_page_smush' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base ) ) {
-				return;
-			}
 			?>
-
 			<div class="sui-dialog wp-smush-list-dialog" aria-hidden="true" id="wp-smush-list-dialog">
 				<div class="sui-dialog-overlay sui-fade-in" tabindex="0"></div>
 				<div class="sui-dialog-content sui-bounce-in" role="dialog">
@@ -233,12 +164,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 		 * Output the progress dialog for the Directory smush list dialog
 		 */
 		public function progress_dialog() {
-			$current_screen = get_current_screen();
-			if ( empty( $current_screen ) || empty( $current_screen->base ) || ( 'toplevel_page_smush' != $current_screen->base && 'toplevel_page_smush-network' != $current_screen->base ) ) {
-				return;
-			}
 			?>
-
 			<div class="sui-dialog wp-smush-progress-dialog" aria-hidden="true" id="wp-smush-progress-dialog">
 				<div class="sui-dialog-overlay sui-fade-in" tabindex="0"></div>
 				<div class="sui-dialog-content sui-bounce-in" role="dialog">
