@@ -618,7 +618,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 									$settings_link = '#';
 									$link_class = 'wp-smush-lossy-enable';
 								}
-								printf( esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s', 'wp-smushit' ), '<a class="' . $link_class . '" href="' . $settings_link . '">', '</a>' );
+								printf(
+									esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality. %sEnable Super-smush%s', 'wp-smushit' ),
+									'<a role="button" class="' . esc_attr( $link_class ) . '" href="' . esc_url( $settings_link ) . '">',
+									'<span class="sui-screen-reader-text">' . __( 'Clicking this link will toggle the Super Smush checkbox.', 'wp-smushit' ) . '</span></a>'
+								);
 								?>
 							</p>
 						<?php } ?>
