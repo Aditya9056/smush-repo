@@ -414,10 +414,35 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 
 		}
 
+		/**
+		 * Get root path of the installation.
+		 *
+		 * Sometimes content directories may reside outside
+		 * the installation sub directory. We need to make sure
+		 * we are selecting the root directory, not installation
+		 * directory.
+		 *
+		 * @return string Root path.
+		 */
 		public function get_root_path() {
+			// If main site.
 			if ( is_main_site() ) {
 
-				return rtrim( get_home_path(), '/' );
+				// Get content directory and explod.
+				$content_path = explode( '/', WP_CONTENT_DIR );
+				// Get root path and explod.
+				$root_path = explode( '/', get_home_path() );
+				// Find the length of the shortest one.
+				$end = min( count( $content_path ), count( $root_path ) );
+				$i = 0;
+				$common = array();
+				// Add the component if they are the same in both paths.
+				while ( $content_path[ $i ] === $root_path[ $i ] && $i < $end ) {
+					$common[] = $content_path[ $i ];
+					$i++;
+				}
+
+				return implode( '/', $common );
 			} else {
 				$up = wp_upload_dir();
 
