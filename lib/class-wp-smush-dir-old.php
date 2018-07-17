@@ -14,11 +14,11 @@
 include_once 'utils/class-wp-smush-directory-scanner.php';
 include_once 'ui/class-wp-smush-dir-ui.php';
 
-if ( ! class_exists( 'WP_Smush_Dir' ) ) {
+if ( ! class_exists( 'WP_Smush_Dir123' ) ) {
 	/**
 	 * Class WP_Smush_Dir
 	 */
-	class WP_Smush_Dir {
+	class WP_Smush_Dir123 {
 		/**
 		 * Contains a list of optimised images.
 		 *
