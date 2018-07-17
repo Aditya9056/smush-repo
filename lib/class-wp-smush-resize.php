@@ -104,6 +104,11 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 
 			$file_path = $wpsmush_helper->get_attached_file( $id );
 
+			// If GIF is animated, return.
+			if ( $this->is_animated( $file_path ) && 'image/gif' === get_post_mime_type( $id ) ) {
+				return false;
+			}
+
 			if ( ! empty( $file_path ) ) {
 
 				// Skip: if "noresize" is included in the filename, Thanks to Imsanity.
@@ -225,7 +230,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 			}
 
 			// Else Replace the Original file with resized file.
-			$replaced = $this->replcae_original_image( $file_path, $resize, $id, $meta );
+			$replaced = $this->replace_original_image( $file_path, $resize, $id, $meta );
 
 			if ( $replaced ) {
 				// Clear Stat Cache, Else the size obtained is same as the original file size.
@@ -336,7 +341,7 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 		 *
 		 * @return bool
 		 */
-		function replcae_original_image( $file_path, $resized, $attachment_id = '', $meta = '' ) {
+		function replace_original_image( $file_path, $resized, $attachment_id = '', $meta = '' ) {
 
 			$replaced = @copy( $resized['file_path'], $file_path );
 			$this->maybe_unlink( $resized['file_path'], $meta );
@@ -395,6 +400,47 @@ if ( ! class_exists( 'WpSmushResize' ) ) {
 
 			return true;
 
+		}
+
+		/**
+		 * Check to see if file is animated.
+		 *
+		 * @param string $file_path Image File Path.
+		 *
+		 * @return bool
+		 */
+		function is_animated( $file_path ) {
+			$filecontents = file_get_contents( $file_path );
+
+			$str_loc = 0;
+			$count = 0;
+
+			// There is no point in continuing after we find a 2nd frame.
+			while ( $count < 2 ) {
+
+				$where1 = strpos( $filecontents,"\x00\x21\xF9\x04", $str_loc );
+				if ( false === $where1 ) {
+					break;
+				} else {
+					$str_loc = $where1 + 1;
+					$where2 = strpos( $filecontents,"\x00\x2C", $str_loc );
+					if ( false === $where2 ) {
+						break;
+					} else {
+						if ( $where2 === $where1 + 8 ) {
+							$count++;
+						}
+						$str_loc = $where2 + 1;
+					}
+				}
+			}
+
+			if ( $count > 1 ) {
+				return true;
+
+			}
+
+			return false;
 		}
 	}
 
