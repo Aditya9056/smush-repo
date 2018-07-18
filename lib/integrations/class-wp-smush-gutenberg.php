@@ -44,6 +44,9 @@ class WP_Smush_Gutenberg {
 
 		// Hook at the end of setting row to output an error div.
 		add_action( 'smush_setting_column_right_inside', array( $this, 'integration_error' ) );
+
+		// Register gutenberg block assets.
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gb' ) );
 	}
 
 	/**
@@ -135,6 +138,34 @@ class WP_Smush_Gutenberg {
 	 */
 	private function is_gutenberg_active() {
 		return is_plugin_active( 'gutenberg/gutenberg.php' );
+	}
+
+	/**
+	 * Enqueue Gutenberg block assets for backend editor.
+	 *
+	 * `wp-blocks`: includes block type registration and related functions.
+	 * `wp-element`: includes the WordPress Element abstraction for describing the structure of your blocks.
+	 * `wp-i18n`: To internationalize the block's text.
+	 *
+	 * @since 2.8.1
+	 */
+	public function enqueue_gb() {
+		/* @var WpSmushSettings $wpsmush_settings */
+		global $wpsmush_settings;
+
+		$enabled = $wpsmush_settings->settings[ $this->module ];
+
+		if ( ! $enabled || ! $this->is_gutenberg_active() ) {
+			return;
+		}
+
+		// Gutenberg block scripts.
+		wp_enqueue_script(
+			'smush-gutenberg',
+			WP_SMUSH_URL . 'assets/js/blocks.min.js',
+			array( 'wp-blocks', 'wp-i18n', 'wp-element' ),
+			WP_SMUSH_VERSION
+		);
 	}
 
 }

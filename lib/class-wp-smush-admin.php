@@ -226,9 +226,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Load js and css on pages with Media Uploader - WP Enqueue Media.
 			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
-
-			// Register gutenberg block assets.
-			add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gb' ) );
 		}
 
 		function init_settings() {
@@ -326,25 +323,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Dismiss update info.
 			$this->dismiss_update_info();
-		}
-
-		/**
-		 * Enqueue Gutenberg block assets for backend editor.
-		 *
-		 * `wp-blocks`: includes block type registration and related functions.
-		 * `wp-element`: includes the WordPress Element abstraction for describing the structure of your blocks.
-		 * `wp-i18n`: To internationalize the block's text.
-		 *
-		 * @since 2.9.0
-		 */
-		public function enqueue_gb() {
-			// Gutenberg block scripts.
-			wp_enqueue_script(
-				'smush-gutenberg',
-				WP_SMUSH_URL . 'assets/js/blocks.min.js',
-				array( 'wp-blocks', 'wp-i18n', 'wp-element' ),
-				WP_SMUSH_VERSION
-			);
 		}
 
 		/**
