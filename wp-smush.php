@@ -48,19 +48,40 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'WP_SMUSH_VERSION', '2.8.0-beta.3' );
-define( 'WP_SHARED_UI_VERSION', 'sui-2-2-6' ); // Used to define body class.
-define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
+if ( ! defined( 'WP_SMUSH_VERSION' ) ) {
+	define( 'WP_SMUSH_VERSION', '2.8.0-beta.3' );
+}
+// Used to define body class.
+if ( ! defined( 'WP_SHARED_UI_VERSION' ) ) {
+	define( 'WP_SHARED_UI_VERSION', 'sui-2-2-6' );
+}
+if ( ! defined( 'WP_SMUSH_BASENAME' ) ) {
+	define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
+}
 if ( ! defined( 'WP_SMUSH_API' ) ) {
 	define( 'WP_SMUSH_API', 'https://smushpro.wpmudev.org/1.0/' );
 }
-define( 'WP_SMUSH_UA', 'WP Smush/' . WP_SMUSH_VERSION . '; ' . network_home_url() );
-define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
-define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
-define( 'WP_SMUSH_MAX_BYTES', 1000000 );
-define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 32000000 );
-define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
-define( 'WP_SMUSH_TIMEOUT', apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 ) );
+if ( ! defined( 'WP_SMUSH_UA' ) ) {
+	define( 'WP_SMUSH_UA', 'WP Smush/' . WP_SMUSH_VERSION . '; ' . network_home_url() );
+}
+if ( ! defined( 'WP_SMUSH_DIR' ) ) {
+	define( 'WP_SMUSH_DIR', plugin_dir_path( __FILE__ ) );
+}
+if ( ! defined( 'WP_SMUSH_URL' ) ) {
+	define( 'WP_SMUSH_URL', plugin_dir_url( __FILE__ ) );
+}
+if ( ! defined( 'WP_SMUSH_MAX_BYTES' ) ) {
+	define( 'WP_SMUSH_MAX_BYTES', 1000000 );
+}
+if ( ! defined( 'WP_SMUSH_PREMIUM_MAX_BYTES' ) ) {
+	define( 'WP_SMUSH_PREMIUM_MAX_BYTES', 32000000 );
+}
+if ( ! defined( 'WP_SMUSH_PREFIX' ) ) {
+	define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
+}
+if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
+	define( 'WP_SMUSH_TIMEOUT', apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 ) );
+}
 
 /**
  * To support Smushing on staging sites like SiteGround staging where staging site urls are different
@@ -68,9 +89,9 @@ define( 'WP_SMUSH_TIMEOUT', apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 ) );
  * If Set to false, WP Smush switch backs to the Old Sync Optimisation.
  */
 $site_url = str_replace( array( 'http://', 'https://', 'www.' ), '', site_url() );
-if ( ! empty( $_SERVER['SERVER_NAME'] ) && ( 0 !== strpos( $site_url, $_SERVER['SERVER_NAME'] ) ) ) { // Input var ok.
+if ( ! defined( 'WP_SMUSH_ASYNC' ) && ! empty( $_SERVER['SERVER_NAME'] ) && ( 0 !== strpos( $site_url, $_SERVER['SERVER_NAME'] ) ) ) { // Input var ok.
 	define( 'WP_SMUSH_ASYNC', false );
-} else {
+} elseif ( ! defined( 'WP_SMUSH_ASYNC' ) ) {
 	define( 'WP_SMUSH_ASYNC', true );
 }
 
@@ -89,8 +110,10 @@ if ( ! function_exists( 'deactivate_smush_org' ) ) {
 }
 
 // Include core class.
-/* @noinspection PhpIncludeInspection */
-require_once plugin_dir_path( __FILE__ ) . 'lib/class-wp-smush.php';
+if ( ! class_exists( 'WP_Smush' ) ) {
+	/* @noinspection PhpIncludeInspection */
+	require_once plugin_dir_path( __FILE__ ) . 'lib/class-wp-smush.php';
+}
 
 global $wp_smush;
 $wp_smush = WP_Smush::get_instance();
