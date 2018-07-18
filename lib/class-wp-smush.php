@@ -1600,6 +1600,7 @@ class WP_Smush {
 		//Load Nextgen lib, and initialize wp smush async class
 		$this->load_nextgen();
 		$this->wp_smush_async();
+		$this->load_gutenberg();
 	}
 
 	/**
@@ -1635,6 +1636,17 @@ class WP_Smush {
 		$wpsmushnextgenstats = new WpSmushNextGenStats();
 		$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 		new WPSmushNextGenBulk();
+	}
+
+	/**
+	 * Load Gutenberg integration.
+	 *
+	 * @since 2.8.1
+	 */
+	private function load_gutenberg() {
+		require_once WP_SMUSH_DIR . '/lib/integrations/class-wp-smush-gutenberg.php';
+
+		new WP_Smush_Gutenberg();
 	}
 
 	/**

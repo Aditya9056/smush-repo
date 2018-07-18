@@ -774,9 +774,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<?php if ( is_multisite() && is_network_admin() ) : ?>
 					<input type="hidden" name="wp-smush-networkwide" id="wp-smush-networkwide" value="1">
 					<input type="hidden" name="setting-type" value="network">
-				<?php endif; ?>
+				<?php endif;
 
-				<?php
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
 
 				// For subsite admins show only if networkwide options is not enabled.
@@ -784,23 +783,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					foreach ( $this->intgration_group as $name ) {
 						// Settings key.
 						$setting_m_key = WP_SMUSH_PREFIX . $name;
+						// Disable setting.
+						$disable = apply_filters( 'wp_smush_integration_status_' . $name, false );
 						// Current setting value.
-						$setting_val = empty( $settings[ $name ] ) ? 0 : $settings[ $name ];
+						$setting_val = ( empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
 						// Current setting label.
 						$label = ! empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label'];
-
-						// If we don't have free or pro version for WP Offload S3, disable.
-						$disable = false;
-						if ( 's3' === $name && ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) {
-							$disable = true;
-							$setting_val = 0;
-						}
-
-						// If we don't have NextGen Gallery installed, disable.
-						if ( 'nextgen' === $name && ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
-							$disable = true;
-							$setting_val = 0;
-						}
 
 						// Gray out row, disable setting.
 						$upsell = false;
