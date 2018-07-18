@@ -1,5 +1,15 @@
-const DirectoryScanner = ( totalSteps, currentStep ) => {
+/**
+ * Directory scanner module that will Smush images in the Directory Smush modal.
+ *
+ * @since 2.8.1
+ *
+ * @param totalSteps
+ * @param currentStep
+ * @returns {{scan: scan, cancel: (function(): (*|$.promise|{})), getProgress: getProgress, onFinishStep: onFinishStep, onFinish: onFinish}}
+ * @constructor
+ */
 
+const DirectoryScanner = ( totalSteps, currentStep ) => {
 	totalSteps = parseInt( totalSteps );
 	currentStep = parseInt( currentStep );
 	let cancelling = false;

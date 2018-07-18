@@ -1,5 +1,3 @@
-import { createTree } from 'jquery.fancytree';
-
 /**
  * Processes bulk smushing
  *

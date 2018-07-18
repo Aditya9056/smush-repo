@@ -1,3 +1,9 @@
+/**
+ * Directory Smush module JavaScript code.
+ *
+ * @since 2.8.1  Separated from admin.js into dedicated file.
+ */
+
 import { createTree } from 'jquery.fancytree';
 import Scanner from './directory-scanner';
 
