@@ -136,7 +136,7 @@
         }
 
 
-        .fancytree-partsel span.fancytree-checkbox {
+        .fancytree-selected span.fancytree-checkbox {
             border: 1px solid #17a8e3;
             background-color: #17a8e3;
 
@@ -199,7 +199,7 @@
             margin-left: 5px;
             font-family: wpmudev-plugin-icons, sans-serif;
             font-size: 16px;
-            color: #888888;
+            color: #AAA;
             content: 'D';
             position: relative;
             top: 1px;
@@ -254,6 +254,7 @@
             margin: 0 0 0 5px;
             border: 1px solid transparent;  // avoid jumping, when a border is added on hover
             border-radius: 4px;
+            font-weight: 500;
             //.rounded-corners(@fancy-node-border-radius);
             //  outline: 0; // @ Firefox, prevent dotted border after click
             // Set transparent border to prevent jumping when active node gets a border
@@ -264,10 +265,25 @@
             //color: @fancy-font-error-color;
         }
 
-        span.fancytree-expanded {
+        span.fancytree-expanded,
+        span.fancytree-selected {
             border-radius: 4px;
-            background-color: #E1F6FF;
+            background-color: #F8F8F8;
             color: #17A8E3;
+
+            span.fancytree-title {
+                color: #666666;
+            }
+        }
+
+        span.fancytree-selected {
+            background-color: #E1F6FF;
+
+            span.fancytree-expander:before,
+            span.fancytree-icon:before,
+            span.fancytree-title {
+                color: #17A8E3;
+            }
         }
     }
 
