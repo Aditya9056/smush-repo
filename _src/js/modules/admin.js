@@ -1094,21 +1094,6 @@ jQuery( function ( $ ) {
 	};
 
 	/**
-	 * Hide the popup and reset the opacity for the button
-	 *
-	 */
-	var close_dialog = function () {
-
-		// Close the dialog.
-		SUI.dialogs['wp-smush-list-dialog'].hide();
-
-		$( '.wp-smush-select-dir, button.wp-smush-browse, a.wp-smush-dir-link' ).removeAttr( 'disabled' );
-
-		// Reset the opacity for content and scan button
-		$( '.wp-smush-select-dir, .wp-smush-list-dialog .sui-box-body' ).css( {'opacity': '1'} );
-	};
-
-	/**
 	 * Add smush notice after directory smushing is finished
 	 *
 	 * @param notice_type
@@ -1937,12 +1922,6 @@ jQuery( function ( $ ) {
 		//Run the Re-check
 		run_re_check( $( '.wp-smush-scan' ), false );
 	}
-
-	// On dialog close make browse btutton active.
-	$( '.sui-dialog-close' ).on( 'click', function ( e ) {
-		$( '.wp-smush-browse' ).removeAttr( 'disabled' );
-		close_dialog();
-	} );
 
 	// Handle the Pause button click.
 	$( 'div.wp-smush-scan-result' ).on( 'click', 'button.wp-smush-pause', function ( e ) {

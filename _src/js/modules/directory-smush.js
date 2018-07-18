@@ -111,6 +111,14 @@ import Scanner from './directory-scanner';
 					self.scanner.scan();
 				} );
 			} );
+
+			/**
+			 * On dialog close make browse button active.
+			 */
+			$( '.sui-dialog-close' ).on( 'click', function () {
+				$( '.wp-smush-browse' ).removeAttr( 'disabled' );
+				self.close_dialog();
+			} );
 		},
 
 		/**
@@ -149,6 +157,8 @@ import Scanner from './directory-scanner';
 		initFileTree: function () {
 			const self = this;
 
+			let smushButton = $( 'button.wp-smush-select-dir' );
+
 			self.tree = createTree('.wp-smush-list-dialog .content', {
 				autoCollapse: true, // Automatically collapse all siblings, when a node is expanded
 				clickFolderMode: 3, // 1:activate, 2:expand, 3:activate and expand, 4:activate (dblclick expands)
@@ -157,14 +167,10 @@ import Scanner from './directory-scanner';
 				selectMode: 3,      // 1:single, 2:multi, 3:multi-hier
 				tabindex: '0',      // Whole tree behaves as one single control
 				source: self.getDirectoryList,
-				lazyLoad: function( event, data ) {
-					const node = data.node;
-					data.result = self.getDirectoryList( node.key );
-				},
-				loadChildren: function( event, data ) {
-					// Apply parent's state to new child nodes:
-					data.node.fixSelection3AfterClick();
-				}
+				lazyLoad: ( event, data ) => data.result = self.getDirectoryList( data.node.key ),
+				loadChildren: ( event, data ) => data.node.fixSelection3AfterClick(), // Apply parent's state to new child nodes:
+				select: () => smushButton.attr( 'disabled', !+self.tree.getSelectedNodes().length ),
+				init: () => smushButton.attr( 'disabled', true ),
 			});
 		},
 
@@ -183,6 +189,19 @@ import Scanner from './directory-scanner';
 		showProgressDialog: function () {
 			SUI.dialogs['wp-smush-progress-dialog'].show();
 			$( '.wp-smush-progress-dialog div.close' ).focus();
+		},
+
+		/**
+		 * Hide the popup and reset the opacity for the button.
+		 */
+		close_dialog: function () {
+			// Close the dialog.
+			SUI.dialogs['wp-smush-list-dialog'].hide();
+
+			$( '.wp-smush-select-dir, button.wp-smush-browse, a.wp-smush-dir-link' ).removeAttr( 'disabled' );
+
+			// Reset the opacity for content and scan button
+			$( '.wp-smush-select-dir, .wp-smush-list-dialog .sui-box-body' ).css( {'opacity': '1'} );
 		},
 
 		/**
