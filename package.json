@@ -36,8 +36,7 @@
   },
   "dependencies": {
     "@wpmudev/shared-ui": "2.2.6",
-    "jquery.fancytree": "^2.29.1",
-    "jqueryfiletree": "git+https://github.com/jqueryfiletree/jqueryfiletree.git"
+    "jquery.fancytree": "^2.29.1"
   },
   "devDependencies": {
     "ajv": "6.5.2",
