@@ -786,16 +786,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						// Disable setting.
 						$disable = apply_filters( 'wp_smush_integration_status_' . $name, false );
 						// Current setting value.
-						$setting_val = ( empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
+						$setting_val = ( ! $wp_smush->validate_install() || empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
 						// Current setting label.
 						$label = ! empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label'];
-
 						// Gray out row, disable setting.
-						$upsell = false;
-						if ( ! $wp_smush->validate_install() ) {
-							$upsell = true;
-							$setting_val = 0;
-						}
+						$upsell = ! $wp_smush->validate_install();
 
 						// Show settings option.
 						$this->settings_row( $setting_m_key, $label, $name, $setting_val, true, $disable, $upsell );
