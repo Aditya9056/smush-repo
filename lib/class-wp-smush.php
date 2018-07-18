@@ -1006,14 +1006,18 @@ class WP_Smush {
 	}
 
 	/**
-	 * Returns api key
+	 * Returns api key.
 	 *
 	 * @return mixed
 	 */
 	function _get_api_key() {
+		$api_key = false;
+
+		// If API key defined manually, get that.
 		if ( defined( 'WPMUDEV_APIKEY' ) && WPMUDEV_APIKEY ) {
 			$api_key = WPMUDEV_APIKEY;
-		} else {
+		} elseif ( class_exists( 'WPMUDEV_Dashboard' ) ) {
+			// If dashboard plugin is active, get API key from db.
 			$api_key = get_site_option( 'wpmudev_apikey' );
 		}
 
