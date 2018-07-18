@@ -114,6 +114,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public $pages = array(
 			'nggallery-manage-images',
+			'gallery_page_nggallery-manage-gallery',
 			'gallery_page_wp-smush-nextgen-bulk',
 			'post',
 			'post-new',
