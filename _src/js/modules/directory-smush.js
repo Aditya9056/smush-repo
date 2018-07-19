@@ -113,7 +113,7 @@ import Scanner from './directory-scanner';
 
 					// TODO: check for errors.
 					self.scanner = new Scanner( response.data, 0 );
-					self.showProgressDialog();
+					self.showProgressDialog( response.data );
 					self.scanner.scan();
 				} );
 			} );
@@ -224,8 +224,11 @@ import Scanner from './directory-scanner';
 
 		/**
 		 * Show progress dialog.
+		 *
+		 * @param {int} items  Number of items in the scan.
 		 */
-		showProgressDialog: function () {
+		showProgressDialog: function ( items ) {
+			$( '.wp-smush-progress-dialog .sui-progress-state-text' ).html( '0/' + items + ' ' + self.wp_smush_msgs.progress_smushed );
 			SUI.dialogs['wp-smush-progress-dialog'].show();
 			$( '.wp-smush-progress-dialog div.close' ).focus();
 		},

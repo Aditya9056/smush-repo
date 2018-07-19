@@ -40,6 +40,7 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 		},
 
 		onFinishStep: function( progress ) {
+			$( '.wp-smush-progress-dialog .sui-progress-state-text' ).html( currentStep + '/' + totalSteps + ' ' + wp_smush_msgs.progress_smushed );
 			WP_Smush.directory.updateProgressBar( progress );
 		},
 
