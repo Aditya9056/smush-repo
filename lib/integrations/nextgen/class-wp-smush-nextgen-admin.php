@@ -262,15 +262,12 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			// Load page header.
 			$wpsmush_bulkui->smush_page_header();
 
-			echo '<div class="sui-row">';
 
 			// Show status box.
 			$this->smush_stats_container();
 
 			// Bulk smush container.
 			$this->bulk_smush_container();
-
-			echo '</div>';
 
 			// Close shared ui wrapper.
 			echo '</div>';
@@ -466,7 +463,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			// Class for bulk smush box.
 			$class = $wp_smush->validate_install() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 
-			echo '<div class="sui-col-lg-6">';
 
 			echo '<div class="sui-box ' . $class . '" id="wp-smush-bulk-wrap-box">';
 
@@ -478,7 +474,6 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			// Bulk smush box.
 			$this->bulk_smush_content();
 
-			echo '</div>';
 			echo '</div>';
 			echo '</div>';
 		}
@@ -494,21 +489,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 
 			global $wpsmush_bulkui;
 
-			echo '<div class="sui-col-lg-6">';
 			echo '<div class="sui-box sui-summary sui-summary-smush-nextgen">';
-
-			// Container header.
-			$wpsmush_bulkui->container_header( esc_html__( 'Stats', 'wp-smushit' ) );
-
-			echo '<div class="sui-box-body smush-summary-box-body">';
-
 			$this->smush_stats_content();
 
 			// Allows you to output any content within the stats box at the end.
 			do_action( 'wp_smush_after_stats' );
-
-			echo '</div>';
-			echo '</div>';
 			echo '</div>';
 		}
 

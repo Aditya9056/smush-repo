@@ -501,12 +501,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						</span>
 						<span class="sui-summary-sub"><?php _e( 'Total Savings', 'wp-smushit' ); ?></span>
 						<span class="smushed-items-count">
-							<span class="smush-align-left wp-smush-count-total">
+							<span class="wp-smush-count-total">
 								<span class="sui-summary-detail wp-smush-total-optimised"><?php echo $wpsmushit_admin->stats['total_images']; ?></span>
 								<span class="sui-summary-sub"><?php _e( 'Images Smushed', 'wp-smushit' ); ?></span>
 							</span>
 							<?php if ( $resize_count > 0 ) { ?>
-								<span class="smush-align-right wp-smush-count-resize-total">
+								<span class="wp-smush-count-resize-total">
 									<span class="sui-summary-detail wp-smush-total-optimised"><?php echo $resize_count; ?></span>
 									<span class="sui-summary-sub"><?php _e( 'Images Resized', 'wp-smushit' ); ?></span>
 								</span>
