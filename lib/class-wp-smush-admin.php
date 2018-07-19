@@ -311,10 +311,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		function register() {
 			// Share UI JS.
-			wp_register_script( 'wpmudev-sui', WP_SMUSH_URL . 'assets/js/shared-ui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
+			wp_register_script( 'smush-wpmudev-sui', WP_SMUSH_URL . 'assets/js/shared-ui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
 
 			// Main JS.
-			wp_register_script( 'smush-admin', WP_SMUSH_URL . 'assets/js/admin.min.js', array( 'jquery', 'wpmudev-sui' ), WP_SMUSH_VERSION, true );
+			wp_register_script( 'smush-admin', WP_SMUSH_URL . 'assets/js/admin.min.js', array( 'jquery', 'smush-wpmudev-sui' ), WP_SMUSH_VERSION, true );
 
 			// Main CSS.
 			wp_register_style( 'smush-admin', WP_SMUSH_URL . 'assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
