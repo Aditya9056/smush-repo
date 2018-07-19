@@ -4,6 +4,23 @@
 
 	.sui-wrap {
 
+		// Bulk smush and directory smush (overwrite when the limit is exceeded)
+		.wp-smush-exceed-limit {
+			.wp-smush-progress-inner {
+				background: #FECF2F !important;
+			}
+
+			.sui-progress-text:before {
+				content: "!";
+				animation: none;
+				color: #FECF2F;
+			}
+
+			.sui-icon-close:before {
+				content: "";
+			}
+		}
+
 		.tc {
 			text-align: center;
 		}

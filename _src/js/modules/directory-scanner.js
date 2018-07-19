@@ -49,6 +49,9 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 			window.location.href = wp_smush_msgs.directory_url;
 		},
 
+		/**
+		 * TODO: replace this with CSS
+		 */
 		limitReached: function() {
 			let dialog = $( '#wp-smush-progress-dialog' );
 			dialog.find( '.sui-notice-warning' ).removeClass( 'sui-hidden' );

@@ -1061,7 +1061,16 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				$smushed_pc = $count->smushed_count / $count->total_count * 100;
 			} ?>
 			<div class="wp-smush-bulk-progress-bar-wrapper sui-hidden">
-				<p class="wp-smush-bulk-active roboto-medium"><?php printf( esc_html__( '%sBulk smush is currently running.%s You need to keep this page open for the process to complete.', 'wp-smushit' ), '<strong>', '</strong>' ); ?></p>
+				<p class="wp-smush-bulk-active roboto-medium">
+					<?php printf(
+						esc_html__( '%sBulk smush is currently running.%s You need to keep this page open for the process to complete.', 'wp-smushit' ),
+						'<strong>',
+						'</strong>'
+					); ?>
+				</p>
+
+				<div class="sui-notice sui-notice-warning smush-final-log sui-hidden"></div>
+
 				<div class="sui-progress-block sui-progress-can-close">
 					<div class="sui-progress">
 						<div class="sui-progress-text sui-icon-loader sui-loading">
@@ -1075,8 +1084,19 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<i class="sui-icon-close"></i>
 					</button>
 				</div>
-			</div>
-			<div class="smush-final-log notice notice-warning inline sui-hidden"></div><?php
+
+				<div class="sui-progress-state">
+					<span class="sui-progress-state-text">
+						<span>50/100</span> <?php esc_html_e( 'images optimized', 'wp-smushit' ); ?>
+					</span>
+				</div>
+
+				<div class="sui-box-body sui-no-padding-right">
+					<button type="button" class="wp-smush-all wp-smush-button sui-button wp-smush-started">
+						<?php esc_html_e( 'RESUME', 'wp-smushit' ); ?>
+					</button>
+				</div>
+			</div><?php
 		}
 
 		/**

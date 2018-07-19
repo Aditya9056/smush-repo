@@ -18,6 +18,8 @@ import Scanner from './directory-scanner';
 		init: function () {
 			const self = this;
 
+			let progress_dialog = $( '#wp-smush-progress-dialog');
+
 			// Init image scanner.
 			this.scanner = new Scanner( wp_smushit_data.dir_smush.totalSteps, wp_smushit_data.dir_smush.currentScanStep );
 
@@ -135,7 +137,7 @@ import Scanner from './directory-scanner';
 			/**
 			 * Cancel scan.
 			 */
-			$( '#wp-smush-progress-dialog').on( 'click', '.sui-dialog-close, .sui-icon-close, .wp-smush-cancel-dir', function ( e ) {
+			progress_dialog.on( 'click', '.sui-dialog-close, .sui-icon-close, .wp-smush-cancel-dir', function ( e ) {
 				e.preventDefault();
 				self.scanner.cancel().done( () => window.location.href = self.wp_smush_msgs.directory_url );
 			} );
@@ -143,44 +145,10 @@ import Scanner from './directory-scanner';
 			/**
 			 * Continue scan.
 			 */
-			$( '#wp-smush-progress-dialog').on( 'click', '.sui-icon-play, .wp-smush-resume-scan', function ( e ) {
+			progress_dialog.on( 'click', '.sui-icon-play, .wp-smush-resume-scan', function ( e ) {
 				e.preventDefault();
 				self.scanner.resume();
 			} );
-
-
-			/*
-			// Handle the Pause button click.
-			$( 'div.wp-smush-scan-result' ).on( 'click', 'button.wp-smush-pause', function ( e ) {
-				e.preventDefault();
-
-				var pause_button = $( 'button.wp-smush-pause' );
-				// Return if the link is disabled.
-				if ( pause_button.hasClass( 'disabled' ) ) {
-					return false;
-				}
-
-				// Enable the smush button, disable Pause button.
-				pause_button.addClass( 'sui-hidden' ).attr( 'disabled', 'disabled' );
-
-				// Enable the smush button, hide the spinner.
-				$( 'button.wp-smush-start, button.wp-smush-browse' ).show().removeAttr( 'disabled' );
-				$( 'span.wp-smush-image-dir-progress, span.wp-smush-image-ele-progress' ).removeClass( 'sui-icon-loader sui-loading' );
-
-				// Hide the waiting message.
-				$( '.wp-smush-image-progress-percent' ).addClass( 'sui-hidden' );
-
-				// Show directory exclude option.
-				$( '.wp-smush-exclude-dir' ).each( function () {
-					if ( $( this ).parent().prevAll( '.optimised, .partial' ).length === 0 ) {
-						$( this ).show();
-					}
-				} );
-
-				// Remove progress icon from navbar.
-				$( '.smush-nav-icon.directory' ).removeClass( 'sui-icon-loader sui-loading' );
-			} );
-			*/
 		},
 
 		/**

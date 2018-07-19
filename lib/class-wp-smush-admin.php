@@ -92,7 +92,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * @var int Limit for allowed number of images per bulk request
 		 */
-		private $max_free_bulk = 50; //this is enforced at api level too
+		private $max_free_bulk = 2; //this is enforced at api level too
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
 
@@ -568,13 +568,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Processes the Smush request and sends back the next id for smushing
 		 *
 		 * Bulk Smushing Handler
-		 *
 		 */
-		function process_smush_request() {
-
+		public function process_smush_request() {
 			global $wp_smush, $wpsmush_helper;
 
-			// turn off errors for ajax result
+			// Turn off errors for ajax result.
 			@error_reporting( 0 );
 
 			$should_continue = true;
