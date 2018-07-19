@@ -4,146 +4,287 @@
 
 @include body-class {
 
-	// Remove border on focus.
-	.wp-smush-list-dialog .jqueryFileTree:focus,
-	.wp-smush-scan-result .wp-smush-image-list-inner:focus {
-		outline: 0 solid transparent;
-	}
+    ul.fancytree-container {
 
-	ul.jqueryFileTree {
-		color: #666;
-		font-family: "Roboto", sans-serif;
-		font-size: 13px;
-		font-weight: 500;
-		letter-spacing: -0.25px;
-		line-height: 20px;
-		padding: 0;
-		margin: 0;
-		display: none;
+        color: #666;
+        font-family: "Roboto", sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: -0.25px;
+        line-height: 40px;
+        padding: 0;
+        margin: 0;
+        outline: 0 solid transparent;
+        min-height: 0%;
+        position: relative;
 
-		li {
-			line-height: 33px;
-			margin: 0 0 0 40px;
-			white-space: nowrap;
-			border-bottom: 5px solid #fff;
+        ul {
+            padding: 0 0 0 16px;
+            margin: 0;
+            display: block;
+        }
 
-			.sui-checkbox {
-				position: relative;
-				margin: 0 30px -4px -25px;
-				display: inline-block;
-			}
+        /*------------------------------------------------------------------------------
+         * Expander icon
+         *
+         * Note: IE6 doesn't correctly evaluate multiples class names,
+         *		 so we create combined class names that can be used in the CSS.
+         *
+         * Prefix: fancytree-exp-
+         * 1st character: 'e': expanded, 'c': collapsed, 'n': no children
+         * 2nd character (optional): 'd': lazy (Delayed)
+         * 3rd character (optional): 'l': Last sibling
+         *----------------------------------------------------------------------------*/
 
-			a, a:hover {
-				color: #666 !important;
-				font-size: 13px;
-				cursor: pointer;
-				padding-left: 5px;
-			}
+        span.fancytree-expander {
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
 
-			.ext_tif:before,
-			.ext_tif:before,
-			.ext_tiff:before,
-			.ext_png:before,
-			.ext_pcx:before,
-			.ext_jpeg:before,
-			.ext_jpg:before,
-			.ext_gif:before,
-			.ext_bmp:before,
-			&.directory:before {
-				font-family: wpmudev-plugin-icons, sans-serif;
-				position: relative;
-				top: 2px;
-				left: 18px;
-				font-size: 16px;
-				content: 'D';
-				color: #17A8E3;
-			}
+            &:before {
+                font-family: wpmudev-plugin-icons, sans-serif;
+            }
+        }
 
-			&.directory:before {
-				top: 1px;
-				content: '\2D8';
-				color: #AAA;
-			}
+        // --- End nodes (use connectors instead of expanders)
 
-			&.directory.wait:before {
-				content: 'N';
-				display: inline-block;
-				animation: spin 1.3s linear infinite;
-			}
+        .fancytree-exp-n span.fancytree-expander:before,
+        .fancytree-exp-nl span.fancytree-expander:before {
+            content: "\131";
+            cursor: default;
+        }
 
-			&.expanded {
-				background-color: #F8F8F8;
-				padding-left: 30px;
-				margin-left: 10px;
+        span.fancytree-ico-c  span.fancytree-expander:before {
+            content: '';
+            cursor: default;
+        }
 
-				&:before {
-					content: '\BB';
-				}
+        // --- Collapsed
 
-				ul {
-					background-color: #fff;
-				}
-			}
+        .fancytree-exp-c span.fancytree-expander:before,
+        .fancytree-exp-cl span.fancytree-expander:before,
+        .fancytree-exp-cd span.fancytree-expander:before,
+        .fancytree-exp-cdl span.fancytree-expander:before,
+        .fancytree-exp-e span.fancytree-expander:before,
+        .fancytree-exp-ed span.fancytree-expander:before,
+        .fancytree-exp-el span.fancytree-expander:before,
+        .fancytree-exp-edl span.fancytree-expander:before {
+            color: #888888;
+            content: "\2DC";
+        }
 
-			&.selected:before,
-			&.selected .collapsed:before {
-				color: #17A8E3;
-			}
+        // --- Expanded
 
-			&.selected,
-			&.expanded {
-				ul.jqueryFileTree {
-					border-top: 5px solid #fff;
-					margin-left: -30px;
-					padding-left: 20px;
-				}
+        .fancytree-exp-e span.fancytree-expander:before,
+        .fancytree-exp-ed span.fancytree-expander:before,
+        .fancytree-exp-el span.fancytree-expander:before,
+        .fancytree-exp-edl span.fancytree-expander:before {
+            content: "\131";
+        }
 
-				li {
-					padding-left: 30px;
-					margin-left: 6px;
-				}
-			}
+        /* Fade out expanders, when container is not hovered or active */
+        .fancytree-fade-expander {
+            span.fancytree-expander:before {
+                transition: opacity 1.5s;
+                opacity: 0;
+            }
+            &:hover span.fancytree-expander:before,
+            &.fancytree-treefocus span.fancytree-expander:before,
+            .fancytree-treefocus span.fancytree-expander:before,
+            [class*='fancytree-statusnode-'] span.fancytree-expander:before {
+                transition: opacity 0.6s;
+                opacity: 1;
+            }
+        }
 
-			&.selected {
-				background-color: #E1F6FF;
-				padding-left: 30px;
-				margin-left: 10px;
+        /*------------------------------------------------------------------------------
+         * Checkbox icon
+         *----------------------------------------------------------------------------*/
 
-				a, a:active, a:hover {
-					color: #17A8E3 !important;
-				}
+        span.fancytree-checkbox {
+            margin-right: 3px;
+            margin-left: 5px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            background-color: #e6e6e6;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            top: 2px;
+            position: relative;
+            transition: .2s;
 
-				ul.jqueryFileTree {
-					background-color: #fff;
-				}
+            &:before {
+                opacity: 0;
+                font-family: wpmudev-plugin-icons!important;
+                content: "(";
+                color: #fff;
+                font-size: 10px;
+                line-height: 14px;
+                position: absolute;
+                width: 100%;
+                text-align: center;
+                transition: .2s;
+            }
 
-				li {
-					background-position-x: 31px;
-					background-color: #E1F6FF;
-				}
-			}
+            /*
+            .useSprite(0, 2);
+            &:hover { .useSprite(1, 2); }
+            &.fancytree-radio { .useSprite(0, 3); }
+            &.fancytree-radio:hover { .useSprite(1, 3); }
+            */
+        }
 
-			// Overwrites for a disabled state.
-			// TODO: I know it's important and all, but remove them!
-			&.disabled {
-				background-color: #FFF !important;
-				opacity: 0.6;
 
-				&:before {
-					color: #DDD !important;
-				}
+        .fancytree-selected span.fancytree-checkbox {
+            border: 1px solid #17a8e3;
+            background-color: #17a8e3;
 
-				& > a {
-					cursor: default;
-					color: #AAA !important;
-				}
+            &:before {
+                opacity: 1;
+            }
 
-				.sui-checkbox > span {
-					background-color: #C2C2C2 !important;
-					border-color: #C2C2C2 !important;
-				}
-			}
-		}
-	}
+        }
+
+        /*
+        span.fancytree-checkbox {
+            margin-left: 5px;
+            .useSprite(0, 2);
+            &:hover { .useSprite(1, 2); }
+            &.fancytree-radio { .useSprite(0, 3); }
+            &.fancytree-radio:hover { .useSprite(1, 3); }
+        }
+        .fancytree-partsel span.fancytree-checkbox {
+            .useSprite(4, 2);
+            &:hover { .useSprite(5, 2); }
+            &.fancytree-radio { .useSprite(4, 3); }
+            &.fancytree-radio:hover { .useSprite(5, 3); }
+        }
+        // selected after partsel, so it takes precedence:
+        .fancytree-selected span.fancytree-checkbox {
+            .useSprite(2, 2);
+            &:hover { .useSprite(3, 2); }
+            &.fancytree-radio { .useSprite(2, 3); }
+            &.fancytree-radio:hover { .useSprite(3, 3); }
+        }
+        */
+        // Unselectable is dimmed, without hover effects
+        .fancytree-unselectable {
+            span.fancytree-checkbox {
+                opacity: 0.4;
+                filter: alpha(opacity=40);
+            }
+            span.fancytree-checkbox:hover {
+                //.useSprite(0, 2);
+            }
+            &.fancytree-partsel span.fancytree-checkbox:hover {
+                //.useSprite(4, 2);
+            }
+            &.fancytree-selected span.fancytree-checkbox:hover {
+                //.useSprite(2, 2);
+            }
+        }
+
+        /*------------------------------------------------------------------------------
+         * Node type icon
+         * Note: IE6 doesn't correctly evaluate multiples class names,
+         *		 so we create combined class names that can be used in the CSS.
+         *
+         * Prefix: fancytree-ico-
+         * 1st character: 'e': expanded, 'c': collapsed
+         * 2nd character (optional): 'f': folder
+         *----------------------------------------------------------------------------*/
+
+        span.fancytree-icon:before { // Default icon
+            margin-left: 5px;
+            font-family: wpmudev-plugin-icons, sans-serif;
+            font-size: 16px;
+            color: #AAA;
+            content: 'D';
+            position: relative;
+            top: 1px;
+        }
+
+        /* Documents */
+        .fancytree-ico-c span.fancytree-icon:before  { // Collapsed folder (empty)
+            content: 'D';
+        }
+        .fancytree-has-children.fancytree-ico-c span.fancytree-icon:before  { // Collapsed folder (not empty)
+            content: 'D';
+        }
+        .fancytree-ico-e span.fancytree-icon:before  { // Expanded folder
+            content: '\BB';
+        }
+
+        /* Folders */
+        .fancytree-ico-cf span.fancytree-icon:before  { // Collapsed folder (empty)
+            content: '\2D8';
+        }
+        .fancytree-has-children.fancytree-ico-cf span.fancytree-icon:before  { // Collapsed folder (not empty)
+            content: '\2D8';
+        }
+        .fancytree-ico-ef span.fancytree-icon:before  { // Expanded folder
+            content: '\BB';
+        }
+
+        // 'Loading' status overrides all others
+        .fancytree-loading span.fancytree-expander:before,
+        .fancytree-statusnode-loading span.fancytree-icon:before {
+            content: 'N';
+            animation: spin 1.3s linear infinite;
+        }
+
+        /*------------------------------------------------------------------------------
+         * Node titles and highlighting
+         *----------------------------------------------------------------------------*/
+
+        span.fancytree-node {
+            display: inherit;
+            width: 100%;
+            margin-top: 5px;
+            min-height: 40px;
+        }
+        span.fancytree-title {
+            color: #666; // inherit doesn't work on IE
+            cursor: pointer;
+            display: inline-block; // Better alignment, when title contains <br>
+            vertical-align: top;
+            min-height: 20px;
+            padding: 0 3px 0 3px; // Otherwise italic font will be outside right bounds
+            margin: 0 0 0 5px;
+            border: 1px solid transparent;  // avoid jumping, when a border is added on hover
+            border-radius: 4px;
+            font-weight: 500;
+            //.rounded-corners(@fancy-node-border-radius);
+            //  outline: 0; // @ Firefox, prevent dotted border after click
+            // Set transparent border to prevent jumping when active node gets a border
+            //	   (we can do this, because this theme doesn't use vertical lines)
+            //	border: 1px solid white; // Note: 'transparent' would not work in IE6
+        }
+        span.fancytree-node.fancytree-error span.fancytree-title {
+            //color: @fancy-font-error-color;
+        }
+
+        span.fancytree-expanded,
+        span.fancytree-selected {
+            border-radius: 4px;
+            background-color: #F8F8F8;
+            color: #17A8E3;
+
+            span.fancytree-title {
+                color: #666666;
+            }
+        }
+
+        span.fancytree-selected {
+            background-color: #E1F6FF;
+
+            span.fancytree-expander:before,
+            span.fancytree-icon:before,
+            span.fancytree-title {
+                color: #17A8E3;
+            }
+        }
+    }
 
 }
