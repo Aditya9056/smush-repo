@@ -170,6 +170,9 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 				<div class="sui-dialog-overlay sui-fade-in" tabindex="0"></div>
 				<div class="sui-dialog-content sui-bounce-in" role="dialog">
 					<div class="sui-box" role="document">
+						<style>
+							.sui-icon-warning-alert:before { color: #fecf2f !important; }
+						</style>
 
 						<div class="sui-box-header">
 							<h3 class="sui-box-title"><?php esc_html_e( 'Choose Directory', 'wp-smushit' ); ?></h3>
@@ -179,7 +182,18 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 						</div>
 
 						<div class="sui-box-body">
-							<p><?php esc_html_e( 'Bulk smushing is in progress, you need to leave this tab open until the process completes.', 'wp-smushit' ); ?></p>
+							<p>
+								<?php esc_html_e( 'Bulk smushing is in progress, you need to leave this tab open
+								until the process completes.', 'wp-smushit' ); ?>
+							</p>
+
+							<div class="sui-notice sui-notice-warning sui-hidden">
+								<p>
+									<?php esc_html_e( "You've reached the 50 attachment limit for bulk smushing in
+									the free version. Upgrade to Pro to smush unlimited images, or click resume to
+									smush another 50 attachments.", 'wp-smushit' ); ?>
+								</p>
+							</div>
 
 							<div class="sui-progress-block sui-progress-can-close">
 								<div class="sui-progress">
@@ -190,7 +204,9 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 										<span style="width: 0"></span>
 									</div>
 								</div>
-								<button class="sui-progress-close sui-tooltip" id="cancel-directory-smush" type="button" data-a11y-dialog-hide data-tooltip="<?php esc_attr_e( 'Cancel', 'wp-smushit' ); ?>">
+								<button class="sui-progress-close sui-tooltip" id="cancel-directory-smush" type="button"
+										data-a11y-dialog-hide data-tooltip="<?php esc_attr_e( 'Cancel', 'wp-smushit' ); ?>"
+								>
 									<i class="sui-icon-close"></i>
 								</button>
 							</div>
@@ -206,6 +222,10 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 							<div class="sui-actions-right">
 								<span class="add-dir-loader"></span>
 								<button class="sui-modal-close sui-button wp-smush-cancel-dir"><?php esc_html_e( 'CANCEL', 'wp-smushit' ); ?></button>
+							</div>
+
+							<div class="sui-actions-right sui-hidden">
+								<button class="sui-button wp-smush-resume-scan"><?php esc_html_e( 'RESUME', 'wp-smushit' ); ?></button>
 							</div>
 						</div>
 					</div>

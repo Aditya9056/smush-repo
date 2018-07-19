@@ -63,6 +63,13 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 			$this->ui      = new WP_Smush_Dir_UI();
 			$this->scanner = new WP_Smush_Directory_Scanner();
 
+			if ( ! $this->scanner->is_scanning() ) {
+				$this->scanner->reset_scan();
+			}
+
+			// Check to see if the scanner should be running.
+			add_action( 'admin_footer', array( $this, 'check_scan' ) );
+
 			// Handle Ajax request 'smush_get_directory_list'.
 			add_action( 'wp_ajax_smush_get_directory_list', array( $this, 'directory_list' ) );
 
@@ -84,6 +91,24 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 			add_action( 'wp_ajax_directory_smush_check_step', array( $this, 'directory_smush_check_step' ) );
 			add_action( 'wp_ajax_directory_smush_finish', array( $this, 'directory_smush_finish' ) );
 			add_action( 'wp_ajax_directory_smush_cancel', array( $this, 'directory_smush_cancel' ) );
+		}
+
+		/**
+		 * Run the scanner on page refresh (if it's running).
+		 *
+		 * @since 2.8.1
+		 */
+		public function check_scan() {
+			if ( $this->scanner->is_scanning() ) {
+				?>
+				<script>
+					jQuery( document ).ready( function() {
+						jQuery('#wp-smush-progress-dialog').show();
+						window.WP_Smush.directory.scanner.scan();
+					});
+				</script>
+				<?php
+			}
 		}
 
 		/**
@@ -132,7 +157,6 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 * @since 2.8.1
 		 */
 		public function directory_smush_cancel() {
-			// TODO: clear out al the scan data.
 			$this->scanner->reset_scan();
 			wp_send_json_success();
 		}

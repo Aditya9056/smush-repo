@@ -19,8 +19,7 @@ import Scanner from './directory-scanner';
 			const self = this;
 
 			// Init image scanner.
-			//console.log( 'Total steps/current step: ' + wp_smushit_data.dir_smush.totalSteps + ' ' + wp_smushit_data.dir_smush.currentScanStep );
-			//this.scanner = new Scanner( wp_smushit_data.dir_smush.totalSteps, wp_smushit_data.dir_smush.currentScanStep );
+			this.scanner = new Scanner( wp_smushit_data.dir_smush.totalSteps, wp_smushit_data.dir_smush.currentScanStep );
 
 			/**
 			 * Smush translation strings.
@@ -121,10 +120,34 @@ import Scanner from './directory-scanner';
 			/**
 			 * On dialog close make browse button active.
 			 */
-			$( '.sui-dialog-close' ).on( 'click', function () {
+			$( '#wp-smush-list-dialog' ).on( 'click', '.sui-dialog-close', function () {
 				$( '.wp-smush-browse' ).removeAttr( 'disabled' );
-				self.close_dialog();
+
+				// Close the dialog.
+				SUI.dialogs['wp-smush-list-dialog'].hide();
+
+				$( '.wp-smush-select-dir, button.wp-smush-browse, a.wp-smush-dir-link' ).removeAttr( 'disabled' );
+
+				// Reset the opacity for content and scan button
+				$( '.wp-smush-select-dir, .wp-smush-list-dialog .sui-box-body' ).css( {'opacity': '1'} );
 			} );
+
+			/**
+			 * Cancel scan.
+			 */
+			$( '#wp-smush-progress-dialog').on( 'click', '.sui-dialog-close, .sui-icon-close, .wp-smush-cancel-dir', function ( e ) {
+				e.preventDefault();
+				self.scanner.cancel().done( () => window.location.href = self.wp_smush_msgs.directory_url );
+			} );
+
+			/**
+			 * Continue scan.
+			 */
+			$( '#wp-smush-progress-dialog').on( 'click', '.sui-icon-play, .wp-smush-resume-scan', function ( e ) {
+				e.preventDefault();
+				self.scanner.resume();
+			} );
+
 
 			/*
 			// Handle the Pause button click.
@@ -232,19 +255,6 @@ import Scanner from './directory-scanner';
 			$( '.wp-smush-progress-dialog .sui-progress-state-text' ).html( '0/' + items + ' ' + self.wp_smush_msgs.progress_smushed );
 			SUI.dialogs['wp-smush-progress-dialog'].show();
 			$( '.wp-smush-progress-dialog div.close' ).focus();
-		},
-
-		/**
-		 * Hide the popup and reset the opacity for the button.
-		 */
-		close_dialog: function () {
-			// Close the dialog.
-			SUI.dialogs['wp-smush-list-dialog'].hide();
-
-			$( '.wp-smush-select-dir, button.wp-smush-browse, a.wp-smush-dir-link' ).removeAttr( 'disabled' );
-
-			// Reset the opacity for content and scan button
-			$( '.wp-smush-select-dir, .wp-smush-list-dialog .sui-box-body' ).css( {'opacity': '1'} );
 		},
 
 		/**
