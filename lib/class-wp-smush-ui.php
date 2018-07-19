@@ -859,7 +859,17 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			?>
 			<div class="sui-box-settings-row wp-smush-basic <?php echo $upsell ? 'sui-disabled' : ''; ?>">
 				<div class="sui-box-settings-col-1">
-					<span class="sui-settings-label"><?php echo $label; ?></span>
+					<span class="sui-settings-label">
+						<?php echo $label; ?>
+						<?php if ( 'gutenberg' === $name ) : ?>
+							<span class="sui-tag sui-tag-beta sui-tooltip sui-tooltip-constrained"
+								  data-tooltip="<?php esc_attr_e( 'This feature is likely to work without issue, however Gutenberg is in beta stage and some issues are still present.', 'wp-smushit' ); ?>"
+							>
+								<?php esc_html_e( 'Beta', 'wp-smushit' ); ?>
+							</span>
+						<?php endif; ?>
+					</span>
+
 					<span class="sui-description">
 						<?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
 					</span>
