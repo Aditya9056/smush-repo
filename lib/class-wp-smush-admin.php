@@ -406,7 +406,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'resmush_check'           => esc_html__( 'RE-CHECK IMAGES', 'wp-smushit' ),
 				'resmush_complete'        => esc_html__( 'CHECK COMPLETE', 'wp-smushit' ),
 				// Progress bar text.
-				'progress_smushed' => __( 'images optimized', 'wp-smushit' ),
+				'progress_smushed'        => __( 'images optimized', 'wp-smushit' ),
+				'directory_url'           => admin_url( 'admin.php?page=smush&tab=directory' ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );

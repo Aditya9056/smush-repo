@@ -46,7 +46,7 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 
 		onFinish: function() {
 			WP_Smush.directory.updateProgressBar( 100 );
-			window.location.href='admin.php?page=smush&tab=directory';
+			window.location.href = wp_smush_msgs.directory_url;
 		},
 	};
 
@@ -70,7 +70,7 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 				step( remainingSteps );
 			} );
 		} else {
-			$.post( ajaxurl, { action: 'directory_smush_finish' },
+			$.post( ajaxurl, { action: 'directory_smush_finish', items: totalSteps },
 				( response ) => obj.onFinish( response ) );
 		}
 	};

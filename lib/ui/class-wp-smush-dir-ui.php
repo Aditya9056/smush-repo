@@ -86,20 +86,22 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 						</span>
 					</div>
 					<!-- Notices -->
-					<div class="sui-notice sui-notice-success wp-smush-dir-all-done sui-hidden">
-						<p><?php esc_html_e( 'All images for the selected directory are smushed and up to date. Awesome!', 'wp-smushit' ); ?></p>
-					</div>
-					<div class="sui-notice sui-notice-warning wp-smush-dir-remaining sui-hidden">
-						<p>
-						<?php printf(
-							/* translators: %1$s: smushed span, %2$s: dir total span, %3$s: dir remaining span */
-							esc_html__( '%1$s/%2$s image(s) were successfully smushed, however %3$s image(s) could not be smushed due to an error.', 'wp-smushit' ),
-							'<span class="wp-smush-dir-smushed"></span>',
-							'<span class="wp-smush-dir-total"></span>',
-							'<span class="wp-smush-dir-remaining"></span>'
-						); ?>
-						</p>
-					</div>
+					<?php $items = get_transient( 'wp-smush-show-dir-scan-notice' );
+					if ( isset( $items ) && 0 < $items ) :
+						delete_transient( 'wp-smush-show-dir-scan-notice' ); ?>
+						<div class="sui-notice-top sui-notice-success sui-can-dismiss">
+							<p class="sui-notice-content">
+								<?php printf(
+									/* translators: %d: number of images */
+									esc_html__( '%d images were successfully optimized.', 'wp-smushit' ),
+									absint( $items )
+								); ?>
+							</p>
+							<span class="sui-notice-dismiss">
+								<a role="button" href="#" aria-label="Dismiss" class="sui-icon-check"></a>
+							</span>
+						</div>
+					<?php endif; ?>
 					<div class="sui-notice sui-notice-info wp-smush-dir-limit sui-hidden">
 						<p>
 							<?php printf(

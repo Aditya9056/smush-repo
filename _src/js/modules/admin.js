@@ -1821,48 +1821,6 @@ jQuery( function ( $ ) {
 		}
 	} );
 
-	//Handle Twitter Share
-	$( '#wp-smush-twitter-share' ).on( 'click', function ( e ) {
-		e.preventDefault();
-		var url = this.href;
-		var text = removeSpan( url );
-		//Update text in URL
-		url = url.replace( /(text=)[^\&]+/, '$1' + text );
-		var width = 550,
-			height = 420,
-			left = ($( window ).width() - width) / 2,
-			top = ($( window ).height() - height) / 2,
-			url = url,
-			opts = 'status=1' +
-				',width=' + width +
-				',height=' + height +
-				',top=' + top +
-				',left=' + left;
-
-		window.open( url, 'twitter', opts );
-
-		return false;
-	} );
-
-	//Handle Facebook Share
-	$( '#wp-smush-facebook-share' ).on( 'click', function ( e ) {
-		e.preventDefault();
-		var width = 550,
-			height = 420,
-			left = ($( window ).width() - width) / 2,
-			top = ($( window ).height() - height) / 2,
-			url = this.href,
-			opts = 'status=1' +
-				',width=' + width +
-				',height=' + height +
-				',top=' + top +
-				',left=' + left;
-
-		window.open( url, 'facebook', opts );
-
-		return false;
-	} );
-
 	//Handle Re-check button functionality
 	$( "#wp-smush-revalidate-member" ).on( 'click', function ( e ) {
 		e.preventDefault();

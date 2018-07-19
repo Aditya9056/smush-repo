@@ -228,6 +228,7 @@ import Scanner from './directory-scanner';
 		 * @param {int} items  Number of items in the scan.
 		 */
 		showProgressDialog: function ( items ) {
+			// Update items status and show the progress dialog..
 			$( '.wp-smush-progress-dialog .sui-progress-state-text' ).html( '0/' + items + ' ' + self.wp_smush_msgs.progress_smushed );
 			SUI.dialogs['wp-smush-progress-dialog'].show();
 			$( '.wp-smush-progress-dialog div.close' ).focus();
@@ -244,34 +245,6 @@ import Scanner from './directory-scanner';
 
 			// Reset the opacity for content and scan button
 			$( '.wp-smush-select-dir, .wp-smush-list-dialog .sui-box-body' ).css( {'opacity': '1'} );
-		},
-
-		/**
-		 * Add smush notice after directory smushing is finished.
-		 *
-		 * @param notice_type
-		 *  all_done    - If all the images were smushed else warning
-		 *  smush_limit - If Free users exceeded limit
-		 */
-		add_smush_dir_notice: function ( notice_type ) {
-			// Get the content div length, if less than 1500, Skip.
-			if ( $( 'div.wp-smush-scan-result div.content' ).height() < 1500 || $( 'div.wp-smush-scan-result div.sui-notice.top' ).length >= 1 ) {
-				return;
-			}
-
-			let notice = '';
-
-			// Clone and append the notice.
-			if ( 'all_done' === notice_type ) {
-				notice = $( 'div.sui-notice.wp-smush-dir-all-done' ).clone();
-			} else if ( 'smush_limit' === notice_type ) {
-				notice = $( 'div.sui-notice.wp-smush-dir-limit' ).clone();
-			} else {
-				notice = $( 'div.sui-notice.wp-smush-dir-remaining' ).clone();
-			}
-
-			// Add class top.
-			notice.addClass( 'top' );
 		},
 
 		/**

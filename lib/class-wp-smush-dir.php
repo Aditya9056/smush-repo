@@ -120,6 +120,8 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 * @since 2.8.1
 		 */
 		public function directory_smush_finish() {
+			$items = isset( $_POST['items'] ) ? absint( $_POST['items'] ) : 0; // Input var ok.
+			set_transient( 'wp-smush-show-dir-scan-notice', $items, 60 * 5 ); // 5 minutes max.
 			$this->scanner->reset_scan();
 			wp_send_json_success();
 		}
