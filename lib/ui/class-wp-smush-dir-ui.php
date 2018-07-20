@@ -207,7 +207,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 
 							<div class="sui-progress-state">
 								<span class="sui-progress-state-text">
-									<?php esc_html_e( '-/- images optimized', 'wphb' ); ?>
+									<?php esc_html_e( '-/- images optimized', 'wp-smushit' ); ?>
 								</span>
 							</div>
 						</div>
