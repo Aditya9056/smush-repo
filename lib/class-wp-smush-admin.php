@@ -82,7 +82,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public $resmush_ids = array();
 
-		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/gif', 'image/png' );
+		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/x-citrix-jpeg', 'image/gif', 'image/png', 'image/x-png' );
 
 		/**
 		 * @array Stores the stats for all the images
@@ -1184,10 +1184,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$smush_data['human'] = size_format( $smush_data['bytes'], 1 );
 
-			// Set size and size format.
-			$smush_data['human_format'] = preg_replace( '/[^A-Z]+/', '', $smush_data['human'] );
-			$smush_data['human_size'] = preg_replace( '/[^0-9.]+/', '', $smush_data['human'] );
-
 			//Setup Smushed attachment ids
 			$this->smushed_attachments = ! empty( $smush_data['id'] ) ? $smush_data['id'] : '';
 
@@ -1309,7 +1305,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			global $wpdb;
 
-			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/png' )";
+			$allowed_images = "( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png' )";
 
 			$limit      = $this->query_limit();
 			$offset     = 0;

@@ -169,7 +169,7 @@ if ( ! class_exists( 'WpSmushPngtoJpg' ) ) {
 
 			//False if not a PNG
 			$mime = empty( $mime ) ? get_post_mime_type( $id ) : $mime;
-			if ( 'image/png' != $mime ) {
+			if ( 'image/png' != $mime && 'image/x-png' != $mime ) {
 				return false;
 			}
 
