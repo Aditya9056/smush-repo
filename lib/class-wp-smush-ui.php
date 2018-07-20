@@ -1055,7 +1055,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @param object $count
 		 */
 		public function progress_bar( $count ) {
-
 			$smushed_pc = 0;
 			if ( $count->total_count > 0 && $count->smushed_count > 0 ) {
 				$smushed_pc = $count->smushed_count / $count->total_count * 100;
@@ -1087,7 +1086,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 				<div class="sui-progress-state">
 					<span class="sui-progress-state-text">
-						<span>50/100</span> <?php esc_html_e( 'images optimized', 'wp-smushit' ); ?>
+						<span><?php echo absint( $count->smushed_count ); ?>/<?php echo absint( $count->total_count ); ?></span> <?php esc_html_e( 'images optimized', 'wp-smushit' ); ?>
 					</span>
 				</div>
 

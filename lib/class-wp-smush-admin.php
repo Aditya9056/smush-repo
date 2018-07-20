@@ -92,7 +92,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * @var int Limit for allowed number of images per bulk request
 		 */
-		private $max_free_bulk = 2; //this is enforced at api level too
+		private $max_free_bulk = 50; //this is enforced at api level too
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
 
@@ -406,8 +406,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'resmush_check'           => esc_html__( 'RE-CHECK IMAGES', 'wp-smushit' ),
 				'resmush_complete'        => esc_html__( 'CHECK COMPLETE', 'wp-smushit' ),
 				// Progress bar text.
-				'progress_smushed'        => __( 'images optimized', 'wp-smushit' ),
+				'progress_smushed'        => esc_html__( 'images optimized', 'wp-smushit' ),
 				'directory_url'           => admin_url( 'admin.php?page=smush&tab=directory' ),
+				'bulk_resume'             => esc_html__( 'Resume scan', 'wp-smushit' ),
+				'bulk_stop'               => esc_html__( 'Stop current bulk smush process.', 'wp-smushit' ),
 			);
 
 			wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -599,7 +601,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				wp_send_json_error(
 					array(
 						'error'         => 'bulk_request_image_limit_exceeded',
-						'error_message' => sprintf( esc_html__( "You've exceeded Bulk Smush limit of %d images at once for standard users. Click on Bulk Smush to continue.", "wp-smushit" ), $this->max_free_bulk ),
+						'error_message' => sprintf( esc_html__( "You've reached the %d attachment limit for bulk smushing in the free version. Upgrade to Pro to smush unlimited images, or click resume to smush another %d attachments.", "wp-smushit" ), $this->max_free_bulk, $this->max_free_bulk ),
 						'error_class'   => 'limit_exceeded',
 						'continue'      => false
 					)

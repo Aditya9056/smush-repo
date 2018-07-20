@@ -375,7 +375,12 @@ jQuery( function ( $ ) {
 
 		this.free_exceeded = function () {
 			if ( self.ids.length > 0 ) {
-				$( '.wp-smush-bulk-progress-bar-wrapper' ).addClass( 'wp-smush-exceed-limit' );
+				let progress = jQuery( '.wp-smush-bulk-progress-bar-wrapper' );
+				progress.addClass( 'wp-smush-exceed-limit' )
+					.find( '.sui-progress-close' )
+					.attr( 'data-tooltip', wp_smush_msgs.bulk_resume )
+					.removeClass( 'wp-smush-cancel-bulk' )
+					.addClass( 'wp-smush-all' );
 			} else {
 				$( '.wp-smush-notice.wp-smush-all-done, .wp-smush-pagespeed-recommendation' ).show();
 			}
@@ -460,10 +465,11 @@ jQuery( function ( $ ) {
 			self.update_remaining_count();
 
 			//if we have received the progress data, update the stats else skip
-			if ( 'undefined' != typeof _res.data.stats ) {
-
+			if ( 'undefined' !== typeof _res.data.stats ) {
 				// increase the progress bar
 				this._update_progress( wp_smushit_data.count_smushed, progress );
+				// update the counter
+				this._update_progress_status( wp_smushit_data.count_smushed, wp_smushit_data.count_total);
 			}
 			// Update stats and counts.
 			update_stats( this.smush_type );
@@ -483,6 +489,16 @@ jQuery( function ( $ ) {
 			// increase progress
 			$progress_bar.css( 'width', width + '%' );
 
+		};
+
+		this._update_progress_status = function ( smushed, total ) {
+			let progress_status = jQuery( '.bulk-smush-wrapper .sui-progress-state-text' );
+
+			if ( 1 > progress_status.length ) {
+				return;
+			}
+
+			progress_status.find( 'span' ).html( smushed + '/' + total );
 		};
 
 		//Whether to send the ajax requests further or not
@@ -691,7 +707,9 @@ jQuery( function ( $ ) {
 		$( '.sui-notice-top.sui-notice-success' ).remove();
 
 		// Remove limit exceeded styles.
-		$( '.wp-smush-bulk-progress-bar-wrapper' ).removeClass( 'wp-smush-exceed-limit' );
+		$( '.wp-smush-bulk-progress-bar-wrapper' ).removeClass( 'wp-smush-exceed-limit' )
+			.find( '.sui-progress-close' ).attr( 'data-tooltip', wp_smush_msgs.bulk_stop );
+
 
 		//Disable Resmush and scan button
 		$( '.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings' ).attr( 'disabled', 'disabled' );
