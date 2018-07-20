@@ -283,7 +283,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 							<form method="post" id="smush-quick-setup-form">
 								<input type="hidden" value="setupSmush" name="action"/>
 								<?php wp_nonce_field( 'setupSmush' ); ?>
-								<?php $exclude = array( 'backup', 'png_to_jpg', 'nextgen', 's3' );
+								<?php $exclude = array( 'backup', 'png_to_jpg', 'nextgen', 's3', 'detection' );
 								// Settings for free and pro version.
 								foreach ( $wpsmushit_admin->settings as $name => $values ) {
 									// Skip networkwide settings, we already printed it.
