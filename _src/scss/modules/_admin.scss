@@ -322,6 +322,14 @@
 		.sui-toggle + label {
 			font-weight: 500;
 		}
+
+		#smush-quick-setup-dialog {
+			.sui-box-settings-row {
+				.sui-box-settings-col-1 {
+					width: 85%;
+				}
+			}
+		}
 	}
 
 	.wp-smush-pagespeed-recommendation {
