@@ -1,3 +1,8 @@
+= 2.8.1 =
+
+* New: Directory Smush has been rebuilt from the ground up
+* Enhance: Bulk Smush UI
+
 = 2.8.0 =
 
 * New: High-power API cluster for Smush Pro users
