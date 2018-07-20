@@ -137,7 +137,7 @@ import Scanner from './directory-scanner';
 			/**
 			 * Cancel scan.
 			 */
-			progress_dialog.on( 'click', '.sui-dialog-close, .sui-icon-close, .wp-smush-cancel-dir', function ( e ) {
+			progress_dialog.on( 'click', '.sui-icon-close, .sui-dialog-close, .wp-smush-cancel-dir', function ( e ) {
 				e.preventDefault();
 				self.scanner.cancel().done( () => window.location.href = self.wp_smush_msgs.directory_url );
 			} );

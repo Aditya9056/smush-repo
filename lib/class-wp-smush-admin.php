@@ -90,9 +90,13 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $stats;
 
 		/**
-		 * @var int Limit for allowed number of images per bulk request
+		 * Limit for allowed number of images per bulk request.
+		 *
+		 * This is enforced at api level too
+		 *
+		 * @var int $max_free_bulk
 		 */
-		private $max_free_bulk = 50; //this is enforced at api level too
+		private $max_free_bulk = 50;
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
 

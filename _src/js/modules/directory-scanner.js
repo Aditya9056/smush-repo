@@ -49,52 +49,20 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 			window.location.href = wp_smush_msgs.directory_url;
 		},
 
-		/**
-		 * TODO: replace this with CSS
-		 */
 		limitReached: function() {
 			let dialog = $( '#wp-smush-progress-dialog' );
-			dialog.find( '.sui-notice-warning' ).removeClass( 'sui-hidden' );
 
-			dialog.find( '.sui-icon-loader' )
-				.addClass( 'sui-icon-warning-alert' )
-				.removeClass( 'sui-icon-loader sui-loading' );
-
-			dialog.find( '.sui-progress-bar span' ).css( 'background', '#fecf2f' );
-
+			dialog.addClass( 'wp-smush-exceed-limit' );
+			dialog.find( '#cancel-directory-smush' ).attr( 'data-tooltip', wp_smush_msgs.bulk_resume );
 			dialog.find( '.sui-icon-close' ).removeClass( 'sui-icon-close' ).addClass( 'sui-icon-play' );
-			dialog.find( '#cancel-directory-smush' ).attr( 'data-tooltip', 'Resume' );
-
-			dialog.find( '.sui-box-footer .sui-actions-right:not(.sui-hidden)' )
-				.addClass( 'sui-actions-left' )
-				.removeClass( 'sui-actions-right' )
-				.find( '.sui-button' ).addClass( 'sui-button-ghost' );
-
-			dialog.find( '.sui-box-footer .sui-actions-right.sui-hidden' )
-				.removeClass( 'sui-hidden' );
 		},
 
 		resume: function() {
 			let dialog = $( '#wp-smush-progress-dialog' );
-			dialog.find( '.sui-notice-warning' ).addClass( 'sui-hidden' );
 
-			dialog.find( '.sui-icon-warning-alert' )
-				.addClass( 'sui-icon-loader sui-loading' )
-				.removeClass( 'sui-icon-warning-alert' );
-
-
-			dialog.find( '.sui-progress-bar span' ).css( 'background', '#17a8e3' );
-
-			dialog.find( '.sui-icon-close' ).removeClass( 'sui-icon-play' ).addClass( 'sui-icon-close' );
+			dialog.removeClass( 'wp-smush-exceed-limit' );
 			dialog.find( '#cancel-directory-smush' ).attr( 'data-tooltip', 'Cancel' );
-
-			dialog.find( '.sui-box-footer .sui-actions-right' )
-				.addClass( 'sui-hidden' );
-
-			dialog.find( '.sui-box-footer .sui-actions-left' )
-				.addClass( 'sui-actions-right' )
-				.removeClass( 'sui-actions-left' )
-				.find( '.sui-button' ).removeClass( 'sui-button-ghost' );
+			dialog.find( '.sui-icon-close' ).removeClass( 'sui-icon-play' ).addClass( 'sui-icon-close' );
 
 			obj.scan();
 		}

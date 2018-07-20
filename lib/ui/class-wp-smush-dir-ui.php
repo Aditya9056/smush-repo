@@ -170,10 +170,6 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 				<div class="sui-dialog-overlay sui-fade-in" tabindex="0"></div>
 				<div class="sui-dialog-content sui-bounce-in" role="dialog">
 					<div class="sui-box" role="document">
-						<style>
-							.sui-icon-warning-alert:before { color: #fecf2f !important; }
-						</style>
-
 						<div class="sui-box-header">
 							<h3 class="sui-box-title"><?php esc_html_e( 'Choose Directory', 'wp-smushit' ); ?></h3>
 							<div class="sui-actions-right">
@@ -204,9 +200,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 										<span style="width: 0"></span>
 									</div>
 								</div>
-								<button class="sui-progress-close sui-tooltip" id="cancel-directory-smush" type="button"
-										data-a11y-dialog-hide data-tooltip="<?php esc_attr_e( 'Cancel', 'wp-smushit' ); ?>"
-								>
+								<button class="sui-progress-close sui-tooltip" id="cancel-directory-smush" type="button" data-tooltip="<?php esc_attr_e( 'Cancel', 'wp-smushit' ); ?>">
 									<i class="sui-icon-close"></i>
 								</button>
 							</div>

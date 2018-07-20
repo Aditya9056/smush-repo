@@ -20,6 +20,29 @@
 				content: "";
 			}
 		}
+		// Directory smush overwrites when limit exceeded
+		.wp-smush-progress-dialog.wp-smush-exceed-limit {
+			.sui-hidden {
+				display: block;
+			}
+
+			.sui-progress-bar span {
+				background: #fecf2f;
+			}
+
+			.sui-box-footer .sui-actions-right:not(.sui-hidden) {
+				margin-left: 10px;
+				margin-right: auto;
+				float: left;
+
+				.sui-button {
+					padding: 5px 16px 7px;
+					border: 2px solid #ddd;
+					background: transparent;
+					color: #888;
+				}
+			}
+		}
 
 		.tc {
 			text-align: center;
