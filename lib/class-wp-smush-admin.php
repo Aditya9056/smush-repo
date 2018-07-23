@@ -1141,10 +1141,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$smush_data['total_images'] += $this->dir_stats['optimised'];
 			}
 
-			//Resize Savings
+			// Resize Savings.
+			$smush_data['resize_count']   = $wpsmush_db->resize_savings( false, false, true );
 			$resize_savings               = $wpsmush_db->resize_savings( false );
 			$smush_data['resize_savings'] = ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
-			$smush_data['resize_count']   = $wpsmush_db->resize_savings( false, false, true );
 
 			//Conversion Savings
 			$conversion_savings               = $wpsmush_db->conversion_savings( false );
