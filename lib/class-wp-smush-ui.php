@@ -316,6 +316,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 												<span class="sui-toggle-slider"></span>
 											</label>
 										</div>
+										<?php if ( 'resize' === $name ) { // Add resize width and height setting. ?>
+											<div class="wp-smush-resize-settings-col">
+												<?php $this->resize_settings( $name, 'quick-setup-' ); ?>
+											</div>
+										<?php } ?>
 									</div>
 									<?php
 								} ?>
@@ -1519,11 +1524,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		/**
 		 * Prints Dimensions required for Resizing
 		 *
-		 * @param string $name
+		 * @param string $name Setting name.
+		 * @param string $class_prefix Custom class prefix.
 		 *
 		 * @return void
 		 */
-		public function resize_settings( $name = '' ) {
+		public function resize_settings( $name = '', $class_prefix = '' ) {
 			// Add only to full size settings.
 			if ( 'resize' !== $name ) {
 				return;
@@ -1537,6 +1543,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				'height' => ''
 			) );
 
+			// Set default prefix is custom prefix is empty.
+			$prefix = empty( $class_prefix ) ? WP_SMUSH_PREFIX : $class_prefix;
+
 			//Get max dimensions.
 			$max_sizes = $wpsmushit_admin->get_max_image_dimensions();
 
@@ -1547,15 +1556,15 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="wp-smush-resize-settings-wrap<?php echo $setting_status ? '' : ' sui-hidden' ?>">
 				<div class="sui-row">
 					<div class="sui-col">
-						<label aria-labelledby="<?php echo WP_SMUSH_PREFIX; ?>label-max-width" for="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" class="sui-label"><?php esc_html_e( 'Max width', 'wp-smushit' ); ?></label>
-						<input aria-required="true" type="number" aria-describedby="<?php echo WP_SMUSH_PREFIX; ?>wp-smush-resize-note" id="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>">
+						<label aria-labelledby="<?php echo $prefix; ?>label-max-width" for="<?php echo $prefix . $name . '_width'; ?>" class="sui-label"><?php esc_html_e( 'Max width', 'wp-smushit' ); ?></label>
+						<input aria-required="true" type="number" aria-describedby="<?php echo $prefix; ?>resize-note" id="<?php echo $prefix . $name . '_width'; ?>" name="<?php echo $prefix . $name . '_width'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>">
 					</div>
 					<div class="sui-col">
-						<label aria-labelledby="<?php echo WP_SMUSH_PREFIX; ?>label-max-height" for="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" class="sui-label"><?php esc_html_e( 'Max height', 'wp-smushit' ); ?></label>
-						<input aria-required="true" type="number" aria-describedby="<?php echo WP_SMUSH_PREFIX; ?>wp-smush-resize-note" id="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>">
+						<label aria-labelledby="<?php echo $prefix; ?>label-max-height" for="<?php echo $prefix . $name . '_height'; ?>" class="sui-label"><?php esc_html_e( 'Max height', 'wp-smushit' ); ?></label>
+						<input aria-required="true" type="number" aria-describedby="<?php echo $prefix; ?>resize-note" id="<?php echo $prefix . $name . '_height'; ?>" name="<?php echo $prefix . $name . '_height'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>">
 					</div>
 				</div>
-				<div class="sui-description" id="<?php echo WP_SMUSH_PREFIX; ?>wp-smush-resize-note"><?php printf( esc_html__( "Currently, your largest image size is set at %s%dpx wide %s %dpx high%s.", "wp-smushit" ), '<strong>', $max_sizes['width'], '&times;', $max_sizes['height'], '</strong>' ); ?></div>
+				<div class="sui-description" id="<?php echo $prefix; ?>resize-note"><?php printf( esc_html__( "Currently, your largest image size is set at %s%dpx wide %s %dpx high%s.", "wp-smushit" ), '<strong>', $max_sizes['width'], '&times;', $max_sizes['height'], '</strong>' ); ?></div>
 				<div class="sui-description sui-notice sui-notice-info wp-smush-update-width sui-hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
 				<div class="sui-description sui-notice sui-notice-info wp-smush-update-height sui-hidden" tabindex="0"><?php esc_html_e( "Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.", "wp-smushit" ); ?></div>
 			</div>
