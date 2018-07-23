@@ -518,7 +518,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 					$offset += $limit;
 
 					//Compare the Offset value to total images
-					if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count < $offset ) {
+					if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $offset ) {
 						$query_next = false;
 					} elseif ( ! $resize_data ) {
 						//If we didn' got any results
