@@ -103,7 +103,8 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 		'shared-ui': '@wpmudev/shared-ui',
 		'admin': './_src/js/app.js',
 		'media': './_src/js/media.js',
-		'resize-detection': './_src/js/public-resize-detection.js'
+		'resize-detection': './_src/js/public-resize-detection.js',
+		'blocks': './_src/js/blocks.js'
 	},
 
 	output: {
@@ -119,7 +120,7 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: ['env']
+						presets: ['env', 'react']
 					}
 				}
 			}

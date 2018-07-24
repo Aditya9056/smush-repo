@@ -506,12 +506,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						</span>
 						<span class="sui-summary-sub"><?php _e( 'Total Savings', 'wp-smushit' ); ?></span>
 						<span class="smushed-items-count">
-							<span class="smush-align-left wp-smush-count-total">
+							<span class="wp-smush-count-total">
 								<span class="sui-summary-detail wp-smush-total-optimised"><?php echo $wpsmushit_admin->stats['total_images']; ?></span>
 								<span class="sui-summary-sub"><?php _e( 'Images Smushed', 'wp-smushit' ); ?></span>
 							</span>
 							<?php if ( $resize_count > 0 ) { ?>
-								<span class="smush-align-right wp-smush-count-resize-total">
+								<span class="wp-smush-count-resize-total">
 									<span class="sui-summary-detail wp-smush-total-optimised"><?php echo $resize_count; ?></span>
 									<span class="sui-summary-sub"><?php _e( 'Images Resized', 'wp-smushit' ); ?></span>
 								</span>
@@ -779,9 +779,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<?php if ( is_multisite() && is_network_admin() ) : ?>
 					<input type="hidden" name="wp-smush-networkwide" id="wp-smush-networkwide" value="1">
 					<input type="hidden" name="setting-type" value="network">
-				<?php endif; ?>
+				<?php endif;
 
-				<?php
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
 
 				// For subsite admins show only if networkwide options is not enabled.
@@ -789,30 +788,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					foreach ( $this->intgration_group as $name ) {
 						// Settings key.
 						$setting_m_key = WP_SMUSH_PREFIX . $name;
+						// Disable setting.
+						$disable = apply_filters( 'wp_smush_integration_status_' . $name, false );
 						// Current setting value.
-						$setting_val = empty( $settings[ $name ] ) ? 0 : $settings[ $name ];
+						$setting_val = ( ! $wp_smush->validate_install() || empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
 						// Current setting label.
 						$label = ! empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label'];
-
-						// If we don't have free or pro version for WP Offload S3, disable.
-						$disable = false;
-						if ( 's3' === $name && ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) {
-							$disable = true;
-							$setting_val = 0;
-						}
-
-						// If we don't have NextGen Gallery installed, disable.
-						if ( 'nextgen' === $name && ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
-							$disable = true;
-							$setting_val = 0;
-						}
-
 						// Gray out row, disable setting.
-						$upsell = false;
-						if ( ! $wp_smush->validate_install() ) {
-							$upsell = true;
-							$setting_val = 0;
-						}
+						$upsell = ! $wp_smush->validate_install();
 
 						// Show settings option.
 						$this->settings_row( $setting_m_key, $label, $name, $setting_val, true, $disable, $upsell );
@@ -881,7 +864,17 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			?>
 			<div class="sui-box-settings-row wp-smush-basic <?php echo $upsell ? 'sui-disabled' : ''; ?>">
 				<div class="sui-box-settings-col-1">
-					<span class="sui-settings-label"><?php echo $label; ?></span>
+					<span class="sui-settings-label">
+						<?php echo $label; ?>
+						<?php if ( 'gutenberg' === $name ) : ?>
+							<span class="sui-tag sui-tag-beta sui-tooltip sui-tooltip-constrained"
+								  data-tooltip="<?php esc_attr_e( 'This feature is likely to work without issue, however Gutenberg is in beta stage and some issues are still present.', 'wp-smushit' ); ?>"
+							>
+								<?php esc_html_e( 'Beta', 'wp-smushit' ); ?>
+							</span>
+						<?php endif; ?>
+					</span>
+
 					<span class="sui-description">
 						<?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
 					</span>
