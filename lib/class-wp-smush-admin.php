@@ -454,10 +454,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'savings_resize'     => $this->stats['resize_savings'],
 					'savings_conversion' => $this->stats['conversion_savings'],
 					'savings_dir_smush'  => $this->dir_stats,
-					'dir_smush'          => array(
-						'currentScanStep' => $wpsmush_dir->scanner->get_current_scan_step(),
-						'totalSteps'      => $wpsmush_dir->scanner->get_scan_steps(),
-					),
 				);
 			} else {
 				$data = array(
@@ -474,6 +470,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'pro_savings'        => '',
 				);
 			} // End if().
+
+			$data['dir_smush'] = array(
+				'currentScanStep' => $wpsmush_dir->scanner->get_current_scan_step(),
+				'totalSteps'      => $wpsmush_dir->scanner->get_scan_steps(),
+			);
 
 			$data['resize_sizes'] = $this->get_max_image_dimensions();
 
