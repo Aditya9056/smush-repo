@@ -247,12 +247,12 @@ class WP_Smush {
 		// Initialize variables.
 		$this->initialise();
 
-		// Localize version, Update.
+		// Localize version, update.
 		$this->getOptions();
 
 		// Create a clas object, if doesn't exists.
-		if ( empty( $wpsmush_dir ) && class_exists( 'WpSmushDir' ) ) {
-			$wpsmush_dir = new WpSmushDir();
+		if ( empty( $wpsmush_dir ) && class_exists( 'WP_Smush_Dir' ) ) {
+			$wpsmush_dir = new WP_Smush_Dir();
 		}
 
 		// Run only on wp smush page.

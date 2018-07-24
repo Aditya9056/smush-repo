@@ -420,9 +420,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
                     <p><?php esc_html_e( 'All images are smushed and up to date. Awesome!', 'wp-smushit' ); ?></p>
                 </div>
                 <div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' sui-hidden' : ''; ?>">
-				<?php
-				// DO not show the remaining notice if we have resmush ids
-				?>
+				<!-- Do not show the remaining notice if we have resmush ids -->
                 <div class="sui-notice sui-notice-warning wp-smush-remaining  <?php echo count( $this->resmush_ids ) > 0 ? ' sui-hidden' : ''; ?>">
                     <p>
 	                    <span class="wp-smush-notice-text">
