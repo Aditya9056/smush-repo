@@ -19,7 +19,7 @@ pipelines:
             - composer install
             # codesniffer
             - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
-            - vendor/bin/phpcs --colors --standard=WordPress --report=summary src/ wp-smush.php
+            - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress lib/ wp-smush.php
             # codeception
             - php -S localhost:8085 --docroot public &>/dev/null&
             - vendor/bin/codecept run
