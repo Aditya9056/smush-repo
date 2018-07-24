@@ -336,18 +336,18 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function enqueue() {
 			$current_page = $current_screen = '';
 
-			/**
-			 * We may try to enqueue this again using wp_enqueue_media hook.
-			 * But do not continue if already enqueued, otherwise it will make
-			 * duplicate queries for localization.
-			 */
-			if ( has_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) ) && did_action( 'admin_enqueue_scripts' ) ) {
-				return;
-			}
-
 			if ( function_exists( 'get_current_screen' ) ) {
 				$current_screen = get_current_screen();
 				$current_page   = ! empty( $current_screen ) ? $current_screen->base : $current_page;
+			}
+
+			/**
+			 * If this is called by wp_enqueue_media action, check if we are on one of the
+			 * listed screen to avoid duplicate queries by localization.
+			 * Do not continue as we have already enqueued required scripts using admin_enqueue_scripts.
+			 */
+			if ( in_array( $current_page, $this->pages, true ) && doing_action( 'wp_enqueue_media' ) ) {
+				return;
 			}
 
 			/**
