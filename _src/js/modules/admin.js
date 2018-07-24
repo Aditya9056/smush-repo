@@ -1880,7 +1880,6 @@ jQuery( function ( $ ) {
 				return true;
 			} );
 		} else {
-
 			//Check for all the settings, and scan for resmush
 			var wrapper_div = self.parents().eq( 1 );
 
