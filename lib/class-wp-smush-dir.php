@@ -1056,12 +1056,19 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 		}
 
 		/**
-		 * Fetch all the optimised image, Calculate stats
+		 * Fetch all the optimised image, calculate stats.
 		 *
-		 * @return array Total Stats
+		 * @param bool $force_update Should force update?
 		 *
+		 * @return array Total stats.
 		 */
-		function total_stats() {
+		function total_stats( $force_update = false ) {
+
+			// If we have already calculated the stats, and not forced to update.
+			if ( ! $force_update || ! empty( $this->stats ) ) {
+				return $this->stats;
+			}
+
 			global $wpdb, $wp_smush;
 
 			$offset    = 0;
@@ -1082,13 +1089,13 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 					$images = array_merge( $images, $results );
 				}
 				$offset += $limit;
-				//If offset is above total number, do not query
+				// If offset is above total number, do not query.
 				if ( $offset > $total ) {
 					$continue = false;
 				}
 			}
 
-			//Iterate over stats, Return Count and savings
+			// Iterate over stats, return count and savings.
 			if ( ! empty( $images ) ) {
 				$this->stats                     = array_shift( $images );
 				$path                            = $this->stats['path'];
@@ -1106,19 +1113,18 @@ if ( ! class_exists( 'WpSmushDir' ) ) {
 				}
 			}
 
-			//Get the savings in bytes and percent
+			// Get the savings in bytes and percent.
 			if ( ! empty( $this->stats ) && ! empty( $this->stats['orig_size'] ) ) {
 				$this->stats['bytes']   = ( $this->stats['orig_size'] > $this->stats['image_size'] ) ? $this->stats['orig_size'] - $this->stats['image_size'] : 0;
 				$this->stats['percent'] = number_format_i18n( ( ( $this->stats['bytes'] / $this->stats['orig_size'] ) * 100 ), 1 );
-				//Convert to human readable form
-				$this->stats['human'] = size_format( $this->stats['bytes'], 1 );
+				// Convert to human readable form.
+				$this->stats['human']   = size_format( $this->stats['bytes'], 1 );
 			}
 
 			$this->stats['total']     = $total;
 			$this->stats['optimised'] = $optimised;
 
 			return $this->stats;
-
 		}
 
 		/**

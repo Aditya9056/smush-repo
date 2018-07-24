@@ -474,8 +474,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		/**
 		 * Outputs the smush stats for the site.
 		 *
-		 * @todo Implement this
-		 *
 		 * @return void
 		 */
 		public function smush_stats_container() {
