@@ -8,6 +8,10 @@ image: codeception/codeception
 pipelines:
   default:
     - step:
+        caches:
+          - docker
+          - composer
+          - node
         services:
           - docker
         script: # Modify the commands below to build your repository.
