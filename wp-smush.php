@@ -188,7 +188,7 @@ if ( is_admin() ) {
 	// Only for wordpress.org members.
 	if ( strpos( $dir_path, 'wp-smushit' ) !== false ) {
 		/* @noinspection PhpIncludeInspection */
-		require_once( WP_SMUSH_DIR . 'extras/free-dashboard/module.php' );
+		require_once WP_SMUSH_DIR . 'extras/free-dashboard/module.php';
 
 		// Register the current plugin.
 		do_action(
@@ -219,7 +219,7 @@ if ( is_admin() ) {
 	} elseif ( strpos( $dir_path, 'wp-smush-pro' ) !== false && file_exists( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' ) ) {
 		// Only for WPMU DEV Members.
 		/* @noinspection PhpIncludeInspection */
-		require_once( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' );
+		require_once WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php';
 
 		// Register items for the dashboard plugin.
 		global $wpmudev_notices;
@@ -248,7 +248,8 @@ if ( ! function_exists( 'smush_deactivated' ) ) {
 		if ( is_admin() && is_super_admin() && get_site_option( 'smush_deactivated' ) ) { ?>
 			<div class="updated">
 				<p><?php esc_html_e( 'Smush Free was deactivated. You have Smush Pro active!', 'wp-smushit' ); ?></p>
-			</div> <?php
+			</div> 
+			<?php
 			delete_site_option( 'smush_deactivated' );
 		}
 	}

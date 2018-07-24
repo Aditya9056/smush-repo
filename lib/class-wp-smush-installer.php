@@ -37,10 +37,12 @@ class WP_Smush_Installer {
 		if ( ! $version || WP_SMUSH_VERSION !== $version ) {
 			global $wpdb;
 			// Check if there are any existing smush stats.
-			$results = $wpdb->get_var( $wpdb->prepare(
-				"SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT 1",
-				'wp-smpro-smush-data'
-			) ); // db call ok; no-cache ok.
+			$results = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT 1",
+					'wp-smpro-smush-data'
+				)
+			); // db call ok; no-cache ok.
 
 			if ( $results ) {
 				update_site_option( 'wp-smush-install-type', 'existing' );

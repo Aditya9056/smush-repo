@@ -86,16 +86,20 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 						</span>
 					</div>
 					<!-- Notices -->
-					<?php $items = get_transient( 'wp-smush-show-dir-scan-notice' );
+					<?php
+					$items = get_transient( 'wp-smush-show-dir-scan-notice' );
 					if ( isset( $items ) && 0 < $items ) :
-						delete_transient( 'wp-smush-show-dir-scan-notice' ); ?>
+						delete_transient( 'wp-smush-show-dir-scan-notice' );
+						?>
 						<div class="sui-notice-top sui-notice-success sui-can-dismiss">
 							<p class="sui-notice-content">
-								<?php printf(
+								<?php
+								printf(
 									/* translators: %d: number of images */
 									esc_html__( '%d images were successfully optimized.', 'wp-smushit' ),
 									absint( $items )
-								); ?>
+								);
+								?>
 							</p>
 							<span class="sui-notice-dismiss">
 								<a role="button" href="#" aria-label="Dismiss" class="sui-icon-check"></a>
@@ -104,12 +108,14 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 					<?php endif; ?>
 					<div class="sui-notice sui-notice-info wp-smush-dir-limit sui-hidden">
 						<p>
-							<?php printf(
+							<?php
+							printf(
 								/* translators: %1$s: a tag start, %2$s: closing a tag */
 								esc_html__( '%1$sUpgrade to pro%2$s to bulk smush all your directory images with one click. Free users can smush 50 images with each click.', 'wp-smushit' ),
 								'<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Smush Pro', 'wp-smushit' ) . '">',
 								'</a>'
-							); ?>
+							);
+							?>
 						</p>
 					</div>
 					<?php wp_nonce_field( 'wp_smush_all', 'wp-smush-all' ); ?>
@@ -179,15 +185,23 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 
 						<div class="sui-box-body">
 							<p>
-								<?php esc_html_e( 'Bulk smushing is in progress, you need to leave this tab open
-								until the process completes.', 'wp-smushit' ); ?>
+								<?php
+								esc_html_e(
+									'Bulk smushing is in progress, you need to leave this tab open
+								until the process completes.', 'wp-smushit'
+								);
+								?>
 							</p>
 
 							<div class="sui-notice sui-notice-warning sui-hidden">
 								<p>
-									<?php esc_html_e( "You've reached the 50 attachment limit for bulk smushing in
+									<?php
+									esc_html_e(
+										"You've reached the 50 attachment limit for bulk smushing in
 									the free version. Upgrade to Pro to smush unlimited images, or click resume to
-									smush another 50 attachments.", 'wp-smushit' ); ?>
+									smush another 50 attachments.", 'wp-smushit'
+									);
+									?>
 								</p>
 							</div>
 
@@ -235,7 +249,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 		 */
 		public function stats_ui() {
 			$dir_smush_stats = get_option( 'dir_smush_stats' );
-			$human = 0;
+			$human           = 0;
 			if ( ! empty( $dir_smush_stats ) && ! empty( $dir_smush_stats['dir_smush'] ) ) {
 				$human = ! empty( $dir_smush_stats['dir_smush']['bytes'] ) && $dir_smush_stats['dir_smush']['bytes'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
 			}
