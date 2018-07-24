@@ -96,7 +96,7 @@ module.exports = function( grunt ) {
 				src:  includeFilesPro,
 				dest: 'build/wp-smush-pro/',
 				options: {
-					noProcess: ['**/*.{png,gif,jpg,ico,svg}'],
+					noProcess: ['**/*.{png,gif,jpg,ico,svg,eot,ttf,woff,woff2}'],
 					process: function (content, srcpath) {
 						return content.replace( /\%\%CHANGELOG\%\%/g, changelog )
 							.replace( /\/\*\nThis plugin was originally developed by Alex Dunae \(http:\/\/dialect.ca\/\).\n/g, '/*' );
@@ -107,7 +107,7 @@ module.exports = function( grunt ) {
 				src:  includeFilesFree,
 				dest: 'build/wp-smushit/',
 				options: {
-					noProcess: ['**/*.{png,gif,jpg,ico,svg}'],
+					noProcess: ['**/*.{png,gif,jpg,ico,svg,eot,ttf,woff,woff2}'],
 					process: function (content, srcpath) {
 						return content.replace( / \* WDP ID\:            912164\n \*\//g, ' *\/' )
 							.replace( /Plugin Name\:       Smush Pro/g, 'Plugin Name:       Smush' )

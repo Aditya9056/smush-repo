@@ -1,8 +1,8 @@
-const _          = require('lodash');
-const path       = require('path');
-const webpack    = require('webpack');
-const ATP        = require('autoprefixer');
-const CSSExtract = require("mini-css-extract-plugin");
+const _          = require('lodash'),
+	  path       = require('path'),
+	  webpack    = require('webpack'),
+	  ATP        = require('autoprefixer'),
+	  CSSExtract = require("mini-css-extract-plugin");
 
 // The path where the Shared UI fonts & images should be sent.
 const config = {
@@ -28,12 +28,13 @@ const sharedConfig = {
 
 const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
-		'admin': './_src/scss/app.scss'
+		'admin': './_src/scss/app.scss',
+		'common': './_src/scss/common.scss'
 	},
 
 	output: {
 		filename: '[name].min.css',
-		path: path.resolve( __dirname, 'assets/shared-ui-2/css' )
+		path: path.resolve( __dirname, 'assets/css' )
 	},
 
 	module: {
@@ -92,19 +93,22 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 
 	plugins: [
 		new CSSExtract({
-			filename: '../css/[name].min.css'
-		})
+            filename: '../css/[name].min.css'
+        })
 	]
 });
 
 const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
-		'admin': './_src/js/app.js'
+		'shared-ui': '@wpmudev/shared-ui',
+		'admin': './_src/js/app.js',
+		'media': './_src/js/media.js',
+		'resize-detection': './_src/js/public-resize-detection.js'
 	},
 
 	output: {
 		filename: '[name].min.js',
-		path: path.resolve( __dirname, 'assets/shared-ui-2/js' )
+		path: path.resolve( __dirname, 'assets/js' )
 	},
 
 	module: {
