@@ -3,13 +3,17 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: codeception/codeception
+image: php:7.2
 
 pipelines:
   branches:
     unit-tests:
       - step:
-          services:
-            - docker
+          caches:
+            - composer
+            - vendor
           script: # Modify the commands below to build your repository.
-            - run
+            - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+            - composer install
+            - php -S localhost:8085 --docroot public &>/dev/null&
+            - vendor/bin/codecept run
