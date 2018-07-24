@@ -1,5 +1,17 @@
 = 2.8.1 =
+
+* New: Directory Smush UI/UX
+* New: Directory Smush updated library
+* New: Directory Smush ability to select multiple directories
+* New: Directory Smush ability to deselect certain images in directories
+* New: Integration with Gutenberg image block
+* Enhance: Bulk Smush UI
 * Enhance: Update GDPR policy text
+* Enhance: Do not auto resize animated GIF images to preserve animation
+* Enhance: Performance improvements, remove duplicate queries
+* Fixed: Stats reset for Smushed directories when selecting Super-smush option
+* Fixed: Pro status cached bug
+* Fixed: Quick setup modal missing image dimensions for image resize option
 
 = 2.8.0 =
 

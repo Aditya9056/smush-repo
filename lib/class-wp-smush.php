@@ -247,12 +247,12 @@ class WP_Smush {
 		// Initialize variables.
 		$this->initialise();
 
-		// Localize version, Update.
+		// Localize version, update.
 		$this->getOptions();
 
 		// Create a clas object, if doesn't exists.
-		if ( empty( $wpsmush_dir ) && class_exists( 'WpSmushDir' ) ) {
-			$wpsmush_dir = new WpSmushDir();
+		if ( empty( $wpsmush_dir ) && class_exists( 'WP_Smush_Dir' ) ) {
+			$wpsmush_dir = new WP_Smush_Dir();
 		}
 
 		// Run only on wp smush page.
@@ -1604,6 +1604,7 @@ class WP_Smush {
 		//Load Nextgen lib, and initialize wp smush async class
 		$this->load_nextgen();
 		$this->wp_smush_async();
+		$this->load_gutenberg();
 	}
 
 	/**
@@ -1622,14 +1623,14 @@ class WP_Smush {
 			$opt_nextgen_val = $wpsmush_settings->get_setting( $opt_nextgen, false );
 		}
 
-		require_once( WP_SMUSH_DIR . '/lib/class-wp-smush-nextgen.php' );
+		require_once( WP_SMUSH_DIR . '/lib/integrations/class-wp-smush-nextgen.php' );
 		// Do not continue if integration not enabled or not a pro user.
 		if ( ! $opt_nextgen_val || ! $this->validate_install() ) {
 			return;
 		}
-		require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-admin.php' );
-		require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-stats.php' );
-		require_once( WP_SMUSH_DIR . '/lib/nextgen-integration/class-wp-smush-nextgen-bulk.php' );
+		require_once( WP_SMUSH_DIR . '/lib/integrations/nextgen/class-wp-smush-nextgen-admin.php' );
+		require_once( WP_SMUSH_DIR . '/lib/integrations/nextgen/class-wp-smush-nextgen-stats.php' );
+		require_once( WP_SMUSH_DIR . '/lib/integrations/nextgen/class-wp-smush-nextgen-bulk.php' );
 
 		global $wpsmushnextgen, $wpsmushnextgenadmin, $wpsmushnextgenstats;
 		//Initialize Nextgen support
@@ -1639,6 +1640,17 @@ class WP_Smush {
 		$wpsmushnextgenstats = new WpSmushNextGenStats();
 		$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
 		new WPSmushNextGenBulk();
+	}
+
+	/**
+	 * Load Gutenberg integration.
+	 *
+	 * @since 2.8.1
+	 */
+	private function load_gutenberg() {
+		require_once WP_SMUSH_DIR . '/lib/integrations/class-wp-smush-gutenberg.php';
+
+		new WP_Smush_Gutenberg();
 	}
 
 	/**
@@ -2295,7 +2307,7 @@ class WP_Smush {
 	 */
 	function wp_smush_async() {
 		// Include Smush Async class.
-		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-s3.php';
+		require_once WP_SMUSH_DIR . 'lib/integrations/class-wp-smush-s3.php';
 
 		//Don't load the Async task, if user not logged in or not in backend
 		if ( ! is_admin() || ! is_user_logged_in() ) {
