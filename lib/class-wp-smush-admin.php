@@ -338,7 +338,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/**
 			 * We may try to enqueue this again using wp_enqueue_media hook.
-			 * But do not continue if already enqueued.
+			 * But do not continue if already enqueued, otherwise it will make
+			 * duplicate queries for localization.
 			 */
 			if ( has_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) ) && did_action( 'admin_enqueue_scripts' ) ) {
 				return;
