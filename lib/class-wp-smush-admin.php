@@ -343,8 +343,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			/**
 			 * If this is called by wp_enqueue_media action, check if we are on one of the
-			 * listed screen to avoid duplicate queries by localization.
-			 * Do not continue as we have already enqueued required scripts using admin_enqueue_scripts.
+			 * required screen to avoid duplicate queries.
+			 * We have already enqueued scripts using admin_enqueue_scripts on required pages.
 			 */
 			if ( in_array( $current_page, $this->pages, true ) && doing_action( 'wp_enqueue_media' ) ) {
 				return;
