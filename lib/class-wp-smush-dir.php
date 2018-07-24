@@ -821,11 +821,11 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 * @return array Total stats.
 		 */
 		function total_stats( $force_update = false ) {
-			// If we have already calculated the stats, and not forced to update.
+			// If not forced to update.
 			if ( ! $force_update ) {
-				// Get from stats cache.
+				// Get stats from cache.
 				$total_stats = wp_cache_get( WP_SMUSH_PREFIX . 'dir_total_stats', 'wp-smush' );
-				// If cache found, return it.
+				// If we have already calculated the stats and found in cache, return it.
 				if ( false !== $total_stats ) {
 					return $total_stats;
 				}
