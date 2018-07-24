@@ -12,4 +12,4 @@ pipelines:
           services:
             - docker
           script: # Modify the commands below to build your repository.
-            - php vendor/bin/codecept run
+            - run
