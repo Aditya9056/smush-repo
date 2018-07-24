@@ -830,11 +830,9 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 
 			$total = ! empty( $total ) && is_array( $total ) ? $total[0] : 0;
 
-			// If super-smush enabled, add meta condition.
-			$lossy_condition = $wp_smush->lossy_enabled ? 'AND lossy = 1' : '';
-
 			$continue = true;
-			while ( $continue && $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL $lossy_condition ORDER BY `id` LIMIT $offset, $limit", ARRAY_A ) ) { // Db call ok; no-cache ok.
+
+			while ( $continue && $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL ORDER BY `id` LIMIT $offset, $limit", ARRAY_A ) ) { // Db call ok; no-cache ok.
 				if ( ! empty( $results ) ) {
 					$images = array_merge( $images, $results );
 				}
