@@ -13,16 +13,13 @@ pipelines:
             - composer
           script:
             # install necessary packages
-            - apt-get update && apt-get install -qqy git unzip openssh-client
-            # get ssh keys for git
-            - mkdir -p ~/.ssh
-            - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
-            - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
+            - apt-get update && apt-get install -qqy git unzip
             # install composer and packages
             - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
             - composer install
-            # install codesniffer rules (enable only when there are not many warnings)
-            #- git clone git@bitbucket.org:incsub/wpmudev-dev-tools.git ~/phpcs-rules
-            #- vendor/bin/phpcs --colors --sniffs=~/phpcs-rules/Wpmudev-Plugins-Standard/ruleset.xml src/ wp-smush.php
+            # codesniffer
+            - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
+            - vendor/bin/phpcs --colors --standard=WordPress --report=summary src/ wp-smush.php
+            # codeception
             - php -S localhost:8085 --docroot public &>/dev/null&
             - vendor/bin/codecept run
