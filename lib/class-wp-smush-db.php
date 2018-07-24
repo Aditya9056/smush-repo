@@ -518,7 +518,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 					if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $offset ) {
 						$query_next = false;
 					} elseif ( ! $resize_data ) {
-						// If we didn' got any results.
+						// If we didn't get any results.
 						$query_next = false;
 					}
 				}
