@@ -2,6 +2,7 @@
 .DS_Store
 .idea
 .svn
+.env
 
 # Ignore system files
 composer.lock

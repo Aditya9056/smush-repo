@@ -15,4 +15,4 @@ pipelines:
             #- vendor/bin/phpcs -p --colors --report=summary --standard=WordPress lib/ wp-smush.php
             # codeception
             - php -S localhost:8085 --docroot public &>/dev/null&
-            - codecept run
+            - codecept run wpunit
