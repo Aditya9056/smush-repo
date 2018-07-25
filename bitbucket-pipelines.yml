@@ -9,14 +9,10 @@ pipelines:
   branches:
     unit-tests:
       - step:
-          caches:
-            - composer
           script:
             # codesniffer - will fail the pipeline, if errors are present
             #- vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
             #- vendor/bin/phpcs -p --colors --report=summary --standard=WordPress lib/ wp-smush.php
-            # codeception
-            #- composer install
             - service mysql start
             - bash misc/deploy-wordpress.sh
             - php -S localhost:8085 --docroot public &>/dev/null&
