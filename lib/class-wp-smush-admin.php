@@ -33,95 +33,116 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public $bulk;
 
 		/**
-		 * Total count of Attachments for Smushing
+		 * Total count of attachments for smushing.
 		 *
 		 * @var int $total_count
 		 */
 		public $total_count;
 
 		/**
-		 * Smushed attachments out of total attachments
+		 * Smushed attachments out of total attachments.
 		 *
 		 * @var int $smushed_count
 		 */
 		public $smushed_count;
 
 		/**
+		 * Smushed attachments from selected directories.
 		 *
-		 * @var Smushed attachments from selected directories.
+		 * @var array $dir_stats
 		 */
 		public $dir_stats;
 
 		/**
+		 * Smushed attachments out of total attachments.
 		 *
-		 * @var Smushed attachments out of total attachments
+		 * @var int $remaining_count
 		 */
 		public $remaining_count;
 
 		/**
+		 * Super Smushed attachments count.
 		 *
-		 * @var Super Smushed attachments count
+		 * @var int $super_smushed
 		 */
 		public $super_smushed;
 
 		/**
+		 * Attachment IDs.
 		 *
-		 * @var array Unsmushed image ids
+		 * @var array $attachments
 		 */
 		public $attachments = array();
 
 		/**
+		 * Unsmushed image ids.
 		 *
-		 * @var array Unsmushed image ids
+		 * @var array $unsmushed_attachments
 		 */
 		public $unsmushed_attachments = array();
 
 		/**
+		 * Attachment ids which are smushed.
 		 *
-		 * @var array Attachment ids which are smushed
+		 * @var array $smushed_attachments
 		 */
 		public $smushed_attachments = array();
 
 		/**
+		 * Image ids that needs to be resmushed.
 		 *
-		 * @var array Image ids that needs to be resmushed
+		 * @var array $resmush_ids
 		 */
 		public $resmush_ids = array();
 
+		/**
+		 * Allowed mime types of image.
+		 *
+		 * @var array $mime_types
+		 */
 		public $mime_types = array( 'image/jpg', 'image/jpeg', 'image/x-citrix-jpeg', 'image/gif', 'image/png', 'image/x-png' );
 
 		/**
+		 * Stores the stats for all the images.
 		 *
-		 * @array Stores the stats for all the images
+		 * @var array $stats
 		 */
 		public $stats;
 
 		/**
 		 * Limit for allowed number of images per bulk request.
 		 *
-		 * This is enforced at api level too
+		 * This is enforced at api level too.
 		 *
 		 * @var int $max_free_bulk
 		 */
 		private $max_free_bulk = 50;
 
+		/**
+		 * Link to upgrade.
+		 *
+		 * @var string $upgrade_url
+		 */
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
 
+		/**
+		 * Images dimensions array.
+		 *
+		 * @var array $image_sizes
+		 */
 		public $image_sizes = array();
 
 		/**
-		 * Stores the headers returned by the latest API call
+		 * Stores the headers returned by the latest API call.
 		 *
 		 * @var string $api_headers
 		 */
 		public $api_headers = array();
 
-		public $page_smush_all = '';
-
 		/**
 		 * List of pages where smush needs to be loaded.
 		 *
-		 * @var $pages array
+		 * @var array $pages
 		 */
 		public $pages = array(
 			'nggallery-manage-images',
@@ -134,12 +155,22 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			'toplevel_page_smush',
 		);
 
+		/**
+		 * List of smush settings pages.
+		 *
+		 * @var array $plugin_pages
+		 */
 		public $plugin_pages = array(
 			'gallery_page_wp-smush-nextgen-bulk',
 			'toplevel_page_smush-network',
 			'toplevel_page_smush',
 		);
 
+		/**
+		 * List of featurws/settings that are free.
+		 *
+		 * @var array $basic_features
+		 */
 		public $basic_features = array(
 			'networkwide',
 			'auto',
