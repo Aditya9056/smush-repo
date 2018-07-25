@@ -342,6 +342,15 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			/**
+			 * If this is called by wp_enqueue_media action, check if we are on one of the
+			 * required screen to avoid duplicate queries.
+			 * We have already enqueued scripts using admin_enqueue_scripts on required pages.
+			 */
+			if ( in_array( $current_page, $this->pages, true ) && doing_action( 'wp_enqueue_media' ) ) {
+				return;
+			}
+
+			/**
 			 * Load js and css on all admin pages, in order to display install/upgrade notice.
 			 * And If upgrade/install message is dismissed or for pro users, Do not enqueue script.
 			 */
@@ -1154,10 +1163,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$smush_data['total_images'] += $this->dir_stats['optimised'];
 			}
 
-			//Resize Savings
+			// Resize Savings.
+			$smush_data['resize_count']   = $wpsmush_db->resize_savings( false, false, true );
 			$resize_savings               = $wpsmush_db->resize_savings( false );
 			$smush_data['resize_savings'] = ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
-			$smush_data['resize_count']   = $wpsmush_db->resize_savings( false, false, true );
 
 			//Conversion Savings
 			$conversion_savings               = $wpsmush_db->conversion_savings( false );

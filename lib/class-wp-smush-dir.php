@@ -816,10 +816,22 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		/**
 		 * Fetch all the optimised image, calculate stats.
 		 *
-		 * @return array Total Stats
+		 * @param bool $force_update Should force update?
+		 *
+		 * @return array Total stats.
 		 */
-		public function total_stats() {
-			global $wpdb, $wp_smush;
+		function total_stats( $force_update = false ) {
+			// If not forced to update.
+			if ( ! $force_update ) {
+				// Get stats from cache.
+				$total_stats = wp_cache_get( WP_SMUSH_PREFIX . 'dir_total_stats', 'wp-smush' );
+				// If we have already calculated the stats and found in cache, return it.
+				if ( false !== $total_stats ) {
+					return $total_stats;
+				}
+			}
+
+			global $wpdb;
 
 			$offset    = 0;
 			$optimised = 0;
@@ -869,11 +881,14 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 				$this->stats['bytes']   = ( $this->stats['orig_size'] > $this->stats['image_size'] ) ? $this->stats['orig_size'] - $this->stats['image_size'] : 0;
 				$this->stats['percent'] = number_format_i18n( ( ( $this->stats['bytes'] / $this->stats['orig_size'] ) * 100 ), 1 );
 				// Convert to human readable form.
-				$this->stats['human'] = size_format( $this->stats['bytes'], 1 );
+				$this->stats['human']   = size_format( $this->stats['bytes'], 1 );
 			}
 
 			$this->stats['total']     = $total;
 			$this->stats['optimised'] = $optimised;
+
+			// Set stats in cache.
+			wp_cache_set( WP_SMUSH_PREFIX . 'dir_total_stats', $this->stats, 'wp-smush' );
 
 			return $this->stats;
 		}
