@@ -99,10 +99,8 @@ class WP_Smush_Gutenberg {
 			return;
 		}
 
-		global $wpsmush_settings;
-
-		// If integration is disabled, do not continue.
-		if ( ! $wpsmush_settings->settings[ $this->module ] || $this->is_gutenberg_active() ) {
+		// If Gutenberg is active, do not continue.
+		if ( $this->is_gutenberg_active() ) {
 			return;
 		}
 		?>
