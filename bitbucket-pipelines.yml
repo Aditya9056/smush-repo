@@ -20,4 +20,4 @@ pipelines:
             - service mysql start
             - bash misc/deploy-wordpress.sh
             - php -S localhost:8085 --docroot public &>/dev/null&
-            - vendor/bin/codecept run wpunit
+            - codecept run wpunit
