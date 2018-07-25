@@ -138,6 +138,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			'auto',
 			'strip_exif',
 			'resize',
+			'gutenberg',
 		);
 
 		/**
