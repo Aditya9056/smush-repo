@@ -18,4 +18,4 @@ pipelines:
             # codeception
             - composer install
             - php -S localhost:8085 --docroot public &>/dev/null&
-            - codecept run wpunit
+            - vendor/bin/codecept run wpunit
