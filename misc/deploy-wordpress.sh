@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+DB_NAME="wpTests"
+DB_USER="wp"
+DB_PASS="wp"
 WP_CORE_DIR='/srv/www/wordpress-default/public_html'
 
 download() {
@@ -26,9 +29,28 @@ install_wp() {
 }
 
 add_db_user() {
-    mysql -e "CREATE DATABASE wpTests"
-    mysql -e "GRANT ALL PRIVILEGES ON wpTests.* to 'wp'@'localhost' IDENTIFIED BY 'wp'"
+    mysql -e "CREATE DATABASE $DB_NAME"
+    mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* to '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS'"
+}
+
+update_wp_config() {
+	# portable in-place argument for both GNU sed and Mac OSX sed
+	if [[ $(uname -s) == 'Darwin' ]]; then
+		local ioption='-i .bak'
+	else
+		local ioption='-i'
+	fi
+
+	cd $WP_CORE_DIR
+
+	if [ ! -f wp-tests-config.php ]; then
+        cp "$WP_CORE_DIR"/wp-config-sample.php "$WP_CORE_DIR"/wp-config.php
+        sed $ioption "s/database_name_here/$DB_NAME/" "$WP_CORE_DIR"/wp-config.php
+        sed $ioption "s/username_here/$DB_USER/" "$WP_CORE_DIR"/wp-config.php
+        sed $ioption "s/password_here/$DB_PASS/" "$WP_CORE_DIR"/wp-config.php
+    fi
 }
 
 install_wp
 add_db_user
+update_wp_config
