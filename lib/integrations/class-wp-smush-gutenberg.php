@@ -47,6 +47,9 @@ class WP_Smush_Gutenberg {
 
 		// Register gutenberg block assets.
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gb' ) );
+
+		// Show submit button when Gutenberg is active.
+		add_filter( 'wp_smush_integration_show_submit', array( $this, 'show_submit' ) );
 	}
 
 	/**
@@ -125,6 +128,26 @@ class WP_Smush_Gutenberg {
 		}
 
 		return $disabled;
+	}
+
+	/**
+	 * Show submit button for integration settings.
+	 *
+	 * If Gutenberg plugin is active we will enable integration,
+	 * so show submit button if Gutenberg is active.
+	 *
+	 * @param bool $show Should show?.
+	 *
+	 * @since 2.8.1
+	 *
+	 * @return bool
+	 */
+	public function show_submit( $show ) {
+		if ( $this->is_gutenberg_active() ) {
+			$show = true;
+		}
+
+		return $show;
 	}
 
 	/**

@@ -64,6 +64,9 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			add_filter( 'smush_backup_exists', array( $this, 'backup_exists_on_s3' ), 10, 3 );
 
 			add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
+
+			// Show submit button when a pro user and the S3 plugin is installed.
+			add_filter( 'wp_smush_integration_show_submit', '__return_true' );
 		}
 
 		/**
