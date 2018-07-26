@@ -419,13 +419,15 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 							continue;
 						}
 
+						$skip_path = $this->skip_dir( $file_path );
+
 						$tree[] = array(
 							'title'        => $html_name,
 							'key'          => $html_rel,
 							'folder'       => is_dir( $file_path ),
-							'lazy'         => true,
+							'lazy'         => ! $skip_path,
 							'checkbox'     => true,
-							'unselectable' => $this->skip_dir( $file_path ), // Skip Uploads folder - Media Files.
+							'unselectable' => $skip_path, // Skip Uploads folder - Media Files.
 						);
 					}
 
@@ -474,9 +476,6 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 
 		/**
 		 * Get the image list in a specified directory path.
-		 *
-		 * TODO: Skip already added images? Or not?
-		 * TODO: Could be refactored to remove similar code.
 		 *
 		 * @since 2.8.1  Added support for selecting files.
 		 *

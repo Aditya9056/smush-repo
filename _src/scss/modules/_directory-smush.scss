@@ -35,15 +35,21 @@
          * 2nd character (optional): 'd': lazy (Delayed)
          * 3rd character (optional): 'l': Last sibling
          *----------------------------------------------------------------------------*/
-
         span.fancytree-expander {
             cursor: pointer;
             font-size: 12px;
             margin-left: 10px;
+            width: 15px;
 
             &:before {
                 font-family: wpmudev-plugin-icons, sans-serif;
             }
+        }
+
+        .fancytree-exp-c span.fancytree-expander,
+        .fancytree-exp-cd:not(.fancytree-unselectable) span.fancytree-expander,
+        .fancytree-exp-cf:not(.fancytree-unselectable) span.fancytree-expander {
+            margin-left: 13px;
         }
 
         // --- End nodes (use connectors instead of expanders)
@@ -80,6 +86,12 @@
         .fancytree-exp-el span.fancytree-expander:before,
         .fancytree-exp-edl span.fancytree-expander:before {
             content: "\131";
+        }
+
+        // --- Unselectable
+
+        .fancytree-unselectable span.fancytree-expander:before {
+            content: "9";
         }
 
         /* Fade out expanders, when container is not hovered or active */
@@ -135,7 +147,6 @@
             */
         }
 
-
         .fancytree-selected span.fancytree-checkbox {
             border: 1px solid #17a8e3;
             background-color: #17a8e3;
@@ -143,7 +154,10 @@
             &:before {
                 opacity: 1;
             }
+        }
 
+        .fancytree-expanded span.fancytree-checkbox {
+            margin-left: 11px;
         }
 
         /*
@@ -170,18 +184,12 @@
         */
         // Unselectable is dimmed, without hover effects
         .fancytree-unselectable {
-            span.fancytree-checkbox {
+            span.fancytree-expander,
+            span.fancytree-icon,
+            span.fancytree-checkbox,
+            span.fancytree-title {
                 opacity: 0.4;
                 filter: alpha(opacity=40);
-            }
-            span.fancytree-checkbox:hover {
-                //.useSprite(0, 2);
-            }
-            &.fancytree-partsel span.fancytree-checkbox:hover {
-                //.useSprite(4, 2);
-            }
-            &.fancytree-selected span.fancytree-checkbox:hover {
-                //.useSprite(2, 2);
             }
         }
 
