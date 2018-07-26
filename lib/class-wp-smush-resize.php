@@ -1,5 +1,6 @@
 <?php
 /**
+ * Smush resize functionality: WpSmushResize class
  *
  * @package WP_Smush
  * @subpackage Admin

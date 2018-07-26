@@ -49,12 +49,14 @@ if ( ! class_exists( 'WP_Async_Task_Smush' ) ) {
 		protected $priority = 10;
 
 		/**
+		 * Action name.
 		 *
 		 * @var string
 		 */
 		protected $action;
 
 		/**
+		 * Request body data.
 		 *
 		 * @var array
 		 */

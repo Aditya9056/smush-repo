@@ -1,5 +1,6 @@
 <?php
 /**
+ * Smush UI: WpSmushBulkUi class.
  *
  * @package WP_Smush
  * @subpackage Admin
@@ -721,43 +722,43 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="network-settings-wrapper<?php echo $class; ?>">
 				<?php
 				endif;
-if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
-	foreach ( $wpsmushit_admin->settings as $name => $values ) {
-		// Skip networkwide settings, we already printed it.
-		if ( 'networkwide' == $name ) {
-			continue;
-		}
+				if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
+					foreach ( $wpsmushit_admin->settings as $name => $values ) {
+						// Skip networkwide settings, we already printed it.
+						if ( 'networkwide' == $name ) {
+							continue;
+						}
 
-		// Skip premium features if not a member.
-		if ( ! in_array( $name, $wpsmushit_admin->basic_features ) && ! $wp_smush->validate_install() ) {
-			continue;
-		}
+						// Skip premium features if not a member.
+						if ( ! in_array( $name, $wpsmushit_admin->basic_features ) && ! $wp_smush->validate_install() ) {
+							continue;
+						}
 
-		$setting_m_key = WP_SMUSH_PREFIX . $name;
-		$setting_val   = empty( $settings[ $name ] ) ? 0 : $settings[ $name ];
+						$setting_m_key = WP_SMUSH_PREFIX . $name;
+						$setting_val   = empty( $settings[ $name ] ) ? 0 : $settings[ $name ];
 
-		// Set the default value 1 for auto smush.
-		if ( 'auto' == $name && ( false === $setting_val || ! isset( $setting_val ) ) ) {
-			$setting_val = 1;
-		}
+						// Set the default value 1 for auto smush.
+						if ( 'auto' == $name && ( false === $setting_val || ! isset( $setting_val ) ) ) {
+							$setting_val = 1;
+						}
 
-		// Group Original, Resize and Backup for pro users
-		if ( in_array( $name, $grouped_settings ) ) {
-			continue;
-		}
+						// Group Original, Resize and Backup for pro users
+						if ( in_array( $name, $grouped_settings ) ) {
+							continue;
+						}
 
-		$label = ! empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label'];
+						$label = ! empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label'];
 
-		// Show settings option.
-		$this->settings_row( $setting_m_key, $label, $name, $setting_val );
-	}
-	// Hook after general settings.
-	do_action( 'wp_smush_after_basic_settings' );
-}
-if ( is_multisite() && is_network_admin() ) {
-	echo '</div>';
-}
-?>
+						// Show settings option.
+						$this->settings_row( $setting_m_key, $label, $name, $setting_val );
+					}
+					// Hook after general settings.
+					do_action( 'wp_smush_after_basic_settings' );
+				}
+				if ( is_multisite() && is_network_admin() ) {
+					echo '</div>';
+				}
+				?>
 			</form>
 			<?php
 		}
@@ -790,27 +791,27 @@ if ( is_multisite() && is_network_admin() ) {
 				wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
 
 				// For subsite admins show only if networkwide options is not enabled.
-if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
-	foreach ( $this->intgration_group as $name ) {
-		// Settings key.
-		$setting_m_key = WP_SMUSH_PREFIX . $name;
-		// Disable setting.
-		$disable = apply_filters( 'wp_smush_integration_status_' . $name, false );
-		// Current setting value.
-		$setting_val = ( ! $wp_smush->validate_install() || empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
-		// Current setting label.
-		$label = ! empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label'];
-		// Gray out row, disable setting.
-		$upsell = ! $wp_smush->validate_install();
+				if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
+					foreach ( $this->intgration_group as $name ) {
+						// Settings key.
+						$setting_m_key = WP_SMUSH_PREFIX . $name;
+						// Disable setting.
+						$disable = apply_filters( 'wp_smush_integration_status_' . $name, false );
+						// Current setting value.
+						$setting_val = ( ! $wp_smush->validate_install() || empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
+						// Current setting label.
+						$label = ! empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label'];
+						// Gray out row, disable setting.
+						$upsell = ! $wp_smush->validate_install();
 
-		// Show settings option.
-		$this->settings_row( $setting_m_key, $label, $name, $setting_val, true, $disable, $upsell );
+						// Show settings option.
+						$this->settings_row( $setting_m_key, $label, $name, $setting_val, true, $disable, $upsell );
 
-	}
-	// Hook after showing integration settings.
-	do_action( 'wp_smush_after_integration_settings' );
-}
-?>
+					}
+					// Hook after showing integration settings.
+					do_action( 'wp_smush_after_integration_settings' );
+				}
+				?>
 			</form>
 			<?php
 		}
@@ -975,28 +976,28 @@ if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_
 					</div>
 				<?php endif; ?>
 				<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' sui-hidden' : ''; ?>">
-															 <?php
-																if ( $wpsmushit_admin->remaining_count > 0 ) :
-																	$class       = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' sui-hidden' : '';
-																	$upgrade_url = add_query_arg(
-																		array(
-																			'utm_source'   => 'smush',
-																			'utm_medium'   => 'plugin',
-																			'utm_campaign' => 'smush_bulksmush_limit_notice',
-																		),
-																		$wpsmushit_admin->upgrade_url
-																	);
-																	?>
+					<?php
+					if ( $wpsmushit_admin->remaining_count > 0 ) :
+						$class       = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' sui-hidden' : '';
+						$upgrade_url = add_query_arg(
+							array(
+								'utm_source'   => 'smush',
+								'utm_medium'   => 'plugin',
+								'utm_campaign' => 'smush_bulksmush_limit_notice',
+							),
+							$wpsmushit_admin->upgrade_url
+						);
+						?>
 					<div class="sui-notice sui-notice-warning<?php echo $class; ?>" tabindex="0">
 						<p>
-																	<?php printf( _n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs smushing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need smushing!', $wpsmushit_admin->remaining_count, 'wp-smushit' ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' ); ?>
-																	<?php if ( ! $is_pro && $wpsmushit_admin->remaining_count > 50 ) : ?>
-																		<?php printf( esc_html__( ' %1$sUpgrade to Pro%2$s to bulk smush all your images with one click.', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Smush Pro', 'wp-smushit' ) . '">', '</a>' ); ?>
-																		<?php esc_html_e( ' Free users can smush 50 images with each click.', 'wp-smushit' ); ?>
+							<?php printf( _n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs smushing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need smushing!', $wpsmushit_admin->remaining_count, 'wp-smushit' ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' ); ?>
+							<?php if ( ! $is_pro && $wpsmushit_admin->remaining_count > 50 ) : ?>
+								<?php printf( esc_html__( ' %1$sUpgrade to Pro%2$s to bulk smush all your images with one click.', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Smush Pro', 'wp-smushit' ) . '">', '</a>' ); ?>
+								<?php esc_html_e( ' Free users can smush 50 images with each click.', 'wp-smushit' ); ?>
 							<?php endif; ?>
 						</p>
 					</div>
-																<?php endif; ?>
+					<?php endif; ?>
 				<button type="button" class="wp-smush-all wp-smush-button sui-button sui-button-primary" title="<?php esc_html_e( 'Click to start Bulk Smushing images in Media Library', 'wp-smushit' ); ?>"><?php esc_html_e( 'BULK SMUSH NOW', 'wp-smushit' ); ?></button>
 				</div>
 				<?php
@@ -1059,14 +1060,14 @@ if ( ! is_multisite() || ( ! $wpsmush_settings->settings['networkwide'] && ! is_
 					$main_nav_li .= '<span class="smush-nav-icon ' . $tab . $tag_class . '" aria-hidden="true">' . $tag_content . '</span>';
 					$main_nav_li .= '</li>';
 					// Mobile nav
-if ( is_multisite() && is_network_admin() ) {
-	$url = network_admin_url( 'admin.php?page=smush' . '&tab=' . $tab );
-} else {
-	$url = admin_url( 'admin.php?page=smush' . '&tab=' . $tab );
-}
+					if ( is_multisite() && is_network_admin() ) {
+						$url = network_admin_url( 'admin.php?page=smush' . '&tab=' . $tab );
+					} else {
+						$url = admin_url( 'admin.php?page=smush' . '&tab=' . $tab );
+					}
 					$select_nav .= '<option class="' . $class . '" value="' . esc_url( $url ) . '" ' . selected( $tab, $this->current_tab, false ) . '>' . $label . '</option>';
 					$mob_nav_li .= '<li class="smush-' . $tab . $class . ( $tab === $this->current_tab ? ' current' : '' ) . '">' . $label . '</li>';
-?>
+					?>
 				<?php endforeach; ?>
 				<ul class="sui-vertical-tabs sui-sidenav-hide-md">
 					<?php echo $main_nav_li; ?>
@@ -1437,28 +1438,28 @@ if ( is_multisite() && is_network_admin() ) {
 			}
 			?>
 			<span class="sui-description sui-toggle-description" id="<?php echo WP_SMUSH_PREFIX . $setting_key . '-desc'; ?>">
-																				<?php
-																				switch ( $setting_key ) {
+				<?php
+				switch ( $setting_key ) {
 
-																					case 'resize':
-																						esc_html_e( 'Save a ton of space by not storing over-sized images on your server. Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically scaled down to a reasonable size. Note: Image resizing happens automatically when you upload attachments. This setting does not apply to images smushed using Directory Smush feature. To support retina devices, we recommend using 2x the dimensions of your image size.', 'wp-smushit' );
-																						break;
-																					case 'original':
-																						esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed, unless your website uses the original images in full size.', 'wp-smushit' );
-																						break;
-																					case 'strip_exif':
-																						esc_html_e( 'Note: This data adds to the size of the image. While this information might be important to photographers, it’s unnecessary for most users and safe to remove.', 'wp-smushit' );
-																						break;
-																					case 'png_to_jpg':
-																						esc_html_e( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and any hard-coded URLs on your site that contain the original PNG filename will need to be updated.', 'wp-smushit' );
-																						break;
-																					case 's3':
-																						esc_html_e( 'Note: For this process to happen automatically you need automatic smushing enabled.', 'wp-smushit' );
-																						break;
-																					case 'default':
-																						break;
-																				}
-																				?>
+					case 'resize':
+						esc_html_e( 'Save a ton of space by not storing over-sized images on your server. Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically scaled down to a reasonable size. Note: Image resizing happens automatically when you upload attachments. This setting does not apply to images smushed using Directory Smush feature. To support retina devices, we recommend using 2x the dimensions of your image size.', 'wp-smushit' );
+						break;
+					case 'original':
+						esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed, unless your website uses the original images in full size.', 'wp-smushit' );
+						break;
+					case 'strip_exif':
+						esc_html_e( 'Note: This data adds to the size of the image. While this information might be important to photographers, it’s unnecessary for most users and safe to remove.', 'wp-smushit' );
+						break;
+					case 'png_to_jpg':
+						esc_html_e( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and any hard-coded URLs on your site that contain the original PNG filename will need to be updated.', 'wp-smushit' );
+						break;
+					case 's3':
+						esc_html_e( 'Note: For this process to happen automatically you need automatic smushing enabled.', 'wp-smushit' );
+						break;
+					case 'default':
+						break;
+				}
+				?>
 			</span>
 			<?php
 		}
@@ -1527,20 +1528,20 @@ if ( is_multisite() && is_network_admin() ) {
 				<!-- List of image sizes recognised by WP Smush -->
 				<div class="wp-smush-image-size-list <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
 				<span class="sui-description"><?php esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every default and/or custom image size that your theme has registered. This means there are multiple versions of your images in your media library. Choose the images size/s below that you would like optimized:', 'wp-smushit' ); ?></span>
-																<?php
-																foreach ( $sizes as $size_k => $size ) {
-																	// If image sizes array isn't set, mark all checked ( Default Values ).
-																	if ( false === $image_sizes ) {
-																		$checked = true;
-																	} else {
-																		$checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes ) : false;
-																	}
-																	// For free users, disable full size option.
-																	if ( $size_k === 'full' ) {
-																		$disabled = $is_pro ? '' : 'disabled';
-																		$checked  = $is_pro ? $checked : false;
-																	}
-																	?>
+					<?php
+					foreach ( $sizes as $size_k => $size ) {
+						// If image sizes array isn't set, mark all checked ( Default Values ).
+						if ( false === $image_sizes ) {
+							$checked = true;
+						} else {
+							$checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes ) : false;
+						}
+						// For free users, disable full size option.
+						if ( $size_k === 'full' ) {
+							$disabled = $is_pro ? '' : 'disabled';
+							$checked  = $is_pro ? $checked : false;
+						}
+						?>
 					<label class="sui-checkbox sui-description">
 					<input type="checkbox" id="wp-smush-size-<?php echo $size_k; ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo $size_k; ?>" <?php echo $disabled; ?>>
 					<span aria-hidden="true"></span>
@@ -1554,9 +1555,9 @@ if ( is_multisite() && is_network_admin() ) {
 						</span>
 					<?php } ?>
 					</label>
-																	<?php
-																}
-																?>
+						<?php
+					}
+					?>
 				</div>
 				<?php
 			}

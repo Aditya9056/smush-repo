@@ -837,8 +837,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Smush single images
 		 *
-		 * @param $attachment_id
-		 * @param bool          $return Return/Echo the stats
+		 * @param int  $attachment_id
+		 * @param bool $return        Return/Echo the stats
 		 *
 		 * @return array|string|void
 		 */

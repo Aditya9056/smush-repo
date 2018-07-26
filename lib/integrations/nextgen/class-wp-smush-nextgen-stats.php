@@ -160,11 +160,11 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 		/**
 		 * Display the smush stats for the image
 		 *
-		 * @param $pid Image Id stored in nextgen table
-		 * @param bool                                 $wp_smush_data Stats, stored after smushing the image
-		 * @param string                               $image_type Used for determining if not gif, to show the Super Smush button
-		 * @param bool                                 $text_only Return only text instead of button (Useful for Ajax)
-		 * @param bool                                 $echo Whether to echo the stats or not
+		 * @param int    $pid Image Id stored in nextgen table
+		 * @param bool   $wp_smush_data Stats, stored after smushing the image
+		 * @param string $image_type Used for determining if not gif, to show the Super Smush button
+		 * @param bool   $text_only Return only text instead of button (Useful for Ajax)
+		 * @param bool   $echo Whether to echo the stats or not
 		 *
 		 * @uses WpSmushNextGenAdmin::column_html(), WP_Smush::get_restore_link(), WP_Smush::get_resmush_link()
 		 *

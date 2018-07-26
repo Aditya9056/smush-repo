@@ -1,5 +1,6 @@
 <?php
 /**
+ * PNG to JPG conversion: WpSmushPngtoJpg class
  *
  * @package WP_Smush
  *
