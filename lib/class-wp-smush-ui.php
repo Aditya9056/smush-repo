@@ -1110,7 +1110,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</span>
 				</div>
 
-				<div class="sui-box-body sui-no-padding-right">
+				<div class="sui-box-body sui-no-padding-right sui-hidden">
 					<button type="button" class="wp-smush-all wp-smush-button sui-button wp-smush-started">
 						<?php esc_html_e( 'RESUME', 'wp-smushit' ); ?>
 					</button>

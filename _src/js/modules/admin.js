@@ -381,6 +381,8 @@ jQuery( function ( $ ) {
 					.attr( 'data-tooltip', wp_smush_msgs.bulk_resume )
 					.removeClass( 'wp-smush-cancel-bulk' )
 					.addClass( 'wp-smush-all' );
+
+				progress.find( '.sui-box-body.sui-hidden' ).removeClass( 'sui-hidden' );
 			} else {
 				$( '.wp-smush-notice.wp-smush-all-done, .wp-smush-pagespeed-recommendation' ).show();
 			}
@@ -707,9 +709,11 @@ jQuery( function ( $ ) {
 		$( '.sui-notice-top.sui-notice-success' ).remove();
 
 		// Remove limit exceeded styles.
-		$( '.wp-smush-bulk-progress-bar-wrapper' ).removeClass( 'wp-smush-exceed-limit' )
+		let progress = $( '.wp-smush-bulk-progress-bar-wrapper' );
+		progress.removeClass( 'wp-smush-exceed-limit' )
 			.find( '.sui-progress-close' ).attr( 'data-tooltip', wp_smush_msgs.bulk_stop );
-
+		// Hide Resume button
+		progress.find( '.sui-box-body' ).addClass( 'sui-hidden' );
 
 		//Disable Resmush and scan button
 		$( '.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings' ).attr( 'disabled', 'disabled' );
