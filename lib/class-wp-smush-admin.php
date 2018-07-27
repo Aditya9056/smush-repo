@@ -2443,8 +2443,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 */
 		public function admin_pointer() {
 
-			global $wpsmush_db;
-
 			// Get dismissed pointers meta.
 			$dismissed_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
 
@@ -2458,11 +2456,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// We had a flag in old versions for activation redirect. Check that also.
 			if ( get_site_option( 'wp-smush-skip-redirect' ) ) {
-				return;
-			}
-
-			// If we already have some smushed images, that means we have smush installed before.
-			if ( $wpsmush_db->smushed_count( false ) > 0 ) {
 				return;
 			}
 
