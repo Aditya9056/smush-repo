@@ -9,8 +9,8 @@ npm-debug.log
 package-lock.json
 
 # Ignore build directories and tmp folders
-assets/css
-assets/js
 build
 node_modules
 vendor
+assets/css
+assets/js

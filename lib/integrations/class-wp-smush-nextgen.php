@@ -65,6 +65,9 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			// Disable setting.
 			add_filter( 'wp_smush_integration_status_' . $this->module, array( $this, 'setting_status' ) );
 
+			// Show submit button when Gutenberg is active.
+			add_filter( 'wp_smush_integration_show_submit', array( $this, 'show_submit' ) );
+
 			// Show alert message only if Pro user.
 			if ( $is_pro ) {
 				// Hook at the end of setting row to output a error div.
@@ -937,6 +940,29 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 
 			return $disabled;
+		}
+
+		/**
+		 * Show submit button for integration settings.
+		 *
+		 * If a pro user and NextGen plugin is active, we need to
+		 * make sure settings submit button is shown.
+		 *
+		 * @param bool $show Should show?.
+		 *
+		 * @since 2.8.1
+		 *
+		 * @return bool
+		 */
+		public function show_submit( $show ) {
+			global $wp_smush;
+
+			// If a pro user and NextGen plugin is active.
+			if ( $wp_smush->validate_install() && class_exists( 'C_NextGEN_Bootstrap' ) ) {
+				$show = true;
+			}
+
+			return $show;
 		}
 
 	}// End of Class.

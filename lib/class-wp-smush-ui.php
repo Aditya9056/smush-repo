@@ -452,15 +452,22 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 			echo '</div>';
 
+			/**
+			 * Filter to enable/disable submit button in integration settings.
+			 *
+			 * @param bool $show_submit Should show submit?
+			 */
+			$show_submit = apply_filters( 'wp_smush_integration_show_submit', false );
+
 			// Box footer content including buttons.
 			$div_end = '<span class="wp-smush-submit-wrap">
-				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" aria-describedby="smush-submit-description" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $is_pro, true, false ) . '>
+				<input type="submit" id="wp-smush-save-settings" class="sui-button sui-button-primary" aria-describedby="smush-submit-description" value="' . esc_html__( 'UPDATE SETTINGS', 'wp-smushit' ) . '" ' . disabled( ! $show_submit, true, false ) . '>
 		        <span class="sui-icon-loader sui-loading sui-hidden"></span>
 		        <span class="smush-submit-note" id="smush-submit-description">' . esc_html__( 'Smush will automatically check for any images that need re-smushing.', 'wp-smushit' ) . '</span>
 		        </span>';
 
 			// Container footer if pro.
-			if ( $is_pro ) {
+			if ( $show_submit ) {
 				$this->container_footer( '', $div_end );
 			}
 			echo '</div>';
@@ -473,8 +480,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 		/**
 		 * Outputs the smush stats for the site.
-		 *
-		 * @todo Implement this
 		 *
 		 * @return void
 		 */
@@ -790,12 +795,12 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						$setting_m_key = WP_SMUSH_PREFIX . $name;
 						// Disable setting.
 						$disable = apply_filters( 'wp_smush_integration_status_' . $name, false );
+						// Gray out row, disable setting.
+						$upsell = ( ! in_array( $name, $wpsmushit_admin->basic_features ) && ! $wp_smush->validate_install() );
 						// Current setting value.
-						$setting_val = ( ! $wp_smush->validate_install() || empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
+						$setting_val = ( $upsell || empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
 						// Current setting label.
 						$label = ! empty( $wpsmushit_admin->settings[ $name ]['short_label'] ) ? $wpsmushit_admin->settings[ $name ]['short_label'] : $wpsmushit_admin->settings[ $name ]['label'];
-						// Gray out row, disable setting.
-						$upsell = ! $wp_smush->validate_install();
 
 						// Show settings option.
 						$this->settings_row( $setting_m_key, $label, $name, $setting_val, true, $disable, $upsell );
@@ -1105,7 +1110,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					</span>
 				</div>
 
-				<div class="sui-box-body sui-no-padding-right">
+				<div class="sui-box-body sui-no-padding-right sui-hidden">
 					<button type="button" class="wp-smush-all wp-smush-button sui-button wp-smush-started">
 						<?php esc_html_e( 'RESUME', 'wp-smushit' ); ?>
 					</button>

@@ -3,6 +3,10 @@
 @include body-class {
 
 	.sui-wrap {
+		// Overwrite extra padding on progress bars in modals.
+		.sui-dialog-content .sui-progress-block {
+			margin-bottom: 0;
+		}
 
 		// Bulk smush and directory smush (overwrite when the limit is exceeded)
 		.wp-smush-exceed-limit {
