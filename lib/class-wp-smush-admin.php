@@ -96,7 +96,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @var int $max_free_bulk
 		 */
-		private $max_free_bulk = 2;
+		private $max_free_bulk = 50;
 
 		public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
 
