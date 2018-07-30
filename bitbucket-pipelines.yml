@@ -15,6 +15,6 @@ pipelines:
             #- vendor/bin/phpcs -p --colors --report=summary --standard=WordPress lib/ wp-smush.php
             - service mysql start
             - bash misc/deploy-wordpress.sh
-            - cp -R $BUILD_DIR/wp-smushit /srv/www/wordpress-default/public_html/wp-content/plugins/
+            - cp -R /opt/atlassian/bitbucketci/agent/build/wp-smushit /srv/www/wordpress-default/public_html/wp-content/plugins/
             - php -S localhost:8085 --docroot public &>/dev/null&
             - codecept run wpunit
