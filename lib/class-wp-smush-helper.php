@@ -1,5 +1,6 @@
 <?php
 /**
+ *
  * @package WP_Smush
  * @subpackage Admin
  * @version 1.0
@@ -50,29 +51,29 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 		 * @return array|bool
 		 */
 		function get_pngjpg_savings( $attachment_id = '' ) {
-			//Initialize empty array
+			// Initialize empty array
 			$savings = array(
 				'bytes'       => 0,
 				'size_before' => 0,
-				'size_after'  => 0
+				'size_after'  => 0,
 			);
 
-			//Return empty array if attaachment id not provided
-			if( empty( $attachment_id ) ) {
+			// Return empty array if attaachment id not provided
+			if ( empty( $attachment_id ) ) {
 				return $savings;
 			}
 
 			$pngjpg_savings = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
-			if( empty( $pngjpg_savings ) || !is_array( $pngjpg_savings )) {
+			if ( empty( $pngjpg_savings ) || ! is_array( $pngjpg_savings ) ) {
 				return $savings;
 			}
 
 			foreach ( $pngjpg_savings as $size => $s_savings ) {
-				if( empty( $s_savings ) ) {
+				if ( empty( $s_savings ) ) {
 					continue;
 				}
 				$savings['size_before'] += $s_savings['size_before'];
-				$savings['size_after'] += $s_savings['size_after'];
+				$savings['size_after']  += $s_savings['size_after'];
 			}
 			$savings['bytes'] = $savings['size_before'] - $savings['size_after'];
 
@@ -84,7 +85,7 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 		 *
 		 * @param $haystack
 		 * @param $needle
-		 * @param int $offset
+		 * @param int      $offset
 		 *
 		 * @return bool
 		 */
@@ -112,19 +113,19 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 		 */
 		function file_exists( $id, $file_path ) {
 
-			//If not attachment id is given return false
+			// If not attachment id is given return false
 			if ( empty( $id ) ) {
 				return false;
 			}
 
-			//Get file path, if not provided
+			// Get file path, if not provided
 			if ( empty( $file_path ) ) {
 				$file_path = $this->get_attached_file( $id );
 			}
 
 			global $wpsmush_s3;
 
-			//If S3 is enabled
+			// If S3 is enabled
 			if ( is_object( $wpsmush_s3 ) && method_exists( $wpsmush_s3, 'is_image_on_s3' ) && $wpsmush_s3->is_image_on_s3( $id ) ) {
 				$file_exists = true;
 			} else {
@@ -142,15 +143,15 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 		 * @return string Truncated string
 		 */
 		function add_ellipsis( $string = '' ) {
-			if( empty( $string ) ){
+			if ( empty( $string ) ) {
 				return $string;
 			}
-			//Return if the character length is 120 or less, else add ellipsis in between
-			if( strlen( $string ) < 121 ) {
+			// Return if the character length is 120 or less, else add ellipsis in between
+			if ( strlen( $string ) < 121 ) {
 				return $string;
 			}
-			$start = substr( $string, 0, 60 );
-			$end = substr( $string, -40 );
+			$start  = substr( $string, 0, 60 );
+			$end    = substr( $string, -40 );
 			$string = $start . '...' . $end;
 
 			return $string;
@@ -160,10 +161,10 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 		 * Bump up the PHP memory limit temporarily
 		 */
 		function increase_memory_limit() {
-			$mlimit = ini_get('memory_limit');
-			$trim_limit = rtrim($mlimit,"M");
-			if ($trim_limit < '256') {
-				@ini_set('memory_limit', '256M');
+			$mlimit     = ini_get( 'memory_limit' );
+			$trim_limit = rtrim( $mlimit, 'M' );
+			if ( $trim_limit < '256' ) {
+				@ini_set( 'memory_limit', '256M' );
 			}
 		}
 
@@ -180,10 +181,12 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 		 */
 		function table_column_exists( $table_name, $column_name ) {
 			global $wpdb;
-			$column = $wpdb->get_results( $wpdb->prepare(
-				"SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-				DB_NAME, $table_name, $column_name
-			) );
+			$column = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ',
+					DB_NAME, $table_name, $column_name
+				)
+			);
 			if ( ! empty( $column ) ) {
 				return true;
 			}
@@ -201,9 +204,9 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 		 * @param string $index Index name to drop.
 		 * @return true True, when finished.
 		 */
-		function drop_index($table, $index) {
+		function drop_index( $table, $index ) {
 			global $wpdb;
-			$wpdb->query("ALTER TABLE `$table` DROP INDEX `$index`");
+			$wpdb->query( "ALTER TABLE `$table` DROP INDEX `$index`" );
 			return true;
 		}
 	}
