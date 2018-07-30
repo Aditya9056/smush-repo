@@ -233,6 +233,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Load js and css on pages with Media Uploader - WP Enqueue Media.
 			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
 
+			// Admin pointer for new Smush installation.
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_pointer' ) );
 		}
 
