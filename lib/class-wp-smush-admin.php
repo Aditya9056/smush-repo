@@ -525,9 +525,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			} // End if().
 
+			// Check if scanner class is available.
+			$scanner_ready = isset( $wpsmush_dir->scanner );
+
 			$data['dir_smush'] = array(
-				'currentScanStep' => $wpsmush_dir->scanner->get_current_scan_step(),
-				'totalSteps'      => $wpsmush_dir->scanner->get_scan_steps(),
+				'currentScanStep' => $scanner_ready ? $wpsmush_dir->scanner->get_current_scan_step() : 0,
+				'totalSteps'      => $scanner_ready ? $wpsmush_dir->scanner->get_scan_steps() : 0,
 			);
 
 			$data['resize_sizes'] = $this->get_max_image_dimensions();
