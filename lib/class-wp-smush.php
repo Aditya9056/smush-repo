@@ -165,9 +165,6 @@ class WP_Smush {
 	 * WP_Smush constructor.
 	 */
 	protected function __construct() {
-		// Redirect to settings page.
-		add_action( 'activated_plugin', array( $this, 'wp_smush_redirect' ) );
-
 		// Smush image (Auto Smush) when `wp_update_attachment_metadata` filter is fired.
 		add_filter( 'wp_update_attachment_metadata', array( $this, 'smush_image' ), 15, 2 );
 
@@ -2056,50 +2053,6 @@ class WP_Smush {
 
 			return $percentage;
 		}
-	}
-
-	/**
-	 * Redirects the user to Plugin settings page on Plugin activation
-	 *
-	 * @param $plugin Plugin Name
-	 *
-	 * @return bool
-	 */
-	function wp_smush_redirect( $plugin ) {
-		global $wpsmush_db;
-
-		// Run for only our plugin
-		if ( $plugin != WP_SMUSH_BASENAME ) {
-			return false;
-		}
-
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			return true;
-		}
-
-		// Do not perform redirect if WP ClI is there, as it generates warning and causes issue
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return true;
-		}
-
-		// Skip if bulk activation, Or if we have to skip redirection
-		if ( isset( $_GET['activate-multi'] ) || get_site_option( 'wp-smush-skip-redirect' ) ) {
-			return false;
-		}
-
-		// If images are already smushed
-		if ( $wpsmush_db->smushed_count( false ) > 0 ) {
-			return false;
-		}
-
-		// Do not use menu_page_url(), by the time menu is not registered and it returns a empty URL, and in turn wp_redirect() gives a fatal error
-		$url = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : admin_url( 'admin.php?page=smush' );
-
-		// Store that we need not redirect again
-		add_site_option( 'wp-smush-skip-redirect', true );
-
-		wp_redirect( $url );
-		exit;
 	}
 
 	/**

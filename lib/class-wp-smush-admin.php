@@ -273,6 +273,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Load js and css on pages with Media Uploader - WP Enqueue Media.
 			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
+
+			// Admin pointer for new Smush installation.
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_pointer' ) );
 		}
 
 		function init_settings() {
@@ -525,9 +528,12 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			} // End if().
 
+			// Check if scanner class is available.
+			$scanner_ready = isset( $wpsmush_dir->scanner );
+
 			$data['dir_smush'] = array(
-				'currentScanStep' => $wpsmush_dir->scanner->get_current_scan_step(),
-				'totalSteps'      => $wpsmush_dir->scanner->get_scan_steps(),
+				'currentScanStep' => $scanner_ready ? $wpsmush_dir->scanner->get_current_scan_step() : 0,
+				'totalSteps'      => $scanner_ready ? $wpsmush_dir->scanner->get_scan_steps() : 0,
 			);
 
 			$data['resize_sizes'] = $this->get_max_image_dimensions();
@@ -2465,6 +2471,80 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			return $resmush_list;
+		}
+
+		/**
+		 * Add custom admin pointer using wp-pointer.
+		 *
+		 * We have removed activation redirect to Smush settings
+		 * in new version to avoid interrupting bulk activations.
+		 * Show a pointer notice to Smush settings menu on new
+		 * activations.
+		 *
+		 * @since 2.9
+		 */
+		public function admin_pointer() {
+
+			// Get dismissed pointers meta.
+			$dismissed_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
+
+			// Explod them by comma.
+			$dismissed_pointers = explode( ',', (string) $dismissed_pointers );
+
+			// If smush pointer is not found in dismissed pointers, show.
+			if ( in_array( 'smush_pointer', $dismissed_pointers ) ) {
+				return;
+			}
+
+			// We had a flag in old versions for activation redirect. Check that also.
+			if ( get_site_option( 'wp-smush-skip-redirect' ) ) {
+				return;
+			}
+
+			// Enqueue wp-pointer styles and scripts.
+			wp_enqueue_style( 'wp-pointer' );
+			wp_enqueue_script( 'wp-pointer' );
+
+			// Register our custom pointer.
+			add_action( 'admin_print_footer_scripts', array( $this, 'register_admin_pointer' ) );
+		}
+
+		/**
+		 * Register smush custom pointer to wp-pointer.
+		 *
+		 * Use wordpress dismiss-wp-pointer action on pointer
+		 * dismissal to store dismissal flag in meta via ajax.
+		 *
+		 * @since 2.9
+		 */
+		public function register_admin_pointer() {
+
+			// Pointer content.
+			$content = '<h3>' . __( 'Get Optimized', 'wp-smushit' ) . '</h3>';
+			$content .= '<p>' . __( 'Resize, compress and optimize your images here.', 'wp-smushit' ) . '</p>';
+			?>
+
+			<script type="text/javascript">
+				//<![CDATA[
+				jQuery( document ).ready( function( $ ) {
+					// jQuery selector to point the message to.
+					$( '#toplevel_page_smush' ).pointer({
+						content: '<?php echo $content; ?>',
+						position: {
+							edge: 'left',
+							align: 'center'
+						},
+						close: function() {
+							$.post( ajaxurl, {
+								pointer: 'smush_pointer',
+								action: 'dismiss-wp-pointer'
+							});
+						}
+					}).pointer( 'open' );
+				});
+				//]]>
+			</script>
+			<?php
 		}
 	}
 
