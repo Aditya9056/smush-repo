@@ -1,4 +1,4 @@
-@import "variables";
+@import "modules/variables";
 
 @font-face {
 	font-family: 'wpmudev-plugin-icons';
@@ -18,28 +18,31 @@
 }
 
 .smush-resize-box {
-	width: max-content;
-	display: block;
+	display: flex;
+	align-items: center;
+	align-content: center;
+	justify-content: space-between;;
 	padding: 10px;
 	box-shadow: 0 5px 25px 0 rgba(0, 0, 0, .15);
 	margin: 20px auto;
 	border-radius: 30px;
 	cursor: pointer;
+	width: 250px;
 
 	.smush-front-icons {
-		margin-left: 10px;
+		margin: 0 10px;
+		line-height: 12px;
+
 		&:before {
 			font-family: 'wpmudev-plugin-icons', sans-serif !important;
 			speak: none;
-			font-size: 1em;
+			font-size: 12px;
 			font-style: normal;
 			font-weight: 400;
 			font-variant: normal;
 			text-transform: none;
-			line-height: 1;
 			text-rendering: auto;
-			display: inline-block;
-			color: #888;
+			color: #AAA;
 			-webkit-font-smoothing: antialiased;
 			-moz-osx-font-smoothing: grayscale;
 		}
@@ -52,7 +55,6 @@
 	}
 
 	.smush-tag {
-		display: inline-block;
 		background-color: #fecf2f;
 		color: #333;
 		border-radius: 15px;
@@ -62,12 +64,11 @@
 		line-height: 26px;
 		text-align: center;
 		font-weight: 500;
-		padding: 0 10px;
+		padding: 0 15px;
 
 		&.smush-tag-success {
 			background-color: #1abc9c;
 			color: #fff;
-			margin-left: 10px;
 		}
 	}
 
