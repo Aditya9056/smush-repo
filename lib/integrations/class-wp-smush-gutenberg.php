@@ -65,8 +65,10 @@ class WP_Smush_Gutenberg {
 		$settings[ $this->module ] = array(
 			'label'       => esc_html__( 'Show Smush stats in Gutenberg blocks', 'wp-smushit' ),
 			'short_label' => esc_html__( 'Gutenberg Support', 'wp-smushit' ),
-			'desc'        => esc_html__( 'Add statistics and the manual smush button to Gutenberg blocks that
-							display images.', 'wp-smushit' ),
+			'desc'        => esc_html__(
+				'Add statistics and the manual smush button to Gutenberg blocks that
+							display images.', 'wp-smushit'
+			),
 		);
 
 		return $settings;

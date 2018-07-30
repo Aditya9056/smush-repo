@@ -134,14 +134,16 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			);
 
 			// Define ajaxurl var.
-			wp_localize_script( 'smush-resize-detection', 'wp_smush_resize_vars', array(
-				'ajaxurl'     => admin_url( 'admin-ajax.php' ),
-				'ajax_nonce'  => wp_create_nonce( 'smush_resize_nonce' ),
-				// translators: %s - width, %s - height.
-				'large_image' => sprintf( __( 'This image is too large for it’s container. Adjust the image dimensions to %1$s x %2$spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
-				// translators: %s - width, %s - height.
-				'small_image' => sprintf( __( 'This image is too small for it’s container. Adjust the image dimensions to %1$s x %2$spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
-			) );
+			wp_localize_script(
+				'smush-resize-detection', 'wp_smush_resize_vars', array(
+					'ajaxurl'     => admin_url( 'admin-ajax.php' ),
+					'ajax_nonce'  => wp_create_nonce( 'smush_resize_nonce' ),
+					// translators: %s - width, %s - height.
+					'large_image' => sprintf( __( 'This image is too large for it’s container. Adjust the image dimensions to %1$s x %2$spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
+					// translators: %s - width, %s - height.
+					'small_image' => sprintf( __( 'This image is too small for it’s container. Adjust the image dimensions to %1$s x %2$spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
+				)
+			);
 		}
 
 		/**
@@ -159,11 +161,13 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			/* @var WP_Admin_Bar $wp_admin_bar */
 			global $wp_admin_bar;
 
-			$wp_admin_bar->add_menu( array(
-				'id'     => 'smush-resize-detection',
-				'parent' => 'top-secondary',
-				'title'  => __( 'Detect Images', 'wp-smushit' ),
-			) );
+			$wp_admin_bar->add_menu(
+				array(
+					'id'     => 'smush-resize-detection',
+					'parent' => 'top-secondary',
+					'title'  => __( 'Detect Images', 'wp-smushit' ),
+				)
+			);
 		}
 
 		/**

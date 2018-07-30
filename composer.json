@@ -1,0 +1,10 @@
+{
+    "name": "incsub/smush",
+    "description": "Resize, optimize, optimise and compress all of your images with the incredibly powerful and 100% free WordPress image smusher, brought to you by the superteam at WPMU DEV!",
+    "type": "project",
+    "require": {},
+    "require-dev": {
+        "lucatume/wp-browser": "^2.1",
+        "phpunit/phpunit": "6.*"
+    }
+}
