@@ -61,4 +61,4 @@ svn st | grep '^!' | awk '{print $2}' | xargs svn del
 echo -e "${INFO_COLOR}Success! SVN preparation tasks completed. Please review:"
 echo -e "- Check that ${BLACK_COLOR}./build/smush-svn/tags/$VERSION${INFO_COLOR} is the correct tag generated"
 echo -e "- ${BLACK_COLOR}./build/smush-svn/trunk/readme.txt${INFO_COLOR} Stable tag field has been updated and is correct"
-echo -e "If everything is correct, navigate to ${BLACK_COLOR}./build/smush-svn${INFO_COLOR} and make a great commit!${COLOR_OFF}"
+echo -e "If everything is correct, navigate to ${BLACK_COLOR}./build/smush-svn${INFO_COLOR} and run ${BLACK_COLOR}svn ci -m \"Release $VERSION\"${COLOR_OFF}"
