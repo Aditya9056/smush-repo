@@ -510,7 +510,11 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 				/**
 				 * Path is an image.
 				 */
-				if ( ! is_dir( $path ) && $this->is_image( $path ) && ! $this->is_media_library_file( $path ) && ! strpos( $path, '.bak' ) ) {
+				if ( ! is_dir( $path ) && ! $this->is_media_library_file( $path ) && ! strpos( $path, '.bak' ) ) {
+					if ( ! $this->is_image( $path ) ) {
+						continue;
+					}
+
 					// Image already added. Skip.
 					if ( in_array( $path, $images, true ) ) {
 						continue;
