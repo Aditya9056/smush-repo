@@ -19,6 +19,8 @@ This path needs to correlate to the `WP_ROOT_FOLDER` constant in the `.env` file
 Script that will fetch latest wp.org release to `./build/smush-svn` directory. Auto merge all changes from the current (new)
 release and show next steps for pushing to WordPress SVN.
 
+Usage: from `wp-smushit` drectory run `./misc/deploy-to-svn.sh`
+
 ## Docerkfile
 
 This file is used to generate a Docker image used in Bitbucket Pipelines.
