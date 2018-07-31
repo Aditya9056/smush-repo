@@ -1001,7 +1001,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						</p>
 					</div>
 					<?php endif; ?>
-				<button type="button" class="wp-smush-all wp-smush-button sui-button sui-button-primary" title="<?php esc_html_e( 'Click to start Bulk Smushing images in Media Library', 'wp-smushit' ); ?>"><?php esc_html_e( 'BULK SMUSH NOW', 'wp-smushit' ); ?></button>
+				<button type="button" class="wp-smush-all sui-button sui-button-primary" title="<?php esc_html_e( 'Click to start Bulk Smushing images in Media Library', 'wp-smushit' ); ?>"><?php esc_html_e( 'BULK SMUSH NOW', 'wp-smushit' ); ?></button>
 				</div>
 				<?php
 				$this->progress_bar( $wpsmushit_admin );
@@ -1129,7 +1129,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</div>
 
 				<div class="sui-box-body sui-no-padding-right sui-hidden">
-					<button type="button" class="wp-smush-all wp-smush-button sui-button wp-smush-started">
+					<button type="button" class="wp-smush-all sui-button wp-smush-started">
 						<?php esc_html_e( 'RESUME', 'wp-smushit' ); ?>
 					</button>
 				</div>

@@ -651,7 +651,7 @@ jQuery( function ( $ ) {
 				self.bulk_done();
 
 				//Re enable the buttons
-				$( '.wp-smush-button:not(.wp-smush-finished), .wp-smush-scan' ).removeAttr( 'disabled' );
+				$( '.wp-smush-all:not(.wp-smush-finished), .wp-smush-scan' ).removeAttr( 'disabled' );
 			} );
 
 		};
@@ -706,40 +706,6 @@ jQuery( function ( $ ) {
 
 		return this.deferred;
 	};
-
-	/**
-	 * Handle the Bulk Smush/ Bulk Resmush button click
-	 */
-	$( 'body' ).on( 'click', 'button.wp-smush-all', function ( e ) {
-		// prevent the default action
-		e.preventDefault();
-
-		$( '.sui-notice-top.sui-notice-success' ).remove();
-
-		// Remove limit exceeded styles.
-		let progress = $( '.wp-smush-bulk-progress-bar-wrapper' );
-		progress.removeClass( 'wp-smush-exceed-limit' )
-			.find( '.sui-progress-close' ).attr( 'data-tooltip', wp_smush_msgs.bulk_stop );
-		// Hide Resume button
-		progress.find( '.sui-box-body' ).addClass( 'sui-hidden' );
-
-		//Disable Resmush and scan button
-		$( '.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-button, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings' ).attr( 'disabled', 'disabled' );
-
-		//Check for ids, if there is none (Unsmushed or lossless), don't call smush function
-		if ( typeof wp_smushit_data == 'undefined' ||
-			( wp_smushit_data.unsmushed.length == 0 && wp_smushit_data.resmush.length == 0 )
-		) {
-			return false;
-		}
-
-		$( ".wp-smush-remaining" ).hide();
-
-		// Show loader.
-		$( '.sui-summary-smush .smush-stats-icon' ).removeClass( 'sui-icon-info sui-warning' ).addClass( 'sui-icon-loader sui-loading' );
-
-		new WP_Smush.Smush( $( this ), true );
-	} );
 
 	/** Disable the action links **/
 	var disable_links = function ( c_element ) {
@@ -1001,7 +967,7 @@ jQuery( function ( $ ) {
 		} );
 
 		//Disable Bulk smush button and itself
-		$( '.wp-smush-button' ).attr( 'disabled', 'disabled' );
+		$( '.wp-smush-all' ).attr( 'disabled', 'disabled' );
 
 		//Hide Settings changed Notice
 		$( '.wp-smush-settings-changed' ).hide();
@@ -1102,7 +1068,7 @@ jQuery( function ( $ ) {
 					.text( wp_smush_msgs.resmush_check );
 			}, 2000 );
 
-			$( '.wp-smush-button' ).removeAttr( 'disabled' );
+			$( '.wp-smush-all' ).removeAttr( 'disabled' );
 
 			//If wp-smush-re-check-message is there, remove it
 			if ( $( '.wp-smush-re-check-message' ).length ) {
@@ -1455,7 +1421,7 @@ jQuery( function ( $ ) {
 
 		}
 
-		jQuery( '.wp-smush-button, .wp-smush-scan' ).attr( 'disabled', 'disabled' );
+		jQuery( '.wp-smush-all, .wp-smush-scan' ).attr( 'disabled', 'disabled' );
 		$( ".wp-smush-notice.wp-smush-remaining" ).hide();
 		new WP_Smush.Smush( $( this ), true, 'nextgen' );
 
