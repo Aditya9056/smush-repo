@@ -656,11 +656,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			if ( ! $this->validate_install() ) {
-				// Free version bulk smush, check the transient counter value
+				// Free version bulk smush, check the transient counter value.
 				$should_continue = $this->check_bulk_limit();
 			}
 
-			// If the bulk smush needs to be stopped
+			// If the bulk smush needs to be stopped.
 			if ( ! $should_continue ) {
 				wp_send_json_error(
 					array(
@@ -674,7 +674,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$error = $error_class = '';
 
-			$attachment_id = (int) ( $_REQUEST['attachment_id'] );
+			$attachment_id = (int) $_REQUEST['attachment_id'];
 
 			/**
 			 * Filter: wp_smush_image
@@ -692,26 +692,26 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$error_class   = 'skipped';
 			}
 
-			// Get the file path for backup
+			// Get the file path for backup.
 			$attachment_file_path = $wpsmush_helper->get_attached_file( $attachment_id );
 
-			// Download if not exists
+			// Download if not exists.
 			do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
 
-			// Take Backup
+			// Take backup.
 			global $wpsmush_backup;
 			$wpsmush_backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 			if ( ! $send_error ) {
-				// Proceed only if Smushing Transient is not set for the given attachment id
+				// Proceed only if Smushing Transient is not set for the given attachment id.
 				if ( ! get_option( 'smush-in-progress-' . $attachment_id, false ) ) {
 
-					// Set a transient to avoid multiple request
+					// Set a transient to avoid multiple request.
 					update_option( 'smush-in-progress-' . $attachment_id, true );
 
 					$original_meta = wp_get_attachment_metadata( $attachment_id, true );
 
-					// Resize the dimensions of the image
+					// Resize the dimensions of the image.
 					/**
 					 * Filter whether the existing image should be resized or not
 					 *
@@ -728,14 +728,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 					global $wpsmush_pngjpg;
 
-					// Convert PNGs to JPG
+					// Convert PNGs to JPG.
 					$original_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
 
 					$smush = $wp_smush->resize_from_meta_data( $original_meta, $attachment_id );
 					wp_update_attachment_metadata( $attachment_id, $original_meta );
 				}
 
-				// Delete Transient
+				// Delete transient.
 				delete_option( 'smush-in-progress-' . $attachment_id );
 			}
 
@@ -757,14 +757,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$send_error = true;
 
 				$error_message = $smush->get_error_message();
-				// Check for timeout error and suggest to filter timeout
+				// Check for timeout error and suggest to filter timeout.
 				if ( strpos( $error_message, 'timed out' ) ) {
 					$error         = 'timeout';
 					$error_message = sprintf( esc_html__( "%1\$s%2\$d%3\$s Attachment(s) were not smushed due to a timeout error, You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`", 'wp-smushit' ), '<span class="image-error-count">', 1, '</span>' );
 					$error_class   = ' timeout';
 				}
 			} else {
-				// Check if a resmush request, update the resmush list
+				// Check if a resmush request, update the resmush list.
 				if ( ! empty( $_REQUEST['is_bulk_resmush'] ) && 'false' != $_REQUEST['is_bulk_resmush'] && $_REQUEST['is_bulk_resmush'] ) {
 					$this->update_resmush_list( $attachment_id );
 				}
@@ -787,11 +787,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Wrap the error message in div
 			// $error = !empty( $error ) ? sprintf( '<p class="wp-smush-error-message'. $error_class .'">%s</p>', $error ) : $error;
 			if ( ! $send_error ) {
-				// Update the bulk Limit count
+				// Update the bulk Limit count.
 				$this->update_smush_count();
 			}
 
-			// Send ajax response
+			// Send ajax response.
 			$send_error ? wp_send_json_error(
 				array(
 					'stats'         => $stats,

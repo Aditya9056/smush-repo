@@ -537,68 +537,76 @@ jQuery( function ( $ ) {
 
 			this.request = WP_Smush.ajax( this.is_bulk_resmush, this.current_id, this.url, 0, nonce_value )
 				.error( function () {
+					// TODO: check that this method ever fires.
 					self.increment_errors( self.current_id );
-				} ).done( function ( res ) {
-					//Increase the error count except if bulk request limit excceded
-					if ( typeof res.success === "undefined" || ( typeof res.success !== "undefined" && typeof res.success.data !== "undefined" && res.success === false && res.data.error !== 'bulk_request_image_limit_exceeded' ) ) {
+				} )
+				.done( function ( res ) {
+					// Increase the error count except if bulk request limit exceeded.
+					if ( 'undefined' === typeof res.success || ( 'undefined' !== typeof res.success && false === res.success && 'undefined' !== typeof res.data && 'bulk_request_image_limit_exceeded' !== res.data.error ) ) {
 						self.increment_errors( self.current_id );
 					}
-					//If no response or success is false, do not process further
-					if ( !res || !res.success ) {
-						//@todo: Handle Bulk Smush limit error message
-						if ( 'undefined' !== typeof res && 'undefined' !== typeof res.data && typeof res.data.error !== 'undefined' ) {
-							var error_class = 'undefined' != typeof res.data.error_class ? 'smush-error-message ' + res.data.error_class : 'smush-error-message';
-							var error_msg = '<p class="' + error_class + '">' + res.data.error_message + '</p>';
-							if ( 'undefined' != typeof res.data.error && 'bulk_request_image_limit_exceeded' == res.data.error ) {
-								var ajax_error_message = $( '.wp-smush-ajax-error' );
-								//If we have ajax error message div, append after it
-								if ( ajax_error_message.length > 0 ) {
-									ajax_error_message.after( error_msg );
-								} else {
-									//Otherwise prepend
-									self.$log.prepend( error_msg );
-								}
-							} else if ( 'undefined' != typeof res.data.error_class && "" != res.data.error_class && $( 'div.smush-final-log .' + res.data.error_class ).length > 0 ) {
-								var error_count = $( 'p.smush-error-message.' + res.data.error_class + ' .image-error-count' );
-								//Get the error count, increase and append
-								var image_count = error_count.html();
-								image_count = parseInt( image_count ) + 1;
-								//Append the updated image count
-								error_count.html( image_count );
+
+					// If no response or success is false, do not process further.
+					if ( ( ! res || ! res.success ) && ( 'undefined' !== typeof res && 'undefined' !== typeof res.data && 'undefined' !== typeof res.data.error ) ) {
+						// TODO: Handle Bulk Smush limit error message
+
+						/** @var {string} res.data.error_class */
+						const error_class = 'undefined' !== typeof res.data.error_class ? 'smush-error-message ' + res.data.error_class : 'smush-error-message';
+						/** @var {string} res.data.error_message */
+						const error_msg = '<p class="' + error_class + '">' + res.data.error_message + '</p>';
+
+						if ( 'undefined' !== typeof res.data.error && 'bulk_request_image_limit_exceeded' === res.data.error ) {
+							const ajax_error_message = $( '.wp-smush-ajax-error' );
+							// If we have ajax error message div, append after it.
+							if ( ajax_error_message.length > 0 ) {
+								ajax_error_message.after( error_msg );
 							} else {
-								//Print the error on screen
-								self.$log.append( error_msg );
+								// Otherwise prepend
+								self.$log.prepend( error_msg );
 							}
-							self.$log.show();
+						} else if ( 'undefined' != typeof res.data.error_class && "" != res.data.error_class && $( 'div.smush-final-log .' + res.data.error_class ).length > 0 ) {
+							const error_count = $( 'p.smush-error-message.' + res.data.error_class + ' .image-error-count' );
+							// Get the error count, increase and append.
+							let image_count = error_count.html();
+							image_count = parseInt( image_count ) + 1;
+							// Append the updated image count.
+							error_count.html( image_count );
+						} else {
+							// Print the error on screen.
+							self.$log.append( error_msg );
 						}
+
+						self.$log.show();
 					}
 
-					//Check whether to show the warning notice or not
+					// Check whether to show the warning notice or not.
 					membership_validity( res.data );
 
-					//Bulk Smush Limit Exceeded: Stop ajax requests, remove progress bar, append the last image id back to smush variable, and reset variables to allow the user to continue bulk smush
-					if ( typeof res.data !== "undefined" && res.data.error == 'bulk_request_image_limit_exceeded' && !self.is_resolved() ) {
-						//Add a data attribute to the smush button, to stop sending ajax
+					/**
+					 * Bulk Smush limit exceeded: Stop ajax requests, remove progress bar, append the last image ID
+					 * back to Smush variable, and reset variables to allow the user to continue bulk Smush.
+					 */
+					if ( 'undefined' !== typeof res.data && 'bulk_request_image_limit_exceeded' === res.data.error && ! self.is_resolved() ) {
+						// Add a data attribute to the Smush button, to stop sending ajax.
 						self.$button.attr( 'continue_smush', false );
 
 						self.free_exceeded();
 
-						//Reinsert the current id
+						// Reinsert the current ID.
 						wp_smushit_data.unsmushed.unshift( self.current_id );
 
-						//Update the remaining count to length of remaining ids + 1 (Current id)
+						// Update the remaining count to length of remaining IDs + 1 (current ID).
 						self.update_remaining_count();
-					} else {
-
-						if ( self.is_bulk && res.success ) {
-							self.update_progress( res );
-						} else if ( self.ids.length == 0 ) {
-							//Sync stats anyway
-							self.sync_stats();
-						}
+					} else if ( self.is_bulk && res.success ) {
+						self.update_progress( res );
+					} else if ( 0 === self.ids.length ) {
+						// Sync stats anyway.
+						self.sync_stats();
 					}
+
 					self.single_done();
-				} ).complete( function () {
+				} )
+				.complete( function () {
 					if ( !self.continue() || !self.is_bulk ) {
 						//Calls deferred.done()
 						self.deferred.resolve();

@@ -395,12 +395,12 @@ class WP_Smush {
 	 * Read the image paths from an attachment's meta data and process each image
 	 * with wp_smushit().
 	 *
-	 * @param $meta
-	 * @param null $ID
+	 * @param array    $meta  Image meta data.
+	 * @param null|int $id    Image ID.
 	 *
 	 * @return mixed
 	 */
-	function resize_from_meta_data( $meta, $ID = null ) {
+	public function resize_from_meta_data( $meta, $id = null ) {
 		global $wpsmush_settings, $wpsmush_helper, $wpsmushit_admin;
 
 		$settings = $wpsmush_settings->settings;
@@ -420,18 +420,16 @@ class WP_Smush {
 			'sizes' => array(),
 		);
 
-		$size_before = $size_after = $compression = $total_time = $bytes_saved = 0;
-
-		if ( $ID && false === wp_attachment_is_image( $ID ) ) {
+		if ( $id && false === wp_attachment_is_image( $id ) ) {
 			return $meta;
 		}
 
 		// Set attachment id and media type.
-		$this->attachment_id = $ID;
+		$this->attachment_id = $id;
 		$this->media_type    = 'wp';
 
 		// File path and URL for original image.
-		$attachment_file_path = $wpsmush_helper->get_attached_file( $ID );
+		$attachment_file_path = $wpsmush_helper->get_attached_file( $id );
 
 		// If images has other registered size, smush them first.
 		if ( ! empty( $meta['sizes'] ) ) {
@@ -466,7 +464,7 @@ class WP_Smush {
 				/**
 				 * Allows S3 to hook over here and check if the given file path exists else download the file.
 				 */
-				do_action( 'smush_file_exists', $attachment_file_path_size, $ID, $size_data );
+				do_action( 'smush_file_exists', $attachment_file_path_size, $id, $size_data );
 
 				if ( $finfo ) {
 					$ext = is_file( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
@@ -530,8 +528,8 @@ class WP_Smush {
 					$stats['stats']['keep_exif']   = ! empty( $response['data']->keep_exif ) ? $response['data']->keep_exif : 0;
 				}
 			}
-			// Upfront Integration
-			$stats = $this->smush_upfront_images( $ID, $stats );
+			// Upfront Integration.
+			$stats = $this->smush_upfront_images( $id, $stats );
 		} else {
 			$smush_full = true;
 		}
@@ -544,10 +542,10 @@ class WP_Smush {
 		 */
 		$smush_full_image = apply_filters( 'wp_smush_media_image', true, 'full' );
 
-		// Whether to update the image stats or not
+		// Whether to update the image stats or not.
 		$store_stats = true;
 
-		// If original size is supposed to be smushed
+		// If original size is supposed to be smushed.
 		if ( $smush_full && $smush_full_image ) {
 
 			$full_image_response = $this->do_smushit( $attachment_file_path );
@@ -556,12 +554,12 @@ class WP_Smush {
 				return $full_image_response;
 			}
 
-			// If there are no stats
+			// If there are no stats.
 			if ( empty( $full_image_response['data'] ) ) {
 				$store_stats = false;
 			}
 
-			// If the image size grew after smushing, skip it
+			// If the image size grew after smushing, skip it.
 			if ( $full_image_response['data']->after_size > $full_image_response['data']->before_size ) {
 				$store_stats = false;
 			}
@@ -571,7 +569,7 @@ class WP_Smush {
 			}
 
 			// Api version and lossy, for some images, full image i skipped and for other images only full exists
-			// so have to add code again
+			// so have to add code again.
 			if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 				$stats['stats']['api_version'] = $full_image_response['data']->api_version;
 				$stats['stats']['lossy']       = $full_image_response['data']->lossy;
@@ -581,28 +579,28 @@ class WP_Smush {
 
 		$has_errors = (bool) count( $errors->get_error_messages() );
 
-		// Set smush status for all the images, store it in wp-smpro-smush-data
+		// Set smush status for all the images, store it in wp-smpro-smush-data.
 		if ( ! $has_errors ) {
 
-			$existing_stats = get_post_meta( $ID, $this->smushed_meta_key, true );
+			$existing_stats = get_post_meta( $id, $this->smushed_meta_key, true );
 
 			if ( ! empty( $existing_stats ) ) {
 
-				// Update stats for each size
+				// Update stats for each size.
 				if ( isset( $existing_stats['sizes'] ) && ! empty( $stats['sizes'] ) ) {
 
 					foreach ( $existing_stats['sizes'] as $size_name => $size_stats ) {
-						// if stats for a particular size doesn't exists
+						// If stats for a particular size doesn't exists.
 						if ( empty( $stats['sizes'][ $size_name ] ) ) {
 							$stats['sizes'][ $size_name ] = $existing_stats['sizes'][ $size_name ];
 						} else {
 
 							$existing_stats_size = (object) $existing_stats['sizes'][ $size_name ];
 
-							// store the original image size
+							// Store the original image size.
 							$stats['sizes'][ $size_name ]->size_before = ( ! empty( $existing_stats_size->size_before ) && $existing_stats_size->size_before > $stats['sizes'][ $size_name ]->size_before ) ? $existing_stats_size->size_before : $stats['sizes'][ $size_name ]->size_before;
 
-							// Update compression percent and bytes saved for each size
+							// Update compression percent and bytes saved for each size.
 							$stats['sizes'][ $size_name ]->bytes   = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->bytes;
 							$stats['sizes'][ $size_name ]->percent = $this->calculate_percentage( $stats['sizes'][ $size_name ], $existing_stats_size );
 						}
@@ -610,26 +608,26 @@ class WP_Smush {
 				}
 			}
 
-			// Sum Up all the stats
+			// Sum Up all the stats.
 			$stats = $this->total_compression( $stats );
 
-			// If there was any compression and there was no error in smushing
+			// If there was any compression and there was no error in smushing.
 			if ( isset( $stats['stats']['bytes'] ) && $stats['stats']['bytes'] >= 0 && ! $has_errors ) {
 				/**
 				 * Runs if the image smushing was successful
 				 *
-				 * @param int $ID Image Id
+				 * @param int $id Image Id
 				 *
 				 * @param array $stats Smush Stats for the image
 				 */
-				do_action( 'wp_smush_image_optimised', $ID, $stats );
+				do_action( 'wp_smush_image_optimised', $id, $stats );
 			}
-			update_post_meta( $ID, $this->smushed_meta_key, $stats );
+			update_post_meta( $id, $this->smushed_meta_key, $stats );
 		}
 
 		unset( $stats );
 
-		// Unset Response
+		// Unset response.
 		if ( ! empty( $response ) ) {
 			unset( $response );
 		}
