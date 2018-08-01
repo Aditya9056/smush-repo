@@ -128,6 +128,11 @@ class WP_Smush_Installer {
 	private static function directory_smush_table() {
 		global $wpsmush_dir;
 
+		// Create a class object, if doesn't exists.
+		if ( empty( $wpsmush_dir ) && class_exists( 'WP_Smush_Dir' ) ) {
+			$wpsmush_dir = new WP_Smush_Dir();
+		}
+
 		// Create/upgrade directory smush table.
 		$wpsmush_dir->create_table();
 
