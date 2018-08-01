@@ -840,11 +840,11 @@ jQuery( function ( $ ) {
 		var resize_checkbox = wrapper_div.find( '#wp-smush-resize, #wp-smush-resize-quick-setup' );
 
 		if ( !height_only ) {
-			var width_input = wrapper_div.find( '#wp-smush-resize_width' );
+			var width_input = wrapper_div.find( '#wp-smush-resize_width, #quick-setup-resize_width' );
 			var width_error_note = wrapper_div.find( '.sui-notice-info.wp-smush-update-width' );
 		}
 		if ( !width_only ) {
-			var height_input = wrapper_div.find( '#wp-smush-resize_height' );
+			var height_input = wrapper_div.find( '#wp-smush-resize_height, #quick-setup-resize_height' );
 			var height_error_note = wrapper_div.find( '.sui-notice-info.wp-smush-update-height' );
 		}
 
