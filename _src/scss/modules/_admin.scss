@@ -246,6 +246,10 @@
 				.wp-smush-resize-settings-wrap,
 				.sui-description {
 					margin-left: 0;
+
+					&.sui-notice {
+						margin-bottom: 0;
+					}
 				}
 			}
 		}
