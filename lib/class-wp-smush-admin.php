@@ -303,7 +303,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				'resize'      => array(
 					'label'       => esc_html__( 'Resize my full size images', 'wp-smushit' ),
 					'short_label' => esc_html__( 'Image resizing', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Detect unnecessarly large oversize images on your pages to reduce their size and decrease load times.', 'wp-smushit' ),
+					'desc'        => esc_html__( 'Detect unnecessarily large oversize images on your pages to reduce their size and decrease load times.', 'wp-smushit' ),
 				),
 				'detection'   => array(
 					'label'       => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
