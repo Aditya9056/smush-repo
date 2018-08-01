@@ -960,6 +960,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-notice sui-notice-success wp-smush-all-done<?php echo $all_done ? '' : ' sui-hidden'; ?>" tabindex="0">
 					<p><?php esc_html_e( 'All attachments have been smushed. Awesome!', 'wp-smushit' ); ?></p>
 				</div>
+				<div class="sui-notice sui-notice-warning smush-final-log sui-hidden"></div>
 				<?php if ( ! $hide_pagespeed ) : ?>
 					<div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' sui-hidden'; ?>">
 						<span class="smush-recommendation-title"><?php esc_html_e( 'Still having trouble with PageSpeed tests? Give these a go…', 'wp-smushit' ); ?></span>
@@ -1001,7 +1002,9 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						</p>
 					</div>
 					<?php endif; ?>
-				<button type="button" class="wp-smush-all sui-button sui-button-primary" title="<?php esc_html_e( 'Click to start Bulk Smushing images in Media Library', 'wp-smushit' ); ?>"><?php esc_html_e( 'BULK SMUSH NOW', 'wp-smushit' ); ?></button>
+				<button type="button" class="wp-smush-all sui-button sui-button-primary" title="<?php esc_html_e( 'Click to start Bulk Smushing images in Media Library', 'wp-smushit' ); ?>">
+					<?php esc_html_e( 'BULK SMUSH NOW', 'wp-smushit' ); ?>
+				</button>
 				</div>
 				<?php
 				$this->progress_bar( $wpsmushit_admin );
@@ -1105,8 +1108,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					);
 					?>
 				</p>
-
-				<div class="sui-notice sui-notice-warning smush-final-log sui-hidden"></div>
 
 				<div class="sui-progress-block sui-progress-can-close">
 					<div class="sui-progress">

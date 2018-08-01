@@ -4,6 +4,8 @@
  * @since 2.9.0  Moved from admin.js
  */
 
+import Smush from '../smush/smush';
+
 ( function( $ ) {
 	'use strict';
 
@@ -14,7 +16,7 @@
 			/**
 			 * Handle the Bulk Smush/Bulk re-Smush button click.
 			 */
-			$( 'body' ).on( 'click', 'button.wp-smush-all', ( e ) => {
+			$( 'body' ).on( 'click', 'button.wp-smush-all', function( e ) {
 				e.preventDefault();
 
 				$( '.sui-notice-top.sui-notice-success' ).remove();
@@ -28,7 +30,8 @@
 				progress.find( '.sui-box-body' ).addClass( 'sui-hidden' );
 
 				// Disable re-Smush and scan button.
-				$( '.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-all, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings' ).attr( 'disabled', 'disabled' );
+				// TODO: refine what is disabled.
+				$( '.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-all:not(.sui-progress-close), a.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings' ).attr( 'disabled', 'disabled' );
 
 				// Check for IDs, if there is none (unsmushed or lossless), don't call Smush function.
 				/** @var {array} wp_smushit_data.unsmushed */
@@ -45,9 +48,11 @@
 					.removeClass( 'sui-icon-info sui-warning' )
 					.addClass( 'sui-icon-loader sui-loading' );
 
-				new WP_Smush.Smush( $( this ), true );
+				new Smush( $( this ), true, 'media' );
 			} );
+
 		}
+
 	};
 
 	WP_Smush.bulk.init();

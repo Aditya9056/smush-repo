@@ -1001,7 +1001,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return bool
 		 */
 		function check_bulk_limit( $reset = false, $key = 'bulk_sent_count' ) {
-
 			$transient_name = WP_SMUSH_PREFIX . $key;
 
 			$bulk_sent_count = get_transient( $transient_name );

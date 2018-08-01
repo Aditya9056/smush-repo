@@ -378,8 +378,9 @@ div.wp-smush-dir-limit {
 }
 
 .smush-final-log {
-	margin-left: 0;
-	padding: 10px;
+	margin-top: 0 !important;
+	max-height: 200px;
+	overflow: auto;
 }
 
 .wp-smush-ajax-error {
@@ -609,11 +610,6 @@ div.wp-smush-resize-note {
 	color: #555;
 	font-size: 13px;
 	font-weight: 400;
-}
-
-.smush-final-log {
-	max-height: 200px;
-	overflow: auto;
 }
 
 /** Override WP Footer Styling, Hide it on WPMU pages only, if we really need to **/
