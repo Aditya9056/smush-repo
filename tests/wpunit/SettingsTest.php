@@ -29,6 +29,38 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
+	 * Test bulk limit for free users.
+	 */
+	public function testBulkLimit() {
+		/* @var WpSmushitAdmin $wpsmushit_admin */
+		global $wpsmushit_admin;
+
+		$i         = 0;
+		$condition = true;
+
+		while ( $i <= 50 ) {
+			set_transient( 'wp-smush-bulk_sent_count', $i, 60 );
+
+			if ( 50 === $i ) {
+				$condition = false;
+			}
+
+			$this->assertEquals( $condition, $wpsmushit_admin->check_bulk_limit() );
+			$i++;
+		}
+
+		/*
+		// Reset count.
+		set_transient( 'wp-smush-bulk_sent_count', 0, 60 );
+		$this->assertEquals( true, $wpsmushit_admin->check_bulk_limit() );
+
+		// Update to 50.
+		set_transient( 'wp-smush-bulk_sent_count', 50, 60 );
+		$this->assertEquals( false, $wpsmushit_admin->check_bulk_limit() );
+		*/
+	}
+
+	/**
 	 * Test update settings.
 	 */
 	public function testUpdateSettings() {
