@@ -14,3 +14,4 @@ node_modules
 vendor
 assets/css
 assets/js
+tests/_output
