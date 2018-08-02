@@ -278,6 +278,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_pointer' ) );
 		}
 
+		/**
+		 * Init settings.
+		 */
 		function init_settings() {
 			$this->settings = array(
 				'networkwide' => array(
