@@ -234,6 +234,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			add_action( 'wp_enqueue_media', array( $this, 'enqueue' ) );
 		}
 
+		/**
+		 * Init settings.
+		 */
 		function init_settings() {
 			$this->settings = array(
 				'networkwide'     => array(
