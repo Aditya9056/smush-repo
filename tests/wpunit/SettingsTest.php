@@ -48,16 +48,6 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 			$this->assertEquals( $condition, $wpsmushit_admin->check_bulk_limit() );
 			$i++;
 		}
-
-		/*
-		// Reset count.
-		set_transient( 'wp-smush-bulk_sent_count', 0, 60 );
-		$this->assertEquals( true, $wpsmushit_admin->check_bulk_limit() );
-
-		// Update to 50.
-		set_transient( 'wp-smush-bulk_sent_count', 50, 60 );
-		$this->assertEquals( false, $wpsmushit_admin->check_bulk_limit() );
-		*/
 	}
 
 	/**
