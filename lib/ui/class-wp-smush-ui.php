@@ -3,13 +3,14 @@
  * Smush UI: WpSmushBulkUi class.
  *
  * @package WP_Smush
- * @subpackage Admin
+ * @subpackage Admin/UI
  * @version 1.0
  *
  * @author Umesh Kumar <umesh@incsub.com>
  *
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
+
 if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 	/**
@@ -83,7 +84,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * WpSmushBulkUi constructor.
 		 */
 		public function __construct() {
-
 			add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
 			add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
 			add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
@@ -921,7 +921,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function bulk_smush_content() {
-
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			// Check if Pro user.
@@ -956,65 +955,147 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<span class="wp-smush-upload-images sui-no-padding-bottom tc">
 					<a class="sui-button sui-button-primary tc" href="<?php echo esc_url( admin_url( 'media-new.php' ) ); ?>"><?php esc_html_e( 'UPLOAD IMAGES', 'wp-smushit' ); ?></a>
 				</span>
-			<?php else : ?>
-				<div class="sui-notice sui-notice-success wp-smush-all-done<?php echo $all_done ? '' : ' sui-hidden'; ?>" tabindex="0">
-					<p><?php esc_html_e( 'All attachments have been smushed. Awesome!', 'wp-smushit' ); ?></p>
+			<?php
+				return;
+				endif;
+			?>
+
+			<div class="sui-notice sui-notice-success wp-smush-all-done<?php echo $all_done ? '' : ' sui-hidden'; ?>" tabindex="0">
+				<p><?php esc_html_e( 'All attachments have been smushed. Awesome!', 'wp-smushit' ); ?></p>
+			</div>
+
+			<div class="sui-notice sui-notice-warning smush-final-log sui-hidden"></div>
+
+			<style>
+				.smush-bulk-error-row {
+					align-content: center;
+					align-items: center;
+					border-bottom: 1px solid #E6E6E6;
+					box-shadow: inset 2px 0 0 0 #FECF2F;
+					display: flex;
+					height: 50px;
+					justify-content: space-between;
+					margin: 0 -30px;
+					padding: 0 20px;
+				}
+
+				.smush-bulk-error-row:first-child {
+					border-top: 1px solid #E6E6E6;
+				}
+
+				.sui-icon-info {
+					margin-right: 10px;
+				}
+				.sui-icon-info:before {
+					color: #FECF2F !important;
+				}
+
+				.sui-icon-photo-picture {
+					font-size: 25px;
+					margin-right: 10px;
+				}
+			</style>
+
+			<div class="smush-bulk-errors">
+				<div class="smush-bulk-error-row">
+					<div>
+						<i class="sui-icon-info" aria-hidden="true"></i>
+						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
+						<span>sunset.jpg</span>
+						<span>We couldn't find this file</span>
+					</div>
+					<div>
+						<a href="#"><i class="sui-icon-update" aria-hidden="true"></i></a>
+						<a href="#"><i class="sui-icon-open-new-window" aria-hidden="true"></i></a>
+						<a href="#"><i class="sui-icon-trash" aria-hidden="true"></i></a>
+					</div>
 				</div>
-				<div class="sui-notice sui-notice-warning smush-final-log sui-hidden"></div>
-				<?php if ( ! $hide_pagespeed ) : ?>
-					<div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' sui-hidden'; ?>">
-						<span class="smush-recommendation-title"><?php esc_html_e( 'Still having trouble with PageSpeed tests? Give these a go…', 'wp-smushit' ); ?></span>
-						<ol class="smush-recommendation-list">
-							<?php if ( ! $is_pro ) : ?>
-								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Upgrade to Smush Pro for advanced lossy compression. %1$sTry pro free%2$s.', 'wp-smushit' ), '<a href="' . $upgrade_url . '" target="_blank">', '</a>' ); ?></li>
-							<?php elseif ( ! $wpsmush_settings->settings['lossy'] ) : ?>
-								<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Enable %1$sSuper-smush%2$s for advanced lossy compression to optimise images further with almost no visible drop in quality.', 'wp-smushit' ), '<a href="#" class="wp-smush-lossy-enable">', '</a>' ); ?></li>
-							<?php endif; ?>
-							<li class="smush-recommendation-resize"><?php printf( esc_html__( 'Make sure your images are the right size for your theme. %1$sLearn more%2$s.', 'wp-smushit' ), '<a href="' . esc_url( 'https://goo.gl/kCqWxS' ) . '" target="_blank">', '</a>' ); ?></li>
-							<?php if ( ! $wpsmush_settings->settings['resize'] ) : ?>
-								<?php // Check if resize original is disabled ?>
-								<li class="smush-recommendation-resize-original"><?php printf( esc_html__( 'Enable %1$sResize Full Size Images%2$s to scale big images down to a reasonable size and save a ton of space.', 'wp-smushit' ), '<a href="#" class="wp-smush-resize-enable">', '</a>' ); ?></li>
-							<?php endif; ?>
-						</ol>
-						<span class="dismiss-recommendation"><?php esc_html_e( 'DISMISS', 'wp-smushit' ); ?></span>
+				<div class="smush-bulk-error-row">
+					<div>
+						<i class="sui-icon-info" aria-hidden="true"></i>
+						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
+						<span>sunset.jpg</span>
+						<span>We couldn't find this file</span>
 					</div>
+					<div>
+						<a href="#"><i class="sui-icon-update" aria-hidden="true"></i></a>
+						<a href="#"><i class="sui-icon-open-new-window" aria-hidden="true"></i></a>
+						<a href="#"><i class="sui-icon-trash" aria-hidden="true"></i></a>
+					</div>
+				</div>
+				<div class="smush-bulk-error-row">
+					<div>
+						<i class="sui-icon-info" aria-hidden="true"></i>
+						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
+						<span>sunset.jpg</span>
+						<span>We couldn't find this file</span>
+					</div>
+					<div>
+						<a href="#"><i class="sui-icon-update" aria-hidden="true"></i></a>
+						<a href="#"><i class="sui-icon-open-new-window" aria-hidden="true"></i></a>
+						<a href="#"><i class="sui-icon-trash" aria-hidden="true"></i></a>
+					</div>
+				</div>
+			</div>
+
+			<br><br><br>
+
+			<?php if ( ! $hide_pagespeed ) : ?>
+				<div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' sui-hidden'; ?>">
+					<span class="smush-recommendation-title"><?php esc_html_e( 'Still having trouble with PageSpeed tests? Give these a go…', 'wp-smushit' ); ?></span>
+					<ol class="smush-recommendation-list">
+						<?php if ( ! $is_pro ) : ?>
+							<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Upgrade to Smush Pro for advanced lossy compression. %1$sTry pro free%2$s.', 'wp-smushit' ), '<a href="' . $upgrade_url . '" target="_blank">', '</a>' ); ?></li>
+						<?php elseif ( ! $wpsmush_settings->settings['lossy'] ) : ?>
+							<li class="smush-recommendation-lossy"><?php printf( esc_html__( 'Enable %1$sSuper-smush%2$s for advanced lossy compression to optimise images further with almost no visible drop in quality.', 'wp-smushit' ), '<a href="#" class="wp-smush-lossy-enable">', '</a>' ); ?></li>
+						<?php endif; ?>
+						<li class="smush-recommendation-resize"><?php printf( esc_html__( 'Make sure your images are the right size for your theme. %1$sLearn more%2$s.', 'wp-smushit' ), '<a href="' . esc_url( 'https://goo.gl/kCqWxS' ) . '" target="_blank">', '</a>' ); ?></li>
+						<?php if ( ! $wpsmush_settings->settings['resize'] ) : ?>
+							<?php // Check if resize original is disabled ?>
+							<li class="smush-recommendation-resize-original"><?php printf( esc_html__( 'Enable %1$sResize Full Size Images%2$s to scale big images down to a reasonable size and save a ton of space.', 'wp-smushit' ), '<a href="#" class="wp-smush-resize-enable">', '</a>' ); ?></li>
+						<?php endif; ?>
+					</ol>
+					<span class="dismiss-recommendation"><?php esc_html_e( 'DISMISS', 'wp-smushit' ); ?></span>
+				</div>
+			<?php endif; ?>
+
+			<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' sui-hidden' : ''; ?>">
+				<?php
+				if ( $wpsmushit_admin->remaining_count > 0 ) :
+					$class       = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' sui-hidden' : '';
+					$upgrade_url = add_query_arg(
+						array(
+							'utm_source'   => 'smush',
+							'utm_medium'   => 'plugin',
+							'utm_campaign' => 'smush_bulksmush_limit_notice',
+						),
+						$wpsmushit_admin->upgrade_url
+					);
+					?>
+				<div class="sui-notice sui-notice-warning<?php echo $class; ?>" tabindex="0">
+					<p>
+						<?php printf( _n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs smushing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need smushing!', $wpsmushit_admin->remaining_count, 'wp-smushit' ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' ); ?>
+						<?php if ( ! $is_pro && $wpsmushit_admin->remaining_count > 50 ) : ?>
+							<?php printf( esc_html__( ' %1$sUpgrade to Pro%2$s to bulk smush all your images with one click.', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Smush Pro', 'wp-smushit' ) . '">', '</a>' ); ?>
+							<?php esc_html_e( ' Free users can smush 50 images with each click.', 'wp-smushit' ); ?>
+						<?php endif; ?>
+					</p>
+				</div>
 				<?php endif; ?>
-				<div class="wp-smush-bulk-wrapper <?php echo $all_done ? ' sui-hidden' : ''; ?>">
-					<?php
-					if ( $wpsmushit_admin->remaining_count > 0 ) :
-						$class       = count( $wpsmushit_admin->resmush_ids ) > 0 ? ' sui-hidden' : '';
-						$upgrade_url = add_query_arg(
-							array(
-								'utm_source'   => 'smush',
-								'utm_medium'   => 'plugin',
-								'utm_campaign' => 'smush_bulksmush_limit_notice',
-							),
-							$wpsmushit_admin->upgrade_url
-						);
-						?>
-					<div class="sui-notice sui-notice-warning<?php echo $class; ?>" tabindex="0">
-						<p>
-							<?php printf( _n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs smushing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need smushing!', $wpsmushit_admin->remaining_count, 'wp-smushit' ), $wpsmushit_admin->get_user_name(), '<strong>', '<span class="wp-smush-remaining-count">', $wpsmushit_admin->remaining_count, '</span>', '</strong>' ); ?>
-							<?php if ( ! $is_pro && $wpsmushit_admin->remaining_count > 50 ) : ?>
-								<?php printf( esc_html__( ' %1$sUpgrade to Pro%2$s to bulk smush all your images with one click.', 'wp-smushit' ), '<a href="' . esc_url( $upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Smush Pro', 'wp-smushit' ) . '">', '</a>' ); ?>
-								<?php esc_html_e( ' Free users can smush 50 images with each click.', 'wp-smushit' ); ?>
-							<?php endif; ?>
-						</p>
-					</div>
-					<?php endif; ?>
 				<button type="button" class="wp-smush-all sui-button sui-button-primary" title="<?php esc_html_e( 'Click to start Bulk Smushing images in Media Library', 'wp-smushit' ); ?>">
 					<?php esc_html_e( 'BULK SMUSH NOW', 'wp-smushit' ); ?>
 				</button>
-				</div>
+			</div>
+			<?php
+			$this->progress_bar( $wpsmushit_admin );
+			if ( $is_pro && $wp_smush->lossy_enabled ) :
+				?>
+				<p class="wp-smush-enable-lossy tc sui-hidden">
+					<?php esc_html_e( 'Tip: Enable Super-smush in the Settings area to get even more savings with almost no visible drop in quality.', 'wp-smushit' ); ?>
+				</p>
 				<?php
-				$this->progress_bar( $wpsmushit_admin );
-				if ( $is_pro && $wp_smush->lossy_enabled ) :
-					?>
-					<p class="wp-smush-enable-lossy tc sui-hidden"><?php esc_html_e( 'Tip: Enable Super-smush in the Settings area to get even more savings with almost no visible drop in quality.', 'wp-smushit' ); ?></p>
-					<?php
-				endif;
-				$this->super_smush_promo();
 			endif;
+			$this->super_smush_promo();
 		}
 
 		/**

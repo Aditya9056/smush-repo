@@ -12,7 +12,7 @@
  */
 
 // Include Bulk UI.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-ui.php';
+require_once WP_SMUSH_DIR . 'lib/ui/class-wp-smush-ui.php';
 
 if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	/**
@@ -450,7 +450,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$wp_smush_msgs = array(
 				'resmush'                 => esc_html__( 'Super-Smush', 'wp-smushit' ),
 				'smush_now'               => esc_html__( 'Smush Now', 'wp-smushit' ),
-				'error_in_bulk'           => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				'error_in_bulk'           => esc_html__( '{{smushed}}/{{total}} images were successfully compressed, {{errors}} encountered issues.', 'wp-smushit' ),
 				'all_resmushed'           => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
 				'restore'                 => esc_html__( 'Restoring image..', 'wp-smushit' ),
 				'smushing'                => esc_html__( 'Smushing image..', 'wp-smushit' ),

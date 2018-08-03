@@ -871,10 +871,20 @@ class Smush {
 
 			if ( self.errors.length ) {
 				/** @var {string} wp_smush_msgs.error_in_bulk */
-				const error_message = '<div class="wp-smush-ajax-error">' + wp_smush_msgs.error_in_bulk.replace( "{{errors}}", self.errors.length ) + '</div>';
+				let msg = wp_smush_msgs.error_in_bulk
+					.replace( "{{errors}}", self.errors.length )
+					.replace( "{{total}}", wp_smushit_data.count_total )
+					.replace( "{{smushed}}", wp_smushit_data.count_smushed );
+
+				jQuery( '.wp-smush-all-done' )
+					.addClass( 'sui-notice-warning' )
+					.removeClass( 'sui-notice-success' )
+					.find( 'p' ).html( msg );
+
+				//const error_message = '<div class="wp-smush-ajax-error">' + msg + '</div>';
 				// Remove any existing notice.
-				jQuery( '.wp-smush-ajax-error' ).remove();
-				self.log.prepend( error_message );
+				//jQuery( '.wp-smush-ajax-error' ).remove();
+				//self.log.prepend( error_message );
 			}
 
 			self.bulk_done();
