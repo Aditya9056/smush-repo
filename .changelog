@@ -1,3 +1,7 @@
+= 2.8.0.1 =
+
+* Fixed: Smush causing media uploads to not function properly (in rare conditions)
+
 = 2.8.0 =
 
 * New: High-power API cluster for Smush Pro users
