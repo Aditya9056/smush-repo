@@ -1,3 +1,8 @@
+coverage:
+    enabled: true
+    include:
+        - wp-smush.php
+        - lib/*
 paths:
     tests: tests
     output: tests/_output
