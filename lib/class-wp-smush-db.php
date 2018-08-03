@@ -282,7 +282,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 			}
 
 			// Set in cache.
-			wp_cache_get( $key, $return_ids ? $posts : count( $posts ), 'wp-smush' );
+			wp_cache_set( $key, $return_ids ? $posts : count( $posts ), 'wp-smush' );
 
 			return $return_ids ? $posts : count( $posts );
 		}
