@@ -183,6 +183,14 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * WpSmushitAdmin constructor.
 		 */
 		public function __construct() {
+			add_filter( 'wp_smush_image', function( $status, $id ) {
+				if ( 154 === $id ) {
+					return false;
+				}
+
+				return $status;
+			}, 10, 2 );
+
 			// Hook scripts and styles.
 			add_action( 'admin_init', array( $this, 'register' ) );
 
@@ -634,9 +642,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		}
 
 		/**
-		 * Processes the Smush request and sends back the next id for smushing
+		 * Bulk Smushing Handler.
 		 *
-		 * Bulk Smushing Handler
+		 * Processes the Smush request and sends back the next id for smushing.
 		 */
 		public function process_smush_request() {
 			global $wp_smush, $wpsmush_helper;
@@ -644,27 +652,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Turn off errors for ajax result.
 			@error_reporting( 0 );
 
-			$should_continue = true;
-			$send_error      = false;
-			$error_message   = '';
+			if ( '155' === $_REQUEST['attachment_id'] ) {
+				unset( $_REQUEST['attachment_id'] );
+			}
 
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
 				wp_send_json_error(
 					array(
 						'error'         => 'missing_id',
-						'error_message' => sprintf( esc_html__( '%1$s%2$d%3$s Attachment(s) could not be smushed, as no ID was received.', 'wp-smushit' ), '<span class="image-error-count">', 1, '</span>' ),
+						'error_message' => $this->filter_error( esc_html__( 'No attachment ID was received', 'wp-smushit' ) ),
 						'error_class'   => 'no_id',
+						'file_name'     => 'undefined',
 					)
 				);
 			}
 
-			if ( ! $this->validate_install() ) {
-				// Free version bulk smush, check the transient counter value.
-				$should_continue = $this->check_bulk_limit();
-			}
-
 			// If the bulk smush needs to be stopped.
-			if ( ! $should_continue ) {
+			if ( ! $this->validate_install() && ! $this->check_bulk_limit() ) {
 				wp_send_json_error(
 					array(
 						'error'         => 'bulk_request_image_limit_exceeded',
@@ -675,72 +679,91 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			}
 
-			$error = $error_class = '';
-
 			$attachment_id = (int) $_REQUEST['attachment_id'];
+			$original_meta = wp_get_attachment_metadata( $attachment_id, true );
+
+			// Try to get the file name from path.
+			$file_name = explode( '/', $original_meta['file'] );
+
+			if ( is_array( $file_name ) ) {
+				$file_name = array_pop( $file_name );
+			} else {
+				$file_name = $original_meta['file'];
+			}
 
 			/**
 			 * Filter: wp_smush_image
 			 *
 			 * Whether to smush the given attachment id or not
 			 *
-			 * @param $skip bool, whether to Smush image or not
-			 *
-			 * @param $Attachment Id, Attachment id of the image being processed
+			 * @param bool $skip           Whether to Smush image or not.
+			 * @param int  $attachment_id  Attachment ID of the image being processed.
 			 */
 			if ( ! apply_filters( 'wp_smush_image', true, $attachment_id ) ) {
-				$send_error    = true;
-				$error         = 'skipped';
-				$error_message = $this->filter_error( sprintf( esc_html__( '%1$s%2$d%3$s Attachment(s) were skipped.', 'wp-smushit' ), '<span class="image-error-count">', 1, '</span>' ) );
-				$error_class   = 'skipped';
+				wp_send_json_error(
+					array(
+						'error'         => 'skipped',
+						'error_message' => $this->filter_error( esc_html__( 'Skipped with wp_smush_image filter', 'wp-smushit' ) ),
+						'error_class'   => 'skipped',
+						'show_warning'  => intval( $this->show_warning() ),
+						'file_name'     => $file_name,
+					)
+				);
 			}
 
-			// Get the file path for backup.
+			/**
+			 * Get the file path for backup.
+			 *
+			 * @var WpSmushHelper $wpsmush_helper
+			 */
 			$attachment_file_path = $wpsmush_helper->get_attached_file( $attachment_id );
 
 			// Download if not exists.
 			do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
 
-			// Take backup.
+			/**
+			 * Take backup.
+			 *
+			 * @var WpSmushBackup $wpsmush_backup
+			 */
 			global $wpsmush_backup;
 			$wpsmush_backup->create_backup( $attachment_file_path, '', $attachment_id );
 
-			if ( ! $send_error ) {
-				// Proceed only if Smushing Transient is not set for the given attachment id.
-				if ( ! get_option( 'smush-in-progress-' . $attachment_id, false ) ) {
+			// Proceed only if Smushing Transient is not set for the given attachment id.
+			if ( ! get_option( 'smush-in-progress-' . $attachment_id, false ) ) {
+				// Set a transient to avoid multiple request.
+				update_option( 'smush-in-progress-' . $attachment_id, true );
 
-					// Set a transient to avoid multiple request.
-					update_option( 'smush-in-progress-' . $attachment_id, true );
-
-					$original_meta = wp_get_attachment_metadata( $attachment_id, true );
-
-					// Resize the dimensions of the image.
-					/**
-					 * Filter whether the existing image should be resized or not
-					 *
-					 * @since 2.3
-					 *
-					 * @param bool $should_resize , Set to True by default
-					 *
-					 * @param $attachment_id Image Attachment ID
-					 */
-					if ( $should_resize = apply_filters( 'wp_smush_resize_media_image', true, $attachment_id ) ) {
-						$updated_meta  = $this->resize_image( $attachment_id, $original_meta );
-						$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
-					}
-
-					global $wpsmush_pngjpg;
-
-					// Convert PNGs to JPG.
-					$original_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
-
-					$smush = $wp_smush->resize_from_meta_data( $original_meta, $attachment_id );
-					wp_update_attachment_metadata( $attachment_id, $original_meta );
+				/**
+				 * Resize the dimensions of the image.
+				 *
+				 * Filter whether the existing image should be resized or not
+				 *
+				 * @since 2.3
+				 *
+				 * @param bool $should_resize Set to True by default.
+				 * @param int  $attachment_id Image Attachment ID.
+				 */
+				if ( $should_resize = apply_filters( 'wp_smush_resize_media_image', true, $attachment_id ) ) {
+					$updated_meta  = $this->resize_image( $attachment_id, $original_meta );
+					$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 				}
 
-				// Delete transient.
-				delete_option( 'smush-in-progress-' . $attachment_id );
+				/**
+				 * Convert PNGs to JPG.
+				 *
+				 * @var WpSmushPngtoJpg $wpsmush_pngjpg
+				 */
+				global $wpsmush_pngjpg;
+
+				$original_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
+
+				$smush = $wp_smush->resize_from_meta_data( $original_meta, $attachment_id );
+				wp_update_attachment_metadata( $attachment_id, $original_meta );
 			}
+
+			// Delete transient.
+			delete_option( 'smush-in-progress-' . $attachment_id );
 
 			$smush_data         = get_post_meta( $attachment_id, $this->smushed_meta_key, true );
 			$resize_savings     = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings', true );
@@ -756,61 +779,52 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			);
 
 			if ( isset( $smush ) && is_wp_error( $smush ) ) {
-
-				$send_error = true;
-
 				$error_message = $smush->get_error_message();
+
 				// Check for timeout error and suggest to filter timeout.
 				if ( strpos( $error_message, 'timed out' ) ) {
 					$error         = 'timeout';
-					$error_message = sprintf( esc_html__( "%1\$s%2\$d%3\$s Attachment(s) were not smushed due to a timeout error, You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`", 'wp-smushit' ), '<span class="image-error-count">', 1, '</span>' );
+					$error_message = esc_html__( "Timeout error. You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`", 'wp-smushit' );
 					$error_class   = ' timeout';
 				}
-			} else {
-				// Check if a resmush request, update the resmush list.
-				if ( ! empty( $_REQUEST['is_bulk_resmush'] ) && 'false' != $_REQUEST['is_bulk_resmush'] && $_REQUEST['is_bulk_resmush'] ) {
-					$this->update_resmush_list( $attachment_id );
+
+				$error = isset( $error ) ? $error : '';
+
+				if ( ! empty( $error_message ) ) {
+					// Used internally to modify the error message.
+					$error_message = $this->filter_error( $error_message, $attachment_id, $error );
 				}
+
+				wp_send_json_error(
+					array(
+						'stats'         => $stats,
+						'error'         => $error,
+						'error_message' => $error_message,
+						'error_class'   => isset( $error_class ) ? $error_class : '',
+						'show_warning'  => intval( $this->show_warning() ),
+						'file_name'     => $file_name,
+					)
+				);
 			}
 
-			if ( ! $send_error ) {
-				/**
-				 * Runs after a image is succesfully smushed
-				 */
-				do_action( 'image_smushed', $attachment_id, $stats );
+			// Check if a resmush request, update the resmush list.
+			if ( ! empty( $_REQUEST['is_bulk_resmush'] ) && 'false' !== $_REQUEST['is_bulk_resmush'] && $_REQUEST['is_bulk_resmush'] ) {
+				$this->update_resmush_list( $attachment_id );
 			}
 
-			if ( ! empty( $error_message ) ) {
-				/**
-				 * Used internally to modify the error message
-				 */
-				$error_message = $this->filter_error( $error_message, $attachment_id, $error );
-			}
+			// Runs after a image is successfully smushed.
+			do_action( 'image_smushed', $attachment_id, $stats );
 
-			// Wrap the error message in div
-			// $error = !empty( $error ) ? sprintf( '<p class="wp-smush-error-message'. $error_class .'">%s</p>', $error ) : $error;
-			if ( ! $send_error ) {
-				// Update the bulk Limit count.
-				$this->update_smush_count();
-			}
+			// Update the bulk Limit count.
+			$this->update_smush_count();
 
 			// Send ajax response.
-			$send_error ? wp_send_json_error(
-				array(
-					'stats'         => $stats,
-					'error'         => $error,
-					'error_message' => $error_message,
-					'error_class'   => $error_class,
-					'show_warning'  => intval( $this->show_warning() ),
-
-				)
-			) : wp_send_json_success(
+			wp_send_json_success(
 				array(
 					'stats'        => $stats,
 					'show_warning' => intval( $this->show_warning() ),
 				)
 			);
-
 		}
 
 		/**

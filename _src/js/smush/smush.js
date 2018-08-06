@@ -147,7 +147,7 @@ class Smush {
 		jQuery( 'p.smush-error-message.limit_exceeded' ).remove();
 
 		// Hide parent wrapper, if there are no other messages.
-		if ( 0 >= jQuery( 'div.smush-final-log p' ).length ) {
+		if ( 0 >= jQuery( 'div.smush-final-log .smush-bulk-error-row' ).length ) {
 			jQuery( 'div.smush-final-log' ).hide();
 		}
 	};
@@ -322,10 +322,6 @@ class Smush {
 		if ( ! isNaN( wp_smushit_data.savings_percent ) ) {
 			jQuery( '.wp-smush-savings .wp-smush-stats-percent' ).html( wp_smushit_data.savings_percent );
 		}
-
-		// Update Smush percent.
-		wp_smushit_data.smush_percent = WP_Smush.helpers.precise_round( ( parseInt( wp_smushit_data.count_smushed ) / parseInt( wp_smushit_data.count_total ) ) * 100, 1 );
-		jQuery( 'span.wp-smush-images-percent' ).html( wp_smushit_data.smush_percent );
 
 		// Super-Smush savings.
 		if ( 'undefined' !== typeof wp_smushit_data.savings_bytes && 'undefined' !== typeof wp_smushit_data.savings_resize ) {
@@ -552,6 +548,7 @@ class Smush {
 
 	/**
 	 * Adds the stats for the current image to existing stats.
+	 *
 	 * @param {array}   image_stats
 	 * @param {string}  image_stats.count
 	 * @param {boolean} image_stats.is_lossy
@@ -626,13 +623,13 @@ class Smush {
 		let progress = '';
 
 		// Update localized stats.
-		if ( _res && ( 'undefined' !== typeof _res.data || 'undefined' !== typeof _res.data.stats ) ) {
+		if ( _res && ( 'undefined' !== typeof _res.data && 'undefined' !== typeof _res.data.stats ) ) {
 			Smush.update_localized_stats( _res.data.stats, this.smush_type );
 		}
 
 		if ( ! this.is_bulk_resmush ) {
 			// Handle progress for normal bulk smush.
-			progress = ( wp_smushit_data.count_smushed / wp_smushit_data.count_total ) * 100;
+			progress = ( ( parseInt( wp_smushit_data.count_smushed ) + this.errors.length ) / wp_smushit_data.count_total ) * 100;
 		} else {
 			// If the request was successful, update the progress bar.
 			if ( _res.success ) {
@@ -651,7 +648,7 @@ class Smush {
 
 			// Handle progress for normal bulk Smush. Set progress bar width.
 			if ( 'undefined' !== typeof this.ids && 'undefined' !== typeof wp_smushit_data.count_total && wp_smushit_data.count_total > 0 ) {
-				progress = ( wp_smushit_data.count_smushed / wp_smushit_data.count_total ) * 100;
+				progress = ( ( wp_smushit_data.count_smushed + this.errors.length ) / wp_smushit_data.count_total ) * 100;
 			}
 		}
 
@@ -668,13 +665,9 @@ class Smush {
 		// Update remaining count.
 		this.update_remaining_count();
 
-		// If we have received the progress data, update the stats else skip.
-		if ( 'undefined' !== typeof _res.data.stats ) {
-			// Increase the progress bar.
-			this._update_progress( wp_smushit_data.count_smushed, progress );
-			// Update the counter.
-			Smush._update_progress_status( wp_smushit_data.count_smushed, wp_smushit_data.count_total);
-		}
+		// Increase the progress bar and counter.
+		this._update_progress( parseInt( wp_smushit_data.count_smushed ) + this.errors.length, progress );
+
 		// Update stats and counts.
 		Smush.update_stats( this.smush_type );
 	};
@@ -689,31 +682,12 @@ class Smush {
 	_update_progress( count, width ) {
 		if ( ! this.is_bulk && ! this.is_bulk_resmush ) return;
 
-		// Update the progress bar width. Get the progress bar.
-		const progress_bar = jQuery( '.bulk-smush-wrapper .wp-smush-progress-inner' );
-		if ( progress_bar.length < 1 ) {
-			return;
-		}
-
-		// Increase progress.
-		progress_bar.css( 'width', width + '%' );
-	};
-
-	/**
-	 * Update progress bar status.
-	 *
-	 * @param {int} smushed  Number of Smushed images.
-	 * @param {int} total    Total number of imags.
-	 * @private
-	 */
-	static _update_progress_status( smushed, total ) {
-		const progress_status = jQuery( '.bulk-smush-wrapper .sui-progress-state-text' );
-
-		if ( 1 > progress_status.length ) {
-			return;
-		}
-
-		progress_status.find( 'span' ).html( smushed + '/' + total );
+		// Porgress bar label.
+		jQuery( 'span.wp-smush-images-percent' ).html( width );
+		// Progress bar.
+		jQuery( '.bulk-smush-wrapper .wp-smush-progress-inner' ).css( 'width', width + '%' );
+		// Progress bar status.
+		jQuery( '.bulk-smush-wrapper .sui-progress-state-text' ).find( 'span' ).html( count + '/' + wp_smushit_data.count_total );
 	};
 
 	/**
@@ -765,10 +739,6 @@ class Smush {
 		const self = this;
 
 		this.request = Smush.ajax( this.is_bulk_resmush, this.current_id, this.url, 0, nonce_value )
-			.error( function () {
-				// TODO: check that this method ever fires.
-				self.increment_errors( self.current_id );
-			} )
 			.done( function ( res ) {
 				// Increase the error count except if bulk request limit exceeded.
 				if ( 'undefined' === typeof res.success || ( 'undefined' !== typeof res.success && false === res.success && 'undefined' !== typeof res.data && 'bulk_request_image_limit_exceeded' !== res.data.error ) ) {
@@ -782,7 +752,8 @@ class Smush {
 					/** @var {string} res.data.error_class */
 					const error_class = 'undefined' !== typeof res.data.error_class ? 'smush-error-message ' + res.data.error_class : 'smush-error-message';
 					/** @var {string} res.data.error_message */
-					const error_msg = '<p class="' + error_class + '">' + res.data.error_message + '</p>';
+					//const error_msg = '<p class="' + error_class + '">' + res.data.error_message + '</p>';
+					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name, error_class );
 
 					if ( 'undefined' !== typeof res.data.error && 'bulk_request_image_limit_exceeded' === res.data.error ) {
 						const ajax_error_message = jQuery( '.wp-smush-ajax-error' );
@@ -791,7 +762,7 @@ class Smush {
 							ajax_error_message.after( error_msg );
 						} else {
 							// Otherwise prepend.
-							self.log.prepend( error_msg );
+							self.log.find( '.smush-bulk-errors' ).prepend( error_msg );
 						}
 					} else if ( 'undefined' !== typeof res.data.error_class && '' !== res.data.error_class && jQuery( 'div.smush-final-log .' + res.data.error_class ).length > 0 ) {
 						const error_count = jQuery( 'p.smush-error-message.' + res.data.error_class + ' .image-error-count' );
@@ -802,7 +773,7 @@ class Smush {
 						error_count.html( image_count );
 					} else {
 						// Print the error on screen.
-						self.log.append( error_msg );
+						self.log.find( '.smush-bulk-errors' ).append( error_msg );
 					}
 
 					self.log.show();
@@ -826,7 +797,7 @@ class Smush {
 
 					// Update the remaining count to length of remaining IDs + 1 (current ID).
 					self.update_remaining_count();
-				} else if ( self.is_bulk && res.success ) {
+				} else if ( self.is_bulk ) {
 					self.update_progress( res );
 				} else if ( 0 === self.ids.length ) {
 					// Sync stats anyway.
@@ -846,6 +817,35 @@ class Smush {
 
 		this.deferred.errors = this.errors;
 		return this.deferred;
+	};
+
+	/**
+	 * Prepare error row.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {string} errorMsg   Error message.
+	 * @param {string} fileName   File name.
+	 * @param {string} className  Div class.
+	 *
+	 * @returns {string}
+	 */
+	static prepare_error_row( errorMsg, fileName, className ) {
+		return '<div class="smush-bulk-error-row ' + className + '">' +
+				'<div class="smush-bulk-image-data">' +
+					'<i class="sui-icon-photo-picture" aria-hidden="true"></i>' +
+					'<span class="smush-image-name">' + fileName + '</span>' +
+					'<span class="smush-image-error">' + errorMsg + '</span>' +
+				'</div>' +
+				'<div class="smush-bulk-image-actions">' +
+					'<button type="button" class="sui-button-icon sui-tooltip sui-tooltip-constrained sui-tooltip-top-left" data-tooltip="Ignore this image from bulk smushing">' +
+						'<i class="sui-icon-update" aria-hidden="true"></i>' +
+					'</button>' +
+					'<button type="button" class="sui-button-icon sui-tooltip sui-tooltip-constrained sui-tooltip-top-left" data-tooltip="Retry">' +
+						'<i class="sui-icon-open-new-window" aria-hidden="true"></i>' +
+					'</button>' +
+				'</div>' +
+			'</div>';
 	};
 
 	/**

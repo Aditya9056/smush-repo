@@ -1,14 +1,5 @@
 import Smush from '../smush/smush';
 
-/**
- * Smush translation strings.
- *
- * @var {array} wp_smush_msgs
- */
-if ( wp_smush_msgs ) {
-	const wp_smush_msgs = wp_smush_msgs;
-}
-
 let remove_element = function ( el, timeout ) {
 	if ( typeof timeout === 'undefined' ) {
 		timeout = 100;

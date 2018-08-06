@@ -964,81 +964,19 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<p><?php esc_html_e( 'All attachments have been smushed. Awesome!', 'wp-smushit' ); ?></p>
 			</div>
 
-			<div class="sui-notice sui-notice-warning smush-final-log sui-hidden"></div>
-
-			<style>
-				.smush-bulk-error-row {
-					align-content: center;
-					align-items: center;
-					border-bottom: 1px solid #E6E6E6;
-					box-shadow: inset 2px 0 0 0 #FECF2F;
-					display: flex;
-					height: 50px;
-					justify-content: space-between;
-					margin: 0 -30px;
-					padding: 0 20px;
-				}
-
-				.smush-bulk-error-row:first-child {
-					border-top: 1px solid #E6E6E6;
-				}
-
-				.sui-icon-info {
-					margin-right: 10px;
-				}
-				.sui-icon-info:before {
-					color: #FECF2F !important;
-				}
-
-				.sui-icon-photo-picture {
-					font-size: 25px;
-					margin-right: 10px;
-				}
-			</style>
-
-			<div class="smush-bulk-errors">
-				<div class="smush-bulk-error-row">
-					<div>
-						<i class="sui-icon-info" aria-hidden="true"></i>
+			<div class="smush-final-log sui-hidden">
+				<div class="smush-bulk-errors"></div>
+				<div class="smush-bulk-errors-actions">
+					<button type="button" class="sui-button sui-button-icon sui-button-ghost">
 						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
-						<span>sunset.jpg</span>
-						<span>We couldn't find this file</span>
-					</div>
-					<div>
-						<a href="#"><i class="sui-icon-update" aria-hidden="true"></i></a>
-						<a href="#"><i class="sui-icon-open-new-window" aria-hidden="true"></i></a>
-						<a href="#"><i class="sui-icon-trash" aria-hidden="true"></i></a>
-					</div>
-				</div>
-				<div class="smush-bulk-error-row">
-					<div>
-						<i class="sui-icon-info" aria-hidden="true"></i>
-						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
-						<span>sunset.jpg</span>
-						<span>We couldn't find this file</span>
-					</div>
-					<div>
-						<a href="#"><i class="sui-icon-update" aria-hidden="true"></i></a>
-						<a href="#"><i class="sui-icon-open-new-window" aria-hidden="true"></i></a>
-						<a href="#"><i class="sui-icon-trash" aria-hidden="true"></i></a>
-					</div>
-				</div>
-				<div class="smush-bulk-error-row">
-					<div>
-						<i class="sui-icon-info" aria-hidden="true"></i>
-						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
-						<span>sunset.jpg</span>
-						<span>We couldn't find this file</span>
-					</div>
-					<div>
-						<a href="#"><i class="sui-icon-update" aria-hidden="true"></i></a>
-						<a href="#"><i class="sui-icon-open-new-window" aria-hidden="true"></i></a>
-						<a href="#"><i class="sui-icon-trash" aria-hidden="true"></i></a>
-					</div>
+						<?php esc_html_e( 'View all', 'wp-smushit' ); ?>
+					</button>
+
+					<p>
+						<?php esc_html_e( 'You can restore ignored images from your Media Library', 'wp-smushit' ); ?>
+					</p>
 				</div>
 			</div>
-
-			<br><br><br>
 
 			<?php if ( ! $hide_pagespeed ) : ?>
 				<div class="wp-smush-pagespeed-recommendation<?php echo $all_done ? '' : ' sui-hidden'; ?>">
