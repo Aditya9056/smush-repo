@@ -1403,7 +1403,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// Show messages.
 			echo $user_validation;
 			echo $recheck_notice;
-			echo $wpsmush_dir->check_for_table_error();
+			// Check and show missing directory smush table error only on main site.
+			if ( $wpsmush_dir->should_continue() ) {
+				echo $wpsmush_dir->check_for_table_error();
+			}
 
 			// Check for any stored API message and show it.
 			$this->show_api_message();

@@ -224,23 +224,36 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		}
 
 		/**
-		 * Optimised images count
+		 * Optimised images count or IDs.
 		 *
-		 * @param bool $return_ids
+		 * @param bool $return_ids Should return ids?.
+		 * @param bool $force_update Should force update?.
 		 *
 		 * @return array|int
 		 */
-		function smushed_count( $return_ids = false ) {
+		function smushed_count( $return_ids = false, $force_update = false ) {
 			global $wpsmushit_admin, $wpdb;
 
-			// Don't query again, if the variable is already set
+			// Don't query again, if the variable is already set.
 			if ( ! $return_ids && ! empty( $wpsmushit_admin->smushed_count ) && $wpsmushit_admin->smushed_count > 0 ) {
 				return $wpsmushit_admin->smushed_count;
 			}
 
+			// Key for cache.
+			$key = $return_ids ? WP_SMUSH_PREFIX . 'smushed_ids' : WP_SMUSH_PREFIX . 'smushed_count';
+
+			// If not forced to update, try to get from cache.
+			if ( ! $force_update ) {
+				$smushed_count = wp_cache_get( $key, 'wp-smush' );
+				// Return the cache value if cache is set.
+				if ( false !== $smushed_count ) {
+					return $smushed_count;
+				}
+			}
+
 			/**
 			 * Allows to set a limit of mysql query
-			 * Default value is 2000
+			 * Default value is 2000.
 			 */
 			$limit      = $wpsmushit_admin->query_limit();
 			$offset     = 0;
@@ -248,26 +261,28 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 			$posts = array();
 
-			// Remove the Filters added by WP Media Folder
+			// Remove the Filters added by WP Media Folder.
 			$this->remove_filters();
 			while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s ORDER BY `post_id` DESC LIMIT $offset, $limit", 'wp-smpro-smush-data' ) ) ) {
 				if ( ! is_wp_error( $results ) && sizeof( $results ) > 0 ) {
-
 					$posts = array_merge( $posts, $results );
 				}
-				// Update the offset
+				// Update the offset.
 				$offset += $limit;
 
-				// Compare the Offset value to total images
+				// Compare the Offset value to total images.
 				if ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $offset ) {
 					$query_next = false;
 				}
 			}
 
-			// Remove resmush ids from the list
+			// Remove resmush ids from the list.
 			if ( ! empty( $wpsmushit_admin->resmush_ids ) && is_array( $wpsmushit_admin->resmush_ids ) ) {
 				$posts = array_diff( $posts, $wpsmushit_admin->resmush_ids );
 			}
+
+			// Set in cache.
+			wp_cache_set( $key, $return_ids ? $posts : count( $posts ), 'wp-smush' );
 
 			return $return_ids ? $posts : count( $posts );
 		}

@@ -232,8 +232,6 @@ class WP_Smush {
 	 * Enqueue scripts and initialize variables.
 	 */
 	function admin_init() {
-		global $wpsmush_dir;
-
 		// Handle notice dismiss.
 		$this->dismiss_smush_upgrade();
 
@@ -245,17 +243,6 @@ class WP_Smush {
 
 		// Localize version, update.
 		$this->getOptions();
-
-		// Create a clas object, if doesn't exists.
-		if ( empty( $wpsmush_dir ) && class_exists( 'WP_Smush_Dir' ) ) {
-			$wpsmush_dir = new WP_Smush_Dir();
-		}
-
-		// Run only on wp smush page.
-		$wpsmush_dir->create_table();
-
-		// Run the Directory Smush table update.
-		$this->update_dir_path_hash();
 
 		// Load integrations.
 		$this->load_integrations();
@@ -2493,38 +2480,6 @@ class WP_Smush {
 		}
 
 		return $this->options;
-	}
-
-	/**
-	 * Update path_hash, and store a flag if all the rows were updated
-	 *
-	 * @return null
-	 *
-	 * @todo, Stop running this function after 2-3 updates using version check
-	 */
-	function update_dir_path_hash() {
-		// If we've already performed the update
-		if ( get_option( 'smush-directory-path-hash-updated', false ) ) {
-			return null;
-		}
-		global $wpsmush_helper, $wpdb;
-		// Check if Column exists
-		if ( ! $wpsmush_helper->table_column_exists( $wpdb->prefix . 'smush_dir_images', 'path_hash' ) ) {
-			return null;
-		}
-
-		// Update the rows
-		$query = "UPDATE {$wpdb->prefix}smush_dir_images SET path_hash = MD5(path) WHERE path IS NOT NULL";
-		$wpdb->query( $query );
-
-		// Check if there are any pending rows that needs to be updated
-		$pending_rows = "SELECT count(*) FROM {$wpdb->prefix}smush_dir_images WHERE path_hash is NULL AND path IS NOT NULL";
-		$index_exists = "SHOW INDEX FROM {$wpdb->prefix}smush_dir_images WHERE KEY_NAME = 'path'";
-		// If all the rows are updated and Index exists
-		if ( ! $wpdb->get_var( $pending_rows ) && $wpdb->get_var( $index_exists ) != null ) {
-			$wpsmush_helper->drop_index( $wpdb->prefix . 'smush_dir_images', 'path' );
-			update_option( 'smush-directory-path-hash-updated', 1 );
-		}
 	}
 
 	/**

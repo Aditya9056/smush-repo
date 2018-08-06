@@ -53,6 +53,9 @@ class WP_Smush_Installer {
 				}
 			}
 
+			// Create directory smush table.
+			self::directory_smush_table();
+
 			// Store the plugin version in db.
 			update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
 		}
@@ -85,6 +88,9 @@ class WP_Smush_Installer {
 				self::upgrade_2_8_0();
 			}
 
+			// Create/upgrade directory smush table.
+			self::directory_smush_table();
+
 			// Store the latest plugin version in db.
 			update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
 		}
@@ -109,5 +115,28 @@ class WP_Smush_Installer {
 			// Delete the old exif setting.
 			$wpsmush_settings->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
 		}
+	}
+
+	/**
+	 * Create or upgrade custom table for directory Smush.
+	 *
+	 * After creating or upgrading the custom table, update the path_hash
+	 * column value and structure if upgrading from old version.
+	 *
+	 * @since 2.9.0
+	 */
+	private static function directory_smush_table() {
+		global $wpsmush_dir;
+
+		// Create a class object, if doesn't exists.
+		if ( empty( $wpsmush_dir ) && class_exists( 'WP_Smush_Dir' ) ) {
+			$wpsmush_dir = new WP_Smush_Dir();
+		}
+
+		// Create/upgrade directory smush table.
+		$wpsmush_dir->create_table();
+
+		// Run the directory smush table update.
+		$wpsmush_dir->update_dir_path_hash();
 	}
 }
