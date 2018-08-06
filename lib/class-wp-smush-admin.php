@@ -183,14 +183,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * WpSmushitAdmin constructor.
 		 */
 		public function __construct() {
-			add_filter( 'wp_smush_image', function( $status, $id ) {
-				if ( 154 === $id ) {
-					return false;
-				}
-
-				return $status;
-			}, 10, 2 );
-
 			// Hook scripts and styles.
 			add_action( 'admin_init', array( $this, 'register' ) );
 
@@ -652,10 +644,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Turn off errors for ajax result.
 			@error_reporting( 0 );
 
-			if ( '155' === $_REQUEST['attachment_id'] ) {
-				unset( $_REQUEST['attachment_id'] );
-			}
-
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
 				wp_send_json_error(
 					array(
@@ -1072,7 +1060,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return int
 		 */
 		function remaining_count() {
-
 			// Check if the resmush count is equal to remaining count
 			$resmush_count   = count( $this->resmush_ids );
 			$remaining_count = $this->total_count - $this->smushed_count;
@@ -1516,7 +1503,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @todo: Needs some refactoring big time
 		 */
 		function scan_images() {
-
 			global $wp_smush, $wpsmushnextgenadmin, $wpsmush_db, $wpsmush_settings, $wpsmush_helper, $wpsmush_resize, $wpsmushit_admin, $wpsmush_bulkui;
 
 			check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
@@ -1679,10 +1665,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 								$conversion_savings = $wpsmush_helper->get_pngjpg_savings( $attachment );
 
 								// Increase the smushed count
-								$smushed_count += 1;
+								$smushed_count++;
 								// Get the resized image count
 								if ( ! empty( $resize_savings ) ) {
-									$resized_count += 1;
+									$resized_count++;
 								}
 
 								// Get the image count
