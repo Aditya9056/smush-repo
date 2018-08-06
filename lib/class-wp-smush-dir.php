@@ -267,7 +267,7 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 */
 		public function should_continue() {
 			// Do not show directory smush, if not main site in a network.
-			if ( is_multisite() && ! is_main_site() ) {
+			if ( ! is_main_site() || is_network_admin() ) {
 				return false;
 			}
 
@@ -279,11 +279,6 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 */
 		public function create_table() {
 			global $wpdb;
-
-			// Run the query only on directory smush page.
-			if ( ! isset( $_GET['page'] ) || 'smush' !== $_GET['page'] ) {
-				return null;
-			}
 
 			$charset_collate = $wpdb->get_charset_collate();
 
@@ -322,6 +317,39 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 			// Include the upgrade library to initialize a table.
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			dbDelta( $sql );
+		}
+
+		/**
+		 * Update path_hash, and store a flag if all the rows were updated
+		 *
+		 * @return null
+		 *
+		 * @todo, Stop running this function after 2-3 updates using version check
+		 */
+		public function update_dir_path_hash() {
+			// If we've already performed the update.
+			if ( get_option( 'smush-directory-path-hash-updated', false ) ) {
+				return null;
+			}
+
+			global $wpsmush_helper, $wpdb;
+
+			// Check if column exists.
+			if ( ! $wpsmush_helper->table_column_exists( $wpdb->prefix . 'smush_dir_images', 'path_hash' ) ) {
+				return null;
+			}
+
+			// Update the rows.
+			$wpdb->query( "UPDATE {$wpdb->prefix}smush_dir_images SET path_hash = MD5(path) WHERE path IS NOT NULL" );
+
+			// Check if there are any pending rows that needs to be updated.
+			$pending_rows = "SELECT count(*) FROM {$wpdb->prefix}smush_dir_images WHERE path_hash is NULL AND path IS NOT NULL";
+			$index_exists = "SHOW INDEX FROM {$wpdb->prefix}smush_dir_images WHERE KEY_NAME = 'path'";
+			// If all the rows are updated and Index exists.
+			if ( ! $wpdb->get_var( $pending_rows ) && $wpdb->get_var( $index_exists ) != null ) {
+				$wpsmush_helper->drop_index( $wpdb->prefix . 'smush_dir_images', 'path' );
+				update_option( 'smush-directory-path-hash-updated', 1 );
+			}
 		}
 
 		/**
