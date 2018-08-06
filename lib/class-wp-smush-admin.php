@@ -1118,7 +1118,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function global_stats( $force_update = false ) {
 
 			if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
-				if ( ! empty( $stats ) && ! empty( $stats['size_before'] ) ) {
+				if ( ! empty( $stats ) && isset( $stats['size_before'] ) ) {
 					if ( isset( $stats['id'] ) ) {
 						unset( $stats['id'] );
 					}
