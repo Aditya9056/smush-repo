@@ -11,5 +11,6 @@ package-lock.json
 # Ignore build directories and tmp folders
 build
 node_modules
+vendor
 assets/css
 assets/js
