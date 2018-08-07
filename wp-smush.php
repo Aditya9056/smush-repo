@@ -248,7 +248,7 @@ if ( ! function_exists( 'smush_deactivated' ) ) {
 		if ( is_admin() && is_super_admin() && get_site_option( 'smush_deactivated' ) ) { ?>
 			<div class="updated">
 				<p><?php esc_html_e( 'Smush Free was deactivated. You have Smush Pro active!', 'wp-smushit' ); ?></p>
-			</div> 
+			</div>
 			<?php
 			delete_site_option( 'smush_deactivated' );
 		}
