@@ -2,7 +2,8 @@ const _          = require('lodash'),
 	  path       = require('path'),
 	  webpack    = require('webpack'),
 	  ATP        = require('autoprefixer'),
-	  CSSExtract = require("mini-css-extract-plugin");
+	  CSSExtract = require("mini-css-extract-plugin"),
+	  CleanDir   = require('clean-webpack-plugin');
 
 // The path where the Shared UI fonts & images should be sent.
 const config = {
@@ -95,7 +96,8 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 	plugins: [
 		new CSSExtract({
             filename: '../css/[name].min.css'
-        })
+        }),
+		new CleanDir( ['assets/css'] )
 	]
 });
 
@@ -135,7 +137,8 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 		new webpack.ProvidePlugin( {
 			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js', // Vendor script in Shared UI.
 			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
-		} )
+		} ),
+		new CleanDir( ['assets/js'] )
 	]
 });
 

@@ -28,7 +28,7 @@
   "repository": "git+https://bitbucket.org/incsub/wp-smushit.git",
   "scripts": {
     "watch": "clear && webpack --watch --mode development",
-    "compile": "clear && grunt clean && webpack -p --progress",
+    "compile": "clear && webpack -p --progress",
     "translate": "clear && grunt translate",
     "build:pro": "npm run compile && grunt prepare && grunt build",
     "build:free": "npm run compile && grunt prepare && grunt build:wporg",
@@ -46,6 +46,7 @@
     "babel-loader": "^7.1.5",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^1.0.0",
     "file-loader": "^1.1.11",
     "grunt": "^1.0.3",
