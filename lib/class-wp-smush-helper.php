@@ -209,6 +209,47 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 			$wpdb->query( "ALTER TABLE `$table` DROP INDEX `$index`" );
 			return true;
 		}
+
+		/**
+		 * Sanitizes a hex color.
+		 *
+		 * @since 2.9  Moved from wp-smushit.php file.
+		 *
+		 * @param string $color  HEX color code.
+		 *
+		 * @return string Returns either '', a 3 or 6 digit hex color (with #), or nothing
+		 */
+		private function smush_sanitize_hex_color( $color ) {
+			if ( '' === $color ) {
+				return '';
+			}
+
+			// 3 or 6 hex digits, or the empty string.
+			if ( preg_match( '|^#([A-Fa-f0-9]{3}){1,2}$|', $color ) ) {
+				return $color;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Sanitizes a hex color without hash.
+		 *
+		 * @since 2.9  Moved from wp-smushit.php file.
+		 *
+		 * @param string $color  HEX color code with hash.
+		 *
+		 * @return string Returns either '', a 3 or 6 digit hex color (with #), or nothing
+		 */
+		public function smush_sanitize_hex_color_no_hash( $color ) {
+			$color = ltrim( $color, '#' );
+
+			if ( '' === $color ) {
+				return '';
+			}
+
+			return $this->smush_sanitize_hex_color( '#' . $color ) ? $color : null;
+		}
 	}
 
 	global $wpsmush_helper;

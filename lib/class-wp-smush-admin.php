@@ -299,8 +299,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					'desc'        => esc_html__( 'Optimize images up to 2x more than regular smush with our multi-pass lossy compression.', 'wp-smushit' ),
 				),
 				'strip_exif'  => array(
-					'label'       => esc_html__( 'Strip my image meta data', 'wp-smushit' ),
-					'short_label' => esc_html__( 'Meta data', 'wp-smushit' ),
+					'label'       => esc_html__( 'Strip my image metadata', 'wp-smushit' ),
+					'short_label' => esc_html__( 'Metadata', 'wp-smushit' ),
 					'desc'        => esc_html__( 'Whenever you take a photo, your camera stores metadata, such as focal length, date, time and location, within the image.', 'wp-smushit' ),
 				),
 				'resize'      => array(
@@ -2093,8 +2093,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			// Get Plugin dir, Return if it's WP Smush Pro installation
-			$dir_path = get_plugin_dir();
-			if ( ! empty( $dir_path ) && strpos( $dir_path, 'wp-smush-pro' ) !== false ) {
+			if ( ! defined( 'WP_SMUSH_DIR' ) && strpos( WP_SMUSH_DIR, 'wp-smush-pro' ) !== false ) {
 				return true;
 			}
 

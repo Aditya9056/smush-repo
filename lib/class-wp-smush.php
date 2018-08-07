@@ -2502,8 +2502,7 @@ class WP_Smush {
 				'</a>'
 			) . '</p>';
 
-		$dir_path = get_plugin_dir();
-		if ( strpos( $dir_path, 'wp-smushit' ) !== false ) {
+		if ( strpos( WP_SMUSH_DIR, 'wp-smushit' ) !== false ) {
 			// Only for wordpress.org members
 			$content .=
 				'<p>' . __( 'Smush uses a third-party email service (Drip) to send informational emails to the site administrator. The administrator\'s email address is sent to Drip and a cookie is set by the service. Only administrator information is collected by Drip.', 'wp-smushit' ) . '</p>';

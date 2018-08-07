@@ -19,7 +19,7 @@
  * License:           GPLv2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       wp-smushit
- * Domain Path:       /languages
+ * Domain Path:       /languages/
  * WDP ID:            912164
  */
 
@@ -112,7 +112,7 @@ if ( ! function_exists( 'deactivate_smush_org' ) ) {
 // Include core class.
 if ( ! class_exists( 'WP_Smush' ) ) {
 	/* @noinspection PhpIncludeInspection */
-	require_once plugin_dir_path( __FILE__ ) . 'lib/class-wp-smush.php';
+	require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
 }
 
 global $wp_smush;
@@ -169,24 +169,16 @@ if ( ! function_exists( 'wp_smush_email_message' ) ) {
 	}
 }
 
-if ( ! function_exists( 'get_plugin_dir' ) ) {
+add_action( 'admin_init', 'register_free_modules' );
+if ( ! function_exists( 'register_free_modules' ) ) {
 	/**
-	 * Returns the dir path for the plugin
-	 *
-	 * @return string
+	 * Register sub-modules.
+	 * Only for wordpress.org members.
 	 */
-	function get_plugin_dir() {
-		$dir_path = plugin_dir_path( __FILE__ );
-
-		return $dir_path;
-	}
-}
-
-if ( is_admin() ) {
-	$dir_path = get_plugin_dir();
-
-	// Only for wordpress.org members.
-	if ( strpos( $dir_path, 'wp-smushit' ) !== false ) {
+	function register_free_modules() {
+		if ( false === strpos( WP_SMUSH_DIR, 'wp-smushit' ) ) {
+			return;
+		}
 		/* @noinspection PhpIncludeInspection */
 		require_once WP_SMUSH_DIR . 'extras/free-dashboard/module.php';
 
@@ -194,7 +186,7 @@ if ( is_admin() ) {
 		do_action(
 			'wdev-register-plugin',
 			/* 1             Plugin ID */
-			plugin_basename( __FILE__ ),
+			WP_SMUSH_BASENAME,
 			/* 2          Plugin Title */
 			'WP Smush',
 			/* 3 https://wordpress.org */
@@ -206,18 +198,23 @@ if ( is_admin() ) {
 		);
 
 		// The rating message contains 2 variables: user-name, plugin-name.
-		add_filter(
-			'wdev-rating-message-' . plugin_basename( __FILE__ ),
-			'wp_smush_rating_message'
-		);
-
+		add_filter( 'wdev-rating-message-' . WP_SMUSH_BASENAME, 'wp_smush_rating_message' );
 		// The email message contains 1 variable: plugin-name.
-		add_filter(
-			'wdev-email-message-' . plugin_basename( __FILE__ ),
-			'wp_smush_email_message'
-		);
-	} elseif ( strpos( $dir_path, 'wp-smush-pro' ) !== false && file_exists( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' ) ) {
-		// Only for WPMU DEV Members.
+		add_filter( 'wdev-email-message-' . WP_SMUSH_BASENAME, 'wp_smush_email_message' );
+	}
+}
+
+add_action( 'admin_init', 'register_pro_modules' );
+if ( ! function_exists( 'register_pro_modules' ) ) {
+	/**
+	 * Register sub-modules.
+	 * Only for WPMU DEV Members.
+	 */
+	function register_pro_modules() {
+		if ( false === strpos( WP_SMUSH_DIR, 'wp-smush-pro' ) || ! file_exists( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' ) ) {
+			return;
+		}
+
 		/* @noinspection PhpIncludeInspection */
 		require_once WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php';
 
@@ -232,13 +229,12 @@ if ( is_admin() ) {
 				'toplevel_page_smush-network',
 			),
 		);
-	} // End if().
-} // End if().
+	}
+}
 
 // Show the required notice.
 add_action( 'network_admin_notices', 'smush_deactivated' );
 add_action( 'admin_notices', 'smush_deactivated' );
-
 if ( ! function_exists( 'smush_deactivated' ) ) {
 	/**
 	 * Display a admin Notice about plugin deactivation.
@@ -255,48 +251,7 @@ if ( ! function_exists( 'smush_deactivated' ) ) {
 	}
 }
 
-if ( ! function_exists( 'smush_sanitize_hex_color' ) ) {
-	/**
-	 * Sanitizes a hex color.
-	 *
-	 * @param string $color  HEX color code.
-	 *
-	 * @return string Returns either '', a 3 or 6 digit hex color (with #), or nothing
-	 */
-	function smush_sanitize_hex_color( $color ) {
-		if ( '' === $color ) {
-			return '';
-		}
-
-		// 3 or 6 hex digits, or the empty string.
-		if ( preg_match( '|^#([A-Fa-f0-9]{3}){1,2}$|', $color ) ) {
-			return $color;
-		}
-
-		return false;
-	}
-}
-
-if ( ! function_exists( 'smush_sanitize_hex_color_no_hash' ) ) {
-	/**
-	 * Sanitizes a hex color without hash
-	 *
-	 * @param string $color  HEX color code with hash.
-	 *
-	 * @return string Returns either '', a 3 or 6 digit hex color (with #), or nothing
-	 */
-	function smush_sanitize_hex_color_no_hash( $color ) {
-		$color = ltrim( $color, '#' );
-
-		if ( '' === $color ) {
-			return '';
-		}
-
-		return smush_sanitize_hex_color( '#' . $color ) ? $color : null;
-	}
-}
-
-add_action( 'plugins_loaded', 'smush_i18n' );
+add_action( 'admin_init', 'smush_i18n' );
 if ( ! function_exists( 'smush_i18n' ) ) {
 	/**
 	 * Load translation files.
@@ -312,7 +267,6 @@ if ( ! function_exists( 'smush_i18n' ) ) {
 
 // Add Share UI Class.
 add_filter( 'admin_body_class', 'smush_body_classes', 99 );
-
 if ( ! function_exists( 'smush_body_classes' ) ) {
 	/**
 	 * Add Share UI Class.
