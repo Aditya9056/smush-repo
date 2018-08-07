@@ -644,10 +644,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Turn off errors for ajax result.
 			@error_reporting( 0 );
 
-			if ( 145 === $_REQUEST['attachment_id'] ) {
-				unset( $_REQUEST['attachment_id'] );
-			}
-
 			if ( empty( $_REQUEST['attachment_id'] ) ) {
 				wp_send_json_error(
 					array(

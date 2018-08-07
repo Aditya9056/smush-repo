@@ -629,7 +629,7 @@ class Smush {
 		let progress = '';
 
 		// Update localized stats.
-		if ( _res && ( 'undefined' !== typeof _res.data || 'undefined' !== typeof _res.data.stats ) ) {
+		if ( _res && ( 'undefined' !== typeof _res.data && 'undefined' !== typeof _res.data.stats ) ) {
 			Smush.update_localized_stats( _res.data.stats, this.smush_type );
 		}
 
