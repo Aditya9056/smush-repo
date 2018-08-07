@@ -302,8 +302,11 @@ if ( ! function_exists( 'smush_i18n' ) ) {
 	 * Load translation files.
 	 */
 	function smush_i18n() {
-		$path = path_join( dirname( plugin_basename( __FILE__ ) ), 'languages/' );
-		load_plugin_textdomain( 'wp-smushit', false, $path );
+		load_plugin_textdomain(
+			'wp-smushit',
+			false,
+			dirname( WP_SMUSH_BASENAME ) . '/languages'
+		);
 	}
 }
 

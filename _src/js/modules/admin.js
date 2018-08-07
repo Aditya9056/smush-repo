@@ -482,41 +482,33 @@ jQuery( function ( $ ) {
 	} );
 
 	/** Restore: Media Library **/
-	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-restore', function ( e ) {
-		var current_button = $( this );
-		var smush_action = 'smush_restore_image';
-		process_smush_action( e, current_button, smush_action, 'restore' );
-		//Change the class oa parent div ( Level 2 )
-		var parent = current_button.parents().eq( 1 );
+	$( '.wp-smush-action.wp-smush-restore' ).on( 'click', function ( e ) {
+		const current_button = $( this );
+		process_smush_action( e, current_button, 'smush_restore_image', 'restore' );
+		// Change the class oa parent div ( Level 2 )
+		const parent = current_button.parents().eq( 1 );
 		if ( parent.hasClass( 'smushed' ) ) {
 			parent.removeClass( 'smushed' ).addClass( 'unsmushed' );
 		}
 	} );
 
 	/** Resmush: Media Library **/
-	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-resmush', function ( e ) {
-		var current_button = $( this );
-		var smush_action = 'smush_resmush_image';
-		process_smush_action( e, current_button, smush_action, 'smushing' );
+	$( '.wp-smush-action.wp-smush-resmush' ).on( 'click', function ( e ) {
+		process_smush_action( e, $( this ), 'smush_resmush_image', 'smushing' );
 	} );
 
 	/** Restore: NextGen Gallery **/
-	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-nextgen-restore', function ( e ) {
-		var current_button = $( this );
-		var smush_action = 'smush_restore_nextgen_image';
-		process_smush_action( e, current_button, smush_action, 'restore' );
+	$( '.wp-smush-action.wp-smush-nextgen-restore' ).on( 'click', function ( e ) {
+		process_smush_action( e, $( this ), 'smush_restore_nextgen_image', 'restore' );
 	} );
 
 	/** Resmush: NextGen Gallery **/
-	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-nextgen-resmush', function ( e ) {
-		var current_button = $( this );
-		var smush_action = 'smush_resmush_nextgen_image';
-		process_smush_action( e, current_button, smush_action, 'smushing' );
+	$( '.wp-smush-action.wp-smush-nextgen-resmush' ).on( 'click', function ( e ) {
+		process_smush_action( e, $( this ), 'smush_resmush_nextgen_image', 'smushing' );
 	} );
 
 	//Scan For resmushing images
-	$( 'body' ).on( 'click', '.wp-smush-scan', function ( e ) {
-
+	$( '.wp-smush-scan' ).on( 'click', function ( e ) {
 		e.preventDefault();
 
 		//Run the Re-check
