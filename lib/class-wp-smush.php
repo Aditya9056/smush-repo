@@ -777,7 +777,7 @@ class WP_Smush {
 			}
 			// Check for timeout error and suggest to filter timeout.
 			if ( strpos( $er_msg, 'timed out' ) ) {
-				$data['message'] = esc_html__( "Skipped due to a timeout error. You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`.", 'wp-smushit' );
+				$data['message'] = esc_html__( "Skipped due to a timeout error. You can increase the request timeout to make sure Smush has enough time to process larger files. define('WP_SMUSH_API_TIMEOUT', 150);", 'wp-smushit' );
 			} else {
 				// Handle error
 				$data['message'] = sprintf( __( 'Error posting to API: %s', 'wp-smushit' ), $result->get_error_message() );

@@ -964,6 +964,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<p><?php esc_html_e( 'All attachments have been smushed. Awesome!', 'wp-smushit' ); ?></p>
 			</div>
 
+			<?php $this->progress_bar( $wpsmushit_admin ); ?>
+
 			<div class="smush-final-log sui-hidden">
 				<div class="smush-bulk-errors"></div>
 				<div class="smush-bulk-errors-actions">
@@ -971,10 +973,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
 						<?php esc_html_e( 'View all', 'wp-smushit' ); ?>
 					</button>
-
-					<p>
-						<?php esc_html_e( 'You can restore ignored images from your Media Library', 'wp-smushit' ); ?>
-					</p>
 				</div>
 			</div>
 
@@ -1025,14 +1023,13 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				</button>
 			</div>
 			<?php
-			$this->progress_bar( $wpsmushit_admin );
-			if ( $is_pro && $wp_smush->lossy_enabled ) :
+			if ( $is_pro && $wp_smush->lossy_enabled ) {
 				?>
 				<p class="wp-smush-enable-lossy tc sui-hidden">
 					<?php esc_html_e( 'Tip: Enable Super-smush in the Settings area to get even more savings with almost no visible drop in quality.', 'wp-smushit' ); ?>
 				</p>
 				<?php
-			endif;
+			}
 			$this->super_smush_promo();
 		}
 
@@ -1112,10 +1109,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @param object $count
 		 */
 		public function progress_bar( $count ) {
-			$smushed_pc = 0;
-			if ( $count->total_count > 0 && $count->smushed_count > 0 ) {
-				$smushed_pc = $count->smushed_count / $count->total_count * 100;
-			}
 			?>
 			<div class="wp-smush-bulk-progress-bar-wrapper sui-hidden">
 				<p class="wp-smush-bulk-active roboto-medium">
@@ -1131,10 +1124,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-progress-block sui-progress-can-close">
 					<div class="sui-progress">
 						<div class="sui-progress-text sui-icon-loader sui-loading">
-							<span class="wp-smush-images-percent"><?php echo round( $smushed_pc, 1 ); ?></span><span>%</span>
+							<span class="wp-smush-images-percent">0</span><span>%</span>
 						</div>
 						<div class="sui-progress-bar">
-							<span class="wp-smush-progress-inner" style="width: <?php echo $smushed_pc; ?>%"></span>
+							<span class="wp-smush-progress-inner" style="width: 0%"></span>
 						</div>
 					</div>
 					<button class="sui-progress-close sui-tooltip wp-smush-cancel-bulk" type="button" data-tooltip="<?php esc_html_e( 'Stop current bulk smush process.', 'wp-smushit' ); ?>">
@@ -1144,7 +1137,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 
 				<div class="sui-progress-state">
 					<span class="sui-progress-state-text">
-						<span><?php echo absint( $count->smushed_count ); ?>/<?php echo absint( $count->total_count ); ?></span> <?php esc_html_e( 'images optimized', 'wp-smushit' ); ?>
+						<span>0/<?php echo  absint( $count->remaining_count ); ?></span> <?php esc_html_e( 'images optimized', 'wp-smushit' ); ?>
 					</span>
 				</div>
 

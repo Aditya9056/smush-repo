@@ -14,7 +14,9 @@ class Smush {
 	 * @param {string}  type    Accepts: 'nextgen', 'media'.
 	 */
 	constructor( button, bulk, type = 'media' ) {
-		this.errors = [];
+		this.errors  = [];
+		this.smushed = [];
+
 		//If smush attribute is not defined, Need not skip re-Smush IDs.
 		this.skip_resmush = ! ( 'undefined' === typeof button.data( 'smush' ) || ! button.data( 'smush' ) );
 
@@ -34,6 +36,9 @@ class Smush {
 		} else {
 			this.ids = ids;
 		}
+
+		// Total count.
+		this.total = this.ids.length;
 
 		this.is_bulk_resmush = 0 < wp_smushit_data.resmush.length && ! this.skip_resmush;
 
@@ -137,9 +142,6 @@ class Smush {
 		// Hide the bulk div.
 		jQuery( '.wp-smush-bulk-wrapper' ).hide();
 
-		// Show the progress bar.
-		jQuery( '.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper' ).show();
-
 		// Remove any global notices if there.
 		jQuery( '.sui-notice-top' ).remove();
 
@@ -150,6 +152,9 @@ class Smush {
 		if ( 0 >= jQuery( 'div.smush-final-log .smush-bulk-error-row' ).length ) {
 			jQuery( 'div.smush-final-log' ).hide();
 		}
+
+		// Show the progress bar.
+		jQuery( '.bulk-smush-wrapper .wp-smush-bulk-progress-bar-wrapper' ).show();
 	};
 
 	/**
@@ -564,7 +569,8 @@ class Smush {
 
 		// No need to increase attachment count, resize, conversion savings for directory Smush.
 		if ( 'media' === type ) {
-			wp_smushit_data.count_smushed = parseInt( wp_smushit_data.count_smushed ) + 1;
+			// TODO: see if we need this, Smush has a total var now, don't think there is a need for this (and the one below)
+			//wp_smushit_data.count_smushed = parseInt( wp_smushit_data.count_smushed ) + 1;
 
 			// Increase Smushed image count.
 			wp_smushit_data.count_images = parseInt( wp_smushit_data.count_images ) + parseInt( image_stats.count );
@@ -586,7 +592,7 @@ class Smush {
 			//Increase smushed image count
 			wp_smushit_data.count_images = parseInt( wp_smushit_data.count_images ) + 1;
 		} else if ( 'nextgen' === type ) {
-			wp_smushit_data.count_smushed = parseInt( wp_smushit_data.count_smushed ) + 1;
+			//wp_smushit_data.count_smushed = parseInt( wp_smushit_data.count_smushed ) + 1;
 			wp_smushit_data.count_supersmushed = parseInt( wp_smushit_data.count_supersmushed ) + 1;
 
 			// Increase Smushed image count.
@@ -623,13 +629,13 @@ class Smush {
 		let progress = '';
 
 		// Update localized stats.
-		if ( _res && ( 'undefined' !== typeof _res.data && 'undefined' !== typeof _res.data.stats ) ) {
+		if ( _res && ( 'undefined' !== typeof _res.data || 'undefined' !== typeof _res.data.stats ) ) {
 			Smush.update_localized_stats( _res.data.stats, this.smush_type );
 		}
 
 		if ( ! this.is_bulk_resmush ) {
 			// Handle progress for normal bulk smush.
-			progress = ( ( parseInt( wp_smushit_data.count_smushed ) + this.errors.length ) / wp_smushit_data.count_total ) * 100;
+			progress = ( ( this.smushed.length + this.errors.length ) / this.total ) * 100;
 		} else {
 			// If the request was successful, update the progress bar.
 			if ( _res.success ) {
@@ -647,8 +653,8 @@ class Smush {
 			}
 
 			// Handle progress for normal bulk Smush. Set progress bar width.
-			if ( 'undefined' !== typeof this.ids && 'undefined' !== typeof wp_smushit_data.count_total && wp_smushit_data.count_total > 0 ) {
-				progress = ( ( wp_smushit_data.count_smushed + this.errors.length ) / wp_smushit_data.count_total ) * 100;
+			if ( 'undefined' !== typeof this.ids && 'undefined' !== typeof this.total && this.total > 0 ) {
+				progress = ( ( this.smushed.length + this.errors.length ) / this.total ) * 100;
 			}
 		}
 
@@ -666,7 +672,7 @@ class Smush {
 		this.update_remaining_count();
 
 		// Increase the progress bar and counter.
-		this._update_progress( parseInt( wp_smushit_data.count_smushed ) + this.errors.length, progress );
+		this._update_progress( this.smushed.length + this.errors.length, progress );
 
 		// Update stats and counts.
 		Smush.update_stats( this.smush_type );
@@ -682,12 +688,12 @@ class Smush {
 	_update_progress( count, width ) {
 		if ( ! this.is_bulk && ! this.is_bulk_resmush ) return;
 
-		// Porgress bar label.
+		// Progress bar label.
 		jQuery( 'span.wp-smush-images-percent' ).html( width );
 		// Progress bar.
 		jQuery( '.bulk-smush-wrapper .wp-smush-progress-inner' ).css( 'width', width + '%' );
 		// Progress bar status.
-		jQuery( '.bulk-smush-wrapper .sui-progress-state-text' ).find( 'span' ).html( count + '/' + wp_smushit_data.count_total );
+		jQuery( '.bulk-smush-wrapper .sui-progress-state-text' ).find( 'span' ).html( count + '/' + this.total );
 	};
 
 	/**
@@ -712,11 +718,20 @@ class Smush {
 	/**
 	 * Add image ID to the errors array.
 	 *
-	 * @param id
+	 * @param {int} id
 	 */
 	increment_errors( id ) {
 		this.errors.push( id );
 	};
+
+	/**
+	 * Add image ID to smushed array.
+	 *
+	 * @param {int} id
+	 */
+	increment_smushed( id ) {
+		this.smushed.push( id );
+	}
 
 	/**
 	 * Send ajax request for Smushing single and bulk, call update_progress on ajax response.
@@ -743,6 +758,9 @@ class Smush {
 				// Increase the error count except if bulk request limit exceeded.
 				if ( 'undefined' === typeof res.success || ( 'undefined' !== typeof res.success && false === res.success && 'undefined' !== typeof res.data && 'bulk_request_image_limit_exceeded' !== res.data.error ) ) {
 					self.increment_errors( self.current_id );
+				} else if ( 'undefined' !== typeof res.success && res.success ) {
+					// Increment the smushed count if image smushed without errors.
+					self.increment_smushed( self.current_id );
 				}
 
 				// If no response or success is false, do not process further.
@@ -752,7 +770,6 @@ class Smush {
 					/** @var {string} res.data.error_class */
 					const error_class = 'undefined' !== typeof res.data.error_class ? 'smush-error-message ' + res.data.error_class : 'smush-error-message';
 					/** @var {string} res.data.error_message */
-					//const error_msg = '<p class="' + error_class + '">' + res.data.error_message + '</p>';
 					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name, error_class );
 
 					if ( 'undefined' !== typeof res.data.error && 'bulk_request_image_limit_exceeded' === res.data.error ) {
@@ -839,10 +856,7 @@ class Smush {
 				'</div>' +
 				'<div class="smush-bulk-image-actions">' +
 					'<button type="button" class="sui-button-icon sui-tooltip sui-tooltip-constrained sui-tooltip-top-left" data-tooltip="Ignore this image from bulk smushing">' +
-						'<i class="sui-icon-update" aria-hidden="true"></i>' +
-					'</button>' +
-					'<button type="button" class="sui-button-icon sui-tooltip sui-tooltip-constrained sui-tooltip-top-left" data-tooltip="Retry">' +
-						'<i class="sui-icon-open-new-window" aria-hidden="true"></i>' +
+						'<i class="sui-icon-eye-hide" aria-hidden="true"></i>' +
 					'</button>' +
 				'</div>' +
 			'</div>';
@@ -873,18 +887,13 @@ class Smush {
 				/** @var {string} wp_smush_msgs.error_in_bulk */
 				let msg = wp_smush_msgs.error_in_bulk
 					.replace( "{{errors}}", self.errors.length )
-					.replace( "{{total}}", wp_smushit_data.count_total )
-					.replace( "{{smushed}}", wp_smushit_data.count_smushed );
+					.replace( "{{total}}", self.total )
+					.replace( "{{smushed}}", self.smushed.length );
 
 				jQuery( '.wp-smush-all-done' )
 					.addClass( 'sui-notice-warning' )
 					.removeClass( 'sui-notice-success' )
 					.find( 'p' ).html( msg );
-
-				//const error_message = '<div class="wp-smush-ajax-error">' + msg + '</div>';
-				// Remove any existing notice.
-				//jQuery( '.wp-smush-ajax-error' ).remove();
-				//self.log.prepend( error_message );
 			}
 
 			self.bulk_done();
