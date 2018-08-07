@@ -2094,8 +2094,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			// Get Plugin dir, Return if it's WP Smush Pro installation
-			$dir_path = get_plugin_dir();
-			if ( ! empty( $dir_path ) && strpos( $dir_path, 'wp-smush-pro' ) !== false ) {
+			if ( ! defined( 'WP_SMUSH_DIR' ) && strpos( WP_SMUSH_DIR, 'wp-smush-pro' ) !== false ) {
 				return true;
 			}
 
