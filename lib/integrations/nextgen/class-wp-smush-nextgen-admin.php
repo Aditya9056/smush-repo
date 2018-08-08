@@ -450,7 +450,19 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					<?php
 				endif;
 				echo '</div>';
-				$wpsmush_bulkui->progress_bar( $this );
+				$wpsmush_bulkui->progress_bar( $this ); ?>
+
+				<div class="smush-final-log sui-hidden">
+					<div class="smush-bulk-errors"></div>
+					<div class="smush-bulk-errors-actions">
+						<a href="<?php echo esc_url( admin_url( 'upload.php' ) ); ?>" class="sui-button sui-button-icon sui-button-ghost">
+							<i class="sui-icon-photo-picture" aria-hidden="true"></i>
+							<?php esc_html_e( 'View all', 'wp-smushit' ); ?>
+						</a>
+					</div>
+				</div>
+
+				<?php
 			endif;
 		}
 

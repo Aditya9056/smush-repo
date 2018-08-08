@@ -469,8 +469,8 @@ jQuery( function ( $ ) {
 		e.preventDefault();
 
 		//Check for ids, if there is none (Unsmushed or lossless), don't call smush function
-		if ( typeof wp_smushit_data == 'undefined' ||
-			( wp_smushit_data.unsmushed.length == 0 && wp_smushit_data.resmush.length == 0 )
+		if ( 'undefined' === typeof wp_smushit_data ||
+			( wp_smushit_data.unsmushed.length === 0 && wp_smushit_data.resmush.length === 0 )
 		) {
 			return false;
 		}
@@ -478,7 +478,6 @@ jQuery( function ( $ ) {
 		jQuery( '.wp-smush-all, .wp-smush-scan' ).attr( 'disabled', 'disabled' );
 		$( ".wp-smush-notice.wp-smush-remaining" ).hide();
 		new Smush( $( this ), true, 'nextgen' );
-
 	} );
 
 	/** Restore: Media Library **/

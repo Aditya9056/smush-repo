@@ -48,7 +48,7 @@ import Smush from '../smush/smush';
 					.removeClass( 'sui-icon-info sui-warning' )
 					.addClass( 'sui-icon-loader sui-loading' );
 
-				new Smush( $( this ), true, 'media' );
+				new Smush( $( this ), true );
 			} );
 
 		}

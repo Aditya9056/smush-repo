@@ -969,10 +969,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			<div class="smush-final-log sui-hidden">
 				<div class="smush-bulk-errors"></div>
 				<div class="smush-bulk-errors-actions">
-					<button type="button" class="sui-button sui-button-icon sui-button-ghost">
+					<a href="<?php echo esc_url( admin_url( 'upload.php' ) ); ?>" class="sui-button sui-button-icon sui-button-ghost">
 						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
 						<?php esc_html_e( 'View all', 'wp-smushit' ); ?>
-					</button>
+					</a>
 				</div>
 			</div>
 

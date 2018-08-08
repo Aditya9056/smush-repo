@@ -672,7 +672,7 @@ class Smush {
 		this.update_remaining_count();
 
 		// Increase the progress bar and counter.
-		this._update_progress( this.smushed.length + this.errors.length, progress );
+		this._update_progress( this.smushed.length + this.errors.length, WP_Smush.helpers.precise_round( progress, 1 ) );
 
 		// Update stats and counts.
 		Smush.update_stats( this.smush_type );
@@ -756,7 +756,7 @@ class Smush {
 		this.request = Smush.ajax( this.is_bulk_resmush, this.current_id, this.url, 0, nonce_value )
 			.done( function ( res ) {
 				// Increase the error count except if bulk request limit exceeded.
-				if ( 'undefined' === typeof res.success || ( 'undefined' !== typeof res.success && false === res.success && 'undefined' !== typeof res.data && 'bulk_request_image_limit_exceeded' !== res.data.error ) ) {
+				if ( 'undefined' === typeof res.success || ( 'undefined' !== typeof res.success && false === res.success && 'undefined' !== typeof res.data && 'limit_exceeded' !== res.data.error ) ) {
 					self.increment_errors( self.current_id );
 				} else if ( 'undefined' !== typeof res.success && res.success ) {
 					// Increment the smushed count if image smushed without errors.
@@ -765,14 +765,15 @@ class Smush {
 
 				// If no response or success is false, do not process further.
 				if ( ( ! res || ! res.success ) && ( 'undefined' !== typeof res && 'undefined' !== typeof res.data && 'undefined' !== typeof res.data.error ) ) {
-					// TODO: Handle Bulk Smush limit error message
+					/**
+					 * @var {string} res.data.error_message
+					 * @var {string} res.data.file_name
+					 */
+					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name );
 
-					/** @var {string} res.data.error_class */
-					const error_class = 'undefined' !== typeof res.data.error_class ? 'smush-error-message ' + res.data.error_class : 'smush-error-message';
-					/** @var {string} res.data.error_message */
-					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name, error_class );
-
-					if ( 'undefined' !== typeof res.data.error && 'bulk_request_image_limit_exceeded' === res.data.error ) {
+					// Handle bulk smush limit.
+					// TODO: check that we need this.
+					if ( 'undefined' !== typeof res.data.error && 'limit_exceeded' === res.data.error ) {
 						const ajax_error_message = jQuery( '.wp-smush-ajax-error' );
 						// If we have ajax error message div, append after it.
 						if ( ajax_error_message.length > 0 ) {
@@ -781,14 +782,7 @@ class Smush {
 							// Otherwise prepend.
 							self.log.find( '.smush-bulk-errors' ).prepend( error_msg );
 						}
-					} else if ( 'undefined' !== typeof res.data.error_class && '' !== res.data.error_class && jQuery( 'div.smush-final-log .' + res.data.error_class ).length > 0 ) {
-						const error_count = jQuery( 'p.smush-error-message.' + res.data.error_class + ' .image-error-count' );
-						// Get the error count, increase and append.
-						let image_count = error_count.html();
-						image_count = parseInt( image_count ) + 1;
-						// Append the updated image count.
-						error_count.html( image_count );
-					} else {
+					} else if ( 'undefined' !== typeof res.data.error_message && '' !== res.data.error_message && jQuery( 'div.smush-final-log' ).length > 0 ) {
 						// Print the error on screen.
 						self.log.find( '.smush-bulk-errors' ).append( error_msg );
 					}
@@ -803,7 +797,7 @@ class Smush {
 				 * Bulk Smush limit exceeded: Stop ajax requests, remove progress bar, append the last image ID
 				 * back to Smush variable, and reset variables to allow the user to continue bulk Smush.
 				 */
-				if ( 'undefined' !== typeof res.data && 'bulk_request_image_limit_exceeded' === res.data.error && ! self.is_resolved() ) {
+				if ( 'undefined' !== typeof res.data && 'limit_exceeded' === res.data.error && ! self.is_resolved() ) {
 					// Add a data attribute to the Smush button, to stop sending ajax.
 					self.button.attr( 'continue_smush', false );
 
@@ -843,12 +837,11 @@ class Smush {
 	 *
 	 * @param {string} errorMsg   Error message.
 	 * @param {string} fileName   File name.
-	 * @param {string} className  Div class.
 	 *
 	 * @returns {string}
 	 */
-	static prepare_error_row( errorMsg, fileName, className ) {
-		return '<div class="smush-bulk-error-row ' + className + '">' +
+	static prepare_error_row( errorMsg, fileName ) {
+		return '<div class="smush-bulk-error-row">' +
 				'<div class="smush-bulk-image-data">' +
 					'<i class="sui-icon-photo-picture" aria-hidden="true"></i>' +
 					'<span class="smush-image-name">' + fileName + '</span>' +

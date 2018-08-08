@@ -220,9 +220,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Smush Upgrade.
 			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
 
-			// New Features Notice.
-			// add_action( 'admin_notices', array( $this, 'smush_updated' ) );
-			// add_action( 'network_admin_notices', array( $this, 'smush_updated' ) );
 			// Handle the smush pro dismiss features notice ajax.
 			add_action( 'wp_ajax_dismiss_upgrade_notice', array( $this, 'dismiss_upgrade_notice' ) );
 
@@ -649,8 +646,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					array(
 						'error'         => 'missing_id',
 						'error_message' => $this->filter_error( esc_html__( 'No attachment ID was received', 'wp-smushit' ) ),
-						'error_class'   => 'no_id',
 						'file_name'     => 'undefined',
+						'show_warning'  => intval( $this->show_warning() ),
 					)
 				);
 			}
@@ -659,9 +656,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( ! $this->validate_install() && ! $this->check_bulk_limit() ) {
 				wp_send_json_error(
 					array(
-						'error'         => 'bulk_request_image_limit_exceeded',
+						'error'         => 'limit_exceeded',
 						'error_message' => sprintf( esc_html__( "You've reached the %1\$d attachment limit for bulk smushing in the free version. Upgrade to Pro to smush unlimited images, or click resume to smush another %2\$d attachments.", 'wp-smushit' ), $this->max_free_bulk, $this->max_free_bulk ),
-						'error_class'   => 'limit_exceeded',
 						'continue'      => false,
 					)
 				);
@@ -692,7 +688,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					array(
 						'error'         => 'skipped',
 						'error_message' => $this->filter_error( esc_html__( 'Skipped with wp_smush_image filter', 'wp-smushit' ) ),
-						'error_class'   => 'skipped',
 						'show_warning'  => intval( $this->show_warning() ),
 						'file_name'     => $file_name,
 					)
@@ -773,10 +768,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				if ( strpos( $error_message, 'timed out' ) ) {
 					$error         = 'timeout';
 					$error_message = esc_html__( "Timeout error. You can increase the request timeout to make sure Smush has enough time to process larger files. `define('WP_SMUSH_API_TIMEOUT', 150);`", 'wp-smushit' );
-					$error_class   = ' timeout';
 				}
 
-				$error = isset( $error ) ? $error : '';
+				$error = isset( $error ) ? $error : 'other';
 
 				if ( ! empty( $error_message ) ) {
 					// Used internally to modify the error message.
@@ -788,8 +782,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						'stats'         => $stats,
 						'error'         => $error,
 						'error_message' => $error_message,
-						'error_class'   => isset( $error_class ) ? $error_class : '',
 						'show_warning'  => intval( $this->show_warning() ),
+						'error_class'   => isset( $error_class ) ? $error_class : '',
 						'file_name'     => $file_name,
 					)
 				);
@@ -1459,8 +1453,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @uses smush_single()
 		 */
 		function resmush_image() {
-
-			// Check Empty fields
+			// Check empty fields.
 			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
 				wp_send_json_error(
 					array(
@@ -1469,7 +1462,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					)
 				);
 			}
-			// Check Nonce
+
+			// Check nonce.
 			if ( ! wp_verify_nonce( $_POST['_nonce'], 'wp-smush-resmush-' . $_POST['attachment_id'] ) ) {
 				wp_send_json_error(
 					array(
@@ -1483,17 +1477,19 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			$smushed = $this->smush_single( $image_id, true );
 
-			// If any of the image is restored, we count it as success
+			// If any of the image is restored, we count it as success.
 			if ( ! empty( $smushed['status'] ) ) {
+				// Send button content.
+				wp_send_json_success( array(
+					'button' => $smushed['status'] . $smushed['stats'],
+				) );
+			}
 
-				// Send button content
-				wp_send_json_success( array( 'button' => $smushed['status'] . $smushed['stats'] ) );
-
-			} elseif ( ! empty( $smushed['error'] ) ) {
-
-				// Send Error Message
-				wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . $smushed['error'] . '</div>' ) );
-
+			// Send error Message.
+			if ( ! empty( $smushed['error'] ) ) {
+				wp_send_json_error( array(
+					'message' => '<div class="wp-smush-error">' . $smushed['error'] . '</div>',
+				) );
 			}
 		}
 
