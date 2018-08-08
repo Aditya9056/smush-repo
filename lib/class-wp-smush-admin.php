@@ -116,7 +116,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @var int $max_free_bulk
 		 */
-		private $max_free_bulk = 50;
+		private $max_free_bulk = 2;
 
 		/**
 		 * Link to upgrade.
@@ -652,8 +652,10 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			}
 
+			$reset = isset( $_REQUEST['new_scan'] ) && 'true' === $_REQUEST['new_scan']; // Input var ok.
+
 			// If the bulk smush needs to be stopped.
-			if ( ! $this->validate_install() && ! $this->check_bulk_limit() ) {
+			if ( ! $this->validate_install() && ! $this->check_bulk_limit( $reset ) ) {
 				wp_send_json_error(
 					array(
 						'error'         => 'limit_exceeded',
@@ -994,31 +996,30 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Check bulk sent count, whether to allow further smushing or not
 		 *
-		 * @param bool   $reset To hard reset the transient
-		 *
-		 * @param string $key Transient Key - bulk_sent_count/dir_sent_count
+		 * @param bool   $reset  To hard reset the transient.
+		 * @param string $key    Transient Key - bulk_sent_count/dir_sent_count.
 		 *
 		 * @return bool
 		 */
-		function check_bulk_limit( $reset = false, $key = 'bulk_sent_count' ) {
+		public function check_bulk_limit( $reset = false, $key = 'bulk_sent_count' ) {
 			$transient_name = WP_SMUSH_PREFIX . $key;
+
+			// If we need to reset the transient.
+			if ( $reset ) {
+				set_transient( $transient_name, 0, 60 );
+			}
 
 			$bulk_sent_count = get_transient( $transient_name );
 
-			// Check if bulk smush limit is less than limit
+			// Check if bulk smush limit is less than limit.
 			if ( ! $bulk_sent_count || $bulk_sent_count < $this->max_free_bulk ) {
 				$continue = true;
-			} elseif ( $bulk_sent_count == $this->max_free_bulk ) {
-				// If user has reached the limit, reset the transient
+			} elseif ( $bulk_sent_count === $this->max_free_bulk ) {
+				// If user has reached the limit, reset the transient.
 				$continue = false;
 				$reset    = true;
 			} else {
 				$continue = false;
-			}
-
-			// If we need to reset the transient
-			if ( $reset ) {
-				set_transient( $transient_name, 0, 60 );
 			}
 
 			return $continue;
@@ -1027,25 +1028,20 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Update the image smushed count in transient
 		 *
-		 * @param string $key
+		 * @param string $key  Database key.
 		 */
-		function update_smush_count( $key = 'bulk_sent_count' ) {
-
+		public function update_smush_count( $key = 'bulk_sent_count' ) {
 			$transient_name = WP_SMUSH_PREFIX . $key;
 
 			$bulk_sent_count = get_transient( $transient_name );
 
-			// If bulk sent count is not set
+			// If bulk sent count is not set.
 			if ( false === $bulk_sent_count ) {
-
-				// start transient at 0
+				// Start transient at 0.
 				set_transient( $transient_name, 1, 200 );
-
 			} elseif ( $bulk_sent_count < $this->max_free_bulk ) {
-
-				// If lte $this->max_free_bulk images are sent, increment
+				// If lte $this->max_free_bulk images are sent, increment.
 				set_transient( $transient_name, $bulk_sent_count + 1, 200 );
-
 			}
 		}
 

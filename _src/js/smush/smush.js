@@ -100,15 +100,15 @@ class Smush {
 	 * @param {boolean} is_bulk_resmush
 	 * @param {int}     id
 	 * @param {string}  send_url
-	 * @param {int}     getnxt
+	 * @param {boolean} new_scan  Is this a new scan? Or just a next image?
 	 * @param {string}  nonce
 	 * @returns {*|jQuery.promise|void}
 	 */
-	static ajax( is_bulk_resmush, id, send_url, getnxt, nonce ) {
+	static ajax( is_bulk_resmush, id, send_url, new_scan, nonce ) {
 		const param = jQuery.param({
 			is_bulk_resmush: is_bulk_resmush,
 			attachment_id: id,
-			get_next: getnxt,
+			new_scan: new_scan,
 			_nonce: nonce
 		});
 
@@ -146,7 +146,7 @@ class Smush {
 		jQuery( '.sui-notice-top' ).remove();
 
 		// Hide the bulk limit message.
-		jQuery( 'p.smush-error-message.limit_exceeded' ).remove();
+		jQuery( '.wp-smush-bulk-progress-bar-wrapper .sui-notice-warning' ).hide();
 
 		// Hide parent wrapper, if there are no other messages.
 		if ( 0 >= jQuery( 'div.smush-final-log .smush-bulk-error-row' ).length ) {
@@ -736,9 +736,11 @@ class Smush {
 	/**
 	 * Send ajax request for Smushing single and bulk, call update_progress on ajax response.
 	 *
+	 * @param {boolean} new_scan  If set to true, will reset the bulk Smush limit for free users.
+	 *
 	 * @returns {*|{}}
 	 */
-	call_ajax() {
+	call_ajax( new_scan = false ) {
 		let nonce_value = '';
 		// Remove from array while processing so we can continue where left off.
 		this.current_id = this.is_bulk ? this.ids.shift() : this.button.data( 'id' );
@@ -753,41 +755,21 @@ class Smush {
 
 		const self = this;
 
-		this.request = Smush.ajax( this.is_bulk_resmush, this.current_id, this.url, 0, nonce_value )
+		this.request = Smush.ajax( this.is_bulk_resmush, this.current_id, this.url, new_scan, nonce_value )
 			.done( function ( res ) {
-				// Increase the error count except if bulk request limit exceeded.
+				// If no response or success is false, do not process further. Increase the error count except if bulk request limit exceeded.
 				if ( 'undefined' === typeof res.success || ( 'undefined' !== typeof res.success && false === res.success && 'undefined' !== typeof res.data && 'limit_exceeded' !== res.data.error ) ) {
 					self.increment_errors( self.current_id );
+
+					/** @var {string} res.data.file_name */
+					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name );
+
+					// Print the error on screen.
+					self.log.find( '.smush-bulk-errors' ).append( error_msg );
+					self.log.show();
 				} else if ( 'undefined' !== typeof res.success && res.success ) {
 					// Increment the smushed count if image smushed without errors.
 					self.increment_smushed( self.current_id );
-				}
-
-				// If no response or success is false, do not process further.
-				if ( ( ! res || ! res.success ) && ( 'undefined' !== typeof res && 'undefined' !== typeof res.data && 'undefined' !== typeof res.data.error ) ) {
-					/**
-					 * @var {string} res.data.error_message
-					 * @var {string} res.data.file_name
-					 */
-					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name );
-
-					// Handle bulk smush limit.
-					// TODO: check that we need this.
-					if ( 'undefined' !== typeof res.data.error && 'limit_exceeded' === res.data.error ) {
-						const ajax_error_message = jQuery( '.wp-smush-ajax-error' );
-						// If we have ajax error message div, append after it.
-						if ( ajax_error_message.length > 0 ) {
-							ajax_error_message.after( error_msg );
-						} else {
-							// Otherwise prepend.
-							self.log.find( '.smush-bulk-errors' ).prepend( error_msg );
-						}
-					} else if ( 'undefined' !== typeof res.data.error_message && '' !== res.data.error_message && jQuery( 'div.smush-final-log' ).length > 0 ) {
-						// Print the error on screen.
-						self.log.find( '.smush-bulk-errors' ).append( error_msg );
-					}
-
-					self.log.show();
 				}
 
 				// Check whether to show the warning notice or not.
@@ -798,6 +780,13 @@ class Smush {
 				 * back to Smush variable, and reset variables to allow the user to continue bulk Smush.
 				 */
 				if ( 'undefined' !== typeof res.data && 'limit_exceeded' === res.data.error && ! self.is_resolved() ) {
+					// Show error message.
+					const bulk_error_message = jQuery( '.wp-smush-bulk-progress-bar-wrapper' );
+					/** @var {string} res.data.error_message */
+					bulk_error_message.find( '.sui-notice-warning' )
+						.html( '<p>' + res.data.error_message + '</p>' )
+						.show();
+
 					// Add a data attribute to the Smush button, to stop sending ajax.
 					self.button.attr( 'continue_smush', false );
 
@@ -861,10 +850,10 @@ class Smush {
 	run() {
 		// If bulk and we have a definite number of IDs.
 		if ( this.is_bulk && this.ids.length > 0 )
-			this.call_ajax();
+			this.call_ajax( true );
 
 		if ( ! this.is_bulk )
-			this.call_ajax();
+			this.call_ajax( true );
 	};
 
 	/**

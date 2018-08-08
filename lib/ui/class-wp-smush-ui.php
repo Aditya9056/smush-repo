@@ -1121,6 +1121,8 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					?>
 				</p>
 
+				<div class="sui-notice sui-notice-warning sui-hidden"></div>
+
 				<div class="sui-progress-block sui-progress-can-close">
 					<div class="sui-progress">
 						<div class="sui-progress-text sui-icon-loader sui-loading">
