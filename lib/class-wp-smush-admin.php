@@ -820,28 +820,30 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 *
 		 * @uses smush_single()
 		 */
-		function smush_manual() {
-
-			// turn off errors for ajax result
+		public function smush_manual() {
+			// Turn off errors for ajax result.
 			@error_reporting( 0 );
 
 			if ( ! current_user_can( 'upload_files' ) ) {
-				wp_die( __( "You don't have permission to work with uploaded files.", 'wp-smushit' ) );
+				wp_die( esc_html__( "You don't have permission to work with uploaded files.", 'wp-smushit' ) );
 			}
 
 			if ( ! isset( $_GET['attachment_id'] ) ) {
-				wp_die( __( 'No attachment ID was provided.', 'wp-smushit' ) );
+				wp_die( esc_html__( 'No attachment ID was provided.', 'wp-smushit' ) );
 			}
 
-			$attachemnt_id = intval( $_GET['attachment_id'] );
+			$attachment_id = intval( $_GET['attachment_id'] );
 
 			/**
-			 * Filter: wp_smush_image
+			 * Filter: wp_smush_image.
 			 *
-			 * Whether to smush the given attachment id or not
+			 * Whether to smush the given attachment ID or not.
+			 *
+			 * @param bool $status         Smush all attachments by default.
+			 * @param int  $attachment_id  Attachment ID.
 			 */
-			if ( ! apply_filters( 'wp_smush_image', true, $attachemnt_id ) ) {
-				$error = $this->filter_error( esc_html__( 'Attachment Skipped - Check `wp_smush_image` filter.', 'wp-smushit' ), $attachemnt_id );
+			if ( ! apply_filters( 'wp_smush_image', true, $attachment_id ) ) {
+				$error = $this->filter_error( esc_html__( 'Attachment Skipped - Check `wp_smush_image` filter.', 'wp-smushit' ), $attachment_id );
 				wp_send_json_error(
 					array(
 						'error_msg'    => sprintf( '<p class="wp-smush-error-message">%s</p>', $error ),
@@ -851,93 +853,92 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			$this->initialise();
-			// Pass on the attachment id to smush single function
-			$this->smush_single( $attachemnt_id );
+			// Pass on the attachment id to smush single function.
+			$this->smush_single( $attachment_id );
 		}
 
 		/**
 		 * Smush single images
 		 *
-		 * @param int  $attachment_id
-		 * @param bool $return        Return/Echo the stats
+		 * @param int  $attachment_id  Attachment ID.
+		 * @param bool $return         Return/echo the stats.
 		 *
-		 * @return array|string|void
+		 * @return array|string
 		 */
-		function smush_single( $attachment_id, $return = false ) {
+		public function smush_single( $attachment_id, $return = false ) {
 			// If the smushing option is already set, return the status.
-			if ( get_option( 'smush-in-progress-' . $attachment_id, false ) || get_option( "wp-smush-restore-$attachment_id", false ) ) {
-				// Get the button status
+			if ( get_option( "smush-in-progress-{$attachment_id}", false ) || get_option( "wp-smush-restore-{$attachment_id}", false ) ) {
+				// Get the button status.
 				$status = $this->set_status( $attachment_id, false, true );
 				if ( $return ) {
 					return $status;
-				} else {
-					wp_send_json_success( $status );
 				}
+
+				wp_send_json_success( $status );
 			}
 
-			// Set a transient to avoid multiple request
-			update_option( 'smush-in-progress-' . $attachment_id, true );
+			// Set a transient to avoid multiple request.
+			update_option( "smush-in-progress-{$attachment_id}", true );
 
 			global $wpsmush_pngjpg, $wpsmush_helper;
 
 			$attachment_id = absint( (int) ( $attachment_id ) );
 
-			// Get the file path for backup
+			// Get the file path for backup.
 			$attachment_file_path = $wpsmush_helper->get_attached_file( $attachment_id );
 
-			// Download file if not exists
+			// Download file if not exists.
 			do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
 
-			// Take Backup
+			// Take backup.
 			global $wpsmush_backup;
 			$wpsmush_backup->create_backup( $attachment_file_path, '', $attachment_id );
 
-			// Get the image metadata from $_POST
+			// Get the image metadata from $_POST.
 			$original_meta = ! empty( $_POST['metadata'] ) ? $this->format_meta_from_post( $_POST['metadata'] ) : '';
 
 			$original_meta = empty( $original_meta ) ? wp_get_attachment_metadata( $attachment_id ) : $original_meta;
 
-			// Send image for resizing, if enabled resize first before any other operation
+			// Send image for resizing, if enabled resize first before any other operation.
 			$updated_meta = $this->resize_image( $attachment_id, $original_meta );
 
-			// Convert PNGs to JPG
+			// Convert PNGs to JPG.
 			$updated_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $updated_meta );
 
 			$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 
-			// Smush the image
+			// Smush the image.
 			$smush = $this->resize_from_meta_data( $original_meta, $attachment_id );
 
-			// Update the details, after smushing, so that latest image is used in hook
+			// Update the details, after smushing, so that latest image is used in hook.
 			wp_update_attachment_metadata( $attachment_id, $original_meta );
 
-			// Get the button status
+			// Get the button status.
 			$status = $this->set_status( $attachment_id, false, true );
 
-			// Delete the transient after attachment meta is updated
+			// Delete the transient after attachment meta is updated.
 			delete_option( 'smush-in-progress-' . $attachment_id );
 
-			// Send Json response if we are not suppose to return the results
-			/** Send stats */
+			// Send Json response if we are not suppose to return the results.
 			if ( is_wp_error( $smush ) ) {
 				if ( $return ) {
 					return array( 'error' => $smush->get_error_message() );
-				} else {
-					wp_send_json_error(
-						array(
-							'error_msg'    => '<p class="wp-smush-error-message">' . $smush->get_error_message() . '</p>',
-							'show_warning' => intval( $this->show_warning() ),
-						)
-					);
 				}
-			} else {
-				$this->update_resmush_list( $attachment_id );
-				if ( $return ) {
-					return $status;
-				} else {
-					wp_send_json_success( $status );
-				}
+
+				wp_send_json_error(
+					array(
+						'error_msg'    => '<p class="wp-smush-error-message">' . $smush->get_error_message() . '</p>',
+						'show_warning' => intval( $this->show_warning() ),
+					)
+				);
 			}
+
+			$this->update_resmush_list( $attachment_id );
+			if ( $return ) {
+				return $status;
+			}
+
+			wp_send_json_success( $status );
 		}
 
 		/**
