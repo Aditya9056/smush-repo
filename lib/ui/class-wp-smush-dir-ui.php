@@ -127,6 +127,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 			$failed_items = get_transient( 'wp-smush-dir-scan-failed-items' );
 			$notice_message = esc_html__( 'All images failed to optimize.', 'wp-smushit' );
 			$notice_class = 'sui-notice-error';
+
 			// Not all images optimized.
 			if ( ! empty( $failed_items ) && ! empty( $items ) ) :
 				$notice_message = sprintf(
@@ -145,6 +146,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 				);
 				$notice_class = 'sui-notice-success';
 			endif;
+			
 			// If we have counts, show the notice.
 			if ( ! empty( $items ) || ! empty( $failed_items ) ) :
 				// Delete the transients.
