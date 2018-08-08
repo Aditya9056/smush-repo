@@ -14,8 +14,12 @@ class Smush {
 	 * @param {string}  type    Accepts: 'nextgen', 'media'.
 	 */
 	constructor( button, bulk, type = 'media' ) {
+		// TODO: errors will reset after bulk smush limit is reached and user clicks continue. Might be
 		this.errors  = [];
-		this.smushed = [];
+		// Smushed and total we take from the progress bar... I don't like this :-(
+		const progressBar = jQuery( '.bulk-smush-wrapper .sui-progress-state-text' );
+		this.smushed = parseInt( progressBar.find( 'span:first-child' ).html() );
+		this.total = parseInt( progressBar.find( 'span:last-child' ).html() );
 
 		//If smush attribute is not defined, Need not skip re-Smush IDs.
 		this.skip_resmush = ! ( 'undefined' === typeof button.data( 'smush' ) || ! button.data( 'smush' ) );
@@ -36,9 +40,6 @@ class Smush {
 		} else {
 			this.ids = ids;
 		}
-
-		// Total count.
-		this.total = this.ids.length;
 
 		this.is_bulk_resmush = 0 < wp_smushit_data.resmush.length && ! this.skip_resmush;
 
@@ -507,11 +508,8 @@ class Smush {
 		if ( this.ids.length > 0 ) {
 			const progress = jQuery( '.wp-smush-bulk-progress-bar-wrapper' );
 			progress.addClass( 'wp-smush-exceed-limit' )
-				.find( '.sui-progress-close' )
-				/** @var {string} wp_smush_msgs.bulk_resume */
-				.attr( 'data-tooltip', wp_smush_msgs.bulk_resume )
-				.removeClass( 'wp-smush-cancel-bulk' )
-				.addClass( 'wp-smush-all' ); // TODO: can we not add this class and instead add another listener?
+				.find( '.sui-progress-block .sui-progress-close' ).addClass( 'sui-hidden' )
+				.find( '.sui-progress-block .wp-smush-all' ).removeClass( 'sui-hidden' );
 
 			progress.find( '.sui-box-body.sui-hidden' ).removeClass( 'sui-hidden' );
 		} else {
@@ -567,9 +565,6 @@ class Smush {
 
 		// No need to increase attachment count, resize, conversion savings for directory Smush.
 		if ( 'media' === type ) {
-			// TODO: see if we need this, Smush has a total var now, don't think there is a need for this (and the one below)
-			//wp_smushit_data.count_smushed = parseInt( wp_smushit_data.count_smushed ) + 1;
-
 			// Increase Smushed image count.
 			wp_smushit_data.count_images = parseInt( wp_smushit_data.count_images ) + parseInt( image_stats.count );
 
@@ -590,7 +585,6 @@ class Smush {
 			//Increase smushed image count
 			wp_smushit_data.count_images = parseInt( wp_smushit_data.count_images ) + 1;
 		} else if ( 'nextgen' === type ) {
-			//wp_smushit_data.count_smushed = parseInt( wp_smushit_data.count_smushed ) + 1;
 			wp_smushit_data.count_supersmushed = parseInt( wp_smushit_data.count_supersmushed ) + 1;
 
 			// Increase Smushed image count.
@@ -633,7 +627,7 @@ class Smush {
 
 		if ( ! this.is_bulk_resmush ) {
 			// Handle progress for normal bulk smush.
-			progress = ( ( this.smushed.length + this.errors.length ) / this.total ) * 100;
+			progress = ( ( this.smushed + this.errors.length ) / this.total ) * 100;
 		} else {
 			// If the request was successful, update the progress bar.
 			if ( _res.success ) {
@@ -652,7 +646,7 @@ class Smush {
 
 			// Handle progress for normal bulk Smush. Set progress bar width.
 			if ( 'undefined' !== typeof this.ids && 'undefined' !== typeof this.total && this.total > 0 ) {
-				progress = ( ( this.smushed.length + this.errors.length ) / this.total ) * 100;
+				progress = ( ( this.smushed + this.errors.length ) / this.total ) * 100;
 			}
 		}
 
@@ -670,7 +664,7 @@ class Smush {
 		this.update_remaining_count();
 
 		// Increase the progress bar and counter.
-		this._update_progress( this.smushed.length + this.errors.length, WP_Smush.helpers.precise_round( progress, 1 ) );
+		this._update_progress( this.smushed + this.errors.length, WP_Smush.helpers.precise_round( progress, 1 ) );
 
 		// Update stats and counts.
 		Smush.update_stats( this.smush_type );
@@ -690,8 +684,11 @@ class Smush {
 		jQuery( 'span.wp-smush-images-percent' ).html( width );
 		// Progress bar.
 		jQuery( '.bulk-smush-wrapper .wp-smush-progress-inner' ).css( 'width', width + '%' );
+
 		// Progress bar status.
-		jQuery( '.bulk-smush-wrapper .sui-progress-state-text' ).find( 'span' ).html( count + '/' + this.total );
+		jQuery( '.bulk-smush-wrapper .sui-progress-state-text' )
+			.find( 'span:first-child' ).html( count )
+			.find( 'span:last-child' ).html( this.total );
 	};
 
 	/**
@@ -728,7 +725,7 @@ class Smush {
 	 * @param {int} id
 	 */
 	increment_smushed( id ) {
-		this.smushed.push( id );
+		this.smushed = this.smushed + 1;
 	}
 
 	/**
@@ -790,9 +787,6 @@ class Smush {
 
 					// Reinsert the current ID.
 					wp_smushit_data.unsmushed.unshift( self.current_id );
-
-					// Update the remaining count to length of remaining IDs + 1 (current ID).
-					self.update_remaining_count();
 				} else if ( self.is_bulk ) {
 					self.update_progress( res );
 				} else if ( 0 === self.ids.length ) {

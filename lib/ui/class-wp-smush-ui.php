@@ -1135,11 +1135,14 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<button class="sui-progress-close sui-tooltip wp-smush-cancel-bulk" type="button" data-tooltip="<?php esc_html_e( 'Stop current bulk smush process.', 'wp-smushit' ); ?>">
 						<i class="sui-icon-close"></i>
 					</button>
+					<button class="sui-progress-close sui-tooltip wp-smush-all sui-hidden" type="button" data-tooltip="<?php esc_html_e( 'Resume scan.', 'wp-smushit' ); ?>">
+						<i class="sui-icon-close"></i>
+					</button>
 				</div>
 
 				<div class="sui-progress-state">
 					<span class="sui-progress-state-text">
-						<span>0/<?php echo  absint( $count->remaining_count ); ?></span> <?php esc_html_e( 'images optimized', 'wp-smushit' ); ?>
+						<span>0</span>/<span><?php echo  absint( $count->remaining_count ); ?></span> <?php esc_html_e( 'images optimized', 'wp-smushit' ); ?>
 					</span>
 				</div>
 
