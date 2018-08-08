@@ -100,15 +100,13 @@ class Smush {
 	 * @param {boolean} is_bulk_resmush
 	 * @param {int}     id
 	 * @param {string}  send_url
-	 * @param {boolean} new_scan  Is this a new scan? Or just a next image?
 	 * @param {string}  nonce
 	 * @returns {*|jQuery.promise|void}
 	 */
-	static ajax( is_bulk_resmush, id, send_url, new_scan, nonce ) {
+	static ajax( is_bulk_resmush, id, send_url, nonce ) {
 		const param = jQuery.param({
 			is_bulk_resmush: is_bulk_resmush,
 			attachment_id: id,
-			new_scan: new_scan,
 			_nonce: nonce
 		});
 
@@ -736,11 +734,9 @@ class Smush {
 	/**
 	 * Send ajax request for Smushing single and bulk, call update_progress on ajax response.
 	 *
-	 * @param {boolean} new_scan  If set to true, will reset the bulk Smush limit for free users.
-	 *
 	 * @returns {*|{}}
 	 */
-	call_ajax( new_scan = false ) {
+	call_ajax() {
 		let nonce_value = '';
 		// Remove from array while processing so we can continue where left off.
 		this.current_id = this.is_bulk ? this.ids.shift() : this.button.data( 'id' );
@@ -755,7 +751,7 @@ class Smush {
 
 		const self = this;
 
-		this.request = Smush.ajax( this.is_bulk_resmush, this.current_id, this.url, new_scan, nonce_value )
+		this.request = Smush.ajax( this.is_bulk_resmush, this.current_id, this.url, nonce_value )
 			.done( function ( res ) {
 				// If no response or success is false, do not process further. Increase the error count except if bulk request limit exceeded.
 				if ( 'undefined' === typeof res.success || ( 'undefined' !== typeof res.success && false === res.success && 'undefined' !== typeof res.data && 'limit_exceeded' !== res.data.error ) ) {
@@ -850,10 +846,10 @@ class Smush {
 	run() {
 		// If bulk and we have a definite number of IDs.
 		if ( this.is_bulk && this.ids.length > 0 )
-			this.call_ajax( true );
+			this.call_ajax();
 
 		if ( ! this.is_bulk )
-			this.call_ajax( true );
+			this.call_ajax();
 	};
 
 	/**

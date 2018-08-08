@@ -652,10 +652,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 			}
 
-			$reset = isset( $_REQUEST['new_scan'] ) && 'true' === $_REQUEST['new_scan']; // Input var ok.
-
 			// If the bulk smush needs to be stopped.
-			if ( ! $this->validate_install() && ! $this->check_bulk_limit( $reset ) ) {
+			if ( ! $this->validate_install() && ! $this->check_bulk_limit() ) {
 				wp_send_json_error(
 					array(
 						'error'         => 'limit_exceeded',
@@ -1004,12 +1002,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		public function check_bulk_limit( $reset = false, $key = 'bulk_sent_count' ) {
 			$transient_name = WP_SMUSH_PREFIX . $key;
 
-			// If we need to reset the transient.
-			if ( $reset ) {
-				set_transient( $transient_name, 0, 60 );
-			}
-
-			$bulk_sent_count = get_transient( $transient_name );
+			$bulk_sent_count = (int) get_transient( $transient_name );
 
 			// Check if bulk smush limit is less than limit.
 			if ( ! $bulk_sent_count || $bulk_sent_count < $this->max_free_bulk ) {
@@ -1020,6 +1013,11 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$reset    = true;
 			} else {
 				$continue = false;
+			}
+
+			// If we need to reset the transient.
+			if ( $reset ) {
+				set_transient( $transient_name, 0, 60 );
 			}
 
 			return $continue;
