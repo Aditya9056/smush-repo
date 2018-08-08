@@ -103,7 +103,7 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 
 const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
-		'shared-ui': '@wpmudev/shared-ui',
+		'shared-ui': './_src/js//shared-ui.js',
 		'admin': './_src/js/app.js',
 		'media': './_src/js/media.js',
 		'resize-detection': './_src/js/public-resize-detection.js',
@@ -135,7 +135,6 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 	plugins: [
 		// Automatically load modules instead of having to import or require them everywhere.
 		new webpack.ProvidePlugin( {
-			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js', // Vendor script in Shared UI.
 			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
 		} ),
 		new CleanDir( ['assets/js'] )
