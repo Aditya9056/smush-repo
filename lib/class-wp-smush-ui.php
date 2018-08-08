@@ -1574,11 +1574,11 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				<div class="sui-row">
 					<div class="sui-col">
 						<label aria-labelledby="<?php echo $prefix; ?>label-max-width" for="<?php echo $prefix . $name . '_width'; ?>" class="sui-label"><?php esc_html_e( 'Max width', 'wp-smushit' ); ?></label>
-						<input aria-required="true" type="number" aria-describedby="<?php echo $prefix; ?>resize-note" id="<?php echo $prefix . $name . '_width'; ?>" name="<?php echo $prefix . $name . '_width'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>">
+						<input aria-required="true" type="number" aria-describedby="<?php echo $prefix; ?>resize-note" id="<?php echo $prefix . $name . '_width'; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_width'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['width'] ) && '' != $resize_sizes['width'] ? $resize_sizes['width'] : $p_width; ?>">
 					</div>
 					<div class="sui-col">
 						<label aria-labelledby="<?php echo $prefix; ?>label-max-height" for="<?php echo $prefix . $name . '_height'; ?>" class="sui-label"><?php esc_html_e( 'Max height', 'wp-smushit' ); ?></label>
-						<input aria-required="true" type="number" aria-describedby="<?php echo $prefix; ?>resize-note" id="<?php echo $prefix . $name . '_height'; ?>" name="<?php echo $prefix . $name . '_height'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>">
+						<input aria-required="true" type="number" aria-describedby="<?php echo $prefix; ?>resize-note" id="<?php echo $prefix . $name . '_height'; ?>" name="<?php echo WP_SMUSH_PREFIX . $name . '_height'; ?>" class="sui-form-control wp-smush-resize-input" value="<?php echo isset( $resize_sizes['height'] ) && '' != $resize_sizes['height'] ? $resize_sizes['height'] : $p_height; ?>">
 					</div>
 				</div>
 				<div class="sui-description" id="<?php echo $prefix; ?>resize-note"><?php printf( esc_html__( "Currently, your largest image size is set at %s%dpx wide %s %dpx high%s.", "wp-smushit" ), '<strong>', $max_sizes['width'], '&times;', $max_sizes['height'], '</strong>' ); ?></div>
