@@ -146,6 +146,12 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 */
 		public function directory_smush_finish() {
 			$items = isset( $_POST['items'] ) ? absint( $_POST['items'] ) : 0; // Input var ok.
+			$failed = isset( $_POST['failed'] ) ? absint( $_POST['failed'] ) : 0; // Input var ok.
+			// If any images failed to smush, store count.
+			if ( $failed > 0 ) {
+				set_transient( 'wp-smush-dir-scan-failed-items', $failed, 60 * 5 ); // 5 minutes max.
+			}
+			// Store optimized items count.
 			set_transient( 'wp-smush-show-dir-scan-notice', $items, 60 * 5 ); // 5 minutes max.
 			$this->scanner->reset_scan();
 			wp_send_json_success();

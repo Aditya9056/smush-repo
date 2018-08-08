@@ -86,26 +86,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 						</span>
 					</div>
 					<!-- Notices -->
-					<?php
-					$items = get_transient( 'wp-smush-show-dir-scan-notice' );
-					if ( isset( $items ) && 0 < $items ) :
-						delete_transient( 'wp-smush-show-dir-scan-notice' );
-						?>
-						<div class="sui-notice-top sui-notice-success sui-can-dismiss">
-							<p class="sui-notice-content">
-								<?php
-								printf(
-									/* translators: %d: number of images */
-									esc_html__( '%d images were successfully optimized.', 'wp-smushit' ),
-									absint( $items )
-								);
-								?>
-							</p>
-							<span class="sui-notice-dismiss">
-								<a role="button" href="#" aria-label="Dismiss" class="sui-icon-check"></a>
-							</span>
-						</div>
-					<?php endif; ?>
+					<?php echo $this->smush_result_notice(); ?>
 					<div class="sui-notice sui-notice-info wp-smush-dir-limit sui-hidden">
 						<p>
 							<?php
@@ -130,6 +111,56 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 			}
 
 			echo '</div>';
+		}
+
+		/**
+		 * Show directory smush result notice.
+		 *
+		 * If we are redirected from a directory smush finish page,
+		 * show the result notice if success/fail count is available.
+		 *
+		 * @since 2.9.0
+		 */
+		public function smush_result_notice() {
+			// Get the counts from transient.
+			$items = get_transient( 'wp-smush-show-dir-scan-notice' );
+			$failed_items = get_transient( 'wp-smush-dir-scan-failed-items' );
+			$notice_message = esc_html__( 'All images failed to optimize.', 'wp-smushit' );
+			$notice_class = 'sui-notice-error';
+			// Not all images optimized.
+			if ( ! empty( $failed_items ) && ! empty( $items ) ) :
+				$notice_message = sprintf(
+					/* translators: %1$d: number of images smushed and %1$d number of failed. */
+					esc_html__( '%1$d images were successfully optimized and %2$d images failed.', 'wp-smushit' ),
+					absint( $items ),
+					absint( $failed_items )
+				);
+				$notice_class = 'sui-notice-warning';
+			// Yay! All images were optimized.
+			elseif ( ! empty( $items ) && empty( $failed_items ) ) :
+				$notice_message = sprintf(
+					/* translators: %d: number of images */
+					esc_html__( '%d images were successfully optimized.', 'wp-smushit' ),
+					absint( $items )
+				);
+				$notice_class = 'sui-notice-success';
+			endif;
+			// If we have counts, show the notice.
+			if ( ! empty( $items ) || ! empty( $failed_items ) ) :
+				// Delete the transients.
+				delete_transient( 'wp-smush-show-dir-scan-notice' );
+				delete_transient( 'wp-smush-dir-scan-failed-items' );
+				?>
+				<div class="sui-notice-top sui-can-dismiss <?php echo $notice_class; ?>">
+					<p class="sui-notice-content">
+						<?php echo $notice_message; ?>
+					</p>
+					<span class="sui-notice-dismiss">
+						<a role="button" href="#" aria-label="Dismiss" class="sui-icon-check"></a>
+					</span>
+				</div>
+				<?php
+			endif;
 		}
 
 		/**

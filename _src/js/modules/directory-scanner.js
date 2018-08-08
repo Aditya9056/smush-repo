@@ -13,6 +13,7 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 	totalSteps = parseInt( totalSteps );
 	currentStep = parseInt( currentStep );
 	let cancelling = false;
+	let failedItems = 0;
 
 	let obj = {
 		scan: function() {
@@ -40,7 +41,7 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 		},
 
 		onFinishStep: function( progress ) {
-			$( '.wp-smush-progress-dialog .sui-progress-state-text' ).html( currentStep + '/' + totalSteps + ' ' + wp_smush_msgs.progress_smushed );
+			$( '.wp-smush-progress-dialog .sui-progress-state-text' ).html( ( currentStep - failedItems ) + '/' + totalSteps + ' ' + wp_smush_msgs.progress_smushed );
 			WP_Smush.directory.updateProgressBar( progress );
 		},
 
@@ -91,11 +92,21 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 				} else if ( 'undefined' !== typeof response.data.error && 'dir_smush_limit_exceeded' === response.data.error ) {
 					// Limit reached. Stop.
 					obj.limitReached();
+				} else {
+					// Error? never mind, continue, but count them.
+					failedItems++;
+					currentStep++;
+					remainingSteps = remainingSteps - 1;
+					obj.onFinishStep( obj.getProgress() );
+					step( remainingSteps );
 				}
 			} );
 		} else {
-			$.post( ajaxurl, { action: 'directory_smush_finish', items: totalSteps },
-				( response ) => obj.onFinish( response ) );
+			$.post( ajaxurl, {
+				action: 'directory_smush_finish',
+				items: ( totalSteps - failedItems ),
+				failed: failedItems,
+			}, ( response ) => obj.onFinish( response ) );
 		}
 	};
 
