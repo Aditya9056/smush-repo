@@ -263,7 +263,7 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 */
 		public function should_continue() {
 			// Do not show directory smush, if not main site in a network.
-			if ( is_multisite() && ! is_main_site() ) {
+			if ( ! is_main_site() || is_network_admin() ) {
 				return false;
 			}
 
