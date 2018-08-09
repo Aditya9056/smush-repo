@@ -564,7 +564,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			global $wpsmush_db, $wpsmush_dir;
 
 			// Set directory smush status.
-			$this->dir_stats = $wpsmush_dir->total_stats();
+			$this->dir_stats = $wpsmush_dir->should_continue() ? $wpsmush_dir->total_stats() : array();
 
 			// Setup Attachments and total count
 			$wpsmush_db->total_count( true );
