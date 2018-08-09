@@ -689,7 +689,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						'error'         => 'skipped',
 						'error_message' => $this->filter_error( esc_html__( 'Skipped with wp_smush_image filter', 'wp-smushit' ) ),
 						'show_warning'  => intval( $this->show_warning() ),
-						'file_name'     => $file_name,
+						'file_name'     => $wpsmush_helper->get_image_media_link( $attachment_id, $file_name ),
+						'thumbnail'     => wp_get_attachment_image( $attachment_id ),
 					)
 				);
 			}
@@ -784,7 +785,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 						'error_message' => $error_message,
 						'show_warning'  => intval( $this->show_warning() ),
 						'error_class'   => isset( $error_class ) ? $error_class : '',
-						'file_name'     => $file_name,
+						'file_name'     => $wpsmush_helper->get_image_media_link( $attachment_id, $file_name ),
 					)
 				);
 			}

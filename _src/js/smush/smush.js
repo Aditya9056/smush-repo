@@ -755,7 +755,7 @@ class Smush {
 					self.increment_errors( self.current_id );
 
 					/** @var {string} res.data.file_name */
-					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name );
+					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name, res.data.thumbnail );
 
 					// Print the error on screen.
 					self.log.find( '.smush-bulk-errors' ).append( error_msg );
@@ -816,14 +816,17 @@ class Smush {
 	 *
 	 * @param {string} errorMsg   Error message.
 	 * @param {string} fileName   File name.
+	 * @param {string} thumbnail  Thumbnail for image (if available).
 	 *
 	 * @returns {string}
 	 */
-	static prepare_error_row( errorMsg, fileName ) {
+	static prepare_error_row( errorMsg, fileName, thumbnail ) {
+		const thumbDiv = ( 'undefined' === typeof thumbnail ) ? '<i class="sui-icon-photo-picture" aria-hidden="true"></i>' : thumbnail;
+		const fileLink = ( 'undefined' === fileName || 'undefined' === typeof fileName ) ? 'undefined' : fileName;
+
 		return '<div class="smush-bulk-error-row">' +
-				'<div class="smush-bulk-image-data">' +
-					'<i class="sui-icon-photo-picture" aria-hidden="true"></i>' +
-					'<span class="smush-image-name">' + fileName + '</span>' +
+				'<div class="smush-bulk-image-data">' + thumbDiv +
+					'<span class="smush-image-name">' + fileLink + '</span>' +
 					'<span class="smush-image-error">' + errorMsg + '</span>' +
 				'</div>' +
 				'<div class="smush-bulk-image-actions">' +
@@ -860,7 +863,7 @@ class Smush {
 				let msg = wp_smush_msgs.error_in_bulk
 					.replace( "{{errors}}", self.errors.length )
 					.replace( "{{total}}", self.total )
-					.replace( "{{smushed}}", self.smushed.length );
+					.replace( "{{smushed}}", ( self.smushed.length ) ? self.smushed.length : 0 );
 
 				jQuery( '.wp-smush-all-done' )
 					.addClass( 'sui-notice-warning' )
