@@ -67,8 +67,8 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 				$this->scanner->reset_scan();
 			}
 
-			// Check directory smush table.
-			add_action( 'admin_init', array( $this, 'check_table' ) );
+			// Check directory smush table after screen is set.
+			add_action( 'current_screen', array( $this, 'check_table' ) );
 
 			// Check to see if the scanner should be running.
 			add_action( 'admin_footer', array( $this, 'check_scan' ) );
@@ -1204,6 +1204,16 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 * @since 2.9.0
 		 */
 		public function check_table() {
+			global $wpsmushit_admin;
+
+			// Get current screen.
+			$current_screen = get_current_screen();
+
+			// Only run on required pages.
+			if ( ! empty( $current_screen ) && ! in_array( $current_screen->id, $wpsmushit_admin->pages, true ) ) {
+				return;
+			}
+
 			// Create custom table for directory smush.
 			if ( ! $this->table_exist() ) {
 				WP_Smush_Installer::directory_smush_table();
