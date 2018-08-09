@@ -276,6 +276,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 			// Admin pointer for new Smush installation.
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_pointer' ) );
+
+			// Smush image filter from Media Library.
+			add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
 		}
 
 		/**
@@ -2350,6 +2353,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_enqueue_script(
 				'smush-backbone-extension', WP_SMUSH_URL . 'assets/js/media.min.js', array(
 					'jquery',
+					'media-editor', // Used in image filters
 					'media-views',
 					'media-grid',
 					'wp-util',
@@ -2360,13 +2364,16 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			wp_localize_script(
 				'smush-backbone-extension', 'smush_vars', array(
 					'strings' => array(
-						'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
+						'stats_label'  => esc_html__( 'Smush', 'wp-smushit' ),
+						'filter_all'   => esc_html__( 'Smush: All images', 'wp-smushit' ),
+						'filter_excl'  => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
 					),
 					'nonce'   => array(
 						'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
-					),
+					)
 				)
 			);
+
 		}
 
 		/**
@@ -2557,6 +2564,31 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			update_post_meta( $id, $this->smushed_meta_key, '' );
 
 			wp_send_json_success();
+		}
+
+		/**
+		 * Add our filter to the media query filter in Media Library.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @see wp_ajax_query_attachments()
+		 *
+		 * @param array $query
+		 *
+		 * @return mixed
+		 */
+		public function filter_media_query( $query ) {
+			if ( isset( $_POST['query']['stats'] ) && 'null' === $_POST['query']['stats'] ) {
+				$query['meta_query'] = array(
+					array(
+						'key'     => 'wp-smpro-smush-data',
+						'value'   => 'null',
+						'compare' => 'EXISTS',
+					),
+				);
+			}
+
+			return $query;
 		}
 
 	}
