@@ -755,7 +755,7 @@ class Smush {
 					self.increment_errors( self.current_id );
 
 					/** @var {string} res.data.file_name */
-					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name, res.data.thumbnail );
+					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name, res.data.thumbnail, self.current_id );
 
 					// Print the error on screen.
 					self.log.find( '.smush-bulk-errors' ).append( error_msg );
@@ -817,10 +817,11 @@ class Smush {
 	 * @param {string} errorMsg   Error message.
 	 * @param {string} fileName   File name.
 	 * @param {string} thumbnail  Thumbnail for image (if available).
+	 * @param {int}    id         Image ID.
 	 *
 	 * @returns {string}
 	 */
-	static prepare_error_row( errorMsg, fileName, thumbnail ) {
+	static prepare_error_row( errorMsg, fileName, thumbnail, id ) {
 		const thumbDiv = ( 'undefined' === typeof thumbnail ) ? '<i class="sui-icon-photo-picture" aria-hidden="true"></i>' : thumbnail;
 		const fileLink = ( 'undefined' === fileName || 'undefined' === typeof fileName ) ? 'undefined' : fileName;
 
@@ -830,7 +831,7 @@ class Smush {
 					'<span class="smush-image-error">' + errorMsg + '</span>' +
 				'</div>' +
 				'<div class="smush-bulk-image-actions">' +
-					'<button type="button" class="sui-button-icon sui-tooltip sui-tooltip-constrained sui-tooltip-top-left" data-tooltip="Ignore this image from bulk smushing">' +
+					'<button type="button" class="sui-button-icon sui-tooltip sui-tooltip-constrained sui-tooltip-top-left smush-ignore-image" data-tooltip="Ignore this image from bulk smushing" data-id="' + id + '">' +
 						'<i class="sui-icon-eye-hide" aria-hidden="true"></i>' +
 					'</button>' +
 				'</div>' +
@@ -863,7 +864,7 @@ class Smush {
 				let msg = wp_smush_msgs.error_in_bulk
 					.replace( "{{errors}}", self.errors.length )
 					.replace( "{{total}}", self.total )
-					.replace( "{{smushed}}", ( self.smushed.length ) ? self.smushed.length : 0 );
+					.replace( "{{smushed}}", self.smushed );
 
 				jQuery( '.wp-smush-all-done' )
 					.addClass( 'sui-notice-warning' )

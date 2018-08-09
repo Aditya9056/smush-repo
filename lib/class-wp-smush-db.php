@@ -52,16 +52,15 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 *
 		 * @return array $attachments
 		 */
-		function get_unsmushed_attachments() {
+		public function get_unsmushed_attachments() {
 			global $wpsmushit_admin, $wpsmush_db;
 
 			if ( ! isset( $_REQUEST['ids'] ) ) {
-
 				/** Do not fetch more than this, any time
 				Localizing all rows at once increases the page load and slows down everything */
 				$r_limit = apply_filters( 'wp_smush_max_rows', 5000 );
 
-				// Check if we can get the unsmushed attachments from the other two variables
+				// Check if we can get the unsmushed attachments from the other two variables.
 				if ( ! empty( $wpsmushit_admin->attachments ) && ! empty( $wpsmushit_admin->smushed_attachments ) ) {
 					$unsmushed_posts = array_diff( $wpsmushit_admin->attachments, $wpsmushit_admin->smushed_attachments );
 					$unsmushed_posts = ! empty( $unsmushed_posts ) && is_array( $unsmushed_posts ) ? array_slice( $unsmushed_posts, 0, $r_limit ) : array();

@@ -16,7 +16,7 @@ import Smush from '../smush/smush';
 			/**
 			 * Handle the Bulk Smush/Bulk re-Smush button click.
 			 */
-			$( 'body' ).on( 'click', 'button.wp-smush-all', function( e ) {
+			$( 'button.wp-smush-all' ).on( 'click', function( e ) {
 				e.preventDefault();
 
 				$( '.sui-notice-top.sui-notice-success' ).remove();
@@ -49,6 +49,23 @@ import Smush from '../smush/smush';
 					.addClass( 'sui-icon-loader sui-loading' );
 
 				new Smush( $( this ), true );
+			} );
+
+			/**
+			 * Ignore file from bulk Smush.
+			 *
+			 * @since 2.9.0
+			 */
+			$( 'body' ).on( 'click', '.smush-ignore-image', function() {
+				$(this).attr( 'disabled', true );
+				$(this).attr( 'data-tooltip' );
+				$(this).removeClass( 'sui-tooltip' );
+
+				$.post( ajaxurl, {
+					action: 'ignore_bulk_image',
+					id: $(this).attr( 'data-id' )
+				} );
+
 			} );
 
 		}

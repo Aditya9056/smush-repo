@@ -133,6 +133,15 @@
 
 				.smush-bulk-image-actions {
 					flex-basis: 30px;
+
+					button:disabled {
+						background-color: #F2F2F2;
+						cursor: default;
+
+						.sui-icon-eye-hide:before {
+							color: lighten( #333333, 50% );
+						}
+					}
 				}
 			}
 

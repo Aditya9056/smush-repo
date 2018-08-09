@@ -192,6 +192,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Network Settings Page.
 			add_action( 'network_admin_menu', array( $this, 'screen' ) );
 
+			// Ignore image from bulk Smush.
+			add_action( 'wp_ajax_ignore_bulk_image', array( $this, 'ignore_bulk_image' ) );
+
 			// Handle Smush Bulk Ajax.
 			add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
 
@@ -2539,6 +2542,23 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			</script>
 			<?php
 		}
+
+		/**
+		 * Ignore image from bulk Smush.
+		 *
+		 * @since 1.9.0
+		 */
+		public function ignore_bulk_image() {
+			if ( ! isset ( $_POST['id'] ) ) {
+				wp_send_json_error();
+			}
+
+			$id = absint( $_POST['id'] );
+			update_post_meta( $id, $this->smushed_meta_key, '' );
+
+			wp_send_json_success();
+		}
+
 	}
 
 	global $wpsmushit_admin;
