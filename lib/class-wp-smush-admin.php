@@ -503,7 +503,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				$data = array(
 					'count_supersmushed' => $this->super_smushed,
 					'count_smushed'      => $this->smushed_count,
-					'count_total'        => $this->total_count,
+					'count_total'        => $this->toversiontal_count,
 					'count_images'       => $this->stats['total_images'],
 					'count_resize'       => $this->stats['resize_count'],
 					'unsmushed'          => $this->unsmushed_attachments,

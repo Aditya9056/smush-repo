@@ -125,12 +125,17 @@ class WP_Smush_Installer {
 	 *
 	 * @since 2.9.0
 	 */
-	private static function directory_smush_table() {
+	public static function directory_smush_table() {
 		global $wpsmush_dir;
 
 		// Create a class object, if doesn't exists.
 		if ( empty( $wpsmush_dir ) && class_exists( 'WP_Smush_Dir' ) ) {
 			$wpsmush_dir = new WP_Smush_Dir();
+		}
+
+		// No need to continue on sub sites.
+		if ( ! $wpsmush_dir->should_continue() ) {
+			return;
 		}
 
 		// Create/upgrade directory smush table.

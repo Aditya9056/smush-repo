@@ -67,6 +67,9 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 				$this->scanner->reset_scan();
 			}
 
+			// Check directory smush table.
+			add_action( 'admin_init', array( $this, 'check_table' ) );
+
 			// Check to see if the scanner should be running.
 			add_action( 'admin_footer', array( $this, 'check_scan' ) );
 
@@ -297,7 +300,7 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 			 *                  are from latest scan only and not the whole list from db
 			 * meta       -> For any future use
 			 */
-			$sql = "CREATE TABLE {$wpdb->prefix}smush_dir_images (
+			$sql = "CREATE TABLE {$wpdb->base_prefix}smush_dir_images (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
 				path text NOT NULL,
 				path_hash CHAR(32),
@@ -1177,9 +1180,7 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 *
 		 * @todo: Update text
 		 */
-		public function check_for_table_error() {
-			global $wpdb;
-
+		public function show_table_error() {
 			$notice = '';
 
 			$current_screen = get_current_screen();
@@ -1187,8 +1188,7 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 				return $notice;
 			}
 
-			$smush_table = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'smush_dir_images' ) ) ); // Db call ok; no-cache ok.
-			if ( ! $smush_table ) {
+			if ( ! $this->table_exist() ) {
 				// Display a notice.
 				$notice  = '<div class="sui-notice sui-notice-warning missing_table"><p>';
 				$notice .= esc_html__( 'Directory smushing requires custom tables and it seems there was an error creating tables. For help, please contact our team on the support forums', 'wp-smushit' );
@@ -1196,6 +1196,48 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 			}
 
 			return $notice;
+		}
+
+		/**
+		 * Check and create dir smush table if required.
+		 *
+		 * @since 2.9.0
+		 */
+		public function check_table() {
+			// Create custom table for directory smush.
+			if ( ! $this->table_exist() ) {
+				WP_Smush_Installer::directory_smush_table();
+			}
+		}
+
+		/**
+		 * Check if required directory smush table exist.
+		 *
+		 * @param bool $force Should force check?
+		 *
+		 * @since 2.9.0
+		 *
+		 * @return bool
+		 */
+		public function table_exist( $force = false ) {
+			global $wpdb;
+
+			$table_exist = false;
+
+			// If not forced, try to get from cache.
+			if ( ! $force ) {
+				$table_exist = wp_cache_get( WP_SMUSH_PREFIX . 'dir_table_exist', 'wp-smush' );
+			}
+
+			// If not avaialble in cache, query.
+			if ( $table_exist === false ) {
+				$table_exist = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->base_prefix . 'smush_dir_images' ) ) ); // Db call ok; no-cache ok.
+			}
+
+			// Set in cache.
+			wp_cache_set( WP_SMUSH_PREFIX . 'dir_table_exist', true, 'wp-smush' );
+
+			return empty( $table_exist ) ? false : true;
 		}
 
 		/**
