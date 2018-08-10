@@ -106,6 +106,7 @@
 	 *
 	 * @since 2.9.0
 	 */
+/*
 	const MediaLibraryTaxonomyFilter = wp.media.view.AttachmentFilters.extend({
 		id: 'media-attachment-smush-filter',
 
@@ -125,14 +126,14 @@
 			};
 		}
 	});
-
+*/
 	/**
 	 * Extend and override wp.media.view.AttachmentsBrowser to include our new filter.
 	 *
 	 * @since 2.9.0
 	 */
+/*
 	let AttachmentsBrowser = wp.media.view.AttachmentsBrowser;
-
 	wp.media.view.AttachmentsBrowser = wp.media.view.AttachmentsBrowser.extend({
 		createToolbar: function() {
 			// Make sure to load the original toolbar
@@ -144,5 +145,6 @@
 			}).render() );
 		}
 	});
+*/
 
 })( jQuery, _ );

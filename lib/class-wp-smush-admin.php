@@ -569,26 +569,25 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Set directory smush status.
 			$this->dir_stats = $wpsmush_dir->total_stats();
 
-			// Setup Attachments and total count
+			// Setup Attachments and total count.
 			$wpsmush_db->total_count( true );
 
 			$this->stats = $this->global_stats( $force_update );
 
 			if ( empty( $this->smushed_attachments ) ) {
-				// Get smushed attachments
+				// Get smushed attachments.
 				$this->smushed_attachments = $wpsmush_db->smushed_count( true );
 			}
 
-			// Get supersmushed iamges count
+			// Get supersmushed iamges count.
 			if ( empty( $this->super_smushed ) ) {
-
 				$this->super_smushed = $wpsmush_db->super_smushed_count();
 			}
 
 			// Set pro savings.
 			$this->set_pro_savings();
 
-			// Set smushed count
+			// Set smushed count.
 			$this->smushed_count   = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
 			$this->remaining_count = $this->remaining_count();
 		}
@@ -1056,7 +1055,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @return int
 		 */
 		function remaining_count() {
-			// Check if the resmush count is equal to remaining count
+			// Check if the resmush count is equal to remaining count.
 			$resmush_count   = count( $this->resmush_ids );
 			$remaining_count = $this->total_count - $this->smushed_count;
 			if ( $resmush_count > 0 && $resmush_count == $this->smushed_count ) {
@@ -2521,7 +2520,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @since 2.9
 		 */
 		public function register_admin_pointer() {
-
 			// Pointer content.
 			$content = '<h3>' . __( 'Get Optimized', 'wp-smushit' ) . '</h3>';
 			$content .= '<p>' . __( 'Resize, compress and optimize your images here.', 'wp-smushit' ) . '</p>';
@@ -2561,7 +2559,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			}
 
 			$id = absint( $_POST['id'] );
-			update_post_meta( $id, $this->smushed_meta_key, '' );
+			update_post_meta( $id, 'wp-smush-ignore-bulk', 'true' );
 
 			wp_send_json_success();
 		}
@@ -2581,8 +2579,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( isset( $_POST['query']['stats'] ) && 'null' === $_POST['query']['stats'] ) {
 				$query['meta_query'] = array(
 					array(
-						'key'     => 'wp-smpro-smush-data',
-						'value'   => 'null',
+						'key'     => 'wp-smush-ignore-bulk',
+						'value'   => 'true',
 						'compare' => 'EXISTS',
 					),
 				);

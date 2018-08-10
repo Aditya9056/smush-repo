@@ -830,11 +830,13 @@ class Smush {
 					'<span class="smush-image-name">' + fileLink + '</span>' +
 					'<span class="smush-image-error">' + errorMsg + '</span>' +
 				'</div>' +
+			/*
 				'<div class="smush-bulk-image-actions">' +
 					'<button type="button" class="sui-button-icon sui-tooltip sui-tooltip-constrained sui-tooltip-top-left smush-ignore-image" data-tooltip="Ignore this image from bulk smushing" data-id="' + id + '">' +
 						'<i class="sui-icon-eye-hide" aria-hidden="true"></i>' +
 					'</button>' +
 				'</div>' +
+			*/
 			'</div>';
 	};
 

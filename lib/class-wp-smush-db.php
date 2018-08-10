@@ -16,10 +16,10 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 	 */
 	class WpSmushDB {
 		function __construct() {
-			// Recalculate resize savings
+			// Recalculate resize savings.
 			add_action( 'wp_smush_image_resized', array( $this, 'resize_savings' ) );
 
-			// Update Conversion savings
+			// Update Conversion savings.
 			add_action( 'wp_smush_png_jpg_converted', array( $this, 'conversion_savings' ) );
 
 		}
@@ -81,31 +81,32 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 							array(
 								'key'     => 'wp-smpro-smush-data',
 								'compare' => 'NOT EXISTS',
-							),
+							)
 						),
 						'update_post_term_cache' => false,
 						'no_found_rows'          => true,
 					);
-					// Loop Over to get all the attachments
+
+					// Loop Over to get all the attachments.
 					while ( $get_posts ) {
 
-						// Remove the Filters added by WP Media Folder
+						// Remove the Filters added by WP Media Folder.
 						$this->remove_filters();
 
 						$query = new WP_Query( $args );
 
 						if ( ! empty( $query->post_count ) && sizeof( $query->posts ) > 0 ) {
 
-							// Get a filtered list of post ids
+							// Get a filtered list of post ids.
 							$posts = $wpsmush_db->filter_by_mime( $query->posts );
 
-							// Merge the results
+							// Merge the results.
 							$unsmushed_posts = array_merge( $unsmushed_posts, $posts );
 
-							// Update the offset
+							// Update the offset.
 							$args['offset'] += $limit;
 						} else {
-							// If we didn't get any posts from query, set $get_posts to false
+							// If we didn't get any posts from query, set $get_posts to false.
 							$get_posts = false;
 						}
 
@@ -113,7 +114,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 						if ( count( $unsmushed_posts ) >= $r_limit ) {
 							$get_posts = false;
 						} elseif ( ! empty( $wpsmushit_admin->total_count ) && $wpsmushit_admin->total_count <= $args['offset'] ) {
-							// If total Count is set, and it is alread lesser than offset, don't query
+							// If total Count is set, and it is alread lesser than offset, don't query.
 							$get_posts = false;
 						}
 					}
@@ -122,7 +123,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				return array_map( 'intval', explode( ',', $_REQUEST['ids'] ) );
 			}
 
-			// Remove resmush list from unsmushed images
+			// Remove resmush list from unsmushed images.
 			if ( ! empty( $wpsmushit_admin->resmush_ids ) && is_array( $wpsmushit_admin->resmush_ids ) ) {
 				$unsmushed_posts = array_diff( $unsmushed_posts, $wpsmushit_admin->resmush_ids );
 			}
@@ -139,18 +140,18 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		function total_count( $force_update = false ) {
 			global $wpsmushit_admin;
 
-			// Retrieve from Cache
+			// Retrieve from Cache.
 			if ( ! $force_update && $count = wp_cache_get( 'total_count', 'wp-smush' ) ) {
 				if ( $count ) {
 					return $count;
 				}
 			}
 
-			// Set Attachment ids, and total count
+			// Set Attachment ids, and total count.
 			$posts                        = $this->get_media_attachments( '', $force_update );
 			$wpsmushit_admin->attachments = $posts;
 
-			// Get total count from attachments
+			// Get total count from attachments.
 			$total_count = ! empty( $posts ) && is_array( $posts ) ? sizeof( $posts ) : 0;
 
 			// Set total count.
@@ -158,7 +159,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 			wp_cache_add( 'total_count', $total_count, 'wp-smush' );
 
-			// send the count
+			// Send the count.
 			return $total_count;
 		}
 
@@ -173,12 +174,12 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		function get_media_attachments( $return_count = false, $force_update = false ) {
 			global $wpsmushit_admin, $wpdb;
 
-			// Return results from cache
+			// Return results from cache.
 			if ( ! $force_update ) {
 				$posts = wp_cache_get( 'media_attachments', 'wp-smush' );
 				$count = ! empty( $posts ) ? sizeof( $posts ) : 0;
 
-				// Return results only if we've got any
+				// Return results only if we've got any.
 				if ( $count ) {
 					return $return_count ? $count : $posts;
 				}
@@ -192,7 +193,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 			$mime  = implode( "', '", $wpsmushit_admin->mime_types );
 			$query = "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_mime_type IN ('$mime') ORDER BY `ID` DESC LIMIT %d, %d";
-			// Remove the Filters added by WP Media Folder
+			// Remove the Filters added by WP Media Folder.
 			$this->remove_filters();
 
 			$get_posts = true;
@@ -201,18 +202,18 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 				$results = $wpdb->get_col( $wpdb->prepare( $query, $offset, $limit ) );
 				if ( ! empty( $results ) && is_array( $results ) && sizeof( $results ) > 0 ) {
 
-					// Get a filtered list of post ids
+					// Get a filtered list of post ids.
 					$posts = array_merge( $posts, $results );
 
-					// Update the offset
+					// Update the offset.
 					$offset += $limit;
 				} else {
-					// If we didn't get any posts from query, set $get_posts to false
+					// If we didn't get any posts from query, set $get_posts to false.
 					$get_posts = false;
 				}
 			}
 
-			// Add the attachments to cache
+			// Add the attachments to cache.
 			wp_cache_add( 'media_attachments', $posts, 'wp-smushit' );
 
 			if ( $return_count ) {
@@ -298,7 +299,6 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 		 * @todo: Refactor Method, Separate Media Library and Nextgen, moreover nextgen functioanlity is broken
 		 */
 		function super_smushed_count( $type = 'media', $attachments = array() ) {
-
 			global $wpsmushnextgenstats;
 
 			if ( 'media' == $type ) {
@@ -311,12 +311,12 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 					delete_option( $key );
 				}
 
-				// Flag to check if we need to re-evaluate the count
+				// Flag to check if we need to re-evaluate the count.
 				$revaluate = false;
 
 				$super_smushed = get_option( $key, false );
 
-				// Check if need to revalidate
+				// Check if need to revalidate.
 				if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['ids'] ) ) {
 
 					$super_smushed = array(
@@ -329,7 +329,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 
 					$diff = $last_checked - current_time( 'timestamp' );
 
-					// Difference in hour
+					// Difference in hour.
 					$diff_h = $diff / 3600;
 
 					// if last checked was more than 1 hours.
@@ -342,7 +342,7 @@ if ( ! class_exists( 'WpSmushDB' ) ) {
 					$revaluate = false;
 				}
 
-				// Need to scan all the image
+				// Need to scan all the image.
 				if ( $revaluate ) {
 					// Get all the Smushed attachments ids
 					// Note: Wrong Method called, it'll fetch media images and not NextGen images
