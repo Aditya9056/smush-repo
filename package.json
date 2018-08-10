@@ -32,7 +32,7 @@
     "translate": "clear && grunt translate",
     "build:pro": "npm run compile && grunt prepare && grunt build",
     "build:free": "npm run compile && grunt prepare && grunt build:wporg",
-    "build": "npm run compile && grunt prepare && grunt build && grunt build:wporg"
+    "build": "grunt clean && npm run compile && grunt prepare && grunt build && grunt build:wporg"
   },
   "dependencies": {
     "@wpmudev/shared-ui": "2.2.9",
