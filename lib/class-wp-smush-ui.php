@@ -1363,10 +1363,10 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 								</div>
 							<?php endif; ?>
 							<div class="sui-notice sui-notice-warning smush-notice-sm smush-highlighting-warning sui-hidden">
-									<p>
-										<?php esc_html_e( 'Almost there! To finish activating this feature you must save your settings.', 'wp-smushit' ); ?>
-									</p>
-								</div>
+								<p>
+									<?php esc_html_e( 'Almost there! To finish activating this feature you must save your settings.', 'wp-smushit' ); ?>
+								</p>
+							</div>
 						<?php endif; ?>
 					</span>
 				</div>
