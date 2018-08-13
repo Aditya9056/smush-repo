@@ -10,6 +10,7 @@ modules:
     enabled:
         - WPDb
         - WPBrowser
+        - WPCLI
         - \Helper\Acceptance
     config:
         WPDb:
@@ -19,6 +20,7 @@ modules:
             dump: 'tests/_data/dump.sql'
             populate: true #import the dump before the tests
             cleanup: true #import the dump between tests
+            waitlock: 0
             url: '%WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
             tablePrefix: '%TABLE_PREFIX%'
@@ -27,3 +29,5 @@ modules:
             adminUsername: '%ADMIN_USERNAME%'
             adminPassword: '%ADMIN_PASSWORD%'
             adminPath: '%WP_ADMIN_PATH%'
+        WPCLI:
+            path: '%WP_ROOT_FOLDER%'

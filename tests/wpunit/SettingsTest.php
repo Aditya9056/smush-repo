@@ -32,7 +32,11 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	 * Test bulk limit for free users.
 	 */
 	public function testBulkLimit() {
-		/* @var WpSmushitAdmin $wpsmushit_admin */
+		/**
+		 * WpSmushitAdmin global.
+		 *
+		 * @var WpSmushitAdmin $wpsmushit_admin
+		 */
 		global $wpsmushit_admin;
 
 		$i         = 0;

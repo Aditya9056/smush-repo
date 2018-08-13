@@ -5,7 +5,7 @@
  */
 
 import { createTree } from 'jquery.fancytree';
-import Scanner from './directory-scanner';
+import Scanner from '../smush/directory-scanner';
 
 ( function( $ ) {
 	'use strict';

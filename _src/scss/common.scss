@@ -383,11 +383,6 @@ div.wp-smush-dir-limit {
 	margin: 20px 0;
 }
 
-.smush-final-log {
-	margin-left: 0;
-	padding: 10px;
-}
-
 .wp-smush-ajax-error {
 	color: black;
 	font-size: 14px;
@@ -617,11 +612,6 @@ div.wp-smush-resize-note {
 	font-weight: 400;
 }
 
-.smush-final-log {
-	max-height: 200px;
-	overflow: auto;
-}
-
 /** Override WP Footer Styling, Hide it on WPMU pages only, if we really need to **/
 .wp-admin #wpfooter {
 	display: block;
@@ -691,7 +681,7 @@ div.wp-smush-info.notice {
 }
 
 /* Bulk Smush button*/
-button.wp-smush-all.wp-smush-button {
+button.wp-smush-all {
 	float: right;
 }
 

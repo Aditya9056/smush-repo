@@ -14,6 +14,13 @@ Installation path: `/srv/www/wordpress-default/public_html`
 
 This path needs to correlate to the `WP_ROOT_FOLDER` constant in the `.env` file for Codeception unit tests to properly work.
 
+## deploy-to-svn.sh
+
+Script that will fetch latest wp.org release to `./build/smush-svn` directory. Auto merge all changes from the current (new)
+release and show next steps for pushing to WordPress SVN.
+
+Usage: from `wp-smushit` drectory run `./misc/deploy-to-svn.sh`
+
 ## Docerkfile
 
 This file is used to generate a Docker image used in Bitbucket Pipelines.

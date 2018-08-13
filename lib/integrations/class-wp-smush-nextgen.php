@@ -420,14 +420,14 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 *
 		 * @usedby: `manual_nextgen`, `auto_smush`, `smush_bulk`
 		 *
-		 * @param string $pid NextGen Gallery Image id
-		 * @param string $image Nextgen gallery image object
-		 * @param bool   $echo Whether to echo the stats or not, false for auto smush
-		 * @param bool   $is_bulk Whether it's called by bulk smush or not
+		 * @param string $pid      NextGen Gallery Image id.
+		 * @param string $image    Nextgen gallery image object.
+		 * @param bool   $echo     Whether to echo the stats or not, false for auto smush.
+		 * @param bool   $is_bulk  Whether it's called by bulk smush or not.
 		 *
 		 * @return mixed Stats / Status / Error
 		 */
-		function smush_image( $pid = '', $image = '', $echo = true, $is_bulk = false ) {
+		public function smush_image( $pid = '', $image = '', $echo = true, $is_bulk = false ) {
 			global $wpsmushnextgenstats, $wp_smush;
 
 			$wp_smush->initialise();
@@ -442,7 +442,16 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			$metadata = ! empty( $image ) ? $image->meta_data : '';
 
 			if ( empty( $metadata ) ) {
-				wp_send_json_error( array( 'error_msg' => '<p class="wp-smush-error-message">' . esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ) . '</p>' ) );
+				/**
+				 * We use error_msg for single images to append to the div and error_message to
+				 * append to bulk smush errors list.
+				 */
+				wp_send_json_error( array(
+					'error'         => 'no_metadata',
+					'error_msg'     => '<p class="wp-smush-error-message">' . esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ) . '</p>',
+					'error_message' => esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ),
+					'file_name'     => isset( $image->filename ) ? $image->filename : 'undefined',
+				) );
 			}
 
 			$registry = C_Component_Registry::get_instance();
@@ -467,6 +476,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				// Send stats.
 				if ( is_wp_error( $smush ) ) {
 					/**
+					 * Not used for bulk smush.
 					 *
 					 * @param WP_Error $smush
 					 */
@@ -497,7 +507,9 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 			// Verify Nonce.
 			if ( ! wp_verify_nonce( $nonce, 'wp_smush_nextgen' ) ) {
-				wp_send_json_error( array( 'error' => 'nonce_verification_failed' ) );
+				wp_send_json_error( array(
+					'error' => 'nonce_verification_failed'
+				) );
 			}
 
 			// Check for media upload permission.
@@ -510,7 +522,6 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 
 			$this->smush_image( $pid, '' );
-
 		}
 
 		/**
