@@ -346,7 +346,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 *
 		 * @return void
 		 */
-		function bulk_smush_container() {
+		private function bulk_smush_container() {
 			global $wp_smush;
 
 			$smush_individual_msg = sprintf(
@@ -358,7 +358,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// Class for bulk smush box.
 			$class = $wp_smush->validate_install() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 
-			echo '<div class="sui-box ' . $class . '" id="wp-smush-bulk-wrap-box">';
+			echo '<div class="sui-box ' . esc_attr( $class ) . '" id="wp-smush-bulk-wrap-box">';
 
 			// Container header.
 			$this->container_header( esc_html__( 'Bulk Smush', 'wp-smushit' ), $smush_individual_msg );
@@ -921,7 +921,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function bulk_smush_content() {
-
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			// Check if Pro user.
@@ -1146,7 +1145,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return string
 		 */
 		public function bulk_resmush_content( $count = false, $show = false ) {
-
 			global $wpsmushit_admin;
 
 			// If we already have count, don't fetch it.
