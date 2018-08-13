@@ -22,7 +22,8 @@ require_once WP_SMUSH_DIR . 'lib/class-wp-smush-db.php';
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
 
 // Include Resize class.
-// require_once WP_SMUSH_DIR . 'lib/class-wp-smush-auto-resize.php';
+require_once WP_SMUSH_DIR . 'lib/class-wp-smush-auto-resize.php';
+
 // Include PNG to JPG Converter.
 require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
 

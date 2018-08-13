@@ -73,7 +73,11 @@
 	}
 
 	&.smush-tooltip {
-		position: relative;
+		position: absolute;
+		align-self: flex-start;
+		margin-top: 15px;
+		margin-left: 15px;
+		background-color: #fff;
 
 		&:before,
 		&:after {

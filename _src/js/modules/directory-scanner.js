@@ -10,10 +10,11 @@
  */
 
 const DirectoryScanner = ( totalSteps, currentStep ) => {
-	totalSteps = parseInt( totalSteps );
+	totalSteps  = parseInt( totalSteps );
 	currentStep = parseInt( currentStep );
-	let cancelling = false;
-	let failedItems = 0;
+
+	let cancelling  = false,
+		failedItems = 0;
 
 	let obj = {
 		scan: function() {
