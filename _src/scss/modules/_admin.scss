@@ -185,7 +185,8 @@
 				}
 			}
 
-			&.smush-highlighting-notice {
+			&.smush-highlighting-notice,
+			&.smush-highlighting-warning {
 				margin-top: 10px;
 			}
 		}
