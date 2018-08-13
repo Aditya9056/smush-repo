@@ -891,7 +891,7 @@ jQuery( function ( $ ) {
 	}
 
 	if ( $( 'li.smush-dir-savings' ).length > 0 ) {
-		//Update Directory Smush, as soon as the page loads
+		// Update Directory Smush, as soon as the page loads.
 		var stats_param = {
 			action: 'get_dir_smush_stats'
 		};

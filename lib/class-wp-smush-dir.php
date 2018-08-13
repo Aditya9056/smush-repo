@@ -89,9 +89,6 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 			// Handle Ajax Request to optimise images.
 			add_action( 'wp_ajax_optimise', array( $this, 'optimise' ) );
 
-			// Handle Ajax request for directory smush stats (stats meta box).
-			add_action( 'wp_ajax_get_dir_smush_stats', array( $this, 'get_dir_smush_stats' ) );
-
 			/**
 			 * Scanner ajax actions.
 			 *
@@ -1131,7 +1128,7 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 		 *
 		 * @return array Combined array of stats.
 		 */
-		private function combined_stats( $stats ) {
+		public function combined_stats( $stats ) {
 			if ( empty( $stats ) || empty( $stats['percent'] ) || empty( $stats['bytes'] ) ) {
 				return array();
 			}
@@ -1166,27 +1163,6 @@ if ( ! class_exists( 'WP_Smush_Dir' ) ) {
 			);
 
 			return $result;
-		}
-
-		/**
-		 * Returns Directory Smush stats and Cumulative stats
-		 */
-		public function get_dir_smush_stats() {
-			$result = array();
-
-			// Store the Total/Smushed count.
-			$stats = $this->total_stats();
-
-			$result['dir_smush'] = $stats;
-
-			// Cumulative Stats.
-			$result['combined_stats'] = $this->combined_stats( $stats );
-
-			// Store the stats in options table.
-			update_option( 'dir_smush_stats', $result, false );
-
-			// Send ajax response.
-			wp_send_json_success( $result );
 		}
 
 		/**

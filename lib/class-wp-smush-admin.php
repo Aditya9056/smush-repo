@@ -561,9 +561,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		/**
 		 * Runs the expensive queries to get our global smush stats
 		 *
-		 * @param bool $force_update Whether to Force update the Global Stats or not
+		 * @param bool $force_update  Whether to force update the global stats or not.
 		 */
-		function setup_global_stats( $force_update = false ) {
+		public function setup_global_stats( $force_update = false ) {
 			global $wpsmush_db, $wpsmush_dir;
 
 			// Set directory smush status.

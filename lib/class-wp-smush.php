@@ -5,52 +5,6 @@
  * @package WP_Smush
  */
 
-// Helper Class.
-/* @noinspection PhpIncludeInspection */
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-helper.php';
-
-// Settings Class.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-settings.php';
-
-// Migration Class.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-migrate.php';
-
-// Stats.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-db.php';
-
-// Include Resize class.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
-
-// Include Resize class.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-auto-resize.php';
-
-// Include PNG to JPG Converter.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
-
-// Include Image backup class.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-backup.php';
-
-// Include Smush Async class.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-async.php';
-
-// Include REST API integration.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-rest.php';
-
-// Include admin classes.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-admin.php';
-
-// Include Directory Smush.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-dir.php';
-
-// Include CDN.
-// require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';
-
-// Include Plugin Recommendations.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-recommender.php';
-
-// Installer Class.
-require_once WP_SMUSH_DIR . 'lib/class-wp-smush-installer.php';
-
 /**
  * Class WP_Smush.
  */
@@ -166,6 +120,12 @@ class WP_Smush {
 	 * WP_Smush constructor.
 	 */
 	protected function __construct() {
+		$this->includes();
+
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			new WP_Smush_Ajax();
+		}
+
 		// Smush image (Auto Smush) when `wp_update_attachment_metadata` filter is fired.
 		add_filter( 'wp_update_attachment_metadata', array( $this, 'smush_image' ), 15, 2 );
 
@@ -211,6 +171,77 @@ class WP_Smush {
 		if ( is_admin() ) {
 			add_action( 'admin_init', array( 'WP_Smush_Installer', 'upgrade_settings' ) );
 		}
+	}
+
+	/**
+	 * Include required files.
+	 *
+	 * @since 1.9.0
+	 */
+	private function includes() {
+		// Ajax Class.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-ajax.php';
+
+		// Helper Class.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-helper.php';
+
+		// Settings Class.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-settings.php';
+
+		// Migration Class.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-migrate.php';
+
+		// Stats.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-db.php';
+
+		// Include Resize class.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-resize.php';
+
+		// Include Resize class.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-auto-resize.php';
+
+		// Include PNG to JPG Converter.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-png_jpg.php';
+
+		// Include Image backup class.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-backup.php';
+
+		// Include Smush Async class.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-async.php';
+
+		// Include REST API integration.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-rest.php';
+
+		// Include admin classes.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-admin.php';
+
+		// Include Directory Smush.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-dir.php';
+
+		// Include CDN.
+		/* @noinspection PhpIncludeInspection */
+		// require_once WP_SMUSH_DIR . 'lib/class-wp-smush-cdn.php';
+
+		// Include Plugin Recommendations.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-recommender.php';
+
+		// Installer Class.
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'lib/class-wp-smush-installer.php';
 	}
 
 	/**
