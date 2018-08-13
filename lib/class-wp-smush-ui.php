@@ -346,7 +346,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 *
 		 * @return void
 		 */
-		function bulk_smush_container() {
+		private function bulk_smush_container() {
 			global $wp_smush;
 
 			$smush_individual_msg = sprintf(
@@ -358,7 +358,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			// Class for bulk smush box.
 			$class = $wp_smush->validate_install() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 
-			echo '<div class="sui-box ' . $class . '" id="wp-smush-bulk-wrap-box">';
+			echo '<div class="sui-box ' . esc_attr( $class ) . '" id="wp-smush-bulk-wrap-box">';
 
 			// Container header.
 			$this->container_header( esc_html__( 'Bulk Smush', 'wp-smushit' ), $smush_individual_msg );
@@ -921,7 +921,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return void
 		 */
 		public function bulk_smush_content() {
-
 			global $wp_smush, $wpsmushit_admin, $wpsmush_settings;
 
 			// Check if Pro user.
@@ -1146,7 +1145,6 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 		 * @return string
 		 */
 		public function bulk_resmush_content( $count = false, $show = false ) {
-
 			global $wpsmushit_admin;
 
 			// If we already have count, don't fetch it.
@@ -1354,13 +1352,23 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<label for="<?php echo $setting_key; ?>">
 						<?php echo $wpsmushit_admin->settings[ $name ]['label']; ?>
 					</label>
-					<span class="sui-description sui-toggle-description"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span>
-					<?php if ( 'detection' === $name ) { ?>
-						<?php if ( $setting_val === 1 ) : // If detection is enabled. ?>
-							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice"><p><?php printf( esc_html__( 'Incorrect image size highlighting is active. %1$sView the frontend%2$s of your website to see which images aren\'t the correct size for their containers.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?></p></div>
+					<span class="sui-description sui-toggle-description">
+						<?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
+						<?php if ( 'detection' === $name ) : ?>
+							<?php if ( $setting_val === 1 ) : // If detection is enabled. ?>
+								<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
+									<p>
+										<?php printf( esc_html__( 'Incorrect image size highlighting is active. %1$sView the frontend%2$s of your website to see which images aren\'t the correct size for their containers.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?>
+									</p>
+								</div>
+							<?php endif; ?>
+							<div class="sui-notice sui-notice-warning smush-notice-sm smush-highlighting-warning sui-hidden">
+									<p>
+										<?php esc_html_e( 'Almost there! To finish activating this feature you must save your settings.', 'wp-smushit' ); ?>
+									</p>
+								</div>
 						<?php endif; ?>
-						<div class="sui-notice sui-notice-warning smush-notice-sm smush-highlighting-warning sui-hidden"><p><?php esc_html_e( 'Almost there! To finish activating this feature you must save your settings.', 'wp-smushit' ); ?></p></div>
-					<?php } ?>
+					</span>
 				</div>
 				<?php
 			}

@@ -1200,7 +1200,6 @@ jQuery( function ( $ ) {
 	 * @param scan_type Current scan type.
 	 */
 	var update_stats = function ( scan_type ) {
-
 		var super_savings = 0,
 			smushed_count = 0;
 		var is_nextgen = 'undefined' != typeof scan_type && 'nextgen' == scan_type;
@@ -1223,9 +1222,6 @@ jQuery( function ( $ ) {
 			$( '.wp-smush-savings .wp-smush-stats-percent' ).html( wp_smushit_data.savings_percent );
 		}
 
-		//Update Savings in share message
-		//$( 'span.smush-share-savings' ).html( formatBytes( wp_smushit_data.savings_bytes, 1 ) );
-
 		//Update Smush percent
 		wp_smushit_data.smush_percent = precise_round( ( parseInt( wp_smushit_data.count_smushed ) / parseInt( wp_smushit_data.count_total ) ) * 100, 1 );
 		$( 'span.wp-smush-images-percent' ).html( wp_smushit_data.smush_percent );
@@ -1245,16 +1241,11 @@ jQuery( function ( $ ) {
 			$( 'span.smushed-items-count span.wp-smush-count-total span.wp-smush-total-optimised' ).html( wp_smushit_data.count_images );
 		}
 
-		//Update image count in share message
-		//$( 'span.smush-share-image-count' ).html( wp_smushit_data.count_images );
-
 		//Update Resize image count
 		$( 'span.smushed-items-count span.wp-smush-count-resize-total span.wp-smush-total-optimised' ).html( wp_smushit_data.count_resize );
 
 		//Update Attachment image count
 		//$( 'div.wp-smush-count-attachment-total span.wp-smush-total-optimised' ).html( wp_smushit_data.count_smushed );
-
-		//Update image count in share message
 
 		//Update supersmushed image count
 		if ( $( 'li.super-smush-attachments .smushed-count' ).length && 'undefined' != typeof wp_smushit_data.count_supersmushed ) {
@@ -1599,15 +1590,16 @@ jQuery( function ( $ ) {
 		}
 	} );
 
-	// On Resmush click.
+	// On re-Smush click.
 	$( 'body' ).on( 'click', '.wp-smush-skip-resmush', function ( e ) {
 		e.preventDefault();
-		var self = jQuery( this );
-		var container = self.parents().eq( 1 );
+
+		const self = jQuery( this ),
+			  container = self.parents().eq( 1 ),
+			  el = self.parent();
 
 		// Remove Parent div.
-		var $el = self.parent();
-		remove_element( $el );
+		remove_element( el );
 
 		// Remove Settings Notice.
 		$( '.sui-notice-top.sui-notice-success' ).remove();
@@ -1619,75 +1611,82 @@ jQuery( function ( $ ) {
 		wp_smushit_data.count_smushed = parseInt( wp_smushit_data.count_smushed ) + wp_smushit_data.resmush.length;
 		wp_smushit_data.count_supersmushed = parseInt( wp_smushit_data.count_supersmushed ) + wp_smushit_data.resmush.length;
 
-		// Update Stats.
-		if ( wp_smushit_data.count_smushed == wp_smushit_data.count_total ) {
-
+		// Update stats.
+		if ( wp_smushit_data.count_smushed === wp_smushit_data.count_total ) {
 			// Show all done notice.
 			$( '.wp-smush-notice.wp-smush-all-done, .wp-smush-pagespeed-recommendation' ).show();
 
 			// Hide Smush button.
 			$( '.wp-smush-bulk-wrapper ' ).hide()
-
 		}
-		//Remove Re-Smush Notice
+
+		// Remove re-Smush notice.
 		$( '.wp-smush-resmush-notice' ).remove();
 
-		var type = $( '.wp-smush-scan' ).data( 'type' );
-		type = 'undefined' == typeof type ? 'media' : type;
+		let type = $( '.wp-smush-scan' ).data( 'type' );
+		type = 'undefined' === typeof type ? 'media' : type;
 
-		var smushed_count = 'undefined' != typeof wp_smushit_data.count_smushed ? wp_smushit_data.count_smushed : 0;
+		const smushed_count = 'undefined' !== typeof wp_smushit_data.count_smushed ? wp_smushit_data.count_smushed : 0;
 
-		var smush_percent = ( smushed_count / wp_smushit_data.count_total ) * 100;
+		let smush_percent = ( smushed_count / wp_smushit_data.count_total ) * 100;
 		smush_percent = precise_round( smush_percent, 1 );
 
 		$( '.wp-smush-images-percent' ).html( smush_percent );
 
-		//Update the Progress Bar Width
-		// get the progress bar
-		var $progress_bar = jQuery( '.bulk-smush-wrapper .wp-smush-progress-inner' );
-		if ( $progress_bar.length < 1 ) {
+		// Update the progress bar width. Get the progress bar.
+		const progress_bar = jQuery( '.bulk-smush-wrapper .wp-smush-progress-inner' );
+		if ( progress_bar.length < 1 ) {
 			return;
 		}
 
-		// increase progress
-		$progress_bar.css( 'width', smush_percent + '%' );
+		// Increase progress.
+		progress_bar.css( 'width', smush_percent + '%' );
 
-		//Show the default bulk smush notice
+		// Show the default bulk smush notice.
 		$( '.wp-smush-bulk-wrapper' ).show();
 		$( '.wp-smush-bulk-wrapper .sui-notice' ).show();
 
-		var params = {
+		const params = {
 			action: 'delete_resmush_list',
 			type: type
 		};
+
 		//Delete resmush list, @todo: update stats from the ajax response
 		$.post( ajaxurl, params, function ( res ) {
-			//Remove the whole li element on success
-			if ( res.success && 'undefined' != typeof res.data.stats ) {
-				var stats = res.data.stats;
-				//Update wp_smushit_data ( Smushed count, Smushed Percent, Image count, Super smush count, resize savings, conversion savings )
+			// Remove the whole li element on success
+			if ( res.success && 'undefined' !== typeof res.data.stats ) {
+				const stats = res.data.stats;
+				// Update wp_smushit_data ( Smushed count, Smushed Percent, Image count, Super smush count, resize savings, conversion savings )
 				if ( 'undefinied' != typeof wp_smushit_data ) {
-					wp_smushit_data.count_images = 'undefined' != typeof stats.count_images ? parseInt( wp_smushit_data.count_images ) + stats.count_images : wp_smushit_data.count_images;
-					wp_smushit_data.size_before = 'undefined' != typeof stats.size_before ? parseInt( wp_smushit_data.size_before ) + stats.size_before : wp_smushit_data.size_before;
-					wp_smushit_data.size_after = 'undefined' != typeof stats.size_after ? parseInt( wp_smushit_data.size_after ) + stats.size_after : wp_smushit_data.size_after;
-					wp_smushit_data.savings_resize = 'undefined' != typeof stats.savings_resize ? parseInt( wp_smushit_data.savings_resize ) + stats.savings_resize : wp_smushit_data.savings_resize;
-					wp_smushit_data.savings_conversion = 'undefined' != typeof stats.savings_conversion ? parseInt( wp_smushit_data.savings_conversion ) + stats.savings_conversion : wp_smushit_data.savings_conversion;
-					//Add directory smush stats
-					if ( 'undefined' != typeof ( wp_smushit_data.savings_dir_smush ) && 'undefined' != typeof ( wp_smushit_data.savings_dir_smush.orig_size ) ) {
-						wp_smushit_data.size_before = 'undefined' != typeof wp_smushit_data.savings_dir_smush ? parseInt( wp_smushit_data.size_before ) + parseInt( wp_smushit_data.savings_dir_smush.orig_size ) : wp_smushit_data.size_before;
-						wp_smushit_data.size_after = 'undefined' != typeof wp_smushit_data.savings_dir_smush ? parseInt( wp_smushit_data.size_after ) + parseInt( wp_smushit_data.savings_dir_smush.image_size ) : wp_smushit_data.size_after;
+					wp_smushit_data.count_images = 'undefined' !== typeof stats.count_images ? parseInt( wp_smushit_data.count_images ) + stats.count_images : wp_smushit_data.count_images;
+					wp_smushit_data.size_before = 'undefined' !== typeof stats.size_before ? parseInt( wp_smushit_data.size_before ) + stats.size_before : wp_smushit_data.size_before;
+					wp_smushit_data.size_after = 'undefined' !== typeof stats.size_after ? parseInt( wp_smushit_data.size_after ) + stats.size_after : wp_smushit_data.size_after;
+					wp_smushit_data.savings_resize = 'undefined' !== typeof stats.savings_resize ? parseInt( wp_smushit_data.savings_resize ) + stats.savings_resize : wp_smushit_data.savings_resize;
+					wp_smushit_data.savings_conversion = 'undefined' !== typeof stats.savings_conversion ? parseInt( wp_smushit_data.savings_conversion ) + stats.savings_conversion : wp_smushit_data.savings_conversion;
+
+					// Add directory smush stats.
+					if ( 'undefined' !== typeof ( wp_smushit_data.savings_dir_smush ) && 'undefined' !== typeof ( wp_smushit_data.savings_dir_smush.orig_size ) ) {
+						wp_smushit_data.size_before = 'undefined' !== typeof wp_smushit_data.savings_dir_smush ? parseInt( wp_smushit_data.size_before ) + parseInt( wp_smushit_data.savings_dir_smush.orig_size ) : wp_smushit_data.size_before;
+						wp_smushit_data.size_after = 'undefined' !== typeof wp_smushit_data.savings_dir_smush ? parseInt( wp_smushit_data.size_after ) + parseInt( wp_smushit_data.savings_dir_smush.image_size ) : wp_smushit_data.size_after;
 					}
 
-					wp_smushit_data.count_resize = 'undefined' != typeof stats.count_resize ? parseInt( wp_smushit_data.count_resize ) + stats.count_resize : wp_smushit_data.count_resize;
+					wp_smushit_data.count_resize = 'undefined' !== typeof stats.count_resize ? parseInt( wp_smushit_data.count_resize ) + stats.count_resize : wp_smushit_data.count_resize;
 				}
-				//Smush Notice
-				if ( $( '.bulk-smush-wrapper .wp-smush-remaining-count' ).length && 'undefined' != typeof wp_smushit_data.unsmushed ) {
-					$( '.bulk-smush-wrapper .wp-smush-remaining-count' ).html( wp_smushit_data.unsmushed.length );
+				// Smush notice.
+				const remainingCountDiv = $( '.bulk-smush-wrapper .wp-smush-remaining-count' );
+				if ( remainingCountDiv.length && 'undefined' !== typeof wp_smushit_data.unsmushed ) {
+					remainingCountDiv.html( wp_smushit_data.unsmushed.length );
 				}
+
+				// If no images left, hide the notice, show all success notice.
+				if ( 'undefined' !== typeof wp_smushit_data.unsmushed || wp_smushit_data.unsmushed.length === 0 ) {
+					$( '.wp-smush-bulk-wrapper .sui-notice' ).hide();
+					$( '.sui-notice-success.wp-smush-all-done' ).show();
+				}
+
 				update_stats();
 			}
 		} );
-
 	} );
 
 	/**
