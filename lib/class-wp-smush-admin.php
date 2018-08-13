@@ -1892,29 +1892,28 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Delete the resmush list for Nextgen or the Media Library
 		 *
 		 * Return Stats in ajax response
-		 *
 		 */
-		function delete_resmush_list() {
-
+		public function delete_resmush_list() {
 			global $wpsmush_db, $wpsmushnextgenstats, $wpsmushnextgenadmin;
 			$stats = array();
 
 			$key = ! empty( $_POST['type'] ) && 'nextgen' == $_POST['type'] ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
-			//For media Library
+
+			// For media Library.
 			if ( 'nextgen' != $_POST['type'] ) {
 				$resmush_list = get_option( $key );
 				if ( ! empty( $resmush_list ) && is_array( $resmush_list ) ) {
 					$stats = $wpsmush_db->get_stats_for_attachments( $resmush_list );
 				}
 			} else {
-				//For Nextgen. Get the stats( Get the resmush ids )
+				// For Nextgen. Get the stats (get the re-Smush IDs).
 				$resmush_ids = get_option( "wp-smush-nextgen-resmush-list", array() );
 				$stats = $wpsmushnextgenstats->get_stats_for_ids( $resmush_ids );
 
 				$stats['count_images'] = $wpsmushnextgenadmin->get_image_count( $resmush_ids, false );
 			}
 
-			//Delete the resmush list
+			// Delete the resmush list.
 			delete_option( $key );
 			wp_send_json_success( array( 'stats' => $stats ) );
 		}
