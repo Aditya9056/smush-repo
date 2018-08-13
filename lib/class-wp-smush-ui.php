@@ -1354,10 +1354,16 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					<label for="<?php echo $setting_key; ?>">
 						<?php echo $wpsmushit_admin->settings[ $name ]['label']; ?>
 					</label>
-					<span class="sui-description sui-toggle-description"><?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?></span>
-					<?php if ( 'detection' === $name ) { ?>
-						<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo $setting_val === 1 ? '' : 'sui-hidden'; ?>"><p><?php printf( esc_html__( 'Highlighting is active. %1$sView homepage%2$s.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?></p></div>
-					<?php } ?>
+					<span class="sui-description sui-toggle-description">
+						<?php echo $wpsmushit_admin->settings[ $name ]['desc']; ?>
+						<?php if ( 'detection' === $name ) : ?>
+							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo $setting_val === 1 ? '' : 'sui-hidden'; ?>">
+								<p>
+									<?php printf( esc_html__( 'Highlighting is active. %1$sView homepage%2$s.', 'wp-smushit' ), '<a href="' . home_url() . '" target="_blank">', '</a>' ); ?>
+								</p>
+							</div>
+						<?php endif; ?>
+					</span>
 				</div>
 				<?php
 			}
