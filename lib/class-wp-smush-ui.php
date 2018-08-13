@@ -1405,7 +1405,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 			echo $recheck_notice;
 			// Check and show missing directory smush table error only on main site.
 			if ( $wpsmush_dir->should_continue() ) {
-				echo $wpsmush_dir->check_for_table_error();
+				echo $wpsmush_dir->show_table_error();
 			}
 
 			// Check for any stored API message and show it.
