@@ -452,18 +452,6 @@ class WP_Smush {
 
 		// If images has other registered size, smush them first.
 		if ( ! empty( $meta['sizes'] ) ) {
-			/**
-			 * If smush original is set to false, otherwise smush.
-			 * Check for large size, we will set a flag to leave the original untouched.
-			 */
-			if ( ! $smush_full ) {
-				if ( array_key_exists( 'large', $meta['sizes'] ) ) {
-					$smush_full = false;
-				} else {
-					$smush_full = true;
-				}
-			}
-
 			if ( class_exists( 'finfo' ) ) {
 				$finfo = new finfo( FILEINFO_MIME_TYPE );
 			} else {
@@ -1475,20 +1463,16 @@ class WP_Smush {
 						'size'   => 'full',
 						'reason' => 'size_limit',
 					);
-				} else {
-					$skipped[] = array(
-						'size'   => 'full',
-						'reason' => 'large_size',
-					);
 				}
-			} else {
+			}
+
+			// In other case, if full size is skipped.
+			if ( ! isset( $skipped['full'] ) ) {
 				// Paid version, Check if we have large size
-				if ( array_key_exists( 'large', $size_stats ) ) {
-					$skipped[] = array(
-						'size'   => 'full',
-						'reason' => 'large_size',
-					);
-				}
+				$skipped[] = array(
+					'size'   => 'full',
+					'reason' => 'large_size',
+				);
 			}
 		}
 		// For other sizes, check if the image was generated and not available in stats
