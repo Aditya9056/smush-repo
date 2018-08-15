@@ -68,7 +68,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 			}
 
 			$this->assertEquals( $condition, $wpsmushit_admin->check_bulk_limit() );
-			$i++;
+			$i ++;
 		}
 	}
 
@@ -86,45 +86,28 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * Test smushing original image.
 	 */
-	public function testSmushOriginal() {
+	public function testSmushOriginalSetting() {
 		global $wpsmushit_admin, $wpsmush_settings;
 
 		// Set Smush to Pro.
 		$this->setPro();
 
+		// Image path.
 		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
 		// Set smush original image setting to true.
 		$wpsmush_settings->settings['original'] = 1;
-
-		// Upload image and set meta data.
-		$id = $this->factory()->attachment->create_upload_object( $file );
-
-		// Get smush meta data for attachment.
+		// Upload image and get meta.
+		$id   = $this->factory()->attachment->create_upload_object( $file );
 		$meta = get_post_meta( $id, $wpsmushit_admin->smushed_meta_key, true );
 
 		// Full size should be there in smushed sizes.
 		$this->assertTrue( isset( $meta['sizes']['full'] ) );
-	}
-
-	/**
-	 * Test skipping original image.
-	 */
-	public function testSkipOriginal() {
-		global $wpsmushit_admin, $wpsmush_settings;
-
-		// Set Smush to Pro.
-		$this->setPro();
-
-		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
 		// Set smush original image setting to false.
 		$wpsmush_settings->settings['original'] = 0;
-
-		// Upload image and set meta data.
-		$id = $this->factory()->attachment->create_upload_object( $file );
-
-		// Get smush meta data for attachment.
+		// Upload image and get meta.
+		$id   = $this->factory()->attachment->create_upload_object( $file );
 		$meta = get_post_meta( $id, $wpsmushit_admin->smushed_meta_key, true );
 
 		// Full size should not be there in smushed sizes.
