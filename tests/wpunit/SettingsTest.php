@@ -47,6 +47,14 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
+	 * Set Smush to free version.
+	 */
+	private function setFree() {
+		// Delete api key.
+		delete_site_option( 'wp_smush_api_auth' );
+	}
+
+	/**
 	 * Test bulk limit for free users.
 	 */
 	public function testBulkLimit() {
@@ -68,7 +76,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 			}
 
 			$this->assertEquals( $condition, $wpsmushit_admin->check_bulk_limit() );
-			$i ++;
+			$i++;
 		}
 	}
 
@@ -112,5 +120,8 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		// Full size should not be there in smushed sizes.
 		$this->assertFalse( isset( $meta['sizes']['full'] ) );
+
+		// Remove temp API key.
+		$this->setFree();
 	}
 }
