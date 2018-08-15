@@ -14,23 +14,6 @@ let remove_element = function ( el, timeout ) {
 jQuery( function ( $ ) {
 	'use strict';
 
-	/**
-	 * Remove the quick setup dialog
-	 */
-	function remove_dialog() {
-		$( 'dialog#smush-quick-setup' ).remove();
-	}
-
-	// Show the Quick Setup dialog.
-	if ( $( '#smush-quick-setup' ).size() > 0 ) {
-		/** @var {string} wp_smush_msgs.quick_setup_title */
-		WDP.showOverlay( "#smush-quick-setup", {
-			title: wp_smush_msgs.quick_setup_title,
-			class: 'no-close wp-smush-overlay wp-smush-quick-setup'
-		} );
-		remove_dialog();
-	}
-
 	/** Disable the action links **/
 	var disable_links = function ( c_element ) {
 

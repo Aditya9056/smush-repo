@@ -36,7 +36,7 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 
 	output: {
 		filename: '[name].min.css',
-		path: path.resolve( __dirname, 'assets/css' )
+		path: path.resolve( __dirname, 'app/assets/css' )
 	},
 
 	module: {
@@ -97,7 +97,7 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 		new CSSExtract({
             filename: '../css/[name].min.css'
         }),
-		new CleanDir( ['assets/css'] )
+		new CleanDir( ['app/assets/css'] )
 	]
 });
 
@@ -112,7 +112,7 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 
 	output: {
 		filename: '[name].min.js',
-		path: path.resolve( __dirname, 'assets/js' )
+		path: path.resolve( __dirname, 'app/assets/js' )
 	},
 
 	module: {
@@ -137,7 +137,7 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 		new webpack.ProvidePlugin( {
 			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
 		} ),
-		new CleanDir( ['assets/js'] )
+		new CleanDir( ['app/assets/js'] )
 	]
 });
 

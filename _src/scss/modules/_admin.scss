@@ -180,32 +180,6 @@
 			}
 		}
 
-		.smush-sidenav {
-
-			.smush-nav-icon {
-
-				position: absolute;
-				right: 4px;
-				top: 4px;
-				display: inline-block;
-				&.bulk:not(.sui-tag) {
-					@include icon(before, check-tick);
-					&:before {
-						color: $notice-default-icon-color;
-						font-size: 21px;
-					}
-				}
-			}
-
-			.current {
-				.bulk:not(.sui-tag) {
-					&:before {
-						color: $notice-success-icon-color;
-					}
-				}
-			}
-		}
-
 		.sui-actions-right {
 			float: right;
 			display: inline-block;

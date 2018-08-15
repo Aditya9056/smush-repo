@@ -3,9 +3,9 @@ module.exports = function( grunt ) {
 
 	var commonFiles = [
 		'_src/**',
-		'assets/**',
+		'app/**',
 		'extras/**',
-		'lib/**',
+		'core/**',
 		'uninstall.php',
 		'wp-smush.php'
 	];
