@@ -103,6 +103,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * Register meta boxes.
 	 */
 	public function register_meta_boxes() {
+		$is_pro         = WP_Smush::is_pro();
 		$is_network     = is_network_admin();
 		$is_networkwide = WP_Smush_Settings::$settings['networkwide'];
 
@@ -120,7 +121,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			);
 
 			// If not a pro user.
-			if ( ! WP_Smush::is_pro() ) {
+			if ( ! $is_pro ) {
 				/**
 				 * Allows to hook in additional containers after stats box for free version
 				 * Pro Version has a full width settings box, so we don't want to do it there.
@@ -130,7 +131,8 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		}
 
 		// Class for box.
-		$settings_class = WP_Smush::is_pro() ? 'smush-settings-wrapper wp-smush-pro' : 'smush-settings-wrapper';
+		$settings_class = $is_pro ? 'smush-settings-wrapper wp-smush-pro' : 'smush-settings-wrapper';
+
 		if ( $is_network && ! $is_networkwide ) {
 			$this->add_meta_box( 'meta-boxes/settings',
 				__( 'Settings', 'wp-smushit' ),
@@ -154,7 +156,21 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 			case 'integrations':
 				// Show integrations box.
-				$this->integrations_ui();
+				$class          = $is_pro ? 'smush-integrations-wrapper wp-smush-pro' : 'smush-integrations-wrapper';
+				$box_body_class = $is_pro ? '' : 'sui-upsell-items';
+
+				$this->add_meta_box( 'meta-boxes/integrations',
+					__( 'Integrations', 'wp-smushit' ),
+					array( $this, 'integrations_metabox' ),
+					null,
+					array( $this, 'integrations_metabox_footer' ),
+					'integrations',
+					array(
+						'box_class'         => "sui-box {$class}",
+						'box_content_class' => "sui-box-body {$box_body_class}",
+					)
+				);
+
 				break;
 
 			case 'cdn':
@@ -167,7 +183,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				// Show bulk smush box if a subsite admin.
 				if ( ! $is_network ) {
 					// Class for bulk smush box.
-					$class = WP_Smush::is_pro() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
+					$class = $is_pro ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 
 					$this->add_meta_box( 'meta-boxes/bulk',
 						__( 'Bulk Smush', 'wp-smushit' ),
@@ -194,13 +210,16 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					);
 				}
 
-				$this->add_meta_box( 'meta-boxes/pro-features',
-					__( 'Pre Features', 'wp-smushit' ),
-					array( $this, 'pro_features_metabox' ),
-					array( $this, 'pro_features_metabox_header' ),
-					null,
-					'bulk'
-				);
+				// Do not show if pro user.
+				if ( ! $is_pro && ( ! is_network_admin() || WP_Smush_Settings::$settings['networkwide'] ) ) {
+					$this->add_meta_box( 'meta-boxes/pro-features',
+						__( 'Pre Features', 'wp-smushit' ),
+						array( $this, 'pro_features_metabox' ),
+						array( $this, 'pro_features_metabox_header' ),
+						null,
+						'bulk'
+					);
+				}
 
 				break;
 		}
@@ -847,11 +866,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * Pro features list box to show after settings.
 	 */
 	public function pro_features_metabox() {
-		// Do not show if pro user.
-		if ( WP_Smush::is_pro() || ( is_network_admin() && ! WP_Smush_Settings::$settings['networkwide'] ) ) {
-			return;
-		}
-
 		// Upgrade url for upsell.
 		$upsell_url = add_query_arg(
 			array(
@@ -870,11 +884,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * Pro features meta box header.
 	 */
 	public function pro_features_metabox_header() {
-		// Do not show if pro user.
-		if ( WP_Smush::is_pro() || ( is_network_admin() && ! WP_Smush_Settings::$settings['networkwide'] ) ) {
-			return;
-		}
-
 		// Upgrade url with analytics keys.
 		$upgrade_url = add_query_arg(
 			array(
@@ -885,7 +894,52 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		);
 
 		$this->view( 'meta-boxes/pro-features/meta-box-header', array(
+			'title'       => __( 'Pre Features', 'wp-smushit' ),
 			'upgrade_url' => $upgrade_url,
+		) );
+	}
+
+	/**
+	 * Integrations meta box.
+	 *
+	 * Free and pro version settings are shown in same section. For free users, pro settings won't be shown.
+	 * To print full size smush, resize and backup in group, we hook at `smush_setting_column_right_end`.
+	 */
+	public function integrations_metabox() {
+		$core = WP_Smush::get_instance()->core();
+
+		$upsell_url = add_query_arg(
+			array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => 'smush-nextgen-settings-upsell',
+			), $core->upgrade_url
+		);
+
+		// Get settings values.
+		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
+
+		$this->view( 'meta-boxes/integrations/meta-box', array(
+			'basic_features'   => $core::$basic_features,
+			'is_pro'           => WP_Smush::is_pro(),
+			'intgration_group' => $this->intgration_group,
+			'settings'         => $settings,
+			'settings_data'    => $core->settings,
+			'upsell_url'       => $upsell_url,
+		) );
+	}
+
+	/**
+	 * Integrations meta box footer.
+	 */
+	public function integrations_metabox_footer() {
+		/**
+		 * Filter to enable/disable submit button in integration settings.
+		 *
+		 * @param bool $show_submit Should show submit?
+		 */
+		$this->view( 'meta-boxes/integrations/meta-box-footer', array(
+			'show_submit' => apply_filters( 'wp_smush_integration_show_submit', false ),
 		) );
 	}
 

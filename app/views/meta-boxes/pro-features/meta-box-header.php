@@ -4,6 +4,7 @@
  *
  * @package WP_Smush
  *
+ * @var string $title        Title.
  * @var string $upgrade_url  Upgrade URL.
  */
 

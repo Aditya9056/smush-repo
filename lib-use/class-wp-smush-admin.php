@@ -11,9 +11,6 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-// Include Bulk UI.
-require_once WP_SMUSH_DIR . 'lib/ui/class-wp-smush-ui.php';
-
 if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 	/**
 	 * Class WpSmushitAdmin

@@ -468,7 +468,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 					)
 				);
 
-				if ( ! is_wp_error( $request ) && '200' === wp_remote_retrieve_response_code( $request ) ) {
+				if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
 					$result = json_decode( wp_remote_retrieve_body( $request ) );
 					if ( ! empty( $result->success ) && $result->success ) {
 						$valid = 'valid';
