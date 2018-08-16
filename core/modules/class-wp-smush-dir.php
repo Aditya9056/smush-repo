@@ -11,8 +11,6 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-require_once 'ui/class-wp-smush-dir-ui.php';
-
 /**
  * Class WP_Smush_Dir
  */
@@ -46,15 +44,6 @@ class WP_Smush_Dir {
 	public $scanner;
 
 	/**
-	 * Directory Smush UI.
-	 *
-	 * @since 2.8.1
-	 *
-	 * @var WP_Smush_Dir_UI
-	 */
-	private $ui;
-
-	/**
 	 * WP_Smush_Dir constructor.
 	 */
 	public function __construct() {
@@ -65,7 +54,6 @@ class WP_Smush_Dir {
 			return;
 		}
 
-		$this->ui      = new WP_Smush_Dir_UI();
 		$this->scanner = new WP_Smush_Directory_Scanner();
 
 		if ( ! $this->scanner->is_scanning() ) {

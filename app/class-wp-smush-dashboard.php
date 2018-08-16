@@ -51,6 +51,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Add stats to stats box.
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'pro_savings_stats' ), 15 );
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'conversion_savings_stats' ), 15 );
+		add_action( 'stats_ui_after_resize_savings', array( $this, 'directory_stats_ui' ), 10 );
 	}
 
 	/**
@@ -150,8 +151,14 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 		switch ( $this->get_current_tab() ) {
 			case 'directory':
-				// Action hook to add settings to directory smush.
-				do_action( 'smush_directory_settings_ui' );
+				$this->add_meta_box( 'meta-boxes/directory',
+					__( 'Directory Smush', 'wp-smushit' ),
+					array( $this, 'directory_smush_metabox' ),
+					null,
+					null,
+					'directory'
+				);
+
 				break;
 
 			case 'integrations':
@@ -433,6 +440,40 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			</li>
 			<?php
 		}
+	}
+
+	/**
+	 * Set directory smush stats to stats box.
+	 *
+	 * @return void
+	 */
+	public function directory_stats_ui() {
+		$dir_smush_stats = get_option( 'dir_smush_stats' );
+		$human           = 0;
+		if ( ! empty( $dir_smush_stats ) && ! empty( $dir_smush_stats['dir_smush'] ) ) {
+			$human = ! empty( $dir_smush_stats['dir_smush']['bytes'] ) && $dir_smush_stats['dir_smush']['bytes'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
+		}
+		?>
+		<li class="smush-dir-savings">
+			<span class="sui-list-label"><?php esc_html_e( 'Directory Smush Savings', 'wp-smushit' ); ?>
+				<?php if ( $human <= 0 ) { ?>
+					<p class="wp-smush-stats-label-message">
+						<?php esc_html_e( "Smush images that aren't located in your uploads folder.", 'wp-smushit' ); ?>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=smush&tab=directory' ) ); ?>" class="wp-smush-dir-link"
+							title="<?php esc_attr_e( "Select a directory you'd like to Smush.", 'wp-smushit' ); ?>">
+							<?php esc_html_e( 'Choose directory', 'wp-smushit' ); ?>
+						</a>
+					</p>
+				<?php } ?>
+			</span>
+			<span class="wp-smush-stats sui-list-detail">
+				<i class="sui-icon-loader sui-loading" aria-hidden="true" title="<?php esc_attr_e( 'Updating Stats', 'wp-smushit' ); ?>"></i>
+				<span class="wp-smush-stats-human"></span>
+				<span class="wp-smush-stats-sep sui-hidden">/</span>
+				<span class="wp-smush-stats-percent"></span>
+			</span>
+		</li>
+		<?php
 	}
 
 	/**
@@ -763,6 +804,58 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
+	 * Show directory smush result notice.
+	 *
+	 * If we are redirected from a directory smush finish page,
+	 * show the result notice if success/fail count is available.
+	 *
+	 * @since 2.9.0
+	 */
+	public function smush_result_notice() {
+		// Get the counts from transient.
+		$items          = get_transient( 'wp-smush-show-dir-scan-notice' );
+		$failed_items   = get_transient( 'wp-smush-dir-scan-failed-items' );
+		$notice_message = esc_html__( 'All images failed to optimize.', 'wp-smushit' );
+		$notice_class   = 'sui-notice-error';
+
+		// Not all images optimized.
+		if ( ! empty( $failed_items ) && ! empty( $items ) ) {
+			$notice_message = sprintf(
+				/* translators: %1$d: number of images smushed and %1$d number of failed. */
+				esc_html__( '%1$d images were successfully optimized and %2$d images failed.', 'wp-smushit' ),
+				absint( $items ),
+				absint( $failed_items )
+			);
+			$notice_class   = 'sui-notice-warning';
+		} elseif ( ! empty( $items ) && empty( $failed_items ) ) {
+			// Yay! All images were optimized.
+			$notice_message = sprintf(
+				/* translators: %d: number of images */
+				esc_html__( '%d images were successfully optimized.', 'wp-smushit' ),
+				absint( $items )
+			);
+			$notice_class   = 'sui-notice-success';
+		}
+
+		// If we have counts, show the notice.
+		if ( ! empty( $items ) || ! empty( $failed_items ) ) {
+			// Delete the transients.
+			delete_transient( 'wp-smush-show-dir-scan-notice' );
+			delete_transient( 'wp-smush-dir-scan-failed-items' );
+			?>
+			<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $notice_class ); ?>">
+				<p class="sui-notice-content">
+					<?php echo $notice_message; ?>
+				</p>
+				<span class="sui-notice-dismiss">
+					<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>
+				</span>
+			</div>
+			<?php
+		}
+	}
+
+	/**
 	 * Summary meta box.
 	 */
 	public function dashboard_summary_metabox() {
@@ -895,6 +988,31 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 		$this->view( 'meta-boxes/pro-features/meta-box-header', array(
 			'title'       => __( 'Pre Features', 'wp-smushit' ),
+			'upgrade_url' => $upgrade_url,
+		) );
+	}
+
+	/**
+	 * Directory Smush meta box.
+	 */
+	public function directory_smush_metabox() {
+		// Reset the bulk limit transient.
+		if ( ! WP_Smush::is_pro() ) {
+			WP_Smush_Core::check_bulk_limit( true, 'dir_sent_count' );
+		}
+
+		$core = WP_Smush::get_instance()->core();
+
+		$upgrade_url = add_query_arg(
+			array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => 'smush_directorysmush_limit_notice',
+			), $core->upgrade_url
+		);
+
+		$this->view( 'meta-boxes/directory/meta-box', array(
+			'root_path'   => $core->dir->get_root_path(),
 			'upgrade_url' => $upgrade_url,
 		) );
 	}

@@ -705,7 +705,6 @@ abstract class WP_Smush_View {
 				$bulk_smush_link = 'bulk' === $this->get_current_tab() ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '">';
 				$message        .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
 			}
-
 			?>
 			<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $message_class ); ?>">
 				<div class="sui-notice-content">
