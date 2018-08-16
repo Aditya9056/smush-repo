@@ -74,6 +74,13 @@ class WP_Smushit {
 	);
 
 	/**
+	 * Stores the headers returned by the latest API call.
+	 *
+	 * @var array $api_headers
+	 */
+	protected $api_headers = array();
+
+	/**
 	 * WP_Smush constructor.
 	 */
 	public function __construct() {
@@ -622,6 +629,86 @@ class WP_Smushit {
 		return $meta;
 	}
 
+	/**
+	 * Smush single images
+	 *
+	 * @param int  $attachment_id  Attachment ID.
+	 * @param bool $return         Return/echo the stats.
+	 *
+	 * @return array|string
+	 */
+	public function smush_single( $attachment_id, $return = false ) {
+		// If the smushing option is already set, return the status.
+		if ( get_option( "smush-in-progress-{$attachment_id}", false ) || get_option( "wp-smush-restore-{$attachment_id}", false ) ) {
+			// Get the button status.
+			$status = $this->set_status( $attachment_id, false, true );
+			if ( $return ) {
+				return $status;
+			}
+
+			wp_send_json_success( $status );
+		}
+
+		// Set a transient to avoid multiple request.
+		update_option( "smush-in-progress-{$attachment_id}", true );
+
+		$attachment_id = absint( (int) ( $attachment_id ) );
+
+		// Get the file path for backup.
+		$attachment_file_path = WP_Smush_Helper::get_attached_file( $attachment_id );
+
+		// Download file if not exists.
+		do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
+
+		// Take backup.
+		WP_Smush::get_instance()->core()->backup->create_backup( $attachment_file_path, '', $attachment_id );
+
+		// Get the image metadata from $_POST.
+		$original_meta = ! empty( $_POST['metadata'] ) ? WP_Smush_Helper::format_meta_from_post( $_POST['metadata'] ) : '';
+
+		$original_meta = empty( $original_meta ) ? wp_get_attachment_metadata( $attachment_id ) : $original_meta;
+
+		// Send image for resizing, if enabled resize first before any other operation.
+		$updated_meta = $this->resize_image( $attachment_id, $original_meta );
+
+		// Convert PNGs to JPG.
+		$updated_meta = WP_Smush::get_instance()->core()->png2jpg->png_to_jpg( $attachment_id, $updated_meta );
+
+		$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
+
+		// Smush the image.
+		$smush = $this->resize_from_meta_data( $original_meta, $attachment_id );
+
+		// Update the details, after smushing, so that latest image is used in hook.
+		wp_update_attachment_metadata( $attachment_id, $original_meta );
+
+		// Get the button status.
+		$status = $this->set_status( $attachment_id, false, true );
+
+		// Delete the transient after attachment meta is updated.
+		delete_option( 'smush-in-progress-' . $attachment_id );
+
+		// Send Json response if we are not suppose to return the results.
+		if ( is_wp_error( $smush ) ) {
+			if ( $return ) {
+				return array( 'error' => $smush->get_error_message() );
+			}
+
+			wp_send_json_error(
+				array(
+					'error_msg'    => '<p class="wp-smush-error-message">' . $smush->get_error_message() . '</p>',
+					'show_warning' => intval( $this->show_warning() ),
+				)
+			);
+		}
+
+		WP_Smush_Core::update_resmush_list( $attachment_id );
+		if ( $return ) {
+			return $status;
+		}
+
+		wp_send_json_success( $status );
+	}
 
 	/**
 	 * Posts an image to Smush.
@@ -725,7 +812,7 @@ class WP_Smushit {
 
 			// If is_premium is set in response, send it over to check for member validity.
 			if ( ! empty( $response->data ) && isset( $response->data->is_premium ) ) {
-				$wpsmushit_admin->api_headers['is_premium'] = $response->data->is_premium;
+				$this->api_headers['is_premium'] = $response->data->is_premium;
 			}
 		} else {
 			// Server side error, get message from response
@@ -1647,7 +1734,7 @@ class WP_Smushit {
 
 		// Check and Update resmush list
 		if ( $resmush_list = get_option( 'wp-smush-resmush-list' ) ) {
-			$wpsmushit_admin->update_resmush_list( $image_id, 'wp-smush-resmush-list' );
+			WP_Smush_Core::update_resmush_list( $image_id, 'wp-smush-resmush-list' );
 		}
 
 		/** Delete Backups  */
@@ -1861,7 +1948,7 @@ class WP_Smushit {
 	 */
 	function dismiss_smush_upgrade() {
 		if ( isset( $_GET['remove_smush_upgrade_notice'] ) && 1 == $_GET['remove_smush_upgrade_notice'] ) {
-			$wpsmushit_admin->dismiss_upgrade_notice( false );
+			WP_Smush::get_instance()->admin()->ajax->dismiss_upgrade_notice( false );
 		}
 	}
 
@@ -1980,23 +2067,40 @@ class WP_Smushit {
 	 *
 	 * @return bool
 	 */
-	function show_warning() {
+	public function show_warning() {
 		// If it's a free setup, Go back right away!
 		if ( ! WP_Smush::is_pro() ) {
 			return false;
 		}
 
 		// Return. If we don't have any headers
-		if ( ! isset( $wpsmushit_admin->api_headers ) ) {
+		if ( ! isset( $this->api_headers ) ) {
 			return false;
 		}
 
 		// Show warning, if function says it's premium and api says not premium
-		if ( isset( $wpsmushit_admin->api_headers['is_premium'] ) && ! intval( $wpsmushit_admin->api_headers['is_premium'] ) ) {
+		if ( isset( $this->api_headers['is_premium'] ) && ! intval( $this->api_headers['is_premium'] ) ) {
 			return true;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Perform the resize operation for the image
+	 *
+	 * @param $attachment_id
+	 *
+	 * @param $meta
+	 *
+	 * @return mixed
+	 */
+	public function resize_image( $attachment_id, $meta ) {
+		if ( empty( $attachment_id ) || empty( $meta ) ) {
+			return $meta;
+		}
+
+		return WP_Smush::get_instance()->core()->resize->auto_resize( $attachment_id, $meta );
 	}
 
 	/**

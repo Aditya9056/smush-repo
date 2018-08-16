@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class WP_Smush_Admin
+ */
 class WP_Smush_Admin {
 
 	/**
@@ -8,6 +11,13 @@ class WP_Smush_Admin {
 	 * @var array
 	 */
 	public $pages = array();
+
+	/**
+	 * AJAX module.
+	 *
+	 * @var WP_Smush_Ajax
+	 */
+	public $ajax;
 
 	/**
 	 * WP_Smush_Admin constructor.
@@ -21,7 +31,7 @@ class WP_Smush_Admin {
 		add_action( 'admin_init', array( $this, 'smush_i18n' ) );
 
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			new WP_Smush_Ajax();
+			$this->ajax = new WP_Smush_Ajax();
 		}
 
 		add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );

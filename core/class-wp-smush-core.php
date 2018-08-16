@@ -61,6 +61,13 @@ class WP_Smush_Core {
 	public $s3;
 
 	/**
+	 * Settings module.
+	 *
+	 * @var WP_Smush_Settings
+	 */
+	public $options;
+
+	/**
 	 * Meta key to save smush result to db.
 	 *
 	 * @var string $smushed_meta_key
@@ -219,7 +226,7 @@ class WP_Smush_Core {
 	 *
 	 * @var int $max_free_bulk
 	 */
-	private static $max_free_bulk = 50;
+	public static $max_free_bulk = 50;
 
 	/**
 	 * WP_Smush_Core constructor.
@@ -288,8 +295,8 @@ class WP_Smush_Core {
 		$this->backup  = new WP_Smush_Backup( $this->smush );
 		$this->png2jpg = new WP_Smush_Png2jpg();
 		$this->resize  = new WP_Smush_Resize();
+		$this->options = new WP_Smush_Settings();
 
-		new WP_Smush_Settings();
 		new WP_Smush_Auto_Resize();
 
 		// Register REST API metas.
@@ -914,5 +921,63 @@ class WP_Smush_Core {
 		}
 	}
 
+	/**
+	 * Remove the given attachment id from resmush list and updates it to db
+	 *
+	 * @param string $attachment_id  Attachment ID.
+	 * @param string $mkey           Option key.
+	 */
+	public static function update_resmush_list( $attachment_id, $mkey = 'wp-smush-resmush-list' ) {
+		$resmush_list = get_option( $mkey );
+
+		// If there are any items in the resmush list, Unset the Key.
+		if ( ! empty( $resmush_list ) && count( $resmush_list ) > 0 ) {
+			$key = array_search( $attachment_id, $resmush_list );
+			if ( $resmush_list ) {
+				unset( $resmush_list[ $key ] );
+			}
+			$resmush_list = array_values( $resmush_list );
+		}
+
+		// If Resmush List is empty.
+		if ( empty( $resmush_list ) || 0 === count( $resmush_list ) ) {
+			// Delete resmush list.
+			delete_option( $mkey );
+		} else {
+			update_option( $mkey, $resmush_list, false );
+		}
+	}
+
+	/**
+	 * Checks if upfront images needs to be resmushed
+	 *
+	 * @param array $resmush_list  Resmush list.
+	 *
+	 * @return array Returns the list of image ids that needs to be re-smushed
+	 */
+	public function get_upfront_resmush_list( $resmush_list ) {
+		$upfront_attachments = WP_Smush::get_instance()->core()->db->get_upfront_images( $resmush_list );
+		if ( ! empty( $upfront_attachments ) && is_array( $upfront_attachments ) ) {
+			foreach ( $upfront_attachments as $u_attachment_id ) {
+				if ( ! in_array( $u_attachment_id, $resmush_list ) ) {
+					// Check if not smushed.
+					$upfront_images = get_post_meta( $u_attachment_id, 'upfront_used_image_sizes', true );
+					if ( ! empty( $upfront_images ) && is_array( $upfront_images ) ) {
+						// Iterate over all the images.
+						foreach ( $upfront_images as $image ) {
+							// If any of the element image is not smushed, add the id to resmush list
+							// and skip to next image.
+							if ( empty( $image['is_smushed'] ) || 1 != $image['is_smushed'] ) {
+								$resmush_list[] = $u_attachment_id;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $resmush_list;
+	}
 
 }

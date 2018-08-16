@@ -279,4 +279,79 @@ class WP_Smush_Helper {
 		return $name;
 	}
 
+	/**
+	 * Allows to filter the error message sent to the user
+	 *
+	 * @param string $error          Error message.
+	 * @param string $attachment_id  Attachment ID.
+	 *
+	 * @return mixed|null|string
+	 */
+	public static function filter_error( $error = '', $attachment_id = '' ) {
+		if ( empty( $error ) ) {
+			return null;
+		}
+
+		/**
+		 * Used internally to modify the error message
+		 */
+		$error = apply_filters( 'wp_smush_error', $error, $attachment_id );
+
+		return $error;
+	}
+
+	/**
+	 * Format meta data from $_POST request.
+	 *
+	 * Post request in WordPress will convert all values
+	 * to string. Make sure image height and width are int.
+	 * This is required only when Async requests are used.
+	 * See - https://wordpress.org/support/topic/smushit-overwrites-image-meta-crop-sizes-as-string-instead-of-int/
+	 *
+	 * @since 2.8.0
+	 *
+	 * @param array $meta Meta data of attachment.
+	 *
+	 * @return array
+	 */
+	public static function format_meta_from_post( $meta = array() ) {
+		// Do not continue in case meta is empty.
+		if ( empty( $meta ) ) {
+			return $meta;
+		}
+
+		// If meta data is array proceed.
+		if ( is_array( $meta ) ) {
+
+			// Walk through each items and format.
+			array_walk_recursive( $meta, array( 'WP_Smush_Helper', 'format_attachment_meta_item' ) );
+		}
+
+		return $meta;
+	}
+
+	/**
+	 * If current item is width or height, make sure it is int.
+	 *
+	 * @since 2.8.0
+	 *
+	 * @param mixed  $value Meta item value.
+	 * @param string $key Meta item key.
+	 */
+	public static function format_attachment_meta_item( &$value, $key ) {
+		if ( 'height' === $key || 'width' === $key ) {
+			$value = (int) $value;
+		}
+
+		/**
+		 * Allows to format single item in meta.
+		 *
+		 * This filter will be used only for Async, post requests.
+		 *
+		 * @param mixed $value Meta item value.
+		 * @param string $key Meta item key.
+		 */
+		$value = apply_filters( 'wp_smush_format_attachment_meta_item', $value, $key );
+	}
+
 }
