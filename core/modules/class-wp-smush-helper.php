@@ -354,4 +354,20 @@ class WP_Smush_Helper {
 		$value = apply_filters( 'wp_smush_format_attachment_meta_item', $value, $key );
 	}
 
+	/**
+	 * Format Numbers to short form 1000 -> 1k
+	 *
+	 * @param $number
+	 *
+	 * @return string
+	 */
+	public static function format_number( $number ) {
+		if ( $number >= 1000 ) {
+			return $number / 1000 . 'k'; // NB: you will want to round this.
+		}
+
+		return $number;
+	}
+
+
 }

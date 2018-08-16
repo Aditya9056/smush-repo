@@ -494,7 +494,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				$show = $count > 0 ? true : false;
 
 				// Get the actual remainaing count.
-				if ( ! isset( $wpsmushit_admin->remaining_count ) ) {
+				if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) ) {
 					WP_Smush::get_instance()->core()->setup_global_stats();
 				}
 

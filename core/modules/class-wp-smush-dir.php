@@ -178,11 +178,7 @@ class WP_Smush_Dir {
 
 		// Check smush limit for free users.
 		if ( ! WP_Smush::is_pro() ) {
-			/**
-			 * Free version bulk smush, check the transient counter value.
-			 *
-			 * @var WpSmushitAdmin $wpsmushit_admin
-			 */
+			// Free version bulk smush, check the transient counter value.
 			$should_continue = WP_Smush_Core::check_bulk_limit( false, 'dir_sent_count' );
 
 			// Send a error for the limit.
@@ -521,11 +517,7 @@ class WP_Smush_Dir {
 		$values    = array();
 		$timestamp = gmdate( 'Y-m-d H:i:s' );
 
-		/**
-		 * Temporary increase the limit.
-		 *
-		 * @var WpSmushHelper $wpsmush_helper
-		 */
+		// Temporary increase the limit.
 		WP_Smush_Helper::increase_memory_limit();
 
 		// Iterate over all the selected items (can be either an image or directory).
@@ -1010,8 +1002,10 @@ class WP_Smush_Dir {
 
 		$path = $image['path'];
 
+		$core = WP_Smush::get_instance()->core();
+
 		// We have the image path, optimise.
-		$smush_results = $wp_smush->do_smushit( $path );
+		$smush_results = $core->smush->do_smushit( $path );
 
 		if ( is_wp_error( $smush_results ) ) {
 			/* @var WP_Error $smush_results */
@@ -1040,7 +1034,7 @@ class WP_Smush_Dir {
 		$file_time = @filectime( $path );
 
 		// If super-smush enabled, update supersmushed meta value also.
-		$lossy = $wp_smush->lossy_enabled ? 1 : 0;
+		$lossy = $core->smush->lossy_enabled ? 1 : 0;
 
 		// All good, Update the stats.
 		$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, lossy=%s WHERE id=%d LIMIT 1";
@@ -1050,17 +1044,17 @@ class WP_Smush_Dir {
 		// Get the global stats if current dir smush completed.
 		if ( isset( $_GET['get_stats'] ) && 1 == $_GET['get_stats'] ) {
 			// This will setup directory smush stats too.
-			$wpsmushit_admin->setup_global_stats();
-			$stats            = $wpsmushit_admin->stats;
-			$stats['total']   = $wpsmushit_admin->total_count;
-			$stats['smushed'] = $wpsmushit_admin->smushed_count;
+			$core->setup_global_stats();
+			$stats            = $core->stats;
+			$stats['total']   = $core->total_count;
+			$stats['smushed'] = $core->smushed_count;
 			if ( 1 === $lossy ) {
-				$stats['super_smushed'] = $wpsmushit_admin->super_smushed;
+				$stats['super_smushed'] = $core->super_smushed;
 			}
 			// Set tootltip text to update.
 			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( __( "You've smushed %d images in total.", 'wp-smushit' ), $stats['total_images'] ) : '';
 			// Get the total dir smush stats.
-			$total = $wpsmushit_admin->dir_stats;
+			$total = $core->dir_stats;
 		} else {
 			$total = $this->total_stats();
 		}
@@ -1088,7 +1082,7 @@ class WP_Smush_Dir {
 		}
 
 		// Update Bulk Limit Transient.
-		$wpsmushit_admin->update_smush_count( 'dir_sent_count' );
+		$core->update_smush_count( 'dir_sent_count' );
 
 		wp_send_json_success( $data );
 	}
@@ -1216,7 +1210,7 @@ if ( class_exists( 'RecursiveFilterIterator' ) && ! class_exists( 'WPSmushRecurs
 		public function accept() {
 			$path = $this->current()->getPathname();
 
-			if ( $this->isDir() && ! $wpsmush_dir->skip_dir( $path ) ) {
+			if ( $this->isDir() && ! WP_Smush::get_instance()->core()->dir->skip_dir( $path ) ) {
 				return true;
 			}
 

@@ -156,7 +156,7 @@ abstract class WP_Smush_View {
 		wp_register_style( 'smush-admin-common', WP_SMUSH_URL . 'app/assets/css/common.min.css', array(), WP_SMUSH_VERSION );
 
 		// Dismiss update info.
-		WP_Smush::get_instance()->admin()->ajax->dismiss_update_info();
+		WP_Smush::get_instance()->core()->smush->dismiss_update_info();
 	}
 
 	/**

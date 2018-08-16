@@ -283,18 +283,11 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @return string
 		 */
 		public function wp_smush_rating_message( $message ) {
-			/**
-			 * WpSmushitAdmin global.
-			 *
-			 * @var WpSmushitAdmin $wpsmushit_admin
-			 */
-			global $wpsmushit_admin;
-
-			if ( empty( $wpsmushit_admin->stats ) ) {
-				$wpsmushit_admin->setup_global_stats();
+			if ( empty( $this->core()->stats ) ) {
+				$this->core()->setup_global_stats();
 			}
 
-			$savings    = $wpsmushit_admin->stats;
+			$savings    = $this->core()->stats;
 			$show_stats = false;
 
 			// If there is any saving, greater than 1Mb, show stats.

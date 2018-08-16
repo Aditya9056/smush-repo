@@ -105,7 +105,6 @@ class WP_Smushit {
 
 		// Send Smush stats for PRO members.
 		add_filter( 'wpmudev_api_project_extra_data-912164', array( $this, 'send_smush_stats' ) );
-		add_action( 'wp_ajax_smush_show_warning', array( $this, 'show_warning_ajax' ) );
 
 		/**
 		 * Load NextGen Gallery, instantiate the Async class. if hooked too late or early, auto Smush doesn't
@@ -125,6 +124,133 @@ class WP_Smushit {
 
 		if ( is_admin() ) {
 			add_action( 'admin_init', array( 'WP_Smush_Installer', 'upgrade_settings' ) );
+		}
+
+		/**
+		 * Prints a membership validation issue notice in Media Library
+		 */
+		add_action( 'admin_notices', array( $this, 'media_library_membership_notice' ) );
+
+		add_filter( 'wp_prepare_attachment_for_js', array( $this, 'smush_send_status' ), 99, 3 );
+
+		// Smush image filter from Media Library.
+		add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
+	}
+
+	/**
+	 * Get the smush button text for attachment
+	 *
+	 * @param $id Attachment ID for which the Status has to be set
+	 *
+	 * @return string
+	 */
+	function smush_status( $id ) {
+		global $wp_smush;
+
+		// Show Temporary Status, For Async Optimisation, No Good workaround
+		if ( ! get_option( "wp-smush-restore-$id", false ) && ! empty( $_POST['action'] ) && 'upload-attachment' == $_POST['action'] && $wp_smush->is_auto_smush_enabled() ) {
+			// the status
+			$status_txt = '<p class="smush-status">' . __( 'Smushing in progress..', 'wp-smushit' ) . '</p>';
+
+			// we need to show the smush button
+			$show_button = false;
+
+			// the button text
+			$button_txt = __( 'Smush Now!', 'wp-smushit' );
+
+			return $this->column_html( $id, $status_txt, $button_txt, $show_button, true, false, true );
+		}
+		// Else Return the normal status
+		$response = trim( $this->set_status( $id, false ) );
+
+		return $response;
+	}
+
+	/**
+	 * Prints the Membership Validation issue notice
+	 */
+	public function media_library_membership_notice() {
+		// No need to print it for free version.
+		if ( ! WP_Smush::is_pro() ) {
+			return;
+		}
+
+		// Show it on Media Library page only.
+		$screen    = get_current_screen();
+		$screen_id = ! empty( $screen ) ? $screen->id : '';
+		// Do not show notice anywhere else
+		if ( empty( $screen ) || 'upload' != $screen_id ) {
+			return;
+		}
+
+		echo $wpsmush_bulkui->get_user_validation_message( false );
+	}
+
+	/**
+	 * Send smush status for attachment
+	 *
+	 * @param $response
+	 * @param $attachment
+	 *
+	 * @return mixed
+	 */
+	function smush_send_status( $response, $attachment ) {
+		if ( ! isset( $attachment->ID ) ) {
+			return $response;
+		}
+
+		// Validate nonce
+		$status            = $this->smush_status( $attachment->ID );
+		$response['smush'] = $status;
+
+		return $response;
+	}
+
+	/**
+	 * Remove the Update info.
+	 *
+	 * @param bool $remove_notice  Remove notice.
+	 */
+	public function dismiss_update_info( $remove_notice = false ) {
+		// From URL arg.
+		if ( isset( $_GET['dismiss_smush_update_info'] ) && 1 == $_GET['dismiss_smush_update_info'] ) {
+			$remove_notice = true;
+		}
+
+		// From Ajax.
+		if ( ! empty( $_REQUEST['action'] ) && 'dismiss_update_info' == $_REQUEST['action'] ) {
+			$remove_notice = true;
+		}
+
+		// Update Db.
+		if ( $remove_notice ) {
+			update_site_option( 'wp-smush-hide_update_info', 1 );
+		}
+	}
+
+	/**
+	 * Check whether to skip a specific image size or not
+	 *
+	 * @param string $size Registered image size
+	 *
+	 * @return bool true/false Whether to skip the image size or not
+	 */
+	public function skip_image_size( $size = '' ) {
+		// No image size specified, Don't skip.
+		if ( empty( $size ) ) {
+			return false;
+		}
+
+		$image_sizes = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
+
+		// If Images sizes aren't set, don't skip any of the image size.
+		if ( false === $image_sizes ) {
+			return false;
+		}
+
+		// Check if the size is in the smush list.
+		if ( is_array( $image_sizes ) && ! in_array( $size, $image_sizes ) ) {
+			return true;
 		}
 	}
 
@@ -352,7 +478,7 @@ class WP_Smushit {
 
 			foreach ( $meta['sizes'] as $size_key => $size_data ) {
 				// Check if registered size is supposed to be Smushed or not.
-				if ( 'full' !== $size_key && $wpsmushit_admin->skip_image_size( $size_key ) ) {
+				if ( 'full' !== $size_key && WP_Smush::get_instance()->core()->smush->skip_image_size( $size_key ) ) {
 					continue;
 				}
 
@@ -2104,15 +2230,6 @@ class WP_Smushit {
 	}
 
 	/**
-	 * Send JSON response whether to show or not the warning
-	 */
-	function show_warning_ajax() {
-		$show = $this->show_warning();
-		wp_send_json( intval( $show ) );
-	}
-
-
-	/**
 	 * Send a smush request for the attachment
 	 *
 	 * @param $id Attachment ID
@@ -2367,6 +2484,31 @@ class WP_Smushit {
 			__( 'WP Smush', 'wp-smushit' ),
 			wp_kses_post( wpautop( $content, false ) )
 		);
+	}
+
+	/**
+	 * Add our filter to the media query filter in Media Library.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @see wp_ajax_query_attachments()
+	 *
+	 * @param array $query
+	 *
+	 * @return mixed
+	 */
+	public function filter_media_query( $query ) {
+		if ( isset( $_POST['query']['stats'] ) && 'null' === $_POST['query']['stats'] ) {
+			$query['meta_query'] = array(
+				array(
+					'key'     => 'wp-smush-ignore-bulk',
+					'value'   => 'true',
+					'compare' => 'EXISTS',
+				),
+			);
+		}
+
+		return $query;
 	}
 
 }

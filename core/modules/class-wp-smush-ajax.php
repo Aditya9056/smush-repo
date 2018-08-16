@@ -43,6 +43,7 @@ class WP_Smush_Ajax {
 		add_action( 'wp_ajax_hide_pagespeed_suggestion', array( $this, 'hide_pagespeed_suggestion' ) );
 		// Hide API message.
 		add_action( 'wp_ajax_hide_api_message', array( $this, 'hide_api_message' ) );
+		add_action( 'wp_ajax_smush_show_warning', array( $this, 'show_warning_ajax' ) );
 
 		/**
 		 * SMUSH
@@ -180,20 +181,7 @@ class WP_Smush_Ajax {
 	 * @param bool $remove_notice  Remove notice.
 	 */
 	public function dismiss_update_info( $remove_notice = false ) {
-		// From URL arg.
-		if ( isset( $_GET['dismiss_smush_update_info'] ) && 1 == $_GET['dismiss_smush_update_info'] ) {
-			$remove_notice = true;
-		}
-
-		// From Ajax.
-		if ( ! empty( $_REQUEST['action'] ) && 'dismiss_update_info' == $_REQUEST['action'] ) {
-			$remove_notice = true;
-		}
-
-		// Update Db.
-		if ( $remove_notice ) {
-			update_site_option( 'wp-smush-hide_update_info', 1 );
-		}
+		WP_Smush::get_instance()->core()->smush->dismiss_update_info( $remove_notice );
 	}
 
 	/**
@@ -228,6 +216,14 @@ class WP_Smush_Ajax {
 
 		update_site_option( WP_SMUSH_PREFIX . 'api_message', true );
 		wp_send_json_success();
+	}
+
+	/**
+	 * Send JSON response whether to show or not the warning
+	 */
+	public function show_warning_ajax() {
+		$show = WP_Smush::get_instance()->core()->smush->show_warning();
+		wp_send_json( intval( $show ) );
 	}
 
 	/***************************************

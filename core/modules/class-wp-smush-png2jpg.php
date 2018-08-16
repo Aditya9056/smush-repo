@@ -180,7 +180,7 @@ class WP_Smush_Png2jpg {
 		}
 
 		// Check if registered size is supposed to be converted or not.
-		if ( 'full' !== $size && $wpsmushit_admin->skip_image_size( $size ) ) {
+		if ( 'full' !== $size && WP_Smush::get_instance()->core()->smush->skip_image_size( $size ) ) {
 			return false;
 		}
 
