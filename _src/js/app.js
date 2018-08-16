@@ -18,7 +18,7 @@ require( './modules/directory-smush' );
  *
  * @used-by WpSmushitAdmin::smush_updated()
  * @used-by WpSmushS3::3_support_required_notice()
- * @used-by WpSmushBulkUi::installation_notice()
+ * @used-by WP_Smush_View::installation_notice()
  *
  * TODO: should this be moved out in a separate file like common.scss?
  */

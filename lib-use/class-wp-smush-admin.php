@@ -60,8 +60,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 
 
-			// Smush Upgrade.
-			add_action( 'admin_notices', array( $this, 'smush_upgrade' ) );
+
 
 			// Handle the smush pro dismiss features notice ajax.
 			add_action( 'wp_ajax_dismiss_upgrade_notice', array( $this, 'dismiss_upgrade_notice' ) );
@@ -562,45 +561,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$response = trim( $this->set_status( $id, false ) );
 
 			return $response;
-		}
-
-
-
-
-		/**
-		 * Shows Notice for free users, displays a discount coupon
-		 */
-		function smush_upgrade() {
-			global $wpsmush_bulkui;
-
-			// Return, If a pro user, or not super admin, or don't have the admin privilleges
-			if ( $this->validate_install() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
-				return false;
-			}
-
-			// No need to show it on bulk smush
-			if ( isset( $_GET['page'] ) && 'smush' == $_GET['page'] ) {
-				return false;
-			}
-
-			// Return if notice is already dismissed
-			if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
-				return false;
-			}
-
-			$install_type = get_site_option( 'wp-smush-install-type', false );
-
-			if ( ! $install_type ) {
-				if ( $this->smushed_count > 0 ) {
-					$install_type = 'existing';
-				} else {
-					$install_type = 'new';
-				}
-				update_site_option( 'wp-smush-install-type', $install_type );
-			}
-
-			// Container Header
-			echo $wpsmush_bulkui->installation_notice();
 		}
 
 		/**

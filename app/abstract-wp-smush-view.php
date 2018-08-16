@@ -34,13 +34,6 @@ abstract class WP_Smush_View {
 	protected $tabs = array();
 
 	/**
-	 * Settings group for integration options.
-	 *
-	 * @var array
-	 */
-	protected $intgration_group = array();
-
-	/**
 	 * WP_Smush_View constructor.
 	 *
 	 * @param string $title  Page title.
@@ -137,8 +130,12 @@ abstract class WP_Smush_View {
 	 */
 	public function add_action_hooks() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
+		// Notices.
+		add_action( 'admin_notices', array( $this, 'smush_upgrade_notice' ) );
 		add_action( 'admin_notices', array( $this, 'smush_deactivated' ) );
 		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
+
 		add_filter( 'admin_body_class', array( $this, 'smush_body_classes' ) );
 	}
 
@@ -255,6 +252,71 @@ abstract class WP_Smush_View {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Shows Notice for free users, displays a discount coupon
+	 */
+	public function smush_upgrade_notice() {
+		// Return, If a pro user, or not super admin, or don't have the admin privilleges.
+		if ( WP_Smush::is_pro() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
+			return;
+		}
+
+		// No need to show it on bulk smush.
+		if ( isset( $_GET['page'] ) && 'smush' === $_GET['page'] ) {
+			return;
+		}
+
+		// Return if notice is already dismissed.
+		if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
+			return;
+		}
+
+		$core = WP_Smush::get_instance()->core();
+
+		$install_type = get_site_option( 'wp-smush-install-type', false );
+
+		if ( ! $install_type ) {
+			$install_type = $core->smushed_count > 0 ? 'existing' : 'new';
+			update_site_option( 'wp-smush-install-type', $install_type );
+		}
+
+		// Prepare notice.
+		if ( 'new' === $install_type ) {
+			$notice_heading = __( 'Thanks for installing Smush. We hope you like it!', 'wp-smushit' );
+			$notice_content = __( 'And hey, if you do, you can join WPMU DEV for a free 30 day trial and get access to even more features!', 'wp-smushit' );
+			$button_content = __( 'Try Smush Pro Free', 'wp-smushit' );
+		} else {
+			$notice_heading = __( 'Thanks for upgrading Smush!', 'wp-smushit' );
+			$notice_content = __( 'Did you know she has secret super powers? Yes, she can super-smush images for double the savings, store original images, and bulk smush thousands of images in one go. Get started with a free WPMU DEV trial to access these advanced features.', 'wp-smushit' );
+			$button_content = __( 'Try Smush Pro Free', 'wp-smushit' );
+		}
+
+		$upgrade_url = add_query_arg(
+			array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => 'smush_dashboard_upgrade_notice',
+			), $core->upgrade_url
+		);
+		?>
+		<div class="notice smush-notice" style="display: none;">
+			<div class="smush-notice-logo"><span></span></div>
+			<div class="smush-notice-message<?php echo 'new' === $install_type ? ' wp-smush-fresh' : ' wp-smush-existing'; ?>">
+				<strong><?php echo esc_html( $notice_heading ); ?></strong>
+				<?php echo esc_html( $notice_content ); ?>
+			</div>
+			<div class="smush-notice-cta">
+				<a href="<?php echo esc_url( $upgrade_url ); ?>" class="smush-notice-act button-primary" target="_blank">
+					<?php echo esc_html( $button_content ); ?>
+				</a>
+				<button class="smush-notice-dismiss smush-dismiss-welcome" data-msg="<?php esc_html_e( 'Saving', 'wp-smushit' ); ?>">
+					<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>
+				</button>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**
@@ -401,11 +463,6 @@ abstract class WP_Smush_View {
 
 		// Nonce field.
 		wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '' );
-
-		/**
-		 * Action hook to add extra containers at bottom of admin UI.
-		 */
-		do_action( 'smush_admin_ui_bottom' );
 
 		// Close shared ui wrapper.
 		echo '</div>';

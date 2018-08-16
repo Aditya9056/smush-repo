@@ -12,10 +12,41 @@
 class WP_Smush_Dashboard extends WP_Smush_View {
 
 	/**
+	 * Settings group for resize options.
+	 *
+	 * @var array
+	 */
+	private $resize_group = array(
+		'detection',
+	);
+
+	/**
+	 * Settings group for full size image options.
+	 *
+	 * @var array
+	 */
+	private $full_size_group = array(
+		'backup',
+	);
+
+	/**
+	 * Settings group for integration options.
+	 *
+	 * @var array
+	 */
+	private $intgration_group = array();
+
+	/**
 	 * Register page action hooks
 	 */
 	public function add_action_hooks() {
 		parent::add_action_hooks();
+
+		add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
+		add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
+		add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
+		add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
+		add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
 
 		// Add stats to stats box.
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'pro_savings_stats' ), 15 );
@@ -76,14 +107,14 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$is_networkwide = WP_Smush_Settings::$settings['networkwide'];
 
 		if ( ! $is_network ) {
-			$this->add_meta_box( 'summary',
+			$this->add_meta_box( 'meta-boxes/summary',
 				null,
 				array( $this, 'dashboard_summary_metabox' ),
 				null,
 				null,
 				'summary',
 				array(
-					'box_class'         => 'sui-box sui-summary-smush',
+					'box_class'         => 'sui-box sui-summary sui-summary-smush',
 					'box_content_class' => false,
 				)
 			);
@@ -98,12 +129,39 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			}
 		}
 
+		// Class for box.
+		$settings_class = WP_Smush::is_pro() ? 'smush-settings-wrapper wp-smush-pro' : 'smush-settings-wrapper';
 		if ( $is_network && ! $is_networkwide ) {
+			$this->add_meta_box( 'meta-boxes/settings',
+				__( 'Settings', 'wp-smushit' ),
+				array( $this, 'settings_metabox' ),
+				null,
+				null,
+				'bulk',
+				array(
+					'box_class' => "sui-box {$settings_class}",
+				)
+			);
 
 			return;
 		}
 
 		switch ( $this->get_current_tab() ) {
+			case 'directory':
+				// Action hook to add settings to directory smush.
+				do_action( 'smush_directory_settings_ui' );
+				break;
+
+			case 'integrations':
+				// Show integrations box.
+				$this->integrations_ui();
+				break;
+
+			case 'cdn':
+				// Action hook to add settings to cdn section.
+				do_action( 'smush_cdn_settings_ui' );
+				break;
+
 			case 'bulk':
 			default:
 				// Show bulk smush box if a subsite admin.
@@ -111,7 +169,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					// Class for bulk smush box.
 					$class = WP_Smush::is_pro() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 
-					$this->add_meta_box( 'bulk',
+					$this->add_meta_box( 'meta-boxes/bulk',
 						__( 'Bulk Smush', 'wp-smushit' ),
 						array( $this, 'bulk_smush_metabox' ),
 						null,
@@ -124,12 +182,28 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				}
 
 				if ( $is_network || ! $is_networkwide ) {
-					// Show settings box.
-					//$this->settings_container();
+					$this->add_meta_box( 'meta-boxes/settings',
+						__( 'Settings', 'wp-smushit' ),
+						array( $this, 'settings_metabox' ),
+						null,
+						null,
+						'bulk',
+						array(
+							'box_class' => "sui-box {$settings_class}",
+						)
+					);
 				}
+
+				$this->add_meta_box( 'meta-boxes/pro-features',
+					__( 'Pre Features', 'wp-smushit' ),
+					array( $this, 'pro_features_metabox' ),
+					array( $this, 'pro_features_metabox_header' ),
+					null,
+					'bulk'
+				);
+
 				break;
 		}
-
 	}
 
 	/**
@@ -394,6 +468,282 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
+	 * Single settings row html content.
+	 *
+	 * @param string $setting_m_key  Setting key.
+	 * @param string $label          Setting label.
+	 * @param string $name           Setting name.
+	 * @param mixed  $setting_val    Setting value.
+	 * @param bool   $skip_group     Skip group settings.
+	 * @param bool   $disable        Disable the setting.
+	 * @param bool   $upsell         Gray out row to show upsell.
+	 *
+	 * @return void
+	 */
+	public function settings_row( $setting_m_key, $label, $name, $setting_val, $skip_group = false, $disable = false, $upsell = false ) {
+		// Get all grouped settings that can be skipped.
+		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->intgration_group );
+
+		?>
+		<div class="sui-box-settings-row wp-smush-basic <?php echo $upsell ? 'sui-disabled' : ''; ?>">
+			<div class="sui-box-settings-col-1">
+				<span class="sui-settings-label">
+					<?php echo esc_html( $label ); ?>
+					<?php if ( 'gutenberg' === $name ) : ?>
+						<span class="sui-tag sui-tag-beta sui-tooltip sui-tooltip-constrained"
+							data-tooltip="<?php esc_attr_e( 'This feature is likely to work without issue, however Gutenberg is in beta stage and some issues are still present.', 'wp-smushit' ); ?>"
+						>
+							<?php esc_html_e( 'Beta', 'wp-smushit' ); ?>
+						</span>
+					<?php endif; ?>
+				</span>
+
+				<span class="sui-description">
+					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
+				</span>
+			</div>
+			<div class="sui-box-settings-col-2" id="column-<?php echo esc_attr( $setting_m_key ); ?>">
+				<?php if ( ! in_array( $name, $grouped_settings, true ) || $skip_group ) : ?>
+					<div class="sui-form-field">
+						<label class="sui-toggle">
+							<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>" id="<?php echo esc_attr( $setting_m_key ); ?>" name="<?php echo esc_attr( $setting_m_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
+							<span class="sui-toggle-slider"></span>
+						</label>
+						<label for="<?php echo esc_attr( $setting_m_key ); ?>">
+							<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+						</label>
+						<!-- Print/Perform action in right setting column -->
+						<?php do_action( 'smush_setting_column_right_inside', $name ); ?>
+					</div>
+				<?php endif; ?>
+				<!-- Print/Perform action in right setting column -->
+				<?php do_action( 'smush_setting_column_right_outside', $name ); ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Show additional descriptions for settings.
+	 *
+	 * @param string $setting_key Setting key.
+	 */
+	public function settings_desc( $setting_key = '' ) {
+		if ( empty( $setting_key ) || ! in_array(
+			$setting_key, array(
+				'resize',
+				'original',
+				'strip_exif',
+				'png_to_jpg',
+				's3',
+			), true
+		) ) {
+			return;
+		}
+		?>
+		<span class="sui-description sui-toggle-description" id="<?php echo esc_attr( WP_SMUSH_PREFIX . $setting_key . '-desc' ); ?>">
+			<?php
+			switch ( $setting_key ) {
+				case 'resize':
+					esc_html_e( 'Save a ton of space by not storing over-sized images on your server. Set a
+					maximum height and width for all images uploaded to your site so that any unnecessarily large
+					images are automatically scaled down to a reasonable size. Note: Image resizing happens
+					automatically when you upload attachments. This setting does not apply to images smushed using
+					Directory Smush feature. To support retina devices, we recommend using 2x the dimensions of
+					your image size.', 'wp-smushit' );
+					break;
+				case 'original':
+					esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized
+					version of that image for every image size that your theme has registered. This means there
+					are multiple versions of your images in your media library. By default, Smush only compresses
+					these generated image. Activate this setting to also smush your original images. Note: Activating
+					this setting doesn’t usually improve page speed, unless your website uses the original images
+					in full size.', 'wp-smushit' );
+					break;
+				case 'strip_exif':
+					esc_html_e( 'Note: This data adds to the size of the image. While this information might be
+					important to photographers, it’s unnecessary for most users and safe to remove.', 'wp-smushit' );
+					break;
+				case 'png_to_jpg':
+					esc_html_e( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs
+					if it results in a smaller file size. The resulting file will have a new filename and extension
+					(JPEG), and any hard-coded URLs on your site that contain the original PNG filename will need
+					to be updated.', 'wp-smushit' );
+					break;
+				case 's3':
+					esc_html_e( 'Note: For this process to happen automatically you need automatic smushing enabled.', 'wp-smushit' );
+					break;
+				case 'default':
+					break;
+			}
+			?>
+		</span>
+		<?php
+	}
+
+	/**
+	 * Prints all the registererd image sizes, to be selected/unselected for smushing.
+	 *
+	 * @param string $name Setting key.
+	 *
+	 * @return void
+	 */
+	public function image_sizes( $name = '' ) {
+		// Add only to auto smush settings.
+		if ( 'auto' !== $name ) {
+			return;
+		}
+
+		// Additional Image sizes.
+		$image_sizes = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
+		$sizes       = WP_Smush::get_instance()->core()->image_dimensions();
+
+		/**
+		 * Add an additional item for full size.
+		 * Do not use intermediate_image_sizes filter.
+		 */
+		$sizes['full'] = array();
+
+		$is_pro   = WP_Smush::is_pro();
+		$disabled = '';
+
+		$setting_status = empty( WP_Smush_Settings::$settings['auto'] ) ? 0 : WP_Smush_Settings::$settings['auto'];
+
+		if ( ! empty( $sizes ) ) {
+			?>
+			<!-- List of image sizes recognised by WP Smush -->
+			<div class="wp-smush-image-size-list <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
+				<span class="sui-description">
+					<?php
+					esc_html_e( 'Every time you upload an image to your site, WordPress generates a
+					resized version of that image for every default and/or custom image size that your theme has
+					registered. This means there are multiple versions of your images in your media library. Choose
+					the images size/s below that you would like optimized:', 'wp-smushit' );
+					?>
+				</span>
+				<?php
+				foreach ( $sizes as $size_k => $size ) {
+					// If image sizes array isn't set, mark all checked ( Default Values ).
+					if ( false === $image_sizes ) {
+						$checked = true;
+					} else {
+						$checked = is_array( $image_sizes ) ? in_array( $size_k, $image_sizes, true ) : false;
+					}
+					// For free users, disable full size option.
+					if ( 'full' === $size_k ) {
+						$disabled = $is_pro ? '' : 'disabled';
+						$checked  = $is_pro ? $checked : false;
+					}
+					?>
+					<label class="sui-checkbox sui-description">
+						<input type="checkbox" id="wp-smush-size-<?php echo esc_attr( $size_k ); ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo esc_attr( $size_k ); ?>" <?php echo esc_attr( $disabled ); ?>>
+						<span aria-hidden="true"></span>
+						<?php if ( isset( $size['width'], $size['height'] ) ) : ?>
+							<span class="sui-description">
+								<?php echo esc_html( $size_k . ' (' . $size['width'] . 'x' . $size['height'] . ') ' ); ?>
+							</span>
+						<?php else : ?>
+							<span class="sui-description"><?php echo esc_attr( $size_k ); ?>
+								<?php if ( ! $is_pro ) : ?>
+									<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>">
+										<?php esc_html_e( 'PRO', 'wp-smushit' ); ?>
+									</span>
+								<?php endif; ?>
+							</span>
+						<?php endif; ?>
+					</label>
+					<?php
+				}
+				?>
+			</div>
+			<?php
+		}
+	}
+
+	/**
+	 * Prints Resize, Smush Original, and Backup settings.
+	 *
+	 * @param string $name  Name of the current setting being processed.
+	 */
+	public function full_size_options( $name = '' ) {
+		// Continue only if original image option.
+		if ( 'original' !== $name || ! WP_Smush::is_pro() ) {
+			return;
+		}
+
+		foreach ( $this->full_size_group as $name ) {
+			$setting_val = WP_Smush_Settings::$settings[ $name ];
+			$setting_key = WP_SMUSH_PREFIX . $name;
+			?>
+			<div class="sui-form-field">
+				<label class="sui-toggle">
+					<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_key ); ?>-desc" id="<?php echo esc_attr( $setting_key ); ?>" name="<?php echo esc_attr( $setting_key ); ?>" <?php checked( $setting_val, 1 ); ?> value="1">
+					<span class="sui-toggle-slider"></span>
+					<label class="toggle-label <?php echo esc_attr( $setting_key . '-label' ); ?>" for="<?php echo esc_attr( $setting_key ); ?>" aria-hidden="true"></label>
+				</label>
+				<label for="<?php echo esc_attr( $setting_key ); ?>">
+					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+				</label>
+				<span class="sui-description sui-toggle-description">
+					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
+				</span>
+			</div>
+			<?php
+		}
+	}
+
+	/**
+	 * Prints front end image size detection option.
+	 *
+	 * @param string $name  Name of the current setting being processed.
+	 */
+	public function detect_size_options( $name ) {
+		// Only add to resize setting.
+		if ( 'resize' !== $name ) {
+			return;
+		}
+
+		foreach ( $this->resize_group as $name ) {
+			// Do not continue if setting is not found.
+			if ( ! isset( WP_Smush_Settings::$settings[ $name ] ) ) {
+				continue;
+			}
+
+			$setting_val = WP_Smush_Settings::$settings[ $name ];
+			$setting_key = WP_SMUSH_PREFIX . $name;
+			?>
+			<div class="sui-form-field">
+				<label class="sui-toggle">
+					<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_key ); ?>-desc" id="<?php echo esc_attr( $setting_key ); ?>" name="<?php echo esc_attr( $setting_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1">
+					<span class="sui-toggle-slider"></span>
+					<label class="toggle-label <?php echo esc_attr( $setting_key . '-label' ); ?>" for="<?php echo esc_attr( $setting_key ); ?>" aria-hidden="true"></label>
+				</label>
+				<label for="<?php echo esc_attr( $setting_key ); ?>">
+					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+				</label>
+				<span class="sui-description sui-toggle-description">
+					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
+					<?php if ( 'detection' === $name ) : ?>
+						<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo 1 === $setting_val ? '' : 'sui-hidden'; ?>">
+							<p>
+								<?php
+								printf(
+									/* translators: %1$s: opening a tag, %2$s: closing a tag */
+									esc_html__( 'Highlighting is active. %1$sView homepage%2$s.', 'wp-smushit' ),
+									'<a href="' . esc_url( home_url() ) . '" target="_blank">',
+									'</a>'
+								);
+								?>
+							</p>
+						</div>
+					<?php endif; ?>
+				</span>
+			</div>
+			<?php
+		}
+	}
+
+	/**
 	 * Summary meta box.
 	 */
 	public function dashboard_summary_metabox() {
@@ -411,7 +761,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			$resize_savings = size_format( $core->stats['resize_savings'], 1 );
 		}
 
-		$this->view( 'summary/meta-box', array(
+		$this->view( 'meta-boxes/summary/meta-box', array(
 			'human_format'    => empty( $human[1] ) ? 'B' : $human[1],
 			'human_size'      => empty( $human[0] ) ? '0' : $human[0],
 			'networkwide'     => (bool) $settings['networkwide'],
@@ -457,7 +807,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			), $core->upgrade_url
 		);
 
-		$this->view( 'bulk/meta-box', array(
+		$this->view( 'meta-boxes/bulk/meta-box', array(
 			'all_done'         => $core->smushed_count === $core->total_count && empty( $core->resmush_ids ),
 			'bulk_upgrade_url' => $bulk_upgrade_url,
 			'core'             => $core,
@@ -466,6 +816,76 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			'lossy_enabled'    => $core->smush->lossy_enabled,
 			'pro_upgrade_url'  => $pro_upgrade_url,
 			'upgrade_url'      => $upgrade_url,
+		) );
+	}
+
+	/**
+	 * Settings meta box.
+	 *
+	 * Free and pro version settings are shown in same section. For free users, pro settings won't be shown.
+	 * To print full size smush, resize and backup in group, we hook at `smush_setting_column_right_end`.
+	 */
+	public function settings_metabox() {
+		// Get all grouped settings that can be skipped.
+		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->intgration_group );
+
+		// Get settings values.
+		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
+
+		$core = WP_Smush::get_instance()->core();
+
+		$this->view( 'meta-boxes/settings/meta-box', array(
+			'basic_features'      => $core::$basic_features,
+			'grouped_settings'    => $grouped_settings,
+			'opt_networkwide_val' => WP_Smush_Settings::$settings['networkwide'],
+			'settings'            => $settings,
+			'settings_data'       => $core->settings,
+		) );
+	}
+
+	/**
+	 * Pro features list box to show after settings.
+	 */
+	public function pro_features_metabox() {
+		// Do not show if pro user.
+		if ( WP_Smush::is_pro() || ( is_network_admin() && ! WP_Smush_Settings::$settings['networkwide'] ) ) {
+			return;
+		}
+
+		// Upgrade url for upsell.
+		$upsell_url = add_query_arg(
+			array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => 'smush-advanced-settings-upsell',
+			), WP_Smush::get_instance()->core()->upgrade_url
+		);
+
+		$this->view( 'meta-boxes/pro-features/meta-box', array(
+			'upsell_url' => $upsell_url,
+		) );
+	}
+
+	/**
+	 * Pro features meta box header.
+	 */
+	public function pro_features_metabox_header() {
+		// Do not show if pro user.
+		if ( WP_Smush::is_pro() || ( is_network_admin() && ! WP_Smush_Settings::$settings['networkwide'] ) ) {
+			return;
+		}
+
+		// Upgrade url with analytics keys.
+		$upgrade_url = add_query_arg(
+			array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => 'smush_advancedsettings_profeature_tag',
+			), WP_Smush::get_instance()->core()->upgrade_url
+		);
+
+		$this->view( 'meta-boxes/pro-features/meta-box-header', array(
+			'upgrade_url' => $upgrade_url,
 		) );
 	}
 
