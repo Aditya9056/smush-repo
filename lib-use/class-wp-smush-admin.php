@@ -205,13 +205,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Download if not exists.
 			do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
 
-			/**
-			 * Take backup.
-			 *
-			 * @var WpSmushBackup $wpsmush_backup
-			 */
-			global $wpsmush_backup;
-			$wpsmush_backup->create_backup( $attachment_file_path, '', $attachment_id );
+			WP_Smush::get_instance()->core()->backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 			// Proceed only if Smushing Transient is not set for the given attachment id.
 			if ( ! get_option( 'smush-in-progress-' . $attachment_id, false ) ) {
@@ -233,14 +227,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 					$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 				}
 
-				/**
-				 * Convert PNGs to JPG.
-				 *
-				 * @var WpSmushPngtoJpg $wpsmush_pngjpg
-				 */
-				global $wpsmush_pngjpg;
-
-				$original_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $original_meta );
+				$original_meta = WP_Smush::get_instance()->core()->png2jpg->png_to_jpg( $attachment_id, $original_meta );
 
 				$smush = $wp_smush->resize_from_meta_data( $original_meta, $attachment_id );
 				wp_update_attachment_metadata( $attachment_id, $original_meta );
@@ -375,8 +362,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			// Set a transient to avoid multiple request.
 			update_option( "smush-in-progress-{$attachment_id}", true );
 
-			global $wpsmush_pngjpg, $wpsmush_helper;
-
 			$attachment_id = absint( (int) ( $attachment_id ) );
 
 			// Get the file path for backup.
@@ -386,8 +371,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
 
 			// Take backup.
-			global $wpsmush_backup;
-			$wpsmush_backup->create_backup( $attachment_file_path, '', $attachment_id );
+			WP_Smush::get_instance()->core()->backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 			// Get the image metadata from $_POST.
 			$original_meta = ! empty( $_POST['metadata'] ) ? $this->format_meta_from_post( $_POST['metadata'] ) : '';
@@ -398,7 +382,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			$updated_meta = $this->resize_image( $attachment_id, $original_meta );
 
 			// Convert PNGs to JPG.
-			$updated_meta = $wpsmush_pngjpg->png_to_jpg( $attachment_id, $updated_meta );
+			$updated_meta = WP_Smush::get_instance()->core()->png2jpg->png_to_jpg( $attachment_id, $updated_meta );
 
 			$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 
@@ -858,8 +842,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 						// If image can be converted
 						if ( ! $should_resmush ) {
-							global $wpsmush_pngjpg;
-							$should_resmush = $wpsmush_pngjpg->can_be_converted( $attachment );
+							$should_resmush = WP_Smush::get_instance()->core()->png2jpg->can_be_converted( $attachment );
 						}
 
 						// If the image needs to be resmushed add it to the list
@@ -1162,10 +1145,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * Allows to bulk restore the images, if there is any backup for them
 		 */
 		function bulk_restore() {
-			global $wpsmush_db, $wpsmush_backup;
 			$smushed_attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $wpsmush_db->smushed_count( true );
 			foreach ( $smushed_attachments as $attachment ) {
-				$wpsmush_backup->restore_image( $attachment->attachment_id, false );
+				WP_Smush::get_instance()->core()->backup->restore_image( $attachment->attachment_id, false );
 			}
 		}
 

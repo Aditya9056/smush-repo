@@ -33,6 +33,20 @@ class WP_Smush_Core {
 	public $smush;
 
 	/**
+	 * Backup module.
+	 *
+	 * @var WP_Smush_Backup
+	 */
+	public $backup;
+
+	/**
+	 * PNG 2 JPG module.
+	 *
+	 * @var WP_Smush_Png2jpg
+	 */
+	public $png2jpg;
+
+	/**
 	 * Meta key to save smush result to db.
 	 *
 	 * @var string $smushed_meta_key
@@ -250,11 +264,14 @@ class WP_Smush_Core {
 	 * @since 2.9.0
 	 */
 	private function init() {
-		$this->db    = new WP_Smush_DB();
-		$this->dir   = new WP_Smush_Dir();
-		$this->smush = new WP_Smushit();
+		$this->db      = new WP_Smush_DB();
+		$this->dir     = new WP_Smush_Dir();
+		$this->smush   = new WP_Smushit();
+		$this->backup  = new WP_Smush_Backup( $this->smush );
+		$this->png2jpg = new WP_Smush_Png2jpg();
 
 		new WP_Smush_Settings();
+		new WP_Smush_Auto_Resize();
 
 		// Register REST API metas.
 		WP_Smush_Rest::get_instance()->register_metas();

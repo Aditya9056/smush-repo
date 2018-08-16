@@ -584,7 +584,7 @@ class WP_Smushit {
 		$attachment_file_path = WP_Smush_Helper::get_attached_file( $ID );
 
 		// Take backup.
-		$wpsmush_backup->create_backup( $attachment_file_path, '', $ID );
+		WP_Smush::get_instance()->core()->backup->create_backup( $attachment_file_path, '', $ID );
 
 		// Optionally resize images.
 		$meta = $wpsmush_resize->auto_resize( $ID, $meta );
@@ -592,7 +592,7 @@ class WP_Smushit {
 		// Auto Smush the new image.
 		if ( $auto_smush ) {
 			// Optionally convert PNGs to JPG.
-			$meta = $wpsmush_pngjpg->png_to_jpg( $ID, $meta );
+			$meta = WP_Smush::get_instance()->core()->png2jpg->png_to_jpg( $ID, $meta );
 
 			/**
 			 * Fix for Hostgator.
@@ -817,7 +817,7 @@ class WP_Smushit {
 	 *
 	 * @return string|void
 	 */
-	function set_status( $id, $echo = true, $text_only = false, $wrapper = true ) {
+	public function set_status( $id, $echo = true, $text_only = false, $wrapper = true ) {
 		$status_txt  = $button_txt = $stats = $links = '';
 		$show_button = $show_resmush = false;
 
@@ -1606,7 +1606,7 @@ class WP_Smushit {
 	 *
 	 * @return bool|string
 	 */
-	function get_image_backup_path( $attachment_path ) {
+	public function get_image_backup_path( $attachment_path ) {
 		// If attachment id is not available, return false
 		if ( empty( $attachment_path ) ) {
 			return false;
@@ -1760,7 +1760,7 @@ class WP_Smushit {
 		}
 
 		// PNG to JPEG
-		if ( $wpsmush_pngjpg->can_be_converted( $id ) ) {
+		if ( WP_Smush::get_instance()->core()->png2jpg->can_be_converted( $id ) ) {
 			return true;
 		}
 
@@ -1965,7 +1965,7 @@ class WP_Smushit {
 	 *
 	 * @return string File Path
 	 */
-	function original_file( $original_file = '' ) {
+	public function original_file( $original_file = '' ) {
 		$uploads     = wp_get_upload_dir();
 		$upload_path = $uploads['basedir'];
 

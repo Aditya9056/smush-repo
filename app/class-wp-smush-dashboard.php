@@ -944,14 +944,12 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Get settings values.
 		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
 
-		$core = WP_Smush::get_instance()->core();
-
 		$this->view( 'meta-boxes/settings/meta-box', array(
-			'basic_features'      => $core::$basic_features,
+			'basic_features'      => WP_Smush_Core::$basic_features,
 			'grouped_settings'    => $grouped_settings,
 			'opt_networkwide_val' => WP_Smush_Settings::$settings['networkwide'],
 			'settings'            => $settings,
-			'settings_data'       => $core->settings,
+			'settings_data'       => WP_Smush::get_instance()->core()->settings,
 		) );
 	}
 
@@ -1038,7 +1036,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
 
 		$this->view( 'meta-boxes/integrations/meta-box', array(
-			'basic_features'   => $core::$basic_features,
+			'basic_features'   => WP_Smush_Core::$basic_features,
 			'is_pro'           => WP_Smush::is_pro(),
 			'intgration_group' => $this->intgration_group,
 			'settings'         => $settings,
