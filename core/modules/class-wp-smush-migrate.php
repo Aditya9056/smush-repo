@@ -1,9 +1,8 @@
 <?php
-
 /**
+ * Migrate class: WP_Smush_Migrate
  *
  * @package WP_Smush
- * @subpackage Migrate
  * @version 1.0
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -12,7 +11,10 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-class WpSmushMigrate {
+/**
+ * Class WP_Smush_Migrate
+ */
+class WP_Smush_Migrate {
 
 	/**
 	 * Returns percent saved from the api call response
@@ -58,7 +60,6 @@ class WpSmushMigrate {
 		return -1;
 	}
 
-
 	/**
 	 * Migrates smushit message structure
 	 *
@@ -94,7 +95,7 @@ class WpSmushMigrate {
 					$new_size->after_size  = -1;
 					$new_size->time        = -1;
 
-					if ( $new_size->compression !== -1 && $new_size->bytes_saved !== -1 ) {
+					if ( -1 !== $new_size->compression && -1 !== $new_size->bytes_saved ) {
 						$new_size->before_size = ( $new_size->bytes_saved * 100 ) / $new_size->compression;
 						$new_size->after_size  = ( 100 - $new_size->compression ) * $new_size->before_size / 100;
 					}
@@ -107,11 +108,12 @@ class WpSmushMigrate {
 		$new_message['stats']['percent'] = $this->_get_saved_percentage( $message['wp_smushit'] );
 		$new_message['stats']['bytes']   = $this->_get_saved_bytes( $message['wp_smushit'] );
 
-		if ( $new_message['stats']['percent'] !== -1 && $new_message['stats']['bytes'] !== -1 ) {
+		if ( -1 !== $new_message['stats']['percent'] && -1 !== $new_message['stats']['bytes'] ) {
 			$new_message['stats']['size_before'] = ( $new_message['stats']['bytes'] * 100 ) / $new_message['stats']['percent'];
 			$new_message['stats']['size_after']  = ( 100 - $new_message['stats']['percent'] ) * $new_message['stats']['size_before'] / 100;
 		}
 
 		return $new_message;
 	}
+
 }

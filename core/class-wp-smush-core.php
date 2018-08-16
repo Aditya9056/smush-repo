@@ -47,6 +47,20 @@ class WP_Smush_Core {
 	public $png2jpg;
 
 	/**
+	 * Resize module.
+	 *
+	 * @var WP_Smush_Resize
+	 */
+	public $resize;
+
+	/**
+	 * S3 module
+	 *
+	 * @var WP_Smush_S3
+	 */
+	public $s3;
+
+	/**
 	 * Meta key to save smush result to db.
 	 *
 	 * @var string $smushed_meta_key
@@ -264,11 +278,16 @@ class WP_Smush_Core {
 	 * @since 2.9.0
 	 */
 	private function init() {
+		// TODO: see what we can inject, maybe there's no need to startup all the modules from here.
+		//$resize = new WP_Smush_Resize(); -> WP_Smushit, WpSmushNextGen, WpSmushAdmin
+		// DB -> Smushit, WpSmushAdmin and Dashboard
+
 		$this->db      = new WP_Smush_DB();
 		$this->dir     = new WP_Smush_Dir();
 		$this->smush   = new WP_Smushit();
 		$this->backup  = new WP_Smush_Backup( $this->smush );
 		$this->png2jpg = new WP_Smush_Png2jpg();
+		$this->resize  = new WP_Smush_Resize();
 
 		new WP_Smush_Settings();
 		new WP_Smush_Auto_Resize();
@@ -281,17 +300,29 @@ class WP_Smush_Core {
 	 * Load plugin modules.
 	 */
 	public function load_libs() {
+		$this->s3_libraries();
 		$this->wp_smush_async();
+	}
+
+	/**
+	 * Initialize S3 integration libraries.
+	 */
+	private function s3_libraries() {
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-s3.php';
+
+		if ( class_exists( 'AS3CF_Plugin_Compatibility' ) ) {
+			/* @noinspection PhpIncludeInspection */
+			require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-s3-compat.php';
+		}
+
+		$this->s3 = new WP_Smush_S3();
 	}
 
 	/**
 	 * Initialize the Smush Async class.
 	 */
 	private function wp_smush_async() {
-		// Include Smush Async class.
-		// TODO:
-		//require_once WP_SMUSH_DIR . 'lib/integrations/class-wp-smush-s3.php';
-
 		// Don't load the Async task, if user not logged in or not in backend.
 		if ( ! is_admin() || ! is_user_logged_in() ) {
 			return;

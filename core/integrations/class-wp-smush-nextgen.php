@@ -784,10 +784,10 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 
 			// Initialize resize class.
-			$wpsmush_resize->initialize();
+			WP_Smush::get_instance()->core()->resize->initialize();
 
 			// If resizing not enabled, or if both max width and height is set to 0, return.
-			if ( ! $wpsmush_resize->resize_enabled || ( $wpsmush_resize->max_w == 0 && $wpsmush_resize->max_h == 0 ) ) {
+			if ( ! WP_Smush::get_instance()->core()->resize->resize_enabled || ( WP_Smush::get_instance()->core()->resize->max_w == 0 && WP_Smush::get_instance()->core()->resize->max_h == 0 ) ) {
 				return $meta;
 			}
 
@@ -798,7 +798,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 			$ext = $this->get_file_ext( $file_path );
 
-			$mime_supported = in_array( $ext, $wpsmushit_admin->mime_types );
+			$mime_supported = in_array( $ext, WP_Smush_Core::$mime_types );
 
 			// If type of upload doesn't matches the criteria return.
 			$mime_supported = apply_filters( 'wp_smush_resmush_mime_supported', $mime_supported, $mime );
@@ -835,7 +835,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 			$original_file_size = filesize( $file_path );
 
-			$resized = $wpsmush_resize->perform_resize( $file_path, $original_file_size, $attachment_id, '', false );
+			$resized = WP_Smush::get_instance()->core()->resize->perform_resize( $file_path, $original_file_size, $attachment_id, '', false );
 
 			// If resize wasn't successful.
 			if ( ! $resized || $resized['filesize'] == $original_file_size ) {

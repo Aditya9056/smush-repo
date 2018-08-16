@@ -114,10 +114,10 @@ class WP_Smush_Helper {
 			$file_path = self::get_attached_file( $id );
 		}
 
-		global $wpsmush_s3;
+		$s3 = WP_Smush::get_instance()->core()->s3;
 
 		// If S3 is enabled.
-		if ( is_object( $wpsmush_s3 ) && method_exists( $wpsmush_s3, 'is_image_on_s3' ) && $wpsmush_s3->is_image_on_s3( $id ) ) {
+		if ( is_object( $s3 ) && method_exists( $s3, 'is_image_on_s3' ) && $s3->is_image_on_s3( $id ) ) {
 			$file_exists = true;
 		} else {
 			$file_exists = file_exists( $file_path );

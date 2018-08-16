@@ -575,7 +575,7 @@ class WP_Smushit {
 		// While uploading from Mobile App or other sources, admin_init action may not fire.
 		// So we need to manually initialize those.
 		$this->initialise();
-		$wpsmush_resize->initialize( true );
+		WP_Smush::get_instance()->core()->resize->initialize( true );
 
 		// Check if auto is enabled.
 		$auto_smush = self::is_auto_smush_enabled();
@@ -587,7 +587,7 @@ class WP_Smushit {
 		WP_Smush::get_instance()->core()->backup->create_backup( $attachment_file_path, '', $ID );
 
 		// Optionally resize images.
-		$meta = $wpsmush_resize->auto_resize( $ID, $meta );
+		$meta = WP_Smush::get_instance()->core()->resize->auto_resize( $ID, $meta );
 
 		// Auto Smush the new image.
 		if ( $auto_smush ) {
@@ -837,7 +837,10 @@ class WP_Smushit {
 		$combined_stats = $this->combine_conversion_stats( $combined_stats, $conversion_savings );
 
 		// Remove Smush s3 hook, as it downloads the file again.
-		remove_filter( 'as3cf_get_attached_file', array( $wpsmush_s3_compat, 'smush_download_file' ), 11, 4 );
+		if ( class_exists( 'WP_Smush_S3_Compat' ) ) {
+			$s3_compat = new WP_Smush_S3_Compat();
+			remove_filter( 'as3cf_get_attached_file', array( $s3_compat, 'smush_download_file' ), 11, 4 );
+		}
 		$attachment_data = wp_get_attachment_metadata( $id );
 
 		// If the image is smushed.
@@ -1081,7 +1084,7 @@ class WP_Smushit {
 			return;
 		}
 
-		$migrator = new WpSmushMigrate();
+		$migrator = new WP_Smush_Migrate();
 		foreach ( $results as $attachment_meta ) {
 			$migrated_message = $migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
 			if ( $migrated_message !== array() ) {
@@ -1747,7 +1750,7 @@ class WP_Smushit {
 		}
 
 		// If image needs to be resized
-		if ( $wpsmush_resize->should_resize( $id ) ) {
+		if ( WP_Smush::get_instance()->core()->resize->should_resize( $id ) ) {
 			return true;
 		}
 

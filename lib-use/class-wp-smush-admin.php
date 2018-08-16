@@ -694,8 +694,6 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		 * @todo: Needs some refactoring big time
 		 */
 		function scan_images() {
-			global $wp_smush, $wpsmushnextgenadmin, $wpsmush_db, $wpsmush_settings, $wpsmush_helper, $wpsmush_resize, $wpsmushit_admin, $wpsmush_bulkui;
-
 			check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
 			$resmush_list = array();
@@ -801,7 +799,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 				);
 
 				// Initialize resize class.
-				$wpsmush_resize->initialize();
+				WP_Smush::get_instance()->core()->resize->initialize();
 
 				foreach ( $attachments as $attachment_k => $attachment ) {
 
@@ -837,7 +835,7 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 
 						// If Image needs to be resized
 						if ( ! $should_resmush ) {
-							$should_resmush = $wpsmush_resize->should_resize( $attachment );
+							$should_resmush = WP_Smush::get_instance()->core()->resize->should_resize( $attachment );
 						}
 
 						// If image can be converted
@@ -1166,9 +1164,8 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 			if ( empty( $attachment_id ) || empty( $meta ) ) {
 				return $meta;
 			}
-			global $wpsmush_resize;
 
-			return $wpsmush_resize->auto_resize( $attachment_id, $meta );
+			return WP_Smush::get_instance()->core()->resize->auto_resize( $attachment_id, $meta );
 		}
 
 		/**
