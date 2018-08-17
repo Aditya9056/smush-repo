@@ -28,15 +28,8 @@ class BulkSmushCest {
 	 * @param AcceptanceTester $I
 	 */
 	public function tryBulkSmush( AcceptanceTester $I ) {
-		/**
-		 * WpSmushSettings global.
-		 *
-		 * @var WpSmushSettings $wpsmush_settings
-		 */
-		global $wpsmush_settings;
-
 		// Disable auto Smush.
-		$wpsmush_settings->settings['auto'] = 0;
+		WP_Smush_Settings::$settings['auto'] = 0;
 
 		// Upload images.
 		$I->wantTo( 'Upload images to the media library' );

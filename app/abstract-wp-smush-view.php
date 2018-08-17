@@ -1,4 +1,9 @@
 <?php
+/**
+ * Abstract class for Smush view: WP_Smush_View
+ *
+ * @package WP_Smush
+ */
 
 /**
  * Abstract class WP_Smush_View.
@@ -54,33 +59,28 @@ abstract class WP_Smush_View {
 	}
 
 	/**
+	 * Common hooks for all screens
+	 *
+	 * @since 2.9.0
+	 */
+	public function add_action_hooks() {
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
+		// Notices.
+		add_action( 'admin_notices', array( $this, 'smush_upgrade_notice' ) );
+		add_action( 'admin_notices', array( $this, 'smush_deactivated' ) );
+		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
+
+		add_filter( 'admin_body_class', array( $this, 'smush_body_classes' ) );
+	}
+
+	/**
 	 * Return the admin menu slug
 	 *
 	 * @return string
 	 */
 	public function get_slug() {
 		return $this->slug;
-	}
-
-	/**
-	 * Smush icon svg image
-	 *
-	 * @return string
-	 */
-	private function get_menu_icon() {
-		ob_start();
-		?>
-		<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-			<g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-				<g id="WP-/-Menu---Free" transform="translate(-12.000000, -428.000000)" fill="#FFFFFF;">
-					<path d="M26.9310561,432.026782 C27.2629305,432.598346 27.5228884,433.217017 27.7109375,433.882812 C27.9036468,434.565108 28,435.27083 28,436 C28,437.104172 27.7916687,438.14062 27.375,439.109375 C26.9479145,440.07813 26.3750036,440.924476 25.65625,441.648438 C24.9374964,442.372399 24.0937548,442.942706 23.125,443.359375 C22.1562452,443.78646 21.1197972,444 20.015625,444 L26.9310562,432.026782 L26.9310561,432.026782 Z M26.9310561,432.026782 C26.9228316,432.012617 26.9145629,431.998482 26.90625,431.984375 L26.9375,432.015625 L26.9310562,432.026782 L26.9310561,432.026782 Z M16.625,433.171875 L23.375,433.171875 L20,439.03125 L16.625,433.171875 Z M14.046875,430.671875 L14.046875,430.65625 C14.4114602,430.249998 14.8177061,429.88021 15.265625,429.546875 C15.7031272,429.223957 16.1744766,428.945314 16.6796875,428.710938 C17.1848984,428.476561 17.7187472,428.296876 18.28125,428.171875 C18.8333361,428.046874 19.406247,427.984375 20,427.984375 C20.593753,427.984375 21.1666639,428.046874 21.71875,428.171875 C22.2812528,428.296876 22.8151016,428.476561 23.3203125,428.710938 C23.8255234,428.945314 24.3020811,429.223957 24.75,429.546875 C25.1875022,429.88021 25.5937481,430.255206 25.96875,430.671875 L14.046875,430.671875 Z M13.0625,432.03125 L19.984375,444 C18.8802028,444 17.8437548,443.78646 16.875,443.359375 C15.9062452,442.942706 15.0625036,442.372399 14.34375,441.648438 C13.6249964,440.924476 13.0572937,440.07813 12.640625,439.109375 C12.2239563,438.14062 12.015625,437.104172 12.015625,436 C12.015625,435.27083 12.1067699,434.567712 12.2890625,433.890625 C12.4713551,433.213538 12.729165,432.593753 13.0625,432.03125 Z" id="icon-smush"></path>
-				</g>
-			</g>
-		</svg>
-		<?php
-		$svg = ob_get_clean();
-
-		return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 	}
 
 	/**
@@ -109,54 +109,6 @@ abstract class WP_Smush_View {
 		}
 
 		echo $content;
-	}
-
-	/**
-	 * Check if view exists.
-	 *
-	 * @param string $name  View name = file name.
-	 *
-	 * @return bool
-	 */
-	protected function view_exists( $name ) {
-		$file = WP_SMUSH_DIR . "app/views/{$name}.php";
-		return is_file( $file );
-	}
-
-	/**
-	 * Common hooks for all screens
-	 *
-	 * @since 2.9.0
-	 */
-	public function add_action_hooks() {
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-
-		// Notices.
-		add_action( 'admin_notices', array( $this, 'smush_upgrade_notice' ) );
-		add_action( 'admin_notices', array( $this, 'smush_deactivated' ) );
-		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
-
-		add_filter( 'admin_body_class', array( $this, 'smush_body_classes' ) );
-	}
-
-	/**
-	 * Register JS and CSS.
-	 */
-	private function register_scripts() {
-		// Share UI JS.
-		wp_register_script( 'smush-wpmudev-sui', WP_SMUSH_URL . 'app/assets/js/shared-ui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
-
-		// Main JS.
-		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery', 'smush-wpmudev-sui' ), WP_SMUSH_VERSION, true );
-
-		// Main CSS.
-		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
-
-		// Styles that can be used on all pages in the WP backend.
-		wp_register_style( 'smush-admin-common', WP_SMUSH_URL . 'app/assets/css/common.min.css', array(), WP_SMUSH_VERSION );
-
-		// Dismiss update info.
-		WP_Smush::get_instance()->core()->mod->smush->dismiss_update_info();
 	}
 
 	/**
@@ -221,43 +173,10 @@ abstract class WP_Smush_View {
 	}
 
 	/**
-	 * Load media assets.
-	 */
-	private function extend_media_modal() {
-		if ( wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
-			return;
-		}
-
-		wp_enqueue_script(
-			'smush-backbone-extension', WP_SMUSH_URL . 'app/assets/js/media.min.js', array(
-				'jquery',
-				'media-editor', // Used in image filters.
-				'media-views',
-				'media-grid',
-				'wp-util',
-				'wp-api',
-			), WP_SMUSH_VERSION, true
-		);
-
-		wp_localize_script(
-			'smush-backbone-extension', 'smush_vars', array(
-				'strings' => array(
-					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
-					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
-					'filter_excl' => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
-				),
-				'nonce'   => array(
-					'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
-				),
-			)
-		);
-	}
-
-	/**
 	 * Shows Notice for free users, displays a discount coupon
 	 */
 	public function smush_upgrade_notice() {
-		// Return, If a pro user, or not super admin, or don't have the admin privilleges.
+		// Return, If a pro user, or not super admin, or don't have the admin privileges.
 		if ( WP_Smush::is_pro() || ! current_user_can( 'edit_others_posts' ) || ! is_super_admin() ) {
 			return;
 		}
@@ -419,31 +338,6 @@ abstract class WP_Smush_View {
 	}
 
 	/**
-	 * Render meta box.
-	 *
-	 * @param string $context  Meta box context. Default: main.
-	 */
-	protected function do_meta_boxes( $context = 'main' ) {
-		if ( empty( $this->meta_boxes[ $this->slug ][ $context ] ) ) {
-			return;
-		}
-
-		do_action_ref_array( 'wp_smush_admin_do_meta_boxes_' . $this->slug, array( &$this ) );
-
-		foreach ( $this->meta_boxes[ $this->slug ][ $context ] as $id => $box ) {
-			$args = array(
-				'title'           => $box['title'],
-				'id'              => $id,
-				'callback'        => $box['callback'],
-				'callback_header' => $box['callback_header'],
-				'callback_footer' => $box['callback_footer'],
-				'args'            => $box['args'],
-			);
-			$this->view( 'meta-box', $args );
-		}
-	}
-
-	/**
 	 * Render the page
 	 */
 	public function render() {
@@ -468,13 +362,6 @@ abstract class WP_Smush_View {
 	}
 
 	/**
-	 * Render inner content.
-	 */
-	protected function render_inner_content() {
-		$this->view( $this->slug . '-page' );
-	}
-
-	/**
 	 * Get the current screen tab
 	 *
 	 * @return string
@@ -491,15 +378,6 @@ abstract class WP_Smush_View {
 
 		reset( $tabs );
 		return key( $tabs );
-	}
-
-	/**
-	 * Get the list of tabs for this screen
-	 *
-	 * @return array
-	 */
-	protected function get_tabs() {
-		return apply_filters( 'wp_smush_admin_page_tabs_' . $this->slug, $this->tabs );
 	}
 
 	/**
@@ -529,6 +407,133 @@ abstract class WP_Smush_View {
 		} else {
 			return admin_url( 'admin.php?page=' . $this->slug . '&view=' . $tab );
 		}
+	}
+
+	/**
+	 * Get the list of tabs for this screen
+	 *
+	 * @return array
+	 */
+	protected function get_tabs() {
+		return apply_filters( 'wp_smush_admin_page_tabs_' . $this->slug, $this->tabs );
+	}
+
+	/**
+	 * Render inner content.
+	 */
+	protected function render_inner_content() {
+		$this->view( $this->slug . '-page' );
+	}
+
+	/**
+	 * Render meta box.
+	 *
+	 * @param string $context  Meta box context. Default: main.
+	 */
+	protected function do_meta_boxes( $context = 'main' ) {
+		if ( empty( $this->meta_boxes[ $this->slug ][ $context ] ) ) {
+			return;
+		}
+
+		do_action_ref_array( 'wp_smush_admin_do_meta_boxes_' . $this->slug, array( &$this ) );
+
+		foreach ( $this->meta_boxes[ $this->slug ][ $context ] as $id => $box ) {
+			$args = array(
+				'title'           => $box['title'],
+				'id'              => $id,
+				'callback'        => $box['callback'],
+				'callback_header' => $box['callback_header'],
+				'callback_footer' => $box['callback_footer'],
+				'args'            => $box['args'],
+			);
+			$this->view( 'meta-box', $args );
+		}
+	}
+
+	/**
+	 * Check if view exists.
+	 *
+	 * @param string $name  View name = file name.
+	 *
+	 * @return bool
+	 */
+	protected function view_exists( $name ) {
+		$file = WP_SMUSH_DIR . "app/views/{$name}.php";
+		return is_file( $file );
+	}
+
+	/**
+	 * Smush icon svg image
+	 *
+	 * @return string
+	 */
+	private function get_menu_icon() {
+		ob_start();
+		?>
+		<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+			<g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+				<g id="WP-/-Menu---Free" transform="translate(-12.000000, -428.000000)" fill="#FFFFFF;">
+					<path d="M26.9310561,432.026782 C27.2629305,432.598346 27.5228884,433.217017 27.7109375,433.882812 C27.9036468,434.565108 28,435.27083 28,436 C28,437.104172 27.7916687,438.14062 27.375,439.109375 C26.9479145,440.07813 26.3750036,440.924476 25.65625,441.648438 C24.9374964,442.372399 24.0937548,442.942706 23.125,443.359375 C22.1562452,443.78646 21.1197972,444 20.015625,444 L26.9310562,432.026782 L26.9310561,432.026782 Z M26.9310561,432.026782 C26.9228316,432.012617 26.9145629,431.998482 26.90625,431.984375 L26.9375,432.015625 L26.9310562,432.026782 L26.9310561,432.026782 Z M16.625,433.171875 L23.375,433.171875 L20,439.03125 L16.625,433.171875 Z M14.046875,430.671875 L14.046875,430.65625 C14.4114602,430.249998 14.8177061,429.88021 15.265625,429.546875 C15.7031272,429.223957 16.1744766,428.945314 16.6796875,428.710938 C17.1848984,428.476561 17.7187472,428.296876 18.28125,428.171875 C18.8333361,428.046874 19.406247,427.984375 20,427.984375 C20.593753,427.984375 21.1666639,428.046874 21.71875,428.171875 C22.2812528,428.296876 22.8151016,428.476561 23.3203125,428.710938 C23.8255234,428.945314 24.3020811,429.223957 24.75,429.546875 C25.1875022,429.88021 25.5937481,430.255206 25.96875,430.671875 L14.046875,430.671875 Z M13.0625,432.03125 L19.984375,444 C18.8802028,444 17.8437548,443.78646 16.875,443.359375 C15.9062452,442.942706 15.0625036,442.372399 14.34375,441.648438 C13.6249964,440.924476 13.0572937,440.07813 12.640625,439.109375 C12.2239563,438.14062 12.015625,437.104172 12.015625,436 C12.015625,435.27083 12.1067699,434.567712 12.2890625,433.890625 C12.4713551,433.213538 12.729165,432.593753 13.0625,432.03125 Z" id="icon-smush"></path>
+				</g>
+			</g>
+		</svg>
+		<?php
+		$svg = ob_get_clean();
+
+		return 'data:image/svg+xml;base64,' . base64_encode( $svg );
+	}
+
+	/**
+	 * Register JS and CSS.
+	 */
+	private function register_scripts() {
+		// Share UI JS.
+		wp_register_script( 'smush-wpmudev-sui', WP_SMUSH_URL . 'app/assets/js/shared-ui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
+
+		// Main JS.
+		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery', 'smush-wpmudev-sui' ), WP_SMUSH_VERSION, true );
+
+		// Main CSS.
+		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
+
+		// Styles that can be used on all pages in the WP backend.
+		wp_register_style( 'smush-admin-common', WP_SMUSH_URL . 'app/assets/css/common.min.css', array(), WP_SMUSH_VERSION );
+
+		// Dismiss update info.
+		WP_Smush::get_instance()->core()->mod->smush->dismiss_update_info();
+	}
+
+	/**
+	 * Load media assets.
+	 */
+	private function extend_media_modal() {
+		if ( wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'smush-backbone-extension', WP_SMUSH_URL . 'app/assets/js/media.min.js', array(
+				'jquery',
+				'media-editor', // Used in image filters.
+				'media-views',
+				'media-grid',
+				'wp-util',
+				'wp-api',
+			), WP_SMUSH_VERSION, true
+		);
+
+		wp_localize_script(
+			'smush-backbone-extension', 'smush_vars', array(
+				'strings' => array(
+					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
+					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
+					'filter_excl' => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
+				),
+				'nonce'   => array(
+					'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
+				),
+			)
+		);
 	}
 
 	/**

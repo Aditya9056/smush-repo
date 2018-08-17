@@ -47,15 +47,4 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		}
 	}
 
-	/**
-	 * Test update settings.
-	 */
-	public function testUpdateSettings() {
-		/* @var WpSmushSettings $wpsmush_settings */
-		global $wpsmush_settings;
-
-		$expected = new WpSmushSettings();
-		$this->assertEquals( $expected, $wpsmush_settings );
-	}
-
 }
