@@ -6,7 +6,7 @@
  *
  * @var array  $basic_features    Basic features array.
  * @var bool   $is_pro            Is PRO user or not.
- * @var array  $intgration_group  Integration group.
+ * @var array  $integration_group Integration group.
  * @var array  $settings          Settings array.
  * @var array  $settings_data     Settings descriptions and labels.
  * @var string $upsell_url        Upsell URL.
@@ -26,7 +26,7 @@
 
 	// For subsite admins show only if networkwide options is not enabled.
 	if ( ! is_multisite() || ( ! $settings && ! is_network_admin() ) || is_network_admin() ) {
-		foreach ( $intgration_group as $name ) {
+		foreach ( $integration_group as $name ) {
 			// Settings key.
 			$setting_m_key = WP_SMUSH_PREFIX . $name;
 			// Disable setting.

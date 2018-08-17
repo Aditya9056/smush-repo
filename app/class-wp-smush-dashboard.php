@@ -34,7 +34,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 *
 	 * @var array
 	 */
-	private $intgration_group = array();
+	private $integration_group = array();
 
 	/**
 	 * Register page action hooks
@@ -59,7 +59,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 */
 	public function on_load() {
 		// Hook into integration settings.
-		$this->intgration_group = apply_filters( 'wp_smush_integration_settings', array() );
+		$this->integration_group = apply_filters( 'wp_smush_integration_settings', array() );
 
 		// If a free user, update the limits.
 		if ( ! WP_Smush::is_pro() ) {
@@ -73,13 +73,10 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'bulk'         => __( 'Bulk Smush', 'wp-smushit' ),
 				'directory'    => __( 'Directory Smush', 'wp-smushit' ),
 				'integrations' => __( 'Integrations', 'wp-smushit' ),
-				// 'cdn'          => __( 'CDN', 'wp-smushit' ),
 			)
 		);
 
 		$networkwide = WP_Smush_Settings::$settings['networkwide'];
-
-		// TODO: verify that this works properly.
 
 		// Tabs that can be shown in network admin networkwide (bulk, integrations, cdn).
 		if ( is_multisite() && $networkwide && is_network_admin() ) {
@@ -89,10 +86,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Tabs that can be shown in subsites if networkwide (bulk and directory).
 		if ( is_multisite() && $networkwide && ! is_network_admin() ) {
 			unset( $this->tabs['integrations'] );
-			//unset( $this->tabs['cdn'] );
 		}
 
-		if ( empty( $this->intgration_group ) ) {
+		if ( empty( $this->integration_group ) ) {
 			unset( $this->tabs['integrations'] );
 		}
 
@@ -178,11 +174,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					)
 				);
 
-				break;
-
-			case 'cdn':
-				// Action hook to add settings to cdn section.
-				do_action( 'smush_cdn_settings_ui' );
 				break;
 
 			case 'bulk':
@@ -542,7 +533,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 */
 	public function settings_row( $setting_m_key, $label, $name, $setting_val, $skip_group = false, $disable = false, $upsell = false ) {
 		// Get all grouped settings that can be skipped.
-		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->intgration_group );
+		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group );
 
 		?>
 		<div class="sui-box-settings-row wp-smush-basic <?php echo $upsell ? 'sui-disabled' : ''; ?>">
@@ -939,7 +930,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 */
 	public function settings_metabox() {
 		// Get all grouped settings that can be skipped.
-		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->intgration_group );
+		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group );
 
 		// Get settings values.
 		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
@@ -1036,12 +1027,12 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
 
 		$this->view( 'meta-boxes/integrations/meta-box', array(
-			'basic_features'   => WP_Smush_Core::$basic_features,
-			'is_pro'           => WP_Smush::is_pro(),
-			'intgration_group' => $this->intgration_group,
-			'settings'         => $settings,
-			'settings_data'    => $core->settings,
-			'upsell_url'       => $upsell_url,
+			'basic_features'    => WP_Smush_Core::$basic_features,
+			'is_pro'            => WP_Smush::is_pro(),
+			'integration_group' => $this->integration_group,
+			'settings'          => $settings,
+			'settings_data'     => $core->settings,
+			'upsell_url'        => $upsell_url,
 		) );
 	}
 

@@ -330,7 +330,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			}
 
 			/* @noinspection PhpIncludeInspection */
-			require_once WP_SMUSH_DIR . 'extras/free-dashboard/module.php';
+			require_once WP_SMUSH_DIR . 'core/external/free-dashboard/module.php';
 
 			// Register the current plugin.
 			do_action(
@@ -358,12 +358,12 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Only for WPMU DEV Members.
 		 */
 		public function register_pro_modules() {
-			if ( false === strpos( WP_SMUSH_DIR, 'wp-smush-pro' ) || ! file_exists( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' ) ) {
+			if ( false === strpos( WP_SMUSH_DIR, 'wp-smush-pro' ) || ! file_exists( WP_SMUSH_DIR . 'core/external/dash-notice/wpmudev-dash-notification.php' ) ) {
 				return;
 			}
 
 			/* @noinspection PhpIncludeInspection */
-			require_once WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php';
+			require_once WP_SMUSH_DIR . 'core/external/dash-notice/wpmudev-dash-notification.php';
 
 			// Register items for the dashboard plugin.
 			global $wpmudev_notices;

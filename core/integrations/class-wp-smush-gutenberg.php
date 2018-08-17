@@ -75,7 +75,7 @@ class WP_Smush_Gutenberg {
 	}
 
 	/**
-	 * Adds the setting to the intgration_group array in the WpSmushBulkUi class.
+	 * Adds the setting to the integration_group array in the WP_Smush_Dashboard class.
 	 *
 	 * @used-by wp_smush_integration_settings filter
 	 *
