@@ -264,7 +264,7 @@ class WP_Smush_Backup {
 		// If any of the image is restored, we count it as success.
 		if ( $restored ) {
 			// Remove the Meta, And send json success.
-			delete_post_meta( $attachment_id, WP_Smush_Core::$smushed_meta_key );
+			delete_post_meta( $attachment_id, WP_Smushit::$smushed_meta_key );
 
 			// Remove PNG to JPG conversion savings.
 			delete_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings' );

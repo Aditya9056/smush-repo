@@ -108,7 +108,7 @@ class WP_Smush_DB {
 				'offset'                 => 0,
 				'meta_query'             => array(
 					array(
-						'key'     => WP_Smush_Core::$smushed_meta_key,
+						'key'     => WP_Smushit::$smushed_meta_key,
 						'compare' => 'NOT EXISTS',
 					),
 				),
@@ -287,7 +287,7 @@ class WP_Smush_DB {
 
 		// Remove the Filters added by WP Media Folder.
 		$this->remove_filters();
-		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s ORDER BY `post_id` DESC LIMIT $offset, $limit", WP_Smush_Core::$smushed_meta_key ) ) ) {
+		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s ORDER BY `post_id` DESC LIMIT $offset, $limit", WP_Smushit::$smushed_meta_key ) ) ) {
 			if ( ! is_wp_error( $results ) && count( $results ) > 0 ) {
 				$posts = array_merge( $posts, $results );
 			}
@@ -873,7 +873,7 @@ class WP_Smush_DB {
 
 		// Loop over all the attachments to get the cummulative savings.
 		foreach ( $attachments as $attachment ) {
-			$smush_stats        = get_post_meta( $attachment, WP_Smush_Core::$smushed_meta_key, true );
+			$smush_stats        = get_post_meta( $attachment, WP_Smushit::$smushed_meta_key, true );
 			$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
 			$conversion_savings = WP_Smush_Helper::get_pngjpg_savings( $attachment );
 

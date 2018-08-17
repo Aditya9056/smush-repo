@@ -446,7 +446,7 @@ class WP_Smush_Ajax {
 					$smush_data = $attachment['wp_smush'];
 				} else {
 					// Check the current settings, and smush data for the image.
-					$smush_data = get_post_meta( $attachment, WP_Smush_Core::$smushed_meta_key, true );
+					$smush_data = get_post_meta( $attachment, WP_Smushit::$smushed_meta_key, true );
 				}
 
 				// If the image is already smushed.
@@ -794,7 +794,7 @@ class WP_Smush_Ajax {
 		// Delete transient.
 		delete_option( 'smush-in-progress-' . $attachment_id );
 
-		$smush_data         = get_post_meta( $attachment_id, WP_Smush_Core::$smushed_meta_key, true );
+		$smush_data         = get_post_meta( $attachment_id, WP_Smushit::$smushed_meta_key, true );
 		$resize_savings     = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings', true );
 		$conversion_savings = WP_Smush_Helper::get_pngjpg_savings( $attachment_id );
 

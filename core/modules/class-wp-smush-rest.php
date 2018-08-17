@@ -65,7 +65,7 @@ class WP_Smush_Rest {
 			return $status_txt;
 		}
 
-		$wp_smush_data = get_post_meta( $image['id'], WP_Smush_Core::$smushed_meta_key, true );
+		$wp_smush_data = get_post_meta( $image['id'], WP_Smushit::$smushed_meta_key, true );
 
 		if ( empty( $wp_smush_data ) ) {
 			$status_txt = __( 'Not processed', 'wp-smushit' );

@@ -11,6 +11,13 @@
 class WP_Smushit {
 
 	/**
+	 * Meta key to save smush result to db.
+	 *
+	 * @var string $smushed_meta_key
+	 */
+	public static $smushed_meta_key = 'wp-smpro-smush-data';
+
+	/**
 	 * Images dimensions array.
 	 *
 	 * @var array $image_sizes
@@ -104,7 +111,7 @@ class WP_Smushit {
 			WP_Smush::get_instance()->core()->initialise();
 		}
 
-		$wp_smush_data      = get_post_meta( $id, WP_Smush_Core::$smushed_meta_key, true );
+		$wp_smush_data      = get_post_meta( $id, self::$smushed_meta_key, true );
 		$wp_resize_savings  = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
 		$conversion_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
 
@@ -1441,7 +1448,7 @@ class WP_Smushit {
 		// Set smush status for all the images, store it in wp-smpro-smush-data.
 		if ( ! $has_errors ) {
 
-			$existing_stats = get_post_meta( $id, WP_Smush_Core::$smushed_meta_key, true );
+			$existing_stats = get_post_meta( $id, self::$smushed_meta_key, true );
 
 			if ( ! empty( $existing_stats ) ) {
 
@@ -1481,7 +1488,7 @@ class WP_Smushit {
 				 */
 				do_action( 'wp_smush_image_optimised', $id, $stats );
 			}
-			update_post_meta( $id, WP_Smush_Core::$smushed_meta_key, $stats );
+			update_post_meta( $id, self::$smushed_meta_key, $stats );
 		}
 
 		unset( $stats );
@@ -1659,7 +1666,7 @@ class WP_Smushit {
 			$this->resize_from_meta_data( $meta, $id );
 		} else {
 			// Remove the smush metadata.
-			delete_post_meta( $id, WP_Smush_Core::$smushed_meta_key );
+			delete_post_meta( $id, self::$smushed_meta_key );
 		}
 
 		// Delete transient.
@@ -1799,7 +1806,7 @@ class WP_Smushit {
 		}
 		$data = $smush_stats['data'];
 		// Get existing Stats.
-		$stats = get_post_meta( $id, WP_Smush_Core::$smushed_meta_key, true );
+		$stats = get_post_meta( $id, self::$smushed_meta_key, true );
 		// Update existing Stats.
 		if ( ! empty( $stats ) ) {
 
@@ -1837,7 +1844,7 @@ class WP_Smushit {
 		// Calculate the total compression.
 		$stats = $this->total_compression( $stats );
 
-		update_post_meta( $id, WP_Smush_Core::$smushed_meta_key, $stats );
+		update_post_meta( $id, self::$smushed_meta_key, $stats );
 	}
 
 	/**
@@ -1976,7 +1983,7 @@ class WP_Smushit {
 	 * @param int $image_id  Attachment ID.
 	 */
 	private function delete_backup_files( $image_id ) {
-		$smush_meta = get_post_meta( $image_id, WP_Smush_Core::$smushed_meta_key, true );
+		$smush_meta = get_post_meta( $image_id, self::$smushed_meta_key, true );
 		if ( empty( $smush_meta ) ) {
 			// Return if we don't have any details.
 			return;
@@ -2129,7 +2136,7 @@ class WP_Smushit {
 		}
 
 		// Get the existing Stats.
-		$smush_stats = get_post_meta( $post_data['postid'], WP_Smush_Core::$smushed_meta_key, true );
+		$smush_stats = get_post_meta( $post_data['postid'], self::$smushed_meta_key, true );
 		$stats_full  = ! empty( $smush_stats['sizes'] ) && ! empty( $smush_stats['sizes']['full'] ) ? $smush_stats['sizes']['full'] : '';
 
 		if ( empty( $stats_full ) ) {
@@ -2147,7 +2154,7 @@ class WP_Smushit {
 		$smush_stats['sizes']['full'] = $stats_full;
 
 		// Update Stats
-		update_post_meta( $post_data['postid'], WP_Smush_Core::$smushed_meta_key, $smush_stats );
+		update_post_meta( $post_data['postid'], self::$smushed_meta_key, $smush_stats );
 	}
 
 	/**

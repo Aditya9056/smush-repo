@@ -47,13 +47,6 @@ class WP_Smush_Core {
 	);
 
 	/**
-	 * Meta key to save smush result to db.
-	 *
-	 * @var string $smushed_meta_key
-	 */
-	public static $smushed_meta_key = 'wp-smpro-smush-data';
-
-	/**
 	 * Allowed mime types of image.
 	 *
 	 * @var array $mime_types
@@ -323,7 +316,7 @@ class WP_Smush_Core {
 		foreach ( $results as $attachment_meta ) {
 			$migrated_message = $migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
 			if ( array() !== $migrated_message ) {
-				update_post_meta( $attachment_meta->post_id, self::$smushed_meta_key, $migrated_message );
+				update_post_meta( $attachment_meta->post_id, WP_Smushit::$smushed_meta_key, $migrated_message );
 			}
 		}
 
@@ -867,7 +860,7 @@ class WP_Smush_Core {
 		$smush_data['total_images'] = 0;
 
 		while ( $query_next ) {
-			$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", self::$smushed_meta_key ) );
+			$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", WP_Smushit::$smushed_meta_key ) );
 			if ( ! empty( $global_data ) ) {
 				foreach ( $global_data as $data ) {
 					// Skip attachment, if in re-smush list, or not in attachment list.

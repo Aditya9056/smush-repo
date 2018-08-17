@@ -335,11 +335,11 @@ class WP_Smush_Admin {
 				'meta_query', array(
 					'relation' => 'OR',
 					array(
-						'key'     => $this->smushed_meta_key,
+						'key'     => WP_Smushit::$smushed_meta_key,
 						'compare' => 'EXISTS',
 					),
 					array(
-						'key'     => $this->smushed_meta_key,
+						'key'     => WP_Smushit::$smushed_meta_key,
 						'compare' => 'NOT EXISTS',
 					),
 				)
