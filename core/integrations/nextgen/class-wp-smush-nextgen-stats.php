@@ -466,7 +466,7 @@ if ( ! class_exists( 'WpSmushNextGenStats' ) ) {
 						$skip_class = $img_data['reason'] == 'size_limit' ? ' error' : '';
 						$stats     .= '<tr>
 					<td>' . strtoupper( $img_data['size'] ) . '</td>
-					<td class="smush-skipped' . $skip_class . '">' . $wp_smush->skip_reason( $img_data['reason'] ) . '</td>
+					<td class="smush-skipped' . $skip_class . '">' . WP_Smush::get_instance()->core()->mod->smush->skip_reason( $img_data['reason'] ) . '</td>
 				</tr>';
 					}
 				}

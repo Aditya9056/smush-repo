@@ -245,11 +245,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 *
 		 * @return mixed
 		 */
-		function resize_from_meta_data( $image ) {
+		private function resize_from_meta_data( $image ) {
+			$smush = WP_Smush::get_instance()->core()->mod->smush;
+
 			$errors = new WP_Error();
 			$stats  = array(
 				'stats' => array_merge(
-					$wp_smush->_get_size_signature(),
+					$smush->_get_size_signature(),
 					array(
 						'api_version' => - 1,
 						'lossy'       => - 1,
@@ -282,12 +284,12 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 				foreach ( $sizes as $size ) {
 
 					// Skip Full size, if smush original is not checked.
-					if ( 'full' == $size && ! $wp_smush->smush_original ) {
+					if ( 'full' === $size && ! $smush->smush_original ) {
 						continue;
 					}
 
 					// Check if registered size is supposed to be converted or not.
-					if ( 'full' != $size && WP_Smush::get_instance()->core()->mod->smush->skip_image_size( $size ) ) {
+					if ( 'full' !== $size && $smush->skip_image_size( $size ) ) {
 						return false;
 					}
 
@@ -326,7 +328,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 						continue;
 					}
 					// Store details for each size key.
-					$response = $wp_smush->do_smushit( $attachment_file_path_size, $image->pid, $this->module );
+					$response = $smush->do_smushit( $attachment_file_path_size, $image->pid, $this->module );
 
 					if ( is_wp_error( $response ) ) {
 						return $response;
@@ -342,7 +344,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 						continue;
 					}
 
-					$stats['sizes'][ $size ] = (object) $wp_smush->_array_fill_placeholders( $wp_smush->_get_size_signature(), (array) $response['data'] );
+					$stats['sizes'][ $size ] = (object) $smush->_array_fill_placeholders( $smush->_get_size_signature(), (array) $response['data'] );
 
 					if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
 						$stats['stats']['api_version'] = $response['data']->api_version;
@@ -380,13 +382,13 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 								// Update compression percent and bytes saved for each size.
 								$stats['sizes'][ $size_name ]->bytes = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->bytes;
 								// Calculate percentage.
-								$stats['sizes'][ $size_name ]->percent = $wp_smush->calculate_percentage( $stats['sizes'][ $size_name ], $existing_stats_size );
+								$stats['sizes'][ $size_name ]->percent = $smush->calculate_percentage( $stats['sizes'][ $size_name ], $existing_stats_size );
 							}
 						}
 					}
 				}
 				// Total Stats.
-				$stats                 = $wp_smush->total_compression( $stats );
+				$stats                 = $smush->total_compression( $stats );
 				$stats['total_images'] = ! empty( $stats['sizes'] ) ? count( $stats['sizes'] ) : 0;
 
 				// If there was any compression and there was no error in smushing.
@@ -999,6 +1001,8 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 			 * @return bool|object
 			 */
 			function generate_image_size( $image, $size, $params = null, $skip_defaults = false ) {
+				$smush = WP_Smush::get_instance()->core()->mod->smush;
+
 				$image_id = ! empty( $image->pid ) ? $image->pid : '';
 				// Get image from storage object if we don't have it already.
 				if ( empty( $image_id ) ) {
@@ -1017,7 +1021,7 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 					$filename = $success->fileName;
 					// Smush it, if it exists.
 					if ( file_exists( $filename ) ) {
-						$response = $wp_smush->do_smushit( $filename, $image_id, $this->module );
+						$response = $smush->do_smushit( $filename, $image_id, $this->module );
 
 						// If the image was smushed.
 						if ( ! is_wp_error( $response ) && ! empty( $response['data'] ) && $response['data']->bytes_saved > 0 ) {
@@ -1028,7 +1032,7 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 								// Initialize stats array.
 								$stats                = array(
 									'stats' => array_merge(
-										$wp_smush->_get_size_signature(),
+										$smush->_get_size_signature(),
 										array(
 											'api_version' => - 1,
 											'lossy'       => - 1,
@@ -1043,7 +1047,7 @@ if ( class_exists( 'WpSmushNextGen' ) ) {
 								$stats['size_before'] = $response['data']->before_size;
 								$stats['time']        = $response['data']->time;
 							}
-							$stats['sizes'][ $size ] = (object) $wp_smush->_array_fill_placeholders( $wp_smush->_get_size_signature(), (array) $response['data'] );
+							$stats['sizes'][ $size ] = (object) $smush->_array_fill_placeholders( $smush->_get_size_signature(), (array) $response['data'] );
 
 							if ( isset( $image->metadata ) ) {
 								$image->meta_data['wp_smush'] = $stats;

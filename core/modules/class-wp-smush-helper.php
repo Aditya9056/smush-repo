@@ -369,5 +369,36 @@ class WP_Smush_Helper {
 		return $number;
 	}
 
+	/**
+	 * Return the filesize in a humanly readable format.
+	 *
+	 * Taken from http://www.php.net/manual/en/function.filesize.php#91477
+	 *
+	 * @param int $bytes      Number of bytes.
+	 * @param int $precision  Precision.
+	 *
+	 * @return string
+	 */
+	public static function format_bytes( $bytes, $precision = 1 ) {
+		$units  = array( 'B', 'KiB', 'MiB', 'GiB', 'TiB' );
+		$bytes  = max( $bytes, 0 );
+		$pow    = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
+		$pow    = min( $pow, count( $units ) - 1 );
+		$bytes /= pow( 1024, $pow );
+
+		return round( $bytes, $precision ) . $units[ $pow ];
+	}
+
+	/**
+	 * Compare Values
+	 *
+	 * @param object $a
+	 * @param object $b
+	 *
+	 * @return bool
+	 */
+	public static function cmp( $a, $b ) {
+		return $a->bytes < $b->bytes;
+	}
 
 }
