@@ -57,7 +57,7 @@ if ( ! class_exists( 'WPSmushNextGenBulk' ) ) {
 
 			// Check if a re-Smush request, update the re-Smush list.
 			if ( ! empty( $_REQUEST['is_bulk_resmush'] ) && $_REQUEST['is_bulk_resmush'] ) {
-				$wpsmushit_admin->update_resmush_list( $atchmnt_id, 'wp-smush-nextgen-resmush-list' );
+				WP_Smush::get_instance()->core()->mod->smush->update_resmush_list( $atchmnt_id, 'wp-smush-nextgen-resmush-list' );
 			}
 			$stats['is_lossy'] = ! empty( $smush['stats'] ) ? $smush['stats']['lossy'] : 0;
 

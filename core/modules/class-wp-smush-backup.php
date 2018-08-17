@@ -88,7 +88,7 @@ class WP_Smush_Backup {
 		}
 
 		$attachment_id = ! empty( $this->smush->attachment_id ) ? $this->smush->attachment_id : $attachment_id;
-		if ( ! empty( $attachment_id ) && WP_Smush::get_instance()->core()->png2jpg->is_converted( $attachment_id ) ) {
+		if ( ! empty( $attachment_id ) && WP_Smush::get_instance()->core()->mod->png2jpg->is_converted( $attachment_id ) ) {
 			// No need to create a backup, we already have one if enabled.
 			return $file_path;
 		}
@@ -339,7 +339,7 @@ class WP_Smush_Backup {
 		$original_file_path = $this->smush->original_file( $original_file );
 		if ( file_exists( $original_file_path ) ) {
 			// Update the path details in meta and attached file, replace the image.
-			$meta = WP_Smush::get_instance()->core()->png2jpg->update_image_path( $image_id, $file_path, $original_file_path, $meta, 'full', 'restore' );
+			$meta = WP_Smush::get_instance()->core()->mod->png2jpg->update_image_path( $image_id, $file_path, $original_file_path, $meta, 'full', 'restore' );
 
 			// Unlink JPG.
 			if ( ! empty( $meta['file'] ) && $original_file == $meta['file'] ) {

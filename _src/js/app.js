@@ -16,7 +16,7 @@ require( './modules/directory-smush' );
  *
  * Notices are used in the following functions:
  *
- * @used-by WpSmushitAdmin::smush_updated()
+ * @used-by WP_Smushit::smush_updated()
  * @used-by WP_Smush_S3::3_support_required_notice()
  * @used-by WP_Smush_View::installation_notice()
  *

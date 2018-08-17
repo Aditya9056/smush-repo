@@ -94,7 +94,7 @@ class WP_Smush_Directory_Scanner {
 	 * @return int
 	 */
 	public function get_scan_steps() {
-		return count( WP_Smush::get_instance()->core()->dir->get_scanned_images() );
+		return count( WP_Smush::get_instance()->core()->mod->dir->get_scanned_images() );
 	}
 
 	/**

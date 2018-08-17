@@ -124,7 +124,7 @@ class WP_Smush_Installer {
 		$wpsmush_dir = new WP_Smush_Dir();
 
 		// No need to continue on sub sites.
-		if ( ! WP_Smush_Core::should_continue() ) {
+		if ( ! WP_Smush_Dir::should_continue() ) {
 			return;
 		}
 

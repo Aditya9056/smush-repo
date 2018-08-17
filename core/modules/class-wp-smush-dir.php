@@ -47,7 +47,7 @@ class WP_Smush_Dir {
 	 * WP_Smush_Dir constructor.
 	 */
 	public function __construct() {
-		if ( ! WP_Smush_Core::should_continue() ) {
+		if ( ! WP_Smush_Dir::should_continue() ) {
 			// Remove directory smush from tabs if not required.
 			add_filter( 'smush_setting_tabs', array( $this, 'remove_directory_tab' ) );
 
@@ -84,6 +84,20 @@ class WP_Smush_Dir {
 		add_action( 'wp_ajax_directory_smush_check_step', array( $this, 'directory_smush_check_step' ) );
 		add_action( 'wp_ajax_directory_smush_finish', array( $this, 'directory_smush_finish' ) );
 		add_action( 'wp_ajax_directory_smush_cancel', array( $this, 'directory_smush_cancel' ) );
+	}
+
+	/**
+	 * Do not display Directory smush for subsites.
+	 *
+	 * @return bool True/False, whether to display the Directory smush or not
+	 */
+	public static function should_continue() {
+		// Do not show directory smush, if not main site in a network.
+		if ( ! is_main_site() || is_network_admin() ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -208,7 +222,7 @@ class WP_Smush_Dir {
 		$path = $image['path'];
 
 		// We have the image path, optimise.
-		$smush_results = WP_Smush::get_instance()->core()->smush->do_smushit( $path );
+		$smush_results = WP_Smush::get_instance()->core()->mod->smush->do_smushit( $path );
 
 		if ( is_wp_error( $smush_results ) ) {
 			/* @var WP_Error $smush_results */
@@ -241,7 +255,7 @@ class WP_Smush_Dir {
 		$file_time = @filectime( $path );
 
 		// If super-smush enabled, update supersmushed meta value also.
-		$lossy = WP_Smush::get_instance()->core()->smush->lossy_enabled ? 1 : 0;
+		$lossy = WP_Smush::get_instance()->core()->mod->smush->lossy_enabled ? 1 : 0;
 
 		// All good, Update the stats.
 		$wpdb->query(
@@ -462,7 +476,6 @@ class WP_Smush_Dir {
 	public function get_root_path() {
 		// If main site.
 		if ( is_main_site() ) {
-
 			/**
 			 * Sometimes content directories may reside outside
 			 * the installation sub directory. We need to make sure
@@ -1005,7 +1018,7 @@ class WP_Smush_Dir {
 		$core = WP_Smush::get_instance()->core();
 
 		// We have the image path, optimise.
-		$smush_results = $core->smush->do_smushit( $path );
+		$smush_results = $core->mod->smush->do_smushit( $path );
 
 		if ( is_wp_error( $smush_results ) ) {
 			/* @var WP_Error $smush_results */
@@ -1034,7 +1047,7 @@ class WP_Smush_Dir {
 		$file_time = @filectime( $path );
 
 		// If super-smush enabled, update supersmushed meta value also.
-		$lossy = $core->smush->lossy_enabled ? 1 : 0;
+		$lossy = $core->mod->smush->lossy_enabled ? 1 : 0;
 
 		// All good, Update the stats.
 		$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, lossy=%s WHERE id=%d LIMIT 1";
@@ -1210,7 +1223,7 @@ if ( class_exists( 'RecursiveFilterIterator' ) && ! class_exists( 'WPSmushRecurs
 		public function accept() {
 			$path = $this->current()->getPathname();
 
-			if ( $this->isDir() && ! WP_Smush::get_instance()->core()->dir->skip_dir( $path ) ) {
+			if ( $this->isDir() && ! WP_Smush::get_instance()->core()->mod->dir->skip_dir( $path ) ) {
 				return true;
 			}
 

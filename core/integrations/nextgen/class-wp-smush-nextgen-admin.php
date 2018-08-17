@@ -551,7 +551,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @param $attachment_id
 		 */
 		function update_resmush_list( $attachment_id ) {
-			$wpsmushit_admin->update_resmush_list( $attachment_id, 'wp-smush-nextgen-resmush-list' );
+			WP_Smush::get_instance()->core()->mod->smush->update_resmush_list( $attachment_id, 'wp-smush-nextgen-resmush-list' );
 		}
 
 		/**
@@ -597,7 +597,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			update_option( 'wp_smush_stats_nextgen', $nextgen_stats, false );
 
 			// Remove from Super Smush list
-			$wpsmushit_admin->update_super_smush_count( $attachment_id, 'remove', 'wp-smush-super_smushed_nextgen' );
+			WP_Smush::get_instance()->core()->mod->smush->update_super_smush_count( $attachment_id, 'remove', 'wp-smush-super_smushed_nextgen' );
 
 		}
 
@@ -608,7 +608,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 		 * @param $stats
 		 */
 		function update_lists( $image_id, $stats ) {
-			$wpsmushit_admin->update_lists( $image_id, $stats, 'wp-smush-super_smushed_nextgen' );
+			WP_Smush::get_instance()->core()->mod->smush->update_lists( $image_id, $stats, 'wp-smush-super_smushed_nextgen' );
 			if ( ! empty( $this->resmush_ids ) && in_array( $image_id, $this->resmush_ids ) ) {
 				$this->update_resmush_list( $image_id );
 			}

@@ -156,7 +156,7 @@ abstract class WP_Smush_View {
 		wp_register_style( 'smush-admin-common', WP_SMUSH_URL . 'app/assets/css/common.min.css', array(), WP_SMUSH_VERSION );
 
 		// Dismiss update info.
-		WP_Smush::get_instance()->core()->smush->dismiss_update_info();
+		WP_Smush::get_instance()->core()->mod->smush->dismiss_update_info();
 	}
 
 	/**
@@ -558,13 +558,13 @@ abstract class WP_Smush_View {
 
 		<?php
 		// User API check, and display a message if not valid.
-		$this->get_user_validation_message();
+		WP_Smush::get_instance()->admin()->get_user_validation_message();
 
 		// Re-check images notice.
 		$this->get_recheck_message();
 
 		// Check and show missing directory smush table error only on main site.
-		if ( WP_Smush_Core::should_continue() ) {
+		if ( WP_Smush_Dir::should_continue() ) {
 			$this->show_table_error();
 		}
 
@@ -600,27 +600,6 @@ abstract class WP_Smush_View {
 		<div class="sui-notice sui-notice-success wp-smush-re-check-message">
 			<p><?php esc_html_e( 'Smush settings were updated, performing a quick scan to check if any of the images need to be Smushed again.', 'wp-smushit' ); ?></p>
 			<span class="sui-notice-dismiss"><a href="#"><?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?></a></span>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Get membership validation message.
-	 *
-	 * @param bool $notice Is a notice.
-	 */
-	private function get_user_validation_message( $notice = true ) {
-		$notice_class = $notice ? ' sui-notice sui-notice-warning' : ' notice notice-warning is-dismissible';
-		$wpmu_contact = sprintf( '<a href="%s" target="_blank">', esc_url( 'https://premium.wpmudev.org/contact' ) );
-		$recheck_link = '<a href="#" id="wp-smush-revalidate-member" data-message="%s">';
-		?>
-
-		<div id="wp-smush-invalid-member" data-message="<?php esc_attr_e( 'Validating..', 'wp-smushit' ); ?>" class="sui-hidden hidden <?php echo esc_attr( $notice_class ); ?>">
-			<p>
-				<?php
-				printf( esc_html__( 'It looks like Smush couldn’t verify your WPMU DEV membership so Pro features have been disabled for now. If you think this is an error, run a %1$sre-check%2$s or get in touch with our %3$ssupport team%4$s.', 'wp-smushit' ), $recheck_link, '</a>', $wpmu_contact, '</a>' );
-				?>
-			</p>
 		</div>
 		<?php
 	}

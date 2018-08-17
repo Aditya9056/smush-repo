@@ -181,7 +181,7 @@ class WP_Smush_Ajax {
 	 * @param bool $remove_notice  Remove notice.
 	 */
 	public function dismiss_update_info( $remove_notice = false ) {
-		WP_Smush::get_instance()->core()->smush->dismiss_update_info( $remove_notice );
+		WP_Smush::get_instance()->core()->mod->smush->dismiss_update_info( $remove_notice );
 	}
 
 	/**
@@ -222,7 +222,7 @@ class WP_Smush_Ajax {
 	 * Send JSON response whether to show or not the warning
 	 */
 	public function show_warning_ajax() {
-		$show = WP_Smush::get_instance()->core()->smush->show_warning();
+		$show = WP_Smush::get_instance()->core()->mod->smush->show_warning();
 		wp_send_json( intval( $show ) );
 	}
 
@@ -250,7 +250,7 @@ class WP_Smush_Ajax {
 
 		$attachment_id = intval( $_GET['attachment_id'] );
 
-		$smush = WP_Smush::get_instance()->core()->smush;
+		$core = WP_Smush::get_instance()->core();
 
 		/**
 		 * Filter: wp_smush_image.
@@ -265,14 +265,14 @@ class WP_Smush_Ajax {
 			wp_send_json_error(
 				array(
 					'error_msg'    => sprintf( '<p class="wp-smush-error-message">%s</p>', $error ),
-					'show_warning' => intval( $smush->show_warning() ),
+					'show_warning' => intval( $core->mod->smush->show_warning() ),
 				)
 			);
 		}
 
-		$smush->initialise();
+		$core->initialise();
 		// Pass on the attachment id to smush single function.
-		$smush->smush_single( $attachment_id );
+		$core->mod->smush->smush_single( $attachment_id );
 	}
 
 	/**
@@ -303,7 +303,7 @@ class WP_Smush_Ajax {
 
 		$image_id = intval( $_POST['attachment_id'] );
 
-		$smushed = WP_Smush::get_instance()->core()->smush->smush_single( $image_id, true );
+		$smushed = WP_Smush::get_instance()->core()->mod->smush->smush_single( $image_id, true );
 
 		// If any of the image is restored, we count it as success.
 		if ( ! empty( $smushed['status'] ) ) {
@@ -340,11 +340,11 @@ class WP_Smush_Ajax {
 		// Save settings only if networkwide settings are disabled.
 		if ( ( ! is_multisite() || ! WP_Smush_Settings::is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
 			// Save Settings.
-			$core->options->process_options();
+			$core->mod->settings->process_options();
 		}
 
 		// If there aren't any images in the library, return the notice.
-		if ( 0 == $core->db->get_media_attachments( true ) && 'nextgen' !== $type ) {
+		if ( 0 == $core->mod->db->get_media_attachments( true ) && 'nextgen' !== $type ) {
 			$notice = esc_html__( 'We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' );
 			$resp   = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
 					<div class="sui-notice-content">
@@ -359,7 +359,7 @@ class WP_Smush_Ajax {
 			wp_send_json_success(
 				array(
 					'notice'      => $resp,
-					'super_smush' => $core->smush->lossy_enabled,
+					'super_smush' => $core->mod->smush->lossy_enabled,
 				)
 			);
 
@@ -380,7 +380,7 @@ class WP_Smush_Ajax {
 		$return_ui = isset( $_REQUEST['get_ui'] ) && 'true' == $_REQUEST['get_ui'] ? true : false;
 
 		// Update the variables.
-		$core->smush->initialise();
+		$core->initialise();
 
 		// Logic: If none of the required settings is on, don't need to resmush any of the images
 		// We need at least one of these settings to be on, to check if any of the image needs resmush
@@ -401,7 +401,7 @@ class WP_Smush_Ajax {
 
 		$remaining_count = 'nextgen' === $type ? $wpsmushnextgenadmin->remaining_count : $core->remaining_count;
 
-		if ( 0 == $remaining_count && ! $core->smush->lossy_enabled && ! $core->smush->smush_original && $core->smush->keep_exif && ! $upfront_active ) {
+		if ( 0 == $remaining_count && ! $core->mod->smush->lossy_enabled && ! $core->mod->smush->smush_original && $core->mod->smush->keep_exif && ! $upfront_active ) {
 			delete_option( $key );
 			delete_site_option( WP_SMUSH_PREFIX . 'run_recheck' );
 			wp_send_json_success( array( 'notice' => $resp ) );
@@ -413,7 +413,7 @@ class WP_Smush_Ajax {
 		// Get Smushed Attachments.
 		if ( 'nextgen' !== $type ) {
 			// Get list of Smushed images.
-			$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->db->smushed_count( true );
+			$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->mod->db->smushed_count( true );
 		} else {
 			global $wpsmushnextgenstats;
 
@@ -432,7 +432,7 @@ class WP_Smush_Ajax {
 			);
 
 			// Initialize resize class.
-			$core->resize->initialize();
+			$core->mod->resize->initialize();
 
 			foreach ( $attachments as $attachment_k => $attachment ) {
 				// Skip if already in resmush list.
@@ -453,13 +453,13 @@ class WP_Smush_Ajax {
 				if ( is_array( $smush_data ) && ! empty( $smush_data['stats'] ) ) {
 
 					// If we need to optmise losslessly, add to resmush list.
-					$smush_lossy = $core->smush->lossy_enabled && ! $smush_data['stats']['lossy'];
+					$smush_lossy = $core->mod->smush->lossy_enabled && ! $smush_data['stats']['lossy'];
 
 					// If we need to strip exif, put it in resmush list.
-					$strip_exif = ! $core->smush->keep_exif && isset( $smush_data['stats']['keep_exif'] ) && ( 1 == $smush_data['stats']['keep_exif'] );
+					$strip_exif = ! $core->mod->smush->keep_exif && isset( $smush_data['stats']['keep_exif'] ) && ( 1 == $smush_data['stats']['keep_exif'] );
 
 					// If Original image needs to be smushed.
-					$smush_original = $core->smush->smush_original && empty( $smush_data['sizes']['full'] );
+					$smush_original = $core->mod->smush->smush_original && empty( $smush_data['sizes']['full'] );
 
 					if ( $smush_lossy || $strip_exif || $smush_original ) {
 						$should_resmush = true;
@@ -467,12 +467,12 @@ class WP_Smush_Ajax {
 
 					// If Image needs to be resized.
 					if ( ! $should_resmush ) {
-						$should_resmush = $core->resize->should_resize( $attachment );
+						$should_resmush = $core->mod->resize->should_resize( $attachment );
 					}
 
 					// If image can be converted.
 					if ( ! $should_resmush ) {
-						$should_resmush = $core->png2jpg->can_be_converted( $attachment );
+						$should_resmush = $core->mod->png2jpg->can_be_converted( $attachment );
 					}
 
 					// If the image needs to be resmushed add it to the list.
@@ -606,9 +606,9 @@ class WP_Smush_Ajax {
 		}
 
 		$return['notice']      = $resp;
-		$return['super_smush'] = $core->smush->lossy_enabled;
-		if ( $core->smush->lossy_enabled && 'nextgen' === $type ) {
-			$ss_count                    = $core->db->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
+		$return['super_smush'] = $core->mod->smush->lossy_enabled;
+		if ( $core->mod->smush->lossy_enabled && 'nextgen' === $type ) {
+			$ss_count                    = $core->mod->db->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
 			$return['super_smush_stats'] = sprintf( '<strong><span class="smushed-count">%d</span>/%d</strong>', $ss_count, $wpsmushnextgenadmin->total_count );
 		}
 
@@ -630,7 +630,7 @@ class WP_Smush_Ajax {
 		if ( 'nextgen' !== $_POST['type'] ) {
 			$resmush_list = get_option( $key );
 			if ( ! empty( $resmush_list ) && is_array( $resmush_list ) ) {
-				$stats = WP_Smush::get_instance()->core()->db->get_stats_for_attachments( $resmush_list );
+				$stats = WP_Smush::get_instance()->core()->mod->db->get_stats_for_attachments( $resmush_list );
 			}
 		} else {
 			// For Nextgen. Get the stats (get the re-Smush IDs).
@@ -701,7 +701,7 @@ class WP_Smush_Ajax {
 		// Turn off errors for ajax result.
 		@error_reporting( 0 );
 
-		$smush = WP_Smush::get_instance()->core()->smush;
+		$smush = WP_Smush::get_instance()->core()->mod->smush;
 
 		if ( empty( $_REQUEST['attachment_id'] ) ) {
 			wp_send_json_error(
@@ -763,7 +763,7 @@ class WP_Smush_Ajax {
 		// Download if not exists.
 		do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
 
-		WP_Smush::get_instance()->core()->backup->create_backup( $attachment_file_path, '', $attachment_id );
+		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 		// Proceed only if Smushing Transient is not set for the given attachment id.
 		if ( ! get_option( 'smush-in-progress-' . $attachment_id, false ) ) {
@@ -785,7 +785,7 @@ class WP_Smush_Ajax {
 				$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 			}
 
-			$original_meta = WP_Smush::get_instance()->core()->png2jpg->png_to_jpg( $attachment_id, $original_meta );
+			$original_meta = WP_Smush::get_instance()->core()->mod->png2jpg->png_to_jpg( $attachment_id, $original_meta );
 
 			$smush_response = $smush->resize_from_meta_data( $original_meta, $attachment_id );
 			wp_update_attachment_metadata( $attachment_id, $original_meta );
@@ -837,7 +837,7 @@ class WP_Smush_Ajax {
 
 		// Check if a resmush request, update the resmush list.
 		if ( ! empty( $_REQUEST['is_bulk_resmush'] ) && 'false' !== $_REQUEST['is_bulk_resmush'] && $_REQUEST['is_bulk_resmush'] ) {
-			WP_Smush_Core::update_resmush_list( $attachment_id );
+			$smush->update_resmush_list( $attachment_id );
 		}
 
 		// Runs after a image is successfully smushed.
@@ -867,12 +867,12 @@ class WP_Smush_Ajax {
 		$result = array();
 
 		// Store the Total/Smushed count.
-		$stats = WP_Smush::get_instance()->core()->dir->total_stats();
+		$stats = WP_Smush::get_instance()->core()->mod->dir->total_stats();
 
 		$result['dir_smush'] = $stats;
 
 		// Cumulative Stats.
-		$result['combined_stats'] = WP_Smush::get_instance()->core()->dir->combine_stats( $stats );
+		$result['combined_stats'] = WP_Smush::get_instance()->core()->mod->dir->combine_stats( $stats );
 
 		// Store the stats in options table.
 		update_option( 'dir_smush_stats', $result, false );

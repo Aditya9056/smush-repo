@@ -11,11 +11,11 @@
 class WP_Smushit {
 
 	/**
-	 * Meta key to save migrated version.
+	 * Images dimensions array.
 	 *
-	 * @var string $migrated_version_key
+	 * @var array $image_sizes
 	 */
-	private $migrated_version_key = 'wp-smush-migrated-version';
+	public $image_sizes = array();
 
 	/**
 	 * Attachment type, being Smushed currently.
@@ -53,27 +53,6 @@ class WP_Smushit {
 	public $attachment_id;
 
 	/**
-	 * DB option name.
-	 */
-	const OPTION_NAME = 'smush_option';
-
-	/**
-	 * Plugin options.
-	 *
-	 * @var null|array
-	 */
-	protected $options = null;
-
-	/**
-	 * Default options and values go here.
-	 *
-	 * @var array $defaults
-	 */
-	protected $defaults = array(
-		'version' => WP_SMUSH_VERSION, // This one should not change.
-	);
-
-	/**
 	 * Stores the headers returned by the latest API call.
 	 *
 	 * @var array $api_headers
@@ -84,33 +63,15 @@ class WP_Smushit {
 	 * WP_Smush constructor.
 	 */
 	public function __construct() {
+		// Update the Super Smush count, after the smushing.
+		add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
+
 		// Smush image (Auto Smush) when `wp_update_attachment_metadata` filter is fired.
 		add_filter( 'wp_update_attachment_metadata', array( $this, 'smush_image' ), 15, 2 );
-
 		// Delete backup files.
 		add_action( 'delete_attachment', array( $this, 'delete_images' ), 12 );
-
 		// Optimise WP retina 2x images.
 		add_action( 'wr2x_retina_file_added', array( $this, 'smush_retina_image' ), 20, 3 );
-
-		// Add Smush Columns.
-		add_filter( 'manage_media_columns', array( $this, 'columns' ) );
-		add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
-		add_filter( 'manage_upload_sortable_columns', array( $this, 'sortable_column' ) );
-		// Manage column sorting.
-		add_action( 'pre_get_posts', array( $this, 'smushit_orderby' ) );
-
-		// Enqueue scripts and initialize variables.
-		add_action( 'admin_init', array( $this, 'admin_init' ) );
-
-		// Send Smush stats for PRO members.
-		add_filter( 'wpmudev_api_project_extra_data-912164', array( $this, 'send_smush_stats' ) );
-
-		/**
-		 * Load NextGen Gallery, instantiate the Async class. if hooked too late or early, auto Smush doesn't
-		 * work, also load after settings have been saved on init action.
-		 */
-		add_action( 'plugins_loaded', array( $this, 'load_libs' ), 90 );
 
 		// Handle the Async optimisation.
 		add_action( 'wp_async_wp_generate_attachment_metadata', array( $this, 'wp_smush_handle_async' ) );
@@ -119,93 +80,755 @@ class WP_Smushit {
 		// Register function for sending unsmushed image count to hub.
 		add_filter( 'wdp_register_hub_action', array( $this, 'smush_stats' ) );
 
-		// Add information to privacy policy page (only during creation).
-		add_action( 'admin_init', array( $this, 'add_policy' ) );
-
-		if ( is_admin() ) {
-			add_action( 'admin_init', array( 'WP_Smush_Installer', 'upgrade_settings' ) );
-		}
-
-		/**
-		 * Prints a membership validation issue notice in Media Library
-		 */
-		add_action( 'admin_notices', array( $this, 'media_library_membership_notice' ) );
-
 		add_filter( 'wp_prepare_attachment_for_js', array( $this, 'smush_send_status' ), 99, 3 );
-
-		// Smush image filter from Media Library.
-		add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
-
-		// Update the Super Smush count, after the smushing.
-		add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
 	}
 
+	/**
+	 * Set send button status
+	 *
+	 * @param int  $id        Attachment ID.
+	 * @param bool $echo      Echo or return.
+	 * @param bool $text_only Returns the stats text instead of button.
+	 * @param bool $wrapper   Required for `column_html`, to include the wrapper div or not.
+	 *
+	 * @return string|array
+	 */
+	public function set_status( $id, $echo = true, $text_only = false, $wrapper = true ) {
+		$status_txt  = $button_txt = $stats = $links = '';
+		$show_button = $show_resmush = false;
 
+		$links = '';
+
+		// If variables are not initialized properly, initialize it.
+		if ( ! has_action( 'admin_init', array( $this, 'admin_init' ) ) ) {
+			WP_Smush::get_instance()->core()->initialise();
+		}
+
+		$wp_smush_data      = get_post_meta( $id, WP_Smush_Core::$smushed_meta_key, true );
+		$wp_resize_savings  = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
+		$conversion_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+
+		$combined_stats = $this->combined_stats( $wp_smush_data, $wp_resize_savings );
+
+		$combined_stats = $this->combine_conversion_stats( $combined_stats, $conversion_savings );
+
+		// Remove Smush s3 hook, as it downloads the file again.
+		if ( class_exists( 'WP_Smush_S3_Compat' ) ) {
+			$s3_compat = new WP_Smush_S3_Compat();
+			remove_filter( 'as3cf_get_attached_file', array( $s3_compat, 'smush_download_file' ), 11, 4 );
+		}
+		$attachment_data = wp_get_attachment_metadata( $id );
+
+		// If the image is smushed.
+		if ( ! empty( $wp_smush_data ) ) {
+			$image_count    = count( $wp_smush_data['sizes'] );
+			$bytes          = isset( $combined_stats['stats']['bytes'] ) ? $combined_stats['stats']['bytes'] : 0;
+			$bytes_readable = ! empty( $bytes ) ? size_format( $bytes, 1 ) : '';
+			$percent        = isset( $combined_stats['stats']['percent'] ) ? $combined_stats['stats']['percent'] : 0;
+			$percent        = $percent < 0 ? 0 : $percent;
+
+			// Show resmush link, if the settings were changed.
+			$show_resmush = $this->show_resmush( $id, $wp_smush_data );
+
+			if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
+				$status_txt = __( 'Already Optimized', 'wp-smushit' );
+				if ( $show_resmush ) {
+					$links .= $this->get_resmsuh_link( $id );
+				}
+				$show_button = false;
+			} else {
+				if ( $bytes == 0 || $percent == 0 ) {
+					$status_txt = __( 'Already Optimized', 'wp-smushit' );
+
+					if ( $show_resmush ) {
+						$links .= $this->get_resmsuh_link( $id );
+					}
+				} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
+					/* translators: %d: number of images reduced */
+					$status_txt = $image_count > 1 ? sprintf( __( '%d images reduced ', 'wp-smushit' ), $image_count ) : __( 'Reduced ', 'wp-smushit' );
+
+					$stats_percent = number_format_i18n( $percent, 2, '.', '' );
+					$stats_percent = $stats_percent > 0 ? sprintf( '(  %01.1f%% )', $stats_percent ) : '';
+					/* translators: %1$s: bytes in readable format, %2$s: percent */
+					$status_txt .= sprintf( __( 'by %1$s %2$s', 'wp-smushit' ), $bytes_readable, $stats_percent );
+
+					$file_path = get_attached_file( $id );
+					$size      = file_exists( $file_path ) ? filesize( $file_path ) : 0;
+					if ( $size > 0 ) {
+						$update_size = size_format( $size, 0 ); // Used in js to update image stat.
+						$size        = size_format( $size, 1 );
+						/* translators: %s: image size */
+						$image_size  = sprintf( __( '<br /> Image Size: %s', 'wp-smushit' ), $size );
+						$status_txt .= $image_size;
+					}
+
+					$show_resmush = $this->show_resmush( $id, $wp_smush_data );
+
+					if ( $show_resmush ) {
+						$links .= $this->get_resmsuh_link( $id );
+					}
+
+					// Restore Image: Check if we need to show the restore image option.
+					$show_restore = $this->show_restore_option( $id, $attachment_data );
+
+					if ( $show_restore ) {
+						$links .= $this->get_restore_link( $id );
+					}
+
+					// Detailed Stats: Show detailed stats if available.
+					if ( ! empty( $wp_smush_data['sizes'] ) ) {
+
+						// Detailed Stats Link.
+						$links .= sprintf(
+							'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-constrained button" data-tooltip="%s">%s</a>',
+							esc_html__( 'Detailed stats for all the image sizes', 'wp-smushit' ),
+							esc_html__( 'View Stats', 'wp-smushit' )
+						);
+
+						// Stats.
+						$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
+
+						if ( ! $text_only ) {
+							$links .= $stats;
+						}
+					}
+				}
+			}
+			// Wrap links if not empty.
+			$links = ! empty( $links ) ? "<div class='sui-smush-media smush-status-links'>" . $links . '</div>' : '';
+
+			/** Super Smush Button  */
+			// IF current compression is lossy.
+			if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
+				$lossy    = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
+				$is_lossy = $lossy == 1 ? true : false;
+			}
+
+			// Check image type.
+			$image_type = get_post_mime_type( $id );
+
+			// Check if premium user, compression was lossless, and lossy compression is enabled.
+			// If we are displaying the resmush option already, no need to show the Super Smush button.
+			if ( ! $show_resmush && ! $is_lossy && $this->lossy_enabled && 'image/gif' !== $image_type ) {
+				$button_txt  = __( 'Super-Smush', 'wp-smushit' );
+				$show_button = true;
+			}
+		} elseif ( get_option( 'smush-in-progress-' . $id, false ) ) {
+			// The status.
+			$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
+
+			// Set WP Smush data to true in order to show the text.
+			$wp_smush_data = true;
+
+			// We need to show the smush button.
+			$show_button = false;
+
+			// The button text.
+			$button_txt = '';
+		} else {
+
+			// Show status text.
+			$wp_smush_data = true;
+
+			// The status.
+			$status_txt = __( 'Not processed', 'wp-smushit' );
+
+			// We need to show the smush button.
+			$show_button = true;
+
+			// The button text.
+			$button_txt = __( 'Smush', 'wp-smushit' );
+		}
+
+		$class      = $wp_smush_data ? '' : ' hidden';
+		$status_txt = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
+
+		$status_txt .= $links;
+
+		if ( $text_only ) {
+			// For ajax response.
+			return array(
+				'status'       => $status_txt,
+				'stats'        => $stats,
+				'show_warning' => intval( $this->show_warning() ),
+				'new_size'     => isset( $update_size ) ? $update_size : 0,
+			);
+		}
+
+		// If we are not showing smush button, append progress bar, else it is already there.
+		if ( ! $show_button ) {
+			$status_txt .= $this->progress_bar();
+		}
+
+		$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $wp_smush_data, $echo, $wrapper );
+		if ( ! $echo ) {
+			return $text;
+		}
+	}
 
 	/**
-	 * Add/Remove image id from Super Smushed images count
+	 * Smush and Resizing Stats Combined together.
 	 *
-	 * @param int    $id Image id
+	 * @param array $smush_stats     Smush stats.
+	 * @param array $resize_savings  Resize savings.
 	 *
-	 * @param string $op_type Add/remove, whether to add the image id or remove it from the list
+	 * @return array Array of all the stats
+	 */
+	public function combined_stats( $smush_stats, $resize_savings ) {
+		if ( empty( $smush_stats ) || empty( $resize_savings ) ) {
+			return $smush_stats;
+		}
+
+		// Initialize key full if not there already.
+		if ( ! isset( $smush_stats['sizes']['full'] ) ) {
+			$smush_stats['sizes']['full']              = new stdClass();
+			$smush_stats['sizes']['full']->bytes       = 0;
+			$smush_stats['sizes']['full']->size_before = 0;
+			$smush_stats['sizes']['full']->size_after  = 0;
+			$smush_stats['sizes']['full']->percent     = 0;
+		}
+
+		// Full Image.
+		if ( ! empty( $smush_stats['sizes']['full'] ) ) {
+			$smush_stats['sizes']['full']->bytes       = ! empty( $resize_savings['bytes'] ) ? $smush_stats['sizes']['full']->bytes + $resize_savings['bytes'] : $smush_stats['sizes']['full']->bytes;
+			$smush_stats['sizes']['full']->size_before = ! empty( $resize_savings['size_before'] ) && ( $resize_savings['size_before'] > $smush_stats['sizes']['full']->size_before ) ? $resize_savings['size_before'] : $smush_stats['sizes']['full']->size_before;
+			$smush_stats['sizes']['full']->percent     = ! empty( $smush_stats['sizes']['full']->bytes ) && $smush_stats['sizes']['full']->size_before > 0 ? ( $smush_stats['sizes']['full']->bytes / $smush_stats['sizes']['full']->size_before ) * 100 : $smush_stats['sizes']['full']->percent;
+
+			$smush_stats['sizes']['full']->size_after = $smush_stats['sizes']['full']->size_before - $smush_stats['sizes']['full']->bytes;
+
+			$smush_stats['sizes']['full']->percent = round( $smush_stats['sizes']['full']->percent, 1 );
+		}
+
+		$smush_stats = $this->total_compression( $smush_stats );
+
+		return $smush_stats;
+	}
+
+	/**
+	 * Iterate over all the size stats and calculate the total stats
+	 *
+	 * @param array $stats  Stats array.
+	 *
+	 * @return mixed
+	 */
+	public function total_compression( $stats ) {
+		$stats['stats']['size_before'] = 0;
+		$stats['stats']['size_after']  = 0;
+		$stats['stats']['time']        = 0;
+
+		foreach ( $stats['sizes'] as $size_stats ) {
+			$stats['stats']['size_before'] += ! empty( $size_stats->size_before ) ? $size_stats->size_before : 0;
+			$stats['stats']['size_after']  += ! empty( $size_stats->size_after ) ? $size_stats->size_after : 0;
+			$stats['stats']['time']        += ! empty( $size_stats->time ) ? $size_stats->time : 0;
+		}
+
+		$stats['stats']['bytes'] = ! empty( $stats['stats']['size_before'] ) && $stats['stats']['size_before'] > $stats['stats']['size_after'] ? $stats['stats']['size_before'] - $stats['stats']['size_after'] : 0;
+
+		if ( ! empty( $stats['stats']['bytes'] ) && ! empty( $stats['stats']['size_before'] ) ) {
+			$stats['stats']['percent'] = ( $stats['stats']['bytes'] / $stats['stats']['size_before'] ) * 100;
+		}
+
+		return $stats;
+	}
+
+	/**
+	 * Combine Savings from PNG to JPG conversion with smush stats
+	 *
+	 * @param array $stats               Savings from Smushing the image.
+	 * @param array $conversion_savings  Savings from converting the PNG to JPG.
+	 *
+	 * @return Object|array Total Savings
+	 */
+	public function combine_conversion_stats( $stats, $conversion_savings ) {
+		if ( empty( $stats ) || empty( $conversion_savings ) ) {
+			return $stats;
+		}
+
+		foreach ( $conversion_savings as $size_k => $savings ) {
+			// Initialize Object for size.
+			if ( empty( $stats['sizes'][ $size_k ] ) ) {
+				$stats['sizes'][ $size_k ]              = new stdClass();
+				$stats['sizes'][ $size_k ]->bytes       = 0;
+				$stats['sizes'][ $size_k ]->size_before = 0;
+				$stats['sizes'][ $size_k ]->size_after  = 0;
+				$stats['sizes'][ $size_k ]->percent     = 0;
+			}
+
+			if ( ! empty( $stats['sizes'][ $size_k ] ) && ! empty( $savings ) ) {
+				$stats['sizes'][ $size_k ]->bytes       = $stats['sizes'][ $size_k ]->bytes + $savings['bytes'];
+				$stats['sizes'][ $size_k ]->size_before = $stats['sizes'][ $size_k ]->size_before > $savings['size_before'] ? $stats['sizes'][ $size_k ]->size_before : $savings['size_before'];
+				$stats['sizes'][ $size_k ]->percent     = ! empty( $stats['sizes'][ $size_k ]->bytes ) && $stats['sizes'][ $size_k ]->size_before > 0 ? ( $stats['sizes'][ $size_k ]->bytes / $stats['sizes'][ $size_k ]->size_before ) * 100 : $stats['sizes'][ $size_k ]->percent;
+				$stats['sizes'][ $size_k ]->percent     = round( $stats['sizes'][ $size_k ]->percent, 1 );
+			}
+		}
+
+		$stats = $this->total_compression( $stats );
+
+		return $stats;
+	}
+
+	/**
+	 * Checks the current settings and returns the value whether to enable or not the resmush option.
+	 *
+	 * @param string $id             Attachment ID.
+	 * @param array  $wp_smush_data  Smush data.
+	 *
+	 * @return bool
+	 */
+	private function show_resmush( $id = '', $wp_smush_data ) {
+		// Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
+		// Or: If keep exif is unchecked and the smushed image have exif
+		// PNG To JPEG.
+		if ( $this->smush_original ) {
+			// IF full image was not smushed.
+			if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
+				return true;
+			}
+		}
+
+		// If image needs to be resized.
+		if ( WP_Smush::get_instance()->core()->mod->resize->should_resize( $id ) ) {
+			return true;
+		}
+
+		// EXIF Check.
+		if ( ! $this->keep_exif ) {
+			// If Keep Exif was set to true initially, and since it is set to false now.
+			if ( isset( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
+				return true;
+			}
+		}
+
+		// PNG to JPEG.
+		if ( WP_Smush::get_instance()->core()->mod->png2jpg->can_be_converted( $id ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Generates a Resmush link for a image.
+	 *
+	 * @param int    $image_id  Attachment ID.
+	 * @param string $type      Type of attachment.
+	 *
+	 * @return bool|string
+	 */
+	public function get_resmsuh_link( $image_id, $type = 'wp' ) {
+		if ( empty( $image_id ) ) {
+			return false;
+		}
+		$class  = 'wp-smush-action wp-smush-title sui-tooltip sui-tooltip-constrained';
+		$class .= 'wp' === $type ? ' wp-smush-resmush button' : ' wp-smush-nextgen-resmush';
+
+		$ajax_nonce = wp_create_nonce( 'wp-smush-resmush-' . $image_id );
+
+		return sprintf( '<a href="#" data-tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( 'Smush image including original file.', 'wp-smushit' ), $image_id, $ajax_nonce, $class, esc_html__( 'Resmush', 'wp-smushit' ) );
+	}
+
+	/**
+	 * If any of the image size have a backup file, show the restore option
+	 *
+	 * @param int          $image_id         Attachment ID.
+	 * @param string|array $attachment_data  Attachment data.
+	 *
+	 * @return bool
+	 */
+	private function show_restore_option( $image_id, $attachment_data ) {
+		// No Attachment data, don't go ahead.
+		if ( empty( $attachment_data ) ) {
+			return false;
+		}
+
+		// Get the image path for all sizes.
+		$file = get_attached_file( $image_id );
+
+		// Get stored backup path, if any.
+		$backup_sizes = get_post_meta( $image_id, '_wp_attachment_backup_sizes', true );
+
+		// Check if we've a backup path.
+		if ( ! empty( $backup_sizes ) && ( ! empty( $backup_sizes['smush-full'] ) || ! empty( $backup_sizes['smush_png_path'] ) ) ) {
+			// Check for PNG backup.
+			$backup = ! empty( $backup_sizes['smush_png_path'] ) ? $backup_sizes['smush_png_path'] : '';
+
+			// Check for original full size image backup.
+			$backup = empty( $backup ) && ! empty( $backup_sizes['smush-full'] ) ? $backup_sizes['smush-full'] : $backup;
+			$backup = ! empty( $backup['file'] ) ? $backup['file'] : '';
+		}
+
+		// If we still don't have a backup path, use traditional method to get it.
+		if ( empty( $backup ) ) {
+			// Check backup for Full size.
+			$backup = $this->get_image_backup_path( $file );
+		} else {
+			// Get the full path for file backup.
+			$backup = str_replace( wp_basename( $file ), wp_basename( $backup ), $file );
+		}
+
+		$file_exists = apply_filters( 'smush_backup_exists', file_exists( $backup ), $image_id, $backup );
+
+		if ( $file_exists ) {
+			return true;
+		}
+
+		// Additional Backup Check for JPEGs converted from PNG.
+		$pngjpg_savings = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+		if ( ! empty( $pngjpg_savings ) ) {
+
+			// Get the original File path and check if it exists.
+			$backup = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
+			$backup = $this->original_file( $backup );
+
+			if ( ! empty( $backup ) && is_file( $backup ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the backup path for attachment
+	 *
+	 * @param string $attachment_path  Attachment path.
+	 *
+	 * @return bool|string
+	 */
+	public function get_image_backup_path( $attachment_path ) {
+		// If attachment id is not available, return false.
+		if ( empty( $attachment_path ) ) {
+			return false;
+		}
+		$path = pathinfo( $attachment_path );
+
+		// If we don't have complete filename return false.
+		if ( empty( $path['extension'] ) ) {
+			return false;
+		}
+
+		$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . '.bak.' . $path['extension'];
+
+		return $backup_name;
+	}
+
+	/**
+	 * Original File path
+	 *
+	 * @param string $original_file  Original file.
+	 *
+	 * @return string File Path
+	 */
+	public function original_file( $original_file = '' ) {
+		$uploads     = wp_get_upload_dir();
+		$upload_path = $uploads['basedir'];
+
+		return path_join( $upload_path, $original_file );
+	}
+
+	/**
+	 * Returns a restore link for given image id
+	 *
+	 * @param int    $image_id  Attachment ID.
+	 * @param string $type      Attachment type.
+	 *
+	 * @return bool|string
+	 */
+	public function get_restore_link( $image_id, $type = 'wp' ) {
+		if ( empty( $image_id ) ) {
+			return false;
+		}
+
+		$class  = 'wp-smush-action wp-smush-title sui-tooltip';
+		$class .= 'wp' === $type ? ' wp-smush-restore button' : ' wp-smush-nextgen-restore';
+
+		$ajax_nonce = wp_create_nonce( 'wp-smush-restore-' . $image_id );
+
+		return sprintf( '<a href="#" data-tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( 'Restore original image.', 'wp-smushit' ), $image_id, $ajax_nonce, $class, esc_html__( 'Restore', 'wp-smushit' ) );
+	}
+
+	/**
+	 * Shows the image size and the compression for each of them
+	 *
+	 * @param int   $image_id             Attachment ID.
+	 * @param array $wp_smush_data        Smush data array.
+	 * @param array $attachment_metadata  Attachment meta data.
+	 *
+	 * @return string
+	 */
+	private function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata ) {
+		$stats      = '<div id="smush-stats-' . $image_id . '" class="sui-smush-media smush-stats-wrapper hidden">
+			<table class="wp-smush-stats-holder">
+				<thead>
+					<tr>
+						<th class="smush-stats-header">' . esc_html__( 'Image size', 'wp-smushit' ) . '</th>
+						<th class="smush-stats-header">' . esc_html__( 'Savings', 'wp-smushit' ) . '</th>
+					</tr>
+				</thead>
+				<tbody>';
+		$size_stats = $wp_smush_data['sizes'];
+
+		// Reorder Sizes as per the maximum savings.
+		uasort( $size_stats, array( $this, 'cmp' ) );
+
+		if ( ! empty( $attachment_metadata['sizes'] ) ) {
+			// Get skipped images.
+			$skipped = $this->get_skipped_images( $image_id, $size_stats, $attachment_metadata );
+
+			if ( ! empty( $skipped ) ) {
+				foreach ( $skipped as $img_data ) {
+					$skip_class = 'size_limit' === $img_data['reason'] ? ' error' : '';
+					$stats     .= '<tr>
+				<td>' . strtoupper( $img_data['size'] ) . '</td>
+				<td class="smush-skipped' . $skip_class . '">' . $this->skip_reason( $img_data['reason'] ) . '</td>
+			</tr>';
+				}
+			}
+		}
+		// Show Sizes and their compression.
+		foreach ( $size_stats as $size_key => $size_value ) {
+			$dimensions = '';
+			// Get the dimensions for the image size if available.
+			if ( ! empty( $this->image_sizes ) && ! empty( $this->image_sizes[ $size_key ] ) ) {
+				$dimensions = $this->image_sizes[ $size_key ]['width'] . 'x' . $this->image_sizes[ $size_key ]['height'];
+			}
+			$dimensions = ! empty( $dimensions ) ? sprintf( ' <br /> (%s)', $dimensions ) : '';
+			if ( $size_value->bytes > 0 ) {
+				$percent = round( $size_value->percent, 1 );
+				$percent = $percent > 0 ? ' ( ' . $percent . '% )' : '';
+				$stats  .= '<tr>
+				<td>' . strtoupper( $size_key ) . $dimensions . '</td>
+				<td>' . size_format( $size_value->bytes, 1 ) . $percent . '</td>
+			</tr>';
+			}
+		}
+		$stats .= '</tbody>
+			</table>
+		</div>';
+
+		return $stats;
+	}
+
+	/**
+	 * Return a list of images not smushed and reason
+	 *
+	 * @param int   $image_id             Attachment ID.
+	 * @param array $size_stats           Stats array.
+	 * @param array $attachment_metadata  Attachment meta data.
+	 *
+	 * @return array
+	 */
+	private function get_skipped_images( $image_id, $size_stats, $attachment_metadata ) {
+		$skipped = array();
+
+		// Get a list of all the sizes, Show skipped images.
+		$media_size = get_intermediate_image_sizes();
+
+		// Full size.
+		$full_image = get_attached_file( $image_id );
+
+		// If full image was not smushed, reason 1. Large Size logic, 2. Free and greater than 1Mb.
+		if ( ! array_key_exists( 'full', $size_stats ) ) {
+			// For free version, Check the image size.
+			if ( ! WP_Smush::is_pro() ) {
+				// For free version, check if full size is greater than 1 Mb, show the skipped status.
+				$file_size = file_exists( $full_image ) ? filesize( $full_image ) : '';
+				if ( ! empty( $file_size ) && ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
+					$skipped[] = array(
+						'size'   => 'full',
+						'reason' => 'size_limit',
+					);
+				} else {
+					$skipped[] = array(
+						'size'   => 'full',
+						'reason' => 'large_size',
+					);
+				}
+			} else {
+				// Paid version, Check if we have large size.
+				if ( array_key_exists( 'large', $size_stats ) ) {
+					$skipped[] = array(
+						'size'   => 'full',
+						'reason' => 'large_size',
+					);
+				}
+			}
+		}
+		// For other sizes, check if the image was generated and not available in stats.
+		if ( is_array( $media_size ) ) {
+			foreach ( $media_size as $size ) {
+				if ( array_key_exists( $size, $attachment_metadata['sizes'] ) && ! array_key_exists( $size, $size_stats ) && ! empty( $size['file'] ) ) {
+					// Image Path.
+					$img_path   = path_join( dirname( $full_image ), $size['file'] );
+					$image_size = file_exists( $img_path ) ? filesize( $img_path ) : '';
+					if ( ! empty( $image_size ) && ( $image_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
+						$skipped[] = array(
+							'size'   => 'full',
+							'reason' => 'size_limit',
+						);
+					}
+				}
+			}
+		}
+
+		return $skipped;
+	}
+
+	/**
+	 * Check whether to show warning or not for Pro users, if they don't have a valid install
+	 *
+	 * @return bool
+	 */
+	public function show_warning() {
+		// If it's a free setup, Go back right away!
+		if ( ! WP_Smush::is_pro() ) {
+			return false;
+		}
+
+		// Return. If we don't have any headers.
+		if ( ! isset( $this->api_headers ) ) {
+			return false;
+		}
+
+		// Show warning, if function says it's premium and api says not premium.
+		if ( isset( $this->api_headers['is_premium'] ) && ! intval( $this->api_headers['is_premium'] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the HTML for progress bar
+	 *
+	 * @return string
+	 */
+	public function progress_bar() {
+		return '<span class="spinner wp-smush-progress"></span>';
+	}
+
+	/**
+	 * Print the column html.
+	 *
+	 * @param string  $id           Media id.
+	 * @param string  $html         Status text.
+	 * @param string  $button_txt   Button label.
+	 * @param boolean $show_button  Whether to shoe the button.
+	 * @param bool    $smushed      Whether image is smushed or not.
+	 * @param bool    $echo         If true, it directly outputs the HTML.
+	 * @param bool    $wrapper      Whether to return the button with wrapper div or not.
+	 *
+	 * @return string|void
+	 */
+	private function column_html( $id, $html = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
+		$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png', 'image/gif' );
+
+		// Don't proceed if attachment is not image, or if image is not a jpg, png or gif.
+		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
+			$status_txt = __( 'Not processed', 'wp-smushit' );
+			if ( $echo ) {
+				echo $status_txt;
+				return;
+			}
+
+			return $status_txt;
+		}
+
+		// If we aren't showing the button.
+		if ( ! $show_button ) {
+			if ( $echo ) {
+				echo $html;
+				return;
+			}
+
+			$class = $smushed ? ' smushed' : ' currently-smushing';
+
+			return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
+		}
+
+		$mode_class = ! empty( $_POST['mode'] ) && 'grid' === $_POST['mode'] ? ' button-primary' : '';
+		if ( ! $echo ) {
+			$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button button-primary wp-smush-send';
+			$html        .= '
+			<button  class="' . $button_class . '" data-id="' . $id . '">
+                ' . $button_txt . '
+			</button>';
+			if ( ! $smushed ) {
+				$class = ' unsmushed';
+			} else {
+				$class = ' smushed';
+			}
+
+			$html .= $this->progress_bar();
+			$html  = $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
+
+			return $html;
+		}
+
+		$html .= '<button class="button button-primary wp-smush-send' . $mode_class . '" data-id="' . $id . '">
+			' . $button_txt . '
+		</button>';
+		$html  = $html . $this->progress_bar();
+		echo $html;
+	}
+
+	/**
+	 * Add/Remove image id from Super Smushed images count.
+	 *
+	 * @param int    $id       Image id.
+	 * @param string $op_type  Add/remove, whether to add the image id or remove it from the list.
+	 * @param string $key      Options key.
 	 *
 	 * @return bool Whether the Super Smushed option was update or not
 	 */
-	function update_super_smush_count( $id, $op_type = 'add', $key = 'wp-smush-super_smushed' ) {
-
-		// Get the existing count
+	public function update_super_smush_count( $id, $op_type = 'add', $key = 'wp-smush-super_smushed' ) {
+		// Get the existing count.
 		$super_smushed = get_option( $key, false );
 
-		// Initialize if it doesn't exists
+		// Initialize if it doesn't exists.
 		if ( ! $super_smushed || empty( $super_smushed['ids'] ) ) {
 			$super_smushed = array(
 				'ids' => array(),
 			);
 		}
 
-		// Insert the id, if not in there already
-		if ( 'add' == $op_type && ! in_array( $id, $super_smushed['ids'] ) ) {
-
+		// Insert the id, if not in there already.
+		if ( 'add' === $op_type && ! in_array( $id, $super_smushed['ids'] ) ) {
 			$super_smushed['ids'][] = $id;
-
-		} elseif ( 'remove' == $op_type && false !== ( $k = array_search( $id, $super_smushed['ids'] ) ) ) {
-
-			// Else remove the id from the list
+		} elseif ( 'remove' === $op_type && false !== ( $k = array_search( $id, $super_smushed['ids'] ) ) ) {
+			// Else remove the id from the list.
 			unset( $super_smushed['ids'][ $k ] );
 
-			// Reset all the indexes
+			// Reset all the indexes.
 			$super_smushed['ids'] = array_values( $super_smushed['ids'] );
-
 		}
 
-		// Add the timestamp
+		// Add the timestamp.
 		$super_smushed['timestamp'] = current_time( 'timestamp' );
 
 		update_option( $key, $super_smushed, false );
 
-		// Update to database
+		// Update to database.
 		return true;
 	}
 
 	/**
 	 * Checks if the image compression is lossy, stores the image id in options table
 	 *
-	 * @param int    $id Image Id
-	 *
-	 * @param array  $stats Compression Stats
-	 *
-	 * @param string $key Meta Key for storing the Super Smushed ids (Optional for Media Library)
-	 *                    Need To be specified for NextGen
+	 * @param int    $id     Image Id.
+	 * @param array  $stats  Compression Stats.
+	 * @param string $key    Meta Key for storing the Super Smushed ids (Optional for Media Library).
+	 *                       Need To be specified for NextGen.
 	 *
 	 * @return bool
 	 */
-	function update_lists( $id, $stats, $key = '' ) {
-		// If Stats are empty or the image id is not provided, return
+	public function update_lists( $id, $stats, $key = '' ) {
+		// If Stats are empty or the image id is not provided, return.
 		if ( empty( $stats ) || empty( $id ) || empty( $stats['stats'] ) ) {
 			return false;
 		}
 
-		// Update Super Smush count
+		// Update Super Smush count.
 		if ( isset( $stats['stats']['lossy'] ) && 1 == $stats['stats']['lossy'] ) {
 			if ( empty( $key ) ) {
 				update_post_meta( $id, 'wp-smush-lossy', 1 );
@@ -214,19 +837,50 @@ class WP_Smushit {
 			}
 		}
 
-		// Check and update re-smush list for media gallery
+		// Check and update re-smush list for media gallery.
 		if ( ! empty( $this->resmush_ids ) && in_array( $id, $this->resmush_ids ) ) {
 			$this->update_resmush_list( $id );
 		}
 	}
 
 	/**
-	 * Allows to bulk restore the images, if there is any backup for them
+	 * Remove the given attachment id from resmush list and updates it to db
+	 *
+	 * @param string $attachment_id  Attachment ID.
+	 * @param string $mkey           Option key.
 	 */
-	function bulk_restore() {
-		$smushed_attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $wpsmush_db->smushed_count( true );
+	public function update_resmush_list( $attachment_id, $mkey = 'wp-smush-resmush-list' ) {
+		$resmush_list = get_option( $mkey );
+
+		// If there are any items in the resmush list, Unset the Key.
+		if ( ! empty( $resmush_list ) && count( $resmush_list ) > 0 ) {
+			$key = array_search( $attachment_id, $resmush_list );
+			if ( $resmush_list ) {
+				unset( $resmush_list[ $key ] );
+			}
+			$resmush_list = array_values( $resmush_list );
+		}
+
+		// If Resmush List is empty.
+		if ( empty( $resmush_list ) || 0 === count( $resmush_list ) ) {
+			// Delete resmush list.
+			delete_option( $mkey );
+		} else {
+			update_option( $mkey, $resmush_list, false );
+		}
+	}
+
+	/**
+	 * Allows to bulk restore the images, if there is any backup for them
+	 *
+	 * Not used anywhere.
+	 */
+	private function bulk_restore() {
+		$modules = WP_Smush::get_instance()->core()->mod;
+
+		$smushed_attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $modules->db->smushed_count( true );
 		foreach ( $smushed_attachments as $attachment ) {
-			WP_Smush::get_instance()->core()->backup->restore_image( $attachment->attachment_id, false );
+			$modules->backup->restore_image( $attachment->attachment_id, false );
 		}
 	}
 
@@ -321,26 +975,6 @@ class WP_Smushit {
 	}
 
 	/**
-	 * Prints the Membership Validation issue notice
-	 */
-	public function media_library_membership_notice() {
-		// No need to print it for free version.
-		if ( ! WP_Smush::is_pro() ) {
-			return;
-		}
-
-		// Show it on Media Library page only.
-		$screen    = get_current_screen();
-		$screen_id = ! empty( $screen ) ? $screen->id : '';
-		// Do not show notice anywhere else
-		if ( empty( $screen ) || 'upload' != $screen_id ) {
-			return;
-		}
-
-		echo $wpsmush_bulkui->get_user_validation_message( false );
-	}
-
-	/**
 	 * Send smush status for attachment
 	 *
 	 * @param $response
@@ -406,40 +1040,6 @@ class WP_Smushit {
 		if ( is_array( $image_sizes ) && ! in_array( $size, $image_sizes ) ) {
 			return true;
 		}
-	}
-
-	/**
-	 * Initialise the setting variables
-	 */
-	public function initialise() {
-		// Check if lossy enabled.
-		$this->lossy_enabled = WP_Smush::is_pro() && WP_Smush_Settings::$settings['lossy'];
-
-		// Check if Smush original enabled.
-		$this->smush_original = WP_Smush::is_pro() && WP_Smush_Settings::$settings['original'];
-
-		// Check whether to keep EXIF data or not.
-		$this->keep_exif = empty( WP_Smush_Settings::$settings['strip_exif'] );
-	}
-
-	/**
-	 * Enqueue scripts and initialize variables.
-	 */
-	function admin_init() {
-		// Handle notice dismiss.
-		$this->dismiss_smush_upgrade();
-
-		// Perform migration if required.
-		$this->migrate();
-
-		// Initialize variables.
-		$this->initialise();
-
-		// Localize version, update.
-		$this->getOptions();
-
-		// Load integrations.
-		$this->load_integrations();
 	}
 
 	/**
@@ -632,7 +1232,7 @@ class WP_Smushit {
 
 			foreach ( $meta['sizes'] as $size_key => $size_data ) {
 				// Check if registered size is supposed to be Smushed or not.
-				if ( 'full' !== $size_key && WP_Smush::get_instance()->core()->smush->skip_image_size( $size_key ) ) {
+				if ( 'full' !== $size_key && WP_Smush::get_instance()->core()->mod->smush->skip_image_size( $size_key ) ) {
 					continue;
 				}
 
@@ -861,8 +1461,8 @@ class WP_Smushit {
 
 		// While uploading from Mobile App or other sources, admin_init action may not fire.
 		// So we need to manually initialize those.
-		$this->initialise();
-		WP_Smush::get_instance()->core()->resize->initialize( true );
+		WP_Smush::get_instance()->core()->initialise();
+		WP_Smush::get_instance()->core()->mod->resize->initialize( true );
 
 		// Check if auto is enabled.
 		$auto_smush = self::is_auto_smush_enabled();
@@ -871,15 +1471,15 @@ class WP_Smushit {
 		$attachment_file_path = WP_Smush_Helper::get_attached_file( $ID );
 
 		// Take backup.
-		WP_Smush::get_instance()->core()->backup->create_backup( $attachment_file_path, '', $ID );
+		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $ID );
 
 		// Optionally resize images.
-		$meta = WP_Smush::get_instance()->core()->resize->auto_resize( $ID, $meta );
+		$meta = WP_Smush::get_instance()->core()->mod->resize->auto_resize( $ID, $meta );
 
 		// Auto Smush the new image.
 		if ( $auto_smush ) {
 			// Optionally convert PNGs to JPG.
-			$meta = WP_Smush::get_instance()->core()->png2jpg->png_to_jpg( $ID, $meta );
+			$meta = WP_Smush::get_instance()->core()->mod->png2jpg->png_to_jpg( $ID, $meta );
 
 			/**
 			 * Fix for Hostgator.
@@ -941,7 +1541,7 @@ class WP_Smushit {
 		do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
 
 		// Take backup.
-		WP_Smush::get_instance()->core()->backup->create_backup( $attachment_file_path, '', $attachment_id );
+		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 		// Get the image metadata from $_POST.
 		$original_meta = ! empty( $_POST['metadata'] ) ? WP_Smush_Helper::format_meta_from_post( $_POST['metadata'] ) : '';
@@ -952,7 +1552,7 @@ class WP_Smushit {
 		$updated_meta = $this->resize_image( $attachment_id, $original_meta );
 
 		// Convert PNGs to JPG.
-		$updated_meta = WP_Smush::get_instance()->core()->png2jpg->png_to_jpg( $attachment_id, $updated_meta );
+		$updated_meta = WP_Smush::get_instance()->core()->mod->png2jpg->png_to_jpg( $attachment_id, $updated_meta );
 
 		$original_meta = ! empty( $updated_meta ) ? $updated_meta : $original_meta;
 
@@ -982,7 +1582,7 @@ class WP_Smushit {
 			);
 		}
 
-		WP_Smush_Core::update_resmush_list( $attachment_id );
+		$this->update_resmush_list( $attachment_id );
 		if ( $return ) {
 			return $status;
 		}
@@ -1106,15 +1706,7 @@ class WP_Smushit {
 		return $data;
 	}
 
-	/**
-	 * Print column header for Smush results in the media library using
-	 * the `manage_media_columns` hook.
-	 */
-	function columns( $defaults ) {
-		$defaults['smushit'] = 'Smush';
 
-		return $defaults;
-	}
 
 	/**
 	 * Return the filesize in a humanly readable format.
@@ -1130,15 +1722,7 @@ class WP_Smushit {
 		return round( $bytes, $precision ) . $units[ $pow ];
 	}
 
-	/**
-	 * Print column data for Smush results in the media library using
-	 * the `manage_media_custom_column` hook.
-	 */
-	function custom_column( $column_name, $id ) {
-		if ( 'smushit' == $column_name ) {
-			$this->set_status( $id );
-		}
-	}
+
 
 	/**
 	 * Returns api key.
@@ -1172,294 +1756,6 @@ class WP_Smushit {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Set send button status
-	 *
-	 * @param $id
-	 * @param bool $echo
-	 * @param bool $text_only Returns the stats text instead of button
-	 * @param bool $wrapper required for `column_html`, to include the wrapper div or not
-	 *
-	 * @return string|void
-	 */
-	public function set_status( $id, $echo = true, $text_only = false, $wrapper = true ) {
-		$status_txt  = $button_txt = $stats = $links = '';
-		$show_button = $show_resmush = false;
-
-		$links = '';
-
-		// If variables are not initialized properly, initialize it.
-		if ( ! has_action( 'admin_init', array( $this, 'admin_init' ) ) ) {
-			$this->initialise();
-		}
-
-		$wp_smush_data      = get_post_meta( $id, $this->smushed_meta_key, true );
-		$wp_resize_savings  = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
-		$conversion_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
-
-		$combined_stats = $this->combined_stats( $wp_smush_data, $wp_resize_savings );
-
-		$combined_stats = $this->combine_conversion_stats( $combined_stats, $conversion_savings );
-
-		// Remove Smush s3 hook, as it downloads the file again.
-		if ( class_exists( 'WP_Smush_S3_Compat' ) ) {
-			$s3_compat = new WP_Smush_S3_Compat();
-			remove_filter( 'as3cf_get_attached_file', array( $s3_compat, 'smush_download_file' ), 11, 4 );
-		}
-		$attachment_data = wp_get_attachment_metadata( $id );
-
-		// If the image is smushed.
-		if ( ! empty( $wp_smush_data ) ) {
-
-			$image_count    = count( $wp_smush_data['sizes'] );
-			$bytes          = isset( $combined_stats['stats']['bytes'] ) ? $combined_stats['stats']['bytes'] : 0;
-			$bytes_readable = ! empty( $bytes ) ? size_format( $bytes, 1 ) : '';
-			$percent        = isset( $combined_stats['stats']['percent'] ) ? $combined_stats['stats']['percent'] : 0;
-			$percent        = $percent < 0 ? 0 : $percent;
-
-			// Show resmush link, if the settings were changed.
-			$show_resmush = $this->show_resmush( $id, $wp_smush_data );
-
-			if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
-				$status_txt = __( 'Already Optimized', 'wp-smushit' );
-				if ( $show_resmush ) {
-					$links .= $this->get_resmsuh_link( $id );
-				}
-				$show_button = false;
-			} else {
-				if ( $bytes == 0 || $percent == 0 ) {
-					$status_txt = __( 'Already Optimized', 'wp-smushit' );
-
-					if ( $show_resmush ) {
-						$links .= $this->get_resmsuh_link( $id );
-					}
-				} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
-					$status_txt = $image_count > 1 ? sprintf( __( '%d images reduced ', 'wp-smushit' ), $image_count ) : __( 'Reduced ', 'wp-smushit' );
-
-					$stats_percent = number_format_i18n( $percent, 2, '.', '' );
-					$stats_percent = $stats_percent > 0 ? sprintf( '(  %01.1f%% )', $stats_percent ) : '';
-					$status_txt   .= sprintf( __( 'by %1$s %2$s', 'wp-smushit' ), $bytes_readable, $stats_percent );
-
-					$file_path = get_attached_file( $id );
-					$size      = file_exists( $file_path ) ? filesize( $file_path ) : 0;
-					if ( $size > 0 ) {
-						$update_size = size_format( $size, 0 ); // Used in js to update image stat.
-						$size        = size_format( $size, 1 );
-						$image_size  = sprintf( __( '<br /> Image Size: %s', 'wp-smushit' ), $size );
-						$status_txt .= $image_size;
-					}
-
-					$show_resmush = $this->show_resmush( $id, $wp_smush_data );
-
-					if ( $show_resmush ) {
-						$links .= $this->get_resmsuh_link( $id );
-					}
-
-					// Restore Image: Check if we need to show the restore image option.
-					$show_restore = $this->show_restore_option( $id, $attachment_data );
-
-					if ( $show_restore ) {
-						$links .= $this->get_restore_link( $id );
-					}
-
-					// Detailed Stats: Show detailed stats if available.
-					if ( ! empty( $wp_smush_data['sizes'] ) ) {
-
-						// Detailed Stats Link.
-						$links .= sprintf(
-							'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-constrained button" data-tooltip="%s">%s</a>',
-							esc_html__( 'Detailed stats for all the image sizes', 'wp-smushit' ),
-							esc_html__( 'View Stats', 'wp-smushit' )
-						);
-
-						// Stats.
-						$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
-
-						if ( ! $text_only ) {
-							$links .= $stats;
-						}
-					}
-				}
-			}
-			// Wrap links if not empty.
-			$links = ! empty( $links ) ? "<div class='sui-smush-media smush-status-links'>" . $links . '</div>' : '';
-
-			/** Super Smush Button  */
-			// IF current compression is lossy.
-			if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
-				$lossy    = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
-				$is_lossy = $lossy == 1 ? true : false;
-			}
-
-			// Check image type.
-			$image_type = get_post_mime_type( $id );
-
-			// Check if premium user, compression was lossless, and lossy compression is enabled.
-			// If we are displaying the resmush option already, no need to show the Super Smush button.
-			if ( ! $show_resmush && ! $is_lossy && $this->lossy_enabled && $image_type != 'image/gif' ) {
-				// the button text
-				$button_txt  = __( 'Super-Smush', 'wp-smushit' );
-				$show_button = true;
-			}
-		} elseif ( get_option( 'smush-in-progress-' . $id, false ) ) {
-			// The status.
-			$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
-
-			// Set WP Smush data to true in order to show the text.
-			$wp_smush_data = true;
-
-			// We need to show the smush button.
-			$show_button = false;
-
-			// The button text.
-			$button_txt = '';
-		} else {
-
-			// Show status text
-			$wp_smush_data = true;
-
-			// The status.
-			$status_txt = __( 'Not processed', 'wp-smushit' );
-
-			// We need to show the smush button.
-			$show_button = true;
-
-			// The button text.
-			$button_txt = __( 'Smush', 'wp-smushit' );
-		}
-
-		$class      = $wp_smush_data ? '' : ' hidden';
-		$status_txt = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
-
-		$status_txt .= $links;
-
-		if ( $text_only ) {
-			// For ajax response.
-			return array(
-				'status'       => $status_txt,
-				'stats'        => $stats,
-				'show_warning' => intval( $this->show_warning() ),
-				'new_size'     => isset( $update_size ) ? $update_size : 0,
-			);
-		}
-
-		// If we are not showing smush button, append progree bar, else it is already there.
-		if ( ! $show_button ) {
-			$status_txt .= $this->progress_bar();
-		}
-
-		$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $wp_smush_data, $echo, $wrapper );
-		if ( ! $echo ) {
-			return $text;
-		}
-	}
-
-	/**
-	 * Print the column html
-	 *
-	 * @param string  $id Media id
-	 * @param string  $status_txt Status text
-	 * @param string  $button_txt Button label
-	 * @param boolean $show_button Whether to shoe the button
-	 * @param bool    $smushed Whether image is smushed or not
-	 * @param bool    $echo If true, it directly outputs the HTML
-	 * @param bool    $wrapper Whether to return the button with wrapper div or not
-	 *
-	 * @return string|void
-	 */
-	function column_html( $id, $html = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
-		$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png', 'image/gif' );
-
-		// don't proceed if attachment is not image, or if image is not a jpg, png or gif
-		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
-			$status_txt = __( 'Not processed', 'wp-smushit' );
-			if ( $echo ) {
-				echo $status_txt;
-
-				return;
-			} else {
-				return $status_txt;
-			}
-		}
-
-		// if we aren't showing the button
-		if ( ! $show_button ) {
-			if ( $echo ) {
-				echo $html;
-
-				return;
-			} else {
-				if ( ! $smushed ) {
-					$class = ' currently-smushing';
-				} else {
-					$class = ' smushed';
-				}
-
-				return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
-			}
-		}
-		$mode_class = ! empty( $_POST['mode'] ) && 'grid' == $_POST['mode'] ? ' button-primary' : '';
-		if ( ! $echo ) {
-			$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button button-primary wp-smush-send';
-			$html        .= '
-			<button  class="' . $button_class . '" data-id="' . $id . '">
-                ' . $button_txt . '
-			</button>';
-			if ( ! $smushed ) {
-				$class = ' unsmushed';
-			} else {
-				$class = ' smushed';
-			}
-
-			$html .= $this->progress_bar();
-			$html  = $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
-
-			return $html;
-		} else {
-			$html .= '<button class="button button-primary wp-smush-send' . $mode_class . '" data-id="' . $id . '">
-                ' . $button_txt . '
-			</button>';
-			$html  = $html . $this->progress_bar();
-			echo $html;
-		}
-	}
-
-	/**
-	 * Migrates smushit api message to the latest structure
-	 *
-	 * @return void
-	 */
-	function migrate() {
-		if ( ! version_compare( WP_SMUSH_VERSION, '1.7.1', 'lte' ) ) {
-			return;
-		}
-
-		$migrated_version = get_site_option( $this->migrated_version_key );
-
-		if ( $migrated_version === WP_SMUSH_VERSION ) {
-			return;
-		}
-
-		global $wpdb;
-
-		$q       = $wpdb->prepare( "SELECT * FROM {$wpdb->postmeta} WHERE meta_key=%s AND meta_value LIKE %s", '_wp_attachment_metadata', '%wp_smushit%' );
-		$results = $wpdb->get_results( $q );
-
-		if ( count( $results ) < 1 ) {
-			return;
-		}
-
-		$migrator = new WP_Smush_Migrate();
-		foreach ( $results as $attachment_meta ) {
-			$migrated_message = $migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
-			if ( $migrated_message !== array() ) {
-				update_post_meta( $attachment_meta->post_id, $this->smushed_meta_key, $migrated_message );
-			}
-		}
-
-		update_site_option( $this->migrated_version_key, WP_SMUSH_VERSION );
 	}
 
 	/**
@@ -1570,71 +1866,6 @@ class WP_Smushit {
 	}
 
 	/**
-	 * Return a list of images not smushed and reason
-	 *
-	 * @param $image_id
-	 * @param $size_stats
-	 * @param $attachment_metadata
-	 *
-	 * @return array
-	 */
-	function get_skipped_images( $image_id, $size_stats, $attachment_metadata ) {
-		$skipped = array();
-
-		// Get a list of all the sizes, Show skipped images
-		$media_size = get_intermediate_image_sizes();
-
-		// Full size
-		$full_image = get_attached_file( $image_id );
-
-		// If full image was not smushed, reason 1. Large Size logic, 2. Free and greater than 1Mb
-		if ( ! array_key_exists( 'full', $size_stats ) ) {
-			// For free version, Check the image size
-			if ( ! WP_Smush::is_pro() ) {
-				// For free version, check if full size is greater than 1 Mb, show the skipped status
-				$file_size = file_exists( $full_image ) ? filesize( $full_image ) : '';
-				if ( ! empty( $file_size ) && ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
-					$skipped[] = array(
-						'size'   => 'full',
-						'reason' => 'size_limit',
-					);
-				} else {
-					$skipped[] = array(
-						'size'   => 'full',
-						'reason' => 'large_size',
-					);
-				}
-			} else {
-				// Paid version, Check if we have large size
-				if ( array_key_exists( 'large', $size_stats ) ) {
-					$skipped[] = array(
-						'size'   => 'full',
-						'reason' => 'large_size',
-					);
-				}
-			}
-		}
-		// For other sizes, check if the image was generated and not available in stats
-		if ( is_array( $media_size ) ) {
-			foreach ( $media_size as $size ) {
-				if ( array_key_exists( $size, $attachment_metadata['sizes'] ) && ! array_key_exists( $size, $size_stats ) && ! empty( $size['file'] ) ) {
-					// Image Path
-					$img_path   = path_join( dirname( $full_image ), $size['file'] );
-					$image_size = file_exists( $img_path ) ? filesize( $img_path ) : '';
-					if ( ! empty( $image_size ) && ( $image_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
-						$skipped[] = array(
-							'size'   => 'full',
-							'reason' => 'size_limit',
-						);
-					}
-				}
-			}
-		}
-
-		return $skipped;
-	}
-
-	/**
 	 * Skip messages respective to their ids
 	 *
 	 * @param $msg_id
@@ -1655,67 +1886,6 @@ class WP_Smushit {
 	}
 
 	/**
-	 * Shows the image size and the compression for each of them
-	 *
-	 * @param $image_id
-	 * @param $wp_smush_data
-	 *
-	 * @return string
-	 */
-	function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata ) {
-		$stats      = '<div id="smush-stats-' . $image_id . '" class="sui-smush-media smush-stats-wrapper hidden">
-			<table class="wp-smush-stats-holder">
-				<thead>
-					<tr>
-						<th class="smush-stats-header">' . esc_html__( 'Image size', 'wp-smushit' ) . '</th>
-						<th class="smush-stats-header">' . esc_html__( 'Savings', 'wp-smushit' ) . '</th>
-					</tr>
-				</thead>
-				<tbody>';
-		$size_stats = $wp_smush_data['sizes'];
-
-		// Reorder Sizes as per the maximum savings.
-		uasort( $size_stats, array( $this, 'cmp' ) );
-
-		if ( ! empty( $attachment_metadata['sizes'] ) ) {
-			// Get skipped images
-			$skipped = $this->get_skipped_images( $image_id, $size_stats, $attachment_metadata );
-
-			if ( ! empty( $skipped ) ) {
-				foreach ( $skipped as $img_data ) {
-					$skip_class = $img_data['reason'] == 'size_limit' ? ' error' : '';
-					$stats     .= '<tr>
-				<td>' . strtoupper( $img_data['size'] ) . '</td>
-				<td class="smush-skipped' . $skip_class . '">' . $this->skip_reason( $img_data['reason'] ) . '</td>
-			</tr>';
-				}
-			}
-		}
-		// Show Sizes and their compression
-		foreach ( $size_stats as $size_key => $size_value ) {
-			$dimensions = '';
-			// Get the dimensions for the image size if available
-			if ( ! empty( $wpsmushit_admin->image_sizes ) && ! empty( $wpsmushit_admin->image_sizes[ $size_key ] ) ) {
-				$dimensions = $wpsmushit_admin->image_sizes[ $size_key ]['width'] . 'x' . $wpsmushit_admin->image_sizes[ $size_key ]['height'];
-			}
-			$dimensions = ! empty( $dimensions ) ? sprintf( ' <br /> (%s)', $dimensions ) : '';
-			if ( $size_value->bytes > 0 ) {
-				$percent = round( $size_value->percent, 1 );
-				$percent = $percent > 0 ? ' ( ' . $percent . '% )' : '';
-				$stats  .= '<tr>
-				<td>' . strtoupper( $size_key ) . $dimensions . '</td>
-				<td>' . size_format( $size_value->bytes, 1 ) . $percent . '</td>
-			</tr>';
-			}
-		}
-		$stats .= '</tbody>
-			</table>
-		</div>';
-
-		return $stats;
-	}
-
-	/**
 	 * Compare Values
 	 *
 	 * @param $a
@@ -1727,212 +1897,7 @@ class WP_Smushit {
 		return $a->bytes < $b->bytes;
 	}
 
-	/**
-	 * Load Plugin Modules
-	 */
-	function load_libs() {
-		// Load Nextgen lib, and initialize wp smush async class
-		//$this->load_nextgen();
-		$this->load_gutenberg();
-	}
 
-	/**
-	 * Check if NextGen is active or not
-	 * Include and instantiate classes
-	 */
-	function load_nextgen() {
-		// Check if integration is enabled or not.
-		if ( ! empty( WP_Smush_Settings::$settings ) ) {
-			$opt_nextgen_val = WP_Smush_Settings::$settings['nextgen'];
-		} else {
-			// Smush NextGen key
-			$opt_nextgen     = WP_SMUSH_PREFIX . 'nextgen';
-			$opt_nextgen_val = WP_Smush_Settings::get_setting( $opt_nextgen, false );
-		}
-
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-nextgen.php';
-		// Do not continue if integration not enabled or not a pro user.
-		if ( ! $opt_nextgen_val || ! WP_Smush::is_pro() ) {
-			return;
-		}
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-admin.php';
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-stats.php';
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-bulk.php';
-
-		global $wpsmushnextgen, $wpsmushnextgenadmin, $wpsmushnextgenstats;
-		// Initialize Nextgen support
-		if ( ! is_object( $wpsmushnextgen ) ) {
-			$wpsmushnextgen = new WpSmushNextGen();
-		}
-		$wpsmushnextgenstats = new WpSmushNextGenStats();
-		$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
-		new WPSmushNextGenBulk();
-	}
-
-	/**
-	 * Load Gutenberg integration.
-	 *
-	 * @since 2.8.1
-	 */
-	private function load_gutenberg() {
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-gutenberg.php';
-
-		new WP_Smush_Gutenberg();
-	}
-
-	/**
-	 * Load integrations class.
-	 *
-	 * @since 2.8.0
-	 */
-	private function load_integrations() {
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-common.php';
-
-		new WP_Smush_Common();
-	}
-
-	/**
-	 * Add the Smushit Column to sortable list
-	 *
-	 * @param $columns
-	 *
-	 * @return mixed
-	 */
-	function sortable_column( $columns ) {
-		$columns['smushit'] = 'smushit';
-
-		return $columns;
-	}
-
-	/**
-	 * Orderby query for smush columns
-	 */
-	function smushit_orderby( $query ) {
-		global $current_screen;
-
-		// Filter only media screen
-		if ( ! is_admin() || ( ! empty( $current_screen ) && $current_screen->base != 'upload' ) ) {
-			return;
-		}
-
-		$orderby = $query->get( 'orderby' );
-
-		if ( isset( $orderby ) && 'smushit' == $orderby ) {
-			$query->set(
-				'meta_query', array(
-					'relation' => 'OR',
-					array(
-						'key'     => $this->smushed_meta_key,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => $this->smushed_meta_key,
-						'compare' => 'NOT EXISTS',
-					),
-				)
-			);
-			$query->set( 'orderby', 'meta_value_num' );
-		}
-
-		return $query;
-	}
-
-	/**
-	 * If any of the image size have a backup file, show the restore option
-	 *
-	 * @param $attachment_data
-	 *
-	 * @return bool
-	 */
-	function show_restore_option( $image_id, $attachment_data ) {
-		// No Attachment data, don't go ahead
-		if ( empty( $attachment_data ) ) {
-			return false;
-		}
-
-		// Get the image path for all sizes
-		$file    = get_attached_file( $image_id );
-		$uf_file = get_attached_file( $image_id, true );
-
-		// Get stored backup path, if any
-		$backup_sizes = get_post_meta( $image_id, '_wp_attachment_backup_sizes', true );
-
-		// Check if we've a backup path
-		if ( ! empty( $backup_sizes ) && ( ! empty( $backup_sizes['smush-full'] ) || ! empty( $backup_sizes['smush_png_path'] ) ) ) {
-			// Check for PNG backup
-			$backup = ! empty( $backup_sizes['smush_png_path'] ) ? $backup_sizes['smush_png_path'] : '';
-
-			// Check for original full size image backup
-			$backup = empty( $backup ) && ! empty( $backup_sizes['smush-full'] ) ? $backup_sizes['smush-full'] : $backup;
-
-			$backup = ! empty( $backup['file'] ) ? $backup['file'] : '';
-		}
-
-		// If we still don't have a backup path, use traditional method to get it
-		if ( empty( $backup ) ) {
-			// Check backup for Full size
-			$backup = $wpsmushit_admin->get_image_backup_path( $file );
-		} else {
-			// Get the full path for file backup
-			$backup = str_replace( wp_basename( $file ), wp_basename( $backup ), $file );
-		}
-
-		$file_exists = apply_filters( 'smush_backup_exists', file_exists( $backup ), $image_id, $backup );
-
-		if ( $file_exists ) {
-			return true;
-		}
-
-		// Additional Backup Check for JPEGs converted from PNG
-		$pngjpg_savings = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
-		if ( ! empty( $pngjpg_savings ) ) {
-
-			// Get the original File path and check if it exists
-			$backup = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
-			$backup = $this->original_file( $backup );
-
-			if ( ! empty( $backup ) && is_file( $backup ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Returns a restore link for given image id
-	 *
-	 * @param $image_id
-	 *
-	 * @return bool|string
-	 */
-	function get_restore_link( $image_id, $type = 'wp' ) {
-		if ( empty( $image_id ) ) {
-			return false;
-		}
-
-		$class  = 'wp-smush-action wp-smush-title sui-tooltip';
-		$class .= 'wp' == $type ? ' wp-smush-restore button' : ' wp-smush-nextgen-restore';
-
-		$ajax_nonce = wp_create_nonce( 'wp-smush-restore-' . $image_id );
-
-		return sprintf( '<a href="#" data-tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( 'Restore original image.', 'wp-smushit' ), $image_id, $ajax_nonce, $class, esc_html__( 'Restore', 'wp-smushit' ) );
-	}
-
-	/**
-	 * Returns the HTML for progress bar
-	 *
-	 * @return string
-	 */
-	function progress_bar() {
-		return '<span class="spinner wp-smush-progress"></span>';
-	}
 
 	/**
 	 * If auto smush is set to true or not, default is true
@@ -1948,49 +1913,6 @@ class WP_Smushit {
 		}
 
 		return $auto_smush;
-	}
-
-	/**
-	 * Generates a Resmush link for a image
-	 *
-	 * @param $image_id
-	 *
-	 * @return bool|string
-	 */
-	function get_resmsuh_link( $image_id, $type = 'wp' ) {
-		if ( empty( $image_id ) ) {
-			return false;
-		}
-		$class  = 'wp-smush-action wp-smush-title sui-tooltip sui-tooltip-constrained';
-		$class .= 'wp' == $type ? ' wp-smush-resmush button' : ' wp-smush-nextgen-resmush';
-
-		$ajax_nonce = wp_create_nonce( 'wp-smush-resmush-' . $image_id );
-
-		return sprintf( '<a href="#" data-tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>', esc_html__( 'Smush image including original file.', 'wp-smushit' ), $image_id, $ajax_nonce, $class, esc_html__( 'Resmush', 'wp-smushit' ) );
-	}
-
-	/**
-	 * Returns the backup path for attachment
-	 *
-	 * @param $attachment_path
-	 *
-	 * @return bool|string
-	 */
-	public function get_image_backup_path( $attachment_path ) {
-		// If attachment id is not available, return false
-		if ( empty( $attachment_path ) ) {
-			return false;
-		}
-		$path = pathinfo( $attachment_path );
-
-		// If we don't have complete filename return false
-		if ( empty( $path['extension'] ) ) {
-			return false;
-		}
-
-		$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . '.bak.' . $path['extension'];
-
-		return $backup_name;
 	}
 
 	/**
@@ -2014,7 +1936,7 @@ class WP_Smushit {
 
 		// Check and Update resmush list
 		if ( $resmush_list = get_option( 'wp-smush-resmush-list' ) ) {
-			WP_Smush_Core::update_resmush_list( $image_id, 'wp-smush-resmush-list' );
+			$this->update_resmush_list( $image_id, 'wp-smush-resmush-list' );
 		}
 
 		/** Delete Backups  */
@@ -2022,24 +1944,7 @@ class WP_Smushit {
 		$this->delete_backup_files( $image_id );
 	}
 
-	/**
-	 * Return Global stats
-	 *
-	 * Stats sent
-	 *
-	 *  array( 'total_images','bytes', 'human', 'percent')
-	 *
-	 * @return array|bool|mixed
-	 */
-	function send_smush_stats() {
-		$stats = $wpsmushit_admin->global_stats();
 
-		$required_stats = array( 'total_images', 'bytes', 'human', 'percent' );
-
-		$stats = is_array( $stats ) ? array_intersect_key( $stats, array_flip( $required_stats ) ) : array();
-
-		return $stats;
-	}
 
 	/**
 	 * Smushes the upfront images and Updates the respective stats
@@ -2095,46 +2000,6 @@ class WP_Smushit {
 		update_post_meta( $attachment_id, 'upfront_used_image_sizes', $upfront_images );
 
 		return $stats;
-	}
-
-	/**
-	 * Checks the current settings and returns the value whether to enable or not the resmush option
-	 *
-	 * @param $id
-	 * @param $wp_smush_data
-	 *
-	 * @return bool
-	 */
-	function show_resmush( $id = '', $wp_smush_data ) {
-		// Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
-		// Or: If keep exif is unchecked and the smushed image have exif
-		// PNG To JPEG
-		if ( $this->smush_original ) {
-			// IF full image was not smushed
-			if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
-				return true;
-			}
-		}
-
-		// If image needs to be resized
-		if ( WP_Smush::get_instance()->core()->resize->should_resize( $id ) ) {
-			return true;
-		}
-
-		// EXIF Check
-		if ( ! $this->keep_exif ) {
-			// If Keep Exif was set to true initially, and since it is set to false now
-			if ( isset( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
-				return true;
-			}
-		}
-
-		// PNG to JPEG
-		if ( WP_Smush::get_instance()->core()->png2jpg->can_be_converted( $id ) ) {
-			return true;
-		}
-
-		return false;
 	}
 
 	/**
@@ -2224,149 +2089,6 @@ class WP_Smushit {
 	}
 
 	/**
-	 * Manually Dismiss Smush Upgrade notice
-	 */
-	function dismiss_smush_upgrade() {
-		if ( isset( $_GET['remove_smush_upgrade_notice'] ) && 1 == $_GET['remove_smush_upgrade_notice'] ) {
-			WP_Smush::get_instance()->admin()->ajax->dismiss_upgrade_notice( false );
-		}
-	}
-
-	/**
-	 * Iterate over all the size stats and calculate the total stats
-	 *
-	 * @param $stats
-	 *
-	 * @return mixed
-	 */
-	function total_compression( $stats ) {
-		$stats['stats']['size_before'] = $stats['stats']['size_after'] = $stats['stats']['time'] = 0;
-		foreach ( $stats['sizes'] as $size_stats ) {
-			$stats['stats']['size_before'] += ! empty( $size_stats->size_before ) ? $size_stats->size_before : 0;
-			$stats['stats']['size_after']  += ! empty( $size_stats->size_after ) ? $size_stats->size_after : 0;
-			$stats['stats']['time']        += ! empty( $size_stats->time ) ? $size_stats->time : 0;
-		}
-		$stats['stats']['bytes'] = ! empty( $stats['stats']['size_before'] ) && $stats['stats']['size_before'] > $stats['stats']['size_after'] ? $stats['stats']['size_before'] - $stats['stats']['size_after'] : 0;
-		if ( ! empty( $stats['stats']['bytes'] ) && ! empty( $stats['stats']['size_before'] ) ) {
-			$stats['stats']['percent'] = ( $stats['stats']['bytes'] / $stats['stats']['size_before'] ) * 100;
-		}
-
-		return $stats;
-	}
-
-	/**
-	 * Smush and Resizing Stats Combined together
-	 *
-	 * @param $smush_stats
-	 * @param $resize_savings
-	 *
-	 * @return array Array of all the stats
-	 */
-	function combined_stats( $smush_stats, $resize_savings ) {
-		if ( empty( $smush_stats ) || empty( $resize_savings ) ) {
-			return $smush_stats;
-		}
-
-		// Initialize key full if not there already
-		if ( ! isset( $smush_stats['sizes']['full'] ) ) {
-			$smush_stats['sizes']['full']              = new stdClass();
-			$smush_stats['sizes']['full']->bytes       = 0;
-			$smush_stats['sizes']['full']->size_before = 0;
-			$smush_stats['sizes']['full']->size_after  = 0;
-			$smush_stats['sizes']['full']->percent     = 0;
-		}
-
-		// Full Image
-		if ( ! empty( $smush_stats['sizes']['full'] ) ) {
-			$smush_stats['sizes']['full']->bytes       = ! empty( $resize_savings['bytes'] ) ? $smush_stats['sizes']['full']->bytes + $resize_savings['bytes'] : $smush_stats['sizes']['full']->bytes;
-			$smush_stats['sizes']['full']->size_before = ! empty( $resize_savings['size_before'] ) && ( $resize_savings['size_before'] > $smush_stats['sizes']['full']->size_before ) ? $resize_savings['size_before'] : $smush_stats['sizes']['full']->size_before;
-			$smush_stats['sizes']['full']->percent     = ! empty( $smush_stats['sizes']['full']->bytes ) && $smush_stats['sizes']['full']->size_before > 0 ? ( $smush_stats['sizes']['full']->bytes / $smush_stats['sizes']['full']->size_before ) * 100 : $smush_stats['sizes']['full']->percent;
-
-			$smush_stats['sizes']['full']->size_after = $smush_stats['sizes']['full']->size_before - $smush_stats['sizes']['full']->bytes;
-
-			$smush_stats['sizes']['full']->percent = round( $smush_stats['sizes']['full']->percent, 1 );
-		}
-
-		$smush_stats = $this->total_compression( $smush_stats );
-
-		return $smush_stats;
-	}
-
-	/**
-	 * Combine Savings from PNG to JPG conversion with smush stats
-	 *
-	 * @param array $stats               Savings from Smushing the image.
-	 * @param array $conversion_savings  Savings from converting the PNG to JPG.
-	 *
-	 * @return Object|array Total Savings
-	 */
-	function combine_conversion_stats( $stats, $conversion_savings ) {
-		if ( empty( $stats ) || empty( $conversion_savings ) ) {
-			return $stats;
-		}
-		foreach ( $conversion_savings as $size_k => $savings ) {
-
-			// Initialize Object for size
-			if ( empty( $stats['sizes'][ $size_k ] ) ) {
-				$stats['sizes'][ $size_k ]              = new stdClass();
-				$stats['sizes'][ $size_k ]->bytes       = 0;
-				$stats['sizes'][ $size_k ]->size_before = 0;
-				$stats['sizes'][ $size_k ]->size_after  = 0;
-				$stats['sizes'][ $size_k ]->percent     = 0;
-			}
-
-			if ( ! empty( $stats['sizes'][ $size_k ] ) && ! empty( $savings ) ) {
-				$stats['sizes'][ $size_k ]->bytes       = $stats['sizes'][ $size_k ]->bytes + $savings['bytes'];
-				$stats['sizes'][ $size_k ]->size_before = $stats['sizes'][ $size_k ]->size_before > $savings['size_before'] ? $stats['sizes'][ $size_k ]->size_before : $savings['size_before'];
-				$stats['sizes'][ $size_k ]->percent     = ! empty( $stats['sizes'][ $size_k ]->bytes ) && $stats['sizes'][ $size_k ]->size_before > 0 ? ( $stats['sizes'][ $size_k ]->bytes / $stats['sizes'][ $size_k ]->size_before ) * 100 : $stats['sizes'][ $size_k ]->percent;
-				$stats['sizes'][ $size_k ]->percent     = round( $stats['sizes'][ $size_k ]->percent, 1 );
-			}
-		}
-
-		$stats = $this->total_compression( $stats );
-
-		return $stats;
-	}
-
-	/**
-	 * Original File path
-	 *
-	 * @param string $original_file
-	 *
-	 * @return string File Path
-	 */
-	public function original_file( $original_file = '' ) {
-		$uploads     = wp_get_upload_dir();
-		$upload_path = $uploads['basedir'];
-
-		return path_join( $upload_path, $original_file );
-	}
-
-	/**
-	 * Check whether to show warning or not for Pro users, if they don't have a valid install
-	 *
-	 * @return bool
-	 */
-	public function show_warning() {
-		// If it's a free setup, Go back right away!
-		if ( ! WP_Smush::is_pro() ) {
-			return false;
-		}
-
-		// Return. If we don't have any headers
-		if ( ! isset( $this->api_headers ) ) {
-			return false;
-		}
-
-		// Show warning, if function says it's premium and api says not premium
-		if ( isset( $this->api_headers['is_premium'] ) && ! intval( $this->api_headers['is_premium'] ) ) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Perform the resize operation for the image
 	 *
 	 * @param $attachment_id
@@ -2380,7 +2102,7 @@ class WP_Smushit {
 			return $meta;
 		}
 
-		return WP_Smush::get_instance()->core()->resize->auto_resize( $attachment_id, $meta );
+		return WP_Smush::get_instance()->core()->mod->resize->auto_resize( $attachment_id, $meta );
 	}
 
 	/**
@@ -2551,118 +2273,10 @@ class WP_Smushit {
 		update_site_option( WP_SMUSH_PREFIX . 'api_message', $message );
 	}
 
-	/**
-	 * Store/Perform updates as per the plugin version
-	 *
-	 * @uses $wpsmush_helper, $wpdb, $wpsmush_dir
-	 *
-	 * @return array|mixed|null|void
-	 *
-	 * Source: Stackoverflow
-	 * https://wordpress.stackexchange.com/a/49797/32466
-	 */
-	public function getOptions() {
-		// already did the checks
-		if ( isset( $this->options ) ) {
-			return $this->options;
-		}
 
-		// first call, get the options
-		$options = get_option( self::OPTION_NAME );
 
-		// options exist
-		if ( $options !== false ) {
 
-			$new_version = version_compare( $options['version'], WP_SMUSH_VERSION, '!=' );
-			// $desync      = array_diff_key( $this->defaults, $options ) !== array_diff_key( $options, $this->defaults );
-			// update options if version changed
-			if ( $new_version ) {
 
-				$new_options = array();
 
-				// check for new options and set defaults if necessary
-				foreach ( $this->defaults as $option => $value ) {
-					$new_options[ $option ] = isset( $options[ $option ] ) ? $options[ $option ] : $value;
-				}
-
-				// update version info
-				$new_options['version'] = WP_SMUSH_VERSION;
-
-				update_option( self::OPTION_NAME, $new_options );
-				$this->options = $new_options;
-
-				// no update was required
-			} else {
-				$this->options = $options;
-			}
-
-			// new install (plugin was just activated)
-		} else {
-			// Store the version details
-			update_option( self::OPTION_NAME, $this->defaults );
-			$this->options = $this->defaults;
-		}
-
-		return $this->options;
-	}
-
-	/**
-	 * Add Smush Policy to "Privace Policy" page during creation.
-	 *
-	 * @since 2.3.0
-	 */
-	public function add_policy() {
-		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
-			return;
-		}
-
-		$content  = '<h3>' . __( 'Plugin: Smush', 'wp-smushit' ) . '</h3>';
-		$content .=
-			'<p>' . __( 'Note: Smush does not interact with end users on your website. The only input option Smush has is to a newsletter subscription for site admins only. If you would like to notify your users of this in your privacy policy, you can use the information below.', 'wp-smushit' ) . '</p>';
-		$content .=
-			'<p>' . __( 'Smush sends images to the WPMU DEV servers to optimize them for web use. This includes the transfer of EXIF data. The EXIF data will either be stripped or returned as it is. It is not stored on the WPMU DEV servers.', 'wp-smushit' ) . '</p>';
-		$content .=
-			'<p>' . sprintf(
-				__( "Smush uses the Stackpath Content Delivery Network (CDN). Stackpath may store web log information of site visitors, including IPs, UA, referrer, Location and ISP info of site visitors for 7 days. Files and images served by the CDN may be stored and served from countries other than your own. Stackpath's privacy policy can be found %1\$shere%2\$s.", 'wp-smushit' ),
-				'<a href="https://www.stackpath.com/legal/privacy-statement/" target="_blank">',
-				'</a>'
-			) . '</p>';
-
-		if ( strpos( WP_SMUSH_DIR, 'wp-smushit' ) !== false ) {
-			// Only for wordpress.org members
-			$content .=
-				'<p>' . __( 'Smush uses a third-party email service (Drip) to send informational emails to the site administrator. The administrator\'s email address is sent to Drip and a cookie is set by the service. Only administrator information is collected by Drip.', 'wp-smushit' ) . '</p>';
-		}
-
-		wp_add_privacy_policy_content(
-			__( 'WP Smush', 'wp-smushit' ),
-			wp_kses_post( wpautop( $content, false ) )
-		);
-	}
-
-	/**
-	 * Add our filter to the media query filter in Media Library.
-	 *
-	 * @since 2.9.0
-	 *
-	 * @see wp_ajax_query_attachments()
-	 *
-	 * @param array $query
-	 *
-	 * @return mixed
-	 */
-	public function filter_media_query( $query ) {
-		if ( isset( $_POST['query']['stats'] ) && 'null' === $_POST['query']['stats'] ) {
-			$query['meta_query'] = array(
-				array(
-					'key'     => 'wp-smush-ignore-bulk',
-					'value'   => 'true',
-					'compare' => 'EXISTS',
-				),
-			);
-		}
-
-		return $query;
-	}
 
 }

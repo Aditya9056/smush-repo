@@ -287,7 +287,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 					}
 
 					// Check if registered size is supposed to be converted or not.
-					if ( 'full' != $size && WP_Smush::get_instance()->core()->smush->skip_image_size( $size ) ) {
+					if ( 'full' != $size && WP_Smush::get_instance()->core()->mod->smush->skip_image_size( $size ) ) {
 						return false;
 					}
 
@@ -423,7 +423,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 		 * @return mixed Stats / Status / Error
 		 */
 		public function smush_image( $pid = '', $image = '', $echo = true, $is_bulk = false ) {
-			$wp_smush->initialise();
+			WP_Smush::get_instance()->core()->initialise();
 
 			// Get image, if we have image id.
 			if ( ! empty( $pid ) ) {
@@ -784,10 +784,10 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 			}
 
 			// Initialize resize class.
-			WP_Smush::get_instance()->core()->resize->initialize();
+			WP_Smush::get_instance()->core()->mod->resize->initialize();
 
 			// If resizing not enabled, or if both max width and height is set to 0, return.
-			if ( ! WP_Smush::get_instance()->core()->resize->resize_enabled || ( WP_Smush::get_instance()->core()->resize->max_w == 0 && WP_Smush::get_instance()->core()->resize->max_h == 0 ) ) {
+			if ( ! WP_Smush::get_instance()->core()->mod->resize->resize_enabled || ( WP_Smush::get_instance()->core()->mod->resize->max_w == 0 && WP_Smush::get_instance()->core()->mod->resize->max_h == 0 ) ) {
 				return $meta;
 			}
 
@@ -835,7 +835,7 @@ if ( ! class_exists( 'WpSmushNextGen' ) ) {
 
 			$original_file_size = filesize( $file_path );
 
-			$resized = WP_Smush::get_instance()->core()->resize->perform_resize( $file_path, $original_file_size, $attachment_id, '', false );
+			$resized = WP_Smush::get_instance()->core()->mod->resize->perform_resize( $file_path, $original_file_size, $attachment_id, '', false );
 
 			// If resize wasn't successful.
 			if ( ! $resized || $resized['filesize'] == $original_file_size ) {

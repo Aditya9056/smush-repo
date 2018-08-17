@@ -32,13 +32,6 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	 * Test bulk limit for free users.
 	 */
 	public function testBulkLimit() {
-		/**
-		 * WpSmushitAdmin global.
-		 *
-		 * @var WpSmushitAdmin $wpsmushit_admin
-		 */
-		global $wpsmushit_admin;
-
 		$i         = 0;
 		$condition = true;
 
@@ -49,7 +42,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 				$condition = false;
 			}
 
-			$this->assertEquals( $condition, $wpsmushit_admin->check_bulk_limit() );
+			$this->assertEquals( $condition, WP_Smush_Core::check_bulk_limit() );
 			$i++;
 		}
 	}

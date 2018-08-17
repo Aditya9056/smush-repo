@@ -17,41 +17,13 @@
  * @since 2.8.0
  */
 class WP_Smush_Rest {
-	/**
-	 * Class instance variable.
-	 *
-	 * @since 2.8.0
-	 * @var null|WP_Smush_Rest
-	 */
-	private static $_instance = null;
 
 	/**
 	 * WP_Smush_Rest constructor.
 	 */
-	private function __construct() {}
-
-	/**
-	 * Get class instance.
-	 *
-	 * @since 2.8.0
-	 *
-	 * @return null|WP_Smush_Rest
-	 */
-	public static function get_instance() {
-		if ( null !== self::$_instance ) {
-			return self::$_instance;
-		}
-
-		return new self();
-	}
-
-	/**
-	 * Register smush meta fields and callbacks for the image object in the
-	 * wp-json/wp/v2/media REST API endpoint.
-	 *
-	 * @since 2.8.0
-	 */
-	public function register_metas() {
+	public function __construct() {
+		// Register smush meta fields and callbacks for the image object in the
+		// wp-json/wp/v2/media REST API endpoint.
 		add_action( 'rest_api_init', array( $this, 'register_smush_meta' ) );
 	}
 
@@ -103,8 +75,8 @@ class WP_Smush_Rest {
 		$wp_resize_savings  = get_post_meta( $image['id'], WP_SMUSH_PREFIX . 'resize_savings', true );
 		$conversion_savings = get_post_meta( $image['id'], WP_SMUSH_PREFIX . 'pngjpg_savings', true );
 
-		$combined_stats = $wp_smush->combined_stats( $wp_smush_data, $wp_resize_savings );
-		$combined_stats = $wp_smush->combine_conversion_stats( $combined_stats, $conversion_savings );
+		$combined_stats = WP_Smush::get_instance()->core()->mod->smush->combined_stats( $wp_smush_data, $wp_resize_savings );
+		$combined_stats = WP_Smush::get_instance()->core()->mod->smush->combine_conversion_stats( $combined_stats, $conversion_savings );
 
 		return $combined_stats;
 	}

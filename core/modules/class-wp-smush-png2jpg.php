@@ -180,7 +180,7 @@ class WP_Smush_Png2jpg {
 		}
 
 		// Check if registered size is supposed to be converted or not.
-		if ( 'full' !== $size && WP_Smush::get_instance()->core()->smush->skip_image_size( $size ) ) {
+		if ( 'full' !== $size && WP_Smush::get_instance()->core()->mod->smush->skip_image_size( $size ) ) {
 			return false;
 		}
 
@@ -485,7 +485,7 @@ class WP_Smush_Png2jpg {
 
 			// Save the original File URL.
 			$o_file = ! empty( $file ) ? $file : get_post_meta( $id, '_wp_attached_file', true );
-			WP_Smush::get_instance()->core()->backup->add_to_image_backup_sizes( $id, $o_file, 'smush_png_path' );
+			WP_Smush::get_instance()->core()->mod->backup->add_to_image_backup_sizes( $id, $o_file, 'smush_png_path' );
 
 			/**
 			 * Do action, if the PNG to JPG conversion was successful

@@ -111,8 +111,8 @@ class WP_Smush_CDN {
 
 		// Arguments for CDN.
 		$pro_args = array(
-			'lossy' => WP_Smush::get_instance()->core()->smush->lossy_enabled ? 1 : 0,
-			'strip' => WP_Smush::get_instance()->core()->smush->keep_exif ? 0 : 1,
+			'lossy' => WP_Smush::get_instance()->core()->mod->smush->lossy_enabled ? 1 : 0,
+			'strip' => WP_Smush::get_instance()->core()->mod->smush->keep_exif ? 0 : 1,
 			'webp'  => 0,
 		);
 

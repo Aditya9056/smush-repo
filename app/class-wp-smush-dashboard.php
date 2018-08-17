@@ -374,7 +374,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			<li class="super-smush-attachments">
 				<span class="sui-list-label">
 					<?php esc_html_e( 'Super-Smush Savings', 'wp-smushit' ); ?>
-					<?php if ( ! $core->smush->lossy_enabled ) { ?>
+					<?php if ( ! $core->mod->smush->lossy_enabled ) { ?>
 						<p class="wp-smush-stats-label-message">
 							<?php
 							$link_class = 'wp-smush-lossy-enable-link';
@@ -396,7 +396,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						</p>
 					<?php } ?>
 				</span>
-				<?php if ( $core->smush->lossy_enabled ) { ?>
+				<?php if ( $core->mod->smush->lossy_enabled ) { ?>
 					<span class="sui-list-detail wp-smush-stats">
 						<span class="smushed-savings">
 							<?php echo esc_html( size_format( $compression_savings, 1 ) ); ?>
@@ -853,7 +853,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$core = WP_Smush::get_instance()->core();
 
 		$settings     = WP_Smush_Settings::$settings;
-		$resize_count = WP_Smush::get_instance()->core()->db->resize_savings( false, false, true );
+		$resize_count = $core->mod->db->resize_savings( false, false, true );
 
 		// Split human size to get format and size.
 		$human = explode( ' ', $core->stats['human'] );
@@ -916,7 +916,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			'core'             => $core,
 			'hide_pagespeed'   => get_site_option( WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion' ),
 			'is_pro'           => WP_Smush::is_pro(),
-			'lossy_enabled'    => $core->smush->lossy_enabled,
+			'lossy_enabled'    => $core->mod->smush->lossy_enabled,
 			'pro_upgrade_url'  => $pro_upgrade_url,
 			'upgrade_url'      => $upgrade_url,
 		) );
@@ -1001,7 +1001,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		);
 
 		$this->view( 'meta-boxes/directory/meta-box', array(
-			'root_path'   => $core->dir->get_root_path(),
+			'root_path'   => $core->mod->dir->get_root_path(),
 			'upgrade_url' => $upgrade_url,
 		) );
 	}
