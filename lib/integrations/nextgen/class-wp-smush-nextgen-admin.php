@@ -175,7 +175,7 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			$wp_smush_msgs = array(
 				'resmush'          => esc_html__( 'Super-Smush', 'wp-smushit' ),
 				'smush_now'        => esc_html__( 'Smush Now', 'wp-smushit' ),
-				'error_in_bulk'    => esc_html__( '{{errors}} image(s) were skipped due to an error.', 'wp-smushit' ),
+				'error_in_bulk'    => esc_html__( '{{smushed}}/{{total}} images were successfully compressed, {{errors}} encountered issues.', 'wp-smushit' ),
 				'all_resmushed'    => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
 				'restore'          => esc_html__( 'Restoring image..', 'wp-smushit' ),
 				'smushing'         => esc_html__( 'Smushing image..', 'wp-smushit' ),
@@ -450,7 +450,19 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 					<?php
 				endif;
 				echo '</div>';
-				$wpsmush_bulkui->progress_bar( $this );
+				$wpsmush_bulkui->progress_bar( $this ); ?>
+
+				<div class="smush-final-log sui-hidden">
+					<div class="smush-bulk-errors"></div>
+					<div class="smush-bulk-errors-actions">
+						<a href="<?php echo esc_url( admin_url( 'upload.php' ) ); ?>" class="sui-button sui-button-icon sui-button-ghost">
+							<i class="sui-icon-photo-picture" aria-hidden="true"></i>
+							<?php esc_html_e( 'View all', 'wp-smushit' ); ?>
+						</a>
+					</div>
+				</div>
+
+				<?php
 			endif;
 		}
 

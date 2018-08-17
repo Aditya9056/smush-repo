@@ -250,6 +250,28 @@ if ( ! class_exists( 'WpSmushHelper' ) ) {
 
 			return $this->smush_sanitize_hex_color( '#' . $color ) ? $color : null;
 		}
+
+		/**
+		 * Get the link to the media library page for the image.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @param int    $id    Image ID.
+		 * @param string $name  Image file name.
+		 *
+		 * @return string
+		 */
+		public function get_image_media_link( $id, $name ) {
+			$mode = get_user_option( 'media_library_mode' );
+			if ( 'grid' === $mode ) {
+				$link = admin_url( "upload.php?item={$id}" );
+			} else {
+				$link = admin_url( "post.php?post={$id}&action=edit" );
+			}
+
+			return "<a href='{$link}'>{$name}</a>";
+		}
+
 	}
 
 	global $wpsmush_helper;

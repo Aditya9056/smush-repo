@@ -28,24 +28,26 @@
   "repository": "git+https://bitbucket.org/incsub/wp-smushit.git",
   "scripts": {
     "watch": "clear && webpack --watch --mode development",
-    "compile": "clear && grunt clean && webpack -p --progress",
+    "compile": "clear && webpack -p --progress",
     "translate": "clear && grunt translate",
     "build:pro": "npm run compile && grunt prepare && grunt build",
     "build:free": "npm run compile && grunt prepare && grunt build:wporg",
-    "build": "npm run compile && grunt prepare && grunt build && grunt build:wporg"
+    "build": "grunt clean && npm run compile && grunt prepare && grunt build && grunt build:wporg"
   },
   "dependencies": {
-    "@wpmudev/shared-ui": "2.2.7",
+    "@wpmudev/shared-ui": "2.2.9",
     "jquery.fancytree": "^2.29.1"
   },
   "devDependencies": {
     "ajv": "6.5.2",
     "ajv-keywords": "^3.2.0",
+    "autoprefixer": "^9.1.0",
     "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.4",
+    "babel-loader": "^7.1.5",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
-    "css-loader": "^0.28.11",
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^1.0.0",
     "file-loader": "^1.1.11",
     "grunt": "^1.0.3",
     "grunt-checktextdomain": "^1.0.1",
@@ -56,12 +58,12 @@
     "load-grunt-tasks": "^4.0.0",
     "mini-css-extract-plugin": "^0.4.1",
     "node-sass": "^4.9.2",
-    "postcss-loader": "^2.1.5",
+    "postcss-loader": "^2.1.6",
     "resolve-url-loader": "^2.3.0",
-    "sass-loader": "^7.0.3",
+    "sass-loader": "^7.1.0",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
-    "webpack": "^4.16.2",
-    "webpack-command": "^0.3.1"
+    "webpack": "^4.16.5",
+    "webpack-command": "^0.4.1"
   }
 }

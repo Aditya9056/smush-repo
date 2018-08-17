@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -qqy mariadb-server
 # Configure Composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer global require phpunit/phpunit:6.* && composer global require lucatume/wp-browser
+RUN composer global require lucatume/wp-browser
 RUN ln -s ~/.composer/vendor/bin/codecept /usr/local/bin/codecept
 
 # Install CodeSniffer
