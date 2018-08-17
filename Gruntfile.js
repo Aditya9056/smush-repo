@@ -4,7 +4,6 @@ module.exports = function( grunt ) {
 	var commonFiles = [
 		'_src/**',
 		'app/**',
-		'extras/**',
 		'core/**',
 		'uninstall.php',
 		'wp-smush.php'
@@ -12,12 +11,12 @@ module.exports = function( grunt ) {
 
 	var includeFilesPro = commonFiles.slice(0).concat([
 		'changelog.txt',
-		'!extras/free-dashboard/**'
+		'!core/external/free-dashboard/**'
 	]);
 
 	var includeFilesFree = commonFiles.slice(0).concat([
 		'readme.txt',
-		'!extras/dash-notice/**'
+		'!core/external/dash-notice/**'
 	]);
 
 	var changelog = grunt.file.read('.changelog');
@@ -51,9 +50,11 @@ module.exports = function( grunt ) {
 			},
 			files: {
 				src:  [
-					'lib/**/*.php',
+					'app/**/*.php',
+					'core/**/*.php',
 					'uninstall.php',
-					'wp-smush.php'
+					'wp-smush.php',
+					'!core/external/**'
 				],
 				expand: true
 			}
@@ -63,7 +64,7 @@ module.exports = function( grunt ) {
 			options: {
 				domainPath: 'languages',
 				exclude: [
-					'extras/.*'
+					'core/external/.*'
 				],
 				mainFile: 'wp-smush.php',
 				potFilename: 'wp-smushit.pot',
