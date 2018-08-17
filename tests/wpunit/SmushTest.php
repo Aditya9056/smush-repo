@@ -20,6 +20,18 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
+	 * Make auto smushing disabled.
+	 *
+	 * @param int $status Auto smush setting.
+	 */
+	private function setAutoSmush( $status = true ) {
+		global $wpsmush_settings;
+
+		// Set smush original image setting to true.
+		$wpsmush_settings->settings['auto'] = $status;
+	}
+
+	/**
 	 * Tear down method.
 	 */
 	public function tearDown() {
@@ -39,22 +51,22 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 		 */
 		global $wpsmushit_admin;
 
+		// Make sure it is not auto smushed.
+		$this->setAutoSmush( false );
+
 		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
-		$id = $this->factory()->attachment->create( array(
-			'post_title'   => basename( $file ),
-			'post_content' => $file,
-		) );
+		$id = $this->factory()->attachment->create_upload_object( $file );
 
-		//wp_set_current_user( 1 );
-		//$_GET['attachment_id'] = 64;
-		//$wpsmushit_admin->smush_manual();
+		// Smush the image.
+		$wpsmushit_admin->smush_single( $id, true );
+		// Try to get the smushed meta.
+		$smush_meta = get_post_meta( $id, $wpsmushit_admin->smushed_meta_key, true );
+		// Check if meta is empty.
+		$smushed = empty( $smush_meta ) ? false : true;
 
-		$wpsmushit_admin->initialise();
-
-		update_option( "smush-in-progress-{$id}", true );
-
-		//$wpsmushit_admin->smush_single( $id );
+		// Make sure meta is set.
+		$this->assertTrue( $smushed );
 	}
 
 	//public function testRestoreSingle() {}
