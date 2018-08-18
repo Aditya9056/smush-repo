@@ -24,6 +24,13 @@ class WP_Smush_Core {
 	public $s3;
 
 	/**
+	 * NextGen module.
+	 *
+	 * @var WP_Smush_Nextgen
+	 */
+	public $nextgen;
+
+	/**
 	 * Modules array.
 	 *
 	 * @var WP_Smush_Modules
@@ -465,13 +472,7 @@ class WP_Smush_Core {
 		/* @noinspection PhpIncludeInspection */
 		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-bulk.php';
 
-		global $wpsmushnextgen, $wpsmushnextgenadmin, $wpsmushnextgenstats;
-		// Initialize Nextgen support.
-		if ( ! is_object( $wpsmushnextgen ) ) {
-			$wpsmushnextgen = new WpSmushNextGen();
-		}
-		$wpsmushnextgenstats = new WpSmushNextGenStats();
-		$wpsmushnextgenadmin = new WpSmushNextGenAdmin();
+		$this->nextgen = new WP_Smush_Nextgen();
 		new WPSmushNextGenBulk();
 	}
 

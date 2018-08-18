@@ -37,7 +37,7 @@ class WP_Smush_CDN {
 	private $api_key = null;
 
 	/**
-	 * WpSmushCDN constructor.
+	 * WP_Smush_CDN constructor.
 	 */
 	public function __construct() {
 		// Set auto resize flag.

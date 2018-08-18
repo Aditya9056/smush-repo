@@ -44,7 +44,7 @@ class WP_Smush_Auto_Resize {
 	);
 
 	/**
-	 * WpSmushAutoResize constructor.
+	 * WP_Smush_Auto_Resize constructor.
 	 */
 	public function __construct() {
 		// Set auto resize flag.
@@ -204,9 +204,6 @@ class WP_Smush_Auto_Resize {
 	 * @return array $sources
 	 */
 	public function update_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id = 0 ) {
-		/* @var WpSmushCDN $wpsmush_cdn */
-		global $wpsmush_cdn;
-
 		$main_image_url = false;
 
 		if ( ! empty( $attachment_id ) ) {
@@ -245,7 +242,7 @@ class WP_Smush_Auto_Resize {
 			}
 
 			// Replace with CDN url.
-			$sources[ $i ]['url'] = $wpsmush_cdn->generate_cdn_url( $url, $args );
+			$sources[ $i ]['url'] = WP_Smush::get_instance()->core()->mod->cdn->generate_cdn_url( $url, $args );
 		}
 
 		// Set additional sizes if required.
@@ -266,9 +263,6 @@ class WP_Smush_Auto_Resize {
 	 * @return array $sources
 	 */
 	private function set_additional_srcset( $sources, $size_array, $url, $image_meta, $image_src ) {
-		/* @var WpSmushCDN $wpsmush_cdn */
-		global $wpsmush_cdn;
-
 		$content_width = $this->max_content_width();
 
 		// If url is empty, try to get from src.
@@ -337,7 +331,7 @@ class WP_Smush_Auto_Resize {
 
 			// Add new srcset item.
 			$new_sources[ $new_width ] = array(
-				'url'        => $wpsmush_cdn->generate_cdn_url( $url, $args ),
+				'url'        => WP_Smush::get_instance()->core()->mod->cdn->generate_cdn_url( $url, $args ),
 				'descriptor' => 'w',
 				'value'      => $new_width,
 			);

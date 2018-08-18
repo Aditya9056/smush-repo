@@ -423,7 +423,7 @@ class WP_Smush_Png2jpg {
 	 * @param string $id    Image ID.
 	 * @param string $meta  Image meta.
 	 *
-	 * @uses WpSmushBackup::add_to_image_backup_sizes()
+	 * @uses WP_Smush_Backup::add_to_image_backup_sizes()
 	 *
 	 * @return mixed|string
 	 *

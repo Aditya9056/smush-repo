@@ -26,7 +26,7 @@ class WP_Smush_S3 {
 	private $module = 's3';
 
 	/**
-	 * WpSmushS3 constructor.
+	 * WP_Smush_S3 constructor.
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'init' ), 5 );
@@ -119,7 +119,7 @@ class WP_Smush_S3 {
 
 		global $as3cf, $wp_smush, $wpsmush_settings;
 
-		$is_pro = $wp_smush->validate_install();
+		$is_pro = WP_Smush::is_pro();
 
 		// If S3 integration is not enabled, return.
 		$setting_val = $is_pro ? $wpsmush_settings->settings[ $this->module ] : 0;
@@ -254,7 +254,7 @@ class WP_Smush_S3 {
 
 		// If we only have the attachment id.
 		$full_url = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
-		// If the filepath contains S3, get the s3 URL for the file.
+		// If the file path contains S3, get the s3 URL for the file.
 		if ( ! empty( $full_url ) ) {
 			$full_url = $as3cf->get_attachment_url( $attachment_id );
 		} else {
@@ -267,15 +267,13 @@ class WP_Smush_S3 {
 
 	/**
 	 * Download a specified file to local server with respect to provided attachment id
-	 *  and/or Attachment path
+	 *  and/or Attachment path.
 	 *
-	 * @param $attachment_id
+	 * @param int    $attachment_id  Attachment ID.
+	 * @param array  $size_details   Size details array.
+	 * @param string $uf_file_path   File path.
 	 *
-	 * @param array         $size_details
-	 *
-	 * @param string        $uf_file_path
-	 *
-	 * @return string|bool Returns file path or false
+	 * @return bool|string  Returns file path or false
 	 */
 	private function download_file( $attachment_id, $size_details = array(), $uf_file_path = '' ) {
 		if ( empty( $attachment_id ) || ! WP_Smush_Settings::$settings[ $this->module ] || ! WP_Smush::is_pro() ) {
@@ -347,8 +345,8 @@ class WP_Smush_S3 {
 	/**
 	 * Check if file exists for the given path
 	 *
-	 * @param string $attachment_id
-	 * @param string $file_path
+	 * @param string $attachment_id  Attachment ID.
+	 * @param string $file_path      File path.
 	 *
 	 * @return bool
 	 */
@@ -396,9 +394,9 @@ class WP_Smush_S3 {
 	/**
 	 * Check if the file is served by S3 and download the file for given path
 	 *
-	 * @param string $file_path Full file path
-	 * @param string $attachment_id
-	 * @param array  $size_details Array of width and height for the image
+	 * @param string $file_path      Full file path.
+	 * @param string $attachment_id  Attachment ID.
+	 * @param array  $size_details   Array of width and height for the image.
 	 *
 	 * @return bool|string False/ File Path
 	 */
@@ -417,8 +415,9 @@ class WP_Smush_S3 {
 	/**
 	 * Checks if we've backup on S3 for the given attachment id and backup path
 	 *
-	 * @param string $attachment_id
-	 * @param string $backup_path
+	 * @param bool   $exists         If backup exists on S3.
+	 * @param string $attachment_id  Attachment ID.
+	 * @param string $backup_path    Backup path.
 	 *
 	 * @return bool
 	 */

@@ -63,6 +63,13 @@ class WP_Smush_Modules {
 	public $settings;
 
 	/**
+	 * CDN module.
+	 *
+	 * @var WP_Smush_CDN
+	 */
+	public $cdn;
+
+	/**
 	 * WP_Smush_Modules constructor.
 	 */
 	public function __construct() {

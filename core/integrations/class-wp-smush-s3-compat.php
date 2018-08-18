@@ -28,10 +28,12 @@ class WP_Smush_S3_Compat extends AS3CF_Plugin_Compatibility {
 	/**
 	 * Download the attached file from S3 to local server
 	 *
-	 * @param $url
-	 * @param $file
-	 * @param $attachment_id
-	 * @param $s3_object
+	 * @param string $url            URL.
+	 * @param string $file           File.
+	 * @param int    $attachment_id  Attachment ID.
+	 * @param object $s3_object      S3 object.
+	 *
+	 * @return mixed
 	 */
 	public function smush_download_file( $url, $file, $attachment_id, $s3_object ) {
 		global $as3cf;
