@@ -468,57 +468,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
-	 * Shows a option to ignore the Image ids which can be resmushed while bulk smushing.
-	 *
-	 * @param bool $count  Resmush + unsmushed image count.
-	 * @param bool $show   Should show or not.
-	 */
-	public function bulk_resmush_content( $count = false, $show = false ) {
-		// If we already have count, don't fetch it.
-		if ( false === $count ) {
-			// If we have the resmush ids list, Show Resmush notice and button.
-			if ( $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
-				// Count.
-				$count = count( $resmush_ids );
-
-				// Whether to show the remaining re-smush notice.
-				$show = $count > 0 ? true : false;
-
-				// Get the actual remainaing count.
-				if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) ) {
-					WP_Smush::get_instance()->core()->setup_global_stats();
-				}
-
-				$count = WP_Smush::get_instance()->core()->remaining_count;
-			}
-		}
-
-		// Show only if we have any images to ber resmushed.
-		if ( $show ) {
-			?>
-			<div class="sui-notice sui-notice-warning wp-smush-resmush-notice wp-smush-remaining" tabindex="0">
-				<p>
-					<span class="wp-smush-notice-text">
-						<?php
-						printf(
-							/* translators: %1$s: user name, %2$s: strong tag, %3$s: span tag, %4$d: number of remaining umages, %5$s: closing span tag, %6$s: closing strong tag  */
-							_n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs re-compressing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need re-compressing!', $count, 'wp-smushit' ),
-							esc_html( WP_Smush_Helper::get_user_name() ),
-							'<strong>',
-							'<span class="wp-smush-remaining-count">',
-							absint( $count ),
-							'</span>',
-							'</strong>'
-						);
-						?>
-					</span>
-				</p>
-			</div>
-			<?php
-		}
-	}
-
-	/**
 	 * Single settings row html content.
 	 *
 	 * @param string $setting_m_key  Setting key.
@@ -550,7 +499,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				</span>
 
 				<span class="sui-description">
-					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
+					<?php echo WP_Smush::get_instance()->core()->settings[ $name ]['desc']; ?>
 				</span>
 			</div>
 			<div class="sui-box-settings-col-2" id="column-<?php echo esc_attr( $setting_m_key ); ?>">

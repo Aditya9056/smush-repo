@@ -390,6 +390,10 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 	 * @return bool|mixed|void
 	 */
 	function get_smush_stats() {
+		if ( ! is_object( $this->ng_admin ) ) {
+			$this->ng_admin = new WP_Smush_Nextgen_Admin();
+		}
+
 		$smushed_stats = array(
 			'savings_bytes'   => 0,
 			'size_before'     => 0,

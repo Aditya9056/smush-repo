@@ -1,6 +1,6 @@
 <?php
 /**
- * Render page.
+ * Render Smush pages.
  *
  * @package WP_Smush
  */

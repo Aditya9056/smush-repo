@@ -393,13 +393,13 @@ class WP_Smush_Ajax {
 		}
 
 		// Intialize NextGen Stats.
-		if ( 'nextgen' === $type && is_object( $wpsmushnextgenadmin ) && empty( $wpsmushnextgenadmin->remaining_count ) ) {
-			$wpsmushnextgenadmin->setup_image_counts();
+		if ( 'nextgen' === $type && is_object( $core->nextgen->ng_admin ) && empty( $core->nextgen->ng_admin->remaining_count ) ) {
+			$core->nextgen->ng_admin->setup_image_counts();
 		}
 
 		$key = 'nextgen' === $type ? 'wp-smush-nextgen-resmush-list' : 'wp-smush-resmush-list';
 
-		$remaining_count = 'nextgen' === $type ? $wpsmushnextgenadmin->remaining_count : $core->remaining_count;
+		$remaining_count = 'nextgen' === $type ? $core->nextgen->ng_admin->remaining_count : $core->remaining_count;
 
 		if ( 0 == $remaining_count && ! $core->mod->smush->lossy_enabled && ! $core->mod->smush->smush_original && $core->mod->smush->keep_exif && ! $upfront_active ) {
 			delete_option( $key );
@@ -415,10 +415,8 @@ class WP_Smush_Ajax {
 			// Get list of Smushed images.
 			$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->mod->db->smushed_count( true );
 		} else {
-			global $wpsmushnextgenstats;
-
 			// Get smushed attachments list from nextgen class, We get the meta as well.
-			$attachments = $wpsmushnextgenstats->get_ngg_images();
+			$attachments = $core->nextgen->ng_stats->get_ngg_images();
 		}
 
 		$image_count = $super_smushed_count = $smushed_count = $resized_count = 0;
@@ -524,12 +522,12 @@ class WP_Smush_Ajax {
 		// Get updated stats for Nextgen.
 		if ( 'nextgen' === $type ) {
 			// Reinitialize Nextgen stats.
-			$wpsmushnextgenadmin->setup_image_counts();
+			$core->nextgen->ng_admin->setup_image_counts();
 			// Image count, Smushed Count, Supersmushed Count, Savings.
-			$stats               = $wpsmushnextgenstats->get_smush_stats();
-			$image_count         = $wpsmushnextgenadmin->image_count;
-			$smushed_count       = $wpsmushnextgenadmin->smushed_count;
-			$super_smushed_count = $wpsmushnextgenadmin->super_smushed;
+			$stats               = $core->nextgen->ng_stats->get_smush_stats();
+			$image_count         = $core->nextgen->ng_admin->image_count;
+			$smushed_count       = $core->nextgen->ng_admin->smushed_count;
+			$super_smushed_count = $core->nextgen->ng_admin->super_smushed;
 		}
 
 		// Delete resmush list if empty.
@@ -538,7 +536,7 @@ class WP_Smush_Ajax {
 		}
 
 		$resmush_count = $count = count( $resmush_list );
-		$count        += 'nextgen' == $type ? $wpsmushnextgenadmin->remaining_count : $core->remaining_count;
+		$count        += 'nextgen' == $type ? $core->nextgen->ng_admin->remaining_count : $core->remaining_count;
 
 		// Return the Remsmush list and UI to be appended to Bulk Smush UI.
 		if ( $return_ui ) {
@@ -547,7 +545,7 @@ class WP_Smush_Ajax {
 				$core->resmush_ids = $resmush_list;
 			} else {
 				// To avoid the php warning.
-				$wpsmushnextgenadmin->resmush_ids = $resmush_list;
+				$core->nextgen->ng_admin->resmush_ids = $resmush_list;
 			}
 
 			if ( $resmush_count ) {
@@ -608,8 +606,8 @@ class WP_Smush_Ajax {
 		$return['notice']      = $resp;
 		$return['super_smush'] = $core->mod->smush->lossy_enabled;
 		if ( $core->mod->smush->lossy_enabled && 'nextgen' === $type ) {
-			$ss_count                    = $core->mod->db->super_smushed_count( 'nextgen', $wpsmushnextgenstats->get_ngg_images( 'smushed' ) );
-			$return['super_smush_stats'] = sprintf( '<strong><span class="smushed-count">%d</span>/%d</strong>', $ss_count, $wpsmushnextgenadmin->total_count );
+			$ss_count                    = $core->mod->db->super_smushed_count( 'nextgen', $core->nextgen->ng_stats->get_ngg_images( 'smushed' ) );
+			$return['super_smush_stats'] = sprintf( '<strong><span class="smushed-count">%d</span>/%d</strong>', $ss_count, $core->nextgen->ng_admin->total_count );
 		}
 
 		delete_site_option( WP_SMUSH_PREFIX . 'run_recheck' );

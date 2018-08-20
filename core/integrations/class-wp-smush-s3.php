@@ -32,7 +32,9 @@ class WP_Smush_S3 {
 		add_action( 'admin_init', array( $this, 'init' ), 5 );
 
 		// Hook at the end of setting row to output a error div.
-		add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ) );
+		// TODO: check if we need this
+		//add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ), 5 );
+		add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ), 15 );
 	}
 
 	/**
@@ -58,8 +60,6 @@ class WP_Smush_S3 {
 
 		// Check if the backup file exists.
 		add_filter( 'smush_backup_exists', array( $this, 'backup_exists_on_s3' ), 10, 3 );
-
-		add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
 
 		// Show submit button when a pro user and the S3 plugin is installed.
 		add_filter( 'wp_smush_integration_show_submit', '__return_true' );
@@ -117,12 +117,12 @@ class WP_Smush_S3 {
 			return;
 		}
 
-		global $as3cf, $wp_smush, $wpsmush_settings;
+		global $as3cf;
 
 		$is_pro = WP_Smush::is_pro();
 
 		// If S3 integration is not enabled, return.
-		$setting_val = $is_pro ? $wpsmush_settings->settings[ $this->module ] : 0;
+		$setting_val = $is_pro ? WP_Smush_Settings::$settings[ $this->module ] : 0;
 
 		// If integration is disabled when S3 offload is active, do not continue.
 		if ( ! $setting_val && is_object( $as3cf ) ) {

@@ -446,10 +446,13 @@ class WP_Smush_Core {
 	}
 
 	/**
-	 * Check if NextGen is active or not
-	 * Include and instantiate classes
+	 * Check if NextGen integration is active.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @return bool|mixed
 	 */
-	private function load_nextgen() {
+	public function get_nextgen_status() {
 		// Check if integration is enabled or not.
 		if ( ! empty( WP_Smush_Settings::$settings ) ) {
 			$opt_nextgen_val = WP_Smush_Settings::$settings['nextgen'];
@@ -459,12 +462,19 @@ class WP_Smush_Core {
 			$opt_nextgen_val = WP_Smush_Settings::get_setting( $opt_nextgen, false );
 		}
 
+		return $opt_nextgen_val;
+	}
+
+	/**
+	 * Check if NextGen is active or not
+	 * Include and instantiate classes
+	 */
+	private function load_nextgen() {
 		/* @noinspection PhpIncludeInspection */
 		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-nextgen.php';
-		// Do not continue if integration not enabled or not a pro user.
-		if ( ! $opt_nextgen_val || ! WP_Smush::is_pro() ) {
-			return;
-		}
+
+		// TODO: we should not be loading this if the nextgen integration is not enabled.
+
 		/* @noinspection PhpIncludeInspection */
 		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-admin.php';
 		/* @noinspection PhpIncludeInspection */
@@ -473,7 +483,16 @@ class WP_Smush_Core {
 		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-bulk.php';
 
 		$this->nextgen = new WP_Smush_Nextgen();
-		new WPSmushNextGenBulk();
+
+		// Do not continue if integration not enabled or not a pro user.
+		if ( ! $this->get_nextgen_status() || ! WP_Smush::is_pro() ) {
+			return;
+		}
+
+		/* @noinspection PhpIncludeInspection */
+		include_once WP_SMUSH_DIR . 'app/class-wp-smush-nextgen.php';
+
+		//new WP_Smush_Nextgen_Bulk();
 	}
 
 	/**

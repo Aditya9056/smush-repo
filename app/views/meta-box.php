@@ -60,4 +60,9 @@
 		</div><!-- end sui-box-footer -->
 	<?php endif; ?>
 
+	<?php
+	// Allows you to output any content within the stats box at the end.
+	do_action( 'wp_smush_after_stats' );
+	?>
+
 </div><!-- end box-<?php echo esc_attr( $id ); ?> -->
