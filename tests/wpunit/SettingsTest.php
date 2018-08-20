@@ -109,11 +109,11 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		$id   = $this->factory()->attachment->create_upload_object( $file );
 		$meta = get_post_meta( $id, $wpsmushit_admin->smushed_meta_key, true );
 
-		// Full size should be there in smushed sizes.
-		$this->assertTrue( isset( $meta['sizes']['full'] ) );
-
 		// Now delete the uploaded file.
 		wp_delete_attachment( $id );
+
+		// Full size should be there in smushed sizes.
+		$this->assertTrue( isset( $meta['sizes']['full'] ) );
 
 		// Set smush original image setting to false.
 		$wpsmush_settings->settings['original'] = 0;
@@ -121,13 +121,13 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		$id   = $this->factory()->attachment->create_upload_object( $file );
 		$meta = get_post_meta( $id, $wpsmushit_admin->smushed_meta_key, true );
 
+		// Now delete the uploaded file.
+		wp_delete_attachment( $id );
+
 		// Full size should not be there in smushed sizes.
 		$this->assertFalse( isset( $meta['sizes']['full'] ) );
 
 		// Remove temp API key.
 		$this->setFree();
-
-		// Now delete the uploaded file.
-		wp_delete_attachment( $id );
 	}
 }
