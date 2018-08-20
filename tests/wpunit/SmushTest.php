@@ -20,15 +20,53 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
+	 * Set setting value temporarily.
+	 *
+	 * @param string $key Setting name.
+	 * @param bool   $value True or false.
+	 */
+	private function setSetting( $key, $value = true ) {
+		global $wpsmush_settings;
+
+		// Set smush original image setting to true.
+		$wpsmush_settings->settings[ $key ] = $value;
+	}
+
+	/**
+	 * Set Smush to Smush Pro.
+	 */
+	private function setPro() {
+		// Define test api key.
+		if ( ! defined( 'WPMUDEV_APIKEY' ) ) {
+			define( 'WPMUDEV_APIKEY', 'test_api_key' );
+		}
+
+		// Flag that api key is valid.
+		update_site_option( 'wp_smush_api_auth', array(
+			'test_api_key' => array(
+				'timestamp' => current_time( 'timestamp' ),
+				'validity'  => 'valid',
+			),
+		) );
+	}
+
+	/**
+	 * Set Smush to free version.
+	 */
+	private function setFree() {
+		// Delete api key.
+		delete_site_option( 'wp_smush_api_auth' );
+	}
+
+	/**
 	 * Make auto smushing disabled.
 	 *
 	 * @param int $status Auto smush setting.
 	 */
-	private function setAutoSmush( $status = true ) {
-		global $wpsmush_settings;
+	private function uploadImage( $status = true ) {
+		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
-		// Set smush original image setting to true.
-		$wpsmush_settings->settings['auto'] = $status;
+		return $this->factory()->attachment->create_upload_object( $file );
 	}
 
 	/**
@@ -41,7 +79,7 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
-	 * Test update settings.
+	 * Test smush single image.
 	 */
 	public function testSmushSingle() {
 		/**
@@ -52,11 +90,10 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 		global $wpsmushit_admin;
 
 		// Make sure it is not auto smushed.
-		$this->setAutoSmush( false );
+		$this->setSetting( 'auto', false );
 
-		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
-
-		$id = $this->factory()->attachment->create_upload_object( $file );
+		// Upload image.
+		$id = $this->uploadImage();
 
 		// Smush the image.
 		$wpsmushit_admin->smush_single( $id, true );
@@ -69,6 +106,44 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertTrue( $smushed );
 	}
 
-	//public function testRestoreSingle() {}
+	/**
+	 * Test restore image after smush.
+	 */
+	public function testRestoreSingle() {
+		global $wpsmush_backup, $wpsmushit_admin;
+
+		// Set smush pro.
+		$this->setPro();
+		// Make sure it is auto smushed.
+		$this->setSetting( 'auto', 1 );
+		// Make sure smush original enabled.
+		$this->setSetting( 'original', 1 );
+		// Make sure backup original enabled.
+		$this->setSetting( 'backup', 1 );
+
+		$wpsmush_backup->backup_enabled = true;
+
+		$id = $this->uploadImage();
+
+		$wpsmush_backup->restore_image( $id );
+		$restored_meta = get_post_meta( $id, $wpsmushit_admin->smushed_meta_key, true );
+
+		// Make sure meta is set.
+		$this->assertEmpty( $restored_meta );
+	}
+
+	function mylog($var, $label = NULL) {
+
+		$tmp_file = '/tmp/my_debug.log';
+
+		$output = '';
+		if(!is_null($label)) {
+			$output = $label . ': ';
+		}
+
+		$output .= print_r($var, 1) . PHP_EOL;
+
+		file_put_contents($tmp_file, $output, FILE_APPEND);
+	}
 
 }
