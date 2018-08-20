@@ -100,6 +100,9 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 		// Check if meta is empty.
 		$smushed = empty( $smush_meta ) ? false : true;
 
+		// We don't need the attachment anymore. Delete.
+		wp_delete_attachment( $id, true );
+
 		// Make sure meta is set.
 		$this->assertTrue( $smushed );
 	}
