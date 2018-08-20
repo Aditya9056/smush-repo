@@ -178,6 +178,8 @@ if ( ! class_exists( 'WpSmushBackup' ) ) {
 			// Get the backup path
 			$backup_sizes = get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
 
+			$backup_path = '';
+
 			// If there are
 			if ( ! empty( $backup_sizes ) ) {
 

@@ -60,10 +60,8 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 
 	/**
 	 * Make auto smushing disabled.
-	 *
-	 * @param int $status Auto smush setting.
 	 */
-	private function uploadImage( $status = true ) {
+	private function uploadImage() {
 		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
 		return $this->factory()->attachment->create_upload_object( $file );
@@ -107,7 +105,7 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
-	 * Test restore image after smush.
+	 * Test restore image after smushing.
 	 */
 	public function testRestoreSingle() {
 		global $wpsmush_backup, $wpsmushit_admin;
@@ -120,30 +118,21 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 		$this->setSetting( 'original', 1 );
 		// Make sure backup original enabled.
 		$this->setSetting( 'backup', 1 );
-
+		// Enable backup image.
 		$wpsmush_backup->backup_enabled = true;
 
+		// Upload an image.
 		$id = $this->uploadImage();
 
-		$wpsmush_backup->restore_image( $id );
+		// Restore image.
+		$wpsmush_backup->restore_image( $id, false );
+		// Try to get smushed meta.
 		$restored_meta = get_post_meta( $id, $wpsmushit_admin->smushed_meta_key, true );
 
-		// Make sure meta is set.
+		// We don't need the attachment anymore. Delete.
+		wp_delete_attachment( $id, true );
+
+		// Make sure meta is empty.
 		$this->assertEmpty( $restored_meta );
 	}
-
-	function mylog($var, $label = NULL) {
-
-		$tmp_file = '/tmp/my_debug.log';
-
-		$output = '';
-		if(!is_null($label)) {
-			$output = $label . ': ';
-		}
-
-		$output .= print_r($var, 1) . PHP_EOL;
-
-		file_put_contents($tmp_file, $output, FILE_APPEND);
-	}
-
 }
