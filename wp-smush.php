@@ -95,7 +95,7 @@ if ( ! defined( 'WP_SMUSH_ASYNC' ) && ! empty( $_SERVER['SERVER_NAME'] ) && ( 0 
 	define( 'WP_SMUSH_ASYNC', true );
 }
 
-register_activation_hook( 'lib/class-wp-smush-installer.php', array( 'WP_Smush_Installer', 'smush_activated' ) );
+register_activation_hook( 'core/class-wp-smush-installer.php', array( 'WP_Smush_Installer', 'smush_activated' ) );
 
 // Init the plugin and load the plugin instance for the first time.
 add_action( 'plugins_loaded', array( 'WP_Smush', 'get_instance' ) );

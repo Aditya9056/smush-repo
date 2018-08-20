@@ -238,7 +238,7 @@ class WP_Smush_Admin {
 		$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
 
 		// Add a bulk smush option for NextGen gallery.
-		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->get_nextgen_status() ) {
+		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->get_nextgen_status() && WP_Smush::is_pro() ) {
 			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( $title, 'wp-smush-nextgen-bulk', true );
 		}
 	}
