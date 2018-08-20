@@ -65,10 +65,10 @@ class WP_Smush_Nextgen {
 		$is_pro = WP_Smush::is_pro();
 
 		// Filters the setting variable to add Nextgen setting title and description.
-		add_filter( 'wp_smush_settings', array( $this, 'register' ), 5 );
+		add_filter( 'wp_smush_settings', array( $this, 'register' ) );
 
 		// Filters the setting variable to add Nextgen setting in premium features.
-		add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 5 );
+		add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 10 );
 
 		// Disable setting.
 		add_filter( 'wp_smush_integration_status_' . $this->module, array( $this, 'setting_status' ) );
@@ -225,7 +225,7 @@ class WP_Smush_Nextgen {
 	 *
 	 * @return mixed
 	 */
-	function register( $settings ) {
+	public function register( $settings ) {
 		$settings[ $this->module ] = array(
 			'label'       => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
 			'short_label' => esc_html__( 'NextGen Gallery', 'wp-smushit' ),
@@ -242,7 +242,7 @@ class WP_Smush_Nextgen {
 	 *
 	 * @return array
 	 */
-	function add_setting( $int_settings ) {
+	public function add_setting( $int_settings ) {
 		if ( ! isset( $int_settings[ $this->module ] ) ) {
 			$int_settings[] = $this->module;
 		}

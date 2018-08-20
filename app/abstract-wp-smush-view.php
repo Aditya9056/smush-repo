@@ -483,11 +483,7 @@ abstract class WP_Smush_View {
 
 		$this->settings_updated();
 
-		// Show S3 integration message, if user hasn't enabled it.
-		$s3 = WP_Smush::get_instance()->core()->s3;
-		if ( is_object( $s3 ) && method_exists( $s3, 's3_support_required_notice' ) ) {
-			$s3->s3_support_required_notice();
-		}
+		do_action( 'wp_smush_header_notices' );
 	}
 
 	/**

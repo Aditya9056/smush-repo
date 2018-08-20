@@ -34,10 +34,10 @@ class WP_Smush_Gutenberg {
 	 */
 	public function __construct() {
 		// Filters the setting variable to add Gutenberg setting title and description.
-		add_filter( 'wp_smush_settings', array( $this, 'register_setting' ), 6 );
+		add_filter( 'wp_smush_settings', array( $this, 'register_setting' ) );
 
 		// Filters the setting variable to add Nextgen to the Integration tab.
-		add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 1 );
+		add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 3 );
 
 		// Disable setting.
 		add_filter( 'wp_smush_integration_status_' . $this->module, array( $this, 'setting_status' ), 10, 2 );

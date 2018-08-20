@@ -422,6 +422,9 @@ class WP_Smush_Core {
 	 * Load plugin modules.
 	 */
 	public function load_libs() {
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'core/integrations/abstract-wp-smush-integration.php';
+
 		$this->s3_libraries();
 		$this->wp_smush_async();
 
