@@ -39,15 +39,9 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 			'post_content' => $file,
 		) );
 
-		//wp_set_current_user( 1 );
-		//$_GET['attachment_id'] = 64;
-		//$wpsmushit_admin->smush_manual();
-
 		WP_Smush::get_instance()->core()->initialise();
 
 		update_option( "smush-in-progress-{$id}", true );
-
-		//$wpsmushit_admin->smush_single( $id );
 	}
 
 	//public function testRestoreSingle() {}

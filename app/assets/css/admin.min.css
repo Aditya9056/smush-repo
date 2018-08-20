@@ -5592,6 +5592,23 @@ html.sui-has-overlay {
   margin-bottom: 30px;
 }
 
+.sui-2-2-9 .sui-wrap .smush-integrations-wrapper .sui-box-settings-row:first-child .sui-settings-label,
+.sui-2-2-9 .sui-wrap .smush-integrations-wrapper .sui-box-body .sui-box-settings-row:first-child .sui-settings-label-with-tag,
+.sui-2-2-9 .sui-wrap .sui-box-body .smush-integrations-wrapper .sui-box-settings-row:first-child .sui-settings-label-with-tag {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+}
+
+.sui-2-2-9 .sui-wrap .smush-integrations-wrapper .sui-box-settings-row:first-child .sui-settings-label .sui-tag,
+.sui-2-2-9 .sui-wrap .smush-integrations-wrapper .sui-box-body .sui-box-settings-row:first-child .sui-settings-label-with-tag .sui-tag,
+.sui-2-2-9 .sui-wrap .sui-box-body .smush-integrations-wrapper .sui-box-settings-row:first-child .sui-settings-label-with-tag .sui-tag {
+  margin-left: 10px;
+}
+
 .sui-2-2-9 .sui-wrap .smush-final-log .smush-bulk-error-row {
   -ms-flex-line-pack: center;
       align-content: center;

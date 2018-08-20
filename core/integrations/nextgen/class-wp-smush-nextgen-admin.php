@@ -126,7 +126,7 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 	public function wp_smush_column_options( $column_name, $id, $echo = false ) {
 		// NExtGen Doesn't returns Column name, weird? yeah, right, it is proper because hook is called for the particular column.
 		if ( 'wp_smush_image' === $column_name || '' === $column_name ) {
-			// We're not using our in-house function WpSmushNextGen::get_nextgen_image_from_id()
+			// We're not using our in-house function WP_Smush_Nextgen::get_nextgen_image_from_id()
 			// as we're already instializing the nextgen gallery object, we need $storage instance later.
 			// Registry Object for NextGen Gallery.
 			$registry = C_Component_Registry::get_instance();

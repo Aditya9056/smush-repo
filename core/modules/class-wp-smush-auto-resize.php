@@ -79,8 +79,6 @@ class WP_Smush_Auto_Resize {
 		$is_pro = WP_Smush::is_pro();
 
 		// All these are members only feature.
-		// @todo add other checks if required.
-		// if ( $is_pro && $wpsmush_cdn->cdn_active ) {
 		if ( $is_pro ) {
 			$this->can_auto_resize = true;
 		}

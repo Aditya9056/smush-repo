@@ -12,7 +12,7 @@
  */
 
 /**
- * Class WpSmushNextGen
+ * Class WP_Smush_Nextgen
  */
 class WP_Smush_Nextgen {
 
@@ -30,14 +30,12 @@ class WP_Smush_Nextgen {
 	 *
 	 * @var array $stats
 	 */
-	var $stats = array(
+	public $stats = array(
 		'savings_bytes'   => 0,
 		'size_before'     => 0,
 		'size_after'      => 0,
 		'savings_percent' => 0,
 	);
-
-	var $is_nextgen_active = false;
 
 	/**
 	 * NextGen admin module.
@@ -57,9 +55,6 @@ class WP_Smush_Nextgen {
 	 * WP_Smush_Nextgen constructor.
 	 */
 	public function __construct() {
-		$this->ng_stats = new WP_Smush_Nextgen_Stats();
-		$this->ng_admin = new WP_Smush_Nextgen_Admin( $this->ng_stats );
-
 		$this->init();
 	}
 
@@ -100,6 +95,9 @@ class WP_Smush_Nextgen {
 		if ( ! $is_pro || ! $opt_nextgen_val ) {
 			return;
 		}
+
+		$this->ng_stats = new WP_Smush_Nextgen_Stats();
+		$this->ng_admin = new WP_Smush_Nextgen_Admin( $this->ng_stats );
 
 		// Auto Smush image, if enabled, runs after Nextgen is finished uploading the image.
 		// Allows to override whether to auto smush nextgen image or not.
@@ -680,7 +678,7 @@ class WP_Smush_Nextgen {
 	/**
 	 * Handles the ajax request to restore a image from backup and return button HTML
 	 *
-	 * @uses WpSmushNextGenAdmin::wp_smush_column_options()
+	 * @uses WP_Smush_Nextgen_Admin::wp_smush_column_options()
 	 */
 	function restore_image() {
 		// Check Empty fields.

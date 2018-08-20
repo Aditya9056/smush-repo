@@ -121,7 +121,9 @@ class WP_Smush_Installer {
 	 */
 	public static function directory_smush_table() {
 		// Create a class object, if doesn't exists.
-		$wpsmush_dir = new WP_Smush_Dir();
+		if ( ! is_object( WP_Smush::get_instance()->core()->mod->dir ) ) {
+			WP_Smush::get_instance()->core()->mod->dir = new WP_Smush_Dir();
+		}
 
 		// No need to continue on sub sites.
 		if ( ! WP_Smush_Dir::should_continue() ) {
@@ -129,9 +131,9 @@ class WP_Smush_Installer {
 		}
 
 		// Create/upgrade directory smush table.
-		$wpsmush_dir->create_table();
+		WP_Smush::get_instance()->core()->mod->dir->create_table();
 
 		// Run the directory smush table update.
-		$wpsmush_dir->update_dir_path_hash();
+		WP_Smush::get_instance()->core()->mod->dir->update_dir_path_hash();
 	}
 }

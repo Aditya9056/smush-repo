@@ -487,15 +487,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		?>
 		<div class="sui-box-settings-row wp-smush-basic <?php echo $upsell ? 'sui-disabled' : ''; ?>">
 			<div class="sui-box-settings-col-1">
-				<span class="sui-settings-label">
+				<span class="sui-settings-label <?php echo 'gutenberg' === $name ? 'sui-settings-label-with-tag' : ''; ?>">
 					<?php echo esc_html( $label ); ?>
-					<?php if ( 'gutenberg' === $name ) : ?>
-						<span class="sui-tag sui-tag-beta sui-tooltip sui-tooltip-constrained"
-							data-tooltip="<?php esc_attr_e( 'This feature is likely to work without issue, however Gutenberg is in beta stage and some issues are still present.', 'wp-smushit' ); ?>"
-						>
-							<?php esc_html_e( 'Beta', 'wp-smushit' ); ?>
-						</span>
-					<?php endif; ?>
+					<?php do_action( 'smush_setting_column_tag', $name ); ?>
 				</span>
 
 				<span class="sui-description">

@@ -45,6 +45,9 @@ class WP_Smush_Gutenberg {
 		// Hook at the end of setting row to output an error div.
 		add_action( 'smush_setting_column_right_inside', array( $this, 'integration_error' ) );
 
+		// Add beta tag.
+		add_action( 'smush_setting_column_tag', array( $this, 'add_beta_tag' ) );
+
 		// Register gutenberg block assets.
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gb' ) );
 
@@ -72,6 +75,27 @@ class WP_Smush_Gutenberg {
 		);
 
 		return $settings;
+	}
+
+	/**
+	 * Add a beta tag next to the setting title.
+	 *
+	 * @param string $setting_key  Setting key name.
+	 *
+	 * @since 2.9.0
+	 */
+	public function add_beta_tag( $setting_key ) {
+		// Return if not Gutenberg integration.
+		if ( $this->module !== $setting_key ) {
+			return;
+		}
+
+		$tooltip_text = __( 'This feature is likely to work without issue, however Gutenberg is in beta stage and some issues are still present.', 'wp-smushit' );
+		?>
+		<span class="sui-tag sui-tag-beta sui-tooltip sui-tooltip-constrained" data-tooltip="<?php echo esc_attr( $tooltip_text ); ?>">
+			<?php esc_html_e( 'Beta', 'wp-smushit' ); ?>
+		</span>
+		<?php
 	}
 
 	/**

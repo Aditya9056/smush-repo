@@ -26,6 +26,8 @@ class WP_Smush_Admin {
 		$this->includes();
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		// Load js and css on pages with Media Uploader - WP Enqueue Media.
+		add_action( 'wp_enqueue_media', array( $this, 'enqueue_scripts' ) );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'network_admin_menu', array( $this, 'add_menu_pages' ) );
@@ -59,9 +61,6 @@ class WP_Smush_Admin {
 
 		// Smush image filter from Media Library.
 		add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
-
-		// Load js and css on pages with Media Uploader - WP Enqueue Media.
-		//add_action( 'wp_enqueue_media', array( 'WP_Smush_View', 'enqueue_scripts' ) );
 	}
 
 	/**

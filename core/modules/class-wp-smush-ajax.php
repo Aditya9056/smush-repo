@@ -633,9 +633,10 @@ class WP_Smush_Ajax {
 		} else {
 			// For Nextgen. Get the stats (get the re-Smush IDs).
 			$resmush_ids = get_option( 'wp-smush-nextgen-resmush-list', array() );
-			$stats       = $wpsmushnextgenstats->get_stats_for_ids( $resmush_ids );
 
-			$stats['count_images'] = $wpsmushnextgenadmin->get_image_count( $resmush_ids, false );
+			$stats       = WP_Smush::get_instance()->core()->nextgen->ng_stats->get_stats_for_ids( $resmush_ids );
+
+			$stats['count_images'] = WP_Smush::get_instance()->core()->nextgen->ng_admin->get_image_count( $resmush_ids, false );
 		}
 
 		// Delete the resmush list.
