@@ -82,8 +82,6 @@ abstract class WP_Smush_View {
 	 * @since 2.9.0
 	 */
 	public function add_action_hooks() {
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-
 		// Notices.
 		add_action( 'admin_notices', array( $this, 'smush_upgrade_notice' ) );
 		add_action( 'admin_notices', array( $this, 'smush_deactivated' ) );
@@ -127,67 +125,6 @@ abstract class WP_Smush_View {
 		}
 
 		echo $content;
-	}
-
-	/**
-	 * Enqueue scripts.
-	 */
-	public function enqueue_scripts() {
-		$this->register_scripts();
-
-		$current_page   = '';
-		$current_screen = '';
-
-		if ( function_exists( 'get_current_screen' ) ) {
-			$current_screen = get_current_screen();
-			$current_page   = ! empty( $current_screen ) ? $current_screen->base : $current_page;
-		}
-
-		/**
-		 * If this is called by wp_enqueue_media action, check if we are on one of the
-		 * required screen to avoid duplicate queries.
-		 * We have already enqueued scripts using admin_enqueue_scripts on required pages.
-		 */
-		if ( in_array( $current_page, WP_Smush_Core::$pages, true ) && doing_action( 'wp_enqueue_media' ) ) {
-			return;
-		}
-
-		/**
-		 * Load js and css on all admin pages, in order to display install/upgrade notice.
-		 * And If upgrade/install message is dismissed or for pro users, Do not enqueue script.
-		 */
-		if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || WP_Smush::is_pro() ) {
-			/**
-			 * Do not enqueue, unless it is one of the required screen, or not in WordPress backend.
-			 *
-			 * @var array $pages  List of screens where script needs to be loaded.
-			 */
-			if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, WP_Smush_Core::$pages, true ) && ! did_action( 'wp_enqueue_media' ) ) ) {
-				return;
-			}
-		}
-
-		// Allows to disable enqueuing smush files on a particular page.
-		$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
-
-		if ( ! $enqueue_smush ) {
-			return;
-		}
-
-		// We need it on media pages and Smush pages.
-		wp_enqueue_script( 'smush-admin' );
-		wp_enqueue_style( 'smush-admin-common' );
-
-		// Load on all Smush page only.
-		if ( in_array( $current_screen->id, WP_Smush_Core::$plugin_pages, true ) ) {
-			// Smush admin (smush-admin) includes the Shared UI.
-			wp_enqueue_style( 'smush-admin' );
-		}
-
-		// Localize translatable strings for js.
-		WP_Smush::get_instance()->core()->localize();
-
-		$this->extend_media_modal();
 	}
 
 	/**
@@ -500,59 +437,6 @@ abstract class WP_Smush_View {
 		$svg = ob_get_clean();
 
 		return 'data:image/svg+xml;base64,' . base64_encode( $svg );
-	}
-
-	/**
-	 * Register JS and CSS.
-	 */
-	private function register_scripts() {
-		// Share UI JS.
-		wp_register_script( 'smush-wpmudev-sui', WP_SMUSH_URL . 'app/assets/js/shared-ui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
-
-		// Main JS.
-		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery', 'smush-wpmudev-sui' ), WP_SMUSH_VERSION, true );
-
-		// Main CSS.
-		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
-
-		// Styles that can be used on all pages in the WP backend.
-		wp_register_style( 'smush-admin-common', WP_SMUSH_URL . 'app/assets/css/common.min.css', array(), WP_SMUSH_VERSION );
-
-		// Dismiss update info.
-		WP_Smush::get_instance()->core()->mod->smush->dismiss_update_info();
-	}
-
-	/**
-	 * Load media assets.
-	 */
-	private function extend_media_modal() {
-		if ( wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
-			return;
-		}
-
-		wp_enqueue_script(
-			'smush-backbone-extension', WP_SMUSH_URL . 'app/assets/js/media.min.js', array(
-				'jquery',
-				'media-editor', // Used in image filters.
-				'media-views',
-				'media-grid',
-				'wp-util',
-				'wp-api',
-			), WP_SMUSH_VERSION, true
-		);
-
-		wp_localize_script(
-			'smush-backbone-extension', 'smush_vars', array(
-				'strings' => array(
-					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
-					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
-					'filter_excl' => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
-				),
-				'nonce'   => array(
-					'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
-				),
-			)
-		);
 	}
 
 	/**

@@ -464,7 +464,7 @@ jQuery( function ( $ ) {
 	} );
 
 	/** Restore: Media Library **/
-	$( '.wp-smush-action.wp-smush-restore' ).on( 'click', function ( e ) {
+	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-restore', function ( e ) {
 		const current_button = $( this );
 		process_smush_action( e, current_button, 'smush_restore_image', 'restore' );
 		// Change the class oa parent div ( Level 2 )
@@ -475,17 +475,17 @@ jQuery( function ( $ ) {
 	} );
 
 	/** Resmush: Media Library **/
-	$( '.wp-smush-action.wp-smush-resmush' ).on( 'click', function ( e ) {
+	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-resmush', function ( e ) {
 		process_smush_action( e, $( this ), 'smush_resmush_image', 'smushing' );
 	} );
 
 	/** Restore: NextGen Gallery **/
-	$( '.wp-smush-action.wp-smush-nextgen-restore' ).on( 'click', function ( e ) {
+	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-nextgen-restore', function ( e ) {
 		process_smush_action( e, $( this ), 'smush_restore_nextgen_image', 'restore' );
 	} );
 
 	/** Resmush: NextGen Gallery **/
-	$( '.wp-smush-action.wp-smush-nextgen-resmush' ).on( 'click', function ( e ) {
+	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-nextgen-resmush', function ( e ) {
 		process_smush_action( e, $( this ), 'smush_resmush_nextgen_image', 'smushing' );
 	} );
 

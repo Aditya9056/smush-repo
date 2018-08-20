@@ -2201,4 +2201,16 @@ class WP_Smushit {
 		$request->send_json_success( $stats );
 	}
 
+	/**
+	 * Compare Values
+	 *
+	 * @param object $a
+	 * @param object $b
+	 *
+	 * @return bool
+	 */
+	public static function cmp( $a, $b ) {
+		return $a->bytes < $b->bytes;
+	}
+
 }

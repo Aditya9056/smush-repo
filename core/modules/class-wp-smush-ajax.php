@@ -490,7 +490,7 @@ class WP_Smush_Ajax {
 							}
 
 							// Get the image count.
-							$image_count += ( ! empty( $smush_data['sizes'] ) && is_array( $smush_data['sizes'] ) ) ? sizeof( $smush_data['sizes'] ) : 0;
+							$image_count += ( ! empty( $smush_data['sizes'] ) && is_array( $smush_data['sizes'] ) ) ? count( $smush_data['sizes'] ) : 0;
 
 							// If the image is in resmush list, and it was super smushed earlier.
 							$super_smushed_count += ( $smush_data['stats']['lossy'] ) ? 1 : 0;

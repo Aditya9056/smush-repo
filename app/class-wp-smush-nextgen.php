@@ -34,12 +34,16 @@ class WP_Smush_Nextgen_Page extends WP_Smush_View {
 			)
 		);
 
+		$class = WP_Smush::is_pro() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 		$this->add_meta_box( 'meta-boxes/bulk',
 			__( 'Bulk Smush', 'wp-smushit' ),
 			array( $this, 'bulk_metabox' ),
 			array( $this, 'bulk_header_metabox' ),
 			null,
-			'bulk'
+			'bulk',
+			array(
+				'box_class' => "sui-box {$class}",
+			)
 		);
 	}
 

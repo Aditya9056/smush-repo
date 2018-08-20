@@ -470,29 +470,24 @@ class WP_Smush_Core {
 	 * Include and instantiate classes
 	 */
 	private function load_nextgen() {
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-nextgen.php';
-
-		// TODO: we should not be loading this if the nextgen integration is not enabled.
-
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-admin.php';
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-stats.php';
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-bulk.php';
-
-		$this->nextgen = new WP_Smush_Nextgen();
-
 		// Do not continue if integration not enabled or not a pro user.
 		if ( ! $this->get_nextgen_status() || ! WP_Smush::is_pro() ) {
 			return;
 		}
 
 		/* @noinspection PhpIncludeInspection */
-		include_once WP_SMUSH_DIR . 'app/class-wp-smush-nextgen.php';
+		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-nextgen.php';
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-admin.php';
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-stats.php';
 
-		//new WP_Smush_Nextgen_Bulk();
+		if ( ! is_object( $this->nextgen ) ) {
+			$this->nextgen = new WP_Smush_Nextgen();
+		}
+
+		/* @noinspection PhpIncludeInspection */
+		include_once WP_SMUSH_DIR . 'app/class-wp-smush-nextgen.php';
 	}
 
 	/**

@@ -389,16 +389,4 @@ class WP_Smush_Helper {
 		return round( $bytes, $precision ) . $units[ $pow ];
 	}
 
-	/**
-	 * Compare Values
-	 *
-	 * @param object $a
-	 * @param object $b
-	 *
-	 * @return bool
-	 */
-	public static function cmp( $a, $b ) {
-		return $a->bytes < $b->bytes;
-	}
-
 }

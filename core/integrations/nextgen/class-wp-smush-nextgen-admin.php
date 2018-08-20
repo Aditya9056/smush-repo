@@ -35,7 +35,7 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 	 *
 	 * @var int $image_count
 	 */
-	public $image_count     = 0;
+	public $image_count = 0;
 
 	/**
 	 * Remaining count.
@@ -49,14 +49,14 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 	 *
 	 * @var int $super_smushed
 	 */
-	public $super_smushed   = 0;
+	public $super_smushed = 0;
 
 	/**
 	 * Smushed images.
 	 *
 	 * @var array $smushed
 	 */
-	public $smushed         = array();
+	public $smushed = array();
 
 	/**
 	 * Stores all lossless smushed IDs.
@@ -66,11 +66,22 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 	public $resmush_ids = array();
 
 	/**
-	 * WP_Smush_Nextgen_Admin constructor.
+	 * WP_Smush_Nextgen_Stats class object.
+	 *
+	 * @var WP_Smush_Nextgen_Stats
 	 */
-	public function __construct() {
+	public $ng_stats;
+
+	/**
+	 * WP_Smush_Nextgen_Admin constructor.
+	 *
+	 * @param WP_Smush_Nextgen_Stats $stats  Class object.
+	 */
+	public function __construct( WP_Smush_Nextgen_Stats $stats ) {
+		$this->ng_stats = $stats;
+
 		// Update the number of columns.
-		add_filter( 'ngg_manage_images_number_of_columns', array( &$this, 'wp_smush_manage_images_number_of_columns' ) );
+		add_filter( 'ngg_manage_images_number_of_columns', array( $this, 'wp_smush_manage_images_number_of_columns' ) );
 
 		// Update resmush list, if a NextGen image is deleted.
 		add_action( 'ngg_delete_picture', array( $this, 'update_resmush_list' ) );
@@ -79,7 +90,7 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 		add_action( 'ngg_delete_picture', array( $this, 'update_nextgen_stats' ) );
 
 		// Update Stats, Lists -  if a NextGen Gallery is deleted.
-		add_action( 'ngg_delete_gallery', array( $this->ng_admin, 'update_stats_cache' ) );
+		add_action( 'ngg_delete_gallery', array( $this->ng_stats, 'update_stats_cache' ) );
 
 		// Update the Super Smush count, after the smushing.
 		add_action( 'wp_smush_image_optimised_nextgen', array( $this, 'update_lists' ), '', 2 );
@@ -245,15 +256,10 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 		$count ++;
 
 		// Add column Heading.
-		add_filter( "ngg_manage_images_column_{$count}_header", array( &$this, 'wp_smush_image_column_name' ) );
+		add_filter( "ngg_manage_images_column_{$count}_header", array( $this, 'wp_smush_image_column_name' ) );
 
 		// Add Column data.
-		add_filter(
-			"ngg_manage_images_column_{$count}_content", array(
-				&$this,
-				'wp_smush_column_options',
-			), 10, 2
-		);
+		add_filter( "ngg_manage_images_column_{$count}_content", array( $this, 'wp_smush_column_options' ), 10, 2 );
 
 		return $count;
 	}
@@ -396,7 +402,6 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 
 		// Remove from Super Smush list.
 		WP_Smush::get_instance()->core()->mod->smush->update_super_smush_count( $attachment_id, 'remove', 'wp-smush-super_smushed_nextgen' );
-
 	}
 
 	/**
@@ -416,10 +421,6 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 	 * Initialize NextGen Gallery Stats
 	 */
 	function setup_image_counts() {
-		if ( ! is_object( $this->ng_stats ) ) {
-			$this->ng_stats = new WP_Smush_Nextgen_Stats();
-		}
-
 		$smushed_images = $this->ng_stats->get_ngg_images( 'smushed' );
 
 		// Check if resmush ids are not set, get it.
@@ -440,7 +441,7 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 		$this->image_count = $this->get_image_count( $smushed_images );
 
 		// Count of images ( Attachments ), Does not includes additioanl sizes that might have been created.
-		$this->smushed_count = isset( $smushed_images ) && is_array( $smushed_images ) ? sizeof( $smushed_images ) : $smushed_images;
+		$this->smushed_count = isset( $smushed_images ) && is_array( $smushed_images ) ? count( $smushed_images ) : $smushed_images;
 
 		$this->remaining_count = $this->ng_stats->get_ngg_images( 'unsmushed', true );
 	}

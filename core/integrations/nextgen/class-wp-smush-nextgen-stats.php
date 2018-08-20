@@ -21,7 +21,7 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 	 *
 	 * @var array
 	 */
-	var $stats = array();
+	public $stats = array();
 
 	/**
 	 * PRO user status.
@@ -171,7 +171,7 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 	 * @param bool   $text_only      Return only text instead of button (Useful for Ajax).
 	 * @param bool   $echo           Whether to echo the stats or not.
 	 *
-	 * @uses WpSmushNextGenAdmin::column_html(), WP_Smush::get_restore_link(), WP_Smush::get_resmush_link()
+	 * @uses WP_Smush_Nextgen_Admin::column_html(), WP_Smush::get_restore_link(), WP_Smush::get_resmush_link()
 	 *
 	 * @return bool|array|string
 	 */
@@ -282,7 +282,7 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 		}
 
 		// If show button is true for some reason, column html can print out the button for us.
-		$text = $this->ng_admin->column_html( $pid, $status_txt, $button_txt, $show_button, true, $echo );
+		$text = WP_Smush::get_instance()->core()->nextgen->ng_admin->column_html( $pid, $status_txt, $button_txt, $show_button, true, $echo );
 		if ( ! $echo ) {
 			return $text;
 		}
@@ -390,10 +390,6 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 	 * @return bool|mixed|void
 	 */
 	function get_smush_stats() {
-		if ( ! is_object( $this->ng_admin ) ) {
-			$this->ng_admin = new WP_Smush_Nextgen_Admin();
-		}
-
 		$smushed_stats = array(
 			'savings_bytes'   => 0,
 			'size_before'     => 0,
@@ -425,8 +421,8 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 		$smushed_stats = array_merge( $smushed_stats, $stats );
 
 		// Gotta remove the stats for re-smush ids.
-		if ( is_array( $this->ng_admin->resmush_ids ) && ! empty( $this->ng_admin->resmush_ids ) ) {
-			$resmush_stats = $this->get_stats_for_ids( $this->ng_admin->resmush_ids );
+		if ( is_array( WP_Smush::get_instance()->core()->nextgen->ng_admin->resmush_ids ) && ! empty( WP_Smush::get_instance()->core()->nextgen->ng_admin->resmush_ids ) ) {
+			$resmush_stats = $this->get_stats_for_ids( WP_Smush::get_instance()->core()->nextgen->ng_admin->resmush_ids );
 			// Recalculate stats, Remove stats for resmush ids.
 			$smushed_stats = $this->recalculate_stats( 'sub', $smushed_stats, $resmush_stats );
 		}
@@ -726,8 +722,8 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 		$super_smushed['timestamp'] = current_time( 'timestamp' );
 
 		// Update Re-smush list
-		if ( is_array( $this->ng_admin->resmush_ids ) && is_array( $smushed_images ) ) {
-			$resmush_ids = array_intersect( $this->ng_admin->resmush_ids, array_keys( $smushed_images ) );
+		if ( is_array( WP_Smush::get_instance()->core()->nextgen->ng_admin->resmush_ids ) && is_array( $smushed_images ) ) {
+			$resmush_ids = array_intersect( WP_Smush::get_instance()->core()->nextgen->ng_admin->resmush_ids, array_keys( $smushed_images ) );
 		}
 
 		// If we have resmush ids, add it to db.
