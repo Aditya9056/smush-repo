@@ -101,7 +101,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		$this->setPro();
 
 		// Image path.
-		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
+		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image2.jpeg';
 
 		// Set smush original image setting to true.
 		$wpsmush_settings->settings['original'] = 1;
@@ -111,6 +111,9 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		// Full size should be there in smushed sizes.
 		$this->assertTrue( isset( $meta['sizes']['full'] ) );
+
+		// Now delete the uploaded file.
+		wp_delete_attachment( $id );
 
 		// Set smush original image setting to false.
 		$wpsmush_settings->settings['original'] = 0;
@@ -123,5 +126,8 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		// Remove temp API key.
 		$this->setFree();
+
+		// Now delete the uploaded file.
+		wp_delete_attachment( $id );
 	}
 }
