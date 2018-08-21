@@ -27,7 +27,12 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 		$this->module   = 'gutenberg';
 		$this->class    = 'free';
 		$this->priority = 3;
-		$this->enabled  = is_plugin_active( 'gutenberg/gutenberg.php' );
+
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$this->enabled = is_plugin_active( 'gutenberg/gutenberg.php' );
 
 		parent::__construct();
 
