@@ -16,16 +16,7 @@
  *
  * @since 2.8.1
  */
-class WP_Smush_Gutenberg {
-
-	/**
-	 * Module slug.
-	 *
-	 * @since 2.8.1
-	 *
-	 * @var string $module
-	 */
-	private $module = 'gutenberg';
+class WP_Smush_Gutenberg extends WP_Smush_Integration {
 
 	/**
 	 * WP_Smush_Gutenberg constructor.
@@ -33,27 +24,37 @@ class WP_Smush_Gutenberg {
 	 * @since 2.8.1
 	 */
 	public function __construct() {
-		// Filters the setting variable to add Gutenberg setting title and description.
-		add_filter( 'wp_smush_settings', array( $this, 'register_setting' ) );
+		$this->module   = 'gutenberg';
+		$this->class    = 'free';
+		$this->priority = 3;
+		$this->enabled  = is_plugin_active( 'gutenberg/gutenberg.php' );
 
-		// Filters the setting variable to add Nextgen to the Integration tab.
-		add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 3 );
-
-		// Disable setting.
-		add_filter( 'wp_smush_integration_status_' . $this->module, array( $this, 'setting_status' ), 10, 2 );
-
-		// Hook at the end of setting row to output an error div.
-		add_action( 'smush_setting_column_right_inside', array( $this, 'integration_error' ) );
+		parent::__construct();
 
 		// Add beta tag.
 		add_action( 'smush_setting_column_tag', array( $this, 'add_beta_tag' ) );
 
-		// Register gutenberg block assets.
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gb' ) );
+		if ( ! $this->enabled ) {
+			// Disable setting if Gutenberg is not active.
+			add_filter( 'wp_smush_integration_status_' . $this->module, '__return_true' );
+
+			// Hook at the end of setting row to output an error div.
+			add_action( 'smush_setting_column_right_inside', array( $this, 'integration_error' ) );
+
+			return;
+		}
 
 		// Show submit button when Gutenberg is active.
-		add_filter( 'wp_smush_integration_show_submit', array( $this, 'show_submit' ) );
+		add_filter( 'wp_smush_integration_show_submit', '__return_true' );
+
+		// Register gutenberg block assets.
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gb' ) );
 	}
+
+	/**************************************
+	 *
+	 * OVERWRITE PARENT CLASS FUNCTIONALITY
+	 */
 
 	/**
 	 * Filters the setting variable to add Gutenberg setting title and description.
@@ -64,7 +65,7 @@ class WP_Smush_Gutenberg {
 	 *
 	 * @return mixed
 	 */
-	public function register_setting( $settings ) {
+	public function register( $settings ) {
 		$settings[ $this->module ] = array(
 			'label'       => esc_html__( 'Show Smush stats in Gutenberg blocks', 'wp-smushit' ),
 			'short_label' => esc_html__( 'Gutenberg Support', 'wp-smushit' ),
@@ -76,6 +77,11 @@ class WP_Smush_Gutenberg {
 
 		return $settings;
 	}
+
+	/**************************************
+	 *
+	 * PUBLIC CLASSES
+	 */
 
 	/**
 	 * Add a beta tag next to the setting title.
@@ -99,21 +105,6 @@ class WP_Smush_Gutenberg {
 	}
 
 	/**
-	 * Adds the setting to the integration_group array in the WP_Smush_Dashboard class.
-	 *
-	 * @used-by wp_smush_integration_settings filter
-	 *
-	 * @param array $settings  Settings array.
-	 *
-	 * @return array
-	 */
-	public function add_setting( $settings ) {
-		$settings[] = $this->module;
-
-		return $settings;
-	}
-
-	/**
 	 * Prints the message for Gutenberg setup.
 	 *
 	 * @since 2.8.1
@@ -126,63 +117,11 @@ class WP_Smush_Gutenberg {
 			return;
 		}
 
-		// If Gutenberg is active, do not continue.
-		if ( $this->is_gutenberg_active() ) {
-			return;
-		}
 		?>
 		<div class="sui-notice smush-notice-sm">
 			<p><?php esc_html_e( 'To use this feature you need to install and activate the Gutenberg plugin.', 'wp-smushit' ); ?></p>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Update setting status - disable it if Gutenberg is not active.
-	 *
-	 * @since 2.8.1
-	 *
-	 * @param bool $disabled  Setting status.
-	 *
-	 * @return bool
-	 */
-	public function setting_status( $disabled ) {
-		if ( ! $this->is_gutenberg_active() ) {
-			$disabled = true;
-		}
-
-		return $disabled;
-	}
-
-	/**
-	 * Show submit button for integration settings.
-	 *
-	 * If Gutenberg plugin is active we will enable integration,
-	 * so show submit button if Gutenberg is active.
-	 *
-	 * @param bool $show Should show?.
-	 *
-	 * @since 2.8.1
-	 *
-	 * @return bool
-	 */
-	public function show_submit( $show ) {
-		if ( $this->is_gutenberg_active() ) {
-			$show = true;
-		}
-
-		return $show;
-	}
-
-	/**
-	 * Check if Gutenberg is active.
-	 *
-	 * @since 2.8.1
-	 *
-	 * @return bool
-	 */
-	private function is_gutenberg_active() {
-		return is_plugin_active( 'gutenberg/gutenberg.php' );
 	}
 
 	/**
@@ -197,7 +136,7 @@ class WP_Smush_Gutenberg {
 	public function enqueue_gb() {
 		$enabled = WP_Smush_Settings::$settings[ $this->module ];
 
-		if ( ! $enabled || ! $this->is_gutenberg_active() ) {
+		if ( ! $enabled ) {
 			return;
 		}
 

@@ -33,6 +33,13 @@ abstract class WP_Smush_Integration {
 	protected $priority = 5;
 
 	/**
+	 * Module status.
+	 *
+	 * @var bool $enabled
+	 */
+	protected $enabled = false;
+
+	/**
 	 * WP_Smush_Integration constructor.
 	 */
 	public function __construct() {
@@ -59,6 +66,17 @@ abstract class WP_Smush_Integration {
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * Update setting status - disable module functionality if not enabled.
+	 *
+	 * @since 2.8.1
+	 *
+	 * @return bool
+	 */
+	public function setting_status() {
+		return ! $this->enabled;
 	}
 
 }

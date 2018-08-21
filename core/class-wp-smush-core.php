@@ -442,7 +442,7 @@ class WP_Smush_Core {
 
 		if ( class_exists( 'AS3CF_Plugin_Compatibility' ) ) {
 			/* @noinspection PhpIncludeInspection */
-			require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-s3-compat.php';
+			require_once WP_SMUSH_DIR . 'core/integrations/s3/class-wp-smush-s3-compat.php';
 		}
 
 		$this->s3 = new WP_Smush_S3();

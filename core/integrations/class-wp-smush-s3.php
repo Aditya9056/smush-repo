@@ -17,34 +17,18 @@
 class WP_Smush_S3 extends WP_Smush_Integration {
 
 	/**
-	 * Module slug.
-	 *
-	 * @var string $module
-	 */
-	protected $module = 's3';
-
-	/**
-	 * Module for PRO members.
-	 *
-	 * @var string $class
-	 */
-	protected $class = 'pro';
-
-	/**
-	 * Setting priority.
-	 *
-	 * @var int $priority
-	 */
-	protected $priority = 5;
-
-	/**
 	 * WP_Smush_S3 constructor.
 	 */
 	public function __construct() {
+		$this->module   = 's3';
+		$this->class    = 'pro';
+		$this->priority = 5;
+		$this->enabled  = class_exists( 'Amazon_S3_And_CloudFront' ) && class_exists( 'Amazon_S3_And_CloudFront_Pro' );
+
 		parent::__construct();
 
 		// Do not continue if not PRO member or S3 Offload plugin is not installed.
-		if ( ! WP_Smush::is_pro() && $this->setting_status( false ) ) {
+		if ( ! WP_Smush::is_pro() || ! $this->enabled ) {
 			return;
 		}
 
@@ -93,23 +77,6 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		);
 
 		return $settings;
-	}
-
-	/**
-	 * Update setting status - disable if S3 Offload plugin is not installed    .
-	 *
-	 * @since 2.8.1
-	 *
-	 * @param bool $disabled  Setting status.
-	 *
-	 * @return bool
-	 */
-	public function setting_status( $disabled ) {
-		if ( ! class_exists( 'Amazon_S3_And_CloudFront' ) && ! class_exists( 'Amazon_S3_And_CloudFront_Pro' ) ) {
-			$disabled = true;
-		}
-
-		return $disabled;
 	}
 
 	/**************************************

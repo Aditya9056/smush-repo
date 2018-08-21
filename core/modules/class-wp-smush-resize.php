@@ -357,7 +357,7 @@ class WP_Smush_Resize {
 	 *
 	 * @return bool
 	 */
-	public function maybe_unlink( $path, $meta ) {
+	private function maybe_unlink( $path, $meta ) {
 		if ( empty( $path ) ) {
 			return true;
 		}

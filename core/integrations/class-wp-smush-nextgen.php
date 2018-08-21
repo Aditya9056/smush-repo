@@ -14,16 +14,7 @@
 /**
  * Class WP_Smush_Nextgen
  */
-class WP_Smush_Nextgen {
-
-	/**
-	 * Module slug.
-	 *
-	 * @since 2.8.1
-	 *
-	 * @var string $module
-	 */
-	private $module = 'nextgen';
+class WP_Smush_Nextgen extends WP_Smush_Integration {
 
 	/**
 	 * Contains the total Stats, for displaying it on bulk page
@@ -55,32 +46,14 @@ class WP_Smush_Nextgen {
 	 * WP_Smush_Nextgen constructor.
 	 */
 	public function __construct() {
-		$this->init();
-	}
+		$this->module   = 'nextgen';
+		$this->class    = 'pro';
+		$this->priority = 10;
+		$this->enabled  = class_exists( 'C_NextGEN_Bootstrap' );
 
-	/**
-	 * Init filters and actions.
-	 */
-	private function init() {
+		parent::__construct();
+
 		$is_pro = WP_Smush::is_pro();
-
-		// Filters the setting variable to add Nextgen setting title and description.
-		add_filter( 'wp_smush_settings', array( $this, 'register' ) );
-
-		// Filters the setting variable to add Nextgen setting in premium features.
-		add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), 10 );
-
-		// Disable setting.
-		add_filter( 'wp_smush_integration_status_' . $this->module, array( $this, 'setting_status' ) );
-
-		// Show submit button when Gutenberg is active.
-		add_filter( 'wp_smush_integration_show_submit', array( $this, 'show_submit' ) );
-
-		// Show alert message only if Pro user.
-		if ( $is_pro ) {
-			// Hook at the end of setting row to output a error div.
-			add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
-		}
 
 		// Check if integration is Enabled or not.
 		if ( ! empty( WP_Smush_Settings::$settings ) && $is_pro ) {
@@ -91,32 +64,72 @@ class WP_Smush_Nextgen {
 			$opt_nextgen_val = WP_Smush_Settings::get_setting( $opt_nextgen, false );
 		}
 
-		// Return if not a pro user, or nextgen integration is not enabled.
-		if ( ! $is_pro || ! $opt_nextgen_val ) {
+		// Hook at the end of setting row to output a error div.
+		add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
+
+		// Do not continue if not PRO member or NextGen plugin not installed.
+		if ( ! $is_pro || ! $this->enabled || ! $opt_nextgen_val ) {
 			return;
 		}
 
 		$this->ng_stats = new WP_Smush_Nextgen_Stats();
 		$this->ng_admin = new WP_Smush_Nextgen_Admin( $this->ng_stats );
 
-		// Auto Smush image, if enabled, runs after Nextgen is finished uploading the image.
-		// Allows to override whether to auto smush nextgen image or not.
+		/**
+		 * FILTERS
+		 */
+		// Show submit button when Gutenberg is active.
+		add_filter( 'wp_smush_integration_show_submit', '__return_true' );
+
+		/**
+		 * ACTIONS
+		 */
+		// Auto Smush image, if enabled, runs after NextGen is finished uploading the image.
+		// Allows to override whether to auto smush NextGen image or not.
 		$auto_smush = apply_filters( 'smush_nextgen_auto', WP_Smushit::is_auto_smush_enabled() );
 		if ( $auto_smush ) {
-			add_action( 'ngg_added_new_image', array( &$this, 'auto_smush' ) );
+			add_action( 'ngg_added_new_image', array( $this, 'auto_smush' ) );
 		}
 
-		// Single Smush/Manual Smush: Handles the Single/Manual smush request for Nextgen Gallery.
+		/**
+		 * AJAX
+		 */
+		// Single Smush/Manual Smush: Handles the Single/Manual smush request for NextGen Gallery.
 		add_action( 'wp_ajax_smush_manual_nextgen', array( $this, 'manual_nextgen' ) );
-
 		// Restore Image: Handles the single/Manual restore image request for NextGen Gallery.
 		add_action( 'wp_ajax_smush_restore_nextgen_image', array( $this, 'restore_image' ) );
-
 		// Resmush Image: Handles the single/Manual resmush image request for NextGen Gallery.
 		add_action( 'wp_ajax_smush_resmush_nextgen_image', array( $this, 'resmush_image' ) );
-
+		// Bulk Smush NextGen images.
 		add_action( 'wp_ajax_wp_smushit_nextgen_bulk', array( $this, 'smush_bulk' ) );
 	}
+
+	/**************************************
+	 *
+	 * OVERWRITE PARENT CLASS FUNCTIONALITY
+	 */
+
+	/**
+	 * Filters the setting variable to add NextGen setting title and description
+	 *
+	 * @param array $settings Settings.
+	 *
+	 * @return mixed
+	 */
+	public function register( $settings ) {
+		$settings[ $this->module ] = array(
+			'label'       => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
+			'short_label' => esc_html__( 'NextGen Gallery', 'wp-smushit' ),
+			'desc'        => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' ),
+		);
+
+		return $settings;
+	}
+
+	/**************************************
+	 *
+	 * PUBLIC CLASSES
+	 */
 
 	/**
 	 * Bulk Smush for Nextgen.
@@ -207,11 +220,14 @@ class WP_Smush_Nextgen {
 	 *
 	 * @param string $name  Setting name.
 	 */
-	public static function additional_notice( $name ) {
-		if ( 'nextgen' === $name && ! class_exists( 'C_NextGEN_Bootstrap' ) ) { ?>
+	public function additional_notice( $name ) {
+		if ( 'nextgen' === $name && ! $this->enabled ) {
+			?>
 			<div class="sui-notice sui-notice-sm">
 				<p>
-					<?php esc_html_e( 'To use this feature you need to install and activate NextGen Gallery.', 'wp-smushit' ); ?>
+					<?php
+					esc_html_e( 'To use this feature you need to install and activate NextGen Gallery.', 'wp-smushit' );
+					?>
 				</p>
 			</div>
 			<?php
@@ -219,64 +235,13 @@ class WP_Smush_Nextgen {
 	}
 
 	/**
-	 * Filters the setting variable to add NextGen setting title and description
-	 *
-	 * @param array $settings Settings.
-	 *
-	 * @return mixed
-	 */
-	public function register( $settings ) {
-		$settings[ $this->module ] = array(
-			'label'       => esc_html__( 'Enable NextGen Gallery integration', 'wp-smushit' ),
-			'short_label' => esc_html__( 'NextGen Gallery', 'wp-smushit' ),
-			'desc'        => esc_html__( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' ),
-		);
-
-		return $settings;
-	}
-
-	/**
-	 * Append nextgen in pro feature list
-	 *
-	 * @param array $int_settings Integration setting keys.
-	 *
-	 * @return array
-	 */
-	public function add_setting( $int_settings ) {
-		if ( ! isset( $int_settings[ $this->module ] ) ) {
-			$int_settings[] = $this->module;
-		}
-
-		return $int_settings;
-	}
-
-	/**
-	 * Queries Nextgen table for a list of image ids
-	 *
-	 * @return mixed Array of ids
-	 */
-	protected static function get_nextgen_attachments() {
-		global $wpdb;
-
-		// Query images from the nextgen table.
-		$images = $wpdb->get_col( "SELECT pid FROM $wpdb->nggpictures ORDER BY pid ASC" );
-
-		// Return empty array, if there was error querying the images.
-		if ( empty( $images ) || is_wp_error( $images ) ) {
-			$images = array();
-		}
-
-		return $images;
-	}
-
-	/**
 	 * Get the NextGen Image object from attachment id
 	 *
-	 * @param $pid
+	 * @param string $pid  NextGen Gallery Image ID.
 	 *
 	 * @return mixed
 	 */
-	function get_nextgen_image_from_id( $pid ) {
+	public function get_nextgen_image_from_id( $pid ) {
 		// Registry Object for NextGen Gallery.
 		$registry = C_Component_Registry::get_instance();
 
@@ -289,35 +254,17 @@ class WP_Smush_Nextgen {
 	}
 
 	/**
-	 * Get the NextGen attachment id from image object
-	 *
-	 * @param $image
-	 *
-	 * @return mixed
-	 */
-	function get_nextgen_id_from_image( $image ) {
-		// Registry Object for NextGen Gallery.
-		$registry = C_Component_Registry::get_instance();
-
-		// Gallery Storage Object.
-		$storage = $registry->get_utility( 'I_Gallery_Storage' );
-
-		$pid = $storage->object->_get_image_id( $image );
-
-		return $pid;
-	}
-
-	/**
 	 * Get image mime type
 	 *
-	 * @param $file_path
+	 * @param string $file_path  File path.
 	 *
 	 * @return bool|string
 	 */
-	function get_file_type( $file_path ) {
+	public function get_file_type( $file_path ) {
 		if ( empty( $file_path ) || ! file_exists( $file_path ) ) {
 			return false;
 		}
+
 		if ( function_exists( 'exif_imagetype' ) ) {
 			$image_type = exif_imagetype( $file_path );
 			if ( ! empty( $image_type ) ) {
@@ -329,182 +276,6 @@ class WP_Smush_Nextgen {
 		}
 
 		return $image_mime;
-	}
-
-	/**
-	 * Read the image paths from an attachment's meta data and process each image
-	 * with wp_smushit().
-	 *
-	 * @param $meta
-	 * @param null $ID
-	 *
-	 * @return mixed
-	 */
-	private function resize_from_meta_data( $image ) {
-		$smush = WP_Smush::get_instance()->core()->mod->smush;
-
-		$errors = new WP_Error();
-		$stats  = array(
-			'stats' => array_merge(
-				$smush->_get_size_signature(),
-				array(
-					'api_version' => - 1,
-					'lossy'       => - 1,
-				)
-			),
-			'sizes' => array(),
-		);
-
-		$size_before = $size_after = $compression = $total_time = $bytes_saved = 0;
-
-		// Registry Object for NextGen Gallery.
-		$registry = C_Component_Registry::get_instance();
-
-		// Storage Object for NextGen Gallery.
-		$storage = $registry->get_utility( 'I_Gallery_Storage' );
-
-		// File path and URL for original image.
-		// Get an array of sizes available for the $image.
-		$sizes = $storage->get_image_sizes();
-
-		// If images has other registered size, smush them first.
-		if ( ! empty( $sizes ) ) {
-
-			if ( class_exists( 'finfo' ) ) {
-				$finfo = new finfo( FILEINFO_MIME_TYPE );
-			} else {
-				$finfo = false;
-			}
-
-			foreach ( $sizes as $size ) {
-
-				// Skip Full size, if smush original is not checked.
-				if ( 'full' === $size && ! $smush->smush_original ) {
-					continue;
-				}
-
-				// Check if registered size is supposed to be converted or not.
-				if ( 'full' !== $size && $smush->skip_image_size( $size ) ) {
-					return false;
-				}
-
-				// We take the original image. Get the absolute path using the storage object.
-				$attachment_file_path_size = $storage->get_image_abspath( $image, $size );
-
-				if ( $finfo ) {
-					$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
-				} elseif ( function_exists( 'mime_content_type' ) ) {
-					$ext = mime_content_type( $attachment_file_path_size );
-				} else {
-					$ext = false;
-				}
-				if ( $ext ) {
-					$valid_mime = array_search(
-						$ext,
-						array(
-							'jpg' => 'image/jpeg',
-							'png' => 'image/png',
-							'gif' => 'image/gif',
-						),
-						true
-					);
-					if ( false === $valid_mime ) {
-						continue;
-					}
-				}
-				/**
-				 * Allows to skip a image from smushing
-				 *
-				 * @param bool , Smush image or not
-				 * @$size string, Size of image being smushed
-				 */
-				$smush_image = apply_filters( 'wp_smush_nextgen_image', true, $size );
-				if ( ! $smush_image ) {
-					continue;
-				}
-				// Store details for each size key.
-				$response = $smush->do_smushit( $attachment_file_path_size, $image->pid, $this->module );
-
-				if ( is_wp_error( $response ) ) {
-					return $response;
-				}
-
-				// If there are no stats.
-				if ( empty( $response['data'] ) ) {
-					continue;
-				}
-
-				// If the image size grew after smushing, skip it.
-				if ( $response['data']->after_size > $response['data']->before_size ) {
-					continue;
-				}
-
-				$stats['sizes'][ $size ] = (object) $smush->_array_fill_placeholders( $smush->_get_size_signature(), (array) $response['data'] );
-
-				if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
-					$stats['stats']['api_version'] = $response['data']->api_version;
-					$stats['stats']['lossy']       = $response['data']->lossy;
-					$stats['stats']['keep_exif']   = ! empty( $response['data']->keep_exif ) ? $response['data']->keep_exif : 0;
-				}
-			}
-		}
-
-		$has_errors = (bool) count( $errors->get_error_messages() );
-
-		// Set smush status for all the images, store it in wp-smpro-smush-data.
-		if ( ! $has_errors ) {
-
-			$existing_stats = ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) ? $image->meta_data['wp_smush'] : '';
-
-			if ( ! empty( $existing_stats ) ) {
-				// Update stats for each size.
-				if ( ! empty( $existing_stats['sizes'] ) && ! empty( $stats['sizes'] ) ) {
-
-					foreach ( $existing_stats['sizes'] as $size_name => $size_stats ) {
-						// If stats for a particular size doesn't exists.
-						if ( empty( $stats['sizes'] ) || empty( $stats['sizes'][ $size_name ] ) ) {
-							$stats = empty( $stats ) ? array() : $stats;
-							if ( empty( $stats['sizes'] ) ) {
-								$stats['sizes'] = array();
-							}
-							$stats['sizes'][ $size_name ] = $existing_stats['sizes'][ $size_name ];
-						} else {
-							$existing_stats_size = (object) $existing_stats['sizes'][ $size_name ];
-
-							// Store the original image size.
-							$stats['sizes'][ $size_name ]->size_before = ( ! empty( $existing_stats_size->size_before ) && $existing_stats_size->size_before > $stats['sizes'][ $size_name ]->size_before ) ? $existing_stats_size->size_before : $stats['sizes'][ $size_name ]->size_before;
-
-							// Update compression percent and bytes saved for each size.
-							$stats['sizes'][ $size_name ]->bytes = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->bytes;
-							// Calculate percentage.
-							$stats['sizes'][ $size_name ]->percent = $smush->calculate_percentage( $stats['sizes'][ $size_name ], $existing_stats_size );
-						}
-					}
-				}
-			}
-			// Total Stats.
-			$stats                 = $smush->total_compression( $stats );
-			$stats['total_images'] = ! empty( $stats['sizes'] ) ? count( $stats['sizes'] ) : 0;
-
-			// If there was any compression and there was no error in smushing.
-			if ( isset( $stats['stats']['bytes'] ) && $stats['stats']['bytes'] >= 0 && ! $has_errors ) {
-				/**
-				 * Runs if the image smushing was successful
-				 *
-				 * @param int $ID Image Id
-				 *
-				 * @param array $stats Smush Stats for the image
-				 */
-				do_action( 'wp_smush_image_optimised_nextgen', $image->pid, $stats );
-			}
-			$image->meta_data['wp_smush'] = $stats;
-			nggdb::update_image_meta( $image->pid, $image->meta_data );
-
-			// Allows To get the stats for each image, after the image is smushed.
-			do_action( 'wp_smush_nextgen_image_stats', $image->pid, $stats );
-		}
-
-		return $image->meta_data['wp_smush'];
 	}
 
 	/**
@@ -571,34 +342,34 @@ class WP_Smush_Nextgen {
 				 * @param WP_Error $smush
 				 */
 				wp_send_json_error( $smush->get_error_message() );
-			} else {
-				wp_send_json_success( $status );
 			}
-		} else {
-			if ( ! $is_bulk ) {
-				if ( is_wp_error( $smush ) ) {
-					return $smush;
-				} else {
-					return $status;
-				}
-			} else {
+
+			wp_send_json_success( $status );
+		}
+
+		if ( ! $is_bulk ) {
+			if ( is_wp_error( $smush ) ) {
 				return $smush;
 			}
+
+			return $status;
 		}
+
+		return $smush;
 	}
 
 	/**
 	 * Handles the smushing of each image and its registered sizes
 	 * Calls the function to update the compression stats
 	 */
-	function manual_nextgen() {
+	public function manual_nextgen() {
 		$pid   = ! empty( $_GET['attachment_id'] ) ? absint( (int) $_GET['attachment_id'] ) : '';
 		$nonce = ! empty( $_GET['_nonce'] ) ? $_GET['_nonce'] : '';
 
 		// Verify Nonce.
 		if ( ! wp_verify_nonce( $nonce, 'wp_smush_nextgen' ) ) {
 			wp_send_json_error( array(
-				'error' => 'nonce_verification_failed'
+				'error' => 'nonce_verification_failed',
 			) );
 		}
 
@@ -619,20 +390,21 @@ class WP_Smush_Nextgen {
 	 *
 	 * @param $image
 	 */
-	function auto_smush( $image ) {
+	public function auto_smush( $image ) {
 		$this->smush_image( '', $image, false );
 	}
+
 
 	/**
 	 * Checks for file backup, if available for any of the size,
 	 * Function returns true
 	 *
-	 * @param $pid
-	 * @param $attachment_data
+	 * @param string $pid              NextGen gallery image ID.
+	 * @param array  $attachment_data  Attachment data.
 	 *
 	 * @return bool
 	 */
-	function show_restore_option( $pid, $attachment_data ) {
+	public function show_restore_option( $pid, $attachment_data ) {
 		$smush = WP_Smush::get_instance()->core()->mod->smush;
 
 		// Registry Object for NextGen Gallery.
@@ -658,10 +430,12 @@ class WP_Smush_Nextgen {
 		if ( empty( $attachment_data['sizes'] ) ) {
 			return false;
 		}
+
 		foreach ( $attachment_data['sizes'] as $size => $size_data ) {
 			if ( 'full' === $size ) {
 				continue;
 			}
+
 			// Get file path.
 			$attachment_size_file_path = $storage->get_image_abspath( $image, $size );
 
@@ -673,6 +447,8 @@ class WP_Smush_Nextgen {
 				return true;
 			}
 		}
+
+		return false;
 	}
 
 	/**
@@ -680,7 +456,7 @@ class WP_Smush_Nextgen {
 	 *
 	 * @uses WP_Smush_Nextgen_Admin::wp_smush_column_options()
 	 */
-	function restore_image() {
+	public function restore_image() {
 		// Check Empty fields.
 		if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
 			wp_send_json_error(
@@ -740,7 +516,7 @@ class WP_Smush_Nextgen {
 		$attachment_data = ! empty( $image->meta_data['wp_smush'] ) ? $image->meta_data['wp_smush'] : '';
 		if ( ! empty( $attachment_data['sizes'] ) ) {
 			foreach ( $attachment_data['sizes'] as $size => $size_data ) {
-				if ( 'full' == $size ) {
+				if ( 'full' === $size ) {
 					continue;
 				}
 				// Get file path.
@@ -764,7 +540,6 @@ class WP_Smush_Nextgen {
 		}
 		// If any of the image is restored, we count it as success.
 		if ( in_array( true, $restored ) ) {
-
 			// Update the global Stats.
 			$this->ng_admin->update_nextgen_stats( $image_id );
 
@@ -791,24 +566,21 @@ class WP_Smush_Nextgen {
 	/**
 	 * Handles the Ajax request to resmush a image, if the full image wasn't smushed earlier
 	 */
-	function resmush_image() {
+	public function resmush_image() {
 		// Check Empty fields.
 		if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
-			wp_send_json_error(
-				array(
-					'error'   => 'empty_fields',
-					'message' => '<div class="wp-smush-error">' . esc_html__( "We couldn't process the image, fields empty.", 'wp-smushit' ) . '</div>',
-				)
-			);
+			wp_send_json_error( array(
+				'error'   => 'empty_fields',
+				'message' => '<div class="wp-smush-error">' . esc_html__( "We couldn't process the image, fields empty.", 'wp-smushit' ) . '</div>',
+			) );
 		}
+
 		// Check Nonce.
 		if ( ! wp_verify_nonce( $_POST['_nonce'], 'wp-smush-resmush-' . $_POST['attachment_id'] ) ) {
-			wp_send_json_error(
-				array(
-					'error'   => 'empty_fields',
-					'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", 'wp-smushit' ) . '</div>',
-				)
-			);
+			wp_send_json_error( array(
+				'error'   => 'empty_fields',
+				'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", 'wp-smushit' ) . '</div>',
+			) );
 		}
 
 		$image_id = intval( $_POST['attachment_id'] );
@@ -818,19 +590,237 @@ class WP_Smush_Nextgen {
 		// If any of the image is restored, we count it as success.
 		if ( ! empty( $smushed ) && ! is_wp_error( $smushed ) ) {
 			// Send button content.
-			wp_send_json_success(
-				array(
-					'button' => $smushed['status'] . $smushed['stats'],
-				)
-			);
+			wp_send_json_success( array(
+				'button' => $smushed['status'] . $smushed['stats'],
+			) );
 		} elseif ( is_wp_error( $smushed ) ) {
 			// Send Error Message.
-			wp_send_json_error(
-				array(
-					'message' => sprintf( '<div class="wp-smush-error">' . __( 'Unable to smush image, %s', 'wp-smushit' ) . '</div>', $smushed->get_error_message() ),
-				)
-			);
+			wp_send_json_error( array(
+				'message' => sprintf(
+				/* translators: %s: error message */
+					'<div class="wp-smush-error">' . __( 'Unable to smush image, %s', 'wp-smushit' ) . '</div>',
+					$smushed->get_error_message()
+				),
+			) );
 		}
+	}
+
+	/**************************************
+	 *
+	 * PRIVATE CLASSES
+	 */
+
+	/**
+	 * Queries Nextgen table for a list of image ids
+	 *
+	 * @return mixed  Array of IDs.
+	 */
+	protected static function get_nextgen_attachments() {
+		global $wpdb;
+
+		// Query images from the nextgen table.
+		$images = $wpdb->get_col( "SELECT pid FROM $wpdb->nggpictures ORDER BY pid ASC" ); // db-query ok; no-cache ok.
+
+		// Return empty array, if there was error querying the images.
+		if ( empty( $images ) || is_wp_error( $images ) ) {
+			$images = array();
+		}
+
+		return $images;
+	}
+
+	/**
+	 * Get the NextGen attachment id from image object
+	 *
+	 * @param $image
+	 *
+	 * @return mixed
+	 */
+	private function get_nextgen_id_from_image( $image ) {
+		// Registry Object for NextGen Gallery.
+		$registry = C_Component_Registry::get_instance();
+
+		// Gallery Storage Object.
+		$storage = $registry->get_utility( 'I_Gallery_Storage' );
+
+		$pid = $storage->object->_get_image_id( $image );
+
+		return $pid;
+	}
+
+	/**
+	 * Read the image paths from an attachment's meta data and process each image
+	 * with wp_smushit().
+	 *
+	 * @param $image
+	 *
+	 * @return mixed
+	 */
+	private function resize_from_meta_data( $image ) {
+		$smush = WP_Smush::get_instance()->core()->mod->smush;
+
+		$errors = new WP_Error();
+		$stats  = array(
+			'stats' => array_merge(
+				$smush->_get_size_signature(),
+				array(
+					'api_version' => - 1,
+					'lossy'       => - 1,
+				)
+			),
+			'sizes' => array(),
+		);
+
+		// Registry Object for NextGen Gallery.
+		$registry = C_Component_Registry::get_instance();
+
+		// Storage Object for NextGen Gallery.
+		$storage = $registry->get_utility( 'I_Gallery_Storage' );
+
+		// File path and URL for original image.
+		// Get an array of sizes available for the $image.
+		$sizes = $storage->get_image_sizes();
+
+		// If images has other registered size, smush them first.
+		if ( ! empty( $sizes ) ) {
+			if ( class_exists( 'finfo' ) ) {
+				$finfo = new finfo( FILEINFO_MIME_TYPE );
+			} else {
+				$finfo = false;
+			}
+
+			foreach ( $sizes as $size ) {
+				// Skip Full size, if smush original is not checked.
+				if ( 'full' === $size && ! $smush->smush_original ) {
+					continue;
+				}
+
+				// Check if registered size is supposed to be converted or not.
+				if ( 'full' !== $size && $smush->skip_image_size( $size ) ) {
+					return false;
+				}
+
+				// We take the original image. Get the absolute path using the storage object.
+				$attachment_file_path_size = $storage->get_image_abspath( $image, $size );
+
+				if ( $finfo ) {
+					$ext = file_exists( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
+				} elseif ( function_exists( 'mime_content_type' ) ) {
+					$ext = mime_content_type( $attachment_file_path_size );
+				} else {
+					$ext = false;
+				}
+
+				if ( $ext ) {
+					$valid_mime = array_search(
+						$ext,
+						array(
+							'jpg' => 'image/jpeg',
+							'png' => 'image/png',
+							'gif' => 'image/gif',
+						),
+						true
+					);
+
+					if ( false === $valid_mime ) {
+						continue;
+					}
+				}
+
+				/**
+				 * Allows to skip a image from smushing
+				 *
+				 * @param bool , Smush image or not
+				 * @$size string, Size of image being smushed
+				 */
+				$smush_image = apply_filters( 'wp_smush_nextgen_image', true, $size );
+
+				if ( ! $smush_image ) {
+					continue;
+				}
+
+				// Store details for each size key.
+				$response = $smush->do_smushit( $attachment_file_path_size, $image->pid, $this->module );
+
+				if ( is_wp_error( $response ) ) {
+					return $response;
+				}
+
+				// If there are no stats.
+				if ( empty( $response['data'] ) ) {
+					continue;
+				}
+
+				// If the image size grew after smushing, skip it.
+				if ( $response['data']->after_size > $response['data']->before_size ) {
+					continue;
+				}
+
+				$stats['sizes'][ $size ] = (object) $smush->_array_fill_placeholders( $smush->_get_size_signature(), (array) $response['data'] );
+
+				if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
+					$stats['stats']['api_version'] = $response['data']->api_version;
+					$stats['stats']['lossy']       = $response['data']->lossy;
+					$stats['stats']['keep_exif']   = ! empty( $response['data']->keep_exif ) ? $response['data']->keep_exif : 0;
+				}
+			}
+		}
+
+		$has_errors = (bool) count( $errors->get_error_messages() );
+
+		// Set smush status for all the images, store it in wp-smpro-smush-data.
+		if ( ! $has_errors ) {
+			$existing_stats = ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) ? $image->meta_data['wp_smush'] : '';
+
+			if ( ! empty( $existing_stats ) ) {
+				// Update stats for each size.
+				if ( ! empty( $existing_stats['sizes'] ) && ! empty( $stats['sizes'] ) ) {
+					foreach ( $existing_stats['sizes'] as $size_name => $size_stats ) {
+						// If stats for a particular size doesn't exists.
+						if ( empty( $stats['sizes'] ) || empty( $stats['sizes'][ $size_name ] ) ) {
+							$stats = empty( $stats ) ? array() : $stats;
+							if ( empty( $stats['sizes'] ) ) {
+								$stats['sizes'] = array();
+							}
+							$stats['sizes'][ $size_name ] = $existing_stats['sizes'][ $size_name ];
+						} else {
+							$existing_stats_size = (object) $existing_stats['sizes'][ $size_name ];
+
+							// Store the original image size.
+							$stats['sizes'][ $size_name ]->size_before = ( ! empty( $existing_stats_size->size_before ) && $existing_stats_size->size_before > $stats['sizes'][ $size_name ]->size_before ) ? $existing_stats_size->size_before : $stats['sizes'][ $size_name ]->size_before;
+
+							// Update compression percent and bytes saved for each size.
+							$stats['sizes'][ $size_name ]->bytes = $stats['sizes'][ $size_name ]->bytes + $existing_stats_size->bytes;
+							// Calculate percentage.
+							$stats['sizes'][ $size_name ]->percent = $smush->calculate_percentage( $stats['sizes'][ $size_name ], $existing_stats_size );
+						}
+					}
+				}
+			}
+
+			// Total Stats.
+			$stats                 = $smush->total_compression( $stats );
+			$stats['total_images'] = ! empty( $stats['sizes'] ) ? count( $stats['sizes'] ) : 0;
+
+			// If there was any compression and there was no error in smushing.
+			if ( isset( $stats['stats']['bytes'] ) && $stats['stats']['bytes'] >= 0 && ! $has_errors ) {
+				/**
+				 * Runs if the image smushing was successful
+				 *
+				 * @param int $ID Image Id
+				 *
+				 * @param array $stats Smush Stats for the image
+				 */
+				do_action( 'wp_smush_image_optimised_nextgen', $image->pid, $stats );
+			}
+			$image->meta_data['wp_smush'] = $stats;
+			nggdb::update_image_meta( $image->pid, $image->meta_data );
+
+			// Allows To get the stats for each image, after the image is smushed.
+			do_action( 'wp_smush_nextgen_image_stats', $image->pid, $stats );
+		}
+
+		return $image->meta_data['wp_smush'];
 	}
 
 	/**
@@ -840,7 +830,7 @@ class WP_Smush_Nextgen {
 	 *
 	 * @return string Null/ Mime Type
 	 */
-	function get_file_ext( $file_path = '' ) {
+	private function get_file_ext( $file_path = '' ) {
 		if ( empty( $file_path ) ) {
 			return '';
 		}
@@ -872,16 +862,18 @@ class WP_Smush_Nextgen {
 	 *
 	 * @return mixed
 	 */
-	function resize_image( $attachment_id, $image, $meta, $storage ) {
+	private function resize_image( $attachment_id, $image, $meta, $storage ) {
 		if ( empty( $attachment_id ) || empty( $meta ) || ! is_object( $storage ) ) {
 			return $meta;
 		}
 
+		$resize = WP_Smush::get_instance()->core()->mod->resize;
+
 		// Initialize resize class.
-		WP_Smush::get_instance()->core()->mod->resize->initialize();
+		$resize->initialize();
 
 		// If resizing not enabled, or if both max width and height is set to 0, return.
-		if ( ! WP_Smush::get_instance()->core()->mod->resize->resize_enabled || ( WP_Smush::get_instance()->core()->mod->resize->max_w == 0 && WP_Smush::get_instance()->core()->mod->resize->max_h == 0 ) ) {
+		if ( ! $resize->resize_enabled || ( $resize->max_w == 0 && $resize->max_h == 0 ) ) {
 			return $meta;
 		}
 
@@ -929,16 +921,14 @@ class WP_Smush_Nextgen {
 
 		$original_file_size = filesize( $file_path );
 
-		$resized = WP_Smush::get_instance()->core()->mod->resize->perform_resize( $file_path, $original_file_size, $attachment_id, '', false );
+		$resized = $resize->perform_resize( $file_path, $original_file_size, $attachment_id, '', false );
 
 		// If resize wasn't successful.
 		if ( ! $resized || $resized['filesize'] == $original_file_size ) {
 			// Unlink Image, if other size path is not similar.
 			$this->maybe_unlink( $file_path, $sizes, $image, $storage );
-
 			return $meta;
 		} else {
-
 			// Else Replace the Original file with resized file.
 			$replaced = @copy( $resized['file_path'], $file_path );
 			$this->maybe_unlink( $resized['file_path'], $sizes, $image, $storage );
@@ -968,12 +958,7 @@ class WP_Smush_Nextgen {
 			 * Called after the image has been successfully resized
 			 * Can be used to update the stored stats
 			 */
-			do_action(
-				'wp_smush_image_nextgen_resized', $attachment_id,
-				array(
-					'stats' => $savings,
-				)
-			);
+			do_action( 'wp_smush_image_nextgen_resized', $attachment_id, array( 'stats' => $savings ) );
 
 			/**
 			 * Called after the image has been successfully resized
@@ -995,7 +980,7 @@ class WP_Smush_Nextgen {
 	 *
 	 * @return bool Whether the file was unlinked or not
 	 */
-	function maybe_unlink( $path, $sizes, $image, $storage ) {
+	private function maybe_unlink( $path, $sizes, $image, $storage ) {
 		if ( empty( $path ) || ! is_object( $storage ) || ! is_object( $image ) ) {
 			return false;
 		}
@@ -1027,52 +1012,7 @@ class WP_Smush_Nextgen {
 		return $unlink;
 	}
 
-	/**
-	 * Update setting status - disable it if Gutenberg is not active.
-	 *
-	 * @since 2.8.1
-	 *
-	 * @param bool $disabled  Setting status.
-	 *
-	 * @return bool
-	 */
-	public function setting_status( $disabled ) {
-		if ( ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
-			$disabled = true;
-		}
-
-		return $disabled;
-	}
-
-	/**
-	 * Show submit button for integration settings.
-	 *
-	 * If a pro user and NextGen plugin is active, we need to
-	 * make sure settings submit button is shown.
-	 *
-	 * @param bool $show Should show?.
-	 *
-	 * @since 2.8.1
-	 *
-	 * @return bool
-	 */
-	public function show_submit( $show ) {
-		// If a pro user and NextGen plugin is active.
-		if ( WP_Smush::is_pro() && class_exists( 'C_NextGEN_Bootstrap' ) ) {
-			$show = true;
-		}
-
-		return $show;
-	}
-
 }// End of Class.
-
-
-
-
-
-
-
 
 // Extend NextGen Mixin class to smush dynamic images.
 if ( class_exists( 'WP_Smush_Nextgen' ) ) {
