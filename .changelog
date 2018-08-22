@@ -2,7 +2,14 @@
 
 * New: Incorrect image size detection
 * New: Pointers for new installs
+* New: Show a list of errors (if present) after bulk Smush
 * Enhance: Remove activation redirection
+* Fix: Layout inconsistencies
+* Fix: Remove duplicate queries
+* Fix: User profile languages not properly applying to Smush
+* Fix: Translation typos
+* Fix: Smush full sized images when image dimensions are smaller than the largest thumbnail
+* Fix: Directory Smush will not get stuck when an image encounters an error during compression
 
 = 2.8.1 =
 
