@@ -335,6 +335,17 @@
 				}
 			}
 		}
+
+		.sui-cross-sell-modules {
+			.sui-cross-1 {
+				background: url("#{$img--path}/plugins-hummingbird.jpg") center;
+				background-size: cover;
+
+				> span {
+					@include background-2x("#{$img--path}/plugins-hummingbird-icon", 'png', 50px, 50px, center center, no-repeat);
+				}
+			}
+		}
 	}
 
 	.wp-smush-pagespeed-recommendation {
