@@ -35,7 +35,7 @@
 			<?php esc_html_e( 'Make a copy of my full size images', 'wp-smushit' ); ?></div>
 		<div class="smush-pro-feature-desc">
 			<?php
-			esc_html_e( 'Save copies the original full-size images you upload to your site so you
+			esc_html_e( 'Save copies of the original full-size images you upload to your site so you
 							can restore them at any point. Note: Activating this setting will double the size of the
 							uploads folder where your site’s images are stored.', 'wp-smushit' );
 			?>

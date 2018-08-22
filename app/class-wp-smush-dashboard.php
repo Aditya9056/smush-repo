@@ -550,7 +550,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized
 					version of that image for every image size that your theme has registered. This means there
 					are multiple versions of your images in your media library. By default, Smush only compresses
-					these generated image. Activate this setting to also smush your original images. Note: Activating
+					these generated images. Activate this setting to also smush your original images. Note: Activating
 					this setting doesn’t usually improve page speed, unless your website uses the original images
 					in full size.', 'wp-smushit' );
 					break;
@@ -612,7 +612,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					esc_html_e( 'Every time you upload an image to your site, WordPress generates a
 					resized version of that image for every default and/or custom image size that your theme has
 					registered. This means there are multiple versions of your images in your media library. Choose
-					the images size/s below that you would like optimized:', 'wp-smushit' );
+					the images sizes below that you would like optimized:', 'wp-smushit' );
 					?>
 				</span>
 				<?php
@@ -719,14 +719,27 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
 					<?php if ( 'detection' === $name ) : ?>
 						<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo 1 === $setting_val ? '' : 'sui-hidden'; ?>">
+						<?php if ( 1 === $setting_val ) : // If detection is enabled. ?>
+							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
+								<p>
+									<?php
+									printf(
+										/* translators: %1$s: opening a tag, %2$s: closing a tag */
+										esc_html__( 'Incorrect image size highlighting is active. %1$sView the
+										frontend%2$s of your website to see which images aren\'t the correct size
+										for their containers.', 'wp-smushit' ),
+										'<a href="' . esc_url( home_url() ) . '" target="_blank">',
+										'</a>'
+									);
+									?>
+								</p>
+							</div>
+						<?php endif; ?>
+						<div class="sui-notice sui-notice-warning smush-notice-sm smush-highlighting-warning sui-hidden">
 							<p>
 								<?php
-								printf(
-									/* translators: %1$s: opening a tag, %2$s: closing a tag */
-									esc_html__( 'Highlighting is active. %1$sView homepage%2$s.', 'wp-smushit' ),
-									'<a href="' . esc_url( home_url() ) . '" target="_blank">',
-									'</a>'
-								);
+								esc_html_e( 'Almost there! To finish activating this feature you must
+								save your settings.', 'wp-smushit' );
 								?>
 							</p>
 						</div>

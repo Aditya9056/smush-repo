@@ -52,7 +52,7 @@ abstract class WP_Smush_View {
 			$this->page_id = add_menu_page(
 				$title,
 				$title,
-				is_multisite() ? 'manage_network_options' : 'manage_options',
+				'manage_options',
 				$this->slug,
 				array( $this, 'render' ),
 				$this->get_menu_icon()

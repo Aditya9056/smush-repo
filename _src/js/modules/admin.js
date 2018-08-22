@@ -806,12 +806,20 @@ jQuery( function ( $ ) {
 	// Handle auto detect checkbox toggle, to show/hide highlighting notice.
 	$( 'body' ).on( 'click', '#wp-smush-detection', function () {
 		var self = $( this );
-		var notice_wrap = $( '.smush-highlighting-notice' );
+		var notice_wrap  = $( '.smush-highlighting-notice' );
+		var warning_wrap = $( '.smush-highlighting-warning' );
 
+		// Setting enabled.
 		if ( self.is( ':checked' ) ) {
-			notice_wrap.show();
+			// Highlighting is already active and setting not saved.
+			if ( notice_wrap.length > 0 ) {
+				notice_wrap.show();
+			} else {
+				warning_wrap.show();
+			}
 		} else {
 			notice_wrap.hide();
+			warning_wrap.hide();
 		}
 	} );
 
