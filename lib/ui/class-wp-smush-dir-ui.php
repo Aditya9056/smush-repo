@@ -82,7 +82,7 @@ if ( ! class_exists( 'WP_Smush_Dir_UI' ) ) {
 							<?php esc_html_e( 'Get started by adding files and folders you wish to optimize.', 'wp-smushit' ); ?>
 						</p>
 						<span class="wp-smush-upload-images sui-no-padding-bottom tc">
-							<button type="button" class="sui-button sui-button-primary wp-smush-browse tc" data-a11y-dialog-show="wp-smush-list-dialog"><?php esc_html_e( 'CHOOSE FOLDER', 'wp-smushit' ); ?></button>
+							<button type="button" class="sui-button sui-button-primary wp-smush-browse tc" data-a11y-dialog-show="wp-smush-list-dialog"><?php esc_html_e( 'CHOOSE DIRECTORY', 'wp-smushit' ); ?></button>
 						</span>
 					</div>
 					<!-- Notices -->

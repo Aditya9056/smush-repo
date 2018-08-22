@@ -1256,7 +1256,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						<li class="smush-pro-feature-row">
 							<div class="smush-pro-feature-title">
 								<?php esc_html_e( 'Make a copy of my full size images', 'wp-smushit' ); ?></div>
-							<div class="smush-pro-feature-desc"><?php esc_html_e( 'Save copies the original full-size images you upload to your site so you can restore them at any point. Note: Activating this setting will double the size of the uploads folder where your site’s images are stored.', 'wp-smushit' ); ?></div>
+							<div class="smush-pro-feature-desc"><?php esc_html_e( 'Save copies of the original full-size images you upload to your site so you can restore them at any point. Note: Activating this setting will double the size of the uploads folder where your site’s images are stored.', 'wp-smushit' ); ?></div>
 						</li>
 						<li class="smush-pro-feature-row">
 							<div class="smush-pro-feature-title">
@@ -1479,7 +1479,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 						esc_html_e( 'Save a ton of space by not storing over-sized images on your server. Set a maximum height and width for all images uploaded to your site so that any unnecessarily large images are automatically scaled down to a reasonable size. Note: Image resizing happens automatically when you upload attachments. This setting does not apply to images smushed using Directory Smush feature. To support retina devices, we recommend using 2x the dimensions of your image size.', 'wp-smushit' );
 						break;
 					case 'original':
-						esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated image. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed, unless your website uses the original images in full size.', 'wp-smushit' );
+						esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every image size that your theme has registered. This means there are multiple versions of your images in your media library. By default, Smush only compresses these generated images. Activate this setting to also smush your original images. Note: Activating this setting doesn’t usually improve page speed, unless your website uses the original images in full size.', 'wp-smushit' );
 						break;
 					case 'strip_exif':
 						esc_html_e( 'Note: This data adds to the size of the image. While this information might be important to photographers, it’s unnecessary for most users and safe to remove.', 'wp-smushit' );
@@ -1561,7 +1561,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 				?>
 				<!-- List of image sizes recognised by WP Smush -->
 				<div class="wp-smush-image-size-list <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
-				<span class="sui-description"><?php esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every default and/or custom image size that your theme has registered. This means there are multiple versions of your images in your media library. Choose the images size/s below that you would like optimized:', 'wp-smushit' ); ?></span>
+				<span class="sui-description"><?php esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized version of that image for every default and/or custom image size that your theme has registered. This means there are multiple versions of your images in your media library. Choose the images sizes below that you would like optimized:', 'wp-smushit' ); ?></span>
 					<?php
 					foreach ( $sizes as $size_k => $size ) {
 						// If image sizes array isn't set, mark all checked ( Default Values ).
