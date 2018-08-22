@@ -44,6 +44,8 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 				'validity'  => 'valid',
 			),
 		) );
+
+		WP_Smush::validate_install();
 	}
 
 	/**
@@ -52,6 +54,8 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	private function setFree() {
 		// Delete api key.
 		delete_site_option( 'wp_smush_api_auth' );
+
+		WP_Smush::validate_install();
 	}
 
 	/**
@@ -80,6 +84,8 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		// Set Smush to Pro.
 		$this->setPro();
 
+		$this->assertTrue( WP_Smush::is_pro() );
+
 		// Image path.
 		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image2.jpeg';
 
@@ -91,6 +97,8 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		// Now delete the uploaded file.
 		wp_delete_attachment( $id );
+
+		codecept_debug( $meta );
 
 		// Full size should be there in smushed sizes.
 		$this->assertTrue( isset( $meta['sizes']['full'] ) );
@@ -109,6 +117,8 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		// Remove temp API key.
 		$this->setFree();
+
+		$this->assertFalse( WP_Smush::is_pro() );
 	}
 
 }
