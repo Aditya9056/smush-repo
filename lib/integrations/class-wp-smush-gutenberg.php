@@ -187,7 +187,8 @@ class WP_Smush_Gutenberg {
 			'smush-gutenberg',
 			WP_SMUSH_URL . 'assets/js/blocks.min.js',
 			array( 'wp-blocks', 'wp-i18n', 'wp-element' ),
-			WP_SMUSH_VERSION
+			WP_SMUSH_VERSION,
+			true
 		);
 	}
 

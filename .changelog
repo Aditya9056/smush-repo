@@ -10,6 +10,7 @@
 * Fix: Translation strings
 * Fix: Smush full sized images when image dimensions are smaller than the largest thumbnail
 * Fix: Directory Smush will not get stuck when an image encounters an error during compression
+* Fix: Support for the latest Gutenberg version
 
 = 2.8.1 =
 
