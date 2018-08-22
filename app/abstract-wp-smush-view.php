@@ -193,7 +193,7 @@ abstract class WP_Smush_View {
 	}
 
 	/**
-	 * Display a admin motice about plugin deactivation.
+	 * Display a admin notice about plugin deactivation.
 	 */
 	public function smush_deactivated() {
 		// Display only in backend for administrators.
@@ -341,7 +341,8 @@ abstract class WP_Smush_View {
 	 */
 	public function show_tabs() {
 		$this->view( 'tabs', array(
-			'tabs' => $this->get_tabs(),
+			'tabs'      => $this->get_tabs(),
+			'is_hidden' => is_network_admin() && ! WP_Smush_Settings::$settings['networkwide'],
 		) );
 	}
 

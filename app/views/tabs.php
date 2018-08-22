@@ -10,7 +10,8 @@
 <div class="sui-sidenav smush-sidenav">
 	<ul class="sui-vertical-tabs sui-sidenav-hide-md">
 		<?php foreach ( $this->get_tabs() as $tab => $name ) : ?>
-			<li class="sui-vertical-tab <?php echo ( $tab === $this->get_current_tab() ) ? 'current' : null; ?>">
+			<?php $tab_class = $is_hidden && 'bulk' !== $tab ? 'sui-hidden smush-' . $tab : 'smush-' . $tab; ?>
+			<li class="sui-vertical-tab <?php echo $tab_class; ?> <?php echo ( $tab === $this->get_current_tab() ) ? 'current' : null; ?>">
 				<a href="<?php echo esc_url( $this->get_tab_url( $tab ) ); ?>">
 					<?php echo esc_html( $name ); ?>
 				</a>

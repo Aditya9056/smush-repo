@@ -24,27 +24,24 @@
 	<?php
 	wp_nonce_field( 'save_wp_smush_options', 'wp_smush_options_nonce', '', true );
 
-	// For subsite admins show only if networkwide options is not enabled.
-	if ( ! is_multisite() || ( ! $settings && ! is_network_admin() ) || is_network_admin() ) {
-		foreach ( $integration_group as $name ) {
-			// Settings key.
-			$setting_m_key = WP_SMUSH_PREFIX . $name;
-			// Disable setting.
-			$disable = apply_filters( 'wp_smush_integration_status_' . $name, false );
-			// Gray out row, disable setting.
-			$upsell = ( ! in_array( $name, $basic_features, true ) && ! $is_pro );
-			// Current setting value.
-			$setting_val = ( $upsell || empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
-			// Current setting label.
-			$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
+	foreach ( $integration_group as $name ) {
+		// Settings key.
+		$setting_m_key = WP_SMUSH_PREFIX . $name;
+		// Disable setting.
+		$disable = apply_filters( 'wp_smush_integration_status_' . $name, false );
+		// Gray out row, disable setting.
+		$upsell = ( ! in_array( $name, $basic_features, true ) && ! $is_pro );
+		// Current setting value.
+		$setting_val = ( $upsell || empty( $settings[ $name ] ) || $disable ) ? 0 : $settings[ $name ];
+		// Current setting label.
+		$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
 
-			// Show settings option.
-			$this->settings_row( $setting_m_key, $label, $name, $setting_val, true, $disable, $upsell );
+		// Show settings option.
+		$this->settings_row( $setting_m_key, $label, $name, $setting_val, true, $disable, $upsell );
 
-		}
-		// Hook after showing integration settings.
-		do_action( 'wp_smush_after_integration_settings' );
 	}
+	// Hook after showing integration settings.
+	do_action( 'wp_smush_after_integration_settings' );
 	?>
 </form>
 
