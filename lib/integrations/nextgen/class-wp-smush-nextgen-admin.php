@@ -414,11 +414,11 @@ if ( ! class_exists( 'WpSmushNextGenAdmin' ) ) {
 			if ( 0 >= $this->total_count ) : ?>
 				<span class="wp-smush-no-image tc">
 					<img src="<?php echo WP_SMUSH_URL . 'assets/images/smush-no-media.png'; ?>" alt="<?php esc_html_e( 'No attachments found - Upload some images', 'wp-smushit' ); ?>">
-				</span>
-				<p class="wp-smush-no-images-content tc"><?php printf( esc_html__( 'We haven\'t found any images in your %1$sgallery%2$s yet, so there\'s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' ), '<a href="' . esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ) . '">', '</a>' ); ?></p>
-				<span class="wp-smush-upload-images sui-no-padding-bottom tc">
-				<a class="sui-button sui-button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ); ?>"><?php esc_html_e( 'UPLOAD IMAGES', 'wp-smushit' ); ?></a>
-				</span>
+		        </span>
+                <p class="wp-smush-no-images-content tc"><?php printf( esc_html__( "We haven't found any images in your %sgallery%s yet, so there's no smushing to be done! Once you upload images, reload this page and start playing!", 'wp-smushit' ), '<a href="' . esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ) . '">', '</a>' ); ?></p>
+                <span class="wp-smush-upload-images sui-no-padding-bottom tc">
+                <a class="sui-button sui-button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ); ?>"><?php esc_html_e( "UPLOAD IMAGES", "wp-smushit" ); ?></a>
+                </span>
 			<?php else : ?>
 				<!-- Hide All done div if there are images pending -->
 				<div class="sui-notice sui-notice-success wp-smush-all-done<?php echo $all_done ? '' : ' sui-hidden'; ?>">
