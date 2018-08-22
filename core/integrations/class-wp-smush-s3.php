@@ -23,9 +23,12 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		$this->module   = 's3';
 		$this->class    = 'pro';
 		$this->priority = 5;
-		$this->enabled  = class_exists( 'Amazon_S3_And_CloudFront' ) && class_exists( 'Amazon_S3_And_CloudFront_Pro' );
+		$this->enabled  = function_exists( 'as3cf_init' );
 
 		parent::__construct();
+
+		// Hook at the end of setting row to output a error div.
+		add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ), 15 );
 
 		// Do not continue if not PRO member or S3 Offload plugin is not installed.
 		if ( ! WP_Smush::is_pro() || ! $this->enabled ) {
@@ -47,8 +50,6 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		add_action( 'smush_file_exists', array( $this, 'maybe_download_file' ), 10, 3 );
 		// Show S3 integration message, if user hasn't enabled it.
 		add_action( 'wp_smush_header_notices', array( $this, 's3_support_required_notice' ) );
-		// Hook at the end of setting row to output a error div.
-		add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ), 15 );
 	}
 
 	/**************************************
