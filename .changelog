@@ -7,7 +7,7 @@
 * Fix: Layout inconsistencies
 * Fix: Remove duplicate queries
 * Fix: User profile languages not properly applying to Smush
-* Fix: Translation typos
+* Fix: Translation strings
 * Fix: Smush full sized images when image dimensions are smaller than the largest thumbnail
 * Fix: Directory Smush will not get stuck when an image encounters an error during compression
 
