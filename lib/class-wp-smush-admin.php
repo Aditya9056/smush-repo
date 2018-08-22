@@ -350,10 +350,9 @@ if ( ! class_exists( 'WpSmushitAdmin' ) ) {
 		function screen() {
 			global $wpsmush_bulkui;
 
-			$cap   = is_multisite() ? 'manage_network_options' : 'manage_options';
 			$title = $this->validate_install() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 			add_menu_page(
-				$title, $title, $cap, 'smush', array(
+				$title, $title, 'manage_options', 'smush', array(
 					$wpsmush_bulkui,
 					'ui',
 				), $this->get_menu_icon()

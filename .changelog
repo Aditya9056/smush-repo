@@ -11,6 +11,7 @@
 * Fix: Smush full sized images when image dimensions are smaller than the largest thumbnail
 * Fix: Directory Smush will not get stuck when an image encounters an error during compression
 * Fix: Support for the latest Gutenberg version
+* Fix: Allow blog admins in network installs to manage site Smush options
 
 = 2.8.1 =
 
