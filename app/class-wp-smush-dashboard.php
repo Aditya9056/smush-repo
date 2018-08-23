@@ -73,6 +73,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'bulk'         => __( 'Bulk Smush', 'wp-smushit' ),
 				'directory'    => __( 'Directory Smush', 'wp-smushit' ),
 				'integrations' => __( 'Integrations', 'wp-smushit' ),
+				'cdn'          => __( 'CDN', 'wp-smushit' ),
 			)
 		);
 
@@ -216,6 +217,27 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						array( $this, 'pro_features_metabox_header' ),
 						null,
 						'bulk'
+					);
+				}
+
+				break;
+
+			case 'cdn':
+				if ( ! $is_pro ) {
+					$this->add_meta_box( 'meta-boxes/cdn-upsell',
+						__( 'CDN', 'wp-smushit' ),
+						array( $this, 'cdn_upsell_metabox' ),
+						array( $this, 'cdn_upsell_metabox_header' ),
+						null,
+						'cdn'
+					);
+				} else {
+					$this->add_meta_box( 'meta-boxes/cdn',
+						__( 'CDN', 'wp-smushit' ),
+						array( $this, 'cdn_metabox' ),
+						null,
+						null,
+						'cdn'
 					);
 				}
 
@@ -1003,6 +1025,36 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		 */
 		$this->view( 'meta-boxes/integrations/meta-box-footer', array(
 			'show_submit' => apply_filters( 'wp_smush_integration_show_submit', false ),
+		) );
+	}
+
+	/**
+	 * CDN meta box (for free users).
+	 *
+	 * @since 3.0
+	 */
+	public function cdn_upsell_metabox() {
+		$upgrade_url = add_query_arg(
+			array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => 'smush_stats_enable_lossy',
+			), WP_Smush::get_instance()->core()->upgrade_url
+		);
+
+		$this->view( 'meta-boxes/cdn/upsell-meta-box', array(
+			'upgrade_url' => $upgrade_url,
+		) );
+	}
+
+	/**
+	 * Upsell meta box header.
+	 *
+	 * @since 3.0
+	 */
+	public function cdn_upsell_metabox_header() {
+		$this->view( 'meta-boxes/cdn/upsell-meta-box-header', array(
+			'title' => __( 'CDN', 'wp-smushit' ),
 		) );
 	}
 
