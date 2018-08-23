@@ -1,13 +1,11 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:400,500,700|Roboto:400,500,700);
-@charset "UTF-8";
-
 .sui-screen-reader-text,
 .sui-2-2-9 .sui-wrap .sui-toggle input[type="checkbox"],
 .sui-2-2-9 .sui-wrap .sui-checkbox input,
 .sui-2-2-9 .sui-wrap .sui-radio input,
 .sui-2-2-9 .sui-wrap .sui-upload-group input[type="file"],
 .sui-2-2-9 .sui-wrap .sui-multi-checkbox label input,
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 .select2-selection--single .select2-selection__rendered {
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 .select2-selection--single .select2-selection__rendered {
   border: 0;
   clip: rect(1px, 1px, 1px, 1px);
   -webkit-clip-path: inset(50%);
@@ -167,12 +165,12 @@
 }
 
 .sui-2-2-9 .sui-wrap {
-  font-family: "Roboto", Arial, sans-serif;
+  font-family: "Roboto",Arial,sans-serif;
   font-weight: 400;
   font-size: 15px;
   line-height: 30px;
-  color: #666666;
-  letter-spacing: -0.025em;
+  color: #666;
+  letter-spacing: -.025em;
   margin: 30px 30px 0 10px;
 }
 
@@ -183,7 +181,7 @@
   -moz-osx-font-smoothing: grayscale;
   font-smoothing: antialiased;
   -webkit-font-smoothing: antialiased;
-  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+  text-shadow: rgba(0,0,0,0.01) 0 0 1px;
 }
 
 @media (max-width: 782px) {
@@ -202,15 +200,15 @@
   margin: 0.5em auto;
   padding: 0;
   line-height: 30px;
-  color: #333333;
+  color: #333;
   font-weight: 700;
-  font-family: "Roboto Condensed", "Roboto", Arial, sans-serif;
+  font-family: "Roboto Condensed","Roboto",Arial,sans-serif;
 }
 
 .sui-2-2-9 .sui-wrap h1 {
   font-size: 32px;
   line-height: 40px;
-  color: #333333;
+  color: #333;
   margin: 0;
 }
 
@@ -237,12 +235,12 @@
 }
 
 .sui-2-2-9 .sui-wrap p {
-  font-family: "Roboto", Arial, sans-serif;
+  font-family: "Roboto",Arial,sans-serif;
   font-weight: 400;
   font-size: 15px;
   line-height: 30px;
-  color: #666666;
-  letter-spacing: -0.025em;
+  color: #666;
+  letter-spacing: -.025em;
   text-rendering: optimizeLegibility;
 }
 
@@ -267,7 +265,7 @@
 .sui-2-2-9 .sui-wrap p small {
   font-size: 13px;
   line-height: 22px;
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-wrap a {
@@ -292,7 +290,7 @@
 .sui-2-2-9 .sui-wrap a.disabled:hover,
 .sui-2-2-9 .sui-wrap a.disabled:focus,
 .sui-2-2-9 .sui-wrap a.disabled:active {
-  color: #888888;
+  color: #888;
   cursor: default;
 }
 
@@ -301,7 +299,7 @@
   font-weight: 500;
   font-size: 13px;
   line-height: 18px;
-  color: #333333;
+  color: #333;
   background-color: #F8F8F8;
   border: 1px solid #E6E6E6;
   border-radius: 4px;
@@ -329,7 +327,7 @@
 .sui-2-2-9 .sui-wrap dfn {
   font-style: normal;
   font-weight: normal;
-  border-bottom: 1px dotted #888888;
+  border-bottom: 1px dotted #888;
 }
 
 .sui-2-2-9 .sui-wrap [class*="sui-icon-"]:before,
@@ -340,7 +338,7 @@
 .sui-2-2-9 .sui-wrap .sui-checkbox span:not(.sui-description):not(.sui-tag):before,
 .sui-2-2-9 .sui-wrap .sui-radio span:not(.sui-description):not(.sui-tag):before,
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container .select-list-container .list-value:before,
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 .select2-selection--single .select2-selection__arrow:before,
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 .select2-selection--single .select2-selection__arrow:before,
 .sui-2-2-9 .sui-dialog .sui-dialog-close:before,
 .sui-2-2-9 .sui-dialog .sui-dialog-back:before,
 .sui-2-2-9 .sui-wrap .smush-pro-features .smush-pro-feature-title:before,
@@ -357,7 +355,7 @@
   line-height: 1;
   text-rendering: auto;
   display: inline-block;
-  color: #888888;
+  color: #888;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -365,7 +363,7 @@
 @font-face {
   font-family: 'wpmudev-plugin-icons';
   src: url(../fonts/wpmudev-plugin-icons.eot);
-  src: url(../fonts/wpmudev-plugin-icons.eot) format("embedded-opentype"), url(../fonts/wpmudev-plugin-icons.ttf) format("truetype"), url(../fonts/wpmudev-plugin-icons.woff) format("woff"), url(../fonts/wpmudev-plugin-icons.woff2) format("woff2"), url(../fonts/wpmudev-plugin-icons.svg) format("svg");
+  src: url(../fonts/wpmudev-plugin-icons.eot) format("embedded-opentype"),url(../fonts/wpmudev-plugin-icons.ttf) format("truetype"),url(../fonts/wpmudev-plugin-icons.woff) format("woff"),url(../fonts/wpmudev-plugin-icons.woff2) format("woff2"),url(../fonts/wpmudev-plugin-icons.svg) format("svg");
   font-weight: normal;
   font-style: normal;
 }
@@ -1100,9 +1098,9 @@
   padding: 7px 16px;
   margin: 0 10px 0 0;
   border: 0;
-  background-color: #888888;
-  color: #FFFFFF;
-  font: 500 12px/16px "Roboto", Arial, sans-serif;
+  background-color: #888;
+  color: #fff;
+  font: 500 12px/16px "Roboto",Arial,sans-serif;
   letter-spacing: -.025em;
   text-transform: uppercase;
   text-align: center;
@@ -1158,7 +1156,7 @@
 .sui-2-2-9 .sui-wrap a.sui-button i:before,
 .sui-2-2-9 .sui-wrap button.sui-button i:before {
   transition: all .3s ease;
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-icon-right i:not(.sui-fw):not(.sui-loading),
@@ -1206,7 +1204,7 @@
 .sui-2-2-9 .sui-wrap a.sui-button.sui-button-blue i:before,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-primary i:before,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-blue i:before {
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-primary:hover,
@@ -1233,7 +1231,7 @@
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-red i:before,
 .sui-2-2-9 .sui-wrap a.sui-button.sui-button-red i:before,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-red i:before {
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-red:hover,
@@ -1255,7 +1253,7 @@
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-green i:before,
 .sui-2-2-9 .sui-wrap a.sui-button.sui-button-green i:before,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-green i:before {
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-green:hover,
@@ -1291,22 +1289,22 @@
   opacity: 1;
   border-color: #18aa8d;
   background: #18aa8d;
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-ghost,
 .sui-2-2-9 .sui-wrap a.sui-button.sui-button-ghost,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-ghost {
   padding: 5px 16px 7px;
-  border: 2px solid #DDDDDD;
+  border: 2px solid #ddd;
   background: transparent;
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-ghost i:before,
 .sui-2-2-9 .sui-wrap a.sui-button.sui-button-ghost i:before,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-ghost i:before {
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-ghost:hover,
@@ -1315,9 +1313,9 @@
 .sui-2-2-9 .sui-wrap a.sui-button.sui-button-ghost:focus,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-ghost:hover,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-ghost:focus {
-  border-color: #888888;
-  background: #888888;
-  color: #FFFFFF;
+  border-color: #888;
+  background: #888;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-ghost:hover i:before,
@@ -1326,7 +1324,7 @@
 .sui-2-2-9 .sui-wrap a.sui-button.sui-button-ghost:focus i:before,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-ghost:hover i:before,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-ghost:focus i:before {
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-ghost.sui-button-blue,
@@ -1350,7 +1348,7 @@
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-ghost.sui-button-blue:focus {
   border-color: #17A8E3;
   background: #17A8E3;
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-ghost.sui-button-red,
@@ -1375,7 +1373,7 @@
   opacity: 1;
   border-color: #FF6D6D;
   background: #FF6D6D;
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-ghost.sui-button-red:hover i:before,
@@ -1384,7 +1382,7 @@
 .sui-2-2-9 .sui-wrap a.sui-button.sui-button-ghost.sui-button-red:focus i:before,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-ghost.sui-button-red:hover i:before,
 .sui-2-2-9 .sui-wrap button.sui-button.sui-button-ghost.sui-button-red:focus i:before {
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-ghost.sui-button-green,
@@ -1409,7 +1407,7 @@
   opacity: 1;
   border-color: #18aa8d;
   background: #18aa8d;
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-lg,
@@ -1418,7 +1416,7 @@
   height: 40px;
   padding: 11px 20px 9px;
   border-radius: 4px;
-  font: 500 15px/20px "Roboto", Arial, sans-serif;
+  font: 500 15px/20px "Roboto",Arial,sans-serif;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button.sui-button-lg.sui-button-ghost,
@@ -1504,8 +1502,8 @@
 .sui-2-2-9 .sui-wrap button.sui-button:disabled,
 .sui-2-2-9 .sui-wrap button.sui-button[disabled],
 .sui-2-2-9 .sui-wrap button.sui-button.disabled {
-  color: #AAAAAA;
-  border-color: #DDDDDD;
+  color: #aaa;
+  border-color: #ddd;
   background: #F8F8F8;
   box-shadow: none;
   pointer-events: none;
@@ -1531,8 +1529,8 @@
 .sui-2-2-9 .sui-wrap button.sui-button[disabled]:focus,
 .sui-2-2-9 .sui-wrap button.sui-button.disabled:hover,
 .sui-2-2-9 .sui-wrap button.sui-button.disabled:focus {
-  color: #AAAAAA;
-  border-color: #DDDDDD;
+  color: #aaa;
+  border-color: #ddd;
   background: #F8F8F8;
   box-shadow: none;
   cursor: default;
@@ -1559,7 +1557,7 @@
   border: 0;
   border-radius: 4px;
   background-color: transparent;
-  color: #888888;
+  color: #888;
   font-size: 12px;
   transition: 0.3s ease;
 }
@@ -1579,7 +1577,7 @@
 
 .sui-2-2-9 .sui-wrap .sui-button-icon:not(.sui-button) i:before {
   display: block;
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button-icon:not(.sui-button),
@@ -1592,12 +1590,12 @@
 .sui-2-2-9 .sui-wrap .sui-button-icon:not(.sui-button):hover,
 .sui-2-2-9 .sui-wrap .sui-button-icon:not(.sui-button):active {
   background-color: #F2F2F2;
-  color: #333333;
+  color: #333;
 }
 
 .sui-2-2-9 .sui-wrap .sui-button-icon:not(.sui-button):hover i:before,
 .sui-2-2-9 .sui-wrap .sui-button-icon:not(.sui-button):active i:before {
-  color: #333333;
+  color: #333;
 }
 
 .sui-2-2-9 .sui-wrap .sui-toggle {
@@ -1612,7 +1610,7 @@
   top: 3px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-toggle + label {
+.sui-2-2-9 .sui-wrap .sui-toggle+label {
   font-weight: 500;
 }
 
@@ -1622,7 +1620,7 @@
   font-weight: 500;
 }
 
-.sui-2-2-9 .sui-wrap .sui-toggle input[type="checkbox"][disabled] + .sui-toggle-slider {
+.sui-2-2-9 .sui-wrap .sui-toggle input[type="checkbox"][disabled]+.sui-toggle-slider {
   opacity: .5;
   cursor: not-allowed;
 }
@@ -1636,7 +1634,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #AAAAAA;
+  background-color: #aaa;
   border-radius: 8px;
   transition: .4s;
   border: none;
@@ -1653,20 +1651,20 @@
   width: 14px;
   top: 1px;
   left: 1px;
-  background-color: #FFFFFF;
+  background-color: #fff;
   border-radius: 50%;
   transition: .2s;
 }
 
-.sui-2-2-9 .sui-wrap input[type="checkbox"]:checked + .sui-toggle-slider {
+.sui-2-2-9 .sui-wrap input[type="checkbox"]:checked+.sui-toggle-slider {
   background-color: #17A8E3;
 }
 
-.sui-2-2-9 .sui-wrap input[type="checkbox"]:checked + .sui-toggle-slider:before {
+.sui-2-2-9 .sui-wrap input[type="checkbox"]:checked+.sui-toggle-slider:before {
   transform: translateX(18px);
 }
 
-.sui-2-2-9 .sui-wrap input[type="checkbox"]:checked + .sui-toggle-slider:hover {
+.sui-2-2-9 .sui-wrap input[type="checkbox"]:checked+.sui-toggle-slider:hover {
   box-shadow: 0 0 0 5px #E1F6FF;
 }
 
@@ -1682,7 +1680,7 @@
 .sui-2-2-9 .sui-wrap .sui-box {
   position: relative;
   min-height: 20px;
-  background-color: #FFFFFF;
+  background-color: #fff;
   border-radius: 5px;
   margin-bottom: 30px;
   box-shadow: 0 2px 0 #E6E6E6;
@@ -1709,7 +1707,7 @@
   }
 }
 
-.sui-2-2-9 .sui-wrap .sui-box-header > h3 > i {
+.sui-2-2-9 .sui-wrap .sui-box-header>h3>i {
   line-height: 30px;
 }
 
@@ -1781,7 +1779,7 @@
 
 .sui-2-2-9 .sui-wrap .sui-box-body .sui-box-settings-row .sui-box-settings-col-2 .sui-settings-label,
 .sui-2-2-9 .sui-wrap .sui-box-body .sui-box-settings-row .sui-box-settings-col-2 .sui-settings-label-with-tag {
-  color: #666666;
+  color: #666;
 }
 
 .sui-2-2-9 .sui-wrap .sui-box-body .sui-box-settings-row .sui-form-field:last-of-type {
@@ -1793,7 +1791,7 @@
   display: block;
   font-weight: 500;
   line-height: 22px;
-  color: #333333;
+  color: #333;
 }
 
 .sui-2-2-9 .sui-wrap .sui-box-body .sui-box-settings-row .sui-settings-label-with-tag {
@@ -1812,7 +1810,7 @@
 }
 
 .sui-2-2-9 .sui-wrap .sui-box-body .sui-box-settings-row.sui-disabled {
-  background-color: rgba(242, 242, 242, 0.5);
+  background-color: rgba(242,242,242,0.5);
   opacity: 0.5;
   pointer-events: none;
 }
@@ -1905,7 +1903,7 @@
   border-radius: 4px;
   background-color: #E1F6FF;
   padding: 20px 30px;
-  color: #333333;
+  color: #333;
   font-size: 13px;
   line-height: 22px;
 }
@@ -1930,7 +1928,7 @@
 }
 
 .sui-2-2-9 .sui-wrap .sui-box-body .sui-upsell-row .sui-upsell-notice p a {
-  color: #333333;
+  color: #333;
   text-decoration: underline;
   font-weight: 500;
 }
@@ -1971,7 +1969,7 @@
   font-weight: 700;
   font-size: 15px;
   line-height: 30px;
-  font-family: "Roboto", Arial, sans-serif;
+  font-family: "Roboto",Arial,sans-serif;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -2819,7 +2817,7 @@
 .sui-2-2-9 .sui-wrap .sui-notice-top p:first-of-type:before,
 .sui-2-2-9 .sui-wrap .sui-notice-floating p:first-of-type:before {
   position: absolute;
-  color: #888888;
+  color: #888;
   font-size: 16px;
 }
 
@@ -2897,12 +2895,12 @@
   border-left: 2px solid #888;
   border-radius: 4px;
   padding: 15px 20px 15px 50px;
-  background-color: #FFFFFF;
+  background-color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-notice p {
   margin: 15px 0;
-  font: 400 13px/22px "Roboto", Arial, sans-serif;
+  font: 400 13px/22px "Roboto",Arial,sans-serif;
   letter-spacing: -0.25px;
 }
 
@@ -2923,7 +2921,7 @@
 
 .sui-2-2-9 .sui-wrap .sui-notice,
 .sui-2-2-9 .sui-wrap .sui-notice p {
-  color: #333333;
+  color: #333;
 }
 
 .sui-2-2-9 .sui-wrap .sui-notice strong,
@@ -2939,7 +2937,7 @@
 .sui-2-2-9 .sui-wrap .sui-notice .sui-notice-dismiss a {
   margin-left: -10px;
   padding: 5px 10px;
-  color: #888888;
+  color: #888;
   font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
@@ -2948,7 +2946,7 @@
 
 .sui-2-2-9 .sui-wrap .sui-notice .sui-notice-dismiss a:hover,
 .sui-2-2-9 .sui-wrap .sui-notice .sui-notice-dismiss a:active {
-  color: #333333;
+  color: #333;
 }
 
 .sui-2-2-9 .sui-wrap .sui-notice:first-child {
@@ -2993,10 +2991,10 @@
   margin: 0;
   margin-left: 80px;
   border-radius: 4px;
-  border-left: 2px solid #888888;
+  border-left: 2px solid #888;
   padding: 15px 20px 15px 50px;
-  background-color: #FFFFFF;
-  box-shadow: rgba(0, 0, 0, 0.15) 0 5px 25px 0;
+  background-color: #fff;
+  box-shadow: rgba(0,0,0,0.15) 0 5px 25px 0;
   transform: translateX(-50%);
 }
 
@@ -3009,8 +3007,8 @@
 .sui-2-2-9 .sui-wrap .sui-notice-floating p {
   position: relative;
   margin: 15px 10px 15px 0;
-  color: #666666;
-  font: 400 13px/22px "Roboto", Arial, sans-serif;
+  color: #666;
+  font: 400 13px/22px "Roboto",Arial,sans-serif;
   letter-spacing: -0.19px;
 }
 
@@ -3022,7 +3020,7 @@
 
 .sui-2-2-9 .sui-wrap .sui-notice-top p strong,
 .sui-2-2-9 .sui-wrap .sui-notice-floating p strong {
-  color: #333333;
+  color: #333;
   font-weight: 500;
 }
 
@@ -3079,8 +3077,8 @@
       flex: 1 1 auto;
   border-radius: 0 4px 4px 0;
   background-color: #F8F8F8;
-  color: #888888;
-  font: 500 11px/13px "Roboto", Arial, sans-serif;
+  color: #888;
+  font: 500 11px/13px "Roboto",Arial,sans-serif;
   text-transform: uppercase;
   text-align: center;
   transition: 0.3s ease;
@@ -3088,7 +3086,7 @@
 
 .sui-2-2-9 .sui-wrap .sui-notice-top.sui-can-dismiss .sui-notice-dismiss a:before,
 .sui-2-2-9 .sui-wrap .sui-can-dismiss.sui-notice-floating .sui-notice-dismiss a:before {
-  color: #888888;
+  color: #888;
   font-size: 13px;
 }
 
@@ -3190,7 +3188,7 @@
 }
 
 .sui-2-2-9 .sui-wrap .sui-header-title {
-  color: #333333;
+  color: #333;
   margin: 0;
   text-align: left;
   text-transform: uppercase;
@@ -3267,7 +3265,7 @@
   margin-top: 0;
   margin-bottom: 20px;
   line-height: 22px;
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-wrap .sui-summary .sui-summary-segment .sui-summary-details .sui-summary-sub:last-of-type {
@@ -3293,7 +3291,7 @@
   font-size: 16px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-summary .sui-summary-segment .sui-summary-details i + .sui-summary-percent {
+.sui-2-2-9 .sui-wrap .sui-summary .sui-summary-segment .sui-summary-details i+.sui-summary-percent {
   margin-left: -20px;
 }
 
@@ -3346,7 +3344,7 @@
   font-size: 13px;
   font-weight: 500;
   line-height: 22px;
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-wrap .sui-summary .sui-summary-segment .sui-list .sui-list-detail i {
@@ -3369,7 +3367,7 @@
   margin-bottom: 20px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li {
+.sui-2-2-9 .sui-wrap .sui-list>li {
   position: relative;
   display: table;
   width: 100%;
@@ -3379,11 +3377,11 @@
   border-spacing: 0;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li > div {
+.sui-2-2-9 .sui-wrap .sui-list>li>div {
   display: table-row;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li.sui-list-header {
+.sui-2-2-9 .sui-wrap .sui-list>li.sui-list-header {
   color: #333333;
   font-size: 13px;
   font-weight: bold;
@@ -3391,17 +3389,17 @@
   padding-bottom: 0;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li.sui-list-header span {
+.sui-2-2-9 .sui-wrap .sui-list>li.sui-list-header span {
   display: table-cell;
   border-bottom: 1px solid #EEEEEE;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li.sui-list-header span:nth-child(2) {
+.sui-2-2-9 .sui-wrap .sui-list>li.sui-list-header span:nth-child(2) {
   text-align: right;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li .sui-list-detail {
-  color: #888888;
+.sui-2-2-9 .sui-wrap .sui-list>li .sui-list-detail {
+  color: #888;
   text-align: right;
   padding: 10px 0;
   font-size: 13px;
@@ -3409,33 +3407,33 @@
   line-height: 22px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li .sui-list-detail .sui-tag {
-  font-family: "Roboto", Arial, sans-serif;
+.sui-2-2-9 .sui-wrap .sui-list>li .sui-list-detail .sui-tag {
+  font-family: "Roboto",Arial,sans-serif;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li .sui-list-detail,
-.sui-2-2-9 .sui-wrap .sui-list > li .sui-list-label {
+.sui-2-2-9 .sui-wrap .sui-list>li .sui-list-detail,
+.sui-2-2-9 .sui-wrap .sui-list>li .sui-list-label {
   display: table-cell;
   vertical-align: middle;
   cursor: default;
   border-bottom: 1px solid #EEEEEE;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li .sui-list-label {
+.sui-2-2-9 .sui-wrap .sui-list>li .sui-list-label {
   font-size: 13px;
   font-weight: 500;
   line-height: 22px;
   padding: 19px 10px 19px 0;
-  color: #333333;
+  color: #333;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li .sui-list-label.sui-list-header {
-  font-family: "Roboto Condensed", "Roboto", Arial, sans-serif;
+.sui-2-2-9 .sui-wrap .sui-list>li .sui-list-label.sui-list-header {
+  font-family: "Roboto Condensed","Roboto",Arial,sans-serif;
   width: 200px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-list > li:last-of-type .sui-list-detail,
-.sui-2-2-9 .sui-wrap .sui-list > li:last-of-type .sui-list-label {
+.sui-2-2-9 .sui-wrap .sui-list>li:last-of-type .sui-list-detail,
+.sui-2-2-9 .sui-wrap .sui-list>li:last-of-type .sui-list-label {
   border-bottom: none;
 }
 
@@ -3472,10 +3470,10 @@
   min-width: 40px;
   padding: 8px 12px;
   border-radius: 4px;
-  background: #333333;
+  background: #333;
   box-sizing: border-box;
-  color: #FFFFFF;
-  font: 500 12px/18px "Roboto", Arial, sans-serif;
+  color: #fff;
+  font: 500 12px/18px "Roboto",Arial,sans-serif;
   text-transform: none;
   text-align: center;
   white-space: nowrap;
@@ -3495,7 +3493,7 @@
 .sui-2-2-9 .sui-wrap .sui-tooltip:before {
   bottom: 100%;
   left: 50%;
-  border-top-color: #333333;
+  border-top-color: #333;
   transform: translateX(-50%);
 }
 
@@ -3524,7 +3522,7 @@
   top: 100%;
   bottom: inherit;
   border-top-color: transparent;
-  border-bottom-color: #333333;
+  border-bottom-color: #333;
 }
 
 .sui-2-2-9 .sui-wrap .sui-tooltip.sui-tooltip-bottom-left:after,
@@ -3555,7 +3553,7 @@
   bottom: inherit;
   left: inherit;
   border-top-color: transparent;
-  border-left-color: #333333;
+  border-left-color: #333;
   transform: translateY(-50%);
 }
 
@@ -3573,7 +3571,7 @@
   bottom: inherit;
   left: 100%;
   border-top-color: transparent;
-  border-right-color: #333333;
+  border-right-color: #333;
   transform: translateY(-50%);
 }
 
@@ -3588,7 +3586,7 @@
 .sui-2-2-9 .sui-wrap .sui-tag {
   display: inline-block;
   background-color: #FECF2F;
-  color: #333333;
+  color: #333;
   border-radius: 15px;
   min-width: 39px;
   height: 26px;
@@ -3602,27 +3600,27 @@
 
 .sui-2-2-9 .sui-wrap .sui-tag.sui-tag-success {
   background-color: #1ABC9C;
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-tag.sui-tag-error {
   background-color: #FF6D6D;
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-tag.sui-tag-inactive {
   background-color: #E6E6E6;
-  color: #AAAAAA;
+  color: #aaa;
 }
 
 .sui-2-2-9 .sui-wrap .sui-tag.sui-tag-disabled {
   background-color: #F8F8F8;
-  color: #AAAAAA;
+  color: #aaa;
 }
 
 .sui-2-2-9 .sui-wrap .sui-tag.sui-tag-upgrade {
   background-color: #1ABC9C;
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-tag.sui-tag-upsell {
@@ -3641,7 +3639,7 @@
   height: 12px;
   padding: 2px 5px 1px;
   border-radius: 6px;
-  color: #FFFFFF;
+  color: #fff;
   font-size: 8px;
   line-height: 9px;
   text-align: center;
@@ -3657,11 +3655,11 @@
 
 .sui-2-2-9 .sui-wrap .sui-label,
 .sui-2-2-9 .sui-wrap .sui-inline-label {
-  font-family: "Roboto", Arial, sans-serif;
+  font-family: "Roboto",Arial,sans-serif;
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;
-  color: #888888;
+  color: #888;
   display: -ms-inline-flexbox;
   display: inline-flex;
   width: 100%;
@@ -3689,7 +3687,7 @@
   margin-left: auto;
   margin-right: 0;
   font-weight: 400;
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-wrap .sui-inline-label {
@@ -3706,16 +3704,16 @@
   display: block;
   margin: 0;
   padding: 9px 14px;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #ddd;
   border-radius: 4px;
   background-color: #FAFAFA;
   background-image: none;
-  color: #333333;
+  color: #333;
   font-size: 15px;
   line-height: 20px;
-  font-family: "Roboto", Arial, sans-serif;
+  font-family: "Roboto",Arial,sans-serif;
   font-weight: 500;
-  letter-spacing: -0.025em;
+  letter-spacing: -.025em;
   transition: color .3s ease-in-out, border-color .3s ease-in-out, background-color .3s ease-in-out;
 }
 
@@ -3755,7 +3753,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-upload-group:focus,
 fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
   border-color: #F2F2F2;
   background-color: #F2F2F2;
-  color: #AAAAAA;
+  color: #aaa;
 }
 
 .sui-2-2-9 .sui-wrap .sui-form-control,
@@ -3776,34 +3774,34 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
 .sui-2-2-9 .sui-wrap .sui-form-control:focus,
 .sui-2-2-9 .sui-wrap .sui-upload-group:focus,
 .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
-  background-color: #FFFFFF;
-  border: 1px solid #DDDDDD;
+  background-color: #fff;
+  border: 1px solid #ddd;
 }
 
 .sui-2-2-9 .sui-wrap .sui-form-control:focus,
 .sui-2-2-9 .sui-wrap .sui-upload-group:focus,
 .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
-  color: #333333;
+  color: #333;
   outline: 0;
-  background-color: #FFFFFF;
+  background-color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-form-control:-ms-input-placeholder,
 .sui-2-2-9 .sui-wrap .sui-upload-group:-ms-input-placeholder,
 .sui-2-2-9 .sui-wrap .sui-multi-checkbox:-ms-input-placeholder {
-  color: #AAAAAA;
+  color: #aaa;
 }
 
 .sui-2-2-9 .sui-wrap .sui-form-control::-ms-input-placeholder,
 .sui-2-2-9 .sui-wrap .sui-upload-group::-ms-input-placeholder,
 .sui-2-2-9 .sui-wrap .sui-multi-checkbox::-ms-input-placeholder {
-  color: #AAAAAA;
+  color: #aaa;
 }
 
 .sui-2-2-9 .sui-wrap .sui-form-control::placeholder,
 .sui-2-2-9 .sui-wrap .sui-upload-group::placeholder,
 .sui-2-2-9 .sui-wrap .sui-multi-checkbox::placeholder {
-  color: #AAAAAA;
+  color: #aaa;
 }
 
 .sui-2-2-9 .sui-wrap textarea.sui-form-control,
@@ -3850,7 +3848,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
 }
 
 .sui-2-2-9 .sui-wrap .sui-control-with-icon i:before {
-  color: #AAAAAA;
+  color: #aaa;
   display: block;
 }
 
@@ -3863,7 +3861,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
 .sui-2-2-9 .sui-wrap .sui-control-with-icon.sui-right-icon i {
   right: 14px;
   left: auto;
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-wrap .sui-control-with-icon.sui-right-icon .sui-form-control,
@@ -3999,7 +3997,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
 .sui-2-2-9 .sui-wrap .sui-multi-checkbox label {
   display: block;
   margin-top: 5px;
-  color: #888888;
+  color: #888;
   font-size: 13px;
   line-height: 16px;
   font-weight: 400;
@@ -4025,7 +4023,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
   cursor: pointer;
   background: transparent;
   border: none;
-  color: #888888;
+  color: #888;
   font-size: 15px;
   line-height: 1em;
   padding: 0;
@@ -4040,11 +4038,11 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
 }
 
 .sui-2-2-9 .sui-wrap .sui-password-group .sui-password-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(0,0,0,0.03);
 }
 
 .sui-2-2-9 .sui-wrap .sui-password-group .sui-password-toggle:hover i:before {
-  color: #666666;
+  color: #666;
 }
 
 .sui-2-2-9 .sui-wrap .sui-checkbox,
@@ -4070,7 +4068,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
   background-color: #E6E6E6;
   cursor: pointer;
   transition: .2s;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #ddd;
   border-radius: 3px;
   margin-top: 3px;
 }
@@ -4079,7 +4077,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
 .sui-2-2-9 .sui-wrap .sui-radio span:not(.sui-description):not(.sui-tag):before {
   opacity: 0;
   content: "(";
-  color: #FFFFFF;
+  color: #fff;
   font-size: 10px;
   line-height: 14px;
   position: absolute;
@@ -4095,14 +4093,14 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
   margin-left: 10px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-checkbox input:checked + span:not(.sui-description),
-.sui-2-2-9 .sui-wrap .sui-radio input:checked + span:not(.sui-description) {
+.sui-2-2-9 .sui-wrap .sui-checkbox input:checked+span:not(.sui-description),
+.sui-2-2-9 .sui-wrap .sui-radio input:checked+span:not(.sui-description) {
   border: 1px solid #17A8E3;
   background-color: #17A8E3;
 }
 
-.sui-2-2-9 .sui-wrap .sui-checkbox input:checked + span:not(.sui-description):before,
-.sui-2-2-9 .sui-wrap .sui-radio input:checked + span:not(.sui-description):before {
+.sui-2-2-9 .sui-wrap .sui-checkbox input:checked+span:not(.sui-description):before,
+.sui-2-2-9 .sui-wrap .sui-radio input:checked+span:not(.sui-description):before {
   opacity: 1;
 }
 
@@ -4122,17 +4120,17 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-multi-checkbox:focus {
   font-size: 13px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-checkbox input[disabled] + span:not(.sui-description),
-.sui-2-2-9 .sui-wrap .sui-radio input[disabled] + span:not(.sui-description),
-fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-checkbox + span:not(.sui-description),
-fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) {
+.sui-2-2-9 .sui-wrap .sui-checkbox input[disabled]+span:not(.sui-description),
+.sui-2-2-9 .sui-wrap .sui-radio input[disabled]+span:not(.sui-description),
+fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-checkbox+span:not(.sui-description),
+fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio+span:not(.sui-description) {
   cursor: not-allowed;
   opacity: .5;
 }
 
-.sui-2-2-9 .sui-wrap .sui-checkbox input[disabled] + span + span.sui-description,
-.sui-2-2-9 .sui-wrap .sui-radio input[disabled] + span + span.sui-description {
-  color: #AAAAAA;
+.sui-2-2-9 .sui-wrap .sui-checkbox input[disabled]+span+span.sui-description,
+.sui-2-2-9 .sui-wrap .sui-radio input[disabled]+span+span.sui-description {
+  color: #aaa;
   cursor: not-allowed;
 }
 
@@ -4140,7 +4138,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   border-radius: 3px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-checkbox + .sui-checkbox {
+.sui-2-2-9 .sui-wrap .sui-checkbox+.sui-checkbox {
   margin-top: 10px;
 }
 
@@ -4148,7 +4146,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   border-radius: 50%;
 }
 
-.sui-2-2-9 .sui-wrap .sui-radio + .sui-radio {
+.sui-2-2-9 .sui-wrap .sui-radio+.sui-radio {
   margin-top: 10px;
 }
 
@@ -4169,7 +4167,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   line-height: 1.5;
   pointer-events: none;
   padding: 1px 16px;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #ddd;
   background: 0 0;
   color: #888;
   transition: all .2s;
@@ -4181,9 +4179,9 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 
 .sui-2-2-9 .sui-wrap .sui-upload-label:hover .sui-upload-button,
 .sui-2-2-9 .sui-wrap .sui-upload-label:focus .sui-upload-button {
-  background-color: #888888;
-  border-color: #888888;
-  color: #FFFFFF;
+  background-color: #888;
+  border-color: #888;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-upload-message {
@@ -4231,9 +4229,9 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   margin: 1px 0;
 }
 
-.sui-2-2-9 .sui-wrap .sui-multi-checkbox label input:checked + span {
+.sui-2-2-9 .sui-wrap .sui-multi-checkbox label input:checked+span {
   background-color: #17A8E3;
-  color: #FFFFFF;
+  color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-multi-checkbox label span {
@@ -4298,7 +4296,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
       justify-content: center;
   position: relative;
   padding: 0;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #ddd;
   border-left-color: transparent;
   border-radius: 0 4px 4px 0;
   color: transparent;
@@ -4307,12 +4305,12 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 }
 
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container .select-list-container .list-value:hover {
-  border-left-color: #DDDDDD;
+  border-left-color: #ddd;
   background-color: #F2F2F2;
 }
 
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container .select-list-container .list-value:hover:before {
-  color: #666666;
+  color: #666;
 }
 
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container .select-list-container .list-value:before {
@@ -4327,8 +4325,8 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   width: 320px;
   left: auto;
   margin-right: 0;
-  border-color: #DDDDDD;
-  background-color: #FFFFFF;
+  border-color: #ddd;
+  background-color: #fff;
 }
 
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container .select-list-container .list-results li.sui-element-flex {
@@ -4349,7 +4347,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
       flex: 1;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .select-container .select-list-container .list-results li.sui-element-flex span + span {
+.sui-2-2-9 .sui-wrap .sui-insert-variables .select-container .select-list-container .list-results li.sui-element-flex span+span {
   -ms-flex: 0 0 auto;
       flex: 0 0 auto;
   margin-left: 5px;
@@ -4359,24 +4357,24 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container .select-list-container .list-results .current {
   background-color: transparent;
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container .select-list-container .list-results .current:hover {
   background-color: #F8F8F8;
-  color: #333333;
+  color: #333;
 }
 
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container.active .select-list-container .list-value {
   z-index: 1011;
-  border-bottom-color: #FFFFFF;
-  border-left-color: #DDDDDD;
-  background-color: #FFFFFF;
+  border-bottom-color: #fff;
+  border-left-color: #ddd;
+  background-color: #fff;
   border-bottom-right-radius: 0;
 }
 
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container.active .select-list-container .list-value:before {
-  color: #333333;
+  color: #333;
 }
 
 .sui-2-2-9 .sui-wrap .sui-insert-variables .select-container.active .select-list-container .list-results {
@@ -4384,7 +4382,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   border-top-right-radius: 0;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 {
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 {
   width: auto !important;
   height: auto !important;
   display: block;
@@ -4393,21 +4391,21 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   right: 0;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 * {
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 * {
   display: block;
   outline: none;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 .select2-selection--single {
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 .select2-selection--single {
   height: auto;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #ddd;
   border-left-color: transparent;
   border-radius: 0 4px 4px 0;
   background-color: transparent;
   transition: 0.2s ease;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 .select2-selection--single .select2-selection__arrow {
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 .select2-selection--single .select2-selection__arrow {
   width: 38px;
   height: 38px;
   display: -ms-flexbox;
@@ -4419,53 +4417,53 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   right: auto;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 .select2-selection--single .select2-selection__arrow:before {
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 .select2-selection--single .select2-selection__arrow:before {
   content: "@";
   display: block;
   margin: 0 auto;
-  color: #888888;
+  color: #888;
   font-size: 16px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 .select2-selection--single .select2-selection__arrow b {
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 .select2-selection--single .select2-selection__arrow b {
   display: none;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 .select2-selection--single:hover {
-  border-left-color: #DDDDDD;
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 .select2-selection--single:hover {
+  border-left-color: #ddd;
   background-color: #F2F2F2;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2 .select2-selection--single:hover .select2-selection__arrow:before {
-  color: #666666;
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2 .select2-selection--single:hover .select2-selection__arrow:before {
+  color: #666;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2.select2-container--open .select2-selection--single {
-  border-left-color: #DDDDDD;
-  background-color: #FFFFFF;
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2.select2-container--open .select2-selection--single {
+  border-left-color: #ddd;
+  background-color: #fff;
   border-bottom-right-radius: 0;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables + .select2.select2-container--open .select2-selection--single .select2-selection__arrow:before {
-  color: #333333;
+.sui-2-2-9 .sui-wrap .sui-insert-variables .sui-variables+.select2.select2-container--open .select2-selection--single .select2-selection__arrow:before {
+  color: #333;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-form-control + .select-container .select-list-container .list-value,
-.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-upload-group + .select-container .select-list-container .list-value,
-.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-multi-checkbox + .select-container .select-list-container .list-value {
+.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-form-control+.select-container .select-list-container .list-value,
+.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-upload-group+.select-container .select-list-container .list-value,
+.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-multi-checkbox+.select-container .select-list-container .list-value {
   border-color: transparent;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-form-control + .select-container .select-list-container .list-value:hover,
-.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-upload-group + .select-container .select-list-container .list-value:hover,
-.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-multi-checkbox + .select-container .select-list-container .list-value:hover {
+.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-form-control+.select-container .select-list-container .list-value:hover,
+.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-upload-group+.select-container .select-list-container .list-value:hover,
+.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-multi-checkbox+.select-container .select-list-container .list-value:hover {
   border-left-color: transparent;
   background-color: transparent;
 }
 
-.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-form-control + .select-container.active .select-list-container .list-value,
-.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-upload-group + .select-container.active .select-list-container .list-value,
-.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-multi-checkbox + .select-container.active .select-list-container .list-value {
+.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-form-control+.select-container.active .select-list-container .list-value,
+.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-upload-group+.select-container.active .select-list-container .list-value,
+.sui-2-2-9 .sui-wrap .sui-insert-variables textarea.sui-multi-checkbox+.select-container.active .select-list-container .list-value {
   border-left-color: transparent;
   background-color: transparent;
 }
@@ -4523,7 +4521,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 }
 
 .sui-2-2-9 .sui-wrap .sui-row-with-sidenav .sui-sidenav .sui-vertical-tabs .sui-vertical-tab.current a {
-  color: #333333;
+  color: #333;
   font-weight: 500;
 }
 
@@ -4544,7 +4542,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 }
 
 .sui-2-2-9 .sui-wrap .sui-row-with-sidenav .sui-sidenav .sui-vertical-tabs a {
-  color: #666666;
+  color: #666;
   display: block;
   font-weight: 400;
   transition: .3s;
@@ -4552,7 +4550,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 
 .sui-2-2-9 .sui-wrap .sui-row-with-sidenav .sui-sidenav .sui-vertical-tabs a:hover,
 .sui-2-2-9 .sui-wrap .sui-row-with-sidenav .sui-sidenav .sui-vertical-tabs a:focus {
-  color: #333333;
+  color: #333;
 }
 
 @media (max-width: 1100px) {
@@ -4586,7 +4584,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 .sui-2-2-9 .sui-wrap .sui-footer {
   text-align: center;
   margin-top: 50px;
-  color: #AAAAAA;
+  color: #aaa;
   font-size: 13px;
 }
 
@@ -4596,7 +4594,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   margin: 0 3px;
 }
 
-.sui-2-2-9 .sui-wrap #sui-cross-sell-footer > div {
+.sui-2-2-9 .sui-wrap #sui-cross-sell-footer>div {
   width: 100%;
   text-align: center;
   border-bottom: 1px solid #E6E6E6;
@@ -4604,9 +4602,9 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   margin: 10px 0 40px;
 }
 
-.sui-2-2-9 .sui-wrap #sui-cross-sell-footer > div > span {
+.sui-2-2-9 .sui-wrap #sui-cross-sell-footer>div>span {
   position: relative;
-  color: #888888;
+  color: #888;
   background-color: #f1f1f1;
   padding: 0 30px;
   font-size: 16px;
@@ -4658,9 +4656,9 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   }
 }
 
-.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1 > span,
-.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2 > span,
-.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3 > span {
+.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1>span,
+.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2>span,
+.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3>span {
   width: 56px;
   height: 56px;
   display: block;
@@ -4669,21 +4667,21 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   position: relative;
   top: 80px;
   left: 15px;
-  box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 10px 0 rgba(0,0,0,0.25);
 }
 
 @media (min-width: 600px) and (max-width: 783px) {
-  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1 > span,
-  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2 > span,
-  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3 > span {
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1>span,
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2>span,
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3>span {
     top: 110px;
   }
 }
 
 @media (max-width: 600px) {
-  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1 > span,
-  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2 > span,
-  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3 > span {
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1>span,
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2>span,
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3>span {
     z-index: 1;
     top: 45px;
     left: 50%;
@@ -4696,13 +4694,13 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   background-size: cover;
 }
 
-.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1 > span {
+.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1>span {
   background: url(../images/plugins-smush-icon.png) no-repeat center center;
   background-size: 50px 50px;
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
-  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1 > span {
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1>span {
     background-image: url(../images/plugins-smush-icon@2x.png);
   }
 }
@@ -4712,13 +4710,13 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   background-size: cover;
 }
 
-.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2 > span {
+.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2>span {
   background: url(../images/plugins-defender-icon.png) no-repeat center center;
   background-size: 50px 50px;
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
-  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2 > span {
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-2>span {
     background-image: url(../images/plugins-defender-icon@2x.png);
   }
 }
@@ -4728,13 +4726,13 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   background-size: cover;
 }
 
-.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3 > span {
+.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3>span {
   background: url(../images/plugins-crawl-icon.png) no-repeat center center;
   background-size: 50px 50px;
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
-  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3 > span {
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-3>span {
     background-image: url(../images/plugins-crawl-icon@2x.png);
   }
 }
@@ -4768,7 +4766,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 }
 
 .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-box .sui-box-body p {
-  color: #888888;
+  color: #888;
   font-size: 13px;
   line-height: 22px;
   margin-bottom: 30px;
@@ -4869,9 +4867,9 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 
 .sui-2-2-9 .sui-wrap .sui-progress-block .sui-progress .sui-progress-text span {
   font-weight: 700;
-  font-family: "Roboto Condensed", "Roboto", Arial, sans-serif, sans-serif;
+  font-family: "Roboto Condensed","Roboto",Arial,sans-serif,sans-serif;
   font-size: 13px;
-  color: #333333;
+  color: #333;
   vertical-align: middle;
   line-height: 30px;
 }
@@ -4916,7 +4914,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   cursor: pointer;
   background: transparent;
   border: none;
-  color: #888888;
+  color: #888;
   font-size: 15px;
   line-height: 1em;
   padding: 0;
@@ -4927,17 +4925,17 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 }
 
 .sui-2-2-9 .sui-wrap .sui-progress-block.sui-progress-can-close .sui-progress-close i:before {
-  color: #AAAAAA;
+  color: #aaa;
   font-size: 16px;
   position: relative;
 }
 
 .sui-2-2-9 .sui-wrap .sui-progress-block.sui-progress-can-close .sui-progress-close:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(0,0,0,0.03);
 }
 
 .sui-2-2-9 .sui-wrap .sui-progress-block.sui-progress-can-close .sui-progress-close:hover i:before {
-  color: #666666;
+  color: #666;
 }
 
 .sui-2-2-9 .sui-wrap .sui-progress-state {
@@ -4946,7 +4944,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 }
 
 .sui-2-2-9 .sui-wrap .sui-progress-state .sui-progress-state-text {
-  color: #888888;
+  color: #888;
   font-size: 13px;
   line-height: 22px;
 }
@@ -4973,7 +4971,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 .sui-2-2-9 .sui-dialog .sui-dialog-overlay {
   position: fixed;
   z-index: 2;
-  background-color: rgba(51, 51, 51, 0.95);
+  background-color: rgba(51,51,51,0.95);
   top: 0;
   right: 0;
   bottom: 0;
@@ -5002,27 +5000,27 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   padding: 0 30px;
 }
 
-.sui-2-2-9 .sui-dialog .sui-dialog-content > .sui-box {
+.sui-2-2-9 .sui-dialog .sui-dialog-content>.sui-box {
   margin: 30px 0;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 
-.sui-2-2-9 .sui-dialog .sui-dialog-content > .sui-box .sui-box-body > * {
+.sui-2-2-9 .sui-dialog .sui-dialog-content>.sui-box .sui-box-body>* {
   margin-bottom: 30px;
 }
 
 @media (max-width: 782px) {
-  .sui-2-2-9 .sui-dialog .sui-dialog-content > .sui-box .sui-box-body > * {
+  .sui-2-2-9 .sui-dialog .sui-dialog-content>.sui-box .sui-box-body>* {
     margin-bottom: 20px;
   }
 }
 
-.sui-2-2-9 .sui-dialog .sui-dialog-content > .sui-box .sui-box-body > *:last-child {
+.sui-2-2-9 .sui-dialog .sui-dialog-content>.sui-box .sui-box-body>*:last-child {
   margin-bottom: 0;
 }
 
 @media (max-width: 782px) {
-  .sui-2-2-9 .sui-dialog .sui-dialog-content > .sui-box {
+  .sui-2-2-9 .sui-dialog .sui-dialog-content>.sui-box {
     margin: 20px 0;
   }
 }
@@ -5049,12 +5047,12 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 
 .sui-2-2-9 .sui-dialog .sui-dialog-close:hover:before,
 .sui-2-2-9 .sui-dialog .sui-dialog-close:active:before {
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-dialog .sui-dialog-close:before {
   content: ")";
-  color: #AAAAAA;
+  color: #aaa;
   font-size: 16px;
   line-height: 30px;
 }
@@ -5074,84 +5072,84 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
 
 .sui-2-2-9 .sui-dialog .sui-dialog-back:hover:before,
 .sui-2-2-9 .sui-dialog .sui-dialog-back:active:before {
-  color: #888888;
+  color: #888;
 }
 
 .sui-2-2-9 .sui-dialog .sui-dialog-back:before {
   content: "\D3";
-  color: #AAAAAA;
+  color: #aaa;
   font-size: 16px;
   line-height: 30px;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-header.sui-block-content-center .sui-form-field,
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-body.sui-block-content-center .sui-form-field,
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-footer.sui-block-content-center .sui-form-field {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-header.sui-block-content-center .sui-form-field,
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-body.sui-block-content-center .sui-form-field,
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-footer.sui-block-content-center .sui-form-field {
   text-align: initial;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-header {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-header {
   display: block;
   padding-top: 40px;
   padding-bottom: 10px;
   border-bottom: 0;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-close {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-close {
   position: absolute;
   top: 20px;
   right: 20px;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-back {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-back {
   position: absolute;
   top: 20px;
   left: 20px;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-header .sui-box-title {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-header .sui-box-title {
   font-size: 22px;
   line-height: 30px;
-  font-family: "Roboto Condensed", "Roboto", Arial, sans-serif;
+  font-family: "Roboto Condensed","Roboto",Arial,sans-serif;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-header:last-child {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-header:last-child {
   padding-bottom: 20px;
 }
 
 @media (min-width: 783px) {
-  .sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-header:last-child {
+  .sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-header:last-child {
     padding-bottom: 30px;
   }
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-header + .sui-box-body {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-header+.sui-box-body {
   padding-top: 10px;
 }
 
 @media (min-width: 783px) {
-  .sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-header {
+  .sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-header {
     padding-top: 60px;
   }
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-footer {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-footer {
   -ms-flex-pack: justify;
       justify-content: space-between;
   border-top: 0;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-footer.sui-box-footer-center {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-footer.sui-box-footer-center {
   -ms-flex-pack: center;
       justify-content: center;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content > .sui-box .sui-box-footer.sui-box-footer-right {
+.sui-2-2-9 .sui-dialog.sui-dialog-alt .sui-dialog-content>.sui-box .sui-box-footer.sui-box-footer-right {
   -ms-flex-pack: end;
       justify-content: flex-end;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header {
   border: none;
   text-align: center;
   display: block;
@@ -5160,7 +5158,7 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   padding-bottom: 10px;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-close {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-close {
   width: 30px;
   height: 30px;
   display: -ms-flexbox;
@@ -5178,28 +5176,28 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   padding: 0;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-close,
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-close:before {
-  color: #888888;
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-close,
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-close:before {
+  color: #888;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-close:before {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-close:before {
   font-size: 16px;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-close:hover,
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-close:focus {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-close:hover,
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-close:focus {
   outline: none;
 }
 
 @media (max-width: 782px) {
-  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-close {
+  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-close {
     top: 20px;
     right: 10px;
   }
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-image {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-image {
   width: 70px;
   height: 70px;
   display: block;
@@ -5207,88 +5205,88 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   top: -35px;
   left: 50%;
   margin-left: -35px;
-  border: 5px solid #FFFFFF;
+  border: 5px solid #fff;
   border-radius: 4px;
-  background-color: #FFFFFF;
+  background-color: #fff;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-image img {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-image img {
   display: block;
   border-radius: 3px;
 }
 
 @media (max-width: 782px) {
-  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-dialog-image {
+  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-dialog-image {
     display: none;
   }
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header .sui-box-title {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header .sui-box-title {
   margin: 0;
-  color: #333333;
-  font: bold 22px/30px "Roboto Condensed", "Roboto", Arial, sans-serif;
+  color: #333;
+  font: bold 22px/30px "Roboto Condensed","Roboto",Arial,sans-serif;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header p {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header p {
   margin: 10px 0 0;
-  color: #666666;
+  color: #666;
   font-size: 13px;
   line-height: 22px;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header p:first-child {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header p:first-child {
   margin-top: 0;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header.sui-dialog-with-image {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header.sui-dialog-with-image {
   margin-top: 35px;
   padding-top: 60px;
 }
 
 @media (max-width: 782px) {
-  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-header.sui-dialog-with-image {
+  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-header.sui-dialog-with-image {
     margin-top: 0;
   }
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-body {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-body {
   padding-top: 10px;
   padding-bottom: 15px;
   text-align: center;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-body p {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-body p {
   font-size: 13px;
   line-height: 20px;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-body label {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-body label {
   text-align: left;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-body .sui-label {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-body .sui-label {
   line-height: 22px;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-body .sui-form-field {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-body .sui-form-field {
   margin-bottom: 20px;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-body .sui-form-field:last-child {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-body .sui-form-field:last-child {
   margin-bottom: 0;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-body:last-child {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-body:last-child {
   padding-bottom: 40px;
 }
 
 @media (max-width: 782px) {
-  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-body {
+  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-body {
     padding-bottom: 10px;
   }
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-footer {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-footer {
   -ms-flex-align: center;
       align-items: center;
   -ms-flex-pack: center;
@@ -5298,13 +5296,13 @@ fieldset[disabled] .sui-2-2-9 .sui-wrap .sui-radio + span:not(.sui-description) 
   border: 0;
 }
 
-.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-footer.sui-align-unset {
+.sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-footer.sui-align-unset {
   -ms-flex-pack: unset;
       justify-content: unset;
 }
 
 @media (max-width: 782px) {
-  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content > .sui-box .sui-box-footer {
+  .sui-2-2-9 .sui-dialog.sui-dialog-sm:not(.sui-dialog-alt) .sui-dialog-content>.sui-box .sui-box-footer {
     padding-top: 10px;
   }
 }
@@ -5541,30 +5539,15 @@ html.sui-has-overlay {
   }
 }
 
-/**
-WP Admin Notices
-
-This is used to give admin notices that are loaded outside of the .wrap but inside .sui-*-*-* the proper styles
-
- */
-
-.sui-2-2-9 #wpbody-content > .notice {
+.sui-2-2-9 #wpbody-content>.notice {
   margin: 10px 30px 15px 10px;
 }
 
 @media (max-width: 782px) {
-  .sui-2-2-9 #wpbody-content > .notice {
+  .sui-2-2-9 #wpbody-content>.notice {
     margin: 20px 10px 0 0px;
   }
 }
-
-/* ****************************************************************************
- * MODULE: VARIABLES
- */
-
-/* ****************************************************************************
- * MODULE: VARIABLES
- */
 
 .sui-2-2-9 .sui-wrap .sui-dialog-content .sui-progress-block {
   margin-bottom: 0;
@@ -5607,6 +5590,10 @@ This is used to give admin notices that are loaded outside of the .wrap but insi
 
 .sui-2-2-9 .sui-wrap .wp-smush-bulk-progress-bar-wrapper {
   margin-bottom: 30px;
+}
+
+.sui-2-2-9 .sui-wrap #sui-cross-sell-footer h3 {
+  text-align: center;
 }
 
 .sui-2-2-9 .sui-wrap .smush-final-log .smush-bulk-error-row {
@@ -5810,7 +5797,8 @@ This is used to give admin notices that are loaded outside of the .wrap but insi
   font-size: 13px;
 }
 
-.sui-2-2-9 .sui-wrap .sui-notice.smush-highlighting-notice {
+.sui-2-2-9 .sui-wrap .sui-notice.smush-highlighting-notice,
+.sui-2-2-9 .sui-wrap .sui-notice.smush-highlighting-warning {
   margin-top: 10px;
 }
 
@@ -5854,7 +5842,7 @@ This is used to give admin notices that are loaded outside of the .wrap but insi
   color: #888 !important;
 }
 
-.sui-2-2-9 .sui-wrap .sui-toggle + label {
+.sui-2-2-9 .sui-wrap .sui-toggle+label {
   font-weight: 500;
 }
 
@@ -5874,6 +5862,22 @@ This is used to give admin notices that are loaded outside of the .wrap but insi
 .sui-2-2-9 .sui-wrap #smush-quick-setup-dialog .wp-smush-resize-settings-col .wp-smush-resize-settings-wrap.sui-notice,
 .sui-2-2-9 .sui-wrap #smush-quick-setup-dialog .wp-smush-resize-settings-col .sui-description.sui-notice {
   margin-bottom: 0;
+}
+
+.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1 {
+  background: url(../images/plugins-hummingbird.jpg) center;
+  background-size: cover;
+}
+
+.sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1>span {
+  background: url(../images/plugins-hummingbird-icon.png) no-repeat center center;
+  background-size: 50px 50px;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .sui-2-2-9 .sui-wrap .sui-cross-sell-modules .sui-cross-1>span {
+    background-image: url(../images/plugins-hummingbird-icon@2x.png);
+  }
 }
 
 .sui-2-2-9 .wp-smush-pagespeed-recommendation {
@@ -5955,10 +5959,6 @@ This is used to give admin notices that are loaded outside of the .wrap but insi
   }
 }
 
-/* ****************************************************************************
- * MODULE: Directory Smush styles.
- */
-
 .sui-2-2-9 ul.fancytree-container {
   color: #666;
   font-family: "Roboto", sans-serif;
@@ -5971,35 +5971,6 @@ This is used to give admin notices that are loaded outside of the .wrap but insi
   outline: 0 solid transparent;
   min-height: 0%;
   position: relative;
-  /*------------------------------------------------------------------------------
-         * Expander icon
-         *
-         * Note: IE6 doesn't correctly evaluate multiples class names,
-         *		 so we create combined class names that can be used in the CSS.
-         *
-         * Prefix: fancytree-exp-
-         * 1st character: 'e': expanded, 'c': collapsed, 'n': no children
-         * 2nd character (optional): 'd': lazy (Delayed)
-         * 3rd character (optional): 'l': Last sibling
-         *----------------------------------------------------------------------------*/
-  /* Fade out expanders, when container is not hovered or active */
-  /*------------------------------------------------------------------------------
-         * Checkbox icon
-         *----------------------------------------------------------------------------*/
-  /*------------------------------------------------------------------------------
-         * Node type icon
-         * Note: IE6 doesn't correctly evaluate multiples class names,
-         *		 so we create combined class names that can be used in the CSS.
-         *
-         * Prefix: fancytree-ico-
-         * 1st character: 'e': expanded, 'c': collapsed
-         * 2nd character (optional): 'f': folder
-         *----------------------------------------------------------------------------*/
-  /* Documents */
-  /* Folders */
-  /*------------------------------------------------------------------------------
-         * Node titles and highlighting
-         *----------------------------------------------------------------------------*/
 }
 
 .sui-2-2-9 ul.fancytree-container ul {
