@@ -231,6 +231,14 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						null,
 						'cdn'
 					);
+				} elseif ( 0 === WP_Smush_Settings::$settings['cdn'] ) {
+					$this->add_meta_box( 'meta-boxes/cdn/disabled',
+						__( 'CDN', 'wp-smushit' ),
+						null,
+						null,
+						null,
+						'cdn'
+					);
 				} else {
 					$this->add_meta_box( 'meta-boxes/cdn',
 						__( 'CDN', 'wp-smushit' ),

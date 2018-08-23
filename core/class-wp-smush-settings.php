@@ -28,6 +28,7 @@ class WP_Smush_Settings {
 		's3'          => 0,
 		'detection'   => 0,
 		'gutenberg'   => 0,
+		'cdn'         => 0,
 	);
 
 	/**
