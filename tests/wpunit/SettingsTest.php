@@ -29,21 +29,29 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
+	 * Allow to override private properties.
+	 *
+	 * @param object $object    Object with the property.
+	 * @param string $property  Property name.
+	 * @param mixed  $value     Value to set.
+	 *
+	 * @throws ReflectionException
+	 */
+	private function setPrivateProperty( &$object, $property, $value ) {
+		$reflection = new \ReflectionClass( get_class( $object ) );
+		$property   = $reflection->getProperty( $property );
+
+		$property->setAccessible( true );
+		$property->setValue( $value );
+	}
+
+	/**
 	 * Set Smush to Smush Pro.
 	 */
 	private function setPro() {
-		// Define test api key.
-		if ( ! defined( 'WPMUDEV_APIKEY' ) ) {
-			define( 'WPMUDEV_APIKEY', 'test_api_key' );
-		}
+		$smush = WP_Smush::get_instance();
 
-		// Flag that api key is valid.
-		update_site_option( 'wp_smush_api_auth', array(
-			'test_api_key' => array(
-				'timestamp' => current_time( 'timestamp' ),
-				'validity'  => 'valid',
-			),
-		) );
+		$this->setPrivateProperty( $smush, 'is_pro', true );
 
 		WP_Smush::validate_install();
 	}
@@ -52,8 +60,9 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	 * Set Smush to free version.
 	 */
 	private function setFree() {
-		// Delete api key.
-		delete_site_option( 'wp_smush_api_auth' );
+		$smush = WP_Smush::get_instance();
+
+		$this->setPrivateProperty( $smush, 'is_pro', false );
 
 		WP_Smush::validate_install();
 	}
