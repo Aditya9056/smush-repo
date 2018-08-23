@@ -10,6 +10,7 @@ require( './modules/admin' );
 require( './modules/bulk-smush' );
 require( './modules/modals' );
 require( './modules/directory-smush' );
+require( './modules/cdn' );
 
 /**
  * Notice scripts.

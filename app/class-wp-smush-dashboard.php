@@ -748,7 +748,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				<span class="sui-description sui-toggle-description">
 					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
 					<?php if ( 'detection' === $name ) : ?>
-						<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice <?php echo 1 === $setting_val ? '' : 'sui-hidden'; ?>">
 						<?php if ( 1 === $setting_val ) : // If detection is enabled. ?>
 							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
 								<p>
@@ -1063,6 +1062,17 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function cdn_upsell_metabox_header() {
 		$this->view( 'meta-boxes/cdn/upsell-meta-box-header', array(
 			'title' => __( 'CDN', 'wp-smushit' ),
+		) );
+	}
+
+	/**
+	 * CDN meta box.
+	 *
+	 * @since 3.0
+	 */
+	public function cdn_metabox() {
+		$this->view( 'meta-boxes/cdn/meta-box', array(
+
 		) );
 	}
 

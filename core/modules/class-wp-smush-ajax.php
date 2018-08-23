@@ -72,6 +72,12 @@ class WP_Smush_Ajax {
 		 */
 		// Handle Ajax request for directory smush stats (stats meta box).
 		add_action( 'wp_ajax_get_dir_smush_stats', array( $this, 'get_dir_smush_stats' ) );
+
+		/**
+		 * CDN
+		 */
+		// Enable CDN.
+		add_action( 'wp_ajax_smush_enable_cdn', array( $this, 'smush_enable_cdn' ) );
 	}
 
 	/***************************************
@@ -878,6 +884,31 @@ class WP_Smush_Ajax {
 
 		// Send ajax response.
 		wp_send_json_success( $result );
+	}
+
+	/***************************************
+	 *
+	 * DIRECTORY SMUSH
+	 *
+	 * @since 3.0
+	 */
+
+	/**
+	 * Enable CDN.
+	 *
+	 * @since 3.0
+	 */
+	public function smush_enable_cdn() {
+		check_ajax_referer( 'smush-enable-cdn' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error(array(
+				'msg' => __( 'User can not modify options', 'wp-smushit' ),
+			), 403 );
+		}
+
+		WP_Smush_Settings::$settings['cdn'] = 1;
+		wp_send_json_success();
 	}
 
 }
