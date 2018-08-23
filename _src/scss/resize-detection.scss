@@ -21,11 +21,11 @@
 	display: flex;
 	align-items: center;
 	align-content: center;
-	justify-content: space-between;;
+	justify-content: space-between;
 	padding: 10px;
 	box-shadow: 0 5px 25px 0 rgba(0, 0, 0, .15);
 	margin: 20px auto;
-	border-radius: 30px;
+	border-radius: 0 0 20px 0;
 	cursor: pointer;
 	width: 250px;
 
@@ -75,9 +75,10 @@
 	&.smush-tooltip {
 		position: absolute;
 		align-self: flex-start;
-		margin-top: 15px;
-		margin-left: 15px;
-		background-color: #fff;
+		margin-top: 5px;
+		margin-left: 5px;
+		background-color: rgba(255, 255, 255, .8);
+		z-index: 100000;
 
 		&:before,
 		&:after {
