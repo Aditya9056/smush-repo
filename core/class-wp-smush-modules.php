@@ -80,6 +80,7 @@ class WP_Smush_Modules {
 		$this->png2jpg  = new WP_Smush_Png2jpg();
 		$this->resize   = new WP_Smush_Resize();
 		$this->settings = new WP_Smush_Settings();
+		$this->cdn      = new WP_Smush_CDN();
 	}
 
 }

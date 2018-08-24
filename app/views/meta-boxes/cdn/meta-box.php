@@ -5,8 +5,11 @@
  * @since 3.0
  * @package WP_Smush
  *
- * @var string $status      CDN status: warning (inactive), success (active) or error (expired).
- * @var array  $status_msg  Array of CDN status messages.
+ * @var array  $cdn_group      CDN settings keys.
+ * @var array  $settings       Settings.
+ * @var array  $settings_data  Settings data (titles, descriptions, fields).
+ * @var string $status         CDN status: warning (inactive), success (active) or error (expired).
+ * @var array  $status_msg     Array of CDN status messages.
  */
 
 ?>
@@ -58,7 +61,7 @@
 			</div>
 		</div>
 
-		<span class="sui-description sui-toggle-description sui-no-margin-left">
+		<span class="sui-description">
 			<?php
 			printf(
 				/* translators: %1$s: opening A (href) tag, %2$s; closing A (href) tag. */
@@ -97,7 +100,7 @@
 			<?php esc_html_e( 'webp', 'wp-smushit' ); ?>
 		</span>
 
-		<span class="sui-description sui-toggle-description sui-no-margin-left">
+		<span class="sui-description">
 			<?php
 			esc_html_e( 'Note: At this time we don’t support video media types. We recommend uploading media to a
 			third-party provider and embedding videos into your posts/pages.', 'wp-smushit' );
@@ -106,152 +109,19 @@
 	</div>
 </div>
 
-<div class="sui-box-settings-row">
-	<div class="sui-box-settings-col-1">
-		<span class="sui-settings-label">
-			<?php esc_html_e( 'Automatic Resizing', 'wp-smushit' ); ?>
-		</span>
-		<span class="sui-description">
-			<?php
-			esc_html_e( 'If your images don’t match their containers, we’ll automatically serve a correctly
-			sized image.', 'wp-smushit' );
-			?>
-		</span>
-	</div>
-	<div class="sui-box-settings-col-2">
-		<label class="sui-toggle">
-			<input type="checkbox" id="auto-resize">
-			<span class="sui-toggle-slider"></span>
-		</label>
-		<label for="auto-resize">
-			<?php esc_html_e( 'Enable automatic resizing of my images', 'wp-smushit' ); ?>
-		</label>
+<?php
+foreach ( $settings_data as $name => $values ) {
+	// If not CDN setting - skip.
+	if ( ! in_array( $name, $cdn_group, true ) ) {
+		continue;
+	}
 
-		<span class="sui-description sui-toggle-description">
-			<?php
-			esc_html_e( 'Having trouble with Google PageSpeeds ‘compress and resize’ suggestion? This feature will
-			fix this without any coding needed! Note: No resizing is done on your actual images, only what is served
-			from the CDN - so your original images will remain untouched.', 'wp-smushit' );
-			?>
-		</span>
-	</div>
-</div>
+	$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
 
-<div class="sui-box-settings-row">
-	<div class="sui-box-settings-col-1">
-		<span class="sui-settings-label">
-			<?php esc_html_e( 'Super-smush', 'wp-smushit' ); ?>
-		</span>
-		<span class="sui-description">
-			<?php
-			esc_html_e( 'Optimize images up to 2x more than regular smush with our multi-pass lossy
-			compression.', 'wp-smushit' );
-			?>
-		</span>
-	</div>
-	<div class="sui-box-settings-col-2">
-		<label class="sui-toggle">
-			<input type="checkbox" id="super-smush">
-			<span class="sui-toggle-slider"></span>
-		</label>
-		<label for="super-smush">
-			<?php esc_html_e( 'Super-smush my images', 'wp-smushit' ); ?>
-		</label>
-	</div>
-</div>
-
-<div class="sui-box-settings-row">
-	<div class="sui-box-settings-col-1">
-		<span class="sui-settings-label">
-			<?php esc_html_e( 'WebP conversion', 'wp-smushit' ); ?>
-		</span>
-		<span class="sui-description">
-			<?php
-			esc_html_e( 'Smush can automatically convert and serve your images as WebP to compatible
-			browsers.', 'wp-smushit' );
-			?>
-		</span>
-	</div>
-	<div class="sui-box-settings-col-2">
-		<label class="sui-toggle">
-			<input type="checkbox" id="webp">
-			<span class="sui-toggle-slider"></span>
-		</label>
-		<label for="webp">
-			<?php esc_html_e( 'Enable WebP conversion', 'wp-smushit' ); ?>
-		</label>
-
-		<span class="sui-description sui-toggle-description">
-			<?php
-			esc_html_e( 'Note: We’ll detect and serve WebP images to browsers that will accept them by checking
-			Accept Headers, and gracefully fall back to normal PNGs or JPEGs for non-compatible
-			browsers.', 'wp-smushit' );
-			?>
-		</span>
-	</div>
-</div>
-
-<div class="sui-box-settings-row">
-	<div class="sui-box-settings-col-1">
-		<span class="sui-settings-label">
-			<?php esc_html_e( 'Meta Data', 'wp-smushit' ); ?>
-		</span>
-		<span class="sui-description">
-			<?php
-			esc_html_e( 'Whenever you take a photo, your camera stores metadata, such as focal length, date,
-			time and location, within the image.', 'wp-smushit' );
-			?>
-		</span>
-	</div>
-	<div class="sui-box-settings-col-2">
-		<label class="sui-toggle">
-			<input type="checkbox" id="strip-metadata">
-			<span class="sui-toggle-slider"></span>
-		</label>
-		<label for="strip-metadata">
-			<?php esc_html_e( 'Strip my image meta data', 'wp-smushit' ); ?>
-		</label>
-
-		<span class="sui-description sui-toggle-description">
-			<?php
-			esc_html_e( 'Note: This data adds to the size of the image. While this information might be important
-			to photographers, it’s unnecessary for most users and safe to remove.', 'wp-smushit' );
-			?>
-		</span>
-	</div>
-</div>
-
-<div class="sui-box-settings-row">
-	<div class="sui-box-settings-col-1">
-		<span class="sui-settings-label">
-			<?php esc_html_e( 'PNG to JPEG conversion', 'wp-smushit' ); ?>
-		</span>
-		<span class="sui-description">
-			<?php
-			esc_html_e( 'When you compress a PNG, Smush will check if converting it to JPEG could further
-			reduce its size.', 'wp-smushit' );
-			?>
-		</span>
-	</div>
-	<div class="sui-box-settings-col-2">
-		<label class="sui-toggle">
-			<input type="checkbox" id="png-to-jpg">
-			<span class="sui-toggle-slider"></span>
-		</label>
-		<label for="png-to-jpg">
-			<?php esc_html_e( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ); ?>
-		</label>
-
-		<span class="sui-description sui-toggle-description">
-			<?php
-			esc_html_e( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it
-			results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and any
-			hard-coded URLs on your site that contain the original PNG filename will need to be
-			updated.', 'wp-smushit' );
-			?>
-		</span>
-	</div>
-</div>
+	// Show settings option.
+	$this->settings_row( WP_SMUSH_PREFIX . $name, $label, $name, 0 );
+}
+?>
 
 <div class="sui-box-settings-row">
 	<div class="sui-box-settings-col-1">
@@ -269,7 +139,7 @@
 		<button class="sui-button sui-button-ghost">
 			<?php esc_html_e( 'Cancel Activation', 'wp-smushit' ); ?>
 		</button>
-		<span class="sui-description sui-toggle-description sui-no-margin-left">
+		<span class="sui-description">
 			<?php
 			esc_html_e( 'Note: You won’t lose any imagery by deactivating, all of your attachments are still
 			stored locally on your own server.', 'wp-smushit' );

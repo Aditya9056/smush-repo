@@ -37,6 +37,13 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	private $integration_group = array();
 
 	/**
+	 * Settings group for CDN options.
+	 *
+	 * @var array
+	 */
+	private $cdn_group = array();
+
+	/**
 	 * Register page action hooks
 	 */
 	public function add_action_hooks() {
@@ -58,8 +65,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * Function triggered when the page is loaded before render any content.
 	 */
 	public function on_load() {
-		// Hook into integration settings.
+		// Hook into settings.
 		$this->integration_group = apply_filters( 'wp_smush_integration_settings', array() );
+		$this->cdn_group         = apply_filters( 'wp_smush_cdn_settings', array() );
 
 		// If a free user, update the limits.
 		if ( ! WP_Smush::is_pro() ) {
@@ -86,10 +94,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 		// Tabs that can be shown in subsites if networkwide (bulk and directory).
 		if ( is_multisite() && $networkwide && ! is_network_admin() ) {
-			unset( $this->tabs['integrations'] );
-		}
-
-		if ( empty( $this->integration_group ) ) {
 			unset( $this->tabs['integrations'] );
 		}
 
@@ -263,11 +267,11 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			$remaining = WP_Smush::get_instance()->core()->remaining_count;
 			if ( 0 < $remaining ) {
 				echo '<span class="sui-tag sui-tag-warning wp-smush-remaining-count">' . absint( $remaining ) . '</span>';
-				return;
+			} else {
+				echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
 			}
-
-			echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
-			return;
+		} elseif ( 'cdn' === $tab ) {
+			echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
 		}
 	}
 
@@ -504,16 +508,12 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * @param string $label          Setting label.
 	 * @param string $name           Setting name.
 	 * @param mixed  $setting_val    Setting value.
-	 * @param bool   $skip_group     Skip group settings.
 	 * @param bool   $disable        Disable the setting.
 	 * @param bool   $upsell         Gray out row to show upsell.
 	 *
 	 * @return void
 	 */
-	public function settings_row( $setting_m_key, $label, $name, $setting_val, $skip_group = false, $disable = false, $upsell = false ) {
-		// Get all grouped settings that can be skipped.
-		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group );
-
+	public function settings_row( $setting_m_key, $label, $name, $setting_val, $disable = false, $upsell = false ) {
 		?>
 		<div class="sui-box-settings-row wp-smush-basic <?php echo $upsell ? 'sui-disabled' : ''; ?>">
 			<div class="sui-box-settings-col-1">
@@ -527,19 +527,17 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				</span>
 			</div>
 			<div class="sui-box-settings-col-2" id="column-<?php echo esc_attr( $setting_m_key ); ?>">
-				<?php if ( ! in_array( $name, $grouped_settings, true ) || $skip_group ) : ?>
-					<div class="sui-form-field">
-						<label class="sui-toggle">
-							<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>" id="<?php echo esc_attr( $setting_m_key ); ?>" name="<?php echo esc_attr( $setting_m_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
-							<span class="sui-toggle-slider"></span>
-						</label>
-						<label for="<?php echo esc_attr( $setting_m_key ); ?>">
-							<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
-						</label>
-						<!-- Print/Perform action in right setting column -->
-						<?php do_action( 'smush_setting_column_right_inside', $name ); ?>
-					</div>
-				<?php endif; ?>
+				<div class="sui-form-field">
+					<label class="sui-toggle">
+						<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>" id="<?php echo esc_attr( $setting_m_key ); ?>" name="<?php echo esc_attr( $setting_m_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
+						<span class="sui-toggle-slider"></span>
+					</label>
+					<label for="<?php echo esc_attr( $setting_m_key ); ?>">
+						<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+					</label>
+					<!-- Print/Perform action in right setting column -->
+					<?php do_action( 'smush_setting_column_right_inside', $name ); ?>
+				</div>
 				<!-- Print/Perform action in right setting column -->
 				<?php do_action( 'smush_setting_column_right_outside', $name ); ?>
 			</div>
@@ -606,7 +604,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
-	 * Prints all the registererd image sizes, to be selected/unselected for smushing.
+	 * Prints all the registered image sizes, to be selected/unselected for smushing.
 	 *
 	 * @param string $name Setting key.
 	 *
@@ -831,6 +829,10 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		}
 	}
 
+	/**************************
+	 * META BOXES
+	 */
+
 	/**
 	 * Summary meta box.
 	 */
@@ -915,7 +917,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 */
 	public function settings_metabox() {
 		// Get all grouped settings that can be skipped.
-		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group );
+		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, $this->cdn_group );
 
 		// Get settings values.
 		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
@@ -1078,9 +1080,15 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					Upgrade your plan now to reactivate this service.', 'wp-smushit' ),
 		);
 
+		// Get settings values.
+		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
+
 		$this->view( 'meta-boxes/cdn/meta-box', array(
-			'status'     => 'warning', // inactive (warning), active (success) or expired (error).
-			'status_msg' => $status_msg,
+			'cdn_group'     => $this->cdn_group,
+			'settings'      => $settings,
+			'settings_data' => WP_Smush::get_instance()->core()->settings,
+			'status'        => 'warning', // inactive (warning), active (success) or expired (error).
+			'status_msg'    => $status_msg,
 		) );
 	}
 

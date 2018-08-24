@@ -3,11 +3,7 @@
  * CDN class: WP_Smush_CDN
  *
  * @package WP_Smush
- * @version 2.8.0
- *
- * @author Joel James <joel@incsub.com>
- *
- * @copyright (c) 2018, Incsub (http://incsub.com)
+ * @version 3.0
  */
 
 /**
@@ -40,6 +36,17 @@ class WP_Smush_CDN {
 	 * WP_Smush_CDN constructor.
 	 */
 	public function __construct() {
+		// Filters the setting variable to add module setting title and description.
+		add_filter( 'wp_smush_settings', array( $this, 'register' ) );
+
+		// Add settings descriptions to the meta box.
+		add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
+
+		// Add setting names to appropriate group.
+		add_action( 'wp_smush_cdn_settings', array( $this, 'add_settings' ) );
+
+
+		/*
 		// Set auto resize flag.
 		add_action( 'wp', array( $this, 'init_flags' ) );
 
@@ -51,7 +58,121 @@ class WP_Smush_CDN {
 
 		// Add cdn url to dns prefetch.
 		add_filter( 'wp_resource_hints', array( $this, 'dns_prefetch' ), 99, 2 );
+		*/
 	}
+
+	/**
+	 * Add setting names to the appropriate group.
+	 *
+	 * @since 3.0
+	 *
+	 * @return array
+	 */
+	public function add_settings() {
+		return array(
+			'cdn_auto_resize',
+			'cdn_super_smush',
+			'cdn_webp',
+			'cdn_strip_exif',
+			'cdn_png_to_jpg',
+		);
+	}
+
+	/**
+	 * Add settings to settings array.
+	 *
+	 * @since 3.0
+	 *
+	 * @param array $settings  Current settings array.
+	 *
+	 * @return array
+	 */
+	public function register( $settings ) {
+		return array_merge( $settings, array(
+			'cdn_auto_resize' => array(
+				'label'       => __( 'Enable automatic resizing of my images', 'wp-smushit' ),
+				'short_label' => __( 'Automatic Resizing', 'wp-smushit' ),
+				'desc'        => __( 'If your images don’t match their containers, we’ll automatically serve a correctly sized image.', 'wp-smushit' ),
+			),
+			'cdn_super_smush' => array(
+				'label'       => __( 'Super-smush my images', 'wp-smushit' ),
+				'short_label' => __( 'Super-smush', 'wp-smushit' ),
+				'desc'        => __( 'Optimize images up to 2x more than regular smush with our multi-pass lossy compression.', 'wp-smushit' ),
+			),
+			'cdn_webp'        => array(
+				'label'       => __( 'Enable WebP conversion', 'wp-smushit' ),
+				'short_label' => __( 'WebP conversion', 'wp-smushit' ),
+				'desc'        => __( 'Smush can automatically convert and serve your images as WebP to compatible browsers.', 'wp-smushit' ),
+			),
+			'cdn_strip_exif'  => array(
+				'label'       => __( 'Strip my image meta data', 'wp-smushit' ),
+				'short_label' => __( 'Metadata', 'wp-smushit' ),
+				'desc'        => __( 'Whenever you take a photo, your camera stores metadata, such as focal length, date, time and location, within the image.', 'wp-smushit' ),
+			),
+			'cdn_png_to_jpg'  => array(
+				'label'       => __( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
+				'short_label' => __( 'PNG to JPEG conversion', 'wp-smushit' ),
+				'desc'        => __( 'When you compress a PNG, Smush will check if converting it to JPEG could further reduce its size.', 'wp-smushit' ),
+			),
+		) );
+	}
+
+	/**
+	 * Show additional descriptions for settings.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string $setting_key Setting key.
+	 */
+	public function settings_desc( $setting_key = '' ) {
+		if ( empty( $setting_key ) || ! in_array(
+			$setting_key, array(
+				'cdn_auto_resize',
+				'cdn_webp',
+				'cdn_strip_exif',
+				'cdn_png_to_jpg',
+			), true
+		) ) {
+			return;
+		}
+		?>
+		<span class="sui-description sui-toggle-description" id="<?php echo esc_attr( WP_SMUSH_PREFIX . $setting_key . '-desc' ); ?>">
+			<?php
+			switch ( $setting_key ) {
+				case 'cdn_auto_resize':
+					esc_html_e( 'Having trouble with Google PageSpeeds ‘compress and resize’ suggestion? This feature will
+					fix this without any coding needed! Note: No resizing is done on your actual images, only what is served
+					from the CDN - so your original images will remain untouched.', 'wp-smushit' );
+					break;
+				case 'cdn_webp':
+					esc_html_e( 'Note: We’ll detect and serve WebP images to browsers that will accept them by checking
+					Accept Headers, and gracefully fall back to normal PNGs or JPEGs for non-compatible
+					browsers.', 'wp-smushit' );
+					break;
+				case 'cdn_strip_exif':
+					esc_html_e( 'Note: This data adds to the size of the image. While this information might be important
+					to photographers, it’s unnecessary for most users and safe to remove.', 'wp-smushit' );
+					break;
+				case 'cdn_png_to_jpg':
+					esc_html_e( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it
+					results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and any
+					hard-coded URLs on your site that contain the original PNG filename will need to be
+					updated.', 'wp-smushit' );
+					break;
+				case 'default':
+					break;
+			}
+			?>
+		</span>
+		<?php
+	}
+
+
+
+
+
+
+
 
 	/**
 	 * Set the API base for the member.
