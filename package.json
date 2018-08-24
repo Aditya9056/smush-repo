@@ -35,7 +35,7 @@
     "build": "grunt clean && npm run compile && grunt prepare && grunt build && grunt build:wporg"
   },
   "dependencies": {
-    "@wpmudev/shared-ui": "2.2.9",
+    "@wpmudev/shared-ui": "2.2.10",
     "jquery.fancytree": "^2.29.1"
   },
   "devDependencies": {
