@@ -1071,8 +1071,16 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * @since 3.0
 	 */
 	public function cdn_metabox() {
-		$this->view( 'meta-boxes/cdn/meta-box', array(
+		$status_msg = array(
+			'warning' => __( 'CDN is not yet active. Configure your settings below and click Activate.', 'wp-smushit' ),
+			'success' => __( 'CDN is active. Your media is being served from the WPMU DEV CDN.', 'wp-smushit' ),
+			'error'   => __( 'CDN is inactive. You have gone over your 30 day cap so we’ve stopped serving your images.
+					Upgrade your plan now to reactivate this service.', 'wp-smushit' ),
+		);
 
+		$this->view( 'meta-boxes/cdn/meta-box', array(
+			'status'     => 'warning', // inactive (warning), active (success) or expired (error).
+			'status_msg' => $status_msg,
 		) );
 	}
 

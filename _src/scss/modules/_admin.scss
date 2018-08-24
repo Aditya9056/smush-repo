@@ -3,16 +3,6 @@
 @include body-class {
 
 	.sui-wrap {
-		/**
-		 * CDN
-		 */
-		.sui-meta-boxes-cdn-upsell,
-		.sui-meta-boxes-cdn-disabled {
-			p {
-				max-width: 75%;
-				margin: 20px auto 0;
-			}
-		}
 
 		// Overwrite extra padding on progress bars in modals.
 		.sui-dialog-content .sui-progress-block {

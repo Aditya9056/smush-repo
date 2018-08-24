@@ -5566,18 +5566,6 @@ This is used to give admin notices that are loaded outside of the .wrap but insi
  * MODULE: VARIABLES
  */
 
-.sui-2-2-9 .sui-wrap {
-  /**
-		 * CDN
-		 */
-}
-
-.sui-2-2-9 .sui-wrap .sui-meta-boxes-cdn-upsell p,
-.sui-2-2-9 .sui-wrap .sui-meta-boxes-cdn-disabled p {
-  max-width: 75%;
-  margin: 20px auto 0;
-}
-
 .sui-2-2-9 .sui-wrap .sui-dialog-content .sui-progress-block {
   margin-bottom: 0;
 }
@@ -6237,4 +6225,87 @@ This is used to give admin notices that are loaded outside of the .wrap but insi
 .sui-2-2-9 ul.fancytree-container span.fancytree-selected span.fancytree-icon:before,
 .sui-2-2-9 ul.fancytree-container span.fancytree-selected span.fancytree-title {
   color: #17A8E3;
+}
+
+/* ****************************************************************************
+ * MODULE: VARIABLES
+ */
+
+/**
+ * CDN styles
+ *
+ * @since 3.0
+ */
+
+.sui-2-2-9 .sui-wrap {
+  /* Filename Extensions Icons */
+}
+
+.sui-2-2-9 .sui-wrap .sui-box-settings-row .sui-box-settings-col-1 {
+  vertical-align: top;
+}
+
+.sui-2-2-9 .sui-wrap .sui-meta-boxes-cdn-upsell p,
+.sui-2-2-9 .sui-wrap .sui-meta-boxes-cdn-disabled p {
+  max-width: 75%;
+  margin: 20px auto 0;
+}
+
+.sui-2-2-9 .sui-wrap .smush-cdn-quota-boxes {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sui-2-2-9 .sui-wrap .smush-cdn-quota-boxes .sui-border-frame {
+  width: 100%;
+  text-align: center;
+  margin-top: 0;
+}
+
+.sui-2-2-9 .sui-wrap .smush-cdn-quota-boxes .sui-border-frame span:first-child {
+  font-size: 24px;
+  letter-spacing: -0.2px;
+  line-height: 30px;
+  color: #333;
+}
+
+.sui-2-2-9 .sui-wrap .smush-cdn-quota-boxes .sui-border-frame:first-child {
+  margin-right: 15px;
+}
+
+.sui-2-2-9 .sui-wrap .smush-cdn-quota-boxes .sui-border-frame:last-child {
+  margin-left: 15px;
+}
+
+.sui-2-2-9 .sui-wrap .smush-filename-extension {
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 43px;
+  height: 30px;
+  margin: 0 5px 0 0;
+  width: 30px;
+}
+
+.sui-2-2-9 .sui-wrap .smush-filename-extension.smush-extension-jpg {
+  background-color: #F7E100;
+}
+
+.sui-2-2-9 .sui-wrap .smush-filename-extension.smush-extension-png {
+  background-color: #FFB694;
+}
+
+.sui-2-2-9 .sui-wrap .smush-filename-extension.smush-extension-gif {
+  background-color: #72D5D4;
+}
+
+.sui-2-2-9 .sui-wrap .smush-filename-extension.smush-extension-webp {
+  background-color: #72ADD5;
 }
