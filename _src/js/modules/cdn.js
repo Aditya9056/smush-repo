@@ -17,13 +17,14 @@
 				action: 'smush_enable_cdn',
 				_ajax_nonce: $('input[name="smush-enable-cdn-nonce"]').val()
 			}
-		}).success(() => {
-			console.log( 'success' );
-		}).error(() => {
-			console.log( 'error' );
+		}).success(() => location.reload()
+		).error((resp) => {
+			const response = JSON.parse( resp.responseText );
+			if ( 'undefined' !== typeof response.data.msg ) {
+				// TODO: show a notice
+				console.log( response.data.msg );
+			}
 		});
-
-		//location.reload();
 	})
 
 }( jQuery ));

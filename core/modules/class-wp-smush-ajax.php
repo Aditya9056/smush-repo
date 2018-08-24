@@ -888,13 +888,16 @@ class WP_Smush_Ajax {
 
 	/***************************************
 	 *
-	 * DIRECTORY SMUSH
+	 * CDN
 	 *
 	 * @since 3.0
 	 */
 
 	/**
 	 * Enable CDN.
+	 *
+	 * Handles "Get Started" button press on the disabled CDN meta box.
+	 * Redirects to main CDN meta box on success.
 	 *
 	 * @since 3.0
 	 */
@@ -907,7 +910,7 @@ class WP_Smush_Ajax {
 			), 403 );
 		}
 
-		WP_Smush_Settings::$settings['cdn'] = 1;
+		WP_Smush_Settings::edit_setting( 'cdn', 1 );
 		wp_send_json_success();
 	}
 

@@ -330,4 +330,29 @@ class WP_Smush_Settings {
 		return self::is_network_enabled() ? delete_site_option( $name ) : delete_option( $name );
 	}
 
+
+	public static function edit_setting( $name, $value ) {
+		// Check the last settings stored in db.
+		$settings = self::get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+		$settings = maybe_unserialize( $settings );
+
+		// If not saved earlier, get it from stored options.
+		if ( empty( $settings ) || 0 === count( $settings ) ) {
+			$settings = self::get_serialised_settings();
+		}
+
+		$settings = ! is_array( $settings ) ? maybe_unserialize( $settings ) : $settings;
+
+		// Get the value to be saved.
+		$value = isset( $value ) && $value ? 1 : 0;
+
+		$settings[ $name ] = $value;
+
+		// Save serialised settings.
+		self::update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
+
+		// Update initialised settings.
+		self::$settings = $settings;
+	}
+
 }
