@@ -107,7 +107,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		}
 
 		// Check the last settings stored in db.
-		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+		$settings = $this->settings->get();
 		$settings = maybe_unserialize( $settings );
 
 		// Available settings for free/pro version.
@@ -148,7 +148,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		// Update the resize sizes.
 		$this->settings->set_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
-		$this->settings->set_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'settings', $settings );
 
 		update_site_option( 'skip-smush-setup', 1 );
 
