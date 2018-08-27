@@ -110,15 +110,17 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$settings = $this->settings->get();
 
 		// Available settings for free/pro version.
-		$exclude = array(
-			'networkwide',
-			'backup',
-			'png_to_jpg',
+		$available = array(
+			'auto',
+			'lossy',
+			'strip_exif',
+			'resize',
+			'original',
 		);
 
 		foreach ( WP_Smush::get_instance()->core()->settings as $name => $values ) {
 			// Update only specified settings.
-			if ( in_array( $name, $exclude, true ) ) {
+			if ( ! in_array( $name, $available, true ) ) {
 				continue;
 			}
 
@@ -128,11 +130,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			}
 
 			// Update value in settings.
-			if ( in_array( WP_SMUSH_PREFIX . $name, $quick_settings, true ) ) {
-				$settings['bulk'][ $name ] = true;
-			} else {
-				$settings['bulk'][ $name ] = false;
-			}
+			$settings['bulk'][ $name ] = in_array( WP_SMUSH_PREFIX . $name, $quick_settings, true );
 		}
 
 		// Update resize width and height settings if set.
