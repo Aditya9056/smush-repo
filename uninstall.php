@@ -52,7 +52,7 @@ $smushit_keys = array(
 	'smush_option',
 	'smush-directory-path-hash-updated',
 	'smush_global_stats',
-	'skip-smush-setup'
+	'skip-smush-setup',
 );
 
 //Cache Keys
