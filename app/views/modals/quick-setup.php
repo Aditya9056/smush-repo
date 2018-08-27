@@ -32,7 +32,7 @@
 					<?php
 					$exclude = array( 'backup', 'png_to_jpg', 'nextgen', 's3', 'detection' );
 					// Settings for free and pro version.
-					foreach ( WP_Smush_Settings::$settings as $name => $values ) {
+					foreach ( WP_Smush_Settings::get_instance()->get( 'bulk' ) as $name => $values ) {
 						// Skip networkwide settings, we already printed it.
 						if ( 'networkwide' === $name ) {
 							continue;
@@ -46,7 +46,7 @@
 							continue;
 						}
 						$setting_m_key = WP_SMUSH_PREFIX . $name;
-						$setting_val   = WP_Smush_Settings::$settings[ $name ];
+						$setting_val   = WP_Smush_Settings::get_instance()->get( 'bulk', $name );
 						// Set the default value 1 for auto smush.
 						if ( 'auto' === $name && false === $setting_val ) {
 							$setting_val = 1;

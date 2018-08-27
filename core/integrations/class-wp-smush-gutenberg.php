@@ -139,7 +139,7 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 	 * @since 2.8.1
 	 */
 	public function enqueue_gb() {
-		$enabled = WP_Smush_Settings::$settings[ $this->module ];
+		$enabled = $this->settings->get( 'integration', $this->module );
 
 		if ( ! $enabled ) {
 			return;

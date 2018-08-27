@@ -334,14 +334,15 @@ class WP_Smush_Core {
 	 * Initialise the setting variables
 	 */
 	public function initialise() {
+		$settings = WP_Smush_Settings::get_instance();
 		// Check if lossy enabled.
-		$this->mod->smush->lossy_enabled = WP_Smush::is_pro() && WP_Smush_Settings::$settings['lossy'];
+		$this->mod->smush->lossy_enabled = WP_Smush::is_pro() && $settings->get( 'bulk', 'lossy' );
 
 		// Check if Smush original enabled.
-		$this->mod->smush->smush_original = WP_Smush::is_pro() && WP_Smush_Settings::$settings['original'];
+		$this->mod->smush->smush_original = WP_Smush::is_pro() && $settings->get( 'bulk', 'original' );
 
 		// Check whether to keep EXIF data or not.
-		$this->mod->smush->keep_exif = empty( WP_Smush_Settings::$settings['strip_exif'] );
+		$this->mod->smush->keep_exif = empty( $settings->get( 'bulk', 'strip_exif' ) );
 	}
 
 	/**
@@ -412,6 +413,9 @@ class WP_Smush_Core {
 	private function init() {
 		/* @noinspection PhpIncludeInspection */
 		require_once WP_SMUSH_DIR . 'core/class-wp-smush-modules.php';
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'core/modules/abstract-wp-smush-module.php';
+
 		$this->mod = new WP_Smush_Modules();
 
 		new WP_Smush_Auto_Resize();
@@ -448,25 +452,7 @@ class WP_Smush_Core {
 		$this->s3 = new WP_Smush_S3();
 	}
 
-	/**
-	 * Check if NextGen integration is active.
-	 *
-	 * @since 2.9.0
-	 *
-	 * @return bool|mixed
-	 */
-	public function get_nextgen_status() {
-		// Check if integration is enabled or not.
-		if ( ! empty( WP_Smush_Settings::$settings ) ) {
-			$opt_nextgen_val = WP_Smush_Settings::$settings['nextgen'];
-		} else {
-			// Smush NextGen key.
-			$opt_nextgen     = WP_SMUSH_PREFIX . 'nextgen';
-			$opt_nextgen_val = WP_Smush_Settings::get_setting( $opt_nextgen, false );
-		}
 
-		return $opt_nextgen_val;
-	}
 
 	/**
 	 * Check if NextGen is active or not
@@ -477,7 +463,7 @@ class WP_Smush_Core {
 		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-nextgen.php';
 
 		// Load only if integration is enabled and PRO user.
-		if ( $this->get_nextgen_status() && WP_Smush::is_pro() ) {
+		if ( WP_Smush_Settings::get_instance()->get( 'integration', 'nextgen' ) && WP_Smush::is_pro() ) {
 			/* @noinspection PhpIncludeInspection */
 			require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-admin.php';
 			/* @noinspection PhpIncludeInspection */
@@ -693,7 +679,7 @@ class WP_Smush_Core {
 		wp_localize_script( $handle, 'wp_smushit_data', $data );
 
 		// Check if settings were changed for a multisite, and localize whether to run re-check on page load.
-		if ( is_multisite() && WP_Smush_Settings::$settings['networkwide'] && ! is_network_admin() ) {
+		if ( is_multisite() && WP_Smush_Settings::get_instance()->is_network_enabled() && ! is_network_admin() ) {
 			// If not same, Set a variable to run re-check on page load.
 			if ( get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false ) ) {
 				wp_localize_script( $handle, 'wp_smush_run_re_check', array( 1 ) );

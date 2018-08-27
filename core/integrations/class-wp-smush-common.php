@@ -86,7 +86,7 @@ class WP_Smush_Common {
 		}
 
 		// Do not smush if auto smush is turned off.
-		if ( ! WP_Smushit::is_auto_smush_enabled() ) {
+		if ( ! $smush->is_auto_smush_enabled() ) {
 			return;
 		}
 

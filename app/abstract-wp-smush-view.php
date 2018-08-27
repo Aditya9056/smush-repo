@@ -39,6 +39,15 @@ abstract class WP_Smush_View {
 	protected $tabs = array();
 
 	/**
+	 * Settings instance for faster access.
+	 *
+	 * @since 3.0
+	 *
+	 * @var WP_Smush_Settings
+	 */
+	protected $settings;
+
+	/**
 	 * WP_Smush_View constructor.
 	 *
 	 * @param string $title    Page title.
@@ -46,7 +55,8 @@ abstract class WP_Smush_View {
 	 * @param bool   $submenu  Is a submenu page.
 	 */
 	public function __construct( $title, $slug = 'smush', $submenu = false ) {
-		$this->slug = $slug;
+		$this->slug     = $slug;
+		$this->settings = WP_Smush_Settings::get_instance();
 
 		if ( ! $submenu ) {
 			$this->page_id = add_menu_page(
@@ -342,7 +352,7 @@ abstract class WP_Smush_View {
 	public function show_tabs() {
 		$this->view( 'tabs', array(
 			'tabs'      => $this->get_tabs(),
-			'is_hidden' => is_network_admin() && ! WP_Smush_Settings::$settings['networkwide'],
+			'is_hidden' => is_network_admin() && ! $this->settings->is_network_enabled(),
 		) );
 	}
 
@@ -492,12 +502,12 @@ abstract class WP_Smush_View {
 	 */
 	private function get_recheck_message() {
 		// Return if not multisite, or on network settings page, Netowrkwide settings is disabled.
-		if ( ! is_multisite() || is_network_admin() || ! WP_Smush_Settings::$settings['networkwide'] ) {
+		if ( ! is_multisite() || is_network_admin() || ! $this->settings->is_network_enabled() ) {
 			return;
 		}
 
 		// Check the last settings stored in db.
-		$run_recheck = get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false );
+		$run_recheck = $this->settings->get_setting( WP_SMUSH_PREFIX . 'run_recheck', false );
 
 		// If not same, display notice.
 		if ( ! $run_recheck ) {
@@ -570,41 +580,45 @@ abstract class WP_Smush_View {
 	 */
 	private function settings_updated() {
 		// Check if networkwide settings are enabled, do not show settings updated message.
-		if ( is_multisite() && WP_Smush_Settings::$settings['networkwide'] && ! is_network_admin() ) {
+		if ( is_multisite() && $this->settings->is_network_enabled() && ! is_network_admin() ) {
 			return;
 		}
 
 		// Show setttings saved message.
-		if ( 1 == WP_Smush_Settings::get_setting( 'wp-smush-settings_updated', false ) ) {
-			// Default message.
-			$message = esc_html__( 'Your settings have been updated!', 'wp-smushit' );
-			// Notice class.
-			$message_class = ' sui-notice-success';
-
-			// Additonal message if we got work to do!
-			$resmush_count = is_array( WP_Smush::get_instance()->core()->resmush_ids ) && count( WP_Smush::get_instance()->core()->resmush_ids ) > 0;
-			$smush_count   = is_array( WP_Smush::get_instance()->core()->remaining_count ) && WP_Smush::get_instance()->core()->remaining_count > 0;
-
-			if ( $smush_count || $resmush_count ) {
-				$message_class = ' sui-notice-warning';
-				// Show link to bulk smush tab from other tabs.
-				$bulk_smush_link = 'bulk' === $this->get_current_tab() ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '">';
-				$message        .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
-			}
-			?>
-			<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $message_class ); ?>">
-				<div class="sui-notice-content">
-					<p><?php echo $message; ?></p>
-				</div>
-				<span class="sui-notice-dismiss">
-					<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>
-				</span>
-			</div>
-
-			<?php
-			// Remove the option.
-			WP_Smush_Settings::delete_setting( 'wp-smush-settings_updated' );
+		if ( 1 != $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings_updated', false ) ) {
+			return;
 		}
+
+		$core = WP_Smush::get_instance()->core();
+
+		// Default message.
+		$message = esc_html__( 'Your settings have been updated!', 'wp-smushit' );
+		// Notice class.
+		$message_class = ' sui-notice-success';
+
+		// Additonal message if we got work to do!
+		$resmush_count = is_array( $core->resmush_ids ) && count( $core->resmush_ids ) > 0;
+		$smush_count   = is_array( $core->remaining_count ) && $core->remaining_count > 0;
+
+		if ( $smush_count || $resmush_count ) {
+			$message_class = ' sui-notice-warning';
+			// Show link to bulk smush tab from other tabs.
+			$bulk_smush_link = 'bulk' === $this->get_current_tab() ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '">';
+			$message        .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
+		}
+		?>
+		<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $message_class ); ?>">
+			<div class="sui-notice-content">
+				<p><?php echo $message; ?></p>
+			</div>
+			<span class="sui-notice-dismiss">
+				<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>
+			</span>
+		</div>
+
+		<?php
+		// Remove the option.
+		$this->settings->delete_setting( WP_SMUSH_PREFIX . 'settings_updated' );
 	}
 
 	/**
@@ -617,7 +631,7 @@ abstract class WP_Smush_View {
 		// If we already have count, don't fetch it.
 		if ( false === $count ) {
 			// If we have the resmush ids list, Show Resmush notice and button.
-			if ( $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
+			if ( $resmush_ids = get_option( WP_SMUSH_PREFIX . 'resmush-list' ) ) {
 				// Count.
 				$count = count( $resmush_ids );
 

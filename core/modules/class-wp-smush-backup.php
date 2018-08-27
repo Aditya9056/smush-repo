@@ -8,7 +8,7 @@
 /**
  * Class WP_Smush_Backup
  */
-class WP_Smush_Backup {
+class WP_Smush_Backup extends WP_Smush_Module {
 
 	/**
 	 * WP_Smushit instance.
@@ -33,12 +33,8 @@ class WP_Smush_Backup {
 
 	/**
 	 * WP_Smush_Backup constructor.
-	 *
-	 * @param WP_Smushit $smush  WP_Smushit instance.
 	 */
-	public function __construct( WP_Smushit $smush ) {
-		$this->smush = $smush;
-
+	public function init() {
 		// Initialize Variables and perform other operations.
 		add_action( 'admin_init', array( $this, 'initialize' ) );
 
@@ -51,7 +47,7 @@ class WP_Smush_Backup {
 	 */
 	public function initialize() {
 		// Whether backup is enabled or not.
-		$this->backup_enabled = isset( WP_Smush_Settings::$settings['backup'] ) ? WP_Smush_Settings::$settings['backup'] : 0;
+		$this->backup_enabled = $this->settings->get( 'bulk', 'backup' ) ? $this->settings->get( 'bulk', 'backup' ) : 0;
 	}
 
 	/**
@@ -77,9 +73,11 @@ class WP_Smush_Backup {
 			return $file_path;
 		}
 
+		$mod = WP_Smush::get_instance()->core()->mod;
+
 		// Get a backup path if empty.
 		if ( empty( $backup_path ) ) {
-			$backup_path = $this->smush->get_image_backup_path( $file_path );
+			$backup_path = $mod->smush->get_image_backup_path( $file_path );
 		}
 
 		// If we don't have any backup path yet, bail!
@@ -87,8 +85,8 @@ class WP_Smush_Backup {
 			return $file_path;
 		}
 
-		$attachment_id = ! empty( $this->smush->attachment_id ) ? $this->smush->attachment_id : $attachment_id;
-		if ( ! empty( $attachment_id ) && WP_Smush::get_instance()->core()->mod->png2jpg->is_converted( $attachment_id ) ) {
+		$attachment_id = ! empty( $mod->smush->attachment_id ) ? $mod->smush->attachment_id : $attachment_id;
+		if ( ! empty( $attachment_id ) && $mod->png2jpg->is_converted( $attachment_id ) ) {
 			// No need to create a backup, we already have one if enabled.
 			return $file_path;
 		}
@@ -185,6 +183,8 @@ class WP_Smush_Backup {
 		// Get the backup path.
 		$backup_sizes = get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
 
+		$smush = WP_Smush::get_instance()->core()->mod->smush;
+
 		// If there are.
 		if ( ! empty( $backup_sizes ) ) {
 			// 1. Check if the image was converted from PNG->JPG, Get the corresponding backup path
@@ -194,7 +194,7 @@ class WP_Smush_Backup {
 				if ( empty( $backup_path ) ) {
 					// Check if it's a jpg converted from png, and restore the jpg to png.
 					$original_file = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'original_file', true );
-					$backup_path   = $this->smush->original_file( $original_file );
+					$backup_path   = $smush->original_file( $original_file );
 				}
 
 				// If we have a backup path for PNG file, use restore_png().
@@ -210,7 +210,7 @@ class WP_Smush_Backup {
 					$backup_path = $backup_sizes[ $this->backup_key ];
 				} else {
 					// If we don't have a backup path, check for legacy backup naming convention.
-					$backup_path = $this->smush->get_image_backup_path( $file_path );
+					$backup_path = $smush->get_image_backup_path( $file_path );
 				}
 			}
 			$backup_path = is_array( $backup_path ) && ! empty( $backup_path['file'] ) ? $backup_path['file'] : $backup_path;
@@ -276,7 +276,7 @@ class WP_Smush_Backup {
 			delete_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings' );
 
 			// Get the Button html without wrapper.
-			$button_html = $this->smush->set_status( $attachment_id, false, false, false );
+			$button_html = $smush->set_status( $attachment_id, false, false, false );
 
 			// Remove the transient.
 			delete_option( "wp-smush-restore-$attachment_id" );
@@ -324,6 +324,8 @@ class WP_Smush_Backup {
 
 		$meta = '';
 
+		$mod = WP_Smush::get_instance()->core()->mod;
+
 		// Else get the Attachment details.
 		/**
 		 * For Full Size
@@ -336,10 +338,10 @@ class WP_Smush_Backup {
 		if ( empty( $original_file ) ) {
 			$original_file = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
 		}
-		$original_file_path = $this->smush->original_file( $original_file );
+		$original_file_path = $mod->smush->original_file( $original_file );
 		if ( file_exists( $original_file_path ) ) {
 			// Update the path details in meta and attached file, replace the image.
-			$meta = WP_Smush::get_instance()->core()->mod->png2jpg->update_image_path( $image_id, $file_path, $original_file_path, $meta, 'full', 'restore' );
+			$meta = $mod->png2jpg->update_image_path( $image_id, $file_path, $original_file_path, $meta, 'full', 'restore' );
 
 			// Unlink JPG.
 			if ( ! empty( $meta['file'] ) && $original_file == $meta['file'] ) {
@@ -356,7 +358,7 @@ class WP_Smush_Backup {
 		// Update Meta.
 		if ( ! empty( $meta ) ) {
 			// Remove Smushing, while attachment data is updated for the image.
-			remove_filter( 'wp_update_attachment_metadata', array( $this->smush, 'smush_image' ), 15 );
+			remove_filter( 'wp_update_attachment_metadata', array( $mod->smush, 'smush_image' ), 15 );
 			wp_update_attachment_metadata( $image_id, $meta );
 
 			return true;

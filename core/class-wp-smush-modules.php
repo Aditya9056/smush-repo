@@ -56,13 +56,6 @@ class WP_Smush_Modules {
 	public $resize;
 
 	/**
-	 * Settings module.
-	 *
-	 * @var WP_Smush_Settings
-	 */
-	public $settings;
-
-	/**
 	 * CDN module.
 	 *
 	 * @var WP_Smush_CDN
@@ -73,14 +66,13 @@ class WP_Smush_Modules {
 	 * WP_Smush_Modules constructor.
 	 */
 	public function __construct() {
-		$this->db       = new WP_Smush_DB();
-		$this->dir      = new WP_Smush_Dir();
-		$this->smush    = new WP_Smushit();
-		$this->backup   = new WP_Smush_Backup( $this->smush );
-		$this->png2jpg  = new WP_Smush_Png2jpg();
-		$this->resize   = new WP_Smush_Resize();
-		$this->settings = new WP_Smush_Settings();
-		$this->cdn      = new WP_Smush_CDN();
+		$this->db      = new WP_Smush_DB();
+		$this->dir     = new WP_Smush_Dir();
+		$this->smush   = new WP_Smushit();
+		$this->backup  = new WP_Smush_Backup();
+		$this->png2jpg = new WP_Smush_Png2jpg();
+		$this->resize  = new WP_Smush_Resize();
+		$this->cdn     = new WP_Smush_CDN();
 	}
 
 }

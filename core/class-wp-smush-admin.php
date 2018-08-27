@@ -237,7 +237,7 @@ class WP_Smush_Admin {
 		$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
 
 		// Add a bulk smush option for NextGen gallery.
-		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->get_nextgen_status() && WP_Smush::is_pro() ) {
+		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->nextgen->is_enabled() && WP_Smush::is_pro() ) {
 			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( $title, 'wp-smush-nextgen-bulk', true );
 		}
 	}
@@ -426,9 +426,9 @@ class WP_Smush_Admin {
 	 *
 	 * @param string $column_name  Column name.
 	 * @param int    $id           Attachment ID.
- 	 */
+	 */
 	public function custom_column( $column_name, $id ) {
-		if ( 'smushit' == $column_name ) {
+		if ( 'smushit' === $column_name ) {
 			WP_Smush::get_instance()->core()->mod->smush->set_status( $id );
 		}
 	}

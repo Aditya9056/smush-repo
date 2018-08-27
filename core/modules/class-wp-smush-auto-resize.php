@@ -15,7 +15,7 @@
  *
  * Reference: EWWW Optimizer.
  */
-class WP_Smush_Auto_Resize {
+class WP_Smush_Auto_Resize extends WP_Smush_Module {
 
 	/**
 	 * Is auto detection enabled.
@@ -46,7 +46,7 @@ class WP_Smush_Auto_Resize {
 	/**
 	 * WP_Smush_Auto_Resize constructor.
 	 */
-	public function __construct() {
+	public function init() {
 		// Set auto resize flag.
 		add_action( 'init', array( $this, 'init_flags' ) );
 
@@ -84,14 +84,8 @@ class WP_Smush_Auto_Resize {
 		}
 
 		// Only required for admin users.
-		if ( (bool) WP_Smush_Settings::$settings['detection'] && current_user_can( 'manage_options' ) ) {
+		if ( $this->settings->get( 'bulk', 'detection' ) && current_user_can( 'manage_options' ) ) {
 			$this->can_auto_detect = true;
-		}
-
-		// Auto detection is required only for free users.
-		if ( ! $is_pro ) {
-			// We need smush settings.
-			WP_Smush_Settings::init_settings();
 		}
 	}
 

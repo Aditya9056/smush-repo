@@ -85,7 +85,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			)
 		);
 
-		$networkwide = WP_Smush_Settings::$settings['networkwide'];
+		$networkwide = $this->settings->is_network_enabled();
 
 		// Tabs that can be shown in network admin networkwide (bulk, integrations, cdn).
 		if ( is_multisite() && $networkwide && is_network_admin() ) {
@@ -107,7 +107,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function register_meta_boxes() {
 		$is_pro         = WP_Smush::is_pro();
 		$is_network     = is_network_admin();
-		$is_networkwide = WP_Smush_Settings::$settings['networkwide'];
+		$is_networkwide = $this->settings->is_network_enabled();
 
 		if ( ! $is_network ) {
 			$this->add_meta_box( 'meta-boxes/summary',
@@ -214,7 +214,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				}
 
 				// Do not show if pro user.
-				if ( ! $is_pro && ( ! is_network_admin() || WP_Smush_Settings::$settings['networkwide'] ) ) {
+				if ( ! $is_pro && ( ! is_network_admin() || $is_networkwide ) ) {
 					$this->add_meta_box( 'meta-boxes/pro-features',
 						__( 'Pre Features', 'wp-smushit' ),
 						array( $this, 'pro_features_metabox' ),
@@ -235,7 +235,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						null,
 						'cdn'
 					);
-				} elseif ( 0 === WP_Smush_Settings::$settings['cdn'] ) {
+				} elseif ( 0 === $this->settings->get( 'cdn', 'enabled' ) ) {
 					$this->add_meta_box( 'meta-boxes/cdn/disabled',
 						__( 'CDN', 'wp-smushit' ),
 						null,
@@ -288,7 +288,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		}
 
 		// Dimensions.
-		$resize_sizes = WP_Smush_Settings::get_setting(
+		$resize_sizes = $this->settings->get_setting(
 			WP_SMUSH_PREFIX . 'resize_sizes', array(
 				'width'  => '',
 				'height' => '',
@@ -301,7 +301,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Get max dimensions.
 		$max_sizes = WP_Smush::get_instance()->core()->get_max_image_dimensions();
 
-		$setting_status = empty( WP_Smush_Settings::$settings['resize'] ) ? 0 : WP_Smush_Settings::$settings['resize'];
+		$setting_status = ! $this->settings->get( 'bulk', 'resize' ) ? 0 : $this->settings->get( 'bulk', 'resize' );
 		?>
 		<div class="wp-smush-resize-settings-wrap<?php echo $setting_status ? '' : ' sui-hidden'; ?>">
 			<div class="sui-row">
@@ -371,10 +371,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * @return void
 	 */
 	public function pro_savings_stats() {
-		$settings = WP_Smush_Settings::$settings;
-
-		$networkwide = (bool) $settings['networkwide'];
-
 		$core = WP_Smush::get_instance()->core();
 
 		if ( ! WP_Smush::is_pro() ) {
@@ -412,7 +408,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						<p class="wp-smush-stats-label-message">
 							<?php
 							$link_class = 'wp-smush-lossy-enable-link';
-							if ( is_multisite() && $networkwide ) {
+							if ( is_multisite() && $this->settings->is_network_enabled() ) {
 								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true, true ) . '#enable-lossy';
 							} elseif ( 'bulk' !== $this->get_current_tab() ) {
 								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '#enable-lossy';
@@ -617,7 +613,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		}
 
 		// Additional Image sizes.
-		$image_sizes = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
+		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
 		$sizes       = WP_Smush::get_instance()->core()->image_dimensions();
 
 		/**
@@ -629,7 +625,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$is_pro   = WP_Smush::is_pro();
 		$disabled = '';
 
-		$setting_status = empty( WP_Smush_Settings::$settings['auto'] ) ? 0 : WP_Smush_Settings::$settings['auto'];
+		$setting_status = ! $this->settings->get( 'bulk', 'auto' ) ? 0 : $this->settings->get( 'bulk', 'auto' );
 
 		if ( ! empty( $sizes ) ) {
 			?>
@@ -694,7 +690,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		}
 
 		foreach ( $this->full_size_group as $name ) {
-			$setting_val = WP_Smush_Settings::$settings[ $name ];
+			$setting_val = $this->settings->get( 'bulk', $name );
 			$setting_key = WP_SMUSH_PREFIX . $name;
 			?>
 			<div class="sui-form-field">
@@ -727,11 +723,11 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 		foreach ( $this->resize_group as $name ) {
 			// Do not continue if setting is not found.
-			if ( ! isset( WP_Smush_Settings::$settings[ $name ] ) ) {
+			if ( ! $this->settings->get( 'bulk', $name ) ) {
 				continue;
 			}
 
-			$setting_val = WP_Smush_Settings::$settings[ $name ];
+			$setting_val = $this->settings->get( 'bulk', $name );
 			$setting_key = WP_SMUSH_PREFIX . $name;
 			?>
 			<div class="sui-form-field">
@@ -839,7 +835,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function dashboard_summary_metabox() {
 		$core = WP_Smush::get_instance()->core();
 
-		$settings     = WP_Smush_Settings::$settings;
 		$resize_count = $core->mod->db->resize_savings( false, false, true );
 
 		// Split human size to get format and size.
@@ -854,10 +849,10 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view( 'meta-boxes/summary/meta-box', array(
 			'human_format'    => empty( $human[1] ) ? 'B' : $human[1],
 			'human_size'      => empty( $human[0] ) ? '0' : $human[0],
-			'networkwide'     => (bool) $settings['networkwide'],
+			'networkwide'     => $this->settings->is_network_enabled(),
 			'remaining'       => $core->remaining_count,
 			'resize_count'    => ! $resize_count ? 0 : $resize_count,
-			'resize_enabled'  => (bool) $settings['resize'],
+			'resize_enabled'  => (bool) $this->settings->get( 'bulk', 'resize' ),
 			'resize_savings'  => $resize_savings,
 			'stats_percent'   => $core->stats['percent'] > 0 ? number_format_i18n( $core->stats['percent'], 1 ) : 0,
 			'total_optimized' => $core->stats['total_images'],
@@ -919,14 +914,11 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Get all grouped settings that can be skipped.
 		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, $this->cdn_group );
 
-		// Get settings values.
-		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
-
 		$this->view( 'meta-boxes/settings/meta-box', array(
 			'basic_features'      => WP_Smush_Core::$basic_features,
 			'grouped_settings'    => $grouped_settings,
-			'opt_networkwide_val' => WP_Smush_Settings::$settings['networkwide'],
-			'settings'            => $settings,
+			'opt_networkwide_val' => $this->settings->is_network_enabled(),
+			'settings'            => $this->settings->get( 'bulk' ),
 			'settings_data'       => WP_Smush::get_instance()->core()->settings,
 		) );
 	}
@@ -1010,14 +1002,11 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			), $core->upgrade_url
 		);
 
-		// Get settings values.
-		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
-
 		$this->view( 'meta-boxes/integrations/meta-box', array(
 			'basic_features'    => WP_Smush_Core::$basic_features,
 			'is_pro'            => WP_Smush::is_pro(),
 			'integration_group' => $this->integration_group,
-			'settings'          => $settings,
+			'settings'          => $this->settings->get( 'integration' ),
 			'settings_data'     => $core->settings,
 			'upsell_url'        => $upsell_url,
 		) );
@@ -1080,12 +1069,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					Upgrade your plan now to reactivate this service.', 'wp-smushit' ),
 		);
 
-		// Get settings values.
-		$settings = empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::init_settings() : WP_Smush_Settings::$settings;
-
 		$this->view( 'meta-boxes/cdn/meta-box', array(
 			'cdn_group'     => $this->cdn_group,
-			'settings'      => $settings,
+			'settings'      => $this->settings->get( 'cdn' ),
 			'settings_data' => WP_Smush::get_instance()->core()->settings,
 			'status'        => 'warning', // inactive (warning), active (success) or expired (error).
 			'status_msg'    => $status_msg,

@@ -8,7 +8,7 @@
 /**
  * Class WP_Smushit.
  */
-class WP_Smushit {
+class WP_Smushit extends WP_Smush_Module {
 
 	/**
 	 * Meta key to save smush result to db.
@@ -69,7 +69,7 @@ class WP_Smushit {
 	/**
 	 * WP_Smush constructor.
 	 */
-	public function __construct() {
+	public function init() {
 		// Update the Super Smush count, after the smushing.
 		add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
 
@@ -894,7 +894,7 @@ class WP_Smushit {
 	 */
 	private function smush_status( $id ) {
 		// Show Temporary Status, For Async Optimisation, No Good workaround.
-		if ( ! get_option( "wp-smush-restore-$id", false ) && ! empty( $_POST['action'] ) && 'upload-attachment' === $_POST['action'] && self::is_auto_smush_enabled() ) {
+		if ( ! get_option( "wp-smush-restore-$id", false ) && ! empty( $_POST['action'] ) && 'upload-attachment' === $_POST['action'] && $this->is_auto_smush_enabled() ) {
 			$status_txt = '<p class="smush-status">' . __( 'Smushing in progress..', 'wp-smushit' ) . '</p>';
 
 			// We need to show the smush button.
@@ -964,7 +964,7 @@ class WP_Smushit {
 			return false;
 		}
 
-		$image_sizes = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
+		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 
 		// If Images sizes aren't set, don't skip any of the image size.
 		if ( false === $image_sizes ) {
@@ -1096,13 +1096,13 @@ class WP_Smushit {
 			$headers['apikey'] = $api_key;
 		}
 
-		if ( WP_Smush::is_pro() && WP_Smush_Settings::$settings['lossy'] ) {
+		if ( WP_Smush::is_pro() && $this->settings->get( 'bulk', 'lossy' ) ) {
 			$headers['lossy'] = 'true';
 		} else {
 			$headers['lossy'] = 'false';
 		}
 
-		$headers['exif'] = WP_Smush_Settings::$settings['strip_exif'] ? 'false' : 'true';
+		$headers['exif'] = $this->settings->get( 'bulk', 'strip_exif' ) ? 'false' : 'true';
 
 		$api_url = defined( 'WP_SMUSH_API_HTTP' ) ? WP_SMUSH_API_HTTP : WP_SMUSH_API;
 		$args    = array(
@@ -1122,7 +1122,7 @@ class WP_Smushit {
 			// Hostgator Issue.
 			if ( ! empty( $er_msg ) && strpos( $er_msg, 'SSL CA cert' ) !== false ) {
 				// Update DB for using http protocol.
-				WP_Smush_Settings::update_setting( WP_SMUSH_PREFIX . 'use_http', 1 );
+				$this->settings->set_setting( WP_SMUSH_PREFIX . 'use_http', 1 );
 			}
 			// Check for timeout error and suggest to filter timeout.
 			if ( strpos( $er_msg, 'timed out' ) ) {
@@ -1263,9 +1263,8 @@ class WP_Smushit {
 	 * @return mixed
 	 */
 	public function resize_from_meta_data( $meta, $id = null ) {
-		$settings = WP_Smush_Settings::$settings;
 		// Flag to check, if original size image should be smushed or not.
-		$original   = $settings['original'];
+		$original   = $this->settings->get( 'bulk', 'original' );
 		$smush_full = WP_Smush::is_pro() && 1 === $original;
 
 		$errors = new WP_Error();
@@ -1613,7 +1612,7 @@ class WP_Smushit {
 		WP_Smush::get_instance()->core()->mod->resize->initialize( true );
 
 		// Check if auto is enabled.
-		$auto_smush = self::is_auto_smush_enabled();
+		$auto_smush = $this->is_auto_smush_enabled();
 
 		// Get the file path for backup.
 		$attachment_file_path = WP_Smush_Helper::get_attached_file( $id );
@@ -1636,7 +1635,7 @@ class WP_Smushit {
 			$use_http = wp_cache_get( WP_SMUSH_PREFIX . 'use_http', 'smush' );
 
 			if ( ! $use_http ) {
-				$use_http = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'use_http', false );
+				$use_http = $this->settings->get_setting( WP_SMUSH_PREFIX . 'use_http', false );
 				wp_cache_add( WP_SMUSH_PREFIX . 'use_http', $use_http, 'smush' );
 			}
 
@@ -1807,8 +1806,8 @@ class WP_Smushit {
 	 *
 	 * @return int|mixed
 	 */
-	public static function is_auto_smush_enabled() {
-		$auto_smush = WP_Smush_Settings::$settings['auto'];
+	public function is_auto_smush_enabled() {
+		$auto_smush = $this->settings->get( 'bulk', 'auto' );
 
 		// Keep the auto smush on by default.
 		if ( false === $auto_smush || ! isset( $auto_smush ) ) {
@@ -1941,7 +1940,7 @@ class WP_Smushit {
 		}
 
 		// If auto Smush is disabled.
-		if ( ! self::is_auto_smush_enabled() ) {
+		if ( ! $this->is_auto_smush_enabled() ) {
 			return;
 		}
 
@@ -1974,7 +1973,7 @@ class WP_Smushit {
 		}
 
 		// If auto Smush is disabled.
-		if ( ! self::is_auto_smush_enabled() ) {
+		if ( ! $this->is_auto_smush_enabled() ) {
 			return;
 		}
 

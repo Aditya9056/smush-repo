@@ -75,7 +75,7 @@ $this->view( 'blocks/progress-bar', array(
 					);
 					?>
 				</li>
-			<?php elseif ( ! WP_Smush_Settings::$settings['lossy'] ) : ?>
+			<?php elseif ( ! $this->settings->get( 'bulk', 'lossy' ) ) : ?>
 				<li class="smush-recommendation-lossy">
 					<?php
 					printf(
@@ -97,7 +97,7 @@ $this->view( 'blocks/progress-bar', array(
 				);
 				?>
 			</li>
-			<?php if ( ! WP_Smush_Settings::$settings['resize'] ) : ?>
+			<?php if ( ! $this->settings->get( 'bulk', 'resize' ) ) : ?>
 				<li class="smush-recommendation-resize-original">
 					<?php
 					printf(

@@ -28,7 +28,7 @@ class WP_Smush_Installer {
 		}
 
 		$version  = get_site_option( WP_SMUSH_PREFIX . 'version' );
-		$settings = ! empty( WP_Smush_Settings::$settings ) ? WP_Smush_Settings::$settings : WP_Smush_Settings::init_settings();
+		$settings = ! empty( WP_Smush_Settings::get_instance()->get() ) ? WP_Smush_Settings::get_instance()->get() : WP_Smush_Settings::get_instance()->init();
 
 		// If the version is not saved or if the version is not same as the current version,.
 		if ( ! $version || WP_SMUSH_VERSION !== $version ) {
@@ -103,11 +103,11 @@ class WP_Smush_Installer {
 	 */
 	private static function upgrade_2_8_0() {
 		// If exif is not preserved, it will be stripped by default.
-		if ( WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'keep_exif' ) ) {
+		if ( WP_Smush_Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'keep_exif' ) ) {
 			// Set not to strip exif value.
-			WP_Smush_Settings::update_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
+			WP_Smush_Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
 			// Delete the old exif setting.
-			WP_Smush_Settings::delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
+			WP_Smush_Settings::get_instance()->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
 		}
 	}
 

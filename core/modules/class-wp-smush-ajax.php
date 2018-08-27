@@ -14,12 +14,12 @@
  *
  * @since 2.9.0
  */
-class WP_Smush_Ajax {
+class WP_Smush_Ajax extends WP_Smush_Module {
 
 	/**
 	 * WP_Smush_Ajax constructor.
 	 */
-	public function __construct() {
+	public function init() {
 		/**
 		 * QUICK SETUP
 		 */
@@ -107,7 +107,7 @@ class WP_Smush_Ajax {
 		}
 
 		// Check the last settings stored in db.
-		$settings = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'last_settings', array() );
 		$settings = maybe_unserialize( $settings );
 
 		// Available settings for free/pro version.
@@ -147,8 +147,8 @@ class WP_Smush_Ajax {
 		$resize_sizes['height'] = $resize_sizes['height'] > 0 && $resize_sizes['height'] < 500 ? 500 : $resize_sizes['height'];
 
 		// Update the resize sizes.
-		WP_Smush_Settings::update_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
-		WP_Smush_Settings::update_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'last_settings', $settings );
 
 		update_site_option( 'skip-smush-setup', 1 );
 
@@ -339,14 +339,14 @@ class WP_Smush_Ajax {
 		$resmush_list = array();
 
 		// Scanning for NextGen or Media Library.
-		$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( $_REQUEST['type'] ) : '';
+		$type = isset( $_REQUEST['type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['type'] ) ) : '';
 
 		$core = WP_Smush::get_instance()->core();
 
 		// Save settings only if networkwide settings are disabled.
-		if ( ( ! is_multisite() || ! WP_Smush_Settings::is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
+		if ( ( ! is_multisite() || ! $this->settings->is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
 			// Save Settings.
-			$core->mod->settings->process_options();
+			$this->settings->process_options();
 		}
 
 		// If there aren't any images in the library, return the notice.
@@ -910,7 +910,7 @@ class WP_Smush_Ajax {
 			), 403 );
 		}
 
-		WP_Smush_Settings::edit_setting( 'cdn', 1 );
+		//$this->settings->set_setting( 'cdn', 1 );
 		wp_send_json_success();
 	}
 
