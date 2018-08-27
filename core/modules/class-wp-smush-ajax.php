@@ -108,15 +108,12 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		// Check the last settings stored in db.
 		$settings = $this->settings->get();
-		$settings = maybe_unserialize( $settings );
 
 		// Available settings for free/pro version.
 		$exclude = array(
 			'networkwide',
 			'backup',
 			'png_to_jpg',
-			'nextgen',
-			's3',
 		);
 
 		foreach ( WP_Smush::get_instance()->core()->settings as $name => $values ) {
@@ -132,9 +129,9 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 			// Update value in settings.
 			if ( in_array( WP_SMUSH_PREFIX . $name, $quick_settings, true ) ) {
-				$settings[ $name ] = 1;
+				$settings['bulk'][ $name ] = true;
 			} else {
-				$settings[ $name ] = 0;
+				$settings['bulk'][ $name ] = false;
 			}
 		}
 
