@@ -22,7 +22,6 @@
 		?>
 	</p>
 
-	<?php wp_nonce_field( 'smush-enable-cdn', 'smush-enable-cdn-nonce' ); ?>
 	<button class="sui-button sui-button-primary" id="smush-enable-cdn">
 		<?php esc_html_e( 'GET STARTED', 'wp-smushit' ); ?>
 	</button>

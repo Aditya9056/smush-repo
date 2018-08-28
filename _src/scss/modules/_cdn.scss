@@ -20,6 +20,12 @@
             margin: 20px auto 0;
         }
 
+        .sui-meta-boxes-cdn {
+            .wp-smush-image-size-list {
+                display: none !important;
+            }
+        }
+
         .smush-cdn-quota-boxes {
             display: flex;
             justify-content: space-between;

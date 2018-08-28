@@ -133,7 +133,7 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 		$should_convert = false;
 
 		// Get the Transparency conversion settings.
-		$convert_png = $this->settings->get( 'bulk', 'png_to_jpg' );
+		$convert_png = $this->settings->get( 'png_to_jpg' );
 
 		if ( ! $convert_png ) {
 			return $should_convert;
@@ -292,7 +292,7 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 		$this->update_image_url( $id, $size_k, $n_file, $o_url );
 
 		// Delete the Original files if backup not enabled.
-		if ( 'conversion' === $o_type && ! $this->settings->get( 'bulk', 'backup' ) ) {
+		if ( 'conversion' === $o_type && ! $this->settings->get( 'backup' ) ) {
 			@unlink( $o_file );
 		}
 

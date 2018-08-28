@@ -84,7 +84,7 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 		}
 
 		// Only required for admin users.
-		if ( $this->settings->get( 'bulk', 'detection' ) && current_user_can( 'manage_options' ) ) {
+		if ( $this->settings->get( 'detection' ) && current_user_can( 'manage_options' ) ) {
 			$this->can_auto_detect = true;
 		}
 	}

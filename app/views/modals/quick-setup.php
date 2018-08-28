@@ -30,23 +30,33 @@
 					<input type="hidden" value="smush_setup" name="action" />
 					<?php wp_nonce_field( 'smush_quick_setup' ); ?>
 					<?php
-					$exclude = array( 'backup', 'png_to_jpg', 'nextgen', 's3', 'detection' );
+					// Available settings for free/pro version.
+					$available = array(
+						'auto',
+						'lossy',
+						'strip_exif',
+						'resize',
+						'original',
+					);
 					// Settings for free and pro version.
-					foreach ( WP_Smush_Settings::get_instance()->get( 'bulk' ) as $name => $values ) {
+					foreach ( WP_Smush_Settings::get_instance()->get() as $name => $values ) {
 						// Skip networkwide settings, we already printed it.
 						if ( 'networkwide' === $name ) {
 							continue;
 						}
+
+						// Only include settings listed in available array list.
+						if ( ! in_array( $name, $available, true ) ) {
+							continue;
+						}
+
 						// Skip premium features if not a member.
 						if ( ! in_array( $name, WP_Smush_Core::$basic_features, true ) && ! WP_Smush::is_pro() ) {
 							continue;
 						}
-						// Do not output settings listed in exclude array list.
-						if ( in_array( $name, $exclude, true ) ) {
-							continue;
-						}
+
 						$setting_m_key = WP_SMUSH_PREFIX . $name;
-						$setting_val   = WP_Smush_Settings::get_instance()->get( 'bulk', $name );
+						$setting_val   = WP_Smush_Settings::get_instance()->get( $name );
 						// Set the default value 1 for auto smush.
 						if ( 'auto' === $name && false === $setting_val ) {
 							$setting_val = 1;

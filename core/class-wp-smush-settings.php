@@ -32,31 +32,62 @@ class WP_Smush_Settings {
 	 * @var array
 	 */
 	private $settings = array(
-		'bulk'        => array(
-			'networkwide' => false,
-			'auto'        => true,
-			'lossy'       => false,
-			'strip_exif'  => true,
-			'resize'      => false,
-			'detection'   => false,
-			'original'    => false,
-			'backup'      => false,
-			'png_to_jpg'  => false,
-		),
-		'integration' => array(
-			'nextgen'   => false,
-			's3'        => false,
-			'gutenberg' => false,
+		'networkwide' => false,
+		'auto'        => true,  // works with CDN.
+		'lossy'       => false, // works with CDN.
+		'strip_exif'  => true,  // works with CDN.
+		'resize'      => false,
+		'detection'   => false,
+		'original'    => false,
+		'backup'      => false,
+		'png_to_jpg'  => false, // works with CDN.
+		'nextgen'     => false,
+		's3'          => false,
+		'gutenberg'   => false,
+		'cdn'         => false,
+		'webp'        => false,
+	);
 
-		),
-		'cdn'         => array(
-			'enabled'    => false,
-			'auto'       => true,
-			'lossy'      => false,
-			'webp'       => false,
-			'strip_exif' => true,
-			'png_to_jpg' => false,
-		),
+	/**
+	 * List of fields in bulk smush form.
+	 *
+	 * @var array
+	 */
+	private $bulk_fields = array(
+		'networkwide',
+		'auto',
+		'lossy',
+		'original',
+		'strip_exif',
+		'resize',
+		'backup',
+		'png_to_jpg',
+		'detection',
+	);
+
+	/**
+	 * List of fields in integration form.
+	 *
+	 * @var array
+	 */
+	private $integration_fields = array(
+		'gutenberg',
+		'nextgen',
+		's3',
+	);
+
+	/**
+	 * List of fields in CDN form.
+	 *
+	 * @var array
+	 */
+	private $cdn_fields = array(
+		'auto',
+		'lossy',
+		'strip_exif',
+		'png_to_jpg',
+		'cdn',
+		'webp',
 	);
 
 	/**
@@ -127,7 +158,7 @@ class WP_Smush_Settings {
 
 		// Get directly from db.
 		$settings = get_site_option( WP_SMUSH_PREFIX . 'settings' );
-		return (bool) $settings['bulk']['networkwide'];
+		return (bool) $settings['networkwide'];
 	}
 
 	/**
@@ -135,23 +166,36 @@ class WP_Smush_Settings {
 	 *
 	 * @since 3.0
 	 *
-	 * @param string $module   Module to get settings for. Default: get all settings.
-	 * @param string $setting  Setting to get. Default: get all settings.
+	 * @param string $setting Setting to get. Default: get all settings.
 	 *
 	 * @return array|bool  Return either a setting value or array of settings.
 	 */
-	public function get( $module = '', $setting = '' ) {
+	public function get( $setting = '' ) {
 		$settings = $this->settings;
 
 		if ( ! empty( $setting ) ) {
-			return isset( $settings[ $module ][ $setting ] ) ? $settings[ $module ][ $setting ] : false;
-		}
-
-		if ( ! empty( $module ) ) {
-			return isset( $settings[ $module ] ) ? $settings[ $module ] : false;
+			return isset( $settings[ $setting ] ) ? $settings[ $setting ] : false;
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * Setter method for $settings.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string $setting  Setting to update.
+	 * @param bool   $value    Value to set. Default: false.
+	 */
+	public function set( $setting = '', $value = false ) {
+		if ( empty( $setting ) ) {
+			return;
+		}
+
+		$this->settings[ $setting ] = $value;
+
+		$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
 	}
 
 	/**
@@ -223,7 +267,7 @@ class WP_Smush_Settings {
 			return;
 		}
 
-		$pages_with_settings = array_keys( $this->settings );
+		$pages_with_settings = array( 'bulk', 'integration', 'cdn' );
 
 		// Continue only if form name is set.
 		if ( ! isset( $_POST['setting_form'] ) || ! in_array( wp_unslash( $_POST['setting_form'] ), $pages_with_settings, true ) ) { // Input var ok.
@@ -239,7 +283,7 @@ class WP_Smush_Settings {
 
 		// Save whether to use the settings networkwide or not ( Only if in network admin ).
 		if ( isset( $_POST['action'] ) && 'save_settings' === wp_unslash( $_POST['action'] ) ) { // Input var ok.
-			$settings['bulk']['networkwide'] = (int) wp_unslash( $_POST['wp-smush-networkwide'] );
+			$settings['networkwide'] = (int) wp_unslash( $_POST['wp-smush-networkwide'] );
 		}
 
 		// Delete S3 alert flag, if S3 option is disabled again.
@@ -248,7 +292,8 @@ class WP_Smush_Settings {
 		}
 
 		// Current form fields.
-		$form_fields   = array_keys( $settings[ $setting_form ] );
+		$form_fields = $this->{$setting_form . '_fields'};
+
 		$core_settings = WP_Smush::get_instance()->core()->settings;
 
 		// Process each setting and update options.
@@ -268,7 +313,7 @@ class WP_Smush_Settings {
 		}
 
 		// Update initialised settings.
-		$this->settings[ $setting_form ] = $settings;
+		$this->settings = $settings;
 
 		$resp = $this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
 

@@ -78,6 +78,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		 */
 		// Enable CDN.
 		add_action( 'wp_ajax_smush_enable_cdn', array( $this, 'smush_enable_cdn' ) );
+		// Toggle CDN.
+		add_action( 'wp_ajax_smush_toggle_cdn', array( $this, 'toggle_cdn' ) );
 	}
 
 	/***************************************
@@ -130,7 +132,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			}
 
 			// Update value in settings.
-			$settings['bulk'][ $name ] = in_array( WP_SMUSH_PREFIX . $name, $quick_settings, true );
+			$settings[ $name ] = in_array( WP_SMUSH_PREFIX . $name, $quick_settings, true );
 		}
 
 		// Update resize width and height settings if set.
@@ -897,7 +899,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 * @since 3.0
 	 */
 	public function smush_enable_cdn() {
-		check_ajax_referer( 'smush-enable-cdn' );
+		check_ajax_referer( 'save_wp_smush_options' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(array(
@@ -905,7 +907,31 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			), 403 );
 		}
 
-		//$this->settings->set_setting( 'cdn', 1 );
+		$this->settings->set( 'cdn', true );
+		wp_send_json_success();
+	}
+
+	/**
+	 * Toggle CDN.
+	 *
+	 * Handles "Get Started" button press on the disabled CDN meta box.
+	 * Handles "Cancel Activation" button press on the CDN meta box.
+	 * Refreshes page on success.
+	 *
+	 * @since 3.0
+	 */
+	public function toggle_cdn() {
+		check_ajax_referer( 'save_wp_smush_options' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error(array(
+				'msg' => __( 'User can not modify options', 'wp-smushit' ),
+			), 403 );
+		}
+
+		$param = sanitize_text_field( wp_unslash( $_POST['param'] ) );
+
+		$this->settings->set( 'cdn', 'true' === $param );
 		wp_send_json_success();
 	}
 

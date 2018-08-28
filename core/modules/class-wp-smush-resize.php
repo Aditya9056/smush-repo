@@ -58,7 +58,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 			return;
 		}
 
-		$settings = $this->settings->get( 'bulk', 'resize' );
+		$settings = $this->settings->get( 'resize' );
 
 		// Make sure the screen function exists.
 		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;

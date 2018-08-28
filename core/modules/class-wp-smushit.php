@@ -1096,13 +1096,13 @@ class WP_Smushit extends WP_Smush_Module {
 			$headers['apikey'] = $api_key;
 		}
 
-		if ( WP_Smush::is_pro() && $this->settings->get( 'bulk', 'lossy' ) ) {
+		if ( WP_Smush::is_pro() && $this->settings->get( 'lossy' ) ) {
 			$headers['lossy'] = 'true';
 		} else {
 			$headers['lossy'] = 'false';
 		}
 
-		$headers['exif'] = $this->settings->get( 'bulk', 'strip_exif' ) ? 'false' : 'true';
+		$headers['exif'] = $this->settings->get( 'strip_exif' ) ? 'false' : 'true';
 
 		$api_url = defined( 'WP_SMUSH_API_HTTP' ) ? WP_SMUSH_API_HTTP : WP_SMUSH_API;
 		$args    = array(
@@ -1264,7 +1264,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 */
 	public function resize_from_meta_data( $meta, $id = null ) {
 		// Flag to check, if original size image should be smushed or not.
-		$original   = $this->settings->get( 'bulk', 'original' );
+		$original   = $this->settings->get( 'original' );
 		$smush_full = WP_Smush::is_pro() && 1 === $original;
 
 		$errors = new WP_Error();
@@ -1807,7 +1807,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 * @return int|mixed
 	 */
 	public function is_auto_smush_enabled() {
-		$auto_smush = $this->settings->get( 'bulk', 'auto' );
+		$auto_smush = $this->settings->get( 'auto' );
 
 		// Keep the auto smush on by default.
 		if ( false === $auto_smush || ! isset( $auto_smush ) ) {

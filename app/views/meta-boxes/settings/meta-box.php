@@ -16,6 +16,7 @@
 <form id="wp-smush-settings-form" method="post">
 	<input type="hidden" name="setting_form" id="setting_form" value="bulk">
 	<?php if ( is_multisite() && is_network_admin() ) : ?>
+		<input type="hidden" name="setting-type" value="network">
 		<div class="sui-box-settings-row wp-smush-basic">
 			<div class="sui-box-settings-col-1">
 				<label for="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>" aria-hidden="true">
@@ -38,7 +39,6 @@
 				</label>
 			</div>
 		</div>
-		<input type="hidden" name="setting-type" value="network">
 		<div class="network-settings-wrapper<?php echo $opt_networkwide_val ? '' : ' sui-hidden'; ?>">
 	<?php endif; ?>
 

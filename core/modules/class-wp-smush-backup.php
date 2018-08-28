@@ -47,7 +47,7 @@ class WP_Smush_Backup extends WP_Smush_Module {
 	 */
 	public function initialize() {
 		// Whether backup is enabled or not.
-		$this->backup_enabled = $this->settings->get( 'bulk', 'backup' ) ? $this->settings->get( 'bulk', 'backup' ) : 0;
+		$this->backup_enabled = $this->settings->get( 'backup' );
 	}
 
 	/**

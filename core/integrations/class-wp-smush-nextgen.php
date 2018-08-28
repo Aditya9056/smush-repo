@@ -130,7 +130,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 	 * @return bool|mixed
 	 */
 	public function is_enabled() {
-		return $this->settings->get( 'integration', 'nextgen' );
+		return $this->settings->get( 'nextgen' );
 	}
 
 	/**

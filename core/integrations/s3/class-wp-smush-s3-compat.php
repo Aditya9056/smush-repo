@@ -39,7 +39,7 @@ class WP_Smush_S3_Compat extends AS3CF_Plugin_Compatibility {
 		global $as3cf;
 
 		// Return if integration is disabled, or not a pro user.
-		if ( ! WP_Smush_Settings::get_instance()->get( 'integration', 's3' ) || ! WP_Smush::is_pro() ) {
+		if ( ! WP_Smush_Settings::get_instance()->get( 's3' ) || ! WP_Smush::is_pro() ) {
 			return $url;
 		}
 

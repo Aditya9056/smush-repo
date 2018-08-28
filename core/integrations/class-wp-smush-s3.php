@@ -259,7 +259,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		$is_pro = WP_Smush::is_pro();
 
 		// If S3 integration is not enabled, return.
-		$setting_val = $is_pro ? $this->settings->get( 'integration', $this->module ) : 0;
+		$setting_val = $is_pro ? $this->settings->get( $this->module ) : 0;
 
 		// If integration is disabled when S3 offload is active, do not continue.
 		if ( ! $setting_val && is_object( $as3cf ) ) {
@@ -325,7 +325,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 * @return bool|string  Returns file path or false
 	 */
 	private function download_file( $attachment_id, $size_details = array(), $uf_file_path = '' ) {
-		if ( empty( $attachment_id ) || ! $this->settings->get( 'integration', $this->module ) || ! WP_Smush::is_pro() ) {
+		if ( empty( $attachment_id ) || ! $this->settings->get( $this->module ) || ! WP_Smush::is_pro() ) {
 			return false;
 		}
 
@@ -470,7 +470,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		}
 
 		// If not Pro user or S3 support is disabled.
-		return ( ! WP_Smush::is_pro() || ! $this->settings->get( 'integration', $this->module ) );
+		return ( ! WP_Smush::is_pro() || ! $this->settings->get( $this->module ) );
 	}
 
 }

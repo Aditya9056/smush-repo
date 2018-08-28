@@ -336,13 +336,13 @@ class WP_Smush_Core {
 	public function initialise() {
 		$settings = WP_Smush_Settings::get_instance();
 		// Check if lossy enabled.
-		$this->mod->smush->lossy_enabled = WP_Smush::is_pro() && $settings->get( 'bulk', 'lossy' );
+		$this->mod->smush->lossy_enabled = WP_Smush::is_pro() && $settings->get( 'lossy' );
 
 		// Check if Smush original enabled.
-		$this->mod->smush->smush_original = WP_Smush::is_pro() && $settings->get( 'bulk', 'original' );
+		$this->mod->smush->smush_original = WP_Smush::is_pro() && $settings->get( 'original' );
 
 		// Check whether to keep EXIF data or not.
-		$this->mod->smush->keep_exif = empty( $settings->get( 'bulk', 'strip_exif' ) );
+		$this->mod->smush->keep_exif = ! $settings->get( 'strip_exif' );
 	}
 
 	/**
@@ -463,7 +463,7 @@ class WP_Smush_Core {
 		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-nextgen.php';
 
 		// Load only if integration is enabled and PRO user.
-		if ( WP_Smush_Settings::get_instance()->get( 'integration', 'nextgen' ) && WP_Smush::is_pro() ) {
+		if ( WP_Smush_Settings::get_instance()->get( 'nextgen' ) && WP_Smush::is_pro() ) {
 			/* @noinspection PhpIncludeInspection */
 			require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-admin.php';
 			/* @noinspection PhpIncludeInspection */
@@ -687,11 +687,6 @@ class WP_Smush_Core {
 		}
 	}
 
-
-
-
-
-
 	/**
 	 * Check bulk sent count, whether to allow further smushing or not
 	 *
@@ -723,11 +718,6 @@ class WP_Smush_Core {
 
 		return $continue;
 	}
-
-
-
-
-
 
 	/**
 	 * Return Global stats
