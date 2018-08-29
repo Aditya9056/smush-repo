@@ -5982,7 +5982,7 @@ html.sui-has-overlay {
 .sui-2-2-9 ul.fancytree-container span.fancytree-expander {
   cursor: pointer;
   font-size: 12px;
-  margin-left: 10px;
+  margin-left: 13px;
   width: 15px;
 }
 
@@ -6083,12 +6083,44 @@ html.sui-has-overlay {
   margin-left: 11px;
 }
 
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable {
+  background-color: transparent !important;
+}
+
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable.fancytree-selected {
+  margin-left: -9px;
+}
+
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable.fancytree-selected span.fancytree-expander {
+  margin-left: 10px;
+}
+
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable.fancytree-selected span.fancytree-checkbox {
+  border: 1px solid #ddd;
+  background-color: #e6e6e6;
+}
+
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable.fancytree-selected span.fancytree-checkbox:before {
+  color: #e6e6e6 !important;
+}
+
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable.fancytree-selected span.fancytree-title {
+  color: #666;
+}
+
 .sui-2-2-9 ul.fancytree-container .fancytree-unselectable span.fancytree-expander,
 .sui-2-2-9 ul.fancytree-container .fancytree-unselectable span.fancytree-icon,
 .sui-2-2-9 ul.fancytree-container .fancytree-unselectable span.fancytree-checkbox,
 .sui-2-2-9 ul.fancytree-container .fancytree-unselectable span.fancytree-title {
   opacity: 0.4;
   filter: alpha(opacity=40);
+}
+
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable span.fancytree-expander:before,
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable span.fancytree-icon:before,
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable span.fancytree-checkbox:before,
+.sui-2-2-9 ul.fancytree-container .fancytree-unselectable span.fancytree-title:before {
+  color: #666 !important;
 }
 
 .sui-2-2-9 ul.fancytree-container span.fancytree-icon:before {
