@@ -98,9 +98,11 @@
 			<span class="smush-filename-extension smush-extension-gif">
 				<?php esc_html_e( 'gif', 'wp-smushit' ); ?>
 			</span>
-			<span class="smush-filename-extension smush-extension-webp">
-				<?php esc_html_e( 'webp', 'wp-smushit' ); ?>
-			</span>
+			<?php if ( $settings['webp'] ) : ?>
+				<span class="smush-filename-extension smush-extension-webp">
+					<?php esc_html_e( 'webp', 'wp-smushit' ); ?>
+				</span>
+			<?php endif; ?>
 
 			<span class="sui-description">
 				<?php

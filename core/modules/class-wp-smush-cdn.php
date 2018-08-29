@@ -9,7 +9,7 @@
 /**
  * Class WP_Smush_CDN
  */
-class WP_Smush_CDN {
+class WP_Smush_CDN extends WP_Smush_Module {
 
 	/**
 	 * Smush CDN base url.
@@ -35,7 +35,7 @@ class WP_Smush_CDN {
 	/**
 	 * WP_Smush_CDN constructor.
 	 */
-	public function __construct() {
+	public function init() {
 		// Filters the setting variable to add module setting title and description.
 		add_filter( 'wp_smush_settings', array( $this, 'register' ) );
 
@@ -45,10 +45,17 @@ class WP_Smush_CDN {
 		// Add setting names to appropriate group.
 		add_action( 'wp_smush_cdn_settings', array( $this, 'add_settings' ) );
 
-
-		/*
 		// Set auto resize flag.
-		add_action( 'wp', array( $this, 'init_flags' ) );
+		add_action( 'init', array( $this, 'init_flags' ) );
+
+		// Add stats to stats box.
+		if ( $this->settings->get( 'cdn' ) ) {
+			add_action( 'stats_ui_after_resize_savings', array( $this, 'cdn_stats_ui' ), 20 );
+		}
+
+		if ( ! $this->cdn_active ) {
+			return;
+		}
 
 		// Set Smush API config.
 		add_action( 'init', array( $this, 'set_cdn_url' ) );
@@ -58,7 +65,15 @@ class WP_Smush_CDN {
 
 		// Add cdn url to dns prefetch.
 		add_filter( 'wp_resource_hints', array( $this, 'dns_prefetch' ), 99, 2 );
-		*/
+	}
+
+	/**
+	 * Get CDN status.
+	 *
+	 * @since 3.0
+	 */
+	public function get_status() {
+		return $this->cdn_active;
 	}
 
 	/**
@@ -125,12 +140,54 @@ class WP_Smush_CDN {
 		<?php
 	}
 
+	/**
+	 * Add CDN stats to stats meta box.
+	 *
+	 * @since 3.0
+	 */
+	public function cdn_stats_ui() {
+		?>
+		<li class="smush-cdn-stats">
+			<span class="sui-list-label"><?php esc_html_e( 'CDN', 'wp-smushit' ); ?></span>
+			<span class="wp-smush-stats sui-list-detail">
+				<i class="sui-icon-loader sui-loading sui-hidden" aria-hidden="true" title="<?php esc_attr_e( 'Updating Stats', 'wp-smushit' ); ?>"></i>
+				<span class="wp-smush-cdn-stats">0 KB</span>
+				<span class="wp-smush-stats-sep">/</span>
+				<span class="wp-smush-cdn-usage">0% used</span>
+				<div class="sui-circle-score" data-score="10"></div>
+			</span>
+		</li>
+		<?php
+	}
 
 
 
 
 
+	/**
+	 * Initialize required flags.
+	 *
+	 * @return void
+	 */
+	public function init_flags() {
+		// @todo handle this after implementing CDN settings.
+		$this->cdn_active = false;
 
+		// All these are members only feature.
+		if ( ! WP_Smush::is_pro() ) {
+			return;
+		}
+
+		$this->settings = WP_Smush_Settings::get_instance();
+
+		if ( ! $this->settings->get( 'cdn' ) ) {
+			return;
+		}
+
+		if ( 'success' === $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn', 'warning' ) ) {
+			$this->cdn_active = true;
+		}
+	}
 
 	/**
 	 * Set the API base for the member.
@@ -149,21 +206,6 @@ class WP_Smush_CDN {
 		$this->cdn_base = trailingslashit( "https://{$user_id}.smushcdn.com/{$site_id}" );
 
 		// $this->cdn_base = trailingslashit( "http://localhost" );
-	}
-
-	/**
-	 * Initialize required flags.
-	 *
-	 * @return void
-	 */
-	public function init_flags() {
-		// @todo handle this after implementing CDN settings.
-		$this->cdn_active = false;
-
-		// All these are members only feature.
-		if ( ! WP_Smush::is_pro() ) {
-			return;
-		}
 	}
 
 	/**

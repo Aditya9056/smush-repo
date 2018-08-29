@@ -183,8 +183,16 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 			case 'bulk':
 			default:
-				// Show bulk smush box if a subsite admin.
-				if ( ! $is_network ) {
+				if ( $is_pro && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+					$this->add_meta_box( 'meta-boxes/bulk',
+						__( 'Bulk Smush', 'wp-smushit' ),
+						array( $this, 'bulk_smush_cdn_metabox' ),
+						null,
+						null,
+						'bulk'
+					);
+				} elseif ( ! $is_network ) {
+					// Show bulk smush box if a subsite admin.
 					// Class for bulk smush box.
 					$class = $is_pro ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 
@@ -265,13 +273,16 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function after_tab( $tab ) {
 		if ( 'bulk' === $tab ) {
 			$remaining = WP_Smush::get_instance()->core()->remaining_count;
-			if ( 0 < $remaining ) {
+			if ( WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+				echo '<i class="sui-icon-info" aria-hidden="true"></i>';
+			} elseif ( 0 < $remaining ) {
 				echo '<span class="sui-tag sui-tag-warning wp-smush-remaining-count">' . absint( $remaining ) . '</span>';
 			} else {
 				echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
 			}
 		} elseif ( 'cdn' === $tab && $this->settings->get( 'cdn' ) ) {
-			echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
+			$cdn_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn', 'warning' );
+			echo '<i class="sui-icon-check-tick sui-' . $cdn_status . '" aria-hidden="true"></i>';
 		}
 	}
 
@@ -860,6 +871,13 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
+	 * Bulk Smush meta box when CDN is enabled.
+	 */
+	public function bulk_smush_cdn_metabox() {
+		$this->view( 'meta-boxes/bulk/bulk-cdn-meta-box', array() );
+	}
+
+	/**
 	 * Bulk smush meta box.
 	 *
 	 * Container box to handle bulk smush actions. Show progress bars,
@@ -1069,11 +1087,14 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					Upgrade your plan now to reactivate this service.', 'wp-smushit' ),
 		);
 
+		// Available values: warning (inactive), success (active) or error (expired).
+		$cdn_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn', 'warning' );
+
 		$this->view( 'meta-boxes/cdn/meta-box', array(
 			'cdn_group'     => $this->cdn_group,
 			'settings'      => $this->settings->get(),
 			'settings_data' => WP_Smush::get_instance()->core()->settings,
-			'status'        => 'warning', // inactive (warning), active (success) or expired (error).
+			'status'        => $cdn_status,
 			'status_msg'    => $status_msg,
 		) );
 	}

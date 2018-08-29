@@ -70,8 +70,11 @@
 
 			$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
 
+			// Disable only auto Smush if CDN is enabled.
+			$disable = WP_Smush::get_instance()->core()->mod->cdn->get_status() && 'auto' === $name;
+
 			// Show settings option.
-			$this->settings_row( $setting_m_key, $label, $name, $setting_val );
+			$this->settings_row( $setting_m_key, $label, $name, $setting_val, $disable, $disable );
 		}
 
 		// Hook after general settings.

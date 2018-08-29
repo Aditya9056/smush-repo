@@ -330,6 +330,12 @@ class WP_Smush_Settings {
 			$this->set_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
 		}
 
+		if ( 'cdn' === $setting_form ) {
+			//$status = connect to CDN.
+			$status = 'success';
+			$this->set_setting( WP_SMUSH_PREFIX . 'cdn', $status );
+		}
+
 		// Store the option in table.
 		$this->set_setting( WP_SMUSH_PREFIX . 'settings_updated', 1 );
 
