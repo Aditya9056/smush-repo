@@ -32,13 +32,6 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 	 * Test update settings.
 	 */
 	public function testSmushSingle() {
-		/**
-		 * WpSmushitAdmin global
-		 *
-		 * @var WpSmushitAdmin $wpsmushit_admin
-		 */
-		global $wpsmushit_admin;
-
 		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
 		$id = $this->factory()->attachment->create( array(
@@ -46,15 +39,9 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 			'post_content' => $file,
 		) );
 
-		//wp_set_current_user( 1 );
-		//$_GET['attachment_id'] = 64;
-		//$wpsmushit_admin->smush_manual();
-
-		$wpsmushit_admin->initialise();
+		WP_Smush::get_instance()->core()->initialise();
 
 		update_option( "smush-in-progress-{$id}", true );
-
-		//$wpsmushit_admin->smush_single( $id );
 	}
 
 	//public function testRestoreSingle() {}

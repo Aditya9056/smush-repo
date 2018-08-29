@@ -2,7 +2,8 @@ coverage:
     enabled: true
     include:
         - wp-smush.php
-        - lib/*
+        - app/*
+        - core/*
 paths:
     tests: tests
     output: tests/_output

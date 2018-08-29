@@ -13,7 +13,7 @@
  * Plugin Name:       Smush Pro
  * Plugin URI:        http://premium.wpmudev.org/projects/wp-smush-pro/
  * Description:       Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
- * Version:           2.9.0-beta.1
+ * Version:           3.0.0-beta.1
  * Author:            WPMU DEV
  * Author URI:        https://premium.wpmudev.org/
  * License:           GPLv2
@@ -49,7 +49,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 if ( ! defined( 'WP_SMUSH_VERSION' ) ) {
-	define( 'WP_SMUSH_VERSION', '2.9.0-beta.1' );
+	define( 'WP_SMUSH_VERSION', '3.0.0-beta.1' );
 }
 // Used to define body class.
 if ( ! defined( 'WP_SHARED_UI_VERSION' ) ) {
@@ -95,208 +95,421 @@ if ( ! defined( 'WP_SMUSH_ASYNC' ) && ! empty( $_SERVER['SERVER_NAME'] ) && ( 0 
 	define( 'WP_SMUSH_ASYNC', true );
 }
 
-add_action( 'admin_init', 'deactivate_smush_org' );
-if ( ! function_exists( 'deactivate_smush_org' ) ) {
+register_activation_hook( 'core/class-wp-smush-installer.php', array( 'WP_Smush_Installer', 'smush_activated' ) );
+
+// Init the plugin and load the plugin instance for the first time.
+add_action( 'plugins_loaded', array( 'WP_Smush', 'get_instance' ) );
+
+if ( ! class_exists( 'WP_Smush' ) ) {
 	/**
-	 * Deactivate the .org version, if pro version is active.
+	 * Class WP_Smush
 	 */
-	function deactivate_smush_org() {
-		if ( is_plugin_active( 'wp-smush-pro/wp-smush.php' ) && is_plugin_active( 'wp-smushit/wp-smush.php' ) ) {
+	class WP_Smush {
+
+		/**
+		 * Plugin instance.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @var null|WP_Smush
+		 */
+		private static $instance = null;
+
+		/**
+		 * Plugin core.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @var WP_Smush_Core
+		 */
+		private $core;
+
+		/**
+		 * Plugin admin.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @var WP_Smush_Admin
+		 */
+		private $admin;
+
+		/**
+		 * Stores the value of validate_install function.
+		 *
+		 * @var bool $is_pro
+		 */
+		private static $is_pro;
+
+		/**
+		 * API server url to check API key validity.
+		 *
+		 * @var string $api_server
+		 */
+		private static $api_server = 'https://premium.wpmudev.org/api/smush/v1/check/';
+
+		/**
+		 * Return the plugin instance.
+		 *
+		 * @return WP_Smush
+		 */
+		public static function get_instance() {
+			if ( ! self::$instance ) {
+				self::$instance = new self();
+			}
+
+			return self::$instance;
+		}
+
+		/**
+		 * WP_Smush constructor.
+		 */
+		private function __construct() {
+			$this->register_actions();
+
+			$this->includes();
+
+			$this->init();
+		}
+
+		/**
+		 * Register actions and filters.
+		 *
+		 * @since 2.9.0
+		 */
+		private function register_actions() {
+			add_action( 'admin_init', array( $this, 'deactivate_smush_org' ) );
+			add_action( 'admin_init', array( $this, 'register_free_modules' ) );
+			add_action( 'admin_init', array( $this, 'register_pro_modules' ) );
+		}
+
+		/**
+		 * Includes.
+		 *
+		 * @since 2.9.0
+		 */
+		private function includes() {
+			/**
+			 * Installer class.
+			 *
+			 * @noinspection PhpIncludeInspection
+			 */
+			require_once WP_SMUSH_DIR . 'core/class-wp-smush-installer.php';
+
+			/**
+			 * Settings class.
+			 *
+			 * @noinspection PhpIncludeInspection
+			 */
+			require_once WP_SMUSH_DIR . 'core/class-wp-smush-settings.php';
+
+			/**
+			 * Include core class.
+			 *
+			 * @noinspection PhpIncludeInspection
+			 */
+			require_once WP_SMUSH_DIR . 'core/class-wp-smush-core.php';
+
+			/**
+			 * Include admin class.
+			 *
+			 * @noinspection PhpIncludeInspection
+			 */
+			require_once WP_SMUSH_DIR . 'core/class-wp-smush-admin.php';
+		}
+
+		/**
+		 * Init core module.
+		 *
+		 * @since 2.9.0
+		 */
+		private function init() {
+			self::$is_pro = self::validate_install();
+
+			$this->core  = new WP_Smush_Core();
+			$this->admin = new WP_Smush_Admin();
+		}
+
+		/**
+		 * Getter method for core.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @return WP_Smush_Core
+		 */
+		public function core() {
+			return $this->core;
+		}
+
+		/**
+		 * Getter method for core.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @return WP_Smush_Admin
+		 */
+		public function admin() {
+			return $this->admin;
+		}
+
+		/**
+		 * Return PRO status.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @return bool
+		 */
+		public static function is_pro() {
+			return self::$is_pro;
+		}
+
+		/**
+		 * Deactivate the .org version, if pro version is active.
+		 */
+		public function deactivate_smush_org() {
+			if ( ! is_plugin_active( 'wp-smush-pro/wp-smush.php' ) || ! is_plugin_active( 'wp-smushit/wp-smush.php' ) ) {
+				return;
+			}
+
 			deactivate_plugins( 'wp-smushit/wp-smush.php' );
 			// Store in database, in order to show a notice on page load.
 			update_site_option( 'smush_deactivated', 1 );
 		}
-	}
-}
 
-// Include core class.
-if ( ! class_exists( 'WP_Smush' ) ) {
-	/* @noinspection PhpIncludeInspection */
-	require_once WP_SMUSH_DIR . 'lib/class-wp-smush.php';
-}
+		/**
+		 * Filters the rating message, include stats if greater than 1Mb
+		 *
+		 * @param string $message  Message text.
+		 *
+		 * @return string
+		 */
+		public function wp_smush_rating_message( $message ) {
+			if ( empty( $this->core()->stats ) ) {
+				$this->core()->setup_global_stats();
+			}
 
-global $wp_smush;
-$wp_smush = WP_Smush::get_instance();
+			$savings    = $this->core()->stats;
+			$show_stats = false;
 
-if ( ! function_exists( 'wp_smush_rating_message' ) ) {
-	/**
-	 * Filters the rating message, include stats if greater than 1Mb
-	 *
-	 * @param string $message  Message text.
-	 *
-	 * @return string
-	 */
-	function wp_smush_rating_message( $message ) {
-		/* @var WpSmushitAdmin $wpsmushit_admin */
-		global $wpsmushit_admin;
+			// If there is any saving, greater than 1Mb, show stats.
+			if ( ! empty( $savings ) && ! empty( $savings['bytes'] ) && $savings['bytes'] > 1048576 ) {
+				$show_stats = true;
+			}
 
-		if ( empty( $wpsmushit_admin->stats ) ) {
-			$wpsmushit_admin->setup_global_stats();
+			$message = "Hey %s, you've been using %s for a while now, and we hope you're happy with it.";
+
+			// Conditionally Show stats in rating message.
+			if ( $show_stats ) {
+				$message .= sprintf( " You've smushed <strong>%s</strong> from %d images already, improving the speed and SEO ranking of this site!", $savings['human'], $savings['total_images'] );
+			}
+			$message .= " We've spent countless hours developing this free plugin for you, and we would really appreciate it if you dropped us a quick rating!";
+
+			return $message;
 		}
 
-		$savings    = $wpsmushit_admin->stats;
-		$show_stats = false;
+		/**
+		 * NewsLetter
+		 *
+		 * @param string $message  Message text.
+		 *
+		 * @return string
+		 */
+		public function wp_smush_email_message( $message ) {
+			$message = "You're awesome for installing %s! Site speed isn't all image optimization though, so we've
+			collected all the best speed resources we know in a single email - just for users of Smush!";
 
-		// If there is any saving, greater than 1Mb, show stats.
-		if ( ! empty( $savings ) && ! empty( $savings['bytes'] ) && $savings['bytes'] > 1048576 ) {
-			$show_stats = true;
+			return $message;
 		}
 
-		$message = "Hey %s, you've been using %s for a while now, and we hope you're happy with it.";
+		/**
+		 * Register sub-modules.
+		 * Only for wordpress.org members.
+		 */
+		public function register_free_modules() {
+			if ( false === strpos( WP_SMUSH_DIR, 'wp-smushit' ) ) {
+				return;
+			}
 
-		// Conditionally Show stats in rating message.
-		if ( $show_stats ) {
-			$message .= sprintf( " You've smushed <strong>%s</strong> from %d images already, improving the speed and SEO ranking of this site!", $savings['human'], $savings['total_images'] );
-		}
-		$message .= " We've spent countless hours developing this free plugin for you, and we would really appreciate it if you dropped us a quick rating!";
+			/* @noinspection PhpIncludeInspection */
+			require_once WP_SMUSH_DIR . 'core/external/free-dashboard/module.php';
 
-		return $message;
-	}
-}
+			// Register the current plugin.
+			do_action(
+				'wdev-register-plugin',
+				/* 1             Plugin ID */
+				WP_SMUSH_BASENAME,
+				/* 2          Plugin Title */
+				'WP Smush',
+				/* 3 https://wordpress.org */
+				'/plugins/wp-smushit/',
+				/* 4      Email Button CTA */
+				__( 'Get Fast', 'wp-smushit' ),
+				/* 5  getdrip Plugin param */
+				'Smush'
+			);
 
-if ( ! function_exists( 'wp_smush_email_message' ) ) {
-	/**
-	 * NewsLetter
-	 *
-	 * @param string $message  Message text.
-	 *
-	 * @return string
-	 */
-	function wp_smush_email_message( $message ) {
-		$message = "You're awesome for installing %s! Site speed isn't all image optimization though, so we've collected all the best speed resources we know in a single email - just for users of Smush!";
-
-		return $message;
-	}
-}
-
-add_action( 'admin_init', 'register_free_modules' );
-if ( ! function_exists( 'register_free_modules' ) ) {
-	/**
-	 * Register sub-modules.
-	 * Only for wordpress.org members.
-	 */
-	function register_free_modules() {
-		if ( false === strpos( WP_SMUSH_DIR, 'wp-smushit' ) ) {
-			return;
-		}
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'extras/free-dashboard/module.php';
-
-		// Register the current plugin.
-		do_action(
-			'wdev-register-plugin',
-			/* 1             Plugin ID */
-			WP_SMUSH_BASENAME,
-			/* 2          Plugin Title */
-			'WP Smush',
-			/* 3 https://wordpress.org */
-			'/plugins/wp-smushit/',
-			/* 4      Email Button CTA */
-			__( 'Get Fast', 'wp-smushit' ),
-			/* 5  getdrip Plugin param */
-			'Smush'
-		);
-
-		// The rating message contains 2 variables: user-name, plugin-name.
-		add_filter( 'wdev-rating-message-' . WP_SMUSH_BASENAME, 'wp_smush_rating_message' );
-		// The email message contains 1 variable: plugin-name.
-		add_filter( 'wdev-email-message-' . WP_SMUSH_BASENAME, 'wp_smush_email_message' );
-	}
-}
-
-add_action( 'admin_init', 'register_pro_modules' );
-if ( ! function_exists( 'register_pro_modules' ) ) {
-	/**
-	 * Register sub-modules.
-	 * Only for WPMU DEV Members.
-	 */
-	function register_pro_modules() {
-		if ( false === strpos( WP_SMUSH_DIR, 'wp-smush-pro' ) || ! file_exists( WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php' ) ) {
-			return;
+			// The rating message contains 2 variables: user-name, plugin-name.
+			add_filter( 'wdev-rating-message-' . WP_SMUSH_BASENAME, array( $this, 'wp_smush_rating_message' ) );
+			// The email message contains 1 variable: plugin-name.
+			add_filter( 'wdev-email-message-' . WP_SMUSH_BASENAME, array( $this, 'wp_smush_email_message' ) );
 		}
 
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'extras/dash-notice/wpmudev-dash-notification.php';
+		/**
+		 * Register sub-modules.
+		 * Only for WPMU DEV Members.
+		 */
+		public function register_pro_modules() {
+			if ( false === strpos( WP_SMUSH_DIR, 'wp-smush-pro' ) || ! file_exists( WP_SMUSH_DIR . 'core/external/dash-notice/wpmudev-dash-notification.php' ) ) {
+				return;
+			}
 
-		// Register items for the dashboard plugin.
-		global $wpmudev_notices;
-		$wpmudev_notices[] = array(
-			'id'      => 912164,
-			'name'    => 'WP Smush Pro',
-			'screens' => array(
-				'upload',
-				'toplevel_page_smush',
-				'toplevel_page_smush-network',
-			),
-		);
-	}
-}
+			/* @noinspection PhpIncludeInspection */
+			require_once WP_SMUSH_DIR . 'core/external/dash-notice/wpmudev-dash-notification.php';
 
-// Show the required notice.
-add_action( 'network_admin_notices', 'smush_deactivated' );
-add_action( 'admin_notices', 'smush_deactivated' );
-if ( ! function_exists( 'smush_deactivated' ) ) {
-	/**
-	 * Display a admin Notice about plugin deactivation.
-	 */
-	function smush_deactivated() {
-		// Display only in backend for administrators.
-		if ( is_admin() && is_super_admin() && get_site_option( 'smush_deactivated' ) ) { ?>
-			<div class="updated">
-				<p><?php esc_html_e( 'Smush Free was deactivated. You have Smush Pro active!', 'wp-smushit' ); ?></p>
-			</div>
-			<?php
-			delete_site_option( 'smush_deactivated' );
-		}
-	}
-}
-
-add_action( 'admin_init', 'smush_i18n' );
-if ( ! function_exists( 'smush_i18n' ) ) {
-	/**
-	 * Load translation files.
-	 */
-	function smush_i18n() {
-		load_plugin_textdomain(
-			'wp-smushit',
-			false,
-			dirname( WP_SMUSH_BASENAME ) . '/languages'
-		);
-	}
-}
-
-// Add Share UI Class.
-add_filter( 'admin_body_class', 'smush_body_classes', 99 );
-if ( ! function_exists( 'smush_body_classes' ) ) {
-	/**
-	 * Add Share UI Class.
-	 *
-	 * @param string $classes  Classes string.
-	 *
-	 * @return string
-	 */
-	function smush_body_classes( $classes ) {
-		global $wpsmushit_admin;
-
-		// Exit if function doesn't exists.
-		if ( ! function_exists( 'get_current_screen' ) ) {
-			return $classes;
+			// Register items for the dashboard plugin.
+			global $wpmudev_notices;
+			$wpmudev_notices[] = array(
+				'id'      => 912164,
+				'name'    => 'WP Smush Pro',
+				'screens' => array(
+					'upload',
+					'toplevel_page_smush',
+					'toplevel_page_smush-network',
+				),
+			);
 		}
 
-		$current_screen = get_current_screen();
+		/**
+		 * Check if user is premium member, check for API key.
+		 *
+		 * @return bool  True if a premium member, false if regular user.
+		 */
+		public static function validate_install() {
+			if ( isset( self::$is_pro ) ) {
+				return self::$is_pro;
+			}
 
-		// If not on plugin page.
-		if ( ! in_array( $current_screen->id, $wpsmushit_admin->plugin_pages, true ) ) {
-			return $classes;
+			// No API key set, always false.
+			$api_key = self::get_api_key();
+
+			if ( empty( $api_key ) ) {
+				return false;
+			}
+
+			// Flag to check if we need to revalidate the key.
+			$revalidate = false;
+
+			$api_auth = get_site_option( 'wp_smush_api_auth' );
+
+			// Check if need to revalidate.
+			if ( ! $api_auth || empty( $api_auth ) || empty( $api_auth[ $api_key ] ) ) {
+				$revalidate = true;
+			} else {
+				$last_checked = $api_auth[ $api_key ]['timestamp'];
+				$valid        = $api_auth[ $api_key ]['validity'];
+
+				$diff = current_time( 'timestamp' ) - $last_checked;
+
+				// Difference in hours.
+				$diff_h = $diff / 3600;
+
+				// Difference in minutes.
+				$diff_m = $diff / 60;
+
+				switch ( $valid ) {
+					case 'valid':
+						// If last checked was more than 12 hours.
+						if ( $diff_h > 12 ) {
+							$revalidate = true;
+						}
+						break;
+					case 'invalid':
+						// If last checked was more than 24 hours.
+						if ( $diff_h > 24 ) {
+							$revalidate = true;
+						}
+						break;
+					case 'network_failure':
+						// If last checked was more than 5 minutes.
+						if ( $diff_m > 5 ) {
+							$revalidate = true;
+						}
+						break;
+				}
+			}
+
+			// If we are suppose to validate API, update the results in options table.
+			if ( $revalidate ) {
+				if ( empty( $api_auth[ $api_key ] ) ) {
+					// For api key resets.
+					$api_auth[ $api_key ] = array();
+
+					// Storing it as valid, unless we really get to know from API call.
+					$api_auth[ $api_key ]['validity'] = 'valid';
+				}
+
+				// Aaron suggested to Update timestamp before making the API call, to avoid any concurrent calls, clever.
+				$api_auth[ $api_key ]['timestamp'] = current_time( 'timestamp' );
+				update_site_option( 'wp_smush_api_auth', $api_auth );
+
+				// Call API.
+				$url = self::$api_server . $api_key;
+
+				$request = wp_remote_get(
+					$url, array(
+						'user-agent' => WP_SMUSH_UA,
+						'timeout'    => 10,
+					)
+				);
+
+				if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
+					$result = json_decode( wp_remote_retrieve_body( $request ) );
+					if ( ! empty( $result->success ) && $result->success ) {
+						$valid = 'valid';
+					} else {
+						$valid = 'invalid';
+					}
+				} else {
+					$valid = 'network_failure';
+				}
+
+				// Reset value.
+				$api_auth = array();
+
+				// Add a fresh timestamp.
+				$timestamp            = current_time( 'timestamp' );
+				$api_auth[ $api_key ] = array(
+					'validity'  => $valid,
+					'timestamp' => $timestamp,
+				);
+
+				// Update API validity.
+				update_site_option( 'wp_smush_api_auth', $api_auth );
+
+			}
+
+			self::$is_pro = isset( $valid ) && ( 'valid' === $valid );
+
+			return self::$is_pro;
 		}
 
-		// Remove old wpmud class from body of smush page to avoid style conflict.
-		$classes = str_replace( 'wpmud ', '', $classes );
+		/**
+		 * Returns api key.
+		 *
+		 * @return mixed
+		 */
+		private static function get_api_key() {
+			$api_key = false;
 
-		$classes .= ' ' . WP_SHARED_UI_VERSION;
+			// If API key defined manually, get that.
+			if ( defined( 'WPMUDEV_APIKEY' ) && WPMUDEV_APIKEY ) {
+				$api_key = WPMUDEV_APIKEY;
+			} elseif ( class_exists( 'WPMUDEV_Dashboard' ) ) {
+				// If dashboard plugin is active, get API key from db.
+				$api_key = get_site_option( 'wpmudev_apikey' );
+			}
 
-		return $classes;
-	}
-}
+			return $api_key;
+		}
 
-register_activation_hook( 'lib/class-wp-smush-installer.php', array( 'WP_Smush_Installer', 'smush_activated' ) );
+	} // End class.
+} // End if() check.

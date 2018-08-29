@@ -105,8 +105,8 @@ format X.X.X. You'll need to update in `wp-smush.php` (header and $version varia
 
 ## Difference between versions
 
-PRO and wp.org versions are exactly the same, except some header strings, PRO version includes `extras/dash-notice`,
-while wp.org contains the `extras/free-dashboard` folder.
+PRO and wp.org versions are exactly the same, except some header strings, PRO version includes `core/external/dash-notice`,
+while wp.org contains the `core/external/free-dashboard` folder.
 
 ## Directory Naming
 

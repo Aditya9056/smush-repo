@@ -9,6 +9,7 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 		parent::setUp();
 
 		wp_set_current_user( 1 );
+		new WP_Smush_Ajax();
 	}
 
 	/**
@@ -44,7 +45,10 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	private function ajaxSmushitManual( $id ) {
 		try {
 			$_GET['attachment_id'] = $id;
-			$this->_handleAjax( 'wp_smushit_manual' );
+			$a = $this->_handleAjax( 'wp_smushit_manual' );
+
+			codecept_debug( $a );
+
 			$this->fail( 'Expected exception: WPAjaxDieContinueException' );
 		} catch ( WPAjaxDieContinueException $e ) {
 			// We expected this, do nothing.

@@ -14,23 +14,6 @@ let remove_element = function ( el, timeout ) {
 jQuery( function ( $ ) {
 	'use strict';
 
-	/**
-	 * Remove the quick setup dialog
-	 */
-	function remove_dialog() {
-		$( 'dialog#smush-quick-setup' ).remove();
-	}
-
-	// Show the Quick Setup dialog.
-	if ( $( '#smush-quick-setup' ).size() > 0 ) {
-		/** @var {string} wp_smush_msgs.quick_setup_title */
-		WDP.showOverlay( "#smush-quick-setup", {
-			title: wp_smush_msgs.quick_setup_title,
-			class: 'no-close wp-smush-overlay wp-smush-quick-setup'
-		} );
-		remove_dialog();
-	}
-
 	/** Disable the action links **/
 	var disable_links = function ( c_element ) {
 
@@ -481,7 +464,7 @@ jQuery( function ( $ ) {
 	} );
 
 	/** Restore: Media Library **/
-	$( '.wp-smush-action.wp-smush-restore' ).on( 'click', function ( e ) {
+	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-restore', function ( e ) {
 		const current_button = $( this );
 		process_smush_action( e, current_button, 'smush_restore_image', 'restore' );
 		// Change the class oa parent div ( Level 2 )
@@ -492,17 +475,17 @@ jQuery( function ( $ ) {
 	} );
 
 	/** Resmush: Media Library **/
-	$( '.wp-smush-action.wp-smush-resmush' ).on( 'click', function ( e ) {
+	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-resmush', function ( e ) {
 		process_smush_action( e, $( this ), 'smush_resmush_image', 'smushing' );
 	} );
 
 	/** Restore: NextGen Gallery **/
-	$( '.wp-smush-action.wp-smush-nextgen-restore' ).on( 'click', function ( e ) {
+	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-nextgen-restore', function ( e ) {
 		process_smush_action( e, $( this ), 'smush_restore_nextgen_image', 'restore' );
 	} );
 
 	/** Resmush: NextGen Gallery **/
-	$( '.wp-smush-action.wp-smush-nextgen-resmush' ).on( 'click', function ( e ) {
+	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-nextgen-resmush', function ( e ) {
 		process_smush_action( e, $( this ), 'smush_resmush_nextgen_image', 'smushing' );
 	} );
 
@@ -823,7 +806,7 @@ jQuery( function ( $ ) {
 	// Handle auto detect checkbox toggle, to show/hide highlighting notice.
 	$( 'body' ).on( 'click', '#wp-smush-detection', function () {
 		var self = $( this );
-		var notice_wrap = $( '.smush-highlighting-notice' );
+		var notice_wrap  = $( '.smush-highlighting-notice' );
 		var warning_wrap = $( '.smush-highlighting-warning' );
 
 		// Setting enabled.
