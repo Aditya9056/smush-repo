@@ -227,6 +227,11 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			$this->core  = new WP_Smush_Core();
 			$this->admin = new WP_Smush_Admin();
+
+			if ( defined( 'WP_CLI' ) && WP_CLI ) {
+				/* @noinspection PhpIncludeInspection */
+				require_once WP_SMUSH_DIR . 'core/class-wp-smush-cli-command.php';
+			}
 		}
 
 		/**
