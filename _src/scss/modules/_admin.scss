@@ -131,7 +131,7 @@
 
 					.smush-image-error {
 						line-height: 15px;
-						word-break: break-word;
+						word-break: break-all;
 						margin-right: 10px;
 					}
 				}
@@ -148,10 +148,23 @@
 						}
 					}
 				}
+
+				@media screen and (max-width: 600px) {
+					height: auto;
+
+					.smush-bulk-image-data {
+						flex-wrap: wrap;
+						padding: 10px 20px;
+					}
+
+					.smush-image-error {
+						margin-top: 10px;
+					}
+				}
 			}
 
 			.smush-bulk-errors-actions {
-				margin: 30px 0;
+				margin: 30px 0 10px;
 			}
 
 		} // Bulk Smush error messages: End.

@@ -332,20 +332,15 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			/* @noinspection PhpIncludeInspection */
 			require_once WP_SMUSH_DIR . 'core/external/free-dashboard/module.php';
 
-			// Register the current plugin.
-			do_action(
-				'wdev-register-plugin',
-				/* 1             Plugin ID */
-				WP_SMUSH_BASENAME,
-				/* 2          Plugin Title */
-				'WP Smush',
-				/* 3 https://wordpress.org */
-				'/plugins/wp-smushit/',
-				/* 4      Email Button CTA */
-				__( 'Get Fast', 'wp-smushit' ),
-				/* 5  getdrip Plugin param */
-				'Smush'
-			);
+		// Register the current plugin.
+		do_action(
+			'wdev-register-plugin',
+			/* 1             Plugin ID */ WP_SMUSH_BASENAME,
+			/* 2          Plugin Title */ 'Smush',
+			/* 3 https://wordpress.org */ '/plugins/wp-smushit/',
+			/* 4      Email Button CTA */ __( 'Get Fast!', 'wp-smushit' ),
+			/* 5  Mailchimp List id for the plugin - e.g. 4b14b58816 is list id for Smush */ '4b14b58816'
+		);
 
 			// The rating message contains 2 variables: user-name, plugin-name.
 			add_filter( 'wdev-rating-message-' . WP_SMUSH_BASENAME, array( $this, 'wp_smush_rating_message' ) );
