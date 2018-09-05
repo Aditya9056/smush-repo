@@ -130,7 +130,7 @@
 
 					.smush-image-error {
 						line-height: 15px;
-						word-break: break-word;
+						word-break: break-all;
 						margin-right: 10px;
 					}
 				}
@@ -145,6 +145,19 @@
 						.sui-icon-eye-hide:before {
 							color: lighten( #333333, 50% );
 						}
+					}
+				}
+
+				@media screen and (max-width: 600px) {
+					height: auto;
+
+					.smush-bulk-image-data {
+						flex-wrap: wrap;
+						padding: 10px 20px;
+					}
+
+					.smush-image-error {
+						margin-top: 10px;
 					}
 				}
 			}
