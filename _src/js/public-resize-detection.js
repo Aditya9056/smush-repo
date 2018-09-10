@@ -8,13 +8,7 @@ jQuery( function ( $ ) {
 	 * a highlighted border and resize box.
 	 * Upon clicking again, remove highlights.
 	 */
-	$( window ).load( function () {
-		// Handle detect link click.
-		$( '#wp-admin-bar-smush-resize-detection' ).toggle(
-			() => detect_wrong_imgs(),
-			() => revert_detection()
-		);
-	} );
+	$( window ).load( () => detect_wrong_imgs() );
 
 	/**
 	 * Function to highlight all scaled images.
@@ -74,17 +68,4 @@ jQuery( function ( $ ) {
 		} );
 	};
 
-	/**
-	 * Function to remove highlights from images.
-	 *
-	 * Remove already added borders and highlights from
-	 * images. Also remove the resize box.
-	 */
-	let revert_detection = () => {
-		// Remove all detection boxes.
-		$( '.smush-resize-box' ).remove();
-
-		// Remove custom class from images.
-		$( '.smush-detected-img' ).removeClass( 'smush-detected-img' );
-	};
 } );

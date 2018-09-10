@@ -61,7 +61,7 @@ No matter what plugins you use to better manage your WordPress media library, Sm
 
 *What about Multisite?* Smush can be used to optimize all the images across your entire network! Use global settings or configure each site individually.
 
-Smush is super easy to use – no confusing compression software settings! Smush images in your library one at a time or bulk smush up to 50 images at a time.  Plus, configure auto-smush to asynchronously scale and compress some or all of your images as they are being uploaded – it's incredibly fast.
+Smush is super easy to use – no confusing compression software settings! Smush images in your library one at a time or bulk smush up to 50 images at a time.  Plus, configure auto-smush to asyncronously scale and compress some or all of your images as they are being uploaded – it's incredibly fast.
 
 The faster your site loads, the more Google, Bing, Yahoo and other search engines will like it. Your site will load faster and rank higher.
 
@@ -162,12 +162,13 @@ It depends what side of the pond you live on...but whether you say optimize, opt
 
 Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is faster, more reliable, and more powerful. Upgrade now!
 
+
 == Changelog ==
 
 %%CHANGELOG%%
 
 == About Us ==
-WPMU DEV is a premium supplier of quality WordPress plugins and themes. For premium support with any WordPress related issues you can join us here:
+WPMU DEV is a premium supplier of quality WordPress plugins, services and support. Learn more here:
 [https://premium.wpmudev.org/](https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme)
 
 Don't forget to stay up to date on everything WordPress from the Internet's number one resource:

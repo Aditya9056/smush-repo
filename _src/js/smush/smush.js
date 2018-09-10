@@ -757,9 +757,15 @@ class Smush {
 					/** @var {string} res.data.file_name */
 					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name, res.data.thumbnail, self.current_id );
 
-					// Print the error on screen.
-					self.log.find( '.smush-bulk-errors' ).append( error_msg );
 					self.log.show();
+
+					if ( self.errors.length > 5 ) {
+						$('.smush-bulk-errors-actions').removeClass('sui-hidden');
+					} else {
+						// Print the error on screen.
+						self.log.find( '.smush-bulk-errors' ).append( error_msg );
+					}
+
 				} else if ( 'undefined' !== typeof res.success && res.success ) {
 					// Increment the smushed count if image smushed without errors.
 					self.increment_smushed( self.current_id );
