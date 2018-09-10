@@ -52,13 +52,17 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 		 */
 		public function __construct() {
 			// Set auto resize flag.
-			add_action( 'init', array( $this, 'init_flags' ) );
+			add_action( 'wp', array( $this, 'init_flags' ) );
+
+			include_once WPINC . '/pluggable.php';
+
+			// Continue only for admins.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
 
 			// Load js file that is required in public facing pages.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_resize_assets' ) );
-
-			// Add new admin bar item on front end.
-			add_action( 'admin_bar_menu', array( $this, 'resize_detection_button' ), 99 );
 
 			// Update responsive image srcset if required.
 			//add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
@@ -143,31 +147,6 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 					'large_image' => sprintf( __( 'This image is too large for its container. Adjust the image dimensions to %1$s x %2$spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
 					// translators: %s - width, %s - height.
 					'small_image' => sprintf( __( 'This image is too small for its container. Adjust the image dimensions to %1$s x %2$spx for optimal results.', 'wp-smushit' ), 'width', 'height' ),
-				)
-			);
-		}
-
-		/**
-		 * Add a new link to admin bar to detect wrong sized images.
-		 *
-		 * Clicking on this link will show scaled images as highlighted.
-		 *
-		 * @return void
-		 */
-		public function resize_detection_button() {
-			if ( ! $this->can_auto_detect || is_admin() ) {
-				return;
-			}
-
-			/* @var WP_Admin_Bar $wp_admin_bar */
-			global $wp_admin_bar;
-
-			$wp_admin_bar->add_menu(
-				array(
-					'id'     => 'smush-resize-detection',
-					'title'  => __( 'Detect Images', 'wp-smushit' ),
-					'parent' => 'top-secondary',
-					// 'href'   => add_query_arg( 'detect-image-sizes', true, home_url() ),
 				)
 			);
 		}
