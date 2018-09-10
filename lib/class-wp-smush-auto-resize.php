@@ -54,7 +54,7 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			// Set auto resize flag.
 			add_action( 'wp', array( $this, 'init_flags' ) );
 
-			include_once WPINC . '/pluggable.php';
+			include_once ABSPATH . WPINC . '/pluggable.php';
 
 			// Continue only for admins.
 			if ( ! current_user_can( 'manage_options' ) ) {
