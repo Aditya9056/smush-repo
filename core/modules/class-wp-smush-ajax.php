@@ -924,12 +924,26 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		check_ajax_referer( 'save_wp_smush_options' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error(array(
-				'msg' => __( 'User can not modify options', 'wp-smushit' ),
+			wp_send_json_error( array(
+				'message' => __( 'User can not modify options', 'wp-smushit' ),
 			), 403 );
 		}
 
 		$param = sanitize_text_field( wp_unslash( $_POST['param'] ) );
+
+		if ( 'true' === $param ) {
+			$status = WP_Smush::get_instance()->api()->check();
+			$status = json_decode( $status['body'] );
+
+			// Error from API.
+			if ( ! $status->success ) {
+				wp_send_json_error( array(
+					'message' => $status->data->message,
+				), $status->data->error_code );
+			}
+
+			$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $status->data );
+		}
 
 		$this->settings->set( 'cdn', 'true' === $param );
 		wp_send_json_success();

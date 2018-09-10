@@ -134,6 +134,15 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		private $admin;
 
 		/**
+		 * Plugin API.
+		 *
+		 * @since 3.0
+		 *
+		 * @var WP_Smush_API
+		 */
+		private $api = '';
+
+		/**
 		 * Stores the value of validate_install function.
 		 *
 		 * @var bool $is_pro
@@ -215,6 +224,15 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			 * @noinspection PhpIncludeInspection
 			 */
 			require_once WP_SMUSH_DIR . 'core/class-wp-smush-admin.php';
+
+			/**
+			 * Include API classes.
+			 *
+			 * @noinspection PhpIncludeInspection
+			 */
+			require_once WP_SMUSH_DIR . 'core/api/class-wp-smush-api.php';
+			/* @noinspection PhpIncludeInspection */
+			require_once WP_SMUSH_DIR . 'core/api/class-wp-smush-api-request.php';
 		}
 
 		/**
@@ -227,6 +245,12 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			$this->core  = new WP_Smush_Core();
 			$this->admin = new WP_Smush_Admin();
+
+			try {
+				$this->api = new WP_Smush_API( self::get_api_key() );
+			} catch ( Exception $e ) {
+				// Unable to init API for some reason.
+			}
 		}
 
 		/**
@@ -249,6 +273,17 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 */
 		public function admin() {
 			return $this->admin;
+		}
+
+		/**
+		 * Getter method for core.
+		 *
+		 * @since 3.0
+		 *
+		 * @return WP_Smush_API
+		 */
+		public function api() {
+			return $this->api;
 		}
 
 		/**
@@ -332,15 +367,15 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			/* @noinspection PhpIncludeInspection */
 			require_once WP_SMUSH_DIR . 'core/external/free-dashboard/module.php';
 
-		// Register the current plugin.
-		do_action(
-			'wdev-register-plugin',
-			/* 1             Plugin ID */ WP_SMUSH_BASENAME,
-			/* 2          Plugin Title */ 'Smush',
-			/* 3 https://wordpress.org */ '/plugins/wp-smushit/',
-			/* 4      Email Button CTA */ __( 'Get Fast!', 'wp-smushit' ),
-			/* 5  Mailchimp List id for the plugin - e.g. 4b14b58816 is list id for Smush */ '4b14b58816'
-		);
+			// Register the current plugin.
+			do_action(
+				'wdev-register-plugin',
+				/* 1             Plugin ID */ WP_SMUSH_BASENAME,
+				/* 2          Plugin Title */ 'Smush',
+				/* 3 https://wordpress.org */ '/plugins/wp-smushit/',
+				/* 4      Email Button CTA */ __( 'Get Fast!', 'wp-smushit' ),
+				/* 5  Mailchimp List id for the plugin - e.g. 4b14b58816 is list id for Smush */ '4b14b58816'
+			);
 
 			// The rating message contains 2 variables: user-name, plugin-name.
 			add_filter( 'wdev-rating-message-' . WP_SMUSH_BASENAME, array( $this, 'wp_smush_rating_message' ) );

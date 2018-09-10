@@ -471,9 +471,13 @@ abstract class WP_Smush_View {
 						<?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?>
 					</button>
 				<?php endif; ?>
-				<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>
+				<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank">
+					<i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?>
+				</a>
 			</div>
 		</div>
+
+		<div class="sui-notice sui-notice-top sui-hidden" id="wp-smush-ajax-notice"></div>
 
 		<?php
 		// User API check, and display a message if not valid.

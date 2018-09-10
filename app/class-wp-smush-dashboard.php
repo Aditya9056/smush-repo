@@ -1080,6 +1080,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * @since 3.0
 	 */
 	public function cdn_metabox() {
+		// Available values: warning (inactive), success (active) or error (expired).
 		$status_msg = array(
 			'warning' => __( 'CDN is not yet active. Configure your settings below and click Activate.', 'wp-smushit' ),
 			'success' => __( 'CDN is active. Your media is being served from the WPMU DEV CDN.', 'wp-smushit' ),
@@ -1087,10 +1088,15 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					Upgrade your plan now to reactivate this service.', 'wp-smushit' ),
 		);
 
-		// Available values: warning (inactive), success (active) or error (expired).
-		$cdn_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn', 'warning' );
+		$cdn_status = 'warning';
+
+		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+		if ( $cdn->cdn_enabled ) {
+			$cdn_status = $cdn->bandwidth < $cdn->bandwidth_plan ? 'success' : 'error';
+		}
 
 		$this->view( 'meta-boxes/cdn/meta-box', array(
+			'cdn'           => $cdn,
 			'cdn_group'     => $this->cdn_group,
 			'settings'      => $this->settings->get(),
 			'settings_data' => WP_Smush::get_instance()->core()->settings,

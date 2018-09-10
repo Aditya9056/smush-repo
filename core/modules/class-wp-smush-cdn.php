@@ -26,13 +26,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	private $cdn_active = false;
 
 	/**
-	 * WPMUDEV API key for the member.
-	 *
-	 * @var null
-	 */
-	private $api_key = null;
-
-	/**
 	 * WP_Smush_CDN constructor.
 	 */
 	public function init() {
@@ -46,7 +39,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		add_action( 'wp_smush_cdn_settings', array( $this, 'add_settings' ) );
 
 		// Set auto resize flag.
-		add_action( 'init', array( $this, 'init_flags' ) );
+		add_action( 'wp', array( $this, 'init_flags' ) );
 
 		// Add stats to stats box.
 		if ( $this->settings->get( 'cdn' ) ) {
@@ -164,6 +157,22 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * Initialize required flags.
 	 *
@@ -184,9 +193,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			return;
 		}
 
-		if ( 'success' === $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn', 'warning' ) ) {
-			$this->cdn_active = true;
-		}
+		$this->cdn_active = true;
 	}
 
 	/**
@@ -280,9 +287,9 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		// Get images from current DOM elements.
 		$images = $document->getElementsByTagName( 'img' );
+
 		// If images found, set attachment ids.
 		if ( ! empty( $images ) ) {
-
 			/**
 			 * Action hook to modify DOM images.
 			 *
@@ -314,7 +321,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		// Loop through each image.
 		foreach ( $images as $key => $image ) {
-
 			// Get the src value.
 			$src = $image->getAttribute( 'src' );
 

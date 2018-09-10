@@ -23,6 +23,8 @@
 	</p>
 
 	<button class="sui-button sui-button-primary" id="smush-enable-cdn">
-		<?php esc_html_e( 'GET STARTED', 'wp-smushit' ); ?>
+		<span class="sui-loading-text"><?php esc_html_e( 'GET STARTED', 'wp-smushit' ); ?></span>
+		<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
 	</button>
+
 </div>
