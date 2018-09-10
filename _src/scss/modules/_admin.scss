@@ -3,6 +3,12 @@
 @include body-class {
 
 	.sui-wrap {
+		// Overwrite iOS styles;
+		input[type="submit"] {
+			-webkit-appearance: none !important;
+			border-radius: 0 !important;
+		}
+
 		// Overwrite extra padding on progress bars in modals.
 		.sui-dialog-content .sui-progress-block {
 			margin-bottom: 0;
