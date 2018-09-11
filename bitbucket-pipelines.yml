@@ -18,15 +18,14 @@ pipelines:
           - bash misc/deploy-wordpress.sh
           - cp -R $BITBUCKET_CLONE_DIR /srv/www/wordpress-default/public_html/wp-content/plugins/wp-smushit
           #- php -S localhost:8085 --docroot public &>/dev/null&
-    - parallel:
-      - step:
-          name: Run CodeSniffer tests
-          trigger: manual
-          script:
+    - step:
+        name: Run CodeSniffer tests
+        trigger: manual
+        script:
           # Will fail the pipeline, if errors are present
           - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
           - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
-      - step:
-          name: Run Codeception tests
-          script:
-            - codecept run wpunit
+    - step:
+        name: Run Codeception tests
+        script:
+          - codecept run wpunit
