@@ -582,12 +582,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					your image size.', 'wp-smushit' );
 					break;
 				case 'original':
-					esc_html_e( 'Every time you upload an image to your site, WordPress generates a resized
-					version of that image for every image size that your theme has registered. This means there
-					are multiple versions of your images in your media library. By default, Smush only compresses
-					these generated images. Activate this setting to also smush your original images. Note: Activating
-					this setting doesn’t usually improve page speed, unless your website uses the original images
-					in full size.', 'wp-smushit' );
+					esc_html_e( 'By default, bulk smush will ignore your original uploads and only compress the
+					thumbnail sizes your theme outputs. Enable this setting to also smush your original uploads. We
+					recommend storing copies of your originals (below) in case you ever need to restore them.', 'wp-smushit' );
 					break;
 				case 'strip_exif':
 					esc_html_e( 'Note: This data adds to the size of the image. While this information might be

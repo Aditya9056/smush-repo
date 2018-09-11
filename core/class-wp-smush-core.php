@@ -544,14 +544,14 @@ class WP_Smush_Core {
 				'desc'        => esc_html__( 'This will add functionality to your website that highlights images that are either too large or too small for their containers. Note: The highlighting will only be visible to administrators – visitors won’t see the highlighting.', 'wp-smushit' ),
 			),
 			'original'    => array(
-				'label'       => esc_html__( 'Smush my original full-size images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-				'desc'        => esc_html__( 'Save a ton of space by not storing over-sized images on your server.', 'wp-smushit' ),
+				'label'       => esc_html__( 'Smush my original full size images', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Original images', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Choose how you want Smush to handle the original image file when you run a bulk smush.', 'wp-smushit' ),
 			),
 			'backup'      => array(
-				'label'       => esc_html__( 'Make a copy of my full size images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Full size images', 'wp-smushit' ),
-				'desc'        => esc_html__( 'Save a ton of space by not storing over-sized images on your server.', 'wp-smushit' ),
+				'label'       => esc_html__( 'Store a copy of my full size images', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Original images', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Save a copy of your original full-size images separately so you can restore them at any point. Note: Keeping a copy of your original files can significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' ),
 			),
 			'png_to_jpg'  => array(
 				'label'       => esc_html__( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
