@@ -2,6 +2,7 @@
 
 * New: Plugin structure
 * Enhance: Update translation strings
+* Enhance: Clean out all the leftover data on plugin uninstall
 
 = 2.9.0 =
 
