@@ -145,7 +145,7 @@ import Scanner from '../smush/directory-scanner';
 			/**
 			 * Cancel scan.
 			 */
-			progress_dialog.on( 'click', '.sui-icon-close, .sui-dialog-close, .wp-smush-cancel-dir', function ( e ) {
+			progress_dialog.on( 'click', '#cancel-directory-smush, .sui-dialog-close, .wp-smush-cancel-dir', function ( e ) {
 				e.preventDefault();
 				// Display the spinner
 				$( this ).parent().find( '.add-dir-loader' ).addClass( 'sui-icon-loader sui-loading' );
