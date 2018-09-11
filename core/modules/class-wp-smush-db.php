@@ -520,9 +520,12 @@ class WP_Smush_DB {
 			global $wpdb;
 
 			while ( $query_next ) {
-				$resize_data = $wpdb->get_results( $wpdb->prepare(
-					"SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", WP_SMUSH_PREFIX . 'resize_savings'
-				) );
+				$resize_data = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit",
+						WP_SMUSH_PREFIX . 'resize_savings'
+					)
+				);
 
 				if ( ! empty( $resize_data ) ) {
 					foreach ( $resize_data as $data ) {

@@ -284,10 +284,13 @@ class WP_Smush_Resize extends WP_Smush_Module {
 		 * }
 		 */
 		$sizes = apply_filters(
-			'wp_smush_resize_sizes', array(
+			'wp_smush_resize_sizes',
+			array(
 				'width'  => $this->max_w,
 				'height' => $this->max_h,
-			), $file_path, $id
+			),
+			$file_path,
+			$id
 		);
 
 		$data = image_make_intermediate_size( $file_path, $sizes['width'], $sizes['height'] );

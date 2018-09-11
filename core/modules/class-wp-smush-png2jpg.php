@@ -693,7 +693,8 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 		global $wpdb;
 		// Get existing Images with current URL.
 		$query = $wpdb->prepare(
-			"SELECT ID, post_content FROM $wpdb->posts WHERE post_content LIKE '%%%s%%'", $o_url
+			"SELECT ID, post_content FROM $wpdb->posts WHERE post_content LIKE '%%%s%%'",
+			$o_url
 		);
 
 		$rows = $wpdb->get_results( $query, ARRAY_A );

@@ -21,9 +21,12 @@
 	<?php elseif ( $this->view_exists( $orig_id . '/meta-box-header' ) ) : ?>
 		<div class="<?php echo esc_attr( $args['box_header_class'] ); ?>">
 			<?php
-			$this->view( $orig_id . '/meta-box-header', array(
-				'title' => $title,
-			) );
+			$this->view(
+				$orig_id . '/meta-box-header',
+				array(
+					'title' => $title,
+				)
+			);
 			?>
 		</div><!-- end sui-box-title -->
 	<?php elseif ( $title ) : ?>

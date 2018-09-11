@@ -181,7 +181,8 @@ abstract class WP_Smush_View {
 				'utm_source'   => 'smush',
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_dashboard_upgrade_notice',
-			), $core->upgrade_url
+			),
+			$core->upgrade_url
 		);
 		?>
 		<div class="notice smush-notice" style="display: none;">
@@ -350,10 +351,13 @@ abstract class WP_Smush_View {
 	 * Display tabs navigation
 	 */
 	public function show_tabs() {
-		$this->view( 'tabs', array(
-			'tabs'      => $this->get_tabs(),
-			'is_hidden' => is_network_admin() && ! $this->settings->is_network_enabled(),
-		) );
+		$this->view(
+			'tabs',
+			array(
+				'tabs'      => $this->get_tabs(),
+				'is_hidden' => is_network_admin() && ! $this->settings->is_network_enabled(),
+			)
+		);
 	}
 
 	/**

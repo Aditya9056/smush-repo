@@ -63,7 +63,8 @@ $this->do_meta_boxes( 'summary' );
 				'utm_source'   => 'smush',
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_footer_upsell_notice',
-			), esc_url( 'https://premium.wpmudev.org/projects/' )
+			),
+			esc_url( 'https://premium.wpmudev.org/projects/' )
 		);
 		?>
 		<h3><?php esc_html_e( 'WPMU DEV - Your WordPress Toolkit', 'wp-smushit' ); ?></h3>

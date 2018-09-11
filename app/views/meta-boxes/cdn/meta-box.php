@@ -42,8 +42,11 @@
 			</span>
 			<span class="sui-description">
 				<?php
-				esc_html_e( 'Monitor how much your websites are using the CDN. If you reach a cap it’s easy to
-				upgrade to grab more bandwidth.', 'wp-smushit' );
+				esc_html_e(
+					'Monitor how much your websites are using the CDN. If you reach a cap it’s easy to
+				upgrade to grab more bandwidth.',
+					'wp-smushit'
+				);
 				?>
 			</span>
 		</div>
@@ -68,8 +71,11 @@
 				<?php
 				printf(
 					/* translators: %1$s: GB of bandwidth, %2$s: opening A (href) tag, %3$s; closing A (href) tag. */
-					esc_html__( 'Note: Your current plan included %1$sGB bandwidth to use over 30 days.
-					%2$sUpgrade Plan%3$s for more bandwidth.', 'wp-smushit' ),
+					esc_html__(
+						'Note: Your current plan included %1$sGB bandwidth to use over 30 days.
+					%2$sUpgrade Plan%3$s for more bandwidth.',
+						'wp-smushit'
+					),
 					absint( $cdn->bandwidth_plan ),
 					'<a href="#" target="_blank">',
 					'</a>'
@@ -108,8 +114,11 @@
 
 			<span class="sui-description">
 				<?php
-				esc_html_e( 'Note: At this time we don’t support video media types. We recommend uploading media to a
-				third-party provider and embedding videos into your posts/pages.', 'wp-smushit' );
+				esc_html_e(
+					'Note: At this time we don’t support video media types. We recommend uploading media to a
+				third-party provider and embedding videos into your posts/pages.',
+					'wp-smushit'
+				);
 				?>
 			</span>
 		</div>
@@ -136,8 +145,11 @@
 			</span>
 			<span class="sui-description">
 				<?php
-				esc_html_e( 'If you no longer require your images hosted from our CDN you can disable
-				this feature.', 'wp-smushit' );
+				esc_html_e(
+					'If you no longer require your images hosted from our CDN you can disable
+				this feature.',
+					'wp-smushit'
+				);
 				?>
 			</span>
 		</div>
@@ -147,8 +159,11 @@
 			</button>
 			<span class="sui-description">
 				<?php
-				esc_html_e( 'Note: You won’t lose any imagery by deactivating, all of your attachments are still
-				stored locally on your own server.', 'wp-smushit' );
+				esc_html_e(
+					'Note: You won’t lose any imagery by deactivating, all of your attachments are still
+				stored locally on your own server.',
+					'wp-smushit'
+				);
 				?>
 			</span>
 		</div>

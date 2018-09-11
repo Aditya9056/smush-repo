@@ -176,7 +176,9 @@ class WP_Smush_Helper {
 		$column = $wpdb->get_results(
 			$wpdb->prepare(
 				'SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ',
-				DB_NAME, $table_name, $column_name
+				DB_NAME,
+				$table_name,
+				$column_name
 			)
 		);
 

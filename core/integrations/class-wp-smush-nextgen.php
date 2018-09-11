@@ -210,9 +210,11 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 		$stats['smushed'] = ! empty( $this->ng_admin->resmush_ids ) ? $smushed_count - $resmush_count : $smushed_count;
 		$stats['count']   = $image_count;
 
-		wp_send_json_success( array(
-			'stats' => $stats,
-		) );
+		wp_send_json_success(
+			array(
+				'stats' => $stats,
+			)
+		);
 	}
 
 	/**
@@ -309,12 +311,14 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 			 * We use error_msg for single images to append to the div and error_message to
 			 * append to bulk smush errors list.
 			 */
-			wp_send_json_error( array(
-				'error'         => 'no_metadata',
-				'error_msg'     => '<p class="wp-smush-error-message">' . esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ) . '</p>',
-				'error_message' => esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ),
-				'file_name'     => isset( $image->filename ) ? $image->filename : 'undefined',
-			) );
+			wp_send_json_error(
+				array(
+					'error'         => 'no_metadata',
+					'error_msg'     => '<p class="wp-smush-error-message">' . esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ) . '</p>',
+					'error_message' => esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ),
+					'file_name'     => isset( $image->filename ) ? $image->filename : 'undefined',
+				)
+			);
 		}
 
 		$registry = C_Component_Registry::get_instance();
@@ -370,9 +374,11 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 
 		// Verify Nonce.
 		if ( ! wp_verify_nonce( $nonce, 'wp_smush_nextgen' ) ) {
-			wp_send_json_error( array(
-				'error' => 'nonce_verification_failed',
-			) );
+			wp_send_json_error(
+				array(
+					'error' => 'nonce_verification_failed',
+				)
+			);
 		}
 
 		// Check for media upload permission.
@@ -571,18 +577,22 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 	public function resmush_image() {
 		// Check Empty fields.
 		if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
-			wp_send_json_error( array(
-				'error'   => 'empty_fields',
-				'message' => '<div class="wp-smush-error">' . esc_html__( "We couldn't process the image, fields empty.", 'wp-smushit' ) . '</div>',
-			) );
+			wp_send_json_error(
+				array(
+					'error'   => 'empty_fields',
+					'message' => '<div class="wp-smush-error">' . esc_html__( "We couldn't process the image, fields empty.", 'wp-smushit' ) . '</div>',
+				)
+			);
 		}
 
 		// Check Nonce.
 		if ( ! wp_verify_nonce( $_POST['_nonce'], 'wp-smush-resmush-' . $_POST['attachment_id'] ) ) {
-			wp_send_json_error( array(
-				'error'   => 'empty_fields',
-				'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", 'wp-smushit' ) . '</div>',
-			) );
+			wp_send_json_error(
+				array(
+					'error'   => 'empty_fields',
+					'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", 'wp-smushit' ) . '</div>',
+				)
+			);
 		}
 
 		$image_id = intval( $_POST['attachment_id'] );
@@ -592,18 +602,22 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 		// If any of the image is restored, we count it as success.
 		if ( ! empty( $smushed ) && ! is_wp_error( $smushed ) ) {
 			// Send button content.
-			wp_send_json_success( array(
-				'button' => $smushed['status'] . $smushed['stats'],
-			) );
+			wp_send_json_success(
+				array(
+					'button' => $smushed['status'] . $smushed['stats'],
+				)
+			);
 		} elseif ( is_wp_error( $smushed ) ) {
 			// Send Error Message.
-			wp_send_json_error( array(
-				'message' => sprintf(
-				/* translators: %s: error message */
-					'<div class="wp-smush-error">' . __( 'Unable to smush image, %s', 'wp-smushit' ) . '</div>',
-					$smushed->get_error_message()
-				),
-			) );
+			wp_send_json_error(
+				array(
+					'message' => sprintf(
+						/* translators: %s: error message */
+						'<div class="wp-smush-error">' . __( 'Unable to smush image, %s', 'wp-smushit' ) . '</div>',
+						$smushed->get_error_message()
+					),
+				)
+			);
 		}
 	}
 

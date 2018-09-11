@@ -69,9 +69,12 @@ class WP_Smush_API {
 	 * @return mixed|WP_Error
 	 */
 	public function check() {
-		return $this->request->get( "check/{$this->api_key}", array(
-			'domain' => $this->request->get_this_site(),
-		) );
+		return $this->request->get(
+			"check/{$this->api_key}",
+			array(
+				'domain' => $this->request->get_this_site(),
+			)
+		);
 	}
 
 }

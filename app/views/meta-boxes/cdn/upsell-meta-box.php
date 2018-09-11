@@ -17,9 +17,12 @@
 
 	<p>
 		<?php
-		esc_html_e( 'Automatically compress and resize your images, then on WPMU DEV’s blazing-fast CDN with multi-pass
+		esc_html_e(
+			'Automatically compress and resize your images, then on WPMU DEV’s blazing-fast CDN with multi-pass
 	lossy compression. This is the ultimate tool for boosting your pagespeed by taking the load off your server. Try it
-	today with a WPMU DEV Membership!', 'wp-smushit' );
+	today with a WPMU DEV Membership!',
+			'wp-smushit'
+		);
 		?>
 	</p>
 

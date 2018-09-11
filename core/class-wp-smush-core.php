@@ -311,9 +311,13 @@ class WP_Smush_Core {
 
 		global $wpdb;
 
-		$results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT * FROM {$wpdb->postmeta} WHERE meta_key=%s AND meta_value LIKE %s", '_wp_attachment_metadata', '%wp_smushit%'
-		) );
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->postmeta} WHERE meta_key=%s AND meta_value LIKE %s",
+				'_wp_attachment_metadata',
+				'%wp_smushit%'
+			)
+		);
 
 		if ( count( $results ) < 1 ) {
 			return;

@@ -127,7 +127,9 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 
 		// Define ajaxurl var.
 		wp_localize_script(
-			'smush-resize-detection', 'wp_smush_resize_vars', array(
+			'smush-resize-detection',
+			'wp_smush_resize_vars',
+			array(
 				'ajaxurl'     => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce'  => wp_create_nonce( 'smush_resize_nonce' ),
 				// translators: %s - width, %s - height.
@@ -269,15 +271,18 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 		 *
 		 * @param array|bool $additional_multipliers Additional multipliers.
 		 */
-		$additional_multipliers = apply_filters( 'smush_srcset_additional_multipliers', array(
-			0.2,
-			0.4,
-			0.6,
-			0.8,
-			1,
-			2,
-			3,
-		) );
+		$additional_multipliers = apply_filters(
+			'smush_srcset_additional_multipliers',
+			array(
+				0.2,
+				0.4,
+				0.6,
+				0.8,
+				1,
+				2,
+				3,
+			)
+		);
 
 		// Continue only if additional multipliers found or not skipped.
 		// Filter already documented in class-wp-smush-cdn.php.

@@ -96,13 +96,16 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @return array
 	 */
 	public function register( $settings ) {
-		return array_merge( $settings, array(
-			'webp' => array(
-				'label'       => __( 'Enable WebP conversion', 'wp-smushit' ),
-				'short_label' => __( 'WebP conversion', 'wp-smushit' ),
-				'desc'        => __( 'Smush can automatically convert and serve your images as WebP to compatible browsers.', 'wp-smushit' ),
-			),
-		) );
+		return array_merge(
+			$settings,
+			array(
+				'webp' => array(
+					'label'       => __( 'Enable WebP conversion', 'wp-smushit' ),
+					'short_label' => __( 'WebP conversion', 'wp-smushit' ),
+					'desc'        => __( 'Smush can automatically convert and serve your images as WebP to compatible browsers.', 'wp-smushit' ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -121,9 +124,12 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			<?php
 			switch ( $setting_key ) {
 				case 'webp':
-					esc_html_e( 'Note: We’ll detect and serve WebP images to browsers that will accept them by checking
+					esc_html_e(
+						'Note: We’ll detect and serve WebP images to browsers that will accept them by checking
 					Accept Headers, and gracefully fall back to normal PNGs or JPEGs for non-compatible
-					browsers.', 'wp-smushit' );
+					browsers.',
+						'wp-smushit'
+					);
 					break;
 				case 'default':
 					break;

@@ -15,10 +15,13 @@
 
 	<p>
 		<?php
-		esc_html_e( 'Automatically compress and resize your images, then on WPMU DEV’s blazing-fast CDN with
+		esc_html_e(
+			'Automatically compress and resize your images, then on WPMU DEV’s blazing-fast CDN with
 		multi-pass lossy compression. This is the ultimate tool for boosting your pagespeed by taking the load off
 		your server. All you need to do is activate the feature and we’ll serve your images from the CDN - no
-		coding required.', 'wp-smushit' );
+		coding required.',
+			'wp-smushit'
+		);
 		?>
 	</p>
 

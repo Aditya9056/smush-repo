@@ -311,16 +311,20 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// If any of the image is restored, we count it as success.
 		if ( ! empty( $smushed['status'] ) ) {
 			// Send button content.
-			wp_send_json_success( array(
-				'button' => $smushed['status'] . $smushed['stats'],
-			) );
+			wp_send_json_success(
+				array(
+					'button' => $smushed['status'] . $smushed['stats'],
+				)
+			);
 		}
 
 		// Send error Message.
 		if ( ! empty( $smushed['error'] ) ) {
-			wp_send_json_error( array(
-				'message' => '<div class="wp-smush-error">' . $smushed['error'] . '</div>',
-			) );
+			wp_send_json_error(
+				array(
+					'message' => '<div class="wp-smush-error">' . $smushed['error'] . '</div>',
+				)
+			);
 		}
 	}
 
@@ -637,7 +641,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			// For Nextgen. Get the stats (get the re-Smush IDs).
 			$resmush_ids = get_option( 'wp-smush-nextgen-resmush-list', array() );
 
-			$stats       = WP_Smush::get_instance()->core()->nextgen->ng_stats->get_stats_for_ids( $resmush_ids );
+			$stats = WP_Smush::get_instance()->core()->nextgen->ng_stats->get_stats_for_ids( $resmush_ids );
 
 			$stats['count_images'] = WP_Smush::get_instance()->core()->nextgen->ng_admin->get_image_count( $resmush_ids, false );
 		}
@@ -684,7 +688,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 * @since 1.9.0
 	 */
 	public function ignore_bulk_image() {
-		if ( ! isset ( $_POST['id'] ) ) {
+		if ( ! isset( $_POST['id'] ) ) {
 			wp_send_json_error();
 		}
 
@@ -902,9 +906,12 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		check_ajax_referer( 'save_wp_smush_options' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error(array(
-				'msg' => __( 'User can not modify options', 'wp-smushit' ),
-			), 403 );
+			wp_send_json_error(
+				array(
+					'msg' => __( 'User can not modify options', 'wp-smushit' ),
+				),
+				403
+			);
 		}
 
 		$this->settings->set( 'cdn', true );
@@ -924,9 +931,12 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		check_ajax_referer( 'save_wp_smush_options' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => __( 'User can not modify options', 'wp-smushit' ),
-			), 403 );
+			wp_send_json_error(
+				array(
+					'message' => __( 'User can not modify options', 'wp-smushit' ),
+				),
+				403
+			);
 		}
 
 		$param = sanitize_text_field( wp_unslash( $_POST['param'] ) );
@@ -937,9 +947,12 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 			// Error from API.
 			if ( ! $status->success ) {
-				wp_send_json_error( array(
-					'message' => $status->data->message,
-				), $status->data->error_code );
+				wp_send_json_error(
+					array(
+						'message' => $status->data->message,
+					),
+					$status->data->error_code
+				);
 			}
 
 			$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $status->data );

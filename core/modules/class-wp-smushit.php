@@ -1270,7 +1270,8 @@ class WP_Smushit extends WP_Smush_Module {
 		$errors = new WP_Error();
 		$stats  = array(
 			'stats' => array_merge(
-				$this->_get_size_signature(), array(
+				$this->_get_size_signature(),
+				array(
 					'api_version' => - 1,
 					'lossy'       => - 1,
 					'keep_exif'   => false,
@@ -1782,17 +1783,23 @@ class WP_Smushit extends WP_Smush_Module {
 		$count           = count( get_intermediate_image_sizes() );
 		$smush_orgnl_txt = sprintf(
 			/* translators: %s: number of thumbnails */
-			esc_html__( 'When you upload an image to WordPress it automatically creates %s thumbnail sizes
+			esc_html__(
+				'When you upload an image to WordPress it automatically creates %s thumbnail sizes
 			that are commonly used in your pages. WordPress also stores the original full-size image, but because
 			these are not usually embedded on your site we don’t Smush them. Pro users can
-			override this.', 'wp-smushit' ),
+			override this.',
+				'wp-smushit'
+			),
 			$count
 		);
 
 		$skip_msg = array(
 			'large_size' => $smush_orgnl_txt,
-			'size_limit' => esc_html__( "Image couldn't be smushed as it exceeded the 1Mb size limit,
-			Pro users can smush images with size up to 32Mb.", 'wp-smushit' ),
+			'size_limit' => esc_html__(
+				"Image couldn't be smushed as it exceeded the 1Mb size limit,
+			Pro users can smush images with size up to 32Mb.",
+				'wp-smushit'
+			),
 		);
 
 		$skip_rsn = ! empty( $skip_msg[ $msg_id ] ) ? esc_html__( ' Skipped', 'wp-smushit' ) : '';

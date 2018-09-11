@@ -76,7 +76,8 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 			'short_label' => esc_html__( 'Gutenberg Support', 'wp-smushit' ),
 			'desc'        => esc_html__(
 				'Add statistics and the manual smush button to Gutenberg blocks that
-							display images.', 'wp-smushit'
+							display images.',
+				'wp-smushit'
 			),
 		);
 

@@ -148,7 +148,8 @@ class WP_Smush_Common {
 			// Create new stats.
 			$stats = array(
 				'stats' => array_merge(
-					$smush->_get_size_signature(), array(
+					$smush->_get_size_signature(),
+					array(
 						'api_version' => - 1,
 						'lossy'       => - 1,
 					)

@@ -152,7 +152,7 @@ class WP_Smush_Dir {
 	 * @since 2.8.1
 	 */
 	public function directory_smush_finish() {
-		$items = isset( $_POST['items'] ) ? absint( $_POST['items'] ) : 0; // Input var ok.
+		$items  = isset( $_POST['items'] ) ? absint( $_POST['items'] ) : 0; // Input var ok.
 		$failed = isset( $_POST['failed'] ) ? absint( $_POST['failed'] ) : 0; // Input var ok.
 		// If any images failed to smush, store count.
 		if ( $failed > 0 ) {
@@ -237,7 +237,8 @@ class WP_Smush_Dir {
 			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->prefix}smush_dir_images SET error=%s WHERE id=%d LIMIT 1",
-					$error_msg, $id
+					$error_msg,
+					$id
 				)
 			); // Db call ok; no-cache ok.
 
@@ -261,7 +262,10 @@ class WP_Smush_Dir {
 		$wpdb->query(
 			$wpdb->prepare(
 				"UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, lossy=%s WHERE id=%d LIMIT 1",
-				$smush_results['data']->after_size, $file_time, $lossy, $id
+				$smush_results['data']->after_size,
+				$file_time,
+				$lossy,
+				$id
 			)
 		); // Db call ok; no-cache ok.
 
@@ -916,7 +920,7 @@ class WP_Smush_Dir {
 			$this->stats['bytes']   = ( $this->stats['orig_size'] > $this->stats['image_size'] ) ? $this->stats['orig_size'] - $this->stats['image_size'] : 0;
 			$this->stats['percent'] = number_format_i18n( ( ( $this->stats['bytes'] / $this->stats['orig_size'] ) * 100 ), 1 );
 			// Convert to human readable form.
-			$this->stats['human']   = size_format( $this->stats['bytes'], 1 );
+			$this->stats['human'] = size_format( $this->stats['bytes'], 1 );
 		}
 
 		$this->stats['total']     = $total;

@@ -485,7 +485,8 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				$url = self::$api_server . $api_key;
 
 				$request = wp_remote_get(
-					$url, array(
+					$url,
+					array(
 						'user-agent' => WP_SMUSH_UA,
 						'timeout'    => 10,
 					)

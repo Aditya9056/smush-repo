@@ -43,9 +43,12 @@ endif;
 </div>
 
 <?php
-$this->view( 'blocks/progress-bar', array(
-	'count' => $core,
-) );
+$this->view(
+	'blocks/progress-bar',
+	array(
+		'count' => $core,
+	)
+);
 ?>
 
 <div class="smush-final-log sui-hidden">
