@@ -50,13 +50,6 @@ class WP_Smush_Auto_Resize {
 		// Set auto resize flag.
 		add_action( 'wp', array( $this, 'init_flags' ) );
 
-		include_once ABSPATH . WPINC . '/pluggable.php';
-
-		// Continue only for admins.
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
 		// Load js file that is required in public facing pages.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_resize_assets' ) );
 
