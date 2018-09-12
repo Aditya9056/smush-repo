@@ -1,6 +1,7 @@
 = 3.0.0 =
 
 * New: Plugin structure
+* New: Show failure reason during directory Smush
 * Enhance: Update translation strings
 * Enhance: Clean out all the leftover data on plugin uninstall
 
