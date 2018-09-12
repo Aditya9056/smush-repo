@@ -549,7 +549,7 @@ class WP_Smush_Ajax {
 			}
 
 			if ( $resmush_count ) {
-				$ajax_response = WP_Smush::get_instance()->admin()->pages['smush']->bulk_resmush_content( $count, true );
+				$ajax_response = WP_Smush::get_instance()->admin()->bulk_resmush_content( $count, false );
 			}
 		}
 

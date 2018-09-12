@@ -456,8 +456,8 @@ abstract class WP_Smush_View {
 			<h1 class="sui-header-title"><?php esc_html_e( 'DASHBOARD', 'wp-smushit' ); ?></h1>
 			<div class="sui-actions-right">
 				<?php if ( ! is_network_admin() && ( 'bulk' === $this->get_current_tab() || 'gallery_page_wp-smush-nextgen-bulk' === $this->page_id ) ) : ?>
-					<?php $data_type = 'gallery_page_wp-smush-nextgen-bulk' === $current_screen->id ? ' data-type="nextgen"' : ''; ?>
-					<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_attr_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>"<?php echo esc_attr( $data_type ); ?>>
+					<?php $data_type = 'gallery_page_wp-smush-nextgen-bulk' === $current_screen->id ? 'nextgen' : 'media'; ?>
+					<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_attr_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>" data-type="<?php echo esc_attr( $data_type ); ?>">
 						<?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?>
 					</button>
 				<?php endif; ?>
@@ -604,56 +604,4 @@ abstract class WP_Smush_View {
 			WP_Smush_Settings::delete_setting( 'wp-smush-settings_updated' );
 		}
 	}
-
-	/**
-	 * Shows a option to ignore the Image ids which can be resmushed while bulk smushing.
-	 *
-	 * @param bool|int $count  Resmush + unsmushed image count.
-	 * @param bool     $show   Should show or not.
-	 */
-	public function bulk_resmush_content( $count = false, $show = false ) {
-		// If we already have count, don't fetch it.
-		if ( false === $count ) {
-			// If we have the resmush ids list, Show Resmush notice and button.
-			if ( $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
-				// Count.
-				$count = count( $resmush_ids );
-
-				// Whether to show the remaining re-smush notice.
-				$show = $count > 0 ? true : false;
-
-				// Get the actual remainaing count.
-				if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) ) {
-					WP_Smush::get_instance()->core()->setup_global_stats();
-				}
-
-				$count = WP_Smush::get_instance()->core()->remaining_count;
-			}
-		}
-
-		// Show only if we have any images to ber resmushed.
-		if ( $show ) {
-			?>
-			<div class="sui-notice sui-notice-warning wp-smush-resmush-notice wp-smush-remaining" tabindex="0">
-				<p>
-					<span class="wp-smush-notice-text">
-						<?php
-						printf(
-							/* translators: %1$s: user name, %2$s: strong tag, %3$s: span tag, %4$d: number of remaining umages, %5$s: closing span tag, %6$s: closing strong tag  */
-							_n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs re-compressing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need re-compressing!', $count, 'wp-smushit' ),
-							esc_html( WP_Smush_Helper::get_user_name() ),
-							'<strong>',
-							'<span class="wp-smush-remaining-count">',
-							absint( $count ),
-							'</span>',
-							'</strong>'
-						);
-						?>
-					</span>
-				</p>
-			</div>
-			<?php
-		}
-	}
-
 }

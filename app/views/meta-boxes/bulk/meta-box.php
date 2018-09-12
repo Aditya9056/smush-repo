@@ -16,7 +16,7 @@
  */
 
 // Show re-smush notice.
-$this->bulk_resmush_content();
+WP_Smush::get_instance()->admin()->bulk_resmush_content();
 
 // If there are no images in media library.
 if ( 0 >= $core->total_count ) : ?>

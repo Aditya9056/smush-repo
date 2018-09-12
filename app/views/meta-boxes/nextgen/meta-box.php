@@ -16,7 +16,7 @@
  */
 
 // Get the counts.
-echo $this->bulk_resmush_content( $count, $show );
+echo WP_Smush::get_instance()->admin()->bulk_resmush_content( $count, $show );
 
 // If there are no images in Media Library.
 if ( 0 >= $total_count ) : ?>
