@@ -64,24 +64,6 @@ class WP_Smush_Admin {
 	}
 
 	/**
-	 * Initialize Smush view classes.
-	 */
-	public function init_views() {
-		// We need only in admin.
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		// Initialize Smush dashboard class.
-		$this->pages['smush'] = new WP_Smush_Dashboard();
-
-		// Initialize Smush NextGen gallery class.
-		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->get_nextgen_status() && WP_Smush::is_pro() ) {
-			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( 'wp-smush-nextgen-bulk' );
-		}
-	}
-
-	/**
 	 * Load translation files.
 	 */
 	public function smush_i18n() {
