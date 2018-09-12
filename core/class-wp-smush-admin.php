@@ -32,7 +32,7 @@ class WP_Smush_Admin {
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'network_admin_menu', array( $this, 'add_menu_pages' ) );
 
-		// Initialize view classes.
+		// We need an early hook. admin_init hook works, but it is after admin_menu.
 		add_action( 'init', array( $this, 'init_views' ) );
 
 		add_action( 'admin_init', array( $this, 'smush_i18n' ) );
