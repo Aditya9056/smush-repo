@@ -50,13 +50,6 @@ class WP_Smush_Auto_Resize {
 		// Set auto resize flag.
 		add_action( 'wp', array( $this, 'init_flags' ) );
 
-		include_once ABSPATH . WPINC . '/pluggable.php';
-
-		// Continue only for admins.
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
 		// Load js file that is required in public facing pages.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_resize_assets' ) );
 
@@ -117,7 +110,7 @@ class WP_Smush_Auto_Resize {
 		// Required scripts for front end.
 		wp_enqueue_script(
 			'smush-resize-detection',
-			plugins_url( 'app/assets/js/resize-detection.min.js', __DIR__ ),
+			WP_SMUSH_URL . 'app/assets/js/resize-detection.min.js',
 			array( 'jquery' ),
 			WP_SMUSH_VERSION,
 			true
@@ -126,7 +119,7 @@ class WP_Smush_Auto_Resize {
 		// Required styles for front end.
 		wp_enqueue_style(
 			'smush-resize-detection',
-			plugins_url( 'app/assets/css/resize-detection.min.css', __DIR__ ),
+			WP_SMUSH_URL . 'app/assets/css/resize-detection.min.css',
 			array(),
 			WP_SMUSH_VERSION
 		);
