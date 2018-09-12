@@ -32,6 +32,9 @@ class WP_Smush_Admin {
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'network_admin_menu', array( $this, 'add_menu_pages' ) );
 
+		// Initialize view classes.
+		add_action( 'init', array( $this, 'init_views' ) );
+
 		add_action( 'admin_init', array( $this, 'smush_i18n' ) );
 		// Add information to privacy policy page (only during creation).
 		add_action( 'admin_init', array( $this, 'add_policy' ) );
@@ -61,6 +64,24 @@ class WP_Smush_Admin {
 
 		// Smush image filter from Media Library.
 		add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
+	}
+
+	/**
+	 * Initialize Smush view classes.
+	 */
+	public function init_views() {
+		// We need only in admin.
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		// Initialize Smush dashboard class.
+		$this->pages['smush'] = new WP_Smush_Dashboard();
+
+		// Initialize Smush NextGen gallery class.
+		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->get_nextgen_status() && WP_Smush::is_pro() ) {
+			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( 'wp-smush-nextgen-bulk' );
+		}
 	}
 
 	/**
@@ -234,11 +255,12 @@ class WP_Smush_Admin {
 	public function add_menu_pages() {
 		$title = WP_Smush::is_pro() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 
-		$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
+		// Register Smush menu.
+		$this->pages['smush']->init_menu( $title );
 
 		// Add a bulk smush option for NextGen gallery.
 		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->get_nextgen_status() && WP_Smush::is_pro() ) {
-			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( $title, 'wp-smush-nextgen-bulk', true );
+			$this->pages['nextgen']->init_menu( $title, true );
 		}
 	}
 
