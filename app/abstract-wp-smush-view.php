@@ -41,9 +41,9 @@ abstract class WP_Smush_View {
 	/**
 	 * WP_Smush_View constructor.
 	 *
-	 * @param string $title   Page title.
-	 * @param string $slug    Page slug. Default: 'smush'.
-	 * @param bool   $submenu Is a submenu page.
+	 * @param string $title    Page title.
+	 * @param string $slug     Page slug. Default: 'smush'.
+	 * @param bool   $submenu  Is a submenu page.
 	 */
 	public function __construct( $title, $slug = 'smush', $submenu = false ) {
 		$this->slug = $slug;
