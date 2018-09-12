@@ -76,6 +76,7 @@
 	 */
 	smush_media.view.Attachment.Details = smushAttachmentDetails.extend( {
 		initialize: function () {
+			smushAttachmentDetails.prototype.initialize.apply( this, arguments );
 			this.listenTo( this.model, 'change:smush', this.render );
 		},
 
