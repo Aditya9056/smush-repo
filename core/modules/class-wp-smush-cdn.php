@@ -46,10 +46,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			add_action( 'stats_ui_after_resize_savings', array( $this, 'cdn_stats_ui' ), 20 );
 		}
 
-		if ( ! $this->cdn_active ) {
-			return;
-		}
-
 		// Set Smush API config.
 		add_action( 'init', array( $this, 'set_cdn_url' ) );
 
@@ -185,9 +181,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @return void
 	 */
 	public function init_flags() {
-		// @todo handle this after implementing CDN settings.
-		$this->cdn_active = false;
-
 		// All these are members only feature.
 		if ( ! WP_Smush::is_pro() ) {
 			return;
@@ -208,17 +201,13 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @return void
 	 */
 	public function set_cdn_url() {
-		// Get the user id of current member.
-		// @todo handle this.
-		$user_id = 0;
+		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
 		// Site id to help mapping multisite installations.
 		$site_id = get_current_blog_id();
 
 		// This is member's custom cdn path.
-		$this->cdn_base = trailingslashit( "https://{$user_id}.smushcdn.com/{$site_id}" );
-
-		// $this->cdn_base = trailingslashit( "http://localhost" );
+		$this->cdn_base = trailingslashit( "https://{$cdn->endpoint_url}/{$site_id}" );
 	}
 
 	/**
