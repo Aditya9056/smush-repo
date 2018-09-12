@@ -450,7 +450,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				<?php if ( $human <= 0 ) { ?>
 					<p class="wp-smush-stats-label-message">
 						<?php esc_html_e( "Smush images that aren't located in your uploads folder.", 'wp-smushit' ); ?>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=smush&tab=directory' ) ); ?>" class="wp-smush-dir-link"
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=smush&view=directory' ) ); ?>" class="wp-smush-dir-link"
 							title="<?php esc_attr_e( "Select a directory you'd like to Smush.", 'wp-smushit' ); ?>">
 							<?php esc_html_e( 'Choose directory', 'wp-smushit' ); ?>
 						</a>
