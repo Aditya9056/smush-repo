@@ -4,6 +4,7 @@
 * New: Pointers for new installs
 * New: Show a list of errors (if present) after bulk Smush
 * Enhance: Remove activation redirection
+* Fix: Compatibility with Enhanced Media Library
 * Fix: Layout inconsistencies
 * Fix: Remove duplicate queries
 * Fix: User profile languages not properly applying to Smush
