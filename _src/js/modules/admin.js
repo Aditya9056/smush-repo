@@ -439,6 +439,19 @@ jQuery( function ( $ ) {
 		new Smush( $( this ), false );
 	} );
 
+	/** Handle show in bulk smush button click **/
+	$( 'body' ).on( 'click', '.wp-smush-remove-skipped', function( e ) {
+		e.preventDefault();
+
+		// Send Ajax request to remove the image from the skip list.
+		$.post( ajaxurl, {
+			action: 'remove_from_skip_list',
+			id: $(this).attr('data-id')
+		} );
+
+		remove_element( $(this) );
+	} );
+
 	/** Handle NextGen Gallery smush button click **/
 	$( 'body' ).on( 'click', '.wp-smush-nextgen-send', function ( e ) {
 		// prevent the default action

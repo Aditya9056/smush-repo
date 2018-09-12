@@ -150,6 +150,15 @@ class WP_Smush_Core {
 	public $unsmushed_attachments = array();
 
 	/**
+	 * Skipped attachment IDs.
+	 *
+	 * @since 3.0
+	 *
+	 * @var array $skipped_attachments
+	 */
+	public $skipped_attachments = array();
+
+	/**
 	 * Smushed attachments out of total attachments.
 	 *
 	 * @var int $smushed_count
@@ -162,6 +171,14 @@ class WP_Smush_Core {
 	 * @var int $remaining_count
 	 */
 	public $remaining_count;
+
+	/**
+	 * Images with errors that have been skipped from bulk smushing.
+	 *
+	 * @since 3.0
+	 * @var int $skipped_count
+	 */
+	public $skipped_count;
 
 	/**
 	 * Super Smushed attachments count.
@@ -621,6 +638,8 @@ class WP_Smush_Core {
 			'directory_url'           => admin_url( 'admin.php?page=smush&tab=directory' ),
 			'bulk_resume'             => esc_html__( 'Resume scan', 'wp-smushit' ),
 			'bulk_stop'               => esc_html__( 'Stop current bulk smush process.', 'wp-smushit' ),
+			// Errors.
+			'error_ignore'            => esc_html__( 'Ignore this image from bulk smushing', 'wp-smushit' ),
 		);
 
 		wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -649,7 +668,7 @@ class WP_Smush_Core {
 			$data = array(
 				'count_supersmushed' => $this->super_smushed,
 				'count_smushed'      => $this->smushed_count,
-				'count_total'        => $this->total_count,
+				'count_total'        => $this->total_count - $this->skipped_count,
 				'count_images'       => $this->stats['total_images'],
 				'count_resize'       => $this->stats['resize_count'],
 				'unsmushed'          => $this->unsmushed_attachments,
@@ -701,11 +720,6 @@ class WP_Smush_Core {
 		}
 	}
 
-
-
-
-
-
 	/**
 	 * Check bulk sent count, whether to allow further smushing or not
 	 *
@@ -737,11 +751,6 @@ class WP_Smush_Core {
 
 		return $continue;
 	}
-
-
-
-
-
 
 	/**
 	 * Return Global stats
@@ -828,6 +837,10 @@ class WP_Smush_Core {
 
 		// Set pro savings.
 		$this->set_pro_savings();
+
+		// Get skipped attachments.
+		$this->skipped_attachments = $this->mod->db->skipped_count( $force_update );
+		$this->skipped_count       = count( $this->skipped_attachments );
 
 		// Set smushed count.
 		$this->smushed_count   = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
@@ -1033,7 +1046,7 @@ class WP_Smush_Core {
 	private function remaining_count() {
 		// Check if the resmush count is equal to remaining count.
 		$resmush_count   = count( $this->resmush_ids );
-		$remaining_count = $this->total_count - $this->smushed_count;
+		$remaining_count = $this->total_count - $this->smushed_count - $this->skipped_count;
 		if ( $resmush_count > 0 && $resmush_count === $this->smushed_count ) {
 			return $resmush_count + $remaining_count;
 		}

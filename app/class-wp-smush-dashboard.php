@@ -863,7 +863,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		);
 
 		$this->view( 'meta-boxes/bulk/meta-box', array(
-			'all_done'         => $core->smushed_count === $core->total_count && empty( $core->resmush_ids ),
+			'all_done'         => ( $core->total_count - $core->skipped_count ) === $core->smushed_count && empty( $core->resmush_ids ),
 			'bulk_upgrade_url' => $bulk_upgrade_url,
 			'core'             => $core,
 			'hide_pagespeed'   => get_site_option( WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion' ),
