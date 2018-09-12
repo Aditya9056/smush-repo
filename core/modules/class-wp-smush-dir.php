@@ -222,7 +222,11 @@ class WP_Smush_Dir {
 		$smush_results = WP_Smush::get_instance()->core()->mod->smush->do_smushit( $path );
 
 		if ( is_wp_error( $smush_results ) ) {
-			/* @var WP_Error $smush_results */
+			/**
+			 * Smush results.
+			 *
+			 * @var WP_Error $smush_results
+			 */
 			$error_msg = $smush_results->get_error_message();
 		} elseif ( empty( $smush_results['data'] ) ) {
 			// If there are no stats.
@@ -234,7 +238,8 @@ class WP_Smush_Dir {
 			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->prefix}smush_dir_images SET error=%s WHERE id=%d LIMIT 1",
-					$error_msg, $id
+					$error_msg,
+					$id
 				)
 			); // Db call ok; no-cache ok.
 
@@ -364,6 +369,28 @@ class WP_Smush_Dir {
 			error_log( sprintf( 'WP Smush Query Error in %s at %s: %s', __FILE__, __LINE__, $results->get_error_message() ) );
 			$results = array();
 		}
+
+		return $results;
+	}
+
+	/**
+	 * Get the paths and errors from last scan.
+	 *
+	 * @since 3.0
+	 *
+	 * @return array  Array of last scanned images
+	 */
+	public function get_image_errors() {
+		global $wpdb;
+
+		$results = $wpdb->get_results(
+			"SELECT id, path, error
+					FROM {$wpdb->prefix}smush_dir_images
+					WHERE error IS NOT NULL
+						AND last_scan = ( SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images )
+					LIMIT 10",
+			ARRAY_A
+		); // Db call ok; no-cache ok.
 
 		return $results;
 	}

@@ -952,7 +952,13 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			), $core->upgrade_url
 		);
 
+		$images = array();
+		if ( isset( $_GET['scan'] ) && 'done' === sanitize_text_field( wp_unslash( $_GET['scan'] ) ) ) {
+			$images = $core->mod->dir->get_image_errors();
+		}
+
 		$this->view( 'meta-boxes/directory/meta-box', array(
+			'images'      => $images,
 			'root_path'   => $core->mod->dir->get_root_path(),
 			'upgrade_url' => $upgrade_url,
 		) );
