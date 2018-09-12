@@ -450,7 +450,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				<?php if ( $human <= 0 ) { ?>
 					<p class="wp-smush-stats-label-message">
 						<?php esc_html_e( "Smush images that aren't located in your uploads folder.", 'wp-smushit' ); ?>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=smush&tab=directory' ) ); ?>" class="wp-smush-dir-link"
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=smush&view=directory' ) ); ?>" class="wp-smush-dir-link"
 							title="<?php esc_attr_e( "Select a directory you'd like to Smush.", 'wp-smushit' ); ?>">
 							<?php esc_html_e( 'Choose directory', 'wp-smushit' ); ?>
 						</a>
@@ -952,7 +952,13 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			), $core->upgrade_url
 		);
 
+		$images = array();
+		if ( isset( $_GET['scan'] ) && 'done' === sanitize_text_field( wp_unslash( $_GET['scan'] ) ) ) {
+			$images = $core->mod->dir->get_image_errors();
+		}
+
 		$this->view( 'meta-boxes/directory/meta-box', array(
+			'images'      => $images,
 			'root_path'   => $core->mod->dir->get_root_path(),
 			'upgrade_url' => $upgrade_url,
 		) );

@@ -6007,6 +6007,10 @@ html.sui-has-overlay {
   }
 }
 
+.sui-2-2-10 .sui-meta-boxes-directory .smush-final-log {
+  margin-top: 30px;
+}
+
 .sui-2-2-10 ul.fancytree-container {
   color: #666;
   font-family: "Roboto", sans-serif;

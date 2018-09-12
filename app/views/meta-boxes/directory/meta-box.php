@@ -4,6 +4,7 @@
  *
  * @package WP_Smush
  *
+ * @var array  $images       Array of images with errors.
  * @var string $root_path    Root path.
  * @var string $upgrade_url  Upgrade URL.
  */
@@ -46,12 +47,29 @@
 			?>
 		</p>
 	</div>
+
+	<?php if ( ! empty( $images ) ) : ?>
+		<div class="smush-final-log">
+			<div class="smush-bulk-errors">
+				<?php foreach ( $images as $image ) : ?>
+					<div class="smush-bulk-error-row">
+						<div class="smush-bulk-image-data">
+							<i class="sui-icon-photo-picture" aria-hidden="true"></i>
+							<span class="smush-image-name"><?php echo esc_html( $image['path'] ); ?></span>
+							<span class="smush-image-error"><?php echo esc_html( $image['error'] ); ?></span>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	<?php endif; ?>
+
 	<?php wp_nonce_field( 'wp_smush_all', 'wp-smush-all' ); ?>
 </div>
 
 <?php
-$current_screen = get_current_screen();
-if ( ! empty( $current_screen ) && ! empty( $current_screen->base ) && ( 'toplevel_page_smush' === $current_screen->base || 'toplevel_page_smush-network' === $current_screen->base ) ) {
+$screen = get_current_screen();
+if ( ! empty( $screen ) && ! empty( $screen->base ) && ( 'toplevel_page_smush' === $screen->base || 'toplevel_page_smush-network' === $screen->base ) ) {
 	$this->view( 'modals/directory-list' );
 	$this->view( 'modals/progress-dialog' );
 }
