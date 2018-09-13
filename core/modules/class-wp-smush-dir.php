@@ -447,7 +447,7 @@ class WP_Smush_Dir {
 			'png',
 		);
 
-		if ( file_exists( $post_dir ) ) {
+		if ( file_exists( $post_dir ) && is_dir( $post_dir ) ) {
 			$files = scandir( $post_dir );
 			// Exclude hidden files.
 			if ( ! empty( $files ) ) {

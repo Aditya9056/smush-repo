@@ -4,6 +4,8 @@
 * New: Show failure reason during directory Smush
 * Enhance: Update translation strings
 * Enhance: Clean out all the leftover data on plugin uninstall
+* Enhance: Directory Smush modal: support keyboard navigation
+* Enhance: Directory Smush modal: navigate to next node by typing the first letters
 * Fix: Directory Smush resume button only working when clicked on icon
 * Fix: Errors during image re-check
 
