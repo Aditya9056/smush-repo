@@ -4,6 +4,7 @@
  *
  * @package WP_Smush
  *
+ * @var int    $errors       Number of errors during directory scan.
  * @var array  $images       Array of images with errors.
  * @var string $root_path    Root path.
  * @var string $upgrade_url  Upgrade URL.
@@ -61,6 +62,16 @@
 					</div>
 				<?php endforeach; ?>
 			</div>
+			<?php if ( $errors > 20 ) : ?>
+				<p class="sui-description">
+					<?php
+					printf( /* translators: %d: number of images with errors */
+						esc_html__( 'Showing 20 of %d failed optimizations. Fix or remove these images and run another Directory Smush.', 'wp-smushit' ),
+						absint( $errors )
+					);
+					?>
+				</p>
+			<?php endif; ?>
 		</div>
 	<?php endif; ?>
 

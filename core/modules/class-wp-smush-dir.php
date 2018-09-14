@@ -388,11 +388,30 @@ class WP_Smush_Dir {
 					FROM {$wpdb->prefix}smush_dir_images
 					WHERE error IS NOT NULL
 						AND last_scan = ( SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images )
-					LIMIT 10",
+					LIMIT 20",
 			ARRAY_A
 		); // Db call ok; no-cache ok.
 
 		return $results;
+	}
+
+	/**
+	 * Return the number of errors.
+	 *
+	 * @since 3.0
+	 *
+	 * @return int
+	 */
+	public function get_image_errors_count() {
+		global $wpdb;
+
+		$count = $wpdb->get_var(
+			"SELECT COUNT(id)
+					FROM {$wpdb->prefix}smush_dir_images
+					WHERE error IS NOT NULL AND last_scan = ( SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images )"
+		);
+
+		return (int) $count;
 	}
 
 	/**

@@ -4,9 +4,11 @@
 
 @include body-class {
 
-    .sui-meta-boxes-directory {
-        .smush-final-log {
-            margin-top: 30px;
+    .sui-meta-boxes-directory .smush-final-log {
+        margin-top: 30px;
+
+        .sui-description {
+            margin-top: 10px;
         }
     }
 
