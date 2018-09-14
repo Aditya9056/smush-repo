@@ -203,11 +203,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	public function set_cdn_url() {
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
-		// Site id to help mapping multisite installations.
-		$site_id = get_current_blog_id();
-
 		// This is member's custom cdn path.
-		$this->cdn_base = trailingslashit( "https://{$cdn->endpoint_url}/{$site_id}" );
+		$this->cdn_base = trailingslashit( "https://{$cdn->endpoint_url}/{$cdn->site_id}" );
 	}
 
 	/**

@@ -1169,7 +1169,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 		if ( $cdn->cdn_enabled ) {
-			$cdn_status = $cdn->bandwidth < $cdn->bandwidth_plan ? 'success' : 'error';
+			$cdn_status = $cdn->bandwidth / 1024 / 1024  < $cdn->bandwidth_plan ? 'success' : 'error';
 		}
 
 		$this->view(

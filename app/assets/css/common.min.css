@@ -7,7 +7,7 @@
   content: "";
   opacity: 0;
   -webkit-backface-visibility: hidden;
-		  backface-visibility: hidden;
+          backface-visibility: hidden;
   pointer-events: none;
   position: absolute;
   z-index: 1;
@@ -198,24 +198,24 @@
 
 @media screen and (max-width: 1024px) {
   .wp-list-table .smushit table.wp-smush-stats-holder th {
-	display: table-cell;
-	box-sizing: border-box;
+    display: table-cell;
+    box-sizing: border-box;
   }
 
   .wp-list-table .smushit table.wp-smush-stats-holder tr td {
-	word-wrap: break-word;
-	display: table-cell !important;
+    word-wrap: break-word;
+    display: table-cell !important;
   }
 
   .wp-list-table .smushit table.wp-smush-stats-holder tr td:first-child {
-	border-right: none;
-	box-sizing: border-box;
+    border-right: none;
+    box-sizing: border-box;
   }
 
   .wp-list-table .smushit table.wp-smush-stats-holder tr td:last-child {
-	box-sizing: border-box;
-	float: none;
-	overflow: visible;
+    box-sizing: border-box;
+    float: none;
+    overflow: visible;
   }
 }
 
@@ -394,9 +394,9 @@ label.setting.smush-stats .smush-wrap,
   display: -ms-flexbox;
   display: flex;
   -ms-flex-align: center;
-	  align-items: center;
+      align-items: center;
   -ms-flex-line-pack: center;
-	  align-content: center;
+      align-content: center;
 }
 
 .smush-skipped.error {
@@ -905,13 +905,13 @@ button.wp-smush-all {
 
 @media screen and (max-width: 1024px) and (min-width: 800px) {
   .smush-stats-wrapper h3 {
-	padding: 6px 0;
+    padding: 6px 0;
   }
 }
 
 @media only screen and (max-width: 800px) {
   .dev-box.bulk-smush-wrapper.wp-smush-container {
-	padding: 20px 10px;
+    padding: 20px 10px;
   }
 }
 
@@ -919,13 +919,13 @@ button.wp-smush-all {
   .wp-smush-resize-settings-wrap,
   .wp-smush-png_to_jpg-wrap,
   .wp-smush-image-size-list {
-	padding: 20px;
+    padding: 20px;
   }
 }
 
 @media screen and (max-width: 456px) {
   .bulk-smush-wrapper .wp-smush-notice-text {
-	max-width: 85%;
+    max-width: 85%;
   }
 }
 
@@ -1030,74 +1030,74 @@ button.wp-smush-all {
 
 @media only all and (max-width: 1200px) {
   .smush-notice-dismiss {
-	display: block;
-	margin: 0 auto;
-	line-height: 18px;
-	padding-top: 8px;
-	padding-bottom: 2px;
+    display: block;
+    margin: 0 auto;
+    line-height: 18px;
+    padding-top: 8px;
+    padding-bottom: 2px;
   }
 }
 
 @media only all and (max-width: 1000px) {
   .smush-notice.notice {
-	display: block;
-	font-size: 13px;
+    display: block;
+    font-size: 13px;
   }
 
   .smush-notice>.smush-notice-logo {
-	float: left;
-	display: inline-block;
-	height: 80px;
-	margin: 10px;
-	border-radius: 4px;
+    float: left;
+    display: inline-block;
+    height: 80px;
+    margin: 10px;
+    border-radius: 4px;
   }
 
   .smush-notice>.smush-notice-message {
-	width: auto;
-	display: block;
-	padding: 10px;
-	min-height: 80px;
+    width: auto;
+    display: block;
+    padding: 10px;
+    min-height: 80px;
   }
 
   .smush-notice>.smush-notice-cta {
-	display: block;
-	border-top: 1px solid #E5E5E5;
-	border-left: 0;
-	text-align: center;
-	white-space: normal;
-	line-height: 30px;
-	padding: 10px 20px;
+    display: block;
+    border-top: 1px solid #E5E5E5;
+    border-left: 0;
+    text-align: center;
+    white-space: normal;
+    line-height: 30px;
+    padding: 10px 20px;
   }
 
   .wp-core-ui .smush-notice>.smush-notice-cta>input[type="email"],
   .smush-notice>.smush-notice-cta>button {
-	font-size: 14px;
+    font-size: 14px;
   }
 
   .smush-notice>.smush-notice-cta>.smush-notice-dismiss {
-	display: inline-block;
-	float: none;
-	line-height: 26px;
-	padding-top: 0;
-	padding-bottom: 0;
-	font-size: 13px;
+    display: inline-block;
+    float: none;
+    line-height: 26px;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 13px;
   }
 }
 
 @media only all and (max-width: 500px) {
   .wp-core-ui .smush-notice>.smush-notice-cta>input[type="email"],
   .smush-notice>.smush-notice-cta>button {
-	display: block;
-	width: 100% !important;
-	max-width: none;
-	margin-bottom: 4px;
-	font-size: 16px;
-	height: 34px;
+    display: block;
+    width: 100% !important;
+    max-width: none;
+    margin-bottom: 4px;
+    font-size: 16px;
+    height: 34px;
   }
 
   .smush-notice>.smush-notice-cta>.smush-notice-dismiss {
-	margin-top: 5px;
-	font-size: 14px;
-	height: 23px;
+    margin-top: 5px;
+    font-size: 14px;
+    height: 23px;
   }
 }
