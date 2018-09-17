@@ -206,11 +206,34 @@ class WP_Smush_Common {
 	 * @param string $size    Attachment size.
 	 */
 	public function wpml_update_duplicate_meta( $id, $file, $n_file, $size ) {
-		if ( ! $this->is_wpml_duplicating_images() ) {
+		if ( ! $this->is_wpml_duplicating_images( $id ) ) {
 			return;
 		}
 
+		global $wpdb;
 
+		$image_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT element_id FROM {$wpdb->prefix}icl_translations
+						WHERE trid IN (
+							SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id=%d
+						) AND element_id!=%d AND element_type='post_attachment'",
+				array( $id, $id )
+			)
+		); // Db call ok; no-cache ok.
+
+		/**
+		 * Get source file meta data.
+		 * Leave out wp-smush-resize_savings, as we actually want the file to run the compression stage so we don't
+		 * interfere with the progress of Smush.
+		 */
+		$_wp_attached_file       = get_post_meta( $id, '_wp_attached_file', true );
+		$_wp_attachment_metadata = wp_get_attachment_metadata( $id, true );
+
+		foreach ( $image_ids as $img_id ) {
+			update_post_meta( $img_id, '_wp_attached_file', $_wp_attached_file );
+			wp_update_attachment_metadata( $img_id, $_wp_attachment_metadata );
+		}
 	}
 
 	/**
@@ -218,20 +241,29 @@ class WP_Smush_Common {
 	 *
 	 * @since 3.0
 	 *
+	 * @param int $id  Attachment ID.
+	 *
 	 * @return bool
 	 */
-	private function is_wpml_duplicating_images() {
+	private function is_wpml_duplicating_images( $id ) {
 		if ( ! class_exists( 'SitePress' ) ) {
 			return false;
 		}
 
 		$media_settings = get_site_option( '_wpml_media' );
 
+		// Check if WPML media translations are active.
 		if ( ! $media_settings || ! isset( $media_settings['new_content_settings']['duplicate_media'] ) ) {
 			return false;
 		}
 
-		return $media_settings['new_content_settings']['duplicate_media'];
+		// WPML duplicate existing media for translated content?
+		if ( ! $media_settings['new_content_settings']['duplicate_media'] ) {
+			return false;
+		}
+
+		// Is the image the sorurce?
+		return get_post_meta( $id, 'wpml_media_processed', true );
 	}
 
 }

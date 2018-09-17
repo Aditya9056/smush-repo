@@ -23,9 +23,8 @@
   padding: 10px;
   box-shadow: 0 5px 25px 0 rgba(0,0,0,0.15);
   margin: 20px auto;
-  border-radius: 0 0 20px 0;
+  border-radius: 30px;
   cursor: pointer;
-  width: 250px;
 }
 
 .smush-resize-box .smush-front-icons {
@@ -61,7 +60,7 @@
   line-height: 26px;
   text-align: center;
   font-weight: 500;
-  padding: 0 15px;
+  padding: 10px 15px;
 }
 
 .smush-resize-box .smush-tag.smush-tag-success {
@@ -73,10 +72,15 @@
   position: absolute;
   -ms-flex-item-align: start;
       align-self: flex-start;
-  margin-top: 5px;
-  margin-left: 5px;
-  background-color: rgba(255,255,255,0.8);
-  z-index: 100000;
+  margin-top: -55px;
+  background-color: #fff;
+  display: none;
+  z-index: 1;
+}
+
+.smush-resize-box.smush-tooltip.with_offset {
+  margin-top: 90px;
+  margin-left: 10px;
 }
 
 .smush-resize-box.smush-tooltip:before,
@@ -117,6 +121,8 @@
   transform: translateX(-50%);
 }
 
+.smush-resize-box.smush-tooltip.visible:before,
+.smush-resize-box.smush-tooltip.visible:after,
 .smush-resize-box.smush-tooltip:hover:before,
 .smush-resize-box.smush-tooltip:hover:after {
   opacity: 1;
