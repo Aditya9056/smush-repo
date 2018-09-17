@@ -27,7 +27,17 @@ class WP_Smush_Common {
 
 		// Optimise WP retina 2x images.
 		add_action( 'wr2x_retina_file_added', array( $this, 'smush_retina_image' ), 20, 3 );
+
+		// WPML integration.
+		add_action( 'wp_smush_image_url_changed', array( $this, 'wpml_update_duplicate_meta' ), 10, 4 );
 	}
+
+	/**************************************
+	 *
+	 * AJAX Thumbnail Rebuild
+	 *
+	 * @since 2.8
+	 */
 
 	/**
 	 * AJAX Thumbnail Rebuild integration.
@@ -56,6 +66,11 @@ class WP_Smush_Common {
 		// Do not regenerate other thumbnails for regenerate action.
 		return false;
 	}
+
+	/**************************************
+	 *
+	 * WP Retina 2x
+	 */
 
 	/**
 	 * Smush Retina images for WP Retina 2x, Update Stats.
@@ -168,6 +183,87 @@ class WP_Smush_Common {
 		$stats = $smush->total_compression( $stats );
 
 		update_post_meta( $id, WP_Smushit::$smushed_meta_key, $stats );
+	}
+
+	/**************************************
+	 *
+	 * WPML
+	 *
+	 * @since 3.0
+	 */
+
+	/**
+	 * Update meta for image.
+	 *
+	 * If converting PNG to JPG and WPML is duplicating images, we need to update the meta for the duplicate image as well,
+	 * otherwise it will not be found during compression or on the WordPress back/front-ends.
+	 *
+	 * @since 3.0
+	 *
+	 * @param int    $id      Attachment ID.
+	 * @param string $file    Attachment path.
+	 * @param string $n_file  Attachment name (with extension).
+	 * @param string $size    Attachment size.
+	 */
+	public function wpml_update_duplicate_meta( $id, $file, $n_file, $size ) {
+		if ( ! $this->is_wpml_duplicating_images( $id ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$image_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT element_id FROM {$wpdb->prefix}icl_translations
+						WHERE trid IN (
+							SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id=%d
+						) AND element_id!=%d AND element_type='post_attachment'",
+				array( $id, $id )
+			)
+		); // Db call ok; no-cache ok.
+
+		/**
+		 * Get source file meta data.
+		 * Leave out wp-smush-resize_savings, as we actually want the file to run the compression stage so we don't
+		 * interfere with the progress of Smush.
+		 */
+		$_wp_attached_file       = get_post_meta( $id, '_wp_attached_file', true );
+		$_wp_attachment_metadata = wp_get_attachment_metadata( $id, true );
+
+		foreach ( $image_ids as $img_id ) {
+			update_post_meta( $img_id, '_wp_attached_file', $_wp_attached_file );
+			wp_update_attachment_metadata( $img_id, $_wp_attachment_metadata );
+		}
+	}
+
+	/**
+	 * Check if WPML is active and is duplicating images.
+	 *
+	 * @since 3.0
+	 *
+	 * @param int $id  Attachment ID.
+	 *
+	 * @return bool
+	 */
+	private function is_wpml_duplicating_images( $id ) {
+		if ( ! class_exists( 'SitePress' ) ) {
+			return false;
+		}
+
+		$media_settings = get_site_option( '_wpml_media' );
+
+		// Check if WPML media translations are active.
+		if ( ! $media_settings || ! isset( $media_settings['new_content_settings']['duplicate_media'] ) ) {
+			return false;
+		}
+
+		// WPML duplicate existing media for translated content?
+		if ( ! $media_settings['new_content_settings']['duplicate_media'] ) {
+			return false;
+		}
+
+		// Is the image the sorurce?
+		return get_post_meta( $id, 'wpml_media_processed', true );
 	}
 
 }
