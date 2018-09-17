@@ -712,4 +712,5 @@ class WP_Smush_Png2jpg {
 			);
 		}
 	}
+
 }
