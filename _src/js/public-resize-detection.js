@@ -68,14 +68,14 @@ jQuery( function ( $ ) {
 
 			ele.hover(
 				() => {
-					const resize_box = $(this).parent().find('.smush-resize-box');
+					const resize_box = $(this).prev();
 					resize_box.show().addClass('visible');
 
 					if ( resize_box.offset().top < 0 ) {
 						resize_box.show().addClass('with_offset');
 					}
 				},
-				() => $(this).parent().find('.smush-resize-box').hide()
+				() => $(this).prev().hide()
 			);
 		} );
 	};
