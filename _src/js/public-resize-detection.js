@@ -65,6 +65,18 @@ jQuery( function ( $ ) {
 
 			// Add a class to image.
 			ele.addClass( 'smush-detected-img' );
+
+			ele.hover(
+				() => {
+					const resize_box = $(this).prev();
+					resize_box.show().addClass('visible');
+
+					if ( resize_box.offset().top < 0 ) {
+						resize_box.show().addClass('with_offset');
+					}
+				},
+				() => $(this).prev().hide()
+			);
 		} );
 	};
 

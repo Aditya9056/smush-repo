@@ -720,4 +720,5 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 			);
 		}
 	}
+
 }

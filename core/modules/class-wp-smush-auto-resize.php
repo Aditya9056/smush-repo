@@ -104,7 +104,7 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 		// Required scripts for front end.
 		wp_enqueue_script(
 			'smush-resize-detection',
-			plugins_url( 'app/assets/js/resize-detection.min.js', __DIR__ ),
+			WP_SMUSH_URL . 'app/assets/js/resize-detection.min.js',
 			array( 'jquery' ),
 			WP_SMUSH_VERSION,
 			true
@@ -113,7 +113,7 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 		// Required styles for front end.
 		wp_enqueue_style(
 			'smush-resize-detection',
-			plugins_url( 'app/assets/css/resize-detection.min.css', __DIR__ ),
+			WP_SMUSH_URL . 'app/assets/css/resize-detection.min.css',
 			array(),
 			WP_SMUSH_VERSION
 		);

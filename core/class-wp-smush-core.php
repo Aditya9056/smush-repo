@@ -608,7 +608,7 @@ class WP_Smush_Core {
 			'resmush_complete'        => esc_html__( 'CHECK COMPLETE', 'wp-smushit' ),
 			// Progress bar text.
 			'progress_smushed'        => esc_html__( 'images optimized', 'wp-smushit' ),
-			'directory_url'           => admin_url( 'admin.php?page=smush&tab=directory' ),
+			'directory_url'           => admin_url( 'admin.php?page=smush&view=directory' ),
 			'bulk_resume'             => esc_html__( 'Resume scan', 'wp-smushit' ),
 			'bulk_stop'               => esc_html__( 'Stop current bulk smush process.', 'wp-smushit' ),
 		);
