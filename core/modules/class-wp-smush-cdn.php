@@ -197,8 +197,9 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @return void
 	 */
 	public function set_cdn_url() {
-		// This is member's custom cdn path.
-		$this->cdn_base = trailingslashit( "https://{$this->status->endpoint_url}/{$this->status->site_id}" );
+		$site_id = absint( $this->status->site_id );
+
+		$this->cdn_base = trailingslashit( "https://{$this->status->endpoint_url}/{$site_id}" );
 	}
 
 	/**
