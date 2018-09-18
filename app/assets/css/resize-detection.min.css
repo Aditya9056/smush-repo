@@ -25,6 +25,8 @@
   margin: 20px auto;
   border-radius: 30px;
   cursor: pointer;
+  width: 260px;
+  text-align: center;
 }
 
 .smush-resize-box .smush-front-icons {
