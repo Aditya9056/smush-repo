@@ -12,8 +12,6 @@
 
 /**
  * Class WP_Smush_Auto_Resize
- *
- * Reference: EWWW Optimizer.
  */
 class WP_Smush_Auto_Resize extends WP_Smush_Module {
 

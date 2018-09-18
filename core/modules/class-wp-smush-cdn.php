@@ -205,19 +205,21 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	/**
 	 * Generate CDN url from given image url.
 	 *
+	 * @since 3.0
+	 *
 	 * @param string $src Image url.
 	 * @param array  $args Query parameters.
 	 *
 	 * @return string
 	 */
 	public function generate_cdn_url( $src, $args = array() ) {
-		// Do not continue incase we try this when cdn is disabled.
+		// Do not continue in case we try this when cdn is disabled.
 		if ( ! $this->cdn_active ) {
 			return $src;
 		}
 
 		// Parse url to get all parts.
-		$url_parts = parse_url( $src );
+		$url_parts = wp_parse_url( $src );
 
 		// If path not found, do not continue.
 		if ( empty( $url_parts['path'] ) ) {
@@ -228,7 +230,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		$pro_args = array(
 			'lossy' => WP_Smush::get_instance()->core()->mod->smush->lossy_enabled ? 1 : 0,
 			'strip' => WP_Smush::get_instance()->core()->mod->smush->keep_exif ? 0 : 1,
-			'webp'  => 0,
+			'webp'  => $this->settings->get( 'webp' ) ? 1 : 0,
 		);
 
 		$args = wp_parse_args( $pro_args, $args );
@@ -248,6 +250,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * Register callback function that adds attachment ids of images
 	 * those are from media library and has an attachment id.
 	 *
+	 * @since 3.0
+	 *
 	 * @uses ob_start()
 	 *
 	 * @return void
@@ -261,6 +265,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 *
 	 * Use DOMDocument class to find all available images
 	 * in current HTML content and set attachmet id attribute.
+	 *
+	 * @since 3.0
 	 *
 	 * @param string $content Current buffer content.
 	 *
@@ -299,7 +305,9 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * We can use WP_Query to find attachment ids of
 	 * all images on current page content.
 	 *
-	 * @param array $images Current page images.
+	 * @since 3.0
+	 *
+	 * @param DOMNodeList $images Current page images.
 	 *
 	 * @return void
 	 */
@@ -366,6 +374,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 	/**
 	 * Add CDN url to header for better speed.
+	 *
+	 * @since 3.0
 	 *
 	 * @param array  $urls URLs to print for resource hints.
 	 * @param string $relation_type The relation type the URLs are printed.

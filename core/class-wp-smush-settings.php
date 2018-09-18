@@ -45,7 +45,7 @@ class WP_Smush_Settings {
 		's3'          => false,
 		'gutenberg'   => false,
 		'cdn'         => false,
-		'webp'        => false,
+		'webp'        => true,
 	);
 
 	/**
