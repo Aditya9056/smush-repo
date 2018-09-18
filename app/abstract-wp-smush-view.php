@@ -313,8 +313,10 @@ abstract class WP_Smush_View {
 		// Load page header.
 		$this->render_page_header();
 
+		$hide_quick_setup = '1' !== get_site_option( 'wp-smush-hide_smush_welcome' ) && '1' !== get_site_option( 'skip-smush-setup' );
+
 		// Show configure screen for only a new installation and for only network admins.
-		if ( ! is_network_admin() && ( '1' !== get_site_option( 'skip-smush-setup' ) && '1' !== get_option( 'wp-smush-hide_smush_welcome' ) ) && '1' !== get_option( 'hide_smush_features' ) && is_super_admin() ) {
+		if ( ( ! is_multisite() && $hide_quick_setup ) || ( is_network_admin() && $this->settings->is_network_enabled() && $hide_quick_setup ) ) {
 			$this->view( 'modals/quick-setup' );
 		}
 

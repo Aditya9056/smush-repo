@@ -44,7 +44,7 @@
 
 	<?php
 	if ( ! is_multisite() || ( ! $opt_networkwide_val && ! is_network_admin() ) || is_network_admin() ) {
-		foreach ( $settings_data as $name => $values ) {
+		foreach ( $settings_data as $name => $value ) {
 			// Skip networkwide settings, we already printed it.
 			if ( 'networkwide' === $name ) {
 				continue;
@@ -56,19 +56,14 @@
 			}
 
 			$setting_m_key = WP_SMUSH_PREFIX . $name;
-			$setting_val   = empty( $settings[ $name ] ) ? 0 : $settings[ $name ];
-
-			// Set the default value 1 for auto smush.
-			if ( 'auto' === $name && ( false === $setting_val || ! isset( $setting_val ) ) ) {
-				$setting_val = 1;
-			}
+			$setting_val   = empty( $settings[ $name ] ) ? false : $settings[ $name ];
 
 			// Group original, resize and backup for PRO users.
 			if ( in_array( $name, $grouped_settings, true ) ) {
 				continue;
 			}
 
-			$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
+			$label = ! empty( $value['short_label'] ) ? $value['short_label'] : $value['label'];
 
 			// Disable only auto Smush if CDN is enabled.
 			$disable = WP_Smush::get_instance()->core()->mod->cdn->get_status() && 'auto' === $name;

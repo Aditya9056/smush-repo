@@ -53,6 +53,7 @@ $smushit_keys = array(
 	'smush-directory-path-hash-updated',
 	'smush_global_stats',
 	'skip-smush-setup',
+	'settings',
 );
 
 $db_keys = array(
