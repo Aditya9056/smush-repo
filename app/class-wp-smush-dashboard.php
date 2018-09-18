@@ -83,6 +83,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'directory'    => __( 'Directory Smush', 'wp-smushit' ),
 				'integrations' => __( 'Integrations', 'wp-smushit' ),
 				'cdn'          => __( 'CDN', 'wp-smushit' ),
+				'settings'     => __( 'Settings', 'wp-smushit' ),
 			)
 		);
 
@@ -217,9 +218,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 				if ( $is_network || ! $is_networkwide ) {
 					$this->add_meta_box(
-						'meta-boxes/settings',
+						'meta-boxes/bulk-settings',
 						__( 'Settings', 'wp-smushit' ),
-						array( $this, 'settings_metabox' ),
+						array( $this, 'bulk_settings_metabox' ),
 						null,
 						null,
 						'bulk',
@@ -273,6 +274,17 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					);
 				}
 
+				break;
+
+			case 'settings':
+				$this->add_meta_box(
+					'meta-boxes/settings',
+					__( 'Settings', 'wp-smushit' ),
+					array( $this, 'settings_metabox' ),
+					null,
+					null,
+					'settings'
+				);
 				break;
 		}
 	}
@@ -965,12 +977,12 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * Free and pro version settings are shown in same section. For free users, pro settings won't be shown.
 	 * To print full size smush, resize and backup in group, we hook at `smush_setting_column_right_end`.
 	 */
-	public function settings_metabox() {
+	public function bulk_settings_metabox() {
 		// Get all grouped settings that can be skipped.
 		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp' ) );
 
 		$this->view(
-			'meta-boxes/settings/meta-box',
+			'meta-boxes/bulk-settings/meta-box',
 			array(
 				'basic_features'      => WP_Smush_Core::$basic_features,
 				'grouped_settings'    => $grouped_settings,
@@ -1182,6 +1194,33 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'settings_data' => WP_Smush::get_instance()->core()->settings,
 				'status'        => $cdn_status,
 				'status_msg'    => $status_msg,
+			)
+		);
+	}
+
+	/**
+	 * Settings meta box.
+	 *
+	 * @since 3.0
+	 */
+	public function settings_metabox() {
+		$link = WP_Smush::is_pro() ? 'https://premium.wpmudev.org/translate/projects/wp-smushit/' : 'https://translate.wordpress.org/projects/wp-plugins/wp-smushit';
+
+		$site_locale = get_locale();
+
+		if ( 'en_US' === $site_locale ) {
+			$site_language = 'English';
+		} else {
+			require_once ABSPATH . 'wp-admin/includes/translation-install.php';
+			$translations  = wp_get_available_translations();
+			$site_language = $translations[ $site_locale ]['native_name'];
+		}
+
+		$this->view(
+			'meta-boxes/settings/meta-box',
+			array(
+				'site_language'    => $site_language,
+				'translation_link' => $link,
 			)
 		);
 	}
