@@ -26,6 +26,13 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	private $cdn_active = false;
 
 	/**
+	 * CDN status.
+	 *
+	 * @var stdClass $status
+	 */
+	private $status;
+
+	/**
 	 * WP_Smush_CDN constructor.
 	 */
 	public function init() {
@@ -39,7 +46,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		add_action( 'wp_smush_cdn_settings', array( $this, 'add_settings' ) );
 
 		// Set auto resize flag.
-		add_action( 'wp', array( $this, 'init_flags' ) );
+		add_action( 'init', array( $this, 'init_flags' ) );
 
 		// Add stats to stats box.
 		if ( $this->settings->get( 'cdn' ) ) {
@@ -141,39 +148,26 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @since 3.0
 	 */
 	public function cdn_stats_ui() {
+		$plan      = isset( $this->status->bandwidth_plan ) ? $this->status->bandwidth_plan : 10;
+		$bandwidth = isset( $this->status->bandwidth ) ? $this->status->bandwidth : 0;
+
+		$percentage = round( $plan * $bandwidth / 1024 / 1024 / 1024 / 100 );
+
 		?>
 		<li class="smush-cdn-stats">
 			<span class="sui-list-label"><?php esc_html_e( 'CDN', 'wp-smushit' ); ?></span>
 			<span class="wp-smush-stats sui-list-detail">
 				<i class="sui-icon-loader sui-loading sui-hidden" aria-hidden="true" title="<?php esc_attr_e( 'Updating Stats', 'wp-smushit' ); ?>"></i>
-				<span class="wp-smush-cdn-stats">0 KB</span>
+				<span class="wp-smush-cdn-stats"><?php echo esc_html( WP_Smush_Helper::format_bytes( $bandwidth, 2 ) ); ?></span>
 				<span class="wp-smush-stats-sep">/</span>
-				<span class="wp-smush-cdn-usage">0% used</span>
-				<div class="sui-circle-score" data-score="10"></div>
+				<span class="wp-smush-cdn-usage">
+					<?php echo esc_html( $percentage ); ?>% <?php esc_html_e( 'used', 'wp-smushit' ); ?>
+				</span>
+				<div class="sui-circle-score" data-score="<?php echo absint( $percentage ); ?>"></div>
 			</span>
 		</li>
 		<?php
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * Initialize required flags.
@@ -192,7 +186,9 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			return;
 		}
 
-		$this->cdn_active = true;
+		$this->status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+
+		$this->cdn_active = $this->status->cdn_enabled;
 	}
 
 	/**
@@ -201,10 +197,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @return void
 	 */
 	public function set_cdn_url() {
-		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
-
 		// This is member's custom cdn path.
-		$this->cdn_base = trailingslashit( "https://{$cdn->endpoint_url}/{$cdn->site_id}" );
+		$this->cdn_base = trailingslashit( "https://{$this->status->endpoint_url}/{$this->status->site_id}" );
 	}
 
 	/**

@@ -53,7 +53,7 @@
 		<div class="sui-box-settings-col-2">
 			<div class="smush-cdn-quota-boxes">
 				<div class="sui-border-frame">
-					<span><?php echo absint( $cdn->bandwidth ); ?>KB</span>
+					<span><?php echo esc_html( WP_Smush_Helper::format_bytes( $cdn->bandwidth, 2 ) ); ?></span>
 					<span class="sui-description">
 						<?php esc_html_e( 'Bandwidth', 'wp-smushit' ); ?>
 					</span>
@@ -72,7 +72,7 @@
 				printf(
 					/* translators: %1$s: GB of bandwidth, %2$s: opening A (href) tag, %3$s; closing A (href) tag. */
 					esc_html__(
-						'Note: Your current plan included %1$sGB bandwidth to use over 30 days.
+						'Note: Your current plan included %1$s GB bandwidth to use over 30 days.
 					%2$sUpgrade Plan%3$s for more bandwidth.',
 						'wp-smushit'
 					),
