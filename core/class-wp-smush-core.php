@@ -544,7 +544,7 @@ class WP_Smush_Core {
 			),
 			'detection'   => array(
 				'label'       => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Image resizing', 'wp-smushit' ),
 				'desc'        => esc_html__( 'This will add functionality to your website that highlights images that are either too large or too small for their containers. Note: The highlighting will only be visible to administrators – visitors won’t see the highlighting.', 'wp-smushit' ),
 			),
 			'original'    => array(

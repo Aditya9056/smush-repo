@@ -39,7 +39,7 @@
 						'original',
 					);
 					// Settings for free and pro version.
-					foreach ( WP_Smush_Settings::get_instance()->get() as $name => $values ) {
+					foreach ( WP_Smush_Settings::get_instance()->get() as $name => $value ) {
 						// Skip networkwide settings, we already printed it.
 						if ( 'networkwide' === $name ) {
 							continue;
@@ -56,11 +56,6 @@
 						}
 
 						$setting_m_key = WP_SMUSH_PREFIX . $name;
-						$setting_val   = WP_Smush_Settings::get_instance()->get( $name );
-						// Set the default value 1 for auto smush.
-						if ( 'auto' === $name && false === $setting_val ) {
-							$setting_val = 1;
-						}
 						?>
 						<div class="sui-box-settings-row">
 							<div class="sui-box-settings-col-1">
@@ -73,7 +68,7 @@
 							</div>
 							<div class="sui-box-settings-col-2">
 								<label class="sui-toggle">
-									<input type="checkbox" class="toggle-checkbox" id="<?php echo esc_attr( $setting_m_key ) . '-quick-setup'; ?>" name="smush_settings[]" <?php checked( $setting_val, 1, true ); ?> value="<?php echo esc_attr( $setting_m_key ); ?>" tabindex="0">
+									<input type="checkbox" class="toggle-checkbox" id="<?php echo esc_attr( $setting_m_key ) . '-quick-setup'; ?>" name="smush_settings[]" <?php checked( $value ); ?> value="<?php echo esc_attr( $setting_m_key ); ?>" tabindex="0">
 									<span class="sui-toggle-slider"></span>
 								</label>
 							</div>

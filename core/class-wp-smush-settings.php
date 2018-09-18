@@ -132,13 +132,10 @@ class WP_Smush_Settings {
 		// See if we've got serialised settings stored already.
 		$settings = $this->get_setting( WP_SMUSH_PREFIX . 'settings', array() );
 		if ( empty( $settings ) ) {
-			// Nope - no serialised settings, get defaults and store in DB.
-			$settings = maybe_serialize( $this->settings );
-			$this->set_setting( WP_SMUSH_PREFIX . 'settings', $settings );
+			$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
 		}
 
 		// Store it in class variable.
-		$settings = maybe_unserialize( $settings );
 		if ( ! empty( $settings ) && is_array( $settings ) ) {
 			// Merge with the existing settings.
 			$this->settings = array_merge( $this->settings, $settings );

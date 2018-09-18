@@ -85,6 +85,10 @@ class WP_Smush_Installer {
 				self::upgrade_2_8_0();
 			}
 
+			if ( version_compare( $version, '3.0', '<' ) ) {
+				self::upgrade_3_0();
+			}
+
 			// Create/upgrade directory smush table.
 			self::directory_smush_table();
 
@@ -136,4 +140,64 @@ class WP_Smush_Installer {
 		// Run the directory smush table update.
 		WP_Smush::get_instance()->core()->mod->dir->update_dir_path_hash();
 	}
+
+	/**
+	 * Update settings to new structure.
+	 *
+	 * @since 3.0
+	 */
+	private static function upgrade_3_0() {
+		$keys = array(
+			'networkwide',
+			'auto',
+			'lossy',
+			'strip_exif',
+			'resize',
+			'detection',
+			'original',
+			'backup',
+			'png_to_jpg',
+			'nextgen',
+			'gutenberg',
+			's3',
+		);
+
+		if ( is_multisite() && ! get_site_option( WP_SMUSH_PREFIX . 'networkwide' ) ) {
+			global $wpdb;
+
+			$offset = 0;
+			$limit  = 100;
+
+			while ( $blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs} LIMIT $offset, $limit", ARRAY_A ) ) {
+				if ( $blogs ) {
+					foreach ( $blogs as $blog ) {
+						switch_to_blog( $blog['blog_id'] );
+
+						$settings = get_option( WP_SMUSH_PREFIX . 'last_settings' );
+						$settings = array_merge( WP_Smush_Settings::get_instance()->get(), $settings );
+						update_option( WP_SMUSH_PREFIX . 'settings', $settings );
+						// Remove previous data.
+						delete_option( WP_SMUSH_PREFIX . 'last_settings' );
+
+						foreach ( $keys as $key ) {
+							delete_option( WP_SMUSH_PREFIX . $key );
+						}
+					}
+					restore_current_blog();
+				}
+				$offset += $limit;
+			}
+		} else {
+			$settings = get_site_option( WP_SMUSH_PREFIX . 'last_settings' );
+			$settings = array_merge( WP_Smush_Settings::get_instance()->get(), $settings );
+			update_site_option( WP_SMUSH_PREFIX . 'settings', $settings );
+			// Remove previous data.
+			delete_site_option( WP_SMUSH_PREFIX . 'last_settings' );
+
+			foreach ( $keys as $key ) {
+				delete_site_option( WP_SMUSH_PREFIX . $key );
+			}
+		}
+	}
+
 }

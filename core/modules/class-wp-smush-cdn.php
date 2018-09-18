@@ -44,16 +44,16 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		// Add stats to stats box.
 		if ( $this->settings->get( 'cdn' ) ) {
 			add_action( 'stats_ui_after_resize_savings', array( $this, 'cdn_stats_ui' ), 20 );
+
+			// Set Smush API config.
+			add_action( 'init', array( $this, 'set_cdn_url' ) );
+
+			// Start an output buffer before any output starts.
+			add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
+
+			// Add cdn url to dns prefetch.
+			add_filter( 'wp_resource_hints', array( $this, 'dns_prefetch' ), 99, 2 );
 		}
-
-		// Set Smush API config.
-		add_action( 'init', array( $this, 'set_cdn_url' ) );
-
-		// Start an output buffer before any output starts.
-		add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
-
-		// Add cdn url to dns prefetch.
-		add_filter( 'wp_resource_hints', array( $this, 'dns_prefetch' ), 99, 2 );
 	}
 
 	/**

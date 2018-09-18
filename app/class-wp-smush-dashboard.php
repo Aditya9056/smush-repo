@@ -593,12 +593,10 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			switch ( $setting_key ) {
 				case 'resize':
 					esc_html_e(
-						'Save a ton of space by not storing over-sized images on your server. Set a
-					maximum height and width for all images uploaded to your site so that any unnecessarily large
-					images are automatically scaled down to a reasonable size. Note: Image resizing happens
-					automatically when you upload attachments. This setting does not apply to images smushed using
-					Directory Smush feature. To support retina devices, we recommend using 2x the dimensions of
-					your image size.',
+						'Save a ton of space by not storing over-sized images on your server. Set a maximum height
+						and width for all images uploaded to your site so that any unnecessarily large images are
+						automatically resized before they are added to the media gallery. This setting does not apply
+						to images smushed using Directory Smush feature.',
 						'wp-smushit'
 					);
 					break;
@@ -763,11 +761,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		}
 
 		foreach ( $this->resize_group as $name ) {
-			// Do not continue if setting is not found.
-			if ( ! $this->settings->get( $name ) ) {
-				continue;
-			}
-
 			$setting_val = $this->settings->get( $name );
 			$setting_key = WP_SMUSH_PREFIX . $name;
 			?>
@@ -782,26 +775,25 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				</label>
 				<span class="sui-description sui-toggle-description">
 					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
-					<?php if ( 'detection' === $name ) : ?>
-						<?php if ( 1 === $setting_val ) : // If detection is enabled. ?>
-							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
-								<p>
-									<?php
-									printf(
-										/* translators: %1$s: opening a tag, %2$s: closing a tag */
-										esc_html__(
-											'Incorrect image size highlighting is active. %1$sView the
-										frontend%2$s of your website to see which images aren\'t the correct size
-										for their containers.',
-											'wp-smushit'
-										),
-										'<a href="' . esc_url( home_url() ) . '" target="_blank">',
-										'</a>'
-									);
-									?>
-								</p>
-							</div>
-						<?php endif; ?>
+					<?php if ( 'detection' === $name && $setting_val ) : ?>
+						<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
+							<p>
+								<?php
+								printf(
+									/* translators: %1$s: opening a tag, %2$s: closing a tag */
+									esc_html__(
+										'Incorrect image size highlighting is active. %1$sView the
+									frontend%2$s of your website to see which images aren\'t the correct size
+									for their containers.',
+										'wp-smushit'
+									),
+									'<a href="' . esc_url( home_url() ) . '" target="_blank">',
+									'</a>'
+								);
+								?>
+							</p>
+						</div>
+					<?php elseif ( 'detection' === $name ) : ?>
 						<div class="sui-notice sui-notice-warning smush-notice-sm smush-highlighting-warning sui-hidden">
 							<p>
 								<?php
