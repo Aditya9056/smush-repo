@@ -2,6 +2,7 @@
 
 * New: Plugin structure (Important: plugin globals have been removed)
 * New: Show failure reason during directory Smush
+* New: Settings page with language translation links
 * Enhance: Update translation strings
 * Enhance: Clean out all the leftover data on plugin uninstall
 * Enhance: Directory Smush modal: support keyboard navigation
