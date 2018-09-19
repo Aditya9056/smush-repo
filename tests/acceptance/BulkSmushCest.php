@@ -20,8 +20,6 @@ class BulkSmushCest {
 	public function _before( AcceptanceTester $I ) {
 		$I->loginAsAdmin();
 
-		//$this->_manually_load_plugin();
-
 		require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/core/class-wp-smush-settings.php';
 	}
 
