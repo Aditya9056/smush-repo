@@ -492,7 +492,7 @@ jQuery( function ( $ ) {
 	} );
 
 	/** Resmush: Media Library **/
-	$( '.wp-smush-action.wp-smush-resmush' ).on( 'click', function ( e ) {
+	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-resmush', function ( e ) {
 		process_smush_action( e, $( this ), 'smush_resmush_image', 'smushing' );
 	} );
 
