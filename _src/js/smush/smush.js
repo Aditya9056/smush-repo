@@ -507,11 +507,10 @@ class Smush {
 	free_exceeded() {
 		if ( this.ids.length > 0 ) {
 			const progress = jQuery( '.wp-smush-bulk-progress-bar-wrapper' );
-			progress.addClass( 'wp-smush-exceed-limit' )
-				.find( '.sui-progress-block .sui-progress-close' ).addClass( 'sui-hidden' )
-				.find( '.sui-progress-block .wp-smush-all' ).removeClass( 'sui-hidden' );
-
-			progress.find( '.sui-box-body.sui-hidden' ).removeClass( 'sui-hidden' );
+			progress.addClass( 'wp-smush-exceed-limit' );
+			progress.find( '.sui-progress-block .wp-smush-cancel-bulk' ).addClass('sui-hidden');
+			progress.find( '.sui-progress-block .wp-smush-all' ).removeClass('sui-hidden');
+			progress.find( '.sui-box-body.sui-no-padding-right' ).removeClass('sui-hidden');
 		} else {
 			jQuery( '.wp-smush-notice.wp-smush-all-done, .wp-smush-pagespeed-recommendation' ).show();
 		}

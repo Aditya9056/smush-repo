@@ -23,11 +23,9 @@ import Smush from '../smush/smush';
 
 				// Remove limit exceeded styles.
 				const progress = $( '.wp-smush-bulk-progress-bar-wrapper' );
-				/** @var {string} wp_smush_msgs.bulk_stop */
-				progress.removeClass( 'wp-smush-exceed-limit' )
-					.find( '.sui-progress-close' ).attr( 'data-tooltip', wp_smush_msgs.bulk_stop );
-				// Hide Resume button.
-				progress.find( '.sui-box-body' ).addClass( 'sui-hidden' );
+				progress.removeClass( 'wp-smush-exceed-limit' );
+				progress.find( '.sui-progress-block .wp-smush-all' ).addClass('sui-hidden');
+				progress.find( '.sui-progress-block .wp-smush-cancel-bulk' ).removeClass('sui-hidden');
 
 				// Disable re-Smush and scan button.
 				// TODO: refine what is disabled.
