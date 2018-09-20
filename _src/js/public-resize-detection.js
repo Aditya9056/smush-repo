@@ -1,83 +1,140 @@
-jQuery( function ( $ ) {
+/**
+ * Image resize detection (IRS).
+ *
+ * Show all wrongly scaled images with a highlighted border and resize box.
+ *
+ * @since 2.9
+ */
+( function( $ ) {
 	'use strict';
+
+	const WP_Smush_IRS = {
+		contentDiv: '',
+
+		/**
+		 * Init scripts.
+		 */
+		init: function () {
+			/** @var {array} wp_smush_resize_vars */
+			if ( wp_smush_resize_vars ) {
+				self.strings = wp_smush_resize_vars;
+			}
+
+			this.contentDiv = document.getElementById('smush-image-block-items');
+
+			this.detectImages();
+		},
+
+		/**
+		 * Various checks to see if the image should be processed.
+		 *
+		 * @param {object} image
+		 * @returns {boolean}
+		 */
+		shouldSkipImage: function(image) {
+			// Skip avatars.
+			if ( image.classList.contains('avatar') ) {
+				return true;
+			}
+
+			// If width attribute is not set, do not continue.
+			return null === image.clientWidth || null === image.clientHeight;
+		},
+
+		/**
+		 * Get tooltip text.
+		 *
+		 * @param {object} props
+		 * @returns {string}
+		 */
+		getTooltipText: function(props) {
+			let tooltip_text = '';
+
+			if ( props.bigger_width || props.bigger_height ) {
+				/** @var {string} strings.large_image */
+				tooltip_text = strings.large_image;
+			} else if ( props.smaller_width || props.smaller_height ) {
+				/** @var {string} strings.small_image */
+				tooltip_text = strings.small_image;
+			}
+
+			return tooltip_text.replace('width', props.real_width)
+				.replace('height', props.real_height);
+		},
+
+		/**
+		 * Create HTML content to append.
+		 *
+		 * @param {object} props
+		 * @returns {HTMLElement}
+		 */
+		createItemDiv: function(props) {
+			const item = document.createElement('div');
+			item.setAttribute('class', 'smush-resize-box smush-tooltip smush-tooltip-constrained');
+			item.setAttribute('data-tooltip', this.getTooltipText(props));
+
+			const tag = document.createElement('span');
+			tag.setAttribute('class', 'smush-tag');
+			tag.innerText = props.computed_width + ' × ' + props.computed_height + ' px';
+
+			const icon = document.createElement('i');
+			icon.setAttribute('class', 'smush-front-icons smush-front-icon-arrows-in');
+			icon.setAttribute('aria-hidden', 'true');
+
+			const tagSuccess = document.createElement('span');
+			tagSuccess.setAttribute('class', 'smush-tag smush-tag-success');
+			tagSuccess.innerText = props.real_width + ' × ' + props.real_height + ' px';
+
+			item.appendChild(tag);
+			item.appendChild(icon);
+			item.appendChild(tagSuccess);
+
+			return item;
+		},
+
+		/**
+		 * Function to highlight all scaled images.
+		 *
+		 * Add yellow border and then show one small box to
+		 * resize the images as per the required size, on fly.
+		 */
+		detectImages: function() {
+			const images = document.getElementsByTagName('img');
+
+			for ( let image of images ) {
+				if ( this.shouldSkipImage(image) ) {
+					continue;
+				}
+
+				// Get defined width and height.
+				const props = {
+					real_width:      image.clientWidth,
+					real_height:     image.clientHeight,
+					computed_width:  image.naturalWidth,
+					computed_height: image.naturalHeight,
+					bigger_width:  ( image.clientWidth * 1.5 ) < image.naturalWidth,
+					bigger_height: ( image.clientHeight * 1.5 ) < image.naturalHeight,
+					smaller_width:   image.clientWidth > image.naturalWidth,
+					smaller_height:  image.clientHeight > image.naturalHeight
+				};
+
+				// In case image is in correct size, do not continue.
+				if ( ! props.bigger_width && ! props.bigger_height && ! props.smaller_width && ! props.smaller_height ) {
+					continue;
+				}
+
+				image.classList.add('smush-detected-img');
+
+				this.contentDiv.appendChild( this.createItemDiv(props) );
+			}
+
+		} // End detectImages()
+
+	}; // End WP_Smush_IRS
 
 	/**
 	 * After page load, initialize toggle event.
-	 *
-	 * On detection link click, show all wrongly scaled images with
-	 * a highlighted border and resize box.
-	 * Upon clicking again, remove highlights.
 	 */
-	$( window ).load( () => detect_wrong_imgs() );
+	$( window ).load( () => WP_Smush_IRS.init() );
 
-	/**
-	 * Function to highlight all scaled images.
-	 *
-	 * Add yellow border and then show one small box to
-	 * resize the images as per the required size, on fly.
-	 */
-	let detect_wrong_imgs = () => {
-		$( 'body img:not(.avatar)' ).each( function() {
-		//$( 'body img[data-smush-image]' ).each( function () {
-			const ele = $( this );
-
-			// If width attribute is not set, do not continue.
-			// @todo We need to check if we can detect images in other way.
-			if ( ele.css( 'width' ) === null || ele.css( 'height' ) === null ) {
-				return true;
-			}
-
-			// Get defined width and height.
-			const css_width      = ele.css( 'width' ).replace( 'px', '' ),
-				  css_height     = ele.css( 'height' ).replace( 'px', '' ),
-				  img_width      = ele.prop( 'naturalWidth' ),
-				  img_height     = ele.prop( 'naturalHeight' ),
-				  higher_width   = ( css_width * 1.5 ) < img_width,
-				  higher_height  = ( css_height * 1.5 ) < img_height,
-				  smaller_width  = css_width > img_width,
-				  smaller_height = css_height > img_height;
-
-			let	tooltip_text = '';
-
-			// In case image is in correct size, do not continue.
-			if ( ! higher_width && ! higher_height && ! smaller_width && ! smaller_height ) {
-				return true;
-			}
-
-			if ( higher_width || higher_height ) {
-				tooltip_text = wp_smush_resize_vars.large_image;
-			} else if ( smaller_width || smaller_height ) {
-				tooltip_text = wp_smush_resize_vars.small_image;
-			}
-
-			tooltip_text = tooltip_text.replace( 'width', css_width );
-			tooltip_text = tooltip_text.replace( 'height', css_height );
-
-			// Create HTML content to append.
-			let content = '<div class="smush-resize-box smush-tooltip smush-tooltip-constrained" data-tooltip="' + tooltip_text + '">' +
-				'<span class="smush-tag">' + img_width + ' × ' + img_height + ' px</span>' +
-				'<i class="smush-front-icons smush-front-icon-arrows-in" aria-hidden="true"></i>' +
-				'<span class="smush-tag smush-tag-success">' + css_width + ' × ' + css_height + ' px</span>' +
-				'</div>';
-
-			// Append resize box to image.
-			ele.before( content );
-
-			// Add a class to image.
-			ele.addClass( 'smush-detected-img' );
-
-			ele.hover(
-				() => {
-					const resize_box = $(this).prev();
-					resize_box.show().addClass('visible');
-
-					if ( resize_box.offset().top < 0 ) {
-						resize_box.show().addClass('with_offset');
-					}
-				},
-				() => $(this).prev().hide()
-			);
-		} );
-	};
-
-} );
+}( jQuery ));

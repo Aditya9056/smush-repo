@@ -57,6 +57,8 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			// Load js file that is required in public facing pages.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_resize_assets' ) );
 
+			add_action( 'wp_footer', array( $this, 'generate_markup') );
+
 			// Update responsive image srcset if required.
 			//add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
 
@@ -503,6 +505,30 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 
 			return $sizes;
 		}
+
+		/**
+		 * Generate markup for the template engine.
+		 *
+		 * @since 2.9
+		 */
+		public function generate_markup() {
+			// Required only if auto detection is required.
+			if ( ! $this->can_auto_detect ) {
+				return;
+			}
+			?>
+			<div id="smush-image-block">
+				<p>
+					<?php esc_html_e( 'The images listed below are being resized to fit a container. To avoid serving oversized or blurry image, try to match the images to their container sizes.', 'wp-smushit' ); ?>
+				</p>
+				<div id="smush-image-block-items"></div>
+				<p>
+					<?php esc_html_e( 'Note: It’s not always easy to make this happen, fix up what you can.', 'wp-smushit' ); ?>
+				</p>
+			</div>
+			<?php
+		}
+
 	}
 
 	global $wpsmush_auto_resize;
