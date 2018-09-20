@@ -251,11 +251,12 @@ class Smush {
 					self.status.html( response.data.error_msg );
 					self.status.show();
 				}
-				if ( 'undefined' !== stats_div && stats_div.length ) {
-					stats_div.replaceWith( response.data.stats );
-				} else {
+
+				//if ( 'undefined' !== stats_div && stats_div.length ) {
+				//	stats_div.replaceWith( response.data.stats );
+				//} else {
 					parent.append( response.data.stats );
-				}
+				//}
 
 				/**
 				 * Update image size in attachment info panel.
