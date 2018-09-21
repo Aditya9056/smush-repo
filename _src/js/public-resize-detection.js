@@ -3,13 +3,18 @@
  *
  * Show all wrongly scaled images with a highlighted border and resize box.
  *
+ * Made in pure JS.
+ * DO NOT ADD JQUERY SUPPORT!!!
+ *
  * @since 2.9
  */
-( function( $ ) {
+( function() {
 	'use strict';
 
 	const WP_Smush_IRS = {
 		contentDiv: '',
+		larger: 0,
+		smaller: 0,
 
 		/**
 		 * Init scripts.
@@ -19,8 +24,6 @@
 			if ( wp_smush_resize_vars ) {
 				self.strings = wp_smush_resize_vars;
 			}
-
-			this.contentDiv = document.getElementById('smush-image-block-items');
 
 			this.detectImages();
 		},
@@ -73,9 +76,12 @@
 			item.setAttribute('class', 'smush-resize-box smush-tooltip smush-tooltip-constrained');
 			item.setAttribute('data-tooltip', this.getTooltipText(props));
 
+			const count = document.createElement('span');
+			count.innerText = props.bigger_width || props.bigger_height ? this.larger : this.smaller;
+
 			const tag = document.createElement('span');
 			tag.setAttribute('class', 'smush-tag');
-			tag.innerText = props.computed_width + ' × ' + props.computed_height + ' px';
+			tag.innerText = props.computed_width + ' × ' + props.computed_height + 'px';
 
 			const icon = document.createElement('i');
 			icon.setAttribute('class', 'smush-front-icons smush-front-icon-arrows-in');
@@ -83,13 +89,44 @@
 
 			const tagSuccess = document.createElement('span');
 			tagSuccess.setAttribute('class', 'smush-tag smush-tag-success');
-			tagSuccess.innerText = props.real_width + ' × ' + props.real_height + ' px';
+			tagSuccess.innerText = props.real_width + ' × ' + props.real_height + 'px';
 
+			item.appendChild(count);
 			item.appendChild(tag);
 			item.appendChild(icon);
 			item.appendChild(tagSuccess);
 
 			return item;
+		},
+
+		/**
+		 * Decide where to place the image.
+		 *
+		 * @param {object} props
+		 */
+		getContentDiv: function(props) {
+			if ( props.bigger_width || props.bigger_height ) {
+				this.larger++;
+				this.contentDiv = document.getElementById('smush-image-block-items-bigger');
+			} else if ( props.smaller_width || props.smaller_height ) {
+				this.smaller++;
+				this.contentDiv = document.getElementById('smush-image-block-items-smaller');
+			}
+		},
+
+		/**
+		 * Remove sections that don't have images.
+		 */
+		removeEmptyDivs: function() {
+			if ( 0 === this.larger ) {
+				const div = document.getElementById('smush-image-block-items-bigger');
+				div.hidden = true;
+			}
+
+			if ( 0 === this.smaller ) {
+				const div = document.getElementById('smush-image-block-items-smaller');
+				div.hidden = true;
+			}
 		},
 
 		/**
@@ -125,8 +162,12 @@
 
 				image.classList.add('smush-detected-img');
 
+				this.getContentDiv(props);
+
 				this.contentDiv.appendChild( this.createItemDiv(props) );
 			}
+
+			this.removeEmptyDivs();
 
 		} // End detectImages()
 
@@ -135,6 +176,6 @@
 	/**
 	 * After page load, initialize toggle event.
 	 */
-	$( window ).load( () => WP_Smush_IRS.init() );
+	window.onload = WP_Smush_IRS.init();
 
-}( jQuery ));
+}());

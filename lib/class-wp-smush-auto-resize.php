@@ -518,10 +518,16 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 			}
 			?>
 			<div id="smush-image-block">
+				<h3><?php esc_html_e( 'Image Issues', 'wp-smushit' ); ?></h3>
 				<p>
 					<?php esc_html_e( 'The images listed below are being resized to fit a container. To avoid serving oversized or blurry image, try to match the images to their container sizes.', 'wp-smushit' ); ?>
 				</p>
-				<div id="smush-image-block-items"></div>
+				<div id="smush-image-block-items-bigger">
+					<strong><?php esc_html_e( 'Oversized', 'wp-smushit' ); ?></strong>
+				</div>
+				<div id="smush-image-block-items-smaller">
+					<strong><?php esc_html_e( 'Under', 'wp-smushit' ); ?></strong>
+				</div>
 				<p>
 					<?php esc_html_e( 'Note: It’s not always easy to make this happen, fix up what you can.', 'wp-smushit' ); ?>
 				</p>
