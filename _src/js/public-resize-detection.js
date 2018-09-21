@@ -107,10 +107,10 @@
 		getContentDiv: function(props) {
 			if ( props.bigger_width || props.bigger_height ) {
 				this.larger++;
-				this.contentDiv = document.getElementById('smush-image-block-items-bigger');
+				this.contentDiv = document.getElementById('smush-image-bar-items-bigger');
 			} else if ( props.smaller_width || props.smaller_height ) {
 				this.smaller++;
-				this.contentDiv = document.getElementById('smush-image-block-items-smaller');
+				this.contentDiv = document.getElementById('smush-image-bar-items-smaller');
 			}
 		},
 
@@ -119,12 +119,12 @@
 		 */
 		removeEmptyDivs: function() {
 			if ( 0 === this.larger ) {
-				const div = document.getElementById('smush-image-block-items-bigger');
+				const div = document.getElementById('smush-image-bar-items-bigger');
 				div.hidden = true;
 			}
 
 			if ( 0 === this.smaller ) {
-				const div = document.getElementById('smush-image-block-items-smaller');
+				const div = document.getElementById('smush-image-bar-items-smaller');
 				div.hidden = true;
 			}
 		},

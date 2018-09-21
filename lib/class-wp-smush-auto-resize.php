@@ -517,15 +517,18 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 				return;
 			}
 			?>
-			<div id="smush-image-block">
+			<div id="smush-image-bar" class="closed">
+				<div id="smush-image-bar-toggle" onclick="document.getElementById('smush-image-bar').classList.toggle('closed');">
+					<i class="sui-icon-info" aria-hidden="true"></i>
+				</div>
 				<h3><?php esc_html_e( 'Image Issues', 'wp-smushit' ); ?></h3>
 				<p>
 					<?php esc_html_e( 'The images listed below are being resized to fit a container. To avoid serving oversized or blurry image, try to match the images to their container sizes.', 'wp-smushit' ); ?>
 				</p>
-				<div id="smush-image-block-items-bigger">
+				<div id="smush-image-bar-items-bigger">
 					<strong><?php esc_html_e( 'Oversized', 'wp-smushit' ); ?></strong>
 				</div>
-				<div id="smush-image-block-items-smaller">
+				<div id="smush-image-bar-items-smaller">
 					<strong><?php esc_html_e( 'Under', 'wp-smushit' ); ?></strong>
 				</div>
 				<p>
