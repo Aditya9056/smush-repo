@@ -396,6 +396,18 @@ class Smush {
 				}
 			}
 		}
+
+		// Update remaining count.
+		// Update sidebar count.
+		const sidenavCountDiv = jQuery( '.smush-sidenav .wp-smush-remaining-count' );
+		if ( sidenavCountDiv.length && 'undefined' !== typeof wp_smushit_data.resmush ) {
+			if ( wp_smushit_data.resmush.length > 0 ) {
+				sidenavCountDiv.html( wp_smushit_data.resmush.length );
+			} else {
+				jQuery( '.sui-summary-smush .smush-stats-icon' ).addClass( 'sui-hidden' );
+				sidenavCountDiv.removeClass( 'sui-tag sui-tag-warning' ).html( '' );
+			}
+		}
 	}
 
 	/**
