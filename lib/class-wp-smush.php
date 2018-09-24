@@ -1464,10 +1464,8 @@ class WP_Smush {
 						'reason' => 'size_limit',
 					);
 				}
-			}
-
 			// In other case, if full size is skipped.
-			if ( ! isset( $skipped['full'] ) ) {
+			} elseif ( ! isset( $skipped['full'] ) ) {
 				// Paid version, Check if we have large size
 				$skipped[] = array(
 					'size'   => 'full',
