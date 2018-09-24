@@ -94,27 +94,7 @@
 		}
 
 		.smush-resize-box {
-			display: flex;
-			align-items: center;
-			align-content: center;
-			justify-content: space-between;
-			padding: 17px 20px;
-			border-bottom: 1px solid #E6E6E6;
-			cursor: pointer;
-
-			&:hover {
-				background-color: rgba(51,51,51,0.04);
-				span:first-of-type {
-					background-color: #E6E6E6;
-					color: transparent;
-					&:before {
-						font-family: 'wpmudev-plugin-icons', sans-serif !important;
-						content: "";
-						color: #666;
-						margin-right: -7px;
-					}
-				}
-			}
+			background-color: #F8F8F8;
 
 			&:first-of-type {
 				border-top: 1px solid #E6E6E6;
@@ -136,6 +116,17 @@
 				border: 1px solid #DDDDDD;
 				border-radius: 50%;
 				margin-right: 10px;
+			}
+
+			.smush-image-info {
+				background-color: #FFF;
+				display: flex;
+				align-items: center;
+				align-content: center;
+				justify-content: space-between;
+				padding: 17px 20px;
+				border-bottom: 1px solid #E6E6E6;
+				cursor: pointer;
 			}
 
 			.smush-front-icons {
@@ -222,18 +213,63 @@
 					transform: translateX(-50%);
 				}
 
-				&:hover {
-					&:before,
-					&:after {
-						opacity: 1;
-					}
-				}
-
 				&.smush-tooltip-constrained {
 					&:after {
 						min-width: 240px;
 						white-space: normal;
 					}
+				}
+
+				&:not(.show-description):hover {
+					&:before,
+					&:after {
+						opacity: 1;
+					}
+				}
+			}
+
+			&:not(.show-description):hover,
+			&.show-description {
+				.smush-image-info { background-color: #F8F8F8; }
+
+				span:first-of-type {
+					background-color: #E6E6E6;
+					color: transparent;
+					&:before {
+						font-family: 'wpmudev-plugin-icons', sans-serif !important;
+						font-weight: 400;
+						content: "";
+						color: #666;
+						margin-right: -7px;
+					}
+				}
+			}
+
+			.smush-image-description {
+				display: none;
+				border-radius: 4px;
+				background-color: #FFFFFF;
+				box-shadow: 0 2px 0 0 #DDDDDD;
+				margin: 0 20px 20px;
+				padding: 20px;
+				color: #888888;
+				font-family: 'Roboto', sans-serif;
+				font-size: 13px;
+				letter-spacing: -0.25px;
+				line-height: 22px;
+			}
+
+			&.show-description {
+				padding-bottom: 1px;
+				border-bottom: 1px solid #E6E6E6;
+
+				.smush-image-info { border-bottom: 0; }
+				.smush-image-description { display: block; }
+
+				span:first-of-type {
+					background-color: #FECF2F;
+					border-color: #FECF2F;
+					&:before { color: #333; }
 				}
 			}
 		}

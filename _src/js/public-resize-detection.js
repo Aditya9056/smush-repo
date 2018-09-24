@@ -12,11 +12,10 @@
 	'use strict';
 
 	const WP_Smush_IRS = {
-		contentDiv: '',
-		counter: 0,
-		larger: 0,
-		smaller: 0,
-		images: [],
+		images: {
+			bigger: [],
+			smaller: []
+		},
 
 		/**
 		 * Init scripts.
@@ -28,6 +27,9 @@
 			}
 
 			this.detectImages();
+			this.generateMarkup('bigger');
+			this.generateMarkup('smaller');
+			this.removeEmptyDivs();
 		},
 
 		/**
@@ -68,77 +70,46 @@
 		},
 
 		/**
-		 * Create HTML content to append.
+		 * Generate markup.
 		 *
-		 * @param {object} props
-		 * @param {string} imageClass
-		 * @returns {HTMLElement}
+		 * @param {string} type  Accepts: 'bigger' or 'smaller'.
 		 */
-		createItemDiv: function(props, imageClass) {
-			const tooltipText = this.getTooltipText(props);
+		generateMarkup: function(type) {
+			this.images[type].forEach((image, index) => {
+				const item = document.createElement('div'),
+					tooltip = this.getTooltipText(image.props);
 
-			const item = document.createElement('div');
-			item.setAttribute('class', 'smush-resize-box smush-tooltip smush-tooltip-constrained');
-			item.setAttribute('data-tooltip', tooltipText);
-			item.setAttribute('data-image', imageClass);
-			item.addEventListener('click', this.highlightImage);
+				item.setAttribute('class', 'smush-resize-box smush-tooltip smush-tooltip-constrained');
+				item.setAttribute('data-tooltip', tooltip);
+				item.setAttribute('data-image', image.class);
+				item.addEventListener('click', this.highlightImage);
 
-			const count = document.createElement('span');
-			count.innerText = props.bigger_width || props.bigger_height ? this.larger : this.smaller;
+				item.innerHTML = `
+					<div class="smush-image-info">
+						<span>${index + 1}</span>
+						<span class="smush-tag">${image.props.computed_width} x ${image.props.computed_height}px</span>
+						<i class="smush-front-icons smush-front-icon-arrows-in" aria-hidden="true">&nbsp;</i>
+						<span class="smush-tag smush-tag-success">${image.props.real_width} × ${image.props.real_height}px</span>					
+					</div>
+					<div class="smush-image-description">${tooltip}</div>
+				`;
 
-			const tag = document.createElement('span');
-			tag.setAttribute('class', 'smush-tag');
-			tag.innerText = props.computed_width + ' × ' + props.computed_height + 'px';
-
-			const icon = document.createElement('i');
-			icon.setAttribute('class', 'smush-front-icons smush-front-icon-arrows-in');
-			icon.setAttribute('aria-hidden', 'true');
-
-			const tagSuccess = document.createElement('span');
-			tagSuccess.setAttribute('class', 'smush-tag smush-tag-success');
-			tagSuccess.innerText = props.real_width + ' × ' + props.real_height + 'px';
-
-			//const descDiv = document.createElement('div');
-			//descDiv.setAttribute('class', 'smush-image-description');
-			//descDiv.innerText = tooltipText;
-
-			item.appendChild(count);
-			item.appendChild(tag);
-			item.appendChild(icon);
-			item.appendChild(tagSuccess);
-			//item.appendChild(descDiv);
-
-			return item;
-		},
-
-		/**
-		 * Decide where to place the image.
-		 *
-		 * @param {object} props
-		 */
-		getContentDiv: function(props) {
-			if ( props.bigger_width || props.bigger_height ) {
-				this.larger++;
-				this.contentDiv = document.getElementById('smush-image-bar-items-bigger');
-			} else if ( props.smaller_width || props.smaller_height ) {
-				this.smaller++;
-				this.contentDiv = document.getElementById('smush-image-bar-items-smaller');
-			}
+				document.getElementById('smush-image-bar-items-'+type).appendChild(item);
+			});
 		},
 
 		/**
 		 * Remove sections that don't have images.
 		 */
 		removeEmptyDivs: function() {
-			if ( 0 === this.larger ) {
-				const div = document.getElementById('smush-image-bar-items-bigger');
-				div.hidden = true;
-			}
+			const types = ['bigger', 'smaller'];
+			types.forEach(type => {
+				if ( 0 === this.images[type].length ) {
+					const div = document.getElementById('smush-image-bar-items-'+type);
+					div.hidden = true;
+				}
 
-			if ( 0 === this.smaller ) {
-				const div = document.getElementById('smush-image-bar-items-smaller');
-				div.hidden = true;
-			}
+			});
 		},
 
 		/**
@@ -146,8 +117,11 @@
 		 */
 		highlightImage: function() {
 			const el = document.getElementsByClassName(this.dataset.image);
-			console.log(el);
 			if ('undefined' !== typeof el[0]) {
+				// Display description box.
+				this.classList.toggle('show-description');
+
+				// Scroll and flash image.
 				el[0].scrollIntoView({behavior: 'smooth', block: 'center', inline: 'nearest'});
 				el[0].style = 'filter: opacity(50%);transition: all 0.5s ease;';
 				setTimeout(() => {
@@ -187,24 +161,19 @@
 					continue;
 				}
 
-				this.counter++;
-				const imageClass =  'smush-image-'+this.counter;
-				image.classList.add('smush-detected-img', imageClass);
+				const imgType = props.bigger_width || props.bigger_height ? 'bigger' : 'smaller',
+					imageClass =  'smush-image-'+(this.images[imgType].length + 1);
 
-				this.getContentDiv(props);
-
-				this.contentDiv.appendChild( this.createItemDiv(props, imageClass) );
-
-				this.images.push({
-					image: image,
+				// Fill the images arrays.
+				this.images[imgType].push({
+					src: image,
 					props: props,
 					class: imageClass
 				});
 
+				// Add class to original image.
+				image.classList.add('smush-detected-img', imageClass);
 			}
-
-			this.removeEmptyDivs();
-
 		} // End detectImages()
 
 	}; // End WP_Smush_IRS
