@@ -525,6 +525,14 @@ if ( ! class_exists( 'WpSmushAutoResize' ) ) {
 				<p>
 					<?php esc_html_e( 'The images listed below are being resized to fit a container. To avoid serving oversized or blurry image, try to match the images to their container sizes.', 'wp-smushit' ); ?>
 				</p>
+
+			<script type="text/template" id="smush-item-row">
+				<# for( var i = 0, len = images.length; i < len; i++ ) { #>
+					{{{ images[i].image }}}
+				<# } #>
+			</script>
+
+
 				<div id="smush-image-bar-items-bigger">
 					<strong><?php esc_html_e( 'Oversized', 'wp-smushit' ); ?></strong>
 				</div>

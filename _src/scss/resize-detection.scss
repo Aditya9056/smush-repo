@@ -1,244 +1,241 @@
-@import "modules/variables";
-@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
+@media screen and ( min-width: 800px ) {
+	@import "modules/variables";
+	@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
 
-@font-face {
-	font-family: 'wpmudev-plugin-icons';
-	src: url('#{$font--path}/wpmudev-plugin-icons.eot');
-	src: url('#{$font--path}/wpmudev-plugin-icons.eot') format('embedded-opentype'),
-	url('#{$font--path}/wpmudev-plugin-icons.ttf') format('truetype'),
-	url('#{$font--path}/wpmudev-plugin-icons.woff') format('woff'),
-	url('#{$font--path}/wpmudev-plugin-icons.woff2') format('woff2'),
-	url('#{$font--path}/wpmudev-plugin-icons.svg') format('svg');
-	font-weight: 400;
-	font-style: normal
-}
-
-.smush-detected-img {
-	border: 5px solid #FECF2F;
-	border-radius: 5px;
-}
-
-#smush-image-bar {
-	position: fixed;
-	top: 0;
-	right: 0;
-	width: 330px;
-	height: 100%;
-	background-color: #FFF;
-	box-shadow: 0 0 40px 0 rgba(0,0,0,0.1);
-	z-index: 10;
-	padding: 32px 0 20px;
-
-	max-width: 330px;
-	transition-property: all;
-	transition-duration: .5s;
-	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-
-	&.closed {
-		max-width: 0;
+	@font-face {
+		font-family: 'wpmudev-plugin-icons';
+		src: url('#{$font--path}/wpmudev-plugin-icons.eot');
+		src: url('#{$font--path}/wpmudev-plugin-icons.eot') format('embedded-opentype'),
+		url('#{$font--path}/wpmudev-plugin-icons.ttf') format('truetype'),
+		url('#{$font--path}/wpmudev-plugin-icons.woff') format('woff'),
+		url('#{$font--path}/wpmudev-plugin-icons.woff2') format('woff2'),
+		url('#{$font--path}/wpmudev-plugin-icons.svg') format('svg');
+		font-weight: 400;
+		font-style: normal
 	}
 
-	h3, p, strong, span {
-		font-family: 'Roboto', sans-serif;
-		letter-spacing: -0.25px;
+	.smush-detected-img {
+		border: 5px solid #FECF2F;
+		border-radius: 5px;
 	}
 
-	h3 {
-		color: #333333;
-		font-size: 15px;
-		font-weight: bold;
-		line-height: 30px;
-		background-color: #FAFAFA;
-		padding: 15px 20px;
-	}
-
-	p {
-		color: #888888;
-		font-size: 13px;
-		line-height: 22px;
-		padding: 0 20px;
-	}
-
-	strong {
-		color: #AAAAAA;
-		font-size: 12px;
-		font-weight: bold;
-		line-height: 22px;
-		padding: 0 20px;
-	}
-
-	#smush-image-bar-toggle {
-		position: absolute;
-		top: 82px;
-		left: -60px;
-		height: 50px;
-		width: 60px;
-		border-radius: 4px 0 0 4px;
+	#smush-image-bar {
+		position: fixed;
+		top: 0;
+		right: 0;
+		width: 330px;
+		height: 100%;
 		background-color: #FFF;
-		box-shadow: inset 2px 0 0 0 #FECF2F, -13px 5px 20px 0 rgba(0,0,0,0.1);
-		text-align: center;
-		cursor: pointer;
+		box-shadow: 0 0 40px 0 rgba(0,0,0,0.1);
+		z-index: 10;
+		padding: 32px 0 20px;
 
-		i.sui-icon-info {
-			font-family: 'wpmudev-plugin-icons', sans-serif !important;
-			font-style: normal;
-			font-size: 16px;
-			line-height: 50px;
-			color: #FECF2F;
+		max-width: 330px;
+		transition-property: all;
+		transition-duration: .5s;
+		transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
 
-			&:before {
-				content: "I";
-			}
-		}
-	}
-
-	.smush-resize-box {
-		display: flex;
-		align-items: center;
-		align-content: center;
-		justify-content: space-between;
-		padding: 17px 20px;
-		border-bottom: 1px solid #E6E6E6;
-		cursor: pointer;
-
-		&:hover {
-			background-color: rgba(51,51,51,0.04);
-			span:first-of-type {
-				background-color: #E6E6E6;
-				color: transparent;
-				&:before {
-					font-family: 'wpmudev-plugin-icons', sans-serif !important;
-					content: "";
-					color: #666;
-					margin-right: -7px;
-				}
-			}
+		&.closed {
+			max-width: 0;
 		}
 
-		&:first-of-type {
-			border-top: 1px solid #E6E6E6;
-			margin-top: 5px;
-		}
-
-		&:last-of-type {
-			margin-bottom: 20px;
-		}
-
-		span:first-of-type {
-			color: #888;
-			height: 34px;
-			width: 40px;
-			font-size: 13px;
-			font-weight: bold;
-			line-height: 32px;
-			text-align: center;
-			border: 1px solid #DDDDDD;
-			border-radius: 50%;
-			margin-right: 10px;
-		}
-
-		.smush-front-icons {
-			margin: 0 10px;
-			line-height: 12px;
-
-			&:before {
-				font-family: 'wpmudev-plugin-icons', sans-serif !important;
-				speak: none;
-				font-size: 12px;
-				font-style: normal;
-				font-weight: 400;
-				font-variant: normal;
-				text-transform: none;
-				text-rendering: auto;
-				color: #AAA;
-				-webkit-font-smoothing: antialiased;
-				-moz-osx-font-smoothing: grayscale;
-			}
-
-			&.smush-front-icon-arrows-in {
-				&:before {
-					content: '\2264';
-				}
-			}
-		}
-
-		.smush-tag {
-			background-color: #fecf2f;
-			color: #333;
-			border-radius: 13px;
-			height: 26px;
-			width: 116px;
-			font-size: 12px;
+		h3, p, strong, span {
+			font-family: 'Roboto', sans-serif;
 			letter-spacing: -0.25px;
-			line-height: 16px;
-			text-align: center;
-			font-weight: 500;
-			padding: 5px 10px;
+		}
 
-			&.smush-tag-success {
-				background-color: #1abc9c;
-				color: #fff;
+		h3 {
+			color: #333333;
+			font-size: 15px;
+			font-weight: bold;
+			line-height: 30px;
+			background-color: #FAFAFA;
+			padding: 15px 20px;
+		}
+
+		p {
+			color: #888888;
+			font-size: 13px;
+			line-height: 22px;
+			padding: 0 20px;
+		}
+
+		strong {
+			color: #AAAAAA;
+			font-size: 12px;
+			font-weight: bold;
+			line-height: 22px;
+			padding: 0 20px;
+		}
+
+		#smush-image-bar-toggle {
+			position: absolute;
+			top: 82px;
+			left: -60px;
+			height: 50px;
+			width: 60px;
+			border-radius: 4px 0 0 4px;
+			background-color: #FFF;
+			box-shadow: inset 2px 0 0 0 #FECF2F, -13px 5px 20px 0 rgba(0,0,0,0.1);
+			text-align: center;
+			cursor: pointer;
+
+			i.sui-icon-info {
+				font-family: 'wpmudev-plugin-icons', sans-serif !important;
+				font-style: normal;
+				font-size: 16px;
+				line-height: 50px;
+				color: #FECF2F;
+
+				&:before {
+					content: "I";
+				}
 			}
 		}
 
-		&.smush-tooltip {
-			position: relative;
-
-			&:before,
-			&:after {
-				content: "";
-				opacity: 0;
-				backface-visibility: hidden;
-				pointer-events: none;
-				position: absolute;
-				z-index: 1;
-				transition: margin .2s, opacity .2s;
-			}
-
-			&:before {
-				border: 5px solid transparent;
-				bottom: 100%;
-				left: 50%;
-				border-top-color: #000000;
-				transform: translateX(-50%);
-			}
-
-			&:after {
-				content: attr(data-tooltip);
-				min-width: 40px;
-				padding: 8px 12px;
-				border-radius: 4px;
-				background: #000000;
-				box-sizing: border-box;
-				color: #FFFFFF;
-				font: 400 12px/18px "Roboto", Arial, sans-serif;
-				text-transform: none;
-				text-align: center;
-				white-space: nowrap;
-				bottom: 100%;
-				left: 50%;
-				margin: 0 0 10px;
-				transform: translateX(-50%);
-			}
+		.smush-resize-box {
+			display: flex;
+			align-items: center;
+			align-content: center;
+			justify-content: space-between;
+			padding: 17px 20px;
+			border-bottom: 1px solid #E6E6E6;
+			cursor: pointer;
 
 			&:hover {
-				&:before,
-				&:after {
-					opacity: 1;
+				background-color: rgba(51,51,51,0.04);
+				span:first-of-type {
+					background-color: #E6E6E6;
+					color: transparent;
+					&:before {
+						font-family: 'wpmudev-plugin-icons', sans-serif !important;
+						content: "";
+						color: #666;
+						margin-right: -7px;
+					}
 				}
 			}
 
-			&.smush-tooltip-constrained {
+			&:first-of-type {
+				border-top: 1px solid #E6E6E6;
+				margin-top: 5px;
+			}
+
+			&:last-of-type {
+				margin-bottom: 20px;
+			}
+
+			span:first-of-type {
+				color: #888;
+				height: 34px;
+				width: 40px;
+				font-size: 13px;
+				font-weight: bold;
+				line-height: 32px;
+				text-align: center;
+				border: 1px solid #DDDDDD;
+				border-radius: 50%;
+				margin-right: 10px;
+			}
+
+			.smush-front-icons {
+				margin: 0 10px;
+				line-height: 12px;
+
+				&:before {
+					font-family: 'wpmudev-plugin-icons', sans-serif !important;
+					speak: none;
+					font-size: 12px;
+					font-style: normal;
+					font-weight: 400;
+					font-variant: normal;
+					text-transform: none;
+					text-rendering: auto;
+					color: #AAA;
+					-webkit-font-smoothing: antialiased;
+					-moz-osx-font-smoothing: grayscale;
+				}
+
+				&.smush-front-icon-arrows-in {
+					&:before {
+						content: '\2264';
+					}
+				}
+			}
+
+			.smush-tag {
+				background-color: #fecf2f;
+				color: #333;
+				border-radius: 13px;
+				height: 26px;
+				width: 116px;
+				font-size: 12px;
+				letter-spacing: -0.25px;
+				line-height: 16px;
+				text-align: center;
+				font-weight: 500;
+				padding: 5px 10px;
+
+				&.smush-tag-success {
+					background-color: #1abc9c;
+					color: #fff;
+				}
+			}
+
+			&.smush-tooltip {
+				position: relative;
+
+				&:before,
 				&:after {
-					min-width: 240px;
-					white-space: normal;
+					content: "";
+					opacity: 0;
+					backface-visibility: hidden;
+					pointer-events: none;
+					position: absolute;
+					z-index: 1;
+					transition: margin .2s, opacity .2s;
+				}
+
+				&:before {
+					border: 5px solid transparent;
+					bottom: 100%;
+					left: 50%;
+					border-top-color: #000000;
+					transform: translateX(-50%);
+				}
+
+				&:after {
+					content: attr(data-tooltip);
+					min-width: 40px;
+					padding: 8px 12px;
+					border-radius: 4px;
+					background: #000000;
+					box-sizing: border-box;
+					color: #FFFFFF;
+					font: 400 12px/18px "Roboto", Arial, sans-serif;
+					text-transform: none;
+					text-align: center;
+					white-space: nowrap;
+					bottom: 100%;
+					left: 50%;
+					margin: 0 0 10px;
+					transform: translateX(-50%);
+				}
+
+				&:hover {
+					&:before,
+					&:after {
+						opacity: 1;
+					}
+				}
+
+				&.smush-tooltip-constrained {
+					&:after {
+						min-width: 240px;
+						white-space: normal;
+					}
 				}
 			}
 		}
 	}
-
 }
-
-
-
-

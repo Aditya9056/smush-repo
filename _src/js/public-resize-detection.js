@@ -13,8 +13,10 @@
 
 	const WP_Smush_IRS = {
 		contentDiv: '',
+		counter: 0,
 		larger: 0,
 		smaller: 0,
+		images: [],
 
 		/**
 		 * Init scripts.
@@ -69,12 +71,17 @@
 		 * Create HTML content to append.
 		 *
 		 * @param {object} props
+		 * @param {string} imageClass
 		 * @returns {HTMLElement}
 		 */
-		createItemDiv: function(props) {
+		createItemDiv: function(props, imageClass) {
+			const tooltipText = this.getTooltipText(props);
+
 			const item = document.createElement('div');
 			item.setAttribute('class', 'smush-resize-box smush-tooltip smush-tooltip-constrained');
-			item.setAttribute('data-tooltip', this.getTooltipText(props));
+			item.setAttribute('data-tooltip', tooltipText);
+			item.setAttribute('data-image', imageClass);
+			item.addEventListener('click', this.highlightImage);
 
 			const count = document.createElement('span');
 			count.innerText = props.bigger_width || props.bigger_height ? this.larger : this.smaller;
@@ -91,10 +98,15 @@
 			tagSuccess.setAttribute('class', 'smush-tag smush-tag-success');
 			tagSuccess.innerText = props.real_width + ' × ' + props.real_height + 'px';
 
+			//const descDiv = document.createElement('div');
+			//descDiv.setAttribute('class', 'smush-image-description');
+			//descDiv.innerText = tooltipText;
+
 			item.appendChild(count);
 			item.appendChild(tag);
 			item.appendChild(icon);
 			item.appendChild(tagSuccess);
+			//item.appendChild(descDiv);
 
 			return item;
 		},
@@ -130,6 +142,21 @@
 		},
 
 		/**
+		 * Scroll the selected image into view and highlight it.
+		 */
+		highlightImage: function() {
+			const el = document.getElementsByClassName(this.dataset.image);
+			console.log(el);
+			if ('undefined' !== typeof el[0]) {
+				el[0].scrollIntoView({behavior: 'smooth', block: 'center', inline: 'nearest'});
+				el[0].style = 'filter: opacity(50%);transition: all 0.5s ease;';
+				setTimeout(() => {
+					el[0].style = 'filter: opacity(100%);transition: all 0.5s ease;';
+				}, 1000);
+			}
+		},
+
+		/**
 		 * Function to highlight all scaled images.
 		 *
 		 * Add yellow border and then show one small box to
@@ -160,11 +187,20 @@
 					continue;
 				}
 
-				image.classList.add('smush-detected-img');
+				this.counter++;
+				const imageClass =  'smush-image-'+this.counter;
+				image.classList.add('smush-detected-img', imageClass);
 
 				this.getContentDiv(props);
 
-				this.contentDiv.appendChild( this.createItemDiv(props) );
+				this.contentDiv.appendChild( this.createItemDiv(props, imageClass) );
+
+				this.images.push({
+					image: image,
+					props: props,
+					class: imageClass
+				});
+
 			}
 
 			this.removeEmptyDivs();
