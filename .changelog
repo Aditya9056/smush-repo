@@ -25,6 +25,7 @@
 * Fix: Directory Smush will not get stuck when an image encounters an error during compression
 * Fix: Support for the latest Gutenberg version
 * Fix: Allow blog admins in network installs to manage site Smush options
+* Fix: Stats not showing after Smushing in media library
 
 = 2.8.1 =
 
