@@ -23,8 +23,10 @@
 		init: function () {
 			/** @var {array} wp_smush_resize_vars */
 			if ( wp_smush_resize_vars ) {
-				self.strings = wp_smush_resize_vars;
+				this.strings = wp_smush_resize_vars;
 			}
+
+			document.getElementById('smush-image-bar-toggle').addEventListener('click', this.removeSelection);
 
 			this.detectImages();
 			this.generateMarkup('bigger');
@@ -59,10 +61,10 @@
 
 			if ( props.bigger_width || props.bigger_height ) {
 				/** @var {string} strings.large_image */
-				tooltip_text = strings.large_image;
+				tooltip_text = this.strings.large_image;
 			} else if ( props.smaller_width || props.smaller_height ) {
 				/** @var {string} strings.small_image */
-				tooltip_text = strings.small_image;
+				tooltip_text = this.strings.small_image;
 			}
 
 			return tooltip_text.replace('width', props.real_width)
@@ -82,7 +84,7 @@
 				item.setAttribute('class', 'smush-resize-box smush-tooltip smush-tooltip-constrained');
 				item.setAttribute('data-tooltip', tooltip);
 				item.setAttribute('data-image', image.class);
-				item.addEventListener('click', this.highlightImage);
+				item.addEventListener('click', (e) => this.highlightImage(e));
 
 				item.innerHTML = `
 					<div class="smush-image-info">
@@ -115,11 +117,13 @@
 		/**
 		 * Scroll the selected image into view and highlight it.
 		 */
-		highlightImage: function() {
-			const el = document.getElementsByClassName(this.dataset.image);
+		highlightImage: function(e) {
+			this.removeSelection();
+
+			const el = document.getElementsByClassName(e.currentTarget.dataset.image);
 			if ('undefined' !== typeof el[0]) {
 				// Display description box.
-				this.classList.toggle('show-description');
+				e.currentTarget.classList.toggle('show-description');
 
 				// Scroll and flash image.
 				el[0].scrollIntoView({behavior: 'smooth', block: 'center', inline: 'nearest'});
@@ -127,6 +131,16 @@
 				setTimeout(() => {
 					el[0].style = 'filter: opacity(100%);transition: all 0.5s ease;';
 				}, 1000);
+			}
+		},
+
+		/**
+		 * Remove selected items.
+		 */
+		removeSelection: function() {
+			const items = document.getElementsByClassName('show-description');
+			if ( items.length > 0 ) {
+				Array.from(items).forEach(div => div.classList.remove('show-description'));
 			}
 		},
 
