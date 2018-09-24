@@ -21,7 +21,7 @@
 
 <div class="wp-smush-scan-result">
 	<div class="content">
-		<?php if ( ! $this->is_hide_wpmudev_branding() ) : ?>
+		<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
 			<span class="wp-smush-no-image tc">
 				<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-no-media.png' ); ?>" alt="<?php esc_html_e( 'Directory Smush - Choose Folder', 'wp-smushit' ); ?>">
 			</span>

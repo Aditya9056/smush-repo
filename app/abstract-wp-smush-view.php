@@ -74,9 +74,6 @@ abstract class WP_Smush_View {
 		add_filter( 'load-' . $this->page_id, array( $this, 'on_load' ) );
 		add_action( 'load-' . $this->page_id, array( $this, 'register_meta_boxes' ) );
 		add_filter( 'load-' . $this->page_id, array( $this, 'add_action_hooks' ) );
-
-		// filter built-in wpmudev branding script
-		add_filter( 'wpmudev_whitelabel_plugin_pages', array( $this, 'builtin_wpmudev_branding' ) );
 	}
 
 	/**
@@ -91,6 +88,8 @@ abstract class WP_Smush_View {
 		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
 
 		add_filter( 'admin_body_class', array( $this, 'smush_body_classes' ) );
+		// filter built-in wpmudev branding script
+		add_filter( 'wpmudev_whitelabel_plugin_pages', array( $this, 'builtin_wpmudev_branding' ) );
 	}
 
 	/**
@@ -464,7 +463,7 @@ abstract class WP_Smush_View {
 						<?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?>
 					</button>
 				<?php endif; ?>
-				<?php if ( ! $this->is_hide_wpmudev_doc_link() ) : ?>
+				<?php if ( ! $this->hide_wpmudev_doc_link() ) : ?>
 					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank">
 						<i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?>
 					</a>
@@ -613,15 +612,15 @@ abstract class WP_Smush_View {
 	}
 
 	/**
-	 * Add more pages to builtin wpmudev branding
+	 * Add more pages to builtin wpmudev branding.
 	 *
-	 * @param $plugin_pages
+	 * @since 3.0
+	 *
+	 * @param array $plugin_pages  Nextgen pages is not introduced in built in wpmudev branding.
 	 *
 	 * @return array
 	 */
 	public function builtin_wpmudev_branding( $plugin_pages ) {
-
-		// nextgen pages is not introduced in built in wpmudev branding
 		$plugin_pages['gallery_page_wp-smush-nextgen-bulk'] = array(
 			'wpmudev_whitelabel_sui_plugins_branding',
 			'wpmudev_whitelabel_sui_plugins_footer',
@@ -632,20 +631,25 @@ abstract class WP_Smush_View {
 	}
 
 	/**
-	 * Flag to hide wpmudev branding image
+	 * Flag to hide wpmudev branding image.
+	 *
+	 * @since 3.0
 	 *
 	 * @return bool
 	 */
-	public function is_hide_wpmudev_branding() {
+	public function hide_wpmudev_branding() {
 		return apply_filters( 'wpmudev_branding_hide_branding', false );
 	}
 
 	/**
-	 * Flag to hide wpmudev doc link
+	 * Flag to hide wpmudev doc link.
+	 *
+	 * @since 3.0
 	 *
 	 * @return bool
 	 */
-	public function is_hide_wpmudev_doc_link() {
+	public function hide_wpmudev_doc_link() {
 		return apply_filters( 'wpmudev_branding_hide_doc_link', false );
 	}
+
 }
