@@ -62,17 +62,35 @@ class WP_Smush_API {
 	}
 
 	/**
-	 * Check CDN status for site.
+	 * Register site on CDN.
 	 *
 	 * @since 3.0
 	 *
 	 * @return mixed|WP_Error
 	 */
-	public function check() {
+	public function register() {
 		return $this->request->get(
 			"check/{$this->api_key}",
 			array(
-				'domain' => $this->request->get_this_site(),
+				'api_key' => $this->api_key,
+				'domain'  => $this->request->get_this_site(),
+			)
+		);
+	}
+
+	/**
+	 * Enable CDN for site.
+	 *
+	 * @since 3.0
+	 *
+	 * @return mixed|WP_Error
+	 */
+	public function enable() {
+		return $this->request->post(
+			'cdn',
+			array(
+				'api_key' => $this->api_key,
+				'domain'  => $this->request->get_this_site(),
 			)
 		);
 	}

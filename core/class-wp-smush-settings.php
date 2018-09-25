@@ -328,9 +328,13 @@ class WP_Smush_Settings {
 		}
 
 		if ( 'cdn' === $setting_form ) {
-			//$status = connect to CDN.
-			$status = 'success';
-			$this->set_setting( WP_SMUSH_PREFIX . 'cdn', $status );
+			// $status = connect to CDN.
+			$enabled = WP_Smush::get_instance()->core()->mod->cdn->get_status();
+			if ( ! $enabled ) {
+				$response = WP_Smush::get_instance()->api()->enable();
+				$response = json_decode( $response['body'] );
+				$this->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $response->data );
+			}
 		}
 
 		// Store the option in table.

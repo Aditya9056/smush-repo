@@ -29,8 +29,6 @@
 				});
 			}
 
-
-
 			/**
 			 * Handle "Cancel Activation' button click on CDN page.
 			 */
@@ -70,7 +68,7 @@
 				});
 
 			})
-			.catch(error => console.error(error));
+			.catch( error => console.error(error) );
 		},
 
 		/**

@@ -76,8 +76,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		/**
 		 * CDN
 		 */
-		// Enable CDN.
-		add_action( 'wp_ajax_smush_enable_cdn', array( $this, 'smush_enable_cdn' ) );
 		// Toggle CDN.
 		add_action( 'wp_ajax_smush_toggle_cdn', array( $this, 'toggle_cdn' ) );
 	}
@@ -895,30 +893,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 */
 
 	/**
-	 * Enable CDN.
-	 *
-	 * Handles "Get Started" button press on the disabled CDN meta box.
-	 * Redirects to main CDN meta box on success.
-	 *
-	 * @since 3.0
-	 */
-	public function smush_enable_cdn() {
-		check_ajax_referer( 'save_wp_smush_options' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error(
-				array(
-					'msg' => __( 'User can not modify options', 'wp-smushit' ),
-				),
-				403
-			);
-		}
-
-		$this->settings->set( 'cdn', true );
-		wp_send_json_success();
-	}
-
-	/**
 	 * Toggle CDN.
 	 *
 	 * Handles "Get Started" button press on the disabled CDN meta box.
@@ -942,7 +916,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$param = sanitize_text_field( wp_unslash( $_POST['param'] ) );
 
 		if ( 'true' === $param ) {
-			$status = WP_Smush::get_instance()->api()->check();
+			$status = WP_Smush::get_instance()->api()->register();
 			$status = json_decode( $status['body'] );
 
 			// Error from API.
@@ -956,9 +930,10 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			}
 
 			$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $status->data );
+		} else {
+			$this->settings->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 		}
 
-		$this->settings->set( 'cdn', 'true' === $param );
 		wp_send_json_success();
 	}
 

@@ -36,6 +36,9 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * WP_Smush_CDN constructor.
 	 */
 	public function init() {
+		/**
+		 * Settings.
+		 */
 		// Filters the setting variable to add module setting title and description.
 		add_filter( 'wp_smush_settings', array( $this, 'register' ) );
 
@@ -46,21 +49,32 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		add_action( 'wp_smush_cdn_settings', array( $this, 'add_settings' ) );
 
 		// Set auto resize flag.
-		add_action( 'init', array( $this, 'init_flags' ) );
+		$this->init_flags();
 
-		// Add stats to stats box.
-		if ( $this->settings->get( 'cdn' ) ) {
+
+		/**
+		 * UI.
+		 */
+		if ( $this->status ) {
+			// Add stats to stats box.
 			add_action( 'stats_ui_after_resize_savings', array( $this, 'cdn_stats_ui' ), 20 );
-
-			// Set Smush API config.
-			add_action( 'init', array( $this, 'set_cdn_url' ) );
-
-			// Start an output buffer before any output starts.
-			add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
-
-			// Add cdn url to dns prefetch.
-			add_filter( 'wp_resource_hints', array( $this, 'dns_prefetch' ), 99, 2 );
 		}
+
+		/**
+		 * Main functionality.
+		 */
+		if ( ! $this->cdn_active ) {
+			return;
+		}
+
+		// Set Smush API config.
+		add_action( 'init', array( $this, 'set_cdn_url' ) );
+
+		// Start an output buffer before any output starts.
+		add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
+
+		// Add cdn url to dns prefetch.
+		add_filter( 'wp_resource_hints', array( $this, 'dns_prefetch' ), 99, 2 );
 	}
 
 	/**
@@ -180,15 +194,14 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			return;
 		}
 
-		$this->settings = WP_Smush_Settings::get_instance();
+		$this->status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
-		if ( ! $this->settings->get( 'cdn' ) ) {
+		// CDN is not enabled and not active.
+		if ( ! $this->status ) {
 			return;
 		}
 
-		$this->status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
-
-		$this->cdn_active = $this->status->cdn_enabled;
+		$this->cdn_active = isset( $this->status->cdn_enabled ) && $this->status->cdn_enabled;
 	}
 
 	/**

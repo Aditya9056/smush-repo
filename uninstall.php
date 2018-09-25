@@ -54,6 +54,7 @@ $smushit_keys = array(
 	'smush_global_stats',
 	'skip-smush-setup',
 	'settings',
+	'cdn_status',
 );
 
 $db_keys = array(
