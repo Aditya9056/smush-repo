@@ -6511,6 +6511,15 @@ html.sui-has-overlay {
   width: 85px;
 }
 
+.sui-2-2-10 .sui-wrap .sui-progress-close.wp-smush-cancel-bulk.sui-hidden,
+.sui-2-2-10 .sui-wrap .sui-progress-close.wp-smush-all.sui-hidden {
+  display: none !important;
+}
+
+.sui-2-2-10 .sui-wrap .sui-notice.wp-smush-all-done {
+  margin-top: 0 !important;
+}
+
 .sui-2-2-10 .sui-wrap .sui-notice.smush-notice-sm p {
   font-size: 13px;
 }
