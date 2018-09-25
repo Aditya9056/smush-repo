@@ -40,7 +40,7 @@
 			<?php if ( is_callable( $callback ) ) : ?>
 				<?php call_user_func( $callback ); ?>
 			<?php else : ?>
-				<?php $this->view( $orig_id . '/meta-box' ); ?>
+				<?php $this->view( $orig_id . '-meta-box' ); ?>
 			<?php endif; ?>
 		</div><!-- end box_content_class -->
 		<?php
@@ -48,7 +48,7 @@
 		if ( is_callable( $callback ) ) {
 			call_user_func( $callback );
 		} else {
-			$this->view( $orig_id . '/meta-box' );
+			$this->view( $orig_id . '-meta-box' );
 		}
 	endif;
 	?>
