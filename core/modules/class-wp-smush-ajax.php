@@ -78,6 +78,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		 */
 		// Toggle CDN.
 		add_action( 'wp_ajax_smush_toggle_cdn', array( $this, 'toggle_cdn' ) );
+		// Update stats box and CDN status.
+		add_action( 'wp_ajax_get_cdn_stats', array( $this, 'get_cdn_stats' ) );
 	}
 
 	/***************************************
@@ -917,24 +919,55 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		if ( 'true' === $param ) {
 			$status = WP_Smush::get_instance()->api()->register();
-			$status = json_decode( $status['body'] );
-
-			// Error from API.
-			if ( ! $status->success ) {
-				wp_send_json_error(
-					array(
-						'message' => $status->data->message,
-					),
-					$status->data->error_code
-				);
-			}
-
-			$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $status->data );
+			$this->proccess_cdn_response( $status );
 		} else {
 			$this->settings->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 		}
 
 		wp_send_json_success();
 	}
+
+	/**
+	 * Refresh the stats in CDN meta box and update CDN status on page refresh.
+	 *
+	 * @since 3.0
+	 */
+	public function get_cdn_stats() {
+		$current_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+
+		if ( isset( $current_status->cdn_enabling ) && $current_status->cdn_enabling ) {
+			$status = WP_Smush::get_instance()->api()->enable();
+		} else {
+			$status = WP_Smush::get_instance()->api()->register();
+		}
+
+		$this->proccess_cdn_response( $status );
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Process the response from API.
+	 *
+	 * @since 3.0
+	 *
+	 * @param array $status  Response array.
+	 */
+	private function proccess_cdn_response( $status ) {
+		$status = json_decode( $status['body'] );
+
+		// Error from API.
+		if ( ! $status->success ) {
+			wp_send_json_error(
+				array(
+					'message' => $status->data->message,
+				),
+				$status->data->error_code
+			);
+		}
+
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $status->data );
+	}
+
 
 }

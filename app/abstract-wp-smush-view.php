@@ -98,7 +98,7 @@ abstract class WP_Smush_View {
 		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
 
 		add_filter( 'admin_body_class', array( $this, 'smush_body_classes' ) );
-		// filter built-in wpmudev branding script
+		// Filter built-in wpmudev branding script.
 		add_filter( 'wpmudev_whitelabel_plugin_pages', array( $this, 'builtin_wpmudev_branding' ) );
 	}
 
