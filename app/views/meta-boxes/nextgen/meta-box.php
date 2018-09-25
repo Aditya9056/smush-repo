@@ -22,9 +22,11 @@ if ( $show ) {
 
 // If there are no images in Media Library.
 if ( 0 >= $total_count ) : ?>
-	<span class="wp-smush-no-image tc">
-		<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-no-media.png' ); ?>" alt="<?php esc_attr_e( 'No attachments found - Upload some images', 'wp-smushit' ); ?>">
-	</span>
+	<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
+		<span class="wp-smush-no-image tc">
+			<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-no-media.png' ); ?>" alt="<?php esc_attr_e( 'No attachments found - Upload some images', 'wp-smushit' ); ?>">
+		</span>
+	<?php endif; ?>
 	<p class="wp-smush-no-images-content tc">
 		<?php
 		printf(
