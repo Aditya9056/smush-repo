@@ -1,3 +1,11 @@
+/**
+ * Common styles that are used on all the WP pages in the backend
+ */
+
+/* ****************************************************************************
+ * MEDIA AREA SCSS FILE
+ */
+
 .sui-smush-media .sui-tooltip {
   position: relative;
 }
@@ -23,10 +31,10 @@
   min-width: 40px;
   padding: 8px 12px;
   border-radius: 4px;
-  background: #333;
+  background: #333333;
   box-sizing: border-box;
-  color: #fff;
-  font: 500 12px/18px "Roboto",Arial,sans-serif;
+  color: #FFFFFF;
+  font: 500 12px/18px "Roboto", Arial, sans-serif;
   text-transform: none;
   text-align: center;
   white-space: nowrap;
@@ -46,7 +54,7 @@
 .sui-smush-media .sui-tooltip:before {
   bottom: 100%;
   left: 50%;
-  border-top-color: #333;
+  border-top-color: #333333;
   transform: translateX(-50%);
 }
 
@@ -75,7 +83,7 @@
   top: 100%;
   bottom: inherit;
   border-top-color: transparent;
-  border-bottom-color: #333;
+  border-bottom-color: #333333;
 }
 
 .sui-smush-media .sui-tooltip.sui-tooltip-bottom-left:after,
@@ -106,7 +114,7 @@
   bottom: inherit;
   left: inherit;
   border-top-color: transparent;
-  border-left-color: #333;
+  border-left-color: #333333;
   transform: translateY(-50%);
 }
 
@@ -124,7 +132,7 @@
   bottom: inherit;
   left: 100%;
   border-top-color: transparent;
-  border-right-color: #333;
+  border-right-color: #333333;
   transform: translateY(-50%);
 }
 
@@ -135,6 +143,10 @@
   margin: 0 0 0 10px;
   transform: translateY(-50%);
 }
+
+/* ****************************************************************************
+ * MEDIA AREA STYLES
+ */
 
 .manage-column.column-smushit {
   width: 260px;
@@ -224,6 +236,8 @@
   font-size: 11px;
 }
 
+/*NextGen Gallery stats*/
+
 #ngg-listimages table.wp-smush-stats-holder {
   table-layout: fixed;
   border: 1px solid lightgray;
@@ -245,14 +259,24 @@
   padding-left: 30px;
 }
 
+/** NextGen Gallery tr height, to show the progress bar properly for alternate rows **/
+
 .alternate.iedit {
   height: 120px;
 }
+
+/** Allows to click on button, otherwise row-actions from NextGen interferes **/
 
 .wp-smush-nextgen-send {
   position: relative;
   z-index: 2;
 }
+
+/**
+ * Smush buttons & stats in the media library, media upload and featured image modals.
+ *
+ * @since 2.8.0
+ */
 
 .attachment-details .smush-wrap .smush-status {
   margin: 0 0 1em;
@@ -282,14 +306,20 @@
   margin: 10px 0 0;
 }
 
+/*
+ * Smush button transformation
+ */
+
 .button.wp-smush-finished.disabled,
 .button.wp-smush-finished:disabled,
 .button.wp-smush-finished[disabled] {
   color: #fff !important;
   background: #00cf21 !important;
   border-color: #619f6b !important;
-  box-shadow: inset 0 1px 0 rgba(0,207,33,0.5),0 1px 0 rgba(0,0,0,0.15) !important;
+  box-shadow: inset 0 1px 0 rgba(0, 207, 33, 0.5), 0 1px 0 rgba(0, 0, 0, 0.15) !important;
 }
+
+/** Settings Page **/
 
 .wp-smush-submit-wrap {
   padding: 4px;
@@ -333,6 +363,10 @@ input#wp-smush-save-settings {
   margin-top: 10px;
 }
 
+.compat-field-wp_smush button {
+  /** If we have button-primary class, this style will be loaded already **/
+}
+
 .compat-field-wp_smush button.wp-smush-send {
   float: left;
   margin-bottom: 5px;
@@ -359,7 +393,7 @@ input#wp-smush-save-settings {
   background: #008ec2 !important;
   border-color: #007cb2 !important;
   box-shadow: none !important;
-  text-shadow: 0 -1px 0 rgba(0,0,0,0.1) !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
   cursor: default;
 }
 
@@ -408,9 +442,13 @@ label.setting.smush-stats .smush-wrap,
   margin-top: -3px;
 }
 
+/** Help Tip **/
+
 .ui-tooltip-content {
   font-size: 12px;
 }
+
+/** Disabled Hyperlinks **/
 
 .smush-stats a[disabled] {
   cursor: default;
@@ -426,9 +464,15 @@ label.setting.smush-stats .smush-wrap,
   line-height: 28px;
 }
 
+/** Resmush Button **/
+
 #wp-smush-resmush {
   margin: 20px 0;
 }
+
+/** Bulk Smush Page UI - New UI Changes **/
+
+/** Font-Families **/
 
 .wp-smush-page-header {
   overflow: hidden;
@@ -443,7 +487,7 @@ label.setting.smush-stats .smush-wrap,
   right: 0;
   top: 0;
   bottom: 0;
-  background-color: rgba(255,255,255,0.7);
+  background-color: rgba(255, 255, 255, 0.7);
   z-index: 5;
   text-align: center;
   line-height: 40px;
@@ -457,7 +501,7 @@ label.setting.smush-stats .smush-wrap,
   right: 0;
   top: 0;
   bottom: 0;
-  background-color: rgba(255,255,255,0.7);
+  background-color: rgba(255, 255, 255, 0.7);
   z-index: 5;
   text-align: center;
   line-height: 40px;
@@ -469,8 +513,8 @@ label.setting.smush-stats .smush-wrap,
   text-decoration: underline;
 }
 
-#wp-smush-invalid-member.loading-notice>div,
-#wp-smush-invalid-member.loaded-notice>div {
+#wp-smush-invalid-member.loading-notice > div,
+#wp-smush-invalid-member.loaded-notice > div {
   -moz-filter: blur(2px);
   -o-filter: blur(2px);
   -ms-filter: blur(2px);
@@ -492,6 +536,10 @@ div.attachment-details .setting div.smush-status-links.smush-status-links div.sm
   margin-top: 15px;
 }
 
+/** Bulk Smush **/
+
+/** No Images **/
+
 .wp-smush-no-image {
   display: block;
   overflow: hidden;
@@ -502,6 +550,8 @@ div.attachment-details .setting div.smush-status-links.smush-status-links div.sm
   overflow: hidden;
   padding: 10px 0 40px;
 }
+
+/** All Smushed **/
 
 .wp-smush-notice {
   background-color: #D1F1EA;
@@ -562,6 +612,8 @@ ol.smush-recommendation-list li {
   overflow: hidden;
 }
 
+/** Image Remaining **/
+
 div.wp-smush-remaining,
 div.wp-smush-dir-limit,
 div.smush-s3-setup-message,
@@ -616,6 +668,8 @@ div.wp-smush-dir-limit {
   margin-bottom: 20px;
 }
 
+/** Stats Container **/
+
 a.wp-smush-lossy-enable {
   cursor: pointer;
 }
@@ -649,6 +703,8 @@ div.smush-pro-feature-desc {
 div.smush-pro-link-wrap {
   text-align: center;
 }
+
+/** Re Smush **/
 
 .wp-smush-settings-changed {
   background: #dff6fa;
@@ -842,9 +898,13 @@ div.wp-smush-resize-note {
   font-weight: 400;
 }
 
+/** Override WP Footer Styling, Hide it on WPMU pages only, if we really need to **/
+
 .wp-admin #wpfooter {
   display: block;
 }
+
+/** Directory Browser **/
 
 div.wp-smush-dir-desc {
   font-size: 15px;
@@ -858,6 +918,8 @@ div.wp-smush-dir-desc {
   margin-top: 20px;
   width: 154px;
 }
+
+/** Image List **/
 
 div.wp-smush-scan-result {
   background: white;
@@ -905,21 +967,31 @@ div.wp-smush-info.notice {
   padding: 15px;
 }
 
+/* Bulk Smush button*/
+
 button.wp-smush-all {
   float: right;
 }
 
+/** Media Queries **/
+
 @media screen and (max-width: 1024px) and (min-width: 800px) {
+  /** Stats Section **/
+
   .smush-stats-wrapper h3 {
     padding: 6px 0;
   }
 }
+
+/** Media Queries for resolution below 782px **/
 
 @media only screen and (max-width: 800px) {
   .dev-box.bulk-smush-wrapper.wp-smush-container {
     padding: 20px 10px;
   }
 }
+
+/** For directory smush image listing **/
 
 @media screen and (max-width: 600px) {
   .wp-smush-resize-settings-wrap,
@@ -935,6 +1007,10 @@ button.wp-smush-all {
   }
 }
 
+/**
+ * CSS styles used Admin notice
+ */
+
 .smush-notice.notice {
   padding: 0;
   margin: 5px 0 10px;
@@ -942,11 +1018,12 @@ button.wp-smush-all {
   background: #FFF;
   overflow: hidden;
   border-radius: 6px;
-  box-shadow: 0 1px 1px 0 rgba(0,0,0,0.05);
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
   position: relative;
   z-index: 1;
   min-height: 80px;
   display: table;
+  /* The magic ingredient! */
   font: 13px "Open Sans", sans-serif;
 }
 
@@ -957,7 +1034,7 @@ button.wp-smush-all {
   right: 0;
   top: 0;
   bottom: 0;
-  background-color: rgba(255,255,255,0.7);
+  background-color: rgba(255, 255, 255, 0.7);
   z-index: 5;
   text-align: center;
   line-height: 80px;
@@ -965,14 +1042,15 @@ button.wp-smush-all {
   font-weight: bold;
 }
 
-.smush-notice>div {
+.smush-notice > div {
   display: table-cell;
+  /* The magic ingredient! */
   vertical-align: middle;
   cursor: default;
   line-height: 1.5;
 }
 
-.smush-notice.notice.loading>div {
+.smush-notice.notice.loading > div {
   -moz-filter: blur(2px);
   -o-filter: blur(2px);
   -ms-filter: blur(2px);
@@ -1050,7 +1128,7 @@ button.wp-smush-all {
     font-size: 13px;
   }
 
-  .smush-notice>.smush-notice-logo {
+  .smush-notice > .smush-notice-logo {
     float: left;
     display: inline-block;
     height: 80px;
@@ -1058,14 +1136,14 @@ button.wp-smush-all {
     border-radius: 4px;
   }
 
-  .smush-notice>.smush-notice-message {
+  .smush-notice > .smush-notice-message {
     width: auto;
     display: block;
     padding: 10px;
     min-height: 80px;
   }
 
-  .smush-notice>.smush-notice-cta {
+  .smush-notice > .smush-notice-cta {
     display: block;
     border-top: 1px solid #E5E5E5;
     border-left: 0;
@@ -1075,12 +1153,12 @@ button.wp-smush-all {
     padding: 10px 20px;
   }
 
-  .wp-core-ui .smush-notice>.smush-notice-cta>input[type="email"],
-  .smush-notice>.smush-notice-cta>button {
+  .wp-core-ui .smush-notice > .smush-notice-cta > input[type="email"],
+  .smush-notice > .smush-notice-cta > button {
     font-size: 14px;
   }
 
-  .smush-notice>.smush-notice-cta>.smush-notice-dismiss {
+  .smush-notice > .smush-notice-cta > .smush-notice-dismiss {
     display: inline-block;
     float: none;
     line-height: 26px;
@@ -1091,8 +1169,8 @@ button.wp-smush-all {
 }
 
 @media only all and (max-width: 500px) {
-  .wp-core-ui .smush-notice>.smush-notice-cta>input[type="email"],
-  .smush-notice>.smush-notice-cta>button {
+  .wp-core-ui .smush-notice > .smush-notice-cta > input[type="email"],
+  .smush-notice > .smush-notice-cta > button {
     display: block;
     width: 100% !important;
     max-width: none;
@@ -1101,7 +1179,7 @@ button.wp-smush-all {
     height: 34px;
   }
 
-  .smush-notice>.smush-notice-cta>.smush-notice-dismiss {
+  .smush-notice > .smush-notice-cta > .smush-notice-dismiss {
     margin-top: 5px;
     font-size: 14px;
     height: 23px;
