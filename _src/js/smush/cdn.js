@@ -105,7 +105,6 @@
 		 * @since 3.0
 		 */
 		updateStatsBox: function () {
-
 			if ( null === this.cdnStatsBox.length ) {
 				return;
 			}
@@ -132,6 +131,9 @@
 				const response = data.json();
 				response.then(res => {
 					if ( 'undefined' !== typeof res.success && res.success ) {
+
+						// TODO: update stats
+
 						elements.forEach(element => element.classList.toggle('sui-hidden'));
 						spinner.classList.toggle('sui-hidden');
 					} else if ( 'undefined' !== typeof res.data.message ) {
