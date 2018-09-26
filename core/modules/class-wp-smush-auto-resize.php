@@ -45,25 +45,38 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 	 * WP_Smush_Auto_Resize constructor.
 	 */
 	public function init() {
+		/**
+		 * Image resize detection.
+		 *
+		 * @since 2.9
+		 */
+
 		// Set auto resize flag.
 		add_action( 'wp', array( $this, 'init_flags' ) );
 
 		// Load js file that is required in public facing pages.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_resize_assets' ) );
 
-		add_action( 'wp_footer', array( $this, 'generate_markup' ) );
-
-		// Update responsive image srcset if required.
-		//add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
-
-		// Update responsive image sizes if required.
-		//add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 10, 5 );
-
 		// Set a flag to media library images.
 		add_action( 'smush_image_src_before_cdn', array( $this, 'set_image_flag' ), 99, 2 );
 
+		// Generate markup for the template engine.
+		add_action( 'wp_footer', array( $this, 'generate_markup' ) );
+
+		/**
+		 * CDN functionality. Should we move to CDN class? Probably.
+		 *
+		 * @since 3.0
+		 */
+
+		// Update responsive image srcset if required.
+		add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
+
+		// Update responsive image sizes if required.
+		add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 10, 5 );
+
 		// Add resizing arguments to image src.
-		//add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
+		add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
 	}
 
 	/**
@@ -333,7 +346,7 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 		// Image class.
 		$class = $image->getAttribute( 'class' );
 
-		$size = '';
+		$size = array();
 
 		// Detect WP registered image size from HTML class.
 		if ( preg_match( '#size-([^"\'\s]+)[^"\']*["|\']?#i', $class, $size ) ) {

@@ -299,7 +299,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function after_tab( $tab ) {
 		if ( 'bulk' === $tab ) {
 			$remaining = WP_Smush::get_instance()->core()->remaining_count;
-			if ( WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+			if ( $this->settings->get('cdn') && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
 				echo '<i class="sui-icon-info" aria-hidden="true"></i>';
 			} elseif ( 0 < $remaining ) {
 				echo '<span class="sui-tag sui-tag-warning wp-smush-remaining-count">' . absint( $remaining ) . '</span>';

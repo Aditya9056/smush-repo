@@ -51,7 +51,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		// Set auto resize flag.
 		$this->init_flags();
 
-
 		/**
 		 * UI.
 		 */
@@ -75,6 +74,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		// Add cdn url to dns prefetch.
 		add_filter( 'wp_resource_hints', array( $this, 'dns_prefetch' ), 99, 2 );
+
+		// wp_calculate_image_srcset & wp_calculate_image_sizes filters
 	}
 
 	/**
