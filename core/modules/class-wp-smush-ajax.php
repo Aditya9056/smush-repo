@@ -920,6 +920,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$this->settings->set( 'cdn', 'true' === $param );
 
 		if ( 'true' === $param ) {
+			// Maybe this is not the place for this here. Check CDN settings on page load.
 			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
 			if ( ! $status ) {
