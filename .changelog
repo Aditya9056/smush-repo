@@ -1,3 +1,6 @@
+= 2.8.2 =
+Fix: Compatibility issues with latest WP Offload Media (WP Offload S3) update
+
 = 2.8.1 =
 
 * New: Directory Smush UI/UX
