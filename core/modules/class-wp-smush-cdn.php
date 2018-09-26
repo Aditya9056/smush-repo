@@ -241,8 +241,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		// Arguments for CDN.
 		$pro_args = array(
-			'lossy' => WP_Smush::get_instance()->core()->mod->smush->lossy_enabled ? 1 : 0,
-			'strip' => WP_Smush::get_instance()->core()->mod->smush->keep_exif ? 0 : 1,
+			'lossy' => $this->settings->get( 'lossy' ) ? 1 : 0,
+			'strip' => $this->settings->get( 'strip_exif' ) ? 1 : 0,
 			'webp'  => $this->settings->get( 'webp' ) ? 1 : 0,
 		);
 
