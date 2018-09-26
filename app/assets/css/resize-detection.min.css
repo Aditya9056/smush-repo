@@ -1,15 +1,9 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700);
-@charset "UTF-8";
-
 @media screen and (min-width: 800px) {
-  /* ****************************************************************************
- * MODULE: VARIABLES
- */
-
 @font-face {
     font-family: 'wpmudev-plugin-icons';
     src: url(../fonts/wpmudev-plugin-icons.eot);
-    src: url(../fonts/wpmudev-plugin-icons.eot) format("embedded-opentype"), url(../fonts/wpmudev-plugin-icons.ttf) format("truetype"), url(../fonts/wpmudev-plugin-icons.woff) format("woff"), url(../fonts/wpmudev-plugin-icons.woff2) format("woff2"), url(../fonts/wpmudev-plugin-icons.svg) format("svg");
+    src: url(../fonts/wpmudev-plugin-icons.eot) format("embedded-opentype"),url(../fonts/wpmudev-plugin-icons.ttf) format("truetype"),url(../fonts/wpmudev-plugin-icons.woff) format("woff"),url(../fonts/wpmudev-plugin-icons.woff2) format("woff2"),url(../fonts/wpmudev-plugin-icons.svg) format("svg");
     font-weight: 400;
     font-style: normal;
 }
@@ -26,7 +20,7 @@
     width: 330px;
     height: 100%;
     background-color: #FFF;
-    box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 40px 0 rgba(0,0,0,0.1);
     z-index: 10;
     padding: 32px 0 20px;
     max-width: 330px;
@@ -79,7 +73,7 @@
     width: 60px;
     border-radius: 4px 0 0 4px;
     background-color: #FFF;
-    box-shadow: inset 2px 0 0 0 #FECF2F, -13px 5px 20px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: inset 2px 0 0 0 #FECF2F,-13px 5px 20px 0 rgba(0,0,0,0.1);
     text-align: center;
     cursor: pointer;
   }
