@@ -919,8 +919,17 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$this->settings->set( 'cdn', 'true' === $param );
 
-		// Remove CDN settings if disabling.
-		if ( 'true' !== $param ) {
+		if ( 'true' === $param ) {
+			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+
+			if ( ! $status ) {
+				$status = WP_Smush::get_instance()->api()->check();
+				$data = $this->process_cdn_status( $status );
+				$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
+			}
+
+		} else {
+			// Remove CDN settings if disabling.
 			$this->settings->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 		}
 
@@ -941,6 +950,14 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			$status = WP_Smush::get_instance()->api()->check();
 		}
 
+		$data = $this->process_cdn_status( $status );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
+
+		// At this point we already know that $status->data is valid.
+		wp_send_json_success( $status->data );
+	}
+
+	private function process_cdn_status( $status ) {
 		$status = json_decode( $status['body'] );
 
 		// Error from API.
@@ -953,10 +970,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			);
 		}
 
-		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $status->data );
-
-		// At this point we already know that $status->data is valid.
-		wp_send_json_success( $status->data );
+		return $status->data;
 	}
 
 }
