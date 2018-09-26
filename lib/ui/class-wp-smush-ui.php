@@ -1386,6 +1386,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 									<?php esc_html_e( 'Almost there! To finish activating this feature you must save your settings.', 'wp-smushit' ); ?>
 								</p>
 							</div>
+							<span class="sui-description">Note: This feature is only visible on screens wider than 800px.</span>
 						<?php endif; ?>
 					</span>
 				</div>
