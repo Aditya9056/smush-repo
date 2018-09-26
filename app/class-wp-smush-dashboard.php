@@ -189,7 +189,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 			case 'bulk':
 			default:
-				if ( $is_pro && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+				if ( $is_pro && $this->settings->get('cdn') && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
 					$this->add_meta_box(
 						'meta-boxes/bulk',
 						__( 'Bulk Smush', 'wp-smushit' ),
