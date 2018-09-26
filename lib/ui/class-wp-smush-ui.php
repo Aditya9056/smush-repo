@@ -1078,7 +1078,7 @@ if ( ! class_exists( 'WpSmushBulkUi' ) ) {
 					endif;
 					// This is to avoid duplicate foreach loop.
 					$main_nav_li .= '<li class="sui-vertical-tab smush-' . $tab . $class . ( $tab === $this->current_tab ? ' current' : '' ) . '">';
-					$main_nav_li .= '<a href="' . add_query_arg( 'tab', $tab ) . '">' . $label . '</a>';
+					$main_nav_li .= '<a href="' . add_query_arg( 'tab', esc_html( $tab ) ) . '">' . $label . '</a>';
 					$main_nav_li .= '<span class="smush-nav-icon ' . $tab . $tag_class . '" aria-hidden="true">' . $tag_content . '</span>';
 					$main_nav_li .= '</li>';
 					// Mobile nav
