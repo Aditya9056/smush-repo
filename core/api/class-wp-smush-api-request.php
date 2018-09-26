@@ -295,10 +295,11 @@ class WP_Smush_API_Request {
 		}
 
 		$args = array(
-			'headers'   => $this->headers,
-			'sslverify' => false,
-			'method'    => strtoupper( $method ),
-			'timeout'   => $this->timeout,
+			'user-agent' => WP_SMUSH_UA,
+			'headers'    => $this->headers,
+			'sslverify'  => false,
+			'method'     => strtoupper( $method ),
+			'timeout'    => $this->timeout,
 		);
 
 		if ( ! $args['timeout'] || 2 === $args['timeout'] ) {

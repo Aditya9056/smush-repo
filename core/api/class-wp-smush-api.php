@@ -62,13 +62,13 @@ class WP_Smush_API {
 	}
 
 	/**
-	 * Register site on CDN.
+	 * Check CDN status (same as verify the is_pro status).
 	 *
 	 * @since 3.0
 	 *
 	 * @return mixed|WP_Error
 	 */
-	public function register() {
+	public function check() {
 		return $this->request->get(
 			"check/{$this->api_key}",
 			array(

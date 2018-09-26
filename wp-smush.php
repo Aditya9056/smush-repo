@@ -150,13 +150,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		private static $is_pro;
 
 		/**
-		 * API server url to check API key validity.
-		 *
-		 * @var string $api_server
-		 */
-		private static $api_server = 'https://premium.wpmudev.org/api/smush/v1/check/';
-
-		/**
 		 * Return the plugin instance.
 		 *
 		 * @return WP_Smush
@@ -241,16 +234,16 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @since 2.9.0
 		 */
 		private function init() {
-			self::$is_pro = self::validate_install();
-
-			$this->core  = new WP_Smush_Core();
-			$this->admin = new WP_Smush_Admin();
-
 			try {
 				$this->api = new WP_Smush_API( self::get_api_key() );
 			} catch ( Exception $e ) {
 				// Unable to init API for some reason.
 			}
+
+			self::$is_pro = $this->validate_install();
+
+			$this->core  = new WP_Smush_Core();
+			$this->admin = new WP_Smush_Admin();
 		}
 
 		/**
@@ -413,7 +406,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @return bool  True if a premium member, false if regular user.
 		 */
-		public static function validate_install() {
+		public function validate_install() {
 			if ( isset( self::$is_pro ) ) {
 				return self::$is_pro;
 			}
@@ -481,21 +474,13 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				$api_auth[ $api_key ]['timestamp'] = current_time( 'timestamp' );
 				update_site_option( 'wp_smush_api_auth', $api_auth );
 
-				// Call API.
-				$url = self::$api_server . $api_key;
-
-				$request = wp_remote_get(
-					$url,
-					array(
-						'user-agent' => WP_SMUSH_UA,
-						'timeout'    => 10,
-					)
-				);
+				$request = $this->api()->check();
 
 				if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
 					$result = json_decode( wp_remote_retrieve_body( $request ) );
 					if ( ! empty( $result->success ) && $result->success ) {
 						$valid = 'valid';
+						update_site_option( WP_SMUSH_PREFIX . 'cdn_status', $result->data );
 					} else {
 						$valid = 'invalid';
 					}

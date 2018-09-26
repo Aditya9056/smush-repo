@@ -293,7 +293,7 @@ class WP_Smush_Core {
 	/**
 	 * Migrates smushit api message to the latest structure
 	 *
-	 * TODO: move to installer class
+	 * @todo move to installer class
 	 */
 	private function migrate() {
 		if ( ! version_compare( WP_SMUSH_VERSION, '1.7.1', 'lte' ) ) {

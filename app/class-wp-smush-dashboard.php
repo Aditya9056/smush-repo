@@ -255,8 +255,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						'cdn'
 					);
 				} else {
-					$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
-					if ( ! $status ) {
+					if ( ! $this->settings->get('cdn') ) {
 						$this->add_meta_box(
 							'meta-boxes/cdn/disabled',
 							__( 'CDN', 'wp-smushit' ),
@@ -310,11 +309,11 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		} elseif ( 'cdn' === $tab ) {
 			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
-			if ( isset( $status->cdn_enabled ) && $status->cdn_enabled ) {
+			if ( $this->settings->get('cdn') && isset( $status->cdn_enabled ) && $status->cdn_enabled ) {
 				echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
 			}
 
-			if ( isset( $status->cdn_enabled ) && ! $status->cdn_enabled ) {
+			if ( $this->settings->get('cdn') && isset( $status->cdn_enabled ) && ! $status->cdn_enabled ) {
 				echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
 			}
 		}

@@ -917,10 +917,10 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$param = sanitize_text_field( wp_unslash( $_POST['param'] ) );
 
-		if ( 'true' === $param ) {
-			$status = WP_Smush::get_instance()->api()->register();
-			$this->proccess_cdn_response( $status );
-		} else {
+		$this->settings->set( 'cdn', 'true' === $param );
+
+		// Remove CDN settings if disabling.
+		if ( 'true' !== $param ) {
 			$this->settings->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 		}
 
@@ -938,22 +938,9 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		if ( isset( $current_status->cdn_enabling ) && $current_status->cdn_enabling ) {
 			$status = WP_Smush::get_instance()->api()->enable();
 		} else {
-			$status = WP_Smush::get_instance()->api()->register();
+			$status = WP_Smush::get_instance()->api()->check();
 		}
 
-		$this->proccess_cdn_response( $status );
-
-		wp_send_json_success();
-	}
-
-	/**
-	 * Process the response from API.
-	 *
-	 * @since 3.0
-	 *
-	 * @param array $status  Response array.
-	 */
-	private function proccess_cdn_response( $status ) {
 		$status = json_decode( $status['body'] );
 
 		// Error from API.
@@ -967,7 +954,9 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		}
 
 		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $status->data );
-	}
 
+		// At this point we already know that $status->data is valid.
+		wp_send_json_success( $status->data );
+	}
 
 }

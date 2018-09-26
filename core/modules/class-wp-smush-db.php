@@ -320,7 +320,7 @@ class WP_Smush_DB {
 	 *
 	 * @return array|mixed
 	 *
-	 * TODO: Refactor Method, Separate Media Library and Nextgen, moreover nextgen functionality is broken
+	 * @todo Refactor Method, Separate Media Library and Nextgen, moreover nextgen functionality is broken
 	 */
 	public function super_smushed_count( $type = 'media', $attachments = array() ) {
 		if ( 'media' === $type ) {

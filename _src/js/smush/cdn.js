@@ -131,9 +131,10 @@
 				const response = data.json();
 				response.then(res => {
 					if ( 'undefined' !== typeof res.success && res.success ) {
-
-						// TODO: update stats
-
+						/**
+						 * TODO: It's possible to parse the res variable and update the latest stats during the update,
+						 * but is it really needed?
+						 */
 						elements.forEach(element => element.classList.toggle('sui-hidden'));
 						spinner.classList.toggle('sui-hidden');
 					} else if ( 'undefined' !== typeof res.data.message ) {

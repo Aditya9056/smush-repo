@@ -55,7 +55,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		/**
 		 * UI.
 		 */
-		if ( $this->status ) {
+		if ( $this->settings->get('cdn') && $this->status ) {
 			// Add stats to stats box.
 			add_action( 'stats_ui_after_resize_savings', array( $this, 'cdn_stats_ui' ), 20 );
 		}
@@ -63,7 +63,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		/**
 		 * Main functionality.
 		 */
-		if ( ! $this->cdn_active ) {
+		if ( ! $this->settings->get('cdn') || ! $this->cdn_active ) {
 			return;
 		}
 
