@@ -262,7 +262,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			}
 
 			//If we only have the attachment id
-			$full_url = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
+			$full_url = $as3cf->is_attachment_served_by_provider( $attachment_id, true );
 			//If the filepath contains S3, get the s3 URL for the file
 			if ( ! empty( $full_url ) ) {
 				$full_url = $as3cf->get_attachment_url( $attachment_id );
@@ -300,8 +300,8 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 			$uf_file_path = empty( $uf_file_path ) ? get_attached_file( $attachment_id, true ) : $uf_file_path;
 
 			//If we have plugin method available, us that otherwise check it ourselves
-			if ( method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
-				$s3_object        = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
+			if ( method_exists( $as3cf, 'is_attachment_served_by_provider' ) ) {
+				$s3_object        = $as3cf->is_attachment_served_by_provider( $attachment_id, true );
 				$size_prefix      = dirname( $s3_object['key'] );
 				$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
 				if ( ! empty( $size_details ) && is_array( $size_details ) ) {
@@ -312,9 +312,9 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				}
 
 				//Try to download the attachment
-				if ( $s3_object && is_object( $as3cf->plugin_compat ) && method_exists( $as3cf->plugin_compat, 'copy_s3_file_to_server' ) ) {
+				if ( $s3_object && is_object( $as3cf->plugin_compat ) && method_exists( $as3cf->plugin_compat, 'copy_provider_file_to_server' ) ) {
 					//Download file
-					$file = $as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $uf_file_path );
+					$file = $as3cf->plugin_compat->copy_provider_file_to_server( $s3_object, $uf_file_path );
 				}
 
 				if ( $file ) {
@@ -370,13 +370,13 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return false;
 			}
 			//Return if method doesn't exists
-			if ( ! method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
-				error_log( "Couldn't find method is_attachment_served_by_s3." );
+			if ( ! method_exists( $as3cf, 'is_attachment_served_by_provider' ) ) {
+				error_log( "Couldn't find method is_attachment_served_by_provider." );
 
 				return false;
 			}
 			//Get s3 object for the file
-			$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
+			$s3_object = $as3cf->is_attachment_served_by_provider( $attachment_id, true );
 
 			$size_prefix      = dirname( $s3_object['key'] );
 			$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
@@ -392,7 +392,7 @@ if ( ! class_exists( 'WpSmushS3' ) ) {
 				return false;
 			}
 
-			$s3client = $as3cf->get_s3client( $region );
+			$s3client = $as3cf->get_provider_client( $region );
 
 			// If we still have the older version of S3 Offload, use old method.
 			if ( method_exists( $s3client, 'doesObjectExist' ) ) {
