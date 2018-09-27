@@ -12,6 +12,8 @@
 	'use strict';
 
 	const WP_Smush_IRS = {
+		bar: document.getElementById('smush-image-bar'),
+		toggle: document.getElementById('smush-image-bar-toggle'),
 		images: {
 			bigger: [],
 			smaller: []
@@ -26,7 +28,7 @@
 				this.strings = wp_smush_resize_vars;
 			}
 
-			document.getElementById('smush-image-bar-toggle').addEventListener('click', this.removeSelection);
+			this.toggle.addEventListener('click', this.handleToggleClick.bind(this));
 
 			this.detectImages();
 			this.generateMarkup('bigger');
@@ -132,6 +134,15 @@
 					el[0].style = 'filter: opacity(100%);transition: all 0.5s ease;';
 				}, 1000);
 			}
+		},
+
+		/**
+		 * Handle click on the toggle item.
+		 */
+		handleToggleClick: function(e) {
+			this.bar.classList.toggle('closed');
+			this.toggle.classList.toggle('closed');
+			this.removeSelection();
 		},
 
 		/**
