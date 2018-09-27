@@ -181,7 +181,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		private function register_actions() {
 			add_action( 'admin_init', array( $this, 'deactivate_smush_org' ) );
 			add_action( 'admin_init', array( $this, 'register_free_modules' ) );
-			add_action( 'admin_init', array( $this, 'register_pro_modules' ) );
+			add_action( 'init', array( $this, 'register_pro_modules' ), 5 );
 		}
 
 		/**
@@ -385,9 +385,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				return;
 			}
 
-			/* @noinspection PhpIncludeInspection */
-			require_once WP_SMUSH_DIR . 'core/external/dash-notice/wpmudev-dash-notification.php';
-
 			// Register items for the dashboard plugin.
 			global $wpmudev_notices;
 			$wpmudev_notices[] = array(
@@ -399,6 +396,9 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 					'toplevel_page_smush-network',
 				),
 			);
+
+			/* @noinspection PhpIncludeInspection */
+			require_once WP_SMUSH_DIR . 'core/external/dash-notice/wpmudev-dash-notification.php';
 		}
 
 		/**

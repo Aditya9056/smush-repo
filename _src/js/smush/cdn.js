@@ -147,6 +147,4 @@
 
 	};
 
-	WP_Smush.CDN.init();
-
 }());

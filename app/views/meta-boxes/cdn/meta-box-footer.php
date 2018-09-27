@@ -17,3 +17,8 @@ $button_text = $enabled ? __( 'Update Settings', 'wp-smushit' ) : __( 'Save & Ac
 		<span class="sui-icon-loader sui-loading sui-hidden"></span>
 	</span>
 </div>
+
+
+<script type="text/javascript">
+	window.WP_Smush.CDN.init();
+</script>
