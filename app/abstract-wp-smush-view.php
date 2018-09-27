@@ -463,11 +463,6 @@ abstract class WP_Smush_View {
 	 */
 	private function render_page_header() {
 		$current_screen = get_current_screen();
-
-		if ( WP_Smush::get_instance()->core()->remaining_count === 0 || WP_Smush::get_instance()->core()->smushed_count === 0 ) {
-			// Initialize global stats.
-			WP_Smush::get_instance()->core()->setup_global_stats();
-		}
 		?>
 
 		<div class="sui-header wp-smush-page-header">

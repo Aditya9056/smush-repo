@@ -381,7 +381,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Only for WPMU DEV Members.
 		 */
 		public function register_pro_modules() {
-			if ( false === strpos( WP_SMUSH_DIR, 'wp-smush-pro' ) || ! file_exists( WP_SMUSH_DIR . 'core/external/dash-notice/wpmudev-dash-notification.php' ) ) {
+			if ( ! file_exists( WP_SMUSH_DIR . 'core/external/dash-notice/wpmudev-dash-notification.php' ) ) {
 				return;
 			}
 
@@ -500,7 +500,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 				// Update API validity.
 				update_site_option( 'wp_smush_api_auth', $api_auth );
-
 			}
 
 			self::$is_pro = isset( $valid ) && ( 'valid' === $valid );
