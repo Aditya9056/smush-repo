@@ -1,9 +1,10 @@
+import "babel-polyfill";
+
 /**
  * CDN functionality.
  *
  * @since 3.0
  */
-
 ( function() {
 	'use strict';
 
