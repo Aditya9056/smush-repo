@@ -1,3 +1,5 @@
+import "babel-polyfill";
+
 /**
  * Image resize detection (IRS).
  *
@@ -110,7 +112,7 @@
 			types.forEach(type => {
 				if ( 0 === this.images[type].length ) {
 					const div = document.getElementById('smush-image-bar-items-'+type);
-					div.hidden = true;
+					div.style.display = 'none';
 				}
 
 			});
@@ -129,9 +131,9 @@
 
 				// Scroll and flash image.
 				el[0].scrollIntoView({behavior: 'smooth', block: 'center', inline: 'nearest'});
-				el[0].style = 'filter: opacity(50%);transition: all 0.5s ease;';
+				el[0].style.opacity = '0.5';
 				setTimeout(() => {
-					el[0].style = 'filter: opacity(100%);transition: all 0.5s ease;';
+					el[0].style.opacity = '1';
 				}, 1000);
 			}
 		},
@@ -196,8 +198,13 @@
 					class: imageClass
 				});
 
-				// Add class to original image.
-				image.classList.add('smush-detected-img', imageClass);
+				/**
+				 * Add class to original image.
+				 * Can't add two classes in single add(), because no support in IE11.
+				 * image.classList.add('smush-detected-img', imageClass);
+				 */
+				image.classList.add('smush-detected-img');
+				image.classList.add(imageClass);
 			}
 		} // End detectImages()
 
