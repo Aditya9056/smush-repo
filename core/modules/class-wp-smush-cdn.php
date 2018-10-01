@@ -33,6 +33,18 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	private $status;
 
 	/**
+	 * Supported file extensions.
+	 *
+	 * @var array $supported_extensions
+	 */
+	private $supported_extensions = array(
+		'gif',
+		'jpg',
+		'jpeg',
+		'png',
+	);
+
+	/**
 	 * WP_Smush_CDN constructor.
 	 */
 	public function init() {
@@ -74,6 +86,13 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		// Start an output buffer before any output starts.
 		add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
+
+		// Update responsive image srcset and sizes if required.
+		add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
+		add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 10, 5 );
+
+		// Add resizing arguments to image src.
+		add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
 	}
 
 	/**
@@ -418,6 +437,222 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	}
 
 	/**
+	 * Check if we can use the image URL in CDN.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string $url  Image URL.
+	 *
+	 * @return bool
+	 */
+	private function is_valid_url( $url ) {
+		$parsed_url = wp_parse_url( $url );
+
+		if ( ! $parsed_url ) {
+			return false;
+		}
+
+		// No host or path found.
+		if ( ! isset( $parsed_url['host'] ) || ! isset( $parsed_url['path'] ) ) {
+			return false;
+		}
+
+		// If not supported extension - return false.
+		if ( ! in_array( strtolower( pathinfo( $parsed_url['path'], PATHINFO_EXTENSION ) ), $this->supported_extensions ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Try to determine height and width from strings WP appends to resized image filenames.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string $src The image URL.
+	 *
+	 * @return array An array consisting of width and height.
+	 */
+	private function get_size_from_file_name( $src ) {
+		$size = array();
+
+		if ( preg_match( '/(\d+)x(\d+)\.(?:' . implode( '|', $this->supported_extensions ) . '){1}$/i', $src, $size ) ) {
+			// Get size and width.
+			$width  = (int) $size[1];
+			$height = (int) $size[2];
+
+			// Handle retina images.
+			if ( strpos( $src, '@2x' ) ) {
+				$width  = 2 * $width;
+				$height = 2 * $height;
+			}
+
+			// Return width and height as array.
+			if ( $width && $height ) {
+				return array( $width, $height );
+			}
+		}
+
+		return array( false, false );
+	}
+
+	/**
+	 * Get full size image url from resized one.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string $src Image URL.
+	 *
+	 * @return string
+	 */
+	private function get_url_without_dimensions( $src ) {
+		if ( ! preg_match( '/(-\d+x\d+)\.(' . implode( '|', $this->supported_extensions ) . '){1}(?:\?.+)?$/i', $src, $src_parts ) ) {
+			return $src;
+		}
+
+		// Remove WP's resize string to get the original image.
+		$original_src = str_replace( $src_parts[1], '', $src );
+
+		// Upload directory.
+		$upload_dir = wp_get_upload_dir();
+
+		// Extracts the file path to the image minus the base url.
+		$file_path = substr( $original_src, strlen( $upload_dir['baseurl'] ) );
+
+		// Continue only if the file exists.
+		if ( file_exists( $upload_dir['basedir'] . $file_path ) ) {
+			return $original_src;
+		}
+
+		// Revert to source if file does not exist.
+		return $src;
+	}
+
+	/**
+	 * Get $content_width global var value.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool|string
+	 */
+	private function max_content_width() {
+		// Get global content width (if content width is empty, set 1900).
+		$content_width = isset( $GLOBALS['content_width'] ) ? $GLOBALS['content_width'] : 1900;
+
+		// Check to see if we are resizing the images (can not go over that value).
+		$resize_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
+
+		if ( isset( $resize_sizes['width'] ) && $resize_sizes['width'] < $content_width ) {
+			return $resize_sizes['width'];
+		}
+
+		return $content_width;
+	}
+
+	/**
+	 * Filters an array of image srcset values, and add additional values.
+	 *
+	 * @since 3.0
+	 *
+	 * @param array  $sources    An array of image urls and widths.
+	 * @param array  $size_array Array of width and height values in pixels.
+	 * @param string $url        Image URL.
+	 * @param array  $image_meta The image metadata.
+	 * @param string $image_src  The src of the image.
+	 *
+	 * @return array $sources
+	 */
+	private function set_additional_srcset( $sources, $size_array, $url, $image_meta, $image_src ) {
+		$content_width = $this->max_content_width();
+
+		// If url is empty, try to get from src.
+		if ( empty( $url ) ) {
+			$url = $this->get_url_without_dimensions( $image_src );
+		}
+
+		// We need to add additional dimensions.
+		$full_width     = $image_meta['width'];
+		$full_height    = $image_meta['height'];
+		$current_width  = $size_array[0];
+		$current_height = $size_array[1];
+		// Get width and height calculated by WP.
+		list( $constrained_width, $constrained_height ) = wp_constrain_dimensions( $full_width, $full_height, $current_width, $current_height );
+
+		// Calculate base width.
+		// If $constrained_width sizes are smaller than current size, set maximum content width.
+		if ( abs( $constrained_width - $current_width ) <= 1 && abs( $constrained_height - $current_height ) <= 1 ) {
+			$base_width = $content_width;
+		} else {
+			$base_width = $current_width;
+		}
+
+		$current_widths = array_keys( $sources );
+		$new_sources    = array();
+
+		/**
+		 * Filter to add/update/bypass additional srcsets.
+		 *
+		 * If empty value or false is retured, additional srcset
+		 * will not be generated.
+		 *
+		 * @param array|bool $additional_multipliers Additional multipliers.
+		 */
+		$additional_multipliers = apply_filters(
+			'smush_srcset_additional_multipliers',
+			array(
+				0.2,
+				0.4,
+				0.6,
+				0.8,
+				1,
+				2,
+				3,
+			)
+		);
+
+		// Continue only if additional multipliers found or not skipped.
+		// Filter already documented in class-wp-smush-cdn.php.
+		if ( apply_filters( 'smush_skip_image_from_cdn', false, $url, false ) || empty( $additional_multipliers ) ) {
+			return $sources;
+		}
+
+		// Loop through each multipliers and generate image.
+		foreach ( $additional_multipliers as $multiplier ) {
+			// New width by multiplying with original size.
+			$new_width = intval( $base_width * $multiplier );
+			// If a nearly sized image already exist, skip.
+			foreach ( $current_widths as $_width ) {
+				if ( abs( $_width - $new_width ) < 50 || ( $new_width > $full_width ) ) {
+					continue 2;
+				}
+			}
+
+			// Arguments for cdn url.
+			$args = array(
+				'size' => $new_width,
+			);
+
+			// Add new srcset item.
+			$new_sources[ $new_width ] = array(
+				'url'        => $this->generate_cdn_url( $url, $args ),
+				'descriptor' => 'w',
+				'value'      => $new_width,
+			);
+		}
+
+		// Assign new srcset items to existing ones.
+		if ( ! empty( $new_sources ) ) {
+			// Loop through each items and replace/add.
+			foreach ( $new_sources as $_width_key => $_width_values ) {
+				$sources[ $_width_key ] = $_width_values;
+			}
+		}
+
+		return $sources;
+	}
+
+	/**
 	 * Filters an array of image srcset values, replacing each URL with resized CDN urls.
 	 *
 	 * Keep the existing srcset sizes if already added by WP, then calculate extra sizes
@@ -434,35 +669,32 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @return array $sources
 	 */
 	public function update_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id = 0 ) {
-		$main_image_url = false;
-
-		if ( ! empty( $attachment_id ) ) {
-			// Or get from attachment id.
-			$url            = wp_get_attachment_url( $attachment_id );
-			$main_image_url = $url;
+		if ( ! is_array( $sources ) ) {
+			return $sources;
 		}
 
-		// Loop through each image.
+		$main_image_url = false;
+
+		// Try to get image URL from attachment ID.
+		if ( empty( $attachment_id ) ) {
+			$url = $main_image_url = wp_get_attachment_url( $attachment_id );
+		}
+
 		foreach ( $sources as $i => $source ) {
-			// Validate
-
-			$img_url = $source['url'];
-
-			// Filter already documented in class-wp-smush-cdn.php.
-			if ( apply_filters( 'smush_skip_image_from_cdn', false, $img_url, $source ) ) {
+			if ( ! $this->is_valid_url( $source['url'] ) ) {
 				continue;
 			}
 
+			if ( apply_filters( 'smush_cdn_skip_image', false, $source['url'], $source ) ) {
+				continue;
+			}
 
+			list( $width, $height ) = $this->get_size_from_file_name( $source['url'] );
 
 			// If don't have attachment id, get original image by removing dimensions from url.
 			if ( empty( $url ) ) {
-				$url = $this->get_url_without_dimensions( $img_url );
+				$url = $this->get_url_without_dimensions( $source['url'] );
 			}
-
-
-
-			list( $width, $height ) = $this->get_size_from_file_name( $img_url );
 
 			$args = array();
 			// If we got size from url, add them.
@@ -474,13 +706,114 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			}
 
 			// Replace with CDN url.
-			$sources[ $i ]['url'] = WP_Smush::get_instance()->core()->mod->cdn->generate_cdn_url( $url, $args );
+			$sources[ $i ]['url'] = $this->generate_cdn_url( $url, $args );
 		}
 
 		// Set additional sizes if required.
 		$sources = $this->set_additional_srcset( $sources, $size_array, $main_image_url, $image_meta, $image_src );
 
+		ksort( $sources );
+
 		return $sources;
+	}
+
+	/**
+	 * Update image sizes for responsive size.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string $sizes A source size value for use in a 'sizes' attribute.
+	 * @param array  $size  Requested size.
+	 *
+	 * @return string
+	 */
+	public function update_image_sizes( $sizes, $size ) {
+		// Get maximum content width.
+		$content_width = $this->max_content_width();
+
+		if ( ( is_array( $size ) && $size[0] <= $content_width ) ) {
+			return $sizes;
+		}
+
+		return sprintf( '(max-width: %1$dpx) 100vw, %1$dpx', $content_width );
+	}
+
+	/**
+	 * Get registered image sizes and its sizes.
+	 *
+	 * Custom function to get all registered image sizes
+	 * and their width and height.
+	 *
+	 * @since 3.0
+	 *
+	 * @return array|bool|mixed
+	 */
+	private function get_image_sizes() {
+		// Get from cache if available to avoid duplicate looping.
+		$sizes = wp_cache_get( 'get_image_sizes', 'smush_image_sizes' );
+		if ( $sizes ) {
+			return $sizes;
+		}
+
+		// Get additional sizes registered by themes.
+		global $_wp_additional_image_sizes;
+
+		$sizes = array();
+
+		// Get intermediate image sizes.
+		$get_intermediate_image_sizes = get_intermediate_image_sizes();
+
+		// Create the full array with sizes and crop info.
+		foreach ( $get_intermediate_image_sizes as $_size ) {
+			if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ), true ) ) {
+				$sizes[ $_size ]['width']  = get_option( $_size . '_size_w' );
+				$sizes[ $_size ]['height'] = get_option( $_size . '_size_h' );
+				$sizes[ $_size ]['crop']   = (bool) get_option( $_size . '_crop' );
+			} elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
+				$sizes[ $_size ] = array(
+					'width'  => $_wp_additional_image_sizes[ $_size ]['width'],
+					'height' => $_wp_additional_image_sizes[ $_size ]['height'],
+					'crop'   => $_wp_additional_image_sizes[ $_size ]['crop'],
+				);
+			}
+		}
+
+		// Set cache to avoid this loop next time.
+		wp_cache_set( 'get_image_sizes', $sizes, 'smush_image_sizes' );
+
+		return $sizes;
+	}
+
+	/**
+	 * Add resize arguments to content image src.
+	 *
+	 * @since 3.0
+	 *
+	 * @param array  $args  Current arguments.
+	 * @param object $image Image tag object from DOM.
+	 *
+	 * @return array $args
+	 */
+	public function update_cdn_image_src_args( $args, $image ) {
+		// Get registered image sizes.
+		$image_sizes = $this->get_image_sizes();
+
+		// Image class.
+		$class = $image->getAttribute( 'class' );
+
+		$size = array();
+
+		// Detect WP registered image size from HTML class.
+		if ( preg_match( '#size-([^"\'\s]+)[^"\']*["|\']?#i', $class, $size ) ) {
+			$size = array_pop( $size );
+
+			// If this size exists in registered sizes, add argument.
+			if ( 'full' !== $size && array_key_exists( $size, $image_sizes ) ) {
+				$args['size'] = (int) $image_sizes[ $size ]['width'] . ',' . (int) $image_sizes[ $size ]['height'];
+			}
+		}
+
+		return $args;
 	}
 
 }
