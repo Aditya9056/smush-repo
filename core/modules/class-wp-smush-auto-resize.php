@@ -69,14 +69,19 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 		 * @since 3.0
 		 */
 
+		// Only do stuff on the frontend.
+		if ( is_admin() ) {
+			return;
+		}
+
 		// Update responsive image srcset if required.
 		add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
 
 		// Update responsive image sizes if required.
-		add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 10, 5 );
+		//add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 10, 5 );
 
 		// Add resizing arguments to image src.
-		add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
+		//add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
 	}
 
 	/**
@@ -175,11 +180,11 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 	 * Keep the existing srcset sizes if already added by WP, then calculate extra sizes
 	 * if required.
 	 *
-	 * @param array  $sources       An array of image urls and widths.
-	 * @param array  $size_array    Array of width and height values in pixels.
-	 * @param string $image_src     The src of the image.
-	 * @param array  $image_meta    The image metadata.
-	 * @param int    $attachment_id Image attachment ID.
+	 * @param array  $sources        One or more arrays of source data to include in the 'srcset'.
+	 * @param array  $size_array     Array of width and height values in pixels.
+	 * @param string $image_src      The 'src' of the image.
+	 * @param array  $image_meta     The image meta data as returned by 'wp_get_attachment_metadata()'.
+	 * @param int    $attachment_id  Image attachment ID or 0.
 	 *
 	 * @return array $sources
 	 */
@@ -188,31 +193,33 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 
 		if ( ! empty( $attachment_id ) ) {
 			// Or get from attachment id.
-			$url = $main_image_url = wp_get_attachment_url( $attachment_id );
+			$url            = wp_get_attachment_url( $attachment_id );
+			$main_image_url = $url;
 		}
 
 		// Loop through each image.
 		foreach ( $sources as $i => $source ) {
+			// Validate
 
 			$img_url = $source['url'];
-			$args    = array();
-
-			// If don't have attachment id, get original image by removing dimensions from url.
-			if ( empty( $url ) ) {
-				$url = $this->get_url_without_dimensions( $img_url );
-			}
-
-			/**
-			 * TODO: Validate image before continue.
-			 */
 
 			// Filter already documented in class-wp-smush-cdn.php.
 			if ( apply_filters( 'smush_skip_image_from_cdn', false, $img_url, $source ) ) {
 				continue;
 			}
 
+
+
+			// If don't have attachment id, get original image by removing dimensions from url.
+			if ( empty( $url ) ) {
+				$url = $this->get_url_without_dimensions( $img_url );
+			}
+
+
+
 			list( $width, $height ) = $this->get_size_from_file_name( $img_url );
 
+			$args = array();
 			// If we got size from url, add them.
 			if ( ! empty( $width ) && ! empty( $height ) ) {
 				// Set size arg.

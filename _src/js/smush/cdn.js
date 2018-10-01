@@ -105,7 +105,7 @@
 		 * @since 3.0
 		 */
 		updateStatsBox: function () {
-			if ( null === this.cdnStatsBox.length ) {
+			if ( 'undefined' === this.cdnStatsBox.length ) {
 				return;
 			}
 
@@ -146,5 +146,7 @@
 		}
 
 	};
+
+	WP_Smush.CDN.init();
 
 }());

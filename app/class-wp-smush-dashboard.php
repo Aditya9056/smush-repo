@@ -299,7 +299,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function after_tab( $tab ) {
 		if ( 'bulk' === $tab ) {
 			$remaining = WP_Smush::get_instance()->core()->remaining_count;
-			if ( $this->settings->get('cdn') && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+			if ( $this->settings->get( 'cdn' ) && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
 				echo '<i class="sui-icon-info" aria-hidden="true"></i>';
 			} elseif ( 0 < $remaining ) {
 				echo '<span class="sui-tag sui-tag-warning wp-smush-remaining-count">' . absint( $remaining ) . '</span>';
@@ -308,12 +308,17 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			}
 		} elseif ( 'cdn' === $tab ) {
 			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+			$cdn    = $this->settings->get( 'cdn' );
 
-			if ( $this->settings->get('cdn') && isset( $status->cdn_enabled ) && $status->cdn_enabled ) {
-				echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
+			if ( $cdn && isset( $status->cdn_enabled ) && $status->cdn_enabled ) {
+				if ( WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+					echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
+				} else {
+					echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
+				}
 			}
 
-			if ( $this->settings->get('cdn') && isset( $status->cdn_enabled ) && ! $status->cdn_enabled ) {
+			if ( $cdn && isset( $status->cdn_enabled ) && ! $status->cdn_enabled ) {
 				echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
 			}
 		}
@@ -1194,7 +1199,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$cdn_status = 'warning';
 
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
-		if ( $cdn->cdn_enabled ) {
+		if ( $cdn->cdn_enabled && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
 			$cdn_status = $cdn->bandwidth / 1024 / 1024  < $cdn->bandwidth_plan ? 'success' : 'error';
 		}
 

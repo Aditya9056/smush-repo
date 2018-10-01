@@ -51,31 +51,29 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		// Set auto resize flag.
 		$this->init_flags();
 
-		/**
-		 * UI.
-		 */
-		if ( $this->settings->get('cdn') && $this->status ) {
-			// Add stats to stats box.
-			add_action( 'stats_ui_after_resize_savings', array( $this, 'cdn_stats_ui' ), 20 );
-		}
+		// Add stats to stats box.
+		add_action( 'stats_ui_after_resize_savings', array( $this, 'cdn_stats_ui' ), 20 );
 
 		/**
 		 * Main functionality.
 		 */
-		if ( ! $this->settings->get('cdn') || ! $this->cdn_active ) {
+		if ( ! $this->settings->get( 'cdn' ) || ! $this->cdn_active ) {
 			return;
 		}
 
 		// Set Smush API config.
 		add_action( 'init', array( $this, 'set_cdn_url' ) );
 
-		// Start an output buffer before any output starts.
-		add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
+		// Only do stuff on the frontend.
+		if ( is_admin() ) {
+			return;
+		}
 
 		// Add cdn url to dns prefetch.
 		add_filter( 'wp_resource_hints', array( $this, 'dns_prefetch' ), 99, 2 );
 
-		// wp_calculate_image_srcset & wp_calculate_image_sizes filters
+		// Start an output buffer before any output starts.
+		add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
 	}
 
 	/**
@@ -163,6 +161,11 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @since 3.0
 	 */
 	public function cdn_stats_ui() {
+		// Only show the UI box if CDN module is enabled and has some data.
+		if ( ! $this->settings->get( 'cdn' ) || ! $this->status ) {
+			return;
+		}
+
 		$plan      = isset( $this->status->bandwidth_plan ) ? $this->status->bandwidth_plan : 10;
 		$bandwidth = isset( $this->status->bandwidth ) ? $this->status->bandwidth : 0;
 
@@ -195,6 +198,11 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			return;
 		}
 
+		// CDN will not work if site is not registered with the dashboard.
+		if ( ! file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
+			return;
+		}
+
 		$this->status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
 		// CDN is not enabled and not active.
@@ -214,6 +222,25 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		$site_id = absint( $this->status->site_id );
 
 		$this->cdn_base = trailingslashit( "https://{$this->status->endpoint_url}/{$site_id}" );
+	}
+
+	/**
+	 * Add CDN url to header for better speed.
+	 *
+	 * @since 3.0
+	 *
+	 * @param array  $urls URLs to print for resource hints.
+	 * @param string $relation_type The relation type the URLs are printed.
+	 *
+	 * @return array
+	 */
+	public function dns_prefetch( $urls, $relation_type ) {
+		// Add only if CDN active.
+		if ( 'dns-prefetch' === $relation_type && $this->cdn_active && ! empty( $this->cdn_base ) ) {
+			$urls[] = $this->cdn_base;
+		}
+
+		return $urls;
 	}
 
 	/**
@@ -287,6 +314,10 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @return string
 	 */
 	public function process_img_tags( $content ) {
+		if ( empty( $content ) ) {
+			return $content;
+		}
+
 		$content  = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
 		$document = new DOMDocument();
 		libxml_use_internal_errors( true );
@@ -387,21 +418,69 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	}
 
 	/**
-	 * Add CDN url to header for better speed.
+	 * Filters an array of image srcset values, replacing each URL with resized CDN urls.
+	 *
+	 * Keep the existing srcset sizes if already added by WP, then calculate extra sizes
+	 * if required.
 	 *
 	 * @since 3.0
 	 *
-	 * @param array  $urls URLs to print for resource hints.
-	 * @param string $relation_type The relation type the URLs are printed.
+	 * @param array  $sources        One or more arrays of source data to include in the 'srcset'.
+	 * @param array  $size_array     Array of width and height values in pixels.
+	 * @param string $image_src      The 'src' of the image.
+	 * @param array  $image_meta     The image meta data as returned by 'wp_get_attachment_metadata()'.
+	 * @param int    $attachment_id  Image attachment ID or 0.
 	 *
-	 * @return array
+	 * @return array $sources
 	 */
-	public function dns_prefetch( $urls, $relation_type ) {
-		// Add only if CDN active.
-		if ( 'dns-prefetch' === $relation_type && $this->cdn_active && ! empty( $this->cdn_base ) ) {
-			$urls[] = $this->cdn_base;
+	public function update_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id = 0 ) {
+		$main_image_url = false;
+
+		if ( ! empty( $attachment_id ) ) {
+			// Or get from attachment id.
+			$url            = wp_get_attachment_url( $attachment_id );
+			$main_image_url = $url;
 		}
 
-		return $urls;
+		// Loop through each image.
+		foreach ( $sources as $i => $source ) {
+			// Validate
+
+			$img_url = $source['url'];
+
+			// Filter already documented in class-wp-smush-cdn.php.
+			if ( apply_filters( 'smush_skip_image_from_cdn', false, $img_url, $source ) ) {
+				continue;
+			}
+
+
+
+			// If don't have attachment id, get original image by removing dimensions from url.
+			if ( empty( $url ) ) {
+				$url = $this->get_url_without_dimensions( $img_url );
+			}
+
+
+
+			list( $width, $height ) = $this->get_size_from_file_name( $img_url );
+
+			$args = array();
+			// If we got size from url, add them.
+			if ( ! empty( $width ) && ! empty( $height ) ) {
+				// Set size arg.
+				$args = array(
+					'size' => $width . ',' . $height,
+				);
+			}
+
+			// Replace with CDN url.
+			$sources[ $i ]['url'] = WP_Smush::get_instance()->core()->mod->cdn->generate_cdn_url( $url, $args );
+		}
+
+		// Set additional sizes if required.
+		$sources = $this->set_additional_srcset( $sources, $size_array, $main_image_url, $image_meta, $image_src );
+
+		return $sources;
 	}
+
 }
