@@ -95,6 +95,11 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
 	}
 
+	/**************************************
+	 *
+	 * PUBLIC METHODS SETTINGS & UI
+	 */
+
 	/**
 	 * Get CDN status.
 	 *
@@ -304,6 +309,18 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		return $url;
 	}
 
+	/**************************************
+	 *
+	 * PUBLIC METHODS CDN
+	 *
+	 * @see process_buffer()
+	 * @see process_img_tags()
+	 * @see process_images()
+	 * @see update_image_srcset()
+	 * @see update_image_sizes()
+	 * @see update_cdn_image_src_args()
+	 */
+
 	/**
 	 * Starts an output buffer and register the callback function.
 	 *
@@ -435,6 +452,138 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			$image->setAttribute( 'src', $src );
 		}
 	}
+
+	/**
+	 * Filters an array of image srcset values, replacing each URL with resized CDN urls.
+	 *
+	 * Keep the existing srcset sizes if already added by WP, then calculate extra sizes
+	 * if required.
+	 *
+	 * @since 3.0
+	 *
+	 * @param array  $sources        One or more arrays of source data to include in the 'srcset'.
+	 * @param array  $size_array     Array of width and height values in pixels.
+	 * @param string $image_src      The 'src' of the image.
+	 * @param array  $image_meta     The image meta data as returned by 'wp_get_attachment_metadata()'.
+	 * @param int    $attachment_id  Image attachment ID or 0.
+	 *
+	 * @return array $sources
+	 */
+	public function update_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id = 0 ) {
+		if ( ! is_array( $sources ) ) {
+			return $sources;
+		}
+
+		$main_image_url = false;
+
+		// Try to get image URL from attachment ID.
+		if ( empty( $attachment_id ) ) {
+			$url = $main_image_url = wp_get_attachment_url( $attachment_id );
+		}
+
+		foreach ( $sources as $i => $source ) {
+			if ( ! $this->is_valid_url( $source['url'] ) ) {
+				continue;
+			}
+
+			if ( apply_filters( 'smush_cdn_skip_image', false, $source['url'], $source ) ) {
+				continue;
+			}
+
+			list( $width, $height ) = $this->get_size_from_file_name( $source['url'] );
+
+			// If don't have attachment id, get original image by removing dimensions from url.
+			if ( empty( $url ) ) {
+				$url = $this->get_url_without_dimensions( $source['url'] );
+			}
+
+			$args = array();
+			// If we got size from url, add them.
+			if ( ! empty( $width ) && ! empty( $height ) ) {
+				// Set size arg.
+				$args = array(
+					'size' => $width . ',' . $height,
+				);
+			}
+
+			// Replace with CDN url.
+			$sources[ $i ]['url'] = $this->generate_cdn_url( $url, $args );
+		}
+
+		// Set additional sizes if required.
+		$sources = $this->set_additional_srcset( $sources, $size_array, $main_image_url, $image_meta, $image_src );
+
+		ksort( $sources );
+
+		return $sources;
+	}
+
+	/**
+	 * Update image sizes for responsive size.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string $sizes A source size value for use in a 'sizes' attribute.
+	 * @param array  $size  Requested size.
+	 *
+	 * @return string
+	 */
+	public function update_image_sizes( $sizes, $size ) {
+		// Get maximum content width.
+		$content_width = $this->max_content_width();
+
+		if ( ( is_array( $size ) && $size[0] <= $content_width ) ) {
+			return $sizes;
+		}
+
+		return sprintf( '(max-width: %1$dpx) 100vw, %1$dpx', $content_width );
+	}
+
+	/**
+	 * Add resize arguments to content image src.
+	 *
+	 * @since 3.0
+	 *
+	 * @param array  $args  Current arguments.
+	 * @param object $image Image tag object from DOM.
+	 *
+	 * @return array $args
+	 */
+	public function update_cdn_image_src_args( $args, $image ) {
+		// Get registered image sizes.
+		$image_sizes = $this->get_image_sizes();
+
+		// Image class.
+		$class = $image->getAttribute( 'class' );
+
+		$size = array();
+
+		// Detect WP registered image size from HTML class.
+		if ( preg_match( '#size-([^"\'\s]+)[^"\']*["|\']?#i', $class, $size ) ) {
+			$size = array_pop( $size );
+
+			// If this size exists in registered sizes, add argument.
+			if ( 'full' !== $size && array_key_exists( $size, $image_sizes ) ) {
+				$args['size'] = (int) $image_sizes[ $size ]['width'] . ',' . (int) $image_sizes[ $size ]['height'];
+			}
+		}
+
+		return $args;
+	}
+
+	/**************************************
+	 *
+	 * PRIVATE METHODS
+	 *
+	 * Functions that are used by the public methods of this CDN class.
+	 *
+	 * @see is_valid_url()
+	 * @see get_size_from_file_name()
+	 * @see get_url_without_dimensions()
+	 * @see max_content_width()
+	 * @see set_additional_srcset()
+	 * @see get_image_sizes()
+	 */
 
 	/**
 	 * Check if we can use the image URL in CDN.
@@ -653,92 +802,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	}
 
 	/**
-	 * Filters an array of image srcset values, replacing each URL with resized CDN urls.
-	 *
-	 * Keep the existing srcset sizes if already added by WP, then calculate extra sizes
-	 * if required.
-	 *
-	 * @since 3.0
-	 *
-	 * @param array  $sources        One or more arrays of source data to include in the 'srcset'.
-	 * @param array  $size_array     Array of width and height values in pixels.
-	 * @param string $image_src      The 'src' of the image.
-	 * @param array  $image_meta     The image meta data as returned by 'wp_get_attachment_metadata()'.
-	 * @param int    $attachment_id  Image attachment ID or 0.
-	 *
-	 * @return array $sources
-	 */
-	public function update_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id = 0 ) {
-		if ( ! is_array( $sources ) ) {
-			return $sources;
-		}
-
-		$main_image_url = false;
-
-		// Try to get image URL from attachment ID.
-		if ( empty( $attachment_id ) ) {
-			$url = $main_image_url = wp_get_attachment_url( $attachment_id );
-		}
-
-		foreach ( $sources as $i => $source ) {
-			if ( ! $this->is_valid_url( $source['url'] ) ) {
-				continue;
-			}
-
-			if ( apply_filters( 'smush_cdn_skip_image', false, $source['url'], $source ) ) {
-				continue;
-			}
-
-			list( $width, $height ) = $this->get_size_from_file_name( $source['url'] );
-
-			// If don't have attachment id, get original image by removing dimensions from url.
-			if ( empty( $url ) ) {
-				$url = $this->get_url_without_dimensions( $source['url'] );
-			}
-
-			$args = array();
-			// If we got size from url, add them.
-			if ( ! empty( $width ) && ! empty( $height ) ) {
-				// Set size arg.
-				$args = array(
-					'size' => $width . ',' . $height,
-				);
-			}
-
-			// Replace with CDN url.
-			$sources[ $i ]['url'] = $this->generate_cdn_url( $url, $args );
-		}
-
-		// Set additional sizes if required.
-		$sources = $this->set_additional_srcset( $sources, $size_array, $main_image_url, $image_meta, $image_src );
-
-		ksort( $sources );
-
-		return $sources;
-	}
-
-	/**
-	 * Update image sizes for responsive size.
-	 *
-	 * @since 3.0
-	 *
-	 * @param string $sizes A source size value for use in a 'sizes' attribute.
-	 * @param array  $size  Requested size.
-	 *
-	 * @return string
-	 */
-	public function update_image_sizes( $sizes, $size ) {
-		// Get maximum content width.
-		$content_width = $this->max_content_width();
-
-		if ( ( is_array( $size ) && $size[0] <= $content_width ) ) {
-			return $sizes;
-		}
-
-		return sprintf( '(max-width: %1$dpx) 100vw, %1$dpx', $content_width );
-	}
-
-	/**
 	 * Get registered image sizes and its sizes.
 	 *
 	 * Custom function to get all registered image sizes
@@ -782,38 +845,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		wp_cache_set( 'get_image_sizes', $sizes, 'smush_image_sizes' );
 
 		return $sizes;
-	}
-
-	/**
-	 * Add resize arguments to content image src.
-	 *
-	 * @since 3.0
-	 *
-	 * @param array  $args  Current arguments.
-	 * @param object $image Image tag object from DOM.
-	 *
-	 * @return array $args
-	 */
-	public function update_cdn_image_src_args( $args, $image ) {
-		// Get registered image sizes.
-		$image_sizes = $this->get_image_sizes();
-
-		// Image class.
-		$class = $image->getAttribute( 'class' );
-
-		$size = array();
-
-		// Detect WP registered image size from HTML class.
-		if ( preg_match( '#size-([^"\'\s]+)[^"\']*["|\']?#i', $class, $size ) ) {
-			$size = array_pop( $size );
-
-			// If this size exists in registered sizes, add argument.
-			if ( 'full' !== $size && array_key_exists( $size, $image_sizes ) ) {
-				$args['size'] = (int) $image_sizes[ $size ]['width'] . ',' . (int) $image_sizes[ $size ]['height'];
-			}
-		}
-
-		return $args;
 	}
 
 }
