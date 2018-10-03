@@ -23,22 +23,9 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 	private $can_auto_detect = false;
 
 	/**
-	 * Can auto resize.
-	 *
-	 * @var bool
-	 */
-	private $can_auto_resize = false;
-
-	/**
 	 * WP_Smush_Auto_Resize constructor.
 	 */
 	public function init() {
-		/**
-		 * Image resize detection.
-		 *
-		 * @since 2.9
-		 */
-
 		// Set auto resize flag.
 		add_action( 'wp', array( $this, 'init_flags' ) );
 
@@ -59,13 +46,6 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 	 * detection is enabled in settings.
 	 */
 	public function init_flags() {
-		$is_pro = WP_Smush::is_pro();
-
-		// All these are members only feature.
-		if ( $is_pro ) {
-			$this->can_auto_resize = true;
-		}
-
 		// Only required for admin users.
 		if ( $this->settings->get( 'detection' ) && current_user_can( 'manage_options' ) ) {
 			$this->can_auto_detect = true;

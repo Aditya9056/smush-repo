@@ -118,7 +118,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 */
 	public function add_settings() {
 		return array(
-			'auto',
 			'lossy',
 			'strip_exif',
 			'png_to_jpg',
