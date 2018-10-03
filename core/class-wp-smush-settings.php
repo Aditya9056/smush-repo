@@ -45,6 +45,7 @@ class WP_Smush_Settings {
 		's3'          => false,
 		'gutenberg'   => false,
 		'cdn'         => false,
+		'auto_resize' => false,
 		'webp'        => true,
 	);
 
@@ -82,7 +83,7 @@ class WP_Smush_Settings {
 	 * @var array
 	 */
 	private $cdn_fields = array(
-		'auto',
+		'auto_resize',
 		'lossy',
 		'strip_exif',
 		'png_to_jpg',

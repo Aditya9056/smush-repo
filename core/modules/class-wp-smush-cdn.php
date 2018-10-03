@@ -118,6 +118,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 */
 	public function add_settings() {
 		return array(
+			'auto_resize',
 			'lossy',
 			'strip_exif',
 			'png_to_jpg',
@@ -138,7 +139,12 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		return array_merge(
 			$settings,
 			array(
-				'webp' => array(
+				'auto_resize' => array(
+					'label'       => __( 'Enable automatic resizing of my images', 'wp-smushit' ),
+					'short_label' => __( 'Automatic Resizing', 'wp-smushit' ),
+					'desc'        => __( 'If your images don’t match their containers, we’ll automatically serve a correctly sized image.', 'wp-smushit' ),
+				),
+				'webp'        => array(
 					'label'       => __( 'Enable WebP conversion', 'wp-smushit' ),
 					'short_label' => __( 'WebP conversion', 'wp-smushit' ),
 					'desc'        => __( 'Smush can automatically convert and serve your images as WebP to compatible browsers.', 'wp-smushit' ),
@@ -155,7 +161,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @param string $setting_key Setting key.
 	 */
 	public function settings_desc( $setting_key = '' ) {
-		if ( empty( $setting_key ) || ! 'webp' !== $setting_key ) {
+		if ( empty( $setting_key ) || ! in_array( $setting_key, array( 'webp', 'auto_resize' ) ) ) {
 			return;
 		}
 		?>
@@ -165,8 +171,15 @@ class WP_Smush_CDN extends WP_Smush_Module {
 				case 'webp':
 					esc_html_e(
 						'Note: We’ll detect and serve WebP images to browsers that will accept them by checking
-					Accept Headers, and gracefully fall back to normal PNGs or JPEGs for non-compatible
-					browsers.',
+						Accept Headers, and gracefully fall back to normal PNGs or JPEGs for non-compatible browsers.',
+						'wp-smushit'
+					);
+					break;
+				case 'auto_resize':
+					esc_html_e(
+						'Having trouble with Google PageSpeeds ‘compress and resize’ suggestion? This feature
+						will fix this without any coding needed! Note: No resizing is done on your actual images, only
+						what is served from the CDN - so your original images will remain untouched.',
 						'wp-smushit'
 					);
 					break;
@@ -510,7 +523,9 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		}
 
 		// Set additional sizes if required.
-		$sources = $this->set_additional_srcset( $sources, $size_array, $main_image_url, $image_meta, $image_src );
+		if ( $this->settings->get( 'auto_resize' ) ) {
+			$sources = $this->set_additional_srcset( $sources, $size_array, $main_image_url, $image_meta, $image_src );
+		}
 
 		ksort( $sources );
 
