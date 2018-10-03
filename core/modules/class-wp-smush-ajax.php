@@ -957,7 +957,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
 
 		// At this point we already know that $status->data is valid.
-		wp_send_json_success( $status->data );
+		wp_send_json_success( $data );
 	}
 
 	private function process_cdn_status( $status ) {
