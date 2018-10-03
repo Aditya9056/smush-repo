@@ -106,7 +106,7 @@ import "babel-polyfill";
 		 * @since 3.0
 		 */
 		updateStatsBox: function () {
-			if ( 'undefined' === this.cdnStatsBox.length ) {
+			if ( 'undefined' === typeof this.cdnStatsBox.length ) {
 				return;
 			}
 
