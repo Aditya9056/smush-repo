@@ -27,7 +27,7 @@ install_wp() {
 	download https://wordpress.org/latest.tar.gz  /tmp/wordpress.tar.gz
 	tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C $WP_CORE_DIR
 
-	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php $WP_CORE_DIR/wp-content/db.php
+	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR"wp-content/db.php
 }
 
 
@@ -84,5 +84,5 @@ update_wp_config() {
 
 install_wp
 install_test_suite
-add_db_user
 update_wp_config
+add_db_user

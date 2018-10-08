@@ -19,8 +19,6 @@ class BulkSmushCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 		$I->loginAsAdmin();
-
-		require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/core/class-wp-smush-settings.php';
 	}
 
 	public function _after( AcceptanceTester $I ) {}
@@ -29,10 +27,24 @@ class BulkSmushCest {
 	 * Try Bulk Smush.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Codeception\Exception\ModuleException
 	 */
 	public function tryBulkSmush( AcceptanceTester $I ) {
-		// Disable auto Smush.
-		WP_Smush_Settings::get_instance()->set( 'auto', 0 );
+		// Disable auto Smush and CDN (if enabled).
+		$I->updateInDatabase(
+			'wp_options',
+			array(
+				'option_value' => serialize(
+					array(
+						'auto' => false,
+						'cdn'  => false,
+					)
+				),
+			),
+			array(
+				'option_name' => 'wp-smush-settings',
+			)
+		);
 
 		// Upload images.
 		$I->wantTo( 'Upload images to the media library' );
