@@ -5,6 +5,7 @@
  * @package WP_Smush
  *
  * @var array $basic_features       Basic features list.
+ * @var bool  $cdn_enabled          CDN status.
  * @var array $grouped_settings     Grouped settings that can be skipeed.
  * @var bool  $opt_networkwide_val  Networkwide or not?
  * @var array $settings             Settings values.
@@ -66,7 +67,8 @@
 			$label = ! empty( $value['short_label'] ) ? $value['short_label'] : $value['label'];
 
 			// Disable only auto Smush if CDN is enabled.
-			$disable = WP_Smush::get_instance()->core()->mod->cdn->get_status() && 'auto' === $name;
+
+			$disable = $cdn_enabled && 'auto' === $name;
 
 			// Show settings option.
 			$this->settings_row( $setting_m_key, $label, $name, $setting_val, $disable, $disable );

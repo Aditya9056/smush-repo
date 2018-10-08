@@ -273,7 +273,16 @@
 			}
 		}
 
+		.sui-progress-close.wp-smush-cancel-bulk.sui-hidden,
+		.sui-progress-close.wp-smush-all.sui-hidden {
+			display: none !important;
+		}
+
 		.sui-notice {
+			&.wp-smush-all-done {
+				margin-top: 0 !important;
+			}
+
 			&.smush-notice-sm {
 				p {
 					font-size: 13px;
@@ -283,6 +292,7 @@
 			&.smush-highlighting-notice,
 			&.smush-highlighting-warning {
 				margin-top: 10px;
+				margin-bottom: 10px;
 			}
 		}
 

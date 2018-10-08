@@ -188,7 +188,7 @@ class WP_Smush_Installer {
 				$offset += $limit;
 			}
 		} else {
-			$settings = get_site_option( WP_SMUSH_PREFIX . 'last_settings' );
+			$settings = get_site_option( WP_SMUSH_PREFIX . 'last_settings', array() );
 			$settings = array_merge( WP_Smush_Settings::get_instance()->get(), $settings );
 			update_site_option( WP_SMUSH_PREFIX . 'settings', $settings );
 			// Remove previous data.

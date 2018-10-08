@@ -2,6 +2,7 @@
 
 * New: Plugin structure (Important: plugin globals have been removed)
 * New: Show failure reason during directory Smush
+* New: Settings page with language translation links
 * Enhance: Update translation strings
 * Enhance: Clean out all the leftover data on plugin uninstall
 * Enhance: Directory Smush modal: support keyboard navigation
@@ -25,6 +26,11 @@
 * Fix: Directory Smush will not get stuck when an image encounters an error during compression
 * Fix: Support for the latest Gutenberg version
 * Fix: Allow blog admins in network installs to manage site Smush options
+* Fix: Stats not showing after Smushing in media library
+
+= 2.8.2 =
+
+Fix: Compatibility issues with latest WP Offload Media (WP Offload S3) update
 
 = 2.8.1 =
 

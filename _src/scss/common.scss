@@ -253,9 +253,14 @@ label.setting.smush-stats .smush-wrap,
 	}
 }
 
+.column-smushit div.smush-status-links,
 .attachment-details .setting div.smush-status-links {
-	float: none;
+	float: left;
 	text-align: left;
+
+	.wp-smush-action {
+		margin-right: 5px;
+	}
 }
 
 div.attachment-details .setting div.smush-status-links.smush-status-links div.smush-stats-wrapper {

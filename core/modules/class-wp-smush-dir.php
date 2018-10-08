@@ -797,7 +797,7 @@ class WP_Smush_Dir {
 	 * @return string
 	 *
 	 * Thanks @andrezrv (Github)
-	 * TODO: this does not properly get the admin path in Bedrock
+	 * @todo this does not properly get the admin path in Bedrock
 	 */
 	private function get_admin_path() {
 		// Replace the site base URL with the absolute path to its installation directory.
@@ -831,7 +831,7 @@ class WP_Smush_Dir {
 	 * Excludes the Media Upload Directory ( Checks for Year and Month ).
 	 *
 	 * Borrowed from Shortpixel - (y)*
-	 * TODO: Add a option to filter images if User have turned off the Year and Month Organize option
+	 * @todo Add a option to filter images if User have turned off the Year and Month Organize option
 	 *
 	 * @param string $path  Path.
 	 *

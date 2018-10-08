@@ -21,9 +21,11 @@
 
 <div class="wp-smush-scan-result">
 	<div class="content">
-		<span class="wp-smush-no-image tc">
-			<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-no-media.png' ); ?>" alt="<?php esc_html_e( 'Directory Smush - Choose Folder', 'wp-smushit' ); ?>">
-		</span>
+		<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
+			<span class="wp-smush-no-image tc">
+				<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-no-media.png' ); ?>" alt="<?php esc_html_e( 'Directory Smush - Choose Folder', 'wp-smushit' ); ?>">
+			</span>
+		<?php endif; ?>
 		<p class="wp-smush-no-images-content tc roboto-regular">
 			<?php esc_html_e( 'In addition to smushing your media uploads, you may want to also smush images living outside your uploads directory.', 'wp-smushit' ); ?><br>
 			<?php esc_html_e( 'Get started by adding files and folders you wish to optimize.', 'wp-smushit' ); ?>

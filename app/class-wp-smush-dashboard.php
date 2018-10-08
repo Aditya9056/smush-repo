@@ -59,6 +59,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'pro_savings_stats' ), 15 );
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'conversion_savings_stats' ), 15 );
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'directory_stats_ui' ), 10 );
+
+		// Icons in the submenu.
+		add_filter( 'wp_smush_admin_after_tab_' . $this->get_slug(), array( $this, 'after_tab' ) );
 	}
 
 	/**
@@ -98,9 +101,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		if ( is_multisite() && $networkwide && ! is_network_admin() ) {
 			unset( $this->tabs['integrations'] );
 		}
-
-		// Icons in the submenu.
-		add_filter( 'wp_smush_admin_after_tab_' . $this->get_slug(), array( $this, 'after_tab' ) );
 	}
 
 	/**
@@ -189,7 +189,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 			case 'bulk':
 			default:
-				if ( $is_pro && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+				if ( $is_pro && $this->settings->get('cdn') && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
 					$this->add_meta_box(
 						'meta-boxes/bulk',
 						__( 'Bulk Smush', 'wp-smushit' ),
@@ -254,24 +254,26 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						null,
 						'cdn'
 					);
-				} elseif ( ! $this->settings->get( 'cdn' ) ) {
-					$this->add_meta_box(
-						'meta-boxes/cdn/disabled',
-						__( 'CDN', 'wp-smushit' ),
-						null,
-						null,
-						null,
-						'cdn'
-					);
 				} else {
-					$this->add_meta_box(
-						'meta-boxes/cdn',
-						__( 'CDN', 'wp-smushit' ),
-						array( $this, 'cdn_metabox' ),
-						null,
-						null,
-						'cdn'
-					);
+					if ( ! $this->settings->get('cdn') ) {
+						$this->add_meta_box(
+							'meta-boxes/cdn/disabled',
+							__( 'CDN', 'wp-smushit' ),
+							null,
+							null,
+							null,
+							'cdn'
+						);
+					} else {
+						$this->add_meta_box(
+							'meta-boxes/cdn',
+							__( 'CDN', 'wp-smushit' ),
+							array( $this, 'cdn_metabox' ),
+							null,
+							null,
+							'cdn'
+						);
+					}
 				}
 
 				break;
@@ -297,16 +299,28 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function after_tab( $tab ) {
 		if ( 'bulk' === $tab ) {
 			$remaining = WP_Smush::get_instance()->core()->remaining_count;
-			if ( WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+			if ( $this->settings->get( 'cdn' ) && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
 				echo '<i class="sui-icon-info" aria-hidden="true"></i>';
 			} elseif ( 0 < $remaining ) {
 				echo '<span class="sui-tag sui-tag-warning wp-smush-remaining-count">' . absint( $remaining ) . '</span>';
 			} else {
 				echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
 			}
-		} elseif ( 'cdn' === $tab && $this->settings->get( 'cdn' ) ) {
-			$cdn_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn', 'warning' );
-			echo '<i class="sui-icon-check-tick sui-' . $cdn_status . '" aria-hidden="true"></i>';
+		} elseif ( 'cdn' === $tab ) {
+			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+			$cdn    = $this->settings->get( 'cdn' );
+
+			if ( $cdn && isset( $status->cdn_enabled ) && $status->cdn_enabled ) {
+				if ( WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+					echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
+				} else {
+					echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
+				}
+			}
+
+			if ( $cdn && isset( $status->cdn_enabled ) && ! $status->cdn_enabled ) {
+				echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
+			}
 		}
 	}
 
@@ -981,10 +995,13 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Get all grouped settings that can be skipped.
 		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp' ) );
 
+
+
 		$this->view(
 			'meta-boxes/bulk-settings/meta-box',
 			array(
 				'basic_features'      => WP_Smush_Core::$basic_features,
+				'cdn_enabled'         => $this->settings->get('cdn'),
 				'grouped_settings'    => $grouped_settings,
 				'opt_networkwide_val' => $this->settings->is_network_enabled(),
 				'settings'            => $this->settings->get(),
@@ -1170,6 +1187,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Available values: warning (inactive), success (active) or error (expired).
 		$status_msg = array(
 			'warning' => __( 'CDN is not yet active. Configure your settings below and click Activate.', 'wp-smushit' ),
+			'notice'  => __( 'CDN is being activated. This could take some time. Please be patient.', 'wp-smushit' ),
 			'success' => __( 'CDN is active. Your media is being served from the WPMU DEV CDN.', 'wp-smushit' ),
 			'error'   => __(
 				'CDN is inactive. You have gone over your 30 day cap so we’ve stopped serving your images.
@@ -1181,8 +1199,13 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$cdn_status = 'warning';
 
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
-		if ( $cdn->cdn_enabled ) {
-			$cdn_status = $cdn->bandwidth / 1024 / 1024  < $cdn->bandwidth_plan ? 'success' : 'error';
+		if ( $cdn->cdn_enabled && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+			// 1073741824 = 1024 (kb) * 1024 (mb) * 1024 (gb)
+			$cdn_status = $cdn->bandwidth / 1073741824  < $cdn->bandwidth_plan ? 'success' : 'error';
+		}
+
+		if ( isset( $cdn->cdn_enabling ) && $cdn->cdn_enabling ) {
+			$cdn_status = 'notice';
 		}
 
 		$this->view(

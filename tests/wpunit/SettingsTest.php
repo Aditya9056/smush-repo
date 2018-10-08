@@ -53,7 +53,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->setPrivateProperty( $smush, 'is_pro', true );
 
-		WP_Smush::validate_install();
+		$smush->validate_install();
 	}
 
 	/**
@@ -64,7 +64,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->setPrivateProperty( $smush, 'is_pro', false );
 
-		WP_Smush::validate_install();
+		$smush->validate_install();
 	}
 
 	/**
