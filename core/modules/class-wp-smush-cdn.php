@@ -519,7 +519,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			if ( ! empty( $width ) && ! empty( $height ) ) {
 				// Set size arg.
 				$args = array(
-					'size' => $width . ',' . $height,
+					'size' => "{$width}x{$height}",
 				);
 			}
 
@@ -584,7 +584,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 			// If this size exists in registered sizes, add argument.
 			if ( 'full' !== $size && array_key_exists( $size, $image_sizes ) ) {
-				$args['size'] = (int) $image_sizes[ $size ]['width'] . ',' . (int) $image_sizes[ $size ]['height'];
+				$args['size'] = (int) $image_sizes[ $size ]['width'] . 'x' . (int) $image_sizes[ $size ]['height'];
 			}
 		}
 
@@ -802,7 +802,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 			// Arguments for cdn url.
 			$args = array(
-				'size' => "{$new_width},{$dimensions[1]}",
+				'size' => "{$new_width}x{$dimensions[1]}",
 			);
 
 			// Add new srcset item.
