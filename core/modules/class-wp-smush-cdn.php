@@ -366,7 +366,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			return $content;
 		}
 
-		$content  = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
+		$content = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
+
 		$document = new DOMDocument();
 		libxml_use_internal_errors( true );
 		$document->loadHTML( utf8_decode( $content ) );
@@ -426,6 +427,14 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			 */
 			if ( apply_filters( 'smush_skip_image_from_cdn', false, $src, $image ) ) {
 				continue;
+			}
+
+			// See if srcset is already set.
+			$srcset = $image->getAttribute( 'srcset' );
+			if ( ! $srcset ) {
+				list( $srcset, $sizes ) = $this->generate_srcset( $src );
+				$image->setAttribute( 'srcset', $srcset );
+				$image->setAttribute( 'sizes', $sizes );
 			}
 
 			/**
@@ -603,6 +612,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @see max_content_width()
 	 * @see set_additional_srcset()
 	 * @see get_image_sizes()
+	 * @see generate_srcset()
 	 */
 
 	/**
@@ -868,6 +878,50 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		wp_cache_set( 'get_image_sizes', $sizes, 'smush_image_sizes' );
 
 		return $sizes;
+	}
+
+	/**
+	 * Try to generate the srcset for the image.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string $src  Image source.
+	 *
+	 * @return array|bool
+	 */
+	private function generate_srcset( $src ) {
+		// Try to get the attachment URL.
+		$attachment_id = attachment_url_to_postid( $src );
+		if ( ! $attachment_id ) {
+			return false;
+		}
+
+		// Try to get width and height from image.
+		if ( $attachment_id ) {
+			$image = wp_get_attachment_image_src( $attachment_id, 'full' );
+
+			list( $src, $width, $height ) = $image;
+
+			$image_meta = wp_get_attachment_metadata( $attachment_id );
+		} else {
+			// Try to get the dimensions directly from the file.
+			list( $width, $height ) = getimagesize( $src );
+
+			$upload_dir = wp_upload_dir();
+			$file_path  = substr( $src, strlen( $upload_dir['baseurl'] ) + 1 );
+
+			$image_meta = array(
+				'width'  => $width,
+				'height' => $height,
+				'file'   => $file_path,
+			);
+		}
+
+		$size_array = array( absint( $width ), absint( $height ) );
+		$srcset     = wp_calculate_image_srcset( $size_array, $src, $image_meta, $attachment_id );
+		$sizes      = wp_calculate_image_sizes( $size_array, $src, $image_meta, $attachment_id );
+
+		return array( $srcset, $sizes );
 	}
 
 }
