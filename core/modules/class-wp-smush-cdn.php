@@ -447,7 +447,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 			// Do not continue if CDN is not active.
 			if ( $this->cdn_active ) {
-
 				// Generate cdn url from local url.
 				$src = $this->generate_cdn_url( $src, $args );
 
@@ -504,6 +503,12 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 			list( $width, $height ) = $this->get_size_from_file_name( $source['url'] );
 
+			// The file already has a resized version as a thumbnail.
+			if ( 'w' === $source['descriptor'] && $width === $source['value'] ) {
+				$sources[ $i ]['url'] = $this->generate_cdn_url( $source['url'] );
+				continue;
+			}
+
 			// If don't have attachment id, get original image by removing dimensions from url.
 			if ( empty( $url ) ) {
 				$url = $this->get_url_without_dimensions( $source['url'] );
@@ -525,9 +530,10 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		// Set additional sizes if required.
 		if ( $this->settings->get( 'auto_resize' ) ) {
 			$sources = $this->set_additional_srcset( $sources, $size_array, $main_image_url, $image_meta, $image_src );
-		}
 
-		ksort( $sources );
+			// Make it look good.
+			ksort( $sources );
+		}
 
 		return $sources;
 	}
@@ -791,9 +797,12 @@ class WP_Smush_CDN extends WP_Smush_Module {
 				}
 			}
 
+			// We need the width as well...
+			$dimensions = wp_constrain_dimensions( $current_width, $current_height, $new_width );
+
 			// Arguments for cdn url.
 			$args = array(
-				'size' => $new_width,
+				'size' => "{$new_width},{$dimensions[1]}",
 			);
 
 			// Add new srcset item.
