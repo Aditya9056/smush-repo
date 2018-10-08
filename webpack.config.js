@@ -2,7 +2,8 @@ const _          = require('lodash'),
 	  path       = require('path'),
 	  webpack    = require('webpack'),
 	  ATP        = require('autoprefixer'),
-	  CSSExtract = require("mini-css-extract-plugin");
+	  CSSExtract = require("mini-css-extract-plugin"),
+	  CleanDir   = require('clean-webpack-plugin');
 
 // The path where the Shared UI fonts & images should be sent.
 const config = {
@@ -29,7 +30,8 @@ const sharedConfig = {
 const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
 		'admin': './_src/scss/app.scss',
-		'common': './_src/scss/common.scss'
+		'common': './_src/scss/common.scss',
+		'resize-detection': './_src/scss/resize-detection.scss'
 	},
 
 	output: {
@@ -94,13 +96,14 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 	plugins: [
 		new CSSExtract({
             filename: '../css/[name].min.css'
-        })
+        }),
+		new CleanDir( ['assets/css'] )
 	]
 });
 
 const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
-		'shared-ui': '@wpmudev/shared-ui',
+		'shared-ui': './_src/js//shared-ui.js',
 		'admin': './_src/js/app.js',
 		'media': './_src/js/media.js',
 		'resize-detection': './_src/js/public-resize-detection.js',
@@ -132,9 +135,9 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 	plugins: [
 		// Automatically load modules instead of having to import or require them everywhere.
 		new webpack.ProvidePlugin( {
-			ClipboardJS: '@wpmudev/shared-ui/js/clipboard.js', // Vendor script in Shared UI.
 			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
-		} )
+		} ),
+		new CleanDir( ['assets/js'] )
 	]
 });
 

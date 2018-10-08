@@ -1,3 +1,20 @@
+= 2.9.0 =
+
+* New: Incorrect image size detection
+* New: Pointers for new installs
+* New: Show a list of errors (if present) after bulk Smush
+* Enhance: Remove activation redirection
+* Fix: Compatibility with Enhanced Media Library
+* Fix: Layout inconsistencies
+* Fix: Remove duplicate queries
+* Fix: User profile languages not properly applying to Smush
+* Fix: Translation strings
+* Fix: Smush full sized images when image dimensions are smaller than the largest thumbnail
+* Fix: Directory Smush will not get stuck when an image encounters an error during compression
+* Fix: Support for the latest Gutenberg version
+* Fix: Allow blog admins in network installs to manage site Smush options
+* Fix: Stats not showing after Smushing in media library
+
 = 2.8.2 =
 
 Fix: Compatibility issues with latest WP Offload Media (WP Offload S3) update

@@ -3,17 +3,21 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: codeception/codeception
+image: incsub/codeception
 
 pipelines:
-  branches:
-    unit-tests:
-      - step:
-          caches:
-            - docker
-            - composer
-            - node
-          services:
-            - docker
-          script: # Modify the commands below to build your repository.
-            - php vendor/bin/codecept run
+  default:
+    - step:
+        script:
+          # codesniffer - will fail the pipeline, if errors are present
+          #- vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
+          #- vendor/bin/phpcs -p --colors --report=summary --standard=WordPress lib/ wp-smush.php
+          - mkdir -p ~/.ssh
+          - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
+          - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
+          - git submodule update --init --recursive
+          - service mysql start
+          - bash misc/deploy-wordpress.sh
+          - cp -R $BITBUCKET_CLONE_DIR /srv/www/wordpress-default/public_html/wp-content/plugins/wp-smushit
+          - php -S localhost:8085 --docroot public &>/dev/null&
+          - codecept run wpunit
