@@ -95,17 +95,29 @@ if ( ! defined( 'WP_SMUSH_ASYNC' ) && ! empty( $_SERVER['SERVER_NAME'] ) && ( 0 
 	define( 'WP_SMUSH_ASYNC', true );
 }
 
-add_action( 'admin_init', 'deactivate_smush_org' );
-if ( ! function_exists( 'deactivate_smush_org' ) ) {
-	/**
-	 * Deactivate the .org version, if pro version is active.
-	 */
-	function deactivate_smush_org() {
-		if ( is_plugin_active( 'wp-smush-pro/wp-smush.php' ) && is_plugin_active( 'wp-smushit/wp-smush.php' ) ) {
-			deactivate_plugins( 'wp-smushit/wp-smush.php' );
-			// Store in database, in order to show a notice on page load.
-			update_site_option( 'smush_deactivated', 1 );
-		}
+/**
+ * If we are activating a version, while having another present and activated.
+ * Leave in the Pro version, if it is available.
+ *
+ * @since 2.9
+ */
+if ( WP_SMUSH_BASENAME !== plugin_basename( __FILE__ ) ) {
+	$pro_installed = false;
+	if ( file_exists( WP_PLUGIN_DIR . '/wp-smush-pro/wp-smush.php' ) ) {
+		$pro_installed = true;
+	}
+
+	if ( ! function_exists( 'is_plugin_active' ) ) {
+		include_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	if ( is_plugin_active( 'wp-smush-pro/wp-smush.php' ) ) {
+		deactivate_plugins( plugin_basename( __FILE__ ) );
+		update_site_option( 'smush_deactivated', 1 );
+		return; // Return to avoid errors with free-dashboard module.
+	} elseif ( $pro_installed && is_plugin_active( WP_SMUSH_BASENAME ) ) {
+		deactivate_plugins( WP_SMUSH_BASENAME );
+		activate_plugin( plugin_basename( __FILE__ ) );
 	}
 }
 
