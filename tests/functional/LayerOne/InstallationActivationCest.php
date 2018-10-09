@@ -13,7 +13,7 @@ class InstallationActivationCest {
 	 *
 	 * @var string $plugin
 	 */
-	private $slug = 'wp-smushit';
+	private $slug = 'smush-pro';
 
 	/**
 	 * Executed before tests.
