@@ -2,7 +2,9 @@
 /**
  * Class BulkSmushCest
  *
- * Test Bulk Smush functionality
+ * Test Bulk Smush functionality.
+ * Before running the tests, make sure to execute ./misc/deploy-wordpress.sh and copy the plugin
+ * folder to /tmp/wordpress/wp-content/plugins folder.
  *
  * @package AcceptanceTests
  */
@@ -19,6 +21,10 @@ class BulkSmushCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 		$I->loginAsAdmin();
+		$I->amOnPluginsPage();
+		$I->seePluginDeactivated( 'smush-pro' );
+		$I->activatePlugin( 'smush-pro' );
+		$I->seePluginActivated( 'smush-pro' );
 	}
 
 	public function _after( AcceptanceTester $I ) {}
