@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class AjaxSmushTest
+ */
 class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 
 	/**
@@ -16,8 +19,7 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	 * Tear down method.
 	 */
 	public function tearDown() {
-		// your tear down methods here
-
+		// your tear down methods here.
 		parent::tearDown();
 	}
 
@@ -29,10 +31,12 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	private function uploadImage() {
 		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
-		return $this->factory()->attachment->create( array(
+		$args = [
 			'post_title'   => basename( $file ),
 			'post_content' => $file,
-		) );
+		];
+
+		return $this->factory()->attachment->create( $args );
 	}
 
 	/**
@@ -45,10 +49,7 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	private function ajaxSmushitManual( $id ) {
 		try {
 			$_GET['attachment_id'] = $id;
-			$a = $this->_handleAjax( 'wp_smushit_manual' );
-
-			codecept_debug( $a );
-
+			$this->_handleAjax( 'wp_smushit_manual' );
 			$this->fail( 'Expected exception: WPAjaxDieContinueException' );
 		} catch ( WPAjaxDieContinueException $e ) {
 			// We expected this, do nothing.

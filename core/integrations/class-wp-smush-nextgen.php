@@ -55,20 +55,11 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 
 		$is_pro = WP_Smush::is_pro();
 
-		// Check if integration is Enabled or not.
-		if ( ! empty( WP_Smush_Settings::$settings ) && $is_pro ) {
-			$opt_nextgen_val = WP_Smush_Settings::$settings[ $this->module ];
-		} else {
-			// Smush NextGen key.
-			$opt_nextgen     = WP_SMUSH_PREFIX . $this->module;
-			$opt_nextgen_val = WP_Smush_Settings::get_setting( $opt_nextgen, false );
-		}
-
 		// Hook at the end of setting row to output a error div.
 		add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
 
 		// Do not continue if not PRO member or NextGen plugin not installed.
-		if ( ! $is_pro || ! $this->enabled || ! $opt_nextgen_val ) {
+		if ( ! $is_pro || ! $this->enabled || ! $this->is_enabled() ) {
 			return;
 		}
 
@@ -86,7 +77,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 		 */
 		// Auto Smush image, if enabled, runs after NextGen is finished uploading the image.
 		// Allows to override whether to auto smush NextGen image or not.
-		$auto_smush = apply_filters( 'smush_nextgen_auto', WP_Smushit::is_auto_smush_enabled() );
+		$auto_smush = apply_filters( 'smush_nextgen_auto', WP_Smush::get_instance()->core()->mod->smush->is_auto_smush_enabled() );
 		if ( $auto_smush ) {
 			add_action( 'ngg_added_new_image', array( $this, 'auto_smush' ) );
 		}
@@ -130,6 +121,17 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 	 *
 	 * PUBLIC CLASSES
 	 */
+
+	/**
+	 * Check if NextGen integration is active.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @return bool|mixed
+	 */
+	public function is_enabled() {
+		return $this->settings->get( 'nextgen' );
+	}
 
 	/**
 	 * Bulk Smush for Nextgen.
@@ -208,9 +210,11 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 		$stats['smushed'] = ! empty( $this->ng_admin->resmush_ids ) ? $smushed_count - $resmush_count : $smushed_count;
 		$stats['count']   = $image_count;
 
-		wp_send_json_success( array(
-			'stats' => $stats,
-		) );
+		wp_send_json_success(
+			array(
+				'stats' => $stats,
+			)
+		);
 	}
 
 	/**
@@ -307,12 +311,14 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 			 * We use error_msg for single images to append to the div and error_message to
 			 * append to bulk smush errors list.
 			 */
-			wp_send_json_error( array(
-				'error'         => 'no_metadata',
-				'error_msg'     => '<p class="wp-smush-error-message">' . esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ) . '</p>',
-				'error_message' => esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ),
-				'file_name'     => isset( $image->filename ) ? $image->filename : 'undefined',
-			) );
+			wp_send_json_error(
+				array(
+					'error'         => 'no_metadata',
+					'error_msg'     => '<p class="wp-smush-error-message">' . esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ) . '</p>',
+					'error_message' => esc_html__( "We couldn't find the metadata for the image, possibly the image has been deleted.", 'wp-smushit' ),
+					'file_name'     => isset( $image->filename ) ? $image->filename : 'undefined',
+				)
+			);
 		}
 
 		$registry = C_Component_Registry::get_instance();
@@ -368,9 +374,11 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 
 		// Verify Nonce.
 		if ( ! wp_verify_nonce( $nonce, 'wp_smush_nextgen' ) ) {
-			wp_send_json_error( array(
-				'error' => 'nonce_verification_failed',
-			) );
+			wp_send_json_error(
+				array(
+					'error' => 'nonce_verification_failed',
+				)
+			);
 		}
 
 		// Check for media upload permission.
@@ -569,18 +577,22 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 	public function resmush_image() {
 		// Check Empty fields.
 		if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
-			wp_send_json_error( array(
-				'error'   => 'empty_fields',
-				'message' => '<div class="wp-smush-error">' . esc_html__( "We couldn't process the image, fields empty.", 'wp-smushit' ) . '</div>',
-			) );
+			wp_send_json_error(
+				array(
+					'error'   => 'empty_fields',
+					'message' => '<div class="wp-smush-error">' . esc_html__( "We couldn't process the image, fields empty.", 'wp-smushit' ) . '</div>',
+				)
+			);
 		}
 
 		// Check Nonce.
 		if ( ! wp_verify_nonce( $_POST['_nonce'], 'wp-smush-resmush-' . $_POST['attachment_id'] ) ) {
-			wp_send_json_error( array(
-				'error'   => 'empty_fields',
-				'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", 'wp-smushit' ) . '</div>',
-			) );
+			wp_send_json_error(
+				array(
+					'error'   => 'empty_fields',
+					'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", 'wp-smushit' ) . '</div>',
+				)
+			);
 		}
 
 		$image_id = intval( $_POST['attachment_id'] );
@@ -590,18 +602,22 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 		// If any of the image is restored, we count it as success.
 		if ( ! empty( $smushed ) && ! is_wp_error( $smushed ) ) {
 			// Send button content.
-			wp_send_json_success( array(
-				'button' => $smushed['status'] . $smushed['stats'],
-			) );
+			wp_send_json_success(
+				array(
+					'button' => $smushed['status'] . $smushed['stats'],
+				)
+			);
 		} elseif ( is_wp_error( $smushed ) ) {
 			// Send Error Message.
-			wp_send_json_error( array(
-				'message' => sprintf(
-				/* translators: %s: error message */
-					'<div class="wp-smush-error">' . __( 'Unable to smush image, %s', 'wp-smushit' ) . '</div>',
-					$smushed->get_error_message()
-				),
-			) );
+			wp_send_json_error(
+				array(
+					'message' => sprintf(
+						/* translators: %s: error message */
+						'<div class="wp-smush-error">' . __( 'Unable to smush image, %s', 'wp-smushit' ) . '</div>',
+						$smushed->get_error_message()
+					),
+				)
+			);
 		}
 	}
 
@@ -1017,7 +1033,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 // Extend NextGen Mixin class to smush dynamic images.
 if ( class_exists( 'WP_Smush_Nextgen' ) ) {
 	// Extend Nextgen Mixin class and override the generate_image_size, to optimize dynamic thumbnails, generated by nextgen, check for auto smush.
-	if ( ! class_exists( 'WpSmushNextGenDynamicThumbs' ) && class_exists( 'Mixin' ) && WP_Smushit::is_auto_smush_enabled() ) {
+	if ( ! class_exists( 'WpSmushNextGenDynamicThumbs' ) && class_exists( 'Mixin' ) && WP_Smush::get_instance()->core()->mod->smush->is_auto_smush_enabled() ) {
 		class WpSmushNextGenDynamicThumbs extends Mixin {
 			/**
 			 * Overrides the NextGen Gallery function, to smush the dynamic images and thumbnails created by gallery

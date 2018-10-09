@@ -1,5 +1,8 @@
 {
     "require-dev": {
         "lucatume/wp-browser": "^2.1"
+    },
+    "require": {
+        "guzzlehttp/guzzle": "~6.0"
     }
 }

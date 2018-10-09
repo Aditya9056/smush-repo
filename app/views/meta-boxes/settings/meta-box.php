@@ -2,84 +2,45 @@
 /**
  * Settings meta box.
  *
+ * @since 3.0
  * @package WP_Smush
  *
- * @var array $basic_features       Basic features list.
- * @var array $grouped_settings     Grouped settings that can be skipeed.
- * @var bool  $opt_networkwide_val  Networkwide or not?
- * @var array $settings             Settings values.
- * @var array $settings_data        Settings labels and descriptions.
+ * @var string $site_language     Site language.
+ * @var string $translation_link  Link to plugin translation page.
  */
 
 ?>
 
-<form id="wp-smush-settings-form" method="post">
-	<input type="hidden" name="setting_form" id="setting_form" value="bulk">
-	<?php if ( is_multisite() && is_network_admin() ) : ?>
-		<div class="sui-box-settings-row wp-smush-basic">
-			<div class="sui-box-settings-col-1">
-				<label for="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>" aria-hidden="true">
-					<span class="sui-settings-label">
-						<?php echo esc_html( $settings_data['networkwide']['short_label'] ); ?>
-					</span>
-					<span class="sui-description">
-						<?php echo esc_html( $settings_data['networkwide']['desc'] ); ?>
-					</span>
-				</label>
-			</div>
-			<div class="sui-box-settings-col-2">
-				<label class="sui-toggle">
-					<input type="checkbox" id="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>" name="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>" <?php checked( $opt_networkwide_val, 1, true ); ?> value="1">
-					<span class="sui-toggle-slider"></span>
-					<label class="toggle-label" for="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>" aria-hidden="true"></label>
-				</label>
-				<label for="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>">
-					<?php echo esc_html( $settings_data['networkwide']['label'] ); ?>
-				</label>
-			</div>
+<div class="sui-box-settings-row">
+	<div class="sui-box-settings-col-1">
+		<span class="sui-settings-label "><?php esc_html_e( 'Translations', 'wp-smushit' ); ?></span>
+		<span class="sui-description">
+			<?php
+			printf(
+				/* translators: %1$s: opening a tag, %2$s: closing a tag */
+				esc_html__( 'By default, Smush will use the language you’d set in your %1$sWordPress Admin Settings%2$s if a matching translation is available.', 'wp-smushit' ),
+				'<a href="' . esc_html( admin_url( 'options-general.php' ) ) . '">',
+				'</a>'
+			);
+			?>
+		</span>
+	</div>
+	<div class="sui-box-settings-col-2">
+		<div class="sui-form-field">
+			<label for="language-input" class="sui-label">
+				<?php esc_html_e( 'Active Translation', 'wp-smushit' ); ?>
+			</label>
+			<input type="text" id="language-input" class="sui-form-control" disabled="disabled" placeholder="<?php echo esc_attr( $site_language ); ?>">
+			<span class="sui-description">
+				<?php
+				printf(
+					/* translators: %1$s: opening a tag, %2$s: closing a tag */
+					esc_html__( 'Not using your language, or have improvements? Help us improve translations by providing your own improvements %1$shere%2$s.', 'wp-smushit' ),
+					'<a href="' . esc_html( $translation_link ) . '" target="_blank">',
+					'</a>'
+				);
+				?>
+			</span>
 		</div>
-		<input type="hidden" name="setting-type" value="network">
-		<div class="network-settings-wrapper<?php echo $opt_networkwide_val ? '' : ' sui-hidden'; ?>">
-	<?php endif; ?>
-
-	<?php
-	if ( ! is_multisite() || ( ! $opt_networkwide_val && ! is_network_admin() ) || is_network_admin() ) {
-		foreach ( $settings_data as $name => $values ) {
-			// Skip networkwide settings, we already printed it.
-			if ( 'networkwide' === $name ) {
-				continue;
-			}
-
-			// Skip premium features if not a member.
-			if ( ! in_array( $name, $basic_features, true ) && ! WP_Smush::is_pro() ) {
-				continue;
-			}
-
-			$setting_m_key = WP_SMUSH_PREFIX . $name;
-			$setting_val   = empty( $settings[ $name ] ) ? 0 : $settings[ $name ];
-
-			// Set the default value 1 for auto smush.
-			if ( 'auto' === $name && ( false === $setting_val || ! isset( $setting_val ) ) ) {
-				$setting_val = 1;
-			}
-
-			// Group original, resize and backup for PRO users.
-			if ( in_array( $name, $grouped_settings, true ) ) {
-				continue;
-			}
-
-			$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
-
-			// Show settings option.
-			$this->settings_row( $setting_m_key, $label, $name, $setting_val );
-		}
-
-		// Hook after general settings.
-		do_action( 'wp_smush_after_basic_settings' );
-	}
-
-	if ( is_multisite() && is_network_admin() ) {
-		echo '</div>';
-	}
-	?>
-</form>
+	</div>
+</div>

@@ -164,18 +164,24 @@ class WP_Smush_Admin {
 		}
 
 		wp_enqueue_script(
-			'smush-backbone-extension', WP_SMUSH_URL . 'app/assets/js/media.min.js', array(
+			'smush-backbone-extension',
+			WP_SMUSH_URL . 'app/assets/js/media.min.js',
+			array(
 				'jquery',
 				'media-editor', // Used in image filters.
 				'media-views',
 				'media-grid',
 				'wp-util',
 				'wp-api',
-			), WP_SMUSH_VERSION, true
+			),
+			WP_SMUSH_VERSION,
+			true
 		);
 
 		wp_localize_script(
-			'smush-backbone-extension', 'smush_vars', array(
+			'smush-backbone-extension',
+			'smush_vars',
+			array(
 				'strings' => array(
 					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
 					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
@@ -237,7 +243,7 @@ class WP_Smush_Admin {
 		$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
 
 		// Add a bulk smush option for NextGen gallery.
-		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->get_nextgen_status() && WP_Smush::is_pro() ) {
+		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->nextgen->is_enabled() && WP_Smush::is_pro() ) {
 			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( $title, 'wp-smush-nextgen-bulk', true );
 		}
 	}
@@ -312,10 +318,16 @@ class WP_Smush_Admin {
 				<?php
 				printf(
 					/* translators: $1$s: recheck link, $2$s: closing a tag, %3$s; contact link, %4$s: closing a tag */
-					esc_html__( 'It looks like Smush couldn’t verify your WPMU DEV membership so Pro features
+					esc_html__(
+						'It looks like Smush couldn’t verify your WPMU DEV membership so Pro features
 					have been disabled for now. If you think this is an error, run a %1$sre-check%2$s or get in touch
-					with our %3$ssupport team%4$s.', 'wp-smushit' ),
-					$recheck_link, '</a>', $wpmu_contact, '</a>'
+					with our %3$ssupport team%4$s.',
+						'wp-smushit'
+					),
+					$recheck_link,
+					'</a>',
+					$wpmu_contact,
+					'</a>'
 				);
 				?>
 			</p>
@@ -426,9 +438,9 @@ class WP_Smush_Admin {
 	 *
 	 * @param string $column_name  Column name.
 	 * @param int    $id           Attachment ID.
- 	 */
+	 */
 	public function custom_column( $column_name, $id ) {
-		if ( 'smushit' == $column_name ) {
+		if ( 'smushit' === $column_name ) {
 			WP_Smush::get_instance()->core()->mod->smush->set_status( $id );
 		}
 	}
@@ -452,7 +464,8 @@ class WP_Smush_Admin {
 
 		if ( isset( $orderby ) && 'smushit' === $orderby ) {
 			$query->set(
-				'meta_query', array(
+				'meta_query',
+				array(
 					'relation' => 'OR',
 					array(
 						'key'     => WP_Smushit::$smushed_meta_key,

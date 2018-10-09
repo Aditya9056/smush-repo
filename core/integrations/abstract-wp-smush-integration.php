@@ -40,9 +40,20 @@ abstract class WP_Smush_Integration {
 	protected $enabled = false;
 
 	/**
+	 * Settings class instance for easier access.
+	 *
+	 * @since 3.0
+	 *
+	 * @var WP_Smush_Settings
+	 */
+	protected $settings;
+
+	/**
 	 * WP_Smush_Integration constructor.
 	 */
 	public function __construct() {
+		$this->settings = WP_Smush_Settings::get_instance();
+
 		// Filters the setting variable to add module settings in premium features.
 		add_filter( 'wp_smush_integration_settings', array( $this, 'add_setting' ), $this->priority );
 

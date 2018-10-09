@@ -101,7 +101,7 @@ class WP_Smush_Common {
 		}
 
 		// Do not smush if auto smush is turned off.
-		if ( ! WP_Smushit::is_auto_smush_enabled() ) {
+		if ( ! $smush->is_auto_smush_enabled() ) {
 			return;
 		}
 
@@ -163,7 +163,8 @@ class WP_Smush_Common {
 			// Create new stats.
 			$stats = array(
 				'stats' => array_merge(
-					$smush->_get_size_signature(), array(
+					$smush->_get_size_signature(),
+					array(
 						'api_version' => - 1,
 						'lossy'       => - 1,
 					)

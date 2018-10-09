@@ -70,8 +70,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			'label'       => __( 'Enable Amazon S3 support', 'wp-smushit' ),
 			'short_label' => __( 'Amazon S3', 'wp-smushit' ),
 			'desc'        => sprintf(
-				esc_html__( "Storing your image on S3 buckets using %1\$sWP Offload S3%2\$s? Smush can detect
-				and smush those assets for you, including when you're removing files from your host server.", 'wp-smushit' ),
+				esc_html__(
+					"Storing your image on S3 buckets using %1\$sWP Offload S3%2\$s? Smush can detect
+				and smush those assets for you, including when you're removing files from your host server.",
+					'wp-smushit'
+				),
 				"<a href='{$plugin_url}' target = '_blank'>",
 				'</a>'
 			),
@@ -161,7 +164,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 */
 	public function s3_support_required_notice() {
 		// Do not display it for other users. Do not display on network screens, if network-wide option is disabled.
-		if ( ! current_user_can( 'manage_options' ) || ( is_network_admin() && ! WP_Smush_Settings::$settings['networkwide'] ) ) {
+		if ( ! current_user_can( 'manage_options' ) || ( is_network_admin() && ! $this->settings->is_network_enabled() ) ) {
 			return true;
 		}
 
@@ -201,9 +204,12 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 				 * Translators: %1$s: opening strong tag, %2$s: closing strong tag, %s: settings link,
 				 * %3$s: opening a and strong tags, %4$s: closing a and strong tags
 				 */
-				__( "We can see you have WP Offload S3 installed with the %1\$sRemove Files From Server%2\$s option
+				__(
+					"We can see you have WP Offload S3 installed with the %1\$sRemove Files From Server%2\$s option
 				activated. If you want to optimize your S3 images you'll need to enable the %3\$sAmazon S3 Support%4\$s
-				feature in Smush's settings.", 'wp-smushit' ),
+				feature in Smush's settings.",
+					'wp-smushit'
+				),
 				'<strong>',
 				'</strong>',
 				"<a href='{$settings_link}'><strong>",
@@ -217,8 +223,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 				 * Translators: %1$s: opening strong tag, %2$s: closing strong tag, %s: settings link,
 				 * %3$s: opening a and strong tags, %4$s: closing a and strong tags
 				 */
-				__( "We can see you have WP Offload S3 installed with the %1\$sRemove Files From Server%2\$s option
-				activated. If you want to optimize your S3 images you'll need to %3\$supgrade to Smush Pro%4\$s", 'wp-smushit' ),
+				__(
+					"We can see you have WP Offload S3 installed with the %1\$sRemove Files From Server%2\$s option
+				activated. If you want to optimize your S3 images you'll need to %3\$supgrade to Smush Pro%4\$s",
+					'wp-smushit'
+				),
 				'<strong>',
 				'</strong>',
 				'<a href=' . esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro' ) . '><strong>',
@@ -259,7 +268,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		$is_pro = WP_Smush::is_pro();
 
 		// If S3 integration is not enabled, return.
-		$setting_val = $is_pro ? WP_Smush_Settings::$settings[ $this->module ] : 0;
+		$setting_val = $is_pro ? $this->settings->get( $this->module ) : 0;
 
 		// If integration is disabled when S3 offload is active, do not continue.
 		if ( ! $setting_val && is_object( $as3cf ) ) {
@@ -276,8 +285,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			$support_url = esc_url( 'https://premium.wpmudev.org/contact' );
 			$message     = sprintf(
 				/* translators: %1$s: opening a tag, %2$s: closing a tag */
-				esc_html__( 'We are having trouble interacting with WP Offload S3, make sure the plugin is
-				activated. Or you can %1$sreport a bug%2$s.', 'wp-smushit' ),
+				esc_html__(
+					'We are having trouble interacting with WP Offload S3, make sure the plugin is
+				activated. Or you can %1$sreport a bug%2$s.',
+					'wp-smushit'
+				),
 				'<a href="' . $support_url . '" target="_blank">',
 				'</a>'
 			);
@@ -287,8 +299,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			$configure_url = $as3cf->get_plugin_page_url();
 			$message       = sprintf(
 				/* translators: %1$s: opening a tag, %2$s: closing a tag */
-				esc_html__( 'It seems you haven’t finished setting up WP Offload S3 yet. %1$sConfigure it
-				now%2$s to enable Amazon S3 support.', 'wp-smushit' ),
+				esc_html__(
+					'It seems you haven’t finished setting up WP Offload S3 yet. %1$sConfigure it
+				now%2$s to enable Amazon S3 support.',
+					'wp-smushit'
+				),
 				'<a href="' . $configure_url . '" target="_blank">',
 				'</a>'
 			);
@@ -325,7 +340,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 * @return bool|string  Returns file path or false
 	 */
 	private function download_file( $attachment_id, $size_details = array(), $uf_file_path = '' ) {
-		if ( empty( $attachment_id ) || ! WP_Smush_Settings::$settings[ $this->module ] || ! WP_Smush::is_pro() ) {
+		if ( empty( $attachment_id ) || ! $this->settings->get( $this->module ) || ! WP_Smush::is_pro() ) {
 			return false;
 		}
 
@@ -470,7 +485,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		}
 
 		// If not Pro user or S3 support is disabled.
-		return ( ! WP_Smush::is_pro() || ! WP_Smush_Settings::$settings[ $this->module ] );
+		return ( ! WP_Smush::is_pro() || ! $this->settings->get( $this->module ) );
 	}
 
 }

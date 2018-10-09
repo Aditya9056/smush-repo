@@ -13,7 +13,7 @@
 /**
  * Class WP_Smush_Resize
  */
-class WP_Smush_Resize {
+class WP_Smush_Resize extends WP_Smush_Module {
 
 	/**
 	 * Specified width for resizing images
@@ -40,7 +40,7 @@ class WP_Smush_Resize {
 	/**
 	 * WP_Smush_Resize constructor.
 	 */
-	public function __construct() {
+	public function init() {
 		/**
 		 * Initialize class variables, after all stuff has been loaded
 		 */
@@ -58,7 +58,7 @@ class WP_Smush_Resize {
 			return;
 		}
 
-		$settings = WP_Smush_Settings::$settings;
+		$settings = $this->settings->get( 'resize' );
 
 		// Make sure the screen function exists.
 		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
@@ -74,7 +74,7 @@ class WP_Smush_Resize {
 		// If resizing is enabled.
 		$this->resize_enabled = $settings['resize'];
 
-		$resize_sizes = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'resize_sizes', array() );
+		$resize_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes', array() );
 
 		// Resize width and Height.
 		$this->max_w = ! empty( $resize_sizes['width'] ) ? $resize_sizes['width'] : 0;
@@ -140,7 +140,7 @@ class WP_Smush_Resize {
 			$old_width  = $meta['width'];
 			$old_height = $meta['height'];
 
-			$resize_dim = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
+			$resize_dim = $this->settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 
 			$max_width  = ! empty( $resize_dim['width'] ) ? $resize_dim['width'] : 0;
 			$max_height = ! empty( $resize_dim['height'] ) ? $resize_dim['height'] : 0;
@@ -284,10 +284,13 @@ class WP_Smush_Resize {
 		 * }
 		 */
 		$sizes = apply_filters(
-			'wp_smush_resize_sizes', array(
+			'wp_smush_resize_sizes',
+			array(
 				'width'  => $this->max_w,
 				'height' => $this->max_h,
-			), $file_path, $id
+			),
+			$file_path,
+			$id
 		);
 
 		$data = image_make_intermediate_size( $file_path, $sizes['width'], $sizes['height'] );

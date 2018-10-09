@@ -11,6 +11,7 @@
  * Class BulkSmushCest
  */
 class BulkSmushCest {
+
 	/**
 	 * Prepare tests.
 	 *
@@ -18,6 +19,10 @@ class BulkSmushCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 		$I->loginAsAdmin();
+
+		//$this->_manually_load_plugin();
+
+		require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/core/class-wp-smush-settings.php';
 	}
 
 	public function _after( AcceptanceTester $I ) {}
@@ -29,7 +34,7 @@ class BulkSmushCest {
 	 */
 	public function tryBulkSmush( AcceptanceTester $I ) {
 		// Disable auto Smush.
-		WP_Smush_Settings::$settings['auto'] = 0;
+		WP_Smush_Settings::get_instance()->set( 'auto', 0 );
 
 		// Upload images.
 		$I->wantTo( 'Upload images to the media library' );

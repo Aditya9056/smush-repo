@@ -56,18 +56,18 @@ class WP_Smush_Modules {
 	public $resize;
 
 	/**
-	 * Settings module.
-	 *
-	 * @var WP_Smush_Settings
-	 */
-	public $settings;
-
-	/**
 	 * CDN module.
 	 *
 	 * @var WP_Smush_CDN
 	 */
 	public $cdn;
+
+	/**
+	 * Settings module.
+	 *
+	 * @var WP_Smush_Settings
+	 */
+	public $settings;
 
 	/**
 	 * WP_Smush_Modules constructor.
@@ -79,7 +79,8 @@ class WP_Smush_Modules {
 		$this->backup   = new WP_Smush_Backup( $this->smush );
 		$this->png2jpg  = new WP_Smush_Png2jpg();
 		$this->resize   = new WP_Smush_Resize();
-		$this->settings = new WP_Smush_Settings();
+		$this->cdn      = new WP_Smush_CDN();
+		$this->settings = WP_Smush_Settings::get_instance();
 
 		$this->init_compat();
 	}

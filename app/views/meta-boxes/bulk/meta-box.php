@@ -45,9 +45,12 @@ endif;
 </div>
 
 <?php
-$this->view( 'blocks/progress-bar', array(
-	'count' => $core,
-) );
+$this->view(
+	'blocks/progress-bar',
+	array(
+		'count' => $core,
+	)
+);
 ?>
 
 <div class="smush-final-log sui-hidden">
@@ -77,7 +80,7 @@ $this->view( 'blocks/progress-bar', array(
 					);
 					?>
 				</li>
-			<?php elseif ( ! WP_Smush_Settings::$settings['lossy'] ) : ?>
+			<?php elseif ( ! $this->settings->get( 'lossy' ) ) : ?>
 				<li class="smush-recommendation-lossy">
 					<?php
 					printf(
@@ -99,7 +102,7 @@ $this->view( 'blocks/progress-bar', array(
 				);
 				?>
 			</li>
-			<?php if ( ! WP_Smush_Settings::$settings['resize'] ) : ?>
+			<?php if ( ! $this->settings->get( 'resize' ) ) : ?>
 				<li class="smush-recommendation-resize-original">
 					<?php
 					printf(
