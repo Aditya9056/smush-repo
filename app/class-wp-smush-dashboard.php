@@ -693,7 +693,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			?>
 			<!-- List of image sizes recognised by WP Smush -->
 			<div class="wp-smush-image-size-list <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
-				<span class="sui-description">
+				<p class="sui-description">
 					<?php
 					esc_html_e(
 						'Every time you upload an image to your site, WordPress generates a
@@ -703,7 +703,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						'wp-smushit'
 					);
 					?>
-				</span>
+				</p>
 				<?php
 				foreach ( $sizes as $size_k => $size ) {
 					// If image sizes array isn't set, mark all checked ( Default Values ).
@@ -718,7 +718,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						$checked  = $is_pro ? $checked : false;
 					}
 					?>
-					<label class="sui-checkbox sui-description">
+					<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm"">
 						<input type="checkbox" id="wp-smush-size-<?php echo esc_attr( $size_k ); ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo esc_attr( $size_k ); ?>" <?php echo esc_attr( $disabled ); ?>>
 						<span aria-hidden="true"></span>
 						<?php if ( isset( $size['width'], $size['height'] ) ) : ?>
@@ -726,7 +726,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 								<?php echo esc_html( $size_k . ' (' . $size['width'] . 'x' . $size['height'] . ') ' ); ?>
 							</span>
 						<?php else : ?>
-							<span class="sui-description"><?php echo esc_attr( $size_k ); ?>
+							<span><?php echo esc_attr( $size_k ); ?>
 								<?php if ( ! $is_pro ) : ?>
 									<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>">
 										<?php esc_html_e( 'PRO', 'wp-smushit' ); ?>
