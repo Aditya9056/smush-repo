@@ -51,20 +51,15 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 		}
 
 		// Flag that api key is valid.
-		update_site_option( 'wp_smush_api_auth', array(
-			'test_api_key' => array(
-				'timestamp' => current_time( 'timestamp' ),
-				'validity'  => 'valid',
-			),
-		) );
-	}
-
-	/**
-	 * Set Smush to free version.
-	 */
-	private function setFree() {
-		// Delete api key.
-		delete_site_option( 'wp_smush_api_auth' );
+		update_site_option(
+			'wp_smush_api_auth',
+			array(
+				'test_api_key' => array(
+					'timestamp' => current_time( 'timestamp' ),
+					'validity'  => 'valid',
+				),
+			)
+		);
 	}
 
 	/**

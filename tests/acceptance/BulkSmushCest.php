@@ -22,9 +22,9 @@ class BulkSmushCest {
 	public function _before( AcceptanceTester $I ) {
 		$I->loginAsAdmin();
 		$I->amOnPluginsPage();
-		$I->seePluginDeactivated( 'smush-pro' );
-		$I->activatePlugin( 'smush-pro' );
-		$I->seePluginActivated( 'smush-pro' );
+		$I->seePluginDeactivated( 'wp-smushit' );
+		$I->activatePlugin( 'wp-smushit' );
+		$I->seePluginActivated( 'wp-smushit' );
 	}
 
 	public function _after( AcceptanceTester $I ) {}
