@@ -4,6 +4,22 @@
 
 	.sui-wrap {
 
+		.smush-quick-setup-settings {
+			.sui-box-settings-row {
+				display: table;
+			}
+
+			.sui-box-settings-col-1 {
+				max-width: 85%;
+			}
+
+			.sui-box-settings-col-1,
+			.sui-box-settings-col-2 {
+				display: table-cell;
+				flex: none;
+			}
+		}
+
 		// Overwrite extra padding on progress bars in modals.
 		.sui-dialog-content .sui-progress-block {
 			margin-bottom: 0;
@@ -227,11 +243,9 @@
 		}
 
 		.sui-summary-smush {
-			background-image: url('#{$img--path}/smush-graphic-dashboard-summary.svg');
 			background-size: 180px;
 		}
 		.sui-summary-smush-nextgen {
-			background-image: url('#{$img--path}/smush-graphic-dashboard-summary.svg');
 			background-size: 170px;
 		}
 

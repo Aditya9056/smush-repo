@@ -1,4 +1,4 @@
-import "babel-polyfill";
+import "@babel/polyfill";
 
 /**
  * CDN functionality.
@@ -106,7 +106,7 @@ import "babel-polyfill";
 		 * @since 3.0
 		 */
 		updateStatsBox: function () {
-			if ( 'undefined' === typeof this.cdnStatsBox.length ) {
+			if ( 'undefined' === typeof this.cdnStatsBox ) {
 				return;
 			}
 

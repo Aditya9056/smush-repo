@@ -27,8 +27,7 @@
 			</span>
 		<?php endif; ?>
 		<p class="wp-smush-no-images-content tc roboto-regular">
-			<?php esc_html_e( 'In addition to smushing your media uploads, you may want to also smush images living outside your uploads directory.', 'wp-smushit' ); ?><br>
-			<?php esc_html_e( 'Get started by adding files and folders you wish to optimize.', 'wp-smushit' ); ?>
+			<?php esc_html_e( 'In addition to smushing your media uploads, you may want to also smush images living outside your uploads directory. Get started by adding files and folders you wish to optimize.', 'wp-smushit' ); ?>
 		</p>
 		<span class="wp-smush-upload-images sui-no-padding-bottom tc">
 			<button type="button" class="sui-button sui-button-primary wp-smush-browse tc" data-a11y-dialog-show="wp-smush-list-dialog">
