@@ -56,6 +56,10 @@
                     color: #333;
                 }
 
+                &:not(:last-child) {
+                    margin-bottom: 0;
+                }
+
                 &:first-child { margin-right: 15px; }
                 &:last-child { margin-left: 15px; }
             }
