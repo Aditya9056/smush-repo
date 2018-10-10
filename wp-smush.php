@@ -13,7 +13,7 @@
  * Plugin Name:       Smush Pro
  * Plugin URI:        http://premium.wpmudev.org/projects/wp-smush-pro/
  * Description:       Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
- * Version:           2.9.0
+ * Version:           2.9.1-beta.1
  * Author:            WPMU DEV
  * Author URI:        https://premium.wpmudev.org/
  * License:           GPLv2
@@ -49,7 +49,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 if ( ! defined( 'WP_SMUSH_VERSION' ) ) {
-	define( 'WP_SMUSH_VERSION', '2.9.0' );
+	define( 'WP_SMUSH_VERSION', '2.9.1-beta.1' );
 }
 // Used to define body class.
 if ( ! defined( 'WP_SHARED_UI_VERSION' ) ) {
@@ -99,7 +99,7 @@ if ( ! defined( 'WP_SMUSH_ASYNC' ) && ! empty( $_SERVER['SERVER_NAME'] ) && ( 0 
  * If we are activating a version, while having another present and activated.
  * Leave in the Pro version, if it is available.
  *
- * @since 2.9
+ * @since 2.9.1
  */
 if ( WP_SMUSH_BASENAME !== plugin_basename( __FILE__ ) ) {
 	$pro_installed = false;
