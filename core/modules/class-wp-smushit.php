@@ -185,7 +185,7 @@ class WP_Smushit extends WP_Smush_Module {
 
 						// Detailed Stats Link.
 						$links .= sprintf(
-							'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-constrained button" data-tooltip="%s">%s</a>',
+							'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-mobile sui-tooltip-top-left-mobile button" data-tooltip="%s">%s</a>',
 							esc_html__( 'Detailed stats for all the image sizes', 'wp-smushit' ),
 							esc_html__( 'View Stats', 'wp-smushit' )
 						);
@@ -1803,7 +1803,7 @@ class WP_Smushit extends WP_Smush_Module {
 		);
 
 		$skip_rsn = ! empty( $skip_msg[ $msg_id ] ) ? esc_html__( ' Skipped', 'wp-smushit' ) : '';
-		$skip_rsn = ! empty( $skip_rsn ) ? $skip_rsn . '<span class="sui-tooltip sui-tooltip-constrained sui-tooltip-left" data-tooltip="' . $skip_msg[ $msg_id ] . '"><i class="dashicons dashicons-editor-help"></i></span>' : '';
+		$skip_rsn = ! empty( $skip_rsn ) ? $skip_rsn . '<span class="sui-tooltip sui-tooltip-left sui-tooltip-constrained sui-tooltip-top-right-mobile" data-tooltip="' . $skip_msg[ $msg_id ] . '"><i class="dashicons dashicons-editor-help"></i></span>' : '';
 
 		return $skip_rsn;
 	}
