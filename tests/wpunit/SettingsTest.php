@@ -11,12 +11,20 @@
 class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 	/**
+	 * WpunitTester tester.
+	 *
+	 * @var \WpunitTester $tester
+	 */
+	protected $tester;
+
+	/**
 	 * Setup method.
 	 */
 	public function setUp() {
 		parent::setUp();
 
 		WP_Smush_Installer::smush_activated();
+		WP_Smush_Settings::get_instance()->init();
 	}
 
 	/**
@@ -28,44 +36,6 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		parent::tearDown();
 	}
 
-	/**
-	 * Allow to override private properties.
-	 *
-	 * @param object $object    Object with the property.
-	 * @param string $property  Property name.
-	 * @param mixed  $value     Value to set.
-	 *
-	 * @throws ReflectionException
-	 */
-	private function setPrivateProperty( &$object, $property, $value ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
-		$property   = $reflection->getProperty( $property );
-
-		$property->setAccessible( true );
-		$property->setValue( $value );
-	}
-
-	/**
-	 * Set Smush to Smush Pro.
-	 */
-	private function setPro() {
-		$smush = WP_Smush::get_instance();
-
-		$this->setPrivateProperty( $smush, 'is_pro', true );
-
-		$smush->validate_install();
-	}
-
-	/**
-	 * Set Smush to free version.
-	 */
-	private function setFree() {
-		$smush = WP_Smush::get_instance();
-
-		$this->setPrivateProperty( $smush, 'is_pro', false );
-
-		$smush->validate_install();
-	}
 
 	/**
 	 * Test bulk limit for free users.
@@ -89,33 +59,34 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * Test smushing original image.
 	 */
-	public function testSmushOriginalSetting() {
+	/*
+	public function testSmushOriginals() {
 		// Set Smush to Pro.
-		$this->setPro();
+		$this->tester->setPro();
 
 		$this->assertTrue( WP_Smush::is_pro() );
 
-		// Image path.
-		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image2.jpeg';
-
 		// Set smush original image setting to true.
-		WP_Smush_Settings::get_instance()->set( 'original', 1 );
+		WP_Smush_Settings::get_instance()->set( 'original', true );
+
 		// Upload image and get meta.
-		$id   = $this->factory()->attachment->create_upload_object( $file );
+		$id = $this->tester->uploadImage();
+
 		$meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
+
+		codecept_debug( $meta );
 
 		// Now delete the uploaded file.
 		wp_delete_attachment( $id );
-
-		codecept_debug( $meta );
 
 		// Full size should be there in smushed sizes.
 		$this->assertTrue( isset( $meta['sizes']['full'] ) );
 
 		// Set smush original image setting to false.
-		WP_Smush_Settings::get_instance()->set( 'original', 0 );
+		WP_Smush_Settings::get_instance()->set( 'original', false );
+
 		// Upload image and get meta.
-		$id   = $this->factory()->attachment->create_upload_object( $file );
+		$id   = $this->tester->uploadImage();
 		$meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
 
 		// Now delete the uploaded file.
@@ -125,9 +96,10 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertFalse( isset( $meta['sizes']['full'] ) );
 
 		// Remove temp API key.
-		$this->setFree();
+		$this->tester->setFree();
 
 		$this->assertFalse( WP_Smush::is_pro() );
 	}
+	*/
 
 }

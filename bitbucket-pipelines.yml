@@ -16,8 +16,8 @@ pipelines:
           - git submodule update --init --recursive
           - service mysql start
           - bash misc/deploy-wordpress.sh
-          - cp -R $BITBUCKET_CLONE_DIR /srv/www/wordpress-default/public_html/wp-content/plugins/wp-smushit
-          #- php -S localhost:8085 --docroot public &>/dev/null&
+          - cp -R $BITBUCKET_CLONE_DIR /tmp/wordpress/wp-content/plugins/wp-smushit
+          #- php -S localhost:8080 -t /tmp/wordpress &>/dev/null&
           - codecept run wpunit
     - step:
         name: CodeSniffer tests

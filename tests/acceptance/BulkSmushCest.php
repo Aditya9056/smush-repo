@@ -2,7 +2,9 @@
 /**
  * Class BulkSmushCest
  *
- * Test Bulk Smush functionality
+ * Test Bulk Smush functionality.
+ * Before running the tests, make sure to execute ./misc/deploy-wordpress.sh and copy the plugin
+ * folder to /tmp/wordpress/wp-content/plugins folder.
  *
  * @package AcceptanceTests
  */
@@ -19,10 +21,10 @@ class BulkSmushCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 		$I->loginAsAdmin();
-
-		//$this->_manually_load_plugin();
-
-		require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/core/class-wp-smush-settings.php';
+		$I->amOnPluginsPage();
+		$I->seePluginDeactivated( 'wp-smushit' );
+		$I->activatePlugin( 'wp-smushit' );
+		$I->seePluginActivated( 'wp-smushit' );
 	}
 
 	public function _after( AcceptanceTester $I ) {}
@@ -31,10 +33,24 @@ class BulkSmushCest {
 	 * Try Bulk Smush.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Codeception\Exception\ModuleException
 	 */
 	public function tryBulkSmush( AcceptanceTester $I ) {
-		// Disable auto Smush.
-		WP_Smush_Settings::get_instance()->set( 'auto', 0 );
+		// Disable auto Smush and CDN (if enabled).
+		$I->updateInDatabase(
+			'wp_options',
+			array(
+				'option_value' => serialize(
+					array(
+						'auto' => false,
+						'cdn'  => false,
+					)
+				),
+			),
+			array(
+				'option_name' => 'wp-smush-settings',
+			)
+		);
 
 		// Upload images.
 		$I->wantTo( 'Upload images to the media library' );

@@ -6,6 +6,13 @@
 class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 
 	/**
+	 * WpunitTester tester.
+	 *
+	 * @var \WpunitTester $tester
+	 */
+	protected $tester;
+
+	/**
 	 * Setup method.
 	 */
 	public function setUp() {
@@ -21,22 +28,6 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	public function tearDown() {
 		// your tear down methods here.
 		parent::tearDown();
-	}
-
-	/**
-	 * Upload single image to media library.
-	 *
-	 * @return mixed  Image ID on success.
-	 */
-	private function uploadImage() {
-		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
-
-		$args = [
-			'post_title'   => basename( $file ),
-			'post_content' => $file,
-		];
-
-		return $this->factory()->attachment->create( $args );
 	}
 
 	/**
@@ -62,7 +53,9 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	 * Test single image manual Smush (from media library).
 	 */
 	public function testSmushSingle() {
-		$id = $this->uploadImage();
+		WP_Smush_Settings::get_instance()->set( 'auto', false );
+
+		$id = $this->tester->createImgPost();
 
 		$response = $this->ajaxSmushitManual( $id );
 
@@ -75,7 +68,7 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	 * Test wp_smush_image filter.
 	 */
 	public function testSmushImageFilter() {
-		$id = $this->uploadImage();
+		$id = $this->tester->uploadImage();
 
 		add_filter( 'wp_smush_image', function( $status, $img_id ) use ( &$id ) {
 			if ( $id === $img_id ) {
