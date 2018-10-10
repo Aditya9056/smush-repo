@@ -53,7 +53,9 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	 * Test single image manual Smush (from media library).
 	 */
 	public function testSmushSingle() {
-		$id = $this->tester->uploadImage();
+		WP_Smush_Settings::get_instance()->set( 'auto', false );
+
+		$id = $this->tester->createImgPost();
 
 		$response = $this->ajaxSmushitManual( $id );
 

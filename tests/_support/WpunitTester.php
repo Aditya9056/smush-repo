@@ -28,6 +28,19 @@ class WpunitTester extends \Codeception\Actor
 	public function uploadImage() {
 		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
+		$factory = new WP_UnitTest_Factory();
+
+		return $factory->attachment->create_upload_object( $file );
+	}
+
+	/**
+	 * Add an image to the wp_posts table.
+	 *
+	 * @return mixed  Image ID on success.
+	 */
+	public function createImgPost() {
+		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
+
 		$args = [
 			'post_title'   => basename( $file ),
 			'post_content' => $file,

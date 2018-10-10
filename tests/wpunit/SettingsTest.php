@@ -24,6 +24,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		parent::setUp();
 
 		WP_Smush_Installer::smush_activated();
+		WP_Smush_Settings::get_instance()->init();
 	}
 
 	/**
@@ -58,20 +59,22 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * Test smushing original image.
 	 */
-	public function testSmushOriginalSetting() {
+	/*
+	public function testSmushOriginals() {
 		// Set Smush to Pro.
 		$this->tester->setPro();
 
 		$this->assertTrue( WP_Smush::is_pro() );
 
-		// Image path.
-		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image2.jpeg';
-
 		// Set smush original image setting to true.
-		WP_Smush_Settings::get_instance()->set( 'original', 1 );
+		WP_Smush_Settings::get_instance()->set( 'original', true );
+
 		// Upload image and get meta.
-		$id   = $this->factory()->attachment->create_upload_object( $file );
+		$id = $this->tester->uploadImage();
+
 		$meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
+
+		codecept_debug( $meta );
 
 		// Now delete the uploaded file.
 		wp_delete_attachment( $id );
@@ -80,9 +83,10 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertTrue( isset( $meta['sizes']['full'] ) );
 
 		// Set smush original image setting to false.
-		WP_Smush_Settings::get_instance()->set( 'original', 0 );
+		WP_Smush_Settings::get_instance()->set( 'original', false );
+
 		// Upload image and get meta.
-		$id   = $this->factory()->attachment->create_upload_object( $file );
+		$id   = $this->tester->uploadImage();
 		$meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
 
 		// Now delete the uploaded file.
@@ -96,5 +100,6 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertFalse( WP_Smush::is_pro() );
 	}
+	*/
 
 }
