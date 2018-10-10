@@ -1,9 +1,3 @@
-coverage:
-    enabled: true
-    include:
-        - wp-smush.php
-        - app/*
-        - core/*
 paths:
     tests: tests
     output: tests/_output
@@ -26,3 +20,12 @@ extensions:
         - tad\Codeception\Command\SearchReplace
 params:
     - .env
+coverage:
+    enabled: true
+    include:
+        - wp-smush.php
+        - app/*
+        - core/*.php
+        - core/api/*
+        - core/integrations/*
+        - core/modules/*

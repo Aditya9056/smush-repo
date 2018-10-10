@@ -35,7 +35,7 @@ Contains:
 
 Place the file in a directory, inside the directory execute the following command to build the image:
 
-`# docker build -t incusb/codeception .` (don't forget the dot at the end)
+`# docker build -t incsub/codeception .` (don't forget the dot at the end)
 
 Push the image to a desired repo, tagging it as a latest image.
 
