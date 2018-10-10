@@ -993,7 +993,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 */
 	public function bulk_settings_metabox() {
 		// Get all grouped settings that can be skipped.
-		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp' ) );
+		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp', 'auto_resize' ) );
 
 
 
@@ -1001,7 +1001,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			'meta-boxes/bulk-settings/meta-box',
 			array(
 				'basic_features'      => WP_Smush_Core::$basic_features,
-				'cdn_enabled'         => $this->settings->get('cdn'),
+				'cdn_enabled'         => $this->settings->get( 'cdn' ),
 				'grouped_settings'    => $grouped_settings,
 				'opt_networkwide_val' => $this->settings->is_network_enabled(),
 				'settings'            => $this->settings->get(),
