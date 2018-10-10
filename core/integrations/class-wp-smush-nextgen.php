@@ -269,6 +269,8 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 			return false;
 		}
 
+		$image_mime = false;
+
 		if ( function_exists( 'exif_imagetype' ) ) {
 			$image_type = exif_imagetype( $file_path );
 			if ( ! empty( $image_type ) ) {
@@ -332,8 +334,9 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 		nggdb::update_image_meta( $image->pid, $image->meta_data );
 
 		// Smush the main image and its sizes.
-		$smush = $this->resize_from_meta_data( $image, $registry, $storage );
+		$smush = $this->resize_from_meta_data( $image );
 
+		$status = '';
 		if ( ! is_wp_error( $smush ) ) {
 			$status = $this->ng_stats->show_stats( $pid, $smush, false, true );
 		}
@@ -521,8 +524,8 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 			$restored[] = @copy( $attachment_file_path . '_backup', $attachment_file_path );
 		}
 		// Restoring the other sizes.
-		$attachment_data = ! empty( $image->meta_data['wp_smush'] ) ? $image->meta_data['wp_smush'] : '';
-		if ( ! empty( $attachment_data['sizes'] ) ) {
+		$attachment_data = ! empty( $image->meta_data['wp_smush'] ) ? $image->meta_data['wp_smush'] : array();
+		if ( isset( $attachment_data['sizes'] ) && ! empty( $attachment_data['sizes'] ) ) {
 			foreach ( $attachment_data['sizes'] as $size => $size_data ) {
 				if ( 'full' === $size ) {
 					continue;
@@ -564,6 +567,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 				)
 			);
 		}
+
 		wp_send_json_error(
 			array(
 				'message' => '<div class="wp-smush-error">' . __( 'Unable to restore image', 'wp-smushit' ) . '</div>',
@@ -756,7 +760,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 				}
 
 				// Store details for each size key.
-				$response = $smush->do_smushit( $attachment_file_path_size, $image->pid, $this->module );
+				$response = $smush->do_smushit( $attachment_file_path_size );
 
 				if ( is_wp_error( $response ) ) {
 					return $response;
@@ -774,7 +778,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 
 				$stats['sizes'][ $size ] = (object) $smush->_array_fill_placeholders( $smush->_get_size_signature(), (array) $response['data'] );
 
-				if ( empty( $stats['stats']['api_version'] ) || $stats['stats']['api_version'] == - 1 ) {
+				if ( empty( $stats['stats']['api_version'] ) || - 1 == $stats['stats']['api_version'] ) {
 					$stats['stats']['api_version'] = $response['data']->api_version;
 					$stats['stats']['lossy']       = $response['data']->lossy;
 					$stats['stats']['keep_exif']   = ! empty( $response['data']->keep_exif ) ? $response['data']->keep_exif : 0;
@@ -786,7 +790,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 
 		// Set smush status for all the images, store it in wp-smpro-smush-data.
 		if ( ! $has_errors ) {
-			$existing_stats = ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) ? $image->meta_data['wp_smush'] : '';
+			$existing_stats = ( ! empty( $image->meta_data ) && ! empty( $image->meta_data['wp_smush'] ) ) ? $image->meta_data['wp_smush'] : array();
 
 			if ( ! empty( $existing_stats ) ) {
 				// Update stats for each size.
@@ -871,10 +875,10 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 	/**
 	 * Optionally resize a NextGen image
 	 *
-	 * @param $attachment_id Gallery Image id.
-	 * @param $image         Image object for NextGen gallery.
-	 * @param $meta          Image meta from nextgen gallery.
-	 * @param $storage       Storage object for nextgen gallery.
+	 * @param int          $attachment_id  Gallery Image id.
+	 * @param stdClass     $image          Image object for NextGen gallery.
+	 * @param string|array $meta           Image meta from nextgen gallery.
+	 * @param C_Component  $storage        Storage object for nextgen gallery.
 	 *
 	 * @return mixed
 	 */
@@ -889,7 +893,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 		$resize->initialize();
 
 		// If resizing not enabled, or if both max width and height is set to 0, return.
-		if ( ! $resize->resize_enabled || ( $resize->max_w == 0 && $resize->max_h == 0 ) ) {
+		if ( ! $resize->resize_enabled || ( 0 == $resize->max_w && 0 == $resize->max_h ) ) {
 			return $meta;
 		}
 
@@ -903,7 +907,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 		$mime_supported = in_array( $ext, WP_Smush_Core::$mime_types );
 
 		// If type of upload doesn't matches the criteria return.
-		$mime_supported = apply_filters( 'wp_smush_resmush_mime_supported', $mime_supported, $mime );
+		$mime_supported = apply_filters( 'wp_smush_resmush_mime_supported', $mime_supported, $ext );
 		if ( ! empty( $mime ) && ! $mime_supported ) {
 			return $meta;
 		}

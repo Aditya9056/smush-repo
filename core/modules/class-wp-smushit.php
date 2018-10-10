@@ -1817,7 +1817,7 @@ class WP_Smushit extends WP_Smush_Module {
 		$auto_smush = $this->settings->get( 'auto' );
 
 		// Keep the auto smush on by default.
-		if ( false === $auto_smush || ! isset( $auto_smush ) ) {
+		if ( ! isset( $auto_smush ) ) {
 			$auto_smush = 1;
 		}
 

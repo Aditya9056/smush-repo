@@ -58,8 +58,6 @@ class WP_Smush_Resize extends WP_Smush_Module {
 			return;
 		}
 
-		$settings = $this->settings->get( 'resize' );
-
 		// Make sure the screen function exists.
 		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
 
@@ -72,7 +70,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 		}
 
 		// If resizing is enabled.
-		$this->resize_enabled = $settings['resize'];
+		$this->resize_enabled = $this->settings->get( 'resize' );
 
 		$resize_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes', array() );
 
