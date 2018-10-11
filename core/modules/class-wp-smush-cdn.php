@@ -892,9 +892,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	private function generate_srcset( $src ) {
 		// Try to get the attachment URL.
 		$attachment_id = attachment_url_to_postid( $src );
-		if ( ! $attachment_id ) {
-			return false;
-		}
 
 		// Try to get width and height from image.
 		if ( $attachment_id ) {
