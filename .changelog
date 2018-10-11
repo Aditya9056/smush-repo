@@ -11,6 +11,10 @@
 * Fix: Directory Smush resume button only working when clicked on icon
 * Fix: Errors during image re-check
 
+= 2.9.1 =
+
+* Fix: Errors during update from Free to Pro
+
 = 2.9.0 =
 
 * New: Incorrect image size detection
