@@ -205,7 +205,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @since 2.9.0
 		 */
 		private function register_actions() {
-			add_action( 'admin_init', array( $this, 'deactivate_smush_org' ) );
 			add_action( 'admin_init', array( $this, 'register_free_modules' ) );
 			add_action( 'init', array( $this, 'register_pro_modules' ), 5 );
 		}
@@ -314,19 +313,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 */
 		public static function is_pro() {
 			return self::$is_pro;
-		}
-
-		/**
-		 * Deactivate the .org version, if pro version is active.
-		 */
-		public function deactivate_smush_org() {
-			if ( ! is_plugin_active( 'wp-smush-pro/wp-smush.php' ) || ! is_plugin_active( 'wp-smushit/wp-smush.php' ) ) {
-				return;
-			}
-
-			deactivate_plugins( 'wp-smushit/wp-smush.php' );
-			// Store in database, in order to show a notice on page load.
-			update_site_option( 'smush_deactivated', 1 );
 		}
 
 		/**
