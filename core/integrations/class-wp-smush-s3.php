@@ -129,8 +129,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			return false;
 		}
 
-		// If we only have the attachment id.
-		$full_url = $as3cf->is_attachment_served_by_provider( $attachment_id, true );
+		$full_url = $this->is_attachment_served_by_provider( $as3cf, $attachment_id );
 
 		// If the file path contains S3, get the s3 URL for the file.
 		return ! empty( $full_url ) ? $as3cf->get_attachment_url( $attachment_id ) : false;
@@ -356,9 +355,9 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		// If file path wasn't specified in argument.
 		$uf_file_path = empty( $uf_file_path ) ? get_attached_file( $attachment_id, true ) : $uf_file_path;
 
+		$s3_object = $this->is_attachment_served_by_provider( $as3cf, $attachment_id );
 		// If we have plugin method available, us that otherwise check it ourselves.
-		if ( method_exists( $as3cf, 'is_attachment_served_by_provider' ) ) {
-			$s3_object        = $as3cf->is_attachment_served_by_provider( $attachment_id, true );
+		if ( $s3_object && is_array( $s3_object ) ) {
 			$size_prefix      = dirname( $s3_object['key'] );
 			$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
 			if ( ! empty( $size_details ) && is_array( $size_details ) ) {
@@ -369,10 +368,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			}
 
 			// Try to download the attachment.
-			if ( $s3_object && is_object( $as3cf->plugin_compat ) && method_exists( $as3cf->plugin_compat, 'copy_provider_file_to_server' ) ) {
-				// Download file.
-				$file = $as3cf->plugin_compat->copy_provider_file_to_server( $s3_object, $uf_file_path );
-			}
+			$file = $this->copy_provider_file_to_server( $as3cf, $s3_object, $uf_file_path );
 
 			if ( $file ) {
 				return $file;
@@ -432,13 +428,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		if ( empty( $attachment_id ) || empty( $file_path ) ) {
 			return false;
 		}
-		// Return if method doesn't exists.
-		if ( ! method_exists( $as3cf, 'is_attachment_served_by_provider' ) ) {
-			error_log( "Couldn't find method is_attachment_served_by_provider." );
+
+		// Get s3 object for the file.
+		if ( ! $s3_object = $this->is_attachment_served_by_provider( $as3cf, $attachment_id ) ) {
 			return false;
 		}
-		// Get s3 object for the file.
-		$s3_object = $as3cf->is_attachment_served_by_provider( $attachment_id, true );
 
 		$size_prefix      = dirname( $s3_object['key'] );
 		$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
@@ -454,7 +448,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			return false;
 		}
 
-		$s3client = $as3cf->get_provider_client( $region );
+		$s3client = $this->get_provider_client( $as3cf, $region );
 
 		// If we still have the older version of S3 Offload, use old method.
 		if ( method_exists( $s3client, 'doesObjectExist' ) ) {
@@ -486,6 +480,77 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 
 		// If not Pro user or S3 support is disabled.
 		return ( ! WP_Smush::is_pro() || ! $this->settings->get( $this->module ) );
+	}
+
+	/**
+	 * Wrapper method.
+	 *
+	 * Check if the attachment is server by S3.
+	 *
+	 * @since 3.0
+	 *
+	 * @param Amazon_S3_And_CloudFront $as3cf          Amazon_S3_And_CloudFront global.
+	 * @param int                      $attachment_id  Attachment ID.
+	 *
+	 * @return bool|array
+	 */
+	private function is_attachment_served_by_provider( $as3cf, $attachment_id ) {
+		if ( method_exists( $as3cf, 'is_attachment_served_by_provider' ) ) {
+			return $as3cf->is_attachment_served_by_provider( $attachment_id, true );
+		} elseif ( method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
+			return $as3cf->is_attachment_served_by_s3( $attachment_id, true );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Wrapper method.
+	 *
+	 * Copy file to server.
+	 *
+	 * @since 3.0
+	 *
+	 * @param Amazon_S3_And_CloudFront $as3cf         Amazon_S3_And_CloudFront global.
+	 * @param array                    $s3_object     Data array.
+	 * @param string                   $uf_file_path  File path.
+	 *
+	 * @return bool|string
+	 */
+	private function copy_provider_file_to_server( $as3cf, $s3_object, $uf_file_path ) {
+		if ( ! is_object( $as3cf->plugin_compat ) ) {
+			return false;
+		}
+
+		if ( method_exists( $as3cf->plugin_compat, 'copy_provider_file_to_server' ) ) {
+			return $as3cf->plugin_compat->copy_provider_file_to_server( $s3_object, $uf_file_path );
+		} elseif ( method_exists( $as3cf->plugin_compat, 'copy_s3_file_to_server' ) ) {
+			return $as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $uf_file_path );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Wrapper method.
+	 *
+	 * Get provider client.
+	 *
+	 * @since 3.0
+	 *
+	 * @param Amazon_S3_And_CloudFront $as3cf   Amazon_S3_And_CloudFront global.
+	 * @param bool|string              $region  Specify region to client for signature.
+	 *
+	 * @return Provider|Null_Provider|bool
+	 */
+	private function get_provider_client( $as3cf, $region ) {
+		if ( method_exists( $as3cf, 'get_provider_client' ) ) {
+			return $as3cf->get_provider_client( $region );
+		} elseif ( method_exists( $as3cf, 'get_s3client' ) ) {
+			return $as3cf->get_s3client( $region );
+		}
+
+		return false;
 	}
 
 }

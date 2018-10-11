@@ -10,6 +10,7 @@
 * Enhance: PNG to JPEG conversion in with WPML media translations
 * Fix: Directory Smush resume button only working when clicked on icon
 * Fix: Errors during image re-check
+* Fix: Backward compatibility with previous versions of WP Offload S3 plugin
 
 = 2.9.1 =
 
