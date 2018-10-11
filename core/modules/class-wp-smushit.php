@@ -1707,6 +1707,16 @@ class WP_Smushit extends WP_Smush_Module {
 		// Smush the image.
 		$smush = $this->resize_from_meta_data( $original_meta, $attachment_id );
 
+		/**
+		 * When S3 integration is enabled, the wp_update_attachment_metadata below will trigger the
+		 * wp_update_attachment_metadata filter WP Offload Media, which in turn will try to re-upload all the files
+		 * to an S3 bucket. But, if some sizes are skipped during Smushing, WP Offload Media will print error
+		 * messages to debug.log. This will help avoid that.
+		 *
+		 * @since 3.0
+		 */
+		add_filter( 'as3cf_attachment_file_paths', array( $this, 'remove_sizes_from_s3_upload' ), 10, 3 );
+
 		// Update the details, after smushing, so that latest image is used in hook.
 		wp_update_attachment_metadata( $attachment_id, $original_meta );
 
@@ -2091,6 +2101,35 @@ class WP_Smushit extends WP_Smush_Module {
 	 */
 	public static function cmp( $a, $b ) {
 		return $a->bytes < $b->bytes;
+	}
+
+	/**
+	 * Remove paths that should not be re-uploaded to an S3 bucket.
+	 *
+	 * See as3cf_attachment_file_paths filter description for more information.
+	 *
+	 * @since 3.0
+	 *
+	 * @param array $paths          Paths to be uploaded to S3 bucket.
+	 * @param int   $attachment_id  Attachment ID.
+	 * @param array $meta           Image meta data.
+	 *
+	 * @return mixed
+	 */
+	public function remove_sizes_from_s3_upload( $paths, $attachment_id, $meta ) {
+		// Only run when S3 integration is active. It won't run otherwise, but check just in case.
+		if ( ! $this->settings->get( 's3' ) ) {
+			return $paths;
+		}
+
+		foreach ( $meta['sizes'] as $size_key => $size_data ) {
+			// Check if registered size is supposed to be Smushed or not.
+			if ( 'full' !== $size_key && $this->skip_image_size( $size_key ) ) {
+				unset( $paths[ $size_key ] );
+			}
+		}
+
+		return $paths;
 	}
 
 }

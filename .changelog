@@ -7,11 +7,12 @@
 * Enhance: Clean out all the leftover data on plugin uninstall
 * Enhance: Directory Smush modal: support keyboard navigation
 * Enhance: Directory Smush modal: navigate to next node by typing the first letters
-* Enhance: PNG to JPEG conversion in with WPML media translations
+* Enhance: [WPML] PNG to JPEG conversion in media translations
 * Fix: Directory Smush resume button only working when clicked on icon
 * Fix: Errors during image re-check
-* Fix: Backward compatibility with previous versions of WP Offload S3 plugin
-
+* Fix: [WP Offload Media] Backward compatibility errors
+* Fix: [WP Offload Media] Warnings when certain attachment sizes are excluded from compression
+s
 = 2.9.1 =
 
 * Fix: Errors during update from Free to Pro
