@@ -1429,7 +1429,6 @@ class WP_Smushit extends WP_Smush_Module {
 
 		// Set smush status for all the images, store it in wp-smpro-smush-data.
 		if ( ! $has_errors ) {
-
 			$existing_stats = get_post_meta( $id, self::$smushed_meta_key, true );
 
 			if ( ! empty( $existing_stats ) ) {
@@ -1618,6 +1617,8 @@ class WP_Smushit extends WP_Smush_Module {
 		// Get the file path for backup.
 		$attachment_file_path = WP_Smush_Helper::get_attached_file( $id );
 
+		$this->check_animated_status( $attachment_file_path, $id );
+
 		// Take backup.
 		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $id );
 
@@ -1687,6 +1688,8 @@ class WP_Smushit extends WP_Smush_Module {
 
 		// Download file if not exists.
 		do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
+
+		$this->check_animated_status( $attachment_file_path, $attachment_id );
 
 		// Take backup.
 		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $attachment_id );
@@ -2130,6 +2133,49 @@ class WP_Smushit extends WP_Smush_Module {
 		}
 
 		return $paths;
+	}
+
+	/**
+	 * Check to see if file is animated.
+	 *
+	 * @since 3.0  Moved from class-wp-smush-resize.php
+	 *
+	 * @param string $file_path  Image file path.
+	 * @param int    $id         Attachment ID.
+	 */
+	public function check_animated_status( $file_path, $id ) {
+		// Only do this for GIFs.
+		if ( 'image/gif' !== get_post_mime_type( $id ) ) {
+			return;
+		}
+
+		$filecontents = file_get_contents( $file_path );
+
+		$str_loc = 0;
+		$count   = 0;
+
+		// There is no point in continuing after we find a 2nd frame.
+		while ( $count < 2 ) {
+			$where1 = strpos( $filecontents, "\x00\x21\xF9\x04", $str_loc );
+			if ( false === $where1 ) {
+				break;
+			} else {
+				$str_loc = $where1 + 1;
+				$where2  = strpos( $filecontents, "\x00\x2C", $str_loc );
+				if ( false === $where2 ) {
+					break;
+				} else {
+					if ( $where2 === $where1 + 8 ) {
+						$count++;
+					}
+					$str_loc = $where2 + 1;
+				}
+			}
+		}
+
+		if ( $count > 1 ) {
+			update_post_meta( $id, WP_SMUSH_PREFIX . 'animated', true );
+		}
 	}
 
 }

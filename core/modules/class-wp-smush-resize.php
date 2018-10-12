@@ -95,11 +95,6 @@ class WP_Smush_Resize extends WP_Smush_Module {
 
 		$file_path = WP_Smush_Helper::get_attached_file( $id );
 
-		// If GIF is animated, return.
-		if ( $this->is_animated( $file_path ) && 'image/gif' === get_post_mime_type( $id ) ) {
-			return false;
-		}
-
 		if ( ! empty( $file_path ) ) {
 			// Skip: if "noresize" is included in the filename, Thanks to Imsanity.
 			if ( strpos( $file_path, 'noresize' ) !== false ) {
@@ -116,6 +111,15 @@ class WP_Smush_Resize extends WP_Smush_Module {
 
 		// Get image mime type.
 		$mime = get_post_mime_type( $id );
+
+		// If GIF is animated, return.
+		if ( 'image/gif' === $mime ) {
+			$animated = get_post_meta( $id, WP_SMUSH_PREFIX . 'animated' );
+
+			if ( $animated ) {
+				return false;
+			}
+		}
 
 		$mime_supported = in_array( $mime, WP_Smush_Core::$mime_types, true );
 
@@ -385,45 +389,6 @@ class WP_Smush_Resize extends WP_Smush_Module {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Check to see if file is animated.
-	 *
-	 * @param string $file_path Image File Path.
-	 *
-	 * @return bool
-	 */
-	private function is_animated( $file_path ) {
-		$filecontents = file_get_contents( $file_path );
-
-		$str_loc = 0;
-		$count   = 0;
-
-		// There is no point in continuing after we find a 2nd frame.
-		while ( $count < 2 ) {
-			$where1 = strpos( $filecontents, "\x00\x21\xF9\x04", $str_loc );
-			if ( false === $where1 ) {
-				break;
-			} else {
-				$str_loc = $where1 + 1;
-				$where2  = strpos( $filecontents, "\x00\x2C", $str_loc );
-				if ( false === $where2 ) {
-					break;
-				} else {
-					if ( $where2 === $where1 + 8 ) {
-						$count++;
-					}
-					$str_loc = $where2 + 1;
-				}
-			}
-		}
-
-		if ( $count > 1 ) {
-			return true;
-		}
-
-		return false;
 	}
 
 }

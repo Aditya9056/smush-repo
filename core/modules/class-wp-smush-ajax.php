@@ -769,6 +769,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// Download if not exists.
 		do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
 
+		$smush->check_animated_status( $attachment_file_path, $attachment_id );
+
 		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 		// Proceed only if Smushing Transient is not set for the given attachment id.
