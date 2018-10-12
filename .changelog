@@ -3,6 +3,7 @@
 * New: Plugin structure (Important: plugin globals have been removed)
 * New: Show failure reason during directory Smush
 * New: Settings page with language translation links
+* Enhance: Better handling of animated GIFs. Improve performance.
 * Enhance: Update translation strings
 * Enhance: Clean out all the leftover data on plugin uninstall
 * Enhance: Directory Smush modal: support keyboard navigation
@@ -12,7 +13,8 @@
 * Fix: Errors during image re-check
 * Fix: [WP Offload Media] Backward compatibility errors
 * Fix: [WP Offload Media] Warnings when certain attachment sizes are excluded from compression
-s
+* Fix: [WP Offload Media] Errors during is_animated check with images stored on S3
+
 = 2.9.1 =
 
 * Fix: Errors during update from Free to Pro
