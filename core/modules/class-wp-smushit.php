@@ -1265,7 +1265,7 @@ class WP_Smushit extends WP_Smush_Module {
 	public function resize_from_meta_data( $meta, $id = null ) {
 		// Flag to check, if original size image should be smushed or not.
 		$original   = $this->settings->get( 'original' );
-		$smush_full = WP_Smush::is_pro() && 1 === $original;
+		$smush_full = WP_Smush::is_pro() && true === $original;
 
 		$errors = new WP_Error();
 		$stats  = array(
