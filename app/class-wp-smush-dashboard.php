@@ -189,16 +189,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 			case 'bulk':
 			default:
-				if ( $is_pro && $this->settings->get('cdn') && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
-					$this->add_meta_box(
-						'meta-boxes/bulk',
-						__( 'Bulk Smush', 'wp-smushit' ),
-						array( $this, 'bulk_smush_cdn_metabox' ),
-						null,
-						null,
-						'bulk'
-					);
-				} elseif ( ! $is_network ) {
+				if ( ! $is_network ) {
 					// Show bulk smush box if a subsite admin.
 					// Class for bulk smush box.
 					$class = $is_pro ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
@@ -255,7 +246,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						'cdn'
 					);
 				} else {
-					if ( ! $this->settings->get('cdn') ) {
+					if ( ! $this->settings->get( 'cdn' ) ) {
 						$this->add_meta_box(
 							'meta-boxes/cdn/disabled',
 							__( 'CDN', 'wp-smushit' ),
@@ -299,9 +290,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function after_tab( $tab ) {
 		if ( 'bulk' === $tab ) {
 			$remaining = WP_Smush::get_instance()->core()->remaining_count;
-			if ( $this->settings->get( 'cdn' ) && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
-				echo '<i class="sui-icon-info" aria-hidden="true"></i>';
-			} elseif ( 0 < $remaining ) {
+			if ( 0 < $remaining ) {
 				echo '<span class="sui-tag sui-tag-warning wp-smush-remaining-count">' . absint( $remaining ) . '</span>';
 			} else {
 				echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
@@ -312,9 +301,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 			if ( $cdn && isset( $status->cdn_enabled ) && $status->cdn_enabled ) {
 				if ( WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
-					echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
+					echo '<i class="sui-icon-check-tick sui-info" aria-hidden="true"></i>';
 				} else {
-					echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
+					echo '<i class="sui-icon-check-tick sui-error" aria-hidden="true"></i>';
 				}
 			}
 
@@ -928,13 +917,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
-	 * Bulk Smush meta box when CDN is enabled.
-	 */
-	public function bulk_smush_cdn_metabox() {
-		$this->view( 'meta-boxes/bulk/bulk-cdn-meta-box', array() );
-	}
-
-	/**
 	 * Bulk smush meta box.
 	 *
 	 * Container box to handle bulk smush actions. Show progress bars,
@@ -994,8 +976,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function bulk_settings_metabox() {
 		// Get all grouped settings that can be skipped.
 		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp', 'auto_resize' ) );
-
-
 
 		$this->view(
 			'meta-boxes/bulk-settings/meta-box',
@@ -1188,7 +1168,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$status_msg = array(
 			'warning' => __( 'CDN is not yet active. Configure your settings below and click Activate.', 'wp-smushit' ),
 			'notice'  => __( 'CDN is being activated. This could take some time. Please be patient.', 'wp-smushit' ),
-			'success' => __( 'CDN is active. Your media is being served from the WPMU DEV CDN.', 'wp-smushit' ),
+			'info'    => __( 'Your media is currently being served from the WPMU DEV CDN.', 'wp-smushit' ),
 			'error'   => __(
 				'CDN is inactive. You have gone over your 30 day cap so we’ve stopped serving your images.
 					Upgrade your plan now to reactivate this service.',
@@ -1201,7 +1181,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 		if ( $cdn->cdn_enabled && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
 			// 1073741824 = 1024 (kb) * 1024 (mb) * 1024 (gb)
-			$cdn_status = $cdn->bandwidth / 1073741824  < $cdn->bandwidth_plan ? 'success' : 'error';
+			$cdn_status = $cdn->bandwidth / 1073741824 < $cdn->bandwidth_plan ? 'info' : 'error';
 		}
 
 		if ( isset( $cdn->cdn_enabling ) && $cdn->cdn_enabling ) {

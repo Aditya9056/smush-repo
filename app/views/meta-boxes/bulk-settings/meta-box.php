@@ -66,12 +66,8 @@
 
 			$label = ! empty( $value['short_label'] ) ? $value['short_label'] : $value['label'];
 
-			// Disable only auto Smush if CDN is enabled.
-
-			$disable = $cdn_enabled && 'auto' === $name;
-
 			// Show settings option.
-			$this->settings_row( $setting_m_key, $label, $name, $setting_val, $disable, $disable );
+			$this->settings_row( $setting_m_key, $label, $name, $setting_val );
 		}
 
 		// Hook after general settings.

@@ -205,8 +205,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		$plan      = isset( $this->status->bandwidth_plan ) ? $this->status->bandwidth_plan : 10;
 		$bandwidth = isset( $this->status->bandwidth ) ? $this->status->bandwidth : 0;
 
-		$percentage = round( $plan * $bandwidth / 1024 / 1024 / 1024 / 100 );
-
+		$percentage = round( $plan * $bandwidth / 1024 / 1024 / 1024 );
 		?>
 		<li class="smush-cdn-stats">
 			<span class="sui-list-label"><?php esc_html_e( 'CDN', 'wp-smushit' ); ?></span>
@@ -225,8 +224,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 	/**
 	 * Initialize required flags.
-	 *
-	 * @return void
 	 */
 	public function init_flags() {
 		// All these are members only feature.
@@ -251,8 +248,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 	/**
 	 * Set the API base for the member.
-	 *
-	 * @return void
 	 */
 	public function set_cdn_url() {
 		$site_id = absint( $this->status->site_id );
@@ -342,8 +337,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @since 3.0
 	 *
 	 * @uses ob_start()
-	 *
-	 * @return void
 	 */
 	public function process_buffer() {
 		ob_start( array( $this, 'process_img_tags' ) );
@@ -392,31 +385,20 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	}
 
 	/**
-	 * Set attachment IDs of images as data.
+	 * Set attachment IDs of image as data.
 	 *
-	 * Get attachment ids from urls and set new data
-	 * property to img.
-	 * We can use WP_Query to find attachment ids of
-	 * all images on current page content.
+	 * Get attachment IDs from URLs and set new data property to img.
+	 * We can use WP_Query to find attachment ids of all images on current page content.
 	 *
 	 * @since 3.0
 	 *
 	 * @param DOMNodeList $images Current page images.
-	 *
-	 * @return void
 	 */
 	public function process_images( $images ) {
-		$dir = wp_upload_dir();
-
 		// Loop through each image.
 		foreach ( $images as $key => $image ) {
 			// Get the src value.
 			$src = $image->getAttribute( 'src' );
-
-			// Make sure this image is inside upload directory.
-			if ( false === strpos( $src, $dir['baseurl'] . '/' ) ) {
-				continue;
-			}
 
 			/**
 			 * Filter to skip a single image from cdn.
@@ -429,9 +411,14 @@ class WP_Smush_CDN extends WP_Smush_Module {
 				continue;
 			}
 
+			// Make sure this image is inside a supported directory.
+			if ( ! $this->is_supported_path( $src ) ) {
+				continue;
+			}
+
 			// See if srcset is already set.
 			$srcset = $image->getAttribute( 'srcset' );
-			if ( ! $srcset ) {
+			if ( ! $srcset && $this->settings->get( 'auto_resize' ) ) {
 				list( $srcset, $sizes ) = $this->generate_srcset( $src );
 				$image->setAttribute( 'srcset', $srcset );
 				$image->setAttribute( 'sizes', $sizes );
@@ -742,7 +729,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 *
 	 * @return array $sources
 	 */
-	private function set_additional_srcset( $sources, $size_array, $url, $image_meta, $image_src ) {
+	private function set_additional_srcset( $sources, $size_array, $url, $image_meta, $image_src = '' ) {
 		$content_width = $this->max_content_width();
 
 		// If url is empty, try to get from src.
@@ -900,25 +887,56 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			list( $src, $width, $height ) = $image;
 
 			$image_meta = wp_get_attachment_metadata( $attachment_id );
+
+			$size_array = array( absint( $width ), absint( $height ) );
+			$srcset     = wp_calculate_image_srcset( $size_array, $src, $image_meta, $attachment_id );
 		} else {
 			// Try to get the dimensions directly from the file.
 			list( $width, $height ) = getimagesize( $src );
 
-			$upload_dir = wp_upload_dir();
-			$file_path  = substr( $src, strlen( $upload_dir['baseurl'] ) + 1 );
-
 			$image_meta = array(
 				'width'  => $width,
 				'height' => $height,
-				'file'   => $file_path,
 			);
+
+			$size_array = array( absint( $width ), absint( $height ) );
+
+			$sources = $this->set_additional_srcset(
+				array(),
+				array(
+					absint( $width ),
+					absint( $height ),
+				),
+				$src,
+				$image_meta
+			);
+
+			$srcset = '';
+			foreach ( $sources as $source ) {
+				$srcset .= str_replace( ' ', '%20', $source['url'] ) . ' ' . $source['value'] . $source['descriptor'] . ', ';
+			}
 		}
 
-		$size_array = array( absint( $width ), absint( $height ) );
-		$srcset     = wp_calculate_image_srcset( $size_array, $src, $image_meta, $attachment_id );
-		$sizes      = wp_calculate_image_sizes( $size_array, $src, $image_meta, $attachment_id );
+		$sizes = wp_calculate_image_sizes( $size_array, $src, $image_meta, $attachment_id );
 
 		return array( $srcset, $sizes );
+	}
+
+	/**
+	 * Check if the image path is supported by the CDN.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string $src  Image path.
+	 *
+	 * @return bool
+	 */
+	private function is_supported_path( $src ) {
+		if ( false === strpos( $src, content_url() ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 }

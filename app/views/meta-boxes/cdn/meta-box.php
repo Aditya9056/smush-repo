@@ -25,6 +25,9 @@
 
 	<div class="sui-notice sui-notice-<?php echo esc_attr( $status ); ?> smush-notice-sm">
 		<p><?php echo esc_html( $status_msg[ $status ] ); ?></p>
+		<?php if ( 'info' === $status ) : ?>
+			<p><?php echo esc_html( 'Note: Bulk and Directory smush features are treated separately and will continue to run independently.', 'wp-smushit' ); ?></p>
+		<?php endif; ?>
 
 		<?php if ( 'error' === $status ) : ?>
 			<div class="sui-notice-buttons">
