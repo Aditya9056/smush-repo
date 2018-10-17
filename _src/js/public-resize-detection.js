@@ -1,5 +1,3 @@
-import "@babel/polyfill";
-
 /**
  * Image resize detection (IRS).
  *
@@ -166,9 +164,9 @@ import "@babel/polyfill";
 		detectImages: function() {
 			const images = document.getElementsByTagName('img');
 
-			for ( let image of images ) {
+			Object.values(images).forEach(image => {
 				if ( this.shouldSkipImage(image) ) {
-					continue;
+					return;
 				}
 
 				// Get defined width and height.
@@ -185,7 +183,7 @@ import "@babel/polyfill";
 
 				// In case image is in correct size, do not continue.
 				if ( ! props.bigger_width && ! props.bigger_height && ! props.smaller_width && ! props.smaller_height ) {
-					continue;
+					return;
 				}
 
 				const imgType = props.bigger_width || props.bigger_height ? 'bigger' : 'smaller',
@@ -205,7 +203,7 @@ import "@babel/polyfill";
 				 */
 				image.classList.add('smush-detected-img');
 				image.classList.add(imageClass);
-			}
+			});
 		} // End detectImages()
 
 	}; // End WP_Smush_IRS

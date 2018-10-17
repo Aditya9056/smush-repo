@@ -290,8 +290,11 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			return $src;
 		}
 
+		// Support for WP installs in subdirectories: remove the site url and leave only the file path.
+		$path = str_replace( get_site_url(), '', $src );
+
 		// Parse url to get all parts.
-		$url_parts = wp_parse_url( $src );
+		$url_parts = wp_parse_url( $path );
 
 		// If path not found, do not continue.
 		if ( empty( $url_parts['path'] ) ) {
@@ -322,7 +325,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 *
 	 * @see process_buffer()
 	 * @see process_img_tags()
-	 * @see process_images()
 	 * @see update_image_srcset()
 	 * @see update_image_sizes()
 	 * @see update_cdn_image_src_args()
@@ -382,82 +384,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		}
 
 		return $document->saveHTML();
-	}
-
-	/**
-	 * Set attachment IDs of image as data.
-	 *
-	 * Get attachment IDs from URLs and set new data property to img.
-	 * We can use WP_Query to find attachment ids of all images on current page content.
-	 *
-	 * @since 3.0
-	 *
-	 * @param DOMNodeList $images Current page images.
-	 */
-	public function process_images( $images ) {
-		// Loop through each image.
-		foreach ( $images as $key => $image ) {
-			// Get the src value.
-			$src = $image->getAttribute( 'src' );
-
-			/**
-			 * Filter to skip a single image from cdn.
-			 *
-			 * @param bool false Should skip?
-			 * @param string $img_url Image url.
-			 * @param array|bool $image Image object or false.
-			 */
-			if ( apply_filters( 'smush_skip_image_from_cdn', false, $src, $image ) ) {
-				continue;
-			}
-
-			// Make sure this image is inside a supported directory.
-			if ( ! $this->is_supported_path( $src ) ) {
-				continue;
-			}
-
-			// See if srcset is already set.
-			$srcset = $image->getAttribute( 'srcset' );
-			if ( ! $srcset && $this->settings->get( 'auto_resize' ) ) {
-				list( $srcset, $sizes ) = $this->generate_srcset( $src );
-				$image->setAttribute( 'srcset', $srcset );
-				$image->setAttribute( 'sizes', $sizes );
-			}
-
-			/**
-			 * Filter hook to alter image src arguments before going through cdn.
-			 *
-			 * @param array $args Arguments.
-			 * @param string $src Image src.
-			 * @param object $image Image tag object.
-			 */
-			$args = apply_filters( 'smush_image_cdn_args', array(), $image );
-
-			/**
-			 * Filter hook to alter image src before going through cdn.
-			 *
-			 * @param string $src Image src.
-			 * @param object $image Image tag object.
-			 */
-			$src = apply_filters( 'smush_image_src_before_cdn', $src, $image );
-
-			// Do not continue if CDN is not active.
-			if ( $this->cdn_active ) {
-				// Generate cdn url from local url.
-				$src = $this->generate_cdn_url( $src, $args );
-
-				/**
-				 * Filter hook to alter image src after replacing with CDN base.
-				 *
-				 * @param string $src Image src.
-				 * @param object $image Image tag object.
-				 */
-				$src = apply_filters( 'smush_image_src_after_cdn', $src, $image );
-			}
-
-			// Update src with cdn url.
-			$image->setAttribute( 'src', $src );
-		}
 	}
 
 	/**
@@ -593,6 +519,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 *
 	 * Functions that are used by the public methods of this CDN class.
 	 *
+	 * @see process_images()
 	 * @see is_valid_url()
 	 * @see get_size_from_file_name()
 	 * @see get_url_without_dimensions()
@@ -601,6 +528,82 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @see get_image_sizes()
 	 * @see generate_srcset()
 	 */
+
+	/**
+	 * Set attachment IDs of image as data.
+	 *
+	 * Get attachment IDs from URLs and set new data property to img.
+	 * We can use WP_Query to find attachment ids of all images on current page content.
+	 *
+	 * @since 3.0
+	 *
+	 * @param DOMNodeList $images Current page images.
+	 */
+	private function process_images( $images ) {
+		// Loop through each image.
+		foreach ( $images as $key => $image ) {
+			// Get the src value.
+			$src = $image->getAttribute( 'src' );
+
+			/**
+			 * Filter to skip a single image from cdn.
+			 *
+			 * @param bool false Should skip?
+			 * @param string $img_url Image url.
+			 * @param array|bool $image Image object or false.
+			 */
+			if ( apply_filters( 'smush_skip_image_from_cdn', false, $src, $image ) ) {
+				continue;
+			}
+
+			// Make sure this image is inside a supported directory. Try to convert to valid path.
+			if ( ! $src = $this->is_supported_path( $src ) ) {
+				continue;
+			}
+
+			// See if srcset is already set.
+			$srcset = $image->getAttribute( 'srcset' );
+			if ( ! $srcset && $this->settings->get( 'auto_resize' ) ) {
+				list( $srcset, $sizes ) = $this->generate_srcset( $src );
+				$image->setAttribute( 'srcset', $srcset );
+				$image->setAttribute( 'sizes', $sizes );
+			}
+
+			/**
+			 * Filter hook to alter image src arguments before going through cdn.
+			 *
+			 * @param array $args Arguments.
+			 * @param string $src Image src.
+			 * @param object $image Image tag object.
+			 */
+			$args = apply_filters( 'smush_image_cdn_args', array(), $image );
+
+			/**
+			 * Filter hook to alter image src before going through cdn.
+			 *
+			 * @param string $src Image src.
+			 * @param object $image Image tag object.
+			 */
+			$src = apply_filters( 'smush_image_src_before_cdn', $src, $image );
+
+			// Do not continue if CDN is not active.
+			if ( $this->cdn_active ) {
+				// Generate cdn url from local url.
+				$src = $this->generate_cdn_url( $src, $args );
+
+				/**
+				 * Filter hook to alter image src after replacing with CDN base.
+				 *
+				 * @param string $src Image src.
+				 * @param object $image Image tag object.
+				 */
+				$src = apply_filters( 'smush_image_src_after_cdn', $src, $image );
+			}
+
+			// Update src with cdn url.
+			$image->setAttribute( 'src', $src );
+		}
+	}
 
 	/**
 	 * Check if we can use the image URL in CDN.
@@ -882,14 +885,9 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		// Try to get width and height from image.
 		if ( $attachment_id ) {
-			$image = wp_get_attachment_image_src( $attachment_id, 'full' );
-
-			list( $src, $width, $height ) = $image;
+			list( $src, $width, $height ) = wp_get_attachment_image_src( $attachment_id, 'full' );
 
 			$image_meta = wp_get_attachment_metadata( $attachment_id );
-
-			$size_array = array( absint( $width ), absint( $height ) );
-			$srcset     = wp_calculate_image_srcset( $size_array, $src, $image_meta, $attachment_id );
 		} else {
 			// Try to get the dimensions directly from the file.
 			list( $width, $height ) = getimagesize( $src );
@@ -898,28 +896,59 @@ class WP_Smush_CDN extends WP_Smush_Module {
 				'width'  => $width,
 				'height' => $height,
 			);
+		}
 
-			$size_array = array( absint( $width ), absint( $height ) );
+		$size_array = array( absint( $width ), absint( $height ) );
+		$srcset     = wp_calculate_image_srcset( $size_array, $src, $image_meta, $attachment_id );
 
-			$sources = $this->set_additional_srcset(
-				array(),
-				array(
-					absint( $width ),
-					absint( $height ),
-				),
-				$src,
-				$image_meta
-			);
-
-			$srcset = '';
-			foreach ( $sources as $source ) {
-				$srcset .= str_replace( ' ', '%20', $source['url'] ) . ' ' . $source['value'] . $source['descriptor'] . ', ';
-			}
+		/**
+		 * In some rare cases, the wp_calculate_image_srcset() will not generate any srcset, because there are
+		 * not image sizes defined. If that is the case, try to revert to our custom maybe_generate_srcset() to
+		 * generate the srcset string.
+		 *
+		 * Also srcset will not be generated for images that are not part of the media library (no $attachment_id).
+		 */
+		if ( ! $srcset ) {
+			$srcset = $this->maybe_generate_srcset( $width, $height, $src, $image_meta );
 		}
 
 		$sizes = wp_calculate_image_sizes( $size_array, $src, $image_meta, $attachment_id );
 
 		return array( $srcset, $sizes );
+	}
+
+	/**
+	 * Try to generate srcset.
+	 *
+	 * @since 3.0
+	 *
+	 * @param int    $width   Attachment width.
+	 * @param int    $height  Attachment height.
+	 * @param string $src     Image source.
+	 * @param array  $meta    Image meta.
+	 *
+	 * @return string
+	 */
+	private function maybe_generate_srcset( $width, $height, $src, $meta ) {
+		$sources[ $width ] = array(
+			'url'        => $this->generate_cdn_url( $src ),
+			'descriptor' => 'w',
+			'value'      => $width,
+		);
+
+		$sources = $this->set_additional_srcset(
+			$sources,
+			array( absint( $width ), absint( $height ) ),
+			$src,
+			$meta
+		);
+
+		$srcset = '';
+		foreach ( $sources as $source ) {
+			$srcset .= str_replace( ' ', '%20', $source['url'] ) . ' ' . $source['value'] . $source['descriptor'] . ', ';
+		}
+
+		return $srcset;
 	}
 
 	/**
@@ -929,14 +958,26 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 *
 	 * @param string $src  Image path.
 	 *
-	 * @return bool
+	 * @return bool|string
 	 */
 	private function is_supported_path( $src ) {
+		$url_parts = wp_parse_url( $src );
+
+		// Unsupported scheme.
+		if ( isset( $url_parts['scheme'] ) && 'http' !== $url_parts['scheme'] && 'https' !== $url_parts['scheme'] ) {
+			return false;
+		}
+
+		// This is a relative path, try to get the URL.
+		if ( ! isset( $url_parts['host'] ) && ! isset( $url_parts['scheme'] ) ) {
+			$src = site_url( $src );
+		}
+
 		if ( false === strpos( $src, content_url() ) ) {
 			return false;
 		}
 
-		return true;
+		return $src;
 	}
 
 }

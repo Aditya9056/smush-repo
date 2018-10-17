@@ -558,7 +558,8 @@ jQuery( function ( $ ) {
 				  smush_original = document.getElementById( "wp-smush-original" ),
 				  resize_images  = document.getElementById( "wp-smush-resize" ),
 				  smush_pngjpg   = document.getElementById( "wp-smush-png_to_jpg" ),
-				  webp           = document.getElementById( "wp-smush-webp" );
+				  webp           = document.getElementById( "wp-smush-webp" ),
+				  detection      = document.getElementById( 'wp-smush-detection' );
 
 			let update_button_txt = true;
 
@@ -571,6 +572,7 @@ jQuery( function ( $ ) {
 				&& ( resize_images === null || ! resize_images.checked )
 				&& ( smush_pngjpg === null || ! smush_pngjpg.checked )
 				&& ( webp === null || ! webp.checked )
+				&& ( detection === null || ! detection.checked )
 			) {
 				update_button_txt = false;
 			}

@@ -123,7 +123,7 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: ['@babel/env', '@babel/react']
+						presets: [ '@babel/env', '@babel/react' ]
 					}
 				}
 			}
