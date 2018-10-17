@@ -962,6 +962,15 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		wp_send_json_success( $data );
 	}
 
+	/**
+	 * Process CDN status.
+	 *
+	 * @since 3.0
+	 *
+	 * @param $status
+	 *
+	 * @return mixed
+	 */
 	private function process_cdn_status( $status ) {
 		$status = json_decode( $status['body'] );
 

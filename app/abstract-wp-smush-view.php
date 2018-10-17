@@ -591,7 +591,7 @@ abstract class WP_Smush_View {
 			return;
 		}
 
-		// Show setttings saved message.
+		// Show settings saved message.
 		if ( 1 != $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings_updated', false ) ) {
 			return;
 		}
@@ -603,7 +603,7 @@ abstract class WP_Smush_View {
 		// Notice class.
 		$message_class = ' sui-notice-success';
 
-		// Additonal message if we got work to do!
+		// Additional message if we got work to do!
 		$resmush_count = is_array( $core->resmush_ids ) && count( $core->resmush_ids ) > 0;
 		$smush_count   = is_array( $core->remaining_count ) && $core->remaining_count > 0;
 

@@ -14,6 +14,12 @@
 
 ?>
 
+<?php if ( $cdn_enabled ) : ?>
+	<div class="sui-notice sui-notice-info">
+		<p><?php esc_html_e( 'Your images are currently being served via ther WPMU DEV CDN. Bulk smush will continue to operate as per your settings below and is treated completely separately in case you ever want to disable the CDN.', 'wp-smushit' ); ?></p>
+	</div>
+<?php endif; ?>
+
 <form id="wp-smush-settings-form" method="post">
 	<input type="hidden" name="setting_form" id="setting_form" value="bulk">
 	<?php if ( is_multisite() && is_network_admin() ) : ?>

@@ -579,7 +579,11 @@ jQuery( function ( $ ) {
 			self.attr( 'disabled', 'disabled' ).addClass( 'button-grey' );
 
 			if ( update_button_txt ) {
-				self.val( wp_smush_msgs.checking )
+				if ( 'undefined' !== typeof self.attr( 'data-msg' ) ) {
+					self.val( self.attr( 'data-msg' ) );
+				} else {
+					self.val( wp_smush_msgs.checking );
+				}
 			}
 
 			// Check if type is set in data attributes.

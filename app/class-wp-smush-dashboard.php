@@ -1167,7 +1167,11 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Available values: warning (inactive), success (active) or error (expired).
 		$status_msg = array(
 			'warning' => __( 'CDN is not yet active. Configure your settings below and click Activate.', 'wp-smushit' ),
-			'notice'  => __( 'CDN is being activated. This could take some time. Please be patient.', 'wp-smushit' ),
+			'notice'  => __(
+				'Your settings have been saved and changes are now propagating to the CDN. Changes can take up to 30
+				minutes to take effect but your images will continue to be served in the mean time, please be patient.',
+				'wp-smushit'
+			),
 			'info'    => __( 'Your media is currently being served from the WPMU DEV CDN.', 'wp-smushit' ),
 			'error'   => __(
 				'CDN is inactive. You have gone over your 30 day cap so we’ve stopped serving your images.
