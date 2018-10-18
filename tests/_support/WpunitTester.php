@@ -69,6 +69,26 @@ class WpunitTester extends \Codeception\Actor
 	}
 
 	/**
+	 * Allow to override private methods.
+	 *
+	 * @since 3.0
+	 *
+	 * @param object $object       Reference to the object.
+	 * @param string $method_name  Method to call.
+	 * @param array  $args         Array of objects to pass to the method.
+	 *
+	 * @return mixed  Method results.
+	 * @throws ReflectionException
+	 */
+	public function callPrivateMethod( &$object, $method_name, array $args = array() ) {
+		$reflection = new \ReflectionClass( get_class( $object ) );
+		$method     = $reflection->getMethod( $method_name );
+		$method->setAccessible( true );
+
+		return $method->invokeArgs( $object, $args );
+	}
+
+	/**
 	 * Set Smush to Smush Pro.
 	 */
 	public function setPro() {

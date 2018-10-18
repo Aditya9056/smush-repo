@@ -63,8 +63,6 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 		// Try to get the smushed meta.
 		$smush_meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
 
-		codecept_debug( $smush_meta );
-
 		// We don't need the attachment anymore. Delete.
 		wp_delete_attachment( $id, true );
 

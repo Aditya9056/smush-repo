@@ -58,7 +58,7 @@ class BulkSmushCest {
 
 		// No image found.
 		if ( empty( $ids ) ) {
-			//$images = array( 'image1.jpeg', 'image2.jpeg', 'image3.jpeg' );
+			//$images = array( 'image1.jpeg', 'image2.jpeg', 'image-1920x1280.jpeg' );
 			$I->cli( 'media import ' . dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg' );
 			$ids = $I->cliToArray( 'post list --post_type=attachment --post_title=image1 --field=ID' );
 		}
