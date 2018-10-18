@@ -84,9 +84,6 @@ class WP_Smush_Settings {
 	 */
 	private $cdn_fields = array(
 		'auto_resize',
-		'lossy',
-		'strip_exif',
-		'png_to_jpg',
 		'cdn',
 		'webp',
 	);
