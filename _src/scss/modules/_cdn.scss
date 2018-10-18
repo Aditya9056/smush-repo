@@ -22,6 +22,10 @@
         }
 
         .sui-meta-boxes-cdn {
+            form p:first-of-type {
+                margin-top: 0;
+            }
+
             .wp-smush-image-size-list {
                 display: none !important;
             }
