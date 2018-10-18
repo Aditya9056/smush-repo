@@ -586,7 +586,7 @@ abstract class WP_Smush_View {
 	 * Displays a admin notice for settings update.
 	 */
 	private function settings_updated() {
-		// Check if networkwide settings are enabled, do not show settings updated message.
+		// Check if network-wide settings are enabled, do not show settings updated message.
 		if ( is_multisite() && $this->settings->is_network_enabled() && ! is_network_admin() ) {
 			return;
 		}
@@ -602,6 +602,14 @@ abstract class WP_Smush_View {
 		$message = esc_html__( 'Your settings have been updated!', 'wp-smushit' );
 		// Notice class.
 		$message_class = ' sui-notice-success';
+
+
+		if ( 'cdn' === $this->get_current_tab() ) {
+			$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+			if ( isset( $cdn->cdn_enabling ) && $cdn->cdn_enabling ) {
+				$message = esc_html__( 'Your settings have been saved and changes are now propagating to the CDN. Changes can take up to 30 minutes to take effect but your images will continue to be served in the mean time, please be patient.', 'wp-smushit' );
+			}
+		}
 
 		// Additional message if we got work to do!
 		$resmush_count = is_array( $core->resmush_ids ) && count( $core->resmush_ids ) > 0;
