@@ -37,6 +37,10 @@
                     stroke: #17A8E3;
                 }
             }
+
+            .sui-circle-score-label:after {
+                content: '%';
+            }
         }
 
         .smush-cdn-quota-boxes {
