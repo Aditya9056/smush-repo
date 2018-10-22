@@ -702,10 +702,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						// WPMDUDEV hosting support: cast $size_k to string to properly work with object cache.
 						$checked = is_array( $image_sizes ) ? in_array( (string) $size_k, $image_sizes, true ) : false;
 					}
-					// For free users, disable full size option.
+					// For free users, remove full size option.
 					if ( 'full' === $size_k ) {
-						$disabled = $is_pro ? '' : 'disabled';
-						$checked  = $is_pro ? $checked : false;
+						continue;
 					}
 					?>
 					<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm"">
