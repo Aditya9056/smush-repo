@@ -6,7 +6,7 @@
  * @package WP_Smush
  */
 
-$tooltip = __( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' );
+$tooltip = __( 'Join WPMU DEV to host your images on our blazing fast global CDN', 'wp-smushit' );
 ?>
 
 <h3 class="sui-box-title">
