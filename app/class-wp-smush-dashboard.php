@@ -1132,7 +1132,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			array(
 				'utm_source'   => 'smush',
 				'utm_medium'   => 'plugin',
-				'utm_campaign' => 'smush_stats_enable_lossy',
+				'utm_campaign' => 'smush_cdn_upgrade_button',
 			),
 			WP_Smush::get_instance()->core()->upgrade_url
 		);
