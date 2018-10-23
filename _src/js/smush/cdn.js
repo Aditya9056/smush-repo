@@ -30,7 +30,7 @@
 			}
 
 			/**
-			 * Handle "Cancel Activation' button click on CDN page.
+			 * Handle "Deactivate' button click on CDN page.
 			 */
 			if ( this.cdnDisableButton ) {
 				this.cdnDisableButton.addEventListener('click', (e) => {

@@ -900,7 +900,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 * Toggle CDN.
 	 *
 	 * Handles "Get Started" button press on the disabled CDN meta box.
-	 * Handles "Cancel Activation" button press on the CDN meta box.
+	 * Handles "Deactivate" button press on the CDN meta box.
 	 * Refreshes page on success.
 	 *
 	 * @since 3.0
