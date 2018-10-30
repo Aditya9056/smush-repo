@@ -14,7 +14,7 @@
 /**
  * Class WP_Smush_Png2jpg
  */
-class WP_Smush_Png2jpg {
+class WP_Smush_Png2jpg extends WP_Smush_Module {
 
 	/**
 	 * Does PNG contain transparency.
@@ -22,6 +22,13 @@ class WP_Smush_Png2jpg {
 	 * @var bool
 	 */
 	private $is_transparent = false;
+
+	/**
+	 * Init method.
+	 *
+	 * @since 3.0
+	 */
+	public function init() {}
 
 	/**
 	 * Check if Imagick is available or not
@@ -126,14 +133,14 @@ class WP_Smush_Png2jpg {
 		$should_convert = false;
 
 		// Get the Transparency conversion settings.
-		$convert_png = WP_Smush_Settings::$settings['png_to_jpg'];
+		$convert_png = $this->settings->get( 'png_to_jpg' );
 
 		if ( ! $convert_png ) {
 			return $should_convert;
 		}
 
 		// Whether to convert transparent images or not.
-		$transparent_settings = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'transparent_png', false );
+		$transparent_settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'transparent_png', false );
 
 		$convert_transparent = $transparent_settings['convert'];
 
@@ -285,7 +292,7 @@ class WP_Smush_Png2jpg {
 		$this->update_image_url( $id, $size_k, $n_file, $o_url );
 
 		// Delete the Original files if backup not enabled.
-		if ( 'conversion' === $o_type && ! WP_Smush_Settings::$settings['backup'] ) {
+		if ( 'conversion' === $o_type && ! $this->settings->get( 'backup' ) ) {
 			@unlink( $o_file );
 		}
 
@@ -537,7 +544,7 @@ class WP_Smush_Png2jpg {
 		// Updated File name.
 		$n_file = path_join( $n_file['dirname'], $n_file['filename'] );
 
-		$transparent_png = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'transparent_png' );
+		$transparent_png = $this->settings->get_setting( WP_SMUSH_PREFIX . 'transparent_png' );
 
 		/**
 		 * Filter Background Color for Transparent PNGs
@@ -686,7 +693,8 @@ class WP_Smush_Png2jpg {
 		global $wpdb;
 		// Get existing Images with current URL.
 		$query = $wpdb->prepare(
-			"SELECT ID, post_content FROM $wpdb->posts WHERE post_content LIKE '%%%s%%'", $o_url
+			"SELECT ID, post_content FROM $wpdb->posts WHERE post_content LIKE '%%%s%%'",
+			$o_url
 		);
 
 		$rows = $wpdb->get_results( $query, ARRAY_A );
@@ -710,6 +718,8 @@ class WP_Smush_Png2jpg {
 					'ID' => $row['ID'],
 				)
 			);
+			clean_post_cache( $row['ID'] );
 		}
 	}
+
 }

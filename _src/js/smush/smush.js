@@ -251,11 +251,12 @@ class Smush {
 					self.status.html( response.data.error_msg );
 					self.status.show();
 				}
-				if ( 'undefined' !== stats_div && stats_div.length ) {
-					stats_div.replaceWith( response.data.stats );
-				} else {
+
+				//if ( 'undefined' !== stats_div && stats_div.length ) {
+				//	stats_div.replaceWith( response.data.stats );
+				//} else {
 					parent.append( response.data.stats );
-				}
+				//}
 
 				/**
 				 * Update image size in attachment info panel.
@@ -395,6 +396,18 @@ class Smush {
 				}
 			}
 		}
+
+		// Update remaining count.
+		// Update sidebar count.
+		const sidenavCountDiv = jQuery( '.smush-sidenav .wp-smush-remaining-count' );
+		if ( sidenavCountDiv.length && 'undefined' !== typeof wp_smushit_data.resmush ) {
+			if ( wp_smushit_data.resmush.length > 0 ) {
+				sidenavCountDiv.html( wp_smushit_data.resmush.length );
+			} else {
+				jQuery( '.sui-summary-smush .smush-stats-icon' ).addClass( 'sui-hidden' );
+				sidenavCountDiv.removeClass( 'sui-tag sui-tag-warning' ).html( '' );
+			}
+		}
 	}
 
 	/**
@@ -507,11 +520,10 @@ class Smush {
 	free_exceeded() {
 		if ( this.ids.length > 0 ) {
 			const progress = jQuery( '.wp-smush-bulk-progress-bar-wrapper' );
-			progress.addClass( 'wp-smush-exceed-limit' )
-				.find( '.sui-progress-block .sui-progress-close' ).addClass( 'sui-hidden' )
-				.find( '.sui-progress-block .wp-smush-all' ).removeClass( 'sui-hidden' );
-
-			progress.find( '.sui-box-body.sui-hidden' ).removeClass( 'sui-hidden' );
+			progress.addClass( 'wp-smush-exceed-limit' );
+			progress.find( '.sui-progress-block .wp-smush-cancel-bulk' ).addClass('sui-hidden');
+			progress.find( '.sui-progress-block .wp-smush-all' ).removeClass('sui-hidden');
+			progress.find( '.sui-box-body.sui-no-padding-right' ).removeClass('sui-hidden');
 		} else {
 			jQuery( '.wp-smush-notice.wp-smush-all-done, .wp-smush-pagespeed-recommendation' ).show();
 		}
@@ -757,9 +769,15 @@ class Smush {
 					/** @var {string} res.data.file_name */
 					const error_msg = Smush.prepare_error_row( res.data.error_message, res.data.file_name, res.data.thumbnail, self.current_id );
 
-					// Print the error on screen.
-					self.log.find( '.smush-bulk-errors' ).append( error_msg );
 					self.log.show();
+
+					if ( self.errors.length > 5 ) {
+						$('.smush-bulk-errors-actions').removeClass('sui-hidden');
+					} else {
+						// Print the error on screen.
+						self.log.find( '.smush-bulk-errors' ).append( error_msg );
+					}
+
 				} else if ( 'undefined' !== typeof res.success && res.success ) {
 					// Increment the smushed count if image smushed without errors.
 					self.increment_smushed( self.current_id );

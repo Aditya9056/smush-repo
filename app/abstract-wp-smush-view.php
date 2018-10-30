@@ -39,6 +39,15 @@ abstract class WP_Smush_View {
 	protected $tabs = array();
 
 	/**
+	 * Settings instance for faster access.
+	 *
+	 * @since 3.0
+	 *
+	 * @var WP_Smush_Settings
+	 */
+	protected $settings;
+
+	/**
 	 * WP_Smush_View constructor.
 	 *
 	 * @param string $title    Page title.
@@ -46,7 +55,8 @@ abstract class WP_Smush_View {
 	 * @param bool   $submenu  Is a submenu page.
 	 */
 	public function __construct( $title, $slug = 'smush', $submenu = false ) {
-		$this->slug = $slug;
+		$this->slug     = $slug;
+		$this->settings = WP_Smush_Settings::get_instance();
 
 		if ( ! $submenu ) {
 			$this->page_id = add_menu_page(
@@ -88,6 +98,8 @@ abstract class WP_Smush_View {
 		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
 
 		add_filter( 'admin_body_class', array( $this, 'smush_body_classes' ) );
+		// Filter built-in wpmudev branding script.
+		add_filter( 'wpmudev_whitelabel_plugin_pages', array( $this, 'builtin_wpmudev_branding' ) );
 	}
 
 	/**
@@ -171,7 +183,8 @@ abstract class WP_Smush_View {
 				'utm_source'   => 'smush',
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_dashboard_upgrade_notice',
-			), $core->upgrade_url
+			),
+			$core->upgrade_url
 		);
 		?>
 		<div class="notice smush-notice" style="display: none;">
@@ -302,8 +315,10 @@ abstract class WP_Smush_View {
 		// Load page header.
 		$this->render_page_header();
 
+		$hide_quick_setup = false !== get_site_option( 'skip-smush-setup' );
+
 		// Show configure screen for only a new installation and for only network admins.
-		if ( ! is_network_admin() && ( '1' !== get_site_option( 'skip-smush-setup' ) && '1' !== get_option( 'wp-smush-hide_smush_welcome' ) ) && '1' !== get_option( 'hide_smush_features' ) && is_super_admin() ) {
+		if ( ( ! is_multisite() && ! $hide_quick_setup ) || ( is_network_admin() && $this->settings->is_network_enabled() && ! $hide_quick_setup ) ) {
 			$this->view( 'modals/quick-setup' );
 		}
 
@@ -340,10 +355,13 @@ abstract class WP_Smush_View {
 	 * Display tabs navigation
 	 */
 	public function show_tabs() {
-		$this->view( 'tabs', array(
-			'tabs'      => $this->get_tabs(),
-			'is_hidden' => is_network_admin() && ! WP_Smush_Settings::$settings['networkwide'],
-		) );
+		$this->view(
+			'tabs',
+			array(
+				'tabs'      => $this->get_tabs(),
+				'is_hidden' => is_network_admin() && ! $this->settings->is_network_enabled(),
+			)
+		);
 	}
 
 	/**
@@ -428,10 +446,8 @@ abstract class WP_Smush_View {
 		ob_start();
 		?>
 		<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-			<g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-				<g id="WP-/-Menu---Free" transform="translate(-12.000000, -428.000000)" fill="#FFFFFF;">
-					<path d="M26.9310561,432.026782 C27.2629305,432.598346 27.5228884,433.217017 27.7109375,433.882812 C27.9036468,434.565108 28,435.27083 28,436 C28,437.104172 27.7916687,438.14062 27.375,439.109375 C26.9479145,440.07813 26.3750036,440.924476 25.65625,441.648438 C24.9374964,442.372399 24.0937548,442.942706 23.125,443.359375 C22.1562452,443.78646 21.1197972,444 20.015625,444 L26.9310562,432.026782 L26.9310561,432.026782 Z M26.9310561,432.026782 C26.9228316,432.012617 26.9145629,431.998482 26.90625,431.984375 L26.9375,432.015625 L26.9310562,432.026782 L26.9310561,432.026782 Z M16.625,433.171875 L23.375,433.171875 L20,439.03125 L16.625,433.171875 Z M14.046875,430.671875 L14.046875,430.65625 C14.4114602,430.249998 14.8177061,429.88021 15.265625,429.546875 C15.7031272,429.223957 16.1744766,428.945314 16.6796875,428.710938 C17.1848984,428.476561 17.7187472,428.296876 18.28125,428.171875 C18.8333361,428.046874 19.406247,427.984375 20,427.984375 C20.593753,427.984375 21.1666639,428.046874 21.71875,428.171875 C22.2812528,428.296876 22.8151016,428.476561 23.3203125,428.710938 C23.8255234,428.945314 24.3020811,429.223957 24.75,429.546875 C25.1875022,429.88021 25.5937481,430.255206 25.96875,430.671875 L14.046875,430.671875 Z M13.0625,432.03125 L19.984375,444 C18.8802028,444 17.8437548,443.78646 16.875,443.359375 C15.9062452,442.942706 15.0625036,442.372399 14.34375,441.648438 C13.6249964,440.924476 13.0572937,440.07813 12.640625,439.109375 C12.2239563,438.14062 12.015625,437.104172 12.015625,436 C12.015625,435.27083 12.1067699,434.567712 12.2890625,433.890625 C12.4713551,433.213538 12.729165,432.593753 13.0625,432.03125 Z" id="icon-smush"></path>
-				</g>
+			<g transform="translate(-12.000000, -428.000000)" style="fill: #83878b;">
+				<path d="M26.9310561,432.026782 C27.2629305,432.598346 27.5228884,433.217017 27.7109375,433.882812 C27.9036468,434.565108 28,435.27083 28,436 C28,437.104172 27.7916687,438.14062 27.375,439.109375 C26.9479145,440.07813 26.3750036,440.924476 25.65625,441.648438 C24.9374964,442.372399 24.0937548,442.942706 23.125,443.359375 C22.1562452,443.78646 21.1197972,444 20.015625,444 L26.9310562,432.026782 L26.9310561,432.026782 Z M26.9310561,432.026782 C26.9228316,432.012617 26.9145629,431.998482 26.90625,431.984375 L26.9375,432.015625 L26.9310562,432.026782 L26.9310561,432.026782 Z M16.625,433.171875 L23.375,433.171875 L20,439.03125 L16.625,433.171875 Z M14.046875,430.671875 L14.046875,430.65625 C14.4114602,430.249998 14.8177061,429.88021 15.265625,429.546875 C15.7031272,429.223957 16.1744766,428.945314 16.6796875,428.710938 C17.1848984,428.476561 17.7187472,428.296876 18.28125,428.171875 C18.8333361,428.046874 19.406247,427.984375 20,427.984375 C20.593753,427.984375 21.1666639,428.046874 21.71875,428.171875 C22.2812528,428.296876 22.8151016,428.476561 23.3203125,428.710938 C23.8255234,428.945314 24.3020811,429.223957 24.75,429.546875 C25.1875022,429.88021 25.5937481,430.255206 25.96875,430.671875 L14.046875,430.671875 Z M13.0625,432.03125 L19.984375,444 C18.8802028,444 17.8437548,443.78646 16.875,443.359375 C15.9062452,442.942706 15.0625036,442.372399 14.34375,441.648438 C13.6249964,440.924476 13.0572937,440.07813 12.640625,439.109375 C12.2239563,438.14062 12.015625,437.104172 12.015625,436 C12.015625,435.27083 12.1067699,434.567712 12.2890625,433.890625 C12.4713551,433.213538 12.729165,432.593753 13.0625,432.03125 Z" id="icon-smush"></path>
 			</g>
 		</svg>
 		<?php
@@ -447,25 +463,26 @@ abstract class WP_Smush_View {
 	 */
 	private function render_page_header() {
 		$current_screen = get_current_screen();
-
-		if ( WP_Smush::get_instance()->core()->remaining_count === 0 || WP_Smush::get_instance()->core()->smushed_count === 0 ) {
-			// Initialize global stats.
-			WP_Smush::get_instance()->core()->setup_global_stats();
-		}
 		?>
 
 		<div class="sui-header wp-smush-page-header">
 			<h1 class="sui-header-title"><?php esc_html_e( 'DASHBOARD', 'wp-smushit' ); ?></h1>
 			<div class="sui-actions-right">
 				<?php if ( ! is_network_admin() && ( 'bulk' === $this->get_current_tab() || 'gallery_page_wp-smush-nextgen-bulk' === $this->page_id ) ) : ?>
-					<?php $data_type = 'gallery_page_wp-smush-nextgen-bulk' === $current_screen->id ? ' data-type="nextgen"' : ''; ?>
-					<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_attr_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>"<?php echo esc_attr( $data_type ); ?>>
+					<?php $data_type = 'gallery_page_wp-smush-nextgen-bulk' === $current_screen->id ? 'nextgen' : 'media'; ?>
+					<button class="sui-button wp-smush-scan" data-tooltip="<?php esc_attr_e( 'Lets you check if any images can be further optimized. Useful after changing settings.', 'wp-smushit' ); ?>" data-type="<?php echo esc_attr( $data_type ); ?>">
 						<?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?>
 					</button>
 				<?php endif; ?>
-				<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank"><i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?></a>
+				<?php if ( ! $this->hide_wpmudev_doc_link() ) : ?>
+					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank">
+						<i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?>
+					</a>
+				<?php endif; ?>
 			</div>
 		</div>
+
+		<div class="sui-notice sui-notice-top sui-hidden" id="wp-smush-ajax-notice"></div>
 
 		<?php
 		// User API check, and display a message if not valid.
@@ -492,12 +509,12 @@ abstract class WP_Smush_View {
 	 */
 	private function get_recheck_message() {
 		// Return if not multisite, or on network settings page, Netowrkwide settings is disabled.
-		if ( ! is_multisite() || is_network_admin() || ! WP_Smush_Settings::$settings['networkwide'] ) {
+		if ( ! is_multisite() || is_network_admin() || ! $this->settings->is_network_enabled() ) {
 			return;
 		}
 
 		// Check the last settings stored in db.
-		$run_recheck = get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false );
+		$run_recheck = $this->settings->get_setting( WP_SMUSH_PREFIX . 'run_recheck', false );
 
 		// If not same, display notice.
 		if ( ! $run_recheck ) {
@@ -569,93 +586,95 @@ abstract class WP_Smush_View {
 	 * Displays a admin notice for settings update.
 	 */
 	private function settings_updated() {
-		// Check if networkwide settings are enabled, do not show settings updated message.
-		if ( is_multisite() && WP_Smush_Settings::$settings['networkwide'] && ! is_network_admin() ) {
+		// Check if network-wide settings are enabled, do not show settings updated message.
+		if ( is_multisite() && $this->settings->is_network_enabled() && ! is_network_admin() ) {
 			return;
 		}
 
-		// Show setttings saved message.
-		if ( 1 == WP_Smush_Settings::get_setting( 'wp-smush-settings_updated', false ) ) {
-			// Default message.
-			$message = esc_html__( 'Your settings have been updated!', 'wp-smushit' );
-			// Notice class.
-			$message_class = ' sui-notice-success';
-
-			// Additonal message if we got work to do!
-			$resmush_count = is_array( WP_Smush::get_instance()->core()->resmush_ids ) && count( WP_Smush::get_instance()->core()->resmush_ids ) > 0;
-			$smush_count   = is_array( WP_Smush::get_instance()->core()->remaining_count ) && WP_Smush::get_instance()->core()->remaining_count > 0;
-
-			if ( $smush_count || $resmush_count ) {
-				$message_class = ' sui-notice-warning';
-				// Show link to bulk smush tab from other tabs.
-				$bulk_smush_link = 'bulk' === $this->get_current_tab() ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '">';
-				$message        .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
-			}
-			?>
-			<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $message_class ); ?>">
-				<div class="sui-notice-content">
-					<p><?php echo $message; ?></p>
-				</div>
-				<span class="sui-notice-dismiss">
-					<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>
-				</span>
-			</div>
-
-			<?php
-			// Remove the option.
-			WP_Smush_Settings::delete_setting( 'wp-smush-settings_updated' );
+		// Show settings saved message.
+		if ( 1 != $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings_updated', false ) ) {
+			return;
 		}
+
+		$core = WP_Smush::get_instance()->core();
+
+		// Default message.
+		$message = esc_html__( 'Your settings have been updated!', 'wp-smushit' );
+		// Notice class.
+		$message_class = ' sui-notice-success';
+
+
+		if ( 'cdn' === $this->get_current_tab() ) {
+			$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+			if ( isset( $cdn->cdn_enabling ) && $cdn->cdn_enabling ) {
+				$message = esc_html__( 'Your settings have been saved and changes are now propagating to the CDN. Changes can take up to 30 minutes to take effect but your images will continue to be served in the mean time, please be patient.', 'wp-smushit' );
+			}
+		}
+
+		// Additional message if we got work to do!
+		$resmush_count = is_array( $core->resmush_ids ) && count( $core->resmush_ids ) > 0;
+		$smush_count   = is_array( $core->remaining_count ) && $core->remaining_count > 0;
+
+		if ( $smush_count || $resmush_count ) {
+			$message_class = ' sui-notice-warning';
+			// Show link to bulk smush tab from other tabs.
+			$bulk_smush_link = 'bulk' === $this->get_current_tab() ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '">';
+			$message        .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
+		}
+		?>
+		<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $message_class ); ?>">
+			<div class="sui-notice-content">
+				<p><?php echo $message; ?></p>
+			</div>
+			<span class="sui-notice-dismiss">
+				<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>
+			</span>
+		</div>
+
+		<?php
+		// Remove the option.
+		$this->settings->delete_setting( WP_SMUSH_PREFIX . 'settings_updated' );
 	}
 
 	/**
-	 * Shows a option to ignore the Image ids which can be resmushed while bulk smushing.
+	 * Add more pages to builtin wpmudev branding.
 	 *
-	 * @param bool|int $count  Resmush + unsmushed image count.
-	 * @param bool     $show   Should show or not.
+	 * @since 3.0
+	 *
+	 * @param array $plugin_pages  Nextgen pages is not introduced in built in wpmudev branding.
+	 *
+	 * @return array
 	 */
-	public function bulk_resmush_content( $count = false, $show = false ) {
-		// If we already have count, don't fetch it.
-		if ( false === $count ) {
-			// If we have the resmush ids list, Show Resmush notice and button.
-			if ( $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
-				// Count.
-				$count = count( $resmush_ids );
+	public function builtin_wpmudev_branding( $plugin_pages ) {
+		$plugin_pages['gallery_page_wp-smush-nextgen-bulk'] = array(
+			'wpmudev_whitelabel_sui_plugins_branding',
+			'wpmudev_whitelabel_sui_plugins_footer',
+			'wpmudev_whitelabel_sui_plugins_doc_links',
+		);
 
-				// Whether to show the remaining re-smush notice.
-				$show = $count > 0 ? true : false;
+		return $plugin_pages;
+	}
 
-				// Get the actual remainaing count.
-				if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) ) {
-					WP_Smush::get_instance()->core()->setup_global_stats();
-				}
+	/**
+	 * Flag to hide wpmudev branding image.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function hide_wpmudev_branding() {
+		return apply_filters( 'wpmudev_branding_hide_branding', false );
+	}
 
-				$count = WP_Smush::get_instance()->core()->remaining_count;
-			}
-		}
-
-		// Show only if we have any images to ber resmushed.
-		if ( $show ) {
-			?>
-			<div class="sui-notice sui-notice-warning wp-smush-resmush-notice wp-smush-remaining" tabindex="0">
-				<p>
-					<span class="wp-smush-notice-text">
-						<?php
-						printf(
-							/* translators: %1$s: user name, %2$s: strong tag, %3$s: span tag, %4$d: number of remaining umages, %5$s: closing span tag, %6$s: closing strong tag  */
-							_n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs re-compressing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need re-compressing!', $count, 'wp-smushit' ),
-							esc_html( WP_Smush_Helper::get_user_name() ),
-							'<strong>',
-							'<span class="wp-smush-remaining-count">',
-							absint( $count ),
-							'</span>',
-							'</strong>'
-						);
-						?>
-					</span>
-				</p>
-			</div>
-			<?php
-		}
+	/**
+	 * Flag to hide wpmudev doc link.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function hide_wpmudev_doc_link() {
+		return apply_filters( 'wpmudev_branding_hide_doc_link', false );
 	}
 
 }

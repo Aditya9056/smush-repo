@@ -164,18 +164,24 @@ class WP_Smush_Admin {
 		}
 
 		wp_enqueue_script(
-			'smush-backbone-extension', WP_SMUSH_URL . 'app/assets/js/media.min.js', array(
+			'smush-backbone-extension',
+			WP_SMUSH_URL . 'app/assets/js/media.min.js',
+			array(
 				'jquery',
 				'media-editor', // Used in image filters.
 				'media-views',
 				'media-grid',
 				'wp-util',
 				'wp-api',
-			), WP_SMUSH_VERSION, true
+			),
+			WP_SMUSH_VERSION,
+			true
 		);
 
 		wp_localize_script(
-			'smush-backbone-extension', 'smush_vars', array(
+			'smush-backbone-extension',
+			'smush_vars',
+			array(
 				'strings' => array(
 					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
 					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
@@ -237,7 +243,7 @@ class WP_Smush_Admin {
 		$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
 
 		// Add a bulk smush option for NextGen gallery.
-		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->get_nextgen_status() && WP_Smush::is_pro() ) {
+		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->nextgen->is_enabled() && WP_Smush::is_pro() ) {
 			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( $title, 'wp-smush-nextgen-bulk', true );
 		}
 	}
@@ -312,10 +318,16 @@ class WP_Smush_Admin {
 				<?php
 				printf(
 					/* translators: $1$s: recheck link, $2$s: closing a tag, %3$s; contact link, %4$s: closing a tag */
-					esc_html__( 'It looks like Smush couldn’t verify your WPMU DEV membership so Pro features
+					esc_html__(
+						'It looks like Smush couldn’t verify your WPMU DEV membership so Pro features
 					have been disabled for now. If you think this is an error, run a %1$sre-check%2$s or get in touch
-					with our %3$ssupport team%4$s.', 'wp-smushit' ),
-					$recheck_link, '</a>', $wpmu_contact, '</a>'
+					with our %3$ssupport team%4$s.',
+						'wp-smushit'
+					),
+					$recheck_link,
+					'</a>',
+					$wpmu_contact,
+					'</a>'
 				);
 				?>
 			</p>
@@ -426,9 +438,9 @@ class WP_Smush_Admin {
 	 *
 	 * @param string $column_name  Column name.
 	 * @param int    $id           Attachment ID.
- 	 */
+	 */
 	public function custom_column( $column_name, $id ) {
-		if ( 'smushit' == $column_name ) {
+		if ( 'smushit' === $column_name ) {
 			WP_Smush::get_instance()->core()->mod->smush->set_status( $id );
 		}
 	}
@@ -452,7 +464,8 @@ class WP_Smush_Admin {
 
 		if ( isset( $orderby ) && 'smushit' === $orderby ) {
 			$query->set(
-				'meta_query', array(
+				'meta_query',
+				array(
 					'relation' => 'OR',
 					array(
 						'key'     => WP_Smushit::$smushed_meta_key,
@@ -495,4 +508,61 @@ class WP_Smush_Admin {
 		return $query;
 	}
 
+	/**
+	 * Shows a option to ignore the Image ids which can be resmushed while bulk smushing.
+	 *
+	 * @param bool|int $count  Resmush + unsmushed image count.
+	 * @param bool     $show   Should show or not.
+	 *
+	 * @return mixed $notice
+	 */
+	public function bulk_resmush_content( $count = false, $show = false ) {
+		// If we already have count, don't fetch it.
+		if ( false === $count ) {
+			// If we have the resmush ids list, Show Resmush notice and button.
+			if ( $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
+				// Count.
+				$count = count( $resmush_ids );
+
+				// Whether to show the remaining re-smush notice.
+				$show = $count > 0 ? true : false;
+
+				// Get the actual remainaing count.
+				if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) ) {
+					WP_Smush::get_instance()->core()->setup_global_stats();
+				}
+
+				$count = WP_Smush::get_instance()->core()->remaining_count;
+			}
+		}
+
+		$notice = '';
+
+		// Show only if we have any images to ber resmushed.
+		if ( $count > 0 ) {
+			$notice  = '<div class="sui-notice sui-notice-warning wp-smush-resmush-notice wp-smush-remaining" tabindex="0">';
+			$notice .= '<p>';
+			$notice .= '<span class="wp-smush-notice-text">';
+			$notice .= sprintf(
+				/* translators: %1$s: user name, %2$s: strong tag, %3$s: span tag, %4$d: number of remaining umages, %5$s: closing span tag, %6$s: closing strong tag  */
+				_n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs re-compressing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need re-compressing!', $count, 'wp-smushit' ),
+				esc_html( WP_Smush_Helper::get_user_name() ),
+				'<strong>',
+				'<span class="wp-smush-remaining-count">',
+				absint( $count ),
+				'</span>',
+				'</strong>'
+			);
+			$notice .= '</span>';
+			$notice .= '</p>';
+			$notice .= '</div>';
+		}
+
+		// Echo only if $show is true, otherwise return content.
+		if ( $show ) {
+			echo $notice;
+		} else {
+			return $notice;
+		}
+	}
 }

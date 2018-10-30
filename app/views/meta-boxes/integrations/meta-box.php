@@ -37,7 +37,7 @@
 		$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
 
 		// Show settings option.
-		$this->settings_row( $setting_m_key, $label, $name, $setting_val, true, $disable, $upsell );
+		$this->settings_row( $setting_m_key, $label, $name, $setting_val, $disable, $upsell );
 
 	}
 	// Hook after showing integration settings.

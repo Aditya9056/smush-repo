@@ -22,7 +22,8 @@ class WP_Smush_Nextgen_Page extends WP_Smush_View {
 	 * Register meta boxes.
 	 */
 	public function register_meta_boxes() {
-		$this->add_meta_box( 'meta-boxes/summary',
+		$this->add_meta_box(
+			'meta-boxes/summary',
 			null,
 			array( $this, 'dashboard_summary_metabox' ),
 			null,
@@ -35,7 +36,8 @@ class WP_Smush_Nextgen_Page extends WP_Smush_View {
 		);
 
 		$class = WP_Smush::is_pro() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
-		$this->add_meta_box( 'meta-boxes/bulk',
+		$this->add_meta_box(
+			'meta-boxes/bulk',
 			__( 'Bulk Smush', 'wp-smushit' ),
 			array( $this, 'bulk_metabox' ),
 			array( $this, 'bulk_header_metabox' ),
@@ -76,23 +78,29 @@ class WP_Smush_Nextgen_Page extends WP_Smush_View {
 			$smushed_image_count = is_array( $smushed_image ) ? count( $smushed_image ) : 0;
 		}
 
-		$this->view( 'meta-boxes/nextgen/summary-meta-box', array(
-			'image_count'         => $ng->image_count,
-			'lossy_enabled'       => $lossy_enabled,
-			'smushed_image_count' => $smushed_image_count,
-			'stats_human'         => $ng->stats['human'] > 0 ? $ng->stats['human'] : '0 MB',
-			'stats_percent'       => $ng->stats['percent'] > 0 ? number_format_i18n( $ng->stats['percent'], 1 ) : 0,
-			'total_count'         => $ng->total_count,
-		) );
+		$this->view(
+			'meta-boxes/nextgen/summary-meta-box',
+			array(
+				'image_count'         => $ng->image_count,
+				'lossy_enabled'       => $lossy_enabled,
+				'smushed_image_count' => $smushed_image_count,
+				'stats_human'         => $ng->stats['human'] > 0 ? $ng->stats['human'] : '0 MB',
+				'stats_percent'       => $ng->stats['percent'] > 0 ? number_format_i18n( $ng->stats['percent'], 1 ) : 0,
+				'total_count'         => $ng->total_count,
+			)
+		);
 	}
 
 	/**
 	 * NextGen bulk Smush header meta box.
 	 */
 	public function bulk_header_metabox() {
-		$this->view( 'meta-boxes/nextgen/meta-box-header', array(
-			'title' => __( 'Bulk Smush', 'wp-smushit' ),
-		) );
+		$this->view(
+			'meta-boxes/nextgen/meta-box-header',
+			array(
+				'title' => __( 'Bulk Smush', 'wp-smushit' ),
+			)
+		);
 	}
 
 	/**
@@ -113,20 +121,24 @@ class WP_Smush_Nextgen_Page extends WP_Smush_View {
 		$url = add_query_arg(
 			array(
 				'page' => 'smush#wp-smush-settings-box',
-			), admin_url( 'upload.php' )
+			),
+			admin_url( 'upload.php' )
 		);
 
-		$this->view( 'meta-boxes/nextgen/meta-box', array(
-			'all_done'        => ( $ng->smushed_count == $ng->total_count ) && 0 == count( $ng->resmush_ids ),
-			'count'           => $count,
-			'lossy_enabled'   => WP_Smush::get_instance()->core()->mod->smush->lossy_enabled,
-			'ng'              => $ng,
-			'remaining_count' => $ng->remaining_count,
-			'resmush_ids'     => $ng->resmush_ids,
-			'show'            => $show,
-			'total_count'     => $ng->total_count,
-			'url'             => $url,
-		) );
+		$this->view(
+			'meta-boxes/nextgen/meta-box',
+			array(
+				'all_done'        => ( $ng->smushed_count == $ng->total_count ) && 0 == count( $ng->resmush_ids ),
+				'count'           => $count,
+				'lossy_enabled'   => WP_Smush::get_instance()->core()->mod->smush->lossy_enabled,
+				'ng'              => $ng,
+				'remaining_count' => $ng->remaining_count,
+				'resmush_ids'     => $ng->resmush_ids,
+				'show'            => $show,
+				'total_count'     => $ng->total_count,
+				'url'             => $url,
+			)
+		);
 	}
 
 }

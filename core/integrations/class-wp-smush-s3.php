@@ -70,8 +70,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			'label'       => __( 'Enable Amazon S3 support', 'wp-smushit' ),
 			'short_label' => __( 'Amazon S3', 'wp-smushit' ),
 			'desc'        => sprintf(
-				esc_html__( "Storing your image on S3 buckets using %1\$sWP Offload S3%2\$s? Smush can detect
-				and smush those assets for you, including when you're removing files from your host server.", 'wp-smushit' ),
+				esc_html__(
+					"Storing your image on S3 buckets using %1\$sWP Offload S3%2\$s? Smush can detect
+				and smush those assets for you, including when you're removing files from your host server.",
+					'wp-smushit'
+				),
 				"<a href='{$plugin_url}' target = '_blank'>",
 				'</a>'
 			),
@@ -126,8 +129,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			return false;
 		}
 
-		// If we only have the attachment id.
-		$full_url = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
+		$full_url = $this->is_attachment_served_by_provider( $as3cf, $attachment_id );
 
 		// If the file path contains S3, get the s3 URL for the file.
 		return ! empty( $full_url ) ? $as3cf->get_attachment_url( $attachment_id ) : false;
@@ -161,7 +163,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 */
 	public function s3_support_required_notice() {
 		// Do not display it for other users. Do not display on network screens, if network-wide option is disabled.
-		if ( ! current_user_can( 'manage_options' ) || ( is_network_admin() && ! WP_Smush_Settings::$settings['networkwide'] ) ) {
+		if ( ! current_user_can( 'manage_options' ) || ( is_network_admin() && ! $this->settings->is_network_enabled() ) ) {
 			return true;
 		}
 
@@ -201,9 +203,12 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 				 * Translators: %1$s: opening strong tag, %2$s: closing strong tag, %s: settings link,
 				 * %3$s: opening a and strong tags, %4$s: closing a and strong tags
 				 */
-				__( "We can see you have WP Offload S3 installed with the %1\$sRemove Files From Server%2\$s option
+				__(
+					"We can see you have WP Offload S3 installed with the %1\$sRemove Files From Server%2\$s option
 				activated. If you want to optimize your S3 images you'll need to enable the %3\$sAmazon S3 Support%4\$s
-				feature in Smush's settings.", 'wp-smushit' ),
+				feature in Smush's settings.",
+					'wp-smushit'
+				),
 				'<strong>',
 				'</strong>',
 				"<a href='{$settings_link}'><strong>",
@@ -217,8 +222,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 				 * Translators: %1$s: opening strong tag, %2$s: closing strong tag, %s: settings link,
 				 * %3$s: opening a and strong tags, %4$s: closing a and strong tags
 				 */
-				__( "We can see you have WP Offload S3 installed with the %1\$sRemove Files From Server%2\$s option
-				activated. If you want to optimize your S3 images you'll need to %3\$supgrade to Smush Pro%4\$s", 'wp-smushit' ),
+				__(
+					"We can see you have WP Offload S3 installed with the %1\$sRemove Files From Server%2\$s option
+				activated. If you want to optimize your S3 images you'll need to %3\$supgrade to Smush Pro%4\$s",
+					'wp-smushit'
+				),
 				'<strong>',
 				'</strong>',
 				'<a href=' . esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro' ) . '><strong>',
@@ -259,7 +267,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		$is_pro = WP_Smush::is_pro();
 
 		// If S3 integration is not enabled, return.
-		$setting_val = $is_pro ? WP_Smush_Settings::$settings[ $this->module ] : 0;
+		$setting_val = $is_pro ? $this->settings->get( $this->module ) : 0;
 
 		// If integration is disabled when S3 offload is active, do not continue.
 		if ( ! $setting_val && is_object( $as3cf ) ) {
@@ -276,8 +284,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			$support_url = esc_url( 'https://premium.wpmudev.org/contact' );
 			$message     = sprintf(
 				/* translators: %1$s: opening a tag, %2$s: closing a tag */
-				esc_html__( 'We are having trouble interacting with WP Offload S3, make sure the plugin is
-				activated. Or you can %1$sreport a bug%2$s.', 'wp-smushit' ),
+				esc_html__(
+					'We are having trouble interacting with WP Offload S3, make sure the plugin is
+				activated. Or you can %1$sreport a bug%2$s.',
+					'wp-smushit'
+				),
 				'<a href="' . $support_url . '" target="_blank">',
 				'</a>'
 			);
@@ -287,8 +298,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			$configure_url = $as3cf->get_plugin_page_url();
 			$message       = sprintf(
 				/* translators: %1$s: opening a tag, %2$s: closing a tag */
-				esc_html__( 'It seems you haven’t finished setting up WP Offload S3 yet. %1$sConfigure it
-				now%2$s to enable Amazon S3 support.', 'wp-smushit' ),
+				esc_html__(
+					'It seems you haven’t finished setting up WP Offload S3 yet. %1$sConfigure it
+				now%2$s to enable Amazon S3 support.',
+					'wp-smushit'
+				),
 				'<a href="' . $configure_url . '" target="_blank">',
 				'</a>'
 			);
@@ -325,7 +339,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 * @return bool|string  Returns file path or false
 	 */
 	private function download_file( $attachment_id, $size_details = array(), $uf_file_path = '' ) {
-		if ( empty( $attachment_id ) || ! WP_Smush_Settings::$settings[ $this->module ] || ! WP_Smush::is_pro() ) {
+		if ( empty( $attachment_id ) || ! $this->settings->get( $this->module ) || ! WP_Smush::is_pro() ) {
 			return false;
 		}
 
@@ -341,9 +355,9 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		// If file path wasn't specified in argument.
 		$uf_file_path = empty( $uf_file_path ) ? get_attached_file( $attachment_id, true ) : $uf_file_path;
 
+		$s3_object = $this->is_attachment_served_by_provider( $as3cf, $attachment_id );
 		// If we have plugin method available, us that otherwise check it ourselves.
-		if ( method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
-			$s3_object        = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
+		if ( $s3_object && is_array( $s3_object ) ) {
 			$size_prefix      = dirname( $s3_object['key'] );
 			$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
 			if ( ! empty( $size_details ) && is_array( $size_details ) ) {
@@ -354,10 +368,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			}
 
 			// Try to download the attachment.
-			if ( $s3_object && is_object( $as3cf->plugin_compat ) && method_exists( $as3cf->plugin_compat, 'copy_s3_file_to_server' ) ) {
-				// Download file.
-				$file = $as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $uf_file_path );
-			}
+			$file = $this->copy_provider_file_to_server( $as3cf, $s3_object, $uf_file_path );
 
 			if ( $file ) {
 				return $file;
@@ -417,13 +428,11 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		if ( empty( $attachment_id ) || empty( $file_path ) ) {
 			return false;
 		}
-		// Return if method doesn't exists.
-		if ( ! method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
-			error_log( "Couldn't find method is_attachment_served_by_s3." );
+
+		// Get s3 object for the file.
+		if ( ! $s3_object = $this->is_attachment_served_by_provider( $as3cf, $attachment_id ) ) {
 			return false;
 		}
-		// Get s3 object for the file.
-		$s3_object = $as3cf->is_attachment_served_by_s3( $attachment_id, true );
 
 		$size_prefix      = dirname( $s3_object['key'] );
 		$size_file_prefix = ( '.' === $size_prefix ) ? '' : $size_prefix . '/';
@@ -439,7 +448,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 			return false;
 		}
 
-		$s3client = $as3cf->get_s3client( $region );
+		$s3client = $this->get_provider_client( $as3cf, $region );
 
 		// If we still have the older version of S3 Offload, use old method.
 		if ( method_exists( $s3client, 'doesObjectExist' ) ) {
@@ -470,7 +479,78 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		}
 
 		// If not Pro user or S3 support is disabled.
-		return ( ! WP_Smush::is_pro() || ! WP_Smush_Settings::$settings[ $this->module ] );
+		return ( ! WP_Smush::is_pro() || ! $this->settings->get( $this->module ) );
+	}
+
+	/**
+	 * Wrapper method.
+	 *
+	 * Check if the attachment is server by S3.
+	 *
+	 * @since 3.0
+	 *
+	 * @param Amazon_S3_And_CloudFront $as3cf          Amazon_S3_And_CloudFront global.
+	 * @param int                      $attachment_id  Attachment ID.
+	 *
+	 * @return bool|array
+	 */
+	private function is_attachment_served_by_provider( $as3cf, $attachment_id ) {
+		if ( method_exists( $as3cf, 'is_attachment_served_by_provider' ) ) {
+			return $as3cf->is_attachment_served_by_provider( $attachment_id, true );
+		} elseif ( method_exists( $as3cf, 'is_attachment_served_by_s3' ) ) {
+			return $as3cf->is_attachment_served_by_s3( $attachment_id, true );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Wrapper method.
+	 *
+	 * Copy file to server.
+	 *
+	 * @since 3.0
+	 *
+	 * @param Amazon_S3_And_CloudFront $as3cf         Amazon_S3_And_CloudFront global.
+	 * @param array                    $s3_object     Data array.
+	 * @param string                   $uf_file_path  File path.
+	 *
+	 * @return bool|string
+	 */
+	private function copy_provider_file_to_server( $as3cf, $s3_object, $uf_file_path ) {
+		if ( ! is_object( $as3cf->plugin_compat ) ) {
+			return false;
+		}
+
+		if ( method_exists( $as3cf->plugin_compat, 'copy_provider_file_to_server' ) ) {
+			return $as3cf->plugin_compat->copy_provider_file_to_server( $s3_object, $uf_file_path );
+		} elseif ( method_exists( $as3cf->plugin_compat, 'copy_s3_file_to_server' ) ) {
+			return $as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $uf_file_path );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Wrapper method.
+	 *
+	 * Get provider client.
+	 *
+	 * @since 3.0
+	 *
+	 * @param Amazon_S3_And_CloudFront $as3cf   Amazon_S3_And_CloudFront global.
+	 * @param bool|string              $region  Specify region to client for signature.
+	 *
+	 * @return Provider|Null_Provider|bool
+	 */
+	private function get_provider_client( $as3cf, $region ) {
+		if ( method_exists( $as3cf, 'get_provider_client' ) ) {
+			return $as3cf->get_provider_client( $region );
+		} elseif ( method_exists( $as3cf, 'get_s3client' ) ) {
+			return $as3cf->get_s3client( $region );
+		}
+
+		return false;
 	}
 
 }

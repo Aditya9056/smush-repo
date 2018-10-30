@@ -16,19 +16,26 @@
  */
 
 // Get the counts.
-echo $this->bulk_resmush_content( $count, $show );
+if ( $show ) {
+	WP_Smush::get_instance()->admin()->bulk_resmush_content( $count, $show );
+}
 
 // If there are no images in Media Library.
 if ( 0 >= $total_count ) : ?>
-	<span class="wp-smush-no-image tc">
-		<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-no-media.png' ); ?>" alt="<?php esc_attr_e( 'No attachments found - Upload some images', 'wp-smushit' ); ?>">
-	</span>
+	<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
+		<span class="wp-smush-no-image tc">
+			<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-no-media.png' ); ?>" alt="<?php esc_attr_e( 'No attachments found - Upload some images', 'wp-smushit' ); ?>">
+		</span>
+	<?php endif; ?>
 	<p class="wp-smush-no-images-content tc">
 		<?php
 		printf(
 			/* translators: %1$s: opening a tga, %2$s: closing a tag */
-			esc_html__( 'We haven\'t found any images in your %1$sgallery%2$s yet, so there\'s no smushing to be
-			done! Once you upload images, reload this page and start playing!', 'wp-smushit' ),
+			esc_html__(
+				'We haven\'t found any images in your %1$sgallery%2$s yet, so there\'s no smushing to be
+			done! Once you upload images, reload this page and start playing!',
+				'wp-smushit'
+			),
 			'<a href="' . esc_url( admin_url( 'admin.php?page=ngg_addgallery' ) ) . '">',
 			'</a>'
 		);
@@ -51,9 +58,12 @@ if ( 0 >= $total_count ) : ?>
 					<?php
 					printf(
 						/* translators: %1$s: user name, %2$s: strong opening tag, %3$s: span opening tag, %4$d: remaining count, %5$s: closing span tag, %6$s: closing strong tag */
-						_n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs smushing!',
+						_n(
+							'%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs smushing!',
 							'%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need smushing!',
-						$remaining_count, 'wp-smushit' ),
+							$remaining_count,
+							'wp-smushit'
+						),
 						esc_html( WP_Smush_Helper::get_user_name() ),
 						'<strong>',
 						'<span class="wp-smush-remaining-count">',
@@ -75,8 +85,11 @@ if ( 0 >= $total_count ) : ?>
 				<?php
 				printf(
 					/* translators: %1$s: opening a tag, %2$s: closing a tag */
-					esc_html__( 'Enable Super-smush in the %1$sSettings%2$s area to get even more savings with
-					almost no visible drop in quality.', 'wp-smushit' ),
+					esc_html__(
+						'Enable Super-smush in the %1$sSettings%2$s area to get even more savings with
+					almost no visible drop in quality.',
+						'wp-smushit'
+					),
 					'<a href="' . esc_url( $url ) . '" target="_blank">',
 					'</a>'
 				);
@@ -86,9 +99,12 @@ if ( 0 >= $total_count ) : ?>
 	</div>
 
 	<?php
-	$this->view( 'blocks/progress-bar', array(
-		'count' => $ng,
-	) );
+	$this->view(
+		'blocks/progress-bar',
+		array(
+			'count' => $ng,
+		)
+	);
 	?>
 
 	<div class="smush-final-log sui-hidden">

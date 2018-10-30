@@ -47,7 +47,7 @@ class WP_Smush_Dir {
 	 * WP_Smush_Dir constructor.
 	 */
 	public function __construct() {
-		if ( ! WP_Smush_Dir::should_continue() ) {
+		if ( ! self::should_continue() ) {
 			// Remove directory smush from tabs if not required.
 			add_filter( 'smush_setting_tabs', array( $this, 'remove_directory_tab' ) );
 
@@ -71,9 +71,6 @@ class WP_Smush_Dir {
 
 		// Scan the given directory path for the list of images.
 		add_action( 'wp_ajax_image_list', array( $this, 'image_list' ) );
-
-		// Handle Ajax Request to optimise images.
-		add_action( 'wp_ajax_optimise', array( $this, 'optimise' ) );
 
 		/**
 		 * Scanner ajax actions.
@@ -152,7 +149,7 @@ class WP_Smush_Dir {
 	 * @since 2.8.1
 	 */
 	public function directory_smush_finish() {
-		$items = isset( $_POST['items'] ) ? absint( $_POST['items'] ) : 0; // Input var ok.
+		$items  = isset( $_POST['items'] ) ? absint( $_POST['items'] ) : 0; // Input var ok.
 		$failed = isset( $_POST['failed'] ) ? absint( $_POST['failed'] ) : 0; // Input var ok.
 		// If any images failed to smush, store count.
 		if ( $failed > 0 ) {
@@ -225,7 +222,11 @@ class WP_Smush_Dir {
 		$smush_results = WP_Smush::get_instance()->core()->mod->smush->do_smushit( $path );
 
 		if ( is_wp_error( $smush_results ) ) {
-			/* @var WP_Error $smush_results */
+			/**
+			 * Smush results.
+			 *
+			 * @var WP_Error $smush_results
+			 */
 			$error_msg = $smush_results->get_error_message();
 		} elseif ( empty( $smush_results['data'] ) ) {
 			// If there are no stats.
@@ -237,7 +238,8 @@ class WP_Smush_Dir {
 			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->prefix}smush_dir_images SET error=%s WHERE id=%d LIMIT 1",
-					$error_msg, $id
+					$error_msg,
+					$id
 				)
 			); // Db call ok; no-cache ok.
 
@@ -261,7 +263,10 @@ class WP_Smush_Dir {
 		$wpdb->query(
 			$wpdb->prepare(
 				"UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, lossy=%s WHERE id=%d LIMIT 1",
-				$smush_results['data']->after_size, $file_time, $lossy, $id
+				$smush_results['data']->after_size,
+				$file_time,
+				$lossy,
+				$id
 			)
 		); // Db call ok; no-cache ok.
 
@@ -372,6 +377,47 @@ class WP_Smush_Dir {
 	}
 
 	/**
+	 * Get the paths and errors from last scan.
+	 *
+	 * @since 3.0
+	 *
+	 * @return array  Array of last scanned images
+	 */
+	public function get_image_errors() {
+		global $wpdb;
+
+		$results = $wpdb->get_results(
+			"SELECT id, path, error
+					FROM {$wpdb->prefix}smush_dir_images
+					WHERE error IS NOT NULL
+						AND last_scan = ( SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images )
+					LIMIT 20",
+			ARRAY_A
+		); // Db call ok; no-cache ok.
+
+		return $results;
+	}
+
+	/**
+	 * Return the number of errors.
+	 *
+	 * @since 3.0
+	 *
+	 * @return int
+	 */
+	public function get_image_errors_count() {
+		global $wpdb;
+
+		$count = $wpdb->get_var(
+			"SELECT COUNT(id)
+					FROM {$wpdb->prefix}smush_dir_images
+					WHERE error IS NOT NULL AND last_scan = ( SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images )"
+		);
+
+		return (int) $count;
+	}
+
+	/**
 	 * Check if the image file is media library file
 	 *
 	 * @param string $file_path  File path.
@@ -423,7 +469,7 @@ class WP_Smush_Dir {
 			'png',
 		);
 
-		if ( file_exists( $post_dir ) ) {
+		if ( file_exists( $post_dir ) && is_dir( $post_dir ) ) {
 			$files = scandir( $post_dir );
 			// Exclude hidden files.
 			if ( ! empty( $files ) ) {
@@ -751,7 +797,7 @@ class WP_Smush_Dir {
 	 * @return string
 	 *
 	 * Thanks @andrezrv (Github)
-	 * TODO: this does not properly get the admin path in Bedrock
+	 * @todo this does not properly get the admin path in Bedrock
 	 */
 	private function get_admin_path() {
 		// Replace the site base URL with the absolute path to its installation directory.
@@ -785,7 +831,7 @@ class WP_Smush_Dir {
 	 * Excludes the Media Upload Directory ( Checks for Year and Month ).
 	 *
 	 * Borrowed from Shortpixel - (y)*
-	 * TODO: Add a option to filter images if User have turned off the Year and Month Organize option
+	 * @todo Add a option to filter images if User have turned off the Year and Month Organize option
 	 *
 	 * @param string $path  Path.
 	 *
@@ -916,7 +962,7 @@ class WP_Smush_Dir {
 			$this->stats['bytes']   = ( $this->stats['orig_size'] > $this->stats['image_size'] ) ? $this->stats['orig_size'] - $this->stats['image_size'] : 0;
 			$this->stats['percent'] = number_format_i18n( ( ( $this->stats['bytes'] / $this->stats['orig_size'] ) * 100 ), 1 );
 			// Convert to human readable form.
-			$this->stats['human']   = size_format( $this->stats['bytes'], 1 );
+			$this->stats['human'] = size_format( $this->stats['bytes'], 1 );
 		}
 
 		$this->stats['total']     = $total;
@@ -962,142 +1008,6 @@ class WP_Smush_Dir {
 		$stats['smushed'] = $smushed;
 
 		return $stats;
-	}
-
-	/**
-	 * Handles the ajax request for image optimisation in a folder
-	 *
-	 * TODO: refactor this, don't think that we need all this stuff.
-	 */
-	public function optimise() {
-		global $wpdb;
-
-		// Verify the ajax nonce.
-		check_ajax_referer( 'wp_smush_all', 'nonce' );
-
-		$error_msg = '';
-		if ( empty( $_GET['image_id'] ) ) { // Input var ok.
-			// If there are no stats.
-			wp_send_json_error( esc_html__( 'Incorrect image id', 'wp-smushit' ) );
-		}
-
-		// Get the last scan stats.
-		$last_scan = $this->last_scan_stats();
-		$stats     = array();
-
-		// Check smush limit for free users.
-		if ( ! WP_Smush::is_pro() ) {
-			// Free version bulk smush, check the transient counter value.
-			$should_continue = WP_Smush_Core::check_bulk_limit( false, 'dir_sent_count' );
-
-			// Send a error for the limit.
-			if ( ! $should_continue ) {
-				wp_send_json_error(
-					array(
-						'error'    => 'dir_smush_limit_exceeded',
-						'continue' => false,
-					)
-				);
-			}
-		}
-
-		$id = intval( $_GET['image_id'] ); // Input var ok.
-		if ( ! $scanned_images = wp_cache_get( 'wp_smush_scanned_images' ) ) {
-			$scanned_images = $this->get_scanned_images();
-		}
-
-		$image = $this->get_image( $id, '', $scanned_images );
-
-		if ( empty( $image ) ) {
-			// If there are no stats.
-			wp_send_json_error( esc_html__( 'Could not find image id in last scanned images', 'wp-smushit' ) );
-		}
-
-		$path = $image['path'];
-
-		$core = WP_Smush::get_instance()->core();
-
-		// We have the image path, optimise.
-		$smush_results = $core->mod->smush->do_smushit( $path );
-
-		if ( is_wp_error( $smush_results ) ) {
-			/* @var WP_Error $smush_results */
-			$error_msg = $smush_results->get_error_message();
-		} elseif ( empty( $smush_results['data'] ) ) {
-			// If there are no stats.
-			$error_msg = esc_html__( "Image couldn't be optimized", 'wp-smushit' );
-		}
-
-		if ( ! empty( $error_msg ) ) {
-			// Store the error in DB. All good, Update the stats.
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}smush_dir_images SET error=%s WHERE id=%d LIMIT 1", $error_msg, $id ) ); // Db call ok; no-cache ok.
-
-			$error_msg = '<div class="wp-smush-error">' . $error_msg . '</div>';
-
-			wp_send_json_error(
-				array(
-					'error' => $error_msg,
-					'image' => array(
-						'id' => $id,
-					),
-				)
-			);
-		}
-		// Get file time.
-		$file_time = @filectime( $path );
-
-		// If super-smush enabled, update supersmushed meta value also.
-		$lossy = $core->mod->smush->lossy_enabled ? 1 : 0;
-
-		// All good, Update the stats.
-		$query = "UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, lossy=%s WHERE id=%d LIMIT 1";
-		$query = $wpdb->prepare( $query, $smush_results['data']->after_size, $file_time, $lossy, $id );
-		$wpdb->query( $query );
-
-		// Get the global stats if current dir smush completed.
-		if ( isset( $_GET['get_stats'] ) && 1 == $_GET['get_stats'] ) {
-			// This will setup directory smush stats too.
-			$core->setup_global_stats();
-			$stats            = $core->stats;
-			$stats['total']   = $core->total_count;
-			$stats['smushed'] = $core->smushed_count;
-			if ( 1 === $lossy ) {
-				$stats['super_smushed'] = $core->super_smushed;
-			}
-			// Set tootltip text to update.
-			$stats['tooltip_text'] = ! empty( $stats['total_images'] ) ? sprintf( __( "You've smushed %d images in total.", 'wp-smushit' ), $stats['total_images'] ) : '';
-			// Get the total dir smush stats.
-			$total = $core->dir_stats;
-		} else {
-			$total = $this->total_stats();
-		}
-
-		// Show the image wise stats.
-		$image = array(
-			'id'          => $id,
-			'size_before' => $image['orig_size'],
-			'size_after'  => $smush_results['data']->after_size,
-		);
-
-		$bytes            = $image['size_before'] - $image['size_after'];
-		$image['savings'] = size_format( $bytes, 1 );
-		$image['percent'] = $image['size_before'] > 0 ? number_format_i18n( ( ( $bytes / $image['size_before'] ) * 100 ), 1 ) . '%' : 0;
-
-		$data = array(
-			'image'       => $image,
-			'total'       => $total,
-			'latest_scan' => $last_scan,
-		);
-
-		// If current dir smush completed, include global stats.
-		if ( ! empty( $stats ) ) {
-			$data['stats'] = $stats;
-		}
-
-		// Update Bulk Limit Transient.
-		$core->update_smush_count( 'dir_sent_count' );
-
-		wp_send_json_success( $data );
 	}
 
 	/**

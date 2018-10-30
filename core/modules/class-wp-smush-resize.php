@@ -13,7 +13,7 @@
 /**
  * Class WP_Smush_Resize
  */
-class WP_Smush_Resize {
+class WP_Smush_Resize extends WP_Smush_Module {
 
 	/**
 	 * Specified width for resizing images
@@ -40,7 +40,7 @@ class WP_Smush_Resize {
 	/**
 	 * WP_Smush_Resize constructor.
 	 */
-	public function __construct() {
+	public function init() {
 		/**
 		 * Initialize class variables, after all stuff has been loaded
 		 */
@@ -58,8 +58,6 @@ class WP_Smush_Resize {
 			return;
 		}
 
-		$settings = WP_Smush_Settings::$settings;
-
 		// Make sure the screen function exists.
 		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
 
@@ -72,9 +70,9 @@ class WP_Smush_Resize {
 		}
 
 		// If resizing is enabled.
-		$this->resize_enabled = $settings['resize'];
+		$this->resize_enabled = $this->settings->get( 'resize' );
 
-		$resize_sizes = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'resize_sizes', array() );
+		$resize_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes', array() );
 
 		// Resize width and Height.
 		$this->max_w = ! empty( $resize_sizes['width'] ) ? $resize_sizes['width'] : 0;
@@ -97,11 +95,6 @@ class WP_Smush_Resize {
 
 		$file_path = WP_Smush_Helper::get_attached_file( $id );
 
-		// If GIF is animated, return.
-		if ( $this->is_animated( $file_path ) && 'image/gif' === get_post_mime_type( $id ) ) {
-			return false;
-		}
-
 		if ( ! empty( $file_path ) ) {
 			// Skip: if "noresize" is included in the filename, Thanks to Imsanity.
 			if ( strpos( $file_path, 'noresize' ) !== false ) {
@@ -118,6 +111,15 @@ class WP_Smush_Resize {
 
 		// Get image mime type.
 		$mime = get_post_mime_type( $id );
+
+		// If GIF is animated, return.
+		if ( 'image/gif' === $mime ) {
+			$animated = get_post_meta( $id, WP_SMUSH_PREFIX . 'animated' );
+
+			if ( $animated ) {
+				return false;
+			}
+		}
 
 		$mime_supported = in_array( $mime, WP_Smush_Core::$mime_types, true );
 
@@ -140,7 +142,7 @@ class WP_Smush_Resize {
 			$old_width  = $meta['width'];
 			$old_height = $meta['height'];
 
-			$resize_dim = WP_Smush_Settings::get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
+			$resize_dim = $this->settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 
 			$max_width  = ! empty( $resize_dim['width'] ) ? $resize_dim['width'] : 0;
 			$max_height = ! empty( $resize_dim['height'] ) ? $resize_dim['height'] : 0;
@@ -284,10 +286,13 @@ class WP_Smush_Resize {
 		 * }
 		 */
 		$sizes = apply_filters(
-			'wp_smush_resize_sizes', array(
+			'wp_smush_resize_sizes',
+			array(
 				'width'  => $this->max_w,
 				'height' => $this->max_h,
-			), $file_path, $id
+			),
+			$file_path,
+			$id
 		);
 
 		$data = image_make_intermediate_size( $file_path, $sizes['width'], $sizes['height'] );
@@ -384,45 +389,6 @@ class WP_Smush_Resize {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Check to see if file is animated.
-	 *
-	 * @param string $file_path Image File Path.
-	 *
-	 * @return bool
-	 */
-	private function is_animated( $file_path ) {
-		$filecontents = file_get_contents( $file_path );
-
-		$str_loc = 0;
-		$count   = 0;
-
-		// There is no point in continuing after we find a 2nd frame.
-		while ( $count < 2 ) {
-			$where1 = strpos( $filecontents, "\x00\x21\xF9\x04", $str_loc );
-			if ( false === $where1 ) {
-				break;
-			} else {
-				$str_loc = $where1 + 1;
-				$where2  = strpos( $filecontents, "\x00\x2C", $str_loc );
-				if ( false === $where2 ) {
-					break;
-				} else {
-					if ( $where2 === $where1 + 8 ) {
-						$count++;
-					}
-					$str_loc = $where2 + 1;
-				}
-			}
-		}
-
-		if ( $count > 1 ) {
-			return true;
-		}
-
-		return false;
 	}
 
 }

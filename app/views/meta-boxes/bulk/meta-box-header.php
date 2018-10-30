@@ -18,7 +18,8 @@
 	printf(
 		/* translators: %1$s - a href opening tag, %2$s - a href closing tag */
 		esc_html__( 'Smush individual images via your %1$sMedia Library%2$s', 'wp-smushit' ),
-		'<a href="' . esc_url( admin_url( 'upload.php' ) ) . '" title="' . esc_html__( 'Media Library', 'wp-smushit' ) . '">', '</a>'
+		'<a href="' . esc_url( admin_url( 'upload.php' ) ) . '" title="' . esc_html__( 'Media Library', 'wp-smushit' ) . '">',
+		'</a>'
 	);
 	?>
 </div>
