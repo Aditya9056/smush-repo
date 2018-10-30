@@ -24,6 +24,15 @@ class ApiTest extends \Codeception\Test\Unit {
 	private $api = 'https://smushpro.wpmudev.org/1.0/';
 
 	/**
+	 * Smush API key.
+	 *
+	 * Can be overwritten with a WPMUDEV_APIKEY define in wp-config.php
+	 *
+	 * @var string $api_key
+	 */
+	private $api_key = '';
+
+	/**
 	 * Guzzle client.
 	 *
 	 * @var null|GuzzleHttp\Client $client
@@ -34,6 +43,22 @@ class ApiTest extends \Codeception\Test\Unit {
 	 * Run before actions.
 	 */
 	protected function _before() {
+		$this->client = new GuzzleHttp\Client( [ 'base_uri' => $this->api ] );
+	}
+
+	/**
+	 * Run after actions.
+	 */
+	protected function _after() {
+		$this->client = null;
+	}
+
+	/**
+	 * Init API server keys for Pro features.
+	 *
+	 * @throws \Codeception\Exception\ModuleException
+	 */
+	private function initApiKeys() {
 		$api = $this->tester->cliToArray( 'config get WP_SMUSH_API' );
 		$key = $this->tester->cliToArray( 'config get WPMUDEV_APIKEY' );
 
@@ -46,15 +71,6 @@ class ApiTest extends \Codeception\Test\Unit {
 		if ( is_array( $key ) && ! empty( $key ) ) {
 			$this->api_key = $key[0];
 		}
-
-		$this->client = new GuzzleHttp\Client( [ 'base_uri' => $this->api ] );
-	}
-
-	/**
-	 * Run after actions.
-	 */
-	protected function _after() {
-		$this->client = null;
 	}
 
 	/**
@@ -124,6 +140,8 @@ class ApiTest extends \Codeception\Test\Unit {
 	 * - lossy = 'true'
 	 */
 	public function testCheckJpegoptimLibrary() {
+		$this->initApiKeys();
+
 		if ( empty( $this->api_key ) ) {
 			$this->markTestSkipped(
 				'WPMUDEV API key is required to run this test.'
@@ -201,6 +219,8 @@ class ApiTest extends \Codeception\Test\Unit {
 	 * - lossy = 'false'
 	 */
 	public function testCheckOptipngLibrary() {
+		$this->initApiKeys();
+
 		if ( empty( $this->api_key ) ) {
 			$this->markTestSkipped(
 				'WPMUDEV API key is required to run this test.'
@@ -236,6 +256,8 @@ class ApiTest extends \Codeception\Test\Unit {
 	 * - lossy = 'true'
 	 */
 	public function testCheckPngquantLibrary() {
+		$this->initApiKeys();
+
 		if ( empty( $this->api_key ) ) {
 			$this->markTestSkipped(
 				'WPMUDEV API key is required to run this test.'
@@ -262,6 +284,32 @@ class ApiTest extends \Codeception\Test\Unit {
 		$data = $this->tester->getData( $response );
 		$this->assertEquals( true, $data->lossy );
 		$this->assertEquals( true, $data->before_size > $data->after_size );
+	}
+
+	/**
+	 * Stress test the server with multiple requests.
+	 */
+	public function testStressTest() {
+		$jpeg = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
+		$data = [
+			'body'        => fopen( $jpeg, 'r' ),
+			'http_errors' => false,
+		];
+
+		// Initiate each request but do not block.
+		$promises = [];
+		for ( $i = 1; $i <= 20; $i++ ) {
+			// Setting 'http_errors' to false will not error out on non 200 requests. We will compare the response code
+			// later on in the assertion.
+			$promises[ $i ] = $this->client->postAsync( '/', $data );
+		}
+
+		// Wait on all of the requests to complete. Throws a ConnectException if any of the requests fail.
+		$results = GuzzleHttp\Promise\unwrap( $promises );
+		foreach ( $results as $response ) {
+			$this->assertEquals( 200, $response->getStatusCode() );
+			$this->assertEquals( true, $this->tester->getStatus( $response ) );
+		}
 	}
 
 }
