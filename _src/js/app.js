@@ -10,6 +10,7 @@ require( './modules/admin' );
 require( './modules/bulk-smush' );
 require( './modules/modals' );
 require( './modules/directory-smush' );
+require( './smush/cdn' );
 
 /**
  * Notice scripts.
@@ -20,6 +21,6 @@ require( './modules/directory-smush' );
  * @used-by WP_Smush_S3::3_support_required_notice()
  * @used-by WP_Smush_View::installation_notice()
  *
- * TODO: should this be moved out in a separate file like common.scss?
+ * @todo should this be moved out in a separate file like common.scss?
  */
 require( './modules/notice' );

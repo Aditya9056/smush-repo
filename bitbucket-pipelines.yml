@@ -8,16 +8,21 @@ image: incsub/codeception
 pipelines:
   default:
     - step:
+        name: Codeception tests
         script:
-          # codesniffer - will fail the pipeline, if errors are present
-          #- vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
-          #- vendor/bin/phpcs -p --colors --report=summary --standard=WordPress lib/ wp-smush.php
           - mkdir -p ~/.ssh
           - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
           - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
           - git submodule update --init --recursive
           - service mysql start
           - bash misc/deploy-wordpress.sh
-          - cp -R $BITBUCKET_CLONE_DIR /srv/www/wordpress-default/public_html/wp-content/plugins/wp-smushit
-          - php -S localhost:8085 --docroot public &>/dev/null&
+          - cp -R $BITBUCKET_CLONE_DIR /tmp/wordpress/wp-content/plugins/wp-smushit
+          - php -S localhost:8080 -t /tmp/wordpress &>/dev/null&
           - codecept run wpunit
+    - step:
+        name: CodeSniffer tests
+        trigger: manual
+        script:
+          # Will fail the pipeline, if errors are present
+          - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
+          - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php

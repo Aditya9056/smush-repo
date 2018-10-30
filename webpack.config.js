@@ -9,7 +9,7 @@ const _          = require('lodash'),
 const config = {
 	output: {
 		imagesDirectory: '../images',
-		fontsDirectory: '../fonts'
+		fontsDirectory: '../fonts',
 	}
 };
 
@@ -123,7 +123,7 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: ['env', 'react']
+						presets: [ '@babel/env', '@babel/react' ]
 					}
 				}
 			}

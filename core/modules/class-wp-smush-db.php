@@ -352,7 +352,7 @@ class WP_Smush_DB {
 	 *
 	 * @return array|mixed
 	 *
-	 * TODO: Refactor Method, Separate Media Library and Nextgen, moreover nextgen functionality is broken
+	 * @todo Refactor Method, Separate Media Library and Nextgen, moreover nextgen functionality is broken
 	 */
 	public function super_smushed_count( $type = 'media', $attachments = array() ) {
 		if ( 'media' === $type ) {
@@ -552,9 +552,12 @@ class WP_Smush_DB {
 			global $wpdb;
 
 			while ( $query_next ) {
-				$resize_data = $wpdb->get_results( $wpdb->prepare(
-					"SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", WP_SMUSH_PREFIX . 'resize_savings'
-				) );
+				$resize_data = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit",
+						WP_SMUSH_PREFIX . 'resize_savings'
+					)
+				);
 
 				if ( ! empty( $resize_data ) ) {
 					foreach ( $resize_data as $data ) {

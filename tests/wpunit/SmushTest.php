@@ -11,6 +11,13 @@
 class SmushTest extends \Codeception\TestCase\WPTestCase {
 
 	/**
+	 * WpunitTester tester.
+	 *
+	 * @var \WpunitTester $tester
+	 */
+	protected $tester;
+
+	/**
 	 * Setup method.
 	 */
 	public function setUp() {
@@ -29,21 +36,73 @@ class SmushTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
-	 * Test update settings.
+	 * Set setting value temporarily.
+	 *
+	 * @param string $key Setting name.
+	 * @param bool   $value True or false.
 	 */
-	public function testSmushSingle() {
-		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
-
-		$id = $this->factory()->attachment->create( array(
-			'post_title'   => basename( $file ),
-			'post_content' => $file,
-		) );
-
-		WP_Smush::get_instance()->core()->initialise();
-
-		update_option( "smush-in-progress-{$id}", true );
+	private function setSetting( $key, $value = true ) {
+		$settings = WP_Smush_Settings::get_instance();
+		$settings->set( $key, $value );
 	}
 
-	//public function testRestoreSingle() {}
+	/**
+	 * Test Smush single image.
+	 */
+	public function testSmushSingle() {
+		$smush = WP_Smush::get_instance();
+		// Make sure it is not auto smushed.
+		$smush->core()->mod->settings->set( 'auto', false );
+
+		// Upload image.
+		$id = $this->tester->uploadImage();
+
+		// Smush the image.
+		WP_Smush::get_instance()->core()->mod->smush->smush_single( $id, true );
+
+		// Try to get the smushed meta.
+		$smush_meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
+
+		// We don't need the attachment anymore. Delete.
+		wp_delete_attachment( $id, true );
+
+		// Make sure meta is set.
+		$this->assertTrue( ! empty( $smush_meta ) );
+	}
+
+	/**
+	 * Test restore image after smushing.
+	 */
+	/*
+	public function testRestoreSingle() {
+		// Set smush pro.
+		$this->tester->setPro();
+
+		// Make sure it is auto smushed.
+		$this->setSetting( 'auto', true );
+		// Make sure smush original enabled.
+		$this->setSetting( 'original', true );
+		// Make sure backup original enabled.
+		$this->setSetting( 'backup', true );
+
+		// Enable backup image.
+		$backup = new WP_Smush_Backup();
+		$this->tester->setPrivateProperty( $backup, 'backup_enabled', true );
+
+		// Upload an image.
+		$id = $this->tester->uploadImage();
+
+		// Restore image.
+		$backup->restore_image( $id, false );
+		// Try to get smushed meta.
+		$restored_meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
+
+		// We don't need the attachment anymore. Delete.
+		wp_delete_attachment( $id, true );
+
+		// Make sure meta is empty.
+		$this->assertEmpty( $restored_meta );
+	}
+	*/
 
 }

@@ -21,17 +21,23 @@
 			<div class="sui-box-body">
 				<p>
 					<?php
-					esc_html_e( 'Bulk smushing is in progress, you need to leave this tab open
-							until the process completes.', 'wp-smushit' );
+					esc_html_e(
+						'Bulk smushing is in progress, you need to leave this tab open
+							until the process completes.',
+						'wp-smushit'
+					);
 					?>
 				</p>
 
 				<div class="sui-notice sui-notice-warning sui-hidden">
 					<p>
 						<?php
-						esc_html_e( "You've reached the 50 attachment limit for bulk smushing in
+						esc_html_e(
+							"You've reached the 50 attachment limit for bulk smushing in
 								the free version. Upgrade to Pro to smush unlimited images, or click resume to
-								smush another 50 attachments.", 'wp-smushit' );
+								smush another 50 attachments.",
+							'wp-smushit'
+						);
 						?>
 					</p>
 				</div>

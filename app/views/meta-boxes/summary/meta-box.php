@@ -17,7 +17,7 @@
 
 ?>
 
-<div class="sui-summary-image-space"></div>
+<div class="sui-summary-image-space" aria-hidden="true"></div>
 
 <div class="sui-summary-segment">
 	<div class="sui-summary-details">

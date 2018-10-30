@@ -3,7 +3,9 @@
 DB_NAME="wpTests"
 DB_USER="wp"
 DB_PASS="wp"
-WP_CORE_DIR='/srv/www/wordpress-default/public_html'
+
+WP_TESTS_DIR='/tmp/wordpress-tests-lib'
+WP_CORE_DIR='/tmp/wordpress/'
 
 download() {
     if [ `which curl` ]; then
@@ -25,7 +27,36 @@ install_wp() {
 	download https://wordpress.org/latest.tar.gz  /tmp/wordpress.tar.gz
 	tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C $WP_CORE_DIR
 
-	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php $WP_CORE_DIR/wp-content/db.php
+	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR"wp-content/db.php
+}
+
+
+install_test_suite() {
+	# portable in-place argument for both GNU sed and Mac OSX sed
+	if [[ $(uname -s) == 'Darwin' ]]; then
+		local ioption='-i .bak'
+	else
+		local ioption='-i'
+	fi
+
+	# set up testing suite if it doesn't yet exist
+	if [ ! -d $WP_TESTS_DIR ]; then
+		# set up testing suite
+		mkdir -p $WP_TESTS_DIR
+		svn co --quiet https://develop.svn.wordpress.org/trunk/tests/phpunit/includes/ $WP_TESTS_DIR/includes
+		svn co --quiet https://develop.svn.wordpress.org/trunk/tests/phpunit/data/ $WP_TESTS_DIR/data
+	fi
+
+	cd $WP_TESTS_DIR
+
+	if [ ! -f wp-tests-config.php ]; then
+		download https://develop.svn.wordpress.org/trunk/wp-tests-config-sample.php "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR':" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s/yourusernamehere/$DB_USER/" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
+	fi
 }
 
 add_db_user() {
@@ -52,5 +83,6 @@ update_wp_config() {
 }
 
 install_wp
-add_db_user
+install_test_suite
 update_wp_config
+add_db_user

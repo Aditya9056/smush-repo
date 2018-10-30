@@ -14,4 +14,6 @@ node_modules
 vendor
 app/assets/css
 app/assets/js
+app/assets/images/plugins-hummingbird-icon.png
+app/assets/images/plugins-hummingbird-icon@2x.png
 tests/_output

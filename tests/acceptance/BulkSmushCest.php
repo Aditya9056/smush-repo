@@ -2,7 +2,9 @@
 /**
  * Class BulkSmushCest
  *
- * Test Bulk Smush functionality
+ * Test Bulk Smush functionality.
+ * Before running the tests, make sure to execute ./misc/deploy-wordpress.sh and copy the plugin
+ * folder to /tmp/wordpress/wp-content/plugins folder.
  *
  * @package AcceptanceTests
  */
@@ -11,6 +13,7 @@
  * Class BulkSmushCest
  */
 class BulkSmushCest {
+
 	/**
 	 * Prepare tests.
 	 *
@@ -18,6 +21,10 @@ class BulkSmushCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 		$I->loginAsAdmin();
+		$I->amOnPluginsPage();
+		$I->seePluginDeactivated( 'wp-smushit' );
+		$I->activatePlugin( 'wp-smushit' );
+		$I->seePluginActivated( 'wp-smushit' );
 	}
 
 	public function _after( AcceptanceTester $I ) {}
@@ -26,10 +33,24 @@ class BulkSmushCest {
 	 * Try Bulk Smush.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Codeception\Exception\ModuleException
 	 */
 	public function tryBulkSmush( AcceptanceTester $I ) {
-		// Disable auto Smush.
-		WP_Smush_Settings::$settings['auto'] = 0;
+		// Disable auto Smush and CDN (if enabled).
+		$I->updateInDatabase(
+			'wp_options',
+			array(
+				'option_value' => serialize(
+					array(
+						'auto' => false,
+						'cdn'  => false,
+					)
+				),
+			),
+			array(
+				'option_name' => 'wp-smush-settings',
+			)
+		);
 
 		// Upload images.
 		$I->wantTo( 'Upload images to the media library' );
@@ -37,7 +58,7 @@ class BulkSmushCest {
 
 		// No image found.
 		if ( empty( $ids ) ) {
-			//$images = array( 'image1.jpeg', 'image2.jpeg', 'image3.jpeg' );
+			//$images = array( 'image1.jpeg', 'image2.jpeg', 'image-1920x1280.jpeg' );
 			$I->cli( 'media import ' . dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg' );
 			$ids = $I->cliToArray( 'post list --post_type=attachment --post_title=image1 --field=ID' );
 		}

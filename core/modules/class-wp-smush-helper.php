@@ -137,7 +137,7 @@ class WP_Smush_Helper {
 		if ( empty( $string ) ) {
 			return $string;
 		}
-		// Return if the character length is 120 or less, else add ellipsis in between
+		// Return if the character length is 120 or less, else add ellipsis in between.
 		if ( strlen( $string ) < 121 ) {
 			return $string;
 		}
@@ -176,7 +176,9 @@ class WP_Smush_Helper {
 		$column = $wpdb->get_results(
 			$wpdb->prepare(
 				'SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ',
-				DB_NAME, $table_name, $column_name
+				DB_NAME,
+				$table_name,
+				$column_name
 			)
 		);
 
@@ -370,7 +372,7 @@ class WP_Smush_Helper {
 	}
 
 	/**
-	 * Return the filesize in a humanly readable format.
+	 * Return the file size in a humanly readable format.
 	 *
 	 * Taken from http://www.php.net/manual/en/function.filesize.php#91477
 	 *
@@ -380,13 +382,13 @@ class WP_Smush_Helper {
 	 * @return string
 	 */
 	public static function format_bytes( $bytes, $precision = 1 ) {
-		$units  = array( 'B', 'KiB', 'MiB', 'GiB', 'TiB' );
+		$units  = array( 'B', 'KB', 'MB', 'GB', 'TB' );
 		$bytes  = max( $bytes, 0 );
 		$pow    = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
 		$pow    = min( $pow, count( $units ) - 1 );
 		$bytes /= pow( 1024, $pow );
 
-		return round( $bytes, $precision ) . $units[ $pow ];
+		return round( $bytes, $precision ) . ' ' . $units[ $pow ];
 	}
 
 }

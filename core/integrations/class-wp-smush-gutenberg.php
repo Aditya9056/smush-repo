@@ -76,7 +76,8 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 			'short_label' => esc_html__( 'Gutenberg Support', 'wp-smushit' ),
 			'desc'        => esc_html__(
 				'Add statistics and the manual smush button to Gutenberg blocks that
-							display images.', 'wp-smushit'
+							display images.',
+				'wp-smushit'
 			),
 		);
 
@@ -139,7 +140,7 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 	 * @since 2.8.1
 	 */
 	public function enqueue_gb() {
-		$enabled = WP_Smush_Settings::$settings[ $this->module ];
+		$enabled = $this->settings->get( $this->module );
 
 		if ( ! $enabled ) {
 			return;

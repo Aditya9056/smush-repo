@@ -69,9 +69,9 @@ class WP_Smush_Async_Editor extends WP_Async_Task_Smush {
 	 */
 	protected function run_action() {
 		if ( isset( $_POST['wp-action'], $_POST['do'], $_POST['postid'] )
-		     && 'image-editor' === $_POST['wp-action']
-		     && check_ajax_referer( 'image_editor-' . $_POST['postid'] )
-		     && 'open' != $_POST['do']
+			 && 'image-editor' === $_POST['wp-action']
+			 && check_ajax_referer( 'image_editor-' . $_POST['postid'] )
+			 && 'open' != $_POST['do']
 		) {
 			$postid = ! empty( $_POST['postid'] ) ? $_POST['postid'] : '';
 			// Allow the Asynchronous task to run.
