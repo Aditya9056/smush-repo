@@ -25,7 +25,7 @@ coverage:
     include:
         - wp-smush.php
         - app/*
-        - core/*.php
-        - core/api/*
-        - core/integrations/*
-        - core/modules/*
+        - core/*
+    exclude:
+        - app/assets/*
+        - core/external/*

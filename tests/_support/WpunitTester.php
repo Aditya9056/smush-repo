@@ -69,6 +69,22 @@ class WpunitTester extends \Codeception\Actor
 	}
 
 	/**
+	 * @param object $object    Object with the property
+	 * @param string $property  Property name
+	 *
+	 * @return mixed
+	 * @throws ReflectionException
+	 */
+	public function readPrivateProperty( &$object, $property ) {
+		$reflection = new \ReflectionClass( get_class( $object ) );
+		$property   = $reflection->getProperty( $property );
+
+		$property->setAccessible( true );
+
+		return $property->getValue( $object );
+	}
+
+	/**
 	 * Allow to override private methods.
 	 *
 	 * @since 3.0
