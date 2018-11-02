@@ -152,8 +152,7 @@ class WP_Smush_Settings {
 		}
 
 		// Get directly from db.
-		$settings = get_site_option( WP_SMUSH_PREFIX . 'settings' );
-		return (bool) $settings['networkwide'];
+		return get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
 	}
 
 	/**
@@ -279,6 +278,7 @@ class WP_Smush_Settings {
 		// Save whether to use the settings networkwide or not ( Only if in network admin ).
 		if ( isset( $_POST['action'] ) && 'save_settings' === wp_unslash( $_POST['action'] ) ) { // Input var ok.
 			$settings['networkwide'] = (bool) wp_unslash( $_POST['wp-smush-networkwide'] );
+			update_site_option( WP_SMUSH_PREFIX . 'networkwide', $settings['networkwide'] );
 		}
 
 		// Delete S3 alert flag, if S3 option is disabled again.
