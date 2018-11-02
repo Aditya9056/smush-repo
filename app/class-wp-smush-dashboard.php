@@ -142,7 +142,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			$this->add_meta_box(
 				'meta-boxes/settings',
 				__( 'Settings', 'wp-smushit' ),
-				array( $this, 'settings_metabox' ),
+				array( $this, 'bulk_settings_metabox' ),
 				null,
 				null,
 				'bulk',
