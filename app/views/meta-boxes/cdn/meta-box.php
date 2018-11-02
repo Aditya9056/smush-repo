@@ -128,16 +128,18 @@
 	</div>
 
 	<?php
-	foreach ( $settings_data as $name => $values ) {
-		// If not CDN setting - skip.
-		if ( ! in_array( $name, $cdn_group, true ) ) {
-			continue;
+	if ( ! is_multisite() || ( ! $settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
+		foreach ( $settings_data as $name => $values ) {
+			// If not CDN setting - skip.
+			if ( ! in_array( $name, $cdn_group, true ) ) {
+				continue;
+			}
+
+			$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
+
+			// Show settings option.
+			$this->settings_row( WP_SMUSH_PREFIX . $name, $label, $name, $settings[ $name ] );
 		}
-
-		$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
-
-		// Show settings option.
-		$this->settings_row( WP_SMUSH_PREFIX . $name, $label, $name, $settings[ $name ] );
 	}
 	?>
 
