@@ -80,7 +80,7 @@
 				printf(
 					/* translators: %1$s: GB of bandwidth, %2$s: opening A (href) tag, %3$s; closing A (href) tag. */
 					esc_html__(
-						'Note: Your current plan included %1$s GB bandwidth to use over 30 days.
+						'Note: Your current plan includes %1$s GB bandwidth to use over 30 days.
 					%2$sUpgrade Plan%3$s for more bandwidth.',
 						'wp-smushit'
 					),
