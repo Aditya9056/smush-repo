@@ -29,7 +29,7 @@
 
 	#smush-image-bar-toggle {
 		position: fixed;
-		top: 82px;
+		top: 50px;
 		right: 330px;
 		height: 50px;
 		width: 60px;
@@ -103,8 +103,9 @@
 		background-color: #FFF;
 		box-shadow: 0 0 40px 0 rgba(0,0,0,0.1);
 		z-index: 999999;
-		padding: 32px 0 20px;
-		overflow-y: scroll;
+		padding: 0 0 20px;
+		overflow-y: auto;
+		overflow-x: hidden;
 		max-width: 330px;
 		transition-property: all;
 		transition-duration: .5s;
@@ -112,6 +113,7 @@
 
 		&.closed {
 			max-width: 0;
+			overflow-y: hidden;
 		}
 
 		h3, p, strong, span {
