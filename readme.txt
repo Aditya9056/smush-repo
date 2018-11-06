@@ -78,7 +78,7 @@ The faster your site loads, the more Google, Bing, Yahoo and other search engine
 > - Global and individual settings for Multisite.
 > - View advanced compression stats per-attachment and library totals.
 >
-> Install Smush now and find out why it's the most popular image optimization plugin for WordPress available today with over 2.7 million downloads.
+> Install Smush now and find out why it's the most popular image optimization plugin for WordPress available today with over 11 million downloads.
 
 ### Shameless Plug(ins)
 

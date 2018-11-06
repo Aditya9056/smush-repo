@@ -930,9 +930,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 				$data   = $this->process_cdn_status( $status );
 				$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
 			}
-
-			// Disable auto smush.
-			$this->settings->set( 'auto', false );
 		} else {
 			// Remove CDN settings if disabling.
 			$this->settings->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );

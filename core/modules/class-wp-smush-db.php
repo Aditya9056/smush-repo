@@ -270,7 +270,7 @@ class WP_Smush_DB {
 		if ( ! $force_update ) {
 			$smushed_count = wp_cache_get( $key, 'wp-smush' );
 			// Return the cache value if cache is set.
-			if ( false !== $smushed_count ) {
+			if ( false !== $smushed_count && ! empty( $smushed_count ) ) {
 				return $smushed_count;
 			}
 		}
