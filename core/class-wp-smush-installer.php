@@ -173,7 +173,7 @@ class WP_Smush_Installer {
 					foreach ( $blogs as $blog ) {
 						switch_to_blog( $blog['blog_id'] );
 
-						$settings = get_option( WP_SMUSH_PREFIX . 'last_settings' );
+						$settings = get_option( WP_SMUSH_PREFIX . 'last_settings', array() );
 						$settings = array_merge( WP_Smush_Settings::get_instance()->get(), $settings );
 						update_option( WP_SMUSH_PREFIX . 'settings', $settings );
 						// Remove previous data.

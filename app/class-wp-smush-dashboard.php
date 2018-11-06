@@ -140,9 +140,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 		if ( $is_network && ! $is_networkwide ) {
 			$this->add_meta_box(
-				'meta-boxes/settings',
+				'meta-boxes/bulk-settings',
 				__( 'Settings', 'wp-smushit' ),
-				array( $this, 'settings_metabox' ),
+				array( $this, 'bulk_settings_metabox' ),
 				null,
 				null,
 				'bulk',

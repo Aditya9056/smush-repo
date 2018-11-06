@@ -538,7 +538,7 @@ jQuery( function ( $ ) {
 			// Ajax param.
 			let param = {
 				action: 'save_settings',
-				nonce: $( '#wp_smush_options_nonce' ).val()
+                wp_smush_options_nonce: $( '#wp_smush_options_nonce' ).val()
 			};
 
 			param = jQuery.param( param ) + '&' + jQuery( 'form#wp-smush-settings-form' ).serialize();

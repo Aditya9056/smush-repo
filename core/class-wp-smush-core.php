@@ -456,8 +456,6 @@ class WP_Smush_Core {
 		$this->s3 = new WP_Smush_S3();
 	}
 
-
-
 	/**
 	 * Check if NextGen is active or not
 	 * Include and instantiate classes
@@ -798,7 +796,7 @@ class WP_Smush_Core {
 
 		if ( empty( $this->smushed_attachments ) ) {
 			// Get smushed attachments.
-			$this->smushed_attachments = $this->mod->db->smushed_count( true );
+			$this->smushed_attachments = $this->mod->db->smushed_count( true, $force_update );
 		}
 
 		// Get supersmushed images count.

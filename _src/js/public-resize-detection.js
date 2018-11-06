@@ -28,12 +28,16 @@
 				this.strings = wp_smush_resize_vars;
 			}
 
-			this.toggle.addEventListener('click', this.handleToggleClick.bind(this));
-
 			this.detectImages();
 			this.generateMarkup('bigger');
 			this.generateMarkup('smaller');
 			this.removeEmptyDivs();
+
+            this.toggle.querySelector('i').classList.add('sui-icon-info')
+            this.toggle.querySelector('i').classList.remove('sui-icon-loader');
+
+			// Register the event handler after everything is done.
+            this.toggle.addEventListener('click', this.handleToggleClick.bind(this));
 		},
 
 		/**

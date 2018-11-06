@@ -211,7 +211,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 				<span class="wp-smush-cdn-stats"><?php echo esc_html( WP_Smush_Helper::format_bytes( $bandwidth, 2 ) ); ?></span>
 				<span class="wp-smush-stats-sep">/</span>
 				<span class="wp-smush-cdn-usage">
-					<?php echo absint( $plan ); ?> Gb
+					<?php echo absint( $plan ); ?> GB
 				</span>
 				<div class="sui-circle-score" data-score="<?php echo absint( $percentage ); ?>"></div>
 			</span>
