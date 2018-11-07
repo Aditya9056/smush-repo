@@ -103,7 +103,8 @@ class WP_Smush_Admin {
 	 * Enqueue scripts.
 	 */
 	public function enqueue_scripts() {
-		$current_page = '';
+		$current_page   = '';
+		$current_screen = '';
 
 		if ( function_exists( 'get_current_screen' ) ) {
 			$current_screen = get_current_screen();
@@ -152,7 +153,7 @@ class WP_Smush_Admin {
 		wp_enqueue_style( 'smush-admin-common' );
 
 		// Load on all Smush page only.
-		if ( $smush_required_page ) {
+		if ( in_array( $current_screen->id, WP_Smush_Core::$plugin_pages, true ) ) {
 			// Smush admin (smush-admin) includes the Shared UI.
 			wp_enqueue_style( 'smush-admin' );
 		}
