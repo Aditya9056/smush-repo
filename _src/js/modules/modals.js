@@ -3,70 +3,100 @@
  */
 
 ( function ( $ ) {
-	'use strict';
+    'use strict';
 
-	$( window ).on( 'load', function () {
-		// If quick setup box is found, show.
-		if ( $( '#smush-quick-setup-dialog' ).length > 0 ) {
-			// Show the modal.
-			window.SUI.dialogs['smush-quick-setup-dialog'].show();
-		}
-	} );
+    /**
+     * Onboarding modal.
+     *
+     * @since 3.1
+     */
+    WP_Smush.onboarding = {
+        onboardingModals: [ 'smush-onboarding-dialog', 'smush-onboarding-dialog-auto', 'smush-onboarding-dialog-lossy' ],
 
-	/**
-	 * Remove dismissable notices.
-	 */
-	$( '.sui-wrap' ).on( 'click', '.sui-notice-dismiss', function ( e ) {
-		e.preventDefault();
-		$( this ).parent().stop().slideUp( 'slow' );
-	} );
+        init: function() {
+            const modal = document.getElementById('smush-onboarding-dialog');
 
-	/**
-	 * Quick Setup - Form Submit
-	 */
-	$( '#smush-quick-setup-submit' ).on( 'click', function () {
-		const self = $( this );
+            // If quick setup box is not found, return.
+            if ( ! modal ) {
+                return;
+            }
 
-		$.ajax( {
-			type: 'POST',
-			url: ajaxurl,
-			data: $( '#smush-quick-setup-form' ).serialize(),
-			beforeSend: function () {
-				// Disable the button.
-				self.attr( 'disabled', 'disabled' );
+            // Show the modal.
+            SUI.dialogs['smush-onboarding-dialog'].show();
 
-				// Show loader.
-				$( '<span class="sui-icon-loader sui-loading"></span>' ).insertAfter( self );
-			},
-			success: function ( data ) {
-				// Enable the button.
-				self.removeAttr( 'disabled' );
-				// Remove the loader.
-				self.parent().find( 'span.spinner' ).remove();
+            // Skip setup.
+            const skipButton = modal.querySelector('.smush-onboarding-skip-link');
+            if ( skipButton ) {
+                skipButton.addEventListener('click', this.skipSetup);
+            }
+        },
 
-				// Reload the Page.
-				location.reload();
-			}
-		} );
-	} );
+        skipSetup: () => {
+            const nonceField = document.getElementById('_wpnonce');
 
-	/**
-	 * Quick Setup - Skip button
-	 */
-	$( '.smush-skip-setup' ).on( 'click', function () {
-		const form = $( 'form#smush-quick-setup-form' );
+            fetch(ajaxurl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+                },
+                body: 'action=skip_smush_setup&_ajax_nonce='+nonceField.value
+            }).catch(error => console.error(error));
+        },
 
-		$.ajax( {
-			type: 'POST',
-			url: ajaxurl,
-			data: {
-				action: 'skip_smush_setup',
-				_wpnonce: $('#_wpnonce').attr('value')
-			},
-			beforeSend: function () {
-				form.find( '.button' ).attr( 'disabled', 'disabled' );
-			}
-		} );
-	} );
+        nav: function(e) {
+            const slideName = e.dataset.slide;
+
+            if ( 'undefined' === typeof slideName ) {
+                return;
+            }
+
+            const index = this.onboardingModals.indexOf(slideName);
+            const oldIndex = 'next' === e.className ? index - 1 : index + 1;
+
+            if ( index < this.onboardingModals.length ) {
+                SUI.dialogs[this.onboardingModals[oldIndex]].hide();
+                SUI.dialogs[this.onboardingModals[index]].show();
+            }
+        }
+    };
+
+    window.onload = () => WP_Smush.onboarding.init();
+
+    /**
+     * Remove dismissable notices.
+     */
+    $( '.sui-wrap' ).on( 'click', '.sui-notice-dismiss', function ( e ) {
+        e.preventDefault();
+        $( this ).parent().stop().slideUp( 'slow' );
+    } );
+
+    /**
+     * Quick Setup - Form Submit
+     */
+    $( '#smush-quick-setup-submit' ).on( 'click', function () {
+        const self = $( this );
+
+        $.ajax( {
+            type: 'POST',
+            url: ajaxurl,
+            data: $( '#smush-quick-setup-form' ).serialize(),
+            beforeSend: function () {
+                // Disable the button.
+                self.attr( 'disabled', 'disabled' );
+
+                // Show loader.
+                $( '<span class="sui-icon-loader sui-loading"></span>' ).insertAfter( self );
+            },
+            success: function ( data ) {
+                // Enable the button.
+                self.removeAttr( 'disabled' );
+                // Remove the loader.
+                self.parent().find( 'span.spinner' ).remove();
+
+                // Reload the Page.
+                location.reload();
+            }
+        } );
+    } );
 
 }( jQuery ));

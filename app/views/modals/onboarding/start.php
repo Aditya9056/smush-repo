@@ -1,10 +1,22 @@
-<div class="sui-dialog sui-dialog-sm" tabindex="-1" id="smush-onboarding-dialog">
+<?php
+/**
+ * Onboarding modal.
+ *
+ * @since 3.1
+ * @package WP_Smush
+ */
+
+$this->view( 'modals/onboarding/auto' );
+$this->view( 'modals/onboarding/lossy' );
+?>
+
+<div class="sui-dialog sui-dialog-sm smush-onboarding-dialog" tabindex="-1" id="smush-onboarding-dialog">
 	<div class="sui-dialog-overlay sui-fade-in"></div>
 	<div class="sui-dialog-content sui-bounce-in" aria-labelledby="dialogTitle" aria-describedby="dialogDescription" role="dialog">
 		<div class="sui-box" role="document">
 			<div class="sui-box-header sui-dialog-with-image">
 				<div class="sui-dialog-image" aria-hidden="true">
-					<!--<img src="dist/images/activecampaign.png" srcset="dist/images/activecampaign.png 1x, dist/images/activecampaign@2x.png 2x" alt="Active Campaign" class="sui-image sui-image-center">-->
+                    <img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/start.png' ); ?>" alt="<?php esc_attr_e( 'Smush On-Boarding Modal', 'wp-smushit' ); ?>" class="sui-image sui-image-center">
 				</div>
 
 				<h3 class="sui-box-title" id="dialogTitle">
@@ -26,6 +38,15 @@
 					<?php esc_html_e( 'Begin setup', 'wp-smushit' ); ?>
 					<i class="sui-icon-chevron-right" aria-hidden="true"></i>
 				</button>
+
+                <div class="smush-onboarding-arrows">
+                    <a href="#" class="previous sui-hidden">
+                        <i class="sui-icon-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="#" class="next" data-slide="smush-onboarding-dialog-auto" onclick="WP_Smush.onboarding.nav(this)">
+                        <i class="sui-icon-chevron-right" aria-hidden="true"></i>
+                    </a>
+                </div>
 			</div>
 
 			<div class="sui-box-footer">
@@ -38,72 +59,11 @@
                     <span></span>
                 </div>
 
-                <a href="#" class="smush-onboarding-skip-link">
+				<?php wp_nonce_field( 'smush_quick_setup' ); ?>
+                <a href="#" class="smush-onboarding-skip-link" data-a11y-dialog-hide>
                     <?php esc_html_e( 'Skip this, I’ll set it up later', 'wp-smushit' ); ?>
                 </a>
 			</div>
 		</div>
 	</div>
 </div>
-
-<style>
-    .sui-dialog.sui-dialog-sm .sui-dialog-content {
-        max-width: 560px !important;
-    }
-
-    .sui-box-header.sui-dialog-with-image {
-        padding-top: 160px !important;
-    }
-
-	.sui-box-header .sui-dialog-image {
-		width: 500px !important;
-		height: 160px !important;
-		margin-left: -250px !important;
-		background-color: #ccc !important;
-	}
-
-	.sui-box .sui-box-header .sui-box-title {
-		font: bold 22px/30px "Roboto", Arial, sans-serif !important;
-	}
-
-	.sui-box-body p {
-		color: #888 !important;
-        max-width: 340px;
-        margin: 0 auto;
-	}
-
-    .smush-onboarding-dots {
-        display: flex;
-        margin-top: 20px;
-    }
-
-    .smush-onboarding-dots span {
-        height: 7px;
-        width: 7px;
-        border-radius: 50%;
-        background-color: #E6E6E6;
-        margin: 0 5px;
-    }
-
-    .smush-onboarding-dots span.active {
-        background-color: #666666;
-    }
-
-    .smush-onboarding-skip-link {
-        position: absolute;
-        bottom: -50px;
-        opacity: 0.7;
-        font-size: 13px;
-        color: #fff !important;
-        letter-spacing: -0.25px;
-        line-height: 22px;
-    }
-</style>
-
-<script type="text/javascript">
-    $(window).on('load', function () {
-        jQuery(document).ready(function () {
-            SUI.dialogs['smush-onboarding-dialog'].show();
-        });
-    });
-</script>

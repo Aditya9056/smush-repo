@@ -91,7 +91,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 * Process ajax action for skipping Smush setup.
 	 */
 	public function skip_smush_setup() {
-		check_ajax_referer( 'smush_quick_setup', '_wpnonce' );
+		check_ajax_referer( 'smush_quick_setup' );
 		update_site_option( 'skip-smush-setup', true );
 		wp_send_json_success();
 	}
