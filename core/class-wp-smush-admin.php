@@ -82,7 +82,7 @@ class WP_Smush_Admin {
 		wp_register_script( 'smush-wpmudev-sui', WP_SMUSH_URL . 'app/assets/js/shared-ui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
 
 		// Main JS.
-		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery', 'smush-wpmudev-sui' ), WP_SMUSH_VERSION, true );
+		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery' ), WP_SMUSH_VERSION, true );
 
 		// Main CSS.
 		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
@@ -139,15 +139,16 @@ class WP_Smush_Admin {
 			return;
 		}
 
-		// We need it on media pages and Smush pages.
-		wp_enqueue_script( 'smush-admin' );
-		wp_enqueue_style( 'smush-admin-common' );
-
 		// Load on all Smush page only.
 		if ( in_array( $current_screen->id, WP_Smush_Core::$plugin_pages, true ) ) {
 			// Smush admin (smush-admin) includes the Shared UI.
 			wp_enqueue_style( 'smush-admin' );
+			wp_enqueue_script( 'smush-wpmudev-sui' );
 		}
+
+		// We need it on media pages and Smush pages.
+		wp_enqueue_script( 'smush-admin' );
+		wp_enqueue_style( 'smush-admin-common' );
 
 		// Localize translatable strings for js.
 		WP_Smush::get_instance()->core()->localize();

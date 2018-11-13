@@ -1575,9 +1575,8 @@ class WP_Smushit extends WP_Smush_Module {
 	 */
 	public function smush_image( $meta, $id = null ) {
 		// Our async task runs when action is upload-attachment and post_id found. So do not run on these conditions.
-		if ( ( ( ! empty( $_POST['action'] ) && 'upload-attachment' === $_POST['action'] ) || isset( $_POST['post_id'] ) )
-			&& defined( 'WP_SMUSH_ASYNC' ) && WP_SMUSH_ASYNC
-		) {
+		$is_upload_attachment = ( ! empty( $_POST['action'] ) && 'upload-attachment' === $_POST['action'] ) || isset( $_POST['post_id'] );
+		if ( ( $is_upload_attachment && defined( 'WP_SMUSH_ASYNC' ) && WP_SMUSH_ASYNC ) || ! is_admin() ) {
 			return $meta;
 		}
 

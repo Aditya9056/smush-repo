@@ -47,6 +47,11 @@ class WP_Smush_Dir {
 	 * WP_Smush_Dir constructor.
 	 */
 	public function __construct() {
+	    // We only run in admin.
+	    if ( ! is_admin() ) {
+	        return;
+        }
+
 		if ( ! self::should_continue() ) {
 			// Remove directory smush from tabs if not required.
 			add_filter( 'smush_setting_tabs', array( $this, 'remove_directory_tab' ) );
