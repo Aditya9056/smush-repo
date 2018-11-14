@@ -20,7 +20,7 @@
         },
         selection: {
             'auto': true,
-            'lossy': false,
+            'lossy': true,
             'strip_exif': true,
             'original': false,
             'usage': true
