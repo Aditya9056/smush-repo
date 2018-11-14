@@ -67,6 +67,11 @@
 
 		.wp-smush-bulk-progress-bar-wrapper {
 			margin-bottom: 30px;
+			.sui-progress-state {
+				span {
+					display: inline-block;
+				}
+			}
 		}
 
 		#sui-cross-sell-footer h3 {
