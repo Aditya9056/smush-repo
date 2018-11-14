@@ -66,13 +66,25 @@
 
 			.smush-onboarding-arrows a {
 				position: absolute;
-				top: 140px;
-				padding: 40px 20px;
+				top: 200px;
+				width: 40px;
+				height: 40px;
+				border-radius: 20px;
+				padding-top: 3px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
 
 				&:hover { background-color: rgba(217, 217, 217, 0.2); }
 
-				&:first-of-type { left: -60px; }
-				&:last-of-type { right: -60px; }
+				&:first-of-type {
+					left: -55px;
+					padding-right: 2px;
+				}
+				&:last-of-type {
+					right: -55px;
+					padding-left: 2px;
+				}
 
 				i:before { color: #fff; }
 			}
