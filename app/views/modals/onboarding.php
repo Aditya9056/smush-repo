@@ -85,7 +85,7 @@
         <# } #>
 
         <# if ( 'original' === data.slide ) { #>
-            <p><?php esc_html_e( 'Note: By default we will store a copy of your original uploads just in case you want to revert in the future - you can turn this off at any time.', 'wp-smushit' ); ?></p>
+            <p class="smush-onboarding-note"><?php esc_html_e( 'Note: By default we will store a copy of your original uploads just in case you want to revert in the future - you can turn this off at any time.', 'wp-smushit' ); ?></p>
         <# } else if ( 'usage' === data.slide ) { #>
             <button type="submit" class="sui-button sui-button-primary sui-button-icon-left">
                 <i class="sui-icon-check" aria-hidden="true"></i>
