@@ -12,19 +12,14 @@
 
 			// Start overwrite sui styles.
 			.sui-box .sui-box-header {
-				padding-top: 160px !important;
-
-				/* TODO: improve mobile layout
-				@media (max-width: 782px), all  {
-					padding-top: 60px !important;
-				}
-				*/
+				padding: 0 !important;
 
 				.sui-dialog-image {
-					width: 500px !important;
-					height: 160px !important;
-					margin-left: -250px !important;
+					width: 100% !important;
+					height: auto !important;
+					margin-left: -50% !important;
 					border: 0 !important;
+					position: relative !important;
 				}
 
 				.sui-box-title {
@@ -71,6 +66,7 @@
 				height: 40px;
 				border-radius: 20px;
 				padding-top: 3px;
+
 				&:not(.sui-hidden) {
 					display: flex;
 					justify-content: center;
@@ -116,23 +112,21 @@
 				letter-spacing: -0.25px;
 				line-height: 22px;
 			}
-		}
 
-		.smush-quick-setup-settings {
-			.sui-box-settings-row {
-				display: table;
-			}
+			@media screen and (max-width: 782px) {
+				.sui-dialog-content {
+					padding: 0 30px;
+				}
 
-			.sui-box-settings-col-1 {
-				max-width: 85%;
-			}
+				.sui-dialog-image {
+					display: block !important;
+				}
 
-			.sui-box-settings-col-1,
-			.sui-box-settings-col-2 {
-				display: table-cell;
-				flex: none;
+				.smush-onboarding-arrows {
+					display: none;
+				}
 			}
-		}
+		} // End .smush-onboarding-dialog
 
 		// Overwrite extra padding on progress bars in modals.
 		.sui-dialog-content .sui-progress-block {
