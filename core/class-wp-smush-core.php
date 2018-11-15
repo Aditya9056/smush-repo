@@ -857,8 +857,8 @@ class WP_Smush_Core {
 			$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", WP_Smushit::$smushed_meta_key ) );
 			if ( ! empty( $global_data ) ) {
 				foreach ( $global_data as $data ) {
-					// Skip attachment, if in re-smush list, or not in attachment list.
-					if ( ( ! empty( $this->resmush_ids ) && in_array( $data->post_id, $this->resmush_ids ) ) || ! in_array( $data->post_id, $this->attachments ) ) {
+					// Skip attachment, if not in attachment list.
+					if ( ! in_array( $data->post_id, $this->attachments ) ) {
 						continue;
 					}
 

@@ -549,9 +549,6 @@ jQuery( function ( $ ) {
 				return true;
 			} );
 		} else {
-			// Check for all the settings, and scan for resmush.
-			const wrapper_div = self.parents().eq( 1 );
-
 			// Get all the main settings.
 			const strip_exif     = document.getElementById( "wp-smush-strip_exif" ),
 				  super_smush    = document.getElementById( "wp-smush-lossy" ),

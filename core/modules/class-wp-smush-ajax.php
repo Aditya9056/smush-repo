@@ -483,37 +483,39 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 					// If the image needs to be resmushed add it to the list.
 					if ( $should_resmush ) {
 						$resmush_list[] = 'nextgen' === $type ? $attachment_k : $attachment;
-						continue;
-					} else {
-						if ( 'nextgen' !== $type ) {
-							$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
-							$conversion_savings = WP_Smush_Helper::get_pngjpg_savings( $attachment );
+					}
 
-							// Increase the smushed count.
-							$smushed_count++;
-							// Get the resized image count.
-							if ( ! empty( $resize_savings ) ) {
-								$resized_count++;
-							}
+					/**
+					 * Calculate stats during re-check images action.
+					 */
+					if ( 'nextgen' !== $type ) {
+						$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
+						$conversion_savings = WP_Smush_Helper::get_pngjpg_savings( $attachment );
 
-							// Get the image count.
-							$image_count += ( ! empty( $smush_data['sizes'] ) && is_array( $smush_data['sizes'] ) ) ? count( $smush_data['sizes'] ) : 0;
-
-							// If the image is in resmush list, and it was super smushed earlier.
-							$super_smushed_count += ( $smush_data['stats']['lossy'] ) ? 1 : 0;
-
-							// Add to the stats.
-							$stats['size_before'] += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_before'] : 0;
-							$stats['size_before'] += ! empty( $resize_savings['size_before'] ) ? $resize_savings['size_before'] : 0;
-							$stats['size_before'] += ! empty( $conversion_savings['size_before'] ) ? $conversion_savings['size_before'] : 0;
-
-							$stats['size_after'] += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_after'] : 0;
-							$stats['size_after'] += ! empty( $resize_savings['size_after'] ) ? $resize_savings['size_after'] : 0;
-							$stats['size_after'] += ! empty( $conversion_savings['size_after'] ) ? $conversion_savings['size_after'] : 0;
-
-							$stats['savings_resize']     += ! empty( $resize_savings ) ? $resize_savings['bytes'] : 0;
-							$stats['savings_conversion'] += ! empty( $conversion_savings ) ? $conversion_savings['bytes'] : 0;
+						// Increase the smushed count.
+						$smushed_count ++;
+						// Get the resized image count.
+						if ( ! empty( $resize_savings ) ) {
+							$resized_count ++;
 						}
+
+						// Get the image count.
+						$image_count += ( ! empty( $smush_data['sizes'] ) && is_array( $smush_data['sizes'] ) ) ? count( $smush_data['sizes'] ) : 0;
+
+						// If the image is in resmush list, and it was super smushed earlier.
+						$super_smushed_count += ( $smush_data['stats']['lossy'] ) ? 1 : 0;
+
+						// Add to the stats.
+						$stats['size_before'] += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_before'] : 0;
+						$stats['size_before'] += ! empty( $resize_savings['size_before'] ) ? $resize_savings['size_before'] : 0;
+						$stats['size_before'] += ! empty( $conversion_savings['size_before'] ) ? $conversion_savings['size_before'] : 0;
+
+						$stats['size_after'] += ! empty( $smush_data['stats'] ) ? $smush_data['stats']['size_after'] : 0;
+						$stats['size_after'] += ! empty( $resize_savings['size_after'] ) ? $resize_savings['size_after'] : 0;
+						$stats['size_after'] += ! empty( $conversion_savings['size_after'] ) ? $conversion_savings['size_after'] : 0;
+
+						$stats['savings_resize']     += ! empty( $resize_savings ) ? $resize_savings['bytes'] : 0;
+						$stats['savings_conversion'] += ! empty( $conversion_savings ) ? $conversion_savings['bytes'] : 0;
 					}
 				}
 			}// End of Foreach Loop
@@ -526,6 +528,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			// Store the resmush list in Options table.
 			update_option( $key, $resmush_list, false );
 		}
+
 		// Get updated stats for Nextgen.
 		if ( 'nextgen' === $type ) {
 			// Reinitialize Nextgen stats.

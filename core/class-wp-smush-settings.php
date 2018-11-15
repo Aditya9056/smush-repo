@@ -243,10 +243,6 @@ class WP_Smush_Settings {
 	 * Save settings, used for networkwide option.
 	 */
 	public function save_settings() {
-		// Validate ajax request.
-		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
-
-		// Save settings.
 		$this->process_options();
 		wp_send_json_success();
 	}
@@ -310,7 +306,7 @@ class WP_Smush_Settings {
 		// Update initialised settings.
 		$this->settings = $settings;
 
-		$resp = $this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
+		$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
 
 		// Settings that are specific to a page.
 		if ( 'bulk' === $setting_form ) {
@@ -337,10 +333,5 @@ class WP_Smush_Settings {
 
 		// Store the option in table.
 		$this->set_setting( WP_SMUSH_PREFIX . 'settings_updated', 1 );
-
-		if ( $resp ) {
-			// Run a re-check on next page load.
-			update_site_option( WP_SMUSH_PREFIX . 'run_recheck', 1 );
-		}
 	}
 }
