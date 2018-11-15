@@ -11,7 +11,7 @@
      * @since 3.1
      */
     WP_Smush.onboarding = {
-        membership: document.getElementById('smush-onboarding').dataset.type,
+        membership: 'free', // Assume free by default.
         modal: document.getElementById('smush-onboarding-dialog'),
         settings: {
             first: true,
@@ -39,6 +39,8 @@
                 return;
             }
 
+            this.membership = document.getElementById('smush-onboarding').dataset.type;
+
             if ( 'pro' !== this.membership ) {
                 this.onboardingSlides = [ 'start', 'auto', 'strip_exif', 'usage' ];
                 this.selection.lossy = false;
@@ -48,12 +50,6 @@
 
             // Show the modal.
             SUI.dialogs['smush-onboarding-dialog'].show();
-
-            // Skip setup.
-            const skipButton = this.modal.querySelector('.smush-onboarding-skip-link');
-            if ( skipButton ) {
-                skipButton.addEventListener('click', this.skipSetup);
-            }
         },
 
         /**
@@ -117,6 +113,12 @@
 
             this.modal.addEventListener('touchstart', this.handleTouchStart, false);
             this.modal.addEventListener('touchmove', this.handleTouchMove, false);
+
+            // Skip setup.
+            const skipButton = this.modal.querySelector('.smush-onboarding-skip-link');
+            if ( skipButton ) {
+                skipButton.addEventListener('click', this.skipSetup);
+            }
 
             this.bindSubmit();
         },
