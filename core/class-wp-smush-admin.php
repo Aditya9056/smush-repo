@@ -43,9 +43,6 @@ class WP_Smush_Admin {
 		add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
 		add_filter( 'network_admin_plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
 
-		// Admin pointer for new Smush installation.
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_pointer' ) );
-
 		/**
 		 * Prints a membership validation issue notice in Media Library
 		 */
@@ -82,7 +79,7 @@ class WP_Smush_Admin {
 		wp_register_script( 'smush-wpmudev-sui', WP_SMUSH_URL . 'app/assets/js/shared-ui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
 
 		// Main JS.
-		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery', 'smush-wpmudev-sui' ), WP_SMUSH_VERSION, true );
+		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery' ), WP_SMUSH_VERSION, true );
 
 		// Main CSS.
 		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
@@ -139,15 +136,16 @@ class WP_Smush_Admin {
 			return;
 		}
 
-		// We need it on media pages and Smush pages.
-		wp_enqueue_script( 'smush-admin' );
-		wp_enqueue_style( 'smush-admin-common' );
-
 		// Load on all Smush page only.
 		if ( in_array( $current_screen->id, WP_Smush_Core::$plugin_pages, true ) ) {
 			// Smush admin (smush-admin) includes the Shared UI.
 			wp_enqueue_style( 'smush-admin' );
+			wp_enqueue_script( 'smush-wpmudev-sui' );
 		}
+
+		// We need it on media pages and Smush pages.
+		wp_enqueue_script( 'smush-admin' );
+		wp_enqueue_style( 'smush-admin-common' );
 
 		// Localize translatable strings for js.
 		WP_Smush::get_instance()->core()->localize();
@@ -333,77 +331,6 @@ class WP_Smush_Admin {
 			</p>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Register smush custom pointer to wp-pointer.
-	 *
-	 * Use WordPress dismiss-wp-pointer action on pointer dismissal to store dismissal flag in meta via ajax.
-	 *
-	 * @since 2.9
-	 */
-	public function register_admin_pointer() {
-		// Pointer content.
-		$content  = '<h3>' . __( 'Get Optimized', 'wp-smushit' ) . '</h3>';
-		$content .= '<p>' . __( 'Resize, compress and optimize your images here.', 'wp-smushit' ) . '</p>';
-		?>
-
-		<script type="text/javascript">
-			//<![CDATA[
-			jQuery( document ).ready( function( $ ) {
-				// jQuery selector to point the message to.
-				$( '#toplevel_page_smush' ).pointer({
-					content: '<?php echo $content; ?>',
-					position: {
-						edge: 'left',
-						align: 'center'
-					},
-					close: function() {
-						$.post( ajaxurl, {
-							pointer: 'smush_pointer',
-							action: 'dismiss-wp-pointer'
-						});
-					}
-				}).pointer( 'open' );
-			});
-			//]]>
-		</script>
-		<?php
-	}
-
-	/**
-	 * Add custom admin pointer using wp-pointer.
-	 *
-	 * We have removed activation redirect to Smush settings
-	 * in new version to avoid interrupting bulk activations.
-	 * Show a pointer notice to Smush settings menu on new
-	 * activations.
-	 *
-	 * @since 2.9
-	 */
-	public function admin_pointer() {
-		// Get dismissed pointers meta.
-		$dismissed_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
-
-		// Explode them by comma.
-		$dismissed_pointers = explode( ',', (string) $dismissed_pointers );
-
-		// If smush pointer is not found in dismissed pointers, show.
-		if ( in_array( 'smush_pointer', $dismissed_pointers, true ) ) {
-			return;
-		}
-
-		// We had a flag in old versions for activation redirect. Check that also.
-		if ( get_site_option( 'wp-smush-skip-redirect' ) ) {
-			return;
-		}
-
-		// Enqueue wp-pointer styles and scripts.
-		wp_enqueue_style( 'wp-pointer' );
-		wp_enqueue_script( 'wp-pointer' );
-
-		// Register our custom pointer.
-		add_action( 'admin_print_footer_scripts', array( $this, 'register_admin_pointer' ) );
 	}
 
 	/**
