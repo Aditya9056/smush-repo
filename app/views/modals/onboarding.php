@@ -105,12 +105,28 @@
 
     <div class="sui-box-footer">
         <div class="smush-onboarding-dots">
-            <span class="<# if ( 'start' === data.slide ) { #>active<# } #>"></span>
-            <span class="<# if ( 'auto' === data.slide ) { #>active<# } #>"></span>
-            <?php if ( WP_Smush::is_pro() ) : ?><span class="<# if ( 'lossy' === data.slide ) { #>active<# } #>"></span><?php endif; ?>
-            <span class="<# if ( 'strip_exif' === data.slide ) { #>active<# } #>"></span>
-            <?php if ( WP_Smush::is_pro() ) : ?><span class="<# if ( 'original' === data.slide ) { #>active<# } #>"></span><?php endif; ?>
-            <span class="<# if ( 'usage' === data.slide ) { #>active<# } #>"></span>
+            <a href="#" onclick="WP_Smush.onboarding.goTo('start')">
+                <span class="<# if ( 'start' === data.slide ) { #>active<# } #>"></span>
+            </a>
+            <a href="#" onclick="WP_Smush.onboarding.goTo('auto')">
+                <span class="<# if ( 'auto' === data.slide ) { #>active<# } #>"></span>
+            </a>
+            <?php if ( WP_Smush::is_pro() ) : ?>
+                <a href="#" onclick="WP_Smush.onboarding.goTo('lossy')">
+                    <span class="<# if ( 'lossy' === data.slide ) { #>active<# } #>"></span>
+                </a>
+            <?php endif; ?>
+            <a href="#" onclick="WP_Smush.onboarding.goTo('strip_exif')">
+                <span class="<# if ( 'strip_exif' === data.slide ) { #>active<# } #>"></span>
+            </a>
+            <?php if ( WP_Smush::is_pro() ) : ?>
+                <a href="#" onclick="WP_Smush.onboarding.goTo('original')">
+                    <span class="<# if ( 'original' === data.slide ) { #>active<# } #>"></span>
+                </a>
+            <?php endif; ?>
+            <a href="#" onclick="WP_Smush.onboarding.goTo('usage')">
+                <span class="<# if ( 'usage' === data.slide ) { #>active<# } #>"></span>
+            </a>
         </div>
 
 		<?php wp_nonce_field( 'smush_quick_setup' ); ?>

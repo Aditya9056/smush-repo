@@ -98,6 +98,9 @@
          * Update the template, register new listeners.
          */
         renderTemplate: function() {
+            // Hide to apply animation later on.
+            this.contentContainer.style.display = 'none';
+
             // Grab the selected value.
             const input = this.modal.querySelector('input[type="checkbox"]');
             if ( input ) {
@@ -121,6 +124,9 @@
             }
 
             this.bindSubmit();
+
+            // Apply animation
+            jQuery('#smush-onboarding-content').slideDown();
         },
 
         /**
@@ -174,9 +180,25 @@
                 value: this.selection[this.onboardingSlides[newIndex]]
             };
 
-            this.contentContainer.style.display = 'none';
             this.renderTemplate();
-            jQuery('#smush-onboarding-content').slideDown();
+        },
+
+        /**
+         * Handle circle navigation.
+         *
+         * @param target
+         */
+        goTo: function(target) {
+            const newIndex = this.onboardingSlides.indexOf(target);
+
+            this.settings = {
+                first: 0 === newIndex,
+                last: newIndex + 1 === this.onboardingSlides.length, // length !== index
+                slide: target,
+                value: this.selection[target]
+            };
+
+            this.renderTemplate();
         },
 
         /**
