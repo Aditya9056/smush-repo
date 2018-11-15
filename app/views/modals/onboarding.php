@@ -8,7 +8,7 @@
 
 ?>
 
-<script type="text/template" id="smush-onboarding">
+<script type="text/template" id="smush-onboarding" data-type="<?php echo WP_Smush::is_pro() ? 'pro' : 'free'; ?>">
     <div class="sui-box-header sui-dialog-with-image">
         <div class="sui-dialog-image" aria-hidden="true">
             <img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/' ); ?>{{{ data.slide }}}.png"
@@ -107,9 +107,9 @@
         <div class="smush-onboarding-dots">
             <span class="<# if ( 'start' === data.slide ) { #>active<# } #>"></span>
             <span class="<# if ( 'auto' === data.slide ) { #>active<# } #>"></span>
-            <span class="<# if ( 'lossy' === data.slide ) { #>active<# } #>"></span>
+            <?php if ( WP_Smush::is_pro() ) : ?><span class="<# if ( 'lossy' === data.slide ) { #>active<# } #>"></span><?php endif; ?>
             <span class="<# if ( 'strip_exif' === data.slide ) { #>active<# } #>"></span>
-            <span class="<# if ( 'original' === data.slide ) { #>active<# } #>"></span>
+            <?php if ( WP_Smush::is_pro() ) : ?><span class="<# if ( 'original' === data.slide ) { #>active<# } #>"></span><?php endif; ?>
             <span class="<# if ( 'usage' === data.slide ) { #>active<# } #>"></span>
         </div>
 

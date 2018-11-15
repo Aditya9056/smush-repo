@@ -11,6 +11,7 @@
      * @since 3.1
      */
     WP_Smush.onboarding = {
+        membership: document.getElementById('smush-onboarding').dataset.type,
         modal: document.getElementById('smush-onboarding-dialog'),
         settings: {
             first: true,
@@ -36,6 +37,11 @@
         init: function() {
             if ( ! this.modal ) {
                 return;
+            }
+
+            if ( 'pro' !== this.membership ) {
+                this.onboardingSlides = [ 'start', 'auto', 'strip_exif', 'usage' ];
+                this.selection.lossy = false;
             }
 
             this.renderTemplate();
@@ -202,6 +208,8 @@
                 escape:      /\{\{([^\}]+?)\}\}(?!\})/g,
                 variable:    'data'
             };
+
+        const self = this;
 
         return data => {
             _.templateSettings = options;
