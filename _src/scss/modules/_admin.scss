@@ -453,27 +453,6 @@
 		.sui-toggle + label {
 			font-weight: 500;
 		}
-
-		#smush-quick-setup-dialog {
-			.sui-box-settings-row {
-				.sui-box-settings-col-1 {
-					width: 85%;
-				}
-			}
-
-			.wp-smush-resize-settings-col {
-				display: table-row;
-
-				.wp-smush-resize-settings-wrap,
-				.sui-description {
-					margin-left: 0;
-
-					&.sui-notice {
-						margin-bottom: 0;
-					}
-				}
-			}
-		}
 	}
 
 	.wp-smush-pagespeed-recommendation {
