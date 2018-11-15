@@ -106,7 +106,9 @@
                 value: this.selection[this.onboardingSlides[newIndex]]
             };
 
+            this.contentContainer.style.display = 'none';
             this.renderTemplate();
+            jQuery('#smush-onboarding-content').slideDown();
         },
 
         /**
@@ -139,7 +141,6 @@
         return data => {
             _.templateSettings = options;
             compiled = compiled || _.template(document.getElementById(id).innerHTML);
-            //compiled = _.template(document.getElementById(id).innerHTML);
             return compiled(data);
         };
     });
