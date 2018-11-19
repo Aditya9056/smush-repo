@@ -32,21 +32,22 @@ class WP_Smush_Settings {
 	 * @var array
 	 */
 	private $settings = array(
-		'networkwide' => false,
-		'auto'        => true,  // works with CDN.
-		'lossy'       => false, // works with CDN.
-		'strip_exif'  => true,  // works with CDN.
-		'resize'      => false,
-		'detection'   => false,
-		'original'    => false,
-		'backup'      => false,
-		'png_to_jpg'  => false, // works with CDN.
-		'nextgen'     => false,
-		's3'          => false,
-		'gutenberg'   => false,
-		'cdn'         => false,
-		'auto_resize' => false,
-		'webp'        => true,
+		'networkwide'       => false,
+		'auto'              => true,  // works with CDN.
+		'lossy'             => false, // works with CDN.
+		'strip_exif'        => true,  // works with CDN.
+		'resize'            => false,
+		'detection'         => false,
+		'original'          => false,
+		'backup'            => false,
+		'png_to_jpg'        => false, // works with CDN.
+		'nextgen'           => false,
+		's3'                => false,
+		'gutenberg'         => false,
+		'cdn'               => false,
+		'auto_resize'       => false,
+		'webp'              => true,
+		'accessible_colors' => false,
 	);
 
 	/**
@@ -86,6 +87,15 @@ class WP_Smush_Settings {
 		'auto_resize',
 		'cdn',
 		'webp',
+	);
+
+	/**
+	 * List of fields in Settings form.
+	 *
+	 * @var array
+	 */
+	private $settings_fields = array(
+		'accessible_colors',
 	);
 
 	/**
@@ -257,7 +267,7 @@ class WP_Smush_Settings {
 			return;
 		}
 
-		$pages_with_settings = array( 'bulk', 'integration', 'cdn' );
+		$pages_with_settings = array( 'bulk', 'integration', 'cdn', 'settings' );
 
 		// Continue only if form name is set.
 		if ( ! isset( $_POST['setting_form'] ) || ! in_array( wp_unslash( $_POST['setting_form'] ), $pages_with_settings, true ) ) { // Input var ok.
