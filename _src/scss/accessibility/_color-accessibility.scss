@@ -1,0 +1,47 @@
+@include body-class(true) {
+    &.sui-color-accessible {
+        .sui-checkbox,
+        .sui-radio {
+            input:checked {
+                  + span:not(.sui-description) {
+                      border: 1px solid $accessible-dark;
+                      background-color: $accessible-dark;
+                  }
+              }
+        }
+        .smush-final-log .smush-bulk-error-row {
+            box-shadow: inset 2px 0 0 0 $accessible-dark;
+            .smush-bulk-image-data:before {
+                color: $accessible-dark;
+            }
+        }
+        // Bulk Smush Fancy Tree
+        ul.fancytree-container {
+            .fancytree-selected {
+                background-color: #F8F8F8;
+                span.fancytree-checkbox {
+                    border: 1px solid $accessible-dark;
+                    background-color: $accessible-dark;
+                }
+            }
+            span.fancytree-expander:before,
+            span.fancytree-icon:before,
+            span.fancytree-title {
+                color: $accessible-dark;
+            }
+        }
+        // CDN
+        .smush-filename-extension {
+            background-color: $accessible-dark;
+        }
+        .smush-cdn-stats {
+            .sui-circle-score {
+                svg {
+                    circle:last-child {
+                        stroke: $accessible-dark;
+                    }
+                }
+            }
+        }
+    }
+}
