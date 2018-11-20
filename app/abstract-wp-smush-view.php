@@ -309,8 +309,10 @@ abstract class WP_Smush_View {
 	 * Render the page
 	 */
 	public function render() {
-		// Shared UI wrapper.
-		echo '<div class="sui-wrap">';
+		// Shared UI wrapper with accessible color option.
+		$classes = $this->settings->get( 'accessible_colors' ) ? 'sui-wrap sui-color-accessible' : 'sui-wrap';
+		echo '<div class="' . esc_attr( $classes ) . '">';
+
 
 		// Load page header.
 		$this->render_page_header();
