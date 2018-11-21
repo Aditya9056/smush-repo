@@ -1237,26 +1237,4 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		);
 	}
 
-	/**
-	 * Add settings to settings array.
-	 *
-	 * @since 3.0
-	 *
-	 * @param array $settings  Current settings array.
-	 *
-	 * @return array
-	 */
-	public function register( $settings ) {
-		return array_merge(
-			$settings,
-			array(
-				'accessible_colors' => array(
-					'label'       => __( 'Enable automatic resizing of my images', 'wp-smushit' ),
-					'short_label' => __( 'Automatic Resizing', 'wp-smushit' ),
-					'desc'        => __( 'If your images don’t match their containers, we’ll automatically serve a correctly sized image.', 'wp-smushit' ),
-				),
-			)
-		);
-	}
-
 }
