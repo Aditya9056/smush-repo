@@ -104,7 +104,7 @@
 		 * @since 3.0
 		 */
 		updateStatsBox: function () {
-			if ( 'undefined' === typeof this.cdnStatsBox ) {
+			if ( 'undefined' === typeof this.cdnStatsBox || ! this.cdnStatsBox ) {
 				return;
 			}
 

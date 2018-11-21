@@ -1,5 +1,8 @@
 = 3.0.0 =
 
+* New: Smush CDN
+* New: Webp support with CDN
+* New: Auto image resize when using CDN
 * New: Plugin structure (Important: plugin globals have been removed)
 * New: Show failure reason during directory Smush
 * New: Settings page with language translation links
@@ -14,6 +17,7 @@
 * Fix: [WP Offload Media] Backward compatibility errors
 * Fix: [WP Offload Media] Warnings when certain attachment sizes are excluded from compression
 * Fix: [WP Offload Media] Errors during is_animated check with images stored on S3
+* Fix: [WooCommerce] Compatibility issue with WooCommerce 3.5
 
 = 2.9.1 =
 

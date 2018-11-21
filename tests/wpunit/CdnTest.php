@@ -2,6 +2,12 @@
 /**
  * Test the Smush CDN: CdnTest
  *
+ * 1. Make sure you have a valid symlink from your test directory to your plugin folder:
+ * # ln -s /srv/www/wordpress/public_html/wp-content/plugins/wp-smushit /tmp/wordpress/wp-content/plugins/wp-smushit
+ *
+ * 2. Make sure a you have a localhost accessible with WordPress and the linked plugin:
+ * # php -S localhost:8080 -t /tmp/wordpress &>/dev/null&
+ *
  * @since 3.0
  */
 
@@ -35,6 +41,9 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 		// Preserve global variables.
 		global $content_width;
 		$this->_globals['content_width'] = $content_width;
+
+		// Remove extra image sizes.
+		$this->remove_image_sizes();
 	}
 
 	/**
@@ -46,6 +55,25 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 		$content_width = $this->_globals['content_width'];
 
 		parent::tearDown();
+	}
+
+	/**
+	 * Remove the image sizes that we do not want to test against. Keep only WordPress originals.
+	 * This makes it more predictable and theme independent.
+	 */
+	private function remove_image_sizes() {
+		// Default WordPress image sizes.
+		$default_image_sizes  = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
+		$all_registered_sizes = get_intermediate_image_sizes();
+
+		// Remove everything else.
+		foreach ( $all_registered_sizes as $size ) {
+			if ( in_array( $size, $default_image_sizes ) ) {
+				continue;
+			}
+
+			remove_image_size( $size );
+		}
 	}
 
 	/**
@@ -110,6 +138,70 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertTrue( $cdn->get_status() );
 	}
 
+	/**
+	 * Verify that the proper settings are registered in the module.
+	 *
+	 * @covers WP_Smush_CDN::add_settings
+	 */
+	public function testCdnAddSettingsToGroup() {
+		$this->assertEquals( [ 'auto_resize', 'webp' ], apply_filters( 'wp_smush_cdn_settings', [] ) );
+	}
+
+	/**
+	 * Test if CDN settings descriptions are properly registered and match the settings fields.
+	 *
+	 * @depends testCdnAddSettingsToGroup
+	 * @covers WP_Smush_CDN::register
+	 */
+	public function testCdnSettings() {
+		$smush = WP_Smush::get_instance();
+
+		// Init settings.
+		$smush->core()->admin_init();
+
+		$registered_settings = apply_filters( 'wp_smush_cdn_settings', [] );
+
+		// Loop through all the settings and check for a description.
+		foreach ( $registered_settings as $setting ) {
+			$this->assertArrayHasKey( $setting, $smush->core()->settings );
+		}
+	}
+
+	/**
+	 * Test to see if init_flags() method can set the status property.
+	 *
+	 * @covers WP_Smush_CDN::init_flags
+	 */
+	public function testCdnInitFlagsMethod() {
+		$cdn = new WP_Smush_CDN();
+
+		$this->assertNull( $this->tester->readPrivateProperty( $cdn, 'status' ) );
+
+		// Simulate the dash plugin.
+		if ( ! file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
+			mkdir( WP_PLUGIN_DIR . '/wpmudev-updates' );
+			touch( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' );
+		}
+
+		$this->tester->setPro();
+		$cdn->init_flags();
+
+		// By this time the value should have been changed from null to false.
+		$this->assertFalse( $this->tester->readPrivateProperty( $cdn, 'status' ) );
+
+		// Add some bogus value to wp-smush-cdn_status setting.
+		update_option( WP_SMUSH_PREFIX . 'cdn_status', 1 );
+		$cdn->init_flags();
+
+		// Check that the status is reflected in the private var.
+		$this->assertEquals( 1, $this->tester->readPrivateProperty( $cdn, 'status' ) );
+
+		// Remove the fake dash plugin.
+		if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
+			$this->unlink( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' );
+			rmdir( WP_PLUGIN_DIR . '/wpmudev-updates' );
+		}
+	}
 
 	/**
 	 * Check that CDN does not fail when process_buffer() sends empty content.
@@ -146,15 +238,15 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 
 		// Test image without dimensions.
 		$image = 'http://' . WP_TESTS_DOMAIN . '/wp-content/plugins/wp-smushit/tests/_data/images/image1.jpeg';
-		$sizes = $this->tester->callPrivateMethod( $cdn, 'get_size_from_file_name', array( $image ) );
+		$sizes = $this->tester->callPrivateMethod( $cdn, 'get_size_from_file_name', [ $image ] );
 
-		$this->assertEquals( array( false, false ), $sizes );
+		$this->assertEquals( [ false, false ], $sizes );
 
 		// Test image with dimensions.
 		$image = 'http://' . WP_TESTS_DOMAIN . '/wp-content/plugins/wp-smushit/tests/_data/images/image-1920x1280.jpeg';
-		$sizes = $this->tester->callPrivateMethod( $cdn, 'get_size_from_file_name', array( $image ) );
+		$sizes = $this->tester->callPrivateMethod( $cdn, 'get_size_from_file_name', [ $image ] );
 
-		$this->assertEquals( array( 1920, 1280 ), $sizes );
+		$this->assertEquals( [ 1920, 1280 ], $sizes );
 	}
 
 	/**
@@ -216,31 +308,47 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 		$cdn = new WP_Smush_CDN();
 
 		foreach ( $test_cases as $case => $value ) {
-			$result = $this->tester->callPrivateMethod( $cdn, 'is_valid_url', array( $case ) );
+			$result = $this->tester->callPrivateMethod( $cdn, 'is_valid_url', [ $case ] );
 			$this->assertEquals( $value, $result );
 		}
 	}
 
 	/**
-	 * Test adding additional srcset to image.
+	 * Image from media library should be converted to CDN format.
+	 * Also test adding additional srcset to image.
+	 *
+	 * This seems a bit too long for a single test.
 	 *
 	 * @covers WP_Smush_CDN::update_image_srcset
 	 */
 	public function testCdnUpdate_image_srcsetMethod() {
-		//$smush = WP_Smush::get_instance();
-		//$cdn   = $smush->core()->mod->cdn;
-
-		//$this->enableCDN( $cdn );
-		//$smush->core()->mod->settings->set( 'auto_resize', true );
-
 		$attachment_id = $this->tester->uploadImage();
 
 		// This is similar to adding an image to the media library and then adding it to a page/post via editor.
 		$image = wp_get_attachment_image( $attachment_id, 'full' );
+		$this->assertEquals( 5, substr_count( $image, WP_TESTS_DOMAIN ) );
 
-		codecept_debug( $image );
+		$smush = WP_Smush::get_instance();
+		$cdn   = $smush->core()->mod->cdn;
 
+		$smush->core()->mod->settings->set( 'auto_resize', false );
+		$smush->core()->mod->settings->set( 'cdn', true );
+		$this->enableCDN( $cdn );
+		$cdn->init();
 
+		// This will convert all srcset links to CDN.
+		$image = wp_get_attachment_image( $attachment_id, 'full' );
+
+		// Convert image src to CDN.
+		$cdn_image = $cdn->process_img_tags( $image );
+		$this->assertEquals( 5, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
+
+		// Enable auto resize.
+		$smush->core()->mod->settings->set( 'auto_resize', true );
+		$image = wp_get_attachment_image( $attachment_id, 'full' );
+
+		$cdn_image = $cdn->process_img_tags( $image );
+		$this->assertEquals( 10, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
 
 		wp_delete_attachment( $attachment_id );
 	}
