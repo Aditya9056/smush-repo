@@ -251,7 +251,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 							'meta-boxes/cdn/disabled',
 							__( 'CDN', 'wp-smushit' ),
 							null,
-							null,
+							array( $this, 'cdn_metabox_header' ),
 							null,
 							'cdn'
 						);
@@ -260,7 +260,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 							'meta-boxes/cdn',
 							__( 'CDN', 'wp-smushit' ),
 							array( $this, 'cdn_metabox' ),
-							null,
+							array( $this, 'cdn_metabox_header' ),
 							null,
 							'cdn'
 						);
@@ -557,7 +557,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			<div class="sui-box-settings-col-1">
 				<span class="sui-settings-label <?php echo 'gutenberg' === $name ? 'sui-settings-label-with-tag' : ''; ?>">
 					<?php echo esc_html( $label ); ?>
-					<?php do_action( 'smush_setting_column_tag', $name ); ?>
 				</span>
 
 				<span class="sui-description">
@@ -1204,6 +1203,21 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			)
 		);
 	}
+
+	/**
+	 * CDN meta box header.
+     *
+     * @since 3.0
+	 */
+	public function cdn_metabox_header() {
+	    $this->view(
+            'meta-boxes/cdn/meta-box-header',
+            array(
+                'title'   => __( 'CDN', 'wp-smushit' ),
+                'tooltip' => __( 'This feature is likely to work without issue, however our CDN is in beta stage and some issues are still present.', 'wp-smushit' ),
+            )
+        );
+    }
 
 	/**
 	 * Settings meta box.
