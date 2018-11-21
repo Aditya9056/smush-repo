@@ -2,7 +2,7 @@
 /**
  * Class WP_Smush_Cli_Command
  *
- * @since 3.0
+ * @since 3.1
  * @package WP_Smush
  */
 
@@ -10,37 +10,6 @@
  * Reduce image file sizes, improve performance and boost your SEO using the WPMU DEV Smush API.
  */
 class WP_Smush_Cli_Command extends WP_CLI_Command {
-
-	/**
-	 * Prints a greeting.
-	 *
-	 * ## OPTIONS
-	 *
-	 * <name>
-	 * : The name of the person to greet.
-	 *
-	 * [--type=<type>]
-	 * : Whether or not to greet the person with success or error.
-	 * ---
-	 * default: success
-	 * options:
-	 *   - success
-	 *   - error
-	 * ---
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     wp example hello Newman
-	 *
-	 * @when after_wp_load
-	 */
-	public function hello( $args, $assoc_args ) {
-		list( $name ) = $args;
-
-		// Print the message with type.
-		$type = $assoc_args['type'];
-		WP_CLI::$type( "Hello, $name!" );
-	}
 
 	/**
 	 * List unoptimized images.
@@ -62,7 +31,11 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 	 * @when after_wp_load
 	 */
 	public function _list( $args ) {
-		list( $count ) = $args;
+		if ( ! empty( $args ) ) {
+			list( $count ) = $args;
+		} else {
+			$count = -1;
+		}
 
 		$response = WP_CLI::launch_self( 'post list', array( '--meta_compare=NOT EXISTS' ), array(
 			'post_type'      => 'attachment',
@@ -74,6 +47,7 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 
 		$images = json_decode( $response->stdout );
 
+		WP_CLI::success( __( 'Unsmushed images:', 'wp-smushit' ) );
 		WP_CLI\Utils\format_items( 'table', $images, array( 'ID', 'guid', 'post_mime_type' ) );
 	}
 
@@ -109,13 +83,68 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 
 		switch ( $type ) {
 			case 'single':
+				$msg = sprintf( __( 'Smushing image ID: %s', 'wp-smushit' ), absint( $image ) );
+				$this->smush( $msg, array( $image ) );
+				$this->_list( array() );
 				break;
 			case 'batch':
+				var_dump( 'batch: ' . $image );
 				break;
 			case 'all':
 			default:
+				$this->smush_all( __( 'Smushing all images', 'wp-smushit' ) );
 				break;
 		}
+	}
+
+	/**
+	 * Smush single image.
+	 *
+	 * @since 3.1
+	 *
+	 * @param string $msg     Message for progress bar status.
+	 * @param array  $images  Attachment IDs.
+	 */
+	private function smush( $msg = '', $images = array() ) {
+		$progress = \WP_CLI\Utils\make_progress_bar( $msg, count( $images ) + 1 );
+
+		$unsmushed_attachments = WP_Smush::get_instance()->core()->mod->db->get_unsmushed_attachments();
+
+		while ( $images ) {
+			$progress->tick();
+
+			$attachment_id = array_pop( $images );
+
+			// Skip if already Smushed.
+			if ( ! in_array( $attachment_id, $unsmushed_attachments ) ) {
+				continue;
+			}
+
+			WP_Smush::get_instance()->core()->mod->smush->smush_single( $attachment_id, true );
+		}
+
+		$progress->tick();
+		$progress->finish();
+	}
+
+	/**
+	 * Smush all uncompressed images.
+	 *
+	 * @since 3.1
+	 *
+	 * @param string $msg  Message for progress bar status.
+	 */
+	private function smush_all( $msg ) {
+		$attachments = WP_Smush::get_instance()->core()->mod->db->get_unsmushed_attachments();
+
+		$progress = \WP_CLI\Utils\make_progress_bar( $msg, count( $attachments ) );
+
+		foreach ( $attachments as $attachment_id ) {
+			WP_Smush::get_instance()->core()->mod->smush->smush_single( $attachment_id, true );
+			$progress->tick();
+		}
+
+		$progress->finish();
 	}
 
 }
