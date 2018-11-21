@@ -126,7 +126,7 @@
             this.bindSubmit();
 
             // Apply animation
-            jQuery('#smush-onboarding-content').slideDown();
+            jQuery('#smush-onboarding-content').fadeIn();
         },
 
         /**
