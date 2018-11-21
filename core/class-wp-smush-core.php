@@ -560,6 +560,11 @@ class WP_Smush_Core {
 				'short_label' => esc_html__( 'PNG to JPEG conversion', 'wp-smushit' ),
 				'desc'        => esc_html__( 'When you compress a PNG, Smush will check if converting it to JPEG could further reduce its size.', 'wp-smushit' ),
 			),
+			'accessible_colors'  => array(
+				'label'       => esc_html__( 'Enable high contrast mode', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Color Accessibility', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Increase the visibility and accessibility of elements and components to meet WCAG AAA requirements.', 'wp-smushit' ),
+			),
 		);
 
 		/**
