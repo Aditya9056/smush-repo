@@ -28,7 +28,8 @@ class WP_Smush_Installer {
 		}
 
 		$version  = get_site_option( WP_SMUSH_PREFIX . 'version' );
-		$settings = ! empty( WP_Smush_Settings::get_instance()->get() ) ? WP_Smush_Settings::get_instance()->get() : WP_Smush_Settings::get_instance()->init();
+		$settings = WP_Smush_Settings::get_instance()->get();
+		$settings = ! empty( $settings ) ? $settings : WP_Smush_Settings::get_instance()->init();
 
 		// If the version is not saved or if the version is not same as the current version,.
 		if ( ! $version || WP_SMUSH_VERSION !== $version ) {

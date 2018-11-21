@@ -49,10 +49,6 @@ $smushit_keys = array(
 	'scan',
 	'last_settings',
 	's3',
-	'smush_option',
-	'smush-directory-path-hash-updated',
-	'smush_global_stats',
-	'skip-smush-setup',
 	'settings',
 	'cdn_status',
 );
@@ -61,6 +57,7 @@ $db_keys = array(
 	'skip-smush-setup',
 	'smush_global_stats',
 	'smush_option',
+	'smush-directory-path-hash-updated'
 );
 
 // Cache Keys.
