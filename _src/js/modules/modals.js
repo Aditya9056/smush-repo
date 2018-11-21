@@ -48,6 +48,12 @@
 
             this.renderTemplate();
 
+            // Skip setup.
+            const skipButton = this.modal.querySelector('.smush-onboarding-skip-link');
+            if ( skipButton ) {
+                skipButton.addEventListener('click', this.skipSetup);
+            }
+
             // Show the modal.
             SUI.dialogs['smush-onboarding-dialog'].show();
         },
@@ -98,9 +104,6 @@
          * Update the template, register new listeners.
          */
         renderTemplate: function() {
-            // Hide to apply animation later on.
-            this.contentContainer.style.display = 'none';
-
             // Grab the selected value.
             const input = this.modal.querySelector('input[type="checkbox"]');
             if ( input ) {
@@ -111,22 +114,17 @@
             const content = template(this.settings);
 
             if ( content ) {
+                // Hide to apply animation later on.
+                this.contentContainer.style.display = 'none';
                 this.contentContainer.innerHTML = content;
+                // Apply animation
+                jQuery('#smush-onboarding-content').fadeIn();
             }
 
             this.modal.addEventListener('touchstart', this.handleTouchStart, false);
             this.modal.addEventListener('touchmove', this.handleTouchMove, false);
 
-            // Skip setup.
-            const skipButton = this.modal.querySelector('.smush-onboarding-skip-link');
-            if ( skipButton ) {
-                skipButton.addEventListener('click', this.skipSetup);
-            }
-
             this.bindSubmit();
-
-            // Apply animation
-            jQuery('#smush-onboarding-content').fadeIn();
         },
 
         /**
@@ -232,8 +230,6 @@
                 escape:      /\{\{([^\}]+?)\}\}(?!\})/g,
                 variable:    'data'
             };
-
-        const self = this;
 
         return data => {
             _.templateSettings = options;

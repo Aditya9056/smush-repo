@@ -6,6 +6,7 @@
  * @package WP_Smush
  */
 
+$user = wp_get_current_user();
 ?>
 
 <script type="text/template" id="smush-onboarding" data-type="<?php echo WP_Smush::is_pro() ? 'pro' : 'free'; ?>">
@@ -18,14 +19,9 @@
 
         <h3 class="sui-box-title" id="dialogTitle">
             <# if ( 'start' === data.slide ) { #>
-                <?php
-                    $current_user = wp_get_current_user();
-                    printf(
-                        /* translators: %s: current user name */
-                        esc_html__( 'Hey, %s!', 'wp-smushit' ),
-                        $current_user->display_name
-                    );
-                    ?>
+                <?php /* translators: %s: current user name */
+                    printf( esc_html__( 'Hey, %s!', 'wp-smushit' ), $user->display_name );
+                ?>
             <# } else if ( 'auto' === data.slide ) { #>
                 <?php esc_html_e( 'Automatic Compression', 'wp-smushit' ); ?>
             <# } else if ( 'lossy' === data.slide ) { #>
@@ -60,13 +56,13 @@
         <# if ( 'start' === data.slide ) { #>
             <a class="sui-button sui-button-primary sui-button-icon-right next" onclick="WP_Smush.onboarding.next(this)">
                 <?php esc_html_e( 'Begin setup', 'wp-smushit' ); ?>
-                <i class="sui-icon-chevron-right" aria-hidden="true"></i>
+                <i class="sui-icon-chevron-right" aria-hidden="true"> </i>
             </a>
         <# } else { #>
             <div class="smush-onboarding-toggle">
                 <label class="sui-toggle">
                     <input type="checkbox" id="{{{ data.slide }}}" <# if ( data.value ) { #>checked<# } #>>
-                    <span class="sui-toggle-slider"></span>
+                    <span class="sui-toggle-slider"> </span>
                 </label>
                 <label for="{{{ data.slide }}}" class="sui-toggle-label">
                     <# if ( 'auto' === data.slide ) { #>
@@ -88,17 +84,17 @@
             <p class="smush-onboarding-note"><?php esc_html_e( 'Note: By default we will store a copy of your original uploads just in case you want to revert in the future - you can turn this off at any time.', 'wp-smushit' ); ?></p>
         <# } else if ( 'usage' === data.slide ) { #>
             <button type="submit" class="sui-button sui-button-primary sui-button-icon-left">
-                <i class="sui-icon-check" aria-hidden="true"></i>
+                <i class="sui-icon-check" aria-hidden="true"> </i>
                 <?php esc_html_e( 'Finish setup wizard', 'wp-smushit' ); ?>
             </button>
         <# } #>
 
         <div class="smush-onboarding-arrows">
             <a href="#" class="previous <# if ( data.first ) { #>sui-hidden<# } #>" onclick="WP_Smush.onboarding.next(this)">
-                <i class="sui-icon-chevron-left" aria-hidden="true"></i>
+                <i class="sui-icon-chevron-left" aria-hidden="true"> </i>
             </a>
             <a href="#" class="next <# if ( data.last ) { #>sui-hidden<# } #>" onclick="WP_Smush.onboarding.next(this)">
-                <i class="sui-icon-chevron-right" aria-hidden="true"></i>
+                <i class="sui-icon-chevron-right" aria-hidden="true"> </i>
             </a>
         </div>
     </div>
@@ -106,33 +102,28 @@
     <div class="sui-box-footer">
         <div class="smush-onboarding-dots">
             <a href="#" onclick="WP_Smush.onboarding.goTo('start')">
-                <span class="<# if ( 'start' === data.slide ) { #>active<# } #>"></span>
+                <span class="<# if ( 'start' === data.slide ) { #>active<# } #>"> </span>
             </a>
             <a href="#" onclick="WP_Smush.onboarding.goTo('auto')">
-                <span class="<# if ( 'auto' === data.slide ) { #>active<# } #>"></span>
+                <span class="<# if ( 'auto' === data.slide ) { #>active<# } #>"> </span>
             </a>
             <?php if ( WP_Smush::is_pro() ) : ?>
                 <a href="#" onclick="WP_Smush.onboarding.goTo('lossy')">
-                    <span class="<# if ( 'lossy' === data.slide ) { #>active<# } #>"></span>
+                    <span class="<# if ( 'lossy' === data.slide ) { #>active<# } #>"> </span>
                 </a>
             <?php endif; ?>
             <a href="#" onclick="WP_Smush.onboarding.goTo('strip_exif')">
-                <span class="<# if ( 'strip_exif' === data.slide ) { #>active<# } #>"></span>
+                <span class="<# if ( 'strip_exif' === data.slide ) { #>active<# } #>"> </span>
             </a>
             <?php if ( WP_Smush::is_pro() ) : ?>
                 <a href="#" onclick="WP_Smush.onboarding.goTo('original')">
-                    <span class="<# if ( 'original' === data.slide ) { #>active<# } #>"></span>
+                    <span class="<# if ( 'original' === data.slide ) { #>active<# } #>"> </span>
                 </a>
             <?php endif; ?>
             <a href="#" onclick="WP_Smush.onboarding.goTo('usage')">
-                <span class="<# if ( 'usage' === data.slide ) { #>active<# } #>"></span>
+                <span class="<# if ( 'usage' === data.slide ) { #>active<# } #>"> </span>
             </a>
         </div>
-
-		<?php wp_nonce_field( 'smush_quick_setup' ); ?>
-        <a href="#" class="smush-onboarding-skip-link" data-a11y-dialog-hide>
-			<?php esc_html_e( 'Skip this, I’ll set it up later', 'wp-smushit' ); ?>
-        </a>
     </div>
 </script>
 
@@ -141,6 +132,11 @@
 	<div class="sui-dialog-content sui-bounce-in" aria-labelledby="dialogTitle" aria-describedby="dialogDescription" role="dialog">
 		<div class="sui-box" role="document">
             <div id="smush-onboarding-content"></div>
+
+			<?php wp_nonce_field( 'smush_quick_setup' ); ?>
+            <a href="#" class="smush-onboarding-skip-link" data-a11y-dialog-hide>
+				<?php esc_html_e( 'Skip this, I’ll set it up later', 'wp-smushit' ); ?>
+            </a>
 		</div>
 	</div>
 </div>
