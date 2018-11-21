@@ -47,6 +47,7 @@ class WP_Smush_Settings {
 		'cdn'               => false,
 		'auto_resize'       => false,
 		'webp'              => true,
+		'usage'             => true,
 		'accessible_colors' => false,
 	);
 

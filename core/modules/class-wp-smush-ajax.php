@@ -91,7 +91,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 * Process ajax action for skipping Smush setup.
 	 */
 	public function skip_smush_setup() {
-		check_ajax_referer( 'smush_quick_setup', '_wpnonce' );
+		check_ajax_referer( 'smush_quick_setup' );
 		update_site_option( 'skip-smush-setup', true );
 		wp_send_json_success();
 	}
@@ -104,8 +104,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$quick_settings = array();
 		// Get the settings from $_POST.
-		if ( ! empty( $_POST['smush_settings'] ) && is_array( $_POST['smush_settings'] ) ) {
-			$quick_settings = $_POST['smush_settings'];
+		if ( ! empty( $_POST['smush_settings'] ) ) {
+			$quick_settings = json_decode( wp_unslash( $_POST['smush_settings'] ) );
 		}
 
 		// Check the last settings stored in db.
@@ -116,8 +116,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			'auto',
 			'lossy',
 			'strip_exif',
-			'resize',
 			'original',
+			'usage'
 		);
 
 		foreach ( WP_Smush::get_instance()->core()->settings as $name => $values ) {
@@ -132,19 +132,16 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			}
 
 			// Update value in settings.
-			$settings[ $name ] = in_array( WP_SMUSH_PREFIX . $name, $quick_settings, true );
+			$settings[ $name ] = (bool) $quick_settings->{$name};
+
+			// If Smush originals is selected, enable backups.
+			if ( 'original' === $name && $settings[ $name ] && WP_Smush::is_pro() ) {
+				$settings['backup'] = true;
+			}
+
 		}
 
-		// Update resize width and height settings if set.
-		$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0;
-		$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0;
-
-		// @todo: Improve the hardcoded 500 value
-		$resize_sizes['width']  = $resize_sizes['width'] > 0 && $resize_sizes['width'] < 500 ? 500 : $resize_sizes['width'];
-		$resize_sizes['height'] = $resize_sizes['height'] > 0 && $resize_sizes['height'] < 500 ? 500 : $resize_sizes['height'];
-
 		// Update the resize sizes.
-		$this->settings->set_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
 		$this->settings->set_setting( WP_SMUSH_PREFIX . 'settings', $settings );
 
 		update_site_option( 'skip-smush-setup', true );
