@@ -74,8 +74,14 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
+	 * # Smush all images.
+	 * $ wp smush compress
+	 *
 	 * # Smush single image with ID = 10.
-	 * $ wp smush compress single --image=10
+	 * $ wp smush compress --type=single --image=10
+	 *
+	 * # Smush first 5 images.
+	 * $ wp smush compress --type=batch --image=5
 	 */
 	public function compress( $args, $assoc_args ) {
 		$type  = $assoc_args['type'];
@@ -88,7 +94,8 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 				$this->_list( array() );
 				break;
 			case 'batch':
-				var_dump( 'batch: ' . $image );
+				$msg = sprintf( __( 'Smushing first %d images', 'wp-smushit' ), absint( $image ) );
+				$this->smush_all( $msg, $image );
 				break;
 			case 'all':
 			default:
@@ -132,10 +139,15 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 	 *
 	 * @since 3.1
 	 *
-	 * @param string $msg  Message for progress bar status.
+	 * @param string $msg    Message for progress bar status.
+	 * @param int    $batch  Compress only this number of images.
 	 */
-	private function smush_all( $msg ) {
+	private function smush_all( $msg, $batch = 0 ) {
 		$attachments = WP_Smush::get_instance()->core()->mod->db->get_unsmushed_attachments();
+
+		if ( $batch > 0 ) {
+			$attachments = array_slice( $attachments, 0, $batch );
+		}
 
 		$progress = \WP_CLI\Utils\make_progress_bar( $msg, count( $attachments ) );
 
