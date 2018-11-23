@@ -1512,6 +1512,14 @@ class WP_Smushit extends WP_Smush_Module {
 			if ( isset( $image['is_smushed'] ) && 1 == $image['is_smushed'] ) {
 				continue;
 			}
+
+			/**
+			 * Skip phar files. Potential phar vulnerability.
+			 */
+			if ( 'phar' === substr( $image['path'], 0,4 ) ) {
+				continue;
+			}
+
 			// Get the image path and smush it.
 			if ( isset( $image['path'] ) && file_exists( $image['path'] ) ) {
 				$res = $this->do_smushit( $image['path'] );
