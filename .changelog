@@ -1,3 +1,6 @@
+= 3.1.0 =
+* Enhance: Support for WordPress 5.0 release and Gutenberg editor
+
 = 3.0.0 =
 
 * New: Smush CDN

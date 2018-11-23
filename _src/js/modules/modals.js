@@ -238,6 +238,6 @@
         };
     });
 
-    window.onload = () => WP_Smush.onboarding.init();
+    window.addEventListener('load', WP_Smush.onboarding.init);
 
 }());

@@ -215,6 +215,6 @@
 	/**
 	 * After page load, initialize toggle event.
 	 */
-	window.onload = WP_Smush_IRS.init();
+    window.addEventListener('load', WP_Smush_IRS.init);
 
 }());

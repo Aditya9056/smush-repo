@@ -79,7 +79,7 @@ class WP_Smush_Admin {
 		wp_register_script( 'smush-wpmudev-sui', WP_SMUSH_URL . 'app/assets/js/shared-ui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
 
 		// Main JS.
-		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery' ), WP_SMUSH_VERSION, true );
+		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery', 'underscore' ), WP_SMUSH_VERSION, true );
 
 		// Main CSS.
 		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
@@ -155,6 +155,8 @@ class WP_Smush_Admin {
 
 	/**
 	 * Load media assets.
+     *
+     * Localization also used in Gutenberg integration.
 	 */
 	private function extend_media_modal() {
 		if ( wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
@@ -184,6 +186,12 @@ class WP_Smush_Admin {
 					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
 					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
 					'filter_excl' => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
+                    'gb'          => array(
+                        'stats'        => esc_html__( 'Smush Stats', 'wp-smushit' ),
+                        'select_image' => esc_html__( 'Select an image to view Smush stats.', 'wp-smushit' ),
+                        'size'         => esc_html__( 'Image size', 'wp-smushit' ),
+                        'savings'      => esc_html__( 'Savings', 'wp-smushit' ),
+                    )
 				),
 				'nonce'   => array(
 					'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
