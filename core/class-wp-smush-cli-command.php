@@ -47,6 +47,11 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 
 		$images = json_decode( $response->stdout );
 
+		if ( empty( $images ) ) {
+			WP_CLI::success( __( 'No uncompressed images found', 'wp-smushit' ) );
+			return;
+		}
+
 		WP_CLI::success( __( 'Unsmushed images:', 'wp-smushit' ) );
 		WP_CLI\Utils\format_items( 'table', $images, array( 'ID', 'guid', 'post_mime_type' ) );
 	}
@@ -127,7 +132,9 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 		$id = $assoc_args['id'];
 
 		if ( 'all' === $id ) {
-			$this->restore_all();
+			$this->restore_image();
+		} else {
+			$this->restore_image( absint( $id ) );
 		}
 	}
 
@@ -192,8 +199,10 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 	 * Restore all images.
 	 *
 	 * @since 3.1
+	 *
+	 * @param int $id  Image ID to restore. Default: 0 - restores all images.
 	 */
-	private function restore_all() {
+	private function restore_image( $id = 0 ) {
 		$core = WP_Smush::get_instance()->core();
 
 		$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->mod->db->smushed_count( true );
@@ -201,6 +210,15 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 		if ( empty( $attachments ) ) {
 			WP_CLI::success( __( 'No images available to restore', 'wp-smushit' ) );
 			return;
+		}
+
+		if ( 0 !== $id ) {
+			if ( ! in_array( $id, $attachments ) ) {
+				WP_CLI::warning( __( 'Image with defined ID not found', 'wp-smushit' ) );
+				return;
+			}
+
+			$attachments = array( $id );
 		}
 
 		$progress = \WP_CLI\Utils\make_progress_bar( __( 'Restoring images', 'wp-smushit' ), count( $attachments ) );
