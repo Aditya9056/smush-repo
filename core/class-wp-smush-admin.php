@@ -219,6 +219,19 @@ class WP_Smush_Admin {
 			$links = array( $settings );
 		}
 
+        // Upgrade link.
+		if ( ! WP_Smush::is_pro() ) {
+			$upgrade_url = add_query_arg(
+				array(
+					'utm_source'   => 'smush',
+					'utm_medium'   => 'plugin',
+					'utm_campaign' => 'smush_pluginlist_upgrade',
+				),
+				esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro/' )
+			);
+			$links['upgrade'] = '<a href="' . esc_url( $upgrade_url ) . '" aria-label="' . esc_attr( __( 'Upgrade to Smush Pro', 'wp-smushit' ) ) . '" target="_blank" style="color: #1ABC9C;">' . esc_html__( 'Upgrade', 'wp-smushit' ) . '</a>';
+		}
+
 		return $links;
 	}
 
