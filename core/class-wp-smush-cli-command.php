@@ -105,6 +105,33 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 	}
 
 	/**
+	 * Restore image.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--id=<ID>]
+	 * : Attachment ID to restore.
+	 * ---
+	 * default: all
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 * # Restore all images that have backups.
+	 * $ wp smush restore
+	 *
+	 * # Restore single image with ID = 10.
+	 * $ wp smush restore --id=10
+	 */
+	public function restore( $args, $assoc_args ) {
+		$id = $assoc_args['id'];
+
+		if ( 'all' === $id ) {
+			$this->restore_all();
+		}
+	}
+
+	/**
 	 * Smush single image.
 	 *
 	 * @since 3.1
@@ -132,6 +159,7 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 
 		$progress->tick();
 		$progress->finish();
+		WP_CLI::success( __( 'Image compressed', 'wp-smushit' ) );
 	}
 
 	/**
@@ -157,6 +185,33 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 		}
 
 		$progress->finish();
+		WP_CLI::success( __( 'All images compressed', 'wp-smushit' ) );
+	}
+
+	/**
+	 * Restore all images.
+	 *
+	 * @since 3.1
+	 */
+	private function restore_all() {
+		$core = WP_Smush::get_instance()->core();
+
+		$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->mod->db->smushed_count( true );
+
+		if ( empty( $attachments ) ) {
+			WP_CLI::success( __( 'No images available to restore', 'wp-smushit' ) );
+			return;
+		}
+
+		$progress = \WP_CLI\Utils\make_progress_bar( __( 'Restoring images', 'wp-smushit' ), count( $attachments ) );
+
+		foreach ( $attachments as $attachment_id ) {
+			$core->mod->backup->restore_image( $attachment_id, false );
+			$progress->tick();
+		}
+
+		$progress->finish();
+		WP_CLI::success( __( 'All images restored', 'wp-smushit' ) );
 	}
 
 }

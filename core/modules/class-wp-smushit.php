@@ -872,20 +872,6 @@ class WP_Smushit extends WP_Smush_Module {
 	}
 
 	/**
-	 * Allows to bulk restore the images, if there is any backup for them
-	 *
-	 * Not used anywhere.
-	 */
-	private function bulk_restore() {
-		$modules = WP_Smush::get_instance()->core()->mod;
-
-		$smushed_attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $modules->db->smushed_count( true );
-		foreach ( $smushed_attachments as $attachment ) {
-			$modules->backup->restore_image( $attachment->attachment_id, false );
-		}
-	}
-
-	/**
 	 * Get the smush button text for attachment.
 	 *
 	 * @param int $id  Attachment ID for which the Status has to be set.
