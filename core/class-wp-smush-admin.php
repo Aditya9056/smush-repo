@@ -76,16 +76,16 @@ class WP_Smush_Admin {
 	 */
 	private function register_scripts() {
 		// Share UI JS.
-		wp_register_script( 'smush-wpmudev-sui', WP_SMUSH_URL . 'app/assets/js/shared-ui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
+		wp_register_script( 'smush-sui', WP_SMUSH_URL . 'app/assets/js/smush-sui.min.js', array( 'jquery' ), WP_SHARED_UI_VERSION, true );
 
 		// Main JS.
-		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/admin.min.js', array( 'jquery' ), WP_SMUSH_VERSION, true );
+		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/smush-admin.min.js', array( 'jquery', 'smush-sui' ), WP_SMUSH_VERSION, true );
 
 		// Main CSS.
-		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/admin.min.css', array(), WP_SMUSH_VERSION );
+		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/smush-admin.min.css', array(), WP_SMUSH_VERSION );
 
 		// Styles that can be used on all pages in the WP backend.
-		wp_register_style( 'smush-admin-common', WP_SMUSH_URL . 'app/assets/css/common.min.css', array(), WP_SMUSH_VERSION );
+		wp_register_style( 'smush-admin-common', WP_SMUSH_URL . 'app/assets/css/smush-common.min.css', array(), WP_SMUSH_VERSION );
 
 		// Dismiss update info.
 		WP_Smush::get_instance()->core()->mod->smush->dismiss_update_info();
@@ -163,7 +163,7 @@ class WP_Smush_Admin {
 
 		wp_enqueue_script(
 			'smush-backbone-extension',
-			WP_SMUSH_URL . 'app/assets/js/media.min.js',
+			WP_SMUSH_URL . 'app/assets/js/smush-media.min.js',
 			array(
 				'jquery',
 				'media-editor', // Used in image filters.

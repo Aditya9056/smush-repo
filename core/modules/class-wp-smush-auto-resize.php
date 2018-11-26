@@ -70,7 +70,7 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 		// Required scripts for front end.
 		wp_enqueue_script(
 			'smush-resize-detection',
-			WP_SMUSH_URL . 'app/assets/js/resize-detection.min.js',
+			WP_SMUSH_URL . 'app/assets/js/smush-rd.min.js',
 			array( 'jquery' ),
 			WP_SMUSH_VERSION,
 			true
@@ -79,7 +79,7 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 		// Required styles for front end.
 		wp_enqueue_style(
 			'smush-resize-detection',
-			WP_SMUSH_URL . 'app/assets/css/resize-detection.min.css',
+			WP_SMUSH_URL . 'app/assets/css/smush-rd.min.css',
 			array(),
 			WP_SMUSH_VERSION
 		);

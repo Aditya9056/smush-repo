@@ -125,7 +125,7 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 		// Gutenberg block scripts.
 		wp_enqueue_script(
 			'smush-gutenberg',
-			WP_SMUSH_URL . 'app/assets/js/blocks.min.js',
+			WP_SMUSH_URL . 'app/assets/js/smush-blocks.min.js',
 			array( 'wp-blocks', 'wp-i18n', 'wp-element' ),
 			WP_SMUSH_VERSION,
 			true
