@@ -81,7 +81,7 @@
 					/* translators: %1$s: GB of bandwidth, %2$s: opening A (href) tag, %3$s; closing A (href) tag. */
 					esc_html__(
 						'Note: Your current plan includes %1$s GB bandwidth to use over 30 days.
-					%2$sUpgrade Plan%3$s for more bandwidth.',
+					%2$sUpgrade Plan%3$s for more bandwidth. Stats are updated every 24 hours.',
 						'wp-smushit'
 					),
 					absint( $cdn->bandwidth_plan ),
