@@ -15,6 +15,7 @@
 * Enhance: [WPML] PNG to JPEG conversion in media translations
 * Fix: Directory Smush resume button only working when clicked on icon
 * Fix: Errors during image re-check
+* Fix: Meta values are deleted when an image is skipped using wp_smush_image filter.
 * Fix: [WP Offload Media] Backward compatibility errors
 * Fix: [WP Offload Media] Warnings when certain attachment sizes are excluded from compression
 * Fix: [WP Offload Media] Errors during is_animated check with images stored on S3
