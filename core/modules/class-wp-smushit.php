@@ -1608,7 +1608,7 @@ class WP_Smushit extends WP_Smush_Module {
 		 * @param int  $ID    Attachment Id, Attachment id of the image being processed.
 		 */
 		if ( ! apply_filters( 'wp_smush_image', true, $id ) ) {
-			return false;
+			return $meta;
 		}
 
 		// Set a transient to avoid multiple request.
