@@ -1516,7 +1516,8 @@ class WP_Smushit extends WP_Smush_Module {
 			/**
 			 * Skip phar files. Potential phar vulnerability.
 			 */
-			if ( 'phar' === substr( $image['path'], 0,4 ) ) {
+			$ext = substr( $image['path'], 0,4 );
+			if ( 'phar' === strtolower( $ext ) ) {
 				continue;
 			}
 
