@@ -1171,7 +1171,11 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				minutes to take effect but your images will continue to be served in the mean time, please be patient.',
 				'wp-smushit'
 			),
-			'info'    => __( 'Your media is currently being served from the WPMU DEV CDN.', 'wp-smushit' ),
+			'info'    => __(
+                'Your media is currently being served from the WPMU DEV CDN. Serving images from CDN is only possible
+                on publicly available domains.',
+                'wp-smushit'
+            ),
 			'error'   => __(
 				'CDN is inactive. You have gone over your 30 day cap so we’ve stopped serving your images.
 					Upgrade your plan now to reactivate this service.',
