@@ -7,6 +7,7 @@
 * Enhance: Remove activation tooltips
 * Enhance: CSS for highlighting incorrectly sized images
 * Enhance: Preserve stats during options updates
+* Enhance: Support for WordPress 5.0 release and Gutenberg editor
 * Fix: Browser console errors in with CDN auto resizing and webp images
 
 = 3.0.0 =
