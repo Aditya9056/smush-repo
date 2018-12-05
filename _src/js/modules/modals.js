@@ -139,18 +139,18 @@
                     e.preventDefault();
                     const _nonce = document.getElementById('_wpnonce');
 
-                    fetch(ajaxurl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-                        },
-                        body: 'action=smush_setup&smush_settings='+JSON.stringify(self.selection)+'&_ajax_nonce='+_nonce.value
-                    })
-                    .then(() => {
-                        SUI.dialogs['smush-onboarding-dialog'].hide();
-                        location.reload();
-                    })
-                    .catch(error => console.error(error));
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', ajaxurl+'?action=smush_setup', true);
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    xhr.onload = () => {
+                        if (200 === xhr.status) {
+                            SUI.dialogs['smush-onboarding-dialog'].hide();
+                            location.reload();
+                        } else {
+                            console.log('Request failed.  Returned status of ' + xhr.status);
+                        }
+                    };
+                    xhr.send('smush_settings='+JSON.stringify(self.selection)+'&_ajax_nonce='+_nonce.value);
                 });
             }
         },
@@ -205,15 +205,16 @@
         skipSetup: () => {
             const _nonce = document.getElementById('_wpnonce');
 
-            fetch(ajaxurl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-                },
-                body: 'action=skip_smush_setup&_ajax_nonce='+_nonce.value
-            })
-                .then(SUI.dialogs['smush-onboarding-dialog'].hide())
-                .catch(error => console.error(error));
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', ajaxurl+'?action=skip_smush_setup&_ajax_nonce='+_nonce.value);
+            xhr.onload = () => {
+                if (200 === xhr.status) {
+                    SUI.dialogs['smush-onboarding-dialog'].hide();
+                } else {
+                    console.log('Request failed.  Returned status of ' + xhr.status);
+                }
+            };
+            xhr.send();
         }
     };
 

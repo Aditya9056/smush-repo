@@ -12,7 +12,7 @@ $user = wp_get_current_user();
 <script type="text/template" id="smush-onboarding" data-type="<?php echo WP_Smush::is_pro() ? 'pro' : 'free'; ?>">
     <div class="sui-box-header sui-dialog-with-image">
         <div class="sui-dialog-image" aria-hidden="true">
-            <img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/' ); ?>{{{ data.slide }}}.png"
+            <img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}.png"
                  srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}.png 1x, <?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}@2x.png 2x"
                  alt="<?php esc_attr_e( 'Smush Onboarding Modal', 'wp-smushit' ); ?>" class="sui-image sui-image-center">
         </div>
