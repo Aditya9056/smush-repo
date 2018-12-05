@@ -97,7 +97,7 @@ $this->do_meta_boxes( 'summary' );
 		<li><a href="https://premium.wpmudev.org/docs/" target="_blank">
 			<?php esc_html_e( 'Docs', 'wp-smushit' ); ?>
 		</a></li>
-		<li><a href="https://premium.wpmudev.org/hub/" target="_blank">
+		<li><a href="https://premium.wpmudev.org/hub-welcome/" target="_blank">
 			<?php esc_html_e( 'The Hub', 'wp-smushit' ); ?>
 		</a></li>
 		<li><a href="https://premium.wpmudev.org/terms-of-service/" target="_blank">

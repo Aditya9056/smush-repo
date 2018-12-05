@@ -1498,6 +1498,15 @@ class WP_Smushit extends WP_Smush_Module {
 			if ( isset( $image['is_smushed'] ) && 1 == $image['is_smushed'] ) {
 				continue;
 			}
+
+			/**
+			 * Skip phar files. Potential phar vulnerability.
+			 */
+			$ext = substr( $image['path'], 0,4 );
+			if ( 'phar' === strtolower( $ext ) ) {
+				continue;
+			}
+
 			// Get the image path and smush it.
 			if ( isset( $image['path'] ) && file_exists( $image['path'] ) ) {
 				$res = $this->do_smushit( $image['path'] );
@@ -1585,7 +1594,7 @@ class WP_Smushit extends WP_Smush_Module {
 		 * @param int  $ID    Attachment Id, Attachment id of the image being processed.
 		 */
 		if ( ! apply_filters( 'wp_smush_image', true, $id ) ) {
-			return false;
+			return $meta;
 		}
 
 		// Set a transient to avoid multiple request.
