@@ -168,7 +168,9 @@
 		detectImages: function() {
 			const images = document.getElementsByTagName('img');
 
-			Object.values(images).forEach(image => {
+            Object.keys(images).map( e => {
+            	const image = images[e];
+
 				if ( this.shouldSkipImage(image) ) {
 					return;
 				}
@@ -215,6 +217,6 @@
 	/**
 	 * After page load, initialize toggle event.
 	 */
-	window.onload = WP_Smush_IRS.init();
+    window.addEventListener('load', () => WP_Smush_IRS.init());
 
 }());
