@@ -706,7 +706,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						continue;
 					}
 					?>
-					<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm"">
+					<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
 						<input type="checkbox" id="wp-smush-size-<?php echo esc_attr( $size_k ); ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo esc_attr( $size_k ); ?>" <?php echo esc_attr( $disabled ); ?>>
 						<span aria-hidden="true"></span>
 						<?php if ( isset( $size['width'], $size['height'] ) ) : ?>

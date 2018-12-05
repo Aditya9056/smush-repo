@@ -208,12 +208,12 @@
             fetch(ajaxurl, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
                 },
                 body: 'action=skip_smush_setup&_ajax_nonce='+_nonce.value
             })
-            .then(SUI.dialogs['smush-onboarding-dialog'].hide())
-            .catch(error => console.error(error));
+                .then(SUI.dialogs['smush-onboarding-dialog'].hide())
+                .catch(error => console.error(error));
         }
     };
 
