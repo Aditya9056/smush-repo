@@ -10,6 +10,10 @@
 * Enhance: Support for WordPress 5.0 release and Gutenberg editor
 * Fix: Browser console errors in with CDN auto resizing and webp images
 
+= 3.0.1 =
+
+* Security: Remove support for Upfront theme functions
+
 = 3.0.0 =
 
 * New: Smush CDN
