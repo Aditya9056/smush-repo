@@ -209,7 +209,10 @@
             xhr.open('POST', ajaxurl+'?action=skip_smush_setup&_ajax_nonce='+_nonce.value);
             xhr.onload = () => {
                 if (200 === xhr.status) {
-                    SUI.dialogs['smush-onboarding-dialog'].hide();
+                    SUI.dialogs['smush-onboarding-dialog'].hide(); // not really needed.
+
+                    SUI.dialogs['checking-files-dialog'].show();
+                    //Smush.run_re_check(  false );
                 } else {
                     console.log('Request failed.  Returned status of ' + xhr.status);
                 }

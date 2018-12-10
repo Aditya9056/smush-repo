@@ -322,6 +322,7 @@ abstract class WP_Smush_View {
 		// Show configure screen for only a new installation and for only network admins.
 		if ( ( ! is_multisite() && ! $hide_quick_setup ) || ( is_network_admin() && $this->settings->is_network_enabled() && ! $hide_quick_setup ) ) {
 			$this->view( 'modals/onboarding' );
+			$this->view( 'modals/checking-files' );
 		}
 
 		$this->render_inner_content();
