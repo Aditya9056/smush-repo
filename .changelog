@@ -8,6 +8,7 @@
 * Enhance: CSS for highlighting incorrectly sized images
 * Enhance: Preserve stats during options updates
 * Enhance: Support for WordPress 5.0 release and Gutenberg editor
+* Enhance: CDN will now only accept JPG/PNG/GIF images - no more warnings in browser console
 * Fix: Browser console errors in with CDN auto resizing and webp images
 * Fix: [WP Offload Media] integration with Pro version
 

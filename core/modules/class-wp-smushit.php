@@ -1279,12 +1279,6 @@ class WP_Smushit extends WP_Smush_Module {
 
 		// If images has other registered size, smush them first.
 		if ( ! empty( $meta['sizes'] ) ) {
-			if ( class_exists( 'finfo' ) ) {
-				$finfo = new finfo( FILEINFO_MIME_TYPE );
-			} else {
-				$finfo = false;
-			}
-
 			foreach ( $meta['sizes'] as $size_key => $size_data ) {
 				// Check if registered size is supposed to be Smushed or not.
 				if ( 'full' !== $size_key && $this->skip_image_size( $size_key ) ) {
@@ -1300,13 +1294,7 @@ class WP_Smushit extends WP_Smush_Module {
 				 */
 				do_action( 'smush_file_exists', $attachment_file_path_size, $id, $size_data );
 
-				if ( $finfo ) {
-					$ext = is_file( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
-				} elseif ( function_exists( 'mime_content_type' ) ) {
-					$ext = mime_content_type( $attachment_file_path_size );
-				} else {
-					$ext = false;
-				}
+				$ext = WP_Smush_Helper::get_mime_type( $attachment_file_path_size );
 
 				if ( $ext ) {
 					$valid_mime = array_search(
