@@ -9,6 +9,7 @@
 * Enhance: Preserve stats during options updates
 * Enhance: Support for WordPress 5.0 release and Gutenberg editor
 * Fix: Browser console errors in with CDN auto resizing and webp images
+* Fix: [WP Offload Media] integration with Pro version
 
 = 3.0.1 =
 
