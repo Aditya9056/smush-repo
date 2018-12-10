@@ -1,6 +1,7 @@
 = 3.0.2 =
 
 * Enhance: Support for WordPress 5.0 release and Gutenberg editor
+* Fix: [WP Offload Media] integration with Pro version
 
 = 3.0.1 =
 
