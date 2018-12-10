@@ -1091,36 +1091,4 @@ class WP_Smush_Core {
 		}
 	}
 
-	/**
-	 * Checks if upfront images needs to be resmushed
-	 *
-	 * @param array $resmush_list  Resmush list.
-	 *
-	 * @return array Returns the list of image ids that needs to be re-smushed
-	 */
-	public function get_upfront_resmush_list( $resmush_list ) {
-		$upfront_attachments = WP_Smush::get_instance()->core()->mod->db->get_upfront_images( $resmush_list );
-		if ( ! empty( $upfront_attachments ) && is_array( $upfront_attachments ) ) {
-			foreach ( $upfront_attachments as $u_attachment_id ) {
-				if ( ! in_array( $u_attachment_id, $resmush_list ) ) {
-					// Check if not smushed.
-					$upfront_images = get_post_meta( $u_attachment_id, 'upfront_used_image_sizes', true );
-					if ( ! empty( $upfront_images ) && is_array( $upfront_images ) ) {
-						// Iterate over all the images.
-						foreach ( $upfront_images as $image ) {
-							// If any of the element image is not smushed, add the id to resmush list
-							// and skip to next image.
-							if ( empty( $image['is_smushed'] ) || 1 != $image['is_smushed'] ) {
-								$resmush_list[] = $u_attachment_id;
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return $resmush_list;
-	}
-
 }
