@@ -811,38 +811,6 @@ class WP_Smush_DB {
 	}
 
 	/**
-	 * Get the attachment IDs with Upfront images
-	 *
-	 * @param array $skip_ids  Skip IDs.
-	 *
-	 * @return array|bool
-	 */
-	public function get_upfront_images( $skip_ids = array() ) {
-		$query = array(
-			'fields'         => array( 'ids', 'post_mime_type' ),
-			'post_type'      => 'attachment',
-			'post_status'    => 'any',
-			'order'          => 'ASC',
-			'posts_per_page' => - 1,
-			'meta_key'       => 'upfront_used_image_sizes',
-			'no_found_rows'  => true,
-		);
-
-		// Skip all the ids which are already in resmush list.
-		if ( ! empty( $skip_ids ) && is_array( $skip_ids ) ) {
-			$query['post__not_in'] = $skip_ids;
-		}
-
-		$results = new WP_Query( $query );
-
-		if ( ! is_wp_error( $results ) && $results->post_count > 0 ) {
-			return $this->filter_by_mime( $results->posts );
-		}
-
-		return false;
-	}
-
-	/**
 	 * Get the savings for the given set of attachments
 	 *
 	 * @param array $attachments  Array of attachment IDs.

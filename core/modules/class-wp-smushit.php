@@ -1376,8 +1376,6 @@ class WP_Smushit extends WP_Smush_Module {
 					$stats['stats']['keep_exif']   = ! empty( $response['data']->keep_exif ) ? $response['data']->keep_exif : 0;
 				}
 			}
-			// Upfront Integration.
-			$stats = $this->smush_upfront_images( $id, $stats );
 		} else {
 			$smush_full = true;
 		}
@@ -1480,71 +1478,6 @@ class WP_Smushit extends WP_Smush_Module {
 		}
 
 		return $meta;
-	}
-
-	/**
-	 * Smushes the upfront images and Updates the respective stats.
-	 *
-	 * @param int   $attachment_id  Attachment ID.
-	 * @param array $stats          Stats array.
-	 *
-	 * @return mixed
-	 */
-	private function smush_upfront_images( $attachment_id, $stats ) {
-		// Check if upfront is active or not.
-		if ( empty( $attachment_id ) || ! class_exists( 'Upfront' ) ) {
-			return $stats;
-		}
-
-		// Set attachment id and Media type.
-		$this->attachment_id = $attachment_id;
-		$this->media_type    = 'upfront';
-
-		// Get post meta to check for Upfront images.
-		$upfront_images = get_post_meta( $attachment_id, 'upfront_used_image_sizes', true );
-
-		// If there is no upfront meta for the image.
-		if ( ! $upfront_images || empty( $upfront_images ) || ! is_array( $upfront_images ) ) {
-			return $stats;
-		}
-		// Loop over all the images in upfront meta.
-		foreach ( $upfront_images as $element_id => $image ) {
-			if ( isset( $image['is_smushed'] ) && 1 == $image['is_smushed'] ) {
-				continue;
-			}
-
-			/**
-			 * Skip phar files. Potential phar vulnerability.
-			 */
-			$ext = substr( $image['path'], 0,4 );
-			if ( 'phar' === strtolower( $ext ) ) {
-				continue;
-			}
-
-			// Get the image path and smush it.
-			if ( isset( $image['path'] ) && file_exists( $image['path'] ) ) {
-				$res = $this->do_smushit( $image['path'] );
-				// If sizes key is not yet initialised.
-				if ( empty( $stats['sizes'] ) ) {
-					$stats['sizes'] = array();
-				}
-
-				// If the smushing was successful.
-				if ( ! is_wp_error( $res ) && ! empty( $res['data'] ) ) {
-					if ( $res['data']->bytes_saved > 0 ) {
-						// Update attachment stats.
-						$stats['sizes'][ $element_id ] = (object) $this->_array_fill_placeholders( $this->_get_size_signature(), (array) $res['data'] );
-					}
-
-					// Update upfront stats for the element id.
-					$upfront_images[ $element_id ]['is_smushed'] = 1;
-				}
-			}
-		}
-		// Finally Update the upfront meta key.
-		update_post_meta( $attachment_id, 'upfront_used_image_sizes', $upfront_images );
-
-		return $stats;
 	}
 
 	/**

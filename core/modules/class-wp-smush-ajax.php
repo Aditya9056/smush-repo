@@ -391,8 +391,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		// Logic: If none of the required settings is on, don't need to resmush any of the images
 		// We need at least one of these settings to be on, to check if any of the image needs resmush
-		// Allow to smush Upfront images as well.
-		$upfront_active = class_exists( 'Upfront' );
 
 		// Initialize Media Library Stats.
 		if ( 'nextgen' !== $type && empty( $core->remaining_count ) ) {
@@ -408,7 +406,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$remaining_count = 'nextgen' === $type ? $core->nextgen->ng_admin->remaining_count : $core->remaining_count;
 
-		if ( 0 == $remaining_count && ! $core->mod->smush->lossy_enabled && ! $core->mod->smush->smush_original && $core->mod->smush->keep_exif && ! $upfront_active ) {
+		if ( 0 == $remaining_count && ! $core->mod->smush->lossy_enabled && ! $core->mod->smush->smush_original && $core->mod->smush->keep_exif ) {
 			delete_option( $key );
 			delete_site_option( WP_SMUSH_PREFIX . 'run_recheck' );
 			wp_send_json_success( array( 'notice' => $resp ) );
@@ -517,11 +515,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 					}
 				}
 			}// End of Foreach Loop
-
-			// Check for Upfront images that needs to be smushed.
-			if ( $upfront_active && 'nextgen' !== $type ) {
-				$resmush_list = $core->get_upfront_resmush_list( $resmush_list );
-			}//End Of Upfront loop
 
 			// Store the resmush list in Options table.
 			update_option( $key, $resmush_list, false );
