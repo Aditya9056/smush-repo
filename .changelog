@@ -10,7 +10,8 @@
 * New: Plugin structure (Important: plugin globals have been removed)
 * New: Show failure reason during directory Smush
 * New: Settings page with language translation links
-* Security: Fix XSS and phar deserialization vulnerabilities
+* Security: Fix XSS vulnerability
+* Security: Fix phar deserialization vulnerability (thanks @ripstech)
 * Enhance: Better handling of animated GIFs. Improve performance.
 * Enhance: Update translation strings
 * Enhance: Clean out all the leftover data on plugin uninstall
