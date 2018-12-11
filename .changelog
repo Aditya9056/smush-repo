@@ -11,6 +11,7 @@
 * Enhance: CDN will now only accept JPG/PNG/GIF images - no more warnings in browser console
 * Fix: Browser console errors in with CDN auto resizing and webp images
 * Fix: [WP Offload Media] integration with Pro version
+* Fix: PHP warning on update from Smush version 2 to version 3
 
 = 3.0.1 =
 
