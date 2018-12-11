@@ -984,6 +984,12 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			return false;
 		}
 
+		// Allow only these extensions in CDN.
+		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
+		if ( ! in_array( $ext, array( 'gif', 'jpg', 'jpeg', 'png' ), true ) ) {
+			return false;
+		}
+
 		return $src;
 	}
 
