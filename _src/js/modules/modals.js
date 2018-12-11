@@ -231,7 +231,7 @@
                             }
                         };
                         xhr.send('type=media&get_ui=false&process_settings=false&wp_smush_options_nonce='+nonce.value);
-                    }, 1500);
+                    }, 3000);
                 } else {
                     console.log('Request failed.  Returned status of ' + xhr.status);
                 }
