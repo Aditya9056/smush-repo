@@ -97,6 +97,7 @@ class WP_Smush_Settings {
 	 */
 	private $settings_fields = array(
 		'accessible_colors',
+		'usage',
 	);
 
 	/**

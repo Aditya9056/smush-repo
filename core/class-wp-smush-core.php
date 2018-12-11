@@ -565,6 +565,11 @@ class WP_Smush_Core {
 				'short_label' => esc_html__( 'Color Accessibility', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Increase the visibility and accessibility of elements and components to meet WCAG AAA requirements.', 'wp-smushit' ),
 			),
+			'usage'       => array(
+				'label'       => esc_html__( 'Help us make Smush better by allowing usage tracking', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Usage Tracking', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Help make Smush better by letting our designers learn how you’re using the plugin.', 'wp-smushit' ),
+			),
 		);
 
 		/**
