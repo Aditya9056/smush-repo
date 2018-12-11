@@ -7,7 +7,7 @@
  */
 
 ?>
-<div class="sui-dialog sui-dialog-sm smush-onboarding-dialog" aria-hidden="true" tabindex="-1" id="checking-files-dialog">
+<div class="sui-dialog sui-dialog-sm checking-files-dialog" aria-hidden="true" tabindex="-1" id="checking-files-dialog">
 	<div class="sui-dialog-overlay sui-fade-in"></div>
 	<div class="sui-dialog-content sui-bounce-in" aria-labelledby="dialogTitle" aria-describedby="dialogDescription" role="dialog">
 		<div class="sui-box" role="document">
@@ -37,27 +37,3 @@
 		</div>
 	</div>
 </div>
-
-<script>
-    window.addEventListener("load", function() {
-        //SUI.dialogs['checking-files-dialog'].show();
-    })
-</script>
-
-<style>
-	.sui-box-title {
-		display: flex !important;
-		flex-direction: column !important;
-		padding-top: 60px !important;
-	}
-
-	.sui-icon-loader {
-		margin-bottom: 20px;
-		margin-right: 0 !important;
-		color: #AAAAAA;
-	}
-
-	.sui-image {
-		margin-bottom: ;
-	}
-</style>

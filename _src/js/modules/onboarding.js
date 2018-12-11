@@ -102,8 +102,10 @@
 
         /**
          * Update the template, register new listeners.
+         *
+         * @param {string} directionClass  Accepts: fadeInRight, fadeInLeft.
          */
-        renderTemplate: function() {
+        renderTemplate: function(directionClass) {
             // Grab the selected value.
             const input = this.modal.querySelector('input[type="checkbox"]');
             if ( input ) {
@@ -114,11 +116,18 @@
             const content = template(this.settings);
 
             if ( content ) {
-                // Hide to apply animation later on.
-                this.contentContainer.style.display = 'none';
                 this.contentContainer.innerHTML = content;
-                // Apply animation
-                jQuery('#smush-onboarding-content').fadeIn();
+
+                if ( 'undefined' === typeof directionClass ) {
+                    this.contentContainer.classList.add('loaded');
+                } else {
+                    this.contentContainer.classList.remove('loaded');
+                    this.contentContainer.classList.add(directionClass);
+                    setTimeout( () => {
+                        this.contentContainer.classList.add('loaded');
+                        this.contentContainer.classList.remove(directionClass);
+                    }, 600 );
+                }
             }
 
             this.modal.addEventListener('touchstart', this.handleTouchStart, false);
@@ -144,8 +153,7 @@
                     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                     xhr.onload = () => {
                         if (200 === xhr.status) {
-                            SUI.dialogs['smush-onboarding-dialog'].hide();
-                            location.reload();
+                            WP_Smush.onboarding.showScanDialog();
                         } else {
                             console.log('Request failed.  Returned status of ' + xhr.status);
                         }
@@ -171,6 +179,8 @@
                 newIndex = 'next' === whereTo ? index + 1 : index - 1;
             }
 
+            const directionClass = e.classList.contains('next') ? 'fadeInRight' : 'fadeInLeft';
+
             this.settings = {
                 first: 0 === newIndex,
                 last: newIndex + 1 === this.onboardingSlides.length, // length !== index
@@ -178,7 +188,7 @@
                 value: this.selection[this.onboardingSlides[newIndex]]
             };
 
-            this.renderTemplate();
+            this.renderTemplate(directionClass);
         },
 
         /**
@@ -209,34 +219,39 @@
             xhr.open('POST', ajaxurl+'?action=skip_smush_setup&_ajax_nonce='+_nonce.value);
             xhr.onload = () => {
                 if (200 === xhr.status) {
-                    SUI.dialogs['smush-onboarding-dialog'].hide(); // not really needed.
-                    SUI.dialogs['checking-files-dialog'].show();
-
-                    const nonce = document.getElementById('wp_smush_options_nonce');
-
-                    setTimeout(() => {
-                        xhr.open('POST', ajaxurl+'?action=scan_for_resmush', true);
-                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-                        xhr.onload = () => {
-                            SUI.dialogs['checking-files-dialog'].hide();
-
-                            if (200 === xhr.status) {
-                                const res = JSON.parse(xhr.response);
-                                if ( 'undefined' !== typeof res.data.notice ) {
-                                    const header = document.querySelector('.wp-smush-page-header');
-                                    header.insertAdjacentHTML('beforeend', res.data.notice);
-                                }
-                            } else {
-                                console.log('Request failed.  Returned status of ' + xhr.status);
-                            }
-                        };
-                        xhr.send('type=media&get_ui=false&process_settings=false&wp_smush_options_nonce='+nonce.value);
-                    }, 3000);
+                    WP_Smush.onboarding.showScanDialog();
                 } else {
                     console.log('Request failed.  Returned status of ' + xhr.status);
                 }
             };
             xhr.send();
+        },
+
+        showScanDialog: () => {
+            SUI.dialogs['checking-files-dialog'].show();
+
+            const nonce = document.getElementById('wp_smush_options_nonce');
+
+            setTimeout(() => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', ajaxurl+'?action=scan_for_resmush', true);
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhr.onload = () => {
+                    SUI.dialogs['smush-onboarding-dialog'].hide();
+                    SUI.dialogs['checking-files-dialog'].hide();
+
+                    if (200 === xhr.status) {
+                        const res = JSON.parse(xhr.response);
+                        if ( 'undefined' !== typeof res.data.notice ) {
+                            const header = document.querySelector('.wp-smush-page-header');
+                            header.insertAdjacentHTML('beforeend', res.data.notice);
+                        }
+                    } else {
+                        console.log('Request failed.  Returned status of ' + xhr.status);
+                    }
+                };
+                xhr.send('type=media&get_ui=false&process_settings=false&wp_smush_options_nonce='+nonce.value);
+            }, 3000);
         }
     };
 
