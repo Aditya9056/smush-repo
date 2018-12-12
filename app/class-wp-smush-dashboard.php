@@ -421,11 +421,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
         <span class="sui-description sui-toggle-description">
             <?php
-            printf(
-                esc_html__( 'Note: Usage tracking is completely anonymous. We are only tracking what features you are/aren’t using to make our feature decisions more informed. %1$sLearn more%2$s about this.' ),
-                '<a href="#" target="_blank">',
-                '</a>'
-            )
+            esc_html_e( 'Note: Usage tracking is completely anonymous. We are only tracking what features you are/aren’t using to make our feature decisions more informed.', 'wp-smushit' );
             ?>
         </span>
         <?php
