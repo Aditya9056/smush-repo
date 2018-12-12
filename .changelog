@@ -3,6 +3,9 @@
 * New: Onboarding experience for new installs
 * New: WP CLI support for bulk/single image Smush and bulk restore
 * New: Color accessibility settings
+* New: Compatibility with Beaver Builder
+* Enhance: CDN image detection
+* Enhance: Compatibility with Hustle
 * Enhance: Add upgrade link in Plugins section for the free version
 * Enhance: Remove activation tooltips
 * Enhance: CSS for highlighting incorrectly sized images
