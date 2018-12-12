@@ -569,13 +569,17 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		if ( preg_match( '/size-([^"\'\s]+)[^"\']*["|\']?/i', $image, $size ) ) {
 			$size = array_pop( $size );
 
+			if ( ! array_key_exists( $size, $image_sizes ) ) {
+			    return $args;
+            }
+
 			// This is probably a correctly sized thumbnail - no need to resize.
 			if ( (int) $width === $image_sizes[ $size ]['width'] || (int) $height === $image_sizes[ $size ]['height'] ) {
 			    return $args;
             }
 
 			// If this size exists in registered sizes, add argument.
-			if ( 'full' !== $size && array_key_exists( $size, $image_sizes ) ) {
+			if ( 'full' !== $size ) {
 				$args['size'] = (int) $image_sizes[ $size ]['width'] . 'x' . (int) $image_sizes[ $size ]['height'];
 			}
 		} else {
