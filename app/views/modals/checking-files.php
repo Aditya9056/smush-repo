@@ -14,7 +14,7 @@
 			<div class="sui-box-header">
 				<h3 class="sui-box-title" id="dialogTitle">
 					<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
-					<?php esc_attr_e( 'Checking images' ); ?>
+					<?php esc_attr_e( 'Checking images', 'wp-smushit' ); ?>
 				</h3>
 			</div>
 
@@ -33,7 +33,7 @@
 			<img class="sui-image sui-image-center"
 			     src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding.png' ); ?>"
 			     srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding@2x.png' ); ?> 2x"
-			     alt="<?php esc_attr_e( 'WP Smush', 'wphb' ); ?>">
+			     alt="<?php esc_attr_e( 'WP Smush', 'wp-smushit' ); ?>">
 		</div>
 	</div>
 </div>
