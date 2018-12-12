@@ -54,7 +54,7 @@ $user = wp_get_current_user();
         </p>
 
         <# if ( 'start' === data.slide ) { #>
-            <a class="sui-button sui-button-primary sui-button-icon-right next" onclick="WP_Smush.onboarding.next(this)">
+            <a class="sui-button sui-button-blue sui-button-icon-right next" onclick="WP_Smush.onboarding.next(this)">
                 <?php esc_html_e( 'Begin setup', 'wp-smushit' ); ?>
                 <i class="sui-icon-chevron-right" aria-hidden="true"> </i>
             </a>
@@ -83,7 +83,7 @@ $user = wp_get_current_user();
         <# if ( 'original' === data.slide ) { #>
             <p class="smush-onboarding-note"><?php esc_html_e( 'Note: By default we will store a copy of your original uploads just in case you want to revert in the future - you can turn this off at any time.', 'wp-smushit' ); ?></p>
         <# } else if ( 'usage' === data.slide ) { #>
-            <button type="submit" class="sui-button sui-button-primary sui-button-icon-left" data-a11y-dialog-hide>
+            <button type="submit" class="sui-button sui-button-blue sui-button-icon-left" data-a11y-dialog-hide>
                 <i class="sui-icon-check" aria-hidden="true"> </i>
                 <?php esc_html_e( 'Finish setup wizard', 'wp-smushit' ); ?>
             </button>
