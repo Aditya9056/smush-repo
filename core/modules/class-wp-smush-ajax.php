@@ -915,7 +915,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$this->settings->set( 'cdn', 'true' === $param );
 
 		if ( 'true' === $param ) {
-			// Maybe this is not the place for this here. Check CDN settings on page load.
+			// Maybe here is not the place for this. Check CDN settings on page load.
 			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
 			if ( ! $status ) {
@@ -923,6 +923,9 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 				$data   = $this->process_cdn_status( $status );
 				$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
 			}
+
+			// Clear HB page cache.
+			do_action( 'wphb_clear_page_cache' );
 		} else {
 			// Remove CDN settings if disabling.
 			$this->settings->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
