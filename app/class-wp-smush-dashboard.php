@@ -52,8 +52,10 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
+		add_action( 'smush_setting_column_right_inside', array( $this, 'usage_settings' ), 25, 2 );
 		add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
 		add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
+
 
 		// Add stats to stats box.
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'pro_savings_stats' ), 15 );
@@ -402,6 +404,28 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			</span>
 		<?php
 	}
+
+	/**
+	 * Display a description in Settings - Usage Tracking.
+     *
+     * @since 3.1.0
+     *
+     * @param string $name  Setting name.
+	 */
+	public function usage_settings( $name ) {
+		// Add only to full size settings.
+		if ( 'usage' !== $name ) {
+			return;
+		}
+		?>
+
+        <span class="sui-description sui-toggle-description">
+            <?php
+            esc_html_e( 'Note: Usage tracking is completely anonymous. We are only tracking what features you are/aren’t using to make our feature decisions more informed.', 'wp-smushit' );
+            ?>
+        </span>
+        <?php
+    }
 
 	/**
 	 * Show super smush stats in stats section.
@@ -974,7 +998,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 */
 	public function bulk_settings_metabox() {
 		// Get all grouped settings that can be skipped.
-		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp', 'auto_resize', 'accessible_colors' ) );
+		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp', 'auto_resize', 'accessible_colors', 'usage' ) );
 
 		$this->view(
 			'meta-boxes/bulk-settings/meta-box',
@@ -1249,7 +1273,8 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'settings'         => $this->settings->get(),
 				'settings_data'    => WP_Smush::get_instance()->core()->settings,
 				'settings_group'   => array(
-					'accessible_colors'
+					'accessible_colors',
+                    'usage',
 				),
 			)
 		);

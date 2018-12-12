@@ -27,7 +27,7 @@ if (!String.prototype.includes) {
 require( './modules/helpers' );
 require( './modules/admin' );
 require( './modules/bulk-smush' );
-require( './modules/modals' );
+require( './modules/onboarding' );
 require( './modules/directory-smush' );
 require( './smush/cdn' );
 

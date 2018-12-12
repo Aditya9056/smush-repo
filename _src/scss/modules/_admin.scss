@@ -9,8 +9,75 @@
 		 *
 		 * @since 3.1
 		 */
+		.checking-files-dialog {
+			.sui-box { background-color: #fff; }
+
+			.sui-box-title {
+				display: flex !important;
+				flex-direction: column !important;
+			}
+
+			.sui-icon-loader {
+				margin-bottom: 20px;
+				margin-right: 0 !important;
+				color: #AAAAAA;
+			}
+		}
+
 		.smush-onboarding-dialog {
-			.sui-dialog-content { max-width: 560px; }
+
+			@keyframes fadeInLeft {
+				from {
+					opacity: 0;
+					transform: translate3d(-50px, 0, 0);
+				}
+				to {
+					opacity: 1;
+					transform: none;
+				}
+			}
+
+			@keyframes fadeInRight {
+				from {
+					opacity: 0;
+					transform: translate3d(50px, 0, 0);
+				}
+				to {
+					opacity: 1;
+					transform: none;
+				}
+			}
+
+			.sui-dialog-content {
+				max-width: 560px;
+
+				.sui-box { background-color: transparent; }
+
+				#smush-onboarding-content {
+					opacity: 0;
+					background-color: #fff;
+					animation-duration: 0.7s;
+					animation-fill-mode: both;
+					transform-origin: center;
+					transform-style: preserve-3d;
+
+					&.loaded {
+						opacity: 1;
+					}
+
+					&.fadeInLeft {
+						opacity: 1;
+						animation-name: fadeInLeft;
+					}
+
+					&.fadeInRight {
+						opacity: 1;
+						animation-name: fadeInRight;
+					}
+				}
+
+
+			}
 
 			// Start overwrite sui styles.
 			.sui-box .sui-box-header {
