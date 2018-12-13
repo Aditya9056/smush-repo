@@ -241,11 +241,16 @@
                 xhr.open('POST', ajaxurl+'?action=scan_for_resmush', true);
                 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 xhr.onload = () => {
-                    SUI.dialogs['smush-onboarding-dialog'].hide();
+                    const elem = document.querySelector('#smush-onboarding-dialog');
+                    elem.parentNode.removeChild(elem);
                     SUI.dialogs['checking-files-dialog'].hide();
 
                     if (200 === xhr.status) {
-                        location.reload();
+                        setTimeout( function() {
+                                location.reload();
+                            }, 1000
+                        );
+                        
                     } else {
                         console.log('Request failed.  Returned status of ' + xhr.status);
                     }
