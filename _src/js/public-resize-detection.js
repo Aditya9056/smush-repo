@@ -28,12 +28,16 @@
 				this.strings = wp_smush_resize_vars;
 			}
 
-			this.toggle.addEventListener('click', this.handleToggleClick.bind(this));
-
 			this.detectImages();
 			this.generateMarkup('bigger');
 			this.generateMarkup('smaller');
 			this.removeEmptyDivs();
+
+            this.toggle.querySelector('i').classList.add('sui-icon-info')
+            this.toggle.querySelector('i').classList.remove('sui-icon-loader');
+
+			// Register the event handler after everything is done.
+            this.toggle.addEventListener('click', this.handleToggleClick.bind(this));
 		},
 
 		/**
@@ -164,7 +168,9 @@
 		detectImages: function() {
 			const images = document.getElementsByTagName('img');
 
-			Object.values(images).forEach(image => {
+            Object.keys(images).map( e => {
+            	const image = images[e];
+
 				if ( this.shouldSkipImage(image) ) {
 					return;
 				}
@@ -211,6 +217,6 @@
 	/**
 	 * After page load, initialize toggle event.
 	 */
-	window.onload = WP_Smush_IRS.init();
+    window.addEventListener('load', () => WP_Smush_IRS.init());
 
 }());

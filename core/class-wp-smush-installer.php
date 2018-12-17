@@ -28,7 +28,8 @@ class WP_Smush_Installer {
 		}
 
 		$version  = get_site_option( WP_SMUSH_PREFIX . 'version' );
-		$settings = ! empty( WP_Smush_Settings::get_instance()->get() ) ? WP_Smush_Settings::get_instance()->get() : WP_Smush_Settings::get_instance()->init();
+		$settings = WP_Smush_Settings::get_instance()->get();
+		$settings = ! empty( $settings ) ? $settings : WP_Smush_Settings::get_instance()->init();
 
 		// If the version is not saved or if the version is not same as the current version,.
 		if ( ! $version || WP_SMUSH_VERSION !== $version ) {
@@ -173,7 +174,7 @@ class WP_Smush_Installer {
 					foreach ( $blogs as $blog ) {
 						switch_to_blog( $blog['blog_id'] );
 
-						$settings = get_option( WP_SMUSH_PREFIX . 'last_settings' );
+						$settings = get_option( WP_SMUSH_PREFIX . 'last_settings', array() );
 						$settings = array_merge( WP_Smush_Settings::get_instance()->get(), $settings );
 						update_option( WP_SMUSH_PREFIX . 'settings', $settings );
 						// Remove previous data.
@@ -188,8 +189,15 @@ class WP_Smush_Installer {
 				$offset += $limit;
 			}
 		} else {
+			// last_settings will be an array if user had any custom settings.
 			$settings = get_site_option( WP_SMUSH_PREFIX . 'last_settings', array() );
-			$settings = array_merge( WP_Smush_Settings::get_instance()->get(), $settings );
+			if ( is_array( $settings ) ) {
+				$settings = array_merge( WP_Smush_Settings::get_instance()->get(), $settings );
+			} else {
+				// last_settings will be a string if the Smush page hasn't been visited => get the new defaults.
+				$settings = WP_Smush_Settings::get_instance()->get();
+			}
+
 			update_site_option( WP_SMUSH_PREFIX . 'settings', $settings );
 			// Remove previous data.
 			delete_site_option( WP_SMUSH_PREFIX . 'last_settings' );

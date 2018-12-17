@@ -4,21 +4,191 @@
 
 	.sui-wrap {
 
-		.smush-quick-setup-settings {
-			.sui-box-settings-row {
-				display: table;
+		/**
+		 * Onboarding modals
+		 *
+		 * @since 3.1
+		 */
+		.checking-files-dialog {
+			.sui-box { background-color: #fff; }
+
+			.sui-box-title {
+				display: flex !important;
+				flex-direction: column !important;
 			}
 
-			.sui-box-settings-col-1 {
-				max-width: 85%;
-			}
-
-			.sui-box-settings-col-1,
-			.sui-box-settings-col-2 {
-				display: table-cell;
-				flex: none;
+			.sui-icon-loader {
+				margin-bottom: 20px;
+				margin-right: 0 !important;
+				color: #AAAAAA;
 			}
 		}
+
+		.smush-onboarding-dialog {
+
+			@keyframes fadeInLeft {
+				from {
+					opacity: 0;
+					transform: translate3d(-50px, 0, 0);
+				}
+				to {
+					opacity: 1;
+					transform: none;
+				}
+			}
+
+			@keyframes fadeInRight {
+				from {
+					opacity: 0;
+					transform: translate3d(50px, 0, 0);
+				}
+				to {
+					opacity: 1;
+					transform: none;
+				}
+			}
+
+			.sui-dialog-content {
+				max-width: 560px;
+
+				.sui-box { background-color: transparent; }
+
+				#smush-onboarding-content {
+					opacity: 0;
+					background-color: #fff;
+					animation-duration: 0.7s;
+					animation-fill-mode: both;
+					transform-origin: center;
+					transform-style: preserve-3d;
+
+					&.loaded {
+						opacity: 1;
+					}
+
+					&.fadeInLeft {
+						opacity: 1;
+						animation-name: fadeInLeft;
+					}
+
+					&.fadeInRight {
+						opacity: 1;
+						animation-name: fadeInRight;
+					}
+				}
+
+
+			}
+
+			// Start overwrite sui styles.
+			.sui-box .sui-box-header {
+				padding: 0 !important;
+
+				.sui-dialog-image {
+					width: 100% !important;
+					height: auto !important;
+					margin-left: -50% !important;
+					border: 0 !important;
+					position: relative !important;
+				}
+
+				.sui-box-title {
+					font: bold 22px/30px "Roboto", Arial, sans-serif !important;
+				}
+			}
+			// End overwrite styles.
+
+			.sui-box-body {
+				p {
+					color: #888;
+					max-width: 340px;
+					margin: 0 auto 30px;
+
+					&.smush-onboarding-note {
+						margin-top: 30px;
+						margin-bottom: 0;
+					}
+				}
+
+				.smush-onboarding-toggle {
+					background-color: #F8F8F8;
+					height: 60px;
+					margin: 20px -20px 5px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 13px;
+				}
+
+				.sui-button { margin: 0; }
+
+				button[type=submit] { margin-top: 25px; }
+			}
+
+			.smush-onboarding-arrows a {
+				position: absolute;
+				top: 45%;
+				width: 40px;
+				height: 40px;
+				border-radius: 20px;
+				padding-top: 3px;
+
+				&:not(.sui-hidden) {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
+				&:hover { background-color: rgba(217, 217, 217, 0.2); }
+
+				&:first-of-type {
+					left: -55px;
+					padding-right: 2px;
+				}
+
+				&:last-of-type {
+					right: -55px;
+					padding-left: 2px;
+				}
+
+				i:before { color: #fff; }
+			}
+
+			.smush-onboarding-dots {
+				display: flex;
+				margin-top: 15px;
+				margin-bottom: 10px;
+
+				a { margin: 0 5px; }
+
+				span {
+					height: 7px;
+					width: 7px;
+					border-radius: 50%;
+					background-color: #E6E6E6;
+					display: block;
+
+					&.active { background-color: #666; }
+				}
+			}
+
+			.smush-onboarding-skip-link {
+				position: absolute;
+				bottom: -50px;
+				opacity: 0.7;
+				font-size: 13px;
+				color: #fff !important;
+				letter-spacing: -0.25px;
+				line-height: 22px;
+				text-align: center;
+				width: 100%;
+			}
+
+			@media screen and (max-width: 782px) {
+				.sui-dialog-content { padding: 0 30px; }
+				.sui-dialog-image { display: block !important; }
+				.smush-onboarding-arrows { display: none; }
+			}
+		} // End .smush-onboarding-dialog
 
 		// Overwrite extra padding on progress bars in modals.
 		.sui-dialog-content .sui-progress-block {
@@ -67,6 +237,11 @@
 
 		.wp-smush-bulk-progress-bar-wrapper {
 			margin-bottom: 30px;
+			.sui-progress-state {
+				span {
+					display: inline-block;
+				}
+			}
 		}
 
 		#sui-cross-sell-footer h3 {
@@ -142,7 +317,7 @@
 						line-height: 15px;
 						font-weight: 500;
 						margin-right: 10px;
-						white-space: nowrap
+						word-break: break-all;
 					}
 
 					.smush-image-error {
@@ -351,27 +526,6 @@
 
 		.sui-toggle + label {
 			font-weight: 500;
-		}
-
-		#smush-quick-setup-dialog {
-			.sui-box-settings-row {
-				.sui-box-settings-col-1 {
-					width: 85%;
-				}
-			}
-
-			.wp-smush-resize-settings-col {
-				display: table-row;
-
-				.wp-smush-resize-settings-wrap,
-				.sui-description {
-					margin-left: 0;
-
-					&.sui-notice {
-						margin-bottom: 0;
-					}
-				}
-			}
 		}
 	}
 

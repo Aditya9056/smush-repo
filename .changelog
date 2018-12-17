@@ -1,9 +1,36 @@
+= 3.1.0 =
+
+* New: Onboarding experience for new installs
+* New: WP CLI support for bulk/single image Smush and bulk restore
+* New: Color accessibility settings
+* New: Ignore images with errors during bulk Smush
+* Enhance: Add upgrade link in Plugins section for the free version
+* Enhance: Remove activation tooltips
+* Enhance: CSS for highlighting incorrectly sized images
+* Enhance: Preserve stats during options updates
+* Enhance: CDN will now only accept JPG/PNG/GIF images - no more warnings in browser console
+* Fix: Browser console errors in with CDN auto resizing and webp images
+
+= 3.0.2 =
+
+* Enhance: Support for WordPress 5.0 release and Gutenberg editor
+* Fix: [WP Offload Media] integration with Pro version
+* Fix: PHP warning on update from Smush version 2 to version 3
+
+= 3.0.1 =
+
+* Security: Remove support for Upfront theme functions
+
 = 3.0.0 =
 
+* New: Smush CDN
+* New: Webp support with CDN
+* New: Auto image resize when using CDN
 * New: Plugin structure (Important: plugin globals have been removed)
 * New: Show failure reason during directory Smush
 * New: Settings page with language translation links
-* New: Ignore images with errors during bulk Smush
+* Security: Fix XSS vulnerability
+* Security: Fix phar deserialization vulnerability (thanks @ripstech)
 * Enhance: Better handling of animated GIFs. Improve performance.
 * Enhance: Update translation strings
 * Enhance: Clean out all the leftover data on plugin uninstall
@@ -12,9 +39,11 @@
 * Enhance: [WPML] PNG to JPEG conversion in media translations
 * Fix: Directory Smush resume button only working when clicked on icon
 * Fix: Errors during image re-check
+* Fix: Meta values are deleted when an image is skipped using wp_smush_image filter.
 * Fix: [WP Offload Media] Backward compatibility errors
 * Fix: [WP Offload Media] Warnings when certain attachment sizes are excluded from compression
 * Fix: [WP Offload Media] Errors during is_animated check with images stored on S3
+* Fix: [WooCommerce] Compatibility issue with WooCommerce 3.5
 
 = 2.9.1 =
 

@@ -309,8 +309,10 @@ abstract class WP_Smush_View {
 	 * Render the page
 	 */
 	public function render() {
-		// Shared UI wrapper.
-		echo '<div class="sui-wrap">';
+		// Shared UI wrapper with accessible color option.
+		$classes = $this->settings->get( 'accessible_colors' ) ? 'sui-wrap sui-color-accessible' : 'sui-wrap';
+		echo '<div class="' . esc_attr( $classes ) . '">';
+
 
 		// Load page header.
 		$this->render_page_header();
@@ -319,7 +321,8 @@ abstract class WP_Smush_View {
 
 		// Show configure screen for only a new installation and for only network admins.
 		if ( ( ! is_multisite() && ! $hide_quick_setup ) || ( is_network_admin() && $this->settings->is_network_enabled() && ! $hide_quick_setup ) ) {
-			$this->view( 'modals/quick-setup' );
+			$this->view( 'modals/onboarding' );
+			$this->view( 'modals/checking-files' );
 		}
 
 		$this->render_inner_content();

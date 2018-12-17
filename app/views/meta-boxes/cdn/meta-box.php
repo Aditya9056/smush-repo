@@ -17,6 +17,11 @@
 
 <form id="wp-smush-settings-form" method="post">
 	<input type="hidden" name="setting_form" id="setting_form" value="cdn">
+	<?php if ( is_multisite() && is_network_admin() ) : ?>
+        <input type="hidden" name="wp-smush-networkwide" id="wp-smush-networkwide" value="1">
+        <input type="hidden" name="setting-type" value="network">
+	<?php endif; ?>
+    
 	<p>
 		<?php
 		esc_html_e( 'Take load off your server by serving your images from our blazing-fast CDN.', 'wp-smushit' );
@@ -31,7 +36,7 @@
 
 		<?php if ( 'error' === $status ) : ?>
 			<div class="sui-notice-buttons">
-				<a href="#" class="sui-button">
+				<a href="https://premium.wpmudev.org/hub" target="_blank" class="sui-button">
 					<?php esc_html_e( 'Upgrade Plan', 'wp-smushit' ); ?>
 				</a>
 			</div>
@@ -75,8 +80,8 @@
 				printf(
 					/* translators: %1$s: GB of bandwidth, %2$s: opening A (href) tag, %3$s; closing A (href) tag. */
 					esc_html__(
-						'Note: Your current plan included %1$s GB bandwidth to use over 30 days.
-					%2$sUpgrade Plan%3$s for more bandwidth.',
+						'Note: Your current plan includes %1$s GB bandwidth to use over 30 days.
+					%2$sUpgrade Plan%3$s for more bandwidth. Stats are updated every 24 hours.',
 						'wp-smushit'
 					),
 					absint( $cdn->bandwidth_plan ),
@@ -128,16 +133,18 @@
 	</div>
 
 	<?php
-	foreach ( $settings_data as $name => $values ) {
-		// If not CDN setting - skip.
-		if ( ! in_array( $name, $cdn_group, true ) ) {
-			continue;
+	if ( ! is_multisite() || ( ! $settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
+		foreach ( $settings_data as $name => $values ) {
+			// If not CDN setting - skip.
+			if ( ! in_array( $name, $cdn_group, true ) ) {
+				continue;
+			}
+
+			$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
+
+			// Show settings option.
+			$this->settings_row( WP_SMUSH_PREFIX . $name, $label, $name, $settings[ $name ] );
 		}
-
-		$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
-
-		// Show settings option.
-		$this->settings_row( WP_SMUSH_PREFIX . $name, $label, $name, $settings[ $name ] );
 	}
 	?>
 

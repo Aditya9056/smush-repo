@@ -473,8 +473,6 @@ class WP_Smush_Core {
 		$this->s3 = new WP_Smush_S3();
 	}
 
-
-
 	/**
 	 * Check if NextGen is active or not
 	 * Include and instantiate classes
@@ -578,6 +576,16 @@ class WP_Smush_Core {
 				'label'       => esc_html__( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
 				'short_label' => esc_html__( 'PNG to JPEG conversion', 'wp-smushit' ),
 				'desc'        => esc_html__( 'When you compress a PNG, Smush will check if converting it to JPEG could further reduce its size.', 'wp-smushit' ),
+			),
+			'accessible_colors'  => array(
+				'label'       => esc_html__( 'Enable high contrast mode', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Color Accessibility', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Increase the visibility and accessibility of elements and components to meet WCAG AAA requirements.', 'wp-smushit' ),
+			),
+			'usage'       => array(
+				'label'       => esc_html__( 'Help us make Smush better by allowing usage tracking', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Usage Tracking', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Help make Smush better by letting our designers learn how you’re using the plugin.', 'wp-smushit' ),
 			),
 		);
 
@@ -817,7 +825,7 @@ class WP_Smush_Core {
 
 		if ( empty( $this->smushed_attachments ) ) {
 			// Get smushed attachments.
-			$this->smushed_attachments = $this->mod->db->smushed_count( true );
+			$this->smushed_attachments = $this->mod->db->smushed_count( true, $force_update );
 		}
 
 		// Get supersmushed images count.
@@ -882,8 +890,8 @@ class WP_Smush_Core {
 			$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", WP_Smushit::$smushed_meta_key ) );
 			if ( ! empty( $global_data ) ) {
 				foreach ( $global_data as $data ) {
-					// Skip attachment, if in re-smush list, or not in attachment list.
-					if ( ( ! empty( $this->resmush_ids ) && in_array( $data->post_id, $this->resmush_ids ) ) || ! in_array( $data->post_id, $this->attachments ) ) {
+					// Skip attachment, if not in attachment list.
+					if ( ! in_array( $data->post_id, $this->attachments ) ) {
 						continue;
 					}
 
@@ -1114,38 +1122,6 @@ class WP_Smush_Core {
 			// If lte $this->max_free_bulk images are sent, increment.
 			set_transient( $transient_name, $bulk_sent_count + 1, 200 );
 		}
-	}
-
-	/**
-	 * Checks if upfront images needs to be resmushed
-	 *
-	 * @param array $resmush_list  Resmush list.
-	 *
-	 * @return array Returns the list of image ids that needs to be re-smushed
-	 */
-	public function get_upfront_resmush_list( $resmush_list ) {
-		$upfront_attachments = WP_Smush::get_instance()->core()->mod->db->get_upfront_images( $resmush_list );
-		if ( ! empty( $upfront_attachments ) && is_array( $upfront_attachments ) ) {
-			foreach ( $upfront_attachments as $u_attachment_id ) {
-				if ( ! in_array( $u_attachment_id, $resmush_list ) ) {
-					// Check if not smushed.
-					$upfront_images = get_post_meta( $u_attachment_id, 'upfront_used_image_sizes', true );
-					if ( ! empty( $upfront_images ) && is_array( $upfront_images ) ) {
-						// Iterate over all the images.
-						foreach ( $upfront_images as $image ) {
-							// If any of the element image is not smushed, add the id to resmush list
-							// and skip to next image.
-							if ( empty( $image['is_smushed'] ) || 1 != $image['is_smushed'] ) {
-								$resmush_list[] = $u_attachment_id;
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return $resmush_list;
 	}
 
 }

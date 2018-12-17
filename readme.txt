@@ -6,7 +6,7 @@ Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: image, resize, optimize, optimise, compress, performance, optimisation, optimise JPG, photo, pictures, optimizer, Smush WordPress Compression, Smush.it
 Requires at least: 4.6
-Tested up to: 4.9.8
+Tested up to: 5.0.1
 Stable tag: %%VERSION%%
 Requires PHP: 5.2.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -78,7 +78,7 @@ The faster your site loads, the more Google, Bing, Yahoo and other search engine
 > - Global and individual settings for Multisite.
 > - View advanced compression stats per-attachment and library totals.
 >
-> Install Smush now and find out why it's the most popular image optimization plugin for WordPress available today with over 2.7 million downloads.
+> Install Smush now and find out why it's the most popular image optimization plugin for WordPress available today with over 11 million downloads.
 
 ### Shameless Plug(ins)
 

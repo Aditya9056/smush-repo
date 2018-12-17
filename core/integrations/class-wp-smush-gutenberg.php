@@ -28,16 +28,9 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 		$this->class    = 'free';
 		$this->priority = 3;
 
-		if ( ! function_exists( 'is_plugin_active' ) ) {
-			include_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		$this->enabled = is_plugin_active( 'gutenberg/gutenberg.php' );
+		$this->check_for_gutenberg();
 
 		parent::__construct();
-
-		// Add beta tag.
-		add_action( 'smush_setting_column_tag', array( $this, 'add_beta_tag' ) );
 
 		if ( ! $this->enabled ) {
 			// Disable setting if Gutenberg is not active.
@@ -90,27 +83,6 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 	 */
 
 	/**
-	 * Add a beta tag next to the setting title.
-	 *
-	 * @param string $setting_key  Setting key name.
-	 *
-	 * @since 2.9.0
-	 */
-	public function add_beta_tag( $setting_key ) {
-		// Return if not Gutenberg integration.
-		if ( $this->module !== $setting_key ) {
-			return;
-		}
-
-		$tooltip_text = __( 'This feature is likely to work without issue, however Gutenberg is in beta stage and some issues are still present.', 'wp-smushit' );
-		?>
-		<span class="sui-tag sui-tag-beta sui-tooltip sui-tooltip-constrained" data-tooltip="<?php echo esc_attr( $tooltip_text ); ?>">
-			<?php esc_html_e( 'Beta', 'wp-smushit' ); ?>
-		</span>
-		<?php
-	}
-
-	/**
 	 * Prints the message for Gutenberg setup.
 	 *
 	 * @since 2.8.1
@@ -124,9 +96,9 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 		}
 
 		?>
-		<div class="sui-notice smush-notice-sm">
-			<p><?php esc_html_e( 'To use this feature you need to install and activate the Gutenberg plugin.', 'wp-smushit' ); ?></p>
-		</div>
+        <div class="sui-notice smush-notice-sm">
+            <p><?php esc_html_e( 'To use this feature you need to install and activate the Gutenberg plugin.', 'wp-smushit' ); ?></p>
+        </div>
 		<?php
 	}
 
@@ -149,11 +121,41 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 		// Gutenberg block scripts.
 		wp_enqueue_script(
 			'smush-gutenberg',
-			WP_SMUSH_URL . 'app/assets/js/blocks.min.js',
+			WP_SMUSH_URL . 'app/assets/js/smush-blocks.min.js',
 			array( 'wp-blocks', 'wp-i18n', 'wp-element' ),
 			WP_SMUSH_VERSION,
 			true
 		);
+	}
+
+	/**************************************
+	 *
+	 * PRIVATE CLASSES
+	 */
+
+	/**
+	 * Make sure we only enqueue when Gutenberg is active.
+	 *
+	 * For WordPress pre 5.0 - only when Gutenberg plugin is installed.
+	 * For WordPress 5.0+ - only when Classic Editor is NOT installed.
+	 *
+	 * @since 3.0.2
+	 */
+	private function check_for_gutenberg() {
+		global $wp_version;
+
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		// Check if WordPress 5.0 or higher.
+		$is_wp5point0 = version_compare( $wp_version, '4.9.9', '>' );
+
+		if ( $is_wp5point0 ) {
+			$this->enabled = ! is_plugin_active( 'classic-editor/classic-editor.php' );
+		} else {
+			$this->enabled = is_plugin_active( 'gutenberg/gutenberg.php' );
+		}
 	}
 
 }

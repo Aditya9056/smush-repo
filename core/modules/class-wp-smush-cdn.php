@@ -211,7 +211,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 				<span class="wp-smush-cdn-stats"><?php echo esc_html( WP_Smush_Helper::format_bytes( $bandwidth, 2 ) ); ?></span>
 				<span class="wp-smush-stats-sep">/</span>
 				<span class="wp-smush-cdn-usage">
-					<?php echo absint( $plan ); ?> Gb
+					<?php echo absint( $plan ); ?> GB
 				</span>
 				<div class="sui-circle-score" data-score="<?php echo absint( $percentage ); ?>"></div>
 			</span>
@@ -562,8 +562,12 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			$srcset = $image->getAttribute( 'srcset' );
 			if ( ! $srcset && $this->settings->get( 'auto_resize' ) ) {
 				list( $srcset, $sizes ) = $this->generate_srcset( $src );
+
 				$image->setAttribute( 'srcset', $srcset );
-				$image->setAttribute( 'sizes', $sizes );
+
+				if ( false !== $sizes ) {
+					$image->setAttribute( 'sizes', $sizes );
+                }
 			}
 
 			/**
@@ -884,6 +888,12 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		if ( $attachment_id ) {
 			list( $src, $width, $height ) = wp_get_attachment_image_src( $attachment_id, 'full' );
 
+			// Revolution slider fix: images will always return 0 height and 0 width.
+			if ( 0 === $width && 0 === $height ) {
+				// Try to get the dimensions directly from the file.
+				list( $width, $height ) = getimagesize( $src );
+            }
+
 			$image_meta = wp_get_attachment_metadata( $attachment_id );
 		} else {
 			// Try to get the dimensions directly from the file.
@@ -971,6 +981,12 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		}
 
 		if ( false === strpos( $src, content_url() ) ) {
+			return false;
+		}
+
+		// Allow only these extensions in CDN.
+		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
+		if ( ! in_array( $ext, array( 'gif', 'jpg', 'jpeg', 'png' ), true ) ) {
 			return false;
 		}
 
