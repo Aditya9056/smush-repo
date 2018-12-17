@@ -227,7 +227,11 @@
             xhr.send();
         },
 
+        /**
+         * Show checking files dialog.
+         */
         showScanDialog: () => {
+            SUI.dialogs['smush-onboarding-dialog'].hide();
             SUI.dialogs['checking-files-dialog'].show();
 
             const nonce = document.getElementById('wp_smush_options_nonce');
@@ -237,15 +241,16 @@
                 xhr.open('POST', ajaxurl+'?action=scan_for_resmush', true);
                 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 xhr.onload = () => {
-                    SUI.dialogs['smush-onboarding-dialog'].hide();
+                    const elem = document.querySelector('#smush-onboarding-dialog');
+                    elem.parentNode.removeChild(elem);
                     SUI.dialogs['checking-files-dialog'].hide();
 
                     if (200 === xhr.status) {
-                        const res = JSON.parse(xhr.response);
-                        if ( 'undefined' !== typeof res.data.notice ) {
-                            const header = document.querySelector('.wp-smush-page-header');
-                            header.insertAdjacentHTML('beforeend', res.data.notice);
-                        }
+                        setTimeout( function() {
+                                location.reload();
+                            }, 1000
+                        );
+                        
                     } else {
                         console.log('Request failed.  Returned status of ' + xhr.status);
                     }
