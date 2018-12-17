@@ -1,3 +1,9 @@
+= 3.0.2 =
+
+* Enhance: Support for WordPress 5.0 release and Gutenberg editor
+* Fix: [WP Offload Media] integration with Pro version
+* Fix: PHP warning on update from Smush version 2 to version 3
+
 = 3.0.1 =
 
 * Security: Remove support for Upfront theme functions
