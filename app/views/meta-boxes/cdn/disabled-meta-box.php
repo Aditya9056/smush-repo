@@ -9,9 +9,11 @@
 ?>
 
 <div class="sui-block-content-center">
-	<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/graphic-smush-cdn-default.png' ); ?>"
-		srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/graphic-smush-cdn-default@2x.png' ); ?> 2x"
-		alt="<?php esc_html_e( 'Smush CDN', 'wp-smushit' ); ?>">
+	<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
+		<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/graphic-smush-cdn-default.png' ); ?>"
+			srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/graphic-smush-cdn-default@2x.png' ); ?> 2x"
+			alt="<?php esc_html_e( 'Smush CDN', 'wp-smushit' ); ?>">
+	<?php endif; ?>
 
 	<p>
 		<?php
