@@ -91,7 +91,7 @@ export function fetchProps( props ) {
  * Modify the block’s edit component.
  * Receives the original block BlockEdit component and returns a new wrapped component.
  */
-const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
+const smushStatsControl = createHigherOrderComponent( ( BlockEdit ) => {
     return ( props ) => {
         // If not image block or not selected, return unmodified block.
         if ( 'core/image' !== props.name || ! props.isSelected || 'undefined' === typeof props.attributes.id ) {
@@ -118,4 +118,4 @@ const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
     };
 }, "withInspectorControl" );
 
-wp.hooks.addFilter( 'editor.BlockEdit', 'my-plugin/with-inspector-controls', withInspectorControls );
+wp.hooks.addFilter( 'editor.BlockEdit', 'wp-smush/smush-data-control', smushStatsControl );

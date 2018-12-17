@@ -96,9 +96,9 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 		}
 
 		?>
-		<div class="sui-notice smush-notice-sm">
-			<p><?php esc_html_e( 'To use this feature you need to install and activate the Gutenberg plugin.', 'wp-smushit' ); ?></p>
-		</div>
+        <div class="sui-notice smush-notice-sm">
+            <p><?php esc_html_e( 'To use this feature you need to install and activate the Gutenberg plugin.', 'wp-smushit' ); ?></p>
+        </div>
 		<?php
 	}
 
@@ -139,7 +139,7 @@ class WP_Smush_Gutenberg extends WP_Smush_Integration {
 	 * For WordPress pre 5.0 - only when Gutenberg plugin is installed.
 	 * For WordPress 5.0+ - only when Classic Editor is NOT installed.
 	 *
-	 * @since 3.1.0
+	 * @since 3.0.2
 	 */
 	private function check_for_gutenberg() {
 		global $wp_version;
