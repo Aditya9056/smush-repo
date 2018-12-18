@@ -38,7 +38,7 @@
 				<?php
 				printf(
 					/* translators: %1$s: opening a tag, %2$s: closing a tag */
-					esc_html__( 'Not using your language, or have improvements? Help us improve translations by providing your own improvements %1$shere%2$s.', 'wp-smushit' ),
+					esc_html__( 'Not using your language, or have improvements? Help us improve translations by providing your own improvements %1$share%2$s.', 'wp-smushit' ),
 					'<a href="' . esc_html( $translation_link ) . '" target="_blank">',
 					'</a>'
 				);
