@@ -840,14 +840,8 @@ jQuery( function ( $ ) {
 	$( '#wp-smush-networkwide' ).on( 'click', function ( e ) {
 		if ( $( this ).is( ':checked' ) ) {
 			$( '.network-settings-wrapper' ).show();
-			$( '.sui-vertical-tabs li' ).not( '.smush-bulk' ).each( function ( n ) {
-				$( this ).removeClass( 'sui-hidden' );
-			} );
 		} else {
 			$( '.network-settings-wrapper' ).hide();
-			$( '.sui-vertical-tabs li' ).not( '.smush-bulk' ).each( function ( n ) {
-				$( this ).addClass( 'sui-hidden' );
-			} );
 		}
 	} );
 
