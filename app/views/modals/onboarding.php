@@ -89,6 +89,12 @@ $user = wp_get_current_user();
             </button>
         <# } #>
 
+        <# if ( 'start' !== data.slide && 'usage' !== data.slide ) { #>
+            <a class="sui-button sui-button-gray next" onclick="WP_Smush.onboarding.next(this)">
+                <?php esc_html_e( 'Next', 'wp-smushit' ); ?>
+            </a>
+        <# } #>
+
         <div class="smush-onboarding-arrows">
             <a href="#" class="previous <# if ( data.first ) { #>sui-hidden<# } #>" onclick="WP_Smush.onboarding.next(this)">
                 <i class="sui-icon-chevron-left" aria-hidden="true"> </i>
