@@ -60,6 +60,9 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		// Add setting names to appropriate group.
 		add_action( 'wp_smush_cdn_settings', array( $this, 'add_settings' ) );
 
+		// Cron task to update CDN stats.
+		add_action( 'smush_update_cdn_stats', array( $this, 'cron_update_stats' ) );
+
 		// Set auto resize flag.
 		$this->init_flags();
 
@@ -78,6 +81,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		// Only do stuff on the frontend.
 		if ( is_admin() ) {
+		    // Verify the cron task to update stats is configured.
+		    $this->schedule_cron();
 			return;
 		}
 
@@ -325,6 +330,10 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @see update_image_srcset()
 	 * @see update_image_sizes()
 	 * @see update_cdn_image_src_args()
+     * @see process_cdn_status()
+     * @see cron_update_stats()
+     * @see unschedule_cron()
+     * @see schedule_cron()
 	 */
 
 	/**
@@ -591,6 +600,71 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		return $args;
 	}
+
+	/**
+	 * Process CDN status.
+	 *
+	 * @since 3.0
+     * @since 3.1  Moved from Ajax class.
+	 *
+	 * @param $status
+	 *
+	 * @return mixed
+	 */
+	public function process_cdn_status( $status ) {
+		$status = json_decode( $status['body'] );
+
+		// Error from API.
+		if ( ! $status->success ) {
+			wp_send_json_error(
+				array(
+					'message' => $status->data->message,
+				),
+				$status->data->error_code
+			);
+		}
+
+		return $status->data;
+	}
+
+	/**
+	 * Update CDN stats (daily) cron task.
+     *
+     * @since 3.1.0
+	 */
+	public function cron_update_stats() {
+		$current_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+
+		if ( isset( $current_status->cdn_enabling ) && $current_status->cdn_enabling ) {
+			$status = WP_Smush::get_instance()->api()->enable();
+		} else {
+			$status = WP_Smush::get_instance()->api()->check();
+		}
+
+		$data = $this->process_cdn_status( $status );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
+    }
+
+	/**
+	 * Disable CDN stats update cron task.
+     *
+     * @since 3.1.0
+	 */
+    public function unschedule_cron() {
+	    $timestamp = wp_next_scheduled( 'smush_update_cdn_stats' );
+	    wp_unschedule_event( $timestamp, 'smush_update_cdn_stats' );
+    }
+
+	/**
+	 * Set cron task to update CDN stats daily.
+     *
+     * @since 3.1.0
+	 */
+    public function schedule_cron() {
+	    if ( ! wp_next_scheduled ( 'smush_update_cdn_stats' ) ) {
+		    wp_schedule_event( time(), 'daily', 'smush_update_cdn_stats' );
+	    }
+    }
 
 	/**************************************
 	 *

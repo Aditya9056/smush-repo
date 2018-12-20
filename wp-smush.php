@@ -122,6 +122,7 @@ if ( WP_SMUSH_BASENAME !== plugin_basename( __FILE__ ) ) {
 }
 
 register_activation_hook( 'core/class-wp-smush-installer.php', array( 'WP_Smush_Installer', 'smush_activated' ) );
+register_deactivation_hook( __FILE__, array( 'WP_Smush_Installer', 'smush_deactivated' ) );
 
 // Init the plugin and load the plugin instance for the first time.
 add_action( 'plugins_loaded', array( 'WP_Smush', 'get_instance' ) );
