@@ -56,11 +56,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
 		add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
 
-
 		// Add stats to stats box.
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'pro_savings_stats' ), 15 );
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'conversion_savings_stats' ), 15 );
-		add_action( 'stats_ui_after_resize_savings', array( $this, 'directory_stats_ui' ), 10 );
 
 		// Icons in the submenu.
 		add_filter( 'wp_smush_admin_after_tab_' . $this->get_slug(), array( $this, 'after_tab' ) );
@@ -527,40 +525,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			</li>
 			<?php
 		}
-	}
-
-	/**
-	 * Set directory smush stats to stats box.
-	 *
-	 * @return void
-	 */
-	public function directory_stats_ui() {
-		$dir_smush_stats = get_option( 'dir_smush_stats' );
-		$human           = 0;
-		if ( ! empty( $dir_smush_stats ) && ! empty( $dir_smush_stats['dir_smush'] ) ) {
-			$human = ! empty( $dir_smush_stats['dir_smush']['bytes'] ) && $dir_smush_stats['dir_smush']['bytes'] > 0 ? $dir_smush_stats['dir_smush']['bytes'] : 0;
-		}
-		?>
-		<li class="smush-dir-savings">
-			<span class="sui-list-label"><?php esc_html_e( 'Directory Smush Savings', 'wp-smushit' ); ?>
-				<?php if ( $human <= 0 ) { ?>
-					<p class="wp-smush-stats-label-message">
-						<?php esc_html_e( "Smush images that aren't located in your uploads folder.", 'wp-smushit' ); ?>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=smush&view=directory' ) ); ?>" class="wp-smush-dir-link"
-							title="<?php esc_attr_e( "Select a directory you'd like to Smush.", 'wp-smushit' ); ?>">
-							<?php esc_html_e( 'Choose directory', 'wp-smushit' ); ?>
-						</a>
-					</p>
-				<?php } ?>
-			</span>
-			<span class="wp-smush-stats sui-list-detail">
-				<i class="sui-icon-loader sui-loading" aria-hidden="true" title="<?php esc_attr_e( 'Updating Stats', 'wp-smushit' ); ?>"></i>
-				<span class="wp-smush-stats-human"></span>
-				<span class="wp-smush-stats-sep sui-hidden">/</span>
-				<span class="wp-smush-stats-percent"></span>
-			</span>
-		</li>
-		<?php
 	}
 
 	/**

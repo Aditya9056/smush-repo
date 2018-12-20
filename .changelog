@@ -12,6 +12,7 @@
 * Enhance: Preserve stats during options updates
 * Enhance: CDN will now only accept JPG/PNG/GIF images - no more warnings in browser console
 * Fix: Browser console errors in with CDN auto resizing and webp images
+* Fix: Directory Smush errors on subsites in multisite environments
 
 = 3.0.2 =
 
