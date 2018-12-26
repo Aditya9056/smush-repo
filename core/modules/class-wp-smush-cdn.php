@@ -1064,6 +1064,14 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			$src = site_url( $src );
 		}
 
+		/* If the URL starts with // (relative URL), try to replace with server scheme.
+		if ( '//' === substr( $src, 0, 2 ) ) {
+			if ( isset( $_SERVER['REQUEST_SCHEME'] ) && in_array( $_SERVER['REQUEST_SCHEME'], array( 'http', 'https' ), true ) ) {
+				$src = $_SERVER['REQUEST_SCHEME'] . ':' . $src;
+			}
+		}
+		*/
+
 		if ( false === strpos( $src, content_url() ) ) {
 			return false;
 		}
@@ -1095,11 +1103,9 @@ class WP_Smush_CDN extends WP_Smush_Module {
 				if ( is_numeric( $key ) && $key > 0 )
 					unset( $images[$key] );
 			}
-
-			return $images;
 		}
 
-		return array();
+		return $images;
 	}
 
 	/**
