@@ -103,11 +103,12 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 
 const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
-		'smush-sui': './_src/js//shared-ui.js',
+		'smush-sui': './_src/js/shared-ui.js',
 		'smush-admin': './_src/js/app.js',
-		'smush-media': './_src/js/media.js',
-		'smush-rd': './_src/js/public-resize-detection.js',
-		'smush-blocks': './_src/js/blocks.js'
+		'smush-media': './_src/js/smush/media.js',
+		'smush-rd': './_src/js/frontend/public-resize-detection.js',
+		'smush-blocks': './_src/js/smush/blocks.js',
+		'smush-lazy-load': './_src/js/frontend/lazy-load.js'
 	},
 
 	output: {

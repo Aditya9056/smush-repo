@@ -419,6 +419,8 @@ class WP_Smush_Core {
 		require_once WP_SMUSH_DIR . 'core/class-wp-smush-modules.php';
 		/* @noinspection PhpIncludeInspection */
 		require_once WP_SMUSH_DIR . 'core/modules/abstract-wp-smush-module.php';
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'core/modules/abstract-wp-smush-content.php';
 
 		$this->mod = new WP_Smush_Modules();
 

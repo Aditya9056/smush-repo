@@ -9,7 +9,7 @@
 /**
  * Class WP_Smush_CDN
  */
-class WP_Smush_CDN extends WP_Smush_Module {
+class WP_Smush_CDN extends WP_Smush_Content {
 
 	/**
 	 * Smush CDN base url.
@@ -1083,43 +1083,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		}
 
 		return $src;
-	}
-
-	/**
-	 * Get image tags from page content.
-	 *
-	 * @since 3.1.0
-	 *
-	 * @param string $content  Page content.
-	 *
-	 * @return array
-	 */
-	private function get_images_from_content( $content ) {
-		$images = array();
-
-		if ( preg_match_all( '/(?:<img[^>]*?\s+?src=["|\'](?P<img_url>[^\s]+?)["|\'].*?>){1}(?:\s*<\/a>)?/is', $content, $images ) ) {
-			foreach ( $images as $key => $unused ) {
-				// Simplify the output as much as possible, mostly for confirming test results.
-				if ( is_numeric( $key ) && $key > 0 )
-					unset( $images[$key] );
-			}
-		}
-
-		return $images;
-	}
-
-	/**
-	 * Add attribute to img tag.
-	 *
-	 * @since 3.1.0
-	 *
-	 * @param string $element  Image element.
-	 * @param string $name     Img attribute name (srcset, size).
-	 * @param string $value    Attribute value.
-	 */
-	private function add_attribute( &$element, $name, $value ) {
-		$closing = false === strpos( $element, '/>' ) ? '>' : ' />';
-		$element = rtrim( $element, $closing ) . " {$name}=\"{$value}\"{$closing}";
 	}
 
 }
