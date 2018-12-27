@@ -1,4 +1,4 @@
-// Polyfill for intersection observer.
+// Polyfill for intersection observer (@see https://caniuse.com/#search=IntersectionObserver)
 require('intersection-observer');
 
 import lozad from 'lozad';
@@ -6,7 +6,7 @@ import lozad from 'lozad';
 /**
  * Lazy loading functionality.
  *
- * @since 3.2
+ * @since 3.2.0
  */
 ( function() {
     'use strict';
@@ -14,14 +14,7 @@ import lozad from 'lozad';
     const WP_Smush_LazyLoad = {
         init: () => {
             const observer = lozad('.lazy-load', {
-                threshold: 0.1,
-                load: function(el) {
-                    console.log('loading element');
-                },
-                loaded: function(el) {
-                    el.classList.add('loaded');
-                    console.log('loaded');
-                }
+                threshold: 0.1
             });
 
             observer.observe();

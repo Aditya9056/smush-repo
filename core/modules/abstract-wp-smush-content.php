@@ -50,4 +50,8 @@ abstract class WP_Smush_Content extends WP_Smush_Module {
 		$element = rtrim( $element, $closing ) . " {$name}=\"{$value}\"{$closing}";
 	}
 
+	protected function remove_attribute( &$element, $attribute ) {
+		$element = preg_replace( '/' . $attribute . '=\\"[^\\"]*\\"/', '', $element );
+	}
+
 }

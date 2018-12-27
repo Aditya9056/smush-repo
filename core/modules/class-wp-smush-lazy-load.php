@@ -30,6 +30,8 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 
 		// Filter images.
 		add_filter( 'the_content', array( $this, 'set_lazy_load_attributes' ), 100 );
+		add_filter( 'post_thumbnail_html', array( $this, 'set_lazy_load_attributes' ), 100 );
+		add_filter( 'get_avatar', array( $this, 'set_lazy_load_attributes' ), 100 );
 	}
 
 	/**
@@ -99,10 +101,22 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return $content;
 		}
 
-		// TODO: Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
 		foreach ( $images[0] as $key => $image ) {
 			$new_image = $image;
+
+			$this->remove_attribute( $new_image, 'src' );
 			$this->add_attribute( $new_image, 'data-src', $images['img_url'][ $key ] );
+
+			// Change srcset to data-srcset attribute.
+			$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
+			// Add .lazy-load class to image that already has a class.
+			$new_image = preg_replace( '/<img(.*?)class=\"(.*?)\"(.*?)>/i', '<img$1class="$2 lazy-load"$3>', $new_image );
+			// Add .lazy-load class to image that doesn't have a class.
+			$new_image = preg_replace( '/<img(.*?)(?!\bclass\b)(.*?)/i', '<img$1 class="lazy-load"$2', $new_image );
+
+			// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
+			$new_image .= '<noscript>' . $image . '</noscript>';
+
 			$content = str_replace( $image, $new_image, $content );
 		}
 
