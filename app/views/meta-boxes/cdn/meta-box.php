@@ -85,7 +85,7 @@
 						'wp-smushit'
 					),
 					absint( $cdn->bandwidth_plan ),
-					'<a href="#" target="_blank">',
+					'<a href="https://premium.wpmudev.org/hub/my-websites/" target="_blank">',
 					'</a>'
 				);
 				?>
