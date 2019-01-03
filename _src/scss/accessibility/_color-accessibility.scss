@@ -1,14 +1,5 @@
 @include body-class(true) {
     &.sui-color-accessible {
-        .sui-checkbox,
-        .sui-radio {
-            input:checked {
-                  + span:not(.sui-description) {
-                      border: 1px solid $accessible-dark;
-                      background-color: $accessible-dark;
-                  }
-              }
-        }
         .smush-final-log .smush-bulk-error-row {
             box-shadow: inset 2px 0 0 0 $accessible-dark;
             .smush-bulk-image-data:before {
