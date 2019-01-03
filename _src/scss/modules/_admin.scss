@@ -206,21 +206,23 @@
 			.wp-smush-progress-inner {
 				background: #FECF2F !important;
 			}
-
-			.sui-progress-text:before {
-				content: "!";
-				animation: none;
-				color: #FECF2F;
-			}
-
-			.sui-icon-close:before {
-				content: "´";
-			}
 		}
 		// Directory smush overwrites when limit exceeded
 		.wp-smush-progress-dialog.wp-smush-exceed-limit {
 			.sui-hidden {
 				display: block;
+			}
+
+			.sui-progress {
+				.sui-progress-icon {
+					.sui-icon-loader {
+						@include icon( before, info );
+						&:before {
+							color: #fecf2f;
+							animation: none;
+						}
+					}
+				}
 			}
 
 			.sui-progress-bar span {
