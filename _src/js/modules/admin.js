@@ -755,7 +755,13 @@ jQuery( function ( $ ) {
 		e.preventDefault();
 		//Induce Setting button save click
 		$( 'button.wp-smush-all' ).click();
-		$( 'span.sui-notice-dismiss' ).click();
+        $( this ).parent().stop().slideUp( 'slow' );
+	} );
+
+	//Trigger Bulk
+	$( 'body' ).on( 'click', '#bulk-smush-top-notice-close', function ( e ) {
+		e.preventDefault();
+        $( this ).parent().parent().slideUp( 'slow' );
 	} );
 
 	//Allow the checkboxes to be Keyboard Accessible
