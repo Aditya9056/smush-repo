@@ -755,7 +755,7 @@ jQuery( function ( $ ) {
 		e.preventDefault();
 		//Induce Setting button save click
 		$( 'button.wp-smush-all' ).click();
-        $( this ).parent().stop().slideUp( 'slow' );
+		$( 'span.sui-notice-dismiss' ).click();
 	} );
 
 	//Trigger Bulk
