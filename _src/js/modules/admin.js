@@ -758,6 +758,12 @@ jQuery( function ( $ ) {
 		$( 'span.sui-notice-dismiss' ).click();
 	} );
 
+	//Trigger Bulk
+	$( 'body' ).on( 'click', '#bulk-smush-top-notice-close', function ( e ) {
+		e.preventDefault();
+        $( this ).parent().parent().slideUp( 'slow' );
+	} );
+
 	//Allow the checkboxes to be Keyboard Accessible
 	$( '.wp-smush-setting-row .toggle-checkbox' ).focus( function () {
 		//If Space is pressed
