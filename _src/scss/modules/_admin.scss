@@ -462,6 +462,11 @@
 
 		.sui-upsell-row {
 			margin-top: 30px;
+
+			@media screen and (min-width: 1921px) {
+				margin-top: 60px;
+			}
+
 			.sui-upsell-image {
 				&.sui-upsell-image-smush:not(.integrations-upsell-image) {
 					bottom: -30px;
