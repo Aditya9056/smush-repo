@@ -181,12 +181,12 @@
             let newIndex = 0;
 
             if ( ! whereTo ) {
-                newIndex = e.classList.contains('next') ? index + 1 : index - 1;
+                newIndex = null !== e && e.classList.contains('next') ? index + 1 : index - 1;
             } else {
                 newIndex = 'next' === whereTo ? index + 1 : index - 1;
             }
 
-            const directionClass = e.classList.contains('next') ? 'fadeInRight' : 'fadeInLeft';
+            const directionClass = null !== e && e.classList.contains('next') ? 'fadeInRight' : 'fadeInLeft';
 
             this.settings = {
                 first: 0 === newIndex,
