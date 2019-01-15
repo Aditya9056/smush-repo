@@ -92,7 +92,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 */
 	public function skip_smush_setup() {
 		check_ajax_referer( 'smush_quick_setup' );
-		update_site_option( 'skip-smush-setup', true );
+		update_option( 'skip-smush-setup', true );
 		wp_send_json_success();
 	}
 
@@ -144,7 +144,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// Update the resize sizes.
 		$this->settings->set_setting( WP_SMUSH_PREFIX . 'settings', $settings );
 
-		update_site_option( 'skip-smush-setup', true );
+		update_option( 'skip-smush-setup', true );
 
 		wp_send_json_success();
 	}
