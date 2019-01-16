@@ -2,6 +2,7 @@
 
 * New: CDN support for mapped domains in multisite
 * Fix: [NextGEN Gallery] bug with stats count
+* Fix: JavaScript error during bulk Smush on free version of the plugin
 
 = 3.1.0 =
 
