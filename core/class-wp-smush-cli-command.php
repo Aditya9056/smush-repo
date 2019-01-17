@@ -155,6 +155,8 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 	 * @param array  $images  Attachment IDs.
 	 */
 	private function smush( $msg = '', $images = array() ) {
+		$success  = false;
+		$errors   = array();
 		$progress = \WP_CLI\Utils\make_progress_bar( $msg, count( $images ) + 1 );
 
 		$unsmushed_attachments = WP_Smush::get_instance()->core()->mod->db->get_unsmushed_attachments();
@@ -166,9 +168,12 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 
 			// Skip if already Smushed.
 			if ( ! in_array( (int) $attachment_id, $unsmushed_attachments, true ) ) {
-				WP_CLI::warning( __( 'Image already compressed', 'wp-smushit' ) );
+				/* translators: %d - attachment ID */
+				$errors[] = sprintf( __( 'Image (ID: %d) already compressed', 'wp-smushit' ), $attachment_id );
 				continue;
 			}
+
+			$success = true;
 
 			// We need to initialize the database module (maybe all other modules as well?).
 			WP_Smush::get_instance()->core()->mod->backup->initialize();
@@ -177,7 +182,16 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 
 		$progress->tick();
 		$progress->finish();
-		WP_CLI::success( __( 'Image compressed', 'wp-smushit' ) );
+
+		if ( ! empty( $errors ) ) {
+			foreach ( $errors as $error ) {
+				WP_CLI::warning( $error );
+			}
+		}
+
+		if ( $success ) {
+			WP_CLI::success( __( 'Image compressed', 'wp-smushit' ) );
+		}
 	}
 
 	/**
