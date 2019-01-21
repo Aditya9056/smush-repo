@@ -225,7 +225,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				if ( ! $is_pro && ( ! is_network_admin() || $is_networkwide ) ) {
 					$this->add_meta_box(
 						'meta-boxes/pro-features',
-						__( 'Pre Features', 'wp-smushit' ),
+						__( 'Pro Features', 'wp-smushit' ),
 						array( $this, 'pro_features_metabox' ),
 						array( $this, 'pro_features_metabox_header' ),
 						null,
@@ -1016,7 +1016,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/pro-features/meta-box-header',
 			array(
-				'title'       => __( 'Pre Features', 'wp-smushit' ),
+				'title'       => __( 'Pro Features', 'wp-smushit' ),
 				'upgrade_url' => $upgrade_url,
 			)
 		);
