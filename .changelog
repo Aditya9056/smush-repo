@@ -1,4 +1,4 @@
-= 3.1.1 =
+= 3.2.0 =
 
 * New: CDN support for mapped domains in multisite
 * New: Auto update free version of the plugin to Pro if Dashboard plugin is installed and activated
