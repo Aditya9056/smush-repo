@@ -962,7 +962,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 */
 	public function bulk_settings_metabox() {
 		// Get all grouped settings that can be skipped.
-		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp', 'auto_resize', 'accessible_colors', 'usage' ) );
+		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp', 'auto_resize', 'accessible_colors', 'usage', 'keep_data' ) );
 
 		$this->view(
 			'meta-boxes/bulk-settings/meta-box',
@@ -1236,10 +1236,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'translation_link' => $link,
 				'settings'         => $this->settings->get(),
 				'settings_data'    => WP_Smush::get_instance()->core()->settings,
-				'settings_group'   => array(
-					'accessible_colors',
-                    'usage',
-				),
+				'settings_group'   => array( 'accessible_colors', 'usage' ),
 			)
 		);
 	}

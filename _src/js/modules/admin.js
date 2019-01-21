@@ -514,6 +514,15 @@ jQuery( function ( $ ) {
 		remove_element( $el );
 	} );
 
+	/**
+	* Parse remove data change.
+	*/
+	$('input[name=wp-smush-keep_data]').on('change', function (e) {
+		const otherClass = 'keep_data-true' === e.target.id ? 'keep_data-false' : 'keep_data-true';
+		e.target.parentNode.classList.add('active');
+		document.getElementById(otherClass).parentNode.classList.remove('active');
+	});
+
 	// On Click Update Settings. Check for change in settings.
 	$( 'input#wp-smush-save-settings' ).on( 'click', function ( e ) {
 		e.preventDefault();

@@ -49,6 +49,7 @@ class WP_Smush_Settings {
 		'webp'              => true,
 		'usage'             => true,
 		'accessible_colors' => false,
+		'keep_data'         => true,
 	);
 
 	/**
@@ -98,6 +99,7 @@ class WP_Smush_Settings {
 	private $settings_fields = array(
 		'accessible_colors',
 		'usage',
+		'keep_data',
 	);
 
 	/**
@@ -127,6 +129,8 @@ class WP_Smush_Settings {
 
 		// Save Settings.
 		add_action( 'wp_ajax_save_settings', array( $this, 'save_settings' ) );
+		// Reset Settings.
+		add_action( 'wp_ajax_reset_settings', array( $this, 'reset_settings' ) );
 
 		$this->init();
 	}
@@ -252,6 +256,28 @@ class WP_Smush_Settings {
 	}
 
 	/**
+	 * Reset settings to defaults.
+	 *
+	 * @since 3.2.0
+	 */
+	public function reset_settings() {
+		check_ajax_referer( 'get-smush-status' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			die();
+		}
+
+		$this->delete_setting( WP_SMUSH_PREFIX . 'settings' );
+		$this->delete_setting( WP_SMUSH_PREFIX . 'hide_smush_welcome' );
+		$this->delete_setting( WP_SMUSH_PREFIX . 'image_sizes' );
+		$this->delete_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
+		$this->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+		$this->delete_setting( 'skip-smush-setup' );
+
+		wp_send_json_success();
+	}
+
+	/**
 	 * Save settings, used for networkwide option.
 	 */
 	public function save_settings() {
@@ -307,7 +333,7 @@ class WP_Smush_Settings {
 			}
 
 			// Get the value to be saved.
-			$setting = isset( $_POST[ WP_SMUSH_PREFIX . $name ] ) ? true : false; // Input var ok.
+			$setting = isset( $_POST[ WP_SMUSH_PREFIX . $name ] ) && $_POST[ WP_SMUSH_PREFIX . $name ] ? true : false; // Input var ok.
 
 			$settings[ $name ] = $setting;
 
