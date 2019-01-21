@@ -236,7 +236,8 @@ class WP_Smushit extends WP_Smush_Module {
 			$wp_smush_data = true;
 
 			// The status.
-			$status_txt = __( 'Not processed', 'wp-smushit' );
+			$ignored = get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true );
+			$status_txt = 'true' === $ignored ? __( 'Ignored in Bulk Smush', 'wp-smushit' ) : __( 'Not processed', 'wp-smushit' );
 
 			// We need to show the smush button.
 			$show_button = true;

@@ -58,6 +58,8 @@ class WP_Smush_Admin {
 
 		// Smush image filter from Media Library.
 		add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
+		// Smush image filter from Media Library (list view).
+		add_action( 'restrict_manage_posts', array( $this, 'media_add_author_dropdown' ) );
 	}
 
 	/**
@@ -409,6 +411,21 @@ class WP_Smush_Admin {
 			return $query;
 		}
 
+		if ( isset( $_REQUEST['smush-filter'] ) && 'ignored' === $_REQUEST['smush-filter'] ) {
+			$query->set(
+				'meta_query',
+				array(
+					array(
+						'key'     => WP_SMUSH_PREFIX . 'ignore-bulk',
+						'value'   => 'true',
+						'compare' => 'EXISTS',
+					),
+				)
+			);
+
+			return $query;
+		}
+
 		$orderby = $query->get( 'orderby' );
 
 		if ( isset( $orderby ) && 'smushit' === $orderby ) {
@@ -455,6 +472,29 @@ class WP_Smush_Admin {
 		}
 
 		return $query;
+	}
+
+	/**
+	 * Adds a search dropdown in Media Library list view to filter out images that have been
+	 * ignored with bulk Smush.
+	 *
+	 * @since 3.2.0
+	 */
+	public function media_add_author_dropdown() {
+		$scr = get_current_screen();
+
+		if ( 'upload' !== $scr->base ) {
+			return;
+		}
+
+		$ignored = filter_input( INPUT_GET, 'smush-filter', FILTER_SANITIZE_STRING );
+
+		?>
+		<select class="smush-filters" name="smush-filter" id="smush_filter">
+			<option value="" <?php selected( $ignored, '' ); ?>><?php esc_html_e( 'Smush: All images', 'wp-smushit' ); ?></option>
+			<option value="ignored" <?php selected( $ignored, 'ignored' ); ?>><?php esc_html_e( 'Smush: Bulk ignored', 'wp-smushit' ); ?></option>
+		</select>
+		<?php
 	}
 
 	/**
