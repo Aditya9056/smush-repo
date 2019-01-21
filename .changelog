@@ -6,6 +6,7 @@
 * New: Option to reset settings to defaults
 * Fix: [NextGEN Gallery] bug with stats count
 * Fix: JavaScript error during bulk Smush on free version of the plugin
+* Fix: Translation strings and typos
 
 = 3.1.0 =
 
