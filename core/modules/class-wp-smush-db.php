@@ -119,8 +119,8 @@ class WP_Smush_DB {
 					),
 					array(
 						'key'     => 'wp-smush-ignore-bulk',
-						'value'   => 'false',
-						'compare' => 'EXISTS',
+						'value'   => 'true',
+						'compare' => 'NOT EXISTS',
 					),
 				),
 				'update_post_term_cache' => false,
