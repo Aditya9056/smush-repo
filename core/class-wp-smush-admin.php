@@ -155,8 +155,8 @@ class WP_Smush_Admin {
 
 	/**
 	 * Load media assets.
-     *
-     * Localization also used in Gutenberg integration.
+	 *
+	 * Localization also used in Gutenberg integration.
 	 */
 	private function extend_media_modal() {
 		if ( wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
@@ -186,12 +186,12 @@ class WP_Smush_Admin {
 					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
 					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
 					'filter_excl' => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
-                    'gb'          => array(
-                        'stats'        => esc_html__( 'Smush Stats', 'wp-smushit' ),
-                        'select_image' => esc_html__( 'Select an image to view Smush stats.', 'wp-smushit' ),
-                        'size'         => esc_html__( 'Image size', 'wp-smushit' ),
-                        'savings'      => esc_html__( 'Savings', 'wp-smushit' ),
-                    )
+					'gb'          => array(
+						'stats'        => esc_html__( 'Smush Stats', 'wp-smushit' ),
+						'select_image' => esc_html__( 'Select an image to view Smush stats.', 'wp-smushit' ),
+						'size'         => esc_html__( 'Image size', 'wp-smushit' ),
+						'savings'      => esc_html__( 'Savings', 'wp-smushit' ),
+					),
 				),
 				'nonce'   => array(
 					'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
@@ -227,7 +227,7 @@ class WP_Smush_Admin {
 			$links = array( $settings );
 		}
 
-        // Upgrade link.
+		// Upgrade link.
 		if ( ! WP_Smush::is_pro() ) {
 			$upgrade_url = add_query_arg(
 				array(
@@ -237,6 +237,7 @@ class WP_Smush_Admin {
 				),
 				esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro/' )
 			);
+
 			$links['upgrade'] = '<a href="' . esc_url( $upgrade_url ) . '" aria-label="' . esc_attr( __( 'Upgrade to Smush Pro', 'wp-smushit' ) ) . '" target="_blank" style="color: #1ABC9C;">' . esc_html__( 'Upgrade', 'wp-smushit' ) . '</a>';
 		}
 
@@ -405,7 +406,7 @@ class WP_Smush_Admin {
 
 		// Filter only media screen.
 		if ( ! is_admin() || ( ! empty( $current_screen ) && 'upload' !== $current_screen->base ) ) {
-			return;
+			return $query;
 		}
 
 		$orderby = $query->get( 'orderby' );
