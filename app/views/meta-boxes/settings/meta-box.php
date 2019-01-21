@@ -104,7 +104,7 @@
 
 			<button type="button" class="sui-button sui-button-ghost" data-a11y-dialog-show="wp-smush-reset-settings-dialog">
 				<i class="sui-icon-undo" aria-hidden="true"></i>
-				<?php esc_html_e( 'Reset Settings', 'wphb' ); ?>
+				<?php esc_html_e( 'Reset Settings', 'wp-smushit' ); ?>
 			</button>
 		</div>
 	</div>
