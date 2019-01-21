@@ -11,8 +11,14 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
 
+if ( ! class_exists( 'WP_Smush_Settings' ) ) {
+	/* @noinspection PhpIncludeInspection */
+	include_once plugin_dir_path( __FILE__ ) . '/core/class-wp-smush-settings.php';
+}
+$keep_data = WP_Smush_Settings::get_instance()->get( 'keep_data' );
+
 // Check if someone want to keep the stats and settings.
-if ( defined( 'WP_SMUSH_PRESERVE_STATS' ) && WP_SMUSH_PRESERVE_STATS ) {
+if ( ( defined( 'WP_SMUSH_PRESERVE_STATS' ) && WP_SMUSH_PRESERVE_STATS ) || true === $keep_data ) {
 	return;
 }
 

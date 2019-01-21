@@ -94,7 +94,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 */
 	public function skip_smush_setup() {
 		check_ajax_referer( 'smush_quick_setup' );
-		update_site_option( 'skip-smush-setup', true );
+		update_option( 'skip-smush-setup', true );
 		wp_send_json_success();
 	}
 
@@ -146,7 +146,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// Update the resize sizes.
 		$this->settings->set_setting( WP_SMUSH_PREFIX . 'settings', $settings );
 
-		update_site_option( 'skip-smush-setup', true );
+		update_option( 'skip-smush-setup', true );
 
 		wp_send_json_success();
 	}
@@ -562,7 +562,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 						<p>' . $message . '</p>
 					</div>
 					<span class="sui-notice-dismiss">
-						<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check"></a>
+						<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check" id="bulk-smush-top-notice-close"></a>
 					</span>
 				</div>';
 		}
@@ -936,18 +936,23 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		if ( 'true' === $param ) {
 			// Maybe here is not the place for this. Check CDN settings on page load.
 			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+			$smush  = WP_Smush::get_instance();
 
 			if ( ! $status ) {
-				$status = WP_Smush::get_instance()->api()->check();
-				$data   = $this->process_cdn_status( $status );
+				$status = $smush->api()->check();
+				$data   = $smush->core()->mod->cdn->process_cdn_status( $status );
 				$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
 			}
+
+			$smush->core()->mod->cdn->schedule_cron();
 
 			// Clear HB page cache.
 			do_action( 'wphb_clear_page_cache' );
 		} else {
 			// Remove CDN settings if disabling.
 			$this->settings->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+
+			WP_Smush::get_instance()->core()->mod->cdn->unschedule_cron();
 		}
 
 		wp_send_json_success();
@@ -961,42 +966,19 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	public function get_cdn_stats() {
 		$current_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
+		$smush = WP_Smush::get_instance();
+
 		if ( isset( $current_status->cdn_enabling ) && $current_status->cdn_enabling ) {
-			$status = WP_Smush::get_instance()->api()->enable();
+			$status = $smush->api()->enable();
 		} else {
-			$status = WP_Smush::get_instance()->api()->check();
+			$status = $smush->api()->check();
 		}
 
-		$data = $this->process_cdn_status( $status );
+		$data = $smush->core()->mod->cdn->process_cdn_status( $status );
 		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
 
 		// At this point we already know that $status->data is valid.
 		wp_send_json_success( $data );
-	}
-
-	/**
-	 * Process CDN status.
-	 *
-	 * @since 3.0
-	 *
-	 * @param $status
-	 *
-	 * @return mixed
-	 */
-	private function process_cdn_status( $status ) {
-		$status = json_decode( $status['body'] );
-
-		// Error from API.
-		if ( ! $status->success ) {
-			wp_send_json_error(
-				array(
-					'message' => $status->data->message,
-				),
-				$status->data->error_code
-			);
-		}
-
-		return $status->data;
 	}
 
 }

@@ -549,6 +549,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 				}
 			}
 		}
+
 		// If any of the image is restored, we count it as success.
 		if ( in_array( true, $restored ) ) {
 			// Update the global Stats.

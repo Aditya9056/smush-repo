@@ -527,6 +527,15 @@ jQuery( function ( $ ) {
 		remove_element( $el );
 	} );
 
+	/**
+	* Parse remove data change.
+	*/
+	$('input[name=wp-smush-keep_data]').on('change', function (e) {
+		const otherClass = 'keep_data-true' === e.target.id ? 'keep_data-false' : 'keep_data-true';
+		e.target.parentNode.classList.add('active');
+		document.getElementById(otherClass).parentNode.classList.remove('active');
+	});
+
 	// On Click Update Settings. Check for change in settings.
 	$( 'input#wp-smush-save-settings' ).on( 'click', function ( e ) {
 		e.preventDefault();
@@ -771,6 +780,12 @@ jQuery( function ( $ ) {
 		$( 'span.sui-notice-dismiss' ).click();
 	} );
 
+	//Trigger Bulk
+	$( 'body' ).on( 'click', '#bulk-smush-top-notice-close', function ( e ) {
+		e.preventDefault();
+        $( this ).parent().parent().slideUp( 'slow' );
+	} );
+
 	//Allow the checkboxes to be Keyboard Accessible
 	$( '.wp-smush-setting-row .toggle-checkbox' ).focus( function () {
 		//If Space is pressed
@@ -853,14 +868,8 @@ jQuery( function ( $ ) {
 	$( '#wp-smush-networkwide' ).on( 'click', function ( e ) {
 		if ( $( this ).is( ':checked' ) ) {
 			$( '.network-settings-wrapper' ).show();
-			$( '.sui-vertical-tabs li' ).not( '.smush-bulk' ).each( function ( n ) {
-				$( this ).removeClass( 'sui-hidden' );
-			} );
 		} else {
 			$( '.network-settings-wrapper' ).hide();
-			$( '.sui-vertical-tabs li' ).not( '.smush-bulk' ).each( function ( n ) {
-				$( this ).addClass( 'sui-hidden' );
-			} );
 		}
 	} );
 

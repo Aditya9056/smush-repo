@@ -146,6 +146,13 @@
             if ( submitButton ) {
                 submitButton.addEventListener('click', function(e) {
                     e.preventDefault();
+
+                    // Because we are not rendering the template, we need to update the last element value.
+                    const input = self.modal.querySelector('input[type="checkbox"]');
+                    if ( input ) {
+                        self.selection[input.id] = input.checked;
+                    }
+
                     const _nonce = document.getElementById('_wpnonce');
 
                     const xhr = new XMLHttpRequest();
@@ -174,12 +181,12 @@
             let newIndex = 0;
 
             if ( ! whereTo ) {
-                newIndex = e.classList.contains('next') ? index + 1 : index - 1;
+                newIndex = null !== e && e.classList.contains('next') ? index + 1 : index - 1;
             } else {
                 newIndex = 'next' === whereTo ? index + 1 : index - 1;
             }
 
-            const directionClass = e.classList.contains('next') ? 'fadeInRight' : 'fadeInLeft';
+            const directionClass = null !== e && e.classList.contains('next') ? 'fadeInRight' : 'fadeInLeft';
 
             this.settings = {
                 first: 0 === newIndex,

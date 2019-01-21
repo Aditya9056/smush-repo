@@ -1,14 +1,5 @@
 @include body-class(true) {
     &.sui-color-accessible {
-        .sui-checkbox,
-        .sui-radio {
-            input:checked {
-                  + span:not(.sui-description) {
-                      border: 1px solid $accessible-dark;
-                      background-color: $accessible-dark;
-                  }
-              }
-        }
         .smush-final-log .smush-bulk-error-row {
             box-shadow: inset 2px 0 0 0 $accessible-dark;
             .smush-bulk-image-data:before {
@@ -42,6 +33,27 @@
                     }
                 }
             }
+        }
+        // Check images button.
+        .sui-button {
+            &.smush-button-check-success:before {
+                color: $accessible-light;
+            }
+        }
+        // Pro features box.
+        .smush-pro-features {
+            .smush-pro-feature-title {
+                &:before {
+                    color: $accessible-dark;
+                }
+            }
+            .smush-pro-feature-desc {
+                color: $accessible-dark;
+            }
+        }
+        // Smush submit note.
+        .smush-submit-note {
+            color: $accessible-dark;
         }
     }
 }
