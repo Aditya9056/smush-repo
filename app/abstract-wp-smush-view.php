@@ -148,11 +148,6 @@ abstract class WP_Smush_View {
 			return;
 		}
 
-		// No need to show it on bulk smush.
-		if ( isset( $_GET['page'] ) && 'smush' === $_GET['page'] ) {
-			return;
-		}
-
 		// Return if notice is already dismissed.
 		if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
 			return;

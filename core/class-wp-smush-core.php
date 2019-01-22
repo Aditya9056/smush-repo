@@ -200,6 +200,7 @@ class WP_Smush_Core {
 	 * WP_Smush_Core constructor.
 	 *
 	 * @since 2.9.0
+	 * @throws Exception  Autoload exception.
 	 */
 	public function __construct() {
 		spl_autoload_register( array( $this, 'autoload' ) );
@@ -561,7 +562,7 @@ class WP_Smush_Core {
 				'savings_supersmush' => '',
 				'pro_savings'        => '',
 			);
-		} // End if().
+		}
 
 		// Check if scanner class is available.
 		$scanner_ready = isset( $this->mod->dir->scanner );
@@ -756,7 +757,14 @@ class WP_Smush_Core {
 		$smush_data['total_images'] = 0;
 
 		while ( $query_next ) {
-			$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", WP_Smushit::$smushed_meta_key ) );
+			$global_data = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT %d, %d",
+					WP_Smushit::$smushed_meta_key,
+					$offset,
+					$limit
+				)
+			); // Db call ok; no-cache ok.
 			if ( ! empty( $global_data ) ) {
 				foreach ( $global_data as $data ) {
 					// Skip attachment, if not in attachment list.
