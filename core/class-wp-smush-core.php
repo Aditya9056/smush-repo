@@ -337,9 +337,6 @@ class WP_Smush_Core {
 
 		// Check if Smush original enabled.
 		$this->mod->smush->smush_original = WP_Smush::is_pro() && $settings->get( 'original' );
-
-		// Check whether to keep EXIF data or not.
-		$this->mod->smush->keep_exif = ! $settings->get( 'strip_exif' );
 	}
 
 	/**

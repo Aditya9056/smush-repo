@@ -582,7 +582,7 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 				$show_resmush = true;
 			}
 		}
-		if ( ! $smush->keep_exif ) {
+		if ( $this->settings->get( 'strip_exif' ) ) {
 			// If Keep Exif was set to tru initially, and since it is set to false now.
 			if ( ! empty( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
 				$show_resmush = true;

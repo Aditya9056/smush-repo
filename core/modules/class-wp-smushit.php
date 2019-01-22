@@ -46,13 +46,6 @@ class WP_Smushit extends WP_Smush_Module {
 	public $smush_original = false;
 
 	/**
-	 * Whether to preserve the EXIF data or not.
-	 *
-	 * @var bool $keep_exif
-	 */
-	public $keep_exif = false;
-
-	/**
 	 * Attachment ID for the image being Smushed currently.
 	 *
 	 * @var int $attachment_id
@@ -398,9 +391,9 @@ class WP_Smushit extends WP_Smush_Module {
 		}
 
 		// EXIF Check.
-		if ( ! $this->keep_exif ) {
+		if ( $this->settings->get( 'strip_exif' ) ) {
 			// If Keep Exif was set to true initially, and since it is set to false now.
-			if ( isset( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
+			if ( isset( $wp_smush_data['stats']['keep_exif'] ) && true === $wp_smush_data['stats']['keep_exif'] ) {
 				return true;
 			}
 		}
