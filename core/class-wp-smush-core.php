@@ -12,11 +12,6 @@
 class WP_Smush_Core {
 
 	/**
-	 * DB option name.
-	 */
-	const OPTION_NAME = 'smush_option';
-
-	/**
 	 * S3 module
 	 *
 	 * @var WP_Smush_S3
@@ -36,22 +31,6 @@ class WP_Smush_Core {
 	 * @var WP_Smush_Modules
 	 */
 	public $mod;
-
-	/**
-	 * Plugin options.
-	 *
-	 * @var null|array
-	 */
-	protected $options = null;
-
-	/**
-	 * Default options and values go here.
-	 *
-	 * @var array $defaults
-	 */
-	protected $defaults = array(
-		'version' => WP_SMUSH_VERSION, // This one should not change.
-	);
 
 	/**
 	 * Allowed mime types of image.
@@ -291,9 +270,6 @@ class WP_Smush_Core {
 		// Initialize variables.
 		$this->initialise();
 
-		// Localize version, update.
-		$this->get_options();
-
 		// Load integrations.
 		$this->load_integrations();
 	}
@@ -364,54 +340,6 @@ class WP_Smush_Core {
 
 		// Check whether to keep EXIF data or not.
 		$this->mod->smush->keep_exif = ! $settings->get( 'strip_exif' );
-	}
-
-	/**
-	 * Store/Perform updates as per the plugin version
-	 *
-	 * @return array|mixed|null
-	 *
-	 * Source: Stackoverflow
-	 * https://wordpress.stackexchange.com/a/49797/32466
-	 */
-	private function get_options() {
-		// Already did the checks.
-		if ( isset( $this->options ) ) {
-			return $this->options;
-		}
-
-		// First call, get the options.
-		$options = get_option( self::OPTION_NAME );
-
-		// Options exist.
-		if ( false !== $options ) {
-			$new_version = version_compare( $options['version'], WP_SMUSH_VERSION, '!=' );
-			// $desync      = array_diff_key( $this->defaults, $options ) !== array_diff_key( $options, $this->defaults );
-			// update options if version changed
-			if ( $new_version ) {
-				$new_options = array();
-
-				// Check for new options and set defaults if necessary.
-				foreach ( $this->defaults as $option => $value ) {
-					$new_options[ $option ] = isset( $options[ $option ] ) ? $options[ $option ] : $value;
-				}
-
-				// Update version info.
-				$new_options['version'] = WP_SMUSH_VERSION;
-
-				update_option( self::OPTION_NAME, $new_options );
-				$this->options = $new_options;
-			} else {
-				$this->options = $options;
-			}
-			// New install (plugin was just activated).
-		} else {
-			// Store the version details.
-			update_option( self::OPTION_NAME, $this->defaults );
-			$this->options = $this->defaults;
-		}
-
-		return $this->options;
 	}
 
 	/**

@@ -25,15 +25,7 @@ if ( ( defined( 'WP_SMUSH_PRESERVE_STATS' ) && WP_SMUSH_PRESERVE_STATS ) || true
 global $wpdb;
 
 $smushit_keys = array(
-	'auto',
-	'original',
-	'lossy',
-	'backup',
-	'resize',
-	'png_to_jpg',
 	'resize-sizes',
-	'nextgen',
-	'strip_exif',
 	'resmush-list',
 	'resize_sizes',
 	'transparent_png',
@@ -50,11 +42,8 @@ $smushit_keys = array(
 	'install-type',
 	'lossy-updated',
 	'version',
-	'networkwide',
 	'dir_path',
 	'scan',
-	'last_settings',
-	's3',
 	'settings',
 	'cdn_status',
 );
@@ -62,7 +51,6 @@ $smushit_keys = array(
 $db_keys = array(
 	'skip-smush-setup',
 	'smush_global_stats',
-	'smush_option',
 	'smush-directory-path-hash-updated'
 );
 
