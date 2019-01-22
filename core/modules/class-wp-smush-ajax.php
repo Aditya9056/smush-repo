@@ -272,7 +272,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			);
 		}
 
-		$core->initialise();
 		// Pass on the attachment id to smush single function.
 		$core->mod->smush->smush_single( $attachment_id );
 	}
@@ -365,7 +364,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			wp_send_json_success(
 				array(
 					'notice'      => $resp,
-					'super_smush' => $core->mod->smush->lossy_enabled,
+					'super_smush' => WP_Smush::is_pro() && $this->settings->get( 'lossy' ),
 				)
 			);
 
@@ -385,9 +384,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// If a user manually runs smush check.
 		$return_ui = isset( $_REQUEST['get_ui'] ) && 'true' == $_REQUEST['get_ui'] ? true : false;
 
-		// Update the variables.
-		$core->initialise();
-
 		// Logic: If none of the required settings is on, don't need to resmush any of the images
 		// We need at least one of these settings to be on, to check if any of the image needs resmush.
 
@@ -405,7 +401,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$remaining_count = 'nextgen' === $type ? $core->nextgen->ng_admin->remaining_count : $core->remaining_count;
 
-		if ( 0 === (int) $remaining_count && ! $core->mod->smush->lossy_enabled && ( ! $this->settings->get( 'original' ) || ! WP_Smush::is_pro() ) && ! $this->settings->get( 'strip_exif' ) ) {
+		if ( 0 === (int) $remaining_count && ( ! WP_Smush::is_pro() || ! $this->settings->get( 'lossy' ) ) && ( ! $this->settings->get( 'original' ) || ! WP_Smush::is_pro() ) && ! $this->settings->get( 'strip_exif' ) ) {
 			delete_option( $key );
 			delete_site_option( WP_SMUSH_PREFIX . 'run_recheck' );
 			wp_send_json_success( array( 'notice' => $resp ) );
@@ -455,7 +451,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 				if ( is_array( $smush_data ) && ! empty( $smush_data['stats'] ) ) {
 
 					// If we need to optmise losslessly, add to resmush list.
-					$smush_lossy = $core->mod->smush->lossy_enabled && ! $smush_data['stats']['lossy'];
+					$smush_lossy = WP_Smush::is_pro() && $this->settings->get( 'lossy' ) && ! $smush_data['stats']['lossy'];
 
 					// If we need to strip exif, put it in resmush list.
 					$strip_exif = $this->settings->get( 'strip_exif' ) && isset( $smush_data['stats']['keep_exif'] ) && ( 1 == $smush_data['stats']['keep_exif'] );
@@ -606,8 +602,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		}
 
 		$return['notice']      = $resp;
-		$return['super_smush'] = $core->mod->smush->lossy_enabled;
-		if ( $core->mod->smush->lossy_enabled && 'nextgen' === $type ) {
+		$return['super_smush'] = WP_Smush::is_pro() && $this->settings->get( 'lossy' );
+		if ( WP_Smush::is_pro() && $this->settings->get( 'lossy' ) && 'nextgen' === $type ) {
 			$ss_count                    = $core->mod->db->super_smushed_count( 'nextgen', $core->nextgen->ng_stats->get_ngg_images( 'smushed' ) );
 			$return['super_smush_stats'] = sprintf( '<strong><span class="smushed-count">%d</span>/%d</strong>', $ss_count, $core->nextgen->ng_admin->total_count );
 		}

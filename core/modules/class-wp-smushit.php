@@ -32,13 +32,6 @@ class WP_Smushit extends WP_Smush_Module {
 	public $media_type = 'wp';
 
 	/**
-	 * Super Smush is enabled or not.
-	 *
-	 * @var bool $lossy_enabled
-	 */
-	public $lossy_enabled = false;
-
-	/**
 	 * Attachment ID for the image being Smushed currently.
 	 *
 	 * @var int $attachment_id
@@ -89,11 +82,6 @@ class WP_Smushit extends WP_Smush_Module {
 		$show_button = $show_resmush = false;
 
 		$links = '';
-
-		// If variables are not initialized properly, initialize it.
-		if ( ! has_action( 'admin_init', array( $this, 'admin_init' ) ) ) {
-			WP_Smush::get_instance()->core()->initialise();
-		}
 
 		$wp_smush_data      = get_post_meta( $id, self::$smushed_meta_key, true );
 		$wp_resize_savings  = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
@@ -200,7 +188,7 @@ class WP_Smushit extends WP_Smush_Module {
 
 			// Check if premium user, compression was lossless, and lossy compression is enabled.
 			// If we are displaying the resmush option already, no need to show the Super Smush button.
-			if ( ! $show_resmush && ! $is_lossy && $this->lossy_enabled && 'image/gif' !== $image_type ) {
+			if ( ! $show_resmush && ! $is_lossy && WP_Smush::is_pro() && $this->settings->get( 'lossy' ) && 'image/gif' !== $image_type ) {
 				$button_txt  = __( 'Super-Smush', 'wp-smushit' );
 				$show_button = true;
 			}
@@ -1510,7 +1498,6 @@ class WP_Smushit extends WP_Smush_Module {
 
 		// While uploading from Mobile App or other sources, admin_init action may not fire.
 		// So we need to manually initialize those.
-		WP_Smush::get_instance()->core()->initialise();
 		WP_Smush::get_instance()->core()->mod->resize->initialize( true );
 
 		// Check if auto is enabled.

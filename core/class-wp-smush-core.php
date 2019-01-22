@@ -267,9 +267,6 @@ class WP_Smush_Core {
 		// Perform migration if required.
 		$this->migrate();
 
-		// Initialize variables.
-		$this->initialise();
-
 		// Load integrations.
 		$this->load_integrations();
 	}
@@ -325,15 +322,6 @@ class WP_Smush_Core {
 		}
 
 		update_site_option( $migrated_version_key, WP_SMUSH_VERSION );
-	}
-
-	/**
-	 * Initialise the setting variables
-	 */
-	public function initialise() {
-		$settings = WP_Smush_Settings::get_instance();
-		// Check if lossy enabled.
-		$this->mod->smush->lossy_enabled = WP_Smush::is_pro() && $settings->get( 'lossy' );
 	}
 
 	/**

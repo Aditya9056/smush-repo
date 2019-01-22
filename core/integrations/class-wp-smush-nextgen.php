@@ -297,8 +297,6 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 	 * @return mixed Stats / Status / Error
 	 */
 	public function smush_image( $pid = '', $image = '', $echo = true, $is_bulk = false ) {
-		WP_Smush::get_instance()->core()->initialise();
-
 		// Get image, if we have image id.
 		if ( ! empty( $pid ) ) {
 			$image = $this->get_nextgen_image_from_id( $pid );

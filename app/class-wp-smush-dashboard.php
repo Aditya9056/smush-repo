@@ -468,7 +468,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			<li class="super-smush-attachments">
 				<span class="sui-list-label">
 					<?php esc_html_e( 'Super-Smush Savings', 'wp-smushit' ); ?>
-					<?php if ( ! $core->mod->smush->lossy_enabled ) { ?>
+					<?php if ( ! $this->settings->get( 'lossy' ) ) { ?>
 						<p class="wp-smush-stats-label-message">
 							<?php
 							$link_class = 'wp-smush-lossy-enable-link';
@@ -490,7 +490,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						</p>
 					<?php } ?>
 				</span>
-				<?php if ( $core->mod->smush->lossy_enabled ) { ?>
+				<?php if ( WP_Smush::is_pro() && $this->settings->get( 'lossy' ) ) { ?>
 					<span class="sui-list-detail wp-smush-stats">
 						<span class="smushed-savings">
 							<?php echo esc_html( size_format( $compression_savings, 1 ) ); ?>
@@ -947,7 +947,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'core'             => $core,
 				'hide_pagespeed'   => get_site_option( WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion' ),
 				'is_pro'           => WP_Smush::is_pro(),
-				'lossy_enabled'    => $core->mod->smush->lossy_enabled,
+				'lossy_enabled'    => WP_Smush::is_pro() && $this->settings->get( 'lossy' ),
 				'pro_upgrade_url'  => $pro_upgrade_url,
 				'upgrade_url'      => $upgrade_url,
 			)
