@@ -25,6 +25,7 @@
 * Fix: Browser console errors with CDN auto resizing and webp images
 * Fix: Directory Smush errors on subsites in multisite environments
 * Fix: Fix CDN not enabling on subsites in multisite
+* Fix: JavaScript error during bulk Smush on free version of the plugin
 
 = 3.0.2 =
 
