@@ -39,13 +39,6 @@ class WP_Smushit extends WP_Smush_Module {
 	public $lossy_enabled = false;
 
 	/**
-	 * Whether to Smush the original image.
-	 *
-	 * @var bool $smush_original
-	 */
-	public $smush_original = false;
-
-	/**
 	 * Attachment ID for the image being Smushed currently.
 	 *
 	 * @var int $attachment_id
@@ -378,7 +371,7 @@ class WP_Smushit extends WP_Smush_Module {
 		// Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
 		// Or: If keep exif is unchecked and the smushed image have exif
 		// PNG To JPEG.
-		if ( $this->smush_original ) {
+		if ( $this->settings->get( 'original' ) && WP_Smush::is_pro() ) {
 			// IF full image was not smushed.
 			if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
 				return true;

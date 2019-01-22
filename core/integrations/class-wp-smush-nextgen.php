@@ -706,7 +706,7 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 		if ( ! empty( $sizes ) ) {
 			foreach ( $sizes as $size ) {
 				// Skip Full size, if smush original is not checked.
-				if ( 'full' === $size && ! $smush->smush_original ) {
+				if ( 'full' === $size && ! $this->settings->get( 'original' ) && ! WP_Smush::is_pro() ) {
 					continue;
 				}
 

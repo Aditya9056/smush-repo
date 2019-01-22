@@ -389,7 +389,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$core->initialise();
 
 		// Logic: If none of the required settings is on, don't need to resmush any of the images
-		// We need at least one of these settings to be on, to check if any of the image needs resmush
+		// We need at least one of these settings to be on, to check if any of the image needs resmush.
 
 		// Initialize Media Library Stats.
 		if ( 'nextgen' !== $type && empty( $core->remaining_count ) ) {
@@ -405,7 +405,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$remaining_count = 'nextgen' === $type ? $core->nextgen->ng_admin->remaining_count : $core->remaining_count;
 
-		if ( 0 == $remaining_count && ! $core->mod->smush->lossy_enabled && ! $core->mod->smush->smush_original && ! $this->settings->get( 'strip_exif' ) ) {
+		if ( 0 === (int) $remaining_count && ! $core->mod->smush->lossy_enabled && ( ! $this->settings->get( 'original' ) || ! WP_Smush::is_pro() ) && ! $this->settings->get( 'strip_exif' ) ) {
 			delete_option( $key );
 			delete_site_option( WP_SMUSH_PREFIX . 'run_recheck' );
 			wp_send_json_success( array( 'notice' => $resp ) );
@@ -461,7 +461,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 					$strip_exif = $this->settings->get( 'strip_exif' ) && isset( $smush_data['stats']['keep_exif'] ) && ( 1 == $smush_data['stats']['keep_exif'] );
 
 					// If Original image needs to be smushed.
-					$smush_original = $core->mod->smush->smush_original && empty( $smush_data['sizes']['full'] );
+					$smush_original = $this->settings->get( 'original' ) && WP_Smush::is_pro() && empty( $smush_data['sizes']['full'] );
 
 					if ( $smush_lossy || $strip_exif || $smush_original ) {
 						$should_resmush = true;

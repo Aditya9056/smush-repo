@@ -334,9 +334,6 @@ class WP_Smush_Core {
 		$settings = WP_Smush_Settings::get_instance();
 		// Check if lossy enabled.
 		$this->mod->smush->lossy_enabled = WP_Smush::is_pro() && $settings->get( 'lossy' );
-
-		// Check if Smush original enabled.
-		$this->mod->smush->smush_original = WP_Smush::is_pro() && $settings->get( 'original' );
 	}
 
 	/**
