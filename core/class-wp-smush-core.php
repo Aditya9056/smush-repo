@@ -264,9 +264,6 @@ class WP_Smush_Core {
 		// Handle notice dismiss.
 		$this->dismiss_smush_upgrade();
 
-		// Perform migration if required.
-		$this->migrate();
-
 		// Load integrations.
 		$this->load_integrations();
 	}
@@ -278,50 +275,6 @@ class WP_Smush_Core {
 		if ( isset( $_GET['remove_smush_upgrade_notice'] ) && 1 == $_GET['remove_smush_upgrade_notice'] ) {
 			WP_Smush::get_instance()->admin()->ajax->dismiss_upgrade_notice( false );
 		}
-	}
-
-	/**
-	 * Migrates smushit api message to the latest structure
-	 *
-	 * @todo move to installer class
-	 */
-	private function migrate() {
-		if ( ! version_compare( WP_SMUSH_VERSION, '1.7.1', 'lte' ) ) {
-			return;
-		}
-
-		// Meta key to save migrated version.
-		$migrated_version_key = 'wp-smush-migrated-version';
-
-		$migrated_version = get_site_option( $migrated_version_key );
-
-		if ( WP_SMUSH_VERSION === $migrated_version ) {
-			return;
-		}
-
-		global $wpdb;
-
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->postmeta} WHERE meta_key=%s AND meta_value LIKE %s",
-				'_wp_attachment_metadata',
-				'%wp_smushit%'
-			)
-		);
-
-		if ( count( $results ) < 1 ) {
-			return;
-		}
-
-		$migrator = new WP_Smush_Migrate();
-		foreach ( $results as $attachment_meta ) {
-			$migrated_message = $migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
-			if ( array() !== $migrated_message ) {
-				update_post_meta( $attachment_meta->post_id, WP_Smushit::$smushed_meta_key, $migrated_message );
-			}
-		}
-
-		update_site_option( $migrated_version_key, WP_SMUSH_VERSION );
 	}
 
 	/**
