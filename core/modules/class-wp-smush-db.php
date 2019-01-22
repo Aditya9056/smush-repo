@@ -92,6 +92,12 @@ class WP_Smush_DB {
 		// Check if we can get the unsmushed attachments from the other two variables.
 		if ( ! empty( WP_Smush::get_instance()->core()->attachments ) && ! empty( WP_Smush::get_instance()->core()->smushed_attachments ) ) {
 			$unsmushed_posts = array_diff( WP_Smush::get_instance()->core()->attachments, WP_Smush::get_instance()->core()->smushed_attachments );
+
+			// Remove skipped attachments.
+			if ( ! empty( WP_Smush::get_instance()->core()->smushed_attachments ) ) {
+				$unsmushed_posts = array_diff( $unsmushed_posts, WP_Smush::get_instance()->core()->skipped_attachments );
+			}
+
 			$unsmushed_posts = ! empty( $unsmushed_posts ) && is_array( $unsmushed_posts ) ? array_slice( $unsmushed_posts, 0, $r_limit ) : array();
 		} else {
 			$limit = $this->query_limit();
@@ -109,6 +115,11 @@ class WP_Smush_DB {
 				'meta_query'             => array(
 					array(
 						'key'     => WP_Smushit::$smushed_meta_key,
+						'compare' => 'NOT EXISTS',
+					),
+					array(
+						'key'     => 'wp-smush-ignore-bulk',
+						'value'   => 'true',
 						'compare' => 'NOT EXISTS',
 					),
 				),
@@ -309,6 +320,27 @@ class WP_Smush_DB {
 		wp_cache_set( $key, $return_ids ? $posts : count( $posts ), 'wp-smush' );
 
 		return $return_ids ? $posts : count( $posts );
+	}
+
+	/**
+	 * Return the number of skipped attachments.
+	 *
+	 * @since 3.0
+	 *
+	 * @param bool $force  Force data refresh.
+	 *
+	 * @return array
+	 */
+	public function skipped_count( $force ) {
+		if ( ! $force && $images = wp_cache_get( 'skipped_images', 'wp-smush' ) ) {
+			return $images;
+		}
+
+		global $wpdb;
+		$images = $wpdb->get_col( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='wp-smush-ignore-bulk'" ); // Db call ok.
+		wp_cache_set( 'skipped_images', $images, 'wp-smush' );
+
+		return $images;
 	}
 
 	/**

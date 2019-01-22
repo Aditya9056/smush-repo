@@ -16,7 +16,9 @@
 	}
 
 	.wp-smush-send {
-		display: block;
+		display: inline-block;
+		float: left;
+		margin-right: 5px;
 	}
 
 	.spinner {

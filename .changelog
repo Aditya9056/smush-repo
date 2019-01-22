@@ -4,6 +4,7 @@
 * New: Auto update free version of the plugin to Pro if Dashboard plugin is installed and activated
 * New: Options to preserve settings and data on plugin uninstall
 * New: Option to reset settings to defaults
+* New: Ignore images with errors during bulk Smush
 * Fix: [NextGEN Gallery] bug with stats count
 * Fix: Translation strings and typos
 
