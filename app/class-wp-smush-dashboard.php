@@ -405,10 +405,10 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 	/**
 	 * Display a description in Settings - Usage Tracking.
-     *
-     * @since 3.1.0
-     *
-     * @param string $name  Setting name.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string $name  Setting name.
 	 */
 	public function usage_settings( $name ) {
 		// Add only to full size settings.
@@ -417,13 +417,13 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		}
 		?>
 
-        <span class="sui-description sui-toggle-description">
-            <?php
-            esc_html_e( 'Note: Usage tracking is completely anonymous. We are only tracking what features you are/aren’t using to make our feature decisions more informed.', 'wp-smushit' );
-            ?>
-        </span>
-        <?php
-    }
+		<span class="sui-description sui-toggle-description">
+			<?php
+			esc_html_e( 'Note: Usage tracking is completely anonymous. We are only tracking what features you are/aren’t using to make our feature decisions more informed.', 'wp-smushit' );
+			?>
+		</span>
+		<?php
+	}
 
 	/**
 	 * Show super smush stats in stats section.
@@ -1160,10 +1160,10 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'wp-smushit'
 			),
 			'info'    => __(
-                'Your media is currently being served from the WPMU DEV CDN. Serving images from CDN is only possible
-                on publicly available domains.',
-                'wp-smushit'
-            ),
+				'Your media is currently being served from the WPMU DEV CDN. Serving images from CDN is only possible
+				on publicly available domains.',
+				'wp-smushit'
+			),
 			'error'   => __(
 				'CDN is inactive. You have gone over your 30 day cap so we’ve stopped serving your images.
 					Upgrade your plan now to reactivate this service.',
@@ -1175,7 +1175,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 		if ( $cdn->cdn_enabled && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
-			// 1073741824 = 1024 (kb) * 1024 (mb) * 1024 (gb)
+			// 1073741824 = 1024 (kb) * 1024 (mb) * 1024 (gb).
 			$cdn_status = $cdn->bandwidth / 1073741824 < $cdn->bandwidth_plan ? 'info' : 'error';
 		}
 
@@ -1198,18 +1198,18 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 	/**
 	 * CDN meta box header.
-     *
-     * @since 3.0
+	 *
+	 * @since 3.0
 	 */
 	public function cdn_metabox_header() {
-	    $this->view(
-            'meta-boxes/cdn/meta-box-header',
-            array(
-                'title'   => __( 'CDN', 'wp-smushit' ),
-                'tooltip' => __( 'This feature is likely to work without issue, however our CDN is in beta stage and some issues are still present.', 'wp-smushit' ),
-            )
-        );
-    }
+		$this->view(
+			'meta-boxes/cdn/meta-box-header',
+			array(
+				'title'   => __( 'CDN', 'wp-smushit' ),
+				'tooltip' => __( 'This feature is likely to work without issue, however our CDN is in beta stage and some issues are still present.', 'wp-smushit' ),
+			)
+		);
+	}
 
 	/**
 	 * Settings meta box.
