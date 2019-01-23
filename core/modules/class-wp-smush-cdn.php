@@ -1072,7 +1072,10 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		}
 		*/
 
-		if ( false === strpos( $src, content_url() ) ) {
+		$mapped_domain = $this->check_mapped_domain();
+
+		// URL does not belong to the site or a site mapped domain.
+		if ( false === strpos( $src, content_url() ) && ( is_multisite() && false === strpos( $src, $mapped_domain ) ) ) {
 			return false;
 		}
 
@@ -1083,6 +1086,73 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		}
 
 		return $src;
+	}
+
+	/**
+	 * Support for domain mapping plugin.
+	 *
+	 * @since 3.1.1
+	 */
+	private function check_mapped_domain() {
+		if ( ! is_multisite() ) {
+			return false;
+		}
+
+		$domain = wp_cache_get( 'smush_mapped_site_domain', 'smush' );
+
+		if ( ! $domain ) {
+			global $wpdb;
+
+			$domain = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT domain FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d ORDER BY id ASC LIMIT 1",
+					get_current_blog_id()
+				)
+			);
+
+			if ( null !== $domain ) {
+				wp_cache_add( 'smush_mapped_site_domain', $domain, 'smush' );
+			}
+		}
+
+		return $domain;
+	}
+
+	/**
+	 * Get image tags from page content.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string $content  Page content.
+	 *
+	 * @return array
+	 */
+	private function get_images_from_content( $content ) {
+		$images = array();
+
+		if ( preg_match_all( '/(?:<img[^>]*?\s+?src=["|\'](?P<img_url>[^\s]+?)["|\'].*?>){1}(?:\s*<\/a>)?/is', $content, $images ) ) {
+			foreach ( $images as $key => $unused ) {
+				// Simplify the output as much as possible, mostly for confirming test results.
+				if ( is_numeric( $key ) && $key > 0 )
+					unset( $images[$key] );
+			}
+		}
+
+		return $images;
+	}
+
+	/**
+	 * Add attribute to img tag.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string $element  Image element.
+	 * @param string $name     Img attribute name (srcset, size).
+	 * @param string $value    Attribute value.
+	 */
+	private function add_attribute( &$element, $name, $value ) {
+		$closing = false === strpos( $element, '/>' ) ? '>' : ' />';
+		$element = rtrim( $element, $closing ) . " {$name}=\"{$value}\"{$closing}";
 	}
 
 }

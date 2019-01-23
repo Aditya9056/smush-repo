@@ -437,6 +437,19 @@ jQuery( function ( $ ) {
 		new Smush( $( this ), false );
 	} );
 
+	/** Handle show in bulk smush button click **/
+	$( 'body' ).on( 'click', '.wp-smush-remove-skipped', function( e ) {
+		e.preventDefault();
+
+		// Send Ajax request to remove the image from the skip list.
+		$.post( ajaxurl, {
+			action: 'remove_from_skip_list',
+			id: $(this).attr('data-id')
+		} );
+
+		remove_element( $(this) );
+	} );
+
 	/** Handle NextGen Gallery smush button click **/
 	$( 'body' ).on( 'click', '.wp-smush-nextgen-send', function ( e ) {
 		// prevent the default action
@@ -513,6 +526,15 @@ jQuery( function ( $ ) {
 		var $el = $( this ).parent();
 		remove_element( $el );
 	} );
+
+	/**
+	* Parse remove data change.
+	*/
+	$('input[name=wp-smush-keep_data]').on('change', function (e) {
+		const otherClass = 'keep_data-true' === e.target.id ? 'keep_data-false' : 'keep_data-true';
+		e.target.parentNode.classList.add('active');
+		document.getElementById(otherClass).parentNode.classList.remove('active');
+	});
 
 	// On Click Update Settings. Check for change in settings.
 	$( 'input#wp-smush-save-settings' ).on( 'click', function ( e ) {
@@ -756,6 +778,12 @@ jQuery( function ( $ ) {
 		//Induce Setting button save click
 		$( 'button.wp-smush-all' ).click();
 		$( 'span.sui-notice-dismiss' ).click();
+	} );
+
+	//Trigger Bulk
+	$( 'body' ).on( 'click', '#bulk-smush-top-notice-close', function ( e ) {
+		e.preventDefault();
+        $( this ).parent().parent().slideUp( 'slow' );
 	} );
 
 	//Allow the checkboxes to be Keyboard Accessible

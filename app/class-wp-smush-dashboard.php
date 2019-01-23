@@ -225,7 +225,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				if ( ! $is_pro && ( ! is_network_admin() || $is_networkwide ) ) {
 					$this->add_meta_box(
 						'meta-boxes/pro-features',
-						__( 'Pre Features', 'wp-smushit' ),
+						__( 'Pro Features', 'wp-smushit' ),
 						array( $this, 'pro_features_metabox' ),
 						array( $this, 'pro_features_metabox_header' ),
 						null,
@@ -942,7 +942,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/bulk/meta-box',
 			array(
-				'all_done'         => $core->smushed_count === $core->total_count && empty( $core->resmush_ids ),
+				'all_done'         => $core->smushed_count + $core->skipped_count === $core->total_count && empty( $core->resmush_ids ),
 				'bulk_upgrade_url' => $bulk_upgrade_url,
 				'core'             => $core,
 				'hide_pagespeed'   => get_site_option( WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion' ),
@@ -962,7 +962,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 */
 	public function bulk_settings_metabox() {
 		// Get all grouped settings that can be skipped.
-		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp', 'auto_resize', 'accessible_colors', 'usage' ) );
+		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp', 'auto_resize', 'accessible_colors', 'usage', 'keep_data' ) );
 
 		$this->view(
 			'meta-boxes/bulk-settings/meta-box',
@@ -1016,7 +1016,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/pro-features/meta-box-header',
 			array(
-				'title'       => __( 'Pre Features', 'wp-smushit' ),
+				'title'       => __( 'Pro Features', 'wp-smushit' ),
 				'upgrade_url' => $upgrade_url,
 			)
 		);
@@ -1236,10 +1236,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'translation_link' => $link,
 				'settings'         => $this->settings->get(),
 				'settings_data'    => WP_Smush::get_instance()->core()->settings,
-				'settings_group'   => array(
-					'accessible_colors',
-                    'usage',
-				),
+				'settings_group'   => array( 'accessible_colors', 'usage' ),
 			)
 		);
 	}

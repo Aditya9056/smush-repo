@@ -12,51 +12,6 @@
 class WP_Smush_Cli_Command extends WP_CLI_Command {
 
 	/**
-	 * List unoptimized images.
-	 *
-	 * ## OPTIONS
-	 *
-	 * [<count>]
-	 * : Limit number of images to get.
-	 *
-	 * ## EXAMPLES
-	 *
-	 * # Get all unoptimized images.
-	 * $ wp smush list
-	 *
-	 * # Get the first 100 images that are not optimized.
-	 * $ wp smush list 100
-	 *
-	 * @subcommand list
-	 * @when after_wp_load
-	 */
-	public function _list( $args ) {
-		if ( ! empty( $args ) ) {
-			list( $count ) = $args;
-		} else {
-			$count = -1;
-		}
-
-		$response = WP_CLI::launch_self( 'post list', array( '--meta_compare=NOT EXISTS' ), array(
-			'post_type'      => 'attachment',
-			'fields'         => 'ID, guid, post_mime_type',
-			'meta_key'       => 'wp-smpro-smush-data',
-			'format'         => 'json',
-			'posts_per_page' => (int) $count,
-		), false, true );
-
-		$images = json_decode( $response->stdout );
-
-		if ( empty( $images ) ) {
-			WP_CLI::success( __( 'No uncompressed images found', 'wp-smushit' ) );
-			return;
-		}
-
-		WP_CLI::success( __( 'Unsmushed images:', 'wp-smushit' ) );
-		WP_CLI\Utils\format_items( 'table', $images, array( 'ID', 'guid', 'post_mime_type' ) );
-	}
-
-	/**
 	 * Optimize image.
 	 *
 	 * ## OPTIONS
@@ -94,11 +49,13 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 
 		switch ( $type ) {
 			case 'single':
-				$msg = sprintf( __( 'Smushing image ID: %s', 'wp-smushit' ), absint( $image ) );
+				/* translators: %d - image ID */
+				$msg = sprintf( __( 'Smushing image ID: %d', 'wp-smushit' ), absint( $image ) );
 				$this->smush( $msg, array( $image ) );
 				$this->_list( array() );
 				break;
 			case 'batch':
+				/* translators: %d - number of images */
 				$msg = sprintf( __( 'Smushing first %d images', 'wp-smushit' ), absint( $image ) );
 				$this->smush_all( $msg, $image );
 				break;
@@ -107,6 +64,57 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 				$this->smush_all( __( 'Smushing all images', 'wp-smushit' ) );
 				break;
 		}
+	}
+
+	/**
+	 * List unoptimized images.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [<count>]
+	 * : Limit number of images to get.
+	 *
+	 * ## EXAMPLES
+	 *
+	 * # Get all unoptimized images.
+	 * $ wp smush list
+	 *
+	 * # Get the first 100 images that are not optimized.
+	 * $ wp smush list 100
+	 *
+	 * @subcommand list
+	 * @when after_wp_load
+	 */
+	public function _list( $args ) {
+		if ( ! empty( $args ) ) {
+			list( $count ) = $args;
+		} else {
+			$count = -1;
+		}
+
+		$response = WP_CLI::launch_self(
+			'post list',
+			array( '--meta_compare=NOT EXISTS' ),
+			array(
+				'post_type'      => 'attachment',
+				'fields'         => 'ID, guid, post_mime_type',
+				'meta_key'       => 'wp-smpro-smush-data',
+				'format'         => 'json',
+				'posts_per_page' => (int) $count,
+			),
+			false,
+			true
+		);
+
+		$images = json_decode( $response->stdout );
+
+		if ( empty( $images ) ) {
+			WP_CLI::success( __( 'No uncompressed images found', 'wp-smushit' ) );
+			return;
+		}
+
+		WP_CLI::success( __( 'Unsmushed images:', 'wp-smushit' ) );
+		WP_CLI\Utils\format_items( 'table', $images, array( 'ID', 'guid', 'post_mime_type' ) );
 	}
 
 	/**
@@ -147,6 +155,8 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 	 * @param array  $images  Attachment IDs.
 	 */
 	private function smush( $msg = '', $images = array() ) {
+		$success  = false;
+		$errors   = array();
 		$progress = \WP_CLI\Utils\make_progress_bar( $msg, count( $images ) + 1 );
 
 		$unsmushed_attachments = WP_Smush::get_instance()->core()->mod->db->get_unsmushed_attachments();
@@ -157,16 +167,31 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 			$attachment_id = array_pop( $images );
 
 			// Skip if already Smushed.
-			if ( ! in_array( $attachment_id, $unsmushed_attachments ) ) {
+			if ( ! in_array( (int) $attachment_id, $unsmushed_attachments, true ) ) {
+				/* translators: %d - attachment ID */
+				$errors[] = sprintf( __( 'Image (ID: %d) already compressed', 'wp-smushit' ), $attachment_id );
 				continue;
 			}
 
+			$success = true;
+
+			// We need to initialize the database module (maybe all other modules as well?).
+			WP_Smush::get_instance()->core()->mod->backup->initialize();
 			WP_Smush::get_instance()->core()->mod->smush->smush_single( $attachment_id, true );
 		}
 
 		$progress->tick();
 		$progress->finish();
-		WP_CLI::success( __( 'Image compressed', 'wp-smushit' ) );
+
+		if ( ! empty( $errors ) ) {
+			foreach ( $errors as $error ) {
+				WP_CLI::warning( $error );
+			}
+		}
+
+		if ( $success ) {
+			WP_CLI::success( __( 'Image compressed', 'wp-smushit' ) );
+		}
 	}
 
 	/**
@@ -213,7 +238,7 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 		}
 
 		if ( 0 !== $id ) {
-			if ( ! in_array( $id, $attachments ) ) {
+			if ( ! in_array( (string) $id, $attachments, true ) ) {
 				WP_CLI::warning( __( 'Image with defined ID not found', 'wp-smushit' ) );
 				return;
 			}
@@ -223,13 +248,86 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 
 		$progress = \WP_CLI\Utils\make_progress_bar( __( 'Restoring images', 'wp-smushit' ), count( $attachments ) );
 
+		$warning = false;
 		foreach ( $attachments as $attachment_id ) {
+			if ( ! $this->can_restore( $attachment_id ) ) {
+				$warning = true;
+				WP_CLI::warning( __( "Image {$attachment_id} cannot be restored", 'wp-smushit' ) );
+				$progress->tick();
+				continue;
+			}
+
 			$core->mod->backup->restore_image( $attachment_id, false );
 			$progress->tick();
 		}
 
 		$progress->finish();
-		WP_CLI::success( __( 'All images restored', 'wp-smushit' ) );
+
+		if ( $warning ) {
+			WP_CLI::error( __( 'There were issues restoring some images', 'wp-smushit' ) );
+		} else {
+			WP_CLI::success( __( 'All images restored', 'wp-smushit' ) );
+		}
+
+	}
+
+	/**
+	 * Verify, that image can be restored.
+	 *
+	 * TODO: this copies the Smush code, so it needs to be refactored.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param int $image_id  Attachment ID.
+	 *
+	 * @return bool
+	 */
+	private function can_restore( $image_id ) {
+		// Get the image path for all sizes.
+		$file = get_attached_file( $image_id );
+
+		// Get stored backup path, if any.
+		$backup_sizes = get_post_meta( $image_id, '_wp_attachment_backup_sizes', true );
+
+		// Check if we've a backup path.
+		if ( ! empty( $backup_sizes ) && ( ! empty( $backup_sizes['smush-full'] ) || ! empty( $backup_sizes['smush_png_path'] ) ) ) {
+			// Check for PNG backup.
+			$backup = ! empty( $backup_sizes['smush_png_path'] ) ? $backup_sizes['smush_png_path'] : '';
+
+			// Check for original full size image backup.
+			$backup = empty( $backup ) && ! empty( $backup_sizes['smush-full'] ) ? $backup_sizes['smush-full'] : $backup;
+			$backup = ! empty( $backup['file'] ) ? $backup['file'] : '';
+		}
+
+		// If we still don't have a backup path, use traditional method to get it.
+		if ( empty( $backup ) ) {
+			// Check backup for Full size.
+			$backup = WP_Smush::get_instance()->core()->mod->smush->get_image_backup_path( $file );
+		} else {
+			// Get the full path for file backup.
+			$backup = str_replace( wp_basename( $file ), wp_basename( $backup ), $file );
+		}
+
+		$file_exists = apply_filters( 'smush_backup_exists', file_exists( $backup ), $image_id, $backup );
+
+		if ( $file_exists ) {
+			return true;
+		}
+
+		// Additional Backup Check for JPEGs converted from PNG.
+		$pngjpg_savings = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+		if ( ! empty( $pngjpg_savings ) ) {
+
+			// Get the original File path and check if it exists.
+			$backup = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
+			$backup = WP_Smush::get_instance()->core()->mod->smush->original_file( $backup );
+
+			if ( ! empty( $backup ) && is_file( $backup ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

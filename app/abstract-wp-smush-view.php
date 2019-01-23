@@ -317,10 +317,10 @@ abstract class WP_Smush_View {
 		// Load page header.
 		$this->render_page_header();
 
-		$hide_quick_setup = false !== get_site_option( 'skip-smush-setup' );
+		$hide_quick_setup = false !== get_option( 'skip-smush-setup' );
 
 		// Show configure screen for only a new installation and for only network admins.
-		if ( ( ! is_multisite() && ! $hide_quick_setup ) || ( is_network_admin() && $this->settings->is_network_enabled() && ! $hide_quick_setup ) ) {
+		if ( ( ! is_multisite() && ! $hide_quick_setup ) || ( is_multisite() && ! is_network_admin() && ! $this->settings->is_network_enabled() && ! $hide_quick_setup ) ) {
 			$this->view( 'modals/onboarding' );
 			$this->view( 'modals/checking-files' );
 		}

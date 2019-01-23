@@ -1,6 +1,12 @@
-= 3.1.1 =
+= 3.2.0 =
 
-Fix: [NextGEN Gallery] bug with stats count
+* New: CDN support for mapped domains in multisite
+* New: Auto update free version of the plugin to Pro if Dashboard plugin is installed and activated
+* New: Options to preserve settings and data on plugin uninstall
+* New: Option to reset settings to defaults
+* New: Ignore images with errors during bulk Smush
+* Fix: [NextGEN Gallery] bug with stats count
+* Fix: Translation strings and typos
 
 = 3.1.0 =
 
@@ -15,9 +21,11 @@ Fix: [NextGEN Gallery] bug with stats count
 * Enhance: CSS for highlighting incorrectly sized images
 * Enhance: Preserve stats during options updates
 * Enhance: CDN will now only accept JPG/PNG/GIF images - no more warnings in browser console
-* Fix: Browser console errors in with CDN auto resizing and webp images
+* Enhance: Support for Edge browser (and some older browser versions)
+* Fix: Browser console errors with CDN auto resizing and webp images
 * Fix: Directory Smush errors on subsites in multisite environments
 * Fix: Fix CDN not enabling on subsites in multisite
+* Fix: JavaScript error during bulk Smush on free version of the plugin
 
 = 3.0.2 =
 

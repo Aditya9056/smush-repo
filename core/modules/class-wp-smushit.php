@@ -236,7 +236,8 @@ class WP_Smushit extends WP_Smush_Module {
 			$wp_smush_data = true;
 
 			// The status.
-			$status_txt = __( 'Not processed', 'wp-smushit' );
+			$ignored = get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true );
+			$status_txt = 'true' === $ignored ? __( 'Ignored in Bulk Smush', 'wp-smushit' ) : __( 'Not processed', 'wp-smushit' );
 
 			// We need to show the smush button.
 			$show_button = true;
@@ -719,7 +720,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 * @param bool    $echo         If true, it directly outputs the HTML.
 	 * @param bool    $wrapper      Whether to return the button with wrapper div or not.
 	 *
-	 * @return string|void
+	 * @return string
 	 */
 	private function column_html( $id, $html = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
 		$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png', 'image/gif' );
@@ -747,29 +748,29 @@ class WP_Smushit extends WP_Smush_Module {
 			return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 		}
 
-		$mode_class = ! empty( $_POST['mode'] ) && 'grid' === $_POST['mode'] ? ' button-primary' : '';
-		if ( ! $echo ) {
-			$button_class = $wrapper || ! empty( $mode_class ) ? 'button button-primary wp-smush-send' : 'button button-primary wp-smush-send';
-			$html        .= '
-			<button  class="' . $button_class . '" data-id="' . $id . '">
-                ' . $button_txt . '
-			</button>';
-			if ( ! $smushed ) {
-				$class = ' unsmushed';
-			} else {
-				$class = ' smushed';
-			}
+		$html .= '
+		<button  class="button button-primary wp-smush-send" data-id="' . $id . '">
+            ' . $button_txt . '
+		</button>';
 
-			$html .= $this->progress_bar();
+		$skipped = get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true );
+		if ( 'true' === $skipped ) {
+			$nonce = wp_create_nonce( 'wp-smush-remove-skipped' );
+			$html .= '
+			<button  class="button button-primary wp-smush-remove-skipped" data-id="' . $id . '" data-nonce="' . $nonce . '">
+                ' . __( 'Show in bulk Smush', 'wp-smushit' ) . '
+			</button>';
+		}
+
+		$html .= $this->progress_bar();
+
+		if ( ! $echo ) {
+			$class = $smushed ? ' smushed' : ' unsmushed';
 			$html  = $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 
 			return $html;
 		}
 
-		$html .= '<button class="button button-primary wp-smush-send' . $mode_class . '" data-id="' . $id . '">
-			' . $button_txt . '
-		</button>';
-		$html  = $html . $this->progress_bar();
 		echo $html;
 	}
 

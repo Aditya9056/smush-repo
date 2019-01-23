@@ -194,6 +194,13 @@
 				.smush-onboarding-arrows { display: none; }
 				.sui-button-gray { display: inline-block !important; }
 			}
+			@media screen and (max-width: 320px) {
+				.sui-box { margin: 46px 0 0 !important; }
+				.smush-onboarding-skip-link { bottom: -30px; }
+				.sui-dialog-content { padding: 0 10px; }
+				.sui-box-body > * { margin-bottom: 10px !important; }
+				.sui-box-footer { padding: 0 0 10px !important; }
+			}
 		} // End .smush-onboarding-dialog
 
 		// Overwrite extra padding on progress bars in modals.
@@ -206,21 +213,23 @@
 			.wp-smush-progress-inner {
 				background: #FECF2F !important;
 			}
-
-			.sui-progress-text:before {
-				content: "!";
-				animation: none;
-				color: #FECF2F;
-			}
-
-			.sui-icon-close:before {
-				content: "´";
-			}
 		}
 		// Directory smush overwrites when limit exceeded
 		.wp-smush-progress-dialog.wp-smush-exceed-limit {
 			.sui-hidden {
 				display: block;
+			}
+
+			.sui-progress {
+				.sui-progress-icon {
+					.sui-icon-loader {
+						@include icon( before, info );
+						&:before {
+							color: #fecf2f;
+							animation: none;
+						}
+					}
+				}
 			}
 
 			.sui-progress-bar span {
@@ -423,6 +432,14 @@
 			}
 		}
 
+		// Settings - keep data.
+		.smush-keep-data-form-row {
+			.sui-tabs-menu,
+			.sui-button-ghost {
+				margin-top: 15px;
+			}
+		}
+
 		.sui-summary-smush {
 			background-size: 180px;
 		}
@@ -460,6 +477,11 @@
 
 		.sui-upsell-row {
 			margin-top: 30px;
+
+			@media screen and (min-width: 1921px) {
+				margin-top: 60px;
+			}
+
 			.sui-upsell-image {
 				&.sui-upsell-image-smush:not(.integrations-upsell-image) {
 					bottom: -30px;

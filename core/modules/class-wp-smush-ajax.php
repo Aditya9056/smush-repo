@@ -66,6 +66,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		add_action( 'wp_ajax_ignore_bulk_image', array( $this, 'ignore_bulk_image' ) );
 		// Handle Smush Bulk Ajax.
 		add_action( 'wp_ajax_wp_smushit_bulk', array( $this, 'process_smush_request' ) );
+		// Remove from skip list.
+		add_action( 'wp_ajax_remove_from_skip_list', array( $this, 'remove_from_skip_list' ) );
 
 		/**
 		 * DIRECTORY SMUSH
@@ -92,7 +94,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 */
 	public function skip_smush_setup() {
 		check_ajax_referer( 'smush_quick_setup' );
-		update_site_option( 'skip-smush-setup', true );
+		update_option( 'skip-smush-setup', true );
 		wp_send_json_success();
 	}
 
@@ -144,7 +146,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// Update the resize sizes.
 		$this->settings->set_setting( WP_SMUSH_PREFIX . 'settings', $settings );
 
-		update_site_option( 'skip-smush-setup', true );
+		update_option( 'skip-smush-setup', true );
 
 		wp_send_json_success();
 	}
@@ -560,7 +562,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 						<p>' . $message . '</p>
 					</div>
 					<span class="sui-notice-dismiss">
-						<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check"></a>
+						<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check" id="bulk-smush-top-notice-close"></a>
 					</span>
 				</div>';
 		}
@@ -854,6 +856,23 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 				'show_warning' => intval( $smush->show_warning() ),
 			)
 		);
+	}
+
+	/**
+	 * Remove the image meta that is making the image skip bulk smush.
+	 *
+	 * @since 3.0
+	 */
+	public function remove_from_skip_list() {
+		wp_verify_nonce( 'wp-smush-remove-skipped' );
+
+		if ( ! isset( $_POST['id'] ) ) {
+			wp_send_json_error();
+		}
+
+		delete_post_meta( absint( $_POST['id'] ), 'wp-smush-ignore-bulk' );
+
+		wp_send_json_success();
 	}
 
 	/***************************************
