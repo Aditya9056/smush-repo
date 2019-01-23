@@ -1174,8 +1174,8 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$cdn_status = 'warning';
 
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
-		if ( $cdn->cdn_enabled && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
-			// 1073741824 = 1024 (kb) * 1024 (mb) * 1024 (gb)
+		if ( isset( $cdn->cdn_enabled ) && $cdn->cdn_enabled && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
+			// 1073741824 = 1024 (kb) * 1024 (mb) * 1024 (gb).
 			$cdn_status = $cdn->bandwidth / 1073741824 < $cdn->bandwidth_plan ? 'info' : 'error';
 		}
 
