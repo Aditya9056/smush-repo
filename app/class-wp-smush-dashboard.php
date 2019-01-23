@@ -86,7 +86,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'directory'    => __( 'Directory Smush', 'wp-smushit' ),
 				'integrations' => __( 'Integrations', 'wp-smushit' ),
 				'cdn'          => __( 'CDN', 'wp-smushit' ),
-				'lazyload'     => __( 'Lazyload', 'wp-smushit' ),
+				'lazy_load'    => __( 'Lazyload', 'wp-smushit' ),
 				'settings'     => __( 'Settings', 'wp-smushit' ),
 			)
 		);
@@ -270,15 +270,15 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 				break;
 
-			case 'lazyload':
-				if ( ! $this->settings->get( 'lazyload' ) ) {
+			case 'lazy_load':
+				if ( ! $this->settings->get( 'lazy_load' ) ) {
 					$this->add_meta_box(
 						'meta-boxes/lazyload/disabled',
 						__( 'Lazyload', 'wp-smushit' ),
 						null,
 						array( $this, 'lazyload_metabox_header' ),
 						null,
-						'lazyload',
+						'lazy_load',
 						array(
 							'box_class' => 'sui-box sui-message sui-no-padding',
 						)
@@ -290,7 +290,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						null,
 						array( $this, 'lazyload_metabox_header' ),
 						null,
-						'lazyload'
+						'lazy_load'
 					);
 				}
 
