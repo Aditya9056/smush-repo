@@ -352,13 +352,8 @@ class WP_Smush_Settings {
 				continue;
 			}
 
-			// Get the value to be saved.
-			$setting = isset( $_POST[ WP_SMUSH_PREFIX . $name ] ) && $_POST[ WP_SMUSH_PREFIX . $name ] ? true : false; // Input var ok.
-
-			$settings[ $name ] = $setting;
-
-			// Unset the var for next loop.
-			unset( $setting );
+			// Update the setting.
+			$settings[ $name ] = filter_input( INPUT_POST, WP_SMUSH_PREFIX . $name, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 		}
 
 		// Update initialised settings.
