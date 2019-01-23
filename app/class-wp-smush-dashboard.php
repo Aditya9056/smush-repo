@@ -287,7 +287,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					$this->add_meta_box(
 						'meta-boxes/lazyload',
 						__( 'Lazyload', 'wp-smushit' ),
-						null,
+						array( $this, 'lazyload_metabox' ),
 						array( $this, 'lazyload_metabox_header' ),
 						null,
 						'lazy_load'
@@ -1280,6 +1280,18 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'title'   => __( 'Lazyload', 'wp-smushit' ),
 				'tooltip' => __( 'This feature is likely to work without issue, however lazyload is in beta stage and some issues are still present', 'wp-smushit' ),
 			)
+		);
+	}
+
+	/**
+	 * Lazy-load meta box.
+	 *
+	 * @since 3.2.0
+	 */
+	public function lazyload_metabox() {
+		$this->view(
+			'meta-boxes/lazyload/meta-box',
+			array()
 		);
 	}
 

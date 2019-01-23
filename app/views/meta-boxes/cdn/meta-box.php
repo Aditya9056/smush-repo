@@ -165,6 +165,7 @@
 		</div>
 		<div class="sui-box-settings-col-2">
 			<button class="sui-button sui-button-ghost" id="smush-cancel-cdn">
+				<i class="sui-icon-power-on-off" aria-hidden="true"></i>
 				<?php esc_html_e( 'Deactivate', 'wp-smushit' ); ?>
 			</button>
 			<span class="sui-description">

@@ -56,6 +56,8 @@ class WP_Smush_Settings {
 	/**
 	 * List of fields in bulk smush form.
 	 *
+	 * @used-by process_options()
+	 *
 	 * @var array
 	 */
 	private $bulk_fields = array(
@@ -73,6 +75,8 @@ class WP_Smush_Settings {
 	/**
 	 * List of fields in integration form.
 	 *
+	 * @used-by process_options()
+	 *
 	 * @var array
 	 */
 	private $integration_fields = array(
@@ -83,6 +87,8 @@ class WP_Smush_Settings {
 
 	/**
 	 * List of fields in CDN form.
+	 *
+	 * @used-by process_options()
 	 *
 	 * @var array
 	 */
@@ -95,6 +101,8 @@ class WP_Smush_Settings {
 	/**
 	 * List of fields in Settings form.
 	 *
+	 * @used-by process_options()
+	 *
 	 * @var array
 	 */
 	private $settings_fields = array(
@@ -102,6 +110,15 @@ class WP_Smush_Settings {
 		'usage',
 		'keep_data',
 	);
+
+	/**
+	 * List of fields in Lazy-load form.
+	 *
+	 * @used-by process_options()
+	 *
+	 * @var array
+	 */
+	private $lazy_load_fields = array( 'lazy_load' );
 
 	/**
 	 * Return the plugin instance.
