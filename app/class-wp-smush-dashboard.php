@@ -337,6 +337,8 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			if ( $cdn && isset( $status->cdn_enabled ) && ! $status->cdn_enabled ) {
 				echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
 			}
+		} elseif ( 'lazy_load' === $tab && $this->settings->get( 'lazy_load' ) ) {
+			echo '<i class="sui-icon-check-tick sui-info" aria-hidden="true"></i>';
 		}
 	}
 
