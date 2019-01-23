@@ -145,7 +145,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				__( 'Settings', 'wp-smushit' ),
 				array( $this, 'bulk_settings_metabox' ),
 				null,
-				null,
+				array( $this, 'common_metabox_footer' ),
 				'bulk',
 				array(
 					'box_class' => "sui-box {$settings_class}",
@@ -178,7 +178,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					__( 'Integrations', 'wp-smushit' ),
 					array( $this, 'integrations_metabox' ),
 					null,
-					array( $this, 'integrations_metabox_footer' ),
+					array( $this, 'common_metabox_footer' ),
 					'integrations',
 					array(
 						'box_class'         => "sui-box {$class}",
@@ -214,7 +214,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						__( 'Settings', 'wp-smushit' ),
 						array( $this, 'bulk_settings_metabox' ),
 						null,
-						null,
+						array( $this, 'common_metabox_footer' ),
 						'bulk',
 						array(
 							'box_class' => "sui-box {$settings_class}",
@@ -262,7 +262,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 							__( 'CDN', 'wp-smushit' ),
 							array( $this, 'cdn_metabox' ),
 							array( $this, 'cdn_metabox_header' ),
-							null,
+							array( $this, 'common_metabox_footer' ),
 							'cdn'
 						);
 					}
@@ -289,7 +289,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						__( 'Lazyload', 'wp-smushit' ),
 						array( $this, 'lazyload_metabox' ),
 						array( $this, 'lazyload_metabox_header' ),
-						null,
+						array( $this, 'common_metabox_footer' ),
 						'lazy_load'
 					);
 				}
@@ -302,7 +302,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					__( 'Settings', 'wp-smushit' ),
 					array( $this, 'settings_metabox' ),
 					null,
-					null,
+					array( $this, 'common_metabox_footer' ),
 					'settings'
 				);
 				break;
@@ -1121,23 +1121,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
-	 * Integrations meta box footer.
-	 */
-	public function integrations_metabox_footer() {
-		/**
-		 * Filter to enable/disable submit button in integration settings.
-		 *
-		 * @param bool $show_submit Should show submit?
-		 */
-		$this->view(
-			'meta-boxes/integrations/meta-box-footer',
-			array(
-				'show_submit' => apply_filters( 'wp_smush_integration_show_submit', false ),
-			)
-		);
-	}
-
-	/**
 	 * CDN meta box (for free users).
 	 *
 	 * @since 3.0
@@ -1295,6 +1278,15 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			'meta-boxes/lazyload/meta-box',
 			array()
 		);
+	}
+
+	/**
+	 * Common footer meta box.
+	 *
+	 * @since 3.2.0
+	 */
+	public function common_metabox_footer() {
+		$this->view( 'common/meta-box-footer', array() );
 	}
 
 }

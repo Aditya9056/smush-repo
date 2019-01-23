@@ -2,7 +2,7 @@
 /**
  * Lazy load images class: WP_Smush_Lazy_Load
  *
- * @since 3.2
+ * @since 3.2.0
  * @package WP_Smush
  */
 
@@ -12,13 +12,28 @@
 class WP_Smush_Lazy_Load extends WP_Smush_Content {
 
 	/**
+	 * Lazy-loading settings.
+	 *
+	 * @since 3.2.0
+	 * @var array $settings
+	 */
+	//private $settings;
+
+	/**
 	 * Initialize module actions.
 	 *
 	 * @since 3.2.0
 	 */
 	public function init() {
-		// Only run on front end.
-		if ( is_admin() ) {
+		// Only run on front end and if lazy-loading is enabled.
+		if ( is_admin() || ! $this->settings->get( 'lazy_load' ) ) {
+			return;
+		}
+
+		//$this->settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+
+		// Enabled without settings? Don't think so... Exit.
+		if ( ! $this->settings ) {
 			return;
 		}
 

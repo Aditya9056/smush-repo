@@ -537,7 +537,7 @@ jQuery( function ( $ ) {
 	});
 
 	// On Click Update Settings. Check for change in settings.
-	$( 'input#wp-smush-save-settings' ).on( 'click', function ( e ) {
+	$( 'button#wp-smush-save-settings' ).on( 'click', function ( e ) {
 		e.preventDefault();
 
 		let setting_type = '';
@@ -567,40 +567,16 @@ jQuery( function ( $ ) {
 				return true;
 			} );
 		} else {
-			// Get all the main settings.
-			const strip_exif     = document.getElementById( "wp-smush-strip_exif" ),
-				  super_smush    = document.getElementById( "wp-smush-lossy" ),
-				  smush_original = document.getElementById( "wp-smush-original" ),
-				  resize_images  = document.getElementById( "wp-smush-resize" ),
-				  smush_pngjpg   = document.getElementById( "wp-smush-png_to_jpg" ),
-				  webp           = document.getElementById( "wp-smush-webp" ),
-				  detection      = document.getElementById( 'wp-smush-detection' );
-
-			let update_button_txt = true;
-
 			$( '.wp-smush-hex-notice' ).hide();
-
-			// If Preserve Exif is Checked, and all other settings are off, just save the settings.
-			if ( ( strip_exif === null || ! strip_exif.checked )
-				&& ( super_smush === null || ! super_smush.checked )
-				&& ( smush_original === null || ! smush_original.checked )
-				&& ( resize_images === null || ! resize_images.checked )
-				&& ( smush_pngjpg === null || ! smush_pngjpg.checked )
-				&& ( webp === null || ! webp.checked )
-				&& ( detection === null || ! detection.checked )
-			) {
-				update_button_txt = false;
-			}
 
 			// Update text.
 			self.attr( 'disabled', 'disabled' ).addClass( 'button-grey' );
 
-			if ( update_button_txt ) {
-				if ( 'undefined' !== typeof self.attr( 'data-msg' ) ) {
-					self.val( self.attr( 'data-msg' ) );
-				} else {
-					self.val( wp_smush_msgs.checking );
-				}
+			// Update save button text.
+			if ( 'undefined' !== typeof self.attr( 'data-msg' ) && self.attr( 'data-msg' ).length > 0 ) {
+				self.html( self.attr( 'data-msg' ) );
+			} else {
+				self.html( wp_smush_msgs.checking );
 			}
 
 			// Check if type is set in data attributes.
