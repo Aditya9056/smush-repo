@@ -27,8 +27,9 @@ abstract class WP_Smush_Content extends WP_Smush_Module {
 		if ( preg_match_all( '/(?:<img[^>]*?\s+?src=["|\'](?P<img_url>[^\s]+?)["|\'].*?>){1}(?:\s*<\/a>)?/is', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
-				if ( is_numeric( $key ) && $key > 0 )
-					unset( $images[$key] );
+				if ( is_numeric( $key ) && $key > 0 ) {
+					unset( $images[ $key ] );
+				}
 			}
 		}
 
@@ -36,7 +37,7 @@ abstract class WP_Smush_Content extends WP_Smush_Module {
 	}
 
 	/**
-	 * Add attribute to img tag.
+	 * Add attribute to selected tag.
 	 *
 	 * @since 3.1.0
 	 * @since 3.2.0  Moved to WP_Smush_Content from WP_Smush_CDN
@@ -50,6 +51,14 @@ abstract class WP_Smush_Content extends WP_Smush_Module {
 		$element = rtrim( $element, $closing ) . " {$name}=\"{$value}\"{$closing}";
 	}
 
+	/**
+	 * Remove attribute from selected tag.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $element    Image element.
+	 * @param string $attribute  Img attribute name (srcset, size, etc).
+	 */
 	protected function remove_attribute( &$element, $attribute ) {
 		$element = preg_replace( '/' . $attribute . '=\\"[^\\"]*\\"/', '', $element );
 	}
