@@ -50,6 +50,7 @@ class WP_Smush_Settings {
 		'usage'             => true,
 		'accessible_colors' => false,
 		'keep_data'         => true,
+		'lazyload'          => false,
 	);
 
 	/**

@@ -86,6 +86,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'directory'    => __( 'Directory Smush', 'wp-smushit' ),
 				'integrations' => __( 'Integrations', 'wp-smushit' ),
 				'cdn'          => __( 'CDN', 'wp-smushit' ),
+				'lazyload'     => __( 'Lazyload', 'wp-smushit' ),
 				'settings'     => __( 'Settings', 'wp-smushit' ),
 			)
 		);
@@ -265,6 +266,32 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 							'cdn'
 						);
 					}
+				}
+
+				break;
+
+			case 'lazyload':
+				if ( ! $this->settings->get( 'lazyload' ) ) {
+					$this->add_meta_box(
+						'meta-boxes/lazyload/disabled',
+						__( 'Lazyload', 'wp-smushit' ),
+						null,
+						array( $this, 'lazyload_metabox_header' ),
+						null,
+						'lazyload',
+						array(
+							'box_class' => 'sui-box sui-message sui-no-padding',
+						)
+					);
+				} else {
+					$this->add_meta_box(
+						'meta-boxes/lazyload',
+						__( 'Lazyload', 'wp-smushit' ),
+						null,
+						array( $this, 'lazyload_metabox_header' ),
+						null,
+						'lazyload'
+					);
 				}
 
 				break;
@@ -1237,6 +1264,21 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'settings'         => $this->settings->get(),
 				'settings_data'    => WP_Smush::get_instance()->core()->settings,
 				'settings_group'   => array( 'accessible_colors', 'usage' ),
+			)
+		);
+	}
+
+	/**
+	 * Lazy-load meta box header.
+	 *
+	 * @since 3.2.0
+	 */
+	public function lazyload_metabox_header() {
+		$this->view(
+			'meta-boxes/lazyload/meta-box-header',
+			array(
+				'title'   => __( 'Lazyload', 'wp-smushit' ),
+				'tooltip' => __( 'This feature is likely to work without issue, however lazyload is in beta stage and some issues are still present', 'wp-smushit' ),
 			)
 		);
 	}
