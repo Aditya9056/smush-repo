@@ -356,12 +356,12 @@
 
 				<div class="sui-side-tabs sui-tabs">
 					<div data-tabs>
-						<label for="noscript-enable" class="sui-tab-item active">
+						<label for="noscript-enable" class="sui-tab-item <?php echo $settings['noscript'] ? 'active' : ''; ?>">
 							<input type="radio" name="noscript" value="on" id="noscript-enable" <?php checked( $settings['noscript'] ); ?> />
 							<?php esc_html_e( 'Enable', 'wp-smushit' ); ?>
 						</label>
 
-						<label for="noscript-disable" class="sui-tab-item">
+						<label for="noscript-disable" class="sui-tab-item <?php echo $settings['noscript'] ? '' : 'active'; ?>">
 							<input type="radio" name="noscript" value="off" id="noscript-disable" <?php checked( $settings['noscript'], false ); ?> />
 							<?php esc_html_e( 'Disable', 'wp-smushit' ); ?>
 						</label>
