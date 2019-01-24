@@ -285,7 +285,7 @@ class WP_Smush_Settings {
 			return;
 		}
 
-		$pages_with_settings = array( 'bulk', 'integration', 'cdn', 'settings' );
+		$pages_with_settings = array( 'bulk', 'integration', 'cdn', 'settings', 'lazy_load' );
 		$setting_form        = isset( $_POST['setting_form'] ) ? sanitize_text_field( wp_unslash( $_POST['setting_form'] ) ) : '';
 
 		// Continue only if form name is set.
@@ -311,15 +311,12 @@ class WP_Smush_Settings {
 			delete_site_option( WP_SMUSH_PREFIX . 'hide_s3support_alert' );
 		}
 
-		// Current form fields.
-		$form_fields = $this->{$setting_form . '_fields'};
-
 		$core_settings = WP_Smush::get_instance()->core()->settings;
 
 		// Process each setting and update options.
 		foreach ( $core_settings as $name => $text ) {
 			// Do not update if field is not available in current form.
-			if ( ! in_array( $name, $form_fields, true ) ) {
+			if ( ! in_array( $name, $this->{$setting_form . '_fields'}, true ) ) {
 				continue;
 			}
 
@@ -327,42 +324,74 @@ class WP_Smush_Settings {
 			$settings[ $name ] = filter_input( INPUT_POST, WP_SMUSH_PREFIX . $name, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 		}
 
-		// Update initialised settings.
-		$this->settings = $settings;
-
-		$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
-
 		// Settings that are specific to a page.
 		if ( 'bulk' === $setting_form ) {
-			// Save the selected image sizes.
-			$image_sizes = array();
-			if ( ! empty( $_POST['wp-smush-image_sizes'] ) ) {
-				$image_sizes = array_filter( array_map( 'sanitize_text_field', wp_unslash( $_POST['wp-smush-image_sizes'] ) ) );
-			}
-			$this->set_setting( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
-
-			// Update Resize width and height settings if set.
-			$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0; // Input var ok.
-			$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0; // Input var ok.
-			$this->set_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+			$this->parse_bulk_settings();
 		}
 
 		if ( 'cdn' === $setting_form ) {
-			// $status = connect to CDN.
-			$enabled = WP_Smush::get_instance()->core()->mod->cdn->get_status();
-			if ( ! $enabled ) {
-				$response = WP_Smush::get_instance()->api()->enable();
-				$response = json_decode( $response['body'] );
-				$this->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $response->data );
-			}
+			$this->parse_cdn_settings();
+		}
+
+		if ( 'lazy_load' === $setting_form ) {
+			$this->parse_lazy_load_settings();
 		}
 
 		// Store the option in table.
+		$this->set_setting( WP_SMUSH_PREFIX . 'settings', $settings );
 		$this->set_setting( WP_SMUSH_PREFIX . 'settings_updated', 1 );
 
 		if ( $json_response ) {
 			wp_send_json_success();
 		}
+	}
+
+	/**
+	 * Parse bulk Smush specific settings.
+	 *
+	 * @since 3.2.0  Moved from save method.
+	 */
+	private function parse_bulk_settings() {
+		$image_sizes = array();
+
+		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
+
+		// Save the selected image sizes.
+		if ( ! empty( $_POST['wp-smush-image_sizes'] ) ) {
+			$image_sizes = array_filter( array_map( 'sanitize_text_field', wp_unslash( $_POST['wp-smush-image_sizes'] ) ) );
+		}
+
+		// Update Resize width and height settings if set.
+		$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0; // Input var ok.
+		$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0; // Input var ok.
+
+		$this->set_setting( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
+		$this->set_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+	}
+
+	/**
+	 * Parse CDN specific settings.
+	 *
+	 * @since 3.2.0  Moved from save method.
+	 */
+	private function parse_cdn_settings() {
+		// $status = connect to CDN.
+		$enabled = WP_Smush::get_instance()->core()->mod->cdn->get_status();
+
+		if ( ! $enabled ) {
+			$response = WP_Smush::get_instance()->api()->enable();
+			$response = json_decode( $response['body'] );
+
+			$this->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $response->data );
+		}
+	}
+
+	/**
+	 * Parse lazy-load specific settings.
+	 *
+	 * @since 3.2.0
+	 */
+	private function parse_lazy_load_settings() {
 	}
 
 }

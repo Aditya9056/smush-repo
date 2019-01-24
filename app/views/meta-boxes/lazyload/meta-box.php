@@ -45,17 +45,17 @@
 					<div class="sui-tab-boxed active">
 						<small><?php esc_html_e( 'Formats', 'wp-smushit' ); ?></small>
 						<label for="format-jpeg" class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="format-jpeg" />
+							<input type="checkbox" name="wp-smush-format[jpeg]" id="format-jpeg" />
 							<span aria-hidden="true"></span>
 							<span><?php esc_html_e( '.jpeg', 'wp-smushit' ); ?></span>
 						</label>
 						<label for="format-png" class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="format-png" />
+							<input type="checkbox" name="wp-smush-format[png]" id="format-png" />
 							<span aria-hidden="true"></span>
 							<span><?php esc_html_e( '.png', 'wp-smushit' ); ?></span>
 						</label>
 						<label for="format-gif" class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="format-gif" />
+							<input type="checkbox" name="wp-smush-format[gif]" id="format-gif" />
 							<span aria-hidden="true"></span>
 							<span><?php esc_html_e( '.gif', 'wp-smushit' ); ?></span>
 						</label>
@@ -77,22 +77,22 @@
 		</div>
 		<div class="sui-box-settings-col-2">
 			<label for="output-content" class="sui-checkbox sui-checkbox-stacked">
-				<input type="checkbox" id="output-content" />
+				<input type="checkbox" name="wp-smush-output[content]" id="output-content" />
 				<span aria-hidden="true"></span>
 				<span><?php esc_html_e( 'Content', 'wp-smushit' ); ?></span>
 			</label>
 			<label for="output-widgets" class="sui-checkbox sui-checkbox-stacked">
-				<input type="checkbox" id="output-widgets" />
+				<input type="checkbox" name="wp-smush-output[widgets]" id="output-widgets" />
 				<span aria-hidden="true"></span>
 				<span><?php esc_html_e( 'Widgets', 'wp-smushit' ); ?></span>
 			</label>
 			<label for="output-thumbnails" class="sui-checkbox sui-checkbox-stacked">
-				<input type="checkbox" id="output-thumbnails" />
+				<input type="checkbox" name="wp-smush-output[thumbnails]" id="output-thumbnails" />
 				<span aria-hidden="true"></span>
 				<span><?php esc_html_e( 'Post Thumbnail', 'wp-smushit' ); ?></span>
 			</label>
 			<label for="output-gravatars" class="sui-checkbox sui-checkbox-stacked">
-				<input type="checkbox" id="output-gravatars" />
+				<input type="checkbox" name="wp-smush-output[gravatars]" id="output-gravatars" />
 				<span aria-hidden="true"></span>
 				<span><?php esc_html_e( 'Gravatars', 'wp-smushit' ); ?></span>
 			</label>
@@ -120,12 +120,12 @@
 						<div class="sui-form-field-inline">
 							<div class="sui-form-field">
 								<label for="fadein-duration" class="sui-label"><?php esc_html_e( 'Duration', 'wp-smushit' ); ?></label>
-								<input type="number" placeholder="400" id="fadein-duration" class="sui-form-control sui-input-sm sui-field-has-suffix">
+								<input type="number" name="wp-smush-fadein[duration]" placeholder="400" id="fadein-duration" class="sui-form-control sui-input-sm sui-field-has-suffix">
 								<span class="sui-field-suffix"><?php esc_html_e( 'ms', 'wp-smushit' ); ?></span>
 							</div>
 							<div class="sui-form-field">
 								<label for="fadein-delay" class="sui-label"><?php esc_html_e( 'Delay', 'wp-smushit' ); ?></label>
-								<input type="number" placeholder="0" id="fadein-delay" class="sui-form-control sui-input-sm sui-field-has-suffix">
+								<input type="number" name="wp-smush-fadein[delay]" placeholder="0" id="fadein-delay" class="sui-form-control sui-input-sm sui-field-has-suffix">
 								<span class="sui-field-suffix"><?php esc_html_e( 'ms', 'wp-smushit' ); ?></span>
 							</div>
 						</div>
@@ -147,7 +147,7 @@
 		</div>
 		<div class="sui-box-settings-col-2">
 			<label for="offset" class="sui-label"><?php esc_html_e( 'Offset', 'wp-smushit' ); ?></label>
-			<input type="text" placeholder="<?php esc_attr_e( 'E.g. 100px', 'wp-smushit' ); ?>" id="offset" class="sui-form-control">
+			<input type="text" name="wp-smush-offset" placeholder="<?php esc_attr_e( 'E.g. 100px', 'wp-smushit' ); ?>" id="offset" class="sui-form-control">
 			<div class="sui-description">
 				<?php esc_html_e( 'You can use both positive and negative values, % or px to control when the media should be shown. ', 'wp-smushit' ); ?>
 			</div>
@@ -183,7 +183,7 @@
 						<td>frontpage</td>
 						<td>
 							<label class="sui-toggle" for="include-frontpage">
-								<input type="checkbox" name="include-frontpage" id="include-frontpage">
+								<input type="checkbox" name="wp-smush-include[frontpage]" id="include-frontpage">
 								<span class="sui-toggle-slider"></span>
 							</label>
 						</td>
@@ -193,7 +193,7 @@
 						<td>home</td>
 						<td>
 							<label class="sui-toggle" for="include-home">
-								<input type="checkbox" name="include-home" id="include-home">
+								<input type="checkbox" name="wp-smush-include[home]" id="include-home">
 								<span class="sui-toggle-slider"></span>
 							</label>
 						</td>
@@ -203,7 +203,7 @@
 						<td>page</td>
 						<td>
 							<label class="sui-toggle" for="include-page">
-								<input type="checkbox" name="include-page" id="include-page">
+								<input type="checkbox" name="wp-smush-include[page]" id="include-page">
 								<span class="sui-toggle-slider"></span>
 							</label>
 						</td>
@@ -213,7 +213,7 @@
 						<td>single</td>
 						<td>
 							<label class="sui-toggle" for="include-single">
-								<input type="checkbox" name="include-single" id="include-single">
+								<input type="checkbox" name="wp-smush-include[single]" id="include-single">
 								<span class="sui-toggle-slider"></span>
 							</label>
 						</td>
@@ -223,7 +223,7 @@
 						<td>archive</td>
 						<td>
 							<label class="sui-toggle" for="include-archive">
-								<input type="checkbox" name="include-archive" id="include-archive">
+								<input type="checkbox" name="wp-smush-include[archive]" id="include-archive">
 								<span class="sui-toggle-slider"></span>
 							</label>
 						</td>
@@ -233,7 +233,7 @@
 						<td>category</td>
 						<td>
 							<label class="sui-toggle" for="include-category">
-								<input type="checkbox" name="include-category" id="include-category">
+								<input type="checkbox" name="wp-smush-include[category]" id="include-category">
 								<span class="sui-toggle-slider"></span>
 							</label>
 						</td>
@@ -243,7 +243,7 @@
 						<td>tag</td>
 						<td>
 							<label class="sui-toggle" for="include-tag">
-								<input type="checkbox" name="include-tag" id="include-tag">
+								<input type="checkbox" name="wp-smush-include[tag]" id="include-tag">
 								<span class="sui-toggle-slider"></span>
 							</label>
 						</td>
@@ -257,7 +257,7 @@
 				<div class="sui-description">
 					<?php esc_html_e( 'Add URLs to the posts and/or pages you want to disable lazyloading on.', 'wp-smushit' ); ?>
 				</div>
-				<textarea class="sui-form-control" placeholder="<?php esc_attr_e( 'E.g. /page', 'wp-smushit' ); ?>"></textarea>
+				<textarea class="sui-form-control" name="wp-smush-exclude-pages" placeholder="<?php esc_attr_e( 'E.g. /page', 'wp-smushit' ); ?>"></textarea>
 				<div class="sui-description">
 					<?php
 					printf(
@@ -275,7 +275,7 @@
 				<div class="sui-description">
 					<?php esc_html_e( 'Additionally, you can specify classes or IDs to avoid lazyloading. This gives you absolute control over each image on a page, not just the page itself.', 'wp-smushit' ); ?>
 				</div>
-				<textarea class="sui-form-control" placeholder="<?php esc_attr_e( 'Add classes or IDs, one per line', 'wp-smushit' ); ?>"></textarea>
+				<textarea class="sui-form-control" name="wp-smush-exclude-classes" placeholder="<?php esc_attr_e( 'Add classes or IDs, one per line', 'wp-smushit' ); ?>"></textarea>
 				<div class="sui-description">
 					<?php
 					printf(
@@ -305,13 +305,27 @@
 				<div class="sui-description">
 					<?php esc_html_e( 'By default we will load the required scripts in your footer for max performance benefits. If you are having issues, you can switch this to the header.', 'wp-smushit' ); ?>
 				</div>
+
 				<div class="sui-side-tabs sui-tabs">
 					<div data-tabs>
-						<div class="active"><?php esc_html_e( 'Footer', 'wp-smushit' ); ?></div>
-						<div><?php esc_html_e( 'Header', 'wp-smushit' ); ?></div>
+						<label for="script-footer" class="sui-tab-item active">
+							<input type="radio" name="wp-smush-scripts" value="footer" id="script-footer">
+							<?php esc_html_e( 'Footer', 'wp-smushit' ); ?>
+						</label>
+
+						<label for="script-header" class="sui-tab-item">
+							<input type="radio" name="wp-smush-scripts" value="header" id="script-header">
+							<?php esc_html_e( 'Header', 'wp-smushit' ); ?>
+						</label>
 					</div>
-					<div class="sui-notice">
-						<p><?php esc_html_e( 'Your theme must be using the wp_footer() function.', 'wp-smushit' ); ?></p>
+
+					<div data-panes>
+						<div class="sui-notice active">
+							<p><?php esc_html_e( 'Your theme must be using the wp_footer() function.', 'wp-smushit' ); ?></p>
+						</div>
+						<div class="sui-notice">
+							<p><?php esc_html_e( 'Your theme must be using the wp_header() function.', 'wp-smushit' ); ?></p>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -321,11 +335,21 @@
 				<div class="sui-description">
 					<?php esc_html_e( 'This feature ensures images will still be shown to users who have Javascript disabled in their browser.', 'wp-smushit' ); ?>
 				</div>
+
 				<div class="sui-side-tabs sui-tabs">
 					<div data-tabs>
-						<div class="active"><?php esc_html_e( 'Enable', 'wp-smushit' ); ?></div>
-						<div><?php esc_html_e( 'Disable', 'wp-smushit' ); ?></div>
+						<label for="noscript-enable" class="sui-tab-item active">
+							<input type="radio" name="wp-smush-noscript" value="on" id="noscript-enable">
+							<?php esc_html_e( 'Enable', 'wp-smushit' ); ?>
+						</label>
+
+						<label for="noscript-disable" class="sui-tab-item">
+							<input type="radio" name="wp-smush-noscript" value="off" id="noscript-disable">
+							<?php esc_html_e( 'Disable', 'wp-smushit' ); ?>
+						</label>
 					</div>
+
+					<div data-panes><div class="active"></div><div></div></div>
 				</div>
 			</div>
 		</div>
