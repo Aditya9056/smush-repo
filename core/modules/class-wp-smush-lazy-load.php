@@ -128,6 +128,18 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		}
 
 		foreach ( $images[0] as $key => $image ) {
+			/**
+			 * Check if some image formats are excluded.
+			 */
+			if ( in_array( false, $this->options['format'], true ) ) {
+				$ext = strtolower( pathinfo( $images['img_url'][ $key ], PATHINFO_EXTENSION ) );
+				$ext = 'jpg' === $ext ? 'jpeg' : $ext;
+
+				if ( isset( $this->options['format'][ $ext ] ) && ! $this->options['format'][ $ext ] ) {
+					continue;
+				}
+			}
+
 			$new_image = $image;
 
 			$this->remove_attribute( $new_image, 'src' );
