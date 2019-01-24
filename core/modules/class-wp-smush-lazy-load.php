@@ -17,7 +17,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 * @since 3.2.0
 	 * @var array $settings
 	 */
-	//private $settings;
+	private $options;
 
 	/**
 	 * Initialize module actions.
@@ -30,10 +30,10 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return;
 		}
 
-		//$this->settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+		$this->options = $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
 
 		// Enabled without settings? Don't think so... Exit.
-		if ( ! $this->settings ) {
+		if ( ! $this->options ) {
 			return;
 		}
 
@@ -60,7 +60,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			WP_SMUSH_URL . 'app/assets/js/smush-lazy-load.min.js',
 			array(),
 			WP_SMUSH_VERSION,
-			true
+			$this->options['footer']
 		);
 	}
 
