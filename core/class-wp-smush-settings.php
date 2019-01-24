@@ -412,19 +412,13 @@ class WP_Smush_Settings {
 			),
 			'exclude-pages'   => FILTER_SANITIZE_STRING,
 			'exclude-classes' => FILTER_SANITIZE_STRING,
-			'scripts'         => array(
-				'filter' => FILTER_SANITIZE_STRING,
-				'flags'  => FILTER_REQUIRE_ARRAY,
-			),
-			'noscript'        => array(
-				'filter' => FILTER_VALIDATE_BOOLEAN,
-				'flags'  => FILTER_REQUIRE_ARRAY,
-			),
+			'footer'          => FILTER_VALIDATE_BOOLEAN,
+			'noscript'        => FILTER_VALIDATE_BOOLEAN,
 		);
 
 		$settings = filter_input_array( INPUT_POST, $args );
 
-		//$this->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $settings );
+		$this->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $settings );
 	}
 
 	/**
@@ -461,7 +455,7 @@ class WP_Smush_Settings {
 			),
 			'exclude-pages'   => '',
 			'exclude-classes' => '',
-			'scripts'         => 'footer',
+			'footer'          => true,
 			'noscript'        => true,
 		);
 

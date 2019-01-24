@@ -326,13 +326,13 @@
 
 				<div class="sui-side-tabs sui-tabs">
 					<div data-tabs>
-						<label for="script-footer" class="sui-tab-item active">
-							<input type="radio" name="scripts" value="footer" id="script-footer" <?php checked( $settings['scripts'] ); ?> />
+						<label for="script-footer" class="sui-tab-item <?php echo $settings['footer'] ? 'active' : ''; ?>">
+							<input type="radio" name="footer" value="on" id="script-footer" <?php checked( $settings['footer'] ); ?> />
 							<?php esc_html_e( 'Footer', 'wp-smushit' ); ?>
 						</label>
 
-						<label for="script-header" class="sui-tab-item">
-							<input type="radio" name="scripts" value="header" id="script-header" <?php checked( $settings['scripts'], false ); ?> />
+						<label for="script-header" class="sui-tab-item <?php echo $settings['footer'] ? '' : 'active'; ?>">
+							<input type="radio" name="footer" value="off" id="script-header" <?php checked( $settings['footer'], false ); ?> />
 							<?php esc_html_e( 'Header', 'wp-smushit' ); ?>
 						</label>
 					</div>
