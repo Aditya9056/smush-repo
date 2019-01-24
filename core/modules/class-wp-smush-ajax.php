@@ -1016,6 +1016,15 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$param = isset( $_POST['param'] ) ? sanitize_text_field( wp_unslash( $_POST['param'] ) ) : false;
 
+		if ( 'true' === $param ) {
+			$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+
+			// No settings, during init - set defaults.
+			if ( ! $settings ) {
+				$this->settings->init_lazy_load_defaults();
+			}
+		}
+
 		$this->settings->set( 'lazy_load', 'true' === $param );
 
 		wp_send_json_success();

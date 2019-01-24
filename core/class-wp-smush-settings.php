@@ -392,6 +392,80 @@ class WP_Smush_Settings {
 	 * @since 3.2.0
 	 */
 	private function parse_lazy_load_settings() {
+		$args = array(
+			'format'          => array(
+				'filter' => FILTER_VALIDATE_BOOLEAN,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+			'output'          => array(
+				'filter' => FILTER_VALIDATE_BOOLEAN,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+			'fadein'          => array(
+				'filter' => FILTER_VALIDATE_INT,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+			'offset'          => FILTER_SANITIZE_STRING,
+			'include'         => array(
+				'filter' => FILTER_VALIDATE_BOOLEAN,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+			'exclude-pages'   => FILTER_SANITIZE_STRING,
+			'exclude-classes' => FILTER_SANITIZE_STRING,
+			'scripts'         => array(
+				'filter' => FILTER_SANITIZE_STRING,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+			'noscript'        => array(
+				'filter' => FILTER_VALIDATE_BOOLEAN,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+		);
+
+		$settings = filter_input_array( INPUT_POST, $args );
+
+		//$this->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $settings );
+	}
+
+	/**
+	 * Apply a default configuration to lazy-loading on first activation.
+	 *
+	 * @since 3.2.0
+	 */
+	public function init_lazy_load_defaults() {
+		$defaults = array(
+			'format'          => array(
+				'jpeg' => true,
+				'png'  => true,
+				'gif'  => true,
+			),
+			'output'          => array(
+				'content'    => true,
+				'widgets'    => true,
+				'thumbnails' => true,
+				'gravatars'  => true,
+			),
+			'fadein'          => array(
+				'duration' => 400,
+				'delay'    => 0,
+			),
+			'offset'          => '',
+			'include'         => array(
+				'frontpage' => true,
+				'home'      => true,
+				'page'      => true,
+				'single'    => true,
+				'archive'   => true,
+				'category'  => true,
+				'tag'       => true,
+			),
+			'exclude-pages'   => '',
+			'exclude-classes' => '',
+			'scripts'         => 'footer',
+			'noscript'        => true,
+		);
+
+		$this->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $defaults );
 	}
 
 }

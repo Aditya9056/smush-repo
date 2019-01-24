@@ -1276,7 +1276,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function lazyload_metabox() {
 		$this->view(
 			'meta-boxes/lazyload/meta-box',
-			array()
+			array(
+				'settings' => $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' ),
+			)
 		);
 	}
 
