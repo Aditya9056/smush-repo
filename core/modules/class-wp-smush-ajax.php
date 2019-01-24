@@ -351,7 +351,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// Save settings only if networkwide settings are disabled.
 		if ( ( ! is_multisite() || ! $this->settings->is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
 			// Save Settings.
-			$this->settings->process_options();
+			$this->settings->save( false );
 		}
 
 		// If there aren't any images in the library, return the notice.

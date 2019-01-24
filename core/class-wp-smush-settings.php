@@ -56,65 +56,43 @@ class WP_Smush_Settings {
 	/**
 	 * List of fields in bulk smush form.
 	 *
-	 * @used-by process_options()
+	 * @used-by save()
 	 *
 	 * @var array
 	 */
-	private $bulk_fields = array(
-		'networkwide',
-		'auto',
-		'lossy',
-		'original',
-		'strip_exif',
-		'resize',
-		'backup',
-		'png_to_jpg',
-		'detection',
-	);
+	private $bulk_fields = array( 'networkwide', 'auto', 'lossy', 'original', 'strip_exif', 'resize', 'backup', 'png_to_jpg', 'detection' );
 
 	/**
 	 * List of fields in integration form.
 	 *
-	 * @used-by process_options()
+	 * @used-by save()
 	 *
 	 * @var array
 	 */
-	private $integration_fields = array(
-		'gutenberg',
-		'nextgen',
-		's3',
-	);
+	private $integration_fields = array( 'gutenberg', 'nextgen', 's3' );
 
 	/**
 	 * List of fields in CDN form.
 	 *
-	 * @used-by process_options()
+	 * @used-by save()
 	 *
 	 * @var array
 	 */
-	private $cdn_fields = array(
-		'auto_resize',
-		'cdn',
-		'webp',
-	);
+	private $cdn_fields = array( 'auto_resize', 'cdn', 'webp' );
 
 	/**
 	 * List of fields in Settings form.
 	 *
-	 * @used-by process_options()
+	 * @used-by save()
 	 *
 	 * @var array
 	 */
-	private $settings_fields = array(
-		'accessible_colors',
-		'usage',
-		'keep_data',
-	);
+	private $settings_fields = array( 'accessible_colors', 'usage', 'keep_data' );
 
 	/**
 	 * List of fields in Lazy-load form.
 	 *
-	 * @used-by process_options()
+	 * @used-by save()
 	 *
 	 * @var array
 	 */
@@ -146,9 +124,9 @@ class WP_Smush_Settings {
 		}
 
 		// Save Settings.
-		add_action( 'wp_ajax_save_settings', array( $this, 'save_settings' ) );
+		add_action( 'wp_ajax_save_settings', array( $this, 'save' ) );
 		// Reset Settings.
-		add_action( 'wp_ajax_reset_settings', array( $this, 'reset_settings' ) );
+		add_action( 'wp_ajax_reset_settings', array( $this, 'reset' ) );
 
 		$this->init();
 	}
@@ -278,7 +256,7 @@ class WP_Smush_Settings {
 	 *
 	 * @since 3.2.0
 	 */
-	public function reset_settings() {
+	public function reset() {
 		check_ajax_referer( 'get-smush-status' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -296,17 +274,11 @@ class WP_Smush_Settings {
 	}
 
 	/**
-	 * Save settings, used for networkwide option.
+	 * Save settings.
+	 *
+	 * @param bool $json_response  Send a JSON response.
 	 */
-	public function save_settings() {
-		$this->process_options();
-		wp_send_json_success();
-	}
-
-	/**
-	 * Check if form is submitted and process it
-	 */
-	public function process_options() {
+	public function save( $json_response = true ) {
 		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
 		if ( ! is_user_logged_in() ) {
@@ -314,13 +286,12 @@ class WP_Smush_Settings {
 		}
 
 		$pages_with_settings = array( 'bulk', 'integration', 'cdn', 'settings' );
+		$setting_form        = isset( $_POST['setting_form'] ) ? sanitize_text_field( wp_unslash( $_POST['setting_form'] ) ) : '';
 
 		// Continue only if form name is set.
-		if ( ! isset( $_POST['setting_form'] ) || ! in_array( wp_unslash( $_POST['setting_form'] ), $pages_with_settings, true ) ) { // Input var ok.
+		if ( ! in_array( $setting_form, $pages_with_settings, true ) ) {
 			return;
 		}
-
-		$setting_form = sanitize_text_field( wp_unslash( $_POST['setting_form'] ) );
 
 		// Store that we need not redirect again on plugin activation.
 		update_site_option( WP_SMUSH_PREFIX . 'hide_smush_welcome', true );
@@ -364,8 +335,10 @@ class WP_Smush_Settings {
 		// Settings that are specific to a page.
 		if ( 'bulk' === $setting_form ) {
 			// Save the selected image sizes.
-			$image_sizes = ! empty( $_POST['wp-smush-image_sizes'] ) ? $_POST['wp-smush-image_sizes'] : array(); // Input var ok.
-			$image_sizes = array_filter( array_map( 'sanitize_text_field', $image_sizes ) );
+			$image_sizes = array();
+			if ( ! empty( $_POST['wp-smush-image_sizes'] ) ) {
+				$image_sizes = array_filter( array_map( 'sanitize_text_field', wp_unslash( $_POST['wp-smush-image_sizes'] ) ) );
+			}
 			$this->set_setting( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
 
 			// Update Resize width and height settings if set.
@@ -386,5 +359,10 @@ class WP_Smush_Settings {
 
 		// Store the option in table.
 		$this->set_setting( WP_SMUSH_PREFIX . 'settings_updated', 1 );
+
+		if ( $json_response ) {
+			wp_send_json_success();
+		}
 	}
+
 }
