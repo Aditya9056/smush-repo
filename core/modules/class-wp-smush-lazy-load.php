@@ -44,9 +44,18 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		add_filter( 'wp_kses_allowed_html', array( $this, 'add_lazy_load_attributes' ) );
 
 		// Filter images.
-		add_filter( 'the_content', array( $this, 'set_lazy_load_attributes' ), 100 );
-		add_filter( 'post_thumbnail_html', array( $this, 'set_lazy_load_attributes' ), 100 );
-		add_filter( 'get_avatar', array( $this, 'set_lazy_load_attributes' ), 100 );
+		if ( isset( $this->options['output']['content'] ) && $this->options['output']['content'] ) {
+			add_filter( 'the_content', array( $this, 'set_lazy_load_attributes' ), 100 );
+		}
+		if ( isset( $this->options['output']['thumbnails'] ) && $this->options['output']['thumbnails'] ) {
+			add_filter( 'post_thumbnail_html', array( $this, 'set_lazy_load_attributes' ), 100 );
+		}
+		if ( isset( $this->options['output']['gravatars'] ) && $this->options['output']['gravatars'] ) {
+			add_filter( 'get_avatar', array( $this, 'set_lazy_load_attributes' ), 100 );
+		}
+		if ( isset( $this->options['output']['widgets'] ) && $this->options['output']['widgets'] ) {
+			add_filter( 'widget_text', array( $this, 'set_lazy_load_attributes' ), 100 );
+		}
 	}
 
 	/**
@@ -55,12 +64,14 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 * @since 3.2.0
 	 */
 	public function enqueue_assets() {
+		$in_footer = isset( $this->options['footer'] ) ? $this->options['footer'] : true;
+
 		wp_enqueue_script(
 			'smush-lazy-load',
 			WP_SMUSH_URL . 'app/assets/js/smush-lazy-load.min.js',
 			array(),
 			WP_SMUSH_VERSION,
-			$this->options['footer']
+			$in_footer
 		);
 	}
 
@@ -69,7 +80,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 *
 	 * @since 3.2.0
 	 *
-	 * @param array $allowedposttags
+	 * @param array $allowedposttags  Allowed post tags.
 	 *
 	 * @return mixed
 	 */
@@ -95,7 +106,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 *
 	 * @since 3.2.0
 	 *
-	 * @param string $content
+	 * @param string $content  Page/block content.
 	 *
 	 * @return string
 	 */
