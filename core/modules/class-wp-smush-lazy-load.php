@@ -153,7 +153,9 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			$new_image = preg_replace( '/<img(.*?)(?!\bclass\b)(.*?)/i', '<img$1 class="lazy-load"$2', $new_image );
 
 			// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
-			$new_image .= '<noscript>' . $image . '</noscript>';
+			if ( isset( $this->options['noscript'] ) && $this->options['noscript'] ) {
+				$new_image .= '<noscript>' . $image . '</noscript>';
+			}
 
 			$content = str_replace( $image, $new_image, $content );
 		}
