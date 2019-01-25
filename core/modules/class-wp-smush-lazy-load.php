@@ -38,6 +38,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		}
 
 		// Load js file that is required in public facing pages.
+		add_action( 'wp_head', array( $this, 'add_inline_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
 		// Allow lazy load attributes in img tag.
@@ -59,6 +60,25 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	}
 
 	/**
+	 * Add inline styles at the top of the page for preloaders and effects.
+	 *
+	 * @since 3.2.0
+	 */
+	public function add_inline_styles() {
+		$loader = WP_SMUSH_URL . 'app/assets/images/loading.gif';
+		?>
+		<style>
+			.lazy-hidden {
+				background: #fff url('<?php echo esc_url( $loader ); ?>') no-repeat 50% 50%;
+			}
+			figure.wp-block-image img.lazy-hidden {
+				min-width: 150px;
+			}
+		</style>
+		<?php
+	}
+
+	/**
 	 * Enqueue JS files required in public pages.
 	 *
 	 * @since 3.2.0
@@ -72,25 +92,6 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			array(),
 			WP_SMUSH_VERSION,
 			$in_footer
-		);
-
-// //wp.local/wp-content/plugins/wp-smushit/app/assets/images/loading.gif
-// http://wp.local/wp-content/plugins/a3-lazy-load/assets/css/loading.gif
-		$styles = '
-			.lazy-hidden {
-				background-color: #ffffff;
-				background-image: url("http://wp.local/wp-content/plugins/a3-lazy-load/assets/css/loading.gif");
-				background-repeat: no-repeat;
-				background-position: 50% 50%;
-				/*background: #fff url("http://wp.local/wp-content/plugins/a3-lazy-load/assets/css/loading.gif") no-repeat 50% 50%;*/
-			}
-			figure.wp-block-image img.lazy-hidden {
-				min-width: 150px;
-			}
-		';
-		wp_add_inline_style(
-			'dashicons',
-			$styles
 		);
 	}
 
@@ -170,6 +171,8 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			$new_image = preg_replace( '/<img(.*?)class=\"(.*?)\"(.*?)>/i', '<img$1class="$2 lazy-load lazy-hidden"$3>', $new_image );
 			// Add .lazy-load class to image that doesn't have a class.
 			$new_image = preg_replace( '/<img(.*?)(?!\bclass\b)(.*?)/i', '<img$1 class="lazy-load lazy-hidden"$2', $new_image );
+
+			$this->add_attribute( $new_image, 'srcset', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
 			// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
 			if ( isset( $this->options['noscript'] ) && $this->options['noscript'] ) {
