@@ -432,6 +432,7 @@ class WP_Smush_Settings {
 				'jpeg' => true,
 				'png'  => true,
 				'gif'  => true,
+				'svg'  => true,
 			),
 			'output'          => array(
 				'content'    => true,

@@ -37,37 +37,30 @@
 			</span>
 		</div>
 		<div class="sui-box-settings-col-2">
-			<div class="sui-side-tabs sui-tabs">
-				<div data-tabs>
-					<div class="active"><?php esc_html_e( 'Images', 'wp-smushit' ); ?></div>
-					<div><?php esc_html_e( 'Video', 'wp-smushit' ); ?></div>
-				</div>
-
-				<div data-panes>
-					<div class="sui-tab-boxed active">
-						<small><?php esc_html_e( 'Formats', 'wp-smushit' ); ?></small>
-						<label for="format-jpeg" class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type='hidden' value='0' name='format[jpeg]' />
-							<input type="checkbox" name="format[jpeg]" id="format-jpeg" <?php checked( $settings['format']['jpeg'] ); ?> />
-							<span aria-hidden="true"></span>
-							<span><?php esc_html_e( '.jpeg', 'wp-smushit' ); ?></span>
-						</label>
-						<label for="format-png" class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type='hidden' value='0' name='format[png]' />
-							<input type="checkbox" name="format[png]" id="format-png" <?php checked( $settings['format']['png'] ); ?> />
-							<span aria-hidden="true"></span>
-							<span><?php esc_html_e( '.png', 'wp-smushit' ); ?></span>
-						</label>
-						<label for="format-gif" class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type='hidden' value='0' name='format[gif]' />
-							<input type="checkbox" name="format[gif]" id="format-gif" <?php checked( $settings['format']['gif'] ); ?> />
-							<span aria-hidden="true"></span>
-							<span><?php esc_html_e( '.gif', 'wp-smushit' ); ?></span>
-						</label>
-					</div>
-					<div class="sui-tab-boxed"><p>Content. Tab 2.</p></div>
-				</div>
-			</div>
+			<label for="format-jpeg" class="sui-checkbox sui-checkbox-stacked">
+				<input type='hidden' value='0' name='format[jpeg]' />
+				<input type="checkbox" name="format[jpeg]" id="format-jpeg" <?php checked( $settings['format']['jpeg'] ); ?> />
+				<span aria-hidden="true"></span>
+				<span><?php esc_html_e( '.jpeg', 'wp-smushit' ); ?></span>
+			</label>
+			<label for="format-png" class="sui-checkbox sui-checkbox-stacked">
+				<input type='hidden' value='0' name='format[png]' />
+				<input type="checkbox" name="format[png]" id="format-png" <?php checked( $settings['format']['png'] ); ?> />
+				<span aria-hidden="true"></span>
+				<span><?php esc_html_e( '.png', 'wp-smushit' ); ?></span>
+			</label>
+			<label for="format-gif" class="sui-checkbox sui-checkbox-stacked">
+				<input type='hidden' value='0' name='format[gif]' />
+				<input type="checkbox" name="format[gif]" id="format-gif" <?php checked( $settings['format']['gif'] ); ?> />
+				<span aria-hidden="true"></span>
+				<span><?php esc_html_e( '.gif', 'wp-smushit' ); ?></span>
+			</label>
+			<label for="format-svg" class="sui-checkbox sui-checkbox-stacked">
+				<input type='hidden' value='0' name='format[svg]' />
+				<input type="checkbox" name="format[svg]" id="format-svg" <?php checked( $settings['format']['svg'] ); ?> />
+				<span aria-hidden="true"></span>
+				<span><?php esc_html_e( '.svg', 'wp-smushit' ); ?></span>
+			</label>
 		</div>
 	</div>
 
