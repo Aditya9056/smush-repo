@@ -14,7 +14,17 @@ import lozad from 'lozad';
     const WP_Smush_LazyLoad = {
         init: () => {
             const observer = lozad('.lazy-load', {
-                threshold: 0.1
+                threshold: 0.1,
+                load: function(el) {
+                    const img = el.getAttribute('data-src');
+                    el.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+                    el.onload = function() {
+                        el.src = img;
+                        console.log( 'finished' );
+                        //el.classList.remove('lazy-hidden');
+                    };
+                }
             });
 
             observer.observe();
