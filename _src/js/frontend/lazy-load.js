@@ -14,7 +14,13 @@ import lozad from 'lozad';
     const WP_Smush_LazyLoad = {
         init: () => {
             const observer = lozad('.lazy-load', {
-                threshold: 0.1
+                threshold: 0.1,
+                loaded(element) {
+                    element.onload = function() {
+                        element.classList.add('lazy-loaded');
+                        element.classList.remove('lazy-hidden');
+                    }
+                }
             });
 
             observer.observe();

@@ -405,6 +405,7 @@ class WP_Smush_Settings {
 				'filter' => FILTER_VALIDATE_INT,
 				'flags'  => FILTER_REQUIRE_ARRAY,
 			),
+			'spinner'         => FILTER_VALIDATE_BOOLEAN,
 			'offset'          => FILTER_SANITIZE_STRING,
 			'include'         => array(
 				'filter' => FILTER_VALIDATE_BOOLEAN,
@@ -444,6 +445,7 @@ class WP_Smush_Settings {
 				'duration' => 400,
 				'delay'    => 0,
 			),
+			'spinner'         => true,
 			'offset'          => '',
 			'include'         => array(
 				'frontpage' => true,

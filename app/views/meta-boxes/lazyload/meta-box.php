@@ -113,12 +113,16 @@
 		<div class="sui-box-settings-col-2">
 			<div class="sui-side-tabs sui-tabs">
 				<div data-tabs>
-					<div class="active"><?php esc_html_e( 'Fade In', 'wp-smushit' ); ?></div>
-					<div><?php esc_html_e( 'Spinner', 'wp-smushit' ); ?></div>
+					<div class="<?php echo $settings['spinner'] ? '' : 'active'; ?>">
+						<?php esc_html_e( 'Fade In', 'wp-smushit' ); ?>
+					</div>
+					<div class="<?php echo $settings['spinner'] ? 'active' : ''; ?>">
+						<?php esc_html_e( 'Spinner', 'wp-smushit' ); ?>
+					</div>
 				</div>
 
 				<div data-panes>
-					<div class="sui-tab-boxed active">
+					<div class="sui-tab-boxed <?php echo $settings['spinner'] ? '' : 'active'; ?>">
 						<div class="sui-form-field-inline">
 							<div class="sui-form-field">
 								<label for="fadein-duration" class="sui-label"><?php esc_html_e( 'Duration', 'wp-smushit' ); ?></label>
@@ -134,7 +138,15 @@
 							</div>
 						</div>
 					</div>
-					<div class="sui-tab-boxed"><p>Content. Tab 2.</p></div>
+					<div class="sui-tab-boxed <?php echo $settings['spinner'] ? 'active' : ''; ?>">
+						<label class="sui-toggle" for="spinner">
+							<input type="checkbox" aria-describedby="sui-toggle-label" name="spinner" id="spinner" <?php checked( $settings['spinner'] ); ?>>
+							<span class="sui-toggle-slider"></span>
+						</label>
+						<label for="spinner" class="sui-toggle-label">
+							<?php esc_html_e( 'Show spinner while image is loading', 'wp-smushit' ); ?>
+						</label>
+					</div>
 				</div>
 			</div>
 		</div>

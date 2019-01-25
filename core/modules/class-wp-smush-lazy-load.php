@@ -66,14 +66,36 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 */
 	public function add_inline_styles() {
 		$loader = WP_SMUSH_URL . 'app/assets/images/loading.gif';
+		$fadein = isset( $this->options['fadein']['duration'] ) ? $this->options['fadein']['duration'] / 1000 : 0;
+		$delay  = isset( $this->options['fadein']['delay'] ) ? $this->options['fadein']['delay'] / 1000 : 0;
 		?>
 		<style>
-			.lazy-hidden {
-				background: #fff url('<?php echo esc_url( $loader ); ?>') no-repeat 50% 50%;
-			}
 			figure.wp-block-image img.lazy-hidden {
 				min-width: 150px;
 			}
+			<?php if ( $this->options['spinner'] ) : ?>
+				.lazy-hidden {
+					background: #fff url('<?php echo esc_url( $loader ); ?>') no-repeat 50% 50%;
+				}
+			<?php else : ?>
+				.lazy-hidden {
+					opacity: 0;
+					background-color: #fff;
+				}
+				.lazy-loaded {
+					-webkit-transition: opacity <?php echo esc_html( $fadein ); ?>s;
+					-moz-transition: opacity <?php echo esc_html( $fadein ); ?>s;
+					-ms-transition: opacity <?php echo esc_html( $fadein ); ?>s;
+					-o-transition: opacity <?php echo esc_html( $fadein ); ?>s;
+					transition: opacity <?php echo esc_html( $fadein ); ?>s;
+					-webkit-transition-delay: <?php echo esc_html( $delay ); ?>s;
+					-moz-transition-delay: <?php echo esc_html( $delay ); ?>s;
+					-ms-transition-delay: <?php echo esc_html( $delay ); ?>s;
+					-o-transition-delay: <?php echo esc_html( $delay ); ?>s;
+					transition-delay: <?php echo esc_html( $delay ); ?>s;
+					opacity: 1 !important;
+				}
+			<?php endif; ?>
 		</style>
 		<?php
 	}
@@ -172,7 +194,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			// Add .lazy-load class to image that doesn't have a class.
 			$new_image = preg_replace( '/<img(.*?)(?!\bclass\b)(.*?)/i', '<img$1 class="lazy-load lazy-hidden"$2', $new_image );
 
-			$this->add_attribute( $new_image, 'srcset', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
+			//$this->add_attribute( $new_image, 'srcset', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
 			// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
 			if ( isset( $this->options['noscript'] ) && $this->options['noscript'] ) {
