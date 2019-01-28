@@ -100,8 +100,8 @@ class WP_Smush_Installer {
 				self::upgrade_3_0();
 			}
 
-			if ( version_compare( $version, '3.3.0', '<' ) ) {
-				self::upgrade_3_3_0();
+			if ( version_compare( $version, '3.2.0', '<' ) ) {
+				self::upgrade_3_2_0();
 			}
 
 			// Create/upgrade directory smush table.
@@ -223,11 +223,11 @@ class WP_Smush_Installer {
 	}
 
 	/**
-	 * Upgrade to 3.3.0.
+	 * Upgrade to 3.2.0.
 	 *
-	 * @since 3.3.0
+	 * @since 3.2.0
 	 */
-	private static function upgrade_3_3_0() {
+	private static function upgrade_3_2_0() {
 		// Not used.
 		delete_option( 'smush_option' );
 	}
