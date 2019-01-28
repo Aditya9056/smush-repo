@@ -176,6 +176,10 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 				}
 			}
 
+			if ( $this->has_excluded_class_or_id( $image ) ) {
+				return $content;
+			}
+
 			$new_image = $image;
 
 			$this->remove_attribute( $new_image, 'src' );
@@ -256,6 +260,33 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 
 		if ( preg_match( "#{$uri_pattern}#i", $request_uri ) ) {
 			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if the image has a defined class or ID.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $image  Image.
+	 *
+	 * @return bool
+	 */
+	private function has_excluded_class_or_id( $image ) {
+		$image_classes = $this->get_attribute( $image, 'class' );
+		$image_classes = explode( ' ', $image_classes );
+		$image_id      = '#' . $this->get_attribute( $image, 'id' );
+
+		if ( in_array( $image_id, $this->options['exclude-classes'], true ) ) {
+			return true;
+		}
+
+		foreach ( $image_classes as $class ) {
+			if ( in_array( ".{$class}", $this->options['exclude-classes'], true ) ) {
+				return true;
+			}
 		}
 
 		return false;

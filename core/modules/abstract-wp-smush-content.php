@@ -52,6 +52,24 @@ abstract class WP_Smush_Content extends WP_Smush_Module {
 	}
 
 	/**
+	 * Get attribute from an HTML element.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $element  HTML element.
+	 * @param string $name     Attribute name.
+	 *
+	 * @return string
+	 */
+	protected function get_attribute( $element, $name ) {
+		$value = array();
+
+		preg_match( '/<img(.*?)' . $name . '=\"(.*?)\"(.*?)>/i', $element, $value );
+
+		return isset( $value['2'] ) ? $value['2'] : '';
+	}
+
+	/**
 	 * Remove attribute from selected tag.
 	 *
 	 * @since 3.2.0
