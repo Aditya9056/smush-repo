@@ -346,7 +346,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 	 *
 	 * @return mixed
 	 */
-	function file_name( $filename ) {
+	public function file_name( $filename ) {
 		if ( empty( $filename ) ) {
 			return $filename;
 		}

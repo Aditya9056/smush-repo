@@ -308,7 +308,6 @@ abstract class WP_Smush_View {
 		$classes = $this->settings->get( 'accessible_colors' ) ? 'sui-wrap sui-color-accessible' : 'sui-wrap';
 		echo '<div class="' . esc_attr( $classes ) . '">';
 
-
 		// Load page header.
 		$this->render_page_header();
 

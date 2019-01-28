@@ -49,7 +49,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 * WP_Smush constructor.
 	 */
 	public function init() {
-		// Update the Super Smush count, after the smushing.
+		// Update the Super Smush count, after the Smush'ing.
 		add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
 
 		// Smush image (Auto Smush) when `wp_update_attachment_metadata` filter is fired.
@@ -210,7 +210,7 @@ class WP_Smushit extends WP_Smush_Module {
 			$wp_smush_data = true;
 
 			// The status.
-			$ignored = get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true );
+			$ignored    = get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true );
 			$status_txt = 'true' === $ignored ? __( 'Ignored in Bulk Smush', 'wp-smushit' ) : __( 'Not processed', 'wp-smushit' );
 
 			// We need to show the smush button.
@@ -855,7 +855,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 */
 	private function smush_status( $id ) {
 		// Show Temporary Status, For Async Optimisation, No Good workaround.
-		if ( ! get_option( "wp-smush-restore-$id", false ) && ! empty( $_POST['action'] ) && 'upload-attachment' === $_POST['action'] && $this->is_auto_smush_enabled() ) {
+		if ( ! get_option( "wp-smush-restore-{$id}", false ) && ! empty( $_POST['action'] ) && 'upload-attachment' === $_POST['action'] && $this->is_auto_smush_enabled() ) {
 			$status_txt = '<p class="smush-status">' . __( 'Smushing in progress..', 'wp-smushit' ) . '</p>';
 
 			// We need to show the smush button.
@@ -1786,7 +1786,7 @@ class WP_Smushit extends WP_Smush_Module {
 		// Check meta for rest of the sizes.
 		if ( ! empty( $meta ) && ! empty( $meta['sizes'] ) ) {
 			foreach ( $meta['sizes'] as $size ) {
-				// Get the file path
+				// Get the file path.
 				if ( empty( $size['file'] ) ) {
 					continue;
 				}

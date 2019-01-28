@@ -119,13 +119,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$settings = $this->settings->get();
 
 		// Available settings for free/pro version.
-		$available = array(
-			'auto',
-			'lossy',
-			'strip_exif',
-			'original',
-			'usage'
-		);
+		$available = array( 'auto', 'lossy', 'strip_exif', 'original', 'usage' );
 
 		foreach ( WP_Smush::get_instance()->core()->settings as $name => $values ) {
 			// Update only specified settings.
@@ -145,7 +139,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			if ( 'original' === $name && $settings[ $name ] && WP_Smush::is_pro() ) {
 				$settings['backup'] = true;
 			}
-
 		}
 
 		// Update the resize sizes.
@@ -372,7 +365,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 					'super_smush' => WP_Smush::is_pro() && $this->settings->get( 'lossy' ),
 				)
 			);
-
 		}
 
 		// Default Notice, to be displayed at the top of page. Show a message, at the top.
@@ -389,15 +381,17 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// If a user manually runs smush check.
 		$return_ui = isset( $_REQUEST['get_ui'] ) && 'true' == $_REQUEST['get_ui'] ? true : false;
 
-		// Logic: If none of the required settings is on, don't need to resmush any of the images
-		// We need at least one of these settings to be on, to check if any of the image needs resmush.
+		/**
+		 * Logic: If none of the required settings is on, don't need to resmush any of the images
+		 * We need at least one of these settings to be on, to check if any of the image needs resmush.
+		 */
 
 		// Initialize Media Library Stats.
 		if ( 'nextgen' !== $type && empty( $core->remaining_count ) ) {
 			$core->setup_global_stats();
 		}
 
-		// Intialize NextGen Stats.
+		// Initialize NextGen Stats.
 		if ( 'nextgen' === $type && is_object( $core->nextgen->ng_admin ) && empty( $core->nextgen->ng_admin->remaining_count ) ) {
 			$core->nextgen->ng_admin->setup_image_counts();
 		}
@@ -557,6 +551,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		}
 
 		if ( ! empty( $count ) ) {
+			/* translators: %1$d - number of images, %2$s - opening a tag, %3$s - closing a tag */
 			$message = sprintf( esc_html__( 'Image check complete, you have %1$d images that need smushing. %2$sBulk smush now!%3$s', 'wp-smushit' ), $count, '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
 			$resp    = '<div class="sui-notice-top sui-notice-warning sui-can-dismiss">
 					<div class="sui-notice-content">
@@ -569,7 +564,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		}
 
 		// Directory Smush Stats
-		// Include directory smush stats if not requested for nextgen.
+		// Include directory smush stats if not requested for NextGen.
 		if ( 'nextgen' !== $type ) {
 			// Append the directory smush stats.
 			$dir_smush_stats = get_option( 'dir_smush_stats' );
@@ -930,7 +925,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			);
 		}
 
-		$param = sanitize_text_field( wp_unslash( $_POST['param'] ) );
+		$param = isset( $_POST['param'] ) ? sanitize_text_field( wp_unslash( $_POST['param'] ) ) : '';
 
 		$this->settings->set( 'cdn', 'true' === $param );
 
