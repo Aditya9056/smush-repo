@@ -155,24 +155,6 @@
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">
 			<span class="sui-settings-label">
-				<?php esc_html_e( 'Offset', 'wp-smushit' ); ?>
-			</span>
-			<span class="sui-description">
-				<?php esc_html_e( 'Control when to trigger the image to show as it scrolls into the viewport.', 'wp-smushit' ); ?>
-			</span>
-		</div>
-		<div class="sui-box-settings-col-2">
-			<label for="offset" class="sui-label"><?php esc_html_e( 'Offset', 'wp-smushit' ); ?></label>
-			<input type="text" name="offset" value="<?php echo esc_attr( $settings['offset'] ); ?>" placeholder="<?php esc_attr_e( 'E.g. 100px', 'wp-smushit' ); ?>" id="offset" class="sui-form-control">
-			<div class="sui-description">
-				<?php esc_html_e( 'You can use both positive and negative values, % or px to control when the media should be shown. ', 'wp-smushit' ); ?>
-			</div>
-		</div>
-	</div>
-
-	<div class="sui-box-settings-row">
-		<div class="sui-box-settings-col-1">
-			<span class="sui-settings-label">
 				<?php esc_html_e( 'Include / Exclude', 'wp-smushit' ); ?>
 			</span>
 			<span class="sui-description">

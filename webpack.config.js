@@ -108,7 +108,7 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 		'smush-media': './_src/js/smush/media.js',
 		'smush-rd': './_src/js/frontend/public-resize-detection.js',
 		'smush-blocks': './_src/js/smush/blocks.js',
-		'smush-lazy-load': './_src/js/frontend/lazy-load.js'
+		'smush-lazy-load': 'lazysizes/lazysizes.js'
 	},
 
 	output: {
