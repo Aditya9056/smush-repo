@@ -8,6 +8,7 @@
 * New: Ignore images with errors during bulk Smush
 * Fix: [NextGEN Gallery] bug with stats count
 * Fix: Translation strings and typos
+* Fix: wp_smush_skip_folder filter
 
 = 3.1.0 =
 

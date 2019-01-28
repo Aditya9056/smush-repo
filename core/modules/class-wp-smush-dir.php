@@ -876,7 +876,7 @@ class WP_Smush_Dir {
 		}
 
 		// Can be used to skip/include folders matching a specific directory path.
-		apply_filters( 'wp_smush_skip_folder', $skip, $path );
+		$skip = apply_filters( 'wp_smush_skip_folder', $skip, $path );
 
 		return $skip;
 	}
