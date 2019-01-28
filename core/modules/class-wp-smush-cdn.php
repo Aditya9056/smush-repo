@@ -81,8 +81,8 @@ class WP_Smush_CDN extends WP_Smush_Content {
 
 		// Only do stuff on the frontend.
 		if ( is_admin() ) {
-		    // Verify the cron task to update stats is configured.
-		    $this->schedule_cron();
+			// Verify the cron task to update stats is configured.
+			$this->schedule_cron();
 			return;
 		}
 
@@ -163,7 +163,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @param string $setting_key Setting key.
 	 */
 	public function settings_desc( $setting_key = '' ) {
-		if ( empty( $setting_key ) || ! in_array( $setting_key, array( 'webp', 'auto_resize' ) ) ) {
+		if ( empty( $setting_key ) || ! in_array( $setting_key, array( 'webp', 'auto_resize' ), true ) ) {
 			return;
 		}
 		?>
@@ -330,10 +330,10 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @see update_image_srcset()
 	 * @see update_image_sizes()
 	 * @see update_cdn_image_src_args()
-     * @see process_cdn_status()
-     * @see cron_update_stats()
-     * @see unschedule_cron()
-     * @see schedule_cron()
+	 * @see process_cdn_status()
+	 * @see cron_update_stats()
+	 * @see unschedule_cron()
+	 * @see schedule_cron()
 	 */
 
 	/**
@@ -371,7 +371,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 
 		if ( empty( $images ) ) {
 			return $content;
-        }
+		}
 
 		foreach ( $images[0] as $key => $image ) {
 			$src = $images['img_url'][ $key ];
@@ -412,21 +412,21 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			 */
 			$src = apply_filters( 'smush_image_src_before_cdn', $src, $image );
 
-            // Generate cdn url from local url.
-            $src = $this->generate_cdn_url( $src, $args );
+			// Generate cdn url from local url.
+			$src = $this->generate_cdn_url( $src, $args );
 
-            /**
-             * Filter hook to alter image src after replacing with CDN base.
-             *
-             * @param string $src Image src.
-             * @param object $image Image tag object.
-             */
+			/**
+			 * Filter hook to alter image src after replacing with CDN base.
+			 *
+			 * @param string $src Image src.
+			 * @param object $image Image tag object.
+			 */
 			$src = apply_filters( 'smush_image_src_after_cdn', $src, $image );
 
 			$new_image = $image;
 			if ( ! empty( $images['img_url'][ $key ] ) ) {
 				$new_image = preg_replace( '#(src=["|\'])' . $images['img_url'][ $key ] . '(["|\'])#i', '\1' . $src . '\2', $new_image, 1 );
-            }
+			}
 
 			// See if srcset is already set.
 			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $images[0][ $key ] ) && $this->settings->get( 'auto_resize' ) ) {
@@ -551,15 +551,15 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @return array $args
 	 */
 	public function update_cdn_image_src_args( $args, $image ) {
-	    // Don't need to auto resize - return default args.
-	    if ( ! $this->settings->get( 'auto_resize' ) ) {
-	        return $args;
-        }
+		// Don't need to auto resize - return default args.
+		if ( ! $this->settings->get( 'auto_resize' ) ) {
+			return $args;
+		}
 
 		// Get registered image sizes.
 		$image_sizes = $this->get_image_sizes();
 
-		// Find the width and height attributes
+		// Find the width and height attributes.
 		$width  = false;
 		$height = false;
 		wp_is_mobile();
@@ -579,13 +579,13 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			$size = array_pop( $size );
 
 			if ( ! array_key_exists( $size, $image_sizes ) ) {
-			    return $args;
-            }
+				return $args;
+			}
 
 			// This is probably a correctly sized thumbnail - no need to resize.
 			if ( (int) $width === $image_sizes[ $size ]['width'] || (int) $height === $image_sizes[ $size ]['height'] ) {
-			    return $args;
-            }
+				return $args;
+			}
 
 			// If this size exists in registered sizes, add argument.
 			if ( 'full' !== $size ) {
@@ -596,7 +596,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			if ( $width && $height ) {
 				$args['size'] = (int) $width . 'x' . (int) $height;
 			}
-        }
+		}
 
 		return $args;
 	}
@@ -605,9 +605,9 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * Process CDN status.
 	 *
 	 * @since 3.0
-     * @since 3.1  Moved from Ajax class.
+	 * @since 3.1  Moved from Ajax class.
 	 *
-	 * @param $status
+	 * @param string $status  Status in JSON format.
 	 *
 	 * @return mixed
 	 */
@@ -629,8 +629,8 @@ class WP_Smush_CDN extends WP_Smush_Content {
 
 	/**
 	 * Update CDN stats (daily) cron task.
-     *
-     * @since 3.1.0
+	 *
+	 * @since 3.1.0
 	 */
 	public function cron_update_stats() {
 		$current_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
@@ -643,28 +643,28 @@ class WP_Smush_CDN extends WP_Smush_Content {
 
 		$data = $this->process_cdn_status( $status );
 		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
-    }
+	}
 
 	/**
 	 * Disable CDN stats update cron task.
-     *
-     * @since 3.1.0
+	 *
+	 * @since 3.1.0
 	 */
-    public function unschedule_cron() {
-	    $timestamp = wp_next_scheduled( 'smush_update_cdn_stats' );
-	    wp_unschedule_event( $timestamp, 'smush_update_cdn_stats' );
-    }
+	public function unschedule_cron() {
+		$timestamp = wp_next_scheduled( 'smush_update_cdn_stats' );
+		wp_unschedule_event( $timestamp, 'smush_update_cdn_stats' );
+	}
 
 	/**
 	 * Set cron task to update CDN stats daily.
-     *
-     * @since 3.1.0
+	 *
+	 * @since 3.1.0
 	 */
-    public function schedule_cron() {
-	    if ( ! wp_next_scheduled ( 'smush_update_cdn_stats' ) ) {
-		    wp_schedule_event( time(), 'daily', 'smush_update_cdn_stats' );
-	    }
-    }
+	public function schedule_cron() {
+		if ( ! wp_next_scheduled( 'smush_update_cdn_stats' ) ) {
+			wp_schedule_event( time(), 'daily', 'smush_update_cdn_stats' );
+		}
+	}
 
 	/**************************************
 	 *
@@ -672,8 +672,8 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 *
 	 * Functions that are used by the public methods of this CDN class.
 	 *
-     * @since 3.0.0:
-     *
+	 * @since 3.0.0:
+	 *
 	 * @see is_valid_url()
 	 * @see get_size_from_file_name()
 	 * @see get_url_without_dimensions()
@@ -681,11 +681,11 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @see set_additional_srcset()
 	 * @see get_image_sizes()
 	 * @see generate_srcset()
-     * @see maybe_generate_srcset()
-     * @see is_supported_path()
-     *
-     * @since 3.1.0:
-     *
+	 * @see maybe_generate_srcset()
+	 * @see is_supported_path()
+	 *
+	 * @since 3.1.0:
+	 *
 	 * @see get_images_from_content()
 	 * @see add_attribute()
 	 */
@@ -712,7 +712,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		}
 
 		// If not supported extension - return false.
-		if ( ! in_array( strtolower( pathinfo( $parsed_url['path'], PATHINFO_EXTENSION ) ), $this->supported_extensions ) ) {
+		if ( ! in_array( strtolower( pathinfo( $parsed_url['path'], PATHINFO_EXTENSION ) ), $this->supported_extensions, true ) ) {
 			return false;
 		}
 
@@ -976,7 +976,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			if ( 0 === $width && 0 === $height ) {
 				// Try to get the dimensions directly from the file.
 				list( $width, $height ) = getimagesize( $src );
-            }
+			}
 
 			$image_meta = wp_get_attachment_metadata( $attachment_id );
 		} else {
@@ -1064,14 +1064,6 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			$src = site_url( $src );
 		}
 
-		/* If the URL starts with // (relative URL), try to replace with server scheme.
-		if ( '//' === substr( $src, 0, 2 ) ) {
-			if ( isset( $_SERVER['REQUEST_SCHEME'] ) && in_array( $_SERVER['REQUEST_SCHEME'], array( 'http', 'https' ), true ) ) {
-				$src = $_SERVER['REQUEST_SCHEME'] . ':' . $src;
-			}
-		}
-		*/
-
 		$mapped_domain = $this->check_mapped_domain();
 
 		// URL does not belong to the site or a site mapped domain.
@@ -1108,7 +1100,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 					"SELECT domain FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d ORDER BY id ASC LIMIT 1",
 					get_current_blog_id()
 				)
-			);
+			); // Db call ok.
 
 			if ( null !== $domain ) {
 				wp_cache_add( 'smush_mapped_site_domain', $domain, 'smush' );
