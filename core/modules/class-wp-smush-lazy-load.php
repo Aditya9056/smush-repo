@@ -148,6 +148,10 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return $content;
 		}
 
+		if ( ! $this->is_allowed_post_type() ) {
+			return $content;
+		}
+
 		// Avoid conflicts if attributes are set (another plugin, for example).
 		if ( false !== strpos( $content, 'data-src' ) ) {
 			return $content;
@@ -196,6 +200,39 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Check if this is part of the allowed post type.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return bool
+	 */
+	private function is_allowed_post_type() {
+		// If not settings are set, probably, all are disabled.
+		if ( ! is_array( $this->options['include'] ) ) {
+			return false;
+		}
+		$blog_is_frontpage = ( 'posts' === get_option( 'show_on_front' ) && ! is_multisite() ) ? true : false;
+
+		if ( is_front_page() && isset( $this->options['include']['frontpage'] ) && $this->options['include']['frontpage'] ) {
+			return true;
+		} elseif ( is_home() && isset( $this->options['include']['home'] ) && $this->options['include']['home'] && ! $blog_is_frontpage ) {
+			return true;
+		} elseif ( is_page() && isset( $this->options['include']['page'] ) && $this->options['include']['page'] ) {
+			return true;
+		} elseif ( is_single() && isset( $this->options['include']['single'] ) && $this->options['include']['single'] ) {
+			return true;
+		} elseif ( is_archive() && isset( $this->options['include']['archive'] ) && $this->options['include']['archive'] ) {
+			return true;
+		} elseif ( is_category() && isset( $this->options['include']['category'] ) && $this->options['include']['category'] ) {
+			return true;
+		} elseif ( is_tag() && isset( $this->options['include']['tag'] ) && $this->options['include']['tag'] ) {
+			return true;
+		}
+
+		return false;
 	}
 
 }
