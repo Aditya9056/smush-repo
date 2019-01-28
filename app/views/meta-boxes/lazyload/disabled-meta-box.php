@@ -1,6 +1,6 @@
 <?php
 /**
- * Lazy-load disabled meta box.
+ * Lazy loading disabled meta box.
  *
  * @since 3.2.0
  * @package WP_Smush

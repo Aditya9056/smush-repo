@@ -1,5 +1,5 @@
 /**
- * Lazy-load functionality.
+ * Lazy loading functionality.
  *
  * @since 3.0
  */
@@ -40,7 +40,7 @@
         },
 
         /**
-         * Toggle Lazy-load.
+         * Toggle lazy loading.
          *
          * @since 3.2.0
          *

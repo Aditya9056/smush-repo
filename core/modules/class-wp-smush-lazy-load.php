@@ -12,7 +12,7 @@
 class WP_Smush_Lazy_Load extends WP_Smush_Content {
 
 	/**
-	 * Lazy-loading settings.
+	 * Lazy loading settings.
 	 *
 	 * @since 3.2.0
 	 * @var array $settings
@@ -25,7 +25,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 * @since 3.2.0
 	 */
 	public function init() {
-		// Only run on front end and if lazy-loading is enabled.
+		// Only run on front end and if lazy loading is enabled.
 		if ( is_admin() || ! $this->settings->get( 'lazy_load' ) ) {
 			return;
 		}
@@ -240,7 +240,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	}
 
 	/**
-	 * Check if the page has been added to Post, Pages & URLs filter in Lazy-load settings.
+	 * Check if the page has been added to Post, Pages & URLs filter in lazy loading settings.
 	 *
 	 * @since 3.2.0
 	 *

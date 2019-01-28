@@ -1254,7 +1254,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
-	 * Lazy-load meta box header.
+	 * Lazy loading meta box header.
 	 *
 	 * @since 3.2.0
 	 */
@@ -1269,7 +1269,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
-	 * Lazy-load meta box.
+	 * Lazy loading meta box.
 	 *
 	 * @since 3.2.0
 	 */

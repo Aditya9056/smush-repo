@@ -1,11 +1,11 @@
 <?php
 /**
- * Lazy-load meta box.
+ * Lazy loading meta box.
  *
  * @since 3.2.0
  * @package WP_Smush
  *
- * @var array $settings  Lazy-load settings.
+ * @var array $settings  Lazy loading settings.
  */
 
 ?>

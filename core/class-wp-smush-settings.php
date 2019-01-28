@@ -90,7 +90,7 @@ class WP_Smush_Settings {
 	private $settings_fields = array( 'accessible_colors', 'usage', 'keep_data' );
 
 	/**
-	 * List of fields in Lazy-load form.
+	 * List of fields in lazy loading form.
 	 *
 	 * @used-by save()
 	 *
@@ -387,7 +387,7 @@ class WP_Smush_Settings {
 	}
 
 	/**
-	 * Parse lazy-load specific settings.
+	 * Parse lazy loading specific settings.
 	 *
 	 * @since 3.2.0
 	 */
@@ -434,7 +434,7 @@ class WP_Smush_Settings {
 	}
 
 	/**
-	 * Apply a default configuration to lazy-loading on first activation.
+	 * Apply a default configuration to lazy loading on first activation.
 	 *
 	 * @since 3.2.0
 	 */

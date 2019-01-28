@@ -84,7 +84,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		add_action( 'wp_ajax_get_cdn_stats', array( $this, 'get_cdn_stats' ) );
 
 		/**
-		 * Lazy-load
+		 * Lazy loading
 		 */
 		add_action( 'wp_ajax_smush_toggle_lazy_load', array( $this, 'smush_toggle_lazy_load' ) );
 	}
@@ -988,16 +988,16 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 	/***************************************
 	 *
-	 * Lazy-load
+	 * Lazy loading
 	 *
 	 * @since 3.2.0
 	 */
 
 	/**
-	 * Toggle Lazy-load module.
+	 * Toggle lazy loading module.
 	 *
-	 * Handles "Activate" button press on the disabled Lazy-load meta box.
-	 * Handles "Deactivate" button press on the Lazy-load meta box.
+	 * Handles "Activate" button press on the disabled lazy loading meta box.
+	 * Handles "Deactivate" button press on the lazy loading meta box.
 	 * Refreshes page on success.
 	 *
 	 * @since 3.2.0

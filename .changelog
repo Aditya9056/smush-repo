@@ -1,5 +1,6 @@
 = 3.2.0 =
 
+* New: Image lazy loading
 * New: CDN support for mapped domains in multisite
 * New: Auto update free version of the plugin to Pro if Dashboard plugin is installed and activated
 * New: Options to preserve settings and data on plugin uninstall
