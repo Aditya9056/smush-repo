@@ -70,6 +70,15 @@ class WP_Smush_Modules {
 	public $settings;
 
 	/**
+	 * Image lazy load module.
+	 *
+	 * @since 3.2
+	 *
+	 * @var WP_Smush_Lazy_Load
+	 */
+	private $lazy;
+
+	/**
 	 * WP_Smush_Modules constructor.
 	 */
 	public function __construct() {
@@ -81,6 +90,7 @@ class WP_Smush_Modules {
 		$this->resize   = new WP_Smush_Resize();
 		$this->cdn      = new WP_Smush_CDN();
 		$this->settings = WP_Smush_Settings::get_instance();
+		$this->lazy     = new WP_Smush_Lazy_Load();
 	}
 
 }
