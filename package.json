@@ -36,9 +36,8 @@
   },
   "dependencies": {
     "@wpmudev/shared-ui": "2.3.16",
-    "intersection-observer": "^0.5.1",
     "jquery.fancytree": "^2.30.1",
-    "lozad": "^1.7.0"
+    "lazysizes": "^4.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",

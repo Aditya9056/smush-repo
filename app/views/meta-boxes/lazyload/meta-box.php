@@ -143,7 +143,7 @@
 							<input type="checkbox" aria-describedby="sui-toggle-label" name="spinner" id="spinner" <?php checked( $settings['spinner'] ); ?>>
 							<span class="sui-toggle-slider"></span>
 						</label>
-						<label for="spinner" class="sui-toggle-label">
+						<label for="spinner" class="sui-toggle-label" style="vertical-align: middle;">
 							<?php esc_html_e( 'Show spinner while image is loading', 'wp-smushit' ); ?>
 						</label>
 					</div>

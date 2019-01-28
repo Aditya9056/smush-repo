@@ -66,34 +66,24 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 */
 	public function add_inline_styles() {
 		$loader = WP_SMUSH_URL . 'app/assets/images/loading.gif';
-		$fadein = isset( $this->options['fadein']['duration'] ) ? $this->options['fadein']['duration'] / 1000 : 0;
-		$delay  = isset( $this->options['fadein']['delay'] ) ? $this->options['fadein']['delay'] / 1000 : 0;
+		$fadein = isset( $this->options['fadein']['duration'] ) ? $this->options['fadein']['duration'] : 0;
+		$delay  = isset( $this->options['fadein']['delay'] ) ? $this->options['fadein']['delay'] : 0;
 		?>
 		<style>
-			figure.wp-block-image img.lazy-hidden {
-				min-width: 150px;
-			}
+			.no-js img.lazyload { display: none; }
+			figure.wp-block-image img.lazyloading { min-width: 150px; }
 			<?php if ( $this->options['spinner'] ) : ?>
-				.lazy-hidden {
-					background: #fff url('<?php echo esc_url( $loader ); ?>') no-repeat 50% 50%;
+				.lazyload { opacity: 0; }
+				.lazyloading {
+					opacity: 1;
+					background: #fff url('<?php echo esc_url( $loader ); ?>') no-repeat center;
 				}
 			<?php else : ?>
-				.lazy-hidden {
-					opacity: 0;
-					background-color: #fff;
-				}
-				.lazy-loaded {
-					-webkit-transition: opacity <?php echo esc_html( $fadein ); ?>s;
-					-moz-transition: opacity <?php echo esc_html( $fadein ); ?>s;
-					-ms-transition: opacity <?php echo esc_html( $fadein ); ?>s;
-					-o-transition: opacity <?php echo esc_html( $fadein ); ?>s;
-					transition: opacity <?php echo esc_html( $fadein ); ?>s;
-					-webkit-transition-delay: <?php echo esc_html( $delay ); ?>s;
-					-moz-transition-delay: <?php echo esc_html( $delay ); ?>s;
-					-ms-transition-delay: <?php echo esc_html( $delay ); ?>s;
-					-o-transition-delay: <?php echo esc_html( $delay ); ?>s;
-					transition-delay: <?php echo esc_html( $delay ); ?>s;
-					opacity: 1 !important;
+				.lazyload, .lazyloading { opacity: 0; }
+				.lazyloaded {
+					opacity: 1;
+					transition: opacity <?php echo esc_html( $fadein ); ?>ms;
+					transition-delay: <?php echo esc_html( $delay ); ?>ms;
 				}
 			<?php endif; ?>
 		</style>
@@ -186,15 +176,16 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 
 			$this->remove_attribute( $new_image, 'src' );
 			$this->add_attribute( $new_image, 'data-src', $images['img_url'][ $key ] );
+			$this->add_attribute( $new_image, 'data-sizes', 'auto' );
 
 			// Change srcset to data-srcset attribute.
 			$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
-			// Add .lazy-load class to image that already has a class.
-			$new_image = preg_replace( '/<img(.*?)class=\"(.*?)\"(.*?)>/i', '<img$1class="$2 lazy-load lazy-hidden"$3>', $new_image );
-			// Add .lazy-load class to image that doesn't have a class.
-			$new_image = preg_replace( '/<img(.*?)(?!\bclass\b)(.*?)/i', '<img$1 class="lazy-load lazy-hidden"$2', $new_image );
+			// Add .lazyload class to image that already has a class.
+			$new_image = preg_replace( '/<img(.*?)class=\"(.*?)\"(.*?)>/i', '<img$1class="$2 lazyload"$3>', $new_image );
+			// Add .lazyload class to image that doesn't have a class.
+			$new_image = preg_replace( '/<img(.*?)(?!\bclass\b)(.*?)/i', '<img$1 class="lazyload"$2', $new_image );
 
-			//$this->add_attribute( $new_image, 'srcset', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
+			$this->add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
 			// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
 			if ( isset( $this->options['noscript'] ) && $this->options['noscript'] ) {
