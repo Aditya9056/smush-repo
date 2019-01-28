@@ -248,7 +248,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 */
 	private function is_exluded_uri() {
 		// No exclusion rules defined.
-		if ( ! isset( $this->options['exclude-pages'] ) || ! is_array( $this->options['exclude-pages'] ) ) {
+		if ( ! isset( $this->options['exclude-pages'] ) || empty( $this->options['exclude-pages'] ) ) {
 			return false;
 		}
 
