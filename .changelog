@@ -1,5 +1,6 @@
 = 3.2.0 =
 
+* New: Image lazy loading
 * New: CDN support for mapped domains in multisite
 * New: Auto update free version of the plugin to Pro if Dashboard plugin is installed and activated
 * New: Options to preserve settings and data on plugin uninstall
@@ -7,6 +8,7 @@
 * New: Ignore images with errors during bulk Smush
 * Fix: [NextGEN Gallery] bug with stats count
 * Fix: Translation strings and typos
+* Fix: wp_smush_skip_folder filter
 
 = 3.1.0 =
 

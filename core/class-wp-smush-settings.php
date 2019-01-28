@@ -50,57 +50,53 @@ class WP_Smush_Settings {
 		'usage'             => true,
 		'accessible_colors' => false,
 		'keep_data'         => true,
+		'lazy_load'         => false,
 	);
 
 	/**
 	 * List of fields in bulk smush form.
 	 *
+	 * @used-by save()
+	 *
 	 * @var array
 	 */
-	private $bulk_fields = array(
-		'networkwide',
-		'auto',
-		'lossy',
-		'original',
-		'strip_exif',
-		'resize',
-		'backup',
-		'png_to_jpg',
-		'detection',
-	);
+	private $bulk_fields = array( 'networkwide', 'auto', 'lossy', 'original', 'strip_exif', 'resize', 'backup', 'png_to_jpg', 'detection' );
 
 	/**
 	 * List of fields in integration form.
 	 *
+	 * @used-by save()
+	 *
 	 * @var array
 	 */
-	private $integration_fields = array(
-		'gutenberg',
-		'nextgen',
-		's3',
-	);
+	private $integration_fields = array( 'gutenberg', 'nextgen', 's3' );
 
 	/**
 	 * List of fields in CDN form.
 	 *
+	 * @used-by save()
+	 *
 	 * @var array
 	 */
-	private $cdn_fields = array(
-		'auto_resize',
-		'cdn',
-		'webp',
-	);
+	private $cdn_fields = array( 'auto_resize', 'cdn', 'webp' );
 
 	/**
 	 * List of fields in Settings form.
 	 *
+	 * @used-by save()
+	 *
 	 * @var array
 	 */
-	private $settings_fields = array(
-		'accessible_colors',
-		'usage',
-		'keep_data',
-	);
+	private $settings_fields = array( 'accessible_colors', 'usage', 'keep_data' );
+
+	/**
+	 * List of fields in lazy loading form.
+	 *
+	 * @used-by save()
+	 *
+	 * @var array
+	 */
+	private $lazy_load_fields = array( 'lazy_load' );
 
 	/**
 	 * Return the plugin instance.
@@ -128,9 +124,9 @@ class WP_Smush_Settings {
 		}
 
 		// Save Settings.
-		add_action( 'wp_ajax_save_settings', array( $this, 'save_settings' ) );
+		add_action( 'wp_ajax_save_settings', array( $this, 'save' ) );
 		// Reset Settings.
-		add_action( 'wp_ajax_reset_settings', array( $this, 'reset_settings' ) );
+		add_action( 'wp_ajax_reset_settings', array( $this, 'reset' ) );
 
 		$this->init();
 	}
@@ -260,7 +256,7 @@ class WP_Smush_Settings {
 	 *
 	 * @since 3.2.0
 	 */
-	public function reset_settings() {
+	public function reset() {
 		check_ajax_referer( 'get-smush-status' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -278,31 +274,24 @@ class WP_Smush_Settings {
 	}
 
 	/**
-	 * Save settings, used for networkwide option.
+	 * Save settings.
+	 *
+	 * @param bool $json_response  Send a JSON response.
 	 */
-	public function save_settings() {
-		$this->process_options();
-		wp_send_json_success();
-	}
-
-	/**
-	 * Check if form is submitted and process it
-	 */
-	public function process_options() {
+	public function save( $json_response = true ) {
 		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
 		if ( ! is_user_logged_in() ) {
 			return;
 		}
 
-		$pages_with_settings = array( 'bulk', 'integration', 'cdn', 'settings' );
+		$pages_with_settings = array( 'bulk', 'integration', 'cdn', 'settings', 'lazy_load' );
+		$setting_form        = isset( $_POST['setting_form'] ) ? sanitize_text_field( wp_unslash( $_POST['setting_form'] ) ) : '';
 
 		// Continue only if form name is set.
-		if ( ! isset( $_POST['setting_form'] ) || ! in_array( wp_unslash( $_POST['setting_form'] ), $pages_with_settings, true ) ) { // Input var ok.
+		if ( ! in_array( $setting_form, $pages_with_settings, true ) ) {
 			return;
 		}
-
-		$setting_form = sanitize_text_field( wp_unslash( $_POST['setting_form'] ) );
 
 		// Store that we need not redirect again on plugin activation.
 		update_site_option( WP_SMUSH_PREFIX . 'hide_smush_welcome', true );
@@ -310,8 +299,10 @@ class WP_Smush_Settings {
 		$settings = $this->get();
 
 		// Save whether to use the settings networkwide or not ( Only if in network admin ).
-		if ( isset( $_POST['action'] ) && 'save_settings' === wp_unslash( $_POST['action'] ) ) { // Input var ok.
-			$settings['networkwide'] = (bool) wp_unslash( $_POST['wp-smush-networkwide'] );
+		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+
+		if ( 'save_settings' === $action ) {
+			$settings['networkwide'] = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'networkwide', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 			update_site_option( WP_SMUSH_PREFIX . 'networkwide', $settings['networkwide'] );
 		}
 
@@ -320,56 +311,168 @@ class WP_Smush_Settings {
 			delete_site_option( WP_SMUSH_PREFIX . 'hide_s3support_alert' );
 		}
 
-		// Current form fields.
-		$form_fields = $this->{$setting_form . '_fields'};
-
 		$core_settings = WP_Smush::get_instance()->core()->settings;
 
 		// Process each setting and update options.
 		foreach ( $core_settings as $name => $text ) {
 			// Do not update if field is not available in current form.
-			if ( ! in_array( $name, $form_fields, true ) ) {
+			if ( ! in_array( $name, $this->{$setting_form . '_fields'}, true ) ) {
 				continue;
 			}
 
-			// Get the value to be saved.
-			$setting = isset( $_POST[ WP_SMUSH_PREFIX . $name ] ) && $_POST[ WP_SMUSH_PREFIX . $name ] ? true : false; // Input var ok.
-
-			$settings[ $name ] = $setting;
-
-			// Unset the var for next loop.
-			unset( $setting );
+			// Update the setting.
+			$settings[ $name ] = filter_input( INPUT_POST, WP_SMUSH_PREFIX . $name, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 		}
-
-		// Update initialised settings.
-		$this->settings = $settings;
-
-		$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
 
 		// Settings that are specific to a page.
 		if ( 'bulk' === $setting_form ) {
-			// Save the selected image sizes.
-			$image_sizes = ! empty( $_POST['wp-smush-image_sizes'] ) ? $_POST['wp-smush-image_sizes'] : array(); // Input var ok.
-			$image_sizes = array_filter( array_map( 'sanitize_text_field', $image_sizes ) );
-			$this->set_setting( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
-
-			// Update Resize width and height settings if set.
-			$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0; // Input var ok.
-			$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0; // Input var ok.
-			$this->set_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+			$this->parse_bulk_settings();
 		}
 
 		if ( 'cdn' === $setting_form ) {
-			// $status = connect to CDN.
-			$enabled = WP_Smush::get_instance()->core()->mod->cdn->get_status();
-			if ( ! $enabled ) {
-				$response = WP_Smush::get_instance()->api()->enable();
-				$response = json_decode( $response['body'] );
-				$this->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $response->data );
-			}
+			$this->parse_cdn_settings();
+		}
+
+		if ( 'lazy_load' === $setting_form ) {
+			$this->parse_lazy_load_settings();
 		}
 
 		// Store the option in table.
+		$this->set_setting( WP_SMUSH_PREFIX . 'settings', $settings );
 		$this->set_setting( WP_SMUSH_PREFIX . 'settings_updated', 1 );
+
+		if ( $json_response ) {
+			wp_send_json_success();
+		}
 	}
+
+	/**
+	 * Parse bulk Smush specific settings.
+	 *
+	 * @since 3.2.0  Moved from save method.
+	 */
+	private function parse_bulk_settings() {
+		$image_sizes = array();
+
+		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
+
+		// Save the selected image sizes.
+		if ( ! empty( $_POST['wp-smush-image_sizes'] ) ) {
+			$image_sizes = array_filter( array_map( 'sanitize_text_field', wp_unslash( $_POST['wp-smush-image_sizes'] ) ) );
+		}
+
+		// Update Resize width and height settings if set.
+		$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0; // Input var ok.
+		$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0; // Input var ok.
+
+		$this->set_setting( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
+		$this->set_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
+	}
+
+	/**
+	 * Parse CDN specific settings.
+	 *
+	 * @since 3.2.0  Moved from save method.
+	 */
+	private function parse_cdn_settings() {
+		// $status = connect to CDN.
+		$enabled = WP_Smush::get_instance()->core()->mod->cdn->get_status();
+
+		if ( ! $enabled ) {
+			$response = WP_Smush::get_instance()->api()->enable();
+			$response = json_decode( $response['body'] );
+
+			$this->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $response->data );
+		}
+	}
+
+	/**
+	 * Parse lazy loading specific settings.
+	 *
+	 * @since 3.2.0
+	 */
+	private function parse_lazy_load_settings() {
+		$args = array(
+			'format'          => array(
+				'filter' => FILTER_VALIDATE_BOOLEAN,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+			'output'          => array(
+				'filter' => FILTER_VALIDATE_BOOLEAN,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+			'fadein'          => array(
+				'filter' => FILTER_VALIDATE_INT,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+			'spinner'         => FILTER_VALIDATE_BOOLEAN,
+			'include'         => array(
+				'filter' => FILTER_VALIDATE_BOOLEAN,
+				'flags'  => FILTER_REQUIRE_ARRAY,
+			),
+			'exclude-pages'   => FILTER_SANITIZE_STRING,
+			'exclude-classes' => FILTER_SANITIZE_STRING,
+			'footer'          => FILTER_VALIDATE_BOOLEAN,
+			'noscript'        => FILTER_VALIDATE_BOOLEAN,
+		);
+
+		$settings = filter_input_array( INPUT_POST, $args );
+
+		// Convert to array.
+		if ( ! empty( $settings['exclude-pages'] ) ) {
+			$settings['exclude-pages'] = preg_split( '/[\r\n\t ]+/', $settings['exclude-pages'] );
+		} else {
+			$settings['exclude-pages'] = array();
+		}
+		if ( ! empty( $settings['exclude-classes'] ) ) {
+			$settings['exclude-classes'] = preg_split( '/[\r\n\t ]+/', $settings['exclude-classes'] );
+		} else {
+			$settings['exclude-classes'] = array();
+		}
+
+		$this->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $settings );
+	}
+
+	/**
+	 * Apply a default configuration to lazy loading on first activation.
+	 *
+	 * @since 3.2.0
+	 */
+	public function init_lazy_load_defaults() {
+		$defaults = array(
+			'format'          => array(
+				'jpeg' => true,
+				'png'  => true,
+				'gif'  => true,
+				'svg'  => true,
+			),
+			'output'          => array(
+				'content'    => true,
+				'widgets'    => true,
+				'thumbnails' => true,
+				'gravatars'  => true,
+			),
+			'fadein'          => array(
+				'duration' => 400,
+				'delay'    => 0,
+			),
+			'spinner'         => true,
+			'include'         => array(
+				'frontpage' => true,
+				'home'      => true,
+				'page'      => true,
+				'single'    => true,
+				'archive'   => true,
+				'category'  => true,
+				'tag'       => true,
+			),
+			'exclude-pages'   => array(),
+			'exclude-classes' => array(),
+			'footer'          => true,
+			'noscript'        => true,
+		);
+
+		$this->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $defaults );
+	}
+
 }

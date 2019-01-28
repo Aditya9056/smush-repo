@@ -271,7 +271,7 @@ class WP_Smush_Admin {
 	}
 
 	/**
-	 * Add Smush Policy to "Privace Policy" page during creation.
+	 * Add Smush Policy to "Privacy Policy" page during creation.
 	 *
 	 * @since 2.3.0
 	 */

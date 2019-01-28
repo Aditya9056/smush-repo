@@ -82,6 +82,11 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		add_action( 'wp_ajax_smush_toggle_cdn', array( $this, 'toggle_cdn' ) );
 		// Update stats box and CDN status.
 		add_action( 'wp_ajax_get_cdn_stats', array( $this, 'get_cdn_stats' ) );
+
+		/**
+		 * Lazy loading
+		 */
+		add_action( 'wp_ajax_smush_toggle_lazy_load', array( $this, 'smush_toggle_lazy_load' ) );
 	}
 
 	/***************************************
@@ -345,7 +350,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// Save settings only if networkwide settings are disabled.
 		if ( ( ! is_multisite() || ! $this->settings->is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
 			// Save Settings.
-			$this->settings->process_options();
+			$this->settings->save( false );
 		}
 
 		// If there aren't any images in the library, return the notice.
@@ -975,6 +980,50 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		// At this point we already know that $status->data is valid.
 		wp_send_json_success( $data );
+	}
+
+	/***************************************
+	 *
+	 * Lazy loading
+	 *
+	 * @since 3.2.0
+	 */
+
+	/**
+	 * Toggle lazy loading module.
+	 *
+	 * Handles "Activate" button press on the disabled lazy loading meta box.
+	 * Handles "Deactivate" button press on the lazy loading meta box.
+	 * Refreshes page on success.
+	 *
+	 * @since 3.2.0
+	 */
+	public function smush_toggle_lazy_load() {
+		check_ajax_referer( 'save_wp_smush_options' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'User can not modify options', 'wp-smushit' ),
+				),
+				403
+			);
+		}
+
+		$param = isset( $_POST['param'] ) ? sanitize_text_field( wp_unslash( $_POST['param'] ) ) : false;
+
+		if ( 'true' === $param ) {
+			$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+
+			// No settings, during init - set defaults.
+			if ( ! $settings ) {
+				$this->settings->init_lazy_load_defaults();
+			}
+		}
+
+		$this->settings->set( 'lazy_load', 'true' === $param );
+
+		wp_send_json_success();
 	}
 
 }

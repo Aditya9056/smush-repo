@@ -172,7 +172,7 @@ class Smush {
 		this.button.prop( 'disabled', false );
 		// For bulk process, enable other buttons.
 		jQuery( 'button.wp-smush-all' ).removeAttr( 'disabled' );
-		jQuery( 'button.wp-smush-scan, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, input#wp-smush-save-settings' ).removeAttr( 'disabled' );
+		jQuery( 'button.wp-smush-scan, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, button#wp-smush-save-settings' ).removeAttr( 'disabled' );
 	};
 
 	/**
