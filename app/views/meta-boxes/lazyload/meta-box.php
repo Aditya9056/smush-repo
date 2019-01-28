@@ -262,7 +262,8 @@
 				<div class="sui-description">
 					<?php esc_html_e( 'Add URLs to the posts and/or pages you want to disable lazyloading on.', 'wp-smushit' ); ?>
 				</div>
-				<textarea class="sui-form-control" name="exclude-pages" placeholder="<?php esc_attr_e( 'E.g. /page', 'wp-smushit' ); ?>"><?php echo esc_attr( $settings['exclude-pages'] ); ?></textarea>
+				<?php $strings = join( PHP_EOL, $settings['exclude-pages'] ); ?>
+				<textarea class="sui-form-control" name="exclude-pages" placeholder="<?php esc_attr_e( 'E.g. /page', 'wp-smushit' ); ?>"><?php echo esc_attr( $strings ); ?></textarea>
 				<div class="sui-description">
 					<?php
 					printf(
@@ -280,7 +281,8 @@
 				<div class="sui-description">
 					<?php esc_html_e( 'Additionally, you can specify classes or IDs to avoid lazyloading. This gives you absolute control over each image on a page, not just the page itself.', 'wp-smushit' ); ?>
 				</div>
-				<textarea class="sui-form-control" name="exclude-classes" placeholder="<?php esc_attr_e( 'Add classes or IDs, one per line', 'wp-smushit' ); ?>"><?php echo esc_attr( $settings['exclude-classes'] ); ?></textarea>
+				<?php $strings = join( PHP_EOL, $settings['exclude-classes'] ); ?>
+				<textarea class="sui-form-control" name="exclude-classes" placeholder="<?php esc_attr_e( 'Add classes or IDs, one per line', 'wp-smushit' ); ?>"><?php echo esc_attr( $strings ); ?></textarea>
 				<div class="sui-description">
 					<?php
 					printf(

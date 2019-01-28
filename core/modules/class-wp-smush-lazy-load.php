@@ -148,7 +148,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return $content;
 		}
 
-		if ( ! $this->is_allowed_post_type() ) {
+		if ( ! $this->is_allowed_post_type() || $this->is_exluded_uri() ) {
 			return $content;
 		}
 
@@ -205,7 +205,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	/**
 	 * Check if this is part of the allowed post type.
 	 *
-	 * @since 2.3.0
+	 * @since 3.2.0
 	 *
 	 * @return bool
 	 */
@@ -229,6 +229,32 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		} elseif ( is_category() && isset( $this->options['include']['category'] ) && $this->options['include']['category'] ) {
 			return true;
 		} elseif ( is_tag() && isset( $this->options['include']['tag'] ) && $this->options['include']['tag'] ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if the page has been added to Post, Pages & URLs filter in Lazy-load settings.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return bool
+	 */
+	private function is_exluded_uri() {
+		// No exclusion rules defined.
+		if ( ! isset( $this->options['exclude-pages'] ) || ! is_array( $this->options['exclude-pages'] ) ) {
+			return false;
+		}
+
+		$request_uri = filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL );
+
+		// Remove empty values.
+		$uri_pattern = array_filter( $this->options['exclude-pages'] );
+		$uri_pattern = implode( '|', $uri_pattern );
+
+		if ( preg_match( "#{$uri_pattern}#i", $request_uri ) ) {
 			return true;
 		}
 

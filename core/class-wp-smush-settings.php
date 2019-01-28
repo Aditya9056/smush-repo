@@ -418,6 +418,18 @@ class WP_Smush_Settings {
 
 		$settings = filter_input_array( INPUT_POST, $args );
 
+		// Convert to array.
+		if ( ! empty( $settings['exclude-pages'] ) ) {
+			$settings['exclude-pages'] = preg_split( '/[\r\n\t ]+/', $settings['exclude-pages'] );
+		} else {
+			$settings['exclude-pages'] = array();
+		}
+		if ( ! empty( $settings['exclude-classes'] ) ) {
+			$settings['exclude-classes'] = preg_split( '/[\r\n\t ]+/', $settings['exclude-classes'] );
+		} else {
+			$settings['exclude-classes'] = array();
+		}
+
 		$this->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $settings );
 	}
 
@@ -454,8 +466,8 @@ class WP_Smush_Settings {
 				'category'  => true,
 				'tag'       => true,
 			),
-			'exclude-pages'   => '',
-			'exclude-classes' => '',
+			'exclude-pages'   => array(),
+			'exclude-classes' => array(),
 			'footer'          => true,
 			'noscript'        => true,
 		);
