@@ -108,7 +108,7 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 		}
 		?>
 		<div id="smush-image-bar-toggle" class="closed">
-            <i class="sui-icon-loader" aria-hidden="true"> </i>
+			<i class="sui-icon-loader" aria-hidden="true"> </i>
 		</div>
 		<div id="smush-image-bar" class="closed">
 			<h3><?php esc_html_e( 'Image Issues', 'wp-smushit' ); ?></h3>

@@ -285,12 +285,6 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 		return $meta;
 	}
 
-	function update_stats( $id = '', $savings = '' ) {
-		if ( empty( $id ) || empty( $savings ) ) {
-			return false;
-		}
-	}
-
 	/**
 	 * Replace the file if there are savings, and return savings
 	 *

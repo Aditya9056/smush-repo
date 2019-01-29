@@ -149,7 +149,7 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 			$image_type = $this->get_file_type( $file_path );
 
 			// If image type not supported.
-			if ( ! $image_type || ! in_array( $image_type, WP_Smush_Core::$mime_types ) ) {
+			if ( ! $image_type || ! in_array( $image_type, WP_Smush_Core::$mime_types, true ) ) {
 				return;
 			}
 

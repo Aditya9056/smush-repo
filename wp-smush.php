@@ -583,35 +583,35 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 */
 		private function maybe_upgrade_to_pro() {
 			if ( 'wp-smush-pro/wp-smush.php' === plugin_basename( __FILE__ ) ) {
-				return false;
+				return;
 			}
 
 			// Check that dashboard plugin is installed.
 			if ( ! class_exists( 'WPMUDEV_Dashboard' ) ) {
-				return false;
+				return;
 			}
 
 			if ( ! is_object( WPMUDEV_Dashboard::$api ) ) {
-				return false;
+				return;
 			}
 
 			if ( ! method_exists( WPMUDEV_Dashboard::$api, 'has_key' ) ) {
-				return false;
+				return;
 			}
 
 			// If user can't install - exit.
 			if ( ! WPMUDEV_Dashboard::$upgrader->user_can_install( self::$project_id ) ) {
-				return false;
+				return;
 			}
 
 			// Check permissions and configuration.
 			if ( ! WPMUDEV_Dashboard::$upgrader->can_auto_install( self::$project_id ) ) {
-				return false;
+				return;
 			}
 
 			$plugin = WPMUDEV_Dashboard::$api->get_project_data( self::$project_id );
 			if ( version_compare( WP_SMUSH_VERSION, $plugin['version'], '>' ) ) {
-				return false;
+				return;
 			}
 
 			$running_cron_update = get_site_option( 'smush_cron_update_running' );

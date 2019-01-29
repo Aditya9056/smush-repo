@@ -148,11 +148,6 @@ abstract class WP_Smush_View {
 			return;
 		}
 
-		// No need to show it on bulk smush.
-		if ( isset( $_GET['page'] ) && 'smush' === $_GET['page'] ) {
-			return;
-		}
-
 		// Return if notice is already dismissed.
 		if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
 			return;
@@ -312,7 +307,6 @@ abstract class WP_Smush_View {
 		// Shared UI wrapper with accessible color option.
 		$classes = $this->settings->get( 'accessible_colors' ) ? 'sui-wrap sui-color-accessible' : 'sui-wrap';
 		echo '<div class="' . esc_attr( $classes ) . '">';
-
 
 		// Load page header.
 		$this->render_page_header();

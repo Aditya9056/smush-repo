@@ -12,11 +12,6 @@
 class WP_Smush_Core {
 
 	/**
-	 * DB option name.
-	 */
-	const OPTION_NAME = 'smush_option';
-
-	/**
 	 * S3 module
 	 *
 	 * @var WP_Smush_S3
@@ -36,22 +31,6 @@ class WP_Smush_Core {
 	 * @var WP_Smush_Modules
 	 */
 	public $mod;
-
-	/**
-	 * Plugin options.
-	 *
-	 * @var null|array
-	 */
-	protected $options = null;
-
-	/**
-	 * Default options and values go here.
-	 *
-	 * @var array $defaults
-	 */
-	protected $defaults = array(
-		'version' => WP_SMUSH_VERSION, // This one should not change.
-	);
 
 	/**
 	 * Allowed mime types of image.
@@ -221,6 +200,7 @@ class WP_Smush_Core {
 	 * WP_Smush_Core constructor.
 	 *
 	 * @since 2.9.0
+	 * @throws Exception  Autoload exception.
 	 */
 	public function __construct() {
 		spl_autoload_register( array( $this, 'autoload' ) );
@@ -285,15 +265,6 @@ class WP_Smush_Core {
 		// Handle notice dismiss.
 		$this->dismiss_smush_upgrade();
 
-		// Perform migration if required.
-		$this->migrate();
-
-		// Initialize variables.
-		$this->initialise();
-
-		// Localize version, update.
-		$this->get_options();
-
 		// Load integrations.
 		$this->load_integrations();
 	}
@@ -305,113 +276,6 @@ class WP_Smush_Core {
 		if ( isset( $_GET['remove_smush_upgrade_notice'] ) && 1 == $_GET['remove_smush_upgrade_notice'] ) {
 			WP_Smush::get_instance()->admin()->ajax->dismiss_upgrade_notice( false );
 		}
-	}
-
-	/**
-	 * Migrates smushit api message to the latest structure
-	 *
-	 * @todo move to installer class
-	 */
-	private function migrate() {
-		if ( ! version_compare( WP_SMUSH_VERSION, '1.7.1', 'lte' ) ) {
-			return;
-		}
-
-		// Meta key to save migrated version.
-		$migrated_version_key = 'wp-smush-migrated-version';
-
-		$migrated_version = get_site_option( $migrated_version_key );
-
-		if ( WP_SMUSH_VERSION === $migrated_version ) {
-			return;
-		}
-
-		global $wpdb;
-
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->postmeta} WHERE meta_key=%s AND meta_value LIKE %s",
-				'_wp_attachment_metadata',
-				'%wp_smushit%'
-			)
-		);
-
-		if ( count( $results ) < 1 ) {
-			return;
-		}
-
-		$migrator = new WP_Smush_Migrate();
-		foreach ( $results as $attachment_meta ) {
-			$migrated_message = $migrator->migrate_api_message( maybe_unserialize( $attachment_meta->meta_value ) );
-			if ( array() !== $migrated_message ) {
-				update_post_meta( $attachment_meta->post_id, WP_Smushit::$smushed_meta_key, $migrated_message );
-			}
-		}
-
-		update_site_option( $migrated_version_key, WP_SMUSH_VERSION );
-	}
-
-	/**
-	 * Initialise the setting variables
-	 */
-	public function initialise() {
-		$settings = WP_Smush_Settings::get_instance();
-		// Check if lossy enabled.
-		$this->mod->smush->lossy_enabled = WP_Smush::is_pro() && $settings->get( 'lossy' );
-
-		// Check if Smush original enabled.
-		$this->mod->smush->smush_original = WP_Smush::is_pro() && $settings->get( 'original' );
-
-		// Check whether to keep EXIF data or not.
-		$this->mod->smush->keep_exif = ! $settings->get( 'strip_exif' );
-	}
-
-	/**
-	 * Store/Perform updates as per the plugin version
-	 *
-	 * @return array|mixed|null
-	 *
-	 * Source: Stackoverflow
-	 * https://wordpress.stackexchange.com/a/49797/32466
-	 */
-	private function get_options() {
-		// Already did the checks.
-		if ( isset( $this->options ) ) {
-			return $this->options;
-		}
-
-		// First call, get the options.
-		$options = get_option( self::OPTION_NAME );
-
-		// Options exist.
-		if ( false !== $options ) {
-			$new_version = version_compare( $options['version'], WP_SMUSH_VERSION, '!=' );
-			// $desync      = array_diff_key( $this->defaults, $options ) !== array_diff_key( $options, $this->defaults );
-			// update options if version changed
-			if ( $new_version ) {
-				$new_options = array();
-
-				// Check for new options and set defaults if necessary.
-				foreach ( $this->defaults as $option => $value ) {
-					$new_options[ $option ] = isset( $options[ $option ] ) ? $options[ $option ] : $value;
-				}
-
-				// Update version info.
-				$new_options['version'] = WP_SMUSH_VERSION;
-
-				update_option( self::OPTION_NAME, $new_options );
-				$this->options = $new_options;
-			} else {
-				$this->options = $options;
-			}
-			// New install (plugin was just activated).
-		} else {
-			// Store the version details.
-			update_option( self::OPTION_NAME, $this->defaults );
-			$this->options = $this->defaults;
-		}
-
-		return $this->options;
 	}
 
 	/**
@@ -700,7 +564,7 @@ class WP_Smush_Core {
 				'savings_supersmush' => '',
 				'pro_savings'        => '',
 			);
-		} // End if().
+		}
 
 		// Check if scanner class is available.
 		$scanner_ready = isset( $this->mod->dir->scanner );
@@ -895,7 +759,14 @@ class WP_Smush_Core {
 		$smush_data['total_images'] = 0;
 
 		while ( $query_next ) {
-			$global_data = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT $offset, $limit", WP_Smushit::$smushed_meta_key ) );
+			$global_data = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT %d, %d",
+					WP_Smushit::$smushed_meta_key,
+					$offset,
+					$limit
+				)
+			); // Db call ok; no-cache ok.
 			if ( ! empty( $global_data ) ) {
 				foreach ( $global_data as $data ) {
 					// Skip attachment, if not in attachment list.
