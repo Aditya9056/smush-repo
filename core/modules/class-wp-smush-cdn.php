@@ -6,6 +6,10 @@
  * @version 3.0
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 /**
  * Class WP_Smush_CDN
  */

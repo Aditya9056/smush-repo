@@ -10,6 +10,10 @@
  * @copyright (c) 2017, Incsub (http://incsub.com)
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 /**
  * Class WP_Smush_Helper
  */

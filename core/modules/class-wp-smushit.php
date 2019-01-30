@@ -5,6 +5,10 @@
  * @package WP_Smushit
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 /**
  * Class WP_Smushit.
  */

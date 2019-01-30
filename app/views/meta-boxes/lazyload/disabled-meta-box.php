@@ -6,6 +6,10 @@
  * @package WP_Smush
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 ?>
 
 <?php if ( ! $this->hide_wpmudev_branding() ) : ?>

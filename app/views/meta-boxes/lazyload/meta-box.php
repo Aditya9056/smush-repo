@@ -8,6 +8,10 @@
  * @var array $settings  Lazy loading settings.
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 ?>
 
 <p>

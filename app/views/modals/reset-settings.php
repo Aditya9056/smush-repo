@@ -6,6 +6,10 @@
  * @package WP_Smush
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 ?>
 
 <div class="dialog sui-dialog sui-dialog-sm wp-smush-reset-settings-dialog" aria-hidden="true" id="wp-smush-reset-settings-dialog">

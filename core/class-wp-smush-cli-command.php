@@ -6,6 +6,10 @@
  * @package WP_Smush
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 /**
  * Reduce image file sizes, improve performance and boost your SEO using the WPMU DEV Smush API.
  */

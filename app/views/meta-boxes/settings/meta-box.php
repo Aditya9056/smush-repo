@@ -12,6 +12,10 @@
  * @var array $settings_group     Settings group.
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 ?>
 
 <div class="sui-box-settings-row" xmlns="http://www.w3.org/1999/html">

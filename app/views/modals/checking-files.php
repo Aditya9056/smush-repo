@@ -6,7 +6,12 @@
  * @package WP_Smush
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 ?>
+
 <div class="sui-dialog sui-dialog-sm checking-files-dialog" aria-hidden="true" tabindex="-1" id="checking-files-dialog">
 	<div class="sui-dialog-overlay sui-fade-in"></div>
 	<div class="sui-dialog-content sui-bounce-in" aria-labelledby="dialogTitle" aria-describedby="dialogDescription" role="dialog">

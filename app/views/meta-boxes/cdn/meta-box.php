@@ -13,6 +13,10 @@
  * @var array    $status_msg     Array of CDN status messages.
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 ?>
 
 <form id="wp-smush-settings-form" method="post">
@@ -21,7 +25,7 @@
         <input type="hidden" name="wp-smush-networkwide" id="wp-smush-networkwide" value="1">
         <input type="hidden" name="setting-type" value="network">
 	<?php endif; ?>
-    
+
 	<p>
 		<?php
 		esc_html_e( 'Take load off your server by serving your images from our blazing-fast CDN.', 'wp-smushit' );

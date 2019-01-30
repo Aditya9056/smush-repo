@@ -6,6 +6,10 @@
  * @package WP_Smush
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 $current_tab = $this->get_current_tab();
 $button_msg  = 'bulk' === $current_tab ? '' : __( 'Saving changes...', 'wp-smushit' );
 $button_text = __( 'Save changes', 'wp-smushit' );

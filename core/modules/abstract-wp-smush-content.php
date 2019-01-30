@@ -9,6 +9,10 @@
  * @package WP_Smush
  */
 
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 abstract class WP_Smush_Content extends WP_Smush_Module {
 
 	/**
