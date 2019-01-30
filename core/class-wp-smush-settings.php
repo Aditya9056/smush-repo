@@ -456,7 +456,7 @@ class WP_Smush_Settings {
 				'duration' => 400,
 				'delay'    => 0,
 			),
-			'spinner'         => true,
+			'spinner'         => false,
 			'include'         => array(
 				'frontpage' => true,
 				'home'      => true,
