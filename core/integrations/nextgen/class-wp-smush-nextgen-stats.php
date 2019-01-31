@@ -106,7 +106,7 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 		$offset = 0;
 
 		// Check type of images being queried.
-		if ( ! in_array( $type, array( 'smushed', 'unsmushed' ) ) ) {
+		if ( ! in_array( $type, array( 'smushed', 'unsmushed' ), true ) ) {
 			return false;
 		}
 
@@ -122,6 +122,8 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 					if ( class_exists( 'Ngg_Serializable' ) ) {
 						$serializer = new Ngg_Serializable();
 						$meta       = $serializer->unserialize( $attachment->meta_data );
+					} elseif ( class_exists( 'C_NextGen_Serializable' ) && method_exists( 'C_NextGen_Serializable', 'unserialize' ) ) {
+						$meta = C_NextGen_Serializable::unserialize( $attachment->meta_data );
 					} else {
 						$meta = unserialize( $attachment->meta_data );
 					}
