@@ -2060,7 +2060,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 */
 	public function check_animated_status( $file_path, $id ) {
 		// Only do this for GIFs.
-		if ( 'image/gif' !== get_post_mime_type( $id ) ) {
+		if ( 'image/gif' !== get_post_mime_type( $id ) || ! isset( $file_path ) ) {
 			return;
 		}
 

@@ -1,5 +1,5 @@
 /**
- * Image resize detection (IRS).
+ * Image resize detection (IRD).
  *
  * Show all wrongly scaled images with a highlighted border and resize box.
  *
