@@ -25,7 +25,6 @@
 		}
 
 		.smush-onboarding-dialog {
-
 			@keyframes fadeInLeft {
 				from {
 					opacity: 0;
@@ -75,8 +74,6 @@
 						animation-name: fadeInRight;
 					}
 				}
-
-
 			}
 
 			// Start overwrite sui styles.
@@ -121,10 +118,7 @@
 
 				.sui-button { margin: 0; }
 
-				.sui-button-gray {
-					display: none;
-					margin-top: 30px;
-				}
+				.sui-button-gray { margin-top: 30px; }
 
 				button[type=submit] { margin-top: 25px; }
 			}
@@ -192,7 +186,6 @@
 				.sui-dialog-content { padding: 0 30px; }
 				.sui-dialog-image { display: block !important; }
 				.smush-onboarding-arrows { display: none; }
-				.sui-button-gray { display: inline-block !important; }
 			}
 			@media screen and (max-width: 320px) {
 				.sui-box { margin: 46px 0 0 !important; }

@@ -17,15 +17,15 @@ $user = wp_get_current_user();
 	<div class="sui-box-header sui-dialog-with-image">
 		<div class="sui-dialog-image" aria-hidden="true">
 			<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}.png"
-				 srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}.png 1x, <?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}@2x.png 2x"
-				 alt="<?php esc_attr_e( 'Smush Onboarding Modal', 'wp-smushit' ); ?>" class="sui-image sui-image-center">
+				srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}.png 1x, <?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}@2x.png 2x"
+				alt="<?php esc_attr_e( 'Smush Onboarding Modal', 'wp-smushit' ); ?>" class="sui-image sui-image-center">
 		</div>
 
 		<h3 class="sui-box-title" id="dialogTitle">
 			<# if ( 'start' === data.slide ) { #>
 			<?php
 			/* translators: %s: current user name */
-			printf( esc_html__( 'Hey, %s!', 'wp-smushit' ), $user->display_name );
+			printf( esc_html__( 'Hey, %s!', 'wp-smushit' ), esc_html( $user->display_name ) );
 			?>
 			<# } else if ( 'auto' === data.slide ) { #>
 			<?php esc_html_e( 'Automatic Compression', 'wp-smushit' ); ?>
