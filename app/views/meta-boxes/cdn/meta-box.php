@@ -157,35 +157,37 @@ if ( ! defined( 'WPINC' ) ) {
 	}
 	?>
 
-	<div class="sui-box-settings-row">
-		<div class="sui-box-settings-col-1">
-			<span class="sui-settings-label">
-				<?php esc_html_e( 'Deactivate', 'wp-smushit' ); ?>
-			</span>
-			<span class="sui-description">
+	<?php if ( ! is_multisite() || ( ! $settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) : ?>
+		<div class="sui-box-settings-row">
+			<div class="sui-box-settings-col-1">
+				<span class="sui-settings-label">
+					<?php esc_html_e( 'Deactivate', 'wp-smushit' ); ?>
+				</span>
+				<span class="sui-description">
 				<?php
 				esc_html_e(
 					'If you no longer require your images hosted from our CDN you can disable
-				this feature.',
+					this feature.',
 					'wp-smushit'
 				);
 				?>
 			</span>
-		</div>
-		<div class="sui-box-settings-col-2">
-			<button class="sui-button sui-button-ghost" id="smush-cancel-cdn">
-				<i class="sui-icon-power-on-off" aria-hidden="true"></i>
-				<?php esc_html_e( 'Deactivate', 'wp-smushit' ); ?>
-			</button>
-			<span class="sui-description">
+			</div>
+			<div class="sui-box-settings-col-2">
+				<button class="sui-button sui-button-ghost" id="smush-cancel-cdn">
+					<i class="sui-icon-power-on-off" aria-hidden="true"></i>
+					<?php esc_html_e( 'Deactivate', 'wp-smushit' ); ?>
+				</button>
+				<span class="sui-description">
 				<?php
 				esc_html_e(
 					'Note: You won’t lose any imagery by deactivating, all of your attachments are still
-				stored locally on your own server.',
+					stored locally on your own server.',
 					'wp-smushit'
 				);
 				?>
-			</span>
+				</span>
+			</div>
 		</div>
-	</div>
+	<?php endif; ?>
 </form>
