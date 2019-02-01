@@ -340,29 +340,6 @@ if ( ! defined( 'WPINC' ) ) {
 					</div>
 				</div>
 			</div>
-
-			<div class="sui-form-field">
-				<strong><?php esc_attr_e( 'No Script', 'wp-smushit' ); ?></strong>
-				<div class="sui-description">
-					<?php esc_html_e( 'This feature ensures images will still be shown to users who have Javascript disabled in their browser.', 'wp-smushit' ); ?>
-				</div>
-
-				<div class="sui-side-tabs sui-tabs">
-					<div data-tabs>
-						<label for="noscript-enable" class="sui-tab-item <?php echo $settings['noscript'] ? 'active' : ''; ?>">
-							<input type="radio" name="noscript" value="on" id="noscript-enable" <?php checked( $settings['noscript'] ); ?> />
-							<?php esc_html_e( 'Enable', 'wp-smushit' ); ?>
-						</label>
-
-						<label for="noscript-disable" class="sui-tab-item <?php echo $settings['noscript'] ? '' : 'active'; ?>">
-							<input type="radio" name="noscript" value="off" id="noscript-disable" <?php checked( $settings['noscript'], false ); ?> />
-							<?php esc_html_e( 'Disable', 'wp-smushit' ); ?>
-						</label>
-					</div>
-
-					<div data-panes><div class="active"></div><div></div></div>
-				</div>
-			</div>
 		</div>
 	</div>
 

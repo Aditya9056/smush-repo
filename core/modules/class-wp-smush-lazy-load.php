@@ -200,9 +200,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			$this->add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
 			// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
-			if ( isset( $this->options['noscript'] ) && $this->options['noscript'] ) {
-				$new_image .= '<noscript>' . $image . '</noscript>';
-			}
+			$new_image .= '<noscript>' . $image . '</noscript>';
 
 			$content = str_replace( $image, $new_image, $content );
 		}
