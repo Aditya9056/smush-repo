@@ -575,7 +575,7 @@
 		float: right;
 	}
 
-	.sui-summary-smush {
+	.sui-summary.sui-summary-smush {
 		.smushed-items-count {
 			margin: 5px;
 
@@ -588,10 +588,19 @@
 			}
 		}
 
-		.sui-summary-detail {
-			font-size: 15px;
-			font-weight: 500;
-			line-height: 22px;
+		.sui-summary-details {
+			.sui-summary-detail {
+				font-size: 15px;
+				font-weight: 500;
+				line-height: 22px;
+				display: inline-flex;
+				.wp-smush-stats-percent {
+					margin-left: 5px;
+				}
+				.wp-smush-stats-human {
+					margin-right: 5px;
+				}
+			}
 		}
 
 		.wp-smush-stats-label-message {
