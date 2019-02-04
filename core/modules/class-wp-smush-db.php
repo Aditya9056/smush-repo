@@ -287,6 +287,7 @@ class WP_Smush_DB {
 
 		// If not forced to update, try to get from cache.
 		if ( ! $force_update ) {
+			// TODO: This is an issue. If not forcing the update, the cached version is never incremented during image Smush.
 			$smushed_count = wp_cache_get( $key, 'wp-smush' );
 			// Return the cache value if cache is set.
 			if ( false !== $smushed_count && ! empty( $smushed_count ) ) {
