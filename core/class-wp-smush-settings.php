@@ -405,11 +405,10 @@ class WP_Smush_Settings {
 				'filter' => FILTER_VALIDATE_BOOLEAN,
 				'flags'  => FILTER_REQUIRE_ARRAY,
 			),
-			'fadein'          => array(
-				'filter' => FILTER_VALIDATE_INT,
+			'animation'       => array(
+				'filter' => FILTER_SANITIZE_STRING,
 				'flags'  => FILTER_REQUIRE_ARRAY,
 			),
-			'spinner'         => FILTER_VALIDATE_BOOLEAN,
 			'include'         => array(
 				'filter' => FILTER_VALIDATE_BOOLEAN,
 				'flags'  => FILTER_REQUIRE_ARRAY,
@@ -420,6 +419,14 @@ class WP_Smush_Settings {
 		);
 
 		$settings = filter_input_array( INPUT_POST, $args );
+
+		// Animation settings.
+		$settings['animation']['fadein']   = isset( $settings['animation']['value'] ) && 'fadein' === $settings['animation']['value'] ? true : false;
+		$settings['animation']['duration'] = isset( $settings['animation']['duration'] ) ? absint( $settings['animation']['duration'] ) : 0;
+		$settings['animation']['delay']    = isset( $settings['animation']['delay'] ) ? absint( $settings['animation']['delay'] ) : 0;
+		$settings['animation']['spinner']  = isset( $settings['animation']['value'] ) && 'spinner' === $settings['animation']['value'] ? true : false;
+		$settings['animation']['disabled'] = isset( $settings['animation']['value'] ) && 'disabled' === $settings['animation']['value'] ? true : false;
+		unset( $settings['animation']['value'] );
 
 		// Convert to array.
 		if ( ! empty( $settings['exclude-pages'] ) ) {
@@ -455,11 +462,13 @@ class WP_Smush_Settings {
 				'thumbnails' => true,
 				'gravatars'  => true,
 			),
-			'fadein'          => array(
+			'animation'       => array(
+				'fadein'   => true,
 				'duration' => 400,
 				'delay'    => 0,
+				'spinner'  => false,
+				'disabled' => false,
 			),
-			'spinner'         => false,
 			'include'         => array(
 				'frontpage' => true,
 				'home'      => true,

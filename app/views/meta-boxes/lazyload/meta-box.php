@@ -117,44 +117,42 @@ if ( ! defined( 'WPINC' ) ) {
 		<div class="sui-box-settings-col-2">
 			<div class="sui-side-tabs sui-tabs">
 				<div data-tabs>
-					<div class="<?php echo $settings['spinner'] ? '' : 'active'; ?>">
+					<label for="animation-fadein" class="sui-tab-item <?php echo $settings['animation']['fadein'] ? 'active' : ''; ?>">
+						<input type="radio" name="animation[value]" value="fadein" id="animation-fadein" <?php checked( $settings['animation']['fadein'] ); ?> />
 						<?php esc_html_e( 'Fade In', 'wp-smushit' ); ?>
-					</div>
-					<div class="<?php echo $settings['spinner'] ? 'active' : ''; ?>">
+					</label>
+					<label for="animation-spinner" class="sui-tab-item <?php echo $settings['animation']['spinner'] ? 'active' : ''; ?>">
+						<input type="radio" name="animation[value]" value="spinner" id="animation-spinner" <?php checked( $settings['animation']['spinner'] ); ?> />
 						<?php esc_html_e( 'Spinner', 'wp-smushit' ); ?>
-					</div>
-				</div>
-
+					</label>
+					<label for="animation-disabled" class="sui-tab-item <?php echo $settings['animation']['disabled'] ? 'active' : ''; ?>">
+						<input type="radio" name="animation[value]" value="disabled" id="animation-disabled" <?php checked( $settings['animation']['disabled'] ); ?> />
+						<?php esc_html_e( 'None', 'wp-smushit' ); ?>
+					</label>
+				</div><!-- end data-tabs -->
 				<div data-panes>
-					<div class="sui-tab-boxed <?php echo $settings['spinner'] ? '' : 'active'; ?>">
+					<div class="sui-tab-boxed <?php echo $settings['animation']['fadein'] ? 'active' : ''; ?>">
 						<div class="sui-form-field-inline">
 							<div class="sui-form-field">
 								<label for="fadein-duration" class="sui-label"><?php esc_html_e( 'Duration', 'wp-smushit' ); ?></label>
-								<input type='hidden' value='0' name='fadein[duration]' />
-								<input type="number" name="fadein[duration]" placeholder="400" value="<?php echo absint( $settings['fadein']['duration'] ); ?>" id="fadein-duration" class="sui-form-control sui-input-sm sui-field-has-suffix">
+								<input type='hidden' value='0' name='animation[duration]' />
+								<input type="number" name="animation[duration]" placeholder="400" value="<?php echo absint( $settings['animation']['duration'] ); ?>" id="fadein-duration" class="sui-form-control sui-input-sm sui-field-has-suffix">
 								<span class="sui-field-suffix"><?php esc_html_e( 'ms', 'wp-smushit' ); ?></span>
 							</div>
 							<div class="sui-form-field">
 								<label for="fadein-delay" class="sui-label"><?php esc_html_e( 'Delay', 'wp-smushit' ); ?></label>
-								<input type='hidden' value='0' name='fadein[delay]' />
-								<input type="number" name="fadein[delay]" placeholder="0" value="<?php echo absint( $settings['fadein']['delay'] ); ?>" id="fadein-delay" class="sui-form-control sui-input-sm sui-field-has-suffix">
+								<input type='hidden' value='0' name='animation[delay]' />
+								<input type="number" name="animation[delay]" placeholder="0" value="<?php echo absint( $settings['animation']['delay'] ); ?>" id="fadein-delay" class="sui-form-control sui-input-sm sui-field-has-suffix">
 								<span class="sui-field-suffix"><?php esc_html_e( 'ms', 'wp-smushit' ); ?></span>
 							</div>
 						</div>
 					</div>
-					<div class="sui-tab-boxed <?php echo $settings['spinner'] ? 'active' : ''; ?>">
-						<label class="sui-toggle" for="spinner">
-							<input type="checkbox" aria-describedby="sui-toggle-label" name="spinner" id="spinner" <?php checked( $settings['spinner'] ); ?>>
-							<span class="sui-toggle-slider"></span>
-						</label>
-						<label for="spinner" class="sui-toggle-label" style="vertical-align: middle;">
-							<?php esc_html_e( 'Show spinner while image is loading', 'wp-smushit' ); ?>
-						</label>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+					<div class="sui-tab-boxed <?php echo $settings['animation']['spinner'] ? 'active' : ''; ?>" style="display:none"></div>
+					<div class="sui-tab-boxed <?php echo $settings['animation']['disabled'] ? 'active' : ''; ?>" style="display:none"></div>
+				</div><!-- end data-panes -->
+			</div><!-- end .sui-tabs -->
+		</div><!-- end .sui-box-settings-col-2 -->
+	</div><!-- end .sui-box-settings-row -->
 
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">

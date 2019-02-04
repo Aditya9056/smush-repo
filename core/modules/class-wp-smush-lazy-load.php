@@ -43,6 +43,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 
 		// Load js file that is required in public facing pages.
 		add_action( 'wp_head', array( $this, 'add_inline_styles' ) );
+
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
 		// Allow lazy load attributes in img tag.
@@ -69,18 +70,44 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 * @since 3.2.0
 	 */
 	public function add_inline_styles() {
-		$loader = WP_SMUSH_URL . 'app/assets/images/loading.gif';
-		$fadein = isset( $this->options['fadein']['duration'] ) ? $this->options['fadein']['duration'] : 0;
-		$delay  = isset( $this->options['fadein']['delay'] ) ? $this->options['fadein']['delay'] : 0;
+		if ( $this->options['animation']['disabled'] ) {
+			return;
+		}
+
+		$loader = WP_SMUSH_URL . 'app/assets/images/icon-lazyloader.svg';
+		$fadein = isset( $this->options['animation']['duration'] ) ? $this->options['animation']['duration'] : 0;
+		$delay  = isset( $this->options['animation']['delay'] ) ? $this->options['animation']['delay'] : 0;
 		?>
 		<style>
 			.no-js img.lazyload { display: none; }
 			figure.wp-block-image img.lazyloading { min-width: 150px; }
-			<?php if ( $this->options['spinner'] ) : ?>
+			<?php if ( $this->options['animation']['spinner'] ) : ?>
+				@-webkit-keyframes spin {
+					0% {
+						-webkit-transform: rotate(0deg);
+						transform: rotate(0deg);
+					}
+					100% {
+						-webkit-transform: rotate(360deg);
+						transform: rotate(360deg);
+					}
+				}
+				@keyframes spin {
+					0% {
+						-webkit-transform: rotate(0deg);
+						transform: rotate(0deg);
+					}
+					100% {
+						-webkit-transform: rotate(360deg);
+						transform: rotate(360deg);
+					}
+				}
 				.lazyload { opacity: 0; }
 				.lazyloading {
 					opacity: 1;
 					background: #fff url('<?php echo esc_url( $loader ); ?>') no-repeat center;
+					-webkit-animation: spin 1.3s linear infinite;
+					animation: spin 1.3s linear infinite;
 				}
 			<?php else : ?>
 				.lazyload, .lazyloading { opacity: 0; }
