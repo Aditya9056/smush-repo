@@ -1469,11 +1469,20 @@ class WP_Smushit extends WP_Smush_Module {
 	 * @return mixed
 	 */
 	public function smush_image( $meta, $id = null ) {
+		if ( ! is_admin() ) {
+			// We need to check if this call originated from Gutenberg (is_admin() does not work in REST API).
+			$route = untrailingslashit( $GLOBALS['wp']->query_vars['rest_route'] );
+			if ( empty( $route ) || '/wp/v2/media' !== $route ) {
+				// If not - return image meta data.
+				return $meta;
+			}
+		}
+
 		$upload_attachment    = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 		$is_upload_attachment = 'upload-attachment' === $upload_attachment || isset( $_POST['post_id'] );
 
 		// Our async task runs when action is upload-attachment and post_id found. So do not run on these conditions.
-		if ( ( $is_upload_attachment && defined( 'WP_SMUSH_ASYNC' ) && WP_SMUSH_ASYNC ) || ! is_admin() ) {
+		if ( $is_upload_attachment && defined( 'WP_SMUSH_ASYNC' ) && WP_SMUSH_ASYNC ) {
 			return $meta;
 		}
 
