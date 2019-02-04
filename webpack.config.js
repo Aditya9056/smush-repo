@@ -29,9 +29,9 @@ const sharedConfig = {
 
 const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
-		'admin': './_src/scss/app.scss',
-		'common': './_src/scss/common.scss',
-		'resize-detection': './_src/scss/resize-detection.scss'
+		'smush-admin': './_src/scss/app.scss',
+		'smush-common': './_src/scss/common.scss',
+		'smush-rd': './_src/scss/resize-detection.scss'
 	},
 
 	output: {
@@ -103,11 +103,11 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 
 const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 	entry: {
-		'shared-ui': './_src/js//shared-ui.js',
-		'admin': './_src/js/app.js',
-		'media': './_src/js/media.js',
-		'resize-detection': './_src/js/public-resize-detection.js',
-		'blocks': './_src/js/blocks.js'
+		'smush-sui': './_src/js//shared-ui.js',
+		'smush-admin': './_src/js/app.js',
+		'smush-media': './_src/js/media.js',
+		'smush-rd': './_src/js/public-resize-detection.js',
+		'smush-blocks': './_src/js/blocks.js'
 	},
 
 	output: {

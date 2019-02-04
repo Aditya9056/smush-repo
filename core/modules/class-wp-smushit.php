@@ -872,20 +872,6 @@ class WP_Smushit extends WP_Smush_Module {
 	}
 
 	/**
-	 * Allows to bulk restore the images, if there is any backup for them
-	 *
-	 * Not used anywhere.
-	 */
-	private function bulk_restore() {
-		$modules = WP_Smush::get_instance()->core()->mod;
-
-		$smushed_attachments = ! empty( $this->smushed_attachments ) ? $this->smushed_attachments : $modules->db->smushed_count( true );
-		foreach ( $smushed_attachments as $attachment ) {
-			$modules->backup->restore_image( $attachment->attachment_id, false );
-		}
-	}
-
-	/**
 	 * Get the smush button text for attachment.
 	 *
 	 * @param int $id  Attachment ID for which the Status has to be set.
@@ -1293,12 +1279,6 @@ class WP_Smushit extends WP_Smush_Module {
 
 		// If images has other registered size, smush them first.
 		if ( ! empty( $meta['sizes'] ) ) {
-			if ( class_exists( 'finfo' ) ) {
-				$finfo = new finfo( FILEINFO_MIME_TYPE );
-			} else {
-				$finfo = false;
-			}
-
 			foreach ( $meta['sizes'] as $size_key => $size_data ) {
 				// Check if registered size is supposed to be Smushed or not.
 				if ( 'full' !== $size_key && $this->skip_image_size( $size_key ) ) {
@@ -1314,13 +1294,7 @@ class WP_Smushit extends WP_Smush_Module {
 				 */
 				do_action( 'smush_file_exists', $attachment_file_path_size, $id, $size_data );
 
-				if ( $finfo ) {
-					$ext = is_file( $attachment_file_path_size ) ? $finfo->file( $attachment_file_path_size ) : '';
-				} elseif ( function_exists( 'mime_content_type' ) ) {
-					$ext = mime_content_type( $attachment_file_path_size );
-				} else {
-					$ext = false;
-				}
+				$ext = WP_Smush_Helper::get_mime_type( $attachment_file_path_size );
 
 				if ( $ext ) {
 					$valid_mime = array_search(
@@ -2086,7 +2060,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 */
 	public function check_animated_status( $file_path, $id ) {
 		// Only do this for GIFs.
-		if ( 'image/gif' !== get_post_mime_type( $id ) ) {
+		if ( 'image/gif' !== get_post_mime_type( $id ) || ! isset( $file_path ) ) {
 			return;
 		}
 
