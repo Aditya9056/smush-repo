@@ -811,23 +811,36 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				<span class="sui-description sui-toggle-description">
 					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
 					<?php if ( 'detection' === $name && $setting_val ) : ?>
-						<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
-							<p>
-								<?php
-								printf(
-									/* translators: %1$s: opening a tag, %2$s: closing a tag */
-									esc_html__(
-										'Incorrect image size highlighting is active. %1$sView the
-									frontend%2$s of your website to see which images aren\'t the correct size
-									for their containers.',
+						<?php if ( $this->settings->get( 'cdn' ) && $this->settings->get( 'auto_resize' ) ) : ?>
+							<div class="sui-notice smush-notice-sm smush-highlighting-notice">
+								<p>
+									<?php
+									esc_html_e(
+										'Note: Images served via the Smush CDN are automatically resized to fit their containers, these will be skipped.',
 										'wp-smushit'
-									),
-									'<a href="' . esc_url( home_url() ) . '" target="_blank">',
-									'</a>'
-								);
-								?>
-							</p>
-						</div>
+									);
+									?>
+								</p>
+							</div>
+						<?php else : ?>
+							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
+								<p>
+									<?php
+									printf(
+										/* translators: %1$s: opening a tag, %2$s: closing a tag */
+										esc_html__(
+											'Incorrect image size highlighting is active. %1$sView the
+										frontend%2$s of your website to see which images aren\'t the correct size
+										for their containers.',
+											'wp-smushit'
+										),
+										'<a href="' . esc_url( home_url() ) . '" target="_blank">',
+										'</a>'
+									);
+									?>
+								</p>
+							</div>
+						<?php endif; ?>
 					<?php elseif ( 'detection' === $name ) : ?>
 						<div class="sui-notice sui-notice-warning smush-notice-sm smush-highlighting-warning sui-hidden">
 							<p>

@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Class WP_Smush_Auto_Resize
  */
-class WP_Smush_Auto_Resize extends WP_Smush_Module {
+class WP_Smush_Auto_Resize extends WP_Smush_Content {
 
 	/**
 	 * Is auto detection enabled.
@@ -35,6 +35,9 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 
 		// Load js file that is required in public facing pages.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_resize_assets' ) );
+
+		// Set a flag to media library images.
+		add_action( 'smush_cdn_image_tag', array( $this, 'skip_image_resize_detection' ) );
 
 		// Generate markup for the template engine.
 		add_action( 'wp_footer', array( $this, 'generate_markup' ) );
@@ -131,6 +134,31 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 			</p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Exclude images that are hosted on CDN and have auto resize enabled.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $image  Image tag.
+	 *
+	 * @return string
+	 */
+	public function skip_image_resize_detection( $image ) {
+		// No need to add attachment id if auto detection is not enabled.
+		if ( ! $this->can_auto_detect ) {
+			return $image;
+		}
+
+		// CDN with auto resize need to be enabled.
+		if ( ! $this->settings->get( 'cdn' ) || ! $this->settings->get( 'auto_resize' ) ) {
+			return $image;
+		}
+
+		$this->add_attribute( $image, 'data-resize-detection', '0' );
+
+		return $image;
 	}
 
 }

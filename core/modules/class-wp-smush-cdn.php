@@ -383,9 +383,9 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			/**
 			 * Filter to skip a single image from cdn.
 			 *
-			 * @param bool false Should skip?
-			 * @param string $img_url Image url.
-			 * @param array|bool $image Image object or false.
+			 * @param bool       $skip     Should skip? Default: false.
+			 * @param string     $img_url  Image url.
+			 * @param array|bool $image    Image tag or false.
 			 */
 			if ( apply_filters( 'smush_skip_image_from_cdn', false, $src, $image ) ) {
 				continue;
@@ -402,17 +402,17 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			/**
 			 * Filter hook to alter image src arguments before going through cdn.
 			 *
-			 * @param array $args Arguments.
-			 * @param string $src Image src.
-			 * @param object $image Image tag object.
+			 * @param array  $args   Arguments.
+			 * @param string $src    Image src.
+			 * @param string $image  Image tag.
 			 */
 			$args = apply_filters( 'smush_image_cdn_args', array(), $image );
 
 			/**
 			 * Filter hook to alter image src before going through cdn.
 			 *
-			 * @param string $src Image src.
-			 * @param object $image Image tag object.
+			 * @param string $src    Image src.
+			 * @param string $image  Image tag.
 			 */
 			$src = apply_filters( 'smush_image_src_before_cdn', $src, $image );
 
@@ -422,8 +422,8 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			/**
 			 * Filter hook to alter image src after replacing with CDN base.
 			 *
-			 * @param string $src Image src.
-			 * @param object $image Image tag object.
+			 * @param string $src    Image src.
+			 * @param string $image  Image tag.
 			 */
 			$src = apply_filters( 'smush_image_src_after_cdn', $src, $image );
 
@@ -442,6 +442,13 @@ class WP_Smush_CDN extends WP_Smush_Content {
 					$this->add_attribute( $new_image, 'sizes', $sizes );
 				}
 			}
+
+			/**
+			 * Filter hook to alter image tag before replacing the image in content.
+			 *
+			 * @param string $image  Image tag.
+			 */
+			$new_image = apply_filters( 'smush_cdn_image_tag', $new_image );
 
 			$content = str_replace( $image, $new_image, $content );
 		}
@@ -1071,7 +1078,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		$mapped_domain = $this->check_mapped_domain();
 
 		// URL does not belong to the site or a site mapped domain.
-		if ( false === strpos( $src, content_url() ) && ( is_multisite() && false === strpos( $src, $mapped_domain ) ) ) {
+		if ( false === strpos( $src, content_url() ) || ( is_multisite() && false === strpos( $src, $mapped_domain ) ) ) {
 			return false;
 		}
 
