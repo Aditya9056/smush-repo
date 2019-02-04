@@ -392,7 +392,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		// Initialize Media Library Stats.
 		if ( 'nextgen' !== $type && empty( $core->remaining_count ) ) {
-			$core->setup_global_stats();
+			// Force update to clear caches.
+			$core->setup_global_stats( true );
 		}
 
 		// Initialize NextGen Stats.
