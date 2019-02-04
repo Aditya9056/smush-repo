@@ -9,6 +9,7 @@
 * Enhance: Performance
 * Enhance: Clean up outdated and deprecated code
 * Enhance: Onboarding experience
+* Enhance: Skip auto resized images on CDN from highlighting in image resize detection tab
 * Fix: [NextGEN Gallery] bug with stats count
 * Fix: Translation strings and typos
 * Fix: wp_smush_skip_folder filter
