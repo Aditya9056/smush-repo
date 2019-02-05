@@ -1533,6 +1533,7 @@ class WP_Smushit extends WP_Smush_Module {
 		// So we need to manually initialize those.
 		WP_Smush::get_instance()->core()->initialise();
 		WP_Smush::get_instance()->core()->mod->resize->initialize( true );
+		WP_Smush::get_instance()->core()->mod->backup->initialize();
 
 		// Check if auto is enabled.
 		$auto_smush = $this->is_auto_smush_enabled();
