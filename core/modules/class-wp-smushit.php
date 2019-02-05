@@ -1514,6 +1514,7 @@ class WP_Smushit extends WP_Smush_Module {
 		// While uploading from Mobile App or other sources, admin_init action may not fire.
 		// So we need to manually initialize those.
 		WP_Smush::get_instance()->core()->mod->resize->initialize( true );
+		WP_Smush::get_instance()->core()->mod->backup->initialize();
 
 		// Check if auto is enabled.
 		$auto_smush = $this->is_auto_smush_enabled();

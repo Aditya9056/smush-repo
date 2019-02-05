@@ -14,7 +14,11 @@
 * Fix: Translation strings and typos
 * Fix: wp_smush_skip_folder filter
 * Fix: Recalculate stats when clicking 'Re-check status' button
+
+= 3.1.1 =
+
 * Fix: Auto Smush in Gutenberg
+* Fix: Image backup in Gutenberg
 
 = 3.1.0 =
 
