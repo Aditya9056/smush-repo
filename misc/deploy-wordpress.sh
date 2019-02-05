@@ -82,7 +82,12 @@ update_wp_config() {
     fi
 }
 
+link_to_plugin_folder() {
+    ln -s `pwd` "$WP_CORE_DIR"wp-content/plugins/wp-smushit
+}
+
 install_wp
+link_to_plugin_folder
 install_test_suite
 update_wp_config
 add_db_user
