@@ -15,7 +15,7 @@ pipelines:
           - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
           - git submodule update --init --recursive
           - service mysql start
-          - bash misc/deploy-wordpress.sh
+          - bash misc/deploy-wordpress.sh --link=false
           - cp -R $BITBUCKET_CLONE_DIR /tmp/wordpress/wp-content/plugins/wp-smushit
           - php -S localhost:8080 -t /tmp/wordpress &>/dev/null&
           - codecept run wpunit
