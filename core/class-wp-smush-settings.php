@@ -272,6 +272,7 @@ class WP_Smush_Settings {
 		$this->delete_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+		$this->delete_setting( WP_SMUSH_PREFIX . 'lazy_load' );
 		$this->delete_setting( 'skip-smush-setup' );
 
 		wp_send_json_success();
