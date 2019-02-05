@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
+if [ $# -lt 1 ]; then
+	echo "usage: $0 --link=[true|false]"
+	exit 1
+fi
+
 DB_NAME="wpTests"
 DB_USER="wp"
 DB_PASS="wp"
+SYMBOLIC_LINK=$1
 
 WP_TESTS_DIR='/tmp/wordpress-tests-lib'
 WP_CORE_DIR='/tmp/wordpress/'
@@ -83,7 +89,12 @@ update_wp_config() {
 }
 
 link_to_plugin_folder() {
-    ln -s `pwd` "$WP_CORE_DIR"wp-content/plugins/wp-smushit
+	if [ $SYMBOLIC_LINK == '--link=true' ]; then
+    	ln -s `pwd` "$WP_CORE_DIR"wp-content/plugins/wp-smushit
+    	echo "Symbolic link created"
+	else
+		echo "Symbolic link skipped with flag"
+	fi
 }
 
 install_wp
