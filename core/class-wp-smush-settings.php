@@ -274,6 +274,7 @@ class WP_Smush_Settings {
 		$this->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'lazy_load' );
 		$this->delete_setting( 'skip-smush-setup' );
+		$this->delete_setting( WP_SMUSH_PREFIX . 'hide_pagespeed_suggestion' );
 
 		wp_send_json_success();
 	}
