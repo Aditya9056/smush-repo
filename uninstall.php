@@ -12,6 +12,9 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 if ( ! class_exists( 'WP_Smush_Settings' ) ) {
+	if ( ! defined( 'WP_SMUSH_PREFIX' ) ) {
+		define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
+	}
 	/* @noinspection PhpIncludeInspection */
 	include_once plugin_dir_path( __FILE__ ) . '/core/class-wp-smush-settings.php';
 }
@@ -46,6 +49,7 @@ $smushit_keys = array(
 	'scan',
 	'settings',
 	'cdn_status',
+	'lazy_load',
 );
 
 $db_keys = array(
