@@ -34,6 +34,9 @@ class WP_Smush_JS_Composer extends WP_Smush_Integration {
 
 		$this->check_for_js_builder();
 
+		// Hook at the end of setting row to output a error div.
+		add_action( 'smush_setting_column_right_inside', array( $this, 'additional_notice' ) );
+
 		parent::__construct();
 
 		if ( $this->settings->get( 'js_builder' ) ) {
@@ -49,6 +52,8 @@ class WP_Smush_JS_Composer extends WP_Smush_Integration {
 	/**
 	 * Filters the setting variable to add NextGen setting title and description
 	 *
+	 * @since 3.2.1
+	 *
 	 * @param array $settings Settings.
 	 *
 	 * @return mixed
@@ -61,6 +66,27 @@ class WP_Smush_JS_Composer extends WP_Smush_Integration {
 		);
 
 		return $settings;
+	}
+
+	/**
+	 * Show additional notice if the required plugins are not installed.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param string $name  Setting name.
+	 */
+	public function additional_notice( $name ) {
+		if ( 'js_builder' === $name && ! $this->enabled ) {
+			?>
+			<div class="sui-notice sui-notice-sm">
+				<p>
+					<?php
+					esc_html_e( 'To use this feature you need to install and activate WPBakery Page Builder.', 'wp-smushit' );
+					?>
+				</p>
+			</div>
+			<?php
+		}
 	}
 
 	/**************************************
