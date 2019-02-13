@@ -28,7 +28,7 @@ Smush has been benchmarked and tested number one for speed and quality and is th
 - Incorrect Size Image Detection – Quickly locate images that are slowing down your site
 - Directory Smush – Optimize images even if they are not located in the media library
 - Automated Optimization – Asynchronously auto-smush your attachments for super fast compression on upload
-- Unlimited & Free – Optimize all of your images up to 1MB in size forever (no daily, monthly, or annual caps)
+- Unlimited & Free – Optimize all of your images up to 5MB in size forever (no daily, monthly, or annual caps)
 - Gutenberg Block Integration – View all Smush stats directly in image blocks
 - Multisite Compatible – Both global and individual Multisite settings
 - Process All Your Files – Smush will process PNG, JPEG and GIF files for optimum results
@@ -131,7 +131,7 @@ Yes! EXIF data stores camera settings, focal length, date, time and location inf
 
 = I just ran bulk smush and some of my images didn't get compressed? =
 
-First, check to see if you're receiving any server errors. If your images seem to be processing correctly check the file size of the images being skipped. Images over 1mb will be skipped. To compress images up to 32mb get [Smush Pro](https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme).
+First, check to see if you're receiving any server errors. If your images seem to be processing correctly check the file size of the images being skipped. Images over 5mb will be skipped. To compress images up to 32mb get [Smush Pro](https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme).
 
 = I activated Smush and I don’t see any difference in image quality. How am I supposed to know if Smush is working? =
 
