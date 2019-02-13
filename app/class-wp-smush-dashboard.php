@@ -578,6 +578,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			<div class="sui-box-settings-col-1">
 				<span class="sui-settings-label <?php echo 'gutenberg' === $name ? 'sui-settings-label-with-tag' : ''; ?>">
 					<?php echo esc_html( $label ); ?>
+					<?php do_action( 'smush_setting_column_tag', $name ); ?>
 				</span>
 
 				<span class="sui-description">
