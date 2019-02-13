@@ -1,6 +1,7 @@
 = 3.2.1 =
 
 * New: Increase image size limit in free version from 1Mb to 5Mb
+* New: Integration with WPBakery Page Builder
 * Enhance: Add upgrade link to bulk smush limit message
 * Fix: Errors with WP Ultimate Recipe Premium
 

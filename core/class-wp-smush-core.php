@@ -326,6 +326,10 @@ class WP_Smush_Core {
 		// Load Nextgen lib, and initialize wp smush async class.
 		$this->load_nextgen();
 		$this->load_gutenberg();
+
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-js-composer.php';
+		new WP_Smush_JS_Composer();
 	}
 
 	/**
