@@ -143,7 +143,7 @@ class WP_Smush_Admin {
 		}
 
 		// Load on all Smush page only.
-		if ( in_array( $current_screen->id, WP_Smush_Core::$plugin_pages, true ) ) {
+		if ( isset( $current_screen->id ) && in_array( $current_screen->id, WP_Smush_Core::$plugin_pages, true ) ) {
 			// Smush admin (smush-admin) includes the Shared UI.
 			wp_enqueue_style( 'smush-admin' );
 			wp_enqueue_script( 'smush-wpmudev-sui' );
