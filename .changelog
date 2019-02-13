@@ -1,3 +1,7 @@
+= 3.2.1 =
+
+* New: Increase image size limit in free version from 1Mb to 5Mb
+
 = 3.2.0 =
 
 * New: Image lazy loading
