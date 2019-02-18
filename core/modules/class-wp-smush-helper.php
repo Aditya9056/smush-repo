@@ -234,7 +234,11 @@ class WP_Smush_Helper {
 	 */
 	public static function drop_index( $table, $index ) {
 		global $wpdb;
-		$wpdb->query( "ALTER TABLE `$table` DROP INDEX `$index`" ); // Db call ok; no-cache ok.
+
+		$wpdb->query(
+			$wpdb->prepare( "ALTER TABLE %s DROP INDEX %s", $table, $index )
+		); // Db call ok; no-cache ok.
+
 		return true;
 	}
 
