@@ -107,8 +107,7 @@ class WP_Smush_Backup extends WP_Smush_Module {
 		}
 
 		// Prevent phar deserialization vulnerability.
-		$normalized_path = strtolower( trim( $backup_path ) );
-		if ( 0 === strpos( $normalized_path, 'phar://' ) ) {
+		if ( 0 === strpos( strtolower( trim( $backup_path ) ), 'phar://' ) ) {
 			return false;
 		}
 
