@@ -662,7 +662,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				case 's3':
 					esc_html_e( 'Note: For this process to happen automatically you need automatic smushing enabled.', 'wp-smushit' );
 					break;
-				case 'default':
+				default:
 					break;
 			}
 			?>
