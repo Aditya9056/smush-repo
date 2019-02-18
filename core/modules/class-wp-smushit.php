@@ -749,7 +749,7 @@ class WP_Smushit extends WP_Smush_Module {
 			return $html;
 		}
 
-		echo $html;
+		echo htmlentities( $html );
 	}
 
 	/**
