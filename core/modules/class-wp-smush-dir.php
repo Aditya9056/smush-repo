@@ -589,7 +589,7 @@ class WP_Smush_Dir {
 		$timestamp = gmdate( 'Y-m-d H:i:s' );
 
 		// Temporary increase the limit.
-		WP_Smush_Helper::increase_memory_limit();
+		wp_raise_memory_limit( 'image' );
 
 		// Iterate over all the selected items (can be either an image or directory).
 		foreach ( $paths as $path ) {

@@ -1077,7 +1077,7 @@ class WP_Smushit extends WP_Smush_Module {
 			'user-agent' => WP_SMUSH_UA,
 		);
 		// Temporary increase the limit.
-		WP_Smush_Helper::increase_memory_limit();
+		wp_raise_memory_limit( 'image' );
 		$result = wp_remote_post( $api_url, $args );
 
 		unset( $file_data ); // Free memory.
