@@ -476,12 +476,7 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 
 			// Save the original File URL.
 			$o_file = ! empty( $file ) ? $file : get_post_meta( $id, '_wp_attached_file', true );
-
-			// Prevent phar deserialization vulnerability.
-			$normalized_path = strtolower( trim( $o_file ) );
-			if ( ! strpos( $normalized_path, 'phar://' ) === 0 ) {
-				WP_Smush::get_instance()->core()->mod->backup->add_to_image_backup_sizes( $id, $o_file, 'smush_png_path' );
-			}
+			WP_Smush::get_instance()->core()->mod->backup->add_to_image_backup_sizes( $id, $o_file, 'smush_png_path' );
 
 			/**
 			 * Do action, if the PNG to JPG conversion was successful
