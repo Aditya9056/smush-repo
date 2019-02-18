@@ -476,6 +476,12 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 
 			// Save the original File URL.
 			$o_file = ! empty( $file ) ? $file : get_post_meta( $id, '_wp_attached_file', true );
+
+			$normalizedPath = strtolower(trim($o_file));
+			if (strpos($normalizedPath, 'phar://') === 0) {
+				throw new Exception('phar handler not allowed');
+			}
+
 			WP_Smush::get_instance()->core()->mod->backup->add_to_image_backup_sizes( $id, $o_file, 'smush_png_path' );
 
 			/**
