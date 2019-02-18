@@ -26,3 +26,8 @@ pipelines:
           # Will fail the pipeline, if errors are present
           - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
           - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
+    - step:
+        name: RIPS Security Scan
+        image: rips/rips-cli:3
+        script:
+          - rips-cli -vvv rips:scan:start -a $RIPS_APP_ID -p $BITBUCKET_CLONE_DIR -t 1
