@@ -594,7 +594,8 @@ class WP_Smush_Dir {
 		// Iterate over all the selected items (can be either an image or directory).
 		foreach ( $paths as $path ) {
 			// Prevent phar deserialization vulnerability.
-			if ( 0 === strpos( strtolower( trim( $path ) ), 'phar://' ) ) {
+			$normalized_path = strtolower( trim( $path ) );
+			if ( strpos( $normalized_path, 'phar://' ) === 0 ) {
 				continue;
 			}
 
