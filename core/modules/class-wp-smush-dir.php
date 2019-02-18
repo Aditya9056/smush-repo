@@ -593,6 +593,12 @@ class WP_Smush_Dir {
 
 		// Iterate over all the selected items (can be either an image or directory).
 		foreach ( $paths as $path ) {
+			// Prevent phar deserialization vulnerability.
+			$normalized_path = strtolower( trim( $path ) );
+			if ( 0 === strpos( $normalized_path, 'phar://' ) ) {
+				continue;
+			}
+
 			/**
 			 * Path is an image.
 			 */
@@ -760,8 +766,10 @@ class WP_Smush_Dir {
 			wp_send_json_error( __( 'Empty Directory Path', 'wp-smushit' ) );
 		}
 
+		$smush_path = filter_input( INPUT_GET, 'smush_path', FILTER_SANITIZE_URL, FILTER_REQUIRE_ARRAY );
+
 		// This will add the images to the database and get the file list.
-		$files = $this->get_image_list( $_GET['smush_path'] ); // Input var ok.
+		$files = $this->get_image_list( $smush_path );
 
 		// If files array is empty, send a message.
 		if ( empty( $files ) ) {
