@@ -707,7 +707,7 @@ class WP_Smushit extends WP_Smush_Module {
 		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
 			$status_txt = __( 'Not processed', 'wp-smushit' );
 			if ( $echo ) {
-				echo $status_txt;
+				echo htmlentities( $status_txt );
 				return;
 			}
 
@@ -717,7 +717,7 @@ class WP_Smushit extends WP_Smush_Module {
 		// If we aren't showing the button.
 		if ( ! $show_button ) {
 			if ( $echo ) {
-				echo $html;
+				echo htmlentities( $html );
 				return;
 			}
 
