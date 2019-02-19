@@ -120,14 +120,14 @@ class WP_Smush_Auto_Resize extends WP_Smush_Content {
 		<div id="smush-image-bar" class="closed">
 			<h3><?php esc_html_e( 'Image Issues', 'wp-smushit' ); ?></h3>
 			<p>
-				<?php esc_html_e( 'The images listed below are being resized to fit a container. To avoid serving oversized or blurry image, try to match the images to their container sizes.', 'wp-smushit' ); ?>
+				<?php esc_html_e( 'The images listed below are being resized to fit a container. To avoid serving oversized or blurry images, try to match the images to their container sizes.', 'wp-smushit' ); ?>
 			</p>
 
 			<div id="smush-image-bar-items-bigger">
 				<strong><?php esc_html_e( 'Oversized', 'wp-smushit' ); ?></strong>
 			</div>
 			<div id="smush-image-bar-items-smaller">
-				<strong><?php esc_html_e( 'Under', 'wp-smushit' ); ?></strong>
+				<strong><?php esc_html_e( 'Undersized', 'wp-smushit' ); ?></strong>
 			</div>
 			<p>
 				<?php esc_html_e( 'Note: It’s not always easy to make this happen, fix up what you can.', 'wp-smushit' ); ?>

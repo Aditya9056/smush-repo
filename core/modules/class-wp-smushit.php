@@ -707,7 +707,7 @@ class WP_Smushit extends WP_Smush_Module {
 		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images ) ) {
 			$status_txt = __( 'Not processed', 'wp-smushit' );
 			if ( $echo ) {
-				echo $status_txt;
+				echo htmlentities( $status_txt );
 				return;
 			}
 
@@ -717,7 +717,7 @@ class WP_Smushit extends WP_Smush_Module {
 		// If we aren't showing the button.
 		if ( ! $show_button ) {
 			if ( $echo ) {
-				echo $html;
+				echo htmlentities( $html );
 				return;
 			}
 
@@ -749,7 +749,7 @@ class WP_Smushit extends WP_Smush_Module {
 			return $html;
 		}
 
-		echo $html;
+		echo htmlentities( $html );
 	}
 
 	/**
@@ -1077,7 +1077,7 @@ class WP_Smushit extends WP_Smush_Module {
 			'user-agent' => WP_SMUSH_UA,
 		);
 		// Temporary increase the limit.
-		WP_Smush_Helper::increase_memory_limit();
+		wp_raise_memory_limit( 'image' );
 		$result = wp_remote_post( $api_url, $args );
 
 		unset( $file_data ); // Free memory.
@@ -1471,6 +1471,10 @@ class WP_Smushit extends WP_Smush_Module {
 	public function smush_image( $meta, $id = null ) {
 		if ( ! is_admin() ) {
 			// We need to check if this call originated from Gutenberg (is_admin() does not work in REST API).
+			if ( empty( $GLOBALS['wp']->query_vars['rest_route'] ) ) {
+				return $meta;
+			}
+
 			$route = untrailingslashit( $GLOBALS['wp']->query_vars['rest_route'] );
 			if ( empty( $route ) || '/wp/v2/media' !== $route ) {
 				// If not - return image meta data.

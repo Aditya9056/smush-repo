@@ -189,7 +189,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 						'wp-smushit'
 					);
 					break;
-				case 'default':
+				default:
 					break;
 			}
 			?>
