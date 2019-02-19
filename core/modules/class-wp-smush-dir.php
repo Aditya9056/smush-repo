@@ -521,7 +521,7 @@ class WP_Smush_Dir {
 					);
 				}
 
-				wp_send_json_success( $tree );
+				wp_send_json( $tree );
 			}
 		}
 	}

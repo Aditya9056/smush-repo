@@ -13,7 +13,6 @@
     }
 
     ul.fancytree-container {
-
         color: #666;
         font-family: "Roboto", sans-serif;
         font-size: 13px;
@@ -245,6 +244,7 @@
         .fancytree-loading span.fancytree-expander:before,
         .fancytree-statusnode-loading span.fancytree-icon:before {
             content: 'N';
+            display: inline-block;
             animation: spin 1.3s linear infinite;
         }
 
