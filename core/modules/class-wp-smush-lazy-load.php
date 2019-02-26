@@ -254,6 +254,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		if ( ! is_array( $this->options['include'] ) ) {
 			return false;
 		}
+
 		$blog_is_frontpage = ( 'posts' === get_option( 'show_on_front' ) && ! is_multisite() ) ? true : false;
 
 		if ( is_front_page() && isset( $this->options['include']['frontpage'] ) && $this->options['include']['frontpage'] ) {
@@ -264,11 +265,12 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return true;
 		} elseif ( is_single() && isset( $this->options['include']['single'] ) && $this->options['include']['single'] ) {
 			return true;
+		} elseif ( is_category() && isset( $this->options['include']['category'] ) && ! $this->options['include']['category'] ) {
+			// Show false, because a category is also an archive.
+			return false;
+		} elseif ( is_tag() && isset( $this->options['include']['tag'] ) && ! $this->options['include']['tag'] ) {
+			return false;
 		} elseif ( is_archive() && isset( $this->options['include']['archive'] ) && $this->options['include']['archive'] ) {
-			return true;
-		} elseif ( is_category() && isset( $this->options['include']['category'] ) && $this->options['include']['category'] ) {
-			return true;
-		} elseif ( is_tag() && isset( $this->options['include']['tag'] ) && $this->options['include']['tag'] ) {
 			return true;
 		}
 
