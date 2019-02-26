@@ -68,7 +68,7 @@ abstract class WP_Smush_Content extends WP_Smush_Module {
 	protected function get_attribute( $element, $name ) {
 		$value = array();
 
-		preg_match( '/<img(.*?)' . $name . '=\"(.*?)\"(.*?)>/i', $element, $value );
+		preg_match( '/<img(.*?)' . $name . '=[\'|"](.*?)[\'|"](.*?)>/i', $element, $value );
 
 		return isset( $value['2'] ) ? $value['2'] : '';
 	}
@@ -82,7 +82,7 @@ abstract class WP_Smush_Content extends WP_Smush_Module {
 	 * @param string $attribute  Img attribute name (srcset, size, etc).
 	 */
 	protected function remove_attribute( &$element, $attribute ) {
-		$element = preg_replace( '/' . $attribute . '=\\"[^\\"]*\\"/', '', $element );
+		$element = preg_replace( '/' . $attribute . '=[\'|"](.*?)[\'|"]/', '', $element );
 	}
 
 }

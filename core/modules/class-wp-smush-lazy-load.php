@@ -219,10 +219,16 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 
 			// Change srcset to data-srcset attribute.
 			$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
-			// Add .lazyload class to image that already has a class.
-			$new_image = preg_replace( '/<img(.*?)class=\"(.*?)\"(.*?)>/i', '<img$1class="$2 lazyload"$3>', $new_image );
-			// Add .lazyload class to image that doesn't have a class.
-			$new_image = preg_replace( '/<img(.*?)(?!\bclass\b)(.*?)/i', '<img$1 class="lazyload"$2', $new_image );
+
+			// Add .lazyload class.
+			$class = $this->get_attribute( $new_image, 'class' );
+			if ( $class ) {
+				$this->remove_attribute( $new_image, 'class' );
+				$class .= ' lazyload';
+			} else {
+				$class = 'lazyload';
+			}
+			$this->add_attribute( $new_image, 'class', $class );
 
 			$this->add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
