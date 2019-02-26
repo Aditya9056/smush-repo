@@ -544,7 +544,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		// Get maximum content width.
 		$content_width = $this->max_content_width();
 
-		if ( ( is_array( $size ) && $size[0] <= $content_width ) ) {
+		if ( is_array( $size ) && $size[0] < $content_width ) {
 			return $sizes;
 		}
 
