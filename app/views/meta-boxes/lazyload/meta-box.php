@@ -264,7 +264,12 @@ if ( ! defined( 'WPINC' ) ) {
 				<div class="sui-description">
 					<?php esc_html_e( 'Add URLs to the posts and/or pages you want to disable lazyloading on.', 'wp-smushit' ); ?>
 				</div>
-				<?php $strings = join( PHP_EOL, $settings['exclude-pages'] ); ?>
+				<?php
+				$strings = '';
+				if ( is_array( $settings['exclude-pages'] ) ) {
+					$strings = join( PHP_EOL, $settings['exclude-pages'] );
+				}
+				?>
 				<textarea class="sui-form-control" name="exclude-pages" placeholder="<?php esc_attr_e( 'E.g. /page', 'wp-smushit' ); ?>"><?php echo esc_attr( $strings ); ?></textarea>
 				<div class="sui-description">
 					<?php
