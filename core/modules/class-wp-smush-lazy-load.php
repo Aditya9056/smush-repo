@@ -60,7 +60,8 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			add_filter( 'get_avatar', array( $this, 'set_lazy_load_attributes' ), 100 );
 		}
 		if ( isset( $this->options['output']['widgets'] ) && $this->options['output']['widgets'] ) {
-			add_filter( 'widget_text', array( $this, 'set_lazy_load_attributes' ), 100 );
+			add_action( 'dynamic_sidebar_before', array( $this, 'filter_sidebar_content_start' ), 0 );
+			add_action( 'dynamic_sidebar_after', array( $this, 'filter_sidebar_content_end' ), 1000 );
 		}
 	}
 
@@ -325,6 +326,28 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Buffer sidebar content.
+	 *
+	 * @since 3.2.0
+	 */
+	public function filter_sidebar_content_start() {
+		ob_start();
+	}
+
+	/**
+	 * Process buffered content.
+	 *
+	 * @since 3.2.0
+	 */
+	public function filter_sidebar_content_end() {
+		$content = ob_get_clean();
+
+		echo $this->set_lazy_load_attributes( $content );
+
+		unset( $content );
 	}
 
 }
