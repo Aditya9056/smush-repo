@@ -348,6 +348,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		if ( ( ! is_multisite() || ! $this->settings->is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
 			// Save Settings.
 			$this->settings->save( false );
+			// Fetch the new settings.
+			$this->settings->init();
 		}
 
 		// If there aren't any images in the library, return the notice.
@@ -453,7 +455,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 				// If the image is already smushed.
 				if ( is_array( $smush_data ) && ! empty( $smush_data['stats'] ) ) {
-
 					// If we need to optmise losslessly, add to resmush list.
 					$smush_lossy = WP_Smush::is_pro() && $this->settings->get( 'lossy' ) && ! $smush_data['stats']['lossy'];
 

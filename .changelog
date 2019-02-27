@@ -17,6 +17,7 @@
 * Enhance: Clean up outdated and deprecated code
 * Enhance: Onboarding experience
 * Enhance: Skip auto resized images on CDN from highlighting in image resize detection tab
+* Enhance: Directory Smush where wp-content is placed in a custom location
 * Fix: [NextGEN Gallery] bug with stats count
 * Fix: Translation strings and typos
 * Fix: wp_smush_skip_folder filter

@@ -6,7 +6,7 @@ Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: image, resize, optimize, optimise, compress, performance, optimisation, optimise JPG, WebP, photography, optimizer, Smush WordPress Compression, Smush.it
 Requires at least: 4.6
-Tested up to: 5.0.3
+Tested up to: 5.1.0
 Stable tag: %%VERSION%%
 Requires PHP: 5.2.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html

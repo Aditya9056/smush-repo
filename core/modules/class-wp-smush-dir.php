@@ -533,7 +533,7 @@ class WP_Smush_Dir {
 	 */
 	public function get_root_path() {
 		// If main site.
-		if ( is_main_site() ) {
+		if ( is_multisite() && is_main_site() ) {
 			/**
 			 * Sometimes content directories may reside outside
 			 * the installation sub directory. We need to make sure
@@ -557,11 +557,9 @@ class WP_Smush_Dir {
 			}
 
 			return implode( '/', $common_path );
-		} else {
-			$up = wp_upload_dir();
-
-			return $up['basedir'];
 		}
+
+		return WP_CONTENT_DIR;
 	}
 
 	/**
