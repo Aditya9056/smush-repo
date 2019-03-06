@@ -623,6 +623,15 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @return mixed
 	 */
 	public function process_cdn_status( $status ) {
+		if ( is_wp_error( $status ) ) {
+			wp_send_json_error(
+				array(
+					'message' => $status->get_error_message(),
+				)
+			);
+		}
+
+
 		$status = json_decode( $status['body'] );
 
 		// Error from API.
