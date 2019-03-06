@@ -3,7 +3,9 @@
 * New: Increase image size limit in free version from 1Mb to 5Mb
 * Enhance: Add upgrade link to bulk smush limit message
 * Enhance: Directory Smush async mode
+* Enhance: Regex syntax for detecting images in content
 * Fix: Errors with WP Ultimate Recipe Premium
+* Fix: Inability to determine max content width with Auto Resize CDN feature
 
 = 3.2.0 =
 

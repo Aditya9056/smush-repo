@@ -812,6 +812,11 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			return $resize_sizes['width'];
 		}
 
+		// Just in case something goes wrong with the above checks.
+		if ( ! $content_width ) {
+			$content_width = 1900;
+		}
+
 		return $content_width;
 	}
 
