@@ -6,6 +6,7 @@
 * Enhance: Regex syntax for detecting images in content
 * Fix: Errors with WP Ultimate Recipe Premium
 * Fix: Inability to determine max content width with Auto Resize CDN feature
+* Fix: Directory Smush not resetting errors on successful scans
 
 = 3.2.0 =
 
