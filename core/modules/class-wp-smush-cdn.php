@@ -1110,6 +1110,10 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			return false;
 		}
 
+		if ( ! defined( 'DOMAINMAP_BASEFILE' ) ) {
+			return false;
+		}
+
 		$domain = wp_cache_get( 'smush_mapped_site_domain', 'smush' );
 
 		if ( ! $domain ) {
