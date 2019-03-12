@@ -181,17 +181,6 @@ class WP_Smush_Helper {
 	}
 
 	/**
-	 * Bump up the PHP memory limit temporarily
-	 */
-	public static function increase_memory_limit() {
-		$mlimit     = ini_get( 'memory_limit' );
-		$trim_limit = rtrim( $mlimit, 'M' );
-		if ( $trim_limit < '256' ) {
-			@ini_set( 'memory_limit', '256M' );
-		}
-	}
-
-	/**
 	 * Returns true if a database table column exists. Otherwise returns false.
 	 *
 	 * @link http://stackoverflow.com/a/5943905/2489248
@@ -234,7 +223,11 @@ class WP_Smush_Helper {
 	 */
 	public static function drop_index( $table, $index ) {
 		global $wpdb;
-		$wpdb->query( "ALTER TABLE `$table` DROP INDEX `$index`" ); // Db call ok; no-cache ok.
+
+		$wpdb->query(
+			$wpdb->prepare( "ALTER TABLE %s DROP INDEX %s", $table, $index )
+		); // Db call ok; no-cache ok.
+
 		return true;
 	}
 

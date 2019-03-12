@@ -106,8 +106,9 @@ class WP_Smush_Backup extends WP_Smush_Module {
 			$backup_sizes = array();
 		}
 
+		// Prevent phar deserialization vulnerability.
 		// Return if backup file doesn't exists.
-		if ( ! file_exists( $backup_path ) ) {
+		if ( 0 === strpos( strtolower( trim( $backup_path ) ), 'phar://' ) || ! file_exists( $backup_path ) ) {
 			return false;
 		}
 		list( $width, $height ) = getimagesize( $backup_path );

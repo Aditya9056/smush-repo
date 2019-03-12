@@ -587,7 +587,7 @@ jQuery( function ( $ ) {
 			let param = {
 				action: 'scan_for_resmush',
 				wp_smush_options_nonce: jQuery( '#wp_smush_options_nonce' ).val(),
-				scan_type: scan_type
+				type: scan_type
 			};
 
 			param = jQuery.param( param ) + '&' + jQuery( 'form#wp-smush-settings-form' ).serialize();

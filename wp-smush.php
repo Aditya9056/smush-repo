@@ -478,6 +478,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 						}
 						break;
 					case 'invalid':
+					default:
 						// If last checked was more than 24 hours.
 						if ( $diff_h > 24 ) {
 							$revalidate = true;

@@ -274,7 +274,7 @@ class WP_Smush_Dir {
 		// All good, Update the stats.
 		$wpdb->query(
 			$wpdb->prepare(
-				"UPDATE {$wpdb->prefix}smush_dir_images SET image_size=%d, file_time=%d, lossy=%s WHERE id=%d LIMIT 1",
+				"UPDATE {$wpdb->prefix}smush_dir_images SET error=NULL, image_size=%d, file_time=%d, lossy=%s WHERE id=%d LIMIT 1",
 				$smush_results['data']->after_size,
 				$file_time,
 				$lossy,
@@ -521,7 +521,7 @@ class WP_Smush_Dir {
 					);
 				}
 
-				wp_send_json_success( $tree );
+				wp_send_json( $tree );
 			}
 		}
 	}
@@ -533,7 +533,7 @@ class WP_Smush_Dir {
 	 */
 	public function get_root_path() {
 		// If main site.
-		if ( is_main_site() ) {
+		if ( is_multisite() && is_main_site() ) {
 			/**
 			 * Sometimes content directories may reside outside
 			 * the installation sub directory. We need to make sure
@@ -557,11 +557,9 @@ class WP_Smush_Dir {
 			}
 
 			return implode( '/', $common_path );
-		} else {
-			$up = wp_upload_dir();
-
-			return $up['basedir'];
 		}
+
+		return WP_CONTENT_DIR;
 	}
 
 	/**
@@ -589,10 +587,16 @@ class WP_Smush_Dir {
 		$timestamp = gmdate( 'Y-m-d H:i:s' );
 
 		// Temporary increase the limit.
-		WP_Smush_Helper::increase_memory_limit();
+		wp_raise_memory_limit( 'image' );
 
 		// Iterate over all the selected items (can be either an image or directory).
 		foreach ( $paths as $path ) {
+			// Prevent phar deserialization vulnerability.
+			$path = strtolower( trim( $path ) );
+			if ( strpos( $path, 'phar://' ) === 0 ) {
+				continue;
+			}
+
 			/**
 			 * Path is an image.
 			 */
@@ -760,8 +764,10 @@ class WP_Smush_Dir {
 			wp_send_json_error( __( 'Empty Directory Path', 'wp-smushit' ) );
 		}
 
+		$smush_path = filter_input( INPUT_GET, 'smush_path', FILTER_SANITIZE_URL, FILTER_REQUIRE_ARRAY );
+
 		// This will add the images to the database and get the file list.
-		$files = $this->get_image_list( $_GET['smush_path'] ); // Input var ok.
+		$files = $this->get_image_list( $smush_path );
 
 		// If files array is empty, send a message.
 		if ( empty( $files ) ) {

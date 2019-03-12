@@ -35,10 +35,12 @@ if ( ! defined( 'WPINC' ) ) {
 				</p>
 			</div>
 
+			<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
 			<img class="sui-image sui-image-center"
-			     src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding.png' ); ?>"
-			     srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding@2x.png' ); ?> 2x"
-			     alt="<?php esc_attr_e( 'WP Smush', 'wp-smushit' ); ?>">
+				src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding.png' ); ?>"
+				srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding@2x.png' ); ?> 2x"
+				alt="<?php esc_attr_e( 'WP Smush', 'wp-smushit' ); ?>">
+			<?php endif; ?>
 		</div>
 	</div>
 </div>

@@ -3,7 +3,11 @@
 * New: Increase image size limit in free version from 1Mb to 5Mb
 * New: Integration with WPBakery Page Builder
 * Enhance: Add upgrade link to bulk smush limit message
+* Enhance: Directory Smush async mode
+* Enhance: Regex syntax for detecting images in content
 * Fix: Errors with WP Ultimate Recipe Premium
+* Fix: Inability to determine max content width with Auto Resize CDN feature
+* Fix: Directory Smush not resetting errors on successful scans
 
 = 3.2.0 =
 
@@ -17,10 +21,12 @@
 * Enhance: Clean up outdated and deprecated code
 * Enhance: Onboarding experience
 * Enhance: Skip auto resized images on CDN from highlighting in image resize detection tab
+* Enhance: Directory Smush where wp-content is placed in a custom location
 * Fix: [NextGEN Gallery] bug with stats count
 * Fix: Translation strings and typos
 * Fix: wp_smush_skip_folder filter
 * Fix: Recalculate stats when clicking 'Re-check status' button
+* Fix: Illegal string offset 'file' warning in PHP
 
 = 3.1.1 =
 

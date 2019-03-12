@@ -348,6 +348,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		if ( ( ! is_multisite() || ! $this->settings->is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
 			// Save Settings.
 			$this->settings->save( false );
+			// Fetch the new settings.
+			$this->settings->init();
 		}
 
 		// If there aren't any images in the library, return the notice.
@@ -453,7 +455,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 				// If the image is already smushed.
 				if ( is_array( $smush_data ) && ! empty( $smush_data['stats'] ) ) {
-
 					// If we need to optmise losslessly, add to resmush list.
 					$smush_lossy = WP_Smush::is_pro() && $this->settings->get( 'lossy' ) && ! $smush_data['stats']['lossy'];
 
@@ -709,7 +710,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			wp_send_json_error(
 				array(
 					'error'         => 'missing_id',
-					'error_message' => WP_Smush_Helper::filter_error( esc_html__( 'No attachment ID was received', 'wp-smushit' ) ),
+					'error_message' => WP_Smush_Helper::filter_error( esc_html__( 'No attachment ID was received.', 'wp-smushit' ) ),
 					'file_name'     => 'undefined',
 					'show_warning'  => intval( $smush->show_warning() ),
 				)
@@ -743,6 +744,24 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$attachment_id = (int) $_REQUEST['attachment_id'];
 		$original_meta = wp_get_attachment_metadata( $attachment_id, true );
+
+		/**
+		 * This is often not set when images are imported to the database, without properly adding the meta values.
+		 * Causes PHP Warning: Illegal string offset 'file' message.
+		 */
+		if ( ! isset( $original_meta['file'] ) ) {
+			wp_send_json_error(
+				array(
+					'error'         => 'no_file_meta',
+					'error_message' => WP_Smush_Helper::filter_error( esc_html__( 'No file data found in image meta.', 'wp-smushit' ) ),
+					'file_name'     => printf(
+						/* translators: %d - attachment ID */
+						esc_html__( 'undefined (attachment ID: %d)', 'wp-smushit' ),
+						(int) $attachment_id
+					),
+				)
+			);
+		}
 
 		// Try to get the file name from path.
 		$file_name = explode( '/', $original_meta['file'] );

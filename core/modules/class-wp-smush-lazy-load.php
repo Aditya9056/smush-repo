@@ -60,7 +60,8 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			add_filter( 'get_avatar', array( $this, 'set_lazy_load_attributes' ), 100 );
 		}
 		if ( isset( $this->options['output']['widgets'] ) && $this->options['output']['widgets'] ) {
-			add_filter( 'widget_text', array( $this, 'set_lazy_load_attributes' ), 100 );
+			add_action( 'dynamic_sidebar_before', array( $this, 'filter_sidebar_content_start' ), 0 );
+			add_action( 'dynamic_sidebar_after', array( $this, 'filter_sidebar_content_end' ), 1000 );
 		}
 	}
 
@@ -219,10 +220,16 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 
 			// Change srcset to data-srcset attribute.
 			$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
-			// Add .lazyload class to image that already has a class.
-			$new_image = preg_replace( '/<img(.*?)class=\"(.*?)\"(.*?)>/i', '<img$1class="$2 lazyload"$3>', $new_image );
-			// Add .lazyload class to image that doesn't have a class.
-			$new_image = preg_replace( '/<img(.*?)(?!\bclass\b)(.*?)/i', '<img$1 class="lazyload"$2', $new_image );
+
+			// Add .lazyload class.
+			$class = $this->get_attribute( $new_image, 'class' );
+			if ( $class ) {
+				$this->remove_attribute( $new_image, 'class' );
+				$class .= ' lazyload';
+			} else {
+				$class = 'lazyload';
+			}
+			$this->add_attribute( $new_image, 'class', $class );
 
 			$this->add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
@@ -247,6 +254,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		if ( ! is_array( $this->options['include'] ) ) {
 			return false;
 		}
+
 		$blog_is_frontpage = ( 'posts' === get_option( 'show_on_front' ) && ! is_multisite() ) ? true : false;
 
 		if ( is_front_page() && isset( $this->options['include']['frontpage'] ) && $this->options['include']['frontpage'] ) {
@@ -257,11 +265,12 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return true;
 		} elseif ( is_single() && isset( $this->options['include']['single'] ) && $this->options['include']['single'] ) {
 			return true;
+		} elseif ( is_category() && isset( $this->options['include']['category'] ) && ! $this->options['include']['category'] ) {
+			// Show false, because a category is also an archive.
+			return false;
+		} elseif ( is_tag() && isset( $this->options['include']['tag'] ) && ! $this->options['include']['tag'] ) {
+			return false;
 		} elseif ( is_archive() && isset( $this->options['include']['archive'] ) && $this->options['include']['archive'] ) {
-			return true;
-		} elseif ( is_category() && isset( $this->options['include']['category'] ) && $this->options['include']['category'] ) {
-			return true;
-		} elseif ( is_tag() && isset( $this->options['include']['tag'] ) && $this->options['include']['tag'] ) {
 			return true;
 		}
 
@@ -281,7 +290,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return false;
 		}
 
-		$request_uri = filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL );
+		$request_uri = filter_input( INPUT_ENV, 'REQUEST_URI', FILTER_SANITIZE_URL );
 
 		// Remove empty values.
 		$uri_pattern = array_filter( $this->options['exclude-pages'] );
@@ -319,6 +328,28 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Buffer sidebar content.
+	 *
+	 * @since 3.2.0
+	 */
+	public function filter_sidebar_content_start() {
+		ob_start();
+	}
+
+	/**
+	 * Process buffered content.
+	 *
+	 * @since 3.2.0
+	 */
+	public function filter_sidebar_content_end() {
+		$content = ob_get_clean();
+
+		echo $this->set_lazy_load_attributes( $content );
+
+		unset( $content );
 	}
 
 }

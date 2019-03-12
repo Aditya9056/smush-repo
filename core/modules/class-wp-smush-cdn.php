@@ -189,7 +189,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 						'wp-smushit'
 					);
 					break;
-				case 'default':
+				default:
 					break;
 			}
 			?>
@@ -544,7 +544,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		// Get maximum content width.
 		$content_width = $this->max_content_width();
 
-		if ( ( is_array( $size ) && $size[0] <= $content_width ) ) {
+		if ( is_array( $size ) && $size[0] < $content_width ) {
 			return $sizes;
 		}
 
@@ -623,6 +623,15 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @return mixed
 	 */
 	public function process_cdn_status( $status ) {
+		if ( is_wp_error( $status ) ) {
+			wp_send_json_error(
+				array(
+					'message' => $status->get_error_message(),
+				)
+			);
+		}
+
+
 		$status = json_decode( $status['body'] );
 
 		// Error from API.
@@ -810,6 +819,11 @@ class WP_Smush_CDN extends WP_Smush_Content {
 
 		if ( isset( $resize_sizes['width'] ) && $resize_sizes['width'] < $content_width ) {
 			return $resize_sizes['width'];
+		}
+
+		// Just in case something goes wrong with the above checks.
+		if ( ! $content_width ) {
+			$content_width = 1900;
 		}
 
 		return $content_width;
@@ -1098,6 +1112,10 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 */
 	private function check_mapped_domain() {
 		if ( ! is_multisite() ) {
+			return false;
+		}
+
+		if ( ! defined( 'DOMAINMAP_BASEFILE' ) ) {
 			return false;
 		}
 
