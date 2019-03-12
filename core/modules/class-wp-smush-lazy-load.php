@@ -106,7 +106,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 				.lazyload { opacity: 0; }
 				.lazyloading {
 					opacity: 1;
-					background: #fff url('<?php echo esc_url( $loader ); ?>') no-repeat center;
+					background: rgba(255, 255, 255, 0) url('<?php echo esc_url( $loader ); ?>') no-repeat center;
 					-webkit-animation: spin 1.3s linear infinite;
 					animation: spin 1.3s linear infinite;
 				}
