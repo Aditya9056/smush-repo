@@ -8,6 +8,7 @@
 * Fix: Inability to determine max content width with Auto Resize CDN feature
 * Fix: Directory Smush not resetting errors on successful scans
 * Fix: Lazy loading spinning image containers
+* Fix: PHP notice on lazy loading settings page
 
 = 3.2.0 =
 

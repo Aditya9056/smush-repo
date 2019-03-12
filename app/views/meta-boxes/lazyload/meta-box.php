@@ -288,7 +288,12 @@ if ( ! defined( 'WPINC' ) ) {
 				<div class="sui-description">
 					<?php esc_html_e( 'Additionally, you can specify classes or IDs to avoid lazyloading. This gives you absolute control over each image on a page, not just the page itself.', 'wp-smushit' ); ?>
 				</div>
-				<?php $strings = join( PHP_EOL, $settings['exclude-classes'] ); ?>
+				<?php
+				$strings = '';
+				if ( is_array( $settings['exclude-classes'] ) ) {
+					$strings = join( PHP_EOL, $settings['exclude-classes'] );
+				}
+				?>
 				<textarea class="sui-form-control" name="exclude-classes" placeholder="<?php esc_attr_e( 'Add classes or IDs, one per line', 'wp-smushit' ); ?>"><?php echo esc_attr( $strings ); ?></textarea>
 				<div class="sui-description">
 					<?php
