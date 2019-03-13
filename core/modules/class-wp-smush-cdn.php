@@ -212,17 +212,25 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		$bandwidth = isset( $this->status->bandwidth ) ? $this->status->bandwidth : 0;
 
 		$percentage = round( $plan * $bandwidth / 1024 / 1024 / 1024 );
+		if ( $percentage > 100 ) {
+			$percentage = 100;
+		}
 		?>
 		<li class="smush-cdn-stats">
 			<span class="sui-list-label"><?php esc_html_e( 'CDN', 'wp-smushit' ); ?></span>
 			<span class="wp-smush-stats sui-list-detail">
 				<i class="sui-icon-loader sui-loading sui-hidden" aria-hidden="true" title="<?php esc_attr_e( 'Updating Stats', 'wp-smushit' ); ?>"></i>
+				<?php if ( 100 === $percentage ) : ?>
+					<span class="sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_attr_e( 'You have exceed your 30 day bandwidth allowance. The CDN is currently inactive until you upgrade your plan', 'wp-smushit' ); ?>">
+						<i class="sui-icon-warning-alert sui-error sui-md" aria-hidden="true"></i>
+					</span>
+				<?php endif; ?>
 				<span class="wp-smush-cdn-stats"><?php echo esc_html( WP_Smush_Helper::format_bytes( $bandwidth, 2 ) ); ?></span>
 				<span class="wp-smush-stats-sep">/</span>
 				<span class="wp-smush-cdn-usage">
 					<?php echo absint( $plan ); ?> GB
 				</span>
-				<div class="sui-circle-score" data-score="<?php echo absint( $percentage ); ?>"></div>
+				<div class="sui-circle-score <?php echo 100 === $percentage ? 'sui-grade-f' : ''; ?>" data-score="<?php echo absint( $percentage ); ?>"></div>
 			</span>
 		</li>
 		<?php

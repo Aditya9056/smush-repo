@@ -40,7 +40,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 		<?php if ( 'error' === $status ) : ?>
 			<div class="sui-notice-buttons">
-				<a href="https://premium.wpmudev.org/hub" target="_blank" class="sui-button">
+				<a href="https://premium.wpmudev.org/hub/account/" target="_blank" class="sui-button">
 					<?php esc_html_e( 'Upgrade Plan', 'wp-smushit' ); ?>
 				</a>
 			</div>

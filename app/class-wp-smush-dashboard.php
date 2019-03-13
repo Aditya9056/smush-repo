@@ -330,11 +330,16 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 			$cdn    = $this->settings->get( 'cdn' );
 
+			if ( $status->bandwidth / 1073741824 > $status->bandwidth_plan ) {
+				echo '<i class="sui-icon-warning-alert sui-error" aria-hidden="true"></i>';
+				return;
+			}
+
 			if ( $cdn && isset( $status->cdn_enabled ) && $status->cdn_enabled ) {
 				if ( WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
 					echo '<i class="sui-icon-check-tick sui-info" aria-hidden="true"></i>';
 				} else {
-					echo '<i class="sui-icon-check-tick sui-error" aria-hidden="true"></i>';
+					echo '<i class="sui-icon-warning-alert sui-error" aria-hidden="true"></i>';
 				}
 			}
 
@@ -1205,11 +1210,15 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 		if ( isset( $cdn->cdn_enabled ) && $cdn->cdn_enabled && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
 			// 1073741824 = 1024 (kb) * 1024 (mb) * 1024 (gb).
-			$cdn_status = $cdn->bandwidth / 1073741824 < $cdn->bandwidth_plan ? 'info' : 'error';
+			$cdn_status = 'info';
 		}
 
 		if ( isset( $cdn->cdn_enabling ) && $cdn->cdn_enabling ) {
 			$cdn_status = 'notice';
+		}
+
+		if ( $cdn->bandwidth / 1073741824 > $cdn->bandwidth_plan ) {
+			$cdn_status = 'error';
 		}
 
 		$this->view(
