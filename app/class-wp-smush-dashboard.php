@@ -330,7 +330,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 			$cdn    = $this->settings->get( 'cdn' );
 
-			if ( $status->bandwidth / 1073741824 > $status->bandwidth_plan ) {
+			if ( isset( $status->bandwidth ) && $status->bandwidth / 1073741824 > $status->bandwidth_plan ) {
 				echo '<i class="sui-icon-warning-alert sui-error" aria-hidden="true"></i>';
 				return;
 			}
@@ -1217,7 +1217,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			$cdn_status = 'notice';
 		}
 
-		if ( $cdn->bandwidth / 1073741824 > $cdn->bandwidth_plan ) {
+		if ( isset( $cdn->bandwidth ) && $cdn->bandwidth / 1073741824 > $cdn->bandwidth_plan ) {
 			$cdn_status = 'error';
 		}
 
