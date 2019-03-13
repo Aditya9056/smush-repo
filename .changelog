@@ -9,6 +9,7 @@
 * Fix: Directory Smush not resetting errors on successful scans
 * Fix: Lazy loading spinning image containers
 * Fix: PHP notice on lazy loading settings page
+* Fix: Subsites showing settings pages when network wide options enabled
 
 = 3.2.0 =
 

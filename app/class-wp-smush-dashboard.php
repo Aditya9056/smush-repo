@@ -105,6 +105,12 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Tabs that can be shown in subsites if networkwide (bulk and directory).
 		if ( is_multisite() && $networkwide && ! is_network_admin() ) {
 			unset( $this->tabs['integrations'] );
+			unset( $this->tabs['lazy_load'] );
+		}
+
+		// Disabled on all subsites.
+		if ( is_multisite() && ! is_network_admin() ) {
+			unset( $this->tabs['settings'] );
 		}
 	}
 
