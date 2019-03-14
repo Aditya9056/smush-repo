@@ -22,8 +22,8 @@ if ( ! defined( 'WPINC' ) ) {
 <form id="wp-smush-settings-form" method="post">
 	<input type="hidden" name="setting_form" id="setting_form" value="cdn">
 	<?php if ( is_multisite() && is_network_admin() ) : ?>
-        <input type="hidden" name="wp-smush-networkwide" id="wp-smush-networkwide" value="1">
-        <input type="hidden" name="setting-type" value="network">
+		<input type="hidden" name="wp-smush-networkwide" id="wp-smush-networkwide" value="1">
+		<input type="hidden" name="setting-type" value="network">
 	<?php endif; ?>
 
 	<p>
@@ -40,7 +40,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 		<?php if ( 'error' === $status ) : ?>
 			<div class="sui-notice-buttons">
-				<a href="https://premium.wpmudev.org/hub" target="_blank" class="sui-button">
+				<a href="https://premium.wpmudev.org/hub/account/" target="_blank" class="sui-button">
 					<?php esc_html_e( 'Upgrade Plan', 'wp-smushit' ); ?>
 				</a>
 			</div>
