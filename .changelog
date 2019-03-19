@@ -10,6 +10,7 @@
 * Fix: Lazy loading spinning image containers
 * Fix: PHP notice on lazy loading settings page
 * Fix: Subsites showing settings pages when network wide options enabled
+* Fix: PHP warning on 2.* - 3.* upgrade in network installs
 
 = 3.2.0.1 =
 
