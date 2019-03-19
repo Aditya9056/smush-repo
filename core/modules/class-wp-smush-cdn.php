@@ -451,6 +451,13 @@ class WP_Smush_CDN extends WP_Smush_Content {
 				}
 			}
 
+			// Support for 3rd party lazy loading plugins.
+			if ( $data_src = $this->get_attribute( $new_image, 'data-src' ) ) {
+				$cdn_image = $this->generate_cdn_url( $data_src, $args );
+				$this->remove_attribute( $new_image, 'data-src' );
+				$this->add_attribute( $new_image, 'data-src', $cdn_image );
+			}
+
 			/**
 			 * Filter hook to alter image tag before replacing the image in content.
 			 *
@@ -1090,6 +1097,10 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		// Unsupported scheme.
 		if ( isset( $url_parts['scheme'] ) && 'http' !== $url_parts['scheme'] && 'https' !== $url_parts['scheme'] ) {
 			return false;
+		}
+
+		if ( ! isset( $url_parts['scheme'] ) && 0 === strpos( $src, '//' ) ) {
+			$src = is_ssl() ? 'https:' : 'http:' . $src;
 		}
 
 		// This is a relative path, try to get the URL.

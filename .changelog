@@ -4,6 +4,7 @@
 * Enhance: Add upgrade link to bulk smush limit message
 * Enhance: Directory Smush async mode
 * Enhance: Regex syntax for detecting images in content
+* Enhance: Smush CDN support for 3rd party lazy loading plugins
 * Fix: Errors with WP Ultimate Recipe Premium
 * Fix: Inability to determine max content width with Auto Resize CDN feature
 * Fix: Directory Smush not resetting errors on successful scans
