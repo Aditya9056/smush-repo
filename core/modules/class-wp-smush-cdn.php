@@ -211,7 +211,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		$plan      = isset( $this->status->bandwidth_plan ) ? $this->status->bandwidth_plan : 10;
 		$bandwidth = isset( $this->status->bandwidth ) ? $this->status->bandwidth : 0;
 
-		$percentage = round( $plan * $bandwidth / 1024 / 1024 / 1024 );
+		$percentage = round( 100 * $bandwidth / 1024 / 1024 / 1024 / $plan );
 		if ( $percentage > 100 ) {
 			$percentage = 100;
 		}
