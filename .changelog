@@ -1,5 +1,7 @@
 = 3.2.0.2 =
 
+* New: Add "Update API status" button in Settings
+* Enhance: API key validation
 * Fix: CDN displaying incorrect usage data
 
 = 3.2.0.1 =

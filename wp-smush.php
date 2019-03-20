@@ -436,10 +436,12 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		/**
 		 * Check if user is premium member, check for API key.
 		 *
+		 * @param bool $manual  Is it a manual check? Default: false.
+		 *
 		 * @return bool  True if a premium member, false if regular user.
 		 */
-		public function validate_install() {
-			if ( isset( self::$is_pro ) ) {
+		public function validate_install( $manual = false ) {
+			if ( isset( self::$is_pro ) && ! $manual ) {
 				return self::$is_pro;
 			}
 
@@ -462,39 +464,16 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				$last_checked = $api_auth[ $api_key ]['timestamp'];
 				$valid        = $api_auth[ $api_key ]['validity'];
 
-				$diff = current_time( 'timestamp' ) - $last_checked;
-
 				// Difference in hours.
-				$diff_h = $diff / 3600;
+				$diff = ( current_time( 'timestamp' ) - $last_checked ) / HOUR_IN_SECONDS;
 
-				// Difference in minutes.
-				$diff_m = $diff / 60;
-
-				switch ( $valid ) {
-					case 'valid':
-						// If last checked was more than 12 hours.
-						if ( $diff_h > 12 ) {
-							$revalidate = true;
-						}
-						break;
-					case 'invalid':
-					default:
-						// If last checked was more than 24 hours.
-						if ( $diff_h > 24 ) {
-							$revalidate = true;
-						}
-						break;
-					case 'network_failure':
-						// If last checked was more than 5 minutes.
-						if ( $diff_m > 5 ) {
-							$revalidate = true;
-						}
-						break;
+				if ( 'invalid' === $valid && 24 < $diff ) {
+					$revalidate = true;
 				}
 			}
 
 			// If we are suppose to validate API, update the results in options table.
-			if ( $revalidate ) {
+			if ( $revalidate || $manual ) {
 				if ( empty( $api_auth[ $api_key ] ) ) {
 					// For api key resets.
 					$api_auth[ $api_key ] = array();
@@ -517,8 +496,9 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 					} else {
 						$valid = 'invalid';
 					}
-				} else {
-					$valid = 'network_failure';
+				} elseif ( ! isset( $valid ) || 'valid' !== $valid ) {
+					// Invalidate only in case when it was not valid before.
+					$valid = 'invalid';
 				}
 
 				// Reset value.
@@ -535,7 +515,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				update_site_option( 'wp_smush_api_auth', $api_auth );
 			}
 
-			self::$is_pro = isset( $valid ) && ( 'valid' === $valid );
+			self::$is_pro = isset( $valid ) && 'valid' === $valid;
 
 			return self::$is_pro;
 		}

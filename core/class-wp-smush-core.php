@@ -462,6 +462,11 @@ class WP_Smush_Core {
 				'short_label' => esc_html__( 'Data', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Choose how you want us to handle your plugin data.', 'wp-smushit' ),
 			),
+			'api_auth'          => array(
+				'label'       => esc_html__( 'API Status', 'wp-smushit' ),
+				'short_label' => esc_html__( 'API Status', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Query API to update membership status.', 'wp-smushit' ),
+			),
 		);
 
 		/**
