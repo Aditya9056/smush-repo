@@ -4,7 +4,7 @@ Version: %%VERSION%%
 Author: WPMU DEV
 Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
-Tags: image, resize, optimize, optimise, compress, performance, optimisation, optimise JPG, WebP, photography, optimizer, Smush WordPress Compression, Smush.it
+Tags: image, resize, optimize, optimise, compress, performance, optimisation, lazy load, WebP, photography, optimizer, Smush WordPress Compression, Smush.it
 Requires at least: 4.6
 Tested up to: 5.1.1
 Stable tag: %%VERSION%%
@@ -23,6 +23,7 @@ Compress and optimize (or optimise) image files, improve performance and boost y
 Smush has been benchmarked and tested number one for speed and quality and is the [award-winning](https://torquemag.io/2018/04/smush-image-compression-wins-2018-plugin-madness/), back-to-back proven crowd favorite image optimization plugin for WordPress.
 
 - Lossless Compression – Strip unused data without affecting image quality
+- Lazy Loader -  Defer offscreen images with the flip of a switch
 - Bulk Smush – Optimize up to 50 images with one click
 - Image Resizing – Set a max width and height and large images will scale down as they are being compressed
 - Incorrect Size Image Detection – Quickly locate images that are slowing down your site
@@ -63,6 +64,9 @@ No matter what plugins you use to better manage your WordPress media library, Sm
 
 ### Incorrect Size Image Detection
 Smush now includes a wrong size image finder. Activate and your images will be highlighted with smart tips for scaling your images. Quickly locate the images that are keeping you from getting that perfect 100 on your Google PageSpeed test.
+
+### Defer Offscreen Images
+Smush has lazy load built-in. If your page has a bunch of images below the fold, lazy loading will drastically speed up your page by serving only the images being viewed and delaying others further down the page.
 
 ★★★★★
 > “I had no idea that my page load time was being dragged down by the images. The plugin nearly halved the time it took.” - [karlcw](http://profiles.wordpress.org/karlcw)
