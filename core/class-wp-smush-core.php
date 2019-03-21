@@ -465,7 +465,7 @@ class WP_Smush_Core {
 			'api_auth'          => array(
 				'label'       => esc_html__( 'API Status', 'wp-smushit' ),
 				'short_label' => esc_html__( 'API Status', 'wp-smushit' ),
-				'desc'        => esc_html__( 'Query API to update membership status.', 'wp-smushit' ),
+				'desc'        => esc_html__( "If you're having issues with enabling pro features you can force the API to update your membership status here.", 'wp-smushit' ),
 			),
 		);
 
