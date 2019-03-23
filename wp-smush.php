@@ -467,7 +467,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				// Difference in hours.
 				$diff = ( current_time( 'timestamp' ) - $last_checked ) / HOUR_IN_SECONDS;
 
-				if ( 'invalid' === $valid && 24 < $diff ) {
+				if ( 24 < $diff ) {
 					$revalidate = true;
 				}
 			}
@@ -479,7 +479,13 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 					$api_auth[ $api_key ] = array();
 
 					// Storing it as valid, unless we really get to know from API call.
+					$valid                            = 'valid';
 					$api_auth[ $api_key ]['validity'] = 'valid';
+				}
+
+				// This is the first check.
+				if ( ! isset( $api_auth[ $api_key ]['timestamp'] ) ) {
+					$api_auth[ $api_key ]['timestamp'] = current_time( 'timestamp' );
 				}
 
 				$request = $this->api()->check();
@@ -501,15 +507,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 					$valid = 'invalid';
 				}
 
-				// Reset value.
-				$api_auth = array();
-
-				// Add a fresh timestamp.
-				$timestamp            = current_time( 'timestamp' );
-				$api_auth[ $api_key ] = array(
-					'validity'  => $valid,
-					'timestamp' => $timestamp,
-				);
+				$api_auth[ $api_key ]['validity'] = $valid;
 
 				// Update API validity.
 				update_site_option( 'wp_smush_api_auth', $api_auth );
