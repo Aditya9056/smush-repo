@@ -482,13 +482,13 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 					$api_auth[ $api_key ]['validity'] = 'valid';
 				}
 
-				// Aaron suggested to Update timestamp before making the API call, to avoid any concurrent calls, clever.
-				$api_auth[ $api_key ]['timestamp'] = current_time( 'timestamp' );
-				update_site_option( 'wp_smush_api_auth', $api_auth );
-
 				$request = $this->api()->check();
 
 				if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
+					// Update the timestamp only on successful attempts.
+					$api_auth[ $api_key ]['timestamp'] = current_time( 'timestamp' );
+					update_site_option( 'wp_smush_api_auth', $api_auth );
+
 					$result = json_decode( wp_remote_retrieve_body( $request ) );
 					if ( ! empty( $result->success ) && $result->success ) {
 						$valid = 'valid';
