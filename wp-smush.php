@@ -488,7 +488,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 					$api_auth[ $api_key ]['timestamp'] = current_time( 'timestamp' );
 				}
 
-				$request = $this->api()->check();
+				$request = $this->api()->check( $manual );
 
 				if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
 					// Update the timestamp only on successful attempts.
