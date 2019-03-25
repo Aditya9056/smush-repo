@@ -411,6 +411,23 @@ jQuery( function ( $ ) {
 	}
 
 	/**
+	 * Handle re-check api status button click (Settings)
+	 *
+	 * @since 3.2.0.2
+	 */
+	$('#wp-smush-update-api-status').on('click', function (e) {
+		e.preventDefault();
+
+		$(this).prop('disabled', true);
+
+		$.post(ajaxurl, {action: 'recheck_api_status'}, function (response) {
+			if (response.success) {
+				$(this).prop('disabled', false);
+			}
+		});
+	});
+
+	/**
 	 * Handle the Smush Stats link click
 	 */
 	$( 'body' ).on( 'click', 'a.smush-stats-details', function ( e ) {
