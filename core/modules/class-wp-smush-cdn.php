@@ -399,61 +399,36 @@ class WP_Smush_CDN extends WP_Smush_Content {
 				continue;
 			}
 
-			// Make sure this image is inside a supported directory. Try to convert to valid path.
-			if ( ! $src = $this->is_supported_path( $src ) ) {
-				continue;
-			}
-
-			// Store the original $src to be used later on.
-			$original_src = $src;
-
-			/**
-			 * Filter hook to alter image src arguments before going through cdn.
-			 *
-			 * @param array  $args   Arguments.
-			 * @param string $src    Image src.
-			 * @param string $image  Image tag.
-			 */
-			$args = apply_filters( 'smush_image_cdn_args', array(), $image );
-
-			/**
-			 * Filter hook to alter image src before going through cdn.
-			 *
-			 * @param string $src    Image src.
-			 * @param string $image  Image tag.
-			 */
-			$src = apply_filters( 'smush_image_src_before_cdn', $src, $image );
-
-			// Generate cdn url from local url.
-			$src = $this->generate_cdn_url( $src, $args );
-
-			/**
-			 * Filter hook to alter image src after replacing with CDN base.
-			 *
-			 * @param string $src    Image src.
-			 * @param string $image  Image tag.
-			 */
-			$src = apply_filters( 'smush_image_src_after_cdn', $src, $image );
-
 			$new_image = $image;
-			if ( ! empty( $images['img_url'][ $key ] ) ) {
-				$new_image = preg_replace( '#(src=["|\'])' . $images['img_url'][ $key ] . '(["|\'])#i', '\1' . $src . '\2', $new_image, 1 );
-			}
 
-			// See if srcset is already set.
-			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $images[0][ $key ] ) && $this->settings->get( 'auto_resize' ) ) {
-				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
+			// Make sure this image is inside a supported directory. Try to convert to valid path.
+			if ( $src = $this->is_supported_path( $src ) ) {
+				// Store the original $src to be used later on.
+				$original_src = $src;
 
-				$this->add_attribute( $new_image, 'srcset', $srcset );
+				$src = $this->process_src( $src );
 
-				if ( false !== $sizes ) {
-					$this->add_attribute( $new_image, 'sizes', $sizes );
+				// Replace the src of the image with CDN link.
+				if ( ! empty( $images['img_url'][ $key ] ) ) {
+					$new_image = preg_replace( '#(src=["|\'])' . $images['img_url'][ $key ] . '(["|\'])#i', '\1' . $src . '\2', $new_image, 1 );
+				}
+
+				// See if srcset is already set.
+				if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $images[0][ $key ] ) && $this->settings->get( 'auto_resize' ) ) {
+					list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
+
+					$this->add_attribute( $new_image, 'srcset', $srcset );
+
+					if ( false !== $sizes ) {
+						$this->add_attribute( $new_image, 'sizes', $sizes );
+					}
 				}
 			}
 
 			// Support for 3rd party lazy loading plugins.
-			if ( $data_src = $this->get_attribute( $new_image, 'data-src' ) ) {
-				$cdn_image = $this->generate_cdn_url( $data_src, $args );
+			$data_src = $this->get_attribute( $new_image, 'data-src' );
+			if ( $data_src = $this->is_supported_path( $data_src ) ) {
+				$cdn_image = $this->process_src( $data_src );
 				$this->remove_attribute( $new_image, 'data-src' );
 				$this->add_attribute( $new_image, 'data-src', $cdn_image );
 			}
@@ -469,6 +444,38 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		}
 
 		return $content;
+	}
+
+	private function process_src( $src ) {
+		/**
+		 * Filter hook to alter image src arguments before going through cdn.
+		 *
+		 * @param array  $args   Arguments.
+		 * @param string $src    Image src.
+		 * @param string $image  Image tag.
+		 */
+		$args = apply_filters( 'smush_image_cdn_args', array(), $image );
+
+		/**
+		 * Filter hook to alter image src before going through cdn.
+		 *
+		 * @param string $src    Image src.
+		 * @param string $image  Image tag.
+		 */
+		$src = apply_filters( 'smush_image_src_before_cdn', $src, $image );
+
+		// Generate cdn url from local url.
+		$src = $this->generate_cdn_url( $src, $args );
+
+		/**
+		 * Filter hook to alter image src after replacing with CDN base.
+		 *
+		 * @param string $src    Image src.
+		 * @param string $image  Image tag.
+		 */
+		$src = apply_filters( 'smush_image_src_after_cdn', $src, $image );
+
+		return $src;
 	}
 
 	/**

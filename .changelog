@@ -13,6 +13,7 @@
 - Fix: PHP notice on lazy loading settings page
 - Fix: Subsites showing settings pages when network wide options enabled
 - Fix: PHP warning on 2.x - 3.x upgrade in network installs
+- Fix: CDN not processing the image tag if src does not contain a valid image
 
 = 3.2.0.2 =
 
