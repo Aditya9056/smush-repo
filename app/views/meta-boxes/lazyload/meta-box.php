@@ -299,7 +299,7 @@ if ( ! defined( 'WPINC' ) ) {
 					<?php
 					printf(
 						/* translators: %1$s - opening strong tag, %2$s - closing strong tag */
-						esc_html__( 'Add one class or ID per line, including the prefix. E.g %1$s#image-id%2$s or %1$s#image-class%2$s.', 'wp-smushit' ),
+						esc_html__( 'Add one class or ID per line, including the prefix. E.g %1$s#image-id%2$s or %1$s.image-class%2$s.', 'wp-smushit' ),
 						'<strong>',
 						'</strong>'
 					);
