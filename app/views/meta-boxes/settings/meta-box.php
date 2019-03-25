@@ -113,6 +113,20 @@ if ( ! defined( 'WPINC' ) ) {
 		</div>
 	</div>
 
+	<div class="sui-box-settings-row">
+		<div class="sui-box-settings-col-1">
+			<span class="sui-settings-label"><?php echo esc_html( $settings_data['api_auth']['short_label'] ); ?></span>
+			<span class="sui-description"><?php echo esc_html( $settings_data['api_auth']['desc'] ); ?></span>
+		</div>
+
+		<div class="sui-box-settings-col-2">
+			<button type="button" class="sui-button sui-button-ghost" id="wp-smush-update-api-status">
+				<i class="sui-icon-undo" aria-hidden="true"></i>
+				<?php esc_html_e( 'Update API status', 'wp-smushit' ); ?>
+			</button>
+		</div>
+	</div>
+
 </form>
 
 <?php $this->view( 'modals/reset-settings' ); ?>

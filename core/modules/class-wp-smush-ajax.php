@@ -88,9 +88,14 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		add_action( 'wp_ajax_get_cdn_stats', array( $this, 'get_cdn_stats' ) );
 
 		/**
-		 * Lazy loading
+		 * LAZY LOADING
 		 */
 		add_action( 'wp_ajax_smush_toggle_lazy_load', array( $this, 'smush_toggle_lazy_load' ) );
+
+		/**
+		 * SETTINGS
+		 */
+		add_action( 'wp_ajax_recheck_api_status', array( $this, 'recheck_api_status' ) );
 	}
 
 	/***************************************
@@ -1017,7 +1022,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 	/***************************************
 	 *
-	 * Lazy loading
+	 * LAZY LOADING
 	 *
 	 * @since 3.2.0
 	 */
@@ -1056,6 +1061,23 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$this->settings->set( 'lazy_load', 'true' === $param );
 
+		wp_send_json_success();
+	}
+
+	/***************************************
+	 *
+	 * SETTINGS
+	 *
+	 * @since 3.2.0.2
+	 */
+
+	/**
+	 * Re-check API status.
+	 *
+	 * @since 3.2.0.2
+	 */
+	public function recheck_api_status() {
+		WP_Smush::get_instance()->validate_install( true );
 		wp_send_json_success();
 	}
 
