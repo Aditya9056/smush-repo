@@ -406,7 +406,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 				// Store the original $src to be used later on.
 				$original_src = $src;
 
-				$src = $this->process_src( $src );
+				$src = $this->process_src( $image, $src );
 
 				// Replace the src of the image with CDN link.
 				if ( ! empty( $images['img_url'][ $key ] ) ) {
@@ -428,7 +428,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			// Support for 3rd party lazy loading plugins.
 			$data_src = $this->get_attribute( $new_image, 'data-src' );
 			if ( $data_src = $this->is_supported_path( $data_src ) ) {
-				$cdn_image = $this->process_src( $data_src );
+				$cdn_image = $this->process_src( $image, $data_src );
 				$this->remove_attribute( $new_image, 'data-src' );
 				$this->add_attribute( $new_image, 'data-src', $cdn_image );
 			}
@@ -446,7 +446,17 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		return $content;
 	}
 
-	private function process_src( $src ) {
+    /**
+     * Process src link and convert to CDN link.
+     *
+     * @since 3.2.1
+     *
+     * @param string $image  Image tag.
+     * @param string $src    Image src attribute.
+     *
+     * @return string
+     */
+	private function process_src( $image, $src ) {
 		/**
 		 * Filter hook to alter image src arguments before going through cdn.
 		 *
