@@ -119,6 +119,38 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	}
 
 	/**
+	 * Get the CDN status.
+	 *
+	 * @return string  Possible return values: disabled/enabled, activating, overcap/upgrade.
+	 *
+	 * @since 3.2.1
+	 */
+	public function status() {
+		if ( ! $this->cdn_active ) {
+			return 'disabled';
+		}
+
+		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+
+		if ( isset( $cdn->cdn_enabling ) && $cdn->cdn_enabling ) {
+			return 'activating';
+		}
+
+		$plan      = isset( $cdn->bandwidth_plan ) ? $cdn->bandwidth_plan : 10;
+		$bandwidth = isset( $cdn->bandwidth ) ? $cdn->bandwidth : 0;
+
+		$percentage = round( 100 * $bandwidth / 1024 / 1024 / 1024 / $plan );
+
+		if ( $percentage > 100 || 100 === (int) $percentage ) {
+			return 'overcap';
+		} elseif ( 90 <= (int) $percentage ) {
+			return 'upgrade';
+		}
+
+		return 'enabled';
+	}
+
+	/**
 	 * Add setting names to the appropriate group.
 	 *
 	 * @since 3.0
@@ -203,34 +235,35 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @since 3.0
 	 */
 	public function cdn_stats_ui() {
-		// Only show the UI box if CDN module is enabled and has some data.
-		if ( ! $this->settings->get( 'cdn' ) || ! $this->status ) {
+		$status = $this->status();
+
+		if ( 'disabled' === $status ) {
 			return;
-		}
-
-		$plan      = isset( $this->status->bandwidth_plan ) ? $this->status->bandwidth_plan : 10;
-		$bandwidth = isset( $this->status->bandwidth ) ? $this->status->bandwidth : 0;
-
-		$percentage = round( 100 * $bandwidth / 1024 / 1024 / 1024 / $plan );
-		if ( $percentage > 100 ) {
-			$percentage = 100;
 		}
 		?>
 		<li class="smush-cdn-stats">
 			<span class="sui-list-label"><?php esc_html_e( 'CDN', 'wp-smushit' ); ?></span>
 			<span class="wp-smush-stats sui-list-detail">
 				<i class="sui-icon-loader sui-loading sui-hidden" aria-hidden="true" title="<?php esc_attr_e( 'Updating Stats', 'wp-smushit' ); ?>"></i>
-				<?php if ( 100 === $percentage ) : ?>
-					<span class="sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_attr_e( 'You have exceed your 30 day bandwidth allowance. The CDN is currently inactive until you upgrade your plan', 'wp-smushit' ); ?>">
+				<?php if ( 'overcap' === $status ) : ?>
+					<span class="sui-tooltip sui-tooltip-top-right sui-tooltip-constrained" data-tooltip="<?php esc_attr_e( "You've gone through your CDN bandwidth limit, so we’ve stopped serving your images via the CDN. Contact your administrator to upgrade your Smush CDN plan to reactivate this service", 'wp-smushit' ); ?>">
 						<i class="sui-icon-warning-alert sui-error sui-md" aria-hidden="true"></i>
 					</span>
+					<span><?php esc_html_e( 'Overcap', 'wp-smushit' ); ?></span>
+				<?php elseif ( 'upgrade' === $status ) : ?>
+					<span class="sui-tooltip sui-tooltip-top-right sui-tooltip-constrained" data-tooltip="<?php esc_attr_e( "You're almost through your CDN bandwidth limit. Please contact your administrator to upgrade your Smush CDN plan to ensure you don't lose this service", 'wp-smushit' ); ?>">
+						<i class="sui-icon-warning-alert sui-warning sui-md" aria-hidden="true"></i>
+					</span>
+					<span><?php esc_html_e( 'Needs upgrade', 'wp-smushit' ); ?></span>
+				<?php elseif ( 'activating' === $status ) : ?>
+					<i class="sui-icon-check-tick sui-info sui-md" aria-hidden="true"></i>
+					<span><?php esc_html_e( 'Activating', 'wp-smushit' ); ?></span>
+				<?php else : ?>
+					<span class="sui-tooltip sui-tooltip-top-right sui-tooltip-constrained" data-tooltip="<?php esc_attr_e( 'Your media is currently being served from the WPMU DEV CDN. Bulk and Directory smush features are treated separately and will continue to run independently.', 'wp-smushit' ); ?>">
+						<i class="sui-icon-check-tick sui-info sui-md" aria-hidden="true"></i>
+					</span>
+					<span><?php esc_html_e( 'Active', 'wp-smushit' ); ?></span>
 				<?php endif; ?>
-				<span class="wp-smush-cdn-stats"><?php echo esc_html( WP_Smush_Helper::format_bytes( $bandwidth, 2 ) ); ?></span>
-				<span class="wp-smush-stats-sep">/</span>
-				<span class="wp-smush-cdn-usage">
-					<?php echo absint( $plan ); ?> GB
-				</span>
-				<div class="sui-circle-score <?php echo 100 === $percentage ? 'sui-grade-f' : ''; ?>" data-score="<?php echo absint( $percentage ); ?>"></div>
 			</span>
 		</li>
 		<?php

@@ -333,24 +333,13 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				echo '<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>';
 			}
 		} elseif ( 'cdn' === $tab ) {
-			$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
-			$cdn    = $this->settings->get( 'cdn' );
-
-			if ( isset( $status->bandwidth ) && $status->bandwidth / 1073741824 > $status->bandwidth_plan ) {
+			$status = WP_Smush::get_instance()->core()->mod->cdn->status();
+			if ( 'overcap' === $status ) {
 				echo '<i class="sui-icon-warning-alert sui-error" aria-hidden="true"></i>';
-				return;
-			}
-
-			if ( $cdn && isset( $status->cdn_enabled ) && $status->cdn_enabled ) {
-				if ( WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
-					echo '<i class="sui-icon-check-tick sui-info" aria-hidden="true"></i>';
-				} else {
-					echo '<i class="sui-icon-warning-alert sui-error" aria-hidden="true"></i>';
-				}
-			}
-
-			if ( $cdn && isset( $status->cdn_enabled ) && ! $status->cdn_enabled ) {
-				echo '<i class="sui-icon-check-tick sui-warning" aria-hidden="true"></i>';
+			} elseif ( 'upgrade' === $status || 'activating' === $status ) {
+				echo '<i class="sui-icon-warning-alert sui-warning" aria-hidden="true"></i>';
+			} elseif ( 'enabled' === $status ) {
+				echo '<i class="sui-icon-check-tick sui-info" aria-hidden="true"></i>';
 			}
 		} elseif ( 'lazy_load' === $tab && $this->settings->get( 'lazy_load' ) ) {
 			echo '<i class="sui-icon-check-tick sui-info" aria-hidden="true"></i>';
@@ -1191,51 +1180,56 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * @since 3.0
 	 */
 	public function cdn_metabox() {
+		$status = WP_Smush::get_instance()->core()->mod->cdn->status();
+
 		// Available values: warning (inactive), success (active) or error (expired).
 		$status_msg = array(
-			'warning' => __( 'CDN is not yet active. Configure your settings below and click Activate.', 'wp-smushit' ),
-			'notice'  => __(
+			'enabled'    => __(
+				'Your media is currently being served from the WPMU DEV CDN. Bulk and Directory smush features are treated separately and will continue to run independently.',
+				'wp-smushit'
+			),
+			'disabled'   => __( 'CDN is not yet active. Configure your settings below and click Activate.', 'wp-smushit' ),
+			'activating' => __(
 				'Your settings have been saved and changes are now propagating to the CDN. Changes can take up to 30
 				minutes to take effect but your images will continue to be served in the mean time, please be patient.',
 				'wp-smushit'
 			),
-			'info'    => __(
-				'Your media is currently being served from the WPMU DEV CDN. Serving images from CDN is only possible
-				on publicly available domains.',
-				'wp-smushit'
+			'upgrade'    => sprintf(
+				__(
+					/* translators: %1$s - starting a tag, %2$s - closing a tag */
+					"You're almost through your CDN bandwidth limit. Please contact your administrator to upgrade your Smush CDN plan to ensure you don't lose this service. %1\$sUpgrade now%2\$s",
+					'wp-smushit'
+				),
+				'<a href="https://premium.wpmudev.org/hub/account/" target="_blank">',
+				'</a>'
 			),
-			'error'   => __(
-				'CDN is inactive. You have gone over your 30 day cap so we’ve stopped serving your images.
-					Upgrade your plan now to reactivate this service.',
-				'wp-smushit'
+			'overcap'    => sprintf(
+				__(
+					/* translators: %1$s - starting a tag, %2$s - closing a tag */
+					"You've gone through your CDN bandwidth limit, so we’ve stopped serving your images via the CDN. Contact your administrator to upgrade your Smush CDN plan to reactivate this service. %1\$sUpgrade now%2\$s",
+					'wp-smushit'
+				),
+				'<a href="https://premium.wpmudev.org/hub/account/" target="_blank">',
+				'</a>'
 			),
 		);
 
-		$cdn_status = 'warning';
-
-		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
-		if ( isset( $cdn->cdn_enabled ) && $cdn->cdn_enabled && WP_Smush::get_instance()->core()->mod->cdn->get_status() ) {
-			// 1073741824 = 1024 (kb) * 1024 (mb) * 1024 (gb).
-			$cdn_status = 'info';
-		}
-
-		if ( isset( $cdn->cdn_enabling ) && $cdn->cdn_enabling ) {
-			$cdn_status = 'notice';
-		}
-
-		if ( isset( $cdn->bandwidth ) && $cdn->bandwidth / 1073741824 > $cdn->bandwidth_plan ) {
-			$cdn_status = 'error';
-		}
+		$status_color = array(
+			'enabled'    => 'info',
+			'disabled'   => 'error',
+			'activating' => 'warning',
+			'upgrade'    => 'warning',
+			'overcap'    => 'error',
+		);
 
 		$this->view(
 			'meta-boxes/cdn/meta-box',
 			array(
-				'cdn'           => $cdn,
 				'cdn_group'     => $this->cdn_group,
 				'settings'      => $this->settings->get(),
 				'settings_data' => WP_Smush::get_instance()->core()->settings,
-				'status'        => $cdn_status,
-				'status_msg'    => $status_msg,
+				'status_msg'    => $status_msg[ $status ],
+				'class'         => $status_color[ $status ],
 			)
 		);
 	}

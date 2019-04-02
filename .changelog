@@ -5,6 +5,7 @@
 - Enhance: Directory Smush async mode
 - Enhance: Regex syntax for detecting images in content
 - Enhance: Smush CDN support for 3rd party lazy loading plugins
+- Enhance: Smush CDN UI
 - Enhance: Smush CLI error handling
 - Fix: Errors with WP Ultimate Recipe Premium
 - Fix: Inability to determine max content width with Auto Resize CDN feature
