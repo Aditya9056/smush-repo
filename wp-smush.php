@@ -570,7 +570,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				return;
 			}
 
-			if ( ! is_object( WPMUDEV_Dashboard::$api ) ) {
+			if ( ! is_object( WPMUDEV_Dashboard::$api ) || is_null( WPMUDEV_Dashboard::$api ) ) {
 				return;
 			}
 
@@ -585,6 +585,10 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			// Check permissions and configuration.
 			if ( ! WPMUDEV_Dashboard::$upgrader->can_auto_install( self::$project_id ) ) {
+				return;
+			}
+
+			if ( ! method_exists( WPMUDEV_Dashboard::$api, 'get_project_data' ) ) {
 				return;
 			}
 
