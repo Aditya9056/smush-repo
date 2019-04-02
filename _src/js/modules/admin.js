@@ -418,12 +418,11 @@ jQuery( function ( $ ) {
 	$('#wp-smush-update-api-status').on('click', function (e) {
 		e.preventDefault();
 
-		$(this).prop('disabled', true);
+		//$(this).prop('disabled', true);
+		$(this).addClass('sui-button-onload');
 
-		$.post(ajaxurl, {action: 'recheck_api_status'}, function (response) {
-			if (response.success) {
-				$(this).prop('disabled', false);
-			}
+		$.post(ajaxurl, {action: 'recheck_api_status'}, function () {
+			location.reload();
 		});
 	});
 
