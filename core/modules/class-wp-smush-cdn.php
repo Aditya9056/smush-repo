@@ -126,7 +126,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @since 3.2.1
 	 */
 	public function status() {
-		if ( ! $this->cdn_active ) {
+		if ( ! $this->cdn_active || ! $this->settings->get( 'cdn' ) ) {
 			return 'disabled';
 		}
 
