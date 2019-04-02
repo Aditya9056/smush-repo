@@ -90,7 +90,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'directory'    => __( 'Directory Smush', 'wp-smushit' ),
 				'integrations' => __( 'Integrations', 'wp-smushit' ),
 				'cdn'          => __( 'CDN', 'wp-smushit' ),
-				'lazy_load'    => __( 'Lazyload', 'wp-smushit' ),
+				'lazy_load'    => __( 'Lazy Load', 'wp-smushit' ),
 				'settings'     => __( 'Settings', 'wp-smushit' ),
 			)
 		);
@@ -284,7 +284,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				if ( ! $this->settings->get( 'lazy_load' ) ) {
 					$this->add_meta_box(
 						'meta-boxes/lazyload/disabled',
-						__( 'Lazyload', 'wp-smushit' ),
+						__( 'Lazy Load', 'wp-smushit' ),
 						null,
 						array( $this, 'lazyload_metabox_header' ),
 						null,
@@ -296,7 +296,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				} else {
 					$this->add_meta_box(
 						'meta-boxes/lazyload',
-						__( 'Lazyload', 'wp-smushit' ),
+						__( 'Lazy Load', 'wp-smushit' ),
 						array( $this, 'lazyload_metabox' ),
 						array( $this, 'lazyload_metabox_header' ),
 						array( $this, 'common_metabox_footer' ),
@@ -1294,8 +1294,8 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/lazyload/meta-box-header',
 			array(
-				'title'   => __( 'Lazyload', 'wp-smushit' ),
-				'tooltip' => __( 'This feature is likely to work without issue, however lazyload is in beta stage and some issues are still present', 'wp-smushit' ),
+				'title'   => __( 'Lazy Load', 'wp-smushit' ),
+				'tooltip' => __( 'This feature is likely to work without issue, however lazy load is in beta stage and some issues are still present', 'wp-smushit' ),
 			)
 		);
 	}
