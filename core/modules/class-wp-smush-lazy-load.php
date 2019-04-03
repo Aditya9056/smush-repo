@@ -196,6 +196,10 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		}
 
 		foreach ( $images[0] as $key => $image ) {
+			if ( apply_filters( 'smush_skip_image_from_lazy_load', false, $images['img_url'][ $key ] ) ) {
+				continue;
+			}
+
 			/**
 			 * Check if some image formats are excluded.
 			 */
