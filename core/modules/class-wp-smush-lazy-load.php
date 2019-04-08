@@ -233,7 +233,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			} else {
 				$class = 'lazyload';
 			}
-			$this->add_attribute( $new_image, 'class', $class );
+			$this->add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
 
 			$this->add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
