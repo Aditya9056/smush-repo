@@ -466,6 +466,13 @@ class WP_Smush_CDN extends WP_Smush_Content {
 				$this->add_attribute( $new_image, 'data-src', $cdn_image );
 			}
 
+			$data_lazy_src = $this->get_attribute( $new_image, 'data-lazy-src' );
+			if ( $data_lazy_src = $this->is_supported_path( $data_lazy_src ) ) {
+				$cdn_image = $this->process_src( $image, $data_lazy_src );
+				$this->remove_attribute( $new_image, 'data-lazy-src' );
+				$this->add_attribute( $new_image, 'data-lazy-src', $cdn_image );
+			}
+
 			/**
 			 * Filter hook to alter image tag before replacing the image in content.
 			 *
