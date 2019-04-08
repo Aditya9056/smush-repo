@@ -1,6 +1,7 @@
 = 3.2.1 =
 
 - New: Increase image size limit in free version from 1Mb to 5Mb
+- Enhance: Move Image resize detection to the new Tools section
 - Enhance: Add upgrade link to bulk smush limit message
 - Enhance: Directory Smush async mode
 - Enhance: Regex syntax for detecting images in content

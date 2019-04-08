@@ -64,7 +64,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $bulk_fields = array( 'networkwide', 'auto', 'lossy', 'original', 'strip_exif', 'resize', 'backup', 'png_to_jpg', 'detection' );
+	private $bulk_fields = array( 'networkwide', 'auto', 'lossy', 'original', 'strip_exif', 'resize', 'backup', 'png_to_jpg' );
 
 	/**
 	 * List of fields in integration form.
@@ -101,6 +101,15 @@ class WP_Smush_Settings {
 	 * @var array
 	 */
 	private $lazy_load_fields = array( 'lazy_load' );
+
+	/**
+	 * List of fields in tools form.
+	 *
+	 * @used-by save()
+	 *
+	 * @var array
+	 */
+	private $tools_fields = array( 'detection' );
 
 	/**
 	 * Return the plugin instance.
@@ -291,7 +300,7 @@ class WP_Smush_Settings {
 			return;
 		}
 
-		$pages_with_settings = array( 'bulk', 'integration', 'cdn', 'settings', 'lazy_load' );
+		$pages_with_settings = array( 'bulk', 'integration', 'cdn', 'settings', 'lazy_load', 'tools' );
 		$setting_form        = isset( $_POST['setting_form'] ) ? sanitize_text_field( wp_unslash( $_POST['setting_form'] ) ) : '';
 
 		// Continue only if form name is set.

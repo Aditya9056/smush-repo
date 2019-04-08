@@ -57,8 +57,8 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'usage_settings' ), 25, 2 );
+		add_action( 'smush_setting_column_right_inside', array( $this, 'detection_settings' ), 10, 2 );
 		add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
-		add_action( 'smush_setting_column_right_outside', array( $this, 'detect_size_options' ), 25, 2 );
 
 		// Add stats to stats box.
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'pro_savings_stats' ), 15 );
@@ -89,8 +89,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'bulk'         => __( 'Bulk Smush', 'wp-smushit' ),
 				'directory'    => __( 'Directory Smush', 'wp-smushit' ),
 				'integrations' => __( 'Integrations', 'wp-smushit' ),
-				'cdn'          => __( 'CDN', 'wp-smushit' ),
 				'lazy_load'    => __( 'Lazy Load', 'wp-smushit' ),
+				'cdn'          => __( 'CDN', 'wp-smushit' ),
+				'tools'        => __( 'Tools', 'wp-smushit' ),
 				'settings'     => __( 'Settings', 'wp-smushit' ),
 			)
 		);
@@ -306,6 +307,17 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 				break;
 
+			case 'tools':
+				$this->add_meta_box(
+					'meta-boxes/tools',
+					__( 'Tools', 'wp-smushit' ),
+					array( $this, 'tools_metabox' ),
+					null,
+					array( $this, 'common_metabox_footer' ),
+					'tools'
+				);
+				break;
+
 			case 'settings':
 				$this->add_meta_box(
 					'meta-boxes/settings',
@@ -454,6 +466,66 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			<?php
 			esc_html_e( 'Note: Usage tracking is completely anonymous. We are only tracking what features you are/aren’t using to make our feature decisions more informed.', 'wp-smushit' );
 			?>
+		</span>
+		<?php
+	}
+
+	/**
+	 * Display a description in Tools - Image Resize Detection.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param string $name  Setting name.
+	 */
+	public function detection_settings( $name ) {
+		// Add only to full size settings.
+		if ( 'detection' !== $name ) {
+			return;
+		}
+		?>
+
+		<span class="sui-description sui-toggle-description">
+			<?php
+			esc_html_e( 'Note: The highlighting will only be visible to administrators – visitors won’t see the highlighting.', 'wp-smushit' );
+			?>
+			<?php if ( $this->settings->get( 'detection' ) ) : ?>
+				<?php if ( $this->settings->get( 'cdn' ) && $this->settings->get( 'auto_resize' ) ) : ?>
+					<div class="sui-notice smush-notice-sm smush-highlighting-notice">
+						<p>
+							<?php
+							esc_html_e(
+								'Note: Images served via the Smush CDN are automatically resized to fit their containers, these will be skipped.',
+								'wp-smushit'
+							);
+							?>
+						</p>
+					</div>
+				<?php else : ?>
+					<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
+						<p>
+							<?php
+							printf(
+								/* translators: %1$s: opening a tag, %2$s: closing a tag */
+								esc_html__(
+									'Incorrect image size highlighting is active. %1$sView the frontend%2$s of your website to see which images aren\'t the correct size for their containers.',
+									'wp-smushit'
+								),
+								'<a href="' . esc_url( home_url() ) . '" target="_blank">',
+								'</a>'
+							);
+							?>
+						</p>
+					</div>
+				<?php endif; ?>
+			<?php elseif ( 'detection' === $name ) : ?>
+				<div class="sui-notice sui-notice-warning smush-notice-sm smush-highlighting-warning sui-hidden">
+					<p>
+						<?php
+						esc_html_e( 'Almost there! To finish activating this feature you must save your settings.', 'wp-smushit' );
+						?>
+					</p>
+				</div>
+			<?php endif; ?>
 		</span>
 		<?php
 	}
@@ -778,82 +850,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				</label>
 				<span class="sui-description sui-toggle-description">
 					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
-				</span>
-			</div>
-			<?php
-		}
-	}
-
-	/**
-	 * Prints front end image size detection option.
-	 *
-	 * @param string $name  Name of the current setting being processed.
-	 */
-	public function detect_size_options( $name ) {
-		// Only add to resize setting.
-		if ( 'resize' !== $name ) {
-			return;
-		}
-
-		foreach ( $this->resize_group as $name ) {
-			$setting_val = $this->settings->get( $name );
-			$setting_key = WP_SMUSH_PREFIX . $name;
-			?>
-			<div class="sui-form-field">
-				<label class="sui-toggle">
-					<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_key ); ?>-desc" id="<?php echo esc_attr( $setting_key ); ?>" name="<?php echo esc_attr( $setting_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1">
-					<span class="sui-toggle-slider"></span>
-					<label class="toggle-label <?php echo esc_attr( $setting_key . '-label' ); ?>" for="<?php echo esc_attr( $setting_key ); ?>" aria-hidden="true"></label>
-				</label>
-				<label for="<?php echo esc_attr( $setting_key ); ?>">
-					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
-				</label>
-				<span class="sui-description sui-toggle-description">
-					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
-					<?php if ( 'detection' === $name && $setting_val ) : ?>
-						<?php if ( $this->settings->get( 'cdn' ) && $this->settings->get( 'auto_resize' ) ) : ?>
-							<div class="sui-notice smush-notice-sm smush-highlighting-notice">
-								<p>
-									<?php
-									esc_html_e(
-										'Note: Images served via the Smush CDN are automatically resized to fit their containers, these will be skipped.',
-										'wp-smushit'
-									);
-									?>
-								</p>
-							</div>
-						<?php else : ?>
-							<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
-								<p>
-									<?php
-									printf(
-										/* translators: %1$s: opening a tag, %2$s: closing a tag */
-										esc_html__(
-											'Incorrect image size highlighting is active. %1$sView the
-										frontend%2$s of your website to see which images aren\'t the correct size
-										for their containers.',
-											'wp-smushit'
-										),
-										'<a href="' . esc_url( home_url() ) . '" target="_blank">',
-										'</a>'
-									);
-									?>
-								</p>
-							</div>
-						<?php endif; ?>
-					<?php elseif ( 'detection' === $name ) : ?>
-						<div class="sui-notice sui-notice-warning smush-notice-sm smush-highlighting-warning sui-hidden">
-							<p>
-								<?php
-								esc_html_e(
-									'Almost there! To finish activating this feature you must
-								save your settings.',
-									'wp-smushit'
-								);
-								?>
-							</p>
-						</div>
-					<?php endif; ?>
 				</span>
 			</div>
 			<?php
@@ -1315,6 +1311,23 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 */
 	public function common_metabox_footer() {
 		$this->view( 'common/meta-box-footer', array() );
+	}
+
+	/**
+	 * Tools meta box.
+	 *
+	 * @since 3.2.1
+	 */
+	public function tools_metabox() {
+		$this->view(
+			'meta-boxes/tools/meta-box',
+			array(
+				'grouped_settings'    => $this->resize_group,
+				'opt_networkwide_val' => $this->settings->is_network_enabled(),
+				'settings'            => $this->settings->get(),
+				'settings_data'       => WP_Smush::get_instance()->core()->settings,
+			)
+		);
 	}
 
 }
