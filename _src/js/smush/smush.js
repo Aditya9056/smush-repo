@@ -693,7 +693,7 @@ class Smush {
 		if ( ! this.is_bulk && ! this.is_bulk_resmush ) return;
 
 		// Progress bar label.
-		jQuery( 'span.wp-smush-images-percent' ).html( width );
+		jQuery( 'span.wp-smush-images-percent' ).html( width + '%' );
 		// Progress bar.
 		jQuery( '.bulk-smush-wrapper .wp-smush-progress-inner' ).css( 'width', width + '%' );
 
