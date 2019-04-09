@@ -518,18 +518,14 @@ class Smush {
 	 * Free Smush limit exceeded.
 	 */
 	free_exceeded() {
-		if ( this.ids.length > 0 ) {
-			const progress = jQuery( '.wp-smush-bulk-progress-bar-wrapper' );
-			progress.addClass( 'wp-smush-exceed-limit' );
-			progress.find( '.sui-progress-block .wp-smush-cancel-bulk' ).addClass('sui-hidden');
-			progress.find( '.sui-progress-block .wp-smush-all' ).removeClass('sui-hidden');
+		const progress = jQuery( '.wp-smush-bulk-progress-bar-wrapper' );
+		progress.addClass( 'wp-smush-exceed-limit' );
+		progress.find( '.sui-progress-block .wp-smush-cancel-bulk' ).addClass('sui-hidden');
+		progress.find( '.sui-progress-block .wp-smush-all' ).removeClass('sui-hidden');
 
-			progress.find('i.sui-icon-loader').addClass('sui-icon-info')
-				.removeClass('sui-icon-loader')
-				.removeClass('sui-loading');
-		} else {
-			jQuery( '.wp-smush-notice.wp-smush-all-done, .wp-smush-pagespeed-recommendation' ).show();
-		}
+		progress.find('i.sui-icon-loader').addClass('sui-icon-info')
+			.removeClass('sui-icon-loader')
+			.removeClass('sui-loading');
 	};
 
 	/**
@@ -800,10 +796,11 @@ class Smush {
 					// Add a data attribute to the Smush button, to stop sending ajax.
 					self.button.attr( 'continue_smush', false );
 
-					self.free_exceeded();
-
 					// Reinsert the current ID.
 					wp_smushit_data.unsmushed.unshift( self.current_id );
+					self.ids.unshift( self.current_id );
+
+					self.free_exceeded();
 				} else if ( self.is_bulk ) {
 					self.update_progress( res );
 				} else if ( 0 === self.ids.length ) {

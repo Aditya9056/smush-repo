@@ -21,6 +21,9 @@ import Smush from '../smush/smush';
 
 				$( '.sui-notice-top.sui-notice-success' ).remove();
 
+				const bulkWarning = document.getElementById('bulk_smush_warning');
+				bulkWarning.classList.add('sui-hidden');
+
 				// Remove limit exceeded styles.
 				const progress = $( '.wp-smush-bulk-progress-bar-wrapper' );
 				progress.removeClass( 'wp-smush-exceed-limit' );
@@ -42,9 +45,9 @@ import Smush from '../smush/smush';
 				$( '.wp-smush-remaining' ).hide();
 
 				// Show loader.
-				$( '.sui-summary-smush .smush-stats-icon' )
-					.removeClass( 'sui-icon-info sui-warning' )
-					.addClass( 'sui-icon-loader sui-loading' );
+				progress.find('i.sui-icon-info').removeClass('sui-icon-info')
+					.addClass('sui-loading')
+					.addClass('sui-icon-loader');
 
 				new Smush( $( this ), true );
 			} );

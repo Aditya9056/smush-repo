@@ -75,7 +75,7 @@ if ( ! defined( 'WPINC' ) ) {
 			<i class="sui-icon-close"></i>
 		</button>
 		<button class="sui-progress-close sui-button-icon sui-tooltip wp-smush-all sui-hidden" type="button" data-tooltip="<?php esc_html_e( 'Resume scan.', 'wp-smushit' ); ?>">
-			<i class="sui-icon-close"></i>
+			<i class="sui-icon-play"></i>
 		</button>
 	</div>
 
