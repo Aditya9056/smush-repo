@@ -4,6 +4,11 @@
 
 @include body-class {
 
+    .wp-smush-progress-dialog,
+    .wp-smush-list-dialog {
+        text-align: left;
+    }
+
     .sui-meta-boxes-directory .smush-final-log {
         margin-top: 30px;
 

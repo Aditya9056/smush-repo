@@ -218,7 +218,7 @@
 					.sui-icon-loader {
 						@include icon( before, info );
 						&:before {
-							color: #fecf2f;
+							color: #888888;
 							animation: none;
 						}
 					}
@@ -226,7 +226,7 @@
 			}
 
 			.sui-progress-bar span {
-				background: #fecf2f;
+				background: #888888;
 			}
 
 			.sui-box-footer .sui-actions-right:not(.sui-hidden) {

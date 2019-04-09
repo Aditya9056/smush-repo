@@ -11,6 +11,7 @@
 - Enhance: Update API status button functionality
 - Enhance: Filter to skip image from lazy loading
 - Enhance: Support for Revolution Slider
+- Enhance: Notices when bulk limit is reached
 - Fix: Errors with WP Ultimate Recipe Premium
 - Fix: Inability to determine max content width with Auto Resize CDN feature
 - Fix: Directory Smush not resetting errors on successful scans

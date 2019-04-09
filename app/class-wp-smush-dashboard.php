@@ -174,7 +174,10 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 					array( $this, 'directory_smush_metabox' ),
 					null,
 					null,
-					'directory'
+					'directory',
+					array(
+						'box_class' => 'sui-box sui-message sui-no-padding',
+					)
 				);
 
 				break;
