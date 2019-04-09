@@ -326,6 +326,11 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		}
 
 		foreach ( $image_classes as $class ) {
+			// Skip Revolution Slider images.
+			if ( 'rev-slidebg' === $class ) {
+				return true;
+			}
+
 			if ( in_array( ".{$class}", $this->options['exclude-classes'], true ) ) {
 				return true;
 			}
