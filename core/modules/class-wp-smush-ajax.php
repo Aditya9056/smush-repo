@@ -724,25 +724,10 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		// If the bulk smush needs to be stopped.
 		if ( ! WP_Smush::is_pro() && ! WP_Smush_Core::check_bulk_limit() ) {
-			$upgrade_url = add_query_arg(
-				array(
-					'utm_source'   => 'smush',
-					'utm_medium'   => 'plugin',
-					'utm_campaign' => 'smush_bulksmush_limit_reached_notice',
-				),
-				esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro/' )
-			);
-
 			wp_send_json_error(
 				array(
-					'error'         => 'limit_exceeded',
-					'error_message' => sprintf(
-						esc_html__( "You've reached the %1\$d attachment limit for bulk smushing in the free version. %2\$sUpgrade to Pro%3\$s to smush unlimited images, or click resume to smush another %1\$d attachments.", 'wp-smushit' ),
-						WP_Smush_Core::$max_free_bulk,
-						'<a href="' . esc_url( $upgrade_url ) . '" target="_blank">',
-						'</a>'
-					),
-					'continue'      => false,
+					'error'    => 'limit_exceeded',
+					'continue' => false,
 				)
 			);
 		}

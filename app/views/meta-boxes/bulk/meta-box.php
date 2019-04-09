@@ -89,7 +89,7 @@ $this->view(
 					<?php
 					printf(
 						/* translators: %1$s: opening a tag, %2$s: closing a tag */
-						esc_html__( 'Enable %1$sSuper-smush%2$s for advanced lossy compression to optimise images further with almost no visible drop in quality.', 'wp-smushit' ),
+						esc_html__( 'Enable %1$sSuper-smush%2$s for advanced lossy compression to optimize images further with almost no visible drop in quality.', 'wp-smushit' ),
 						'<a href="#" class="wp-smush-lossy-enable">',
 						'</a>'
 					);

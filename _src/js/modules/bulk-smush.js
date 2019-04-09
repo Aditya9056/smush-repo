@@ -16,7 +16,7 @@ import Smush from '../smush/smush';
 			/**
 			 * Handle the Bulk Smush/Bulk re-Smush button click.
 			 */
-			$( 'button.wp-smush-all' ).on( 'click', function( e ) {
+			$( '.wp-smush-all' ).on( 'click', function( e ) {
 				e.preventDefault();
 
 				$( '.sui-notice-top.sui-notice-success' ).remove();

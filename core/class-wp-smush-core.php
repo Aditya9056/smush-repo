@@ -198,7 +198,7 @@ class WP_Smush_Core {
 	 *
 	 * @var int $max_free_bulk
 	 */
-	public static $max_free_bulk = 50;
+	public static $max_free_bulk = 2;
 
 	/**
 	 * WP_Smush_Core constructor.

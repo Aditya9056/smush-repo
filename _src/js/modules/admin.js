@@ -218,7 +218,7 @@ jQuery( function ( $ ) {
 		scan_type = 'undefined' == typeof scan_type ? 'media' : scan_type;
 
 		// Remove the Skip resmush attribute from button.
-		$( 'button.wp-smush-all' ).removeAttr( 'data-smush' );
+		$( '.wp-smush-all' ).removeAttr( 'data-smush' );
 
 		// Remove notices.
 		const notices = $( '.sui-notice-top.sui-notice-success' );
@@ -768,7 +768,7 @@ jQuery( function ( $ ) {
 	$( 'body' ).on( 'click', '.wp-smush-trigger-bulk', function ( e ) {
 		e.preventDefault();
 		//Induce Setting button save click
-		$( 'button.wp-smush-all' ).click();
+		$( '.wp-smush-all' ).click();
 		$( 'span.sui-notice-dismiss' ).click();
 	} );
 
