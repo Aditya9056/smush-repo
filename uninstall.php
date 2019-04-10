@@ -51,6 +51,7 @@ $smushit_keys = array(
 	'cdn_status',
 	'lazy_load',
 	'last_run_sync',
+	'bulk_sizes',
 );
 
 $db_keys = array(

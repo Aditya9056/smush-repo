@@ -278,6 +278,7 @@ class WP_Smush_Settings {
 
 		$this->delete_setting( WP_SMUSH_PREFIX . 'settings' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'hide_smush_welcome' );
+		$this->delete_setting( WP_SMUSH_PREFIX . 'bulk_sizes' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );
@@ -367,20 +368,31 @@ class WP_Smush_Settings {
 	 * @since 3.2.0  Moved from save method.
 	 */
 	private function parse_bulk_settings() {
-		$image_sizes = array();
-
 		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
 		// Save the selected image sizes.
-		if ( ! empty( $_POST['wp-smush-image_sizes'] ) ) {
+		$image_sizes = filter_input( INPUT_POST, 'auto-image-sizes', FILTER_SANITIZE_STRING );
+		if ( 'all' === $image_sizes ) {
+			$this->delete_setting( WP_SMUSH_PREFIX . 'image_sizes' );
+		} elseif ( ! empty( $_POST['wp-smush-image_sizes'] ) ) {
+			// Yeah, we're rewriting the above var, who cares...
 			$image_sizes = array_filter( array_map( 'sanitize_text_field', wp_unslash( $_POST['wp-smush-image_sizes'] ) ) );
+			$this->set_setting( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
+		}
+
+		$image_sizes = filter_input( INPUT_POST, 'bulk-image-sizes', FILTER_SANITIZE_STRING );
+		if ( 'all' === $image_sizes ) {
+			$this->delete_setting( WP_SMUSH_PREFIX . 'bulk_sizes' );
+		} elseif ( ! empty( $_POST['wp-smush-bulk_sizes'] ) ) {
+			// Yeah, we're rewriting the above var, who cares...
+			$image_sizes = array_filter( array_map( 'sanitize_text_field', wp_unslash( $_POST['wp-smush-bulk_sizes'] ) ) );
+			$this->set_setting( WP_SMUSH_PREFIX . 'bulk_sizes', $image_sizes );
 		}
 
 		// Update Resize width and height settings if set.
 		$resize_sizes['width']  = isset( $_POST['wp-smush-resize_width'] ) ? intval( $_POST['wp-smush-resize_width'] ) : 0; // Input var ok.
 		$resize_sizes['height'] = isset( $_POST['wp-smush-resize_height'] ) ? intval( $_POST['wp-smush-resize_height'] ) : 0; // Input var ok.
 
-		$this->set_setting( WP_SMUSH_PREFIX . 'image_sizes', $image_sizes );
 		$this->set_setting( WP_SMUSH_PREFIX . 'resize_sizes', $resize_sizes );
 	}
 

@@ -661,13 +661,15 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			</div>
 			<div class="sui-box-settings-col-2" id="column-<?php echo esc_attr( $setting_m_key ); ?>">
 				<div class="sui-form-field">
-					<label class="sui-toggle">
-						<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>" id="<?php echo esc_attr( $setting_m_key ); ?>" name="<?php echo esc_attr( $setting_m_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
-						<span class="sui-toggle-slider"></span>
-					</label>
-					<label for="<?php echo esc_attr( $setting_m_key ); ?>">
-						<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
-					</label>
+					<?php if ( isset( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ) ) : ?>
+						<label class="sui-toggle">
+							<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>" id="<?php echo esc_attr( $setting_m_key ); ?>" name="<?php echo esc_attr( $setting_m_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
+							<span class="sui-toggle-slider"></span>
+						</label>
+						<label for="<?php echo esc_attr( $setting_m_key ); ?>">
+							<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+						</label>
+					<?php endif; ?>
 					<!-- Print/Perform action in right setting column -->
 					<?php do_action( 'smush_setting_column_right_inside', $name ); ?>
 				</div>
@@ -753,78 +755,75 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * @return void
 	 */
 	public function image_sizes( $name = '' ) {
-		// Add only to auto smush settings.
-		if ( 'auto' !== $name ) {
+		$rows = array(
+			'auto' => 'image_sizes',
+			'bulk' => 'bulk_sizes',
+		);
+
+		// Add only to auto and bulk smush settings.
+		if ( ! array_key_exists( $name, $rows ) ) {
 			return;
 		}
 
-		// Additional Image sizes.
-		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
+		// Additional image sizes.
+		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . $rows[ $name ], false );
 		$sizes       = WP_Smush::get_instance()->core()->image_dimensions();
 
-		/**
-		 * Add an additional item for full size.
-		 * Do not use intermediate_image_sizes filter.
-		 */
-		$sizes['full'] = array();
-
-		$is_pro   = WP_Smush::is_pro();
-		$disabled = '';
-
 		$setting_status = $this->settings->get( 'auto' );
-
-		if ( ! empty( $sizes ) ) {
-			?>
-			<!-- List of image sizes recognised by WP Smush -->
-			<div class="wp-smush-image-size-list <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
-				<p class="sui-description">
-					<?php
-					esc_html_e(
-						'Every time you upload an image to your site, WordPress generates a
-					resized version of that image for every default and/or custom image size that your theme has
-					registered. This means there are multiple versions of your images in your media library. Choose
-					the images sizes below that you would like optimized:',
-						'wp-smushit'
-					);
-					?>
-				</p>
-				<?php
-				foreach ( $sizes as $size_k => $size ) {
-					// If image sizes array isn't set, mark all checked ( Default Values ).
-					if ( false === $image_sizes ) {
-						$checked = true;
-					} else {
-						// WPMDUDEV hosting support: cast $size_k to string to properly work with object cache.
-						$checked = is_array( $image_sizes ) ? in_array( (string) $size_k, $image_sizes, true ) : false;
-					}
-					// For free users, remove full size option.
-					if ( 'full' === $size_k ) {
-						continue;
-					}
-					?>
-					<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-						<input type="checkbox" id="wp-smush-size-<?php echo esc_attr( $size_k ); ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo esc_attr( $size_k ); ?>" <?php echo esc_attr( $disabled ); ?>>
-						<span aria-hidden="true"></span>
-						<?php if ( isset( $size['width'], $size['height'] ) ) : ?>
-							<span class="sui-description">
-								<?php echo esc_html( $size_k . ' (' . $size['width'] . 'x' . $size['height'] . ') ' ); ?>
-							</span>
-						<?php else : ?>
-							<span><?php echo esc_attr( $size_k ); ?>
-								<?php if ( ! $is_pro ) : ?>
-									<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>">
-										<?php esc_html_e( 'PRO', 'wp-smushit' ); ?>
-									</span>
-								<?php endif; ?>
-							</span>
-						<?php endif; ?>
+		?>
+		<?php if ( ! empty( $sizes ) ) : ?>
+			<div class="sui-side-tabs sui-tabs <?php echo 'auto' === $name ? 'wp-smush-image-size-list' : ''; ?> <?php echo 'bulk' === $name || $setting_status ? '' : ' sui-hidden'; ?>">
+				<?php if ( 'auto' === $name ) : ?>
+					<p class="sui-description">
+						<?php esc_html_e( 'Choose whether you want to automatically optimize all thumbnail sizes, or select sizes.', 'wp-smushit' ); ?>
+					</p>
+				<?php endif; ?>
+				<div data-tabs="">
+					<label for="all-image-sizes" class="sui-tab-item <?php echo false === $image_sizes ? 'active' : ''; ?>">
+						<input type="radio" name="<?php echo esc_attr( $name ); ?>-image-sizes" value="all" id="all-image-sizes" <?php checked( false === $image_sizes ); ?>>
+						<?php esc_html_e( 'All Image Sizes', 'wp-smushit' ); ?>
 					</label>
-					<?php
-				}
-				?>
+					<label for="custom-image-sizes" class="sui-tab-item <?php echo $image_sizes ? 'active' : ''; ?>">
+						<input type="radio" name="<?php echo esc_attr( $name ); ?>-image-sizes" value="custom" id="custom-image-sizes" <?php checked( false !== $image_sizes ); ?>>
+						<?php esc_html_e( 'Custom', 'wp-smushit' ); ?>
+					</label>
+				</div><!-- end data-tabs -->
+				<div data-panes>
+					<div class="sui-tab-boxed <?php echo false === $image_sizes ? 'active' : ''; ?>" style="display:none"></div>
+					<div class="sui-tab-boxed <?php echo $image_sizes ? 'active' : ''; ?>">
+						<p class="sui-description"><?php esc_html_e( 'Included image sizes', 'wp-smushit' ); ?></p>
+						<?php
+						foreach ( $sizes as $size_k => $size ) {
+							// If image sizes array isn't set, mark all checked ( Default Values ).
+							if ( false === $image_sizes ) {
+								$checked = true;
+							} else {
+								// WPMDUDEV hosting support: cast $size_k to string to properly work with object cache.
+								$checked = is_array( $image_sizes ) ? in_array( (string) $size_k, $image_sizes, true ) : false;
+							}
+							?>
+							<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
+								<input type="checkbox" <?php checked( $checked, true ); ?>
+										id="wp-smush-size-<?php echo esc_attr( $size_k ); ?>"
+										name="wp-smush-<?php echo esc_attr( $rows[ $name ] ); ?>[]"
+										value="<?php echo esc_attr( $size_k ); ?>">
+								<span aria-hidden="true">&nbsp;</span>
+								<span>
+									<?php if ( isset( $size['width'], $size['height'] ) ) : ?>
+										<?php echo esc_html( $size_k . ' (' . $size['width'] . 'x' . $size['height'] . ') ' ); ?>
+									<?php else : ?>
+										<?php echo esc_attr( $size_k ); ?>
+									<?php endif; ?>
+								</span>
+							</label>
+							<?php
+						}
+						?>
+					</div>
+				</div>
 			</div>
-			<?php
-		}
+		<?php endif; ?>
+		<?php
 	}
 
 	/**

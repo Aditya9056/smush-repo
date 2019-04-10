@@ -571,18 +571,6 @@ label.setting.smush-stats .disabled[tooltip]:after,
 	display: none;
 }
 
-.wp-smush-resize-settings-wrap, .wp-smush-png_to_jpg-wrap, .wp-smush-image-size-list {
-	background-color: #FFFFFF;
-	border: 1px solid #E6E6E6;
-	border-radius: 5px;
-	color: #555;
-	font-family: "Roboto", sans-serif;
-	margin: 1.5em 0 0;
-	overflow: auto;
-	padding: 30px;
-	vertical-align: middle;
-}
-
 div.wp-smush-resize-note {
 	color: #555;
 	font-size: 13px;
@@ -657,8 +645,7 @@ button.wp-smush-all {
 
 @media screen and (max-width: 600px) {
 	.wp-smush-resize-settings-wrap,
-	.wp-smush-png_to_jpg-wrap,
-	.wp-smush-image-size-list {
+	.wp-smush-png_to_jpg-wrap {
 		padding: 20px;
 	}
 }
