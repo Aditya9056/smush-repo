@@ -53,7 +53,7 @@ if ( ! defined( 'WP_SMUSH_VERSION' ) ) {
 }
 // Used to define body class.
 if ( ! defined( 'WP_SHARED_UI_VERSION' ) ) {
-	define( 'WP_SHARED_UI_VERSION', 'sui-2-3-20' );
+	define( 'WP_SHARED_UI_VERSION', 'sui-2-3-22' );
 }
 if ( ! defined( 'WP_SMUSH_BASENAME' ) ) {
 	define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );

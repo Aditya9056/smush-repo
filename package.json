@@ -35,17 +35,17 @@
     "build": "grunt clean && npm run compile && grunt prepare && grunt build && grunt build:wporg"
   },
   "dependencies": {
-    "@wpmudev/shared-ui": "2.3.20",
+    "@wpmudev/shared-ui": "2.3.22",
     "jquery.fancytree": "^2.30.2",
     "lazysizes": "^4.1.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
     "ajv": "6.10.0",
     "ajv-keywords": "^3.4.0",
-    "autoprefixer": "^9.5.0",
+    "autoprefixer": "^9.5.1",
     "babel-loader": "^8.0.5",
     "clean-webpack-plugin": "^2.0.1",
     "css-loader": "^2.1.1",
@@ -58,7 +58,7 @@
     "grunt-wp-i18n": "^1.0.3",
     "load-grunt-tasks": "^4.0.0",
     "lodash": "^4.17.11",
-    "mini-css-extract-plugin": "^0.5.0",
+    "mini-css-extract-plugin": "^0.6.0",
     "node-sass": "^4.11.0",
     "postcss-loader": "^3.0.0",
     "resolve-url-loader": "^2.3.1",
