@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
-define( 'WPMUDEV_APIKEY', '10b6efe1f90d35821a034385369bb99aeb65e6d9' );
+
 if ( ! defined( 'WP_SMUSH_VERSION' ) ) {
 	define( 'WP_SMUSH_VERSION', '3.2.1-alpha.1' );
 }
