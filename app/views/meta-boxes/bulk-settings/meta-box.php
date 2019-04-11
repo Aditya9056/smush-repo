@@ -53,8 +53,7 @@ if ( ! defined( 'WPINC' ) ) {
 		<div class="network-settings-wrapper<?php echo $opt_networkwide_val ? '' : ' sui-hidden'; ?>">
 	<?php endif; ?>
 
-	<?php
-	if ( ! is_multisite() || ( ! $opt_networkwide_val && ! is_network_admin() ) || is_network_admin() ) {
+	<?php if ( ! is_multisite() || ( ! $opt_networkwide_val && ! is_network_admin() ) || is_network_admin() ) {
 		foreach ( $settings_data as $name => $value ) {
 			// Skip networkwide settings, we already printed it.
 			if ( 'networkwide' === $name ) {

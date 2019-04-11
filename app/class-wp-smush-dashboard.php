@@ -54,6 +54,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		parent::add_action_hooks();
 
 		add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
+		add_action( 'smush_setting_column_right_inside', array( $this, 'auto_smush' ), 15, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'usage_settings' ), 25, 2 );
@@ -661,13 +662,15 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			</div>
 			<div class="sui-box-settings-col-2" id="column-<?php echo esc_attr( $setting_m_key ); ?>">
 				<div class="sui-form-field">
-					<label class="sui-toggle">
-						<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>" id="<?php echo esc_attr( $setting_m_key ); ?>" name="<?php echo esc_attr( $setting_m_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
-						<span class="sui-toggle-slider"></span>
-					</label>
-					<label for="<?php echo esc_attr( $setting_m_key ); ?>">
-						<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
-					</label>
+					<?php if ( isset( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ) ) : ?>
+						<label class="sui-toggle">
+							<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>" id="<?php echo esc_attr( $setting_m_key ); ?>" name="<?php echo esc_attr( $setting_m_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
+							<span class="sui-toggle-slider"></span>
+						</label>
+						<label for="<?php echo esc_attr( $setting_m_key ); ?>">
+							<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+						</label>
+					<?php endif; ?>
 					<!-- Print/Perform action in right setting column -->
 					<?php do_action( 'smush_setting_column_right_inside', $name ); ?>
 				</div>
@@ -746,6 +749,30 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
+	 * Prints notice after auto compress settings.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param string $name  Setting key.
+	 */
+	public function auto_smush( $name = '' ) {
+		// Add only to auto smush settings.
+		if ( 'auto' !== $name ) {
+			return;
+		}
+
+		$setting_status = $this->settings->get( 'auto' );
+
+		?>
+		<div class="sui-notice smush-notice-sm auto-smush-notice <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
+			<p>
+				<?php esc_html_e( 'Note: We will only automatically compress the image sizes selected above.', 'wp-smushit' ); ?>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Prints all the registered image sizes, to be selected/unselected for smushing.
 	 *
 	 * @param string $name Setting key.
@@ -753,78 +780,63 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * @return void
 	 */
 	public function image_sizes( $name = '' ) {
-		// Add only to auto smush settings.
-		if ( 'auto' !== $name ) {
+		// Add only to bulk smush settings.
+		if ( 'bulk' !== $name ) {
 			return;
 		}
 
-		// Additional Image sizes.
+		// Additional image sizes.
 		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
 		$sizes       = WP_Smush::get_instance()->core()->image_dimensions();
-
-		/**
-		 * Add an additional item for full size.
-		 * Do not use intermediate_image_sizes filter.
-		 */
-		$sizes['full'] = array();
-
-		$is_pro   = WP_Smush::is_pro();
-		$disabled = '';
-
-		$setting_status = $this->settings->get( 'auto' );
-
-		if ( ! empty( $sizes ) ) {
-			?>
-			<!-- List of image sizes recognised by WP Smush -->
-			<div class="wp-smush-image-size-list <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
-				<p class="sui-description">
-					<?php
-					esc_html_e(
-						'Every time you upload an image to your site, WordPress generates a
-					resized version of that image for every default and/or custom image size that your theme has
-					registered. This means there are multiple versions of your images in your media library. Choose
-					the images sizes below that you would like optimized:',
-						'wp-smushit'
-					);
-					?>
-				</p>
-				<?php
-				foreach ( $sizes as $size_k => $size ) {
-					// If image sizes array isn't set, mark all checked ( Default Values ).
-					if ( false === $image_sizes ) {
-						$checked = true;
-					} else {
-						// WPMDUDEV hosting support: cast $size_k to string to properly work with object cache.
-						$checked = is_array( $image_sizes ) ? in_array( (string) $size_k, $image_sizes, true ) : false;
-					}
-					// For free users, remove full size option.
-					if ( 'full' === $size_k ) {
-						continue;
-					}
-					?>
-					<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-						<input type="checkbox" id="wp-smush-size-<?php echo esc_attr( $size_k ); ?>" <?php checked( $checked, true ); ?> name="wp-smush-image_sizes[]" value="<?php echo esc_attr( $size_k ); ?>" <?php echo esc_attr( $disabled ); ?>>
-						<span aria-hidden="true"></span>
-						<?php if ( isset( $size['width'], $size['height'] ) ) : ?>
-							<span class="sui-description">
-								<?php echo esc_html( $size_k . ' (' . $size['width'] . 'x' . $size['height'] . ') ' ); ?>
-							</span>
-						<?php else : ?>
-							<span><?php echo esc_attr( $size_k ); ?>
-								<?php if ( ! $is_pro ) : ?>
-									<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained" data-tooltip="<?php esc_html_e( 'Join WPMU DEV to unlock multi-pass lossy compression', 'wp-smushit' ); ?>">
-										<?php esc_html_e( 'PRO', 'wp-smushit' ); ?>
-									</span>
-								<?php endif; ?>
-							</span>
-						<?php endif; ?>
+		?>
+		<?php if ( ! empty( $sizes ) ) : ?>
+			<div class="sui-side-tabs sui-tabs">
+				<div data-tabs="">
+					<label for="all-image-sizes" class="sui-tab-item <?php echo false === $image_sizes ? 'active' : ''; ?>">
+						<input type="radio" name="auto-image-sizes" value="all" id="all-image-sizes" <?php checked( false === $image_sizes ); ?>>
+						<?php esc_html_e( 'All', 'wp-smushit' ); ?>
 					</label>
-					<?php
-				}
-				?>
+					<label for="custom-image-sizes" class="sui-tab-item <?php echo $image_sizes ? 'active' : ''; ?>">
+						<input type="radio" name="auto-image-sizes" value="custom" id="custom-image-sizes" <?php checked( false !== $image_sizes ); ?>>
+						<?php esc_html_e( 'Custom', 'wp-smushit' ); ?>
+					</label>
+				</div><!-- end data-tabs -->
+				<div data-panes>
+					<div class="sui-tab-boxed <?php echo false === $image_sizes ? 'active' : ''; ?>" style="display:none"></div>
+					<div class="sui-tab-boxed <?php echo $image_sizes ? 'active' : ''; ?>">
+						<span class="sui-label"><?php esc_html_e( 'Included image sizes', 'wp-smushit' ); ?></span>
+						<?php
+						foreach ( $sizes as $size_k => $size ) {
+							// If image sizes array isn't set, mark all checked ( Default Values ).
+							if ( false === $image_sizes ) {
+								$checked = true;
+							} else {
+								// WPMDUDEV hosting support: cast $size_k to string to properly work with object cache.
+								$checked = is_array( $image_sizes ) ? in_array( (string) $size_k, $image_sizes, true ) : false;
+							}
+							?>
+							<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
+								<input type="checkbox" <?php checked( $checked, true ); ?>
+										id="wp-smush-size-<?php echo esc_attr( $size_k ); ?>"
+										name="wp-smush-image_sizes[]"
+										value="<?php echo esc_attr( $size_k ); ?>">
+								<span aria-hidden="true">&nbsp;</span>
+								<span>
+									<?php if ( isset( $size['width'], $size['height'] ) ) : ?>
+										<?php echo esc_html( $size_k . ' (' . $size['width'] . 'x' . $size['height'] . ') ' ); ?>
+									<?php else : ?>
+										<?php echo esc_attr( $size_k ); ?>
+									<?php endif; ?>
+								</span>
+							</label>
+							<?php
+						}
+						?>
+					</div>
+				</div>
 			</div>
-			<?php
-		}
+		<?php endif; ?>
+		<?php
 	}
 
 	/**

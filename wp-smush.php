@@ -561,7 +561,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @since 3.1.1
 		 */
 		private function maybe_upgrade_to_pro() {
-			if ( 'wp-smush-pro/wp-smush.php' === plugin_basename( __FILE__ ) ) {
+			if ( 'wp-smush-pro/wp-smush.php' === WP_SMUSH_BASENAME ) {
 				return;
 			}
 

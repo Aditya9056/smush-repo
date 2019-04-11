@@ -407,10 +407,14 @@ class WP_Smush_Core {
 				'short_label' => esc_html__( 'Multisite Control', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Choose whether you want to use network settings for all sub-sites or whether sub-site admins can control Smush’s settings.', 'wp-smushit' ),
 			),
+			'bulk'              => array(
+				'short_label' => esc_html__( 'Image Sizes', 'wp-smushit' ),
+				'desc'        => esc_html__( 'WordPress generates multiple image thumbnails for each image you upload. Choose which of those thumbnail sizes you want to include when bulk smushing.', 'wp-smushit' ),
+			),
 			'auto'              => array(
 				'label'       => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Automatic Smush', 'wp-smushit' ),
-				'desc'        => esc_html__( 'When you upload images to your site, Smush will automatically optimize and compress them for you.', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Automatic compression', 'wp-smushit' ),
+				'desc'        => esc_html__( 'When you upload images to your site, we can automatically optimize and compress them for you without you needing to do it yourself.', 'wp-smushit' ),
 			),
 			'lossy'             => array(
 				'label'       => esc_html__( 'Super-smush my images', 'wp-smushit' ),
@@ -653,6 +657,8 @@ class WP_Smush_Core {
 
 	/**
 	 * Get registered image sizes with dimension
+	 *
+	 * @return array
 	 */
 	public function image_dimensions() {
 		global $_wp_additional_image_sizes;

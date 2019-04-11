@@ -813,11 +813,10 @@ jQuery( function ( $ ) {
 	} );
 
 	// Handle Automatic Smush Checkbox toggle, to show/hide image size settings.
-	$( 'body' ).on( 'click', '#wp-smush-auto', function () {
-		var self = $( this );
-		var settings_wrap = $( '.wp-smush-image-size-list' );
+	$( '#column-wp-smush-auto' ).on( 'click', '#wp-smush-auto', function () {
+		const settings_wrap = $( '#column-wp-smush-auto .auto-smush-notice' );
 
-		if ( self.is( ':checked' ) ) {
+		if ( $( this ).is( ':checked' ) ) {
 			settings_wrap.show();
 		} else {
 			settings_wrap.hide();
