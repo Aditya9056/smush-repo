@@ -227,7 +227,7 @@ abstract class WP_Smush_View {
 	 * Show notice when Smush Pro is installed only with a key.
 	 */
 	public function smush_dash_required() {
-		if ( WP_Smush::is_pro() && class_exists( 'WPMUDEV_Dashboard' ) ) {
+		if ( WP_Smush::is_pro() || class_exists( 'WPMUDEV_Dashboard' ) ) {
 			return;
 		}
 
