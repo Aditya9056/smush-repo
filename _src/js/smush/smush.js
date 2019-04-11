@@ -265,7 +265,7 @@ class Smush {
 				Smush.update_image_stats( response.data.new_size );
 			}
 			self.enable_button();
-		} ).error( function ( response ) {
+		} ).fail( function ( response ) {
 			self.status.html( response.data );
 			self.status.addClass( 'error' );
 			self.enable_button();
@@ -810,7 +810,7 @@ class Smush {
 
 				self.single_done();
 			} )
-			.complete( function () {
+			.always( function () {
 				if ( ! self.continue() || ! self.is_bulk ) {
 					// Calls deferred.done()
 					self.deferred.resolve();
