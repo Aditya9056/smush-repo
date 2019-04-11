@@ -21,6 +21,7 @@
 - Fix: PHP warning on 2.x - 3.x upgrade in network installs
 - Fix: CDN not processing the image tag if src does not contain a valid image
 - Fix: Lazy loading URL exclude rules
+- Fix: URL exclusion rules in lazy loading
 
 = 3.2.0.2 =
 

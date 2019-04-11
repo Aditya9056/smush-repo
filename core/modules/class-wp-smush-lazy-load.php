@@ -294,7 +294,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return false;
 		}
 
-		$request_uri = filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL );
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 
 		// Remove empty values.
 		$uri_pattern = array_filter( $this->options['exclude-pages'] );
