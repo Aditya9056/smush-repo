@@ -814,7 +814,7 @@ jQuery( function ( $ ) {
 
 	// Handle Automatic Smush Checkbox toggle, to show/hide image size settings.
 	$( '#column-wp-smush-auto' ).on( 'click', '#wp-smush-auto', function () {
-		const settings_wrap = $( '#column-wp-smush-auto .wp-smush-image-size-list' );
+		const settings_wrap = $( '#column-wp-smush-auto .auto-smush-notice' );
 
 		if ( $( this ).is( ':checked' ) ) {
 			settings_wrap.show();

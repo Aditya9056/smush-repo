@@ -54,6 +54,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		parent::add_action_hooks();
 
 		add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
+		add_action( 'smush_setting_column_right_inside', array( $this, 'auto_smush' ), 15, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'image_sizes' ), 15, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'resize_settings' ), 20, 2 );
 		add_action( 'smush_setting_column_right_inside', array( $this, 'usage_settings' ), 25, 2 );
@@ -748,6 +749,30 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	}
 
 	/**
+	 * Prints notice after auto compress settings.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param string $name  Setting key.
+	 */
+	public function auto_smush( $name = '' ) {
+		// Add only to auto smush settings.
+		if ( 'auto' !== $name ) {
+			return;
+		}
+
+		$setting_status = $this->settings->get( 'auto' );
+
+		?>
+		<div class="sui-notice smush-notice-sm auto-smush-notice <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
+			<p>
+				<?php esc_html_e( 'Note: We will only automatically compress the image sizes selected above.', 'wp-smushit' ); ?>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Prints all the registered image sizes, to be selected/unselected for smushing.
 	 *
 	 * @param string $name Setting key.
@@ -755,43 +780,31 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * @return void
 	 */
 	public function image_sizes( $name = '' ) {
-		$rows = array(
-			'auto' => 'image_sizes',
-			'bulk' => 'bulk_sizes',
-		);
-
-		// Add only to auto and bulk smush settings.
-		if ( ! array_key_exists( $name, $rows ) ) {
+		// Add only to bulk smush settings.
+		if ( 'bulk' !== $name ) {
 			return;
 		}
 
 		// Additional image sizes.
-		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . $rows[ $name ], false );
+		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
 		$sizes       = WP_Smush::get_instance()->core()->image_dimensions();
-
-		$setting_status = $this->settings->get( 'auto' );
 		?>
 		<?php if ( ! empty( $sizes ) ) : ?>
-			<div class="sui-side-tabs sui-tabs <?php echo 'auto' === $name ? 'wp-smush-image-size-list' : ''; ?> <?php echo 'bulk' === $name || $setting_status ? '' : ' sui-hidden'; ?>">
-				<?php if ( 'auto' === $name ) : ?>
-					<p class="sui-description">
-						<?php esc_html_e( 'Choose whether you want to automatically optimize all thumbnail sizes, or select sizes.', 'wp-smushit' ); ?>
-					</p>
-				<?php endif; ?>
+			<div class="sui-side-tabs sui-tabs">
 				<div data-tabs="">
 					<label for="all-image-sizes" class="sui-tab-item <?php echo false === $image_sizes ? 'active' : ''; ?>">
-						<input type="radio" name="<?php echo esc_attr( $name ); ?>-image-sizes" value="all" id="all-image-sizes" <?php checked( false === $image_sizes ); ?>>
-						<?php esc_html_e( 'All Image Sizes', 'wp-smushit' ); ?>
+						<input type="radio" name="auto-image-sizes" value="all" id="all-image-sizes" <?php checked( false === $image_sizes ); ?>>
+						<?php esc_html_e( 'All', 'wp-smushit' ); ?>
 					</label>
 					<label for="custom-image-sizes" class="sui-tab-item <?php echo $image_sizes ? 'active' : ''; ?>">
-						<input type="radio" name="<?php echo esc_attr( $name ); ?>-image-sizes" value="custom" id="custom-image-sizes" <?php checked( false !== $image_sizes ); ?>>
+						<input type="radio" name="auto-image-sizes" value="custom" id="custom-image-sizes" <?php checked( false !== $image_sizes ); ?>>
 						<?php esc_html_e( 'Custom', 'wp-smushit' ); ?>
 					</label>
 				</div><!-- end data-tabs -->
 				<div data-panes>
 					<div class="sui-tab-boxed <?php echo false === $image_sizes ? 'active' : ''; ?>" style="display:none"></div>
 					<div class="sui-tab-boxed <?php echo $image_sizes ? 'active' : ''; ?>">
-						<p class="sui-description"><?php esc_html_e( 'Included image sizes', 'wp-smushit' ); ?></p>
+						<span class="sui-label"><?php esc_html_e( 'Included image sizes', 'wp-smushit' ); ?></span>
 						<?php
 						foreach ( $sizes as $size_k => $size ) {
 							// If image sizes array isn't set, mark all checked ( Default Values ).
@@ -805,7 +818,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 							<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
 								<input type="checkbox" <?php checked( $checked, true ); ?>
 										id="wp-smush-size-<?php echo esc_attr( $size_k ); ?>"
-										name="wp-smush-<?php echo esc_attr( $rows[ $name ] ); ?>[]"
+										name="wp-smush-image_sizes[]"
 										value="<?php echo esc_attr( $size_k ); ?>">
 								<span aria-hidden="true">&nbsp;</span>
 								<span>

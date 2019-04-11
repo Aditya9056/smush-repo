@@ -414,7 +414,7 @@ class WP_Smush_Core {
 			'auto'              => array(
 				'label'       => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Automatic compression', 'wp-smushit' ),
-				'desc'        => esc_html__( 'When you upload images to your site, Smush will automatically optimize and compress them for you.', 'wp-smushit' ),
+				'desc'        => esc_html__( 'When you upload images to your site, we can automatically optimize and compress them for you without you needing to do it yourself.', 'wp-smushit' ),
 			),
 			'lossy'             => array(
 				'label'       => esc_html__( 'Super-smush my images', 'wp-smushit' ),

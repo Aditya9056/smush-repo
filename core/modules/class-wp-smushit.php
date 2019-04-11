@@ -919,25 +919,17 @@ class WP_Smushit extends WP_Smush_Module {
 	/**
 	 * Check whether to skip a specific image size or not
 	 *
-	 * @since 3.2.1 Added $type parameter.
-	 *
 	 * @param string $size  Registered image size.
-	 * @param string $type  Type of setting to fetch - either for bulk or auto smush.
 	 *
 	 * @return bool true/false Whether to skip the image size or not
 	 */
-	public function skip_image_size( $size = '', $type = 'image' ) {
+	public function skip_image_size( $size = '' ) {
 		// No image size specified, Don't skip.
 		if ( empty( $size ) ) {
 			return false;
 		}
 
-		$type = 'image_sizes';
-		if ( 'bulk' === $type ) {
-			$type = 'bulk_sizes';
-		}
-
-		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . $type );
+		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 
 		// If Images sizes aren't set, don't skip any of the image size.
 		if ( false === $image_sizes ) {
