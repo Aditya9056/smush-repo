@@ -227,7 +227,7 @@ abstract class WP_Smush_View {
 	 * Show notice when Smush Pro is installed only with a key.
 	 */
 	public function smush_dash_required() {
-		if ( WP_Smush::is_pro() || class_exists( 'WPMUDEV_Dashboard' ) ) {
+		if ( WP_Smush::is_pro() || ( class_exists( 'WPMUDEV_Dashboard' ) && WPMUDEV_Dashboard::$api->has_key() ) ) {
 			return;
 		}
 
@@ -244,9 +244,15 @@ abstract class WP_Smush_View {
 				<?php esc_html_e( 'Smush Pro requires the WPMU DEV Dashboard plugin to unlock pro features. Please make sure you have installed, activated and logged into the Dashboard.', 'wp-smushit' ); ?>
 			</div>
 			<div class="smush-notice-cta">
-				<a href="<?php echo esc_url( $url ); ?>" class="smush-notice-act button-primary" target="_blank">
-					<?php esc_html_e( 'Install Plugin', 'wp-smushit' ); ?>
-				</a>
+				<?php if ( class_exists( 'WPMUDEV_Dashboard' ) && ! WPMUDEV_Dashboard::$api->has_key() ) : ?>
+					<a href="<?php echo esc_url( network_admin_url( 'admin.php?page=wpmudev' ) ); ?>" class="smush-notice-act button-primary" target="_blank">
+						<?php esc_html_e( 'Log In', 'wp-smushit' ); ?>
+					</a>
+				<?php else : ?>
+					<a href="<?php echo esc_url( $url ); ?>" class="smush-notice-act button-primary" target="_blank">
+						<?php esc_html_e( 'Install Plugin', 'wp-smushit' ); ?>
+					</a>
+				<?php endif; ?>
 			</div>
 		</div>
 		<?php
