@@ -84,6 +84,7 @@ class WP_Smush_Core {
 	 */
 	public static $basic_features = array(
 		'networkwide',
+		'bulk',
 		'auto',
 		'strip_exif',
 		'resize',
