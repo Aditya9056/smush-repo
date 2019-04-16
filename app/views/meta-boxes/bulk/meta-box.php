@@ -19,6 +19,10 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+?>
+<p><?php esc_html_e( 'Bulk smush detects images that can be optimized and allows you to compress them in bulk.', 'wp-smushit' ); ?></p>
+<?php
+
 // Show re-smush notice.
 WP_Smush::get_instance()->admin()->bulk_resmush_content();
 
