@@ -218,6 +218,9 @@ class WP_Smush_Core {
 		// Enqueue scripts and initialize variables.
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 
+		// Load integrations.
+		add_action( 'init', array( $this, 'load_integrations' ) );
+
 		// Send Smush stats for PRO members.
 		add_filter( 'wpmudev_api_project_extra_data-912164', array( $this, 'send_smush_stats' ) );
 
@@ -268,9 +271,6 @@ class WP_Smush_Core {
 
 		// Handle notice dismiss.
 		$this->dismiss_smush_upgrade();
-
-		// Load integrations.
-		$this->load_integrations();
 	}
 
 	/**
@@ -287,7 +287,7 @@ class WP_Smush_Core {
 	 *
 	 * @since 2.8.0
 	 */
-	private function load_integrations() {
+	public function load_integrations() {
 		/* @noinspection PhpIncludeInspection */
 		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-common.php';
 
