@@ -212,6 +212,7 @@ class WP_Smush_Common {
 		if ( ! $this->is_wpml_duplicating_images() ) {
 			return;
 		}
+
 		global $wpdb;
 
 		// Get translated attachments.
@@ -251,26 +252,19 @@ class WP_Smush_Common {
 	 * @return bool
 	 */
 	private function is_wpml_duplicating_images() {
-		// Check if WPML class is available.
 		if ( ! class_exists( 'SitePress' ) ) {
 			return false;
 		}
 
 		$media_settings = get_site_option( '_wpml_media' );
 
-		// Get new media settings.
-		if ( empty( $media_settings['new_content_settings'] ) ) {
+		// Check if WPML media translations are active.
+		if ( ! $media_settings || ! isset( $media_settings['new_content_settings']['duplicate_media'] ) ) {
 			return false;
 		}
 
-		// New content settings.
-		$content_settings = $media_settings['new_content_settings'];
-
-		// Check if WPML media translations are active.
-		if ( empty( $content_settings['duplicate_media'] )
-		     && empty( $content_settings['always_translate_media'] )
-		     && empty( $content_settings['duplicate_featured'] )
-		) {
+		// WPML duplicate existing media for translated content?
+		if ( ! $media_settings['new_content_settings']['duplicate_media'] ) {
 			return false;
 		}
 
