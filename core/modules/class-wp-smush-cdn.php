@@ -278,8 +278,13 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			return;
 		}
 
-		// CDN will not work if site is not registered with the dashboard.
+		// CDN will not work if there is no dashboard plugin installed.
 		if ( ! file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
+			return;
+		}
+
+		// CDN will not work if site is not registered with the dashboard.
+		if ( class_exists( 'WPMUDEV_Dashboard' ) && ! WPMUDEV_Dashboard::$api->has_key() ) {
 			return;
 		}
 

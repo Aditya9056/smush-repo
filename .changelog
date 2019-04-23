@@ -1,4 +1,6 @@
 = 3.2.2 =
+
+- Enhance: Do not allow enabling CDN for sites that are not registered on the Hub
 - Enhance: Bulk compressing images without proper meta data
 
 = 3.2.1 =
