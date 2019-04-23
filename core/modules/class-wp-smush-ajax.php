@@ -744,7 +744,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 				array(
 					'error'         => 'no_file_meta',
 					'error_message' => WP_Smush_Helper::filter_error( esc_html__( 'No file data found in image meta.', 'wp-smushit' ) ),
-					'file_name'     => printf(
+					'file_name'     => sprintf(
 						/* translators: %d - attachment ID */
 						esc_html__( 'undefined (attachment ID: %d)', 'wp-smushit' ),
 						(int) $attachment_id
