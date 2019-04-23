@@ -41,6 +41,11 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return;
 		}
 
+		// Skip AMP pages.
+		if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ) {
+			return;
+		}
+
 		// Load js file that is required in public facing pages.
 		add_action( 'wp_head', array( $this, 'add_inline_styles' ) );
 
