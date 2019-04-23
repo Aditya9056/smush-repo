@@ -157,7 +157,7 @@ if ( ! defined( 'WPINC' ) ) {
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">
 			<span class="sui-settings-label">
-				<?php esc_html_e( 'Include / Exclude', 'wp-smushit' ); ?>
+				<?php esc_html_e( 'Include/Exclude', 'wp-smushit' ); ?>
 			</span>
 			<span class="sui-description">
 				<?php esc_html_e( 'Disable lazy loading for specific pages, posts or image classes that you wish to prevent lazyloading on.', 'wp-smushit' ); ?>
