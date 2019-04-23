@@ -268,7 +268,7 @@ class WP_Smush_Dir {
 		// Get file time.
 		$file_time = @filectime( $path );
 
-		// If super-smush enabled, update supersmushed meta value also.
+		// If Super-Smush enabled, update supersmushed meta value also.
 		$lossy = WP_Smush::is_pro() && WP_Smush::get_instance()->core()->mod->settings->get( 'lossy' ) ? 1 : 0;
 
 		// All good, Update the stats.

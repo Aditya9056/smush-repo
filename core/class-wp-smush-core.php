@@ -418,8 +418,8 @@ class WP_Smush_Core {
 				'desc'        => esc_html__( 'When you upload images to your site, we can automatically optimize and compress them for you without you needing to do it yourself.', 'wp-smushit' ),
 			),
 			'lossy'             => array(
-				'label'       => esc_html__( 'Super-smush my images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Super-smush', 'wp-smushit' ),
+				'label'       => esc_html__( 'Super-Smush my images', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Super-Smush', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Optimize images up to 2x more than regular smush with our multi-pass lossy compression.', 'wp-smushit' ),
 			),
 			'strip_exif'        => array(
