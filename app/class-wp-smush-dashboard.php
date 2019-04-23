@@ -511,7 +511,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 							printf(
 								/* translators: %1$s: opening a tag, %2$s: closing a tag */
 								esc_html__(
-									'Incorrect image size highlighting is active. %1$sView the frontend%2$s of your website to see which images aren\'t the correct size for their containers.',
+									'Incorrect image size highlighting is active. %1$sView the frontend%2$s of your website to see if any images aren\'t the correct size for their containers.',
 									'wp-smushit'
 								),
 								'<a href="' . esc_url( home_url() ) . '" target="_blank">',
