@@ -429,7 +429,7 @@ class WP_Smush_Core {
 			),
 			'resize'            => array(
 				'label'       => esc_html__( 'Resize my full size images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Image resizing', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Image Resizing', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Detect unnecessarily large oversize images on your pages to reduce their size and decrease load times.', 'wp-smushit' ),
 			),
 			'detection'         => array(
@@ -439,17 +439,17 @@ class WP_Smush_Core {
 			),
 			'original'          => array(
 				'label'       => esc_html__( 'Smush my original full size images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Original images', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Original Images', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Choose how you want Smush to handle the original image file when you run a bulk smush.', 'wp-smushit' ),
 			),
 			'backup'            => array(
 				'label'       => esc_html__( 'Store a copy of my full size images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Original images', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Original Images', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Save a copy of your original full-size images separately so you can restore them at any point. Note: Keeping a copy of your original files can significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' ),
 			),
 			'png_to_jpg'        => array(
 				'label'       => esc_html__( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
-				'short_label' => esc_html__( 'PNG to JPEG conversion', 'wp-smushit' ),
+				'short_label' => esc_html__( 'PNG to JPEG Conversion', 'wp-smushit' ),
 				'desc'        => esc_html__( 'When you compress a PNG, Smush will check if converting it to JPEG could further reduce its size.', 'wp-smushit' ),
 			),
 			'accessible_colors' => array(

@@ -184,7 +184,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 				),
 				'webp'        => array(
 					'label'       => __( 'Enable WebP conversion', 'wp-smushit' ),
-					'short_label' => __( 'WebP conversion', 'wp-smushit' ),
+					'short_label' => __( 'WebP Conversion', 'wp-smushit' ),
 					'desc'        => __( 'Smush can automatically convert and serve your images as WebP to compatible browsers.', 'wp-smushit' ),
 				),
 			)
