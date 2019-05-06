@@ -974,11 +974,11 @@ class WP_Smushit extends WP_Smush_Module {
 		// Check if file exists.
 		if ( 0 === (int) $file_size ) {
 			/* translators: %1$s: image size, %2$s: image name */
-			$errors->add( 'image_not_found', '<p>' . sprintf( __( 'Skipped (%1$s), image not found. Attachment: %2$s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
+			$errors->add( 'image_not_found', sprintf( __( 'Skipped (%1$s), image not found', 'wp-smushit' ), size_format( $file_size, 1 ) ) );
 		} elseif ( $file_size > $max_size ) {
 			// Check size limit.
 			/* translators: %1$s: image size, %2$s: image name */
-			$errors->add( 'size_limit', '<p>' . sprintf( __( 'Skipped (%1$s), size limit exceeded. Attachment: %2$s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
+			$errors->add( 'size_limit', sprintf( __( 'Skipped (%1$s), size limit exceeded', 'wp-smushit' ), size_format( $file_size, 1 ) ) );
 		}
 
 		if ( count( $errors->get_error_messages() ) ) {
