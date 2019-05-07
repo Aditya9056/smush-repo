@@ -48,6 +48,7 @@ class WP_Smush_Settings {
 		'nextgen'           => false,
 		's3'                => false,
 		'gutenberg'         => false,
+		'js_builder'        => false,
 		'cdn'               => false,
 		'auto_resize'       => false,
 		'webp'              => true,
@@ -73,7 +74,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $integration_fields = array( 'gutenberg', 'nextgen', 's3' );
+	private $integration_fields = array( 'gutenberg', 'nextgen', 's3', 'js_builder' );
 
 	/**
 	 * List of fields in CDN form.

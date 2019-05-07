@@ -2,6 +2,7 @@
 
 - New: Increase image size limit in free version from 1Mb to 5Mb
 - New: Image sizes option
+- New: Integration with WPBakery Page Builder
 - Enhance: Move Image resize detection to the new Tools section
 - Enhance: Add upgrade link to bulk smush limit message
 - Enhance: Directory Smush async mode
