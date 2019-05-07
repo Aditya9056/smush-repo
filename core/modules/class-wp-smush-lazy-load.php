@@ -138,6 +138,19 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			WP_SMUSH_VERSION,
 			$in_footer
 		);
+
+		$custom = "window.lazySizesConfig = window.lazySizesConfig || {};
+
+window.lazySizesConfig.lazyClass    = 'lazyload';
+window.lazySizesConfig.loadingClass = 'lazyloading';
+window.lazySizesConfig.loadedClass  = 'lazyloaded';
+
+//page is optimized for fast onload event
+lazySizesConfig.loadMode = 1;";
+
+		wp_add_inline_script( 'smush-lazy-load', $custom, 'before' );
+
+		wp_add_inline_script( 'smush-lazy-load', 'lazySizes.init();' );
 	}
 
 	/**
