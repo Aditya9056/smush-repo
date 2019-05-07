@@ -108,6 +108,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		if ( is_multisite() && $networkwide && ! is_network_admin() ) {
 			unset( $this->tabs['integrations'] );
 			unset( $this->tabs['lazy_load'] );
+			unset( $this->tabs['tools'] );
 		}
 
 		// Disabled on all subsites.
