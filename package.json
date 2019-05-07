@@ -35,7 +35,7 @@
     "build": "grunt clean && npm run compile && grunt prepare && grunt build && grunt build:wporg"
   },
   "dependencies": {
-    "@wpmudev/shared-ui": "2.3.22",
+    "@wpmudev/shared-ui": "2.3.24",
     "jquery.fancytree": "^2.30.2",
     "lazysizes": "^4.1.8"
   },
@@ -47,7 +47,7 @@
     "ajv-keywords": "^3.4.0",
     "autoprefixer": "^9.5.1",
     "babel-loader": "^8.0.5",
-    "clean-webpack-plugin": "^2.0.1",
+    "clean-webpack-plugin": "^2.0.2",
     "css-loader": "^2.1.1",
     "file-loader": "^3.0.1",
     "grunt": "^1.0.4",
