@@ -234,7 +234,7 @@ abstract class WP_Smush_View {
 		}
 
 		// Do not show on free versions of the plugin.
-		if ( false === strpos( WP_SMUSH_DIR, 'wp-smushit' ) ) {
+		if ( false !== strpos( WP_SMUSH_DIR, 'wp-smushit' ) ) {
 			return;
 		}
 
