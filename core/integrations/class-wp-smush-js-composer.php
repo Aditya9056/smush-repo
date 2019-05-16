@@ -126,13 +126,15 @@ class WP_Smush_JS_Composer extends WP_Smush_Integration {
 	 * @since 3.2.1
 	 *
 	 * @param string $image_src  Image src.
+	 *
+	 * @return string
 	 */
 	public function process_image_resize( $image_src ) {
 		$vc_editable = filter_input( INPUT_GET, 'vc_editable', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 		$vc_action   = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 
 		if ( ! $vc_editable || 'vc_load_shortcode' !== $vc_action ) {
-			return;
+			return $image_src;
 		}
 
 		// Save the original image source.
@@ -152,17 +154,19 @@ class WP_Smush_JS_Composer extends WP_Smush_Integration {
 		$attachment_id = attachment_url_to_postid( $image_url );
 
 		if ( ! wp_attachment_is_image( $attachment_id ) ) {
-			return;
+			return $image_src;
 		}
 
 		$image = image_get_intermediate_size( $attachment_id, array( $size[1], $size[2] ) );
 
 		if ( $image ) {
-			return;
+			// Maybe return $image_src.
+			return $image;
 		}
 
 		// Smush image. TODO: should we update the stats?
 		$smush_results = WP_Smush::get_instance()->core()->mod->smush->do_smushit( $vc_image );
+		return $vc_image;
 	}
 
 	/**************************************
