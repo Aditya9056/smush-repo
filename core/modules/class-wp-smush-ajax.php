@@ -475,13 +475,15 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 					// Check if new sizes have been selected.
 					$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
-					foreach ( $image_sizes as $image_size ) {
-						if ( isset( $smush_data['sizes'][ $image_size ] ) ) {
-							continue;
-						}
+					if ( is_array( $image_sizes ) ) {
+						foreach ( $image_sizes as $image_size ) {
+							if ( isset( $smush_data['sizes'][ $image_size ] ) ) {
+								continue;
+							}
 
-						$should_resmush = true;
-						break;
+							$should_resmush = true;
+							break;
+						}
 					}
 
 					// If Image needs to be resized.
