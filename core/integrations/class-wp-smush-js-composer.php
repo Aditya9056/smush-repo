@@ -160,13 +160,12 @@ class WP_Smush_JS_Composer extends WP_Smush_Integration {
 		$image = image_get_intermediate_size( $attachment_id, array( $size[1], $size[2] ) );
 
 		if ( $image ) {
-			// Maybe return $image_src.
-			return $image;
+			return $image_src;
 		}
 
 		// Smush image. TODO: should we update the stats?
 		$smush_results = WP_Smush::get_instance()->core()->mod->smush->do_smushit( $vc_image );
-		return $vc_image;
+		return $image_src;
 	}
 
 	/**************************************
