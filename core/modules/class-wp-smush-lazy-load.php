@@ -75,7 +75,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return;
 		}
 
-		$loader = WP_SMUSH_URL . 'app/assets/images/icon-lazyloader.svg';
+		$loader = WP_SMUSH_URL . 'app/assets/images/icon-loader.gif';
 		$fadein = isset( $this->options['animation']['duration'] ) ? $this->options['animation']['duration'] : 0;
 		$delay  = isset( $this->options['animation']['delay'] ) ? $this->options['animation']['delay'] : 0;
 		?>
@@ -108,8 +108,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 					border: 0 !important;
 					opacity: 1;
 					background: rgba(255, 255, 255, 0) url('<?php echo esc_url( $loader ); ?>') no-repeat center !important;
-					-webkit-animation: spin 1.3s linear infinite;
-					animation: spin 1.3s linear infinite;
+					background-size: 30px 30px !important;
 				}
 			<?php else : ?>
 				.lazyload, .lazyloading { opacity: 0; }
