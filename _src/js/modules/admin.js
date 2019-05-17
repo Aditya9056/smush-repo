@@ -411,6 +411,15 @@ jQuery( function ( $ ) {
 	}
 
 	/**
+	 * When 'All' is selected for the Image Sizes setting, select all available sizes.
+	 *
+	 * @since 3.2.1
+	 */
+	$('#all-image-sizes').on('change', function() {
+		$('input[name^="wp-smush-image_sizes"]').prop('checked', true);
+	});
+
+	/**
 	 * Handle re-check api status button click (Settings)
 	 *
 	 * @since 3.2.0.2
