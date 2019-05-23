@@ -13,7 +13,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Class WP_Smush_Lazy_Load
  */
-class WP_Smush_Lazy_Load extends WP_Smush_Content {
+class WP_Smush_Lazy_Load extends WP_Smush_Module {
 
 	/**
 	 * Lazy loading settings.
@@ -22,6 +22,25 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 	 * @var array $settings
 	 */
 	private $options;
+
+	/**
+	 * Page parser.
+	 *
+	 * @since 3.2.2
+	 * @var WP_Smush_Page_Parser $parser
+	 */
+	protected $parser;
+
+	/**
+	 * WP_Smush_Lazy_Load constructor.
+	 *
+	 * @since 3.2.2
+	 * @param WP_Smush_Page_Parser $parser  Page parser instance.
+	 */
+	public function __construct( WP_Smush_Page_Parser $parser ) {
+		$this->parser = $parser;
+		parent::__construct();
+	}
 
 	/**
 	 * Initialize module actions.
@@ -251,25 +270,25 @@ lazySizesConfig.loadMode = 1;";
 
 		$new_image = $image;
 
-		$src = $this->get_attribute( $new_image, 'src' );
-		$this->remove_attribute( $new_image, 'src' );
-		$this->add_attribute( $new_image, 'data-src', $src );
-		$this->add_attribute( $new_image, 'data-sizes', 'auto' );
+		$src = WP_Smush_Page_Parser::get_attribute( $new_image, 'src' );
+		WP_Smush_Page_Parser::remove_attribute( $new_image, 'src' );
+		WP_Smush_Page_Parser::add_attribute( $new_image, 'data-src', $src );
+		WP_Smush_Page_Parser::add_attribute( $new_image, 'data-sizes', 'auto' );
 
 		// Change srcset to data-srcset attribute.
 		$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
 
 		// Add .lazyload class.
-		$class = $this->get_attribute( $new_image, 'class' );
+		$class = WP_Smush_Page_Parser::get_attribute( $new_image, 'class' );
 		if ( $class ) {
-			$this->remove_attribute( $new_image, 'class' );
+			WP_Smush_Page_Parser::remove_attribute( $new_image, 'class' );
 			$class .= ' lazyload';
 		} else {
 			$class = 'lazyload';
 		}
-		$this->add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
+		WP_Smush_Page_Parser::add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
 
-		$this->add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
+		WP_Smush_Page_Parser::add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
 		// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
 		$new_image .= '<noscript>' . $image . '</noscript>';
@@ -297,14 +316,14 @@ lazySizesConfig.loadMode = 1;";
 			$new_image = $image;
 
 			// Add .no-lazyload class.
-			$class = $this->get_attribute( $new_image, 'class' );
+			$class = WP_Smush_Page_Parser::get_attribute( $new_image, 'class' );
 			if ( $class ) {
-				$this->remove_attribute( $new_image, 'class' );
+				WP_Smush_Page_Parser::remove_attribute( $new_image, 'class' );
 				$class .= ' no-lazyload';
 			} else {
 				$class = 'no-lazyload';
 			}
-			$this->add_attribute( $new_image, 'class', $class );
+			WP_Smush_Page_Parser::add_attribute( $new_image, 'class', $class );
 
 			$content = str_replace( $image, $new_image, $content );
 		}
@@ -383,9 +402,9 @@ lazySizesConfig.loadMode = 1;";
 	 * @return bool
 	 */
 	private function has_excluded_class_or_id( $image ) {
-		$image_classes = $this->get_attribute( $image, 'class' );
+		$image_classes = WP_Smush_Page_Parser::get_attribute( $image, 'class' );
 		$image_classes = explode( ' ', $image_classes );
-		$image_id      = '#' . $this->get_attribute( $image, 'id' );
+		$image_id      = '#' . WP_Smush_Page_Parser::get_attribute( $image, 'id' );
 
 		if ( in_array( $image_id, $this->options['exclude-classes'], true ) ) {
 			return true;

@@ -13,7 +13,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Class WP_Smush_CDN
  */
-class WP_Smush_CDN extends WP_Smush_Content {
+class WP_Smush_CDN extends WP_Smush_Module {
 
 	/**
 	 * Smush CDN base url.
@@ -47,6 +47,25 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		'jpeg',
 		'png',
 	);
+
+	/**
+	 * Page parser.
+	 *
+	 * @since 3.2.2
+	 * @var WP_Smush_Page_Parser $parser
+	 */
+	protected $parser;
+
+	/**
+	 * WP_Smush_CDN constructor.
+	 *
+	 * @since 3.2.2
+	 * @param WP_Smush_Page_Parser $parser  Page parser instance.
+	 */
+	public function __construct( WP_Smush_Page_Parser $parser ) {
+		$this->parser = $parser;
+		parent::__construct();
+	}
 
 	/**
 	 * WP_Smush_CDN constructor.
@@ -427,27 +446,27 @@ class WP_Smush_CDN extends WP_Smush_Content {
 			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $image ) && $this->settings->get( 'auto_resize' ) ) {
 				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
 
-				$this->add_attribute( $new_image, 'srcset', $srcset );
+				WP_Smush_Page_Parser::add_attribute( $new_image, 'srcset', $srcset );
 
 				if ( false !== $sizes ) {
-					$this->add_attribute( $new_image, 'sizes', $sizes );
+					WP_Smush_Page_Parser::add_attribute( $new_image, 'sizes', $sizes );
 				}
 			}
 		}
 
 		// Support for 3rd party lazy loading plugins.
-		$data_src = $this->get_attribute( $new_image, 'data-src' );
+		$data_src = WP_Smush_Page_Parser::get_attribute( $new_image, 'data-src' );
 		if ( $data_src = $this->is_supported_path( $data_src ) ) {
 			$cdn_image = $this->process_src( $image, $data_src );
-			$this->remove_attribute( $new_image, 'data-src' );
-			$this->add_attribute( $new_image, 'data-src', $cdn_image );
+			WP_Smush_Page_Parser::remove_attribute( $new_image, 'data-src' );
+			WP_Smush_Page_Parser::add_attribute( $new_image, 'data-src', $cdn_image );
 		}
 
-		$data_lazy_src = $this->get_attribute( $new_image, 'data-lazy-src' );
+		$data_lazy_src = WP_Smush_Page_Parser::get_attribute( $new_image, 'data-lazy-src' );
 		if ( $data_lazy_src = $this->is_supported_path( $data_lazy_src ) ) {
 			$cdn_image = $this->process_src( $image, $data_lazy_src );
-			$this->remove_attribute( $new_image, 'data-lazy-src' );
-			$this->add_attribute( $new_image, 'data-lazy-src', $cdn_image );
+			WP_Smush_Page_Parser::remove_attribute( $new_image, 'data-lazy-src' );
+			WP_Smush_Page_Parser::add_attribute( $new_image, 'data-lazy-src', $cdn_image );
 		}
 
 		/**
@@ -747,10 +766,6 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @see generate_srcset()
 	 * @see maybe_generate_srcset()
 	 * @see is_supported_path()
-	 *
-	 * @since 3.1.0:
-	 *
-	 * @see add_attribute()
 	 */
 
 	/**

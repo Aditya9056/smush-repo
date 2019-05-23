@@ -154,4 +154,52 @@ class WP_Smush_Page_Parser {
 		return $images;
 	}
 
+	/**
+	 * Add attribute to selected tag.
+	 *
+	 * @since 3.1.0
+	 * @since 3.2.0  Moved to WP_Smush_Content from WP_Smush_CDN
+	 * @since 3.2.2  Moved to WP_Smush_Page_Parser from WP_Smush_Content
+	 *
+	 * @param string $element  Image element.
+	 * @param string $name     Img attribute name (srcset, size, etc).
+	 * @param string $value    Attribute value.
+	 */
+	public static function add_attribute( &$element, $name, $value ) {
+		$closing = false === strpos( $element, '/>' ) ? '>' : ' />';
+		$element = rtrim( $element, $closing ) . " {$name}=\"{$value}\"{$closing}";
+	}
+
+	/**
+	 * Get attribute from an HTML element.
+	 *
+	 * @since 3.2.0
+	 * @since 3.2.2  Moved to WP_Smush_Page_Parser from WP_Smush_Content
+	 *
+	 * @param string $element  HTML element.
+	 * @param string $name     Attribute name.
+	 *
+	 * @return string
+	 */
+	public static function get_attribute( $element, $name ) {
+		$value = array();
+
+		preg_match( '/<img(.*?)' . $name . '=[\'|"](.*?)[\'|"](.*?)>/i', $element, $value );
+
+		return isset( $value['2'] ) ? $value['2'] : '';
+	}
+
+	/**
+	 * Remove attribute from selected tag.
+	 *
+	 * @since 3.2.0
+	 * @since 3.2.2  Moved to WP_Smush_Page_Parser from WP_Smush_Content
+	 *
+	 * @param string $element    Image element.
+	 * @param string $attribute  Img attribute name (srcset, size, etc).
+	 */
+	public static function remove_attribute( &$element, $attribute ) {
+		$element = preg_replace( '/' . $attribute . '=[\'|"](.*?)[\'|"]/', '', $element );
+	}
+
 }
