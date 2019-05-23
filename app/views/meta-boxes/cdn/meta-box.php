@@ -27,7 +27,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 	<p>
 		<?php
-		esc_html_e( 'Take load off your server by serving your images from our blazing-fast CDN.', 'wp-smushit' );
+		esc_html_e( 'Take a load off your server by delivering your images from our blazingly-fast CDN.', 'wp-smushit' );
 		?>
 	</p>
 
@@ -49,7 +49,7 @@ if ( ! defined( 'WPINC' ) ) {
 			</span>
 			<span class="sui-description">
 				<?php
-				esc_html_e( 'Here’s a list of the media types we will serve from the CDN.', 'wp-smushit' );
+				esc_html_e( 'Here’s a list of the media types we serve from the CDN.', 'wp-smushit' );
 				?>
 			</span>
 		</div>
@@ -72,8 +72,7 @@ if ( ! defined( 'WPINC' ) ) {
 			<span class="sui-description">
 				<?php
 				esc_html_e(
-					'Note: At this time we don’t support video media types. We recommend uploading media to a
-				third-party provider and embedding videos into your posts/pages.',
+					'At this time, we don’t support videos. We recommend uploading your media to a third-party provider and embedding the videos into your posts/pages.',
 					'wp-smushit'
 				);
 				?>
@@ -106,8 +105,7 @@ if ( ! defined( 'WPINC' ) ) {
 				<span class="sui-description">
 				<?php
 				esc_html_e(
-					'If you no longer require your images hosted from our CDN you can disable
-					this feature.',
+					'If you no longer require your images to be hosted from our CDN, you can disable this feature.',
 					'wp-smushit'
 				);
 				?>
@@ -121,8 +119,7 @@ if ( ! defined( 'WPINC' ) ) {
 				<span class="sui-description">
 				<?php
 				esc_html_e(
-					'Note: You won’t lose any imagery by deactivating, all of your attachments are still
-					stored locally on your own server.',
+					'Note: You won’t lose any images by deactivating, all of your attachments are still stored locally on your own server.',
 					'wp-smushit'
 				);
 				?>
