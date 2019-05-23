@@ -102,7 +102,7 @@ class WP_Smush_Page_Parser {
 			return $content;
 		}
 
-		$images = $this->get_images_from_content( $content );
+		$images = self::get_images_from_content( $content );
 
 		if ( empty( $images ) ) {
 			return $content;
@@ -139,7 +139,7 @@ class WP_Smush_Page_Parser {
 	 *
 	 * @return array
 	 */
-	private function get_images_from_content( $content ) {
+	public static function get_images_from_content( $content ) {
 		$images = array();
 
 		if ( preg_match_all( '/(?:<img[^>]*?\s+?src=["|\'](?P<img_url>[^\s]+?)["|\'].*?>){1}/is', $content, $images ) ) {

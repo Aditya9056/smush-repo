@@ -56,6 +56,21 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 
 		$this->parser->enable( 'lazy_load' );
 		add_filter( 'wp_smush_should_skip_parse', array( $this, 'maybe_skip_parse' ), 10 );
+
+		// Filter images.
+		if ( ! isset( $this->options['output']['content'] ) || ! $this->options['output']['content'] ) {
+			add_filter( 'the_content', array( $this, 'exclude_from_lazy_loading' ), 100 );
+		}
+		if ( ! isset( $this->options['output']['thumbnails'] ) || ! $this->options['output']['thumbnails'] ) {
+			add_filter( 'post_thumbnail_html', array( $this, 'exclude_from_lazy_loading' ), 100 );
+		}
+		if ( ! isset( $this->options['output']['gravatars'] ) || ! $this->options['output']['gravatars'] ) {
+			add_filter( 'get_avatar', array( $this, 'exclude_from_lazy_loading' ), 100 );
+		}
+		if ( ! isset( $this->options['output']['widgets'] ) || ! $this->options['output']['widgets'] ) {
+			add_action( 'dynamic_sidebar_before', array( $this, 'filter_sidebar_content_start' ), 0 );
+			add_action( 'dynamic_sidebar_after', array( $this, 'filter_sidebar_content_end' ), 1000 );
+		}
 	}
 
 	/**
@@ -263,6 +278,41 @@ lazySizesConfig.loadMode = 1;";
 	}
 
 	/**
+	 * Get images from content and add exclusion class.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param string $content  Page/block content.
+	 *
+	 * @return string
+	 */
+	public function exclude_from_lazy_loading( $content ) {
+		$images = WP_Smush_Page_Parser::get_images_from_content( $content );
+
+		if ( empty( $images ) ) {
+			return $content;
+		}
+
+		foreach ( $images[0] as $key => $image ) {
+			$new_image = $image;
+
+			// Add .no-lazyload class.
+			$class = $this->get_attribute( $new_image, 'class' );
+			if ( $class ) {
+				$this->remove_attribute( $new_image, 'class' );
+				$class .= ' no-lazyload';
+			} else {
+				$class = 'no-lazyload';
+			}
+			$this->add_attribute( $new_image, 'class', $class );
+
+			$content = str_replace( $image, $new_image, $content );
+		}
+
+		return $content;
+	}
+
+	/**
 	 * Check if this is part of the allowed post type.
 	 *
 	 * @since 3.2.0
@@ -347,12 +397,39 @@ lazySizesConfig.loadMode = 1;";
 				return true;
 			}
 
+			// Internal class to skip images.
+			if ( 'no-lazyload' === $class ) {
+				return true;
+			}
+
 			if ( in_array( ".{$class}", $this->options['exclude-classes'], true ) ) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Buffer sidebar content.
+	 *
+	 * @since 3.2.0
+	 */
+	public function filter_sidebar_content_start() {
+		ob_start();
+	}
+
+	/**
+	 * Process buffered content.
+	 *
+	 * @since 3.2.0
+	 */
+	public function filter_sidebar_content_end() {
+		$content = ob_get_clean();
+
+		echo $this->exclude_from_lazy_loading( $content );
+
+		unset( $content );
 	}
 
 }
