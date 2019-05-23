@@ -13,31 +13,28 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+/**
+ * Class WP_Smush_Content
+ */
 abstract class WP_Smush_Content extends WP_Smush_Module {
 
 	/**
-	 * Get image tags from page content.
+	 * Page parser.
 	 *
-	 * @since 3.1.0
-	 * @since 3.2.0  Moved to WP_Smush_Content from WP_Smush_CDN
-	 *
-	 * @param string $content  Page content.
-	 *
-	 * @return array
+	 * @since 3.2.2
+	 * @var WP_Smush_Page_Parser $parser
 	 */
-	protected function get_images_from_content( $content ) {
-		$images = array();
+	protected $parser;
 
-		if ( preg_match_all( '/(?:<img[^>]*?\s+?src=["|\'](?P<img_url>[^\s]+?)["|\'].*?>){1}/is', $content, $images ) ) {
-			foreach ( $images as $key => $unused ) {
-				// Simplify the output as much as possible, mostly for confirming test results.
-				if ( is_numeric( $key ) && $key > 0 ) {
-					unset( $images[ $key ] );
-				}
-			}
-		}
-
-		return $images;
+	/**
+	 * WP_Smush_Content constructor.
+	 *
+	 * @since 3.2.2
+	 * @param WP_Smush_Page_Parser $parser  Page parser instance.
+	 */
+	public function __construct( WP_Smush_Page_Parser $parser ) {
+		$this->parser = $parser;
+		parent::__construct();
 	}
 
 	/**

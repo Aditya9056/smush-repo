@@ -307,10 +307,12 @@ class WP_Smush_Core {
 		require_once WP_SMUSH_DIR . 'core/modules/abstract-wp-smush-module.php';
 		/* @noinspection PhpIncludeInspection */
 		require_once WP_SMUSH_DIR . 'core/modules/abstract-wp-smush-content.php';
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'core/modules/class-wp-smush-page-parser.php';
 
 		$this->mod = new WP_Smush_Modules();
 
-		new WP_Smush_Auto_Resize();
+		new WP_Smush_Auto_Resize( new WP_Smush_Page_Parser() );
 		new WP_Smush_Rest();
 	}
 

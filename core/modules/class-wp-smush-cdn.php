@@ -93,8 +93,9 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		// Add cdn url to dns prefetch.
 		add_filter( 'wp_resource_hints', array( $this, 'dns_prefetch' ), 99, 2 );
 
-		// Start an output buffer before any output starts.
-		add_action( 'template_redirect', array( $this, 'process_buffer' ), 1 );
+		$this->parser->enable( 'cdn' );
+		// Make sure we always continue page parsing if CDN is enabled.
+		add_filter( 'wp_smush_should_skip_parse', '__return_false', 15 );
 
 		// Update responsive image srcset and sizes if required.
 		add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
@@ -375,8 +376,8 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 *
 	 * PUBLIC METHODS CDN
 	 *
-	 * @see process_buffer()
-	 * @see process_img_tags()
+	 * @see parse_image()
+	 * @see process_src()
 	 * @see update_image_srcset()
 	 * @see update_image_sizes()
 	 * @see update_cdn_image_src_args()
@@ -387,120 +388,86 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 */
 
 	/**
-	 * Starts an output buffer and register the callback function.
+	 * Parse image for CDN.
 	 *
-	 * Register callback function that adds attachment ids of images
-	 * those are from media library and has an attachment id.
+	 * @since 3.2.2
 	 *
-	 * @since 3.0
-	 *
-	 * @uses ob_start()
-	 */
-	public function process_buffer() {
-		ob_start( array( $this, 'process_img_tags' ) );
-	}
-
-	/**
-	 * Process images from current buffer content.
-	 *
-	 * Use DOMDocument class to find all available images
-	 * in current HTML content and set attachmet id attribute.
-	 *
-	 * @since 3.0
-	 *
-	 * @param string $content Current buffer content.
+	 * @param string $src    Image URL.
+	 * @param string $image  Image tag (<img>).
 	 *
 	 * @return string
 	 */
-	public function process_img_tags( $content ) {
-		if ( empty( $content ) || ! $this->cdn_active ) {
-			return $content;
+	public function parse_image( $src, $image ) {
+		/**
+		 * Filter to skip a single image from cdn.
+		 *
+		 * @param bool       $skip   Should skip? Default: false.
+		 * @param string     $src    Image url.
+		 * @param array|bool $image  Image tag or false.
+		 */
+		if ( apply_filters( 'smush_skip_image_from_cdn', false, $src, $image ) ) {
+			return $image;
 		}
 
-		$images = $this->get_images_from_content( $content );
+		$new_image = $image;
 
-		if ( empty( $images ) ) {
-			return $content;
-		}
+		// Make sure this image is inside a supported directory. Try to convert to valid path.
+		if ( $src = $this->is_supported_path( $src ) ) {
+			// Store the original $src to be used later on.
+			$original_src = $src;
 
-		foreach ( $images[0] as $key => $image ) {
-			$src = $images['img_url'][ $key ];
+			$src = $this->process_src( $image, $src );
 
-			/**
-			 * Filter to skip a single image from cdn.
-			 *
-			 * @param bool       $skip     Should skip? Default: false.
-			 * @param string     $img_url  Image url.
-			 * @param array|bool $image    Image tag or false.
-			 */
-			if ( apply_filters( 'smush_skip_image_from_cdn', false, $src, $image ) ) {
-				continue;
+			// Replace the src of the image with CDN link.
+			if ( ! empty( $src ) ) {
+				$new_image = preg_replace( '#(src=["|\'])' . $original_src . '(["|\'])#i', '\1' . $src . '\2', $new_image, 1 );
 			}
 
-			$new_image = $image;
+			// See if srcset is already set.
+			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $image ) && $this->settings->get( 'auto_resize' ) ) {
+				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
 
-			// Make sure this image is inside a supported directory. Try to convert to valid path.
-			if ( $src = $this->is_supported_path( $src ) ) {
-				// Store the original $src to be used later on.
-				$original_src = $src;
+				$this->add_attribute( $new_image, 'srcset', $srcset );
 
-				$src = $this->process_src( $image, $src );
-
-				// Replace the src of the image with CDN link.
-				if ( ! empty( $images['img_url'][ $key ] ) ) {
-					$new_image = preg_replace( '#(src=["|\'])' . $images['img_url'][ $key ] . '(["|\'])#i', '\1' . $src . '\2', $new_image, 1 );
-				}
-
-				// See if srcset is already set.
-				if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $images[0][ $key ] ) && $this->settings->get( 'auto_resize' ) ) {
-					list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
-
-					$this->add_attribute( $new_image, 'srcset', $srcset );
-
-					if ( false !== $sizes ) {
-						$this->add_attribute( $new_image, 'sizes', $sizes );
-					}
+				if ( false !== $sizes ) {
+					$this->add_attribute( $new_image, 'sizes', $sizes );
 				}
 			}
-
-			// Support for 3rd party lazy loading plugins.
-			$data_src = $this->get_attribute( $new_image, 'data-src' );
-			if ( $data_src = $this->is_supported_path( $data_src ) ) {
-				$cdn_image = $this->process_src( $image, $data_src );
-				$this->remove_attribute( $new_image, 'data-src' );
-				$this->add_attribute( $new_image, 'data-src', $cdn_image );
-			}
-
-			$data_lazy_src = $this->get_attribute( $new_image, 'data-lazy-src' );
-			if ( $data_lazy_src = $this->is_supported_path( $data_lazy_src ) ) {
-				$cdn_image = $this->process_src( $image, $data_lazy_src );
-				$this->remove_attribute( $new_image, 'data-lazy-src' );
-				$this->add_attribute( $new_image, 'data-lazy-src', $cdn_image );
-			}
-
-			/**
-			 * Filter hook to alter image tag before replacing the image in content.
-			 *
-			 * @param string $image  Image tag.
-			 */
-			$new_image = apply_filters( 'smush_cdn_image_tag', $new_image );
-
-			$content = str_replace( $image, $new_image, $content );
 		}
 
-		return $content;
+		// Support for 3rd party lazy loading plugins.
+		$data_src = $this->get_attribute( $new_image, 'data-src' );
+		if ( $data_src = $this->is_supported_path( $data_src ) ) {
+			$cdn_image = $this->process_src( $image, $data_src );
+			$this->remove_attribute( $new_image, 'data-src' );
+			$this->add_attribute( $new_image, 'data-src', $cdn_image );
+		}
+
+		$data_lazy_src = $this->get_attribute( $new_image, 'data-lazy-src' );
+		if ( $data_lazy_src = $this->is_supported_path( $data_lazy_src ) ) {
+			$cdn_image = $this->process_src( $image, $data_lazy_src );
+			$this->remove_attribute( $new_image, 'data-lazy-src' );
+			$this->add_attribute( $new_image, 'data-lazy-src', $cdn_image );
+		}
+
+		/**
+		 * Filter hook to alter image tag before replacing the image in content.
+		 *
+		 * @param string $image  Image tag.
+		 */
+		return apply_filters( 'smush_cdn_image_tag', $new_image );
 	}
 
-    /**
-     * Process src link and convert to CDN link.
-     *
-     * @since 3.2.1
-     *
-     * @param string $image  Image tag.
-     * @param string $src    Image src attribute.
-     *
-     * @return string
-     */
+	/**
+	 * Process src link and convert to CDN link.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param string $image  Image tag.
+	 * @param string $src    Image src attribute.
+	 *
+	 * @return string
+	 */
 	private function process_src( $image, $src ) {
 		/**
 		 * Filter hook to alter image src arguments before going through cdn.
@@ -783,7 +750,6 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 *
 	 * @since 3.1.0:
 	 *
-	 * @see get_images_from_content()
 	 * @see add_attribute()
 	 */
 

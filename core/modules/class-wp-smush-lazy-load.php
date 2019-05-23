@@ -54,20 +54,8 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 		// Allow lazy load attributes in img tag.
 		add_filter( 'wp_kses_allowed_html', array( $this, 'add_lazy_load_attributes' ) );
 
-		// Filter images.
-		if ( isset( $this->options['output']['content'] ) && $this->options['output']['content'] ) {
-			add_filter( 'the_content', array( $this, 'set_lazy_load_attributes' ), 100 );
-		}
-		if ( isset( $this->options['output']['thumbnails'] ) && $this->options['output']['thumbnails'] ) {
-			add_filter( 'post_thumbnail_html', array( $this, 'set_lazy_load_attributes' ), 100 );
-		}
-		if ( isset( $this->options['output']['gravatars'] ) && $this->options['output']['gravatars'] ) {
-			add_filter( 'get_avatar', array( $this, 'set_lazy_load_attributes' ), 100 );
-		}
-		if ( isset( $this->options['output']['widgets'] ) && $this->options['output']['widgets'] ) {
-			add_action( 'dynamic_sidebar_before', array( $this, 'filter_sidebar_content_start' ), 0 );
-			add_action( 'dynamic_sidebar_after', array( $this, 'filter_sidebar_content_end' ), 1000 );
-		}
+		$this->parser->enable( 'lazy_load' );
+		add_filter( 'wp_smush_should_skip_parse', array( $this, 'maybe_skip_parse' ), 10 );
 	}
 
 	/**
@@ -184,84 +172,94 @@ lazySizesConfig.loadMode = 1;";
 	}
 
 	/**
-	 * Process images from content and add appropriate lazy load attributes.
+	 * Check if we need to skip parsing of this page.
 	 *
-	 * @since 3.2.0
+	 * @since 3.2.2
+	 * @param bool $skip  Skip parsing.
 	 *
-	 * @param string $content  Page/block content.
-	 *
-	 * @return string
+	 * @return bool
 	 */
-	public function set_lazy_load_attributes( $content ) {
+	public function maybe_skip_parse( $skip ) {
 		// Don't lazy load for feeds, previews.
 		if ( is_feed() || is_preview() ) {
-			return $content;
+			$skip = true;
 		}
 
 		if ( ! $this->is_allowed_post_type() || $this->is_exluded_uri() ) {
-			return $content;
+			$skip = true;
+		}
+
+		return $skip;
+	}
+
+	/**
+	 * Parse image for Lazy load.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param string $src    Image URL.
+	 * @param string $image  Image tag (<img>).
+	 *
+	 * @return string
+	 */
+	public function parse_image( $src, $image ) {
+		/**
+		 * Filter to skip a single image from lazy load.
+		 *
+		 * @param bool   $skip  Should skip? Default: false.
+		 * @param string $src   Image url.
+		 */
+		if ( apply_filters( 'smush_skip_image_from_lazy_load', false, $src ) ) {
+			return $image;
 		}
 
 		// Avoid conflicts if attributes are set (another plugin, for example).
-		if ( false !== strpos( $content, 'data-src' ) ) {
-			return $content;
+		if ( false !== strpos( $image, 'data-src' ) ) {
+			return $image;
 		}
 
-		$images = $this->get_images_from_content( $content );
+		/**
+		 * Check if some image formats are excluded.
+		 */
+		if ( in_array( false, $this->options['format'], true ) ) {
+			$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
+			$ext = 'jpg' === $ext ? 'jpeg' : $ext;
 
-		if ( empty( $images ) ) {
-			return $content;
+			if ( isset( $this->options['format'][ $ext ] ) && ! $this->options['format'][ $ext ] ) {
+				return $image;
+			}
 		}
 
-		foreach ( $images[0] as $key => $image ) {
-			if ( apply_filters( 'smush_skip_image_from_lazy_load', false, $images['img_url'][ $key ] ) ) {
-				continue;
-			}
-
-			/**
-			 * Check if some image formats are excluded.
-			 */
-			if ( in_array( false, $this->options['format'], true ) ) {
-				$ext = strtolower( pathinfo( $images['img_url'][ $key ], PATHINFO_EXTENSION ) );
-				$ext = 'jpg' === $ext ? 'jpeg' : $ext;
-
-				if ( isset( $this->options['format'][ $ext ] ) && ! $this->options['format'][ $ext ] ) {
-					continue;
-				}
-			}
-
-			if ( $this->has_excluded_class_or_id( $image ) ) {
-				return $content;
-			}
-
-			$new_image = $image;
-
-			$this->remove_attribute( $new_image, 'src' );
-			$this->add_attribute( $new_image, 'data-src', $images['img_url'][ $key ] );
-			$this->add_attribute( $new_image, 'data-sizes', 'auto' );
-
-			// Change srcset to data-srcset attribute.
-			$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
-
-			// Add .lazyload class.
-			$class = $this->get_attribute( $new_image, 'class' );
-			if ( $class ) {
-				$this->remove_attribute( $new_image, 'class' );
-				$class .= ' lazyload';
-			} else {
-				$class = 'lazyload';
-			}
-			$this->add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
-
-			$this->add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
-
-			// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
-			$new_image .= '<noscript>' . $image . '</noscript>';
-
-			$content = str_replace( $image, $new_image, $content );
+		if ( $this->has_excluded_class_or_id( $image ) ) {
+			return $image;
 		}
 
-		return $content;
+		$new_image = $image;
+
+		$src = $this->get_attribute( $new_image, 'src' );
+		$this->remove_attribute( $new_image, 'src' );
+		$this->add_attribute( $new_image, 'data-src', $src );
+		$this->add_attribute( $new_image, 'data-sizes', 'auto' );
+
+		// Change srcset to data-srcset attribute.
+		$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
+
+		// Add .lazyload class.
+		$class = $this->get_attribute( $new_image, 'class' );
+		if ( $class ) {
+			$this->remove_attribute( $new_image, 'class' );
+			$class .= ' lazyload';
+		} else {
+			$class = 'lazyload';
+		}
+		$this->add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
+
+		$this->add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
+
+		// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
+		$new_image .= '<noscript>' . $image . '</noscript>';
+
+		return $new_image;
 	}
 
 	/**
@@ -355,28 +353,6 @@ lazySizesConfig.loadMode = 1;";
 		}
 
 		return false;
-	}
-
-	/**
-	 * Buffer sidebar content.
-	 *
-	 * @since 3.2.0
-	 */
-	public function filter_sidebar_content_start() {
-		ob_start();
-	}
-
-	/**
-	 * Process buffered content.
-	 *
-	 * @since 3.2.0
-	 */
-	public function filter_sidebar_content_end() {
-		$content = ob_get_clean();
-
-		echo $this->set_lazy_load_attributes( $content );
-
-		unset( $content );
 	}
 
 }
