@@ -148,6 +148,11 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			if ( 'original' === $name && $settings[ $name ] && WP_Smush::is_pro() ) {
 				$settings['backup'] = true;
 			}
+
+			// If lazy load enabled - init defaults.
+			if ( 'lazy_load' === $name && (bool) $quick_settings->{$name} ) {
+				$this->settings->init_lazy_load_defaults();
+			}
 		}
 
 		// Update the resize sizes.
