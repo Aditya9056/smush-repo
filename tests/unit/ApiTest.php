@@ -85,7 +85,7 @@ class ApiTest extends \Codeception\Test\Unit {
 	}
 
 	/**
-	 * Test that images over 1 Mb fail for free members.
+	 * Test that images over 5 Mb fail for free members.
 	 */
 	public function testImageOverSizeLimit() {
 		$jpeg  = dirname( dirname( __FILE__ ) ) . '/_data/images/image-large.jpg';

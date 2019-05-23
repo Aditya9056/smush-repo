@@ -218,7 +218,7 @@ jQuery( function ( $ ) {
 		scan_type = 'undefined' == typeof scan_type ? 'media' : scan_type;
 
 		// Remove the Skip resmush attribute from button.
-		$( 'button.wp-smush-all' ).removeAttr( 'data-smush' );
+		$( '.wp-smush-all' ).removeAttr( 'data-smush' );
 
 		// Remove notices.
 		const notices = $( '.sui-notice-top.sui-notice-success' );
@@ -411,6 +411,15 @@ jQuery( function ( $ ) {
 	}
 
 	/**
+	 * When 'All' is selected for the Image Sizes setting, select all available sizes.
+	 *
+	 * @since 3.2.1
+	 */
+	$('#all-image-sizes').on('change', function() {
+		$('input[name^="wp-smush-image_sizes"]').prop('checked', true);
+	});
+
+	/**
 	 * Handle re-check api status button click (Settings)
 	 *
 	 * @since 3.2.0.2
@@ -418,12 +427,11 @@ jQuery( function ( $ ) {
 	$('#wp-smush-update-api-status').on('click', function (e) {
 		e.preventDefault();
 
-		$(this).prop('disabled', true);
+		//$(this).prop('disabled', true);
+		$(this).addClass('sui-button-onload');
 
-		$.post(ajaxurl, {action: 'recheck_api_status'}, function (response) {
-			if (response.success) {
-				$(this).prop('disabled', false);
-			}
+		$.post(ajaxurl, {action: 'recheck_api_status'}, function () {
+			location.reload();
 		});
 	});
 
@@ -769,7 +777,7 @@ jQuery( function ( $ ) {
 	$( 'body' ).on( 'click', '.wp-smush-trigger-bulk', function ( e ) {
 		e.preventDefault();
 		//Induce Setting button save click
-		$( 'button.wp-smush-all' ).click();
+		$( '.wp-smush-all' ).click();
 		$( 'span.sui-notice-dismiss' ).click();
 	} );
 
@@ -814,11 +822,10 @@ jQuery( function ( $ ) {
 	} );
 
 	// Handle Automatic Smush Checkbox toggle, to show/hide image size settings.
-	$( 'body' ).on( 'click', '#wp-smush-auto', function () {
-		var self = $( this );
-		var settings_wrap = $( '.wp-smush-image-size-list' );
+	$( '#column-wp-smush-auto' ).on( 'click', '#wp-smush-auto', function () {
+		const settings_wrap = $( '#column-wp-smush-auto .auto-smush-notice' );
 
-		if ( self.is( ':checked' ) ) {
+		if ( $( this ).is( ':checked' ) ) {
 			settings_wrap.show();
 		} else {
 			settings_wrap.hide();

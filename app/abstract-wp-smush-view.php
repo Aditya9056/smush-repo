@@ -101,6 +101,9 @@ abstract class WP_Smush_View {
 		add_action( 'admin_notices', array( $this, 'smush_deactivated' ) );
 		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
 
+		add_action( 'admin_notices', array( $this, 'smush_dash_required' ) );
+		add_action( 'network_admin_notices', array( $this, 'smush_dash_required' ) );
+
 		add_filter( 'admin_body_class', array( $this, 'smush_body_classes' ) );
 		// Filter built-in wpmudev branding script.
 		add_filter( 'wpmudev_whitelabel_plugin_pages', array( $this, 'builtin_wpmudev_branding' ) );
@@ -220,6 +223,46 @@ abstract class WP_Smush_View {
 		</div>
 		<?php
 		delete_site_option( 'smush_deactivated' );
+	}
+
+	/**
+	 * Show notice when Smush Pro is installed only with a key.
+	 */
+	public function smush_dash_required() {
+		if ( WP_Smush::is_pro() || ! is_super_admin() || ( class_exists( 'WPMUDEV_Dashboard' ) && WPMUDEV_Dashboard::$api->has_key() ) ) {
+			return;
+		}
+
+		// Do not show on free versions of the plugin.
+		if ( false !== strpos( WP_SMUSH_DIR, 'wp-smushit' ) ) {
+			return;
+		}
+
+		$function = is_multisite() ? 'network_admin_url' : 'admin_url';
+
+		$url = wp_nonce_url(
+			$function( 'update.php?action=install-plugin&plugin=install_wpmudev_dash' ),
+			'install-plugin_install_wpmudev_dash'
+		);
+		?>
+		<div class="notice smush-notice">
+			<div class="smush-notice-logo"><span></span></div>
+			<div class="smush-notice-message">
+				<?php esc_html_e( 'Smush Pro requires the WPMU DEV Dashboard plugin to unlock pro features. Please make sure you have installed, activated and logged into the Dashboard.', 'wp-smushit' ); ?>
+			</div>
+			<div class="smush-notice-cta">
+				<?php if ( class_exists( 'WPMUDEV_Dashboard' ) && ! WPMUDEV_Dashboard::$api->has_key() ) : ?>
+					<a href="<?php echo esc_url( network_admin_url( 'admin.php?page=wpmudev' ) ); ?>" class="smush-notice-act button-primary" target="_blank">
+						<?php esc_html_e( 'Log In', 'wp-smushit' ); ?>
+					</a>
+				<?php else : ?>
+					<a href="<?php echo esc_url( $url ); ?>" class="smush-notice-act button-primary">
+						<?php esc_html_e( 'Install Plugin', 'wp-smushit' ); ?>
+					</a>
+				<?php endif; ?>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**

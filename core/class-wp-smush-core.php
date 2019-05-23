@@ -84,6 +84,7 @@ class WP_Smush_Core {
 	 */
 	public static $basic_features = array(
 		'networkwide',
+		'bulk',
 		'auto',
 		'strip_exif',
 		'resize',
@@ -326,6 +327,10 @@ class WP_Smush_Core {
 		// Load Nextgen lib, and initialize wp smush async class.
 		$this->load_nextgen();
 		$this->load_gutenberg();
+
+		/* @noinspection PhpIncludeInspection */
+		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-js-composer.php';
+		new WP_Smush_JS_Composer();
 	}
 
 	/**
@@ -407,14 +412,18 @@ class WP_Smush_Core {
 				'short_label' => esc_html__( 'Multisite Control', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Choose whether you want to use network settings for all sub-sites or whether sub-site admins can control Smush’s settings.', 'wp-smushit' ),
 			),
+			'bulk'              => array(
+				'short_label' => esc_html__( 'Image Sizes', 'wp-smushit' ),
+				'desc'        => esc_html__( 'WordPress generates multiple image thumbnails for each image you upload. Choose which of those thumbnail sizes you want to include when bulk smushing.', 'wp-smushit' ),
+			),
 			'auto'              => array(
 				'label'       => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Automatic Smush', 'wp-smushit' ),
-				'desc'        => esc_html__( 'When you upload images to your site, Smush will automatically optimize and compress them for you.', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Automatic compression', 'wp-smushit' ),
+				'desc'        => esc_html__( 'When you upload images to your site, we can automatically optimize and compress them for you without you needing to do it yourself.', 'wp-smushit' ),
 			),
 			'lossy'             => array(
-				'label'       => esc_html__( 'Super-smush my images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Super-smush', 'wp-smushit' ),
+				'label'       => esc_html__( 'Super-Smush my images', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Super-Smush', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Optimize images up to 2x more than regular smush with our multi-pass lossy compression.', 'wp-smushit' ),
 			),
 			'strip_exif'        => array(
@@ -424,27 +433,27 @@ class WP_Smush_Core {
 			),
 			'resize'            => array(
 				'label'       => esc_html__( 'Resize my full size images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Image resizing', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Image Resizing', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Detect unnecessarily large oversize images on your pages to reduce their size and decrease load times.', 'wp-smushit' ),
 			),
 			'detection'         => array(
 				'label'       => esc_html__( 'Detect and show incorrectly sized images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Image resizing', 'wp-smushit' ),
-				'desc'        => esc_html__( 'This will add functionality to your website that highlights images that are either too large or too small for their containers. Note: The highlighting will only be visible to administrators – visitors won’t see the highlighting.', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Image Resize Detection', 'wp-smushit' ),
+				'desc'        => esc_html__( 'This will add functionality to your website that highlights images that are either too large or too small for their containers.', 'wp-smushit' ),
 			),
 			'original'          => array(
 				'label'       => esc_html__( 'Smush my original full size images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Original images', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Original Images', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Choose how you want Smush to handle the original image file when you run a bulk smush.', 'wp-smushit' ),
 			),
 			'backup'            => array(
 				'label'       => esc_html__( 'Store a copy of my full size images', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Original images', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Original Images', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Save a copy of your original full-size images separately so you can restore them at any point. Note: Keeping a copy of your original files can significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' ),
 			),
 			'png_to_jpg'        => array(
 				'label'       => esc_html__( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ),
-				'short_label' => esc_html__( 'PNG to JPEG conversion', 'wp-smushit' ),
+				'short_label' => esc_html__( 'PNG to JPEG Conversion', 'wp-smushit' ),
 				'desc'        => esc_html__( 'When you compress a PNG, Smush will check if converting it to JPEG could further reduce its size.', 'wp-smushit' ),
 			),
 			'accessible_colors' => array(
@@ -514,6 +523,7 @@ class WP_Smush_Core {
 			// Progress bar text.
 			'progress_smushed'        => esc_html__( 'images optimized', 'wp-smushit' ),
 			'directory_url'           => admin_url( 'admin.php?page=smush&view=directory' ),
+			'add_dir'                 => esc_html__( 'Choose directory', 'wp-smushit' ),
 			'bulk_resume'             => esc_html__( 'Resume scan', 'wp-smushit' ),
 			'bulk_stop'               => esc_html__( 'Stop current bulk smush process.', 'wp-smushit' ),
 			'smush_url'               => admin_url( 'admin.php?page=smush' ),
@@ -652,6 +662,8 @@ class WP_Smush_Core {
 
 	/**
 	 * Get registered image sizes with dimension
+	 *
+	 * @return array
 	 */
 	public function image_dimensions() {
 		global $_wp_additional_image_sizes;

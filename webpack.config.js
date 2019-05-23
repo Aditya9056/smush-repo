@@ -97,7 +97,7 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 		new CSSExtract({
             filename: '../css/[name].min.css'
         }),
-		new CleanDir( ['app/assets/css'] )
+		new CleanDir()
 	]
 });
 
@@ -138,7 +138,7 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 		new webpack.ProvidePlugin( {
 			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
 		} ),
-		new CleanDir( ['app/assets/js'] )
+		new CleanDir()
 	]
 });
 

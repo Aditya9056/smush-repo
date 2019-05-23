@@ -128,9 +128,9 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$settings = $this->settings->get();
 
 		// Available settings for free/pro version.
-		$available = array( 'auto', 'lossy', 'strip_exif', 'original', 'usage' );
+		$available = array( 'auto', 'lossy', 'strip_exif', 'original', 'lazy_load', 'usage' );
 
-		foreach ( WP_Smush::get_instance()->core()->settings as $name => $values ) {
+		foreach ( $settings as $name => $values ) {
 			// Update only specified settings.
 			if ( ! in_array( $name, $available, true ) ) {
 				continue;
@@ -147,6 +147,11 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			// If Smush originals is selected, enable backups.
 			if ( 'original' === $name && $settings[ $name ] && WP_Smush::is_pro() ) {
 				$settings['backup'] = true;
+			}
+
+			// If lazy load enabled - init defaults.
+			if ( 'lazy_load' === $name && (bool) $quick_settings->{$name} ) {
+				$this->settings->init_lazy_load_defaults();
 			}
 		}
 
@@ -473,6 +478,19 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 						$should_resmush = true;
 					}
 
+					// Check if new sizes have been selected.
+					$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
+					if ( is_array( $image_sizes ) ) {
+						foreach ( $image_sizes as $image_size ) {
+							if ( isset( $smush_data['sizes'][ $image_size ] ) ) {
+								continue;
+							}
+
+							$should_resmush = true;
+							break;
+						}
+					}
+
 					// If Image needs to be resized.
 					if ( ! $should_resmush ) {
 						$should_resmush = $core->mod->resize->should_resize( $attachment );
@@ -726,9 +744,8 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		if ( ! WP_Smush::is_pro() && ! WP_Smush_Core::check_bulk_limit() ) {
 			wp_send_json_error(
 				array(
-					'error'         => 'limit_exceeded',
-					'error_message' => sprintf( esc_html__( "You've reached the %1\$d attachment limit for bulk smushing in the free version. Upgrade to Pro to smush unlimited images, or click resume to smush another %2\$d attachments.", 'wp-smushit' ), WP_Smush_Core::$max_free_bulk, WP_Smush_Core::$max_free_bulk ),
-					'continue'      => false,
+					'error'    => 'limit_exceeded',
+					'continue' => false,
 				)
 			);
 		}
@@ -745,7 +762,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 				array(
 					'error'         => 'no_file_meta',
 					'error_message' => WP_Smush_Helper::filter_error( esc_html__( 'No file data found in image meta.', 'wp-smushit' ) ),
-					'file_name'     => printf(
+					'file_name'     => sprintf(
 						/* translators: %d - attachment ID */
 						esc_html__( 'undefined (attachment ID: %d)', 'wp-smushit' ),
 						(int) $attachment_id
