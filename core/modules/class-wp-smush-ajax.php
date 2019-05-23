@@ -128,9 +128,9 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$settings = $this->settings->get();
 
 		// Available settings for free/pro version.
-		$available = array( 'auto', 'lossy', 'strip_exif', 'original', 'usage' );
+		$available = array( 'auto', 'lossy', 'strip_exif', 'original', 'lazy_load', 'usage' );
 
-		foreach ( WP_Smush::get_instance()->core()->settings as $name => $values ) {
+		foreach ( $settings as $name => $values ) {
 			// Update only specified settings.
 			if ( ! in_array( $name, $available, true ) ) {
 				continue;

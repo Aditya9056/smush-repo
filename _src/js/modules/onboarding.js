@@ -24,10 +24,11 @@
             'lossy': true,
             'strip_exif': true,
             'original': false,
+            'lazy_load': true,
             'usage': true
         },
         contentContainer: document.getElementById('smush-onboarding-content'),
-        onboardingSlides: [ 'start', 'auto', 'lossy', 'strip_exif', 'original', 'usage' ],
+        onboardingSlides: [ 'start', 'auto', 'lossy', 'strip_exif', 'original', 'lazy_load', 'usage' ],
         touchX: null,
         touchY: null,
 
@@ -42,7 +43,7 @@
             this.membership = document.getElementById('smush-onboarding').dataset.type;
 
             if ( 'pro' !== this.membership ) {
-                this.onboardingSlides = [ 'start', 'auto', 'strip_exif', 'usage' ];
+                this.onboardingSlides = [ 'start', 'auto', 'strip_exif', 'lazy_load', 'usage' ];
                 this.selection.lossy = false;
             }
 
@@ -257,7 +258,7 @@
                                 location.reload();
                             }, 1000
                         );
-                        
+
                     } else {
                         console.log('Request failed.  Returned status of ' + xhr.status);
                     }
