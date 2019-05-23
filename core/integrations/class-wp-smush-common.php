@@ -226,7 +226,7 @@ class WP_Smush_Common {
 		); // Db call ok; no-cache ok.
 
 		/**
-		 * Get source file meta data.
+		 * Get source file metadata.
 		 * Leave out wp-smush-resize_savings, as we actually want the file to run the compression stage so we don't
 		 * interfere with the progress of Smush.
 		 */

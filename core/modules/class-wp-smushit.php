@@ -542,7 +542,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 *
 	 * @param int   $image_id             Attachment ID.
 	 * @param array $wp_smush_data        Smush data array.
-	 * @param array $attachment_metadata  Attachment meta data.
+	 * @param array $attachment_metadata  Attachment metadata.
 	 *
 	 * @return string
 	 */
@@ -604,7 +604,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 *
 	 * @param int   $image_id             Attachment ID.
 	 * @param array $size_stats           Stats array.
-	 * @param array $attachment_metadata  Attachment meta data.
+	 * @param array $attachment_metadata  Attachment metadata.
 	 *
 	 * @return array
 	 */
@@ -1225,10 +1225,10 @@ class WP_Smushit extends WP_Smush_Module {
 	 *
 	 * Note: Function name is bit confusing, it is for optimisation, and calls the resizing function as well
 	 *
-	 * Read the image paths from an attachment's meta data and process each image
+	 * Read the image paths from an attachment's metadata and process each image
 	 * with wp_smushit().
 	 *
-	 * @param array    $meta  Image meta data.
+	 * @param array    $meta  Image metadata.
 	 * @param null|int $id    Image ID.
 	 *
 	 * @return mixed
@@ -1465,11 +1465,11 @@ class WP_Smushit extends WP_Smush_Module {
 	}
 
 	/**
-	 * Read the image paths from an attachment's meta data and process each image with wp_smushit().
+	 * Read the image paths from an attachment's metadata and process each image with wp_smushit().
 	 *
 	 * @uses resize_from_meta_data
 	 *
-	 * @param mixed    $meta  Attachment meta data.
+	 * @param mixed    $meta  Attachment metadata.
 	 * @param null|int $id    Attachment ID.
 	 *
 	 * @return mixed
@@ -1483,7 +1483,7 @@ class WP_Smushit extends WP_Smush_Module {
 
 			$route = untrailingslashit( $GLOBALS['wp']->query_vars['rest_route'] );
 			if ( empty( $route ) || '/wp/v2/media' !== $route ) {
-				// If not - return image meta data.
+				// If not - return image metadata.
 				return $meta;
 			}
 		}
@@ -2029,7 +2029,7 @@ class WP_Smushit extends WP_Smush_Module {
 	 *
 	 * @param array $paths          Paths to be uploaded to S3 bucket.
 	 * @param int   $attachment_id  Attachment ID.
-	 * @param array $meta           Image meta data.
+	 * @param array $meta           Image metadata.
 	 *
 	 * @return mixed
 	 */

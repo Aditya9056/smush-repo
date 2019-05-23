@@ -544,7 +544,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 	 * @param array  $sources        One or more arrays of source data to include in the 'srcset'.
 	 * @param array  $size_array     Array of width and height values in pixels.
 	 * @param string $image_src      The 'src' of the image.
-	 * @param array  $image_meta     The image meta data as returned by 'wp_get_attachment_metadata()'.
+	 * @param array  $image_meta     The image metadata as returned by 'wp_get_attachment_metadata()'.
 	 * @param int    $attachment_id  Image attachment ID or 0.
 	 *
 	 * @return array $sources

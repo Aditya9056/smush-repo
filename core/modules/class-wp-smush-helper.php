@@ -328,7 +328,7 @@ class WP_Smush_Helper {
 	}
 
 	/**
-	 * Format meta data from $_POST request.
+	 * Format metadata from $_POST request.
 	 *
 	 * Post request in WordPress will convert all values
 	 * to string. Make sure image height and width are int.
@@ -337,7 +337,7 @@ class WP_Smush_Helper {
 	 *
 	 * @since 2.8.0
 	 *
-	 * @param array $meta Meta data of attachment.
+	 * @param array $meta Metadata of attachment.
 	 *
 	 * @return array
 	 */
@@ -347,7 +347,7 @@ class WP_Smush_Helper {
 			return $meta;
 		}
 
-		// If meta data is array proceed.
+		// If metadata is array proceed.
 		if ( is_array( $meta ) ) {
 
 			// Walk through each items and format.
