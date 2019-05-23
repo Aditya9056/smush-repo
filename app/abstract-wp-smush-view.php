@@ -99,8 +99,10 @@ abstract class WP_Smush_View {
 		// Notices.
 		add_action( 'admin_notices', array( $this, 'smush_upgrade_notice' ) );
 		add_action( 'admin_notices', array( $this, 'smush_deactivated' ) );
-		add_action( 'admin_notices', array( $this, 'smush_dash_required' ) );
 		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
+
+		add_action( 'admin_notices', array( $this, 'smush_dash_required' ) );
+		add_action( 'network_admin_notices', array( $this, 'smush_dash_required' ) );
 
 		add_filter( 'admin_body_class', array( $this, 'smush_body_classes' ) );
 		// Filter built-in wpmudev branding script.
@@ -227,7 +229,12 @@ abstract class WP_Smush_View {
 	 * Show notice when Smush Pro is installed only with a key.
 	 */
 	public function smush_dash_required() {
-		if ( WP_Smush::is_pro() || ( class_exists( 'WPMUDEV_Dashboard' ) && WPMUDEV_Dashboard::$api->has_key() ) ) {
+		if ( WP_Smush::is_pro() || ! is_super_admin() || ( class_exists( 'WPMUDEV_Dashboard' ) && WPMUDEV_Dashboard::$api->has_key() ) ) {
+			return;
+		}
+
+		// Do not show on free versions of the plugin.
+		if ( false !== strpos( WP_SMUSH_DIR, 'wp-smushit' ) ) {
 			return;
 		}
 
@@ -249,7 +256,7 @@ abstract class WP_Smush_View {
 						<?php esc_html_e( 'Log In', 'wp-smushit' ); ?>
 					</a>
 				<?php else : ?>
-					<a href="<?php echo esc_url( $url ); ?>" class="smush-notice-act button-primary" target="_blank">
+					<a href="<?php echo esc_url( $url ); ?>" class="smush-notice-act button-primary">
 						<?php esc_html_e( 'Install Plugin', 'wp-smushit' ); ?>
 					</a>
 				<?php endif; ?>

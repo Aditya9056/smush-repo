@@ -145,7 +145,7 @@ class WP_Smushit extends WP_Smush_Module {
 						$status_txt .= $image_size;
 					}
 
-					$show_resmush = $this->show_resmush( $id, $wp_smush_data );
+					$show_resmush = $this->show_resmush( $id, $wp_smush_data, $attachment_data );
 
 					if ( $show_resmush ) {
 						$links .= $this->get_resmsuh_link( $id );
@@ -354,12 +354,12 @@ class WP_Smushit extends WP_Smush_Module {
 	/**
 	 * Checks the current settings and returns the value whether to enable or not the resmush option.
 	 *
-	 * @param string $id             Attachment ID.
-	 * @param array  $wp_smush_data  Smush data.
+	 * @param string $id               Attachment ID.
+	 * @param array  $wp_smush_data    Smush data.
 	 *
 	 * @return bool
 	 */
-	private function show_resmush( $id = '', $wp_smush_data ) {
+	private function show_resmush( $id = '', $wp_smush_data = array() ) {
 		// Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
 		// Or: If keep exif is unchecked and the smushed image have exif
 		// PNG To JPEG.
@@ -385,6 +385,12 @@ class WP_Smushit extends WP_Smush_Module {
 
 		// PNG to JPEG.
 		if ( WP_Smush::get_instance()->core()->mod->png2jpg->can_be_converted( $id ) ) {
+			return true;
+		}
+
+
+		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
+		if ( is_array( $image_sizes ) && count( $image_sizes ) > count( $wp_smush_data['sizes'] ) ) {
 			return true;
 		}
 
@@ -974,11 +980,11 @@ class WP_Smushit extends WP_Smush_Module {
 		// Check if file exists.
 		if ( 0 === (int) $file_size ) {
 			/* translators: %1$s: image size, %2$s: image name */
-			$errors->add( 'image_not_found', '<p>' . sprintf( __( 'Skipped (%1$s), image not found. Attachment: %2$s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
+			$errors->add( 'image_not_found', sprintf( __( 'Skipped (%1$s), image not found', 'wp-smushit' ), size_format( $file_size, 1 ) ) );
 		} elseif ( $file_size > $max_size ) {
 			// Check size limit.
 			/* translators: %1$s: image size, %2$s: image name */
-			$errors->add( 'size_limit', '<p>' . sprintf( __( 'Skipped (%1$s), size limit exceeded. Attachment: %2$s', 'wp-smushit' ), size_format( $file_size, 1 ), basename( $file_path ) ) . '</p>' );
+			$errors->add( 'size_limit', sprintf( __( 'Skipped (%1$s), size limit exceeded', 'wp-smushit' ), size_format( $file_size, 1 ) ) );
 		}
 
 		if ( count( $errors->get_error_messages() ) ) {

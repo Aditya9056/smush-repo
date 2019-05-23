@@ -108,6 +108,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		if ( is_multisite() && $networkwide && ! is_network_admin() ) {
 			unset( $this->tabs['integrations'] );
 			unset( $this->tabs['lazy_load'] );
+			unset( $this->tabs['tools'] );
 		}
 
 		// Disabled on all subsites.
@@ -654,6 +655,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			<div class="sui-box-settings-col-1">
 				<span class="sui-settings-label <?php echo 'gutenberg' === $name ? 'sui-settings-label-with-tag' : ''; ?>">
 					<?php echo esc_html( $label ); ?>
+					<?php do_action( 'smush_setting_column_tag', $name ); ?>
 				</span>
 
 				<span class="sui-description">
@@ -788,22 +790,24 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// Additional image sizes.
 		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes', false );
 		$sizes       = WP_Smush::get_instance()->core()->image_dimensions();
+
+		$all_selected = false === $image_sizes || count( $image_sizes ) === count( $sizes );
 		?>
 		<?php if ( ! empty( $sizes ) ) : ?>
 			<div class="sui-side-tabs sui-tabs">
 				<div data-tabs="">
-					<label for="all-image-sizes" class="sui-tab-item <?php echo false === $image_sizes ? 'active' : ''; ?>">
-						<input type="radio" name="auto-image-sizes" value="all" id="all-image-sizes" <?php checked( false === $image_sizes ); ?>>
+					<label for="all-image-sizes" class="sui-tab-item <?php echo $all_selected ? 'active' : ''; ?>">
+						<input type="radio" name="auto-image-sizes" value="all" id="all-image-sizes" <?php checked( $all_selected ); ?>>
 						<?php esc_html_e( 'All', 'wp-smushit' ); ?>
 					</label>
-					<label for="custom-image-sizes" class="sui-tab-item <?php echo $image_sizes ? 'active' : ''; ?>">
-						<input type="radio" name="auto-image-sizes" value="custom" id="custom-image-sizes" <?php checked( false !== $image_sizes ); ?>>
+					<label for="custom-image-sizes" class="sui-tab-item <?php echo $all_selected ? '' : 'active'; ?>">
+						<input type="radio" name="auto-image-sizes" value="custom" id="custom-image-sizes" <?php checked( $all_selected, false ); ?>>
 						<?php esc_html_e( 'Custom', 'wp-smushit' ); ?>
 					</label>
 				</div><!-- end data-tabs -->
 				<div data-panes>
-					<div class="sui-tab-boxed <?php echo false === $image_sizes ? 'active' : ''; ?>" style="display:none"></div>
-					<div class="sui-tab-boxed <?php echo $image_sizes ? 'active' : ''; ?>">
+					<div class="sui-tab-boxed <?php echo $all_selected ? 'active' : ''; ?>" style="display:none"></div>
+					<div class="sui-tab-boxed <?php echo $all_selected ? '' : 'active'; ?>">
 						<span class="sui-label"><?php esc_html_e( 'Included image sizes', 'wp-smushit' ); ?></span>
 						<?php
 						foreach ( $sizes as $size_k => $size ) {

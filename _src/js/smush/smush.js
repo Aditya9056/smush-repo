@@ -850,7 +850,7 @@ class Smush {
 		if ( 'media' === type ) {
 			tableDiv = tableDiv +
 				'<div class="smush-bulk-image-actions">' +
-					'<button type="button" class="sui-button-icon sui-tooltip sui-tooltip-constrained sui-tooltip-top-left smush-ignore-image" data-tooltip="' + wp_smush_msgs.error_ignore + '" data-id="' + id + '">' +
+					'<button type="button" class="sui-button-icon sui-tooltip sui-tooltip-constrained sui-tooltip-top-right smush-ignore-image" data-tooltip="' + wp_smush_msgs.error_ignore + '" data-id="' + id + '">' +
 						'<i class="sui-icon-eye-hide" aria-hidden="true"></i>' +
 					'</button>' +
 				'</div>';

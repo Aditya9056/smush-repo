@@ -80,7 +80,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			return;
 		}
 
-		$loader = WP_SMUSH_URL . 'app/assets/images/icon-lazyloader.svg';
+		$loader = WP_SMUSH_URL . 'app/assets/images/icon-loader.gif';
 		$fadein = isset( $this->options['animation']['duration'] ) ? $this->options['animation']['duration'] : 0;
 		$delay  = isset( $this->options['animation']['delay'] ) ? $this->options['animation']['delay'] : 0;
 		?>
@@ -110,10 +110,10 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 				}
 				.lazyload { opacity: 0; }
 				.lazyloading {
+					border: 0 !important;
 					opacity: 1;
-					background: rgba(255, 255, 255, 0) url('<?php echo esc_url( $loader ); ?>') no-repeat center;
-					-webkit-animation: spin 1.3s linear infinite;
-					animation: spin 1.3s linear infinite;
+					background: rgba(255, 255, 255, 0) url('<?php echo esc_url( $loader ); ?>') no-repeat center !important;
+					background-size: 30px 30px !important;
 				}
 			<?php else : ?>
 				.lazyload, .lazyloading { opacity: 0; }
@@ -142,6 +142,19 @@ class WP_Smush_Lazy_Load extends WP_Smush_Content {
 			WP_SMUSH_VERSION,
 			$in_footer
 		);
+
+		$custom = "window.lazySizesConfig = window.lazySizesConfig || {};
+
+window.lazySizesConfig.lazyClass    = 'lazyload';
+window.lazySizesConfig.loadingClass = 'lazyloading';
+window.lazySizesConfig.loadedClass  = 'lazyloaded';
+
+//page is optimized for fast onload event
+lazySizesConfig.loadMode = 1;";
+
+		wp_add_inline_script( 'smush-lazy-load', $custom, 'before' );
+
+		wp_add_inline_script( 'smush-lazy-load', 'lazySizes.init();' );
 	}
 
 	/**

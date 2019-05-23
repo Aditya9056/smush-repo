@@ -9,6 +9,15 @@
         text-align: left;
     }
 
+    .sui-meta-boxes-directory.sui-message {
+        text-align: left;
+
+        .wp-smush-no-image,
+        .sui-message-content {
+            text-align: center;
+        }
+    }
+
     .sui-meta-boxes-directory .smush-final-log {
         margin-top: 30px;
 
