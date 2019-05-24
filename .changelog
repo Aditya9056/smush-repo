@@ -1,6 +1,8 @@
 = 3.2.2 =
 
 - New: Lazy loading onboarding step
+- Enhance: Lazy loading support for ACF
+- Enhance: Lazy loading page parser
 - Enhance: Do not allow enabling CDN for sites that are not registered on the Hub
 - Enhance: Bulk compressing images without proper meta data
 - Enhance: Do not lazy load images on AMP pages
