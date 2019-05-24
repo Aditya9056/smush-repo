@@ -94,6 +94,8 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
+	 * Test enable CDN.
+	 *
 	 * @param WP_Smush_CDN $cdn
 	 *
 	 * @throws ReflectionException
@@ -116,7 +118,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * Check that the CDN instance is properly initialized.
 	 */
 	public function testCdnInstance() {
-		$cdn = new WP_Smush_CDN();
+		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );
 
 		$this->assertInstanceOf( 'WP_Smush_CDN', $cdn );
 	}
@@ -127,7 +129,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @throws ReflectionException
 	 */
 	public function testCdnInitMethod() {
-		$cdn = new WP_Smush_CDN();
+		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );
 
 		$cdn->init();
 
@@ -173,7 +175,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @covers WP_Smush_CDN::init_flags
 	 */
 	public function testCdnInitFlagsMethod() {
-		$cdn = new WP_Smush_CDN();
+		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );
 
 		$this->assertNull( $this->tester->readPrivateProperty( $cdn, 'status' ) );
 
@@ -209,7 +211,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @covers WP_Smush_CDN::process_img_tags
 	 */
 	public function testCdnParseImagesFromEmptyHTML() {
-		$cdn = new WP_Smush_CDN();
+		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );
 
 		$this->assertEmpty( $cdn->process_img_tags( '' ) );
 	}
@@ -220,7 +222,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @covers WP_Smush_CDN::process_img_tags
 	 */
 	public function testCdnSkipImagesFromExternalSources() {
-		$cdn = new WP_Smush_CDN();
+		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );
 
 		$content = $this->get_content( 'external-images.html' );
 
@@ -234,7 +236,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @throws ReflectionException
 	 */
 	public function testCdnGet_size_from_file_nameMethod() {
-		$cdn = new WP_Smush_CDN();
+		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );
 
 		// Test image without dimensions.
 		$image = 'http://' . WP_TESTS_DOMAIN . '/wp-content/plugins/wp-smushit/tests/_data/images/image1.jpeg';
@@ -305,7 +307,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 			'host:65536' => false,
 		];
 
-		$cdn = new WP_Smush_CDN();
+		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );
 
 		foreach ( $test_cases as $case => $value ) {
 			$result = $this->tester->callPrivateMethod( $cdn, 'is_valid_url', [ $case ] );
@@ -322,6 +324,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @covers WP_Smush_CDN::update_image_srcset
 	 */
 	public function testCdnUpdate_image_srcsetMethod() {
+
 		$attachment_id = $this->tester->uploadImage();
 
 		// This is similar to adding an image to the media library and then adding it to a page/post via editor.
