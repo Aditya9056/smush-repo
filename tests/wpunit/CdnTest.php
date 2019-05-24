@@ -211,9 +211,9 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @covers WP_Smush_CDN::process_img_tags
 	 */
 	public function testCdnParseImagesFromEmptyHTML() {
-		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );
-
-		$this->assertEmpty( $cdn->process_img_tags( '' ) );
+		$parser = new WP_Smush_Page_Parser();
+		$parser->enable( 'cdn' );
+		$this->assertEmpty( $parser->parse_page( '' ) );
 	}
 
 	/**
