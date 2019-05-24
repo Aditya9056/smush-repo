@@ -222,11 +222,12 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @covers WP_Smush_CDN::process_img_tags
 	 */
 	public function testCdnSkipImagesFromExternalSources() {
-		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );
+		$parser = new WP_Smush_Page_Parser();
+		$parser->enable( 'cdn' );
 
 		$content = $this->get_content( 'external-images.html' );
 
-		$this->assertEquals( $content, $cdn->process_img_tags( $content ) );
+		$this->assertEquals( $content, $parser->parse_page( $content ) );
 	}
 
 	/**
@@ -259,6 +260,9 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @throws ReflectionException
 	 */
 	public function testCdnGeneralFunctionality() {
+		$parser = new WP_Smush_Page_Parser();
+		$parser->enable( 'cdn' );
+
 		$smush   = WP_Smush::get_instance();
 		$cdn     = $smush->core()->mod->cdn;
 		$content = $this->get_content( 'single-image.html' );
@@ -267,7 +271,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 		$smush->core()->mod->settings->set( 'auto_resize', true );
 
 		// The new content should not match the old one, otherwise it will mean that nothing has changed.
-		$this->assertNotEquals( $content, $cdn->process_img_tags( $content ) );
+		$this->assertNotEquals( $content, $parser->parse_page( $content ) );
 	}
 
 	/**
