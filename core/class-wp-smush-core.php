@@ -476,6 +476,11 @@ class WP_Smush_Core {
 				'short_label' => esc_html__( 'API Status', 'wp-smushit' ),
 				'desc'        => esc_html__( "If you're having issues with enabling pro features you can force the API to update your membership status here.", 'wp-smushit' ),
 			),
+			'bulk_restore'      => array(
+				'label'       => esc_html__( 'Bulk Restore', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Bulk Restore', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Made a mistake? Use this feature to restore your image thumbnails to their original state.', 'wp-smushit' ),
+			),
 		);
 
 		/**

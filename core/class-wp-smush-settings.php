@@ -110,7 +110,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $tools_fields = array( 'detection' );
+	private $tools_fields = array( 'detection', 'bulk_restore' );
 
 	/**
 	 * Return the plugin instance.
