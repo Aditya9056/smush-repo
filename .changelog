@@ -8,6 +8,7 @@
 - Enhance: Do not lazy load images on AMP pages
 - Enhance: Translation strings
 - Fix: Plugin texts
+- Fix: PHP warning when Smush is not able to detect site language
 
 = 3.2.1 =
 
