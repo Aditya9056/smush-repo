@@ -1423,8 +1423,10 @@ class WP_Smushit extends WP_Smush_Module {
 				 * @param int $id Image Id
 				 *
 				 * @param array $stats Smush Stats for the image
+				 *
+				 * @param array $meta Attachment meta.
 				 */
-				do_action( 'wp_smush_image_optimised', $id, $stats );
+				do_action( 'wp_smush_image_optimised', $id, $stats, $meta );
 			}
 			update_post_meta( $id, self::$smushed_meta_key, $stats );
 		}
