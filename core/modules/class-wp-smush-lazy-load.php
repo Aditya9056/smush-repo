@@ -350,7 +350,7 @@ lazySizesConfig.loadMode = 1;";
 			return false;
 		} elseif ( is_home() && isset( $this->options['include']['home'] ) && $this->options['include']['home'] && ! $blog_is_frontpage ) {
 			return true;
-		} elseif ( is_page() && isset( $this->options['include']['page'] ) && $this->options['include']['page'] ) {
+		} elseif ( is_page() && ! is_front_page() && isset( $this->options['include']['page'] ) && $this->options['include']['page'] ) {
 			return true;
 		} elseif ( is_single() && isset( $this->options['include']['single'] ) && $this->options['include']['single'] ) {
 			return true;
