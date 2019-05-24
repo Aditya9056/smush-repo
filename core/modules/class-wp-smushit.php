@@ -109,7 +109,7 @@ class WP_Smushit extends WP_Smush_Module {
 			$percent        = $percent < 0 ? 0 : $percent;
 
 			// Show resmush link, if the settings were changed.
-			$show_resmush = $this->show_resmush( $id, $wp_smush_data );
+			$show_resmush = $this->show_resmush( $id, $wp_smush_data, $attachment_data );
 
 			if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
 				$status_txt = __( 'Already Optimized', 'wp-smushit' );
@@ -360,10 +360,11 @@ class WP_Smushit extends WP_Smush_Module {
 	 *
 	 * @param string $id               Attachment ID.
 	 * @param array  $wp_smush_data    Smush data.
+	 * @param array  $attachment_data  Attachment data.
 	 *
 	 * @return bool
 	 */
-	private function show_resmush( $id = '', $wp_smush_data = array() ) {
+	private function show_resmush( $id = '', $wp_smush_data = array(), $attachment_data = array() ) {
 		// Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped
 		// Or: If keep exif is unchecked and the smushed image have exif
 		// PNG To JPEG.
@@ -394,7 +395,7 @@ class WP_Smushit extends WP_Smush_Module {
 
 
 		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
-		if ( is_array( $image_sizes ) && count( $image_sizes ) > count( $wp_smush_data['sizes'] ) ) {
+		if ( is_array( $image_sizes ) && count( $image_sizes ) > count( $wp_smush_data['sizes'] ) && count( $attachment_data['sizes'] ) !== count( $wp_smush_data['sizes'] ) ) {
 			return true;
 		}
 
