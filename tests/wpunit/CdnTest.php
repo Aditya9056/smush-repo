@@ -260,7 +260,9 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @throws ReflectionException
 	 */
 	public function testCdnGeneralFunctionality() {
-		$parser  = new WP_Smush_Page_Parser();
+		$parser = new WP_Smush_Page_Parser();
+		$parser->enable( 'cdn' );
+
 		$smush   = WP_Smush::get_instance();
 		$cdn     = $smush->core()->mod->cdn;
 		$content = $this->get_content( 'single-image.html' );
@@ -279,7 +281,9 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @throws ReflectionException
 	 */
 	public function testCdnSmush_cdn_skip_imageFilter() {
-		$parser  = new WP_Smush_Page_Parser();
+		$parser = new WP_Smush_Page_Parser();
+		$parser->enable( 'cdn' );
+
 		$smush   = WP_Smush::get_instance();
 		$cdn     = $smush->core()->mod->cdn;
 		$content = $this->get_content( 'single-image.html' );
@@ -335,8 +339,10 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( 5, substr_count( $image, WP_TESTS_DOMAIN ) );
 
 		$parser = new WP_Smush_Page_Parser();
-		$smush  = WP_Smush::get_instance();
-		$cdn    = $smush->core()->mod->cdn;
+		$parser->enable( 'cdn' );
+
+		$smush = WP_Smush::get_instance();
+		$cdn   = $smush->core()->mod->cdn;
 
 		$smush->core()->mod->settings->set( 'auto_resize', false );
 		$smush->core()->mod->settings->set( 'cdn', true );
