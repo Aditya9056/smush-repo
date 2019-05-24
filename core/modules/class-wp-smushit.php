@@ -85,8 +85,6 @@ class WP_Smushit extends WP_Smush_Module {
 		$status_txt  = $button_txt = $stats = $links = '';
 		$show_button = $show_resmush = false;
 
-		$links = '';
-
 		$wp_smush_data      = get_post_meta( $id, self::$smushed_meta_key, true );
 		$wp_resize_savings  = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
 		$conversion_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
@@ -155,15 +153,21 @@ class WP_Smushit extends WP_Smush_Module {
 					$show_restore = $this->show_restore_option( $id, $attachment_data );
 
 					if ( $show_restore ) {
+						if ( ! empty( $links ) ) {
+							$links .= '| ';
+						}
 						$links .= $this->get_restore_link( $id );
 					}
 
 					// Detailed Stats: Show detailed stats if available.
 					if ( ! empty( $wp_smush_data['sizes'] ) ) {
+						if ( ! empty( $links ) ) {
+							$links .= '| ';
+						}
 
 						// Detailed Stats Link.
 						$links .= sprintf(
-							'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-mobile sui-tooltip-top-left-mobile button" data-tooltip="%s">%s</a>',
+							'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-mobile sui-tooltip-top-left-mobile" data-tooltip="%s">%s</a>',
 							esc_html__( 'Detailed stats for all the image sizes', 'wp-smushit' ),
 							esc_html__( 'View Stats', 'wp-smushit' )
 						);
@@ -410,7 +414,7 @@ class WP_Smushit extends WP_Smush_Module {
 			return false;
 		}
 		$class  = 'wp-smush-action wp-smush-title sui-tooltip sui-tooltip-constrained';
-		$class .= 'wp' === $type ? ' wp-smush-resmush button' : ' wp-smush-nextgen-resmush';
+		$class .= 'wp' === $type ? ' wp-smush-resmush' : ' wp-smush-nextgen-resmush';
 
 		$ajax_nonce = wp_create_nonce( 'wp-smush-resmush-' . $image_id );
 
@@ -530,7 +534,7 @@ class WP_Smushit extends WP_Smush_Module {
 		}
 
 		$class  = 'wp-smush-action wp-smush-title sui-tooltip';
-		$class .= 'wp' === $type ? ' wp-smush-restore button' : ' wp-smush-nextgen-restore';
+		$class .= 'wp' === $type ? ' wp-smush-restore' : ' wp-smush-nextgen-restore';
 
 		$ajax_nonce = wp_create_nonce( 'wp-smush-restore-' . $image_id );
 
@@ -733,17 +737,17 @@ class WP_Smushit extends WP_Smush_Module {
 		}
 
 		$html .= '
-		<button  class="button button-primary wp-smush-send" data-id="' . $id . '">
+		<a href="#" class="wp-smush-send" data-id="' . $id . '">
             ' . $button_txt . '
-		</button>';
+		</a>';
 
 		$skipped = get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true );
 		if ( 'true' === $skipped ) {
 			$nonce = wp_create_nonce( 'wp-smush-remove-skipped' );
 			$html .= '
-			<button  class="button button-primary wp-smush-remove-skipped" data-id="' . $id . '" data-nonce="' . $nonce . '">
+			<a  class="wp-smush-remove-skipped" data-id="' . $id . '" data-nonce="' . $nonce . '">
                 ' . __( 'Show in bulk Smush', 'wp-smushit' ) . '
-			</button>';
+			</a>';
 		}
 
 		$html .= $this->progress_bar();

@@ -7,6 +7,7 @@
 - Enhance: Bulk compressing images without proper meta data
 - Enhance: Do not lazy load images on AMP pages
 - Enhance: Translation strings
+- Enhance: UI in media library
 - Fix: Plugin texts
 - Fix: PHP warning when Smush is not able to detect site language
 - Fix: Excluding frontpage post type from lazy loading
