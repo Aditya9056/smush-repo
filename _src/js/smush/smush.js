@@ -949,6 +949,15 @@ class Smush {
 		}
 	};
 
+	/**
+	 * Bulk restore all images.
+	 *
+	 * @since 3.2.2
+	 */
+	static bulk_restore() {
+		console.log('bulk restore');
+	};
+
 }
 
 export default Smush;

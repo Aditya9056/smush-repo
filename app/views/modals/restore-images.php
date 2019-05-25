@@ -29,7 +29,7 @@ if ( ! defined( 'WPINC' ) ) {
 					<a class="sui-button sui-button-ghost" data-a11y-dialog-hide>
 						<?php esc_html_e( 'Cancel', 'wp-smushit' ); ?>
 					</a>
-					<a class="sui-button" onclick="WP_Smush.helpers.resetSettings()">
+					<a class="sui-button" id="smush-bulk-restore-button">
 						<?php esc_html_e( 'Confirm', 'wp-smushit' ); ?>
 					</a>
 				</div>

@@ -34,6 +34,9 @@ class WP_Smush_Backup extends WP_Smush_Module {
 	public function init() {
 		// Handle Restore operation.
 		add_action( 'wp_ajax_smush_restore_image', array( $this, 'restore_image' ) );
+
+		// Handle bulk restore from modal.
+		add_action( 'wp_ajax_bulk_restore', array( $this, 'bulk_restore' ) );
 	}
 
 	/**
@@ -386,7 +389,15 @@ class WP_Smush_Backup extends WP_Smush_Module {
 
 		// Store it in attachment meta.
 		update_post_meta( $attachment_id, '_wp_attachment_backup_sizes', $backup_sizes );
+	}
 
+	/**
+	 * Bulk restore images from the modal.
+	 *
+	 * @since 3.2.2
+	 */
+	public function bulk_restore() {
+		$a = 1;
 	}
 
 }
