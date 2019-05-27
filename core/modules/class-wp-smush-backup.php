@@ -291,7 +291,7 @@ class WP_Smush_Backup extends WP_Smush_Module {
 		// Remove the transient.
 		delete_option( "wp-smush-restore-$attachment_id" );
 
-		if ( ! $resp ) {
+		if ( $resp ) {
 			wp_send_json_error( array( 'message' => '<div class="wp-smush-error">' . __( 'Unable to restore image', 'wp-smushit' ) . '</div>' ) );
 		}
 
@@ -413,7 +413,16 @@ class WP_Smush_Backup extends WP_Smush_Module {
 	 */
 	public function restore_step() {
 		check_ajax_referer( 'smush_bulk_restore', '_wpnonce' );
-		wp_send_json_success();
+		$id = filter_input( INPUT_POST, 'item', FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE );
+
+		$status = $id ? $this->restore_image( $id, false ) : false;
+
+		if ( $status ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
+		}
+
 	}
 
 }

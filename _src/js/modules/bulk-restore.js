@@ -66,7 +66,6 @@
 
                     self.renderTemplate();
                     self.initScan();
-                    self.updateProgressBar();
                 });
             }
         },
@@ -143,7 +142,6 @@
          * Execute a scan step recursively
          */
         step: function() {
-            console.log(this.items);
             const self = this;
             const _nonce = document.getElementById('_wpnonce');
 

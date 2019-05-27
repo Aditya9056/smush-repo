@@ -774,7 +774,7 @@ class WP_Smush_DB {
 		if ( ! $images ) {
 			global $wpdb;
 			$images = $wpdb->get_col(
-				"SELECT * FROM {$wpdb->postmeta} WHERE meta_key='_wp_attachment_backup_sizes' AND post_id IN (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key='wp-smpro-smush-data')"
+				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key='_wp_attachment_backup_sizes' AND post_id IN (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key='wp-smpro-smush-data')"
 			); // Db call ok.
 
 			if ( $images ) {
