@@ -461,6 +461,10 @@ class WP_Smush_Core {
 				'short_label' => esc_html__( 'Color Accessibility', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Increase the visibility and accessibility of elements and components to meet WCAG AAA requirements.', 'wp-smushit' ),
 			),
+			'subsite_access'    => array(
+				'short_label' => esc_html__( 'Subsite Controls', 'wp-smushit' ),
+				'desc'        => esc_html__( 'By default, subsites will inherit your network settings. Choose which modules you want to allow subsite admins to override.', 'wp-smushit' ),
+			),
 			'usage'             => array(
 				'label'       => esc_html__( 'Help us make Smush better by allowing usage tracking', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Usage Tracking', 'wp-smushit' ),

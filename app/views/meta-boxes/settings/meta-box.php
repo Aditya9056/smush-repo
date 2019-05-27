@@ -75,6 +75,79 @@ if ( ! defined( 'WPINC' ) ) {
 	}
 	?>
 
+	<?php if ( is_multisite() && is_network_admin() ) : ?>
+	<div class="sui-box-settings-row">
+		<div class="sui-box-settings-col-1">
+			<span class="sui-settings-label"><?php echo esc_html( $settings_data['subsite_access']['short_label'] ); ?></span>
+			<span class="sui-description"><?php echo esc_html( $settings_data['subsite_access']['desc'] ); ?></span>
+		</div>
+
+		<div class="sui-box-settings-col-2">
+			<div class="sui-side-tabs sui-tabs">
+				<div data-tabs>
+					<label for="access-none" class="sui-tab-item active">
+						<input type="radio" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access" value="false" id="access-none">
+						<?php esc_html_e( 'None', 'wp-smushit' ); ?>
+					</label>
+					<label for="access-all" class="sui-tab-item">
+						<input type="radio" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access" value="false" id="access-all">
+						<?php esc_html_e( 'All', 'wp-smushit' ); ?>
+					</label>
+					<label for="access-custom" class="sui-tab-item">
+						<input type="radio" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access" value="false" id="access-custom">
+						<?php esc_html_e( 'Custom', 'wp-smushit' ); ?>
+					</label>
+				</div>
+
+				<div data-panes>
+					<div class="sui-notice sui-notice-info active">
+						<p><?php esc_html_e( "Subsite admins can't override any module settings and will always inherit your network settings.", 'wp-smushit' ); ?></p>
+					</div>
+					<div class="sui-notice sui-notice-info">
+						<p><?php esc_html_e( 'Subsite admins can override all module settings.', 'wp-smushit' ); ?></p>
+					</div>
+					<div class="sui-tab-boxed">
+						<p class="sui-description">
+							<?php esc_html_e( 'Choose which modules settings subsite admins have access to.', 'wp-smushit' ); ?>
+						</p>
+
+						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
+							<input type="checkbox" checked="checked" id="module-bulk" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="bulk">
+							<span aria-hidden="true">&nbsp;</span>
+							<span><?php esc_html_e( 'Bulk Smush', 'wp-smushit' ); ?></span>
+						</label>
+						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
+							<input type="checkbox" checked="checked" id="module-directory" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="directory">
+							<span aria-hidden="true">&nbsp;</span>
+							<span><?php esc_html_e( 'Directory Smush', 'wp-smushit' ); ?></span>
+						</label>
+						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
+							<input type="checkbox" checked="checked" id="module-integrations" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="integrations">
+							<span aria-hidden="true">&nbsp;</span>
+							<span><?php esc_html_e( 'Integrations', 'wp-smushit' ); ?></span>
+						</label>
+						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
+							<input type="checkbox" checked="checked" id="module-lazy" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="lazy">
+							<span aria-hidden="true">&nbsp;</span>
+							<span><?php esc_html_e( 'Lazy Load', 'wp-smushit' ); ?></span>
+						</label>
+						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
+							<input type="checkbox" checked="checked" id="module-cdn" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="cdn">
+							<span aria-hidden="true">&nbsp;</span>
+							<span><?php esc_html_e( 'CDN', 'wp-smushit' ); ?></span>
+						</label>
+						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
+							<input type="checkbox" checked="checked" id="module-tools" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="tools">
+							<span aria-hidden="true">&nbsp;</span>
+							<span><?php esc_html_e( 'Tools', 'wp-smushit' ); ?></span>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php endif; ?>
+
 	<div class="sui-box-settings-row smush-keep-data-form-row">
 		<div class="sui-box-settings-col-1">
 			<span class="sui-settings-label"><?php echo esc_html( $settings_data['keep_data']['short_label'] ); ?></span>
