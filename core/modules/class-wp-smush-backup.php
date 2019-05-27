@@ -36,7 +36,8 @@ class WP_Smush_Backup extends WP_Smush_Module {
 		add_action( 'wp_ajax_smush_restore_image', array( $this, 'restore_image' ) );
 
 		// Handle bulk restore from modal.
-		add_action( 'wp_ajax_bulk_restore', array( $this, 'bulk_restore' ) );
+		add_action( 'wp_ajax_get_image_count', array( $this, 'get_image_count' ) );
+		add_action( 'wp_ajax_restore_step', array( $this, 'restore_step' ) );
 	}
 
 	/**
@@ -392,12 +393,27 @@ class WP_Smush_Backup extends WP_Smush_Module {
 	}
 
 	/**
+	 * Get the number of attachments that can be restored.
+	 *
+	 * @since 3.2.2
+	 */
+	public function get_image_count() {
+		check_ajax_referer( 'smush_bulk_restore', '_wpnonce' );
+		wp_send_json_success(
+			array(
+				'items' => WP_Smush::get_instance()->core()->mod->db->get_attachments_with_backups( true ),
+			)
+		);
+	}
+
+	/**
 	 * Bulk restore images from the modal.
 	 *
 	 * @since 3.2.2
 	 */
-	public function bulk_restore() {
-		$a = 1;
+	public function restore_step() {
+		check_ajax_referer( 'smush_bulk_restore', '_wpnonce' );
+		wp_send_json_success();
 	}
 
 }

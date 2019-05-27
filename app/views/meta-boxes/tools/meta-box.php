@@ -45,7 +45,7 @@ if ( ! defined( 'WPINC' ) ) {
 		</div>
 
 		<div class="sui-box-settings-col-2">
-			<button type="button" class="sui-button sui-button-ghost" data-a11y-dialog-show="wp-smush-restore-images-dialog">
+			<button type="button" class="sui-button sui-button-ghost" onclick="WP_Smush.restore.init()">
 				<i class="sui-icon-undo" aria-hidden="true"></i>
 				<?php esc_html_e( 'Restore Thumbnails', 'wp-smushit' ); ?>
 			</button>

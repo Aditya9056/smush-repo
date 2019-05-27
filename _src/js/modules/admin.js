@@ -979,13 +979,4 @@ jQuery( function ( $ ) {
 		} );
 	} );
 
-	/**
-	 * Bulk restore action.
-	 * @since 3.2.2
-	 */
-	$( '#smush-bulk-restore-button' ).on( 'click', function (e) {
-		e.preventDefault();
-		Smush.bulk_restore();
-	} );
-
 } );
