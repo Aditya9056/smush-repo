@@ -428,11 +428,16 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				);
 				?>
 			</div>
-			<div class="sui-description sui-notice sui-notice-info wp-smush-update-width sui-hidden" tabindex="0">
-				<?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", 'wp-smushit' ); ?>
+			<div class="sui-description sui-notice sui-notice-info wp-smush-update-width sui-no-margin-bottom sui-hidden" tabindex="0">
+				<p>
+					<?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", 'wp-smushit' ); ?>
+				</p>
+
 			</div>
-			<div class="sui-description sui-notice sui-notice-info wp-smush-update-height sui-hidden" tabindex="0">
-				<?php esc_html_e( 'Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.', 'wp-smushit' ); ?>
+			<div class="sui-description sui-notice sui-notice-info wp-smush-update-height sui-no-margin-bottom sui-hidden" tabindex="0">
+				<p>
+					<?php esc_html_e( 'Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.', 'wp-smushit' ); ?>
+				</p>
 			</div>
 		</div>
 		<span class="sui-description sui-toggle-description">
