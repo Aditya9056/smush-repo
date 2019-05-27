@@ -33,6 +33,12 @@
                 return;
             }
 
+            this.settings= {
+                slide: 'start',
+                success: 0,
+                errors: [],
+            };
+
             this.renderTemplate();
 
             // Show the modal.
@@ -156,9 +162,12 @@
                     this.currentStep++;
 
                     if (200 === xhr.status) {
-                        self.success.push(item);
-                    } else {
-                        self.errors.push(item);
+                        const res = JSON.parse(xhr.response);
+                        if ( 'undefined' !== typeof res.data.success && res.data.success ) {
+                            self.success.push(item);
+                        } else {
+                            self.errors.push(item);
+                        }
                     }
 
                     self.updateProgressBar();
@@ -171,9 +180,11 @@
                     slide: 'finish',
                     success: this.success.length,
                     errors: this.errors,
+                    total: this.totalSteps,
                 };
 
                 self.renderTemplate();
+                //this.modal.querySelector('.sui-dialog-content').style.maxWidth = '660px';
             }
         }
     };

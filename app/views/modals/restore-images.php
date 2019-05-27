@@ -13,7 +13,6 @@ if ( ! defined( 'WPINC' ) ) {
 ?>
 
 <script type="text/template" id="smush-bulk-restore">
-	<# console.log( data ); #>
 	<div class="sui-box-header">
 		<h3 class="sui-box-title" id="dialogTitle">
 			<# if ( 'start' === data.slide ) { #>
@@ -74,17 +73,45 @@ if ( ! defined( 'WPINC' ) ) {
 				</span>
 			</div>
 			<# } else if ( 'finish' === data.slide ) { #>
-			<div class="sui-notice sui-notice-success">
-				<p>{{{ data.success }}}
-					<?php esc_html_e( 'images were successfully restored.', 'wp-smushit' ); ?>
-				</p>
-			</div>
-			<button class="sui-button" onclick="window.location.reload()" data-a11y-dialog-hide type="button">
-				<?php esc_html_e( 'Finish', 'wp-smushit' ); ?>
-			</button>
+				<# if ( 0 === data.errors.length ) { #>
+				<div class="sui-notice sui-notice-success">
+					<p>{{{ data.success }}}
+						<?php esc_html_e( 'images were successfully restored.', 'wp-smushit' ); ?>
+					</p>
+				</div>
+				<button class="sui-button" onclick="window.location.reload()" data-a11y-dialog-hide type="button">
+					<?php esc_html_e( 'Finish', 'wp-smushit' ); ?>
+				</button>
+				<# } else { #>
+				<div class="sui-notice sui-notice-warning">
+					<p>{{{ data.success }}}/{{{ data.total }}}
+						<?php esc_html_e( 'images were successfully restored but some were unrecoverable. You can try again, or reupload these images.', 'wp-smushit' ); ?>
+					</p>
+				</div>
+				<# } #>
 			<# } #>
 		</div>
 	</div>
+
+	<# if ( 'finish' === data.slide ) { #>
+	<div class="sui-box-footer sui-no-padding-bottom">
+		<!--
+		<div class="sui-actions-left">
+			<button class="sui-button">
+				<i class="sui-icon-eye" aria-hidden="true"></i>
+				<?php esc_html_e( 'View All', 'wp-smushit' ); ?>
+			</button>
+		</div>
+		-->
+
+		<div class="sui-actions-right">
+			<button class="sui-button" id="smush-bulk-restore-button">
+				<i class="sui-icon-update" aria-hidden="true"></i>
+				<?php esc_html_e( 'Retry', 'wp-smushit' ); ?>
+			</button>
+		</div>
+	</div>
+	<# } #>
 
 	<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
 		<img class="sui-image sui-image-center"

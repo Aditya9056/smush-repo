@@ -417,12 +417,11 @@ class WP_Smush_Backup extends WP_Smush_Module {
 
 		$status = $id ? $this->restore_image( $id, false ) : false;
 
-		if ( $status ) {
-			wp_send_json_success();
-		} else {
-			wp_send_json_error();
-		}
-
+		wp_send_json_success(
+			array(
+				'success' => $status,
+			)
+		);
 	}
 
 }
