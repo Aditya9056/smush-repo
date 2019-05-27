@@ -175,8 +175,8 @@ abstract class WP_Smush_View {
 			$notice_content = __( 'And hey, if you do, you can join WPMU DEV for a free 30 day trial and get access to even more features!', 'wp-smushit' );
 			$button_content = __( 'Try Smush Pro Free', 'wp-smushit' );
 		} else {
-			$notice_heading = __( 'Thanks for upgrading Smush!', 'wp-smushit' );
-			$notice_content = __( 'Did you know she has secret super powers? Yes, she can super-smush images for double the savings, store original images, and bulk smush thousands of images in one go. Get started with a free WPMU DEV trial to access these advanced features.', 'wp-smushit' );
+			$notice_heading = __( 'Thanks for updating Smush!', 'wp-smushit' );
+			$notice_content = __( 'Did you know she has secret super powers? Yes, she can super-smush images for double the savings, store original images, bulk smush thousands of images in one go, and serve \'em up in a next-gen format(WebP) with one-click via her blazing-fast CDN. Get started with a free WPMU DEV trial to access these advanced features.', 'wp-smushit' );
 			$button_content = __( 'Try Smush Pro Free', 'wp-smushit' );
 		}
 
