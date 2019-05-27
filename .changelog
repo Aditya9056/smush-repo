@@ -1,6 +1,7 @@
 = 3.2.2 =
 
 - New: Lazy loading onboarding step
+- New: Network access control settings
 - Enhance: Lazy loading support for ACF
 - Enhance: Lazy loading page parser
 - Enhance: Do not allow enabling CDN for sites that are not registered on the Hub
