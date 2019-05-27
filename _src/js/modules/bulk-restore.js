@@ -15,7 +15,9 @@
         modal: document.getElementById('smush-restore-images-dialog'),
         contentContainer: document.getElementById('smush-bulk-restore-content'),
         settings: {
-            slide: 'start' // start, progress or finish.
+            slide: 'start', // start, progress or finish.
+            success: 0,
+            errors: [],
         },
         items: [],   // total items, 1 item = 1 step.
         success: [], // successful items restored.
@@ -87,7 +89,7 @@
         /**
          * Update progress bar during directory smush.
          *
-         * @param {boolean} cancel    Cancel status.
+         * @param {boolean} cancel  Cancel status.
          */
         updateProgressBar: function ( cancel = false ) {
             let progress = 0;
@@ -165,8 +167,13 @@
                 xhr.send('item='+item+'&_ajax_nonce='+_nonce.value);
             } else {
                 // Finish.
-                console.log(this.success);
-                console.log(this.errors);
+                this.settings = {
+                    slide: 'finish',
+                    success: this.success.length,
+                    errors: this.errors,
+                };
+
+                self.renderTemplate();
             }
         }
     };

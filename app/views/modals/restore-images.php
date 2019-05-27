@@ -13,6 +13,7 @@ if ( ! defined( 'WPINC' ) ) {
 ?>
 
 <script type="text/template" id="smush-bulk-restore">
+	<# console.log( data ); #>
 	<div class="sui-box-header">
 		<h3 class="sui-box-title" id="dialogTitle">
 			<# if ( 'start' === data.slide ) { #>
@@ -73,7 +74,14 @@ if ( ! defined( 'WPINC' ) ) {
 				</span>
 			</div>
 			<# } else if ( 'finish' === data.slide ) { #>
-			Results
+			<div class="sui-notice sui-notice-success">
+				<p>{{{ data.success }}}
+					<?php esc_html_e( 'images were successfully restored.', 'wp-smushit' ); ?>
+				</p>
+			</div>
+			<button class="sui-button" onclick="window.location.reload()" data-a11y-dialog-hide type="button">
+				<?php esc_html_e( 'Finish', 'wp-smushit' ); ?>
+			</button>
 			<# } #>
 		</div>
 	</div>

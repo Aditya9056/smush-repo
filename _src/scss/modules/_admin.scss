@@ -13,6 +13,10 @@
 			.sui-image {
 				margin-top: 20px;
 			}
+
+			.sui-notice {
+				text-align: left;
+			}
 		}
 
 		/**
@@ -28,6 +32,7 @@
 				display: flex !important;
 				flex-direction: column !important;
 
+				.sui-icon-check,
 				.sui-icon-loader {
 					margin-bottom: 20px;
 					margin-right: 0 !important;
