@@ -210,11 +210,6 @@ class WP_Smush_Settings {
 		return $this->settings_fields;
 	}
 
-
-
-
-
-
 	/**
 	 * Init settings.
 	 *
@@ -248,10 +243,17 @@ class WP_Smush_Settings {
 		}
 
 		// Get directly from db.
-		return get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+		$network_enabled = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+		return isset( $network_enabled );
 	}
 
-	public function can_access() {
+	/**
+	 * Check if user is able to access the page.
+	 *
+	 * @since 3.2.2
+	 * @return bool
+	 */
+	public static function can_access() {
 		// Allow all access on single site installs.
 		if ( ! is_multisite() ) {
 			return true;
@@ -422,6 +424,14 @@ class WP_Smush_Settings {
 			$settings[ $name ] = filter_input( INPUT_POST, WP_SMUSH_PREFIX . $name, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 		}
 
+		// Save whether to use the settings networkwide or not ( Only if in network admin ).
+		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+
+		// Access control settings for multisite.
+		if ( 'save_settings' === $action && ( 'bulk' === $setting_form || 'settings' === $setting_form ) ) {
+			$settings['networkwide'] = $this->parse_access_settings( $setting_form );
+		}
+
 		// Settings that are specific to a page.
 		if ( 'bulk' === $setting_form ) {
 			$this->parse_bulk_settings();
@@ -451,14 +461,6 @@ class WP_Smush_Settings {
 	 */
 	private function parse_bulk_settings() {
 		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
-
-		// Save whether to use the settings networkwide or not ( Only if in network admin ).
-		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
-
-		if ( 'save_settings' === $action ) {
-			$settings['networkwide'] = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'networkwide', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
-			update_site_option( WP_SMUSH_PREFIX . 'networkwide', $settings['networkwide'] );
-		}
 
 		// Save the selected image sizes.
 		if ( empty( $_POST['wp-smush-image_sizes'] ) ) {
@@ -543,6 +545,37 @@ class WP_Smush_Settings {
 		}
 
 		$this->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $settings );
+	}
+
+	/**
+	 * Parse access control settings on multisite.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param string $page  Bulk or settings page.
+	 *
+	 * @return mixed
+	 */
+	private function parse_access_settings( $page ) {
+		$current_value = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+
+		// TODO: the values won't match if all|custom is selected on the settings page.
+		if ( 'bulk' === $page ) {
+			$new_value = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'networkwide', FILTER_VALIDATE_BOOLEAN );
+		} else {
+			$new_value = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'subsite-access', FILTER_SANITIZE_STRING );
+			$access    = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'access', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY );
+
+			if ( 'custom' === $new_value ) {
+				$new_value = $access;
+			}
+		}
+
+		if ( $current_value !== $new_value ) {
+			update_site_option( WP_SMUSH_PREFIX . 'networkwide', $new_value );
+		}
+
+		return $new_value;
 	}
 
 	/**
