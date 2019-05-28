@@ -1,5 +1,6 @@
 = 3.2.2 =
 
+- New: Bulk restore
 - New: Lazy loading onboarding step
 - Enhance: Lazy loading support for ACF
 - Enhance: Lazy loading page parser
