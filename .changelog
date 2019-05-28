@@ -13,6 +13,7 @@
 - Fix: PHP warning when Smush is not able to detect site language
 - Fix: Excluding frontpage post type from lazy loading
 - Fix: Missing icons in resize my full size images notice
+- Fix: Inability to resize full size images several times
 
 = 3.2.1 =
 
