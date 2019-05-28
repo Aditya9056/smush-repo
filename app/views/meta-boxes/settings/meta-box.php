@@ -112,32 +112,32 @@ if ( ! defined( 'WPINC' ) ) {
 						</p>
 
 						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="module-bulk" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="bulk" <?php checked( in_array( 'bulk', $settings['networkwide'], true ) ); ?>>
+							<input type="checkbox" id="module-bulk" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="bulk" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'bulk', $settings['networkwide'], true ) ); ?>>
 							<span aria-hidden="true">&nbsp;</span>
 							<span><?php esc_html_e( 'Bulk Smush', 'wp-smushit' ); ?></span>
 						</label>
 						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="module-directory" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="directory" <?php checked( in_array( 'directory', $settings['networkwide'], true ) ); ?>>
+							<input type="checkbox" id="module-directory" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="directory" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'directory', $settings['networkwide'], true ) ); ?>>
 							<span aria-hidden="true">&nbsp;</span>
 							<span><?php esc_html_e( 'Directory Smush', 'wp-smushit' ); ?></span>
 						</label>
 						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="module-integrations" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="integrations" <?php checked( in_array( 'integrations', $settings['networkwide'], true ) ); ?>>
+							<input type="checkbox" id="module-integrations" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="integrations" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'integrations', $settings['networkwide'], true ) ); ?>>
 							<span aria-hidden="true">&nbsp;</span>
 							<span><?php esc_html_e( 'Integrations', 'wp-smushit' ); ?></span>
 						</label>
 						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="module-lazy" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="lazy" <?php checked( in_array( 'lazy', $settings['networkwide'], true ) ); ?>>
+							<input type="checkbox" id="module-lazy" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="lazy" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'lazy', $settings['networkwide'], true ) ); ?>>
 							<span aria-hidden="true">&nbsp;</span>
 							<span><?php esc_html_e( 'Lazy Load', 'wp-smushit' ); ?></span>
 						</label>
 						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="module-cdn" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="cdn" <?php checked( in_array( 'cdn', $settings['networkwide'], true ) ); ?>>
+							<input type="checkbox" id="module-cdn" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="cdn" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'cdn', $settings['networkwide'], true ) ); ?>>
 							<span aria-hidden="true">&nbsp;</span>
 							<span><?php esc_html_e( 'CDN', 'wp-smushit' ); ?></span>
 						</label>
 						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="module-tools" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="tools" <?php checked( in_array( 'tools', $settings['networkwide'], true ) ); ?>>
+							<input type="checkbox" id="module-tools" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="tools" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'tools', $settings['networkwide'], true ) ); ?>>
 							<span aria-hidden="true">&nbsp;</span>
 							<span><?php esc_html_e( 'Tools', 'wp-smushit' ); ?></span>
 						</label>

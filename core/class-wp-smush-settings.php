@@ -559,9 +559,12 @@ class WP_Smush_Settings {
 	private function parse_access_settings( $page ) {
 		$current_value = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
 
-		// TODO: the values won't match if all|custom is selected on the settings page.
 		if ( 'bulk' === $page ) {
 			$new_value = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'networkwide', FILTER_VALIDATE_BOOLEAN );
+
+			if ( is_array( $current_value ) && isset( $new_value ) && $new_value ) {
+				$new_value = $current_value;
+			}
 		} else {
 			$new_value = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'subsite-access', FILTER_SANITIZE_STRING );
 			$access    = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'access', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY );
