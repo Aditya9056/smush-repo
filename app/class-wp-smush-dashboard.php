@@ -61,18 +61,15 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			)
 		);
 
-		$networkwide = $this->settings->is_network_enabled();
+		$access = WP_Smush_Settings::can_access();
+		if ( is_array( $access ) ) {
+			foreach ( $this->tabs as $tab => $name ) {
+				if ( in_array( $tab, $access, true ) ) {
+					continue;
+				}
 
-		// Tabs that can be shown in network admin networkwide (bulk, integrations, cdn).
-		if ( is_multisite() && $networkwide && is_network_admin() ) {
-			unset( $this->tabs['directory'] );
-		}
-
-		// Tabs that can be shown in subsites if networkwide (bulk and directory).
-		if ( is_multisite() && $networkwide && ! is_network_admin() ) {
-			unset( $this->tabs['integrations'] );
-			unset( $this->tabs['lazy_load'] );
-			unset( $this->tabs['tools'] );
+				unset( $this->tabs[ $tab ] );
+			}
 		}
 
 		// Disabled on all subsites.

@@ -85,8 +85,8 @@ if ( ! defined( 'WPINC' ) ) {
 			<div class="sui-side-tabs sui-tabs">
 				<div data-tabs>
 					<?php $selected = is_array( $settings['networkwide'] ) ? 'custom' : $settings['networkwide']; ?>
-					<label for="access-none" class="sui-tab-item <?php echo true === $settings['networkwide'] ? 'active' : ''; ?>">
-						<input type="radio" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>subsite-access" value="1" id="access-none" <?php checked( $selected, 1 ); ?>>
+					<label for="access-none" class="sui-tab-item <?php echo '1' === $settings['networkwide'] ? 'active' : ''; ?>">
+						<input type="radio" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>subsite-access" value="1" id="access-none" <?php checked( $selected, '1' ); ?>>
 						<?php esc_html_e( 'None', 'wp-smushit' ); ?>
 					</label>
 					<label for="access-all" class="sui-tab-item <?php echo 'all' === $settings['networkwide'] ? 'active' : ''; ?>">
@@ -100,7 +100,7 @@ if ( ! defined( 'WPINC' ) ) {
 				</div>
 
 				<div data-panes>
-					<div class="sui-notice sui-notice-info <?php echo true === $settings['networkwide'] ? 'active' : ''; ?>">
+					<div class="sui-notice sui-notice-info <?php echo '1' === $settings['networkwide'] ? 'active' : ''; ?>">
 						<p><?php esc_html_e( "Subsite admins can't override any module settings and will always inherit your network settings.", 'wp-smushit' ); ?></p>
 					</div>
 					<div class="sui-notice sui-notice-info <?php echo 'all' === $settings['networkwide'] ? 'active' : ''; ?>">
@@ -117,17 +117,12 @@ if ( ! defined( 'WPINC' ) ) {
 							<span><?php esc_html_e( 'Bulk Smush', 'wp-smushit' ); ?></span>
 						</label>
 						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="module-directory" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="directory" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'directory', $settings['networkwide'], true ) ); ?>>
-							<span aria-hidden="true">&nbsp;</span>
-							<span><?php esc_html_e( 'Directory Smush', 'wp-smushit' ); ?></span>
-						</label>
-						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
 							<input type="checkbox" id="module-integrations" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="integrations" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'integrations', $settings['networkwide'], true ) ); ?>>
 							<span aria-hidden="true">&nbsp;</span>
 							<span><?php esc_html_e( 'Integrations', 'wp-smushit' ); ?></span>
 						</label>
 						<label class="sui-checkbox sui-checkbox-stacked sui-checkbox-sm">
-							<input type="checkbox" id="module-lazy" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="lazy" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'lazy', $settings['networkwide'], true ) ); ?>>
+							<input type="checkbox" id="module-lazy_load" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>access[]" value="lazy_load" <?php checked( ! is_array( $settings['networkwide'] ) || in_array( 'lazy_load', $settings['networkwide'], true ) ); ?>>
 							<span aria-hidden="true">&nbsp;</span>
 							<span><?php esc_html_e( 'Lazy Load', 'wp-smushit' ); ?></span>
 						</label>

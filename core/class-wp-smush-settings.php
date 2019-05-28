@@ -251,9 +251,10 @@ class WP_Smush_Settings {
 	 * Check if user is able to access the page.
 	 *
 	 * @since 3.2.2
-	 * @return bool
+	 * @param bool $top_menu  Is this a top level menu point? Defaults to a Smush sub page.
+	 * @return bool|array  Can access page or not. If custom access rules defined - return custom rules array.
 	 */
-	public static function can_access() {
+	public static function can_access( $top_menu = false ) {
 		// Allow all access on single site installs.
 		if ( ! is_multisite() ) {
 			return true;
@@ -261,13 +262,17 @@ class WP_Smush_Settings {
 
 		$access = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
 
-		// Super admin can always view network settings, or all access is enabled.
-		if ( ( is_network_admin() && is_super_admin() ) || true === $access ) {
+		// Super admin can always view network/site settings.
+		if ( ( is_network_admin() && is_super_admin() ) || is_super_admin() ) {
 			return true;
 		}
 
-		if ( is_array( $access ) ) {
+		if ( current_user_can( 'manage_options' ) && ( 'all' === $access || 'custom' === $access && $top_menu ) ) {
+			return true;
+		}
 
+		if ( is_array( $access ) && current_user_can( 'manage_options' ) ) {
+			return $access;
 		}
 
 		return false;

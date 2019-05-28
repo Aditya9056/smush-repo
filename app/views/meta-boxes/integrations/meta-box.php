@@ -20,7 +20,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 <form id="wp-smush-settings-form" method="post">
 	<input type="hidden" name="setting_form" id="setting_form" value="integration">
-	<?php if ( is_multisite() && is_network_admin() ) : ?>
+	<?php if ( is_multisite() && ( is_network_admin() || WP_Smush_Settings::can_access() ) ) : ?>
 		<input type="hidden" name="setting-type" value="network">
 	<?php endif; ?>
 
