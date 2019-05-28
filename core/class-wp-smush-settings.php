@@ -98,7 +98,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $cdn_fields = array( 'auto_resize', 'cdn', 'webp' );
+	private $cdn_fields = array( 'auto_resize', 'webp' );
 
 	/**
 	 * List of fields in Settings form.

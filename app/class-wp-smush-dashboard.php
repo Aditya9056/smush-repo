@@ -986,12 +986,20 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * To print full size smush, resize and backup in group, we hook at `smush_setting_column_right_end`.
 	 */
 	public function bulk_settings_metabox() {
+		$fields = $this->settings->get_bulk_fields();
+
+		// Remove backups setting, as it's added separately.
+		$key = array_search( 'backup', $fields, true );
+		if ( false !== $key ) {
+			unset( $fields[ $key ] );
+		}
+
 		$this->view(
 			'meta-boxes/bulk-settings/meta-box',
 			array(
 				'basic_features'      => WP_Smush_Settings::$basic_features,
 				'cdn_enabled'         => $this->settings->get( 'cdn' ),
-				'grouped_settings'    => $this->settings->get_bulk_fields(),
+				'grouped_settings'    => $fields,
 				'opt_networkwide_val' => $this->settings->is_network_enabled(),
 				'settings'            => $this->settings->get(),
 				'settings_data'       => WP_Smush::get_instance()->core()->settings,
