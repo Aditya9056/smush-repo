@@ -137,7 +137,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			}
 
 			// Skip premium features if not a member.
-			if ( ! in_array( $name, WP_Smush_Core::$basic_features, true ) && ! WP_Smush::is_pro() ) {
+			if ( ! in_array( $name, WP_Smush_Settings::$basic_features, true ) && ! WP_Smush::is_pro() ) {
 				continue;
 			}
 

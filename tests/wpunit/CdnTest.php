@@ -146,7 +146,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @covers WP_Smush_CDN::add_settings
 	 */
 	public function testCdnAddSettingsToGroup() {
-		$this->assertEquals( [ 'auto_resize', 'webp' ], apply_filters( 'wp_smush_cdn_settings', [] ) );
+		$this->assertEquals( [ 'auto_resize', 'cdn', 'webp' ], WP_Smush::get_instance()->core()->mod->settings->get_cdn_fields() );
 	}
 
 	/**
@@ -161,7 +161,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 		// Init settings.
 		$smush->core()->admin_init();
 
-		$registered_settings = apply_filters( 'wp_smush_cdn_settings', [] );
+		$registered_settings = WP_Smush::get_instance()->core()->mod->settings->get_cdn_fields();
 
 		// Loop through all the settings and check for a description.
 		foreach ( $registered_settings as $setting ) {

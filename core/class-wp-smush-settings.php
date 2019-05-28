@@ -59,6 +59,21 @@ class WP_Smush_Settings {
 	);
 
 	/**
+	 * List of features/settings that are free.
+	 *
+	 * @var array $basic_features
+	 */
+	public static $basic_features = array(
+		'networkwide',
+		'bulk',
+		'auto',
+		'strip_exif',
+		'resize',
+		'gutenberg',
+		'js_builder',
+	);
+
+	/**
 	 * List of fields in bulk smush form.
 	 *
 	 * @used-by save()
@@ -74,7 +89,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $integration_fields = array( 'gutenberg', 'nextgen', 's3', 'js_builder' );
+	private $integration_fields = array( 'gutenberg', 's3', 'nextgen', 'js_builder' );
 
 	/**
 	 * List of fields in CDN form.
@@ -92,7 +107,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $settings_fields = array( 'accessible_colors', 'usage', 'keep_data' );
+	private $settings_fields = array( 'accessible_colors', 'usage', 'keep_data', 'subsite_access', 'api_auth' );
 
 	/**
 	 * List of fields in lazy loading form.
@@ -146,6 +161,61 @@ class WP_Smush_Settings {
 	}
 
 	/**
+	 * Getter method for bulk settings fields.
+	 *
+	 * @since 3.2.2
+	 * @return array
+	 */
+	public function get_bulk_fields() {
+		return $this->bulk_fields;
+	}
+
+	/**
+	 * Getter method for integration fields.
+	 *
+	 * @since 3.2.2
+	 * @return array
+	 */
+	public function get_integration_fields() {
+		return $this->integration_fields;
+	}
+
+	/**
+	 * Getter method for CDN fields.
+	 *
+	 * @since 3.2.2
+	 * @return array
+	 */
+	public function get_cdn_fields() {
+		return $this->cdn_fields;
+	}
+
+	/**
+	 * Getter method for tools fields.
+	 *
+	 * @since 3.2.2
+	 * @return array
+	 */
+	public function get_tools_fields() {
+		return $this->tools_fields;
+	}
+
+	/**
+	 * Getter method for settings fields.
+	 *
+	 * @since 3.2.2
+	 * @return array
+	 */
+	public function get_settings_fields() {
+		return $this->settings_fields;
+	}
+
+
+
+
+
+
+	/**
 	 * Init settings.
 	 *
 	 * If there are no settings in the database, populate it with the defaults, if settings are present
@@ -179,6 +249,26 @@ class WP_Smush_Settings {
 
 		// Get directly from db.
 		return get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+	}
+
+	public function can_access() {
+		// Allow all access on single site installs.
+		if ( ! is_multisite() ) {
+			return true;
+		}
+
+		$access = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+
+		// Super admin can always view network settings, or all access is enabled.
+		if ( ( is_network_admin() && is_super_admin() ) || true === $access ) {
+			return true;
+		}
+
+		if ( is_array( $access ) ) {
+
+		}
+
+		return false;
 	}
 
 	/**
@@ -314,14 +404,6 @@ class WP_Smush_Settings {
 
 		$settings = $this->get();
 
-		// Save whether to use the settings networkwide or not ( Only if in network admin ).
-		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
-
-		if ( 'save_settings' === $action ) {
-			$settings['networkwide'] = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'networkwide', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
-			update_site_option( WP_SMUSH_PREFIX . 'networkwide', $settings['networkwide'] );
-		}
-
 		// Delete S3 alert flag, if S3 option is disabled again.
 		if ( ! isset( $_POST['wp-smush-s3'] ) && isset( $settings['integration']['s3'] ) && $settings['integration']['s3'] ) {
 			delete_site_option( WP_SMUSH_PREFIX . 'hide_s3support_alert' );
@@ -369,6 +451,14 @@ class WP_Smush_Settings {
 	 */
 	private function parse_bulk_settings() {
 		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
+
+		// Save whether to use the settings networkwide or not ( Only if in network admin ).
+		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+
+		if ( 'save_settings' === $action ) {
+			$settings['networkwide'] = filter_input( INPUT_POST, WP_SMUSH_PREFIX . 'networkwide', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
+			update_site_option( WP_SMUSH_PREFIX . 'networkwide', $settings['networkwide'] );
+		}
 
 		// Save the selected image sizes.
 		if ( empty( $_POST['wp-smush-image_sizes'] ) ) {

@@ -27,7 +27,6 @@ if ( ! defined( 'WPINC' ) ) {
 <form id="wp-smush-settings-form" method="post">
 	<input type="hidden" name="setting_form" id="setting_form" value="lazy_load">
 	<?php if ( is_multisite() && is_network_admin() ) : ?>
-		<input type="hidden" name="wp-smush-networkwide" id="wp-smush-networkwide" value="1">
 		<input type="hidden" name="setting-type" value="network">
 	<?php endif; ?>
 

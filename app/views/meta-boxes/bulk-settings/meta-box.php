@@ -60,6 +60,11 @@ if ( ! defined( 'WPINC' ) ) {
 				continue;
 			}
 
+			// If not bulk settings - skip.
+			if ( ! in_array( $name, $grouped_settings, true ) ) {
+				continue;
+			}
+
 			// Skip premium features if not a member.
 			if ( ! in_array( $name, $basic_features, true ) && ! WP_Smush::is_pro() ) {
 				continue;
@@ -67,11 +72,6 @@ if ( ! defined( 'WPINC' ) ) {
 
 			$setting_m_key = WP_SMUSH_PREFIX . $name;
 			$setting_val   = empty( $settings[ $name ] ) ? false : $settings[ $name ];
-
-			// Group original, resize and backup for PRO users.
-			if ( in_array( $name, $grouped_settings, true ) ) {
-				continue;
-			}
 
 			$label = ! empty( $value['short_label'] ) ? $value['short_label'] : $value['label'];
 

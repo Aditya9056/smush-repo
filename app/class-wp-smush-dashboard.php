@@ -16,38 +16,6 @@ if ( ! defined( 'WPINC' ) ) {
 class WP_Smush_Dashboard extends WP_Smush_View {
 
 	/**
-	 * Settings group for resize options.
-	 *
-	 * @var array
-	 */
-	private $resize_group = array(
-		'detection',
-	);
-
-	/**
-	 * Settings group for full size image options.
-	 *
-	 * @var array
-	 */
-	private $full_size_group = array(
-		'backup',
-	);
-
-	/**
-	 * Settings group for integration options.
-	 *
-	 * @var array
-	 */
-	private $integration_group = array();
-
-	/**
-	 * Settings group for CDN options.
-	 *
-	 * @var array
-	 */
-	private $cdn_group = array();
-
-	/**
 	 * Register page action hooks
 	 */
 	public function add_action_hooks() {
@@ -73,10 +41,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * Function triggered when the page is loaded before render any content.
 	 */
 	public function on_load() {
-		// Hook into settings.
-		$this->integration_group = apply_filters( 'wp_smush_integration_settings', array() );
-		$this->cdn_group         = apply_filters( 'wp_smush_cdn_settings', array() );
-
 		// If a free user, update the limits.
 		if ( ! WP_Smush::is_pro() ) {
 			// Reset transient.
@@ -859,25 +823,23 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			return;
 		}
 
-		foreach ( $this->full_size_group as $name ) {
-			$setting_val = $this->settings->get( $name );
-			$setting_key = WP_SMUSH_PREFIX . $name;
-			?>
-			<div class="sui-form-field">
-				<label class="sui-toggle">
-					<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_key ); ?>-desc" id="<?php echo esc_attr( $setting_key ); ?>" name="<?php echo esc_attr( $setting_key ); ?>" <?php checked( $setting_val, 1 ); ?> value="1">
-					<span class="sui-toggle-slider"></span>
-					<label class="toggle-label <?php echo esc_attr( $setting_key . '-label' ); ?>" for="<?php echo esc_attr( $setting_key ); ?>" aria-hidden="true"></label>
-				</label>
-				<label for="<?php echo esc_attr( $setting_key ); ?>">
-					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
-				</label>
-				<span class="sui-description sui-toggle-description">
-					<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
-				</span>
-			</div>
-			<?php
-		}
+		$setting_val = $this->settings->get( 'backup' );
+		$setting_key = WP_SMUSH_PREFIX . 'backup';
+		?>
+		<div class="sui-form-field">
+			<label class="sui-toggle">
+				<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_key ); ?>-desc" id="<?php echo esc_attr( $setting_key ); ?>" name="<?php echo esc_attr( $setting_key ); ?>" <?php checked( $setting_val, 1 ); ?> value="1">
+				<span class="sui-toggle-slider"></span>
+				<label class="toggle-label <?php echo esc_attr( $setting_key . '-label' ); ?>" for="<?php echo esc_attr( $setting_key ); ?>" aria-hidden="true"></label>
+			</label>
+			<label for="<?php echo esc_attr( $setting_key ); ?>">
+				<?php echo esc_html( WP_Smush::get_instance()->core()->settings['backup']['label'] ); ?>
+			</label>
+			<span class="sui-description sui-toggle-description">
+				<?php echo esc_html( WP_Smush::get_instance()->core()->settings['backup']['desc'] ); ?>
+			</span>
+		</div>
+		<?php
 	}
 
 	/**
@@ -1027,15 +989,12 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * To print full size smush, resize and backup in group, we hook at `smush_setting_column_right_end`.
 	 */
 	public function bulk_settings_metabox() {
-		// Get all grouped settings that can be skipped.
-		$grouped_settings = array_merge( $this->resize_group, $this->full_size_group, $this->integration_group, array( 'webp', 'auto_resize', 'accessible_colors', 'usage', 'keep_data', 'api_auth' ) );
-
 		$this->view(
 			'meta-boxes/bulk-settings/meta-box',
 			array(
-				'basic_features'      => WP_Smush_Core::$basic_features,
+				'basic_features'      => WP_Smush_Settings::$basic_features,
 				'cdn_enabled'         => $this->settings->get( 'cdn' ),
-				'grouped_settings'    => $grouped_settings,
+				'grouped_settings'    => $this->settings->get_bulk_fields(),
 				'opt_networkwide_val' => $this->settings->is_network_enabled(),
 				'settings'            => $this->settings->get(),
 				'settings_data'       => WP_Smush::get_instance()->core()->settings,
@@ -1147,9 +1106,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/integrations/meta-box',
 			array(
-				'basic_features'    => WP_Smush_Core::$basic_features,
+				'basic_features'    => WP_Smush_Settings::$basic_features,
 				'is_pro'            => WP_Smush::is_pro(),
-				'integration_group' => $this->integration_group,
+				'integration_group' => $this->settings->get_integration_fields(),
 				'settings'          => $this->settings->get(),
 				'settings_data'     => $core->settings,
 				'upsell_url'        => $upsell_url,
@@ -1245,7 +1204,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/cdn/meta-box',
 			array(
-				'cdn_group'     => $this->cdn_group,
+				'cdn_group'     => $this->settings->get_cdn_fields(),
 				'settings'      => $this->settings->get(),
 				'settings_data' => WP_Smush::get_instance()->core()->settings,
 				'status_msg'    => $status_msg[ $status ],
@@ -1346,7 +1305,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/tools/meta-box',
 			array(
-				'grouped_settings'    => $this->resize_group,
+				'grouped_settings'    => $this->settings->get_tools_fields(),
 				'opt_networkwide_val' => $this->settings->is_network_enabled(),
 				'settings'            => $this->settings->get(),
 				'settings_data'       => WP_Smush::get_instance()->core()->settings,

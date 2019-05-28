@@ -78,20 +78,6 @@ class WP_Smush_Core {
 	);
 
 	/**
-	 * List of featurws/settings that are free.
-	 *
-	 * @var array $basic_features
-	 */
-	public static $basic_features = array(
-		'networkwide',
-		'bulk',
-		'auto',
-		'strip_exif',
-		'resize',
-		'gutenberg',
-	);
-
-	/**
 	 * Link to upgrade.
 	 *
 	 * @var string $upgrade_url
