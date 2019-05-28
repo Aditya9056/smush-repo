@@ -93,16 +93,48 @@ if ( ! defined( 'WPINC' ) ) {
 		</div>
 	</div>
 
-	<# if ( 'finish' === data.slide ) { #>
-	<div class="sui-box-footer sui-no-padding-bottom">
-		<!--
+	<# if ( 'finish' === data.slide && 0 < data.errors.length ) { #>
+	<div class="smush-final-log">
+		<div class="smush-bulk-errors">
+			<# for ( let item of data.errors ) { #>
+			<div class="smush-bulk-error-row sui-no-margin">
+				<div class="smush-bulk-image-data">
+					<# if ( item.thumb ) { #>
+						{{{ item.thumb }}}
+					<# } else { #>
+						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
+					<# } #>
+					<span class="smush-image-name">{{{ item.src }}}</span>
+					<span class="smush-image-error"><?php esc_html_e( 'Unable to restore image', 'wp-smushit' ); ?></span>
+				</div>
+				<div class="smush-bulk-image-actions">
+					<a class="sui-button-icon" href="{{{ item.link }}}">
+						<i class="sui-icon-arrow-right" aria-hidden="true"></i>
+					</a>
+					<span class="sui-screen-reader-text">
+						<?php esc_html_e( 'View item in Media Library', 'wp-smushit' ); ?>
+					</span>
+				</div>
+			</div>
+			<# } #>
+		</div>
+	</div>
+
+	<p class="sui-description sui-margin-left sui-margin-right">
+		<?php
+		printf(
+			esc_html__( "Note: You can find all the images which couldn't be restored (still smushed) in your %1\$sMedia Library%2\$s.", 'wp-smushit' ),
+			'<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">',
+			'</a>'
+		);
+		?>
+	</p>
+	<div class="sui-box-footer sui-no-padding-bottom sui-no-padding-top">
 		<div class="sui-actions-left">
-			<button class="sui-button">
-				<i class="sui-icon-eye" aria-hidden="true"></i>
-				<?php esc_html_e( 'View All', 'wp-smushit' ); ?>
+			<button class="sui-button sui-button-ghost" onclick="WP_Smush.restore.cancel()" data-a11y-dialog-hide>
+				<?php esc_html_e( 'Cancel', 'wp-smushit' ); ?>
 			</button>
 		</div>
-		-->
 
 		<div class="sui-actions-right">
 			<button class="sui-button" id="smush-bulk-restore-button">

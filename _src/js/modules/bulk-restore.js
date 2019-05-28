@@ -69,8 +69,10 @@
             if ( confirmButton ) {
                 confirmButton.addEventListener('click', function(e) {
                     e.preventDefault();
+                    self.modal.querySelector('.sui-dialog-content').style.maxWidth = '460px';
 
                     self.settings = { slide: 'progress' };
+                    self.errors = [];
 
                     self.renderTemplate();
                     self.initScan();
@@ -82,11 +84,10 @@
          * Cancel the bulk restore.
          */
         cancel: function() {
-            if ( 'start' === this.settings.slide ) {
+            if ( 'start' === this.settings.slide || 'finish' === this.settings.slide ) {
                 // Hide the modal.
                 SUI.dialogs['smush-restore-images-dialog'].hide();
             } else {
-                // TODO: Cancel bulk restore.
                 this.updateProgressBar( true );
                 window.location.reload();
             }
@@ -166,7 +167,12 @@
                         if ( 'undefined' !== typeof res.data.success && res.data.success ) {
                             self.success.push(item);
                         } else {
-                            self.errors.push(item);
+                            self.errors.push({
+                                id: item,
+                                src: res.data.src,
+                                thumb: res.data.thumb,
+                                link: res.data.link,
+                            });
                         }
                     }
 
@@ -184,7 +190,9 @@
                 };
 
                 self.renderTemplate();
-                //this.modal.querySelector('.sui-dialog-content').style.maxWidth = '660px';
+                if ( 0 < this.errors.length ) {
+                    this.modal.querySelector('.sui-dialog-content').style.maxWidth = '660px';
+                }
             }
         }
     };

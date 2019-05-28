@@ -417,9 +417,23 @@ class WP_Smush_Backup extends WP_Smush_Module {
 
 		$status = $id ? $this->restore_image( $id, false ) : false;
 
+		$original_meta = wp_get_attachment_metadata( $id, true );
+
+		// Try to get the file name from path.
+		$file_name = explode( '/', $original_meta['file'] );
+
+		if ( is_array( $file_name ) ) {
+			$file_name = array_pop( $file_name );
+		} else {
+			$file_name = $original_meta['file'];
+		}
+
 		wp_send_json_success(
 			array(
 				'success' => $status,
+				'src'     => $file_name,
+				'thumb'   => wp_get_attachment_image( $id ),
+				'link'    => WP_Smush_Helper::get_image_media_link( $id, $file_name, true ),
 			)
 		);
 	}

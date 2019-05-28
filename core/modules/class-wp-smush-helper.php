@@ -279,10 +279,11 @@ class WP_Smush_Helper {
 	 *
 	 * @param int    $id    Image ID.
 	 * @param string $name  Image file name.
+	 * @param bool   $src   Return only src. Default - return link.
 	 *
 	 * @return string
 	 */
-	public static function get_image_media_link( $id, $name ) {
+	public static function get_image_media_link( $id, $name, $src = false ) {
 		$mode = get_user_option( 'media_library_mode' );
 		if ( 'grid' === $mode ) {
 			$link = admin_url( "upload.php?item={$id}" );
@@ -290,7 +291,11 @@ class WP_Smush_Helper {
 			$link = admin_url( "post.php?post={$id}&action=edit" );
 		}
 
-		return "<a href='{$link}'>{$name}</a>";
+		if ( ! $src ) {
+			return "<a href='{$link}'>{$name}</a>";
+		}
+
+		return $link;
 	}
 
 	/**
