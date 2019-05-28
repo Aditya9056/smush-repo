@@ -146,7 +146,7 @@ class CdnTest extends \Codeception\TestCase\WPTestCase {
 	 * @covers WP_Smush_CDN::add_settings
 	 */
 	public function testCdnAddSettingsToGroup() {
-		$this->assertEquals( [ 'auto_resize', 'cdn', 'webp' ], WP_Smush::get_instance()->core()->mod->settings->get_cdn_fields() );
+		$this->assertEquals( [ 'auto_resize', 'webp' ], WP_Smush::get_instance()->core()->mod->settings->get_cdn_fields() );
 	}
 
 	/**
