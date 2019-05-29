@@ -1246,6 +1246,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		if ( 'en_US' === $site_locale ) {
 			$site_language = 'English';
 		} else {
+			/* @noinspection PhpIncludeInspection */
 			require_once ABSPATH . 'wp-admin/includes/translation-install.php';
 			$translations  = wp_get_available_translations();
 			$site_language = isset( $translations[ $site_locale ] ) ? $translations[ $site_locale ]['native_name'] : __( 'Error detecting language', 'wp-smushit' );

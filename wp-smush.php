@@ -108,6 +108,7 @@ if ( WP_SMUSH_BASENAME !== plugin_basename( __FILE__ ) ) {
 	}
 
 	if ( ! function_exists( 'is_plugin_active' ) ) {
+		/* @noinspection PhpIncludeInspection */
 		include_once ABSPATH . 'wp-admin/includes/plugin.php';
 	}
 
