@@ -31,35 +31,29 @@ if ( ! defined( 'WPINC' ) ) {
 		<div class="network-settings-wrapper<?php echo $opt_networkwide_val ? '' : ' sui-hidden'; ?>">
 	<?php endif; ?>
 
-	<?php if ( ! is_multisite() || ( ! $opt_networkwide_val && ! is_network_admin() ) || is_network_admin() ) {
-		foreach ( $settings_data as $name => $value ) {
-			// Skip networkwide settings, we already printed it.
-			if ( 'networkwide' === $name ) {
-				continue;
-			}
-
-			// If not bulk settings - skip.
-			if ( ! in_array( $name, $grouped_settings, true ) ) {
-				continue;
-			}
-
-			// Skip premium features if not a member.
-			if ( ! in_array( $name, $basic_features, true ) && ! WP_Smush::is_pro() ) {
-				continue;
-			}
-
-			$setting_m_key = WP_SMUSH_PREFIX . $name;
-			$setting_val   = empty( $settings[ $name ] ) ? false : $settings[ $name ];
-
-			$label = ! empty( $value['short_label'] ) ? $value['short_label'] : $value['label'];
-
-			// Show settings option.
-			$this->settings_row( $setting_m_key, $label, $name, $setting_val );
+	<?php
+	foreach ( $settings_data as $name => $value ) {
+		// If not bulk settings - skip.
+		if ( ! in_array( $name, $grouped_settings, true ) ) {
+			continue;
 		}
 
-		// Hook after general settings.
-		do_action( 'wp_smush_after_basic_settings' );
+		// Skip premium features if not a member.
+		if ( ! in_array( $name, $basic_features, true ) && ! WP_Smush::is_pro() ) {
+			continue;
+		}
+
+		$setting_m_key = WP_SMUSH_PREFIX . $name;
+		$setting_val   = empty( $settings[ $name ] ) ? false : $settings[ $name ];
+
+		$label = ! empty( $value['short_label'] ) ? $value['short_label'] : $value['label'];
+
+		// Show settings option.
+		$this->settings_row( $setting_m_key, $label, $name, $setting_val );
 	}
+
+	// Hook after general settings.
+	do_action( 'wp_smush_after_basic_settings' );
 
 	if ( is_multisite() && is_network_admin() ) {
 		echo '</div>';
