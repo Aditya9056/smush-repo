@@ -393,11 +393,6 @@ class WP_Smush_Core {
 	 */
 	private function init_settings() {
 		$this->settings = array(
-			'networkwide'       => array(
-				'label'       => esc_html__( 'Use network settings for all the sub-sites.', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Multisite Control', 'wp-smushit' ),
-				'desc'        => esc_html__( 'Choose whether you want to use network settings for all sub-sites or whether sub-site admins can control Smush’s settings.', 'wp-smushit' ),
-			),
 			'bulk'              => array(
 				'short_label' => esc_html__( 'Image Sizes', 'wp-smushit' ),
 				'desc'        => esc_html__( 'WordPress generates multiple image thumbnails for each image you upload. Choose which of those thumbnail sizes you want to include when bulk smushing.', 'wp-smushit' ),
@@ -447,7 +442,7 @@ class WP_Smush_Core {
 				'short_label' => esc_html__( 'Color Accessibility', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Increase the visibility and accessibility of elements and components to meet WCAG AAA requirements.', 'wp-smushit' ),
 			),
-			'subsite_access'    => array(
+			'networkwide'       => array(
 				'short_label' => esc_html__( 'Subsite Controls', 'wp-smushit' ),
 				'desc'        => esc_html__( 'By default, subsites will inherit your network settings. Choose which modules you want to allow subsite admins to override.', 'wp-smushit' ),
 			),

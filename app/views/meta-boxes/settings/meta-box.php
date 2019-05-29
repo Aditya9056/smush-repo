@@ -77,8 +77,8 @@ if ( ! defined( 'WPINC' ) ) {
 	<?php if ( is_multisite() && is_network_admin() ) : ?>
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">
-			<span class="sui-settings-label"><?php echo esc_html( $settings_data['subsite_access']['short_label'] ); ?></span>
-			<span class="sui-description"><?php echo esc_html( $settings_data['subsite_access']['desc'] ); ?></span>
+			<span class="sui-settings-label"><?php echo esc_html( $settings_data['networkwide']['short_label'] ); ?></span>
+			<span class="sui-description"><?php echo esc_html( $settings_data['networkwide']['desc'] ); ?></span>
 		</div>
 
 		<div class="sui-box-settings-col-2">

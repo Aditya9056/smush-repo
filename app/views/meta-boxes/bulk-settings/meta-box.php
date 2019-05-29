@@ -28,28 +28,6 @@ if ( ! defined( 'WPINC' ) ) {
 	<input type="hidden" name="setting_form" id="setting_form" value="bulk">
 	<?php if ( is_multisite() && is_network_admin() ) : ?>
 		<input type="hidden" name="setting-type" value="network">
-		<div class="sui-box-settings-row wp-smush-basic">
-			<div class="sui-box-settings-col-1">
-				<label for="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>" aria-hidden="true">
-					<span class="sui-settings-label">
-						<?php echo esc_html( $settings_data['networkwide']['short_label'] ); ?>
-					</span>
-					<span class="sui-description">
-						<?php echo esc_html( $settings_data['networkwide']['desc'] ); ?>
-					</span>
-				</label>
-			</div>
-			<div class="sui-box-settings-col-2">
-				<label class="sui-toggle">
-					<input type="checkbox" id="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>" name="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>" <?php checked( $opt_networkwide_val, 1, true ); ?> value="1">
-					<span class="sui-toggle-slider"></span>
-					<label class="toggle-label" for="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>" aria-hidden="true"></label>
-				</label>
-				<label for="<?php echo esc_attr( WP_SMUSH_PREFIX . 'networkwide' ); ?>">
-					<?php echo esc_html( $settings_data['networkwide']['label'] ); ?>
-				</label>
-			</div>
-		</div>
 		<div class="network-settings-wrapper<?php echo $opt_networkwide_val ? '' : ' sui-hidden'; ?>">
 	<?php endif; ?>
 

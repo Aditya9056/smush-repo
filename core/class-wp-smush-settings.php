@@ -80,7 +80,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $bulk_fields = array( 'networkwide', 'auto', 'lossy', 'original', 'strip_exif', 'resize', 'backup', 'png_to_jpg' );
+	private $bulk_fields = array( 'auto', 'lossy', 'original', 'strip_exif', 'resize', 'backup', 'png_to_jpg' );
 
 	/**
 	 * List of fields in integration form.
@@ -107,7 +107,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $settings_fields = array( 'accessible_colors', 'usage', 'keep_data', 'subsite_access', 'api_auth' );
+	private $settings_fields = array( 'accessible_colors', 'usage', 'networkwide', 'keep_data', 'api_auth' );
 
 	/**
 	 * List of fields in lazy loading form.
