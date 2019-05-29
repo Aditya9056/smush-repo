@@ -1,5 +1,6 @@
 = 3.2.2 =
 
+- New: Bulk restore
 - New: Lazy loading onboarding step
 - New: Network access control settings
 - Enhance: Lazy loading support for ACF
@@ -13,6 +14,7 @@
 - Fix: PHP warning when Smush is not able to detect site language
 - Fix: Excluding frontpage post type from lazy loading
 - Fix: Missing icons in resize my full size images notice
+- Fix: Inability to resize full size images several times
 
 = 3.2.1 =
 
