@@ -22,7 +22,7 @@ if ( ! defined( 'WPINC' ) ) {
 	<?php endif; ?>
 
 	<?php
-	if ( ! is_multisite() || ( ! $settings['networkwide'] && ! is_network_admin() ) || is_network_admin() ) {
+	if ( WP_Smush_Settings::can_access() ) {
 		foreach ( $settings_data as $name => $values ) {
 			// If not CDN setting - skip.
 			if ( ! in_array( $name, $grouped_settings, true ) ) {

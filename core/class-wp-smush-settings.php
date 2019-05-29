@@ -36,7 +36,6 @@ class WP_Smush_Settings {
 	 * @var array
 	 */
 	private $settings = array(
-		'networkwide'       => false,
 		'auto'              => true,  // works with CDN.
 		'lossy'             => false, // works with CDN.
 		'strip_exif'        => true,  // works with CDN.
@@ -64,7 +63,6 @@ class WP_Smush_Settings {
 	 * @var array $basic_features
 	 */
 	public static $basic_features = array(
-		'networkwide',
 		'bulk',
 		'auto',
 		'strip_exif',
@@ -107,7 +105,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $settings_fields = array( 'accessible_colors', 'usage', 'networkwide', 'keep_data', 'api_auth' );
+	private $settings_fields = array( 'accessible_colors', 'usage', 'keep_data', 'api_auth' );
 
 	/**
 	 * List of fields in lazy loading form.
@@ -244,7 +242,7 @@ class WP_Smush_Settings {
 
 		// Get directly from db.
 		$network_enabled = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
-		return isset( $network_enabled );
+		return isset( $network_enabled ) && false === (bool) $network_enabled;
 	}
 
 	/**
@@ -262,8 +260,18 @@ class WP_Smush_Settings {
 
 		$access = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
 
+		// Check to if the settings update is network-wide or not ( only if in network admin ).
+		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+
+		$is_network_admin = is_network_admin() || 'save_settings' === $action;
+
+		// Additional check for ajax (is_network_admin() does not work in ajax calls).
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && isset( $_SERVER['HTTP_REFERER'] ) && preg_match( '#^' . network_admin_url() . '#i', wp_unslash( $_SERVER['HTTP_REFERER'] ) ) ) { // Input var ok.
+			$is_network_admin = true;
+		}
+
 		// Super admin can always view network/site settings.
-		if ( ( is_network_admin() && is_super_admin() ) || is_super_admin() ) {
+		if ( is_super_admin() && ( $is_network_admin || $access ) ) {
 			return true;
 		}
 
@@ -374,6 +382,7 @@ class WP_Smush_Settings {
 			die();
 		}
 
+		delete_site_option( WP_SMUSH_PREFIX . 'networkwide' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'settings' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'hide_smush_welcome' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'image_sizes' );
@@ -429,7 +438,7 @@ class WP_Smush_Settings {
 			$settings[ $name ] = filter_input( INPUT_POST, WP_SMUSH_PREFIX . $name, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 		}
 
-		// Save whether to use the settings networkwide or not ( Only if in network admin ).
+		// Check to if the settings update is network-wide or not ( only if in network admin ).
 		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 
 		// Access control settings for multisite.

@@ -402,8 +402,7 @@ abstract class WP_Smush_View {
 		$this->view(
 			'tabs',
 			array(
-				'tabs'      => $this->get_tabs(),
-				'is_hidden' => is_network_admin() && ! $this->settings->is_network_enabled(),
+				'tabs' => $this->get_tabs(),
 			)
 		);
 	}
@@ -720,6 +719,34 @@ abstract class WP_Smush_View {
 	 */
 	public function hide_wpmudev_doc_link() {
 		return apply_filters( 'wpmudev_branding_hide_doc_link', false );
+	}
+
+	/**
+	 * Check if the page should be rendered.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @return bool
+	 */
+	public function should_render() {
+		// Render all pages on single site installs.
+		if ( ! is_multisite() ) {
+			return true;
+		}
+
+		$access = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+
+		if ( ! $access ) {
+			return is_network_admin() ? true : false;
+		}
+
+		if ( 'all' === $access ) {
+			return is_network_admin() ? false : true;
+		}
+
+		if ( is_array( $access ) ) {
+			// TODO: check if on page.
+		}
 	}
 
 }
