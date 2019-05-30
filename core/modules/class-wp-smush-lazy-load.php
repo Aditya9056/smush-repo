@@ -102,7 +102,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Module {
 			return;
 		}
 
-		$loader = WP_SMUSH_URL . 'app/assets/images/smush-lazyloader.gif';
+		$loader = WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-' . $this->options['animation']['spinner'] . '.gif';
 		$fadein = isset( $this->options['animation']['duration'] ) ? $this->options['animation']['duration'] : 0;
 		$delay  = isset( $this->options['animation']['delay'] ) ? $this->options['animation']['delay'] : 0;
 		?>
@@ -110,32 +110,12 @@ class WP_Smush_Lazy_Load extends WP_Smush_Module {
 			.no-js img.lazyload { display: none; }
 			figure.wp-block-image img.lazyloading { min-width: 150px; }
 			<?php if ( $this->options['animation']['spinner'] ) : ?>
-				@-webkit-keyframes spin {
-					0% {
-						-webkit-transform: rotate(0deg);
-						transform: rotate(0deg);
-					}
-					100% {
-						-webkit-transform: rotate(360deg);
-						transform: rotate(360deg);
-					}
-				}
-				@keyframes spin {
-					0% {
-						-webkit-transform: rotate(0deg);
-						transform: rotate(0deg);
-					}
-					100% {
-						-webkit-transform: rotate(360deg);
-						transform: rotate(360deg);
-					}
-				}
 				.lazyload { opacity: 0; }
 				.lazyloading {
 					border: 0 !important;
 					opacity: 1;
 					background: rgba(255, 255, 255, 0) url('<?php echo esc_url( $loader ); ?>') no-repeat center !important;
-					background-size: 30px 30px !important;
+					background-size: 16px auto !important;
 				}
 			<?php else : ?>
 				.lazyload, .lazyloading { opacity: 0; }

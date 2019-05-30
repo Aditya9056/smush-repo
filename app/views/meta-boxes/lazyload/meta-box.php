@@ -122,7 +122,7 @@ if ( ! defined( 'WPINC' ) ) {
 						<?php esc_html_e( 'Fade In', 'wp-smushit' ); ?>
 					</label>
 					<label for="animation-spinner" class="sui-tab-item <?php echo $settings['animation']['spinner'] ? 'active' : ''; ?>">
-						<input type="radio" name="animation[value]" value="spinner" id="animation-spinner" <?php checked( $settings['animation']['spinner'] ); ?> />
+						<input type="radio" name="animation[value]" value="spinner" id="animation-spinner" <?php checked( isset( $settings['animation']['spinner'] ) ); ?> />
 						<?php esc_html_e( 'Spinner', 'wp-smushit' ); ?>
 					</label>
 					<label for="animation-disabled" class="sui-tab-item <?php echo $settings['animation']['disabled'] ? 'active' : ''; ?>">
@@ -158,61 +158,33 @@ if ( ! defined( 'WPINC' ) ) {
 						<label class="sui-label"><?php esc_html_e( 'Spinner', 'wp-smushit' ); ?></label>
 						<div class="sui-box-selectors sui-upload">
 							<ul>
-								<li><label for="item1" class="sui-box-selector">
-										<input type="radio" name="item-radio-input" id="item1" checked="checked" />
-										<span>
-											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader.gif'; ?>" />
+								<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
+									<li><label for="loader-icon-<?php echo absint( $i ); ?>" class="sui-box-selector">
+											<input type="radio" name="loader-icon" id="loader-icon-<?php echo absint( $i ); ?>" value="<?php echo absint( $i ); ?>" <?php checked( (int) $settings['animation']['spinner'] === $i ); ?> />
+											<span>
+											<img alt="<?php esc_attr_e( 'Spinner image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $i ); ?>" src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-' . $i . '.gif' ); ?>" />
 										</span>
-									</label></li>
+										</label></li>
+								<?php endfor; ?>
 
-								<li><label for="item2" class="sui-box-selector">
-										<input type="radio" name="item-radio-input" id="item2" />
-										<span>
-											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-1.gif'; ?>" />
-										</span>
-									</label></li>
+								<li class="sui-form-field">
+									<div class="sui-upload">
+										<input type="file" value="filename.png" accept="image/gif" readonly="readonly" />
 
-								<li><label for="item3" class="sui-box-selector">
-										<input type="radio" name="item-radio-input" id="item3" />
-										<span>
-											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-2.gif'; ?>" />
-										</span>
-									</label></li>
+										<div class="sui-upload-image" aria-hidden="true">
+											<div class="sui-image-mask"></div>
+											<div role="button" class="sui-image-preview" style="background-image: url(<?php echo WP_SMUSH_URL . 'app/assets/images/icon-loader.gif'; ?>);"></div>
+										</div>
 
-								<li><label for="item4" class="sui-box-selector">
-										<input type="radio" name="item-radio-input" id="item4" />
-										<span>
-											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-3.gif'; ?>" />
-										</span>
-									</label></li>
+										<button class="sui-upload-button">
+											<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wp-smushit' ); ?>
+										</button>
 
-								<li><label for="item5" class="sui-box-selector">
-										<input type="radio" name="item-radio-input" id="item5" />
-										<span>
-											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-4.gif'; ?>" />
-										</span>
-									</label></li>
-
-								<li>
-									<div class="sui-form-field">
-										<div class="sui-upload">
-											<input type="file" value="filename.png" accept="image/gif" readonly="readonly" />
-
-											<div class="sui-upload-image" aria-hidden="true">
-												<div class="sui-image-mask"></div>
-												<div role="button" class="sui-image-preview" style="background-image: url(<?php echo WP_SMUSH_URL . 'app/assets/images/icon-loader.gif'; ?>);"></div>
-											</div>
-
-											<button class="sui-upload-button">
-												<i class="sui-icon-upload-cloud" aria-hidden="true"></i> Upload file
+										<div class="sui-upload-file">
+											<span>filename.png</span>
+											<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit'); ?>">
+												<i class="sui-icon-close" aria-hidden="true"></i>
 											</button>
-
-											<div class="sui-upload-file">
-												<span>filename.png</span>
-												<button aria-label="Remove file">
-													<i class="sui-icon-close" aria-hidden="true"></i>
-												</button>
-											</div>
 										</div>
 									</div>
 								</li>

@@ -429,6 +429,7 @@ class WP_Smush_Settings {
 			'exclude-pages'   => FILTER_SANITIZE_STRING,
 			'exclude-classes' => FILTER_SANITIZE_STRING,
 			'footer'          => FILTER_VALIDATE_BOOLEAN,
+			'loader-icon'     => FILTER_SANITIZE_STRING,
 		);
 
 		$settings = filter_input_array( INPUT_POST, $args );
@@ -437,7 +438,12 @@ class WP_Smush_Settings {
 		$settings['animation']['fadein']   = isset( $settings['animation']['value'] ) && 'fadein' === $settings['animation']['value'] ? true : false;
 		$settings['animation']['duration'] = isset( $settings['animation']['duration'] ) ? absint( $settings['animation']['duration'] ) : 0;
 		$settings['animation']['delay']    = isset( $settings['animation']['delay'] ) ? absint( $settings['animation']['delay'] ) : 0;
-		$settings['animation']['spinner']  = isset( $settings['animation']['value'] ) && 'spinner' === $settings['animation']['value'] ? true : false;
+		$settings['animation']['spinner']  = false;
+
+		if ( isset( $settings['animation']['value'] ) && 'spinner' === $settings['animation']['value'] ) {
+			$settings['animation']['spinner'] = isset( $settings['loader-icon'] ) ? $settings['loader-icon'] : '1';
+		}
+
 		$settings['animation']['disabled'] = isset( $settings['animation']['value'] ) && 'disabled' === $settings['animation']['value'] ? true : false;
 		unset( $settings['animation']['value'] );
 
