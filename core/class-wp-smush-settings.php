@@ -56,6 +56,7 @@ class WP_Smush_Settings {
 		'accessible_colors' => false,
 		'keep_data'         => true,
 		'lazy_load'         => false,
+		'background_images' => true,
 	);
 
 	/**
@@ -83,7 +84,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $cdn_fields = array( 'auto_resize', 'cdn', 'webp' );
+	private $cdn_fields = array( 'background_images', 'auto_resize', 'cdn', 'webp' );
 
 	/**
 	 * List of fields in Settings form.
