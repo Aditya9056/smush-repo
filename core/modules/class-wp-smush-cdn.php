@@ -1212,7 +1212,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		$mapped_domain = $this->check_mapped_domain();
 
-		if ( false === strpos( $src, content_url() ) || ( is_multisite() && is_subdomain_install() && false === strpos( $src, $mapped_domain ) ) ) {
+		if ( false === strpos( $src, content_url() ) || ( is_multisite() && $mapped_domain && false === strpos( $src, $mapped_domain ) ) ) {
 			return false;
 		}
 
