@@ -132,6 +132,10 @@ if ( ! defined( 'WPINC' ) ) {
 				</div><!-- end data-tabs -->
 				<div data-panes>
 					<div class="sui-tab-boxed <?php echo $settings['animation']['fadein'] ? 'active' : ''; ?>">
+						<strong><?php esc_html_e( 'Animation', 'wp-smushit' ); ?></strong>
+						<span class="sui-description">
+							<?php esc_html_e( 'Once the image has loaded, choose how you want the image to display when it comes into view,', 'wp-smushit' ); ?>
+						</span>
 						<div class="sui-form-field-inline">
 							<div class="sui-form-field">
 								<label for="fadein-duration" class="sui-label"><?php esc_html_e( 'Duration', 'wp-smushit' ); ?></label>
@@ -147,8 +151,78 @@ if ( ! defined( 'WPINC' ) ) {
 							</div>
 						</div>
 					</div>
-					<div class="sui-tab-boxed <?php echo $settings['animation']['spinner'] ? 'active' : ''; ?>" style="display:none"></div>
-					<div class="sui-tab-boxed <?php echo $settings['animation']['disabled'] ? 'active' : ''; ?>" style="display:none"></div>
+					<div class="sui-tab-boxed <?php echo $settings['animation']['spinner'] ? 'active' : ''; ?>" id="smush-lazy-load-spinners">
+						<span class="sui-description">
+							<?php esc_html_e( 'Display a spinner where the image will be during lazy loading. You can choose a predefined spinner, or upload your own GIF.', 'wp-smushit' ); ?>
+						</span>
+						<label class="sui-label"><?php esc_html_e( 'Spinner', 'wp-smushit' ); ?></label>
+						<div class="sui-box-selectors sui-upload">
+							<ul>
+								<li><label for="item1" class="sui-box-selector">
+										<input type="radio" name="item-radio-input" id="item1" checked="checked" />
+										<span>
+											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader.gif'; ?>" />
+										</span>
+									</label></li>
+
+								<li><label for="item2" class="sui-box-selector">
+										<input type="radio" name="item-radio-input" id="item2" />
+										<span>
+											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-1.gif'; ?>" />
+										</span>
+									</label></li>
+
+								<li><label for="item3" class="sui-box-selector">
+										<input type="radio" name="item-radio-input" id="item3" />
+										<span>
+											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-2.gif'; ?>" />
+										</span>
+									</label></li>
+
+								<li><label for="item4" class="sui-box-selector">
+										<input type="radio" name="item-radio-input" id="item4" />
+										<span>
+											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-3.gif'; ?>" />
+										</span>
+									</label></li>
+
+								<li><label for="item5" class="sui-box-selector">
+										<input type="radio" name="item-radio-input" id="item5" />
+										<span>
+											<img src="<?php echo WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-4.gif'; ?>" />
+										</span>
+									</label></li>
+
+								<li>
+									<div class="sui-form-field">
+										<div class="sui-upload">
+											<input type="file" value="filename.png" accept="image/gif" readonly="readonly" />
+
+											<div class="sui-upload-image" aria-hidden="true">
+												<div class="sui-image-mask"></div>
+												<div role="button" class="sui-image-preview" style="background-image: url(<?php echo WP_SMUSH_URL . 'app/assets/images/icon-loader.gif'; ?>);"></div>
+											</div>
+
+											<button class="sui-upload-button">
+												<i class="sui-icon-upload-cloud" aria-hidden="true"></i> Upload file
+											</button>
+
+											<div class="sui-upload-file">
+												<span>filename.png</span>
+												<button aria-label="Remove file">
+													<i class="sui-icon-close" aria-hidden="true"></i>
+												</button>
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+
+					</div>
+					<div class="sui-notice <?php echo $settings['animation']['disabled'] ? 'active' : ''; ?>">
+						<p><?php esc_html_e( 'Images will flash into view as soon as they are ready to display.', 'wp-smushit' ); ?></p>
+					</div>
 				</div><!-- end data-panes -->
 			</div><!-- end .sui-tabs -->
 		</div><!-- end .sui-box-settings-col-2 -->

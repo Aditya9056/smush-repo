@@ -102,7 +102,7 @@ class WP_Smush_Lazy_Load extends WP_Smush_Module {
 			return;
 		}
 
-		$loader = WP_SMUSH_URL . 'app/assets/images/icon-loader.gif';
+		$loader = WP_SMUSH_URL . 'app/assets/images/smush-lazyloader.gif';
 		$fadein = isset( $this->options['animation']['duration'] ) ? $this->options['animation']['duration'] : 0;
 		$delay  = isset( $this->options['animation']['delay'] ) ? $this->options['animation']['delay'] : 0;
 		?>
