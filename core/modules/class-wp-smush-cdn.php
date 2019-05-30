@@ -486,16 +486,16 @@ class WP_Smush_CDN extends WP_Smush_Content {
 		return $content;
 	}
 
-    /**
-     * Process src link and convert to CDN link.
-     *
-     * @since 3.2.1
-     *
-     * @param string $image  Image tag.
-     * @param string $src    Image src attribute.
-     *
-     * @return string
-     */
+	/**
+	 * Process src link and convert to CDN link.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param string $image  Image tag.
+	 * @param string $src    Image src attribute.
+	 *
+	 * @return string
+	 */
 	private function process_src( $image, $src ) {
 		/**
 		 * Filter hook to alter image src arguments before going through cdn.
@@ -1167,8 +1167,7 @@ class WP_Smush_CDN extends WP_Smush_Content {
 
 		$mapped_domain = $this->check_mapped_domain();
 
-		// URL does not belong to the site or a site mapped domain.
-		if ( false === strpos( $src, content_url() ) || ( is_multisite() && false === strpos( $src, $mapped_domain ) ) ) {
+		if ( false === strpos( $src, content_url() ) || ( is_multisite() && is_subdomain_install() && false === strpos( $src, $mapped_domain ) ) ) {
 			return false;
 		}
 
