@@ -1212,8 +1212,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 
 		$mapped_domain = $this->check_mapped_domain();
 
-		// URL does not belong to the site or a site mapped domain.
-		if ( false === strpos( $src, content_url() ) || ( is_multisite() && false === strpos( $src, $mapped_domain ) ) ) {
+		if ( false === strpos( $src, content_url() ) || ( is_multisite() && is_subdomain_install() && false === strpos( $src, $mapped_domain ) ) ) {
 			return false;
 		}
 

@@ -265,12 +265,6 @@ jQuery( function ( $ ) {
 						wp_smushit_data.bytes = parseInt( wp_smushit_data.size_before ) - parseInt( wp_smushit_data.size_after )
 					}
 
-					let smush_percent = ( wp_smushit_data.count_smushed / wp_smushit_data.count_total ) * 100;
-					smush_percent = WP_Smush.helpers.precise_round( smush_percent, 1 );
-
-					// Update it in stats bar.
-					$( '.wp-smush-images-percent' ).html( smush_percent );
-
 					// Hide the Existing wrapper.
 					const notices = $( '.bulk-smush-wrapper .sui-notice' );
 					if ( notices.length > 0 ) {
@@ -282,14 +276,10 @@ jQuery( function ( $ ) {
 
 					// Show Bulk wrapper.
 					$( '.wp-smush-bulk-wrapper' ).show();
-
-					if ( 'undefined' !== typeof r.data.count ) {
-						update_progress_bar_resmush( r.data.count );
-					}
 				}
 				// If content is received, Prepend it.
 				if ( 'undefined' !== typeof r.data.content ) {
-					$( '.bulk-smush-wrapper .sui-box-body' ).prepend( r.data.content );
+					$( '.bulk-smush-wrapper .sui-box-body p:first-of-type' ).after( r.data.content );
 				}
 				// If we have any notice to show.
 				if ( 'undefined' !== typeof r.data.notice ) {
