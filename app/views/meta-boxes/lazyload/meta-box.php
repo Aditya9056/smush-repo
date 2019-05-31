@@ -12,6 +12,9 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+// We need this for uploader to work properly.
+wp_enqueue_media();
+
 ?>
 
 <p>
@@ -169,20 +172,19 @@ if ( ! defined( 'WPINC' ) ) {
 
 								<li class="sui-form-field">
 									<div class="sui-upload">
-										<input type="file" value="filename.png" accept="image/gif" readonly="readonly" />
+										<input type="file" value="" readonly="readonly" id="smush-loader-icon-file" />
 
 										<div class="sui-upload-image" aria-hidden="true">
 											<div class="sui-image-mask"></div>
-											<div role="button" class="sui-image-preview" style="background-image: url(<?php echo WP_SMUSH_URL . 'app/assets/images/icon-loader.gif'; ?>);"></div>
+											<div role="button" class="sui-image-preview" id="smush-loader-icon-preview"></div>
 										</div>
 
-										<button class="sui-upload-button">
+										<button class="sui-upload-button" id="smush-upload-loader-icon">
 											<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wp-smushit' ); ?>
 										</button>
 
-										<div class="sui-upload-file">
-											<span>filename.png</span>
-											<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit'); ?>">
+										<div class="sui-upload-file" id="smush-remove-loader-icon">
+											<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
 												<i class="sui-icon-close" aria-hidden="true"></i>
 											</button>
 										</div>
