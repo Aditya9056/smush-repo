@@ -162,12 +162,6 @@
 
                 // Unhide the remove image link
                 document.getElementById('smush-remove-loader-icon').style.display = 'block';
-
-                // Remove selections
-                const selected = document.querySelector('.sui-box-selector > input:checked');
-                if ( selected ) {
-                    selected.removeAttribute('checked');
-                }
             });
 
             // Finally, open the modal on click

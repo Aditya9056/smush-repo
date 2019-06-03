@@ -409,27 +409,30 @@ class WP_Smush_Settings {
 	 * @since 3.2.0
 	 */
 	private function parse_lazy_load_settings() {
+		$previous_settings = $this->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+
 		$args = array(
-			'format'          => array(
+			'format'             => array(
 				'filter' => FILTER_VALIDATE_BOOLEAN,
 				'flags'  => FILTER_REQUIRE_ARRAY,
 			),
-			'output'          => array(
+			'output'             => array(
 				'filter' => FILTER_VALIDATE_BOOLEAN,
 				'flags'  => FILTER_REQUIRE_ARRAY,
 			),
-			'animation'       => array(
+			'animation'          => array(
 				'filter' => FILTER_SANITIZE_STRING,
 				'flags'  => FILTER_REQUIRE_ARRAY,
 			),
-			'include'         => array(
+			'include'            => array(
 				'filter' => FILTER_VALIDATE_BOOLEAN,
 				'flags'  => FILTER_REQUIRE_ARRAY,
 			),
-			'exclude-pages'   => FILTER_SANITIZE_STRING,
-			'exclude-classes' => FILTER_SANITIZE_STRING,
-			'footer'          => FILTER_VALIDATE_BOOLEAN,
-			'loader-icon'     => FILTER_SANITIZE_STRING,
+			'exclude-pages'      => FILTER_SANITIZE_STRING,
+			'exclude-classes'    => FILTER_SANITIZE_STRING,
+			'footer'             => FILTER_VALIDATE_BOOLEAN,
+			'loader-icon'        => FILTER_SANITIZE_STRING,
+			'loader-icon-custom' => FILTER_SANITIZE_NUMBER_INT,
 		);
 
 		$settings = filter_input_array( INPUT_POST, $args );
@@ -442,6 +445,19 @@ class WP_Smush_Settings {
 
 		if ( isset( $settings['animation']['value'] ) && 'spinner' === $settings['animation']['value'] ) {
 			$settings['animation']['spinner'] = isset( $settings['loader-icon'] ) ? $settings['loader-icon'] : '1';
+
+			if ( ! isset( $previous_settings['animation']['custom-spinner'] ) ) {
+				$settings['animation']['custom-spinner'] = array();
+			} else {
+				$settings['animation']['custom-spinner'] = array_filter( $previous_settings['animation']['custom-spinner'] );
+			}
+
+			if ( isset( $settings['loader-icon-custom'] ) && ! empty( $settings['loader-icon-custom'] ) && ! in_array( $settings['loader-icon-custom'], $settings['animation']['custom-spinner'], true ) ) {
+				$settings['animation']['custom-spinner'][] = $settings['loader-icon-custom'];
+			}
+
+			unset( $settings['loader-icon'] );
+			unset( $settings['loader-icon-custom'] );
 		}
 
 		$settings['animation']['disabled'] = isset( $settings['animation']['value'] ) && 'disabled' === $settings['animation']['value'] ? true : false;

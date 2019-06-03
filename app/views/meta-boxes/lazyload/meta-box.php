@@ -170,9 +170,21 @@ wp_enqueue_media();
 										</label></li>
 								<?php endfor; ?>
 
+								<?php if ( isset( $settings['animation']['custom-spinner'] ) && is_array( $settings['animation']['custom-spinner'] ) ) : ?>
+									<?php foreach ( $settings['animation']['custom-spinner'] as $image ) : ?>
+										<?php $custom_link = wp_get_attachment_image_src( $image, 'full' ); ?>
+										<li><label for="loader-icon-<?php echo absint( $image ); ?>" class="sui-box-selector">
+												<input type="radio" name="loader-icon" id="loader-icon-<?php echo absint( $image ); ?>" value="<?php echo absint( $image ); ?>" <?php checked( $image === $settings['animation']['spinner'] ); ?> />
+												<span>
+												<img alt="<?php esc_attr_e( 'Spinner image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $image ); ?>" src="<?php echo esc_url( $custom_link[0] ); ?>" />
+											</span>
+											</label></li>
+									<?php endforeach; ?>
+								<?php endif; ?>
+
 								<li class="sui-form-field">
 									<div class="sui-upload">
-										<input type="file" value="" readonly="readonly" id="smush-loader-icon-file" />
+										<input type="hidden" name="loader-icon-custom" id="smush-loader-icon-file" value="">
 
 										<div class="sui-upload-image" aria-hidden="true">
 											<div class="sui-image-mask"></div>
