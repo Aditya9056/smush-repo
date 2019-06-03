@@ -108,6 +108,10 @@ class WP_Smush_Installer {
 				self::upgrade_3_2_0();
 			}
 
+			if ( version_compare( $version, '3.2.2', '<' ) ) {
+				self::upgrade_3_2_2();
+			}
+
 			// Create/upgrade directory smush table.
 			self::directory_smush_table();
 
@@ -234,6 +238,47 @@ class WP_Smush_Installer {
 	private static function upgrade_3_2_0() {
 		// Not used.
 		delete_option( 'smush_option' );
+	}
+
+	/**
+	 * Upgrade to 3.2.2
+	 *
+	 * @since 3.2.2
+	 */
+	private static function upgrade_3_2_2() {
+		// Add new lazy-load options.
+		$lazy = WP_Smush_Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+
+		if ( ! isset( $lazy ) ) {
+			return;
+		}
+
+		$selected = 'fadein';
+		if ( $lazy['animation']['spinner'] ) {
+			$selected = 'spinner';
+		} elseif ( $lazy['animation']['disabled'] ) {
+			$selected = false;
+		}
+
+		$animation = array(
+			'selected'    => $selected,
+			'fadein'      => array(
+				'duration' => $lazy['animation']['duration'],
+				'delay'    => $lazy['animation']['delay'],
+			),
+			'spinner'     => array(
+				'selected' => 1,
+				'custom'   => array(),
+			),
+			'placeholder' => array(
+				'selected' => 1,
+				'custom'   => array(),
+			),
+		);
+
+		$lazy['animation'] = $animation;
+
+		WP_Smush_Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $lazy );
 	}
 
 }

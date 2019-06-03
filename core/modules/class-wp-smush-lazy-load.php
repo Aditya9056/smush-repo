@@ -93,28 +93,28 @@ class WP_Smush_Lazy_Load extends WP_Smush_Module {
 	}
 
 	/**
-	 * Add inline styles at the top of the page for preloaders and effects.
+	 * Add inline styles at the top of the page for pre-loaders and effects.
 	 *
 	 * @since 3.2.0
 	 */
 	public function add_inline_styles() {
-		if ( $this->options['animation']['disabled'] ) {
+		if ( ! $this->options['animation']['selected'] ) {
 			return;
 		}
 
-		$loader = WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-' . $this->options['animation']['spinner'] . '.gif';
-		if ( isset( $this->options['animation']['spinner'] ) && 5 < (int) $this->options['animation']['spinner'] ) {
-			$loader = wp_get_attachment_image_src( $this->options['animation']['spinner'], 'full' );
+		$loader = WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-' . $this->options['animation']['spinner']['selected'] . '.gif';
+		if ( isset( $this->options['animation']['spinner']['selected'] ) && 5 < (int) $this->options['animation']['spinner']['selected'] ) {
+			$loader = wp_get_attachment_image_src( $this->options['animation']['spinner']['selected'], 'full' );
 			$loader = $loader[0];
 		}
 
-		$fadein = isset( $this->options['animation']['duration'] ) ? $this->options['animation']['duration'] : 0;
-		$delay  = isset( $this->options['animation']['delay'] ) ? $this->options['animation']['delay'] : 0;
+		$fadein = isset( $this->options['animation']['fadein']['duration'] ) ? $this->options['animation']['fadein']['duration'] : 0;
+		$delay  = isset( $this->options['animation']['fadein']['delay'] ) ? $this->options['animation']['fadein']['delay'] : 0;
 		?>
 		<style>
 			.no-js img.lazyload { display: none; }
 			figure.wp-block-image img.lazyloading { min-width: 150px; }
-			<?php if ( $this->options['animation']['spinner'] ) : ?>
+			<?php if ( 'spinner' === $this->options['animation']['selected'] ) : ?>
 				.lazyload { opacity: 0; }
 				.lazyloading {
 					border: 0 !important;

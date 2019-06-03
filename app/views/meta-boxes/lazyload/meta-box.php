@@ -111,30 +111,39 @@ wp_enqueue_media();
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">
 			<span class="sui-settings-label">
-				<?php esc_html_e( 'Animation', 'wp-smushit' ); ?>
+				<?php esc_html_e( 'Display & Animation', 'wp-smushit' ); ?>
 			</span>
 			<span class="sui-description">
-				<?php esc_html_e( 'Choose how you want to animate media when they scroll into view.', 'wp-smushit' ); ?>
+				<?php esc_html_e( 'Choose how you want preloading images to be displayed, as well as how they animate into view.', 'wp-smushit' ); ?>
 			</span>
 		</div>
 		<div class="sui-box-settings-col-2">
+			<strong><?php esc_html_e( 'Display', 'wp-smushit' ); ?></strong>
+			<div class="sui-description">
+				<?php esc_html_e( 'Choose how you want the non-loaded image to look.', 'wp-smushit' ); ?>
+			</div>
+
 			<div class="sui-side-tabs sui-tabs">
 				<div data-tabs>
-					<label for="animation-fadein" class="sui-tab-item <?php echo $settings['animation']['fadein'] ? 'active' : ''; ?>">
-						<input type="radio" name="animation[value]" value="fadein" id="animation-fadein" <?php checked( $settings['animation']['fadein'] ); ?> />
+					<label for="animation-fadein" class="sui-tab-item <?php echo 'fadein' === $settings['animation']['selected'] ? 'active' : ''; ?>">
+						<input type="radio" name="animation[selected]" value="fadein" id="animation-fadein" <?php checked( $settings['animation']['selected'], 'fadein' ); ?> />
 						<?php esc_html_e( 'Fade In', 'wp-smushit' ); ?>
 					</label>
-					<label for="animation-spinner" class="sui-tab-item <?php echo $settings['animation']['spinner'] ? 'active' : ''; ?>">
-						<input type="radio" name="animation[value]" value="spinner" id="animation-spinner" <?php checked( isset( $settings['animation']['spinner'] ) ); ?> />
+					<label for="animation-spinner" class="sui-tab-item <?php echo 'spinner' === $settings['animation']['selected'] ? 'active' : ''; ?>">
+						<input type="radio" name="animation[selected]" value="spinner" id="animation-spinner" <?php checked( $settings['animation']['selected'], 'spinner' ); ?> />
 						<?php esc_html_e( 'Spinner', 'wp-smushit' ); ?>
 					</label>
-					<label for="animation-disabled" class="sui-tab-item <?php echo $settings['animation']['disabled'] ? 'active' : ''; ?>">
-						<input type="radio" name="animation[value]" value="disabled" id="animation-disabled" <?php checked( $settings['animation']['disabled'] ); ?> />
+					<label for="animation-placeholder" class="sui-tab-item <?php echo 'placeholder' === $settings['animation']['selected'] ? 'active' : ''; ?>">
+						<input type="radio" name="animation[selected]" value="placeholder" id="animation-placeholder" <?php checked( $settings['animation']['selected'], 'placeholder' ); ?> />
+						<?php esc_html_e( 'Placeholder', 'wp-smushit' ); ?>
+					</label>
+					<label for="animation-disabled" class="sui-tab-item <?php echo ! $settings['animation']['selected'] ? 'active' : ''; ?>">
+						<input type="radio" name="animation[selected]" value="0" id="animation-disabled" <?php checked( $settings['animation']['selected'], false ); ?> />
 						<?php esc_html_e( 'None', 'wp-smushit' ); ?>
 					</label>
 				</div><!-- end data-tabs -->
 				<div data-panes>
-					<div class="sui-tab-boxed <?php echo $settings['animation']['fadein'] ? 'active' : ''; ?>">
+					<div class="sui-tab-boxed <?php echo 'fadein' === $settings['animation']['selected'] ? 'active' : ''; ?>">
 						<strong><?php esc_html_e( 'Animation', 'wp-smushit' ); ?></strong>
 						<span class="sui-description">
 							<?php esc_html_e( 'Once the image has loaded, choose how you want the image to display when it comes into view,', 'wp-smushit' ); ?>
@@ -143,18 +152,19 @@ wp_enqueue_media();
 							<div class="sui-form-field">
 								<label for="fadein-duration" class="sui-label"><?php esc_html_e( 'Duration', 'wp-smushit' ); ?></label>
 								<input type='hidden' value='0' name='animation[duration]' />
-								<input type="number" name="animation[duration]" placeholder="400" value="<?php echo absint( $settings['animation']['duration'] ); ?>" id="fadein-duration" class="sui-form-control sui-input-sm sui-field-has-suffix">
+								<input type="number" name="animation[duration]" placeholder="400" value="<?php echo absint( $settings['animation']['fadein']['duration'] ); ?>" id="fadein-duration" class="sui-form-control sui-input-sm sui-field-has-suffix">
 								<span class="sui-field-suffix"><?php esc_html_e( 'ms', 'wp-smushit' ); ?></span>
 							</div>
 							<div class="sui-form-field">
 								<label for="fadein-delay" class="sui-label"><?php esc_html_e( 'Delay', 'wp-smushit' ); ?></label>
 								<input type='hidden' value='0' name='animation[delay]' />
-								<input type="number" name="animation[delay]" placeholder="0" value="<?php echo absint( $settings['animation']['delay'] ); ?>" id="fadein-delay" class="sui-form-control sui-input-sm sui-field-has-suffix">
+								<input type="number" name="animation[delay]" placeholder="0" value="<?php echo absint( $settings['animation']['fadein']['delay'] ); ?>" id="fadein-delay" class="sui-form-control sui-input-sm sui-field-has-suffix">
 								<span class="sui-field-suffix"><?php esc_html_e( 'ms', 'wp-smushit' ); ?></span>
 							</div>
 						</div>
 					</div>
-					<div class="sui-tab-boxed <?php echo $settings['animation']['spinner'] ? 'active' : ''; ?>" id="smush-lazy-load-spinners">
+
+					<div class="sui-tab-boxed <?php echo 'spinner' === $settings['animation']['selected'] ? 'active' : ''; ?>" id="smush-lazy-load-spinners">
 						<span class="sui-description">
 							<?php esc_html_e( 'Display a spinner where the image will be during lazy loading. You can choose a predefined spinner, or upload your own GIF.', 'wp-smushit' ); ?>
 						</span>
@@ -162,29 +172,26 @@ wp_enqueue_media();
 						<div class="sui-box-selectors sui-upload">
 							<ul>
 								<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
-									<li><label for="loader-icon-<?php echo absint( $i ); ?>" class="sui-box-selector">
-											<input type="radio" name="loader-icon" id="loader-icon-<?php echo absint( $i ); ?>" value="<?php echo absint( $i ); ?>" <?php checked( (int) $settings['animation']['spinner'] === $i ); ?> />
-											<span>
+									<li><label for="spinner-<?php echo absint( $i ); ?>" class="sui-box-selector">
+										<input type="radio" name="animation[spinner-icon]" id="spinner-<?php echo absint( $i ); ?>" value="<?php echo absint( $i ); ?>" <?php checked( (int) $settings['animation']['spinner']['selected'] === $i ); ?> />
+										<span>
 											<img alt="<?php esc_attr_e( 'Spinner image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $i ); ?>" src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-' . $i . '.gif' ); ?>" />
 										</span>
 										</label></li>
 								<?php endfor; ?>
 
-								<?php if ( isset( $settings['animation']['custom-spinner'] ) && is_array( $settings['animation']['custom-spinner'] ) ) : ?>
-									<?php foreach ( $settings['animation']['custom-spinner'] as $image ) : ?>
-										<?php $custom_link = wp_get_attachment_image_src( $image, 'full' ); ?>
-										<li><label for="loader-icon-<?php echo absint( $image ); ?>" class="sui-box-selector">
-												<input type="radio" name="loader-icon" id="loader-icon-<?php echo absint( $image ); ?>" value="<?php echo absint( $image ); ?>" <?php checked( $image === $settings['animation']['spinner'] ); ?> />
-												<span>
-												<img alt="<?php esc_attr_e( 'Spinner image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $image ); ?>" src="<?php echo esc_url( $custom_link[0] ); ?>" />
-											</span>
-											</label></li>
-									<?php endforeach; ?>
-								<?php endif; ?>
-
+								<?php foreach ( $settings['animation']['spinner']['custom'] as $image ) : ?>
+									<?php $custom_link = wp_get_attachment_image_src( $image, 'full' ); ?>
+									<li><label for="spinner-<?php echo absint( $image ); ?>" class="sui-box-selector">
+										<input type="radio" name="animation[spinner-icon]" id="spinner-<?php echo absint( $image ); ?>" value="<?php echo absint( $image ); ?>" <?php checked( $image === $settings['animation']['spinner']['selected'] ); ?> />
+										<span>
+											<img alt="<?php esc_attr_e( 'Spinner image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $image ); ?>" src="<?php echo esc_url( $custom_link[0] ); ?>" />
+										</span>
+										</label></li>
+								<?php endforeach; ?>
 								<li class="sui-form-field">
 									<div class="sui-upload">
-										<input type="hidden" name="loader-icon-custom" id="smush-loader-icon-file" value="">
+										<input type="hidden" name="animation[custom-spinner]" id="smush-loader-icon-file" value="">
 
 										<div class="sui-upload-image" aria-hidden="true">
 											<div class="sui-image-mask"></div>
@@ -204,9 +211,57 @@ wp_enqueue_media();
 								</li>
 							</ul>
 						</div>
-
 					</div>
-					<div class="sui-notice <?php echo $settings['animation']['disabled'] ? 'active' : ''; ?>">
+
+					<div class="sui-tab-boxed <?php echo 'placeholder' === $settings['animation']['selected'] ? 'active' : ''; ?>" id="smush-lazy-load-placeholder">
+						<span class="sui-description">
+							<?php esc_html_e( 'Display a placeholder to display instead of the actual image during lazy loading. You can choose a predefined image, or upload your own.', 'wp-smushit' ); ?>
+						</span>
+						<label class="sui-label"><?php esc_html_e( 'Image', 'wp-smushit' ); ?></label>
+						<div class="sui-box-selectors">
+							<ul>
+								<?php for ( $i = 1; $i <= 2; $i++ ) : ?>
+									<li><label for="placeholder-icon-<?php echo absint( $i ); ?>" class="sui-box-selector">
+										<input type="radio" name="animation[placeholder-icon]" id="placeholder-icon-<?php echo absint( $i ); ?>" value="<?php echo absint( $i ); ?>" <?php checked( (int) $settings['animation']['placeholder']['selected'] === $i ); ?> />
+										<span>
+											<img alt="<?php esc_attr_e( 'Placeholder image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $i ); ?>" src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-placeholder.png' ); ?>" />
+										</span>
+										</label></li>
+								<?php endfor; ?>
+
+								<?php foreach ( $settings['animation']['placeholder']['custom'] as $image ) : ?>
+									<?php $custom_link = wp_get_attachment_image_src( $image, 'full' ); ?>
+									<li><label for="placeholder-icon-<?php echo absint( $image ); ?>" class="sui-box-selector">
+										<input type="radio" name="animation[placeholder-icon]" id="placeholder-icon-<?php echo absint( $image ); ?>" value="<?php echo absint( $image ); ?>" <?php checked( $image === $settings['animation']['placeholder']['selected'] ); ?> />
+										<span>
+											<img alt="<?php esc_attr_e( 'Placeholder image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $image ); ?>" src="<?php echo esc_url( $custom_link[0] ); ?>" />
+										</span>
+										</label></li>
+								<?php endforeach; ?>
+							</ul>
+
+							<div class="sui-upload">
+								<input type="hidden" name="animation[custom-placeholder]" id="smush-loader-icon-file" value="">
+
+								<div class="sui-upload-image" aria-hidden="true">
+									<div class="sui-image-mask"></div>
+									<div role="button" class="sui-image-preview" id="smush-loader-icon-preview"></div>
+								</div>
+
+								<button class="sui-upload-button" id="smush-upload-loader-icon">
+									<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wp-smushit' ); ?>
+								</button>
+
+								<div class="sui-upload-file" id="smush-remove-loader-icon">
+									<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
+										<i class="sui-icon-close" aria-hidden="true"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="sui-notice <?php echo ! $settings['animation']['selected'] ? 'active' : ''; ?>">
 						<p><?php esc_html_e( 'Images will flash into view as soon as they are ready to display.', 'wp-smushit' ); ?></p>
 					</div>
 				</div><!-- end data-panes -->
