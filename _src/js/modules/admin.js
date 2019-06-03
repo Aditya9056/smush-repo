@@ -279,7 +279,7 @@ jQuery( function ( $ ) {
 				}
 				// If content is received, Prepend it.
 				if ( 'undefined' !== typeof r.data.content ) {
-					$( '.bulk-smush-wrapper .sui-box-body p:first-of-type' ).after( r.data.content );
+					$( '.bulk-smush-wrapper .sui-box-body > p:first-of-type' ).after( r.data.content );
 				}
 				// If we have any notice to show.
 				if ( 'undefined' !== typeof r.data.notice ) {
