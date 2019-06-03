@@ -103,6 +103,11 @@ class WP_Smush_Lazy_Load extends WP_Smush_Module {
 		}
 
 		$loader = WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-' . $this->options['animation']['spinner'] . '.gif';
+		if ( isset( $this->options['animation']['spinner'] ) && 5 < (int) $this->options['animation']['spinner'] ) {
+			$loader = wp_get_attachment_image_src( $this->options['animation']['spinner'], 'full' );
+			$loader = $loader[0];
+		}
+
 		$fadein = isset( $this->options['animation']['duration'] ) ? $this->options['animation']['duration'] : 0;
 		$delay  = isset( $this->options['animation']['delay'] ) ? $this->options['animation']['delay'] : 0;
 		?>
