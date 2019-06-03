@@ -42,7 +42,8 @@
             this.renderTemplate();
 
             // Show the modal.
-            SUI.dialogs['smush-restore-images-dialog'].show();
+            const dialog = new A11yDialog(this.modal);
+            dialog.show();
         },
 
         /**
@@ -86,7 +87,8 @@
         cancel: function() {
             if ( 'start' === this.settings.slide || 'finish' === this.settings.slide ) {
                 // Hide the modal.
-                SUI.dialogs['smush-restore-images-dialog'].hide();
+                const dialog = new A11yDialog(this.modal);
+                dialog.hide();
             } else {
                 this.updateProgressBar( true );
                 window.location.reload();
