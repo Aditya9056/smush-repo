@@ -12,7 +12,8 @@
      */
     WP_Smush.onboarding = {
         membership: 'free', // Assume free by default.
-        modal: document.getElementById('smush-onboarding-dialog'),
+        onboardingModal: document.getElementById('smush-onboarding-dialog'),
+        scanFilesModal: document.getElementById('checking-files-dialog'),
         settings: {
             first: true,
             last: false,
@@ -36,7 +37,7 @@
          * Init module.
          */
         init: function() {
-            if ( ! this.modal ) {
+            if ( ! this.onboardingModal ) {
                 return;
             }
 
@@ -50,13 +51,14 @@
             this.renderTemplate();
 
             // Skip setup.
-            const skipButton = this.modal.querySelector('.smush-onboarding-skip-link');
+            const skipButton = this.onboardingModal.querySelector('.smush-onboarding-skip-link');
             if ( skipButton ) {
                 skipButton.addEventListener('click', this.skipSetup);
             }
 
             // Show the modal.
-            SUI.dialogs['smush-onboarding-dialog'].show();
+            const dialog = new A11yDialog(this.onboardingModal);
+            dialog.show();
         },
 
         /**
@@ -108,7 +110,7 @@
          */
         renderTemplate: function(directionClass) {
             // Grab the selected value.
-            const input = this.modal.querySelector('input[type="checkbox"]');
+            const input = this.onboardingModal.querySelector('input[type="checkbox"]');
             if ( input ) {
                 this.selection[input.id] = input.checked;
             }
@@ -131,8 +133,8 @@
                 }
             }
 
-            this.modal.addEventListener('touchstart', this.handleTouchStart, false);
-            this.modal.addEventListener('touchmove', this.handleTouchMove, false);
+            this.onboardingModal.addEventListener('touchstart', this.handleTouchStart, false);
+            this.onboardingModal.addEventListener('touchmove', this.handleTouchMove, false);
 
             this.bindSubmit();
         },
@@ -141,7 +143,7 @@
          * Catch "Finish setup wizard" button click.
          */
         bindSubmit: function() {
-            const submitButton = this.modal.querySelector('button[type="submit"]');
+            const submitButton = this.onboardingModal.querySelector('button[type="submit"]');
             const self = this;
 
             if ( submitButton ) {
@@ -149,7 +151,7 @@
                     e.preventDefault();
 
                     // Because we are not rendering the template, we need to update the last element value.
-                    const input = self.modal.querySelector('input[type="checkbox"]');
+                    const input = self.onboardingModal.querySelector('input[type="checkbox"]');
                     if ( input ) {
                         self.selection[input.id] = input.checked;
                     }
@@ -238,9 +240,12 @@
         /**
          * Show checking files dialog.
          */
-        showScanDialog: () => {
-            SUI.dialogs['smush-onboarding-dialog'].hide();
-            SUI.dialogs['checking-files-dialog'].show();
+        showScanDialog: function() {
+            const dialog = new A11yDialog(this.onboardingModal);
+            dialog.hide();
+
+            const scanDialog = new A11yDialog(this.scanFilesModal);
+            scanDialog.show();
 
             const nonce = document.getElementById('wp_smush_options_nonce');
 
@@ -251,7 +256,7 @@
                 xhr.onload = () => {
                     const elem = document.querySelector('#smush-onboarding-dialog');
                     elem.parentNode.removeChild(elem);
-                    SUI.dialogs['checking-files-dialog'].hide();
+                    scanDialog.hide();
 
                     if (200 === xhr.status) {
                         setTimeout( function() {
