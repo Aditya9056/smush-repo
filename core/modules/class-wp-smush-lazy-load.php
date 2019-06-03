@@ -102,32 +102,44 @@ class WP_Smush_Lazy_Load extends WP_Smush_Module {
 			return;
 		}
 
-		$loader = WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-' . $this->options['animation']['spinner']['selected'] . '.gif';
-		if ( isset( $this->options['animation']['spinner']['selected'] ) && 5 < (int) $this->options['animation']['spinner']['selected'] ) {
-			$loader = wp_get_attachment_image_src( $this->options['animation']['spinner']['selected'], 'full' );
-			$loader = $loader[0];
+		// Spinner.
+		if ( 'spinner' === $this->options['animation']['selected'] ) {
+			$loader = WP_SMUSH_URL . 'app/assets/images/smush-lazyloader-' . $this->options['animation']['spinner']['selected'] . '.gif';
+			if ( isset( $this->options['animation']['spinner']['selected'] ) && 5 < (int) $this->options['animation']['spinner']['selected'] ) {
+				$loader = wp_get_attachment_image_src( $this->options['animation']['spinner']['selected'], 'full' );
+				$loader = $loader[0];
+			}
+			$background = 'rgba(255, 255, 255, 0)';
+		} else {
+			// Placeholder.
+			$loader     = WP_SMUSH_URL . 'app/assets/images/smush-placeholder.png';
+			$background = '#FAFAFA';
+			if ( isset( $this->options['animation']['placeholder']['selected'] ) && 2 === (int) $this->options['animation']['placeholder']['selected'] ) {
+				$background = '#333333';
+			}
 		}
 
+		// Fade in.
 		$fadein = isset( $this->options['animation']['fadein']['duration'] ) ? $this->options['animation']['fadein']['duration'] : 0;
 		$delay  = isset( $this->options['animation']['fadein']['delay'] ) ? $this->options['animation']['fadein']['delay'] : 0;
 		?>
 		<style>
 			.no-js img.lazyload { display: none; }
 			figure.wp-block-image img.lazyloading { min-width: 150px; }
-			<?php if ( 'spinner' === $this->options['animation']['selected'] ) : ?>
-				.lazyload { opacity: 0; }
-				.lazyloading {
-					border: 0 !important;
-					opacity: 1;
-					background: rgba(255, 255, 255, 0) url('<?php echo esc_url( $loader ); ?>') no-repeat center !important;
-					background-size: 16px auto !important;
-				}
-			<?php else : ?>
+			<?php if ( 'fadein' === $this->options['animation']['selected'] ) : ?>
 				.lazyload, .lazyloading { opacity: 0; }
 				.lazyloaded {
 					opacity: 1;
 					transition: opacity <?php echo esc_html( $fadein ); ?>ms;
 					transition-delay: <?php echo esc_html( $delay ); ?>ms;
+				}
+			<?php else : ?>
+				.lazyload { opacity: 0; }
+				.lazyloading {
+					border: 0 !important;
+					opacity: 1;
+					background: <?php echo esc_attr( $background ); ?> url('<?php echo esc_url( $loader ); ?>') no-repeat center !important;
+					background-size: 16px auto !important;
 				}
 			<?php endif; ?>
 		</style>

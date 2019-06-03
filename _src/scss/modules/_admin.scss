@@ -57,42 +57,41 @@
 			}
 
 			#smush-lazy-load-placeholder .sui-box-selectors {
-
 				&:not([class*="sui-box-selectors-col-"]) ul li {
 					padding: 5px;
+
+					&:first-of-type {
+						flex: 0;
+					}
+				}
+
+				.sui-upload .sui-upload-file {
+					padding: 11px 19px;
 				}
 
 				label.sui-box-selector {
 					width: 80px;
 					height: 60px;
-				}
 
-				/*
-				.sui-box-selector input+span {
-					padding-top: 12px;
-					padding-bottom: 12px;
+					input + span {
+						height: 60px;
+						padding: 0;
+					}
 
-					img {
-						max-width: 16px;
-						margin: 0;
+					input + span img {
+						margin: 0 auto;
+					}
+
+					input:checked[id^="placeholder-icon-1"] + span,
+					input[id^="placeholder-icon-1"] + span {
+						background-color: #FAFAFA;
+					}
+
+					input:checked[id^="placeholder-icon-2"] + span,
+					input[id^="placeholder-icon-2"] + span {
+						background-color: #333333;
 					}
 				}
-
-				 */
-
-				.sui-box-selector input ~ span {
-					padding-right: 12px;
-					padding-left: 12px;
-					height: 60px;
-				}
-
-/*
-				.sui-box-selector input:checked+span:before,
-				.sui-box-selector input:checked+span:after {
-					content: none;
-				}
-
-				 */
 			}
 		}
 
