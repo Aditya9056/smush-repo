@@ -12,7 +12,7 @@
 
         init: function () {
             /**
-             * Handle "Activate" button click on disabled Lazyload page.
+             * Handle "Activate" button click on disabled Lazy load page.
              */
             if ( this.lazyloadEnableButton ) {
                 this.lazyloadEnableButton.addEventListener('click', (e) => {
@@ -29,12 +29,31 @@
             }
 
             /**
-             * Handle "Deactivate' button click on Lazyload page.
+             * Handle "Deactivate' button click on Lazy load page.
              */
             if ( this.lazyloadDisableButton ) {
                 this.lazyloadDisableButton.addEventListener('click', (e) => {
                     e.preventDefault();
                     this.toggle_lazy_load(false);
+                });
+            }
+
+            /**
+             * Handle "Remove icon" button click on Lazy load page.
+             * @since 3.2.2
+             */
+            const removeSpinner = document.getElementById('smush-remove-spinner');
+            if ( removeSpinner ) {
+                removeSpinner.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.removeLoaderIcon();
+                });
+            }
+            const removePlaceholder = document.getElementById('smush-remove-placeholder');
+            if ( removePlaceholder ) {
+                removePlaceholder.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.removeLoaderIcon('placeholder');
                 });
             }
         },
@@ -90,8 +109,78 @@
 
             notice.style.display = 'block';
             setTimeout( () => { notice.style.display = 'none' }, 5000 );
-        }
+        },
 
+        /**
+         * Add lazy load spinner icon.
+         *
+         * @since 3.2.2
+         * @param {string} type  Accepts: spinner, placeholder.
+         */
+        addLoaderIcon: function(type = 'spinner') {
+            let frame;
+
+            // If the media frame already exists, reopen it.
+            if ( frame ) {
+                frame.open();
+                return;
+            }
+
+            // Create a new media frame
+            frame = wp.media({
+                title: 'Select or upload an icon',
+                button: {
+                    text: 'Select icon'
+                },
+                multiple: false  // Set to true to allow multiple files to be selected
+            });
+
+            // When an image is selected in the media frame...
+            frame.on( 'select', function() {
+                // Get media attachment details from the frame state
+                const attachment = frame.state().get('selection').first().toJSON();
+
+                // Send the attachment URL to our custom image input field.
+                const imageIcon = document.getElementById('smush-'+type+'-icon-preview');
+                imageIcon.style.backgroundImage = 'url("'+attachment.url+'")';
+                imageIcon.style.display = 'block';
+
+                // Send the attachment id to our hidden input
+                document.getElementById('smush-'+type+'-icon-file').setAttribute('value', attachment.id);
+
+                // Hide the add image link
+                document.getElementById('smush-upload-'+type).style.display = 'none';
+
+                // Unhide the remove image link
+                document.getElementById('smush-remove-'+type).style.display = 'block';
+            });
+
+            // Finally, open the modal on click
+            frame.open();
+        },
+
+        /**
+         * Remove lazy load spinner icon.
+         *
+         * @since 3.2.2
+         * @param {string} type  Accepts: spinner, placeholder.
+         */
+        removeLoaderIcon: (type = 'spinner') => {
+            // Clear out the preview image
+            const imageIcon = document.getElementById('smush-'+type+'-icon-preview');
+            imageIcon.style.backgroundImage = '';
+            imageIcon.style.display = 'none';
+
+
+            // Un-hide the add image link
+            document.getElementById('smush-upload-'+type).style.display = 'block';
+
+            // Hide the delete image link
+            document.getElementById('smush-remove-'+type).style.display = 'none';
+
+            // Delete the image id from the hidden input
+            document.getElementById('smush-'+type+'-icon-file').setAttribute('value', '');
+        }
     };
 
     WP_Smush.Lazyload.init();

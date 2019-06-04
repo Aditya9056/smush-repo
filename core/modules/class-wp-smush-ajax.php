@@ -480,14 +480,33 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 					// Check if new sizes have been selected.
 					$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
-					if ( is_array( $image_sizes ) ) {
-						foreach ( $image_sizes as $image_size ) {
-							if ( isset( $smush_data['sizes'][ $image_size ] ) ) {
-								continue;
-							}
+					/**
+					 * This is a too complicated way to check if the attachment needs a resmush.
+					 * Basically, smaller images might not have all the image sizes. And if, let's say, image does not
+					 * have a large attachment size, but user selects large to be compressed - do not trigger the
+					 * $show_resmush action for such an image.
+					 *
+					 * 1. Check if the selected image size is not already compressed.
+					 * 2. Check if the image has the defined size so it can be compressed.
+					 *
+					 * @since 3.2.1
+					 */
+					if ( is_array( $image_sizes ) && count( $image_sizes ) > count( $smush_data['sizes'] ) ) {
+						// Move this inside an if statement.
+						$attachment_data = wp_get_attachment_metadata( $attachment );
+						if ( count( $attachment_data['sizes'] ) !== count( $smush_data['sizes'] ) ) {
+							foreach ( $image_sizes as $image_size ) {
+								// Already compressed.
+								if ( isset( $smush_data['sizes'][ $image_size ] ) ) {
+									continue;
+								}
 
-							$should_resmush = true;
-							break;
+								// If image has the size that can be compressed.
+								if ( isset( $attachment_data['sizes'][ $image_size ] ) ) {
+									$should_resmush = true;
+									break;
+								}
+							}
 						}
 					}
 

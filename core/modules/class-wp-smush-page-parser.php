@@ -26,6 +26,15 @@ class WP_Smush_Page_Parser {
 	private $lazy_load = false;
 
 	/**
+	 * Process background images.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @var bool $background_images
+	 */
+	private $background_images = false;
+
+	/**
 	 * WP_Smush_Page_Parser constructor.
 	 *
 	 * @since 3.2.2
@@ -48,7 +57,7 @@ class WP_Smush_Page_Parser {
 	 * @param string $module  Module ID.
 	 */
 	public function enable( $module ) {
-		if ( ! in_array( $module, array( 'cdn', 'lazy_load' ), true ) ) {
+		if ( ! in_array( $module, array( 'cdn', 'lazy_load', 'background_images' ), true ) ) {
 			return;
 		}
 
@@ -77,7 +86,7 @@ class WP_Smush_Page_Parser {
 	 * @since 3.0
 	 * @since 3.2.2  Moved from WP_Smush_CDN.
 	 *
-	 * @param string $content Current buffer content.
+	 * @param string $content  Current buffer content.
 	 *
 	 * @return string
 	 */
@@ -98,10 +107,29 @@ class WP_Smush_Page_Parser {
 		 *
 		 * @param bool $skip  Skip status.
 		 */
+		$a = apply_filters( 'wp_smush_should_skip_parse', false );
 		if ( empty( $content ) || apply_filters( 'wp_smush_should_skip_parse', false ) ) {
 			return $content;
 		}
 
+		$content = $this->process_images( $content );
+		if ( $this->background_images ) {
+			$content = $this->process_background_images( $content );
+		}
+
+		return $content;
+	}
+
+	/**
+	 * Process all images within <img> tags.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param string $content  Current buffer content.
+	 *
+	 * @return string
+	 */
+	private function process_images( $content ) {
 		$images = self::get_images_from_content( $content );
 
 		if ( empty( $images ) ) {
@@ -129,6 +157,35 @@ class WP_Smush_Page_Parser {
 	}
 
 	/**
+	 * Process all images that are contained as background-images.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param string $content  Current buffer content.
+	 *
+	 * @return string
+	 */
+	private function process_background_images( $content ) {
+		$images = self::get_background_images( $content );
+
+		if ( empty( $images ) ) {
+			return $content;
+		}
+
+		foreach ( $images[0] as $key => $image ) {
+			$img_src   = $images['img_url'][ $key ];
+			$new_image = $image;
+
+			// Update the image with correct CDN links.
+			$new_image = WP_Smush::get_instance()->core()->mod->cdn->parse_background_image( $img_src, $new_image );
+
+			$content = str_replace( $image, $new_image, $content );
+		}
+
+		return $content;
+	}
+
+	/**
 	 * Get image tags from page content.
 	 *
 	 * @since 3.1.0
@@ -143,6 +200,30 @@ class WP_Smush_Page_Parser {
 		$images = array();
 
 		if ( preg_match_all( '/(?:<img[^>]*?\s+?src=["|\'](?P<img_url>[^\s]+?)["|\'].*?>){1}/is', $content, $images ) ) {
+			foreach ( $images as $key => $unused ) {
+				// Simplify the output as much as possible, mostly for confirming test results.
+				if ( is_numeric( $key ) && $key > 0 ) {
+					unset( $images[ $key ] );
+				}
+			}
+		}
+
+		return $images;
+	}
+
+	/**
+	 * Get background images from content.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param string $content  Page content.
+	 *
+	 * @return array
+	 */
+	private static function get_background_images( $content ) {
+		$images = array();
+
+		if ( preg_match_all( '/(?:background-image:?\surl\([\'|"](?P<img_url>http?s?:?\/\/[^"\']*\.(?:png|jpg|jpeg|gif))[\'|"]\)?;){1}/is', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
 				if ( is_numeric( $key ) && $key > 0 ) {

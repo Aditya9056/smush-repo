@@ -1,8 +1,11 @@
 = 3.2.2 =
 
 - New: Bulk restore
-- New: Lazy loading onboarding step
 - New: Network access control settings
+- New: Lazy loading onboarding step
+- New: Lazy loading custom placeholders
+- New: Lazy loading custom spinners
+- New: CDN support for background images
 - Enhance: Lazy loading support for ACF
 - Enhance: Lazy loading page parser
 - Enhance: Do not allow enabling CDN for sites that are not registered on the Hub

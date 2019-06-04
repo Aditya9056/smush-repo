@@ -393,11 +393,22 @@ class WP_Smushit extends WP_Smush_Module {
 			return true;
 		}
 
-
+		// This is duplicating a part of scan_images() in class-wp-smush-ajax.php. See detailed description there.
 		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 		if ( is_array( $image_sizes ) && count( $image_sizes ) > count( $wp_smush_data['sizes'] ) && count( $attachment_data['sizes'] ) !== count( $wp_smush_data['sizes'] ) ) {
-			return true;
+			foreach ( $image_sizes as $image_size ) {
+				// Already compressed.
+				if ( isset( $wp_smush_data['sizes'][ $image_size ] ) ) {
+					continue;
+				}
+
+				// If image has the size that can be compressed.
+				if ( isset( $attachment_data['sizes'][ $image_size ] ) ) {
+					return true;
+				}
+			}
 		}
+
 
 		return false;
 	}

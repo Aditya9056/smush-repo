@@ -2,8 +2,9 @@ const _          = require('lodash'),
 	  path       = require('path'),
 	  webpack    = require('webpack'),
 	  ATP        = require('autoprefixer'),
-	  CSSExtract = require("mini-css-extract-plugin"),
-	  CleanDir   = require('clean-webpack-plugin');
+	  CSSExtract = require("mini-css-extract-plugin");
+
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 // The path where the Shared UI fonts & images should be sent.
 const config = {
@@ -52,9 +53,7 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 						loader: 'postcss-loader',
 						options: {
 							plugins: [
-								ATP({
-									browsers: ['ie > 9', '> 1%']
-								})
+								ATP()
 							],
 							sourceMap: true
 						}
@@ -97,7 +96,7 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 		new CSSExtract({
             filename: '../css/[name].min.css'
         }),
-		new CleanDir()
+		new CleanWebpackPlugin()
 	]
 });
 
@@ -138,7 +137,7 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
 		new webpack.ProvidePlugin( {
 			A11yDialog: '@wpmudev/shared-ui/js/a11y-dialog.js' // Vendor script in Shared UI.
 		} ),
-		new CleanDir()
+		new CleanWebpackPlugin()
 	]
 });
 
