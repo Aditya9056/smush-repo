@@ -53,9 +53,7 @@ const scssConfig = _.assign(_.cloneDeep(sharedConfig), {
 						loader: 'postcss-loader',
 						options: {
 							plugins: [
-								ATP({
-									browsers: ['ie > 9', '> 1%']
-								})
+								ATP()
 							],
 							sourceMap: true
 						}

@@ -45,7 +45,7 @@
     "@babel/preset-react": "^7.0.0",
     "ajv": "6.10.0",
     "ajv-keywords": "^3.4.0",
-    "autoprefixer": "^9.5.1",
+    "autoprefixer": "^9.6.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^2.1.1",
@@ -67,5 +67,9 @@
     "url-loader": "^1.1.2",
     "webpack": "^4.32.2",
     "webpack-command": "^0.4.2"
-  }
+  },
+  "browserslist": [
+    "ie > 9",
+    "> 1%"
+  ]
 }
