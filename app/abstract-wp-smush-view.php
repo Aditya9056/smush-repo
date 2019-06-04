@@ -745,8 +745,17 @@ abstract class WP_Smush_View {
 		}
 
 		if ( is_array( $access ) ) {
-			// TODO: check if on page.
+			return $access;
+			if ( is_network_admin() && ! in_array( $this->get_current_tab(), $access, true ) ) {
+				return true;
+			}
+
+			if ( ! is_network_admin() && in_array( $this->get_current_tab(), $access, true ) ) {
+				return true;
+			}
 		}
+
+		return false;
 	}
 
 }

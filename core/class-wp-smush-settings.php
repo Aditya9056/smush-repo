@@ -234,6 +234,7 @@ class WP_Smush_Settings {
 
 	/**
 	 * Checks whether the settings are applicable for the whole network/site or sitewise (multisite).
+	 * TODO: can we remove this method.
 	 */
 	public function is_network_enabled() {
 		// If single site return true.
@@ -243,6 +244,7 @@ class WP_Smush_Settings {
 
 		// Get directly from db.
 		$network_enabled = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+		// TODO: need to check which module it is.
 		return isset( $network_enabled ) && false === (bool) $network_enabled;
 	}
 
@@ -264,6 +266,7 @@ class WP_Smush_Settings {
 		// Check to if the settings update is network-wide or not ( only if in network admin ).
 		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 
+		// TODO: if this is removed, it needs to go into scan_images().
 		$is_network_admin = is_network_admin() || 'save_settings' === $action;
 
 		// Additional check for ajax (is_network_admin() does not work in ajax calls).
@@ -272,9 +275,9 @@ class WP_Smush_Settings {
 		}
 
 		// Super admin can always view network/site settings.
-		if ( is_super_admin() && ( $is_network_admin || $access ) ) {
-			return true;
-		}
+		//if ( is_super_admin() && ( $is_network_admin || $access ) ) {
+		//	return true;
+		//}
 
 		if ( current_user_can( 'manage_options' ) && ( 'all' === $access || 'custom' === $access && $top_menu ) ) {
 			return true;

@@ -61,8 +61,52 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			)
 		);
 
+		/**
+		 * $access = false
+		 * 		NETWORK ADMIN - show all
+		 * 		SUBSITES - show none
+		 * $access = true
+		 * 		NETWORK ADMIN - show settings
+		 * 		SUBSITES - show all (except settings)
+		 * $access = array
+		 * 		NETWORK ADMIN - show settings + pages not in array
+		 * 		SUBSITES - show pages in array
+		 */
+
 		$access = WP_Smush_Settings::can_access();
 
+		if ( ( ! is_network_admin() && ! $access ) || ( is_network_admin() && true === $access ) ) {
+			unset( $this->tabs['bulk'] );
+			unset( $this->tabs['directory'] );
+			unset( $this->tabs['integrations'] );
+			unset( $this->tabs['lazy_load'] );
+			unset( $this->tabs['cdn'] );
+			unset( $this->tabs['tools'] );
+		}
+
+		if ( is_network_admin() && is_array( $access ) ) {
+			foreach ( $this->tabs as $tab => $name ) {
+				if ( ! in_array( $tab, $access, true ) ) {
+					continue;
+				}
+
+				unset( $this->tabs[ $tab ] );
+			}
+		}
+
+		if ( ! is_network_admin() && is_array( $access ) ) {
+			foreach ( $this->tabs as $tab => $name ) {
+				if ( in_array( $tab, $access, true ) ) {
+					continue;
+				}
+
+				unset( $this->tabs[ $tab ] );
+			}
+		}
+
+
+
+		/*
 		if ( true === $access && is_network_admin() && ! $this->should_render() ) {
 			unset( $this->tabs['bulk'] );
 			unset( $this->tabs['directory'] );
@@ -81,6 +125,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				unset( $this->tabs[ $tab ] );
 			}
 		}
+		*/
 
 		// Disabled on all subsites.
 		if ( is_multisite() && ! is_network_admin() ) {
