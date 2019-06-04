@@ -244,18 +244,29 @@ class WP_Smush_Settings {
 
 		// Get directly from db.
 		$network_enabled = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
-		// TODO: need to check which module it is.
-		return isset( $network_enabled ) && false === (bool) $network_enabled;
+		if ( isset( $network_enabled ) && false === (bool) $network_enabled ) {
+			return true;
+		}
+
+		if ( true === $network_enabled ) {
+			return false;
+		}
+
+		// Partial enabled.
+		return true;
 	}
 
 	/**
 	 * Check if user is able to access the page.
 	 *
 	 * @since 3.2.2
-	 * @param bool $top_menu  Is this a top level menu point? Defaults to a Smush sub page.
+	 *
+	 * @param string|bool $module    Check if a specific module is allowed.
+	 * @param bool        $top_menu  Is this a top level menu point? Defaults to a Smush sub page.
+	 *
 	 * @return bool|array  Can access page or not. If custom access rules defined - return custom rules array.
 	 */
-	public static function can_access( $top_menu = false ) {
+	public static function can_access( $module = false, $top_menu = false ) {
 		// Allow all access on single site installs.
 		if ( ! is_multisite() ) {
 			return true;
@@ -266,7 +277,6 @@ class WP_Smush_Settings {
 		// Check to if the settings update is network-wide or not ( only if in network admin ).
 		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 
-		// TODO: if this is removed, it needs to go into scan_images().
 		$is_network_admin = is_network_admin() || 'save_settings' === $action;
 
 		// Additional check for ajax (is_network_admin() does not work in ajax calls).
@@ -274,17 +284,22 @@ class WP_Smush_Settings {
 			$is_network_admin = true;
 		}
 
-		// Super admin can always view network/site settings.
-		//if ( is_super_admin() && ( $is_network_admin || $access ) ) {
-		//	return true;
-		//}
-
 		if ( current_user_can( 'manage_options' ) && ( 'all' === $access || 'custom' === $access && $top_menu ) ) {
 			return true;
 		}
 
 		if ( is_array( $access ) && current_user_can( 'manage_options' ) ) {
-			return $access;
+			if ( ! $module ) {
+				return $access;
+			}
+
+			if ( $is_network_admin && ! in_array( $module, $access, true ) ) {
+				return true;
+			} elseif ( ! $is_network_admin && in_array( $module, $access, true ) ) {
+				return true;
+			}
+
+			return false;
 		}
 
 		return false;
