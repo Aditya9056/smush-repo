@@ -205,7 +205,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @param string $setting_key Setting key.
 	 */
 	public function settings_desc( $setting_key = '' ) {
-		if ( empty( $setting_key ) || ! in_array( $setting_key, $this->add_settings(), true ) ) {
+		if ( empty( $setting_key ) || ! in_array( $setting_key, $this->settings->get_cdn_fields(), true ) ) {
 			return;
 		}
 		?>
