@@ -14,6 +14,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 // We need this for uploader to work properly.
 wp_enqueue_media();
+wp_enqueue_style( 'wp-color-picker' );
 
 ?>
 
@@ -191,18 +192,18 @@ wp_enqueue_media();
 								<?php endforeach; ?>
 								<li class="sui-form-field">
 									<div class="sui-upload">
-										<input type="hidden" name="animation[custom-spinner]" id="smush-loader-icon-file" value="">
+										<input type="hidden" name="animation[custom-spinner]" id="smush-spinner-icon-file" value="">
 
 										<div class="sui-upload-image" aria-hidden="true">
 											<div class="sui-image-mask"></div>
-											<div role="button" class="sui-image-preview" id="smush-loader-icon-preview"></div>
+											<div role="button" class="sui-image-preview" id="smush-spinner-icon-preview" onclick="WP_Smush.Lazyload.addLoaderIcon()"></div>
 										</div>
 
-										<button class="sui-upload-button" id="smush-upload-loader-icon">
+										<a class="sui-upload-button" id="smush-upload-spinner" onclick="WP_Smush.Lazyload.addLoaderIcon()">
 											<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wp-smushit' ); ?>
-										</button>
+										</a>
 
-										<div class="sui-upload-file" id="smush-remove-loader-icon">
+										<div class="sui-upload-file" id="smush-remove-spinner">
 											<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
 												<i class="sui-icon-close" aria-hidden="true"></i>
 											</button>
@@ -241,24 +242,29 @@ wp_enqueue_media();
 							</ul>
 
 							<div class="sui-upload">
-								<input type="hidden" name="animation[custom-placeholder]" id="smush-loader-icon-file" value="">
+								<input type="hidden" name="animation[custom-placeholder]" id="smush-placeholder-icon-file" value="" />
 
 								<div class="sui-upload-image" aria-hidden="true">
 									<div class="sui-image-mask"></div>
-									<div role="button" class="sui-image-preview" id="smush-loader-icon-preview"></div>
+									<div role="button" class="sui-image-preview" id="smush-placeholder-icon-preview" onclick="WP_Smush.Lazyload.addLoaderIcon('placeholder')"></div>
 								</div>
 
-								<button class="sui-upload-button" id="smush-upload-loader-icon">
+								<a class="sui-upload-button" id="smush-upload-placeholder" onclick="WP_Smush.Lazyload.addLoaderIcon('placeholder')">
 									<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wp-smushit' ); ?>
-								</button>
+								</a>
 
-								<div class="sui-upload-file" id="smush-remove-loader-icon">
+								<div class="sui-upload-file" id="smush-remove-placeholder">
 									<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
 										<i class="sui-icon-close" aria-hidden="true"></i>
 									</button>
 								</div>
 							</div>
 						</div>
+						<label class="sui-label" for="smush-color-picker"><?php esc_html_e( 'Background color', 'wp-smushit' ); ?></label>
+						<?php
+						$color = isset( $settings['animation']['placeholder']['color'] ) ? $settings['animation']['placeholder']['color'] : '#F3F3F3';
+						?>
+						<input type="text" value="<?php echo esc_attr( $color ); ?>" name="animation[color]" id="smush-color-picker" data-default-color="<?php echo esc_attr( $color ); ?>" />
 					</div>
 
 					<div class="sui-notice <?php echo ! $settings['animation']['selected'] ? 'active' : ''; ?>">
@@ -488,3 +494,23 @@ wp_enqueue_media();
 		</div>
 	</div>
 </form>
+
+<script>
+	jQuery(document).ready(function($){
+		$('#smush-color-picker').wpColorPicker({
+			width: 300
+		});
+	});
+</script>
+<style>
+	.iris-slider {
+		position: absolute !important;
+		right: 0 !important;
+		height: 214px !important;
+	}
+
+	#smush-lazy-load-placeholder .sui-box-selector input + span,
+	#smush-lazy-load-placeholder .sui-box-selector input:checked + span {
+		background-color: <?php echo esc_attr( $color ); ?>;
+	}
+</style>

@@ -474,6 +474,14 @@ class WP_Smush_Settings {
 			}
 		}
 
+		// Custom color for placeholder.
+		if ( ! isset( $settings['animation']['color'] ) ) {
+			$settings['animation']['placeholder']['color'] = $previous_settings['animation']['placeholder']['color'];
+		} else {
+			$settings['animation']['placeholder']['color'] = $settings['animation']['color'];
+			unset( $settings['animation']['color'] );
+		}
+
 		/**
 		 * Exclusion rules.
 		 */
@@ -524,6 +532,7 @@ class WP_Smush_Settings {
 				'placeholder' => array(
 					'selected' => 1,
 					'custom'   => array(),
+					'color'    => '#F3F3F3',
 				),
 			),
 			'include'         => array(

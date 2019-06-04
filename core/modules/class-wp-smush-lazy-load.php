@@ -117,6 +117,14 @@ class WP_Smush_Lazy_Load extends WP_Smush_Module {
 			if ( isset( $this->options['animation']['placeholder']['selected'] ) && 2 === (int) $this->options['animation']['placeholder']['selected'] ) {
 				$background = '#333333';
 			}
+			if ( isset( $this->options['animation']['placeholder']['selected'] ) && 2 < (int) $this->options['animation']['placeholder']['selected'] ) {
+				$loader = wp_get_attachment_image_src( $this->options['animation']['placeholder']['selected'], 'full' );
+				$loader = $loader[0];
+
+				if ( isset( $this->options['animation']['placeholder']['color'] ) ) {
+					$background = $this->options['animation']['placeholder']['color'];
+				}
+			}
 		}
 
 		// Fade in.

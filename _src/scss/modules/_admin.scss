@@ -15,7 +15,11 @@
 				margin-bottom: 20px;
 			}
 
-			#smush-lazy-load-spinners .sui-box-selectors {
+			#smush-lazy-load-spinners .sui-box-selectors,
+			#smush-lazy-load-placeholder .sui-box-selectors {
+				background-color: #FFF;
+				padding: 0 0 20px 0;
+
 				&:not([class*="sui-box-selectors-col-"]) ul li {
 					padding: 5px;
 				}
@@ -23,8 +27,10 @@
 				.sui-upload .sui-upload-file {
 					padding: 11px 19px;
 				}
+			}
 
-				button.sui-upload-button {
+			#smush-lazy-load-spinners .sui-box-selectors {
+				a.sui-upload-button {
 					height: 40px;
 					width: 133px;
 				}
@@ -58,15 +64,7 @@
 
 			#smush-lazy-load-placeholder .sui-box-selectors {
 				&:not([class*="sui-box-selectors-col-"]) ul li {
-					padding: 5px;
-
-					&:first-of-type {
-						flex: 0;
-					}
-				}
-
-				.sui-upload .sui-upload-file {
-					padding: 11px 19px;
+					flex: 0;
 				}
 
 				label.sui-box-selector {
@@ -82,12 +80,10 @@
 						margin: 0 auto;
 					}
 
-					input:checked[id^="placeholder-icon-1"] + span,
 					input[id^="placeholder-icon-1"] + span {
 						background-color: #FAFAFA;
 					}
 
-					input:checked[id^="placeholder-icon-2"] + span,
 					input[id^="placeholder-icon-2"] + span {
 						background-color: #333333;
 					}

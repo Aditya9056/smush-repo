@@ -273,6 +273,7 @@ class WP_Smush_Installer {
 			'placeholder' => array(
 				'selected' => 1,
 				'custom'   => array(),
+				'color'    => '#F3F3F3',
 			),
 		);
 

@@ -39,30 +39,21 @@
             }
 
             /**
-             * Handle "Upload file" button click on Lazy load page.
-             * @since 3.2.2
-             */
-            const lazyloadAddSpinnerButton = document.getElementById('smush-upload-loader-icon');
-            if ( lazyloadAddSpinnerButton ) {
-                lazyloadAddSpinnerButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.addLoaderIcon();
-                });
-            }
-            const imageIcon = document.getElementById('smush-loader-icon-preview');
-            if ( imageIcon ) {
-                imageIcon.addEventListener('click', this.addLoaderIcon);
-            }
-
-            /**
              * Handle "Remove icon" button click on Lazy load page.
              * @since 3.2.2
              */
-            const ladyloadRemoveSpinnerButton = document.getElementById('smush-remove-loader-icon');
-            if ( ladyloadRemoveSpinnerButton ) {
-                ladyloadRemoveSpinnerButton.addEventListener('click', (e) => {
+            const removeSpinner = document.getElementById('smush-remove-spinner');
+            if ( removeSpinner ) {
+                removeSpinner.addEventListener('click', (e) => {
                     e.preventDefault();
                     this.removeLoaderIcon();
+                });
+            }
+            const removePlaceholder = document.getElementById('smush-remove-placeholder');
+            if ( removePlaceholder ) {
+                removePlaceholder.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.removeLoaderIcon('placeholder');
                 });
             }
         },
@@ -124,10 +115,10 @@
          * Add lazy load spinner icon.
          *
          * @since 3.2.2
+         * @param {string} type  Accepts: spinner, placeholder.
          */
-        addLoaderIcon: function() {
+        addLoaderIcon: function(type = 'spinner') {
             let frame;
-            const self = this;
 
             // If the media frame already exists, reopen it.
             if ( frame ) {
@@ -137,9 +128,9 @@
 
             // Create a new media frame
             frame = wp.media({
-                title: 'Select or upload animated GIF icon',
+                title: 'Select or upload an icon',
                 button: {
-                    text: 'Select GIF'
+                    text: 'Select icon'
                 },
                 multiple: false  // Set to true to allow multiple files to be selected
             });
@@ -150,18 +141,18 @@
                 const attachment = frame.state().get('selection').first().toJSON();
 
                 // Send the attachment URL to our custom image input field.
-                const imageIcon = document.getElementById('smush-loader-icon-preview');
+                const imageIcon = document.getElementById('smush-'+type+'-icon-preview');
                 imageIcon.style.backgroundImage = 'url("'+attachment.url+'")';
                 imageIcon.style.display = 'block';
 
                 // Send the attachment id to our hidden input
-                document.getElementById('smush-loader-icon-file').setAttribute('value', attachment.id);
+                document.getElementById('smush-'+type+'-icon-file').setAttribute('value', attachment.id);
 
                 // Hide the add image link
-                document.getElementById('smush-upload-loader-icon').style.display = 'none';
+                document.getElementById('smush-upload-'+type).style.display = 'none';
 
                 // Unhide the remove image link
-                document.getElementById('smush-remove-loader-icon').style.display = 'block';
+                document.getElementById('smush-remove-'+type).style.display = 'block';
             });
 
             // Finally, open the modal on click
@@ -172,22 +163,23 @@
          * Remove lazy load spinner icon.
          *
          * @since 3.2.2
+         * @param {string} type  Accepts: spinner, placeholder.
          */
-        removeLoaderIcon: () => {
+        removeLoaderIcon: (type = 'spinner') => {
             // Clear out the preview image
-            const imageIcon = document.getElementById('smush-loader-icon-preview');
+            const imageIcon = document.getElementById('smush-'+type+'-icon-preview');
             imageIcon.style.backgroundImage = '';
             imageIcon.style.display = 'none';
 
 
             // Un-hide the add image link
-            document.getElementById('smush-upload-loader-icon').style.display = 'block';
+            document.getElementById('smush-upload-'+type).style.display = 'block';
 
             // Hide the delete image link
-            document.getElementById('smush-remove-loader-icon').style.display = 'none';
+            document.getElementById('smush-remove-'+type).style.display = 'none';
 
             // Delete the image id from the hidden input
-            document.getElementById('smush-loader-icon-file').setAttribute('value', '');
+            document.getElementById('smush-'+type+'-icon-file').setAttribute('value', '');
         }
     };
 
