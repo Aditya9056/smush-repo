@@ -107,6 +107,7 @@ class WP_Smush_Page_Parser {
 		 *
 		 * @param bool $skip  Skip status.
 		 */
+		$a = apply_filters( 'wp_smush_should_skip_parse', false );
 		if ( empty( $content ) || apply_filters( 'wp_smush_should_skip_parse', false ) ) {
 			return $content;
 		}

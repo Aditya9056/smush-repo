@@ -5,6 +5,93 @@
 	.sui-wrap {
 
 		/**
+		 * Lazy loading
+		 *
+		 * @since 3.2.2
+		 */
+		.sui-meta-boxes-lazyload {
+			#smush-lazy-load-spinners span.sui-description:first-of-type,
+			#smush-lazy-load-placeholder span.sui-description:first-of-type {
+				margin-bottom: 20px;
+			}
+
+			#smush-lazy-load-spinners .sui-box-selectors,
+			#smush-lazy-load-placeholder .sui-box-selectors {
+				background-color: #FFF;
+				padding: 0 0 20px 0;
+
+				&:not([class*="sui-box-selectors-col-"]) ul li {
+					padding: 5px;
+				}
+
+				.sui-upload .sui-upload-file {
+					padding: 11px 19px;
+				}
+			}
+
+			#smush-lazy-load-spinners .sui-box-selectors {
+				a.sui-upload-button {
+					height: 40px;
+					width: 133px;
+				}
+
+				label.sui-box-selector {
+					width: 40px;
+					height: 40px;
+				}
+
+				.sui-box-selector input+span {
+					padding-top: 12px;
+					padding-bottom: 12px;
+
+					img {
+						max-width: 16px;
+						margin: 0;
+					}
+				}
+
+				.sui-box-selector input ~ span {
+					padding-right: 12px;
+					padding-left: 12px;
+					height: 40px;
+				}
+
+				.sui-box-selector input:checked+span:before,
+				.sui-box-selector input:checked+span:after {
+					content: none;
+				}
+			}
+
+			#smush-lazy-load-placeholder .sui-box-selectors {
+				&:not([class*="sui-box-selectors-col-"]) ul li {
+					flex: 0;
+				}
+
+				label.sui-box-selector {
+					width: 80px;
+					height: 60px;
+
+					input + span {
+						height: 60px;
+						padding: 0;
+					}
+
+					input + span img {
+						margin: 0 auto;
+					}
+
+					input[id^="placeholder-icon-1"] + span {
+						background-color: #FAFAFA;
+					}
+
+					input[id^="placeholder-icon-2"] + span {
+						background-color: #333333;
+					}
+				}
+			}
+		}
+
+		/**
 		 * Bulk restore modal
 		 *
 		 * @since 3.2.2

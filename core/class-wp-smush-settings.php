@@ -409,6 +409,8 @@ class WP_Smush_Settings {
 	 * @since 3.2.0
 	 */
 	private function parse_lazy_load_settings() {
+		$previous_settings = $this->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+
 		$args = array(
 			'format'          => array(
 				'filter' => FILTER_VALIDATE_BOOLEAN,
@@ -433,14 +435,56 @@ class WP_Smush_Settings {
 
 		$settings = filter_input_array( INPUT_POST, $args );
 
-		// Animation settings.
-		$settings['animation']['fadein']   = isset( $settings['animation']['value'] ) && 'fadein' === $settings['animation']['value'] ? true : false;
-		$settings['animation']['duration'] = isset( $settings['animation']['duration'] ) ? absint( $settings['animation']['duration'] ) : 0;
-		$settings['animation']['delay']    = isset( $settings['animation']['delay'] ) ? absint( $settings['animation']['delay'] ) : 0;
-		$settings['animation']['spinner']  = isset( $settings['animation']['value'] ) && 'spinner' === $settings['animation']['value'] ? true : false;
-		$settings['animation']['disabled'] = isset( $settings['animation']['value'] ) && 'disabled' === $settings['animation']['value'] ? true : false;
-		unset( $settings['animation']['value'] );
+		// Fade-in settings.
+		$settings['animation']['fadein']['duration'] = 0;
+		if ( isset( $settings['animation']['duration'] ) ) {
+			$settings['animation']['fadein']['duration'] = absint( $settings['animation']['duration'] );
+			unset( $settings['animation']['duration'] );
+		}
 
+		$settings['animation']['fadein']['delay'] = 0;
+		if ( isset( $settings['animation']['delay'] ) ) {
+			$settings['animation']['fadein']['delay'] = absint( $settings['animation']['delay'] );
+			unset( $settings['animation']['delay'] );
+		}
+
+		/**
+		 * Spinner and placeholder settings.
+		 */
+		$items = array( 'spinner', 'placeholder' );
+		foreach ( $items as $item ) {
+			$settings['animation'][ $item ]['selected'] = isset( $settings['animation'][ "{$item}-icon" ] ) ? $settings['animation'][ "{$item}-icon" ] : 1;
+			unset( $settings['animation'][ "{$item}-icon" ] );
+
+			// Custom spinners.
+			if ( ! isset( $previous_settings['animation'][ $item ]['custom'] ) || ! is_array( $previous_settings['animation'][ $item ]['custom'] ) ) {
+				$settings['animation'][ $item ]['custom'] = array();
+			} else {
+				// Remove empty values.
+				$settings['animation'][ $item ]['custom'] = array_filter( $previous_settings['animation'][ $item ]['custom'] );
+			}
+
+			// Add uploaded custom spinner.
+			if ( isset( $settings['animation'][ "custom-{$item}" ] ) ) {
+				if ( ! empty( $settings['animation'][ "custom-{$item}" ] ) && ! in_array( $settings['animation'][ "custom-{$item}" ], $settings['animation'][ $item ]['custom'], true ) ) {
+					$settings['animation'][ $item ]['custom'][] = $settings['animation'][ "custom-{$item}" ];
+					$settings['animation'][ $item ]['selected'] = $settings['animation'][ "custom-{$item}" ];
+				}
+				unset( $settings['animation'][ "custom-{$item}" ] );
+			}
+		}
+
+		// Custom color for placeholder.
+		if ( ! isset( $settings['animation']['color'] ) ) {
+			$settings['animation']['placeholder']['color'] = $previous_settings['animation']['placeholder']['color'];
+		} else {
+			$settings['animation']['placeholder']['color'] = $settings['animation']['color'];
+			unset( $settings['animation']['color'] );
+		}
+
+		/**
+		 * Exclusion rules.
+		 */
 		// Convert to array.
 		if ( ! empty( $settings['exclude-pages'] ) ) {
 			$settings['exclude-pages'] = preg_split( '/[\r\n\t ]+/', $settings['exclude-pages'] );
@@ -476,11 +520,20 @@ class WP_Smush_Settings {
 				'gravatars'  => true,
 			),
 			'animation'       => array(
-				'fadein'   => true,
-				'duration' => 400,
-				'delay'    => 0,
-				'spinner'  => false,
-				'disabled' => false,
+				'selected'    => 'fadein', // Accepts: fadein, spinner, placeholder, false.
+				'fadein'      => array(
+					'duration' => 400,
+					'delay'    => 0,
+				),
+				'spinner'     => array(
+					'selected' => 1,
+					'custom'   => array(),
+				),
+				'placeholder' => array(
+					'selected' => 1,
+					'custom'   => array(),
+					'color'    => '#F3F3F3',
+				),
 			),
 			'include'         => array(
 				'frontpage' => true,
