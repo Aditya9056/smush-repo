@@ -284,7 +284,11 @@ class WP_Smush_Settings {
 			$is_network_admin = true;
 		}
 
-		if ( current_user_can( 'manage_options' ) && ( 'all' === $access || 'custom' === $access && $top_menu ) ) {
+		if ( $is_network_admin && ! $access && $top_menu ) {
+			return true;
+		}
+
+		if ( current_user_can( 'manage_options' ) && ( '1' === $access || 'custom' === $access && $top_menu ) ) {
 			return true;
 		}
 

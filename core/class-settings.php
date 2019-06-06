@@ -16,6 +16,15 @@ namespace WP_Smush\Core;
 class Settings {
 
 	/**
+	 * Plugin instance.
+	 *
+	 * @since 3.0
+	 *
+	 * @var null|Settings
+	 */
+	private static $instance = null;
+
+	/**
 	 * Settings array.
 	 *
 	 * @var array $settings
@@ -145,61 +154,46 @@ class Settings {
 	 * @var array $global_fields
 	 */
 	private $global_fields = array(
-		'networkwide'  => false,
+		'networkwide'  => false, // Accepts: true, false, array of available modules.
 		'install-type' => 'new', // Accepts: new, existing.
 	);
 
 	/**
+	 * Return the plugin instance.
+	 *
+	 * @since 3.0
+	 *
+	 * @return Settings
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
 	 * Settings constructor.
 	 */
-	public function __construct() {
+	private function __construct() {
 		// See if we've got serialised settings stored already.
-		//$settings = $this->get_settings();
+		$settings = $this->get_settings();
 
-
-		$access = $this->is_global();
-
-		if ( true === $access ) {
-			return get_site_option( WP_SMUSH_PREFIX . 'settings', $this->get_defaults() );
-		}
-
-		if ( false === $access ) {
-			//array_intersect_key()
-			// TODO: make sure the missing stuff is taken from site_option setting.
-			return get_option( WP_SMUSH_PREFIX . 'settings', array() );
-		}
-
-		if ( is_array( $access ) ) {
-
-		}
-
-		/*
-		// In network admin it's possible to see only UNSELECTED modules.
-		if ( is_network_admin() ) {
-			return ! in_array( $module, $access, true );
-		}
-
-		// Vice versa for sub sites.
-		return in_array( $module, $access, true );
-		*/
-
-
-
-
-
-
-
-		/*
-		if ( empty( $settings ) ) {
-			$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
+		if ( ! $settings ) {
+			// TODO: refactor.
+			$this->set_settings( WP_SMUSH_PREFIX . 'settings', $this->get_defaults() );
 		}
 
 		// Store it in class variable.
 		if ( ! empty( $settings ) && is_array( $settings ) ) {
-			// Merge with the existing settings.
-			$this->settings = array_merge( $this->settings, $settings );
+			$this->settings = $settings;
 		}
-		*/
+
+		// Save Settings.
+		//add_action( 'wp_ajax_save_settings', array( $this, 'save' ) );
+		// Reset Settings.
+		//add_action( 'wp_ajax_reset_settings', array( $this, 'reset' ) );
 	}
 
 	/**
@@ -275,6 +269,8 @@ class Settings {
 	/**
 	 * Generate an array with default settings.
 	 *
+	 * @since 3.2.2
+	 *
 	 * @return array
 	 */
 	private function get_defaults() {
@@ -286,6 +282,63 @@ class Settings {
 
 		return $settings;
 	}
+
+	/**
+	 * Basically what we are doing here is making sure that all settings are always defined.
+	 * If something is missing, we either take it from network settings or defaults.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @return array|bool  Return false on failure.
+	 */
+	private function get_settings() {
+		$global   = $this->is_global();
+		$defaults = $this->get_defaults();
+
+		// Always get global settings if global settings enabled or is in network admin.
+		if ( true === $global || ( is_array( $global ) && is_network_admin() ) ) {
+			return get_site_option( WP_SMUSH_PREFIX . 'settings', $defaults );
+		}
+
+		if ( false === $global ) {
+			// Make sure we're not missing any settings.
+			$global_settings = get_site_option( WP_SMUSH_PREFIX . 'settings', $defaults );
+			$site_settings   = get_option( WP_SMUSH_PREFIX . 'settings', $defaults );
+
+			$undefined = array_diff_assoc( $global_settings, $site_settings );
+
+			return array_merge( $site_settings, $undefined );
+		}
+
+		// Custom access enabled - combine settings from network with site settings.
+		if ( is_array( $global ) ) {
+			$network_settings = array_diff( $this->modules, $global );
+			$global_settings  = get_site_option( WP_SMUSH_PREFIX . 'settings', $defaults );
+			$site_settings    = get_option( WP_SMUSH_PREFIX . 'settings', $defaults );
+
+			foreach ( $network_settings as $key ) {
+				// If set on network - take the network settings.
+				if ( isset( $global_settings[ $key ] ) ) {
+					$site_settings[ $key ] = $global_settings[ $key ];
+				} else {
+					// Else take the defaults.
+					$site_settings[ $key ] = $defaults[ $key ];
+				}
+			}
+
+			return $site_settings;
+		}
+
+		return false;
+	}
+
+	private function set_settings( $name, $value ) {
+
+	}
+
+
+
+
 
 
 	private function is_available() {
@@ -367,7 +420,7 @@ class Settings {
 			return true;
 		}
 
-		if ( true === $access ) {
+		if ( '1' === $access ) {
 			return false;
 		}
 

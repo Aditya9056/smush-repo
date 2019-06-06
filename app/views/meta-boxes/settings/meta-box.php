@@ -88,8 +88,8 @@ if ( ! defined( 'WPINC' ) ) {
 						<input type="radio" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>subsite-access" value="0" id="access-none" <?php checked( $selected, false ); ?>>
 						<?php esc_html_e( 'None', 'wp-smushit' ); ?>
 					</label>
-					<label for="access-all" class="sui-tab-item <?php echo 'all' === $networkwide ? 'active' : ''; ?>">
-						<input type="radio" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>subsite-access" value="all" id="access-all" <?php checked( $selected, 'all' ); ?>>
+					<label for="access-all" class="sui-tab-item <?php echo '1' === $networkwide ? 'active' : ''; ?>">
+						<input type="radio" name="<?php echo esc_attr( WP_SMUSH_PREFIX ); ?>subsite-access" value="1" id="access-all" <?php checked( $selected, '1' ); ?>>
 						<?php esc_html_e( 'All', 'wp-smushit' ); ?>
 					</label>
 					<label for="access-custom" class="sui-tab-item <?php echo is_array( $networkwide ) ? 'active' : ''; ?>">
@@ -102,7 +102,7 @@ if ( ! defined( 'WPINC' ) ) {
 					<div class="sui-notice sui-notice-info <?php echo ! $networkwide ? 'active' : ''; ?>">
 						<p><?php esc_html_e( "Subsite admins can't override any module settings and will always inherit your network settings.", 'wp-smushit' ); ?></p>
 					</div>
-					<div class="sui-notice sui-notice-info <?php echo 'all' === $networkwide ? 'active' : ''; ?>">
+					<div class="sui-notice sui-notice-info <?php echo '1' === $networkwide ? 'active' : ''; ?>">
 						<p><?php esc_html_e( 'Subsite admins can override all module settings.', 'wp-smushit' ); ?></p>
 					</div>
 					<div class="sui-tab-boxed <?php echo is_array( $networkwide ) ? 'active' : ''; ?>">
