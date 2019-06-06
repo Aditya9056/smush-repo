@@ -50,23 +50,23 @@ class NewSettingsTest extends WPTestCase {
 	/**
 	 * Test settings if no module is selected.
 	 */
-	public function test_empty_get() {
-		$this->assertFalse( $this->settings->get( '' ) );
-	}
+	//public function test_empty_get() {
+	//	$this->assertFalse( $this->settings->get( '' ) );
+	//}
 
-	public function test_default_settings() {
-		$defaults = $this->settings->get_defaults();
-		codecept_debug( $defaults );
-	}
+	//public function test_default_settings() {
+	//	$defaults = $this->settings->get_defaults();
+	//	codecept_debug( $defaults );
+	//}
 
 	/**
 	 * Test bulk smush settings in a MU network on a subsite.
 	 *
 	 * @env multisite
 	 */
-	public function test_bulk_subsite() {
-		$this->assertTrue( $this->settings->is_multisite() );
-	}
+	//public function test_bulk_subsite() {
+	//	$this->assertTrue( $this->settings->is_multisite() );
+	//}
 
 	/*
 	public function test_it_works() {
