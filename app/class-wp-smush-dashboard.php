@@ -1097,7 +1097,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			array(
 				'basic_features'    => WP_Smush_Settings::$basic_features,
 				'is_pro'            => WP_Smush::is_pro(),
-				'integration_group' => $this->settings->get_integration_fields(),
+				'integration_group' => $this->settings->get_integrations_fields(),
 				'settings'          => $this->settings->get(),
 				'settings_data'     => $core->settings,
 				'upsell_url'        => $upsell_url,

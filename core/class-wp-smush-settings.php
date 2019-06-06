@@ -59,6 +59,14 @@ class WP_Smush_Settings {
 	);
 
 	/**
+	 * Available modules.
+	 *
+	 * @sincr 3.2.2
+	 * @var array $modules
+	 */
+	private $modules = array( 'bulk', 'integrations', 'cdn', 'tools', 'settings' );
+
+	/**
 	 * List of features/settings that are free.
 	 *
 	 * @var array $basic_features
@@ -88,7 +96,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $integration_fields = array( 'gutenberg', 's3', 'nextgen', 'js_builder' );
+	private $integrations_fields = array( 'gutenberg', 's3', 'nextgen', 'js_builder' );
 
 	/**
 	 * List of fields in CDN form.
@@ -175,8 +183,8 @@ class WP_Smush_Settings {
 	 * @since 3.2.2
 	 * @return array
 	 */
-	public function get_integration_fields() {
-		return $this->integration_fields;
+	public function get_integrations_fields() {
+		return $this->integrations_fields;
 	}
 
 	/**
@@ -213,33 +221,63 @@ class WP_Smush_Settings {
 	 * Init settings.
 	 *
 	 * If there are no settings in the database, populate it with the defaults, if settings are present
-	 *
-	 * @return array
 	 */
 	public function init() {
-		// See if we've got serialised settings stored already.
-		$settings = $this->get_setting( WP_SMUSH_PREFIX . 'settings', array() );
-		if ( empty( $settings ) ) {
-			$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
+		$global = $this->is_network_enabled();
+
+		// Always get global settings if global settings enabled or is in network admin.
+		if ( true === $global || ( is_array( $global ) && is_network_admin() ) ) {
+			$this->settings = get_site_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
+			return $this->settings;
 		}
 
-		// Store it in class variable.
-		if ( ! empty( $settings ) && is_array( $settings ) ) {
-			// Merge with the existing settings.
-			$this->settings = array_merge( $this->settings, $settings );
+		if ( false === $global ) {
+			$site_settings = get_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
+
+			if ( ! is_multisite() ) {
+				$this->settings = $site_settings;
+			}
+
+			// Make sure we're not missing any settings.
+			$global_settings = get_site_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
+			$undefined       = array_diff( $global_settings, $site_settings );
+
+			$this->settings = array_merge( $site_settings, $undefined );
+			return $this->settings;
 		}
 
-		return $this->settings;
+		// Custom access enabled - combine settings from network with site settings.
+		if ( is_array( $global ) ) {
+			$network_settings = array_diff( $this->modules, $global );
+			$global_settings  = get_site_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
+			$site_settings    = get_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
+
+			foreach ( $network_settings as $key ) {
+				// Remove values that are network wide from site settings.
+				$site_settings = array_diff_key( $site_settings, array_flip( $this->{$key . '_fields'} ) );
+				// Take the values from network settings.
+				$network_part = array_intersect_key( $global_settings, array_flip( $this->{$key . '_fields'} ) );
+				// And append them to the site settings.
+				$site_settings = array_merge( $site_settings, $network_part );
+			}
+
+			$this->settings = $site_settings;
+			return $this->settings;
+		}
 	}
 
 	/**
 	 * Checks whether the settings are applicable for the whole network/site or sitewise (multisite).
-	 * TODO: can we remove this method.
 	 */
 	public function is_network_enabled() {
 		// If single site return true.
 		if ( ! is_multisite() ) {
 			return false;
+		}
+
+		// Additional check for ajax (is_network_admin() does not work in ajax calls).
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && isset( $_SERVER['HTTP_REFERER'] ) && preg_match( '#^' . network_admin_url() . '#i', wp_unslash( $_SERVER['HTTP_REFERER'] ) ) ) { // Input var ok.
+			return true;
 		}
 
 		// Get directly from db.
@@ -253,7 +291,7 @@ class WP_Smush_Settings {
 		}
 
 		// Partial enabled.
-		return true;
+		return $network_enabled;
 	}
 
 	/**
@@ -359,7 +397,9 @@ class WP_Smush_Settings {
 			return false;
 		}
 
-		return $this->is_network_enabled() ? get_site_option( $name, $default ) : get_option( $name, $default );
+		$global = $this->is_network_enabled();
+
+		return $global && ! is_array( $global ) ? get_site_option( $name, $default ) : get_option( $name, $default );
 	}
 
 	/**
@@ -375,7 +415,9 @@ class WP_Smush_Settings {
 			return false;
 		}
 
-		return $this->is_network_enabled() ? update_site_option( $name, $value ) : update_option( $name, $value );
+		$global = $this->is_network_enabled();
+
+		return $global && ! is_array( $global ) ? update_site_option( $name, $value ) : update_option( $name, $value );
 	}
 
 	/**
@@ -390,7 +432,9 @@ class WP_Smush_Settings {
 			return false;
 		}
 
-		return $this->is_network_enabled() ? delete_site_option( $name ) : delete_option( $name );
+		$global = $this->is_network_enabled();
+
+		return $global && ! is_array( $global ) ? delete_site_option( $name ) : delete_option( $name );
 	}
 
 	/**
@@ -430,7 +474,7 @@ class WP_Smush_Settings {
 			return;
 		}
 
-		$pages_with_settings = array( 'bulk', 'integration', 'cdn', 'settings', 'lazy_load', 'tools' );
+		$pages_with_settings = array( 'bulk', 'integrations', 'cdn', 'settings', 'lazy_load', 'tools' );
 		$setting_form        = isset( $_POST['setting_form'] ) ? sanitize_text_field( wp_unslash( $_POST['setting_form'] ) ) : '';
 
 		// Continue only if form name is set.
