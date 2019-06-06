@@ -1,6 +1,6 @@
 {
   "name": "wp-smushit",
-  "version": "3.2.1-beta.5",
+  "version": "3.2.1",
   "private": true,
   "description": "Resize, optimize, optimise and compress all of your images with the incredibly powerful and 100% free WordPress image smusher, brought to you by the superteam at WPMU DEV!",
   "keywords": [
