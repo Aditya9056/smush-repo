@@ -63,7 +63,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 
 		$access = WP_Smush_Settings::can_access();
 
-		if ( true === $access && is_network_admin() && ! $this->should_render() ) {
+		if ( ( ! is_network_admin() && ! $access ) || ( is_network_admin() && true === $access ) ) {
 			unset( $this->tabs['bulk'] );
 			unset( $this->tabs['directory'] );
 			unset( $this->tabs['integrations'] );
@@ -72,7 +72,17 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			unset( $this->tabs['tools'] );
 		}
 
-		if ( is_array( $access ) ) {
+		if ( is_network_admin() && is_array( $access ) ) {
+			foreach ( $this->tabs as $tab => $name ) {
+				if ( ! in_array( $tab, $access, true ) ) {
+					continue;
+				}
+
+				unset( $this->tabs[ $tab ] );
+			}
+		}
+
+		if ( ! is_network_admin() && is_array( $access ) ) {
 			foreach ( $this->tabs as $tab => $name ) {
 				if ( in_array( $tab, $access, true ) ) {
 					continue;
@@ -524,7 +534,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						<p class="wp-smush-stats-label-message">
 							<?php
 							$link_class = 'wp-smush-lossy-enable-link';
-							if ( is_multisite() && $this->settings->is_network_enabled() ) {
+							if ( is_multisite() && WP_Smush_Settings::can_access( 'bulk' ) ) {
 								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true, true ) . '#enable-lossy';
 							} elseif ( 'bulk' !== $this->get_current_tab() ) {
 								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '#enable-lossy';
@@ -893,7 +903,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			array(
 				'human_format'    => empty( $human[1] ) ? 'B' : $human[1],
 				'human_size'      => empty( $human[0] ) ? '0' : $human[0],
-				'networkwide'     => $this->settings->is_network_enabled(),
 				'remaining'       => $core->remaining_count,
 				'resize_count'    => ! $resize_count ? 0 : $resize_count,
 				'resize_enabled'  => (bool) $this->settings->get( 'resize' ),
@@ -976,7 +985,6 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'basic_features'      => WP_Smush_Settings::$basic_features,
 				'cdn_enabled'         => $this->settings->get( 'cdn' ),
 				'grouped_settings'    => $fields,
-				'opt_networkwide_val' => $this->settings->is_network_enabled(),
 				'settings'            => $this->settings->get(),
 				'settings_data'       => WP_Smush::get_instance()->core()->settings,
 			)
@@ -1089,7 +1097,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			array(
 				'basic_features'    => WP_Smush_Settings::$basic_features,
 				'is_pro'            => WP_Smush::is_pro(),
-				'integration_group' => $this->settings->get_integration_fields(),
+				'integration_group' => $this->settings->get_integrations_fields(),
 				'settings'          => $this->settings->get(),
 				'settings_data'     => $core->settings,
 				'upsell_url'        => $upsell_url,
@@ -1288,10 +1296,9 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/tools/meta-box',
 			array(
-				'grouped_settings'    => $this->settings->get_tools_fields(),
-				'opt_networkwide_val' => $this->settings->is_network_enabled(),
-				'settings'            => $this->settings->get(),
-				'settings_data'       => WP_Smush::get_instance()->core()->settings,
+				'grouped_settings' => $this->settings->get_tools_fields(),
+				'settings'         => $this->settings->get(),
+				'settings_data'    => WP_Smush::get_instance()->core()->settings,
 			)
 		);
 	}

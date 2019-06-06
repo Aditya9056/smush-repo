@@ -553,7 +553,7 @@ abstract class WP_Smush_View {
 	 */
 	private function get_recheck_message() {
 		// Return if not multisite, or on network settings page, Netowrkwide settings is disabled.
-		if ( ! is_multisite() || is_network_admin() || ! $this->settings->is_network_enabled() ) {
+		if ( ! is_multisite() || is_network_admin() || ! WP_Smush_Settings::can_access( 'bulk' ) ) {
 			return;
 		}
 
@@ -631,7 +631,7 @@ abstract class WP_Smush_View {
 	 */
 	private function settings_updated() {
 		// Check if network-wide settings are enabled, do not show settings updated message.
-		if ( is_multisite() && $this->settings->is_network_enabled() && ! is_network_admin() ) {
+		if ( is_multisite() && ! is_network_admin() && ! WP_Smush_Settings::can_access( 'bulk' ) ) {
 			return;
 		}
 
@@ -745,8 +745,16 @@ abstract class WP_Smush_View {
 		}
 
 		if ( is_array( $access ) ) {
-			// TODO: check if on page.
+			if ( is_network_admin() && ! in_array( $this->get_current_tab(), $access, true ) ) {
+				return true;
+			}
+
+			if ( ! is_network_admin() && in_array( $this->get_current_tab(), $access, true ) ) {
+				return true;
+			}
 		}
+
+		return false;
 	}
 
 }

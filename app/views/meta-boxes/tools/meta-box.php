@@ -22,18 +22,16 @@ if ( ! defined( 'WPINC' ) ) {
 	<?php endif; ?>
 
 	<?php
-	if ( WP_Smush_Settings::can_access() ) {
-		foreach ( $settings_data as $name => $values ) {
-			// If not CDN setting - skip.
-			if ( ! in_array( $name, $grouped_settings, true ) ) {
-				continue;
-			}
-
-			$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
-
-			// Show settings option.
-			$this->settings_row( WP_SMUSH_PREFIX . $name, $label, $name, $settings[ $name ] );
+	foreach ( $settings_data as $name => $values ) {
+		// If not CDN setting - skip.
+		if ( ! in_array( $name, $grouped_settings, true ) ) {
+			continue;
 		}
+
+		$label = ! empty( $settings_data[ $name ]['short_label'] ) ? $settings_data[ $name ]['short_label'] : $settings_data[ $name ]['label'];
+
+		// Show settings option.
+		$this->settings_row( WP_SMUSH_PREFIX . $name, $label, $name, $settings[ $name ] );
 	}
 	?>
 

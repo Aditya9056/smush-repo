@@ -266,7 +266,7 @@ class WP_Smush_Admin {
 	public function add_menu_pages() {
 		$title = WP_Smush::is_pro() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 
-		if ( WP_Smush_Settings::can_access( true ) ) {
+		if ( WP_Smush_Settings::can_access( false, true ) ) {
 			$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
 		}
 
