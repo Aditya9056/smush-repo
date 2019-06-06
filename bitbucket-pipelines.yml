@@ -20,7 +20,7 @@ pipelines:
             - cp -R $BITBUCKET_CLONE_DIR /tmp/wordpress/wp-content/plugins/wp-smushit
             - php -S localhost:8080 -t /tmp/wordpress &>/dev/null&
             - codecept run wpunit
-            - codecept run wpunit --env multisite
+            #- codecept run wpunit --env multisite
       - step:
           name: RIPS Security Scan
           image: rips/rips-cli:3
