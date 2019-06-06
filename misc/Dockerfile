@@ -13,7 +13,7 @@ RUN ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata
 # gcc libxml2-dev add about 200 Mb, but are needed for phpfarm
 RUN apt-get update && \
-    apt-get install -y nano wget curl unzip subversion git openssh-client php-pear libpng-dev gcc libxml2-dev \
+    apt-get install -y nano wget curl unzip subversion git openssh-client php-pear patch make libpng-dev gcc libxml2-dev \
     php7.2 php7.2-mysql php7.2-gd php7.2-dom php7.2-mbstring php7.2-curl php-xdebug --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
