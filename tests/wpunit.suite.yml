@@ -20,3 +20,13 @@ modules:
             title: "Smush"
             plugins: ['wp-smushit/wp-smush.php']
             activatePlugins: ['wp-smushit/wp-smush.php']
+
+env:
+    multisite:
+        modules:
+            config:
+                WPLoader:
+                    multisite: true
+                    dbName: "wpTestsMU"
+                    bootstrapActions:
+                        - [WpunitTester, createBlogs]

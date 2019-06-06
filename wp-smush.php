@@ -83,6 +83,9 @@ if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
 	define( 'WP_SMUSH_TIMEOUT', apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 ) );
 }
 
+require_once WP_SMUSH_DIR . '/core/class-settings.php';
+$settings = new \WP_Smush\Core\Settings();
+
 /**
  * To support Smushing on staging sites like SiteGround staging where staging site urls are different
  * but redirects to main site url. Remove the protocols and www, and get the domain name.*

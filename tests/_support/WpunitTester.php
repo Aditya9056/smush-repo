@@ -3,6 +3,7 @@
 
 /**
  * Inherited Methods
+ *
  * @method void wantToTest($text)
  * @method void wantTo($text)
  * @method void execute($callable)
@@ -125,4 +126,27 @@ class WpunitTester extends \Codeception\Actor
 
 		$smush->validate_install();
 	}
+
+	/**
+	 * Create blogs for multisite.
+	 *
+	 * @since 3.2.2
+	 */
+	public static function createBlogs() {
+		global $wpdb;
+
+		$wpdb->insert(
+			$wpdb->site,
+			[
+				'id'     => 1,
+				'domain' => 'localhost',
+				'path'   => '/',
+			],
+		); // Db call ok.
+
+		wpmu_create_blog( 'localhost', '/', 'Test Site 1', 1, [ 'public' => 1 ] );
+		wpmu_create_blog( 'localhost', '/site1/', 'Test Site 2', 1, [ 'public' => 1 ] );
+		switch_to_blog( 1 );
+	}
+
 }
