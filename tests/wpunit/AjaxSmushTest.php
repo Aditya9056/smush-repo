@@ -15,7 +15,7 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	/**
 	 * Setup method.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		wp_set_current_user( 1 );
@@ -25,7 +25,7 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	/**
 	 * Tear down method.
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		// your tear down methods here.
 		parent::tearDown();
 	}
