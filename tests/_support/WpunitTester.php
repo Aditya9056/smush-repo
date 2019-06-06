@@ -140,7 +140,7 @@ class WpunitTester extends \Codeception\Actor
 				'id'     => 1,
 				'domain' => 'localhost',
 				'path'   => '/',
-			],
+			]
 		); // Db call ok.
 
 		wpmu_create_blog( 'localhost', '/', 'Test Site 1', 1, [ 'public' => 1 ] );
