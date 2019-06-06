@@ -181,7 +181,6 @@ class Settings {
 		$settings = $this->get_settings();
 
 		if ( ! $settings ) {
-			// TODO: refactor.
 			$this->set_settings( WP_SMUSH_PREFIX . 'settings', $this->get_defaults() );
 		}
 
@@ -191,9 +190,9 @@ class Settings {
 		}
 
 		// Save Settings.
-		//add_action( 'wp_ajax_save_settings', array( $this, 'save' ) );
+		add_action( 'wp_ajax_save_settings', array( $this, 'save' ) );
 		// Reset Settings.
-		//add_action( 'wp_ajax_reset_settings', array( $this, 'reset' ) );
+		add_action( 'wp_ajax_reset_settings', array( $this, 'reset' ) );
 	}
 
 	/**
@@ -284,6 +283,36 @@ class Settings {
 	}
 
 	/**
+	 * Check if access is global.
+	 *
+	 * Returns TRUE on single sites and if global network settings are used.
+	 * FALSE when admins can overwrite all settings.
+	 * ARRAY when custom access is defined. Array contains available modules.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @return bool|array
+	 */
+	private function is_global() {
+		if ( ! is_multisite() ) {
+			return false;
+		}
+
+		// Get directly from db.
+		$access = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+		if ( isset( $access ) && false === (bool) $access ) {
+			return true;
+		}
+
+		if ( '1' === $access ) {
+			return false;
+		}
+
+		// Partial enabled.
+		return $access;
+	}
+
+	/**
 	 * Basically what we are doing here is making sure that all settings are always defined.
 	 * If something is missing, we either take it from network settings or defaults.
 	 *
@@ -301,11 +330,15 @@ class Settings {
 		}
 
 		if ( false === $global ) {
+			$site_settings = get_option( WP_SMUSH_PREFIX . 'settings', $defaults );
+
+			if ( ! is_multisite() ) {
+				return $site_settings;
+			}
+
 			// Make sure we're not missing any settings.
 			$global_settings = get_site_option( WP_SMUSH_PREFIX . 'settings', $defaults );
-			$site_settings   = get_option( WP_SMUSH_PREFIX . 'settings', $defaults );
-
-			$undefined = array_diff_assoc( $global_settings, $site_settings );
+			$undefined       = array_diff_assoc( $global_settings, $site_settings );
 
 			return array_merge( $site_settings, $undefined );
 		}
@@ -332,32 +365,24 @@ class Settings {
 		return false;
 	}
 
-	private function set_settings( $name, $value ) {
+	/**
+	 * Update value for given setting key.
+	 *
+	 * @param string $name   Key.
+	 * @param mixed  $value  Value.
+	 *
+	 * @return bool  If the setting was updated or not.
+	 */
+	public function set_settings( $name = '', $value = '' ) {
+		if ( empty( $name ) ) {
+			return false;
+		}
 
+		return $this->is_global() ? update_site_option( $name, $value ) : update_option( $name, $value );
 	}
-
-
-
-
-
-
-	private function is_available() {
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
+	 * TODO: WORK IN PROGRESS.
 	 * Fetch the settings, based on WordPress install type (single/multisite) or access control settings.
 	 *
 	 * @since 3.2.2  Added $module parameter.
@@ -373,7 +398,7 @@ class Settings {
 			return false;
 		}
 
-		$access = $this->is_network_wide();
+		$access = $this->is_global();
 
 		// Subsite control is disabled.
 		if ( false === $access ) {
@@ -397,35 +422,6 @@ class Settings {
 
 		// Vice versa for sub sites.
 		return in_array( $module, $access, true );
-	}
-
-
-	/**
-	 * $network_enabled = FALSE
-	 * All access is global.
-	 *
-	 * TRUE
-	 * Each subsite can override settings.
-	 *
-	 * ARRAY
-	 */
-	private function is_global() {
-		if ( ! is_multisite() ) {
-			return true;
-		}
-
-		// Get directly from db.
-		$access = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
-		if ( isset( $access ) && false === (bool) $access ) {
-			return true;
-		}
-
-		if ( '1' === $access ) {
-			return false;
-		}
-
-		// Partial enabled.
-		return $access;
 	}
 
 }
