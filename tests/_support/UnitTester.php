@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Inherited Methods
  * @method void wantToTest($text)
@@ -11,13 +12,13 @@
  * @method void am($role)
  * @method void lookForwardTo($achieveValue)
  * @method void comment($description)
- * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
+ * @method void pause()
  *
  * @SuppressWarnings(PHPMD)
- */
-class UnitTester extends \Codeception\Actor {
-
-	use _generated\UnitTesterActions;
+*/
+class UnitTester extends \Codeception\Actor
+{
+    use _generated\UnitTesterActions;
 
 	/**
 	 * Define custom actions here.
@@ -54,5 +55,4 @@ class UnitTester extends \Codeception\Actor {
 	public function getData( $response ) {
 		return json_decode( $response->getBody() )->{'data'};
 	}
-
 }
