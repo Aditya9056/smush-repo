@@ -1,8 +1,8 @@
 <?php
 
-
 /**
  * Inherited Methods
+ *
  * @method void wantToTest($text)
  * @method void wantTo($text)
  * @method void execute($callable)
@@ -16,9 +16,9 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class WpunitTester extends \Codeception\Actor
-{
-    use _generated\WpunitTesterActions;
+class WpunitTester extends \Codeception\Actor {
+
+	use _generated\WpunitTesterActions;
 
 	/**
 	 * Upload single image to media library.
@@ -69,8 +69,10 @@ class WpunitTester extends \Codeception\Actor
 	}
 
 	/**
-	 * @param object $object    Object with the property
-	 * @param string $property  Property name
+	 * Allows to read a private property of a class.
+	 *
+	 * @param object $object    Object with the property.
+	 * @param string $property  Property name.
 	 *
 	 * @return mixed
 	 * @throws ReflectionException

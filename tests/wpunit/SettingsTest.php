@@ -65,6 +65,21 @@ class SettingsTest extends WPTestCase {
 		}
 	}
 
+	public function testDefaults() {
+		// Remove all the settings.
+		delete_option( WP_SMUSH_PREFIX . 'settings' );
+
+		$settings = get_option( WP_SMUSH_PREFIX . 'settings' );
+		$this->assertFalse( $settings );
+
+		$setting_module = WP_Smush_Settings::get_instance();
+
+		$settings = get_option( WP_SMUSH_PREFIX . 'settings' );
+
+		$defaults = $this->tester->readPrivateProperty( $setting_module, 'defaults' );
+		$this->assertEquals( $defaults, $settings );
+	}
+
 	/**
 	 * Test settings if no module is selected.
 	 */

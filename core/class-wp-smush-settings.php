@@ -27,15 +27,24 @@ class WP_Smush_Settings {
 	private static $instance = null;
 
 	/**
+	 * Settings array.
+	 *
+	 * @since 3.2.2
+	 * @var array $settings
+	 */
+	private $settings = array();
+
+	/**
 	 * Default settings array.
 	 *
 	 * We don't want it to be edited directly, so we use public get_*, set_* and delete_* methods.
 	 *
-	 * @since 3.0  Improved structure.
+	 * @since 3.0    Improved structure.
+	 * @simce 3.2.2  Changed to be a default array.
 	 *
 	 * @var array
 	 */
-	private $settings = array(
+	private $defaults = array(
 		'auto'              => true,  // works with CDN.
 		'lossy'             => false, // works with CDN.
 		'strip_exif'        => true,  // works with CDN.
@@ -223,34 +232,34 @@ class WP_Smush_Settings {
 	 * If there are no settings in the database, populate it with the defaults, if settings are present
 	 */
 	public function init() {
+		$site_settings = array();
+
 		$global = $this->is_network_enabled();
 
 		// Always get global settings if global settings enabled or is in network admin.
 		if ( true === $global || ( is_array( $global ) && is_network_admin() ) ) {
-			$this->settings = get_site_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
-			return $this->settings;
+			$site_settings = get_site_option( WP_SMUSH_PREFIX . 'settings', array() );
 		}
 
 		if ( false === $global ) {
-			$site_settings = get_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
+			$site_settings = get_option( WP_SMUSH_PREFIX . 'settings', array() );
 
 			if ( ! is_multisite() ) {
 				$this->settings = $site_settings;
 			}
 
 			// Make sure we're not missing any settings.
-			$global_settings = get_site_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
+			$global_settings = get_site_option( WP_SMUSH_PREFIX . 'settings', array() );
 			$undefined       = array_diff( $global_settings, $site_settings );
 
-			$this->settings = array_merge( $site_settings, $undefined );
-			return $this->settings;
+			$site_settings = array_merge( $site_settings, $undefined );
 		}
 
 		// Custom access enabled - combine settings from network with site settings.
 		if ( is_array( $global ) ) {
 			$network_settings = array_diff( $this->modules, $global );
-			$global_settings  = get_site_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
-			$site_settings    = get_option( WP_SMUSH_PREFIX . 'settings', $this->settings );
+			$global_settings  = get_site_option( WP_SMUSH_PREFIX . 'settings', array() );
+			$site_settings    = get_option( WP_SMUSH_PREFIX . 'settings', array() );
 
 			foreach ( $network_settings as $key ) {
 				// Remove values that are network wide from site settings.
@@ -260,9 +269,11 @@ class WP_Smush_Settings {
 				// And append them to the site settings.
 				$site_settings = array_merge( $site_settings, $network_part );
 			}
+		}
 
-			$this->settings = $site_settings;
-			return $this->settings;
+		if ( empty( $site_settings ) ) {
+			$this->settings = $this->defaults;
+			$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
 		}
 	}
 
