@@ -65,30 +65,41 @@ class SettingsTest extends WPTestCase {
 		}
 	}
 
-	public function testDefaults() {
+	/**
+	 * Test defaults.
+	 *
+	 * @throws ReflectionException
+	 */
+	public function testDefaults( \Codeception\Scenario $scenario ) {
+		codecept_debug( $scenario->current('env') );
 		// Remove all the settings.
-		delete_option( WP_SMUSH_PREFIX . 'settings' );
+		$this->settings->delete_setting( WP_SMUSH_PREFIX . 'settings' );
 
-		$settings = get_option( WP_SMUSH_PREFIX . 'settings' );
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
 		$this->assertFalse( $settings );
 
-		$setting_module = WP_Smush_Settings::get_instance();
-
-		$settings = get_option( WP_SMUSH_PREFIX . 'settings' );
-
-		$defaults = $this->tester->readPrivateProperty( $setting_module, 'defaults' );
+		$this->settings->init();
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+		$defaults = $this->tester->readPrivateProperty( $this->settings, 'defaults' );
 		$this->assertEquals( $defaults, $settings );
 	}
 
 	/**
-	 * Test settings if no module is selected.
+	 * Test is_network_enabled on single site.
+	 *
+	 * @env single
 	 */
-	//public function test_empty_get() {}
+	public function testIs_network_enabledSingle() {
+		$this->assertFalse( $this->settings->is_network_enabled() );
+	}
 
 	/**
-	 * Test bulk smush settings in a MU network on a subsite.
+	 * Test is_network_enabled on multisite.
 	 *
 	 * @env multisite
 	 */
+	public function testIs_network_enabledMultisite() {
+		$this->assertTrue( $this->settings->is_network_enabled() );
+	}
 
 }

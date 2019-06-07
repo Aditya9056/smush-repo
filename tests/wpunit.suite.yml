@@ -22,6 +22,12 @@ modules:
             activatePlugins: ['wp-smushit/wp-smush.php']
 
 env:
+    single:
+        modules:
+            config:
+                WPLoader:
+                    multisite: false
+
     multisite:
         modules:
             config:
