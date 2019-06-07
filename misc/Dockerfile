@@ -14,11 +14,11 @@ RUN ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
 # gcc libxml2-dev add about 200 Mb, but are needed for phpfarm
 RUN apt-get update && \
     apt-get install -y nano wget curl unzip subversion git openssh-client php-pear patch make libpng-dev gcc libxml2-dev \
-    php7.2 php7.2-mysql php7.2-gd php7.2-dom php7.2-mbstring php7.2-curl php-xdebug --no-install-recommends && \
+    php7.3 php7.3-mysql php7.3-gd php7.3-dom php7.3-mbstring php7.3-curl php-xdebug --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure php
-RUN echo "date.timezone = UTC" >> /etc/php/7.2/apache2/php.ini
+RUN echo "date.timezone = UTC" >> /etc/php/7.3/apache2/php.ini
 
 # Install MariaDB
 RUN apt-get update && \
@@ -28,12 +28,12 @@ RUN apt-get update && \
 ####
 # Add phpfarm with all the php versions
 ####
-RUN git clone https://github.com/fpoirotte/phpfarm.git /phpfarm
-WORKDIR /phpfarm/src
-RUN ./main.sh 5.6.38 && \
-    ./main.sh 7.0.32 && \
-    ./main.sh 7.1.22 && \
-    rm -rf /phpfarm/src
+#RUN git clone https://github.com/fpoirotte/phpfarm.git /phpfarm
+#WORKDIR /phpfarm/src
+#RUN ./main.sh 5.6.38 && \
+#    ./main.sh 7.0.32 && \
+#    ./main.sh 7.1.22 && \
+#    rm -rf /phpfarm/src
 
 # Configure Composer
 ENV COMPOSER_ALLOW_SUPERUSER=1

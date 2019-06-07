@@ -1,29 +1,29 @@
 paths:
-    tests: tests
-    output: tests/_output
-    data: tests/_data
-    support: tests/_support
-    envs: tests/_envs
+  tests: tests
+  output: tests/_output
+  data: tests/_data
+  support: tests/_support
+  envs: tests/_envs
 actor_suffix: Tester
 extensions:
-    enabled:
-        - Codeception\Extension\RunFailed
-    commands:
-        - Codeception\Command\GenerateWPUnit
-        - Codeception\Command\GenerateWPRestApi
-        - Codeception\Command\GenerateWPRestController
-        - Codeception\Command\GenerateWPRestPostTypeController
-        - Codeception\Command\GenerateWPAjax
-        - Codeception\Command\GenerateWPCanonical
-        - Codeception\Command\GenerateWPXMLRPC
+  enabled:
+    - Codeception\Extension\RunFailed
+  commands:
+    - Codeception\Command\GenerateWPUnit
+    - Codeception\Command\GenerateWPRestApi
+    - Codeception\Command\GenerateWPRestController
+    - Codeception\Command\GenerateWPRestPostTypeController
+    - Codeception\Command\GenerateWPAjax
+    - Codeception\Command\GenerateWPCanonical
+    - Codeception\Command\GenerateWPXMLRPC
 params:
-    - .env.testing
+  - .env.testing
 coverage:
-    enabled: true
-    include:
-        - wp-smush.php
-        - app/*
-        - core/*
-    exclude:
-        - app/assets/*
-        - core/external/*
+  enabled: true
+  include:
+    - wp-smush.php
+    - app/*
+    - core/*
+  exclude:
+    - app/assets/*
+    - core/external/*
