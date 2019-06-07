@@ -30,24 +30,7 @@ RUN apt-get update && \
 ####
 RUN git clone https://github.com/fpoirotte/phpfarm.git /phpfarm
 WORKDIR /phpfarm/src
-# PHP 5.2.17 needs a patch, so we manually download and apply patch before actual install
-RUN wget https://museum.php.net/php5/php-5.2.17.tar.bz2 -O bzips/php-5.2.17.tar.bz2 && \
-    tar -xjvf bzips/php-5.2.17.tar.bz2 php-5.2.17 && \
-    cd /phpfarm/src/php-5.2.17 && \
-    wget http://storage.googleapis.com/google-code-attachments/php52-backports/issue-16/comment-2/libxml29_compat.patch && \
-    patch -p0 < libxml29_compat.patch && \
-    cd /phpfarm/src && ./main.sh 5.2.17 && rm -rf /phpfarm/src/php-5.2.17
-
-#WORKDIR /phpfarm/src/php-5.2.17
-#RUN wget http://storage.googleapis.com/google-code-attachments/php52-backports/issue-16/comment-2/libxml29_compat.patch && \
-#    patch -p0 < libxml29_compat.patch
-
-#WORKDIR /phpfarm/src
-#RUN ./main.sh 5.2.17 && \
-RUN ./main.sh 5.3.29 && \
-    ./main.sh 5.4.45 && \
-    ./main.sh 5.5.38 && \
-    ./main.sh 5.6.38 && \
+RUN ./main.sh 5.6.38 && \
     ./main.sh 7.0.32 && \
     ./main.sh 7.1.22 && \
     rm -rf /phpfarm/src
