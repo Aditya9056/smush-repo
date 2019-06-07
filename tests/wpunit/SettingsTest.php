@@ -32,6 +32,15 @@ class SettingsTest extends WPTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
+		/**
+		 * This is a patch for Codeception not seeing the freaking actor in a local install...
+		 */
+		if ( is_null( $this->tester ) ) {
+			$di = $this->getMetadata()->getService( 'di' );
+			$di->set( new \Codeception\Scenario( $this ) );
+			$this->tester = $di->instantiate( $this->getMetadata()->getCurrent( 'actor' ) );
+		}
+
 		WP_Smush_Installer::smush_activated();
 		$this->settings = WP_Smush_Settings::get_instance();
 	}
