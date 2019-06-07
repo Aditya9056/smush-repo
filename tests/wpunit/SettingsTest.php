@@ -70,8 +70,7 @@ class SettingsTest extends WPTestCase {
 	 *
 	 * @throws ReflectionException
 	 */
-	public function testDefaults( \Codeception\Scenario $scenario ) {
-		codecept_debug( $scenario->current('env') );
+	public function testDefaults() {
 		// Remove all the settings.
 		$this->settings->delete_setting( WP_SMUSH_PREFIX . 'settings' );
 
