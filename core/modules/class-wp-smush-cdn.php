@@ -1099,13 +1099,13 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			// Revolution slider fix: images will always return 0 height and 0 width.
 			if ( 0 === $width && 0 === $height ) {
 				// Try to get the dimensions directly from the file.
-				list( $width, $height ) = getimagesize( WP_Smush_Helper::src_to_path( $src ) );
+				list( $width, $height ) = getimagesize( $src );
 			}
 
 			$image_meta = wp_get_attachment_metadata( $attachment_id );
 		} else {
 			// Try to get the dimensions directly from the file.
-			list( $width, $height ) = getimagesize( WP_Smush_Helper::src_to_path( $src ) );
+			list( $width, $height ) = getimagesize( $src );
 
 			$image_meta = array(
 				'width'  => $width,
