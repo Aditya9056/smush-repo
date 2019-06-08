@@ -9,7 +9,7 @@ pipelines:
   default:
     - parallel:
       - step:
-          name: Codeception tests
+          name: Unit Tests
           script:
             - mkdir -p ~/.ssh
             - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)

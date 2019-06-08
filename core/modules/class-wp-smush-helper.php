@@ -421,4 +421,35 @@ class WP_Smush_Helper {
 		return round( $bytes, $precision ) . ' ' . $units[ $pow ];
 	}
 
+	/**
+	 * Try to cast a source URL to a path.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param string $src  Source.
+	 *
+	 * @return string
+	 */
+	public static function src_to_path( $src ) {
+		$path = wp_parse_url( $src );
+
+		// Scheme will not be set on a URL.
+		$url = isset( $path['scheme'] );
+
+		$path = ltrim( $path['path'], '/' );
+
+		/**
+		 * DOCUMENT_ROOT does not always store the correct path. For example, Bedrock appends /wp/ to the default dir.
+		 * So if the source is a URL, we can safely use DOCUMENT_ROOT, else see if ABSPATH is defined.
+		 */
+		if ( $url ) {
+			$path = path_join( $_SERVER['DOCUMENT_ROOT'], $path );
+		} else {
+			$root = defined( 'ABSPATH' ) ? ABSPATH : $_SERVER['DOCUMENT_ROOT'];
+			$path = path_join( $root, $path );
+		}
+
+		return $path;
+	}
+
 }
