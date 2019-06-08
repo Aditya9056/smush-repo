@@ -22,7 +22,7 @@ class SmushTest extends WP_UnitTestCase {
 	/**
 	 * Setup method.
 	 */
-	public function setUp(): void {
+	public function setUp() {
 		require_once 'helpers/class-helper.php';
 		$this->tester = new Helper();
 

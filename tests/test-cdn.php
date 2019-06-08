@@ -38,7 +38,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Run before actions.
 	 */
-	public function setUp(): void {
+	public function setUp() {
 		require_once 'helpers/class-helper.php';
 		$this->tester = new Helper();
 
@@ -53,7 +53,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Tear down method.
 	 */
-	public function tearDown(): void {
+	public function tearDown() {
 		// Restore global variables.
 		global $content_width;
 		$content_width = $this->_globals['content_width'];

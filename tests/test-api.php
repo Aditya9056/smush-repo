@@ -49,7 +49,7 @@ class ApiTest extends WP_UnitTestCase {
 	/**
 	 * Run before actions.
 	 */
-	public function setUp(): void {
+	public function setUp() {
 		require_once 'helpers/class-api-helper.php';
 		$this->tester = new API();
 		$this->client = new GuzzleHttp\Client( [ 'base_uri' => $this->api ] );
@@ -58,7 +58,7 @@ class ApiTest extends WP_UnitTestCase {
 	/**
 	 * Run after actions.
 	 */
-	public function tearDown(): void {
+	public function tearDown() {
 		$this->client = null;
 	}
 

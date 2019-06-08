@@ -22,7 +22,7 @@ class AjaxSmushTest extends WP_Ajax_UnitTestCase {
 	/**
 	 * Run before actions.
 	 */
-	public function setUp(): void {
+	public function setUp() {
 		parent::setup();
 
 		require_once 'helpers/class-helper.php';
