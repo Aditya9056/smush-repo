@@ -53,6 +53,8 @@ class AjaxSmushTest extends WP_Ajax_UnitTestCase {
 
 	/**
 	 * Test single image manual Smush (from media library).
+	 *
+	 * @group ajax
 	 */
 	public function testSmushSingle() {
 		WP_Smush_Settings::get_instance()->set( 'auto', false );
@@ -68,6 +70,8 @@ class AjaxSmushTest extends WP_Ajax_UnitTestCase {
 
 	/**
 	 * Test wp_smush_image filter.
+	 *
+	 * @group ajax
 	 */
 	public function testSmushImageFilter() {
 		$id = $this->tester->upload_image();
