@@ -261,6 +261,7 @@ class CdnTest extends WP_UnitTestCase {
 	 *
 	 * @throws ReflectionException  Exception.
 	 */
+	/*
 	public function testCdnGeneralFunctionality() {
 		$parser = new WP_Smush_Page_Parser();
 		$parser->enable( 'cdn' );
@@ -275,6 +276,7 @@ class CdnTest extends WP_UnitTestCase {
 		// The new content should not match the old one, otherwise it will mean that nothing has changed.
 		$this->assertNotEquals( $content, $parser->parse_page( $content ) );
 	}
+	*/
 
 	/**
 	 * Test smush_cdn_skip_image filter.
