@@ -17,6 +17,7 @@
 - Fix: Excluding frontpage post type from lazy loading
 - Fix: Missing icons in resize my full size images notice
 - Fix: Inability to resize full size images several times
+- Fix: Image count calculations during images re-check
 
 = 3.2.1 =
 
