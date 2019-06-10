@@ -239,6 +239,9 @@ wp_enqueue_style( 'wp-color-picker' );
 									<li><label for="placeholder-icon-<?php echo absint( $image ); ?>" class="sui-box-selector">
 										<input type="radio" name="animation[placeholder-icon]" id="placeholder-icon-<?php echo absint( $image ); ?>" value="<?php echo absint( $image ); ?>" <?php checked( $image === $settings['animation']['placeholder']['selected'] ); ?> />
 										<span>
+											<button class="remove-selector sui-button-icon sui-tooltip" id="smush-placeholder-remove" data-tooltip="<?php esc_attr_e( 'Remove', 'wp-smushit' ); ?>">
+												<i class="sui-icon-close" aria-hidden="true" data-id="<?php echo absint( $image ); ?>"></i>
+											</button>
 											<img alt="<?php esc_attr_e( 'Placeholder image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $image ); ?>" src="<?php echo esc_url( $custom_link[0] ); ?>" />
 										</span>
 										</label></li>

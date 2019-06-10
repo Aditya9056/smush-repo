@@ -89,10 +89,28 @@
 				label.sui-box-selector {
 					width: 80px;
 					height: 60px;
+					overflow: visible;
+
+					&:hover {
+						background-color: #E5E5E5;
+					}
 
 					input + span {
-						height: 60px;
+						height: 40px;
 						padding: 0;
+						margin: 10px;
+						overflow: visible;
+						position: relative;
+
+						&:before {
+							top: -5px;
+							right: -5px;
+						}
+
+						&:after {
+							top: -10px;
+							right: -10px;
+						}
 					}
 
 					input + span img {
@@ -105,6 +123,11 @@
 
 					input[id^="placeholder-icon-2"] + span {
 						background-color: #333333;
+					}
+
+					.remove-selector {
+						top: -10px;
+						right: -10px;
 					}
 				}
 			}

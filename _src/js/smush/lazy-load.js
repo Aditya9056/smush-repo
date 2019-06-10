@@ -77,6 +77,15 @@
                     this.remove(id);
                 })
             }
+            const placeholderRemove = document.getElementById('smush-placeholder-remove');
+            if ( placeholderRemove ) {
+                placeholderRemove.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = e.target.dataset.id;
+                    e.target.closest('li').style.display = 'none';
+                    this.remove(id, 'placeholder');
+                })
+            }
         },
 
         /**
