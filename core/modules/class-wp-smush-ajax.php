@@ -91,6 +91,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		 * LAZY LOADING
 		 */
 		add_action( 'wp_ajax_smush_toggle_lazy_load', array( $this, 'smush_toggle_lazy_load' ) );
+		add_action( 'wp_ajax_smush_remove_icon', array( $this, 'remove_icon' ) );
 
 		/**
 		 * SETTINGS
@@ -1082,6 +1083,27 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		}
 
 		$this->settings->set( 'lazy_load', 'true' === $param );
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Remove spinner/placeholder icon from lazy-loading.
+	 *
+	 * @since 3.2.2
+	 */
+	public function remove_icon() {
+		check_ajax_referer( 'save_wp_smush_options' );
+
+		$id   = filter_input( INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT );
+		$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_STRING );
+		if ( $id && $type ) {
+			$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+			if ( false !== ( $key = array_search( $id, $settings['animation'][ $type ]['custom'] ) ) ) {
+				unset( $settings['animation'][ $type ]['custom'][ $key ] );
+				$this->settings->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $settings );
+			}
+		}
 
 		wp_send_json_success();
 	}

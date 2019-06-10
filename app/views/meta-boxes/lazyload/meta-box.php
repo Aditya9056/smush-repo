@@ -146,7 +146,7 @@ wp_enqueue_style( 'wp-color-picker' );
 					<div class="sui-tab-boxed <?php echo 'fadein' === $settings['animation']['selected'] ? 'active' : ''; ?>">
 						<strong><?php esc_html_e( 'Animation', 'wp-smushit' ); ?></strong>
 						<span class="sui-description">
-							<?php esc_html_e( 'Once the image has loaded, choose how you want the image to display when it comes into view,', 'wp-smushit' ); ?>
+							<?php esc_html_e( 'Once the image has loaded, choose how you want the image to display when it comes into view.', 'wp-smushit' ); ?>
 						</span>
 						<div class="sui-form-field-inline">
 							<div class="sui-form-field">
@@ -169,7 +169,7 @@ wp_enqueue_style( 'wp-color-picker' );
 							<?php esc_html_e( 'Display a spinner where the image will be during lazy loading. You can choose a predefined spinner, or upload your own GIF.', 'wp-smushit' ); ?>
 						</span>
 						<label class="sui-label"><?php esc_html_e( 'Spinner', 'wp-smushit' ); ?></label>
-						<div class="sui-box-selectors sui-upload">
+						<div class="sui-box-selectors">
 							<ul>
 								<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
 									<li><label for="spinner-<?php echo absint( $i ); ?>" class="sui-box-selector">
@@ -185,31 +185,35 @@ wp_enqueue_style( 'wp-color-picker' );
 									<li><label for="spinner-<?php echo absint( $image ); ?>" class="sui-box-selector">
 										<input type="radio" name="animation[spinner-icon]" id="spinner-<?php echo absint( $image ); ?>" value="<?php echo absint( $image ); ?>" <?php checked( $image === $settings['animation']['spinner']['selected'] ); ?> />
 										<span>
+											<button class="remove-selector sui-button-icon sui-tooltip" id="smush-spinner-remove" data-tooltip="<?php esc_attr_e( 'Remove', 'wp-smushit' ); ?>">
+												<i class="sui-icon-close" aria-hidden="true" data-id="<?php echo absint( $image ); ?>"></i>
+											</button>
+
 											<img alt="<?php esc_attr_e( 'Spinner image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $image ); ?>" src="<?php echo esc_url( $custom_link[0] ); ?>" />
 										</span>
 										</label></li>
 								<?php endforeach; ?>
-								<li class="sui-form-field">
-									<div class="sui-upload">
-										<input type="hidden" name="animation[custom-spinner]" id="smush-spinner-icon-file" value="">
-
-										<div class="sui-upload-image" aria-hidden="true">
-											<div class="sui-image-mask"></div>
-											<div role="button" class="sui-image-preview" id="smush-spinner-icon-preview" onclick="WP_Smush.Lazyload.addLoaderIcon()"></div>
-										</div>
-
-										<a class="sui-upload-button" id="smush-upload-spinner" onclick="WP_Smush.Lazyload.addLoaderIcon()">
-											<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wp-smushit' ); ?>
-										</a>
-
-										<div class="sui-upload-file" id="smush-remove-spinner">
-											<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
-												<i class="sui-icon-close" aria-hidden="true"></i>
-											</button>
-										</div>
-									</div>
-								</li>
 							</ul>
+
+							<div class="sui-upload">
+								<input type="hidden" name="animation[custom-spinner]" id="smush-spinner-icon-file" value="">
+
+								<div class="sui-upload-image" aria-hidden="true">
+									<div class="sui-image-mask"></div>
+									<div role="button" class="sui-image-preview" id="smush-spinner-icon-preview" onclick="WP_Smush.Lazyload.addLoaderIcon()"></div>
+								</div>
+
+								<a class="sui-upload-button" id="smush-upload-spinner" onclick="WP_Smush.Lazyload.addLoaderIcon()">
+									<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wp-smushit' ); ?>
+								</a>
+
+								<div class="sui-upload-file" id="smush-remove-spinner">
+									<span></span>
+									<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
+										<i class="sui-icon-close" aria-hidden="true"></i>
+									</button>
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -234,6 +238,9 @@ wp_enqueue_style( 'wp-color-picker' );
 									<li><label for="placeholder-icon-<?php echo absint( $image ); ?>" class="sui-box-selector">
 										<input type="radio" name="animation[placeholder-icon]" id="placeholder-icon-<?php echo absint( $image ); ?>" value="<?php echo absint( $image ); ?>" <?php checked( $image === $settings['animation']['placeholder']['selected'] ); ?> />
 										<span>
+											<button class="remove-selector sui-button-icon sui-tooltip" id="smush-placeholder-remove" data-tooltip="<?php esc_attr_e( 'Remove', 'wp-smushit' ); ?>">
+												<i class="sui-icon-close" aria-hidden="true" data-id="<?php echo absint( $image ); ?>"></i>
+											</button>
 											<img alt="<?php esc_attr_e( 'Placeholder image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $image ); ?>" src="<?php echo esc_url( $custom_link[0] ); ?>" />
 										</span>
 										</label></li>
@@ -253,17 +260,29 @@ wp_enqueue_style( 'wp-color-picker' );
 								</a>
 
 								<div class="sui-upload-file" id="smush-remove-placeholder">
+									<span></span>
 									<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
 										<i class="sui-icon-close" aria-hidden="true"></i>
 									</button>
 								</div>
 							</div>
 						</div>
+
+						<?php $color = isset( $settings['animation']['placeholder']['color'] ) ? $settings['animation']['placeholder']['color'] : '#F3F3F3'; ?>
 						<label class="sui-label" for="smush-color-picker"><?php esc_html_e( 'Background color', 'wp-smushit' ); ?></label>
-						<?php
-						$color = isset( $settings['animation']['placeholder']['color'] ) ? $settings['animation']['placeholder']['color'] : '#F3F3F3';
-						?>
-						<input type="text" value="<?php echo esc_attr( $color ); ?>" name="animation[color]" id="smush-color-picker" data-default-color="<?php echo esc_attr( $color ); ?>" />
+						<div class="sui-colorpicker-wrap">
+							<div class="sui-colorpicker sui-colorpicker-hex" aria-hidden="true">
+								<div class="sui-colorpicker-value">
+									<span role="button">
+										<span style="background-color: <?php echo esc_attr( $color ); ?>"></span>
+									</span>
+									<input type="text" value="<?php echo esc_attr( $color ); ?>" readonly="readonly" />
+									<button><i class="sui-icon-close" aria-hidden="true"></i></button>
+								</div>
+								<button class="sui-button"><?php esc_html_e( 'Select', 'wp-smushit' ); ?></button>
+							</div>
+							<input type="text" name="animation[color]" value="<?php echo esc_attr( $color ); ?>" id="smush-color-picker" class="sui-colorpicker-input" data-attribute="<?php echo esc_attr( $color ); ?>" />
+						</div>
 					</div>
 
 					<div class="sui-notice <?php echo ! $settings['animation']['selected'] ? 'active' : ''; ?>">
@@ -496,18 +515,63 @@ wp_enqueue_style( 'wp-color-picker' );
 
 <script>
 	jQuery(document).ready(function($){
-		$('#smush-color-picker').wpColorPicker({
-			width: 300
+		var $suiPickerInputs = $('#smush-color-picker');
+
+		$suiPickerInputs.wpColorPicker({
+			width: 300,
+			change: function(event, ui) {
+				$(this).val( ui.color.toCSS() ).trigger('change');
+			}
 		});
+
+		if ( $suiPickerInputs.hasClass('wp-color-picker') ) {
+			$suiPickerInputs.each( function() {
+				var $suiPickerInput = $(this),
+					$suiPicker      = $suiPickerInput.closest('.sui-colorpicker-wrap'),
+					$suiPickerColor = $suiPicker.find('.sui-colorpicker-value span[role=button]'),
+					$suiPickerValue = $suiPicker.find('.sui-colorpicker-value'),
+					$wpPicker       = $suiPickerInput.closest('.wp-picker-container'),
+					$wpPickerButton = $wpPicker.find('.wp-color-result');
+
+				// Listen to color change
+				$suiPickerInput.bind('change', function() {
+					// Change color preview
+					$suiPickerColor.find('span').css({
+						'background-color': $wpPickerButton.css('background-color')
+					});
+
+					// Change color value
+					$suiPickerValue.find('input').val( $suiPickerInput.val() );
+				});
+
+				// Open iris picker
+				$suiPicker.find('.sui-button, span[role=button]').on('click', function(e) {
+					$wpPickerButton.click();
+
+					e.preventDefault();
+					e.stopPropagation();
+				});
+
+				// Clear color value
+				$suiPickerValue.find('button').on( 'click', function(e) {
+					e.preventDefault();
+
+					$wpPicker.find('.wp-picker-clear').click();
+					$suiPickerValue.find('input').val('');
+					$suiPickerInput.val('').trigger('change');
+					$suiPickerColor.find('span').css({
+						'background-color': ''
+					});
+
+					e.preventDefault();
+					e.stopPropagation();
+				});
+
+			});
+		}
 	});
 </script>
 <style>
-	.iris-slider {
-		position: absolute !important;
-		right: 0 !important;
-		height: 214px !important;
-	}
-
 	#smush-lazy-load-placeholder .sui-box-selector input + span,
 	#smush-lazy-load-placeholder .sui-box-selector input:checked + span {
 		background-color: <?php echo esc_attr( $color ); ?>;

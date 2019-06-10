@@ -21,28 +21,49 @@
 				padding: 0 0 20px 0;
 
 				&:not([class*="sui-box-selectors-col-"]) ul li {
-					padding: 5px;
+					flex: 0;
 				}
 
-				.sui-upload .sui-upload-file {
-					padding: 11px 19px;
+				.sui-box-selector {
+					border: 1px solid #DDD;
+				}
+
+				.remove-selector {
+					top: 0;
+					right: 0;
+					position: absolute;
+					background-color: #AAA;
+					width: 18px;
+					height: 18px;
+					margin-right: 0;
+					border-radius: 0 3px 0 3px;
+
+					i {
+						margin: 0;
+					}
+
+					i:before {
+						color: #FFF;
+						font-size: 12px;
+						line-height: 18px;
+					}
+
+					&:hover {
+						background-color: #FF6D6D;
+					}
 				}
 			}
 
 			#smush-lazy-load-spinners .sui-box-selectors {
-				a.sui-upload-button {
-					height: 40px;
-					width: 133px;
-				}
-
 				label.sui-box-selector {
-					width: 40px;
-					height: 40px;
+					width: 50px;
+					height: 50px;
+					overflow: visible;
 				}
 
-				.sui-box-selector input+span {
-					padding-top: 12px;
-					padding-bottom: 12px;
+				.sui-box-selector input + span {
+					padding-top: 17px;
+					padding-bottom: 17px;
 
 					img {
 						max-width: 16px;
@@ -51,29 +72,45 @@
 				}
 
 				.sui-box-selector input ~ span {
-					padding-right: 12px;
-					padding-left: 12px;
-					height: 40px;
+					padding-right: 17px;
+					padding-left: 17px;
+					height: 48px;
+					border-radius: 4px;
+					overflow: visible;
 				}
 
-				.sui-box-selector input:checked+span:before,
-				.sui-box-selector input:checked+span:after {
+				.sui-box-selector input:checked + span:before,
+				.sui-box-selector input:checked + span:after {
 					content: none;
 				}
 			}
 
 			#smush-lazy-load-placeholder .sui-box-selectors {
-				&:not([class*="sui-box-selectors-col-"]) ul li {
-					flex: 0;
-				}
-
 				label.sui-box-selector {
 					width: 80px;
 					height: 60px;
+					overflow: visible;
+
+					&:hover {
+						background-color: #E5E5E5;
+					}
 
 					input + span {
-						height: 60px;
+						height: 40px;
 						padding: 0;
+						margin: 10px;
+						overflow: visible;
+						position: relative;
+
+						&:before {
+							top: -5px;
+							right: -5px;
+						}
+
+						&:after {
+							top: -10px;
+							right: -10px;
+						}
 					}
 
 					input + span img {
@@ -86,6 +123,11 @@
 
 					input[id^="placeholder-icon-2"] + span {
 						background-color: #333333;
+					}
+
+					.remove-selector {
+						top: -10px;
+						right: -10px;
 					}
 				}
 			}
