@@ -42,6 +42,8 @@ class SmushTest extends WP_UnitTestCase {
 
 	/**
 	 * Test Smush single image.
+	 *
+	 * @group single
 	 */
 	public function testSmushSingle() {
 		$smush = WP_Smush::get_instance();
@@ -63,40 +65,5 @@ class SmushTest extends WP_UnitTestCase {
 		// Make sure meta is set.
 		$this->assertTrue( ! empty( $smush_meta ) );
 	}
-
-	/**
-	 * Test restore image after smushing.
-	 */
-	/*
-	public function testRestoreSingle() {
-		// Set smush pro.
-		$this->tester->setPro();
-
-		// Make sure it is auto smushed.
-		$this->setSetting( 'auto', true );
-		// Make sure smush original enabled.
-		$this->setSetting( 'original', true );
-		// Make sure backup original enabled.
-		$this->setSetting( 'backup', true );
-
-		// Enable backup image.
-		$backup = new WP_Smush_Backup();
-		$this->tester->setPrivateProperty( $backup, 'backup_enabled', true );
-
-		// Upload an image.
-		$id = $this->tester->uploadImage();
-
-		// Restore image.
-		$backup->restore_image( $id, false );
-		// Try to get smushed meta.
-		$restored_meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
-
-		// We don't need the attachment anymore. Delete.
-		wp_delete_attachment( $id, true );
-
-		// Make sure meta is empty.
-		$this->assertEmpty( $restored_meta );
-	}
-	*/
 
 }

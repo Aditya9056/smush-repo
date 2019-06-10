@@ -175,6 +175,7 @@ class CdnTest extends WP_UnitTestCase {
 	 * Test to see if init_flags() method can set the status property.
 	 *
 	 * @covers WP_Smush_CDN::init_flags
+	 * @group single
 	 */
 	public function testCdnInitFlagsMethod() {
 		$cdn = new WP_Smush_CDN( new WP_Smush_Page_Parser() );

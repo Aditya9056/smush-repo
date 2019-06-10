@@ -20,6 +20,13 @@ class SettingsTest extends WP_UnitTestCase {
 	protected $tester;
 
 	/**
+	 * Settings instance.
+	 *
+	 * @var WP_Smush_Settings $settings
+	 */
+	private $settings;
+
+	/**
 	 * Setup method.
 	 */
 	public function setUp() {
@@ -27,7 +34,7 @@ class SettingsTest extends WP_UnitTestCase {
 		$this->tester = new Helper();
 
 		WP_Smush_Installer::smush_activated();
-		WP_Smush_Settings::get_instance()->init();
+		$this->settings = WP_Smush_Settings::get_instance();
 	}
 
 	/**
@@ -50,49 +57,146 @@ class SettingsTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test smushing original image.
+	 * Test defaults.
+	 *
+	 * @throws ReflectionException  Exception.
 	 */
-	/*
-	public function testSmushOriginals() {
-		// Set Smush to Pro.
-		$this->tester->setPro();
+	public function testDefaults() {
+		// Remove all the settings.
+		$this->settings->delete_setting( WP_SMUSH_PREFIX . 'settings' );
 
-		$this->assertTrue( WP_Smush::is_pro() );
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+		$this->assertFalse( $settings );
 
-		// Set smush original image setting to true.
-		WP_Smush_Settings::get_instance()->set( 'original', true );
-
-		// Upload image and get meta.
-		$id = $this->tester->uploadImage();
-
-		$meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
-
-		codecept_debug( $meta );
-
-		// Now delete the uploaded file.
-		wp_delete_attachment( $id );
-
-		// Full size should be there in smushed sizes.
-		$this->assertTrue( isset( $meta['sizes']['full'] ) );
-
-		// Set smush original image setting to false.
-		WP_Smush_Settings::get_instance()->set( 'original', false );
-
-		// Upload image and get meta.
-		$id   = $this->tester->uploadImage();
-		$meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
-
-		// Now delete the uploaded file.
-		wp_delete_attachment( $id );
-
-		// Full size should not be there in smushed sizes.
-		$this->assertFalse( isset( $meta['sizes']['full'] ) );
-
-		// Remove temp API key.
-		$this->tester->setFree();
-
-		$this->assertFalse( WP_Smush::is_pro() );
+		$this->settings->init();
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+		$defaults = $this->tester->read_private_property( $this->settings, 'defaults' );
+		$this->assertEquals( $defaults, $settings );
 	}
-	*/
+
+	/**
+	 * Test is_network_enabled on single site.
+	 *
+	 * @group single
+	 */
+	public function testIs_network_enabledSingle() {
+		$this->assertFalse( $this->settings->is_network_enabled() );
+	}
+
+	/**
+	 * Test is_network_enabled on multisite.
+	 *
+	 * @group multisite
+	 */
+	public function testIs_network_enabledMultisite() {
+		$this->assertTrue( $this->settings->is_network_enabled() );
+	}
+
+	/**
+	 * Test what the function returns on various installs.
+	 *
+	 * @group multisite
+	 */
+	public function testIs_network_enabledVaritations() {
+		$this->assertTrue( $this->settings->is_network_enabled() );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'networkwide', true );
+		$this->assertFalse( $this->settings->is_network_enabled() );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'networkwide', array( 'bulk' ) );
+		$this->assertFalse( $this->settings->is_network_enabled() );
+	}
+
+	/**
+	 * Test global network settings.
+	 *
+	 * @group multisite
+	 */
+	//public function testGlobalNetworkSettings() {
+		/*
+		if ( ! is_multisite() ) {
+			return;
+		}
+
+		$blog_id_1 = $this->factory->blog->create_object( $this->factory->blog->generate_args() );
+		$blog_id_2 = $this->factory->blog->create_object( $this->factory->blog->generate_args() );
+
+		switch_to_blog( $blog_id_1 );
+		$this->settings->init();
+
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+
+		// Turn off all settings.
+		$disabled_settings = array_fill_keys( array_keys( $settings ), false );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'settings', $disabled_settings );
+
+		$this->settings->init();
+
+		// Check one setting to make sure it's off.
+		$auto = $this->settings->get( 'auto' );
+		*/
+
+		/*
+		codecept_debug( $this->tester->readPrivateProperty( $this->settings, 'settings' ) );
+		$this->settings->init();
+
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+
+		// Turn off all settings.
+		$disabled_settings = array_fill_keys( array_keys( $settings ), false );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'settings', $disabled_settings );
+
+		$this->settings->init();
+
+		// Check one setting to make sure it's off.
+		$auto = $this->settings->get( 'auto' );
+		codecept_debug( 'auto: ' . $auto );
+
+		$this->settings->set( 'auto', false );
+		codecept_debug( $this->settings->get( 'auto' ) );
+		*/
+
+		/**
+		 * Disable all settings and make sure they are reflected on subsites.
+		 */
+		/*
+		switch_to_blog( 1 );
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+		// Turn off all settings.
+		$disabled_settings = array_fill_keys( array_keys( $settings ), false );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'settings', $disabled_settings );
+
+		// Check one setting to make sure it's off.
+		$auto = $this->settings->get( 'auto' );
+		$this->assertFalse( $auto );
+
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+		$this->assertEquals( $disabled_settings, $settings );
+
+		switch_to_blog( 2 );
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+		$this->assertEquals( $disabled_settings, $settings );
+		*/
+
+		/**
+		 * Enable all settings and make sure they are reflected on subsites.
+		 */
+		/*
+		switch_to_blog( 1 );
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+		// Turn on all settings.
+		$enabled_settings = array_fill_keys( array_keys( $settings ), true );
+		$this->settings->set_setting( WP_SMUSH_PREFIX . 'settings', $enabled_settings );
+
+		// Check one setting to make sure it's on.
+		$auto = $this->settings->get( 'auto' );
+		$this->assertTrue( $auto );
+
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+		$this->assertEquals( $enabled_settings, $settings );
+
+		switch_to_blog( 2 );
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings' );
+		$this->assertEquals( $enabled_settings, $settings );
+		*/
+	//}
 
 }

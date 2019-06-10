@@ -12,8 +12,14 @@
     </php>
     <testsuites>
         <testsuite name="smush-multisite">
-            <directory prefix="test-" suffix=".php">./tests/</directory>
-            <exclude>./tests/test-api.php</exclude>
+            <directory prefix="test-" suffix=".php">../</directory>
+            <exclude>../test-api.php</exclude>
         </testsuite>
     </testsuites>
+
+    <groups>
+        <exclude>
+            <group>single</group>
+        </exclude>
+    </groups>
 </phpunit>
