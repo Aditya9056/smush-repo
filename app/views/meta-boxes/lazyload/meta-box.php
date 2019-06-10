@@ -265,11 +265,22 @@ wp_enqueue_style( 'wp-color-picker' );
 								</div>
 							</div>
 						</div>
+
+						<?php $color = isset( $settings['animation']['placeholder']['color'] ) ? $settings['animation']['placeholder']['color'] : '#F3F3F3'; ?>
 						<label class="sui-label" for="smush-color-picker"><?php esc_html_e( 'Background color', 'wp-smushit' ); ?></label>
-						<?php
-						$color = isset( $settings['animation']['placeholder']['color'] ) ? $settings['animation']['placeholder']['color'] : '#F3F3F3';
-						?>
-						<input type="text" value="<?php echo esc_attr( $color ); ?>" name="animation[color]" id="smush-color-picker" data-default-color="<?php echo esc_attr( $color ); ?>" />
+						<div class="sui-colorpicker-wrap">
+							<div class="sui-colorpicker sui-colorpicker-hex" aria-hidden="true">
+								<div class="sui-colorpicker-value">
+									<span role="button">
+										<span style="background-color: <?php echo esc_attr( $color ); ?>"></span>
+									</span>
+									<input type="text" value="<?php echo esc_attr( $color ); ?>" readonly="readonly" />
+									<button><i class="sui-icon-close" aria-hidden="true"></i></button>
+								</div>
+								<button class="sui-button"><?php esc_html_e( 'Select', 'wp-smushit' ); ?></button>
+							</div>
+							<input type="text" name="animation[color]" value="<?php echo esc_attr( $color ); ?>" id="smush-color-picker" class="sui-colorpicker-input" data-attribute="<?php echo esc_attr( $color ); ?>" />
+						</div>
 					</div>
 
 					<div class="sui-notice <?php echo ! $settings['animation']['selected'] ? 'active' : ''; ?>">
@@ -502,18 +513,63 @@ wp_enqueue_style( 'wp-color-picker' );
 
 <script>
 	jQuery(document).ready(function($){
-		$('#smush-color-picker').wpColorPicker({
-			width: 300
+		var $suiPickerInputs = $('#smush-color-picker');
+
+		$suiPickerInputs.wpColorPicker({
+			width: 300,
+			change: function(event, ui) {
+				$(this).val( ui.color.toCSS() ).trigger('change');
+			}
 		});
+
+		if ( $suiPickerInputs.hasClass('wp-color-picker') ) {
+			$suiPickerInputs.each( function() {
+				var $suiPickerInput = $(this),
+					$suiPicker      = $suiPickerInput.closest('.sui-colorpicker-wrap'),
+					$suiPickerColor = $suiPicker.find('.sui-colorpicker-value span[role=button]'),
+					$suiPickerValue = $suiPicker.find('.sui-colorpicker-value'),
+					$wpPicker       = $suiPickerInput.closest('.wp-picker-container'),
+					$wpPickerButton = $wpPicker.find('.wp-color-result');
+
+				// Listen to color change
+				$suiPickerInput.bind('change', function() {
+					// Change color preview
+					$suiPickerColor.find('span').css({
+						'background-color': $wpPickerButton.css('background-color')
+					});
+
+					// Change color value
+					$suiPickerValue.find('input').val( $suiPickerInput.val() );
+				});
+
+				// Open iris picker
+				$suiPicker.find('.sui-button, span[role=button]').on('click', function(e) {
+					$wpPickerButton.click();
+
+					e.preventDefault();
+					e.stopPropagation();
+				});
+
+				// Clear color value
+				$suiPickerValue.find('button').on( 'click', function(e) {
+					e.preventDefault();
+
+					$wpPicker.find('.wp-picker-clear').click();
+					$suiPickerValue.find('input').val('');
+					$suiPickerInput.val('').trigger('change');
+					$suiPickerColor.find('span').css({
+						'background-color': ''
+					});
+
+					e.preventDefault();
+					e.stopPropagation();
+				});
+
+			});
+		}
 	});
 </script>
 <style>
-	.iris-slider {
-		position: absolute !important;
-		right: 0 !important;
-		height: 214px !important;
-	}
-
 	#smush-lazy-load-placeholder .sui-box-selector input + span,
 	#smush-lazy-load-placeholder .sui-box-selector input:checked + span {
 		background-color: <?php echo esc_attr( $color ); ?>;

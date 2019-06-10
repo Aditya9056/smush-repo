@@ -3,6 +3,7 @@
  *
  * @since 3.0
  */
+
 ( function() {
     'use strict';
 

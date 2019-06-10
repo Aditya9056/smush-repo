@@ -27,6 +27,31 @@
 				.sui-box-selector {
 					border: 1px solid #DDD;
 				}
+
+				.remove-selector {
+					top: 0;
+					right: 0;
+					position: absolute;
+					background-color: #AAA;
+					width: 18px;
+					height: 18px;
+					margin-right: 0;
+					border-radius: 0 3px 0 3px;
+
+					i {
+						margin: 0;
+					}
+
+					i:before {
+						color: #FFF;
+						font-size: 12px;
+						line-height: 18px;
+					}
+
+					&:hover {
+						background-color: #FF6D6D;
+					}
+				}
 			}
 
 			#smush-lazy-load-spinners .sui-box-selectors {
@@ -57,31 +82,6 @@
 				.sui-box-selector input:checked + span:before,
 				.sui-box-selector input:checked + span:after {
 					content: none;
-				}
-
-				.remove-selector {
-					top: 0;
-					right: 0;
-					position: absolute;
-					background-color: #AAA;
-					width: 18px;
-					height: 18px;
-					margin-right: 0;
-					border-radius: 0 3px 0 3px;
-
-					i {
-						margin: 0;
-					}
-
-					i:before {
-						color: #FFF;
-						font-size: 12px;
-						line-height: 18px;
-					}
-
-					&:hover {
-						background-color: #FF6D6D;
-					}
 				}
 			}
 
