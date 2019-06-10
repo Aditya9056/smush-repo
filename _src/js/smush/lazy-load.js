@@ -40,6 +40,9 @@
 
             /**
              * Handle "Remove icon" button click on Lazy load page.
+             *
+             * This removes the image from the upload placeholder.
+             *
              * @since 3.2.2
              */
             const removeSpinner = document.getElementById('smush-remove-spinner');
@@ -55,6 +58,23 @@
                     e.preventDefault();
                     this.removeLoaderIcon('placeholder');
                 });
+            }
+
+            /**
+             * Handle "Remove" icon click.
+             *
+             * This removes the select icon from the list (not same as above functions).
+             *
+             * @since 3.2.2
+             */
+            const spinnerRemove = document.getElementById('smush-spinner-remove');
+            if ( spinnerRemove ) {
+                spinnerRemove.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = e.target.dataset.id;
+                    e.target.closest('li').style.display = 'none';
+                    this.remove(id);
+                })
             }
         },
 
@@ -152,7 +172,9 @@
                 document.getElementById('smush-upload-'+type).style.display = 'none';
 
                 // Unhide the remove image link
-                document.getElementById('smush-remove-'+type).style.display = 'block';
+                const removeDiv = document.getElementById('smush-remove-'+type);
+                removeDiv.querySelector('span').innerHTML = attachment.filename;
+                removeDiv.style.display = 'block';
             });
 
             // Finally, open the modal on click
@@ -180,6 +202,20 @@
 
             // Delete the image id from the hidden input
             document.getElementById('smush-'+type+'-icon-file').setAttribute('value', '');
+        },
+
+        /**
+         * Remove item.
+         *
+         * @param {Number} id    Image ID.
+         * @param {string} type  Accepts: spinner, placeholder.
+         */
+        remove: (id, type = 'spinner') => {
+            const nonceField = document.getElementsByName('wp_smush_options_nonce');
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', ajaxurl+'?action=smush_remove_icon', true);
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.send('id='+id+'&type='+type+'&_ajax_nonce='+nonceField[0].value);
         }
     };
 

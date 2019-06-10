@@ -170,7 +170,7 @@ wp_enqueue_style( 'wp-color-picker' );
 							<?php esc_html_e( 'Display a spinner where the image will be during lazy loading. You can choose a predefined spinner, or upload your own GIF.', 'wp-smushit' ); ?>
 						</span>
 						<label class="sui-label"><?php esc_html_e( 'Spinner', 'wp-smushit' ); ?></label>
-						<div class="sui-box-selectors sui-upload">
+						<div class="sui-box-selectors">
 							<ul>
 								<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
 									<li><label for="spinner-<?php echo absint( $i ); ?>" class="sui-box-selector">
@@ -186,31 +186,35 @@ wp_enqueue_style( 'wp-color-picker' );
 									<li><label for="spinner-<?php echo absint( $image ); ?>" class="sui-box-selector">
 										<input type="radio" name="animation[spinner-icon]" id="spinner-<?php echo absint( $image ); ?>" value="<?php echo absint( $image ); ?>" <?php checked( $image === $settings['animation']['spinner']['selected'] ); ?> />
 										<span>
+											<button class="remove-selector sui-button-icon sui-tooltip" id="smush-spinner-remove" data-tooltip="<?php esc_attr_e( 'Remove', 'wp-smushit' ); ?>">
+												<i class="sui-icon-close" aria-hidden="true" data-id="<?php echo absint( $image ); ?>"></i>
+											</button>
+
 											<img alt="<?php esc_attr_e( 'Spinner image', 'wp-smushit' ); ?>&nbsp;<?php echo absint( $image ); ?>" src="<?php echo esc_url( $custom_link[0] ); ?>" />
 										</span>
 										</label></li>
 								<?php endforeach; ?>
-								<li class="sui-form-field">
-									<div class="sui-upload">
-										<input type="hidden" name="animation[custom-spinner]" id="smush-spinner-icon-file" value="">
-
-										<div class="sui-upload-image" aria-hidden="true">
-											<div class="sui-image-mask"></div>
-											<div role="button" class="sui-image-preview" id="smush-spinner-icon-preview" onclick="WP_Smush.Lazyload.addLoaderIcon()"></div>
-										</div>
-
-										<a class="sui-upload-button" id="smush-upload-spinner" onclick="WP_Smush.Lazyload.addLoaderIcon()">
-											<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wp-smushit' ); ?>
-										</a>
-
-										<div class="sui-upload-file" id="smush-remove-spinner">
-											<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
-												<i class="sui-icon-close" aria-hidden="true"></i>
-											</button>
-										</div>
-									</div>
-								</li>
 							</ul>
+
+							<div class="sui-upload">
+								<input type="hidden" name="animation[custom-spinner]" id="smush-spinner-icon-file" value="">
+
+								<div class="sui-upload-image" aria-hidden="true">
+									<div class="sui-image-mask"></div>
+									<div role="button" class="sui-image-preview" id="smush-spinner-icon-preview" onclick="WP_Smush.Lazyload.addLoaderIcon()"></div>
+								</div>
+
+								<a class="sui-upload-button" id="smush-upload-spinner" onclick="WP_Smush.Lazyload.addLoaderIcon()">
+									<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wp-smushit' ); ?>
+								</a>
+
+								<div class="sui-upload-file" id="smush-remove-spinner">
+									<span></span>
+									<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
+										<i class="sui-icon-close" aria-hidden="true"></i>
+									</button>
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -254,6 +258,7 @@ wp_enqueue_style( 'wp-color-picker' );
 								</a>
 
 								<div class="sui-upload-file" id="smush-remove-placeholder">
+									<span></span>
 									<button aria-label="<?php esc_attr_e( 'Remove file', 'wp-smushit' ); ?>">
 										<i class="sui-icon-close" aria-hidden="true"></i>
 									</button>

@@ -400,7 +400,6 @@ class Smush {
 		// Update remaining count.
 		// Update sidebar count.
 		const sidenavCountDiv = jQuery( '.smush-sidenav .wp-smush-remaining-count' );
-		console.log( wp_smushit_data );
 		if ( sidenavCountDiv.length ) {
 			let count = 0;
 
