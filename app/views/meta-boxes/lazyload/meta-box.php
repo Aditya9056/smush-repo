@@ -147,7 +147,7 @@ wp_enqueue_style( 'wp-color-picker' );
 					<div class="sui-tab-boxed <?php echo 'fadein' === $settings['animation']['selected'] ? 'active' : ''; ?>">
 						<strong><?php esc_html_e( 'Animation', 'wp-smushit' ); ?></strong>
 						<span class="sui-description">
-							<?php esc_html_e( 'Once the image has loaded, choose how you want the image to display when it comes into view,', 'wp-smushit' ); ?>
+							<?php esc_html_e( 'Once the image has loaded, choose how you want the image to display when it comes into view.', 'wp-smushit' ); ?>
 						</span>
 						<div class="sui-form-field-inline">
 							<div class="sui-form-field">
