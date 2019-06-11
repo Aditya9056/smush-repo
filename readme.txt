@@ -6,7 +6,7 @@ Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: image, resize, optimize, optimise, compress, performance, optimisation, lazy load, WebP, photography, optimizer, Smush WordPress Compression, Smush.it
 Requires at least: 4.6
-Tested up to: 5.2.0
+Tested up to: 5.2.1
 Stable tag: %%VERSION%%
 Requires PHP: 5.2.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -135,7 +135,7 @@ Yes! EXIF data stores camera settings, focal length, date, time and location inf
 
 = I just ran bulk smush and some of my images didn't get compressed? =
 
-First, check to see if you're receiving any server errors. If your images seem to be processing correctly check the file size of the images being skipped. Images over 1mb will be skipped. To compress images up to 32mb get [Smush Pro](https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=smush-readme&utm_content=wp_smush_pro#trial).
+First, check to see if you're receiving any server errors. If your images seem to be processing correctly check the file size of the images being skipped. Images over 5mb will be skipped. To compress images up to 32mb get [Smush Pro](https://premium.wpmudev.org/project/wp-smush-pro/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=smush-readme&utm_content=wp_smush_pro#trial).
 
 = I activated Smush and I don’t see any difference in image quality. How am I supposed to know if Smush is working? =
 
