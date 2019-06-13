@@ -740,7 +740,7 @@ abstract class WP_Smush_View {
 			return is_network_admin() ? true : false;
 		}
 
-		if ( 'all' === $access ) {
+		if ( '1' === $access ) {
 			return is_network_admin() ? false : true;
 		}
 

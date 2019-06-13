@@ -274,6 +274,8 @@ class WP_Smush_Settings {
 		if ( empty( $site_settings ) ) {
 			$this->settings = $this->defaults;
 			$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
+		} else {
+			$this->settings = $site_settings;
 		}
 	}
 
