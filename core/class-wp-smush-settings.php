@@ -295,11 +295,11 @@ class WP_Smush_Settings {
 
 		// Get directly from db.
 		$network_enabled = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
-		if ( isset( $network_enabled ) && false === (bool) $network_enabled ) {
+		if ( ! isset( $network_enabled ) || false === (bool) $network_enabled ) {
 			return true;
 		}
 
-		if ( true === $network_enabled ) {
+		if ( '1' === $network_enabled ) {
 			return false;
 		}
 
