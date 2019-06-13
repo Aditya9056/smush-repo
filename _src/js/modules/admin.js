@@ -854,15 +854,6 @@ jQuery( function ( $ ) {
 		}
 	} );
 
-	//Handle, Change event in Enable Networkwide settings
-	$( '#wp-smush-networkwide' ).on( 'click', function ( e ) {
-		if ( $( this ).is( ':checked' ) ) {
-			$( '.network-settings-wrapper' ).show();
-		} else {
-			$( '.network-settings-wrapper' ).hide();
-		}
-	} );
-
 	//Handle Re-check button functionality
 	$( "#wp-smush-revalidate-member" ).on( 'click', function ( e ) {
 		e.preventDefault();

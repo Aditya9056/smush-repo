@@ -266,7 +266,9 @@ class WP_Smush_Admin {
 	public function add_menu_pages() {
 		$title = WP_Smush::is_pro() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 
-		$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
+		if ( WP_Smush_Settings::can_access( false, true ) ) {
+			$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
+		}
 
 		// Add a bulk smush option for NextGen gallery.
 		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->nextgen->is_enabled() && WP_Smush::is_pro() && ! is_network_admin() ) {

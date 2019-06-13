@@ -80,9 +80,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		// Add settings descriptions to the meta box.
 		add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
 
-		// Add setting names to appropriate group.
-		add_action( 'wp_smush_cdn_settings', array( $this, 'add_settings' ) );
-
 		// Cron task to update CDN stats.
 		add_action( 'smush_update_cdn_stats', array( $this, 'cron_update_stats' ) );
 
@@ -169,21 +166,6 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	}
 
 	/**
-	 * Add setting names to the appropriate group.
-	 *
-	 * @since 3.0
-	 *
-	 * @return array
-	 */
-	public function add_settings() {
-		return array(
-			'background_images',
-			'auto_resize',
-			'webp',
-		);
-	}
-
-	/**
 	 * Add settings to settings array.
 	 *
 	 * @since 3.0
@@ -223,7 +205,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @param string $setting_key Setting key.
 	 */
 	public function settings_desc( $setting_key = '' ) {
-		if ( empty( $setting_key ) || ! in_array( $setting_key, $this->add_settings(), true ) ) {
+		if ( empty( $setting_key ) || ! in_array( $setting_key, $this->settings->get_cdn_fields(), true ) ) {
 			return;
 		}
 		?>

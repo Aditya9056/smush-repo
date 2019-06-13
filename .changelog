@@ -1,6 +1,7 @@
 = 3.2.2 =
 
 - New: Bulk restore
+- New: Network access control settings
 - New: Lazy loading onboarding step
 - New: Lazy loading custom placeholders
 - New: Lazy loading custom spinners

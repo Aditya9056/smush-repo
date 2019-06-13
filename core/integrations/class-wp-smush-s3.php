@@ -24,10 +24,9 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 * WP_Smush_S3 constructor.
 	 */
 	public function __construct() {
-		$this->module   = 's3';
-		$this->class    = 'pro';
-		$this->priority = 5;
-		$this->enabled  = function_exists( 'as3cf_init' ) || function_exists( 'as3cf_pro_init' );
+		$this->module  = 's3';
+		$this->class   = 'pro';
+		$this->enabled = function_exists( 'as3cf_init' ) || function_exists( 'as3cf_pro_init' );
 
 		parent::__construct();
 
@@ -167,7 +166,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 */
 	public function s3_support_required_notice() {
 		// Do not display it for other users. Do not display on network screens, if network-wide option is disabled.
-		if ( ! current_user_can( 'manage_options' ) || ( is_network_admin() && ! $this->settings->is_network_enabled() ) ) {
+		if ( ! current_user_can( 'manage_options' ) || ! WP_Smush_Settings::can_access( 'integrations' ) ) {
 			return true;
 		}
 

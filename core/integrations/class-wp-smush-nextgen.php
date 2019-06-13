@@ -50,10 +50,9 @@ class WP_Smush_Nextgen extends WP_Smush_Integration {
 	 * WP_Smush_Nextgen constructor.
 	 */
 	public function __construct() {
-		$this->module   = 'nextgen';
-		$this->class    = 'pro';
-		$this->priority = 10;
-		$this->enabled  = class_exists( 'C_NextGEN_Bootstrap' );
+		$this->module  = 'nextgen';
+		$this->class   = 'pro';
+		$this->enabled = class_exists( 'C_NextGEN_Bootstrap' );
 
 		parent::__construct();
 

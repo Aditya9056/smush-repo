@@ -138,7 +138,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			}
 
 			// Skip premium features if not a member.
-			if ( ! in_array( $name, WP_Smush_Core::$basic_features, true ) && ! WP_Smush::is_pro() ) {
+			if ( ! in_array( $name, WP_Smush_Settings::$basic_features, true ) && ! WP_Smush::is_pro() ) {
 				continue;
 			}
 
@@ -356,7 +356,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		$core = WP_Smush::get_instance()->core();
 
 		// Save settings only if networkwide settings are disabled.
-		if ( ( ! is_multisite() || ! $this->settings->is_network_enabled() ) && ( ! isset( $_REQUEST['process_settings'] ) || 'false' != $_REQUEST['process_settings'] ) ) {
+		if ( WP_Smush_Settings::can_access() && ( ! isset( $_REQUEST['process_settings'] ) || 'false' !== $_REQUEST['process_settings'] ) ) {
 			// Save Settings.
 			$this->settings->save( false );
 			// Fetch the new settings.

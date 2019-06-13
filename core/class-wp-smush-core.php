@@ -78,20 +78,6 @@ class WP_Smush_Core {
 	);
 
 	/**
-	 * List of featurws/settings that are free.
-	 *
-	 * @var array $basic_features
-	 */
-	public static $basic_features = array(
-		'networkwide',
-		'bulk',
-		'auto',
-		'strip_exif',
-		'resize',
-		'gutenberg',
-	);
-
-	/**
 	 * Link to upgrade.
 	 *
 	 * @var string $upgrade_url
@@ -407,11 +393,6 @@ class WP_Smush_Core {
 	 */
 	private function init_settings() {
 		$this->settings = array(
-			'networkwide'       => array(
-				'label'       => esc_html__( 'Use network settings for all the sub-sites.', 'wp-smushit' ),
-				'short_label' => esc_html__( 'Multisite Control', 'wp-smushit' ),
-				'desc'        => esc_html__( 'Choose whether you want to use network settings for all sub-sites or whether sub-site admins can control Smush’s settings.', 'wp-smushit' ),
-			),
 			'bulk'              => array(
 				'short_label' => esc_html__( 'Image Sizes', 'wp-smushit' ),
 				'desc'        => esc_html__( 'WordPress generates multiple image thumbnails for each image you upload. Choose which of those thumbnail sizes you want to include when bulk smushing.', 'wp-smushit' ),
@@ -460,6 +441,10 @@ class WP_Smush_Core {
 				'label'       => esc_html__( 'Enable high contrast mode', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Color Accessibility', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Increase the visibility and accessibility of elements and components to meet WCAG AAA requirements.', 'wp-smushit' ),
+			),
+			'networkwide'       => array(
+				'short_label' => esc_html__( 'Subsite Controls', 'wp-smushit' ),
+				'desc'        => esc_html__( 'By default, subsites will inherit your network settings. Choose which modules you want to allow subsite admins to override.', 'wp-smushit' ),
 			),
 			'usage'             => array(
 				'label'       => esc_html__( 'Help us make Smush better by allowing usage tracking', 'wp-smushit' ),
@@ -606,7 +591,7 @@ class WP_Smush_Core {
 		wp_localize_script( $handle, 'wp_smushit_data', $data );
 
 		// Check if settings were changed for a multisite, and localize whether to run re-check on page load.
-		if ( is_multisite() && WP_Smush_Settings::get_instance()->is_network_enabled() && ! is_network_admin() ) {
+		if ( WP_Smush_Settings::can_access( 'bulk' ) ) {
 			// If not same, Set a variable to run re-check on page load.
 			if ( get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false ) ) {
 				wp_localize_script( $handle, 'wp_smush_run_re_check', array( 1 ) );
