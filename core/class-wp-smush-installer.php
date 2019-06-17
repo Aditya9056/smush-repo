@@ -263,8 +263,8 @@ class WP_Smush_Installer {
 		$animation = array(
 			'selected'    => $selected,
 			'fadein'      => array(
-				'duration' => $lazy['animation']['duration'],
-				'delay'    => $lazy['animation']['delay'],
+				'duration' => isset( $lazy['animation']['duration'] ) ? $lazy['animation']['duration'] : 400,
+				'delay'    => isset( $lazy['animation']['delay'] ) ? $lazy['animation']['delay'] : 0,
 			),
 			'spinner'     => array(
 				'selected' => 1,
