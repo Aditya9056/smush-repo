@@ -299,7 +299,7 @@ class WP_Smush_Settings {
 			return true;
 		}
 
-		if ( '1' === $network_enabled ) {
+		if ( '1' === $network_enabled || true === $network_enabled ) {
 			return false;
 		}
 
