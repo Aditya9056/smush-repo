@@ -96,7 +96,7 @@ class WP_Smush_Settings {
 	 *
 	 * @var array
 	 */
-	private $bulk_fields = array( 'auto', 'lossy', 'original', 'strip_exif', 'resize', 'backup', 'png_to_jpg' );
+	private $bulk_fields = array( 'bulk', 'auto', 'lossy', 'original', 'strip_exif', 'resize', 'backup', 'png_to_jpg' );
 
 	/**
 	 * List of fields in integration form.
