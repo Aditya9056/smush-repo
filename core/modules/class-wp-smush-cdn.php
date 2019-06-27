@@ -735,10 +735,18 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			);
 		}
 
-
 		$status = json_decode( $status['body'] );
 
-		// Error from API.
+		// Too many requests.
+		if ( is_null( $status ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Too many requests, please try again in a moment.', 'wp-smushit' ),
+				)
+			);
+        }
+
+		// Some other error from API.
 		if ( ! $status->success ) {
 			wp_send_json_error(
 				array(
