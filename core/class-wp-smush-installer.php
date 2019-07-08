@@ -249,7 +249,7 @@ class WP_Smush_Installer {
 		// Add new lazy-load options.
 		$lazy = WP_Smush_Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
 
-		if ( ! isset( $lazy ) ) {
+		if ( ! $lazy ) {
 			return;
 		}
 
