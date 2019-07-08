@@ -96,19 +96,19 @@ if ( ! defined( 'WPINC' ) ) {
 	<# if ( 'finish' === data.slide && 0 < data.errors.length ) { #>
 	<div class="smush-final-log">
 		<div class="smush-bulk-errors">
-			<# for ( let item of data.errors ) { #>
+            <# for ( let i = 0, len = data.errors.length; i < len; i++ ) { #>
 			<div class="smush-bulk-error-row sui-no-margin">
 				<div class="smush-bulk-image-data">
-					<# if ( item.thumb ) { #>
-						{{{ item.thumb }}}
+					<# if ( data.errors[i].thumb ) { #>
+						{{{ data.errors[i].thumb }}}
 					<# } else { #>
 						<i class="sui-icon-photo-picture" aria-hidden="true"></i>
 					<# } #>
-					<span class="smush-image-name">{{{ item.src }}}</span>
+					<span class="smush-image-name">{{{ data.errors[i].src }}}</span>
 					<span class="smush-image-error"><?php esc_html_e( 'Unable to restore image', 'wp-smushit' ); ?></span>
 				</div>
 				<div class="smush-bulk-image-actions">
-					<a class="sui-button-icon" href="{{{ item.link }}}">
+					<a class="sui-button-icon" href="{{{ data.errors[i].link }}}">
 						<i class="sui-icon-arrow-right" aria-hidden="true"></i>
 					</a>
 					<span class="sui-screen-reader-text">
