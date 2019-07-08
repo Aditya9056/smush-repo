@@ -81,7 +81,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
 
 		// Cron task to update CDN stats.
-		add_action( 'smush_update_cdn_stats', array( $this, 'cron_update_stats' ) );
+		add_action( 'smush_update_cdn_stats', array( $this, 'update_stats' ) );
 
 		// Set auto resize flag.
 		$this->init_flags();
@@ -402,7 +402,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @see update_image_sizes()
 	 * @see update_cdn_image_src_args()
 	 * @see process_cdn_status()
-	 * @see cron_update_stats()
+	 * @see update_stats()
 	 * @see unschedule_cron()
 	 * @see schedule_cron()
 	 */
@@ -760,21 +760,24 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	}
 
 	/**
-	 * Update CDN stats (daily) cron task.
+	 * Update CDN stats (daily) cron task or via the get_cdn_stats ajax request.
 	 *
 	 * @since 3.1.0
 	 */
-	public function cron_update_stats() {
-		$current_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
+	public function update_stats() {
+		$status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
-		if ( isset( $current_status->cdn_enabling ) && $current_status->cdn_enabling ) {
-			$status = WP_Smush::get_instance()->api()->enable();
-		} else {
-			$status = WP_Smush::get_instance()->api()->check();
+		$smush = WP_Smush::get_instance();
+
+		if ( isset( $status->cdn_enabling ) && $status->cdn_enabling ) {
+			$status = $this->process_cdn_status( $smush->api()->enable() );
+			$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $status );
 		}
 
-		$data = $this->process_cdn_status( $status );
-		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
+		if ( ! wp_doing_cron() ) {
+			// At this point we already know that $status->data is valid.
+			wp_send_json_success( $status );
+        }
 	}
 
 	/**
@@ -794,7 +797,8 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 */
 	public function schedule_cron() {
 		if ( ! wp_next_scheduled( 'smush_update_cdn_stats' ) ) {
-			wp_schedule_event( time(), 'daily', 'smush_update_cdn_stats' );
+		    // Schedule first run for next day, as we've already checked just now.
+			wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', 'smush_update_cdn_stats' );
 		}
 	}
 

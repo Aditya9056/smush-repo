@@ -85,7 +85,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// Toggle CDN.
 		add_action( 'wp_ajax_smush_toggle_cdn', array( $this, 'toggle_cdn' ) );
 		// Update stats box and CDN status.
-		add_action( 'wp_ajax_get_cdn_stats', array( $this, 'get_cdn_stats' ) );
+		add_action( 'wp_ajax_get_cdn_stats', array( new WP_Smush_CDN( new WP_Smush_Page_Parser() ), 'update_stats' ) );
 
 		/**
 		 * LAZY LOADING
@@ -1018,29 +1018,6 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		}
 
 		wp_send_json_success();
-	}
-
-	/**
-	 * Refresh the stats in CDN meta box and update CDN status on page refresh.
-	 *
-	 * @since 3.0
-	 */
-	public function get_cdn_stats() {
-		$current_status = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
-
-		$smush = WP_Smush::get_instance();
-
-		if ( isset( $current_status->cdn_enabling ) && $current_status->cdn_enabling ) {
-			$status = $smush->api()->enable();
-		} else {
-			$status = $smush->api()->check();
-		}
-
-		$data = $smush->core()->mod->cdn->process_cdn_status( $status );
-		$this->settings->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $data );
-
-		// At this point we already know that $status->data is valid.
-		wp_send_json_success( $data );
 	}
 
 	/***************************************
