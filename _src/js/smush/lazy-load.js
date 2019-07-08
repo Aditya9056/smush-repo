@@ -71,7 +71,7 @@
              * @since 3.2.2
              */
             const items = document.querySelectorAll( '.smush-ll-remove' );
-            if ( items ) {
+            if ( items && 0 < items.length ) {
                 items.forEach(function ( el ) {
                     el.addEventListener('click', (e) => {
                         e.preventDefault();
