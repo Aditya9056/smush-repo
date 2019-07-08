@@ -12,6 +12,8 @@
         lazyloadDisableButton: document.getElementById('smush-cancel-lazyload'),
 
         init: function () {
+            const self = this;
+
             /**
              * Handle "Activate" button click on disabled Lazy load page.
              */
@@ -68,24 +70,17 @@
              *
              * @since 3.2.2
              */
-            const spinnerRemove = document.getElementById('smush-spinner-remove');
-            if ( spinnerRemove ) {
-                spinnerRemove.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const id = e.target.dataset.id;
-                    e.target.closest('li').style.display = 'none';
-                    this.remove(id);
+            const items = document.querySelectorAll( '.smush-ll-remove' );
+            if ( items ) {
+                items.forEach(function ( el ) {
+                    el.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.target.closest('li').style.display = 'none';
+                        self.remove(e.target.dataset.id, e.target.dataset.type);
+                    })
                 })
             }
-            const placeholderRemove = document.getElementById('smush-placeholder-remove');
-            if ( placeholderRemove ) {
-                placeholderRemove.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const id = e.target.dataset.id;
-                    e.target.closest('li').style.display = 'none';
-                    this.remove(id, 'placeholder');
-                })
-            }
+
         },
 
         /**
