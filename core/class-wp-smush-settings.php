@@ -87,6 +87,7 @@ class WP_Smush_Settings {
 		'resize',
 		'gutenberg',
 		'js_builder',
+		'lazy_load',
 	);
 
 	/**
