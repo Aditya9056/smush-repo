@@ -1,6 +1,6 @@
 {
   "name": "wp-smushit",
-  "version": "3.2.2-beta.3",
+  "version": "3.3.0-beta.1",
   "private": true,
   "description": "Resize, optimize, optimise and compress all of your images with the incredibly powerful and 100% free WordPress image smusher, brought to you by the superteam at WPMU DEV!",
   "keywords": [
@@ -40,13 +40,13 @@
     "lazysizes": "^5.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/preset-env": "^7.4.5",
+    "@babel/core": "^7.5.0",
+    "@babel/preset-env": "^7.5.2",
     "@babel/preset-react": "^7.0.0",
     "@wordpress/eslint-plugin": "^2.3.0",
-    "ajv": "6.10.0",
-    "ajv-keywords": "^3.4.0",
-    "autoprefixer": "^9.6.0",
+    "ajv": "6.10.1",
+    "ajv-keywords": "^3.4.1",
+    "autoprefixer": "^9.6.1",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.0.0",
@@ -66,8 +66,8 @@
     "resolve-url-loader": "^2.3.1",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
-    "url-loader": "^2.0.0",
-    "webpack": "^4.34.0",
+    "url-loader": "^2.0.1",
+    "webpack": "^4.35.3",
     "webpack-command": "^0.4.2"
   },
   "browserslist": [
