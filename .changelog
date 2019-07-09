@@ -1,3 +1,7 @@
+= 3.3.0 =
+
+- Enhance: SmartCrawl readability analysis compatibility
+
 = 3.2.2 =
 
 - New: Bulk restore

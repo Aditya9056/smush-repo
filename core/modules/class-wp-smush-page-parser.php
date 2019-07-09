@@ -40,6 +40,10 @@ class WP_Smush_Page_Parser {
 	 * @since 3.2.2
 	 */
 	public function __construct() {
+		if ( $this->is_smartcrawl_analysis() ) {
+			return;
+		}
+
 		// Start an output buffer before any output starts.
 		add_action(
 			'template_redirect',
@@ -182,6 +186,25 @@ class WP_Smush_Page_Parser {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Compatibility with SmartCrawl readability analysis.
+	 * Do not process page on analysis.
+	 *
+	 * @since 3.3.0
+	 */
+	private function is_smartcrawl_analysis() {
+		$wds_analysis = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+		if ( ! is_null( $wds_analysis ) && 'wds-analysis-recheck' === $wds_analysis ) {
+			return true;
+		}
+
+		if ( isset( $_GET['wds-frontend-check'] ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
