@@ -1,28 +1,33 @@
 <?php
 /**
- * API request class: WP_Smush_API_Request
+ * API request class: Request
  *
  * Handles all the internal stuff to form and process a proper API request.
  *
  * @since 3.0
- * @package WP_Smush
+ * @package Smush\Core\Api
  */
+
+namespace Smush\Core\Api;
+
+use Exception;
+use WP_Error;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_API_Request.
+ * Class Request.
  */
-class WP_Smush_API_Request {
+class Request {
 
 	/**
 	 * API service.
 	 *
 	 * @since 3.0
 	 *
-	 * @var null|WP_Smush_API
+	 * @var null|API
 	 */
 	private $service = null;
 
@@ -63,16 +68,16 @@ class WP_Smush_API_Request {
 	private $get_args = array();
 
 	/**
-	 * WP_Smush_API_Request constructor.
+	 * Request constructor.
 	 *
 	 * @since 3.0
 	 *
-	 * @param WP_Smush_API $service  API service.
+	 * @param API $service  API service.
 	 *
 	 * @throws Exception  Init exception.
 	 */
 	public function __construct( $service ) {
-		if ( ! $service instanceof WP_Smush_API ) {
+		if ( ! $service instanceof API ) {
 			throw new Exception( __( 'Invalid API service.', 'wp-smushit' ), 404 );
 		}
 

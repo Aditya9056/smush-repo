@@ -1,19 +1,24 @@
 <?php
 /**
- * Smush API class that handles communications with WPMU DEV API: WP_Smush_API class
+ * Smush API class that handles communications with WPMU DEV API: API class
  *
  * @since 3.0
- * @package WP_Smush
+ * @package Smush\Core\Api
  */
+
+namespace Smush\Core\Api;
+
+use Exception;
+use WP_Error;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_API.
+ * Class API.
  */
-class WP_Smush_API {
+class API {
 
 	/**
 	 * Endpoint name.
@@ -47,12 +52,12 @@ class WP_Smush_API {
 	 *
 	 * @since 3.0
 	 *
-	 * @var WP_Smush_API_Request
+	 * @var Request
 	 */
 	private $request;
 
 	/**
-	 * WP_Smush_API constructor.
+	 * API constructor.
 	 *
 	 * @since 3.0
 	 *
@@ -62,7 +67,7 @@ class WP_Smush_API {
 	 */
 	public function __construct( $key ) {
 		$this->api_key = $key;
-		$this->request = new WP_Smush_API_Request( $this );
+		$this->request = new Request( $this );
 	}
 
 	/**
