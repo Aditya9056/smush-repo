@@ -2,24 +2,27 @@
 /**
  * Smush backup class
  *
- * @package WP_Smush
+ * @package Smush\Core\Modules
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules;
+
+use Smush\Core\Helper;
+use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Backup
+ * Class Backup
  */
-class WP_Smush_Backup extends WP_Smush_Module {
+class Backup extends Abstract_Module {
 
 	/**
-	 * WP_Smushit instance.
+	 * Smush instance.
 	 *
-	 * @var WP_Smushit
+	 * @var Smush
 	 */
 	private $smush;
 
@@ -31,7 +34,7 @@ class WP_Smush_Backup extends WP_Smush_Module {
 	private $backup_key = 'smush-full';
 
 	/**
-	 * WP_Smush_Backup constructor.
+	 * Backup constructor.
 	 */
 	public function init() {
 		// Handle Restore operation.
@@ -171,7 +174,7 @@ class WP_Smush_Backup extends WP_Smush_Module {
 
 		// Restore Full size -> get other image sizes -> restore other images.
 		// Get the Original Path.
-		$file_path = WP_Smush_Helper::get_attached_file( $attachment_id );
+		$file_path = Helper::get_attached_file( $attachment_id );
 
 		// Get the backup path.
 		$backup_sizes = get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
@@ -257,7 +260,7 @@ class WP_Smush_Backup extends WP_Smush_Module {
 		// If any of the image is restored, we count it as success.
 		if ( $restored ) {
 			// Remove the Meta, And send json success.
-			delete_post_meta( $attachment_id, WP_Smushit::$smushed_meta_key );
+			delete_post_meta( $attachment_id, Smush::$smushed_meta_key );
 
 			// Remove PNG to JPG conversion savings.
 			delete_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings' );
@@ -435,7 +438,7 @@ class WP_Smush_Backup extends WP_Smush_Module {
 				'success' => $status,
 				'src'     => $file_name,
 				'thumb'   => wp_get_attachment_image( $id ),
-				'link'    => WP_Smush_Helper::get_image_media_link( $id, $file_name, true ),
+				'link'    => Helper::get_image_media_link( $id, $file_name, true ),
 			)
 		);
 	}

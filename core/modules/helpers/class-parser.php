@@ -3,15 +3,17 @@
  * Smush page parser that is used by CDN and Lazy load modules.
  *
  * @since 3.2.2
- * @package WP_Smush
+ * @package Smush\Core\Modules\Helpers
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules\Helpers;
+
+use Smush\WP_Smush;
 
 /**
- * Class WP_Smush_Page_Parser
+ * Class Parser
  */
-class WP_Smush_Page_Parser {
+class Parser {
 
 	/**
 	 * CDN module status.
@@ -37,7 +39,7 @@ class WP_Smush_Page_Parser {
 	private $background_images = false;
 
 	/**
-	 * WP_Smush_Page_Parser constructor.
+	 * Parser constructor.
 	 *
 	 * @since 3.2.2
 	 */
@@ -90,7 +92,7 @@ class WP_Smush_Page_Parser {
 	 * Use DOMDocument class to find all available images in current HTML content and set attachment ID attribute.
 	 *
 	 * @since 3.0
-	 * @since 3.2.2  Moved from WP_Smush_CDN.
+	 * @since 3.2.2  Moved from \Smush\Core\Modules\CDN.
 	 *
 	 * @param string $content  Current buffer content.
 	 *
@@ -213,8 +215,8 @@ class WP_Smush_Page_Parser {
 	 * Get image tags from page content.
 	 *
 	 * @since 3.1.0
-	 * @since 3.2.0  Moved to WP_Smush_Content from WP_Smush_CDN
-	 * @since 3.2.2  Moved to WP_Smush_Page_Parser from WP_Smush_Content
+	 * @since 3.2.0  Moved to WP_Smush_Content from \Smush\Core\Modules\CDN
+	 * @since 3.2.2  Moved to Parser from WP_Smush_Content
 	 *
 	 * @param string $content  Page content.
 	 *
@@ -263,8 +265,8 @@ class WP_Smush_Page_Parser {
 	 * Add attribute to selected tag.
 	 *
 	 * @since 3.1.0
-	 * @since 3.2.0  Moved to WP_Smush_Content from WP_Smush_CDN
-	 * @since 3.2.2  Moved to WP_Smush_Page_Parser from WP_Smush_Content
+	 * @since 3.2.0  Moved to WP_Smush_Content from \Smush\Core\Modules\CDN
+	 * @since 3.2.2  Moved to Parser from WP_Smush_Content
 	 *
 	 * @param string $element  Image element.
 	 * @param string $name     Img attribute name (srcset, size, etc).
@@ -279,7 +281,7 @@ class WP_Smush_Page_Parser {
 	 * Get attribute from an HTML element.
 	 *
 	 * @since 3.2.0
-	 * @since 3.2.2  Moved to WP_Smush_Page_Parser from WP_Smush_Content
+	 * @since 3.2.2  Moved to Parser from WP_Smush_Content
 	 *
 	 * @param string $element  HTML element.
 	 * @param string $name     Attribute name.
@@ -298,7 +300,7 @@ class WP_Smush_Page_Parser {
 	 * Remove attribute from selected tag.
 	 *
 	 * @since 3.2.0
-	 * @since 3.2.2  Moved to WP_Smush_Page_Parser from WP_Smush_Content
+	 * @since 3.2.2  Moved to Parser from WP_Smush_Content
 	 *
 	 * @param string $element    Image element.
 	 * @param string $attribute  Img attribute name (srcset, size, etc).

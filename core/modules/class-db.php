@@ -2,8 +2,7 @@
 /**
  * Database class.
  *
- * @package WP_Smush
- * @subpackage Admin
+ * @package Smush\Core\Modules
  * @version 2.3
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -13,19 +12,23 @@
 
 namespace Smush\Core\Modules;
 
+use Smush\Core\Core;
+use Smush\Core\Helper;
 use Smush\Core\Integrations\Nextgen\Stats;
+use Smush\WP_Smush;
+use WP_Query;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_DB
+ * Class DB
  */
-class WP_Smush_DB {
+class DB {
 
 	/**
-	 * WP_Smush_DB constructor.
+	 * DB constructor.
 	 */
 	public function __construct() {
 		// Recalculate resize savings.
@@ -48,7 +51,7 @@ class WP_Smush_DB {
 		}
 
 		foreach ( $posts as $post_k => $post ) {
-			if ( ! isset( $post->post_mime_type ) || ! in_array( $post->post_mime_type, WP_Smush_Core::$mime_types, true ) ) {
+			if ( ! isset( $post->post_mime_type ) || ! in_array( $post->post_mime_type, Core::$mime_types, true ) ) {
 				unset( $posts[ $post_k ] );
 			} else {
 				$posts[ $post_k ] = $post->ID;
@@ -122,7 +125,7 @@ class WP_Smush_DB {
 				'offset'                 => 0,
 				'meta_query'             => array(
 					array(
-						'key'     => WP_Smushit::$smushed_meta_key,
+						'key'     => Smush::$smushed_meta_key,
 						'compare' => 'NOT EXISTS',
 					),
 					array(
@@ -233,7 +236,7 @@ class WP_Smush_DB {
 		// Else Get it Fresh!!
 		$offset = 0;
 		$limit  = $this->query_limit();
-		$mime   = implode( "', '", WP_Smush_Core::$mime_types );
+		$mime   = implode( "', '", Core::$mime_types );
 		// Remove the Filters added by WP Media Folder.
 		$this->remove_filters();
 
@@ -311,7 +314,7 @@ class WP_Smush_DB {
 
 		// Remove the Filters added by WP Media Folder.
 		$this->remove_filters();
-		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s ORDER BY `post_id` DESC LIMIT $offset, $limit", WP_Smushit::$smushed_meta_key ) ) ) {
+		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s ORDER BY `post_id` DESC LIMIT $offset, $limit", Smush::$smushed_meta_key ) ) ) {
 			if ( ! is_wp_error( $results ) && count( $results ) > 0 ) {
 				$posts = array_merge( $posts, $results );
 			}
@@ -500,7 +503,7 @@ class WP_Smush_DB {
 	 */
 	private function remove_filters() {
 		// Remove any filters added b WP media Folder plugin to get the all attachments.
-		if ( class_exists( 'Wp_Media_Folder' ) ) {
+		if ( class_exists( '\Wp_Media_Folder' ) ) {
 			global $wp_media_folder;
 			if ( is_object( $wp_media_folder ) ) {
 				remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts1' ) );
@@ -730,9 +733,9 @@ class WP_Smush_DB {
 
 		// Loop over all the attachments to get the cummulative savings.
 		foreach ( $attachments as $attachment ) {
-			$smush_stats        = get_post_meta( $attachment, WP_Smushit::$smushed_meta_key, true );
+			$smush_stats        = get_post_meta( $attachment, Smush::$smushed_meta_key, true );
 			$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
-			$conversion_savings = WP_Smush_Helper::get_pngjpg_savings( $attachment );
+			$conversion_savings = Helper::get_pngjpg_savings( $attachment );
 
 			if ( ! empty( $smush_stats['stats'] ) ) {
 				// Combine all the stats, and keep the resize and send conversion settings separately.

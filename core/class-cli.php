@@ -1,12 +1,16 @@
 <?php
 /**
- * Class WP_Smush_Cli_Command
+ * Class CLI
  *
  * @since 3.1
- * @package WP_Smush
+ * @package Smush\Core
  */
 
 namespace Smush\Core;
+
+use Smush\WP_Smush;
+use WP_CLI;
+use WP_CLI_Command;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -15,7 +19,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Reduce image file sizes, improve performance and boost your SEO using the WPMU DEV Smush API.
  */
-class WP_Smush_Cli_Command extends WP_CLI_Command {
+class CLI extends WP_CLI_Command {
 
 	/**
 	 * Optimize image.
@@ -163,7 +167,7 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 	private function smush( $msg = '', $images = array() ) {
 		$success  = false;
 		$errors   = array();
-		$progress = \WP_CLI\Utils\make_progress_bar( $msg, count( $images ) + 1 );
+		$progress = WP_CLI\Utils\make_progress_bar( $msg, count( $images ) + 1 );
 
 		$smush = WP_Smush::get_instance()->core()->mod;
 
@@ -224,7 +228,7 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 			$attachments = array_slice( $attachments, 0, $batch );
 		}
 
-		$progress = \WP_CLI\Utils\make_progress_bar( $msg, count( $attachments ) );
+		$progress = WP_CLI\Utils\make_progress_bar( $msg, count( $attachments ) );
 
 		foreach ( $attachments as $attachment_id ) {
 			WP_Smush::get_instance()->core()->mod->smush->smush_single( $attachment_id, true );
@@ -261,7 +265,7 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 			$attachments = array( $id );
 		}
 
-		$progress = \WP_CLI\Utils\make_progress_bar( __( 'Restoring images', 'wp-smushit' ), count( $attachments ) );
+		$progress = WP_CLI\Utils\make_progress_bar( __( 'Restoring images', 'wp-smushit' ), count( $attachments ) );
 
 		$warning = false;
 		foreach ( $attachments as $attachment_id ) {
@@ -346,5 +350,3 @@ class WP_Smush_Cli_Command extends WP_CLI_Command {
 	}
 
 }
-
-WP_CLI::add_command( 'smush', 'WP_Smush_Cli_Command' );

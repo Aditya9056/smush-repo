@@ -1,21 +1,26 @@
 <?php
 /**
- * CDN class: WP_Smush_CDN
+ * CDN class: CDN
  *
- * @package WP_Smush
+ * @package Smush\Core\Modules
  * @version 3.0
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules;
+
+use Smush\WP_Smush;
+use stdClass;
+use WPMUDEV_Dashboard;
+use WP_Error;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_CDN
+ * Class CDN
  */
-class WP_Smush_CDN extends WP_Smush_Module {
+class CDN extends Abstract_Module {
 
 	/**
 	 * Smush CDN base url.
@@ -54,23 +59,23 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * Page parser.
 	 *
 	 * @since 3.2.2
-	 * @var WP_Smush_Page_Parser $parser
+	 * @var Helpers\Parser $parser
 	 */
 	protected $parser;
 
 	/**
-	 * WP_Smush_CDN constructor.
+	 * CDN constructor.
 	 *
 	 * @since 3.2.2
-	 * @param WP_Smush_Page_Parser $parser  Page parser instance.
+	 * @param Helpers\Parser $parser  Page parser instance.
 	 */
-	public function __construct( WP_Smush_Page_Parser $parser ) {
+	public function __construct( Helpers\Parser $parser ) {
 		$this->parser = $parser;
 		parent::__construct();
 	}
 
 	/**
-	 * WP_Smush_CDN constructor.
+	 * CDN constructor.
 	 */
 	public function init() {
 		/**
@@ -449,27 +454,27 @@ class WP_Smush_CDN extends WP_Smush_Module {
 			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $image ) && $this->settings->get( 'auto_resize' ) ) {
 				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
 
-				WP_Smush_Page_Parser::add_attribute( $new_image, 'srcset', $srcset );
+				Helpers\Parser::add_attribute( $new_image, 'srcset', $srcset );
 
 				if ( false !== $sizes ) {
-					WP_Smush_Page_Parser::add_attribute( $new_image, 'sizes', $sizes );
+					Helpers\Parser::add_attribute( $new_image, 'sizes', $sizes );
 				}
 			}
 		}
 
 		// Support for 3rd party lazy loading plugins.
-		$data_src = WP_Smush_Page_Parser::get_attribute( $new_image, 'data-src' );
+		$data_src = Helpers\Parser::get_attribute( $new_image, 'data-src' );
 		if ( $data_src = $this->is_supported_path( $data_src ) ) {
 			$cdn_image = $this->process_src( $image, $data_src );
-			WP_Smush_Page_Parser::remove_attribute( $new_image, 'data-src' );
-			WP_Smush_Page_Parser::add_attribute( $new_image, 'data-src', $cdn_image );
+			Helpers\Parser::remove_attribute( $new_image, 'data-src' );
+			Helpers\Parser::add_attribute( $new_image, 'data-src', $cdn_image );
 		}
 
-		$data_lazy_src = WP_Smush_Page_Parser::get_attribute( $new_image, 'data-lazy-src' );
+		$data_lazy_src = Helpers\Parser::get_attribute( $new_image, 'data-lazy-src' );
 		if ( $data_lazy_src = $this->is_supported_path( $data_lazy_src ) ) {
 			$cdn_image = $this->process_src( $image, $data_lazy_src );
-			WP_Smush_Page_Parser::remove_attribute( $new_image, 'data-lazy-src' );
-			WP_Smush_Page_Parser::add_attribute( $new_image, 'data-lazy-src', $cdn_image );
+			Helpers\Parser::remove_attribute( $new_image, 'data-lazy-src' );
+			Helpers\Parser::add_attribute( $new_image, 'data-lazy-src', $cdn_image );
 		}
 
 		/**
@@ -679,7 +684,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		// Find the width and height attributes.
 		$width  = false;
 		$height = false;
-		wp_is_mobile();
+
 		// Try to get the width and height from img tag.
 		if ( preg_match( '/width=["|\']?(\b[[:digit:]]+(?!\%)\b)["|\']?/i', $image, $width_string ) ) {
 			$width = $width_string[1];
@@ -724,7 +729,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 	 * @since 3.0
 	 * @since 3.1  Moved from Ajax class.
 	 *
-	 * @param string $status  Status in JSON format.
+	 * @param array|WP_Error $status  Status in JSON format.
 	 *
 	 * @return mixed
 	 */
@@ -1004,7 +1009,7 @@ class WP_Smush_CDN extends WP_Smush_Module {
 		);
 
 		// Continue only if additional multipliers found or not skipped.
-		// Filter already documented in class-wp-smush-cdn.php.
+		// Filter already documented in class-cdn.php.
 		if ( apply_filters( 'smush_skip_image_from_cdn', false, $url, false ) || empty( $additional_multipliers ) ) {
 			return $sources;
 		}

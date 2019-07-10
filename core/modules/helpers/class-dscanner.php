@@ -1,9 +1,8 @@
 <?php
 /**
- * Smush directory smush scanner: WP_Smush_Directory_Scanner class
+ * Smush directory smush scanner: DScanner class
  *
- * @package WP_Smush
- * @subpackage Utils
+ * @package Smush\Core\Modules\Helpers
  * @since 2.8.1
  *
  * @author Anton Vanyukov <anton@incsub.com>
@@ -11,18 +10,20 @@
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules\Helpers;
+
+use Smush\WP_Smush;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Class WP_Smush_Directory_Scanner
+ * Class DScanner
  *
  * @since 2.8.1
  */
-class WP_Smush_Directory_Scanner {
+class DScanner {
 
 	/**
 	 * Indicates if a scan is in process

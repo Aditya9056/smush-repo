@@ -7,19 +7,21 @@
  * License: MIT
  * Note: Modified to return metadata at the end of the launch function
  *
- * @package WP_Smush
+ * @package Smush\Core\Modules\Async
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules\Async;
+
+use Exception;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Async_Task_Smush
+ * Class Abstract_Async
  */
-abstract class WP_Async_Task_Smush {
+abstract class Abstract_Async {
 
 	/**
 	 * Constant identifier for a task that should be available to logged-in users
@@ -166,7 +168,7 @@ abstract class WP_Async_Task_Smush {
 				$cookies[] = "$name=" . urlencode( is_array( $value ) ? serialize( $value ) : $value );
 			}
 
-			// @todo: We've set sslverify to false
+			// TODO: We've set sslverify to false
 			$request_args = array(
 				'timeout'   => apply_filters( 'smush_async_time_out', 0 ),
 				'blocking'  => false,

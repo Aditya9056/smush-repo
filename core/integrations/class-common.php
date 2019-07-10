@@ -12,6 +12,7 @@
 
 namespace Smush\Core\Integrations;
 
+use Smush\Core\Modules\Smush;
 use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -148,7 +149,7 @@ class Common {
 		$smush = WP_Smush::get_instance()->core()->mod->smush;
 		$data  = $smush_stats['data'];
 		// Get existing Stats.
-		$stats = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
+		$stats = get_post_meta( $id, Smush::$smushed_meta_key, true );
 
 		// Update existing Stats.
 		if ( ! empty( $stats ) ) {
@@ -188,7 +189,7 @@ class Common {
 		// Calculate the total compression.
 		$stats = $smush->total_compression( $stats );
 
-		update_post_meta( $id, WP_Smushit::$smushed_meta_key, $stats );
+		update_post_meta( $id, Smush::$smushed_meta_key, $stats );
 	}
 
 	/**************************************
@@ -236,7 +237,7 @@ class Common {
 			// Update each translations.
 			foreach ( $image_ids as $attchment_id ) {
 				// Smushed stats.
-				update_post_meta( $attchment_id, WP_Smushit::$smushed_meta_key, $stats );
+				update_post_meta( $attchment_id, Smush::$smushed_meta_key, $stats );
 				// Resize savings.
 				if ( ! empty( $resize ) ) {
 					update_post_meta( $attchment_id, WP_SMUSH_PREFIX . 'resize_savings', $resize );

@@ -8,7 +8,7 @@
 
 namespace Smush\Core\Integrations;
 
-use WP_Smush\Core\Settings;
+use Smush\Core\Settings;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

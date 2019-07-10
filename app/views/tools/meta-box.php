@@ -53,4 +53,4 @@ if ( ! defined( 'WPINC' ) ) {
 	</div>
 </form>
 
-<?php $this->view( 'modals/restore-images' ); ?>
+<?php $this->view( 'modals/restore-images', array(), 'modals' ); ?>

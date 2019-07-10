@@ -1,8 +1,8 @@
 <?php
 /**
- * Class WP_Smush_Async_Editor
+ * Class Editor
  *
- * @package WP_Smush
+ * @package Smush\Core\Modules\Async
  * @since 2.5
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -10,16 +10,18 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules\Async;
+
+use Exception;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Async_Editor
+ * Class Editor
  */
-class WP_Smush_Async_Editor extends WP_Async_Task_Smush {
+class Editor extends Abstract_Async {
 
 	/**
 	 * Argument count.
@@ -69,9 +71,9 @@ class WP_Smush_Async_Editor extends WP_Async_Task_Smush {
 	/**
 	 * Run the async task action
 	 *
-	 * @todo: Add a check for image
-	 * @todo: See if auto smush is enabled or not
-	 * @todo: Check if async is enabled or not
+	 * TODO: Add a check for image
+	 * TODO: See if auto smush is enabled or not
+	 * TODO: Check if async is enabled or not
 	 */
 	protected function run_action() {
 		if ( isset( $_POST['wp-action'], $_POST['do'], $_POST['postid'] )

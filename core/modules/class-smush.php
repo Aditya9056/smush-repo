@@ -1,23 +1,27 @@
 <?php
 /**
- * Smush core class: WP_Smushit class
+ * Smush core class: Smush class
  *
- * @package WP_Smushit
+ * @package Smush\Core\Modules
  */
 
 namespace Smush\Core\Modules;
 
+use Smush\Core\Helper;
 use Smush\Core\Integrations\S3\Compat;
 use Smush\WP_Smush;
+use stdClass;
+use WP_Error;
+use WP_Post;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smushit.
+ * Class Smush
  */
-class WP_Smushit extends WP_Smush_Module {
+class Smush extends Abstract_Module {
 
 	/**
 	 * Meta key to save smush result to db.
@@ -133,7 +137,7 @@ class WP_Smushit extends WP_Smush_Module {
 					/* translators: %d: number of images reduced */
 					$status_txt = $image_count > 1 ? sprintf( __( '%d images reduced ', 'wp-smushit' ), $image_count ) : __( 'Reduced ', 'wp-smushit' );
 
-					$stats_percent = number_format_i18n( $percent, 2, '.', '' );
+					$stats_percent = number_format_i18n( $percent, 2 );
 					$stats_percent = $stats_percent > 0 ? sprintf( '(  %01.1f%% )', $stats_percent ) : '';
 					/* translators: %1$s: bytes in readable format, %2$s: percent */
 					$status_txt .= sprintf( __( 'by %1$s %2$s', 'wp-smushit' ), $bytes_readable, $stats_percent );
@@ -191,9 +195,10 @@ class WP_Smushit extends WP_Smush_Module {
 
 			/** Super Smush Button  */
 			// IF current compression is lossy.
+			$is_lossy = false;
 			if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
 				$lossy    = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
-				$is_lossy = $lossy == 1 ? true : false;
+				$is_lossy = $lossy == 1;
 			}
 
 			// Check image type.
@@ -398,7 +403,7 @@ class WP_Smushit extends WP_Smush_Module {
 			return true;
 		}
 
-		// This is duplicating a part of scan_images() in class-wp-smush-ajax.php. See detailed description there.
+		// This is duplicating a part of scan_images() in class-ajax.php. See detailed description there.
 		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 
 		$smushed_image_sizes = isset( $wp_smush_data['sizes'] ) && is_array( $wp_smush_data['sizes'] ) ? count( $wp_smush_data['sizes'] ) : 0;
@@ -1188,16 +1193,14 @@ class WP_Smushit extends WP_Smush_Module {
 	 * Replace the old API message with the latest one if it doesn't exists already
 	 *
 	 * @param array $api_message  API message.
-	 *
-	 * @return null
 	 */
 	private function add_api_message( $api_message = array() ) {
 		if ( empty( $api_message ) || ! count( $api_message ) || empty( $api_message['timestamp'] ) || empty( $api_message['message'] ) ) {
-			return null;
+			return;
 		}
 		$o_api_message = get_site_option( WP_SMUSH_PREFIX . 'api_message', array() );
 		if ( array_key_exists( $api_message['timestamp'], $o_api_message ) ) {
-			return null;
+			return;
 		}
 		$api_message['status'] = 'show';
 
@@ -1283,7 +1286,7 @@ class WP_Smushit extends WP_Smush_Module {
 		$this->media_type    = 'wp';
 
 		// File path and URL for original image.
-		$attachment_file_path = WP_Smush_Helper::get_attached_file( $id );
+		$attachment_file_path = Helper::get_attached_file( $id );
 
 		// If images has other registered size, smush them first.
 		if ( ! empty( $meta['sizes'] ) ) {
@@ -1302,7 +1305,7 @@ class WP_Smushit extends WP_Smush_Module {
 				 */
 				do_action( 'smush_file_exists', $attachment_file_path_size, $id, $size_data );
 
-				$ext = WP_Smush_Helper::get_mime_type( $attachment_file_path_size );
+				$ext = Helper::get_mime_type( $attachment_file_path_size );
 
 				if ( $ext ) {
 					$valid_mime = array_search(
@@ -1554,7 +1557,7 @@ class WP_Smushit extends WP_Smush_Module {
 		$auto_smush = $this->is_auto_smush_enabled();
 
 		// Get the file path for backup.
-		$attachment_file_path = WP_Smush_Helper::get_attached_file( $id );
+		$attachment_file_path = Helper::get_attached_file( $id );
 
 		$this->check_animated_status( $attachment_file_path, $id );
 
@@ -1623,7 +1626,7 @@ class WP_Smushit extends WP_Smush_Module {
 		$attachment_id = absint( (int) ( $attachment_id ) );
 
 		// Get the file path for backup.
-		$attachment_file_path = WP_Smush_Helper::get_attached_file( $attachment_id );
+		$attachment_file_path = Helper::get_attached_file( $attachment_id );
 
 		// Download file if not exists.
 		do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
@@ -1634,7 +1637,7 @@ class WP_Smushit extends WP_Smush_Module {
 		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $attachment_id );
 
 		// Get the image metadata from $_POST.
-		$original_meta = ! empty( $_POST['metadata'] ) ? WP_Smush_Helper::format_meta_from_post( $_POST['metadata'] ) : '';
+		$original_meta = ! empty( $_POST['metadata'] ) ? Helper::format_meta_from_post( $_POST['metadata'] ) : '';
 
 		$original_meta = empty( $original_meta ) ? wp_get_attachment_metadata( $attachment_id ) : $original_meta;
 
@@ -2077,7 +2080,7 @@ class WP_Smushit extends WP_Smush_Module {
 	/**
 	 * Check to see if file is animated.
 	 *
-	 * @since 3.0  Moved from class-wp-smush-resize.php
+	 * @since 3.0  Moved from class-resize.php
 	 *
 	 * @param string $file_path  Image file path.
 	 * @param int    $id         Attachment ID.

@@ -1,9 +1,8 @@
 <?php
 /**
- * Directory Smush: WP_Smush_Dir class
+ * Directory Smush: Dir class
  *
- * @package WP_Smush
- * @subpackage Admin
+ * @package Smush\Core\Modules
  * @since 2.6
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -11,16 +10,24 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules;
+
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use Smush\Core\Core;
+use Smush\Core\Helper;
+use Smush\Core\Installer;
+use Smush\WP_Smush;
+use WP_Error;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Dir
+ * Class Dir
  */
-class WP_Smush_Dir {
+class Dir {
 	/**
 	 * Contains a list of optimised images.
 	 *
@@ -45,12 +52,12 @@ class WP_Smush_Dir {
 	/**
 	 * Directory scanner.
 	 *
-	 * @var WP_Smush_Directory_Scanner
+	 * @var Helpers\DScanner
 	 */
 	public $scanner;
 
 	/**
-	 * WP_Smush_Dir constructor.
+	 * Dir constructor.
 	 */
 	public function __construct() {
 		// We only run in admin.
@@ -65,7 +72,7 @@ class WP_Smush_Dir {
 			return;
 		}
 
-		$this->scanner = new WP_Smush_Directory_Scanner();
+		$this->scanner = new Helpers\DScanner();
 
 		if ( ! $this->scanner->is_scanning() ) {
 			$this->scanner->reset_scan();
@@ -204,7 +211,7 @@ class WP_Smush_Dir {
 		// Check smush limit for free users.
 		if ( ! WP_Smush::is_pro() ) {
 			// Free version bulk smush, check the transient counter value.
-			$should_continue = WP_Smush_Core::check_bulk_limit( false, 'dir_sent_count' );
+			$should_continue = Core::check_bulk_limit( false, 'dir_sent_count' );
 
 			// Send a error for the limit.
 			if ( ! $should_continue ) {
@@ -285,7 +292,7 @@ class WP_Smush_Dir {
 		); // Db call ok; no-cache ok.
 
 		// Update bulk limit transient.
-		WP_Smush_Core::update_smush_count( 'dir_sent_count' );
+		Core::update_smush_count( 'dir_sent_count' );
 	}
 
 
@@ -341,21 +348,19 @@ class WP_Smush_Dir {
 	/**
 	 * Update path_hash, and store a flag if all the rows were updated
 	 *
-	 * @return null
-	 *
-	 * @todo, Stop running this function after 2-3 updates using version check
+	 * TODO: Stop running this function after 2-3 updates using version check
 	 */
 	public function update_dir_path_hash() {
 		// If we've already performed the update.
 		if ( get_option( 'smush-directory-path-hash-updated', false ) ) {
-			return null;
+			return;
 		}
 
 		global $wpdb;
 
 		// Check if column exists.
-		if ( ! WP_Smush_Helper::table_column_exists( $wpdb->prefix . 'smush_dir_images', 'path_hash' ) ) {
-			return null;
+		if ( ! Helper::table_column_exists( $wpdb->prefix . 'smush_dir_images', 'path_hash' ) ) {
+			return;
 		}
 
 		// Update the rows.
@@ -366,7 +371,7 @@ class WP_Smush_Dir {
 		$index_exists = "SHOW INDEX FROM {$wpdb->prefix}smush_dir_images WHERE KEY_NAME = 'path'";
 		// If all the rows are updated and Index exists.
 		if ( ! $wpdb->get_var( $pending_rows ) && $wpdb->get_var( $index_exists ) != null ) {
-			WP_Smush_Helper::drop_index( $wpdb->prefix . 'smush_dir_images', 'path' );
+			Helper::drop_index( $wpdb->prefix . 'smush_dir_images', 'path' );
 			update_option( 'smush-directory-path-hash-updated', 1 );
 		}
 	}
@@ -644,7 +649,7 @@ class WP_Smush_Dir {
 			}
 
 			// Directory Iterator, Exclude . and ..
-			$filtered_dir = new WPSmushRecursiveFilterIterator( new RecursiveDirectoryIterator( $base_dir ) );
+			$filtered_dir = new Helpers\Iterator( new RecursiveDirectoryIterator( $base_dir ) );
 
 			// File Iterator.
 			$iterator = new RecursiveIteratorIterator( $filtered_dir, RecursiveIteratorIterator::CHILD_FIRST );
@@ -817,7 +822,7 @@ class WP_Smush_Dir {
 	 * @return string
 	 *
 	 * Thanks @andrezrv (Github)
-	 * @todo this does not properly get the admin path in Bedrock
+	 * TODO: this does not properly get the admin path in Bedrock
 	 */
 	private function get_admin_path() {
 		// Replace the site base URL with the absolute path to its installation directory.
@@ -851,7 +856,7 @@ class WP_Smush_Dir {
 	 * Excludes the Media Upload Directory ( Checks for Year and Month ).
 	 *
 	 * Borrowed from Shortpixel - (y)*
-	 * @todo Add a option to filter images if User have turned off the Year and Month Organize option
+	 * TODO: Add a option to filter images if User have turned off the Year and Month Organize option
 	 *
 	 * @param string $path  Path.
 	 *
@@ -1083,13 +1088,13 @@ class WP_Smush_Dir {
 		$current_screen = get_current_screen();
 
 		// Only run on required pages.
-		if ( ! empty( $current_screen ) && ! in_array( $current_screen->id, WP_Smush_Core::$pages, true ) ) {
+		if ( ! empty( $current_screen ) && ! in_array( $current_screen->id, Core::$pages, true ) ) {
 			return;
 		}
 
 		// Create custom table for directory smush.
 		if ( ! self::table_exist() ) {
-			WP_Smush_Installer::directory_smush_table();
+			Installer::directory_smush_table();
 		}
 	}
 
@@ -1169,33 +1174,4 @@ class WP_Smush_Dir {
 		<?php
 	}
 
-}
-
-/**
- * Filters the list of directories, exclude the media subfolders.
- */
-if ( class_exists( 'RecursiveFilterIterator' ) && ! class_exists( 'WPSmushRecursiveFilterIterator' ) ) {
-	/**
-	 * Class WPSmushRecursiveFilterIterator
-	 */
-	class WPSmushRecursiveFilterIterator extends RecursiveFilterIterator {
-		/**
-		 * Accept method.
-		 *
-		 * @return bool
-		 */
-		public function accept() {
-			$path = $this->current()->getPathname();
-
-			if ( $this->isDir() && ! WP_Smush::get_instance()->core()->mod->dir->skip_dir( $path ) ) {
-				return true;
-			}
-
-			if ( ! $this->isDir() ) {
-				return true;
-			}
-
-			return false;
-		}
-	}
 }

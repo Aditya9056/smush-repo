@@ -1,9 +1,8 @@
 <?php
 /**
- * Smush installer (update/upgrade procedures): WP_Smush_Installer class
+ * Smush installer (update/upgrade procedures): Installer class
  *
- * @package WP_Smush
- * @subpackage Admin
+ * @package Smush\Core
  * @since 2.8.0
  *
  * @author Anton Vanyukov <anton@incsub.com>
@@ -13,16 +12,18 @@
 
 namespace Smush\Core;
 
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Installer for handling updates and upgrades of the plugin.
+ * Class Installer for handling updates and upgrades of the plugin.
  *
  * @since 2.8.0
  */
-class WP_Smush_Installer {
+class Installer {
 
 	/**
 	 * Triggered on Smush deactivation.
@@ -44,8 +45,8 @@ class WP_Smush_Installer {
 		}
 
 		$version  = get_site_option( WP_SMUSH_PREFIX . 'version' );
-		$settings = WP_Smush_Settings::get_instance()->get();
-		$settings = ! empty( $settings ) ? $settings : WP_Smush_Settings::get_instance()->init();
+		Settings::get_instance()->init();
+		$settings = Settings::get_instance()->get();
 
 		// If the version is not saved or if the version is not same as the current version,.
 		if ( ! $version || WP_SMUSH_VERSION !== $version ) {
@@ -132,11 +133,11 @@ class WP_Smush_Installer {
 	 */
 	private static function upgrade_2_8_0() {
 		// If exif is not preserved, it will be stripped by default.
-		if ( WP_Smush_Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'keep_exif' ) ) {
+		if ( Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'keep_exif' ) ) {
 			// Set not to strip exif value.
-			WP_Smush_Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
+			Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
 			// Delete the old exif setting.
-			WP_Smush_Settings::get_instance()->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
+			Settings::get_instance()->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
 		}
 	}
 
@@ -151,11 +152,11 @@ class WP_Smush_Installer {
 	public static function directory_smush_table() {
 		// Create a class object, if doesn't exists.
 		if ( ! is_object( WP_Smush::get_instance()->core()->mod->dir ) ) {
-			WP_Smush::get_instance()->core()->mod->dir = new WP_Smush_Dir();
+			WP_Smush::get_instance()->core()->mod->dir = new Modules\Dir();
 		}
 
 		// No need to continue on sub sites.
-		if ( ! WP_Smush_Dir::should_continue() ) {
+		if ( ! Modules\Dir::should_continue() ) {
 			return;
 		}
 
@@ -199,7 +200,7 @@ class WP_Smush_Installer {
 						switch_to_blog( $blog['blog_id'] );
 
 						$settings = get_option( WP_SMUSH_PREFIX . 'last_settings', array() );
-						$settings = array_merge( WP_Smush_Settings::get_instance()->get(), maybe_unserialize( $settings ) );
+						$settings = array_merge( Settings::get_instance()->get(), maybe_unserialize( $settings ) );
 						update_option( WP_SMUSH_PREFIX . 'settings', $settings );
 						// Remove previous data.
 						delete_option( WP_SMUSH_PREFIX . 'last_settings' );
@@ -216,10 +217,10 @@ class WP_Smush_Installer {
 			// last_settings will be an array if user had any custom settings.
 			$settings = get_site_option( WP_SMUSH_PREFIX . 'last_settings', array() );
 			if ( is_array( $settings ) ) {
-				$settings = array_merge( WP_Smush_Settings::get_instance()->get(), $settings );
+				$settings = array_merge( Settings::get_instance()->get(), $settings );
 			} else {
 				// last_settings will be a string if the Smush page hasn't been visited => get the new defaults.
-				$settings = WP_Smush_Settings::get_instance()->get();
+				$settings = Settings::get_instance()->get();
 			}
 
 			update_site_option( WP_SMUSH_PREFIX . 'settings', $settings );
@@ -252,7 +253,7 @@ class WP_Smush_Installer {
 		delete_site_option( WP_SMUSH_PREFIX . 'hide_upgrade_notice' );
 
 		// Add new lazy-load options.
-		$lazy = WP_Smush_Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+		$lazy = Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
 
 		if ( ! $lazy ) {
 			return;
@@ -284,7 +285,7 @@ class WP_Smush_Installer {
 
 		$lazy['animation'] = $animation;
 
-		WP_Smush_Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $lazy );
+		Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $lazy );
 	}
 
 }

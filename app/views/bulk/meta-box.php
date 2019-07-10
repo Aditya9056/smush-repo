@@ -56,7 +56,7 @@ if ( 0 === absint( $core->total_count ) ) {
 	<p><?php esc_html_e( 'All attachments have been smushed. Awesome!', 'wp-smushit' ); ?></p>
 </div>
 
-<?php $this->view( 'blocks/progress-bar', array( 'count' => $core ) ); ?>
+<?php $this->view( 'blocks/progress-bar', array( 'count' => $core ), 'common' ); ?>
 
 <div class="smush-final-log sui-hidden">
 	<div class="smush-bulk-errors"></div>
@@ -137,7 +137,7 @@ if ( 0 === absint( $core->total_count ) ) {
 				printf(
 					/* translators: %1$s: user name, %2$s: starting strong tag, %3$s: starting span tag, %4$d: remaining image count, %5$s: ending span tag, %6$s: ending strong tag */
 					_n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs smushing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need smushing!', $core->remaining_count, 'wp-smushit' ),
-					esc_attr( WP_Smush_Helper::get_user_name() ),
+					esc_attr( \Smush\Core\Helper::get_user_name() ),
 					'<strong>',
 					'<span class="wp-smush-remaining-count">',
 					absint( $core->remaining_count ),

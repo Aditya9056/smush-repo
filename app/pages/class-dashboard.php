@@ -1,13 +1,16 @@
 <?php
 /**
- * Dashboard page class: WP_Smush_Dashboard extends WP_Smush_View.
+ * Dashboard page class: Dashboard extends Abstract_Page.
  *
  * @since 2.9.0
- * @package WP_Smush
+ * @package Smush\App\Pages
  */
 
-namespace Smush\App;
+namespace Smush\App\Pages;
 
+use Smush\App\Abstract_Page;
+use Smush\Core\Core;
+use Smush\Core\Settings;
 use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -15,9 +18,9 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WP_Smush_Dashboard
+ * Class Dashboard
  */
-class WP_Smush_Dashboard extends WP_Smush_View {
+class Dashboard extends Abstract_Page {
 
 	/**
 	 * Register page action hooks
@@ -48,7 +51,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		// If a free user, update the limits.
 		if ( ! WP_Smush::is_pro() ) {
 			// Reset transient.
-			WP_Smush_Core::check_bulk_limit( true );
+			Core::check_bulk_limit( true );
 		}
 
 		// Init the tabs.
@@ -65,7 +68,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 			)
 		);
 
-		$access = WP_Smush_Settings::can_access();
+		$access = Settings::can_access();
 
 		if ( ( ! is_network_admin() && ! $access ) || ( is_network_admin() && true === $access ) ) {
 			unset( $this->tabs['bulk'] );
@@ -538,7 +541,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 						<p class="wp-smush-stats-label-message">
 							<?php
 							$link_class = 'wp-smush-lossy-enable-link';
-							if ( is_multisite() && WP_Smush_Settings::can_access( 'bulk' ) ) {
+							if ( is_multisite() && Settings::can_access( 'bulk' ) ) {
 								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true, true ) . '#enable-lossy';
 							} elseif ( 'bulk' !== $this->get_current_tab() ) {
 								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '#enable-lossy';
@@ -986,7 +989,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/bulk-settings/meta-box',
 			array(
-				'basic_features'      => WP_Smush_Settings::$basic_features,
+				'basic_features'      => Settings::$basic_features,
 				'cdn_enabled'         => $this->settings->get( 'cdn' ),
 				'grouped_settings'    => $fields,
 				'settings'            => $this->settings->get(),
@@ -1046,7 +1049,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	public function directory_smush_metabox() {
 		// Reset the bulk limit transient.
 		if ( ! WP_Smush::is_pro() ) {
-			WP_Smush_Core::check_bulk_limit( true, 'dir_sent_count' );
+			Core::check_bulk_limit( true, 'dir_sent_count' );
 		}
 
 		$core = WP_Smush::get_instance()->core();
@@ -1099,7 +1102,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/integrations/meta-box',
 			array(
-				'basic_features'    => WP_Smush_Settings::$basic_features,
+				'basic_features'    => Settings::$basic_features,
 				'is_pro'            => WP_Smush::is_pro(),
 				'integration_group' => $this->settings->get_integrations_fields(),
 				'settings'          => $this->settings->get(),
@@ -1288,7 +1291,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 	 * @since 3.2.0
 	 */
 	public function common_metabox_footer() {
-		$this->view( 'common/meta-box-footer', array() );
+		$this->view( 'common/meta-box-footer', array(), 'common' );
 	}
 
 	/**

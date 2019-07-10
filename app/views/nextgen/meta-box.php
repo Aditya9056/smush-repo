@@ -70,7 +70,7 @@ if ( 0 >= $total_count ) : ?>
 							$remaining_count,
 							'wp-smushit'
 						),
-						esc_html( WP_Smush_Helper::get_user_name() ),
+						esc_html( \Smush\Core\Helper::get_user_name() ),
 						'<strong>',
 						'<span class="wp-smush-remaining-count">',
 						absint( $remaining_count ),
@@ -109,7 +109,8 @@ if ( 0 >= $total_count ) : ?>
 		'blocks/progress-bar',
 		array(
 			'count' => $ng,
-		)
+		),
+        'common'
 	);
 	?>
 

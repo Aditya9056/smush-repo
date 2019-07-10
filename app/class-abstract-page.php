@@ -1,20 +1,26 @@
 <?php
 /**
- * Abstract class for Smush view: WP_Smush_View
+ * Abstract class for Smush view: Abstract_Page
  *
- * @package WP_Smush
+ * @package Smush\App
  */
 
 namespace Smush\App;
+
+use Smush\Core\Core;
+use Smush\Core\Modules\Dir;
+use Smush\Core\Settings;
+use Smush\WP_Smush;
+use WPMUDEV_Dashboard;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Abstract class WP_Smush_View.
+ * Class Abstract_Page
  */
-abstract class WP_Smush_View {
+abstract class Abstract_Page {
 
 	/**
 	 * Page slug.
@@ -49,12 +55,12 @@ abstract class WP_Smush_View {
 	 *
 	 * @since 3.0
 	 *
-	 * @var WP_Smush_Settings
+	 * @var Settings
 	 */
 	protected $settings;
 
 	/**
-	 * WP_Smush_View constructor.
+	 * Abstract_Page constructor.
 	 *
 	 * @param string $title    Page title.
 	 * @param string $slug     Page slug. Default: 'smush'.
@@ -62,7 +68,7 @@ abstract class WP_Smush_View {
 	 */
 	public function __construct( $title, $slug = 'smush', $submenu = false ) {
 		$this->slug     = $slug;
-		$this->settings = WP_Smush_Settings::get_instance();
+		$this->settings = Settings::get_instance();
 
 		if ( ! $submenu ) {
 			$this->page_id = add_menu_page(
@@ -125,9 +131,10 @@ abstract class WP_Smush_View {
 	 *
 	 * @param string $name  View name = file name.
 	 * @param array  $args  Arguments.
+     * @param string $dir   Directory for the views. Default: views.
 	 */
-	public function view( $name, $args = array() ) {
-		$file    = WP_SMUSH_DIR . "app/views/{$name}.php";
+	public function view( $name, $args = array(), $dir = 'views' ) {
+		$file    = WP_SMUSH_DIR . "app/{$dir}/{$name}.php";
 		$content = '';
 
 		if ( is_file( $file ) ) {
@@ -283,7 +290,7 @@ abstract class WP_Smush_View {
 		$current_screen = get_current_screen();
 
 		// If not on plugin page.
-		if ( ! in_array( $current_screen->id, WP_Smush_Core::$plugin_pages, true ) ) {
+		if ( ! in_array( $current_screen->id, Core::$plugin_pages, true ) ) {
 			return $classes;
 		}
 
@@ -364,8 +371,8 @@ abstract class WP_Smush_View {
 
 		// Show configure screen for only a new installation and for only network admins.
 		if ( ( ! is_multisite() && ! $hide_quick_setup ) || ( is_multisite() && ! is_network_admin() && ! $this->settings->is_network_enabled() && ! $hide_quick_setup ) ) {
-			$this->view( 'modals/onboarding' );
-			$this->view( 'modals/checking-files' );
+			$this->view( 'modals/onboarding', array(), 'modals' );
+			$this->view( 'modals/checking-files', array(), 'modals' );
 		}
 
 		$this->render_inner_content();
@@ -538,7 +545,7 @@ abstract class WP_Smush_View {
 		$this->get_recheck_message();
 
 		// Check and show missing directory smush table error only on main site.
-		if ( WP_Smush_Dir::should_continue() ) {
+		if ( Dir::should_continue() ) {
 			$this->show_table_error();
 		}
 
@@ -555,7 +562,7 @@ abstract class WP_Smush_View {
 	 */
 	private function get_recheck_message() {
 		// Return if not multisite, or on network settings page, Netowrkwide settings is disabled.
-		if ( ! is_multisite() || is_network_admin() || ! WP_Smush_Settings::can_access( 'bulk' ) ) {
+		if ( ! is_multisite() || is_network_admin() || ! Settings::can_access( 'bulk' ) ) {
 			return;
 		}
 
@@ -585,7 +592,7 @@ abstract class WP_Smush_View {
 			return $notice;
 		}
 
-		if ( ! WP_Smush_Dir::table_exist() ) {
+		if ( ! Dir::table_exist() ) {
 			// Display a notice.
 			?>
 			<div class="sui-notice sui-notice-warning missing_table">
@@ -633,7 +640,7 @@ abstract class WP_Smush_View {
 	 */
 	private function settings_updated() {
 		// Check if network-wide settings are enabled, do not show settings updated message.
-		if ( is_multisite() && ! is_network_admin() && ! WP_Smush_Settings::can_access( 'bulk' ) ) {
+		if ( is_multisite() && ! is_network_admin() && ! Settings::can_access( 'bulk' ) ) {
 			return;
 		}
 

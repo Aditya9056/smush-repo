@@ -6,19 +6,21 @@
  * @package Smush
  */
 
+use Smush\Core\Settings;
+
 // If uninstall not called from WordPress exit.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
 
-if ( ! class_exists( 'WP_Smush_Settings' ) ) {
+if ( ! class_exists( '\\Smush\\Core\\Settings' ) ) {
 	if ( ! defined( 'WP_SMUSH_PREFIX' ) ) {
 		define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
 	}
 	/* @noinspection PhpIncludeInspection */
-	include_once plugin_dir_path( __FILE__ ) . '/core/class-wp-smush-settings.php';
+	include_once plugin_dir_path( __FILE__ ) . '/core/class-settings.php';
 }
-$keep_data = WP_Smush_Settings::get_instance()->get( 'keep_data' );
+$keep_data = Settings::get_instance()->get( 'keep_data' );
 
 // Check if someone want to keep the stats and settings.
 if ( ( defined( 'WP_SMUSH_PRESERVE_STATS' ) && WP_SMUSH_PRESERVE_STATS ) || true === $keep_data ) {

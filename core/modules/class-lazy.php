@@ -1,21 +1,21 @@
 <?php
 /**
- * Lazy load images class: WP_Smush_Lazy_Load
+ * Lazy load images class: Lazy
  *
  * @since 3.2.0
- * @package WP_Smush
+ * @package Smush\Core\Modules
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Lazy_Load
+ * Class Lazy
  */
-class WP_Smush_Lazy_Load extends WP_Smush_Module {
+class Lazy extends Abstract_Module {
 
 	/**
 	 * Lazy loading settings.
@@ -29,17 +29,17 @@ class WP_Smush_Lazy_Load extends WP_Smush_Module {
 	 * Page parser.
 	 *
 	 * @since 3.2.2
-	 * @var WP_Smush_Page_Parser $parser
+	 * @var Helpers\Parser $parser
 	 */
 	protected $parser;
 
 	/**
-	 * WP_Smush_Lazy_Load constructor.
+	 * Lazy constructor.
 	 *
 	 * @since 3.2.2
-	 * @param WP_Smush_Page_Parser $parser  Page parser instance.
+	 * @param Helpers\Parser $parser  Page parser instance.
 	 */
-	public function __construct( WP_Smush_Page_Parser $parser ) {
+	public function __construct( Helpers\Parser $parser ) {
 		$this->parser = $parser;
 		parent::__construct();
 	}
@@ -277,25 +277,25 @@ lazySizesConfig.loadMode = 1;";
 
 		$new_image = $image;
 
-		$src = WP_Smush_Page_Parser::get_attribute( $new_image, 'src' );
-		WP_Smush_Page_Parser::remove_attribute( $new_image, 'src' );
-		WP_Smush_Page_Parser::add_attribute( $new_image, 'data-src', $src );
-		WP_Smush_Page_Parser::add_attribute( $new_image, 'data-sizes', 'auto' );
+		$src = Helpers\Parser::get_attribute( $new_image, 'src' );
+		Helpers\Parser::remove_attribute( $new_image, 'src' );
+		Helpers\Parser::add_attribute( $new_image, 'data-src', $src );
+		Helpers\Parser::add_attribute( $new_image, 'data-sizes', 'auto' );
 
 		// Change srcset to data-srcset attribute.
 		$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
 
 		// Add .lazyload class.
-		$class = WP_Smush_Page_Parser::get_attribute( $new_image, 'class' );
+		$class = Helpers\Parser::get_attribute( $new_image, 'class' );
 		if ( $class ) {
-			WP_Smush_Page_Parser::remove_attribute( $new_image, 'class' );
+			Helpers\Parser::remove_attribute( $new_image, 'class' );
 			$class .= ' lazyload';
 		} else {
 			$class = 'lazyload';
 		}
-		WP_Smush_Page_Parser::add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
+		Helpers\Parser::add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
 
-		WP_Smush_Page_Parser::add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
+		Helpers\Parser::add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
 		// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
 		$new_image .= '<noscript>' . $image . '</noscript>';
@@ -313,7 +313,7 @@ lazySizesConfig.loadMode = 1;";
 	 * @return string
 	 */
 	public function exclude_from_lazy_loading( $content ) {
-		$images = WP_Smush_Page_Parser::get_images_from_content( $content );
+		$images = Helpers\Parser::get_images_from_content( $content );
 
 		if ( empty( $images ) ) {
 			return $content;
@@ -323,14 +323,14 @@ lazySizesConfig.loadMode = 1;";
 			$new_image = $image;
 
 			// Add .no-lazyload class.
-			$class = WP_Smush_Page_Parser::get_attribute( $new_image, 'class' );
+			$class = Helpers\Parser::get_attribute( $new_image, 'class' );
 			if ( $class ) {
-				WP_Smush_Page_Parser::remove_attribute( $new_image, 'class' );
+				Helpers\Parser::remove_attribute( $new_image, 'class' );
 				$class .= ' no-lazyload';
 			} else {
 				$class = 'no-lazyload';
 			}
-			WP_Smush_Page_Parser::add_attribute( $new_image, 'class', $class );
+			Helpers\Parser::add_attribute( $new_image, 'class', $class );
 
 			$content = str_replace( $image, $new_image, $content );
 		}
@@ -409,9 +409,9 @@ lazySizesConfig.loadMode = 1;";
 	 * @return bool
 	 */
 	private function has_excluded_class_or_id( $image ) {
-		$image_classes = WP_Smush_Page_Parser::get_attribute( $image, 'class' );
+		$image_classes = Helpers\Parser::get_attribute( $image, 'class' );
 		$image_classes = explode( ' ', $image_classes );
-		$image_id      = '#' . WP_Smush_Page_Parser::get_attribute( $image, 'id' );
+		$image_id      = '#' . Helpers\Parser::get_attribute( $image, 'id' );
 
 		if ( in_array( $image_id, $this->options['exclude-classes'], true ) ) {
 			return true;

@@ -1,12 +1,13 @@
 <?php
 /**
- * NextGen admin view: WP_Smush_Nextgen_Page class
+ * NextGen admin view: Nextgen class
  *
- * @package WP_Smush
+ * @package Smush\App\Pages
  */
 
-namespace Smush\App;
+namespace Smush\App\Pages;
 
+use Smush\App\Abstract_Page;
 use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -14,9 +15,9 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WP_Smush_Nextgen_Page
+ * Class Nextgen
  */
-class WP_Smush_Nextgen_Page extends WP_Smush_View {
+class Nextgen extends Abstract_Page {
 
 	/**
 	 * Function triggered when the page is loaded before render any content.

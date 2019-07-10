@@ -166,7 +166,7 @@ class Composer extends Abstract_Integration {
 		}
 
 		// Smush image. TODO: should we update the stats?
-		$smush_results = WP_Smush::get_instance()->core()->mod->smush->do_smushit( $vc_image );
+		WP_Smush::get_instance()->core()->mod->smush->do_smushit( $vc_image );
 		return $image_src;
 	}
 
@@ -182,6 +182,7 @@ class Composer extends Abstract_Integration {
 	 */
 	private function check_for_js_builder() {
 		if ( ! function_exists( 'is_plugin_active' ) ) {
+			/* @noinspection PhpIncludeInspection */
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 

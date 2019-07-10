@@ -26,7 +26,7 @@ if ( ! defined( 'WPINC' ) ) {
 			<# if ( 'start' === data.slide ) { #>
 			<?php
 			/* translators: %s: current user name */
-			printf( esc_html__( 'Hey, %s!', 'wp-smushit' ), esc_html( WP_Smush_Helper::get_user_name() ) );
+			printf( esc_html__( 'Hey, %s!', 'wp-smushit' ), esc_html( \Smush\Core\Helper::get_user_name() ) );
 			?>
 			<# } else if ( 'auto' === data.slide ) { #>
 			<?php esc_html_e( 'Automatic Compression', 'wp-smushit' ); ?>

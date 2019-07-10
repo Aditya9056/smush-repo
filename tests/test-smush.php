@@ -6,6 +6,7 @@
  */
 
 use Helpers\Helper;
+use Smush\Core\Installer;
 
 /**
  * Class SmushTest
@@ -26,7 +27,7 @@ class SmushTest extends WP_UnitTestCase {
 		require_once 'helpers/class-helper.php';
 		$this->tester = new Helper();
 
-		WP_Smush_Installer::smush_activated();
+		Installer::smush_activated();
 	}
 
 	/**

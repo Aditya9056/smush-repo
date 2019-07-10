@@ -1,39 +1,41 @@
 <?php
 /**
- * Abstract module class: WP_Smush_Module
+ * Abstract module class: Abstract_Module
  *
  * @since 3.0
- * @package WP_Smush
+ * @package Smush\Core\Modules
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules;
+
+use Smush\Core\Settings;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Module
+ * Class Abstract_Module
  *
  * @since 3.0
  */
-abstract class WP_Smush_Module {
+abstract class Abstract_Module {
 
 	/**
 	 * Settings instance.
 	 *
 	 * @since 3.0
-	 * @var WP_Smush_Settings
+	 * @var Settings
 	 */
 	protected $settings;
 
 	/**
-	 * WP_Smush_Module constructor.
+	 * Abstract_Module constructor.
 	 *
 	 * @since 3.0
 	 */
 	public function __construct() {
-		$this->settings = WP_Smush_Settings::get_instance();
+		$this->settings = Settings::get_instance();
 
 		$this->init();
 	}

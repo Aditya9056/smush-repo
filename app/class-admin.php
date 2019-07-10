@@ -1,15 +1,26 @@
 <?php
+/**
+ * Admin class.
+ *
+ * @package Smush\App
+ */
 
-namespace Smush\Core;
+namespace Smush\App;
+
+use Smush\Core\Core;
+use Smush\Core\Modules\Smush;
+use Smush\Core\Settings;
+use Smush\WP_Smush;
+use WP_Query;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Admin
+ * Class Admin
  */
-class WP_Smush_Admin {
+class Admin {
 
 	/**
 	 * Plugin pages.
@@ -21,16 +32,14 @@ class WP_Smush_Admin {
 	/**
 	 * AJAX module.
 	 *
-	 * @var WP_Smush_Ajax
+	 * @var Ajax
 	 */
 	public $ajax;
 
 	/**
-	 * WP_Smush_Admin constructor.
+	 * Admin constructor.
 	 */
 	public function __construct() {
-		$this->includes();
-
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		// Load js and css on pages with Media Uploader - WP Enqueue Media.
 		add_action( 'wp_enqueue_media', array( $this, 'enqueue_scripts' ) );
@@ -43,7 +52,7 @@ class WP_Smush_Admin {
 		add_action( 'admin_init', array( $this, 'add_policy' ) );
 
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			$this->ajax = new WP_Smush_Ajax();
+			$this->ajax = new Ajax();
 		}
 
 		add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
@@ -118,7 +127,7 @@ class WP_Smush_Admin {
 		 * required screen to avoid duplicate queries.
 		 * We have already enqueued scripts using admin_enqueue_scripts on required pages.
 		 */
-		if ( in_array( $current_page, WP_Smush_Core::$pages, true ) && doing_action( 'wp_enqueue_media' ) ) {
+		if ( in_array( $current_page, Core::$pages, true ) && doing_action( 'wp_enqueue_media' ) ) {
 			return;
 		}
 
@@ -132,7 +141,7 @@ class WP_Smush_Admin {
 			 *
 			 * @var array $pages  List of screens where script needs to be loaded.
 			 */
-			if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, WP_Smush_Core::$pages, true ) && ! did_action( 'wp_enqueue_media' ) ) ) {
+			if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, Core::$pages, true ) && ! did_action( 'wp_enqueue_media' ) ) ) {
 				return;
 			}
 		}
@@ -145,7 +154,7 @@ class WP_Smush_Admin {
 		}
 
 		// Load on all Smush page only.
-		if ( isset( $current_screen->id ) && in_array( $current_screen->id, WP_Smush_Core::$plugin_pages, true ) ) {
+		if ( isset( $current_screen->id ) && in_array( $current_screen->id, Core::$plugin_pages, true ) ) {
 			// Smush admin (smush-admin) includes the Shared UI.
 			wp_enqueue_style( 'smush-admin' );
 			wp_enqueue_script( 'smush-wpmudev-sui' );
@@ -253,28 +262,18 @@ class WP_Smush_Admin {
 	}
 
 	/**
-	 * Includes for plugin pages.
-	 */
-	private function includes() {
-		/* @noinspection PhpIncludeInspection */
-		include_once WP_SMUSH_DIR . 'app/abstract-wp-smush-view.php';
-		/* @noinspection PhpIncludeInspection */
-		include_once WP_SMUSH_DIR . 'app/class-wp-smush-dashboard.php';
-	}
-
-	/**
 	 * Add menu pages.
 	 */
 	public function add_menu_pages() {
 		$title = WP_Smush::is_pro() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 
-		if ( WP_Smush_Settings::can_access( false, true ) ) {
-			$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
+		if ( Settings::can_access( false, true ) ) {
+			$this->pages['smush'] = new Pages\Dashboard( $title, 'smush' );
 		}
 
 		// Add a bulk smush option for NextGen gallery.
 		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->nextgen->is_enabled() && WP_Smush::is_pro() && ! is_network_admin() ) {
-			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( $title, 'wp-smush-nextgen-bulk', true );
+			$this->pages['nextgen'] = new Pages\Nextgen( $title, 'wp-smush-nextgen-bulk', true );
 		}
 	}
 
@@ -339,7 +338,7 @@ class WP_Smush_Admin {
 	 */
 	public function get_user_validation_message( $notice = true ) {
 		$notice_class = $notice ? ' sui-notice sui-notice-warning' : ' notice notice-warning is-dismissible';
-		$wpmu_contact = sprintf( '<a href="%s" target="_blank">', esc_url( 'https://premium.wpmudev.org/contact' ) );
+		$wpmu_contact = '<a href="' . esc_url( 'https://premium.wpmudev.org/contact' ) . '" target="_blank">';
 		$recheck_link = '<a href="#" id="wp-smush-revalidate-member" data-message="%s">';
 		?>
 
@@ -442,11 +441,11 @@ class WP_Smush_Admin {
 				array(
 					'relation' => 'OR',
 					array(
-						'key'     => WP_Smushit::$smushed_meta_key,
+						'key'     => Smush::$smushed_meta_key,
 						'compare' => 'EXISTS',
 					),
 					array(
-						'key'     => WP_Smushit::$smushed_meta_key,
+						'key'     => Smush::$smushed_meta_key,
 						'compare' => 'NOT EXISTS',
 					),
 				)
@@ -543,7 +542,7 @@ class WP_Smush_Admin {
 			$notice .= sprintf(
 				/* translators: %1$s: user name, %2$s: strong tag, %3$s: span tag, %4$d: number of remaining umages, %5$s: closing span tag, %6$s: closing strong tag  */
 				_n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs re-compressing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need re-compressing!', $count, 'wp-smushit' ),
-				esc_html( WP_Smush_Helper::get_user_name() ),
+				esc_html( Helper::get_user_name() ),
 				'<strong>',
 				'<span class="wp-smush-remaining-count">',
 				absint( $count ),
@@ -562,4 +561,5 @@ class WP_Smush_Admin {
 			return $notice;
 		}
 	}
+
 }

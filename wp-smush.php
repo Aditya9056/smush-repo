@@ -46,6 +46,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace Smush;
 
 use Exception;
+use WP_CLI;
 use WPMUDEV_Dashboard;
 
 // If this file is called directly, abort.
@@ -127,11 +128,13 @@ if ( WP_SMUSH_BASENAME !== plugin_basename( __FILE__ ) ) {
 	}
 }
 
-register_activation_hook( 'core/class-wp-smush-installer.php', array( 'WP_Smush_Installer', 'smush_activated' ) );
-register_deactivation_hook( __FILE__, array( 'WP_Smush_Installer', 'smush_deactivated' ) );
+/* @noinspection PhpIncludeInspection */
+require_once WP_SMUSH_DIR . 'core/class-installer.php';
+register_activation_hook( __FILE__, array( 'Smush\\Core\\Installer', 'smush_activated' ) );
+register_deactivation_hook( __FILE__, array( 'Smush\\Core\\Installer', 'smush_deactivated' ) );
 
 // Init the plugin and load the plugin instance for the first time.
-add_action( 'plugins_loaded', array( 'Smush\WP_Smush', 'get_instance' ) );
+add_action( 'plugins_loaded', array( 'Smush\\WP_Smush', 'get_instance' ) );
 
 if ( ! class_exists( 'WP_Smush' ) ) {
 	/**
@@ -162,7 +165,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @var WP_Smush_Admin
+		 * @var App\Admin
 		 */
 		private $admin;
 
@@ -277,11 +280,10 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			self::$is_pro = $this->validate_install();
 
 			$this->core  = new Core\Core();
-			$this->admin = new WP_Smush_Admin();
+			$this->admin = new App\Admin();
 
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
-				/* @noinspection PhpIncludeInspection */
-				require_once WP_SMUSH_DIR . 'core/class-wp-smush-cli-command.php';
+				WP_CLI::add_command( 'smush', '\\Smush\\Core\\CLI' );
 			}
 		}
 
@@ -301,7 +303,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @return WP_Smush_Admin
+		 * @return App\Admin
 		 */
 		public function admin() {
 			return $this->admin;
@@ -597,5 +599,5 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			}
 		}
 
-	} // End class.
-} // End if() check.
+	}
+}

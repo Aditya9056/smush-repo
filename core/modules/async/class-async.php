@@ -1,8 +1,8 @@
 <?php
 /**
- * Class WP_Smush_Async
+ * Class Async
  *
- * @package WP_Smush
+ * @package Smush\Core\Modules\Async
  * @since 2.5
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -10,18 +10,18 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules\Async;
+
+use Exception;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-require_once 'abstract-wp-async-task-smush.php';
-
 /**
- * Class WP_Smush_Async
+ * Class Async
  */
-class WP_Smush_Async extends WP_Async_Task_Smush {
+class Async extends Abstract_Async {
 
 	/**
 	 * Argument count.
@@ -80,8 +80,8 @@ class WP_Smush_Async extends WP_Async_Task_Smush {
 	/**
 	 * Run the async task action
 	 *
-	 * @todo: See if auto smush is enabled or not.
-	 * @todo: Check if async is enabled or not.
+	 * TODO: See if auto smush is enabled or not.
+	 * TODO: Check if async is enabled or not.
 	 */
 	protected function run_action() {
 		$metadata = ! empty( $_POST['metadata'] ) ? $_POST['metadata'] : '';

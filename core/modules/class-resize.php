@@ -1,8 +1,8 @@
 <?php
 /**
- * Smush resize functionality: WP_Smush_Resize class
+ * Smush resize functionality: Resize class
  *
- * @package WP_Smush
+ * @package Smush\Core\Modules
  * @version 2.3
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -10,16 +10,19 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules;
+
+use Smush\Core\Core;
+use Smush\Core\Helper;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Resize
+ * Class Resize
  */
-class WP_Smush_Resize extends WP_Smush_Module {
+class Resize extends Abstract_Module {
 
 	/**
 	 * Specified width for resizing images
@@ -44,7 +47,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 
 
 	/**
-	 * WP_Smush_Resize constructor.
+	 * Resize constructor.
 	 */
 	public function init() {
 		/**
@@ -70,7 +73,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 		if ( ! empty( $current_screen ) && ! $skip_check ) {
 			// Do not Proceed if not on one of the required screens.
 			$current_page = $current_screen->base;
-			if ( ! in_array( $current_page, WP_Smush_Core::$pages, true ) ) {
+			if ( ! in_array( $current_page, Core::$pages, true ) ) {
 				return;
 			}
 		}
@@ -99,7 +102,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 			return false;
 		}
 
-		$file_path = WP_Smush_Helper::get_attached_file( $id );
+		$file_path = Helper::get_attached_file( $id );
 
 		if ( ! empty( $file_path ) ) {
 			// Skip: if "noresize" is included in the filename, Thanks to Imsanity.
@@ -107,7 +110,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 				return false;
 			}
 
-			$file_exists = WP_Smush_Helper::file_exists( $id, $file_path );
+			$file_exists = Helper::file_exists( $id, $file_path );
 
 			// If file doesn't exists, return.
 			if ( ! $file_exists ) {
@@ -127,7 +130,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 			}
 		}
 
-		$mime_supported = in_array( $mime, WP_Smush_Core::$mime_types, true );
+		$mime_supported = in_array( $mime, Core::$mime_types, true );
 
 		// If type of upload doesn't matches the criteria return.
 		$mime_supported = apply_filters( 'wp_smush_resmush_mime_supported', $mime_supported, $mime );
@@ -205,7 +208,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 		}
 
 		// Good to go.
-		$file_path = WP_Smush_Helper::get_attached_file( $id );
+		$file_path = Helper::get_attached_file( $id );
 
 		$original_file_size = filesize( $file_path );
 
@@ -218,7 +221,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 		}
 
 		// Else Replace the Original file with resized file.
-		$replaced = $this->replace_original_image( $file_path, $resize, $id, $meta );
+		$replaced = $this->replace_original_image( $file_path, $resize, $meta );
 
 		if ( $replaced ) {
 			// Clear Stat Cache, Else the size obtained is same as the original file size.
@@ -257,12 +260,12 @@ class WP_Smush_Resize extends WP_Smush_Module {
 	 * @param string $file_path Original File path.
 	 * @param int    $original_file_size File size before optimisation.
 	 * @param int    $id Attachment ID.
-	 * @param string $meta Attachment Metadata.
+	 * @param array  $meta Attachment Metadata.
 	 * @param bool   $unlink Whether to unlink the original image or not.
 	 *
 	 * @return array|bool|false If the image generation was successful
 	 */
-	public function perform_resize( $file_path, $original_file_size, $id, $meta = '', $unlink = true ) {
+	public function perform_resize( $file_path, $original_file_size, $id, $meta = array(), $unlink = true ) {
 		/**
 		 * Filter the resize image dimensions
 		 *
@@ -325,14 +328,13 @@ class WP_Smush_Resize extends WP_Smush_Module {
 	/**
 	 * Replace the original file with resized file
 	 *
-	 * @param string $file_path File path.
-	 * @param mixed  $resized Resized.
-	 * @param string $attachment_id Attachement ID.
-	 * @param string $meta Meta.
+	 * @param string $file_path  File path.
+	 * @param mixed  $resized    Resized.
+	 * @param array  $meta       Meta.
 	 *
 	 * @return bool
 	 */
-	private function replace_original_image( $file_path, $resized, $attachment_id = '', $meta = '' ) {
+	private function replace_original_image( $file_path, $resized, $meta = array() ) {
 		$replaced = @copy( $resized['file_path'], $file_path );
 		$this->maybe_unlink( $resized['file_path'], $meta );
 
@@ -358,7 +360,7 @@ class WP_Smush_Resize extends WP_Smush_Module {
 	 * Do not unlink the resized file if the name is similar to one of the image sizes
 	 *
 	 * @param string $path Image File Path.
-	 * @param string $meta Image Meta.
+	 * @param array  $meta Image Meta.
 	 *
 	 * @return bool
 	 */

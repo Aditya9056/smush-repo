@@ -1,8 +1,8 @@
 <?php
 /**
- * PNG to JPG conversion: WP_Smush_Png2jpg class
+ * PNG to JPG conversion: Png2jpg class
  *
- * @package WP_Smush
+ * @package Smush\Core\Modules
  *
  * @version 2.4
  *
@@ -11,16 +11,22 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules;
+
+use Exception;
+use Imagick;
+use ImagickPixel;
+use Smush\Core\Helper;
+use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Png2jpg
+ * Class Png2jpg
  */
-class WP_Smush_Png2jpg extends WP_Smush_Module {
+class Png2jpg extends Abstract_Module {
 
 	/**
 	 * Does PNG contain transparency.
@@ -77,7 +83,7 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 		}
 
 		if ( empty( $file ) ) {
-			$file = WP_Smush_Helper::get_attached_file( $id );
+			$file = Helper::get_attached_file( $id );
 		}
 
 		// Check if File exists.
@@ -198,7 +204,7 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 		}
 
 		if ( empty( $file ) ) {
-			$file = WP_Smush_Helper::get_attached_file( $id );
+			$file = Helper::get_attached_file( $id );
 		}
 
 		/** Whether to convert to jpg or not */
@@ -257,7 +263,7 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 
 		// Update File path, Attached File, GUID.
 		$meta = empty( $meta ) ? wp_get_attachment_metadata( $id ) : $meta;
-		$mime = WP_Smush_Helper::get_mime_type( $n_file_path );
+		$mime = Helper::get_mime_type( $n_file_path );
 
 		// Update File Path, Attached file, Mime Type for Image.
 		if ( 'full' === $size_k ) {
@@ -413,14 +419,14 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 	/**
 	 * Convert a PNG to JPG, Lossless Conversion, if we have any savings
 	 *
-	 * @param string $id    Image ID.
-	 * @param string $meta  Image meta.
+	 * @param string       $id    Image ID.
+	 * @param string|array $meta  Image meta.
 	 *
-	 * @uses WP_Smush_Backup::add_to_image_backup_sizes()
+	 * @uses Backup::add_to_image_backup_sizes()
 	 *
 	 * @return mixed|string
 	 *
-	 * @todo: Save cummulative savings
+	 * TODO: Save cumulative savings
 	 */
 	public function png_to_jpg( $id = '', $meta = '' ) {
 		// If we don't have meta or ID, or if not a premium user.
@@ -428,7 +434,7 @@ class WP_Smush_Png2jpg extends WP_Smush_Module {
 			return $meta;
 		}
 
-		$file = WP_Smush_Helper::get_attached_file( $id );
+		$file = Helper::get_attached_file( $id );
 
 		// Whether to convert to jpg or not.
 		$should_convert = $this->can_be_converted( $id );

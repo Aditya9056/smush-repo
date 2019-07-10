@@ -1,8 +1,8 @@
 <?php
 /**
- * Auto resize functionality: WP_Smush_Auto_Resize class
+ * Auto resize functionality: Resize_Detection class
  *
- * @package WP_Smush
+ * @package Smush\Core\Modules
  * @version 2.8.0
  *
  * @author Joel James <joel@incsub.com>
@@ -10,16 +10,16 @@
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core\Modules;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Auto_Resize
+ * Class Resize_Detection
  */
-class WP_Smush_Auto_Resize extends WP_Smush_Module {
+class Resize_Detection extends Abstract_Module {
 
 	/**
 	 * Is auto detection enabled.
@@ -29,7 +29,7 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 	private $can_auto_detect = false;
 
 	/**
-	 * WP_Smush_Auto_Resize constructor.
+	 * Resize_Detection constructor.
 	 */
 	public function init() {
 		// Set auto resize flag.
@@ -59,9 +59,9 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 	}
 
 	/**
-	 * Enqueque JS files required in public pages.
+	 * Enqueue JS files required in public pages.
 	 *
-	 * Enque resize detection js and css files to public
+	 * Enqueue resize detection js and css files to public
 	 * facing side of the site. Load only if auto detect
 	 * is enabled.
 	 *
@@ -158,7 +158,7 @@ class WP_Smush_Auto_Resize extends WP_Smush_Module {
 			return $image;
 		}
 
-		WP_Smush_Page_Parser::add_attribute( $image, 'data-resize-detection', '0' );
+		Helpers\Parser::add_attribute( $image, 'data-resize-detection', '0' );
 
 		return $image;
 	}

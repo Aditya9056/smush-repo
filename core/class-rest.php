@@ -1,9 +1,8 @@
 <?php
 /**
- * Smush integration with Rest API: WP_Smush_Rest class
+ * Smush integration with Rest API: Rest class
  *
- * @package WP_Smush
- * @subpackage Admin
+ * @package Smush\Core
  * @since 2.8.0
  *
  * @author Anton Vanyukov <anton@incsub.com>
@@ -11,21 +10,23 @@
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core;
+
+use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Singleton class WP_Smush_Rest for extending the WordPress REST API interface.
+ * Singleton class Rest for extending the WordPress REST API interface.
  *
  * @since 2.8.0
  */
-class WP_Smush_Rest {
+class Rest {
 
 	/**
-	 * WP_Smush_Rest constructor.
+	 * Rest constructor.
 	 */
 	public function __construct() {
 		// Register smush meta fields and callbacks for the image object in the
@@ -73,7 +74,7 @@ class WP_Smush_Rest {
 			return $status_txt;
 		}
 
-		$wp_smush_data = get_post_meta( $image['id'], WP_Smushit::$smushed_meta_key, true );
+		$wp_smush_data = get_post_meta( $image['id'], Modules\Smush::$smushed_meta_key, true );
 
 		if ( empty( $wp_smush_data ) ) {
 			$status_txt = __( 'Not processed', 'wp-smushit' );

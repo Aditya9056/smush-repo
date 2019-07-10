@@ -15,6 +15,7 @@ namespace Smush\Core\Integrations;
 use C_Component_Registry;
 use nggdb;
 use Smush\Core\Core;
+use Smush\Core\Helper;
 use Smush\WP_Smush;
 use WP_Error;
 
@@ -228,7 +229,7 @@ class Nextgen extends Abstract_Integration {
 	}
 
 	/**
-	 * Show additional notice if the required plugins are not istalled.
+	 * Show additional notice if the required plugins are not installed.
 	 *
 	 * @since 2.8.0
 	 *
@@ -726,7 +727,7 @@ class Nextgen extends Abstract_Integration {
 				// We take the original image. Get the absolute path using the storage object.
 				$attachment_file_path_size = $storage->get_image_abspath( $image, $size );
 
-				$ext = WP_Smush_Helper::get_mime_type( $attachment_file_path_size );
+				$ext = Helper::get_mime_type( $attachment_file_path_size );
 
 				if ( $ext ) {
 					$valid_mime = array_search(
@@ -852,7 +853,7 @@ class Nextgen extends Abstract_Integration {
 			return '';
 		}
 
-		return WP_Smush_Helper::get_mime_type( $file_path );
+		return Helper::get_mime_type( $file_path );
 	}
 
 	/**
@@ -924,7 +925,7 @@ class Nextgen extends Abstract_Integration {
 
 		$original_file_size = filesize( $file_path );
 
-		$resized = $resize->perform_resize( $file_path, $original_file_size, $attachment_id, '', false );
+		$resized = $resize->perform_resize( $file_path, $original_file_size, $attachment_id, array(), false );
 
 		// If resize wasn't successful.
 		if ( ! $resized || $resized['filesize'] == $original_file_size ) {

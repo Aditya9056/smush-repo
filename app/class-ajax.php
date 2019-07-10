@@ -1,9 +1,8 @@
 <?php
 /**
- * Smush class for storing all Ajax related functionality: WP_Smush_Ajax class
+ * Smush class for storing all Ajax related functionality: Ajax class
  *
- * @package WP_Smush
- * @subpackage Admin
+ * @package Smush\App
  * @since 2.9.0
  *
  * @copyright (c) 2018, Incsub (http://incsub.com)
@@ -11,19 +10,24 @@
 
 namespace Smush\App;
 
+use Smush\Core\Helper;
+use Smush\Core\Modules\Abstract_Module;
+use Smush\Core\Modules\CDN;
+use Smush\Core\Modules\Helpers\Parser;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Ajax for storing all Ajax related functionality.
+ * Class Ajax for storing all Ajax related functionality.
  *
  * @since 2.9.0
  */
-class WP_Smush_Ajax extends WP_Smush_Module {
+class Ajax extends Abstract_Module {
 
 	/**
-	 * WP_Smush_Ajax constructor.
+	 * Ajax constructor.
 	 */
 	public function init() {
 		/**
@@ -87,7 +91,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		// Toggle CDN.
 		add_action( 'wp_ajax_smush_toggle_cdn', array( $this, 'toggle_cdn' ) );
 		// Update stats box and CDN status.
-		add_action( 'wp_ajax_get_cdn_stats', array( new WP_Smush_CDN( new WP_Smush_Page_Parser() ), 'update_stats' ) );
+		add_action( 'wp_ajax_get_cdn_stats', array( new CDN( new Parser() ), 'update_stats' ) );
 
 		/**
 		 * LAZY LOADING
@@ -278,7 +282,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 		 * @param int  $attachment_id  Attachment ID.
 		 */
 		if ( ! apply_filters( 'wp_smush_image', true, $attachment_id ) ) {
-			$error = WP_Smush_Helper::filter_error( esc_html__( 'Attachment Skipped - Check `wp_smush_image` filter.', 'wp-smushit' ), $attachment_id );
+			$error = Helper::filter_error( esc_html__( 'Attachment Skipped - Check `wp_smush_image` filter.', 'wp-smushit' ), $attachment_id );
 			wp_send_json_error(
 				array(
 					'error_msg'    => sprintf( '<p class="wp-smush-error-message">%s</p>', $error ),
@@ -533,7 +537,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 					 */
 					if ( 'nextgen' !== $type ) {
 						$resize_savings     = get_post_meta( $attachment, WP_SMUSH_PREFIX . 'resize_savings', true );
-						$conversion_savings = WP_Smush_Helper::get_pngjpg_savings( $attachment );
+						$conversion_savings = Helper::get_pngjpg_savings( $attachment );
 
 						// Increase the smushed count.
 						$smushed_count ++;
@@ -755,7 +759,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			wp_send_json_error(
 				array(
 					'error'         => 'missing_id',
-					'error_message' => WP_Smush_Helper::filter_error( esc_html__( 'No attachment ID was received.', 'wp-smushit' ) ),
+					'error_message' => Helper::filter_error( esc_html__( 'No attachment ID was received.', 'wp-smushit' ) ),
 					'file_name'     => 'undefined',
 					'show_warning'  => intval( $smush->show_warning() ),
 				)
@@ -783,7 +787,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			wp_send_json_error(
 				array(
 					'error'         => 'no_file_meta',
-					'error_message' => WP_Smush_Helper::filter_error( esc_html__( 'No file data found in image meta.', 'wp-smushit' ) ),
+					'error_message' => Helper::filter_error( esc_html__( 'No file data found in image meta.', 'wp-smushit' ) ),
 					'file_name'     => sprintf(
 						/* translators: %d - attachment ID */
 						esc_html__( 'undefined (attachment ID: %d)', 'wp-smushit' ),
@@ -814,16 +818,16 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 			wp_send_json_error(
 				array(
 					'error'         => 'skipped',
-					'error_message' => WP_Smush_Helper::filter_error( esc_html__( 'Skipped with wp_smush_image filter', 'wp-smushit' ) ),
+					'error_message' => Helper::filter_error( esc_html__( 'Skipped with wp_smush_image filter', 'wp-smushit' ) ),
 					'show_warning'  => intval( $smush->show_warning() ),
-					'file_name'     => WP_Smush_Helper::get_image_media_link( $attachment_id, $file_name ),
+					'file_name'     => Helper::get_image_media_link( $attachment_id, $file_name ),
 					'thumbnail'     => wp_get_attachment_image( $attachment_id ),
 				)
 			);
 		}
 
 		// Get the file path for backup.
-		$attachment_file_path = WP_Smush_Helper::get_attached_file( $attachment_id );
+		$attachment_file_path = Helper::get_attached_file( $attachment_id );
 
 		// Download if not exists.
 		do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
@@ -863,7 +867,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 		$smush_data         = get_post_meta( $attachment_id, WP_Smushit::$smushed_meta_key, true );
 		$resize_savings     = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings', true );
-		$conversion_savings = WP_Smush_Helper::get_pngjpg_savings( $attachment_id );
+		$conversion_savings = Helper::get_pngjpg_savings( $attachment_id );
 
 		$stats = array(
 			'count'              => ! empty( $smush_data['sizes'] ) ? count( $smush_data['sizes'] ) : 0,
@@ -887,7 +891,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 
 			if ( ! empty( $error_message ) ) {
 				// Used internally to modify the error message.
-				$error_message = WP_Smush_Helper::filter_error( $error_message, $attachment_id, $error );
+				$error_message = Helper::filter_error( $error_message, $attachment_id, $error );
 			}
 
 			wp_send_json_error(
@@ -897,7 +901,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 					'error_message' => $error_message,
 					'show_warning'  => intval( $smush->show_warning() ),
 					'error_class'   => isset( $error_class ) ? $error_class : '',
-					'file_name'     => WP_Smush_Helper::get_image_media_link( $attachment_id, $file_name ),
+					'file_name'     => Helper::get_image_media_link( $attachment_id, $file_name ),
 				)
 			);
 		}

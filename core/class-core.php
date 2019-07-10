@@ -37,7 +37,7 @@ class Core {
 	/**
 	 * Modules array.
 	 *
-	 * @var WP_Smush_Modules
+	 * @var Modules
 	 */
 	public $mod;
 
@@ -199,12 +199,10 @@ class Core {
 	 * @throws Exception  Autoload exception.
 	 */
 	public function __construct() {
-		spl_autoload_register( array( $this, 'autoload' ) );
-
 		$this->init();
 
 		if ( is_admin() ) {
-			add_action( 'admin_init', array( 'WP_Smush_Installer', 'upgrade_settings' ) );
+			add_action( 'admin_init', array( '\\Smush\\Core\\Installer', 'upgrade_settings' ) );
 		}
 
 		// Enqueue scripts and initialize variables.
@@ -221,38 +219,6 @@ class Core {
 		 * work, also load after settings have been saved on init action.
 		 */
 		add_action( 'plugins_loaded', array( $this, 'load_libs' ), 90 );
-	}
-
-	/**
-	 * Autoloader.
-	 *
-	 * @since 2.9.0
-	 *
-	 * @param string $class_name  Class name to autoload.
-	 */
-	public function autoload( $class_name ) {
-		// Parse only Smush dependencies.
-		if ( 0 !== strpos( $class_name, 'WP_Smush' ) ) {
-			return;
-		}
-
-		$class_parts = explode( '_', $class_name );
-
-		if ( ! $class_parts ) {
-			return;
-		}
-
-		// Convert all to lower case.
-		$class_parts = array_map( 'strtolower', $class_parts );
-
-		// Build path.
-		$filename = implode( '-', $class_parts );
-		$file     = WP_SMUSH_DIR . "core/modules/class-{$filename}.php";
-
-		if ( is_readable( $file ) ) {
-			/* @noinspection PhpIncludeInspection */
-			require_once $file;
-		}
 	}
 
 	/**
@@ -289,17 +255,10 @@ class Core {
 	 * @since 2.9.0
 	 */
 	private function init() {
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/class-wp-smush-modules.php';
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/modules/abstract-wp-smush-module.php';
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/modules/class-wp-smush-page-parser.php';
+		$this->mod = new Modules();
 
-		$this->mod = new WP_Smush_Modules();
-
-		new WP_Smush_Auto_Resize();
-		new WP_Smush_Rest();
+		new Modules\Resize_Detection();
+		new Rest();
 	}
 
 	/**
@@ -333,8 +292,8 @@ class Core {
 		}
 
 		// Instantiate class.
-		new WP_Smush_Async();
-		new WP_Smush_Async_Editor();
+		new Modules\Async\Async();
+		new Modules\Async\Editor();
 	}
 
 	/**
@@ -540,7 +499,7 @@ class Core {
 		wp_localize_script( $handle, 'wp_smushit_data', $data );
 
 		// Check if settings were changed for a multisite, and localize whether to run re-check on page load.
-		if ( WP_Smush_Settings::can_access( 'bulk' ) ) {
+		if ( Settings::can_access( 'bulk' ) ) {
 			// If not same, Set a variable to run re-check on page load.
 			if ( get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false ) ) {
 				wp_localize_script( $handle, 'wp_smush_run_re_check', array( 1 ) );
@@ -648,7 +607,7 @@ class Core {
 	 */
 	public function setup_global_stats( $force_update = false ) {
 		// Set directory smush status.
-		$this->dir_stats = WP_Smush_Dir::should_continue() ? $this->mod->dir->total_stats() : array();
+		$this->dir_stats = Modules\Dir::should_continue() ? $this->mod->dir->total_stats() : array();
 
 		// Setup Attachments and total count.
 		$this->mod->db->total_count( true );
@@ -722,7 +681,7 @@ class Core {
 			$global_data = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT %d, %d",
-					WP_Smushit::$smushed_meta_key,
+					Modules\Smush::$smushed_meta_key,
 					$offset,
 					$limit
 				)

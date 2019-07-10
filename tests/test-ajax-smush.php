@@ -6,6 +6,7 @@
  */
 
 use Helpers\Helper;
+use Smush\App\Ajax;
 
 /**
  * Class AjaxSmushTest
@@ -29,7 +30,7 @@ class AjaxSmushTest extends WP_Ajax_UnitTestCase {
 		$this->tester = new Helper();
 
 		wp_set_current_user( 1 );
-		new WP_Smush_Ajax();
+		new Ajax();
 	}
 
 	/**

@@ -2,7 +2,7 @@
 /**
  * Helpers class.
  *
- * @package WP_Smush
+ * @package Smush\Core
  * @version 1.0
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -10,16 +10,20 @@
  * @copyright (c) 2017, Incsub (http://incsub.com)
  */
 
-namespace WP_Smush\Core\Modules;
+namespace Smush\Core;
+
+use finfo;
+use Smush\WP_Smush;
+use wpdb;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Helper
+ * Class Helper
  */
-class WP_Smush_Helper {
+class Helper {
 
 	/**
 	 * Get mime type for file.
@@ -358,7 +362,7 @@ class WP_Smush_Helper {
 		if ( is_array( $meta ) ) {
 
 			// Walk through each items and format.
-			array_walk_recursive( $meta, array( 'WP_Smush_Helper', 'format_attachment_meta_item' ) );
+			array_walk_recursive( $meta, array( 'Helper', 'format_attachment_meta_item' ) );
 		}
 
 		return $meta;
