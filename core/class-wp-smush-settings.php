@@ -464,8 +464,8 @@ class WP_Smush_Settings {
 		}
 
 		delete_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+		delete_site_option( WP_SMUSH_PREFIX . 'hide_smush_welcome' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'settings' );
-		$this->delete_setting( WP_SMUSH_PREFIX . 'hide_smush_welcome' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );

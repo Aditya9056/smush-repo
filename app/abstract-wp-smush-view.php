@@ -156,7 +156,7 @@ abstract class WP_Smush_View {
 		}
 
 		// Return if notice is already dismissed.
-		if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) ) {
+		if ( get_site_option( WP_SMUSH_PREFIX . 'hide_upgrade_notice' ) ) {
 			return;
 		}
 
