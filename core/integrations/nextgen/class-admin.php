@@ -2,7 +2,7 @@
 /**
  * Adds the Bulk Page and Smush Column to NextGen Gallery
  *
- * @package Smush\Core\Integrations\Nextgen
+ * @package Smush\Core\Integrations\NextGen
  * @version 1.0
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -10,10 +10,10 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-namespace Smush\Core\Integrations\Nextgen;
+namespace Smush\Core\Integrations\NextGen;
 
 use Smush\Core\Core;
-use Smush\Core\Integrations\Nextgen;
+use Smush\Core\Integrations\NextGen;
 use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -22,9 +22,8 @@ if ( ! defined( 'WPINC' ) ) {
 
 /**
  * Class Admin
-
  */
-class Admin extends Nextgen {
+class Admin extends NextGen {
 
 	/**
 	 * Total image count.

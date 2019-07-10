@@ -1,6 +1,6 @@
 <?php
 /**
- * NextGen integration: Nextgen class
+ * NextGen integration: NextGen class
  *
  * @package Smush\Core\Integrations
  * @version 1.0
@@ -24,9 +24,9 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class Nextgen
+ * Class NextGen
  */
-class Nextgen extends Abstract_Integration {
+class NextGen extends Abstract_Integration {
 
 	/**
 	 * Contains the total Stats, for displaying it on bulk page
@@ -74,8 +74,8 @@ class Nextgen extends Abstract_Integration {
 			return;
 		}
 
-		$this->ng_stats = new Nextgen\Stats();
-		$this->ng_admin = new Nextgen\Admin( $this->ng_stats );
+		$this->ng_stats = new NextGen\Stats();
+		$this->ng_admin = new NextGen\Admin( $this->ng_stats );
 
 		/**
 		 * FILTERS

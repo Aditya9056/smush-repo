@@ -2,7 +2,7 @@
 /**
  * Handles all the stats related functions
  *
- * @package Smush\Core\Integrations\Nextgen
+ * @package Smush\Core\Integrations\NextGen
  * @version 1.0
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -10,9 +10,9 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
-namespace Smush\Core\Integrations\Nextgen;
+namespace Smush\Core\Integrations\NextGen;
 
-use Smush\Core\Integrations\Nextgen;
+use Smush\Core\Integrations\NextGen;
 use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -22,7 +22,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Class Stats
  */
-class Stats extends Nextgen {
+class Stats extends NextGen {
 
 	/**
 	 * Contains the total Stats, for displaying it on bulk page
