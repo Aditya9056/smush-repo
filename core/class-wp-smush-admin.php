@@ -1,5 +1,7 @@
 <?php
 
+namespace Smush\Core;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }

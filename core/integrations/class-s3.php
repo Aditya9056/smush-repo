@@ -1,8 +1,8 @@
 <?php
 /**
- * S3 integration: WP_Smush_S3 class
+ * S3 integration: S3 class
  *
- * @package WP_Smush
+ * @package Smush\Core\Modules\Integrations
  * @subpackage S3
  * @since 2.7
  *
@@ -11,17 +11,22 @@
  * @copyright (c) 2017, Incsub (http://incsub.com)
  */
 
+namespace Smush\Core\Integrations;
+
+use Smush\WP_Smush;
+use WP_Smush\Core\Settings;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_S3
+ * Class S3
  */
-class WP_Smush_S3 extends WP_Smush_Integration {
+class S3 extends Abstract_Integration {
 
 	/**
-	 * WP_Smush_S3 constructor.
+	 * S3 constructor.
 	 */
 	public function __construct() {
 		$this->module  = 's3';
@@ -124,7 +129,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var Amazon_S3_And_CloudFront $as3cf
+		 * @var \Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -166,7 +171,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 */
 	public function s3_support_required_notice() {
 		// Do not display it for other users. Do not display on network screens, if network-wide option is disabled.
-		if ( ! current_user_can( 'manage_options' ) || ! WP_Smush_Settings::can_access( 'integrations' ) ) {
+		if ( ! current_user_can( 'manage_options' ) || ! Settings::can_access( 'integrations' ) ) {
 			return true;
 		}
 
@@ -263,7 +268,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var Amazon_S3_And_CloudFront $as3cf
+		 * @var \Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -349,7 +354,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var Amazon_S3_And_CloudFront $as3cf
+		 * @var \Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -424,7 +429,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var Amazon_S3_And_CloudFront $as3cf
+		 * @var \Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -472,7 +477,7 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var Amazon_S3_And_CloudFront $as3cf
+		 * @var \Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -492,8 +497,8 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 *
 	 * @since 3.0
 	 *
-	 * @param Amazon_S3_And_CloudFront $as3cf          Amazon_S3_And_CloudFront global.
-	 * @param int                      $attachment_id  Attachment ID.
+	 * @param \Amazon_S3_And_CloudFront $as3cf          Amazon_S3_And_CloudFront global.
+	 * @param int                       $attachment_id  Attachment ID.
 	 *
 	 * @return bool|array
 	 */
@@ -514,9 +519,9 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 *
 	 * @since 3.0
 	 *
-	 * @param Amazon_S3_And_CloudFront $as3cf         Amazon_S3_And_CloudFront global.
-	 * @param array                    $s3_object     Data array.
-	 * @param string                   $uf_file_path  File path.
+	 * @param \Amazon_S3_And_CloudFront $as3cf         Amazon_S3_And_CloudFront global.
+	 * @param array                     $s3_object     Data array.
+	 * @param string                    $uf_file_path  File path.
 	 *
 	 * @return bool|string
 	 */
@@ -541,10 +546,10 @@ class WP_Smush_S3 extends WP_Smush_Integration {
 	 *
 	 * @since 3.0
 	 *
-	 * @param Amazon_S3_And_CloudFront $as3cf   Amazon_S3_And_CloudFront global.
-	 * @param bool|string              $region  Specify region to client for signature.
+	 * @param \Amazon_S3_And_CloudFront $as3cf   Amazon_S3_And_CloudFront global.
+	 * @param bool|string               $region  Specify region to client for signature.
 	 *
-	 * @return Provider|Null_Provider|bool
+	 * @return \Provider|\Null_Provider|bool
 	 */
 	private function get_provider_client( $as3cf, $region ) {
 		if ( method_exists( $as3cf, 'get_provider_client' ) ) {

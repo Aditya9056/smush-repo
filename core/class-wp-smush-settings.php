@@ -6,6 +6,8 @@
  * @package WP_Smush
  */
 
+namespace Smush\Core;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -15,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
  *
  * @since 3.0
  */
-class WP_Smush_Settings {
+class Settings {
 
 	/**
 	 * Plugin instance.

@@ -6,6 +6,8 @@
  * @package WP_Smush
  */
 
+namespace WP_Smush\Core\Modules;
+
 /**
  * Class WP_Smush_Page_Parser
  */

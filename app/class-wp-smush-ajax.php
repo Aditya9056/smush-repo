@@ -9,6 +9,8 @@
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
 
+namespace Smush\App;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }

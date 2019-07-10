@@ -5,6 +5,8 @@
  * @package WP_Smush
  */
 
+namespace Smush\App;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }

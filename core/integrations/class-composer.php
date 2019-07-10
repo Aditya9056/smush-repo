@@ -1,9 +1,8 @@
 <?php
 /**
- * Smush integration with WPBakery Page Builder: WP_Smush_JS_Composer class
+ * Smush integration with WPBakery Page Builder: Composer class
  *
- * @package WP_Smush
- * @subpackage Admin/Integrations
+ * @package Smush\Core\Integrations
  * @since 3.2.1
  *
  * @author Anton Vanyukov <anton@incsub.com>
@@ -11,19 +10,23 @@
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
 
+namespace Smush\Core\Integrations;
+
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_JS_Composer for WPBakery Page Builder integration.
+ * Class Composer for WPBakery Page Builder integration.
  *
  * @since 3.2.1
  */
-class WP_Smush_JS_Composer extends WP_Smush_Integration {
+class Composer extends Abstract_Integration {
 
 	/**
-	 * WP_Smush_JS_Composer constructor.
+	 * Composer constructor.
 	 *
 	 * @since 3.2.1
 	 */

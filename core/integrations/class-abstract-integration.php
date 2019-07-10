@@ -1,19 +1,23 @@
 <?php
 /**
- * Abstract class for an integration module: class WP_Smush_Integration
+ * Abstract class for an integration module: class Abstract_Integration
  *
  * @since 2.9.0
- * @package WP_Smush
+ * @package Smush\Core\Modules\Integrations
  */
+
+namespace Smush\Core\Integrations;
+
+use WP_Smush\Core\Settings;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Integration
+ * Class Abstract_Integration
  */
-abstract class WP_Smush_Integration {
+abstract class Abstract_Integration {
 
 	/**
 	 * Module slug.
@@ -41,15 +45,15 @@ abstract class WP_Smush_Integration {
 	 *
 	 * @since 3.0
 	 *
-	 * @var WP_Smush_Settings
+	 * @var Settings
 	 */
 	protected $settings;
 
 	/**
-	 * WP_Smush_Integration constructor.
+	 * Abstract_Integration constructor.
 	 */
 	public function __construct() {
-		$this->settings = WP_Smush_Settings::get_instance();
+		$this->settings = Settings::get_instance();
 
 		// Filters the setting variable to add module setting title and description.
 		add_filter( 'wp_smush_settings', array( $this, 'register' ) );

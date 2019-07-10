@@ -6,7 +6,7 @@
  * @package WP_Smush\Core
  */
 
-namespace WP_Smush\Core;
+namespace Smush\Core;
 
 /**
  * Class Settings

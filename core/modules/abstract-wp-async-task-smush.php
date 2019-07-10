@@ -10,6 +10,8 @@
  * @package WP_Smush
  */
 
+namespace WP_Smush\Core\Modules;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }

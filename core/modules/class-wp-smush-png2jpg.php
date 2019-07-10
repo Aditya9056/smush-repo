@@ -11,6 +11,8 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
+namespace WP_Smush\Core\Modules;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }

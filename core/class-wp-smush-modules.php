@@ -3,10 +3,12 @@
  * Class WP_Smush_Modules.
  *
  * Used in WP_Smush_Core to type hint the $mod variable. For example, this way any calls to
- * WP_Smush::get_instance()->core()->mod->settings will be typehinted as a call to WP_Smush_Settings module.
+ * \WP_Smush\Smush::get_instance()->core()->mod->settings will be typehinted as a call to WP_Smush_Settings module.
  *
  * @package WP_Smush
  */
+
+namespace Smush\Core;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

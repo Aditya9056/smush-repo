@@ -1,9 +1,8 @@
 <?php
 /**
- * Smush integration with Gutenberg editor: WP_Smush_Gutenberg class
+ * Smush integration with Gutenberg editor: Gutenberg class
  *
- * @package WP_Smush
- * @subpackage Admin/Integrations
+ * @package Smush\Core\Integrations
  * @since 2.8.1
  *
  * @author Anton Vanyukov <anton@incsub.com>
@@ -11,19 +10,21 @@
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
 
+namespace Smush\Core\Integrations;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Gutenberg for Gutenberg integration.
+ * Class Gutenberg for Gutenberg integration.
  *
  * @since 2.8.1
  */
-class WP_Smush_Gutenberg extends WP_Smush_Integration {
+class Gutenberg extends Abstract_Integration {
 
 	/**
-	 * WP_Smush_Gutenberg constructor.
+	 * Gutenberg constructor.
 	 *
 	 * @since 2.8.1
 	 */

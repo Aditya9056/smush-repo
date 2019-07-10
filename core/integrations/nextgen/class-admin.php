@@ -2,8 +2,7 @@
 /**
  * Adds the Bulk Page and Smush Column to NextGen Gallery
  *
- * @package WP_Smush
- * @subpackage NextGen Gallery
+ * @package Smush\Core\Integrations\Nextgen
  * @version 1.0
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -11,14 +10,21 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
+namespace Smush\Core\Integrations\Nextgen;
+
+use Smush\Core\Core;
+use Smush\Core\Integrations\Nextgen;
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Nextgen_Admin
+ * Class Admin
+
  */
-class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
+class Admin extends Nextgen {
 
 	/**
 	 * Total image count.
@@ -70,18 +76,18 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 	public $resmush_ids = array();
 
 	/**
-	 * WP_Smush_Nextgen_Stats class object.
+	 * Stats class object.
 	 *
-	 * @var WP_Smush_Nextgen_Stats
+	 * @var Stats
 	 */
 	public $ng_stats;
 
 	/**
-	 * WP_Smush_Nextgen_Admin constructor.
+	 * Admin constructor.
 	 *
-	 * @param WP_Smush_Nextgen_Stats $stats  Class object.
+	 * @param Stats $stats  Class object.
 	 */
-	public function __construct( WP_Smush_Nextgen_Stats $stats ) {
+	public function __construct( Stats $stats ) {
 		$this->ng_stats = $stats;
 
 		// Update the number of columns.
@@ -130,13 +136,13 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 	public function wp_smush_column_options( $column_name, $id, $echo = false ) {
 		// NExtGen Doesn't returns Column name, weird? yeah, right, it is proper because hook is called for the particular column.
 		if ( 'wp_smush_image' === $column_name || '' === $column_name ) {
-			// We're not using our in-house function WP_Smush_Nextgen::get_nextgen_image_from_id()
+			// We're not using our in-house function Smush\Core\Integrations\Nextgen::get_nextgen_image_from_id()
 			// as we're already instializing the nextgen gallery object, we need $storage instance later.
 			// Registry Object for NextGen Gallery.
-			$registry = C_Component_Registry::get_instance();
+			$registry = \C_Component_Registry::get_instance();
 
 			// Gallery Storage Object.
-			$storage = $registry->get_utility( 'I_Gallery_Storage' );
+			$storage = $registry->get_utility( '\I_Gallery_Storage' );
 
 			// We'll get the image object in $id itself, else fetch it using Gallery Storage.
 			if ( is_object( $id ) ) {
@@ -153,7 +159,7 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 			$image_type = $this->get_file_type( $file_path );
 
 			// If image type not supported.
-			if ( ! $image_type || ! in_array( $image_type, WP_Smush_Core::$mime_types, true ) ) {
+			if ( ! $image_type || ! in_array( $image_type, Core::$mime_types, true ) ) {
 				return;
 			}
 
@@ -365,7 +371,7 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 	/**
 	 * Fetch the stats for the given attachment id, and subtract them from Global stats
 	 *
-	 * @param $attachment_id
+	 * @param int $attachment_id
 	 *
 	 * @return bool
 	 */
@@ -499,9 +505,9 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 	/**
 	 * Combine the resizing stats and smush stats , One time operation - performed during the image optimization
 	 *
-	 * @param $metadata
+	 * @param array $metadata
 	 *
-	 * @return bool|string
+	 * @return mixed
 	 */
 	function get_combined_stats( $metadata ) {
 		if ( empty( $metadata ) ) {
@@ -538,7 +544,6 @@ class WP_Smush_Nextgen_Admin extends WP_Smush_Nextgen {
 		$metadata['wp_smush'] = $smush_stats;
 
 		return $metadata;
-
 	}
 
 	/**

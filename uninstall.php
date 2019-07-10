@@ -3,7 +3,7 @@
  * Remove plugin settings data.
  *
  * @since 1.7
- * @package WP_Smush
+ * @package Smush
  */
 
 // If uninstall not called from WordPress exit.

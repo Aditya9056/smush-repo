@@ -4,16 +4,18 @@
  *
  * @package WP_Smush
  *
- * @var bool                   $all_done         If all the images are smushed.
- * @var int                    $count            Resmush + unsmushed image count.
- * @var bool                   $lossy_enabled    Lossy compression status.
- * @var WP_Smush_Nextgen_Admin $ng               NextGen admin class.
- * @var int                    $remaining_count  Remaining images.
- * @var array                  $resmush_ids      Resmush ID.
- * @var bool                   $show             Show resmush window.
- * @var int                    $total_count      Total count.
- * @var string                 $url              Media library URL.
+ * @var bool   $all_done         If all the images are smushed.
+ * @var int    $count            Resmush + unsmushed image count.
+ * @var bool   $lossy_enabled    Lossy compression status.
+ * @var Admin  $ng               NextGen admin class.
+ * @var int    $remaining_count  Remaining images.
+ * @var array  $resmush_ids      Resmush ID.
+ * @var bool   $show             Show resmush window.
+ * @var int    $total_count      Total count.
+ * @var string $url              Media library URL.
  */
+
+use Smush\Core\Integrations\Nextgen\Admin;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -21,7 +23,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Get the counts.
 if ( $show ) {
-	WP_Smush::get_instance()->admin()->bulk_resmush_content( $count, $show );
+	\Smush\WP_Smush::get_instance()->admin()->bulk_resmush_content( $count, $show );
 }
 
 // If there are no images in Media Library.

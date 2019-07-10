@@ -1,21 +1,26 @@
 <?php
 /**
- * Class WP_Smush_S3_Compat
+ * Class Compat
  *
- * @package WP_Smush
+ * @package Smush\Core\Integrations\S3
  */
+
+namespace Smush\Core\Integrations\S3;
+
+use Smush\Core\Settings;
+use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_S3_Compat
+ * Class Compat
  */
-class WP_Smush_S3_Compat extends AS3CF_Plugin_Compatibility {
+class Compat extends \AS3CF_Plugin_Compatibility {
 
 	/**
-	 * WP_Smush_S3_Compat constructor.
+	 * Compat constructor.
 	 */
 	public function __construct() {
 		$this->init();
@@ -43,7 +48,7 @@ class WP_Smush_S3_Compat extends AS3CF_Plugin_Compatibility {
 		global $as3cf;
 
 		// Return if integration is disabled, or not a pro user.
-		if ( ! WP_Smush_Settings::get_instance()->get( 's3' ) || ! WP_Smush::is_pro() ) {
+		if ( ! Settings::get_instance()->get( 's3' ) || ! WP_Smush::is_pro() ) {
 			return $url;
 		}
 

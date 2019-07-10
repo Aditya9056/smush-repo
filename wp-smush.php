@@ -153,7 +153,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @var WP_Smush_Core
+		 * @var Core\Core
 		 */
 		private $core;
 
@@ -276,7 +276,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			self::$is_pro = $this->validate_install();
 
-			$this->core  = new WP_Smush_Core();
+			$this->core  = new Core\Core();
 			$this->admin = new WP_Smush_Admin();
 
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -290,7 +290,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @return WP_Smush_Core
+		 * @return Core\Core
 		 */
 		public function core() {
 			return $this->core;

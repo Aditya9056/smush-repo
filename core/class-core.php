@@ -1,31 +1,36 @@
 <?php
 /**
- * WP_Smush_Core class: WP_Smush_Core class.
+ * Core class: Core class.
  *
  * @since 2.9.0
- * @package WP_Smush
+ * @package Smush\Core
  */
+
+namespace Smush\Core;
+
+use Exception;
+use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Core
+ * Class Core
  */
-class WP_Smush_Core {
+class Core {
 
 	/**
 	 * S3 module
 	 *
-	 * @var WP_Smush_S3
+	 * @var Integrations\S3
 	 */
 	public $s3;
 
 	/**
 	 * NextGen module.
 	 *
-	 * @var WP_Smush_Nextgen
+	 * @var Integrations\Nextgen
 	 */
 	public $nextgen;
 
@@ -188,7 +193,7 @@ class WP_Smush_Core {
 	public static $max_free_bulk = 50;
 
 	/**
-	 * WP_Smush_Core constructor.
+	 * Core constructor.
 	 *
 	 * @since 2.9.0
 	 * @throws Exception  Autoload exception.
@@ -275,10 +280,7 @@ class WP_Smush_Core {
 	 * @since 2.8.0
 	 */
 	public function load_integrations() {
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-common.php';
-
-		new WP_Smush_Common();
+		new Integrations\Common();
 	}
 
 	/**
@@ -304,69 +306,16 @@ class WP_Smush_Core {
 	 * Load plugin modules.
 	 */
 	public function load_libs() {
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/abstract-wp-smush-integration.php';
-
-		$this->s3_libraries();
+		$this->s3 = new Integrations\S3();
 		$this->wp_smush_async();
 
-		// Load Nextgen lib, and initialize wp smush async class.
-		$this->load_nextgen();
-		$this->load_gutenberg();
-
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-js-composer.php';
-		new WP_Smush_JS_Composer();
-	}
-
-	/**
-	 * Initialize S3 integration libraries.
-	 */
-	private function s3_libraries() {
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-s3.php';
-
-		if ( class_exists( 'AS3CF_Plugin_Compatibility' ) ) {
-			/* @noinspection PhpIncludeInspection */
-			require_once WP_SMUSH_DIR . 'core/integrations/s3/class-wp-smush-s3-compat.php';
-		}
-
-		$this->s3 = new WP_Smush_S3();
-	}
-
-	/**
-	 * Check if NextGen is active or not
-	 * Include and instantiate classes
-	 */
-	private function load_nextgen() {
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-nextgen.php';
-
 		// Load only if integration is enabled and PRO user.
-		if ( WP_Smush_Settings::get_instance()->get( 'nextgen' ) && WP_Smush::is_pro() ) {
-			/* @noinspection PhpIncludeInspection */
-			require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-admin.php';
-			/* @noinspection PhpIncludeInspection */
-			require_once WP_SMUSH_DIR . 'core/integrations/nextgen/class-wp-smush-nextgen-stats.php';
-			/* @noinspection PhpIncludeInspection */
-			include_once WP_SMUSH_DIR . 'app/class-wp-smush-nextgen.php';
+		if ( Settings::get_instance()->get( 'nextgen' ) && WP_Smush::is_pro() && ! is_object( $this->nextgen ) ) {
+			$this->nextgen = new Integrations\Nextgen();
 		}
 
-		if ( ! is_object( $this->nextgen ) ) {
-			$this->nextgen = new WP_Smush_Nextgen();
-		}
-	}
-
-	/**
-	 * Load Gutenberg integration.
-	 *
-	 * @since 2.8.1
-	 */
-	private function load_gutenberg() {
-		/* @noinspection PhpIncludeInspection */
-		require_once WP_SMUSH_DIR . 'core/integrations/class-wp-smush-gutenberg.php';
-
-		new WP_Smush_Gutenberg();
+		new Integrations\Gutenberg();
+		new Integrations\Composer();
 	}
 
 	/**

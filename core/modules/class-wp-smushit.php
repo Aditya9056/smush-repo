@@ -5,6 +5,11 @@
  * @package WP_Smushit
  */
 
+namespace Smush\Core\Modules;
+
+use Smush\Core\Integrations\S3\Compat;
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -94,8 +99,8 @@ class WP_Smushit extends WP_Smush_Module {
 		$combined_stats = $this->combine_conversion_stats( $combined_stats, $conversion_savings );
 
 		// Remove Smush s3 hook, as it downloads the file again.
-		if ( class_exists( 'WP_Smush_S3_Compat' ) && class_exists( 'AS3CF_Plugin_Compatibility' ) ) {
-			$s3_compat = new WP_Smush_S3_Compat();
+		if ( class_exists( 'Compat' ) && class_exists( '\AS3CF_Plugin_Compatibility' ) ) {
+			$s3_compat = new Compat();
 			remove_filter( 'as3cf_get_attached_file', array( $s3_compat, 'smush_download_file' ), 11, 4 );
 		}
 		$attachment_data = wp_get_attachment_metadata( $id );

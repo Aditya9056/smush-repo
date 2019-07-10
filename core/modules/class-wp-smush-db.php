@@ -11,6 +11,10 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
+namespace Smush\Core\Modules;
+
+use Smush\Core\Integrations\Nextgen\Stats;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -370,7 +374,7 @@ class WP_Smush_DB {
 			$key = 'wp-smush-super_smushed_nextgen';
 
 			// Clear up the stats, if there are no images.
-			if ( method_exists( 'WP_Smush_Nextgen_Stats', 'total_count' ) && 0 == WP_Smush_Nextgen_Stats::total_count() ) {
+			if ( method_exists( 'Stats', 'total_count' ) && 0 == Stats::total_count() ) {
 				delete_option( $key );
 			}
 

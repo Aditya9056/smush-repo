@@ -2,8 +2,7 @@
 /**
  * Handles all the stats related functions
  *
- * @package WP_Smush
- * @subpackage NextGen Gallery
+ * @package Smush\Core\Integrations\Nextgen
  * @version 1.0
  *
  * @author Umesh Kumar <umesh@incsub.com>
@@ -11,14 +10,19 @@
  * @copyright (c) 2016, Incsub (http://incsub.com)
  */
 
+namespace Smush\Core\Integrations\Nextgen;
+
+use Smush\Core\Integrations\Nextgen;
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Nextgen_Stats
+ * Class Stats
  */
-class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
+class Stats extends Nextgen {
 
 	/**
 	 * Contains the total Stats, for displaying it on bulk page
@@ -35,7 +39,7 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 	private $is_pro_user;
 
 	/**
-	 * WP_Smush_Nextgen_Stats constructor.
+	 * Stats constructor.
 	 */
 	public function __construct() {
 		$this->is_pro_user = WP_Smush::is_pro();
@@ -120,10 +124,10 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 				foreach ( $attachments as $attachment ) {
 					// Check if it has `wp_smush` key.
 					if ( class_exists( 'Ngg_Serializable' ) ) {
-						$serializer = new Ngg_Serializable();
+						$serializer = new \Ngg_Serializable();
 						$meta       = $serializer->unserialize( $attachment->meta_data );
-					} elseif ( class_exists( 'C_NextGen_Serializable' ) && method_exists( 'C_NextGen_Serializable', 'unserialize' ) ) {
-						$meta = C_NextGen_Serializable::unserialize( $attachment->meta_data );
+					} elseif ( class_exists( '\C_NextGen_Serializable' ) && method_exists( '\C_NextGen_Serializable', 'unserialize' ) ) {
+						$meta = \C_NextGen_Serializable::unserialize( $attachment->meta_data );
 					} else {
 						$meta = unserialize( $attachment->meta_data );
 					}
@@ -177,7 +181,7 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 	 * @param bool   $text_only      Return only text instead of button (Useful for Ajax).
 	 * @param bool   $echo           Whether to echo the stats or not.
 	 *
-	 * @uses WP_Smush_Nextgen_Admin::column_html(), WP_Smush::get_restore_link(), WP_Smush::get_resmush_link()
+	 * @uses Admin::column_html(), WP_Smush::get_restore_link(), WP_Smush::get_resmush_link()
 	 *
 	 * @return bool|array|string
 	 */
@@ -242,7 +246,7 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 
 					// Get metadata For the image
 					// Registry Object for NextGen Gallery.
-					$registry = C_Component_Registry::get_instance();
+					$registry = \C_Component_Registry::get_instance();
 
 					// Gallery Storage Object.
 					$storage = $registry->get_utility( 'I_Gallery_Storage' );
@@ -365,7 +369,7 @@ class WP_Smush_Nextgen_Stats extends WP_Smush_Nextgen {
 			$image = $id;
 		} else {
 			// Registry Object for NextGen Gallery.
-			$registry = C_Component_Registry::get_instance();
+			$registry = \C_Component_Registry::get_instance();
 
 			// Gallery Storage Object.
 			$storage = $registry->get_utility( 'I_Gallery_Storage' );

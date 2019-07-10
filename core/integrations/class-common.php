@@ -1,9 +1,8 @@
 <?php
 /**
- * Smush integration with various plugins: WP_Smush_Common class
+ * Smush integration with various plugins: Common class
  *
- * @package WP_Smush
- * @subpackage Admin
+ * @package Smush\Core\Integrations
  * @since 2.8.0
  *
  * @author Anton Vanyukov <anton@incsub.com>
@@ -11,19 +10,23 @@
  * @copyright (c) 2018, Incsub (http://incsub.com)
  */
 
+namespace Smush\Core\Integrations;
+
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Singleton class WP_Smush_Common.
+ * Singleton class class Common
  *
  * @since 2.8.0
  */
-class WP_Smush_Common {
+class Common {
 
 	/**
-	 * WP_Smush_Common constructor.
+	 * Common constructor.
 	 */
 	public function __construct() {
 		// AJAX Thumbnail Rebuild integration.
