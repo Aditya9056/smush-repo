@@ -11,13 +11,16 @@
  * @var array $settings_data        Settings labels and descriptions.
  */
 
+use Smush\Core\Settings;
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 ?>
 
-<?php if ( WP_Smush::is_pro() && $cdn_enabled && WP_Smush_Settings::can_access( 'bulk' ) ) : ?>
+<?php if ( WP_Smush::is_pro() && $cdn_enabled && Settings::can_access( 'bulk' ) ) : ?>
 	<div class="sui-notice sui-notice-info">
 		<p><?php esc_html_e( 'Your images are currently being served via the WPMU DEV CDN. Bulk smush will continue to operate as per your settings below and is treated completely separately in case you ever want to disable the CDN.', 'wp-smushit' ); ?></p>
 	</div>

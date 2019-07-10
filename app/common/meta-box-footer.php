@@ -6,6 +6,8 @@
  * @package WP_Smush
  */
 
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }

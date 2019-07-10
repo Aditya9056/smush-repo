@@ -6,6 +6,9 @@
  * @package WP_Smush
  */
 
+use Smush\Core\Helper;
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -26,7 +29,7 @@ if ( ! defined( 'WPINC' ) ) {
 			<# if ( 'start' === data.slide ) { #>
 			<?php
 			/* translators: %s: current user name */
-			printf( esc_html__( 'Hey, %s!', 'wp-smushit' ), esc_html( \Smush\Core\Helper::get_user_name() ) );
+			printf( esc_html__( 'Hey, %s!', 'wp-smushit' ), esc_html( Helper::get_user_name() ) );
 			?>
 			<# } else if ( 'auto' === data.slide ) { #>
 			<?php esc_html_e( 'Automatic Compression', 'wp-smushit' ); ?>

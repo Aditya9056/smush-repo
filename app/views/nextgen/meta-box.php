@@ -15,7 +15,9 @@
  * @var string $url              Media library URL.
  */
 
+use Smush\Core\Helper;
 use Smush\Core\Integrations\Nextgen\Admin;
+use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -23,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Get the counts.
 if ( $show ) {
-	\Smush\WP_Smush::get_instance()->admin()->bulk_resmush_content( $count, $show );
+	WP_Smush::get_instance()->admin()->bulk_resmush_content( $count, $show );
 }
 
 // If there are no images in Media Library.
@@ -70,7 +72,7 @@ if ( 0 >= $total_count ) : ?>
 							$remaining_count,
 							'wp-smushit'
 						),
-						esc_html( \Smush\Core\Helper::get_user_name() ),
+						esc_html( Helper::get_user_name() ),
 						'<strong>',
 						'<span class="wp-smush-remaining-count">',
 						absint( $remaining_count ),

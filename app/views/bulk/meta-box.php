@@ -15,6 +15,9 @@
  * @var string        $upgrade_url       Upgrade to PRO link.
  */
 
+use Smush\Core\Helper;
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -137,7 +140,7 @@ if ( 0 === absint( $core->total_count ) ) {
 				printf(
 					/* translators: %1$s: user name, %2$s: starting strong tag, %3$s: starting span tag, %4$d: remaining image count, %5$s: ending span tag, %6$s: ending strong tag */
 					_n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs smushing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need smushing!', $core->remaining_count, 'wp-smushit' ),
-					esc_attr( \Smush\Core\Helper::get_user_name() ),
+					esc_attr( Helper::get_user_name() ),
 					'<strong>',
 					'<span class="wp-smush-remaining-count">',
 					absint( $core->remaining_count ),
