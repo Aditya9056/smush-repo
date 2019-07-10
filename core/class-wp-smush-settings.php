@@ -278,7 +278,7 @@ class Settings {
 			$this->settings = $this->defaults;
 			$this->set_setting( WP_SMUSH_PREFIX . 'settings', $this->settings );
 		} else {
-			$this->settings = $site_settings;
+			$this->settings = wp_parse_args( $site_settings, $this->defaults );
 		}
 	}
 
@@ -466,8 +466,8 @@ class Settings {
 		}
 
 		delete_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+		delete_site_option( WP_SMUSH_PREFIX . 'hide_smush_welcome' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'settings' );
-		$this->delete_setting( WP_SMUSH_PREFIX . 'hide_smush_welcome' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 		$this->delete_setting( WP_SMUSH_PREFIX . 'cdn_status' );

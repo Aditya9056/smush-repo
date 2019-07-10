@@ -126,7 +126,7 @@ class WP_Smush_Admin {
 		 * Load js and css on all admin pages, in order to display install/upgrade notice.
 		 * And If upgrade/install message is dismissed or for pro users, Do not enqueue script.
 		 */
-		if ( get_option( 'wp-smush-hide_upgrade_notice' ) || get_site_option( 'wp-smush-hide_upgrade_notice' ) || WP_Smush::is_pro() ) {
+		if ( get_site_option( WP_SMUSH_PREFIX . 'hide_upgrade_notice' ) || WP_Smush::is_pro() ) {
 			/**
 			 * Do not enqueue, unless it is one of the required screen, or not in WordPress backend.
 			 *

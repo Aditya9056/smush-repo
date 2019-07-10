@@ -248,6 +248,9 @@ class WP_Smush_Installer {
 	 * @since 3.2.2
 	 */
 	private static function upgrade_3_2_2() {
+		// Show the upgrade notice for everyone.
+		delete_site_option( WP_SMUSH_PREFIX . 'hide_upgrade_notice' );
+
 		// Add new lazy-load options.
 		$lazy = WP_Smush_Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
 
