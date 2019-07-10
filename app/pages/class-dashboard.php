@@ -111,7 +111,7 @@ class Dashboard extends Abstract_Page {
 	public function register_meta_boxes() {
 		if ( ! is_network_admin() ) {
 			$this->add_meta_box(
-				'meta-boxes/summary',
+				'summary',
 				null,
 				array( $this, 'dashboard_summary_metabox' ),
 				null,
@@ -138,7 +138,7 @@ class Dashboard extends Abstract_Page {
 				// Show bulk smush box if a subsite admin.
 				$class = WP_Smush::is_pro() ? 'wp-smush-pro-install' : '';
 				$this->add_meta_box(
-					'meta-boxes/bulk',
+					'bulk',
 					__( 'Bulk Smush', 'wp-smushit' ),
 					array( $this, 'bulk_smush_metabox' ),
 					null,
@@ -152,7 +152,7 @@ class Dashboard extends Abstract_Page {
 
 			$class = WP_Smush::is_pro() ? 'wp-smush-pro' : '';
 			$this->add_meta_box(
-				'meta-boxes/bulk-settings',
+				'bulk-settings',
 				__( 'Settings', 'wp-smushit' ),
 				array( $this, 'bulk_settings_metabox' ),
 				null,
@@ -166,7 +166,7 @@ class Dashboard extends Abstract_Page {
 			// Do not show if pro user.
 			if ( ! WP_Smush::is_pro() ) {
 				$this->add_meta_box(
-					'meta-boxes/pro-features',
+					'pro-features',
 					__( 'Pro Features', 'wp-smushit' ),
 					array( $this, 'pro_features_metabox' ),
 					array( $this, 'pro_features_metabox_header' ),
@@ -178,7 +178,7 @@ class Dashboard extends Abstract_Page {
 
 		if ( 'directory' === $this->get_current_tab() && $this->should_render() ) {
 			$this->add_meta_box(
-				'meta-boxes/directory',
+				'directory',
 				__( 'Directory Smush', 'wp-smushit' ),
 				array( $this, 'directory_smush_metabox' ),
 				null,
@@ -196,7 +196,7 @@ class Dashboard extends Abstract_Page {
 			$box_body_class = WP_Smush::is_pro() ? '' : 'sui-upsell-items';
 
 			$this->add_meta_box(
-				'meta-boxes/integrations',
+				'integrations',
 				__( 'Integrations', 'wp-smushit' ),
 				array( $this, 'integrations_metabox' ),
 				null,
@@ -212,7 +212,7 @@ class Dashboard extends Abstract_Page {
 		if ( 'lazy_load' === $this->get_current_tab() && $this->should_render() ) {
 			if ( ! $this->settings->get( 'lazy_load' ) ) {
 				$this->add_meta_box(
-					'meta-boxes/lazyload/disabled',
+					'lazyload/disabled',
 					__( 'Lazy Load', 'wp-smushit' ),
 					null,
 					array( $this, 'lazyload_metabox_header' ),
@@ -224,7 +224,7 @@ class Dashboard extends Abstract_Page {
 				);
 			} else {
 				$this->add_meta_box(
-					'meta-boxes/lazyload',
+					'lazyload',
 					__( 'Lazy Load', 'wp-smushit' ),
 					array( $this, 'lazyload_metabox' ),
 					array( $this, 'lazyload_metabox_header' ),
@@ -237,7 +237,7 @@ class Dashboard extends Abstract_Page {
 		if ( 'cdn' === $this->get_current_tab() && $this->should_render() ) {
 			if ( ! WP_Smush::is_pro() ) {
 				$this->add_meta_box(
-					'meta-boxes/cdn-upsell',
+					'cdn-upsell',
 					__( 'CDN', 'wp-smushit' ),
 					array( $this, 'cdn_upsell_metabox' ),
 					array( $this, 'cdn_upsell_metabox_header' ),
@@ -247,7 +247,7 @@ class Dashboard extends Abstract_Page {
 			} else {
 				if ( ! $this->settings->get( 'cdn' ) ) {
 					$this->add_meta_box(
-						'meta-boxes/cdn/disabled',
+						'cdn/disabled',
 						__( 'CDN', 'wp-smushit' ),
 						null,
 						array( $this, 'cdn_metabox_header' ),
@@ -256,7 +256,7 @@ class Dashboard extends Abstract_Page {
 					);
 				} else {
 					$this->add_meta_box(
-						'meta-boxes/cdn',
+						'cdn',
 						__( 'CDN', 'wp-smushit' ),
 						array( $this, 'cdn_metabox' ),
 						array( $this, 'cdn_metabox_header' ),
@@ -269,7 +269,7 @@ class Dashboard extends Abstract_Page {
 
 		if ( 'tools' === $this->get_current_tab() && $this->should_render() ) {
 			$this->add_meta_box(
-				'meta-boxes/tools',
+				'tools',
 				__( 'Tools', 'wp-smushit' ),
 				array( $this, 'tools_metabox' ),
 				null,
@@ -280,7 +280,7 @@ class Dashboard extends Abstract_Page {
 
 		if ( 'settings' === $this->get_current_tab() && ( is_network_admin() || $this->should_render() ) ) {
 			$this->add_meta_box(
-				'meta-boxes/settings',
+				'settings',
 				__( 'Settings', 'wp-smushit' ),
 				array( $this, 'settings_metabox' ),
 				null,
@@ -906,7 +906,7 @@ class Dashboard extends Abstract_Page {
 		}
 
 		$this->view(
-			'meta-boxes/summary/meta-box',
+			'summary/meta-box',
 			array(
 				'human_format'    => empty( $human[1] ) ? 'B' : $human[1],
 				'human_size'      => empty( $human[0] ) ? '0' : $human[0],
@@ -957,7 +957,7 @@ class Dashboard extends Abstract_Page {
 		);
 
 		$this->view(
-			'meta-boxes/bulk/meta-box',
+			'bulk/meta-box',
 			array(
 				'all_done'         => absint( $core->smushed_count ) + absint( $core->skipped_count ) === absint( $core->total_count ) && empty( $core->resmush_ids ),
 				'bulk_upgrade_url' => $bulk_upgrade_url,
@@ -987,7 +987,7 @@ class Dashboard extends Abstract_Page {
 		}
 
 		$this->view(
-			'meta-boxes/bulk-settings/meta-box',
+			'bulk-settings/meta-box',
 			array(
 				'basic_features'      => Settings::$basic_features,
 				'cdn_enabled'         => $this->settings->get( 'cdn' ),
@@ -1013,7 +1013,7 @@ class Dashboard extends Abstract_Page {
 		);
 
 		$this->view(
-			'meta-boxes/pro-features/meta-box',
+			'pro-features/meta-box',
 			array(
 				'upsell_url' => $upsell_url,
 			)
@@ -1035,7 +1035,7 @@ class Dashboard extends Abstract_Page {
 		);
 
 		$this->view(
-			'meta-boxes/pro-features/meta-box-header',
+			'pro-features/meta-box-header',
 			array(
 				'title'       => __( 'Pro Features', 'wp-smushit' ),
 				'upgrade_url' => $upgrade_url,
@@ -1071,7 +1071,7 @@ class Dashboard extends Abstract_Page {
 		}
 
 		$this->view(
-			'meta-boxes/directory/meta-box',
+			'directory/meta-box',
 			array(
 				'errors'      => $errors,
 				'images'      => $images,
@@ -1100,7 +1100,7 @@ class Dashboard extends Abstract_Page {
 		);
 
 		$this->view(
-			'meta-boxes/integrations/meta-box',
+			'integrations/meta-box',
 			array(
 				'basic_features'    => Settings::$basic_features,
 				'is_pro'            => WP_Smush::is_pro(),
@@ -1128,7 +1128,7 @@ class Dashboard extends Abstract_Page {
 		);
 
 		$this->view(
-			'meta-boxes/cdn/upsell-meta-box',
+			'cdn/upsell-meta-box',
 			array(
 				'upgrade_url' => $upgrade_url,
 			)
@@ -1142,7 +1142,7 @@ class Dashboard extends Abstract_Page {
 	 */
 	public function cdn_upsell_metabox_header() {
 		$this->view(
-			'meta-boxes/cdn/upsell-meta-box-header',
+			'cdn/upsell-meta-box-header',
 			array(
 				'title' => __( 'CDN', 'wp-smushit' ),
 			)
@@ -1198,7 +1198,7 @@ class Dashboard extends Abstract_Page {
 		);
 
 		$this->view(
-			'meta-boxes/cdn/meta-box',
+			'cdn/meta-box',
 			array(
 				'cdn_group'     => $this->settings->get_cdn_fields(),
 				'settings'      => $this->settings->get(),
@@ -1216,7 +1216,7 @@ class Dashboard extends Abstract_Page {
 	 */
 	public function cdn_metabox_header() {
 		$this->view(
-			'meta-boxes/cdn/meta-box-header',
+			'cdn/meta-box-header',
 			array(
 				'title'   => __( 'CDN', 'wp-smushit' ),
 				'tooltip' => __( 'This feature is likely to work without issue, however our CDN is in beta stage and some issues are still present.', 'wp-smushit' ),
@@ -1244,7 +1244,7 @@ class Dashboard extends Abstract_Page {
 		}
 
 		$this->view(
-			'meta-boxes/settings/meta-box',
+			'settings/meta-box',
 			array(
 				'site_language'    => $site_language,
 				'translation_link' => $link,
@@ -1263,7 +1263,7 @@ class Dashboard extends Abstract_Page {
 	 */
 	public function lazyload_metabox_header() {
 		$this->view(
-			'meta-boxes/lazyload/meta-box-header',
+			'lazyload/meta-box-header',
 			array(
 				'title'   => __( 'Lazy Load', 'wp-smushit' ),
 				'tooltip' => __( 'This feature is likely to work without issue, however lazy load is in beta stage and some issues are still present', 'wp-smushit' ),
@@ -1278,7 +1278,7 @@ class Dashboard extends Abstract_Page {
 	 */
 	public function lazyload_metabox() {
 		$this->view(
-			'meta-boxes/lazyload/meta-box',
+			'lazyload/meta-box',
 			array(
 				'settings' => $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' ),
 			)
@@ -1301,7 +1301,7 @@ class Dashboard extends Abstract_Page {
 	 */
 	public function tools_metabox() {
 		$this->view(
-			'meta-boxes/tools/meta-box',
+			'tools/meta-box',
 			array(
 				'grouped_settings' => $this->settings->get_tools_fields(),
 				'settings'         => $this->settings->get(),

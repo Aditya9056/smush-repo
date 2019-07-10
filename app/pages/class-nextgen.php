@@ -32,7 +32,7 @@ class Nextgen extends Abstract_Page {
 	 */
 	public function register_meta_boxes() {
 		$this->add_meta_box(
-			'meta-boxes/summary',
+			'summary',
 			null,
 			array( $this, 'dashboard_summary_metabox' ),
 			null,
@@ -46,7 +46,7 @@ class Nextgen extends Abstract_Page {
 
 		$class = WP_Smush::is_pro() ? 'bulk-smush-wrapper wp-smush-pro-install' : 'bulk-smush-wrapper';
 		$this->add_meta_box(
-			'meta-boxes/bulk',
+			'bulk',
 			__( 'Bulk Smush', 'wp-smushit' ),
 			array( $this, 'bulk_metabox' ),
 			array( $this, 'bulk_header_metabox' ),
@@ -88,7 +88,7 @@ class Nextgen extends Abstract_Page {
 		}
 
 		$this->view(
-			'meta-boxes/nextgen/summary-meta-box',
+			'nextgen/summary-meta-box',
 			array(
 				'image_count'         => $ng->image_count,
 				'lossy_enabled'       => $lossy_enabled,
@@ -105,7 +105,7 @@ class Nextgen extends Abstract_Page {
 	 */
 	public function bulk_header_metabox() {
 		$this->view(
-			'meta-boxes/nextgen/meta-box-header',
+			'nextgen/meta-box-header',
 			array(
 				'title' => __( 'Bulk Smush', 'wp-smushit' ),
 			)
@@ -135,7 +135,7 @@ class Nextgen extends Abstract_Page {
 		);
 
 		$this->view(
-			'meta-boxes/nextgen/meta-box',
+			'nextgen/meta-box',
 			array(
 				'all_done'        => ( $ng->smushed_count == $ng->total_count ) && 0 == count( $ng->resmush_ids ),
 				'count'           => $count,
