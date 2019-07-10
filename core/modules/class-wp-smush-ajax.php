@@ -175,7 +175,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 * @param bool $ajax  Does this come from an AJAX request.
 	 */
 	public function dismiss_upgrade_notice( $ajax = true ) {
-		update_site_option( 'wp-smush-hide_upgrade_notice', 1 );
+		update_site_option( WP_SMUSH_PREFIX . 'hide_upgrade_notice', true );
 		// No Need to send json response for other requests.
 		if ( $ajax ) {
 			wp_send_json_success();
@@ -186,7 +186,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 	 * Store a key/value to hide the smush features on bulk page
 	 */
 	public function dismiss_welcome_notice() {
-		update_site_option( 'wp-smush-hide_smush_welcome', 1 );
+		update_site_option( WP_SMUSH_PREFIX . 'hide_smush_welcome', true );
 		wp_send_json_success();
 	}
 
