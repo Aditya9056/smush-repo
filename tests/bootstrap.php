@@ -17,6 +17,7 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 }
 
 // Give access to tests_add_filter() function.
+/* @noinspection PhpIncludeInspection */
 require_once $_tests_dir . '/includes/functions.php';
 
 /**
@@ -28,4 +29,5 @@ function _manually_load_plugin() {
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 // Start up the WP testing environment.
+/* @noinspection PhpIncludeInspection */
 require $_tests_dir . '/includes/bootstrap.php';

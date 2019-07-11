@@ -43,6 +43,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+namespace Smush;
+
+use Exception;
+use WP_CLI;
+use WPMUDEV_Dashboard;
+
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -122,11 +128,13 @@ if ( WP_SMUSH_BASENAME !== plugin_basename( __FILE__ ) ) {
 	}
 }
 
-register_activation_hook( 'core/class-wp-smush-installer.php', array( 'WP_Smush_Installer', 'smush_activated' ) );
-register_deactivation_hook( __FILE__, array( 'WP_Smush_Installer', 'smush_deactivated' ) );
+/* @noinspection PhpIncludeInspection */
+require_once WP_SMUSH_DIR . 'core/class-installer.php';
+register_activation_hook( __FILE__, array( 'Smush\\Core\\Installer', 'smush_activated' ) );
+register_deactivation_hook( __FILE__, array( 'Smush\\Core\\Installer', 'smush_deactivated' ) );
 
 // Init the plugin and load the plugin instance for the first time.
-add_action( 'plugins_loaded', array( 'WP_Smush', 'get_instance' ) );
+add_action( 'plugins_loaded', array( 'Smush\\WP_Smush', 'get_instance' ) );
 
 if ( ! class_exists( 'WP_Smush' ) ) {
 	/**
@@ -148,7 +156,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @var WP_Smush_Core
+		 * @var Core\Core
 		 */
 		private $core;
 
@@ -157,7 +165,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @var WP_Smush_Admin
+		 * @var App\Admin
 		 */
 		private $admin;
 
@@ -166,7 +174,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 3.0
 		 *
-		 * @var WP_Smush_API
+		 * @var Core\Api\API
 		 */
 		private $api = '';
 
@@ -203,13 +211,45 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * WP_Smush constructor.
 		 */
 		private function __construct() {
+			spl_autoload_register( array( $this, 'autoload' ) );
+
 			$this->register_actions();
 
 			$this->maybe_upgrade_to_pro();
 
-			$this->includes();
-
 			$this->init();
+		}
+
+
+		/**
+		 * Autoload method.
+		 *
+		 * @since 3.1.0
+		 * @param string $class  Class name to autoload.
+		 */
+		public function autoload( $class ) {
+			// Project-specific namespace prefix.
+			$prefix = 'Smush\\';
+
+			// Does the class use the namespace prefix?
+			$len = strlen( $prefix );
+			if ( 0 !== strncmp( $prefix, $class, $len ) ) {
+				// No, move to the next registered autoloader.
+				return;
+			}
+
+			// Get the relative class name.
+			$relative_class = substr( $class, $len );
+
+			$path = explode( '\\', strtolower( str_replace( '_', '-', $relative_class ) ) );
+			$file = array_pop( $path );
+			$file = WP_SMUSH_DIR . implode( '/', $path ) . '/class-' . $file . '.php';
+
+			// If the file exists, require it.
+			if ( file_exists( $file ) ) {
+				/* @noinspection PhpIncludeInspection */
+				require $file;
+			}
 		}
 
 		/**
@@ -226,69 +266,24 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		}
 
 		/**
-		 * Includes.
-		 *
-		 * @since 2.9.0
-		 */
-		private function includes() {
-			/**
-			 * Installer class.
-			 *
-			 * @noinspection PhpIncludeInspection
-			 */
-			require_once WP_SMUSH_DIR . 'core/class-wp-smush-installer.php';
-
-			/**
-			 * Settings class.
-			 *
-			 * @noinspection PhpIncludeInspection
-			 */
-			require_once WP_SMUSH_DIR . 'core/class-wp-smush-settings.php';
-
-			/**
-			 * Include core class.
-			 *
-			 * @noinspection PhpIncludeInspection
-			 */
-			require_once WP_SMUSH_DIR . 'core/class-wp-smush-core.php';
-
-			/**
-			 * Include admin class.
-			 *
-			 * @noinspection PhpIncludeInspection
-			 */
-			require_once WP_SMUSH_DIR . 'core/class-wp-smush-admin.php';
-
-			/**
-			 * Include API classes.
-			 *
-			 * @noinspection PhpIncludeInspection
-			 */
-			require_once WP_SMUSH_DIR . 'core/api/class-wp-smush-api.php';
-			/* @noinspection PhpIncludeInspection */
-			require_once WP_SMUSH_DIR . 'core/api/class-wp-smush-api-request.php';
-		}
-
-		/**
 		 * Init core module.
 		 *
 		 * @since 2.9.0
 		 */
 		private function init() {
 			try {
-				$this->api = new WP_Smush_API( self::get_api_key() );
+				$this->api = new Core\Api\API( self::get_api_key() );
 			} catch ( Exception $e ) {
 				// Unable to init API for some reason.
 			}
 
 			self::$is_pro = $this->validate_install();
 
-			$this->core  = new WP_Smush_Core();
-			$this->admin = new WP_Smush_Admin();
+			$this->core  = new Core\Core();
+			$this->admin = new App\Admin();
 
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
-				/* @noinspection PhpIncludeInspection */
-				require_once WP_SMUSH_DIR . 'core/class-wp-smush-cli-command.php';
+				WP_CLI::add_command( 'smush', '\\Smush\\Core\\CLI' );
 			}
 		}
 
@@ -297,7 +292,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @return WP_Smush_Core
+		 * @return Core\Core
 		 */
 		public function core() {
 			return $this->core;
@@ -308,7 +303,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @return WP_Smush_Admin
+		 * @return App\Admin
 		 */
 		public function admin() {
 			return $this->admin;
@@ -319,7 +314,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 3.0
 		 *
-		 * @return WP_Smush_API
+		 * @return Core\Api\API
 		 */
 		public function api() {
 			return $this->api;
@@ -565,7 +560,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			}
 
 			// Check that dashboard plugin is installed.
-			if ( ! class_exists( 'WPMUDEV_Dashboard' ) ) {
+			if ( ! class_exists( '\WPMUDEV_Dashboard' ) ) {
 				return;
 			}
 
@@ -604,5 +599,5 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			}
 		}
 
-	} // End class.
-} // End if() check.
+	}
+}

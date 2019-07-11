@@ -5,6 +5,10 @@
  * @package WP_Smush
  */
 
+namespace Smush\App\Views;
+
+use Smush\WP_Smush;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
