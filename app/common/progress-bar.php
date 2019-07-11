@@ -4,7 +4,7 @@
  *
  * @package WP_Smush
  *
- * @var object $count  WP_Smush_Core
+ * @var object $count  Core
  */
 
 use Smush\Core\Core;

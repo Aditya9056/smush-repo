@@ -5,14 +5,14 @@
  * @since 2.9.0
  * @package WP_Smush
  *
- * @var bool          $all_done          Check if all items are smushed.
- * @var string        $bulk_upgrade_url  Bulk Smush upgrade to PRO url.
- * @var WP_Smush_Core $core              Instance of WP_Smush_Core
- * @var bool          $hide_pagespeed    Check whether to show PageSpeed recommendation or not.
- * @var bool          $is_pro            Check if PRO user or not.
- * @var bool          $lossy_enabled     Is lossy enabled.
- * @var string        $pro_upgrade_url   Upgrade to PRO link.
- * @var string        $upgrade_url       Upgrade to PRO link.
+ * @var bool            $all_done          Check if all items are smushed.
+ * @var string          $bulk_upgrade_url  Bulk Smush upgrade to PRO url.
+ * @var Smush\Core\Core $core              Instance of Smush\Core\Core
+ * @var bool            $hide_pagespeed    Check whether to show PageSpeed recommendation or not.
+ * @var bool            $is_pro            Check if PRO user or not.
+ * @var bool            $lossy_enabled     Is lossy enabled.
+ * @var string          $pro_upgrade_url   Upgrade to PRO link.
+ * @var string          $upgrade_url       Upgrade to PRO link.
  */
 
 use Smush\Core\Helper;
