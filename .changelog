@@ -2,6 +2,7 @@
 
 - Enhance: SmartCrawl readability analysis compatibility
 - Fix: NextGen summary meta box layout
+- Fix: Lazy load spinner layout issue
 
 = 3.2.2 =
 
