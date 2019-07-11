@@ -267,11 +267,7 @@ class Core {
 	public function load_libs() {
 		$this->s3 = new Integrations\S3();
 		$this->wp_smush_async();
-
-		// Load only if integration is enabled and PRO user.
-		if ( Settings::get_instance()->get( 'nextgen' ) && WP_Smush::is_pro() && ! is_object( $this->nextgen ) ) {
-			$this->nextgen = new Integrations\Nextgen();
-		}
+		$this->nextgen = new Integrations\Nextgen();
 
 		new Integrations\Gutenberg();
 		new Integrations\Composer();

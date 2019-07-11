@@ -10,10 +10,14 @@
 
 namespace Smush\App;
 
+use Smush\Core\Core;
 use Smush\Core\Helper;
 use Smush\Core\Modules\Abstract_Module;
 use Smush\Core\Modules\CDN;
 use Smush\Core\Modules\Helpers\Parser;
+use Smush\Core\Modules\Smush;
+use Smush\Core\Settings;
+use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -144,7 +148,7 @@ class Ajax extends Abstract_Module {
 			}
 
 			// Skip premium features if not a member.
-			if ( ! in_array( $name, WP_Smush_Settings::$basic_features, true ) && ! WP_Smush::is_pro() ) {
+			if ( ! in_array( $name, Settings::$basic_features, true ) && ! WP_Smush::is_pro() ) {
 				continue;
 			}
 
@@ -362,7 +366,7 @@ class Ajax extends Abstract_Module {
 		$core = WP_Smush::get_instance()->core();
 
 		// Save settings only if networkwide settings are disabled.
-		if ( WP_Smush_Settings::can_access() && ( ! isset( $_REQUEST['process_settings'] ) || 'false' !== $_REQUEST['process_settings'] ) ) {
+		if ( Settings::can_access() && ( ! isset( $_REQUEST['process_settings'] ) || 'false' !== $_REQUEST['process_settings'] ) ) {
 			// Save Settings.
 			$this->settings->save( false );
 			// Fetch the new settings.
@@ -467,7 +471,7 @@ class Ajax extends Abstract_Module {
 					$smush_data = $attachment['wp_smush'];
 				} else {
 					// Check the current settings, and smush data for the image.
-					$smush_data = get_post_meta( $attachment, WP_Smushit::$smushed_meta_key, true );
+					$smush_data = get_post_meta( $attachment, Smush::$smushed_meta_key, true );
 				}
 
 				// If the image is already smushed.
@@ -767,7 +771,7 @@ class Ajax extends Abstract_Module {
 		}
 
 		// If the bulk smush needs to be stopped.
-		if ( ! WP_Smush::is_pro() && ! WP_Smush_Core::check_bulk_limit() ) {
+		if ( ! WP_Smush::is_pro() && ! Core::check_bulk_limit() ) {
 			wp_send_json_error(
 				array(
 					'error'    => 'limit_exceeded',
@@ -865,7 +869,7 @@ class Ajax extends Abstract_Module {
 		// Delete transient.
 		delete_option( 'smush-in-progress-' . $attachment_id );
 
-		$smush_data         = get_post_meta( $attachment_id, WP_Smushit::$smushed_meta_key, true );
+		$smush_data         = get_post_meta( $attachment_id, Smush::$smushed_meta_key, true );
 		$resize_savings     = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings', true );
 		$conversion_savings = Helper::get_pngjpg_savings( $attachment_id );
 
@@ -891,7 +895,7 @@ class Ajax extends Abstract_Module {
 
 			if ( ! empty( $error_message ) ) {
 				// Used internally to modify the error message.
-				$error_message = Helper::filter_error( $error_message, $attachment_id, $error );
+				$error_message = Helper::filter_error( $error_message, $attachment_id );
 			}
 
 			wp_send_json_error(
@@ -915,7 +919,7 @@ class Ajax extends Abstract_Module {
 		do_action( 'image_smushed', $attachment_id, $stats );
 
 		// Update the bulk Limit count.
-		WP_Smush_Core::update_smush_count();
+		Core::update_smush_count();
 
 		// Send ajax response.
 		wp_send_json_success(
