@@ -7,7 +7,13 @@
 
 namespace Smush\Core\Integrations\NextGen;
 
+use C_Component_Registry;
+use C_Gallery_Storage;
+use C_Image;
+use Mixin;
+use nggdb;
 use Smush\WP_Smush;
+use stdClass;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -16,14 +22,14 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Class Thumbs
  */
-class Thumbs extends \Mixin {
+class Thumbs extends Mixin {
 	/**
 	 * Overrides the NextGen Gallery function, to smush the dynamic images and thumbnails created by gallery
 	 *
-	 * @param \C_Image|int|\stdClass $image
-	 * @param                        $size
-	 * @param null                   $params
-	 * @param bool|false             $skip_defaults
+	 * @param C_Image|int|stdClass $image
+	 * @param                      $size
+	 * @param null                 $params
+	 * @param bool|false           $skip_defaults
 	 *
 	 * @return bool|object
 	 */
@@ -35,9 +41,13 @@ class Thumbs extends \Mixin {
 		if ( empty( $image_id ) ) {
 			// Get metadata For the image.
 			// Registry Object for NextGen Gallery.
-			$registry = \C_Component_Registry::get_instance();
+			$registry = C_Component_Registry::get_instance();
 
-			// Gallery Storage Object.
+			/**
+			 * Gallery Storage Object.
+			 *
+			 * @var C_Gallery_Storage $storage
+			 */
 			$storage = $registry->get_utility( 'I_Gallery_Storage' );
 
 			$image_id = $storage->object->_get_image_id( $image );
@@ -48,7 +58,7 @@ class Thumbs extends \Mixin {
 			$filename = $success->fileName;
 			// Smush it, if it exists.
 			if ( file_exists( $filename ) ) {
-				$response = $smush->do_smushit( $filename, $image_id, $this->module );
+				$response = $smush->do_smushit( $filename );
 
 				// If the image was smushed.
 				if ( ! is_wp_error( $response ) && ! empty( $response['data'] ) && $response['data']->bytes_saved > 0 ) {
@@ -78,7 +88,7 @@ class Thumbs extends \Mixin {
 
 					if ( isset( $image->metadata ) ) {
 						$image->meta_data['wp_smush'] = $stats;
-						\nggdb::update_image_meta( $image->pid, $image->meta_data );
+						nggdb::update_image_meta( $image->pid, $image->meta_data );
 					}
 
 					// Allows To get the stats for each image, after the image is smushed.

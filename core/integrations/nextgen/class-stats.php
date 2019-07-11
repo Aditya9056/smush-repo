@@ -12,6 +12,11 @@
 
 namespace Smush\Core\Integrations\NextGen;
 
+use C_Component_Registry;
+use C_Gallery_Storage;
+use C_NextGen_Serializable;
+use Exception;
+use Ngg_Serializable;
 use Smush\Core\Integrations\NextGen;
 use Smush\WP_Smush;
 
@@ -102,6 +107,7 @@ class Stats extends NextGen {
 	 * @param bool|false $force_update  True/false to update the cache or not.
 	 *
 	 * @return bool|mixed Returns assoc array of image ids and meta or Image count
+	 * @throws Exception
 	 */
 	function get_ngg_images( $type = 'smushed', $count = false, $force_update = false ) {
 		global $wpdb;
@@ -123,11 +129,11 @@ class Stats extends NextGen {
 			while ( $attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures LIMIT $offset, $limit" ) ) {
 				foreach ( $attachments as $attachment ) {
 					// Check if it has `wp_smush` key.
-					if ( class_exists( '\Ngg_Serializable' ) ) {
-						$serializer = new \Ngg_Serializable();
+					if ( class_exists( 'Ngg_Serializable' ) ) {
+						$serializer = new Ngg_Serializable();
 						$meta       = $serializer->unserialize( $attachment->meta_data );
-					} elseif ( class_exists( '\C_NextGen_Serializable' ) && method_exists( '\C_NextGen_Serializable', 'unserialize' ) ) {
-						$meta = \C_NextGen_Serializable::unserialize( $attachment->meta_data );
+					} elseif ( class_exists( 'C_NextGen_Serializable' ) && method_exists( 'C_NextGen_Serializable', 'unserialize' ) ) {
+						$meta = C_NextGen_Serializable::unserialize( $attachment->meta_data );
 					} else {
 						$meta = unserialize( $attachment->meta_data );
 					}
@@ -175,11 +181,11 @@ class Stats extends NextGen {
 	/**
 	 * Display the smush stats for the image
 	 *
-	 * @param int    $pid            Image Id stored in nextgen table.
-	 * @param bool   $wp_smush_data  Stats, stored after smushing the image.
-	 * @param string $image_type     Used for determining if not gif, to show the Super Smush button.
-	 * @param bool   $text_only      Return only text instead of button (Useful for Ajax).
-	 * @param bool   $echo           Whether to echo the stats or not.
+	 * @param int        $pid            Image Id stored in nextgen table.
+	 * @param bool|array $wp_smush_data  Stats, stored after smushing the image.
+	 * @param string     $image_type     Used for determining if not gif, to show the Super Smush button.
+	 * @param bool       $text_only      Return only text instead of button (Useful for Ajax).
+	 * @param bool       $echo           Whether to echo the stats or not.
 	 *
 	 * @uses Admin::column_html(), WP_Smush::get_restore_link(), WP_Smush::get_resmush_link()
 	 *
@@ -199,6 +205,7 @@ class Stats extends NextGen {
 		$percent        = isset( $wp_smush_data['stats']['percent'] ) ? $wp_smush_data['stats']['percent'] : 0;
 		$percent        = $percent < 0 ? 0 : $percent;
 
+		$status_txt = '';
 		if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
 			$status_txt = __( 'Already Optimized', 'wp-smushit' );
 		} else {
@@ -211,7 +218,7 @@ class Stats extends NextGen {
 					$status_txt .= '<br />' . $mush->get_resmsuh_link( $pid, 'nextgen' );
 				}
 			} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
-				$status_txt = sprintf( __( 'Reduced by %1$s (  %2$01.1f%% )', 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2, '.', '' ) );
+				$status_txt = sprintf( __( 'Reduced by %1$s (  %2$01.1f%% )', 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2 ) );
 
 				$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
 
@@ -246,9 +253,13 @@ class Stats extends NextGen {
 
 					// Get metadata For the image
 					// Registry Object for NextGen Gallery.
-					$registry = \C_Component_Registry::get_instance();
+					$registry = C_Component_Registry::get_instance();
 
-					// Gallery Storage Object.
+					/**
+					 * Gallery Storage Object.
+					 *
+					 * @var C_Gallery_Storage $storage
+					 */
 					$storage = $registry->get_utility( 'I_Gallery_Storage' );
 
 					// get an array of sizes available for the $image.
@@ -301,7 +312,8 @@ class Stats extends NextGen {
 	/**
 	 * Updated the global smush stats for NextGen gallery
 	 *
-	 * @param $stats Compression stats fo respective image
+	 * @param $image_id
+	 * @param array $stats Compression stats fo respective image
 	 */
 	function update_stats( $image_id, $stats ) {
 		$stats = ! empty( $stats['stats'] ) ? $stats['stats'] : '';
@@ -330,7 +342,7 @@ class Stats extends NextGen {
 	/**
 	 * Updated the global smush stats for NextGen gallery
 	 *
-	 * @param $stats Compression stats fo respective image
+	 * @param array $stats Compression stats fo respective image
 	 */
 	function update_resize_stats( $image_id, $stats ) {
 		$stats = ! empty( $stats['stats'] ) ? $stats['stats'] : '';
@@ -369,7 +381,7 @@ class Stats extends NextGen {
 			$image = $id;
 		} else {
 			// Registry Object for NextGen Gallery.
-			$registry = \C_Component_Registry::get_instance();
+			$registry = C_Component_Registry::get_instance();
 
 			// Gallery Storage Object.
 			$storage = $registry->get_utility( 'I_Gallery_Storage' );
@@ -444,7 +456,10 @@ class Stats extends NextGen {
 	 * Updates the cache for Smushed and Unsmushed images
 	 */
 	function update_cache() {
-		$this->get_ngg_images( 'smushed', '', true );
+		try {
+			$this->get_ngg_images( 'smushed', '', true );
+		} catch ( Exception $e ) {
+		}
 	}
 
 	/**
@@ -535,9 +550,8 @@ class Stats extends NextGen {
 	/**
 	 * Return a list of images not smushed and reason
 	 *
-	 * @param $image_id
 	 * @param $size_stats
-	 * @param $attachment_metadata
+	 * @param $full_image
 	 *
 	 * @return array
 	 */
@@ -578,9 +592,10 @@ class Stats extends NextGen {
 	/**
 	 * Check if image can be resmushed
 	 *
-	 * @param $status_txt
+	 * @param $show_resmush
+	 * @param $wp_smush_data
 	 *
-	 * @return string
+	 * @return bool
 	 */
 	function show_resmush( $show_resmush, $wp_smush_data ) {
 		$smush = WP_Smush::get_instance()->core()->mod;
@@ -607,7 +622,7 @@ class Stats extends NextGen {
 	 *
 	 * @param $ids
 	 *
-	 * @return array Array of Stats for the given ids
+	 * @return array|bool Array of Stats for the given ids
 	 */
 	function get_stats_for_ids( $ids = array() ) {
 		// Return if we don't have an array or no ids.
@@ -707,6 +722,7 @@ class Stats extends NextGen {
 	/**
 	 * Recalculate stats for the given smushed ids and update the cache
 	 * Update Super smushed image ids
+	 * @throws Exception
 	 */
 	function update_stats_cache() {
 		// Get the Image ids.

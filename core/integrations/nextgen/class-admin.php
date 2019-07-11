@@ -12,6 +12,8 @@
 
 namespace Smush\Core\Integrations\NextGen;
 
+use C_Component_Registry;
+use C_Gallery_Storage;
 use Smush\Core\Core;
 use Smush\Core\Integrations\NextGen;
 use Smush\WP_Smush;
@@ -130,7 +132,7 @@ class Admin extends NextGen {
 	 * @param object|int $id           Image object or ID.
 	 * @param bool       $echo         Echo or return.
 	 *
-	 * @return array|bool|string
+	 * @return array|bool|string|void
 	 */
 	public function wp_smush_column_options( $column_name, $id, $echo = false ) {
 		// NExtGen Doesn't returns Column name, weird? yeah, right, it is proper because hook is called for the particular column.
@@ -138,10 +140,14 @@ class Admin extends NextGen {
 			// We're not using our in-house function Smush\Core\Integrations\Nextgen::get_nextgen_image_from_id()
 			// as we're already instializing the nextgen gallery object, we need $storage instance later.
 			// Registry Object for NextGen Gallery.
-			$registry = \C_Component_Registry::get_instance();
+			$registry = C_Component_Registry::get_instance();
 
-			// Gallery Storage Object.
-			$storage = $registry->get_utility( '\I_Gallery_Storage' );
+			/**
+			 * Gallery Storage Object.
+			 *
+			 * @var C_Gallery_Storage $storage
+			 */
+			$storage = $registry->get_utility( 'I_Gallery_Storage' );
 
 			// We'll get the image object in $id itself, else fetch it using Gallery Storage.
 			if ( is_object( $id ) ) {
@@ -230,7 +236,7 @@ class Admin extends NextGen {
 			$this->super_smushed = array_diff( $this->super_smushed, $this->resmush_ids );
 		}
 
-		// If supersmushedimages are more than total, clean it up.
+		// If supersmushed images are more than total, clean it up.
 		if ( count( $this->super_smushed ) > $this->total_count ) {
 			$this->super_smushed = $this->cleanup_super_smush_data();
 		}
@@ -246,7 +252,7 @@ class Admin extends NextGen {
 			'resmush'            => $this->resmush_ids,
 		);
 
-		// Add the stats to arrray.
+		// Add the stats to array.
 		if ( ! empty( $this->stats ) && is_array( $this->stats ) ) {
 			$data = array_merge( $data, $this->stats );
 		}
@@ -309,12 +315,15 @@ class Admin extends NextGen {
 	/**
 	 * Print the column html
 	 *
-	 * @param string  $pid Media id
-	 * @param string  $status_txt Status text
-	 * @param string  $button_txt Button label
-	 * @param boolean $show_button Whether to shoe the button
+	 * @param string  $pid          Media id
+	 * @param string  $status_txt   Status text
+	 * @param string  $button_txt   Button label
+	 * @param boolean $show_button  Whether to shoe the button
+	 * @param bool    $smushed      Image compressed or not.
+	 * @param bool    $echo         Echo or return.
+	 * @param bool    $wrapper      Add a wrapper?
 	 *
-	 * @return null
+	 * @return string|void
 	 */
 	function column_html( $pid, $status_txt = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true, $wrapper = false ) {
 		$class = $smushed ? '' : ' sui-hidden';

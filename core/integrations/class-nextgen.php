@@ -14,10 +14,12 @@ namespace Smush\Core\Integrations;
 
 use C_Component_Registry;
 use C_Gallery_Storage;
+use Exception;
 use nggdb;
 use Smush\Core\Core;
 use Smush\Core\Helper;
 use Smush\WP_Smush;
+use stdClass;
 use WP_Error;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -149,6 +151,8 @@ class NextGen extends Abstract_Integration {
 
 	/**
 	 * Bulk Smush for Nextgen.
+     *
+	 * @throws Exception
 	 */
 	public function smush_bulk() {
 		$stats = array();
@@ -433,7 +437,11 @@ class NextGen extends Abstract_Integration {
 		// Registry Object for NextGen Gallery.
 		$registry = C_Component_Registry::get_instance();
 
-		// Gallery Storage Object.
+		/**
+		 * Gallery Storage Object.
+		 *
+		 * @var C_Gallery_Storage $storage
+		 */
 		$storage = $registry->get_utility( 'I_Gallery_Storage' );
 
 		$image = $storage->object->_image_mapper->find( $pid );
@@ -508,7 +516,11 @@ class NextGen extends Abstract_Integration {
 		// Registry Object for NextGen Gallery.
 		$registry = C_Component_Registry::get_instance();
 
-		// Gallery Storage Object.
+		/**
+		 * Gallery Storage Object.
+		 *
+		 * @var C_Gallery_Storage $storage
+		 */
 		$storage = $registry->get_utility( 'I_Gallery_Storage' );
 
 		// Process Now.
@@ -673,7 +685,11 @@ class NextGen extends Abstract_Integration {
 		// Registry Object for NextGen Gallery.
 		$registry = C_Component_Registry::get_instance();
 
-		// Gallery Storage Object.
+		/**
+		 * Gallery Storage Object.
+		 *
+		 * @var C_Gallery_Storage $storage
+		 */
 		$storage = $registry->get_utility( 'I_Gallery_Storage' );
 
 		$pid = $storage->object->_get_image_id( $image );
@@ -707,7 +723,11 @@ class NextGen extends Abstract_Integration {
 		// Registry Object for NextGen Gallery.
 		$registry = C_Component_Registry::get_instance();
 
-		// Storage Object for NextGen Gallery.
+		/**
+		 * Gallery Storage Object.
+		 *
+		 * @var C_Gallery_Storage $storage
+		 */
 		$storage = $registry->get_utility( 'I_Gallery_Storage' );
 
 		// File path and URL for original image.
@@ -862,10 +882,10 @@ class NextGen extends Abstract_Integration {
 	/**
 	 * Optionally resize a NextGen image
 	 *
-	 * @param int          $attachment_id  Gallery Image id.
-	 * @param \stdClass    $image          Image object for NextGen gallery.
-	 * @param string|array $meta           Image meta from nextgen gallery.
-	 * @param \C_Component $storage        Storage object for nextgen gallery.
+	 * @param int               $attachment_id  Gallery Image id.
+	 * @param stdClass          $image          Image object for NextGen gallery.
+	 * @param string|array      $meta           Image meta from nextgen gallery.
+	 * @param C_Gallery_Storage $storage        Storage object for nextgen gallery.
 	 *
 	 * @return mixed
 	 */
