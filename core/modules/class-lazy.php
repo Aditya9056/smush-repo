@@ -352,10 +352,11 @@ lazySizesConfig.loadMode = 1;";
 		}
 
 		$blog_is_frontpage = ( 'posts' === get_option( 'show_on_front' ) && ! is_multisite() ) ? true : false;
-
 		if ( is_front_page() && ( ! isset( $this->options['include']['frontpage'] ) || ! $this->options['include']['frontpage'] ) ) {
 			return false;
-		} elseif ( is_home() && isset( $this->options['include']['home'] ) && $this->options['include']['home'] && ! $blog_is_frontpage ) {
+		} elseif ( $blog_is_frontpage && is_home() && isset( $this->options['include']['frontpage'] ) && $this->options['include']['frontpage'] ) {
+		    return true;
+	    } elseif ( is_home() && isset( $this->options['include']['home'] ) && $this->options['include']['home'] && ! $blog_is_frontpage ) {
 			return true;
 		} elseif ( is_page() && ! is_front_page() && isset( $this->options['include']['page'] ) && $this->options['include']['page'] ) {
 			return true;
