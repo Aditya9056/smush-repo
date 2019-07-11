@@ -1,6 +1,7 @@
 = 3.3.0 =
 
 - Enhance: SmartCrawl readability analysis compatibility
+- Enhance: Allow optimizing directories in root folder
 - Fix: NextGen summary meta box layout
 - Fix: Lazy load spinner layout issue
 

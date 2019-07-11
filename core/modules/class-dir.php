@@ -338,6 +338,7 @@ class Dir {
 		) $charset_collate;";
 
 		// Include the upgrade library to initialize a table.
+		/* @noinspection PhpIncludeInspection */
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
 
@@ -473,7 +474,7 @@ class Dir {
 		$root = realpath( $this->get_root_path() );
 
 		$dir      = ( isset( $_GET['dir'] ) && ! is_array( $_GET['dir'] ) ) ? ltrim( sanitize_text_field( wp_unslash( $_GET['dir'] ) ), '/' ) : null; // Input var ok.
-		$post_dir = strlen( $dir ) > 1 ? path_join( $root, $dir ) : $root . $dir;
+		$post_dir = strlen( $dir ) >= 1 ? path_join( $root, $dir ) : $root . $dir;
 		$post_dir = realpath( rawurldecode( $post_dir ) );
 
 		// If the final path doesn't contains the root path, bail out.
@@ -540,7 +541,7 @@ class Dir {
 	 */
 	public function get_root_path() {
 		// If main site.
-		if ( is_multisite() && is_main_site() ) {
+		if ( is_main_site() ) {
 			/**
 			 * Sometimes content directories may reside outside
 			 * the installation sub directory. We need to make sure
@@ -566,7 +567,8 @@ class Dir {
 			return implode( '/', $common_path );
 		}
 
-		return WP_CONTENT_DIR;
+		$up = wp_upload_dir();
+		return $up['basedir'];
 	}
 
 	/**
@@ -907,7 +909,7 @@ class Dir {
 	 *
 	 * @return array  Image array or empty array.
 	 */
-	private function get_image( $id = '', $path = '', $images ) {
+	private function get_image( $id, $path, $images ) {
 		foreach ( $images as $key => $val ) {
 			if ( ! empty( $id ) && (int) $val['id'] === $id ) {
 				return $images[ $key ];
