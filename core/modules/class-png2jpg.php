@@ -48,7 +48,7 @@ class Png2jpg extends Abstract_Module {
 	 * @return bool True/False Whether Imagick is available or not
 	 */
 	private function supports_imagick() {
-		if ( ! class_exists( 'Imagick' ) ) {
+		if ( ! class_exists( '\Imagick' ) ) {
 			return false;
 		}
 

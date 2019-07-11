@@ -123,7 +123,7 @@ class Stats extends NextGen {
 			while ( $attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures LIMIT $offset, $limit" ) ) {
 				foreach ( $attachments as $attachment ) {
 					// Check if it has `wp_smush` key.
-					if ( class_exists( 'Ngg_Serializable' ) ) {
+					if ( class_exists( '\Ngg_Serializable' ) ) {
 						$serializer = new \Ngg_Serializable();
 						$meta       = $serializer->unserialize( $attachment->meta_data );
 					} elseif ( class_exists( '\C_NextGen_Serializable' ) && method_exists( '\C_NextGen_Serializable', 'unserialize' ) ) {

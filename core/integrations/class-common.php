@@ -256,7 +256,7 @@ class Common {
 	 * @return bool
 	 */
 	private function is_wpml_duplicating_images() {
-		if ( ! class_exists( 'SitePress' ) ) {
+		if ( ! class_exists( '\SitePress' ) ) {
 			return false;
 		}
 
