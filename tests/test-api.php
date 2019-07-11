@@ -318,7 +318,7 @@ class ApiTest extends WP_UnitTestCase {
 		}
 
 		// Wait on all of the requests to complete. Throws a ConnectException if any of the requests fail.
-		$results = GuzzleHttp\Promise\unwrap( $promises );
+		$results = \GuzzleHttp\Promise\unwrap( $promises );
 		foreach ( $results as $response ) {
 			$this->assertEquals( 200, $response->getStatusCode() );
 			$this->assertEquals( true, $this->tester->get_status( $response ) );

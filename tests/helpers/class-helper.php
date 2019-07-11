@@ -9,7 +9,7 @@ namespace Helpers;
 
 use ReflectionClass;
 use ReflectionException;
-use WP_Smush;
+use Smush\WP_Smush;
 use WP_UnitTestCase;
 
 /**

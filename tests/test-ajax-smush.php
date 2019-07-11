@@ -7,6 +7,7 @@
 
 use Helpers\Helper;
 use Smush\App\Ajax;
+use Smush\Core\Settings;
 
 /**
  * Class AjaxSmushTest
@@ -58,7 +59,7 @@ class AjaxSmushTest extends WP_Ajax_UnitTestCase {
 	 * @group ajax
 	 */
 	public function testSmushSingle() {
-		WP_Smush_Settings::get_instance()->set( 'auto', false );
+		Settings::get_instance()->set( 'auto', false );
 
 		$id = $this->tester->create_img_post();
 

@@ -7,6 +7,9 @@
 
 use Helpers\Helper;
 use Smush\Core\Installer;
+use Smush\Core\Modules\Smush;
+use Smush\Core\Settings;
+use Smush\WP_Smush;
 
 /**
  * Class SmushTest
@@ -37,7 +40,7 @@ class SmushTest extends WP_UnitTestCase {
 	 * @param bool   $value True or false.
 	 */
 	private function setSetting( $key, $value = true ) {
-		$settings = WP_Smush_Settings::get_instance();
+		$settings = Settings::get_instance();
 		$settings->set( $key, $value );
 	}
 
@@ -58,7 +61,7 @@ class SmushTest extends WP_UnitTestCase {
 		WP_Smush::get_instance()->core()->mod->smush->smush_single( $id, true );
 
 		// Try to get the smushed meta.
-		$smush_meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
+		$smush_meta = get_post_meta( $id, Smush::$smushed_meta_key, true );
 
 		// We don't need the attachment anymore. Delete.
 		wp_delete_attachment( $id, true );
