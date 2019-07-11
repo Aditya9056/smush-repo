@@ -7,6 +7,7 @@
 
 namespace Smush\Core\Integrations\S3;
 
+use AS3CF_Plugin_Compatibility;
 use Smush\Core\Settings;
 use Smush\WP_Smush;
 
@@ -17,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Class Compat
  */
-class Compat extends \AS3CF_Plugin_Compatibility {
+class Compat extends AS3CF_Plugin_Compatibility {
 
 	/**
 	 * Compat constructor.

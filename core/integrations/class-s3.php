@@ -13,6 +13,10 @@
 
 namespace Smush\Core\Integrations;
 
+use Amazon_S3_And_CloudFront;
+use Exception;
+use Null_Provider;
+use Provider;
 use Smush\WP_Smush;
 use Smush\Core\Settings;
 
@@ -129,7 +133,7 @@ class S3 extends Abstract_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var \Amazon_S3_And_CloudFront $as3cf
+		 * @var Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -268,7 +272,7 @@ class S3 extends Abstract_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var \Amazon_S3_And_CloudFront $as3cf
+		 * @var Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -354,7 +358,7 @@ class S3 extends Abstract_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var \Amazon_S3_And_CloudFront $as3cf
+		 * @var Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -429,7 +433,7 @@ class S3 extends Abstract_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var \Amazon_S3_And_CloudFront $as3cf
+		 * @var Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -477,7 +481,7 @@ class S3 extends Abstract_Integration {
 		/**
 		 * Amazon_S3_And_CloudFront global.
 		 *
-		 * @var \Amazon_S3_And_CloudFront $as3cf
+		 * @var Amazon_S3_And_CloudFront $as3cf
 		 */
 		global $as3cf;
 
@@ -497,7 +501,7 @@ class S3 extends Abstract_Integration {
 	 *
 	 * @since 3.0
 	 *
-	 * @param \Amazon_S3_And_CloudFront $as3cf          Amazon_S3_And_CloudFront global.
+	 * @param Amazon_S3_And_CloudFront $as3cf          Amazon_S3_And_CloudFront global.
 	 * @param int                       $attachment_id  Attachment ID.
 	 *
 	 * @return bool|array
@@ -519,7 +523,7 @@ class S3 extends Abstract_Integration {
 	 *
 	 * @since 3.0
 	 *
-	 * @param \Amazon_S3_And_CloudFront $as3cf         Amazon_S3_And_CloudFront global.
+	 * @param Amazon_S3_And_CloudFront $as3cf         Amazon_S3_And_CloudFront global.
 	 * @param array                     $s3_object     Data array.
 	 * @param string                    $uf_file_path  File path.
 	 *
@@ -544,12 +548,13 @@ class S3 extends Abstract_Integration {
 	 *
 	 * Get provider client.
 	 *
+	 * @param Amazon_S3_And_CloudFront $as3cf Amazon_S3_And_CloudFront global.
+	 * @param bool|string $region Specify region to client for signature.
+	 *
 	 * @since 3.0
-	 *
-	 * @param \Amazon_S3_And_CloudFront $as3cf   Amazon_S3_And_CloudFront global.
-	 * @param bool|string               $region  Specify region to client for signature.
-	 *
-	 * @return \Provider|\Null_Provider|bool
+     *
+	 * @return Provider|Null_Provider|bool
+	 * @throws Exception
 	 */
 	private function get_provider_client( $as3cf, $region ) {
 		if ( method_exists( $as3cf, 'get_provider_client' ) ) {
