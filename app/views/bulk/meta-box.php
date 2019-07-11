@@ -59,7 +59,7 @@ if ( 0 === absint( $core->total_count ) ) {
 	<p><?php esc_html_e( 'All attachments have been smushed. Awesome!', 'wp-smushit' ); ?></p>
 </div>
 
-<?php $this->view( 'blocks/progress-bar', array( 'count' => $core ), 'common' ); ?>
+<?php $this->view( 'progress-bar', array( 'count' => $core ), 'common' ); ?>
 
 <div class="smush-final-log sui-hidden">
 	<div class="smush-bulk-errors"></div>

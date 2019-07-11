@@ -85,6 +85,6 @@ if ( ! defined( 'WPINC' ) ) {
 <?php
 $screen = get_current_screen();
 if ( ! empty( $screen ) && ! empty( $screen->base ) && ( 'toplevel_page_smush' === $screen->base || 'toplevel_page_smush-network' === $screen->base ) ) {
-	$this->view( 'modals/directory-list', array(), 'modals' );
-	$this->view( 'modals/progress-dialog', array(), 'modals' );
+	$this->view( 'directory-list', array(), 'modals' );
+	$this->view( 'progress-dialog', array(), 'modals' );
 }

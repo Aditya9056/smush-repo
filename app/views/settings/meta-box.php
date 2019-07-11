@@ -214,4 +214,4 @@ if ( ! defined( 'WPINC' ) ) {
 
 </form>
 
-<?php $this->view( 'modals/reset-settings', array(), 'modals' ); ?>
+<?php $this->view( 'reset-settings', array(), 'modals' ); ?>

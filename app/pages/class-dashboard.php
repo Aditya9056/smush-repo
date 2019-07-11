@@ -1291,7 +1291,7 @@ class Dashboard extends Abstract_Page {
 	 * @since 3.2.0
 	 */
 	public function common_metabox_footer() {
-		$this->view( 'common/meta-box-footer', array(), 'common' );
+		$this->view( 'meta-box-footer', array(), 'common' );
 	}
 
 	/**

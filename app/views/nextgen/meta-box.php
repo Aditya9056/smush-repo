@@ -108,7 +108,7 @@ if ( 0 >= $total_count ) : ?>
 
 	<?php
 	$this->view(
-		'blocks/progress-bar',
+		'progress-bar',
 		array(
 			'count' => $ng,
 		),
