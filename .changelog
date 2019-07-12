@@ -1,5 +1,6 @@
 = 3.3.0 =
 
+- New: Integration with Envira Gallery
 - Enhance: SmartCrawl readability analysis compatibility
 - Enhance: Allow optimizing directories in root folder
 - Fix: NextGen summary meta box layout

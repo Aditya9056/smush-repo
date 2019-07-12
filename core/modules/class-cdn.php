@@ -404,6 +404,7 @@ class CDN extends Abstract_Module {
 	 * PUBLIC METHODS CDN
 	 *
 	 * @see parse_image()
+     * @see parse_background_image()
 	 * @see process_src()
 	 * @see update_image_srcset()
 	 * @see update_image_sizes()
@@ -436,6 +437,8 @@ class CDN extends Abstract_Module {
 			return $image;
 		}
 
+		$new_image =
+
 		$new_image = $image;
 
 		// Make sure this image is inside a supported directory. Try to convert to valid path.
@@ -451,7 +454,7 @@ class CDN extends Abstract_Module {
 			}
 
 			// See if srcset is already set.
-			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $image ) && $this->settings->get( 'auto_resize' ) ) {
+			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $image ) && $this->settings->get( 'auto_resize' ) && ! apply_filters( 'smush_skip_adding_srcset', false ) ) {
 				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
 
 				Helpers\Parser::add_attribute( $new_image, 'srcset', $srcset );
@@ -1189,12 +1192,13 @@ class CDN extends Abstract_Module {
 	 * Check if the image path is supported by the CDN.
 	 *
 	 * @since 3.0
+     * @since 3.3.0 Changed access to public.
 	 *
 	 * @param string $src  Image path.
 	 *
 	 * @return bool|string
 	 */
-	private function is_supported_path( $src ) {
+	public function is_supported_path( $src ) {
 		$url_parts = wp_parse_url( $src );
 
 		// Unsupported scheme.
