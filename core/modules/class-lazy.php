@@ -247,10 +247,13 @@ lazySizesConfig.loadMode = 1;";
 		/**
 		 * Filter to skip a single image from lazy load.
 		 *
-		 * @param bool   $skip  Should skip? Default: false.
-		 * @param string $src   Image url.
+         * @since 3.3.0 Added $image param.
+         *
+		 * @param bool   $skip   Should skip? Default: false.
+		 * @param string $src    Image url.
+         * @param string $image  Image.
 		 */
-		if ( apply_filters( 'smush_skip_image_from_lazy_load', false, $src ) ) {
+		if ( apply_filters( 'smush_skip_image_from_lazy_load', false, $src, $image ) ) {
 			return $image;
 		}
 
