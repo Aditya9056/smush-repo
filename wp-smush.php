@@ -27,7 +27,7 @@
 This plugin was originally developed by Alex Dunae (http://dialect.ca/).
 
 Copyright 2007-2018 Incsub (http://incsub.com)
-Author - Aaron Edwards, Sam Najian, Umesh Kumar
+Author - Aaron Edwards, Sam Najian, Umesh Kumar, Anton Vanyukov
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -271,11 +271,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @since 2.9.0
 		 */
 		private function init() {
-			try {
-				$this->api = new Core\Api\API( self::get_api_key() );
-			} catch ( Exception $e ) {
-				// Unable to init API for some reason.
-			}
+			$this->api = new Core\Api\API( self::get_api_key() );
 
 			self::$is_pro = $this->validate_install();
 
