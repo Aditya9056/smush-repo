@@ -331,6 +331,13 @@ class Helper {
 		}
 
 		/**
+		 * Replace the 500 server error with a more appropriate error message.
+		 */
+		if ( false !== strpos( $error, '500 Internal Server Error' ) ) {
+			$error = __( "Couldn't process image due to bad headers. Try re-saving the image in an image editor, then upload it again.", 'wp-smush' );
+		}
+
+		/**
 		 * Used internally to modify the error message
 		 */
 		$error = apply_filters( 'wp_smush_error', $error, $attachment_id );
