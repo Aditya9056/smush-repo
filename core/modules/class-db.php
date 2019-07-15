@@ -62,31 +62,6 @@ class DB {
 	}
 
 	/**
-	 * Limit for all the queries
-	 *
-	 * @return int|mixed
-	 */
-	public function query_limit() {
-		$limit = apply_filters( 'wp_smush_query_limit', 2000 );
-		$limit = ! empty( $this->total_count ) && $limit > $this->total_count ? $this->total_count : $limit;
-		$limit = intval( $limit );
-
-		return $limit;
-	}
-
-	/**
-	 * Filter the number of results fetched at once for NextGen queries
-	 *
-	 * @return int|mixed
-	 */
-	public function nextgen_query_limit() {
-		$limit = apply_filters( 'wp_smush_nextgen_query_limit', 1000 );
-		$limit = intval( $limit );
-
-		return $limit;
-	}
-
-	/**
 	 * Fetch all the unsmushed attachments
 	 *
 	 * @return array $attachments
@@ -111,7 +86,7 @@ class DB {
 
 			$unsmushed_posts = ! empty( $unsmushed_posts ) && is_array( $unsmushed_posts ) ? array_slice( $unsmushed_posts, 0, $r_limit ) : array();
 		} else {
-			$limit = $this->query_limit();
+			$limit = apply_filters( 'wp_smush_query_limit', 2000 );
 
 			$get_posts       = true;
 			$unsmushed_posts = array();
@@ -235,7 +210,7 @@ class DB {
 
 		// Else Get it Fresh!!
 		$offset = 0;
-		$limit  = $this->query_limit();
+		$limit  = apply_filters( 'wp_smush_query_limit', 2000 );
 		$mime   = implode( "', '", Core::$mime_types );
 		// Remove the Filters added by WP Media Folder.
 		do_action( 'wp_smush_remove_filters' );
@@ -306,7 +281,7 @@ class DB {
 		 * Allows to set a limit of mysql query
 		 * Default value is 2000.
 		 */
-		$limit      = $this->query_limit();
+		$limit      = apply_filters( 'wp_smush_query_limit', 2000 );
 		$offset     = 0;
 		$query_next = true;
 
@@ -377,7 +352,7 @@ class DB {
 			$key = 'wp-smush-super_smushed_nextgen';
 
 			// Clear up the stats, if there are no images.
-			if ( method_exists( 'Stats', 'total_count' ) && 0 == Stats::total_count() ) {
+			if ( method_exists( 'Stats', 'total_count' ) && 0 === Stats::total_count() ) {
 				delete_option( $key );
 			}
 
@@ -447,7 +422,7 @@ class DB {
 	 */
 	private function get_super_smushed_attachments( $return_ids = false ) {
 		// Get all the attachments with wp-smush-lossy.
-		$limit         = $this->query_limit();
+		$limit         = apply_filters( 'wp_smush_query_limit', 2000 );
 		$get_posts     = true;
 		$super_smushed = array();
 		$args          = array(
@@ -534,7 +509,7 @@ class DB {
 				'size_after'  => 0,
 			);
 
-			$limit      = $this->query_limit();
+			$limit      = apply_filters( 'wp_smush_query_limit', 2000 );
 			$offset     = 0;
 			$query_next = true;
 
@@ -613,7 +588,7 @@ class DB {
 				'size_after'  => 0,
 			);
 
-			$limit      = $this->query_limit();
+			$limit      = apply_filters( 'wp_smush_query_limit', 2000 );
 			$offset     = 0;
 			$query_next = true;
 
@@ -767,6 +742,88 @@ class DB {
 		}
 
 		return count( $images );
+	}
+
+	/**
+	 * Returns true if a database table column exists. Otherwise returns false.
+	 *
+	 * @link http://stackoverflow.com/a/5943905/2489248
+	 * @global \wpdb $wpdb
+	 *
+	 * @param string $table_name Name of table we will check for column existence.
+	 * @param string $column_name Name of column we are checking for.
+	 *
+	 * @return boolean True if column exists. Else returns false.
+	 */
+	private function table_column_exists( $table_name, $column_name ) {
+		global $wpdb;
+
+		$column = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ',
+				DB_NAME,
+				$table_name,
+				$column_name
+			)
+		); // Db call ok; no-cache ok.
+
+		if ( ! empty( $column ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Drops a specified index from a table.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @global \wpdb  $wpdb
+	 *
+	 * @param string $table Database table name.
+	 * @param string $index Index name to drop.
+	 * @return true True, when finished.
+	 */
+	private function drop_index( $table, $index ) {
+		global $wpdb;
+
+		$wpdb->query(
+			$wpdb->prepare( "ALTER TABLE %s DROP INDEX %s", $table, $index )
+		); // Db call ok; no-cache ok.
+
+		return true;
+	}
+
+	/**
+	 * Update path_hash, and store a flag if all the rows were updated
+	 *
+	 * TODO: Stop running this function after 2-3 updates using version check
+	 */
+	public function update_dir_path_hash() {
+		// If we've already performed the update.
+		if ( get_option( 'smush-directory-path-hash-updated', false ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		// Check if column exists.
+		if ( ! $this->table_column_exists( $wpdb->prefix . 'smush_dir_images', 'path_hash' ) ) {
+			return;
+		}
+
+		// Update the rows.
+		$wpdb->query( "UPDATE {$wpdb->prefix}smush_dir_images SET path_hash = MD5(path) WHERE path IS NOT NULL" );
+
+		// Check if there are any pending rows that needs to be updated.
+		$pending_rows = "SELECT count(*) FROM {$wpdb->prefix}smush_dir_images WHERE path_hash is NULL AND path IS NOT NULL";
+		$index_exists = "SHOW INDEX FROM {$wpdb->prefix}smush_dir_images WHERE KEY_NAME = 'path'";
+		// If all the rows are updated and Index exists.
+		if ( ! $wpdb->get_var( $pending_rows ) && $wpdb->get_var( $index_exists ) != null ) {
+			$this->drop_index( $wpdb->prefix . 'smush_dir_images', 'path' );
+			update_option( 'smush-directory-path-hash-updated', 1 );
+		}
 	}
 
 }

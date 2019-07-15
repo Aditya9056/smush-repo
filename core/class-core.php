@@ -667,7 +667,7 @@ class Core {
 		 * Allows to set a limit of mysql query
 		 * Default value is 2000
 		 */
-		$limit      = $this->mod->db->query_limit();
+		$limit      = apply_filters( 'wp_smush_query_limit', 2000 );
 		$offset     = 0;
 		$query_next = true;
 

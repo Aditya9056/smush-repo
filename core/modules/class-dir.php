@@ -347,37 +347,6 @@ class Dir {
 	}
 
 	/**
-	 * Update path_hash, and store a flag if all the rows were updated
-	 *
-	 * TODO: Stop running this function after 2-3 updates using version check
-	 */
-	public function update_dir_path_hash() {
-		// If we've already performed the update.
-		if ( get_option( 'smush-directory-path-hash-updated', false ) ) {
-			return;
-		}
-
-		global $wpdb;
-
-		// Check if column exists.
-		if ( ! Helper::table_column_exists( $wpdb->prefix . 'smush_dir_images', 'path_hash' ) ) {
-			return;
-		}
-
-		// Update the rows.
-		$wpdb->query( "UPDATE {$wpdb->prefix}smush_dir_images SET path_hash = MD5(path) WHERE path IS NOT NULL" );
-
-		// Check if there are any pending rows that needs to be updated.
-		$pending_rows = "SELECT count(*) FROM {$wpdb->prefix}smush_dir_images WHERE path_hash is NULL AND path IS NOT NULL";
-		$index_exists = "SHOW INDEX FROM {$wpdb->prefix}smush_dir_images WHERE KEY_NAME = 'path'";
-		// If all the rows are updated and Index exists.
-		if ( ! $wpdb->get_var( $pending_rows ) && $wpdb->get_var( $index_exists ) != null ) {
-			Helper::drop_index( $wpdb->prefix . 'smush_dir_images', 'path' );
-			update_option( 'smush-directory-path-hash-updated', 1 );
-		}
-	}
-
-	/**
 	 * Get the image ids and path for last scanned images
 	 *
 	 * @return array Array of last scanned images containing image id and path

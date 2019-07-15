@@ -44,7 +44,7 @@ class Installer {
 			define( 'WP_SMUSH_ACTIVATING', true );
 		}
 
-		$version  = get_site_option( WP_SMUSH_PREFIX . 'version' );
+		$version = get_site_option( WP_SMUSH_PREFIX . 'version' );
 
 		if ( ! class_exists( 'Settings' ) ) {
 			/* @noinspection PhpIncludeInspection */
@@ -105,10 +105,6 @@ class Installer {
 				define( 'WP_SMUSH_UPGRADING', true );
 			}
 
-			if ( version_compare( $version, '2.8.0', '<' ) ) {
-				self::upgrade_2_8_0();
-			}
-
 			if ( version_compare( $version, '3.0', '<' ) ) {
 				self::upgrade_3_0();
 			}
@@ -126,24 +122,6 @@ class Installer {
 
 			// Store the latest plugin version in db.
 			update_site_option( WP_SMUSH_PREFIX . 'version', WP_SMUSH_VERSION );
-		}
-	}
-
-	/**
-	 * Upgrade old settings to new if required.
-	 *
-	 * We have changed exif data setting key from version 2.8
-	 * Update the existing value to new one.
-	 *
-	 * @since 2.8.0
-	 */
-	private static function upgrade_2_8_0() {
-		// If exif is not preserved, it will be stripped by default.
-		if ( Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'keep_exif' ) ) {
-			// Set not to strip exif value.
-			Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'strip_exif', 0 );
-			// Delete the old exif setting.
-			Settings::get_instance()->delete_setting( WP_SMUSH_PREFIX . 'keep_exif' );
 		}
 	}
 
@@ -170,7 +148,7 @@ class Installer {
 		WP_Smush::get_instance()->core()->mod->dir->create_table();
 
 		// Run the directory smush table update.
-		WP_Smush::get_instance()->core()->mod->dir->update_dir_path_hash();
+		WP_Smush::get_instance()->core()->mod->db->update_dir_path_hash();
 	}
 
 	/**

@@ -112,7 +112,7 @@ class Stats extends NextGen {
 	function get_ngg_images( $type = 'smushed', $count = false, $force_update = false ) {
 		global $wpdb;
 
-		$limit  = WP_Smush::get_instance()->core()->mod->db->nextgen_query_limit();
+		$limit  = apply_filters( 'wp_smush_nextgen_query_limit', 1000 );
 		$offset = 0;
 
 		// Check type of images being queried.
@@ -126,7 +126,7 @@ class Stats extends NextGen {
 		// If nothing is found, build the object.
 		if ( ! $images || $force_update ) {
 			// Query Attachments for meta key.
-			while ( $attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures LIMIT $offset, $limit" ) ) {
+			while ( $attachments = $wpdb->get_results( "SELECT pid, meta_data FROM $wpdb->nggpictures LIMIT {$offset}, {$limit}" ) ) {
 				foreach ( $attachments as $attachment ) {
 					// Check if it has `wp_smush` key.
 					if ( class_exists( 'Ngg_Serializable' ) ) {
