@@ -1,33 +1,35 @@
 <?php
+/**
+ * Class for testing ajax smushing.
+ *
+ * @package WP_Smush
+ */
+
+use Helpers\Helper;
 
 /**
  * Class AjaxSmushTest
  */
-class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
+class AjaxSmushTest extends WP_Ajax_UnitTestCase {
 
 	/**
-	 * WpunitTester tester.
+	 * Unit tester.
 	 *
-	 * @var \WpunitTester $tester
+	 * @var Helper $tester
 	 */
 	protected $tester;
 
 	/**
-	 * Setup method.
+	 * Run before actions.
 	 */
 	public function setUp() {
-		parent::setUp();
+		parent::setup();
+
+		require_once 'helpers/class-helper.php';
+		$this->tester = new Helper();
 
 		wp_set_current_user( 1 );
 		new WP_Smush_Ajax();
-	}
-
-	/**
-	 * Tear down method.
-	 */
-	public function tearDown() {
-		// your tear down methods here.
-		parent::tearDown();
 	}
 
 	/**
@@ -37,7 +39,7 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 	 *
 	 * @return array|mixed|object  Response from smush_manual()
 	 */
-	private function ajaxSmushitManual( $id ) {
+	private function ajax_smushit_manual( $id ) {
 		try {
 			$_GET['attachment_id'] = $id;
 			$this->_handleAjax( 'wp_smushit_manual' );
@@ -51,13 +53,15 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 
 	/**
 	 * Test single image manual Smush (from media library).
+	 *
+	 * @group ajax
 	 */
 	public function testSmushSingle() {
 		WP_Smush_Settings::get_instance()->set( 'auto', false );
 
-		$id = $this->tester->createImgPost();
+		$id = $this->tester->create_img_post();
 
-		$response = $this->ajaxSmushitManual( $id );
+		$response = $this->ajax_smushit_manual( $id );
 
 		$this->assertTrue( $response['success'] );
 		$this->assertInternalType( 'array', $response['data'] );
@@ -66,19 +70,26 @@ class AjaxSmushTest extends \Codeception\TestCase\WPAjaxTestCase {
 
 	/**
 	 * Test wp_smush_image filter.
+	 *
+	 * @group ajax
 	 */
 	public function testSmushImageFilter() {
-		$id = $this->tester->uploadImage();
+		$id = $this->tester->upload_image();
 
-		add_filter( 'wp_smush_image', function( $status, $img_id ) use ( &$id ) {
-			if ( $id === $img_id ) {
-				$status = false;
-			}
+		add_filter(
+			'wp_smush_image',
+			function( $status, $img_id ) use ( &$id ) {
+				if ( $id === $img_id ) {
+					$status = false;
+				}
 
-			return $status;
-		}, 10, 2 );
+				return $status;
+			},
+			10,
+			2
+		);
 
-		$response = $this->ajaxSmushitManual( $id );
+		$response = $this->ajax_smushit_manual( $id );
 
 		$this->assertFalse( $response['success'] );
 		$this->assertInternalType( 'array', $response['data'] );

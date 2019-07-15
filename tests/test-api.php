@@ -1,16 +1,23 @@
 <?php
+/**
+ * Class ApiTest
+ *
+ * @package WP_Smush
+ */
+
+use Helpers\API;
 
 /**
  * Class ApiTest
  *
  * Test the Smush API. Requires that WP_SMUSH_API and WPMUDEV_APIKEY are defined in the wp-config.php file.
  */
-class ApiTest extends \Codeception\Test\Unit {
+class ApiTest extends WP_UnitTestCase {
 
 	/**
 	 * Unit tester.
 	 *
-	 * @var \UnitTester $tester
+	 * @var API $tester
 	 */
 	protected $tester;
 
@@ -42,25 +49,31 @@ class ApiTest extends \Codeception\Test\Unit {
 	/**
 	 * Run before actions.
 	 */
-	protected function _before() {
+	public function setUp() {
+		require_once 'helpers/class-api-helper.php';
+		$this->tester = new API();
 		$this->client = new GuzzleHttp\Client( [ 'base_uri' => $this->api ] );
 	}
 
 	/**
 	 * Run after actions.
 	 */
-	protected function _after() {
+	public function tearDown() {
 		$this->client = null;
 	}
 
 	/**
 	 * Init API server keys for Pro features.
-	 *
-	 * @throws \Codeception\Exception\ModuleException
 	 */
 	private function initApiKeys() {
-		$api = $this->tester->cliToArray( 'config get WP_SMUSH_API' );
-		$key = $this->tester->cliToArray( 'config get WPMUDEV_APIKEY' );
+		$api = WP_SMUSH_API;
+
+		if ( defined( 'WPMUDEV_APIKEY' ) && WPMUDEV_APIKEY ) {
+			$key = WPMUDEV_APIKEY;
+		} elseif ( class_exists( 'WPMUDEV_Dashboard' ) ) {
+			// If dashboard plugin is active, get API key from db.
+			$key = get_site_option( 'wpmudev_apikey' );
+		}
 
 		// Get Smush API from wp-config.php file.
 		if ( is_array( $api ) && ! empty( $api ) ) {
@@ -80,36 +93,36 @@ class ApiTest extends \Codeception\Test\Unit {
 		$response = $this->tester->post( $this->client );
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( false, $this->tester->getStatus( $response ) );
-		$this->assertEquals( 'No file content sent.', $this->tester->getData( $response ) );
+		$this->assertEquals( false, $this->tester->get_status( $response ) );
+		$this->assertEquals( 'No file content sent.', $this->tester->get_data( $response ) );
 	}
 
 	/**
 	 * Test that images over 5 Mb fail for free members.
 	 */
 	public function testImageOverSizeLimit() {
-		$jpeg  = dirname( dirname( __FILE__ ) ) . '/_data/images/image-large.jpg';
+		$jpeg  = dirname( __FILE__ ) . '/_data/images/image-large.jpg';
 		$image = fopen( $jpeg, 'r' );
 
 		$response = $this->tester->post( $this->client, [ 'body' => $image ] );
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( false, $this->tester->getStatus( $response ) );
-		$this->assertEquals( 'File too big for premium level.', $this->tester->getData( $response ) );
+		$this->assertEquals( false, $this->tester->get_status( $response ) );
+		$this->assertEquals( 'File too big for premium level.', $this->tester->get_data( $response ) );
 	}
 
 	/**
 	 * Test invalid format.
 	 */
 	public function testInvalidFormat() {
-		$jpeg  = dirname( dirname( __FILE__ ) ) . '/_data/images/invalid-format.css';
+		$jpeg  = dirname( __FILE__ ) . '/_data/images/invalid-format.css';
 		$image = fopen( $jpeg, 'r' );
 
 		$response = $this->tester->post( $this->client, [ 'body' => $image ] );
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( false, $this->tester->getStatus( $response ) );
-		$this->assertEquals( 'Invalid file format. Only PNG, JPEG, and GIF files are supported.', $this->tester->getData( $response ) );
+		$this->assertEquals( false, $this->tester->get_status( $response ) );
+		$this->assertEquals( 'Invalid file format. Only PNG, JPEG, and GIF files are supported.', $this->tester->get_data( $response ) );
 	}
 
 	/**
@@ -119,15 +132,15 @@ class ApiTest extends \Codeception\Test\Unit {
 	 * - lossy = 'false'
 	 */
 	public function testCheckJpegtranLibrary() {
-		$jpeg  = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
+		$jpeg  = dirname( __FILE__ ) . '/_data/images/image1.jpeg';
 		$image = fopen( $jpeg, 'r' );
 
 		$response = $this->tester->post( $this->client, [ 'body' => $image ] );
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( true, $this->tester->getStatus( $response ) );
+		$this->assertEquals( true, $this->tester->get_status( $response ) );
 
-		$data = $this->tester->getData( $response );
+		$data = $this->tester->get_data( $response );
 		$this->assertEquals( false, $data->lossy );
 		$this->assertEquals( true, $data->before_size > $data->after_size );
 	}
@@ -148,7 +161,7 @@ class ApiTest extends \Codeception\Test\Unit {
 			);
 		}
 
-		$jpeg  = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
+		$jpeg  = dirname( __FILE__ ) . '/_data/images/image1.jpeg';
 		$image = fopen( $jpeg, 'r' );
 
 		$response = $this->tester->post(
@@ -163,9 +176,9 @@ class ApiTest extends \Codeception\Test\Unit {
 		);
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( true, $this->tester->getStatus( $response ) );
+		$this->assertEquals( true, $this->tester->get_status( $response ) );
 
-		$data = $this->tester->getData( $response );
+		$data = $this->tester->get_data( $response );
 
 		$this->assertEquals( true, $data->is_premium );
 		$this->assertEquals( true, $data->lossy );
@@ -176,15 +189,15 @@ class ApiTest extends \Codeception\Test\Unit {
 	 * Test Gifsicle library.
 	 */
 	public function testCheckGifsicleLibrary() {
-		$jpeg  = dirname( dirname( __FILE__ ) ) . '/_data/images/image4.gif';
+		$jpeg  = dirname( __FILE__ ) . '/_data/images/image4.gif';
 		$image = fopen( $jpeg, 'r' );
 
 		$response = $this->tester->post( $this->client, [ 'body' => $image ] );
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( true, $this->tester->getStatus( $response ) );
+		$this->assertEquals( true, $this->tester->get_status( $response ) );
 
-		$data = $this->tester->getData( $response );
+		$data = $this->tester->get_data( $response );
 		$this->assertEquals( true, $data->before_size > $data->after_size );
 	}
 
@@ -196,15 +209,15 @@ class ApiTest extends \Codeception\Test\Unit {
 	 * - lossy = 'false'
 	 */
 	public function testCheckAdvpngLibrary() {
-		$jpeg  = dirname( dirname( __FILE__ ) ) . '/_data/images/image5.png';
+		$jpeg  = dirname( __FILE__ ) . '/_data/images/image5.png';
 		$image = fopen( $jpeg, 'r' );
 
 		$response = $this->tester->post( $this->client, [ 'body' => $image ] );
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( true, $this->tester->getStatus( $response ) );
+		$this->assertEquals( true, $this->tester->get_status( $response ) );
 
-		$data = $this->tester->getData( $response );
+		$data = $this->tester->get_data( $response );
 		$this->assertEquals( false, $data->lossy );
 
 		// We are not running this assertion, because advpng often does not compress the image.
@@ -227,7 +240,7 @@ class ApiTest extends \Codeception\Test\Unit {
 			);
 		}
 
-		$jpeg  = dirname( dirname( __FILE__ ) ) . '/_data/images/image5.png';
+		$jpeg  = dirname( __FILE__ ) . '/_data/images/image5.png';
 		$image = fopen( $jpeg, 'r' );
 
 		$response = $this->tester->post(
@@ -241,9 +254,9 @@ class ApiTest extends \Codeception\Test\Unit {
 		);
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( true, $this->tester->getStatus( $response ) );
+		$this->assertEquals( true, $this->tester->get_status( $response ) );
 
-		$data = $this->tester->getData( $response );
+		$data = $this->tester->get_data( $response );
 		$this->assertEquals( false, $data->lossy );
 		$this->assertEquals( true, $data->before_size > $data->after_size );
 	}
@@ -264,7 +277,7 @@ class ApiTest extends \Codeception\Test\Unit {
 			);
 		}
 
-		$jpeg  = dirname( dirname( __FILE__ ) ) . '/_data/images/image5.png';
+		$jpeg  = dirname( __FILE__ ) . '/_data/images/image5.png';
 		$image = fopen( $jpeg, 'r' );
 
 		$response = $this->tester->post(
@@ -279,9 +292,9 @@ class ApiTest extends \Codeception\Test\Unit {
 		);
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( true, $this->tester->getStatus( $response ) );
+		$this->assertEquals( true, $this->tester->get_status( $response ) );
 
-		$data = $this->tester->getData( $response );
+		$data = $this->tester->get_data( $response );
 		$this->assertEquals( true, $data->lossy );
 		$this->assertEquals( true, $data->before_size > $data->after_size );
 	}
@@ -290,7 +303,7 @@ class ApiTest extends \Codeception\Test\Unit {
 	 * Stress test the server with multiple requests.
 	 */
 	public function testStressTest() {
-		$jpeg = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
+		$jpeg = dirname( __FILE__ ) . '/_data/images/image1.jpeg';
 		$data = [
 			'body'        => fopen( $jpeg, 'r' ),
 			'http_errors' => false,
@@ -308,7 +321,7 @@ class ApiTest extends \Codeception\Test\Unit {
 		$results = GuzzleHttp\Promise\unwrap( $promises );
 		foreach ( $results as $response ) {
 			$this->assertEquals( 200, $response->getStatusCode() );
-			$this->assertEquals( true, $this->tester->getStatus( $response ) );
+			$this->assertEquals( true, $this->tester->get_status( $response ) );
 		}
 	}
 

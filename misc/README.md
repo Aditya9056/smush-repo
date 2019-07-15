@@ -26,11 +26,11 @@ Usage: from `wp-smushit` drectory run `./misc/deploy-to-svn.sh`
 This file is used to generate a Docker image used in Bitbucket Pipelines.
 
 Contains:
-* PHP 7.2 (with GD and MySQLi extension)
-* MariaDB 10.1
-* PHPUnit 6.5
-* Codeception 2.2
-* Composer 1.6
+* PHP 7.3 (with GD and MySQLi extension)
+* MariaDB (latest)
+* PHPUnit 7.x
+* Codeception (latest)
+* Composer (latest)
 * PHP Codesniffer + WordPress Coding Standards
 
 Place the file in a directory, inside the directory execute the following command to build the image:

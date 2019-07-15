@@ -1,36 +1,33 @@
 <?php
+/**
+ * General helper class.
+ *
+ * @package WP_Smush
+ */
 
+namespace Helpers;
+
+use ReflectionClass;
+use ReflectionException;
+use WP_Smush;
+use WP_UnitTestCase;
 
 /**
- * Inherited Methods
- * @method void wantToTest($text)
- * @method void wantTo($text)
- * @method void execute($callable)
- * @method void expectTo($prediction)
- * @method void expect($prediction)
- * @method void amGoingTo($argumentation)
- * @method void am($role)
- * @method void lookForwardTo($achieveValue)
- * @method void comment($description)
- * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
+ * Class Helper
  *
- * @SuppressWarnings(PHPMD)
-*/
-class WpunitTester extends \Codeception\Actor
-{
-    use _generated\WpunitTesterActions;
+ * @package Helpers
+ */
+class Helper extends WP_UnitTestCase {
 
 	/**
 	 * Upload single image to media library.
 	 *
 	 * @return mixed  Image ID on success.
 	 */
-	public function uploadImage() {
+	public function upload_image() {
 		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
-		$factory = new WP_UnitTest_Factory();
-
-		return $factory->attachment->create_upload_object( $file );
+		return $this->factory->attachment->create_upload_object( $file );
 	}
 
 	/**
@@ -38,7 +35,7 @@ class WpunitTester extends \Codeception\Actor
 	 *
 	 * @return mixed  Image ID on success.
 	 */
-	public function createImgPost() {
+	public function create_img_post() {
 		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image1.jpeg';
 
 		$args = [
@@ -46,9 +43,7 @@ class WpunitTester extends \Codeception\Actor
 			'post_content' => $file,
 		];
 
-		$factory = new WP_UnitTest_Factory();
-
-		return $factory->attachment->create( $args );
+		return $this->factory->attachment->create( $args );
 	}
 
 	/**
@@ -58,10 +53,10 @@ class WpunitTester extends \Codeception\Actor
 	 * @param string $property  Property name.
 	 * @param mixed  $value     Value to set.
 	 *
-	 * @throws ReflectionException
+	 * @throws ReflectionException  Exception.
 	 */
-	public function setPrivateProperty( &$object, $property, $value ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
+	public function set_private_property( &$object, $property, $value ) {
+		$reflection = new ReflectionClass( get_class( $object ) );
 		$property   = $reflection->getProperty( $property );
 
 		$property->setAccessible( true );
@@ -69,14 +64,16 @@ class WpunitTester extends \Codeception\Actor
 	}
 
 	/**
-	 * @param object $object    Object with the property
-	 * @param string $property  Property name
+	 * Read a private property of an object.
+	 *
+	 * @param object $object    Object with the property.
+	 * @param string $property  Property name.
 	 *
 	 * @return mixed
-	 * @throws ReflectionException
+	 * @throws ReflectionException  Exception.
 	 */
-	public function readPrivateProperty( &$object, $property ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
+	public function read_private_property( &$object, $property ) {
+		$reflection = new ReflectionClass( get_class( $object ) );
 		$property   = $reflection->getProperty( $property );
 
 		$property->setAccessible( true );
@@ -94,10 +91,10 @@ class WpunitTester extends \Codeception\Actor
 	 * @param array  $args         Array of objects to pass to the method.
 	 *
 	 * @return mixed  Method results.
-	 * @throws ReflectionException
+	 * @throws ReflectionException  Exception.
 	 */
-	public function callPrivateMethod( &$object, $method_name, array $args = array() ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
+	public function call_private_method( &$object, $method_name, array $args = array() ) {
+		$reflection = new ReflectionClass( get_class( $object ) );
 		$method     = $reflection->getMethod( $method_name );
 		$method->setAccessible( true );
 
@@ -106,23 +103,28 @@ class WpunitTester extends \Codeception\Actor
 
 	/**
 	 * Set Smush to Smush Pro.
+	 *
+	 * @throws ReflectionException  Exception.
 	 */
-	public function setPro() {
+	public function set_pro() {
 		$smush = WP_Smush::get_instance();
 
-		$this->setPrivateProperty( $smush, 'is_pro', true );
+		$this->set_private_property( $smush, 'is_pro', true );
 
 		$smush->validate_install();
 	}
 
 	/**
 	 * Set Smush to free version.
+	 *
+	 * @throws ReflectionException  Exception.
 	 */
-	public function setFree() {
+	public function set_free() {
 		$smush = WP_Smush::get_instance();
 
-		$this->setPrivateProperty( $smush, 'is_pro', false );
+		$this->set_private_property( $smush, 'is_pro', false );
 
 		$smush->validate_install();
 	}
+
 }
