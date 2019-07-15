@@ -3,6 +3,7 @@
 - New: Integration with Envira Gallery
 - Enhance: SmartCrawl readability analysis compatibility
 - Enhance: Allow optimizing directories in root folder
+- Enhance: Error descriptions during optimization
 - Fix: NextGen summary meta box layout
 - Fix: Lazy load spinner layout issue
 
