@@ -38,6 +38,36 @@ class Common {
 
 		// WPML integration.
 		add_action( 'wp_smush_image_optimised', array( $this, 'wpml_update_duplicate_meta' ), 10, 3 );
+
+		// Remove any pre_get_posts_filters added by WP Media Folder plugin.
+		add_action( 'wp_smush_remove_filters', array( $this, 'remove_filters' ) );
+	}
+
+	/**
+	 * Remove any pre_get_posts_filters added by WP Media Folder plugin.
+	 */
+	public function remove_filters() {
+		// Remove any filters added b WP media Folder plugin to get the all attachments.
+		if ( class_exists( 'Wp_Media_Folder' ) ) {
+			global $wp_media_folder;
+			if ( is_object( $wp_media_folder ) ) {
+				remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts1' ) );
+				remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts' ), 0, 1 );
+			}
+		}
+
+		global $wpml_query_filter;
+
+		// If WPML is not installed, return.
+		if ( ! is_object( $wpml_query_filter ) ) {
+			return;
+		}
+
+		// Remove language filter and let all the images be smushed at once.
+		if ( has_filter( 'posts_join', array( $wpml_query_filter, 'posts_join_filter' ) ) ) {
+			remove_filter( 'posts_join', array( $wpml_query_filter, 'posts_join_filter' ), 10, 2 );
+			remove_filter( 'posts_where', array( $wpml_query_filter, 'posts_where_filter' ), 10, 2 );
+		}
 	}
 
 	/**************************************

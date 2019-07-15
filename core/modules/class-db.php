@@ -141,7 +141,7 @@ class DB {
 			// Loop Over to get all the attachments.
 			while ( $get_posts ) {
 				// Remove the Filters added by WP Media Folder.
-				$this->remove_filters();
+				do_action( 'wp_smush_remove_filters' );
 
 				$query = new WP_Query( $args );
 
@@ -238,7 +238,7 @@ class DB {
 		$limit  = $this->query_limit();
 		$mime   = implode( "', '", Core::$mime_types );
 		// Remove the Filters added by WP Media Folder.
-		$this->remove_filters();
+		do_action( 'wp_smush_remove_filters' );
 
 		$get_posts = true;
 
@@ -313,7 +313,7 @@ class DB {
 		$posts = array();
 
 		// Remove the Filters added by WP Media Folder.
-		$this->remove_filters();
+		do_action( 'wp_smush_remove_filters' );
 		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s ORDER BY `post_id` DESC LIMIT $offset, $limit", Smush::$smushed_meta_key ) ) ) {
 			if ( ! is_wp_error( $results ) && count( $results ) > 0 ) {
 				$posts = array_merge( $posts, $results );
@@ -469,8 +469,8 @@ class DB {
 		);
 		// Loop over to get all the attachments.
 		while ( $get_posts ) {
-			// Remove the filters added by WP Media folder.
-			$this->remove_filters();
+			// Remove the Filters added by WP Media Folder.
+			do_action( 'wp_smush_remove_filters' );
 
 			$query = new WP_Query( $args );
 
@@ -496,33 +496,6 @@ class DB {
 		}
 
 		return $return_ids ? $super_smushed : count( $super_smushed );
-	}
-
-	/**
-	 * Remove any pre_get_posts_filters added by WP Media Folder plugin
-	 */
-	private function remove_filters() {
-		// Remove any filters added b WP media Folder plugin to get the all attachments.
-		if ( class_exists( '\Wp_Media_Folder' ) ) {
-			global $wp_media_folder;
-			if ( is_object( $wp_media_folder ) ) {
-				remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts1' ) );
-				remove_filter( 'pre_get_posts', array( $wp_media_folder, 'wpmf_pre_get_posts' ), 0, 1 );
-			}
-		}
-
-		global $wpml_query_filter;
-
-		// If WPML is not installed, return.
-		if ( ! is_object( $wpml_query_filter ) ) {
-			return;
-		}
-
-		// Remove language filter and let all the images be smushed at once.
-		if ( has_filter( 'posts_join', array( $wpml_query_filter, 'posts_join_filter' ) ) ) {
-			remove_filter( 'posts_join', array( $wpml_query_filter, 'posts_join_filter' ), 10, 2 );
-			remove_filter( 'posts_where', array( $wpml_query_filter, 'posts_where_filter' ), 10, 2 );
-		}
 	}
 
 	/**

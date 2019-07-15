@@ -30,12 +30,11 @@ if ( ( defined( 'WP_SMUSH_PRESERVE_STATS' ) && WP_SMUSH_PRESERVE_STATS ) || true
 global $wpdb;
 
 $smushit_keys = array(
-	'resize-sizes',
 	'resmush-list',
+	'nextgen-resmush-list',
 	'resize_sizes',
 	'transparent_png',
 	'image_sizes',
-	'nextgen-resmush-list',
 	'super_smushed',
 	'super_smushed_nextgen',
 	'settings_updated',
