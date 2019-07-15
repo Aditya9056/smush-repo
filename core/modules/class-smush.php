@@ -1679,7 +1679,7 @@ class Smush extends Abstract_Module {
 
 			wp_send_json_error(
 				array(
-					'error_msg'    => '<p class="wp-smush-error-message">' . $smush->get_error_message() . '</p>',
+					'error_msg'    => '<p class="wp-smush-error-message">' . Helper::filter_error( $smush->get_error_message(), $attachment_id ) . '</p>',
 					'show_warning' => intval( $this->show_warning() ),
 				)
 			);
