@@ -76,12 +76,12 @@ jQuery( function ( $ ) {
 		//Reduce the opacity of stats and disable the click
 		disable_links( current_button );
 
-		Smush.progress_bar( current_button, wp_smush_msgs[action], 'show' );
+		Smush.progressBar( current_button, wp_smush_msgs[action], 'show' );
 
 		//Restore the image
 		$.post( ajaxurl, params, function ( r ) {
 
-			Smush.progress_bar( current_button, wp_smush_msgs[action], 'hide' );
+			Smush.progressBar( current_button, wp_smush_msgs[action], 'hide' );
 
 			//reset all functionality
 			enable_links( current_button );
@@ -97,7 +97,7 @@ jQuery( function ( $ ) {
 				}
 
 				if ( 'undefined' != typeof (r.data) && 'restore' === action ) {
-					Smush.update_image_stats( r.data.new_size );
+					Smush.updateImageStats( r.data.new_size );
 				}
 			} else {
 				if ( r.data.message ) {
@@ -298,7 +298,7 @@ jQuery( function ( $ ) {
 						$( '.super-smush-attachments .wp-smush-stats' ).html( r.data.super_smush_stats );
 					}
 				}
-				Smush.update_stats( scan_type );
+				Smush.updateStats( scan_type );
 			}
 		} ).always( function () {
 			// Hide the progress bar.
@@ -709,7 +709,7 @@ jQuery( function ( $ ) {
 					$( '.sui-notice-success.wp-smush-all-done' ).show();
 				}
 
-				Smush.update_stats();
+				Smush.updateStats();
 			}
 		} );
 	} );
