@@ -1789,13 +1789,11 @@ class Smush extends Abstract_Module {
 	 * @return bool
 	 */
 	public function delete_images( $image_id ) {
-		$db = WP_Smush::get_instance()->core()->mod->db;
+		// Update the savings cache.
+		WP_Smush::get_instance()->core()->db()->resize_savings( true );
 
 		// Update the savings cache.
-		$db->resize_savings( true );
-
-		// Update the savings cache.
-		$db->conversion_savings( true );
+		WP_Smush::get_instance()->core()->db()->conversion_savings( true );
 
 		// If no image id provided.
 		if ( empty( $image_id ) ) {

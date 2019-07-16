@@ -46,6 +46,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace Smush;
 
 use Exception;
+use Smush\Core\Modules\DB;
 use WP_CLI;
 use WPMUDEV_Dashboard;
 
@@ -275,7 +276,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			self::$is_pro = $this->validate_install();
 
-			$this->core  = new Core\Core();
+			$this->core  = new Core\Core( new Core\Modules\DB() );
 			$this->admin = new App\Admin();
 
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {

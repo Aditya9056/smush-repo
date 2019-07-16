@@ -20,13 +20,6 @@ if ( ! defined( 'WPINC' ) ) {
 class Modules {
 
 	/**
-	 * Database module.
-	 *
-	 * @var Modules\DB
-	 */
-	public $db;
-
-	/**
 	 * Directory Smush module.
 	 *
 	 * @var Modules\Dir
@@ -88,7 +81,6 @@ class Modules {
 	 * Modules constructor.
 	 */
 	public function __construct() {
-		$this->db       = new Modules\DB();
 		$this->dir      = new Modules\Dir();
 		$this->smush    = new Modules\Smush();
 		$this->backup   = new Modules\Backup();

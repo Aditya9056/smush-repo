@@ -148,7 +148,7 @@ class Installer {
 		WP_Smush::get_instance()->core()->mod->dir->create_table();
 
 		// Run the directory smush table update.
-		WP_Smush::get_instance()->core()->mod->db->update_dir_path_hash();
+		WP_Smush::get_instance()->core()->db()->update_dir_path_hash();
 	}
 
 	/**

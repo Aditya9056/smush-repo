@@ -42,6 +42,14 @@ class Core {
 	public $mod;
 
 	/**
+	 * Database module.
+	 *
+	 * @since 3.3.0
+	 * @var Modules\DB
+	 */
+	private $database;
+
+	/**
 	 * Allowed mime types of image.
 	 *
 	 * @var array $mime_types
@@ -196,9 +204,11 @@ class Core {
 	 * Core constructor.
 	 *
 	 * @since 2.9.0
+	 * @param Modules\DB $db  Database module.
 	 * @throws Exception  Autoload exception.
 	 */
-	public function __construct() {
+	public function __construct( Modules\DB $db ) {
+		$this->database = $db;
 		$this->init();
 
 		if ( is_admin() ) {
@@ -219,6 +229,17 @@ class Core {
 		 * work, also load after settings have been saved on init action.
 		 */
 		add_action( 'plugins_loaded', array( $this, 'load_libs' ), 90 );
+	}
+
+	/**
+	 * Getter for database module.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @return Modules\DB
+	 */
+	public function db() {
+		return $this->database;
 	}
 
 	/**
@@ -444,7 +465,7 @@ class Core {
 
 			if ( empty( $this->unsmushed_attachments ) ) {
 				// Get attachments if all the images are not smushed.
-				$this->unsmushed_attachments = $this->remaining_count > 0 ? $this->mod->db->get_unsmushed_attachments() : array();
+				$this->unsmushed_attachments = $this->remaining_count > 0 ? $this->database->get_unsmushed_attachments() : array();
 				$this->unsmushed_attachments = ! empty( $this->unsmushed_attachments ) && is_array( $this->unsmushed_attachments ) ? array_values( $this->unsmushed_attachments ) : $this->unsmushed_attachments;
 			}
 
@@ -607,25 +628,25 @@ class Core {
 		$this->dir_stats = Modules\Dir::should_continue() ? $this->mod->dir->total_stats() : array();
 
 		// Setup Attachments and total count.
-		$this->mod->db->total_count( true );
+		$this->database->total_count( true );
 
 		$this->stats = $this->global_stats( $force_update );
 
 		if ( empty( $this->smushed_attachments ) ) {
 			// Get smushed attachments.
-			$this->smushed_attachments = $this->mod->db->smushed_count( true, $force_update );
+			$this->smushed_attachments = $this->database->smushed_count( true, $force_update );
 		}
 
 		// Get supersmushed images count.
 		if ( empty( $this->super_smushed ) ) {
-			$this->super_smushed = $this->mod->db->super_smushed_count();
+			$this->super_smushed = $this->database->super_smushed_count();
 		}
 
 		// Set pro savings.
 		$this->set_pro_savings();
 
 		// Get skipped attachments.
-		$this->skipped_attachments = $this->mod->db->skipped_count( $force_update );
+		$this->skipped_attachments = $this->database->skipped_count( $force_update );
 		$this->skipped_count       = count( $this->skipped_attachments );
 
 		// Set smushed count.
@@ -745,12 +766,12 @@ class Core {
 		}
 
 		// Resize Savings.
-		$smush_data['resize_count']   = $this->mod->db->resize_savings( false, false, true );
-		$resize_savings               = $this->mod->db->resize_savings( false );
+		$smush_data['resize_count']   = $this->database->resize_savings( false, false, true );
+		$resize_savings               = $this->database->resize_savings( false );
 		$smush_data['resize_savings'] = ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
 
 		// Conversion Savings.
-		$conversion_savings               = $this->mod->db->conversion_savings( false );
+		$conversion_savings               = $this->database->conversion_savings( false );
 		$smush_data['conversion_savings'] = ! empty( $conversion_savings['bytes'] ) ? $conversion_savings['bytes'] : 0;
 
 		if ( ! isset( $smush_data['bytes'] ) || $smush_data['bytes'] < 0 ) {
