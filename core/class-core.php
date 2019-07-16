@@ -858,8 +858,9 @@ class Core {
 	public function get_max_image_dimensions() {
 		global $_wp_additional_image_sizes;
 
-		$width = $height = 0;
-		$limit = 9999; // Post-thumbnail.
+		$width  = 0;
+		$height = 0;
+		$limit  = 9999; // Post-thumbnail.
 
 		$image_sizes = get_intermediate_image_sizes();
 

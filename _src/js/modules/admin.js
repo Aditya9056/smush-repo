@@ -262,7 +262,7 @@ jQuery( function ( $ ) {
 					}
 
 					if ( 'nextgen' === scan_type ) {
-						wp_smushit_data.bytes = parseInt( wp_smushit_data.size_before ) - parseInt( wp_smushit_data.size_after )
+						wp_smushit_data.bytes = parseInt( wp_smushit_data.size_before ) - parseInt( wp_smushit_data.size_after );
 					}
 
 					// Hide the Existing wrapper.
@@ -476,6 +476,9 @@ jQuery( function ( $ ) {
 	$( 'body' ).on( 'click', '.wp-smush-nextgen-bulk', function ( e ) {
 		// prevent the default action
 		e.preventDefault();
+
+		// Remove existing Re-Smush notices.
+		$( '.wp-smush-resmush-notice' ).remove();
 
 		//Check for ids, if there is none (Unsmushed or lossless), don't call smush function
 		if ( 'undefined' === typeof wp_smushit_data ||

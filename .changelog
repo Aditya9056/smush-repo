@@ -7,6 +7,7 @@
 - Fix: NextGen summary meta box layout
 - Fix: Lazy load spinner layout issue
 - Fix: PHP warnings on NextGen integration
+- Fix: UI layout in NextGen integration
 
 = 3.2.2 =
 
