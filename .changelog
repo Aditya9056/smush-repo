@@ -6,6 +6,7 @@
 - Enhance: Error descriptions during optimization
 - Fix: NextGen summary meta box layout
 - Fix: Lazy load spinner layout issue
+- Fix: PHP warnings on NextGen integration
 
 = 3.2.2 =
 
