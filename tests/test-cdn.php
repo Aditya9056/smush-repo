@@ -260,33 +260,8 @@ class CdnTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that image src is replaced, srcset and sizes attributes are added when CDN is active.
-	 *
-	 * We don't really need this test... But getting that 100% code coverage is awesome.
-	 *
-	 * @throws ReflectionException  Exception.
-	 */
-	/*
-	public function testCdnGeneralFunctionality() {
-		$parser = new Parser();
-		$parser->enable( 'cdn' );
-
-		$smush   = WP_Smush::get_instance();
-		$cdn     = $smush->core()->mod->cdn;
-		$content = $this->get_content( 'single-image.html' );
-
-		$this->enableCDN( $cdn );
-		Settings::get_instance()->set( 'auto_resize', true );
-
-		// The new content should not match the old one, otherwise it will mean that nothing has changed.
-		$this->assertNotEquals( $content, $parser->parse_page( $content ) );
-	}
-	*/
-
-	/**
 	 * Test smush_cdn_skip_image filter.
 	 *
-	 * @depends testCdnGeneralFunctionality
 	 * @throws ReflectionException  Exception.
 	 */
 	public function testCdnSmush_cdn_skip_imageFilter() {
@@ -360,14 +335,8 @@ class CdnTest extends WP_UnitTestCase {
 
 		// Convert image src to CDN.
 		$cdn_image = $parser->parse_page( $image );
-		$this->assertEquals( 5, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
-
-		// Enable auto resize.
-		Settings::get_instance()->set( 'auto_resize', true );
-		$image = wp_get_attachment_image( $attachment_id, 'full' );
-
-		$cdn_image = $parser->parse_page( $image );
-		$this->assertEquals( 8, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
+		// Will have 4 images, because example.com is not a default domain.
+		$this->assertEquals( 4, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
 
 		wp_delete_attachment( $attachment_id );
 	}
