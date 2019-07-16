@@ -15,7 +15,6 @@ namespace Smush\Core\Modules;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Smush\Core\Core;
-use Smush\Core\Helper;
 use Smush\Core\Installer;
 use Smush\WP_Smush;
 use WP_Error;
@@ -27,7 +26,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Class Dir
  */
-class Dir {
+class Dir extends Abstract_Module {
 	/**
 	 * Contains a list of optimised images.
 	 *
@@ -278,7 +277,7 @@ class Dir {
 		$file_time = @filectime( $path );
 
 		// If Super-Smush enabled, update supersmushed meta value also.
-		$lossy = WP_Smush::is_pro() && WP_Smush::get_instance()->core()->mod->settings->get( 'lossy' ) ? 1 : 0;
+		$lossy = WP_Smush::is_pro() && $this->settings->get( 'lossy' ) ? 1 : 0;
 
 		// All good, Update the stats.
 		$wpdb->query(

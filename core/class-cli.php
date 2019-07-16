@@ -172,7 +172,7 @@ class CLI extends WP_CLI_Command {
 		$core = WP_Smush::get_instance()->core();
 
 		// We need to initialize the database module (maybe all other modules as well?).
-		$core->mod->settings->init();
+		Settings::get_instance()->init();
 
 		$unsmushed_attachments = $core->db()->get_unsmushed_attachments();
 

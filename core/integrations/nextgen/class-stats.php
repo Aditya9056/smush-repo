@@ -286,7 +286,7 @@ class Stats extends NextGen {
 		}
 
 		// Check if Lossy enabled.
-		$opt_lossy_val = WP_Smush::get_instance()->core()->mod->settings->get( 'lossy' );
+		$opt_lossy_val = $this->settings->get( 'lossy' );
 
 		// Check if premium user, compression was lossless, and lossy compression is enabled.
 		if ( ! $show_resmush && $this->is_pro_user && ! $is_lossy && $opt_lossy_val && ! empty( $image_type ) && 'image/gif' !== $image_type ) {
@@ -598,16 +598,14 @@ class Stats extends NextGen {
 	 * @return bool
 	 */
 	function show_resmush( $show_resmush, $wp_smush_data ) {
-		$smush = WP_Smush::get_instance()->core()->mod;
-
 		// Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped.
-		if ( $smush->settings->get( 'original' ) && WP_Smush::is_pro() ) {
+		if ( $this->settings->get( 'original' ) && WP_Smush::is_pro() ) {
 			// IF full image was not smushed.
 			if ( ! empty( $wp_smush_data ) && empty( $wp_smush_data['sizes']['full'] ) ) {
 				$show_resmush = true;
 			}
 		}
-		if ( $smush->settings->get( 'strip_exif' ) ) {
+		if ( $this->settings->get( 'strip_exif' ) ) {
 			// If Keep Exif was set to tru initially, and since it is set to false now.
 			if ( ! empty( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
 				$show_resmush = true;
