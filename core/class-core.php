@@ -434,7 +434,8 @@ class Core {
 		// Load the stats on selected screens only.
 		if ( 'toplevel_page_smush' === $current_page ) {
 			// Get resmush list, If we have a resmush list already, localize those IDs.
-			if ( $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
+			$resmush_ids = get_option( 'wp-smush-resmush-list' );
+			if ( $resmush_ids ) {
 				// Get the attachments, and get lossless count.
 				$this->resmush_ids = $resmush_ids;
 			}
@@ -646,7 +647,8 @@ class Core {
 	 * @todo: remove id from global stats stored in db
 	 */
 	public function global_stats( $force_update = false ) {
-		if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
+		$stats = get_option( 'smush_global_stats' );
+		if ( ! $force_update && $stats ) {
 			if ( ! empty( $stats ) && isset( $stats['size_before'] ) ) {
 				if ( isset( $stats['id'] ) ) {
 					unset( $stats['id'] );
