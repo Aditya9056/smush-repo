@@ -80,24 +80,6 @@ class Core {
 	);
 
 	/**
-	 * List of smush settings pages.
-	 *
-	 * @var array $plugin_pages
-	 */
-	public static $plugin_pages = array(
-		'gallery_page_wp-smush-nextgen-bulk',
-		'toplevel_page_smush-network',
-		'toplevel_page_smush',
-	);
-
-	/**
-	 * Link to upgrade.
-	 *
-	 * @var string $upgrade_url
-	 */
-	public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
-
-	/**
 	 * Settings array.
 	 *
 	 * @var array Settings

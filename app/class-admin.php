@@ -38,6 +38,17 @@ class Admin {
 	public $ajax;
 
 	/**
+	 * List of smush settings pages.
+	 *
+	 * @var array $plugin_pages
+	 */
+	public static $plugin_pages = array(
+		'gallery_page_wp-smush-nextgen-bulk',
+		'toplevel_page_smush-network',
+		'toplevel_page_smush',
+	);
+
+	/**
 	 * Admin constructor.
 	 */
 	public function __construct() {
@@ -155,7 +166,7 @@ class Admin {
 		}
 
 		// Load on all Smush page only.
-		if ( isset( $current_screen->id ) && in_array( $current_screen->id, Core::$plugin_pages, true ) ) {
+		if ( isset( $current_screen->id ) && in_array( $current_screen->id, self::$plugin_pages, true ) ) {
 			// Smush admin (smush-admin) includes the Shared UI.
 			wp_enqueue_style( 'smush-admin' );
 			wp_enqueue_script( 'smush-wpmudev-sui' );
