@@ -9,7 +9,6 @@ namespace Smush\App;
 
 use Smush\Core\Core;
 use Smush\Core\Helper;
-use Smush\Core\Modules\DB;
 use Smush\Core\Modules\Smush;
 use Smush\Core\Settings;
 use Smush\WP_Smush;
