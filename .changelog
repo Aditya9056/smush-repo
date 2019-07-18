@@ -7,7 +7,8 @@
 - Enhance: Allow optimizing directories in root folder
 - Enhance: Error descriptions during optimization
 - Fix: NextGen summary meta box layout
-- Fix: Lazy load spinner layout issue
+- Fix: Images with empty class not lazy loading
+- Fix: Lazy loading spinner layout issue
 
 = 3.2.2.1 =
 

@@ -291,11 +291,11 @@ lazySizesConfig.loadMode = 1;";
 		// Add .lazyload class.
 		$class = Helpers\Parser::get_attribute( $new_image, 'class' );
 		if ( $class ) {
-			Helpers\Parser::remove_attribute( $new_image, 'class' );
 			$class .= ' lazyload';
 		} else {
 			$class = 'lazyload';
 		}
+		Helpers\Parser::remove_attribute( $new_image, 'class' );
 		Helpers\Parser::add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
 
 		Helpers\Parser::add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
