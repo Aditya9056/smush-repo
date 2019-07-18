@@ -602,9 +602,16 @@ class Dir {
 		foreach ( $paths as $path ) {
 			// Prevent phar deserialization vulnerability.
 			$path = trim( $path );
-			if ( strpos( strtolower( $path ), 'phar://' ) !== false ) {
-				continue;
+
+			$normalized_path = strtolower( trim( $path ) );
+			if ( strpos( $normalized_path, 'phar://' ) !== false ) {
+				throw new \Exception( __( 'phar handler not allowed', 'wp-smushit' ) );
 			}
+
+
+			//if ( strpos( strtolower( $path ), 'phar://' ) !== false ) {
+			//	continue;
+			//}
 
 			/**
 			 * Path is an image.
