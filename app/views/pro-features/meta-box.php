@@ -41,6 +41,18 @@ if ( ! defined( 'WPINC' ) ) {
 	</li>
 	<li class="smush-pro-feature-row">
 		<div class="smush-pro-feature-title">
+			<?php esc_html_e( 'No limits, no restrictions', 'wp-smushit' ); ?></div>
+		<div class="smush-pro-feature-desc">
+			<?php
+			esc_html_e(
+				"Need a one-click bulk optimization solution for compressing your entire existing image library fast and easy? Pro unlocks unlimited bulk smushing, and lifts the image size limit from 5Mb to 32Mb. Did somebody say 'retina'? Yes, please.",
+				'wp-smushit'
+			);
+			?>
+		</div>
+	</li>
+	<li class="smush-pro-feature-row">
+		<div class="smush-pro-feature-title">
 			<?php esc_html_e( 'Smush my original full size images', 'wp-smushit' ); ?></div>
 		<div class="smush-pro-feature-desc">
 			<?php
