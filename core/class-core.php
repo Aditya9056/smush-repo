@@ -272,6 +272,7 @@ class Core {
 		new Integrations\Gutenberg();
 		new Integrations\Composer();
 		new Integrations\Envira( $this->mod->cdn );
+		new Integrations\Avada( $this->mod->cdn );
 	}
 
 	/**

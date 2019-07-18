@@ -404,7 +404,7 @@ class CDN extends Abstract_Module {
 	 * PUBLIC METHODS CDN
 	 *
 	 * @see parse_image()
-     * @see parse_background_image()
+	 * @see parse_background_image()
 	 * @see process_src()
 	 * @see update_image_srcset()
 	 * @see update_image_sizes()
@@ -525,7 +525,12 @@ class CDN extends Abstract_Module {
 			}
 		}
 
-		return $new_image;
+		/**
+		 * Filter hook to alter image tag before replacing the background image in content.
+		 *
+		 * @param string $image  Image tag.
+		 */
+		return apply_filters( 'smush_cdn_bg_image_tag', $new_image );
 	}
 
 	/**
@@ -1192,7 +1197,7 @@ class CDN extends Abstract_Module {
 	 * Check if the image path is supported by the CDN.
 	 *
 	 * @since 3.0
-     * @since 3.3.0 Changed access to public.
+	 * @since 3.3.0 Changed access to public.
 	 *
 	 * @param string $src  Image path.
 	 *

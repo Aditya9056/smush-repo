@@ -80,7 +80,8 @@ class Envira {
 			$original_src = $image_src;
 
 			// Replace the data-envira-src of the image with CDN link.
-			if ( $image_src = $this->convert_url_to_cdn( $image_src ) ) {
+			$image_src = $this->convert_url_to_cdn( $image_src );
+			if ( $image_src ) {
 				$img = preg_replace( '#(data-envira-src=["|\'])' . $original_src . '(["|\'])#i', '\1' . $image_src . '\2', $img, 1 );
 			}
 		}
@@ -98,8 +99,9 @@ class Envira {
 			if ( isset( $images[0] ) && is_array( $images[0] ) ) {
 				foreach ( $images[0] as $image ) {
 					// Replace the data-envira-srcset of the image with CDN link.
-					if ( $image_src = $this->convert_url_to_cdn( $image ) ) {
-						$replace = true;
+					$image_src = $this->convert_url_to_cdn( $image );
+					if ( $image_src ) {
+						$replace      = true;
 						$image_srcset = preg_replace( '#' . $image . '#i', '\1' . $image_src . '\2', $image_srcset, 1 );
 					}
 				}
@@ -118,7 +120,7 @@ class Envira {
 	 *
 	 * @since 3.3.0
 	 *
-	 * @param string $url
+	 * @param string $url  Image URL.
 	 *
 	 * @return bool|string
 	 */
