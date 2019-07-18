@@ -456,10 +456,7 @@ class Stats extends NextGen {
 	 * Updates the cache for Smushed and Unsmushed images
 	 */
 	function update_cache() {
-		try {
-			$this->get_ngg_images( 'smushed', '', true );
-		} catch ( Exception $e ) {
-		}
+		$this->get_ngg_images( 'smushed', '', true );
 	}
 
 	/**
