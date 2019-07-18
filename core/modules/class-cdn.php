@@ -437,12 +437,11 @@ class CDN extends Abstract_Module {
 			return $image;
 		}
 
-		$new_image =
-
 		$new_image = $image;
 
 		// Make sure this image is inside a supported directory. Try to convert to valid path.
-		if ( $src = $this->is_supported_path( $src ) ) {
+		$src = $this->is_supported_path( $src );
+		if ( $src ) {
 			// Store the original $src to be used later on.
 			$original_src = $src;
 
@@ -457,27 +456,26 @@ class CDN extends Abstract_Module {
 			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $image ) && $this->settings->get( 'auto_resize' ) && ! apply_filters( 'smush_skip_adding_srcset', false ) ) {
 				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
 
-				Helpers\Parser::add_attribute( $new_image, 'srcset', $srcset );
+				if ( ! is_null( $srcset ) && false !== $srcset ) {
+					Helpers\Parser::add_attribute( $new_image, 'srcset', $srcset );
+				}
 
-				if ( false !== $sizes ) {
+				if ( ! is_null( $srcset ) && false !== $sizes ) {
 					Helpers\Parser::add_attribute( $new_image, 'sizes', $sizes );
 				}
 			}
 		}
 
 		// Support for 3rd party lazy loading plugins.
-		$data_src = Helpers\Parser::get_attribute( $new_image, 'data-src' );
-		if ( $data_src = $this->is_supported_path( $data_src ) ) {
-			$cdn_image = $this->process_src( $image, $data_src );
-			Helpers\Parser::remove_attribute( $new_image, 'data-src' );
-			Helpers\Parser::add_attribute( $new_image, 'data-src', $cdn_image );
-		}
-
-		$data_lazy_src = Helpers\Parser::get_attribute( $new_image, 'data-lazy-src' );
-		if ( $data_lazy_src = $this->is_supported_path( $data_lazy_src ) ) {
-			$cdn_image = $this->process_src( $image, $data_lazy_src );
-			Helpers\Parser::remove_attribute( $new_image, 'data-lazy-src' );
-			Helpers\Parser::add_attribute( $new_image, 'data-lazy-src', $cdn_image );
+		$lazy_attributes = array( 'data-src', 'data-lazy-src', 'data-lazyload' );
+		foreach ( $lazy_attributes as $attr ) {
+			$data_src = Helpers\Parser::get_attribute( $new_image, $attr );
+			$data_src = $this->is_supported_path( $data_src );
+			if ( $data_src ) {
+				$cdn_image = $this->process_src( $image, $data_src );
+				Helpers\Parser::remove_attribute( $new_image, $attr );
+				Helpers\Parser::add_attribute( $new_image, $attr, $cdn_image );
+			}
 		}
 
 		/**
@@ -513,7 +511,8 @@ class CDN extends Abstract_Module {
 		$new_image = $image;
 
 		// Make sure this image is inside a supported directory. Try to convert to valid path.
-		if ( $src = $this->is_supported_path( $src ) ) {
+		$src = $this->is_supported_path( $src );
+		if ( $src ) {
 			// Store the original $src to be used later on.
 			$original_src = $src;
 
@@ -759,7 +758,7 @@ class CDN extends Abstract_Module {
 					'message' => __( 'Too many requests, please try again in a moment.', 'wp-smushit' ),
 				)
 			);
-        }
+		}
 
 		// Some other error from API.
 		if ( ! $status->success ) {
@@ -792,7 +791,7 @@ class CDN extends Abstract_Module {
 		if ( ! wp_doing_cron() ) {
 			// At this point we already know that $status->data is valid.
 			wp_send_json_success( $status );
-        }
+		}
 	}
 
 	/**
@@ -812,7 +811,7 @@ class CDN extends Abstract_Module {
 	 */
 	public function schedule_cron() {
 		if ( ! wp_next_scheduled( 'smush_update_cdn_stats' ) ) {
-		    // Schedule first run for next day, as we've already checked just now.
+			// Schedule first run for next day, as we've already checked just now.
 			wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', 'smush_update_cdn_stats' );
 		}
 	}
@@ -1133,6 +1132,11 @@ class CDN extends Abstract_Module {
 		} else {
 			// Try to get the dimensions directly from the file.
 			list( $width, $height ) = getimagesize( $src );
+
+			// This is an image placeholder - do not generate srcset.
+			if ( $width === $height && 1 === $width ) {
+				return false;
+			}
 
 			$image_meta = array(
 				'width'  => $width,
