@@ -311,7 +311,8 @@ jQuery( function ( $ ) {
 
 			// Remove success message from button.
 			setTimeout( function () {
-				button.removeClass( 'smush-button-check-success' ).text( wp_smush_msgs.resmush_check );
+				button.removeClass( 'smush-button-check-success' )
+					.html( '<i class="sui-icon-update" aria-hidden="true"></i>' + wp_smush_msgs.resmush_check );
 			}, 2000 );
 
 			$( '.wp-smush-all' ).removeAttr( 'disabled' );
