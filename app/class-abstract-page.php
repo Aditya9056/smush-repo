@@ -131,7 +131,7 @@ abstract class Abstract_Page {
 	 *
 	 * @param string $name  View name = file name.
 	 * @param array  $args  Arguments.
-     * @param string $dir   Directory for the views. Default: views.
+	 * @param string $dir   Directory for the views. Default: views.
 	 */
 	public function view( $name, $args = array(), $dir = 'views' ) {
 		$file    = WP_SMUSH_DIR . "app/{$dir}/{$name}.php";
