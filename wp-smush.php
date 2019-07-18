@@ -89,6 +89,11 @@ if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
 	define( 'WP_SMUSH_TIMEOUT', apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 ) );
 }
 
+// Compat with WPMU DEV staging.
+if ( isset( $_SERVER['WPMUDEV_HOSTING_ENV'] ) && 'staging' === wp_unslash( $_SERVER['WPMUDEV_HOSTING_ENV'] ) ) {
+	define( 'WP_SMUSH_ASYNC', false );
+}
+
 /**
  * To support Smushing on staging sites like SiteGround staging where staging site urls are different
  * but redirects to main site url. Remove the protocols and www, and get the domain name.*
