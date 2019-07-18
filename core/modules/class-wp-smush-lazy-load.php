@@ -284,11 +284,11 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 		// Add .lazyload class.
 		$class = WP_Smush_Page_Parser::get_attribute( $new_image, 'class' );
 		if ( $class ) {
-			WP_Smush_Page_Parser::remove_attribute( $new_image, 'class' );
 			$class .= ' lazyload';
 		} else {
 			$class = 'lazyload';
 		}
+		WP_Smush_Page_Parser::remove_attribute( $new_image, 'class' );
 		WP_Smush_Page_Parser::add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
 
 		WP_Smush_Page_Parser::add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
