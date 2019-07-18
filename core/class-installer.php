@@ -121,6 +121,10 @@ class Installer {
 				self::upgrade_3_2_2();
 			}
 
+			if ( version_compare( $version, '3.2.2.1', '<' ) ) {
+				self::upgrade_3_2_2_1();
+			}
+
 			// Create/upgrade directory smush table.
 			self::directory_smush_table();
 
@@ -292,6 +296,24 @@ class Installer {
 		$lazy['animation'] = $animation;
 
 		Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $lazy );
+	}
+
+	/**
+	 * Upgrade to 3.2.2.1
+	 *
+	 * Fix the network wide access upgrade.
+	 *
+	 * @since 3.2.2.1
+	 */
+	private static function upgrade_3_2_2_1() {
+		if ( ! is_multisite() ) {
+			return;
+		}
+
+		wp_cache_flush();
+		$network_enabled = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
+		update_site_option( WP_SMUSH_PREFIX . 'networkwide', ! ( '1' === $network_enabled ) );
+		wp_cache_flush();
 	}
 
 }
