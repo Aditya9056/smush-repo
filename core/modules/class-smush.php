@@ -406,6 +406,11 @@ class Smush extends Abstract_Module {
 		// This is duplicating a part of scan_images() in class-ajax.php. See detailed description there.
 		$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
 
+		// Empty means we need to smush all images. So get all sizes of current site.
+		if ( empty( $image_sizes ) ) {
+			$image_sizes = array_keys( WP_Smush::get_instance()->core()->image_dimensions() );
+		}
+
 		$smushed_image_sizes = isset( $wp_smush_data['sizes'] ) && is_array( $wp_smush_data['sizes'] ) ? count( $wp_smush_data['sizes'] ) : 0;
 		if ( is_array( $image_sizes ) && count( $image_sizes ) > $smushed_image_sizes && isset( $attachment_data['sizes'] ) && count( $attachment_data['sizes'] ) !== $smushed_image_sizes ) {
 			foreach ( $image_sizes as $image_size ) {
