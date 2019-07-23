@@ -7,6 +7,7 @@
 - Enhance: Allow optimizing directories in root folder
 - Enhance: Error descriptions during optimization
 - Fix: Issue with CDN auto resize and Revolution Slider
+- Fix: CDN auto resize feature overwriting the correct sizes attribute
 - Fix: NextGen summary meta box layout
 - Fix: Images with empty class not lazy loading
 - Fix: Lazy loading spinner layout issue
