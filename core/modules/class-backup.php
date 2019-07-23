@@ -117,12 +117,8 @@ class Backup extends Abstract_Module {
 		}
 
 		// Prevent phar deserialization vulnerability.
-		if ( false !== strpos( strtolower( trim( $backup_path ) ), 'phar://' ) ) {
-			throw new Exception( 'phar handler not allowed' );
-		}
-
 		// Return if backup file doesn't exists.
-		if ( ! file_exists( $backup_path ) ) {
+		if ( false !== strpos( strtolower( trim( $backup_path ) ), 'phar://' ) || ! file_exists( $backup_path ) ) {
 			return false;
 		}
 
