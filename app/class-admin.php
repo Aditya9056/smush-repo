@@ -53,8 +53,6 @@ class Admin {
 	 */
 	public function __construct() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		// Load js and css on pages with Media Uploader - WP Enqueue Media.
-		add_action( 'wp_enqueue_media', array( $this, 'enqueue_scripts' ) );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'network_admin_menu', array( $this, 'add_menu_pages' ) );
@@ -124,8 +122,6 @@ class Admin {
 	 * Enqueue scripts.
 	 */
 	public function enqueue_scripts() {
-		$this->register_scripts();
-
 		$current_page   = '';
 		$current_screen = '';
 
@@ -134,36 +130,16 @@ class Admin {
 			$current_page   = ! empty( $current_screen ) ? $current_screen->base : $current_page;
 		}
 
-		/**
-		 * If this is called by wp_enqueue_media action, check if we are on one of the
-		 * required screen to avoid duplicate queries.
-		 * We have already enqueued scripts using admin_enqueue_scripts on required pages.
-		 */
-		if ( in_array( $current_page, Core::$pages, true ) && doing_action( 'wp_enqueue_media' ) ) {
+		if ( ! in_array( $current_page, Core::$pages, true ) ) {
 			return;
-		}
-
-		/**
-		 * Load js and css on all admin pages, in order to display install/upgrade notice.
-		 * And If upgrade/install message is dismissed or for pro users, Do not enqueue script.
-		 */
-		if ( get_site_option( WP_SMUSH_PREFIX . 'hide_upgrade_notice' ) || WP_Smush::is_pro() ) {
-			/**
-			 * Do not enqueue, unless it is one of the required screen, or not in WordPress backend.
-			 *
-			 * @var array $pages  List of screens where script needs to be loaded.
-			 */
-			if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, Core::$pages, true ) && ! did_action( 'wp_enqueue_media' ) ) ) {
-				return;
-			}
 		}
 
 		// Allows to disable enqueuing smush files on a particular page.
-		$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
-
-		if ( ! $enqueue_smush ) {
+		if ( ! apply_filters( 'wp_smush_enqueue', true ) ) {
 			return;
 		}
+
+		$this->register_scripts();
 
 		// Load on all Smush page only.
 		if ( isset( $current_screen->id ) && in_array( $current_screen->id, self::$plugin_pages, true ) ) {
