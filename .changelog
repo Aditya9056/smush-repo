@@ -11,6 +11,7 @@
 - Fix: NextGen summary meta box layout
 - Fix: Images with empty class not lazy loading
 - Fix: Lazy loading spinner layout issue
+- Fix: Compatibility with RT Media
 
 = 3.2.2.1 =
 
