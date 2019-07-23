@@ -2,7 +2,7 @@
 /**
  * Avada integration module.
  *
- * @since 3.3.0
+ * @since 3.2.3
  * @package Smush\Core\Integrations
  */
 
@@ -31,7 +31,7 @@ class Avada {
 	/**
 	 * Avada constructor.
 	 *
-	 * @since 3.3.0
+	 * @since 3.2.3
 	 *
 	 * @param CDN $cdn  CDN module.
 	 */
@@ -48,7 +48,7 @@ class Avada {
 	/**
 	 * Replace images from data-bg-url with CDN links.
 	 *
-	 * @since 3.3.0
+	 * @since 3.2.3
 	 *
 	 * @param string $img  Image.
 	 *

@@ -2,7 +2,7 @@
 /**
  * Integration with Envira Gallery
  *
- * @since 3.3.0
+ * @since 3.2.3
  * @package Smush\Core\Integrations
  */
 
@@ -31,7 +31,7 @@ class Envira {
 	/**
 	 * Envira constructor.
 	 *
-	 * @since 3.3.0
+	 * @since 3.2.3
 	 *
 	 * @param CDN $cdn  CDN module.
 	 */
@@ -51,7 +51,7 @@ class Envira {
 	/**
 	 * Do not lazy load images from Envira Gallery.
 	 *
-	 * @since 3.3.0
+	 * @since 3.2.3
 	 *
 	 * @param bool   $lazy_load  Should skip? Default: false.
 	 * @param string $src        Image url.
@@ -67,7 +67,7 @@ class Envira {
 	/**
 	 * Replace images from data-envira-src and data-envira-srcset with CDN links.
 	 *
-	 * @since 3.3.0
+	 * @since 3.2.3
 	 *
 	 * @param string $img  Image.
 	 *
@@ -118,7 +118,7 @@ class Envira {
 	/**
 	 * Convert URL to CDN link.
 	 *
-	 * @since 3.3.0
+	 * @since 3.2.3
 	 *
 	 * @param string $url  Image URL.
 	 *

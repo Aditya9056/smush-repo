@@ -247,7 +247,7 @@ lazySizesConfig.loadMode = 1;";
 		/**
 		 * Filter to skip a single image from lazy load.
 		 *
-		 * @since 3.3.0 Added $image param.
+		 * @since 3.2.3 Added $image param.
 		 *
 		 * @param bool   $skip   Should skip? Default: false.
 		 * @param string $src    Image url.
