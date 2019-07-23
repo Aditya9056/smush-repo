@@ -1503,13 +1503,11 @@ class Smush extends Abstract_Module {
 	 * @return mixed
 	 */
 	public function smush_image( $meta, $id = null ) {
-		if ( ! is_admin() ) {
-			// We need to check if this call originated from Gutenberg (is_admin() does not work in REST API).
-			if ( empty( $GLOBALS['wp']->query_vars['rest_route'] ) ) {
-				return $meta;
-			}
-
+		// We need to check if this call originated from Gutenberg (is_admin() does not work in REST API).
+		if ( ! empty( $GLOBALS['wp']->query_vars['rest_route'] ) ) {
 			$route = untrailingslashit( $GLOBALS['wp']->query_vars['rest_route'] );
+
+			// Only allow media routes.
 			if ( empty( $route ) || '/wp/v2/media' !== $route ) {
 				// If not - return image metadata.
 				return $meta;
