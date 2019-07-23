@@ -109,6 +109,7 @@ class Backup extends Abstract_Module {
 		if ( empty( $attachment_id ) || empty( $backup_path ) ) {
 			return false;
 		}
+
 		// Get the Existing backup sizes.
 		$backup_sizes = get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
 		if ( empty( $backup_sizes ) ) {
@@ -116,11 +117,17 @@ class Backup extends Abstract_Module {
 		}
 
 		// Prevent phar deserialization vulnerability.
+		if ( false !== strpos( strtolower( trim( $backup_path ) ), 'phar://' ) ) {
+			throw new Exception( 'phar handler not allowed' );
+		}
+
 		// Return if backup file doesn't exists.
-		if ( 0 === strpos( strtolower( trim( $backup_path ) ), 'phar://' ) || ! file_exists( $backup_path ) ) {
+		if ( ! file_exists( $backup_path ) ) {
 			return false;
 		}
+
 		list( $width, $height ) = getimagesize( $backup_path );
+
 		// Store our backup Path.
 		$backup_key                  = empty( $backup_key ) ? $this->backup_key : $backup_key;
 		$backup_sizes[ $backup_key ] = array(
