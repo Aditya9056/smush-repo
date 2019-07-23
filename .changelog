@@ -6,6 +6,7 @@
 - Enhance: SmartCrawl readability analysis compatibility
 - Enhance: Allow optimizing directories in root folder
 - Enhance: Error descriptions during optimization
+- Enhance: Detection of image sizes when "All" option is selected in Bulk Smush settings
 - Fix: Issue with CDN auto resize and Revolution Slider
 - Fix: CDN auto resize feature overwriting the correct sizes attribute
 - Fix: NextGen summary meta box layout
