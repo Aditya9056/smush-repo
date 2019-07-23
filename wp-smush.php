@@ -27,7 +27,7 @@
 This plugin was originally developed by Alex Dunae (http://dialect.ca/).
 
 Copyright 2007-2018 Incsub (http://incsub.com)
-Author - Aaron Edwards, Sam Najian, Umesh Kumar
+Author - Aaron Edwards, Sam Najian, Umesh Kumar, Anton Vanyukov
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -46,6 +46,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace Smush;
 
 use Exception;
+use Smush\Core\Modules\DB;
 use WP_CLI;
 use WPMUDEV_Dashboard;
 
@@ -276,15 +277,11 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @since 2.9.0
 		 */
 		private function init() {
-			try {
-				$this->api = new Core\Api\API( self::get_api_key() );
-			} catch ( Exception $e ) {
-				// Unable to init API for some reason.
-			}
+			$this->api = new Core\Api\API( self::get_api_key() );
 
 			self::$is_pro = $this->validate_install();
 
-			$this->core  = new Core\Core();
+			$this->core  = new Core\Core( new Core\Modules\DB() );
 			$this->admin = new App\Admin();
 
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {

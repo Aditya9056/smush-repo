@@ -12,8 +12,8 @@ namespace Smush\App;
 
 use Smush\Core\Core;
 use Smush\Core\Helper;
-use Smush\Core\Modules\Abstract_Module;
 use Smush\Core\Modules\CDN;
+use Smush\Core\Modules\DB;
 use Smush\Core\Modules\Helpers\Parser;
 use Smush\Core\Modules\Smush;
 use Smush\Core\Settings;
@@ -28,12 +28,22 @@ if ( ! defined( 'WPINC' ) ) {
  *
  * @since 2.9.0
  */
-class Ajax extends Abstract_Module {
+class Ajax {
+
+	/**
+	 * Settings instance.
+	 *
+	 * @since 3.3.0
+	 * @var Settings
+	 */
+	private $settings;
 
 	/**
 	 * Ajax constructor.
 	 */
-	public function init() {
+	public function __construct() {
+		$this->settings = Settings::get_instance();
+
 		/**
 		 * QUICK SETUP
 		 */
@@ -374,7 +384,7 @@ class Ajax extends Abstract_Module {
 		}
 
 		// If there aren't any images in the library, return the notice.
-		if ( 0 == $core->mod->db->get_media_attachments( true ) && 'nextgen' !== $type ) {
+		if ( 0 == $core->db()->get_media_attachments( true ) && 'nextgen' !== $type ) {
 			$notice = esc_html__( 'We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' );
 			$resp   = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
 					<div class="sui-notice-content">
@@ -440,7 +450,7 @@ class Ajax extends Abstract_Module {
 		// Get Smushed Attachments.
 		if ( 'nextgen' !== $type ) {
 			// Get list of Smushed images.
-			$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->mod->db->smushed_count( true );
+			$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->db()->smushed_count( true );
 		} else {
 			// Get smushed attachments list from nextgen class, We get the meta as well.
 			$attachments = $core->nextgen->ng_stats->get_ngg_images();
@@ -669,7 +679,7 @@ class Ajax extends Abstract_Module {
 		$return['notice']      = $resp;
 		$return['super_smush'] = WP_Smush::is_pro() && $this->settings->get( 'lossy' );
 		if ( WP_Smush::is_pro() && $this->settings->get( 'lossy' ) && 'nextgen' === $type ) {
-			$ss_count                    = $core->mod->db->super_smushed_count( 'nextgen', $core->nextgen->ng_stats->get_ngg_images( 'smushed' ) );
+			$ss_count                    = $core->db()->super_smushed_count( 'nextgen', $core->nextgen->ng_stats->get_ngg_images( 'smushed' ) );
 			$return['super_smush_stats'] = sprintf( '<strong><span class="smushed-count">%d</span>/%d</strong>', $ss_count, $core->nextgen->ng_admin->total_count );
 		}
 
@@ -691,7 +701,7 @@ class Ajax extends Abstract_Module {
 		if ( 'nextgen' !== $_POST['type'] ) {
 			$resmush_list = get_option( $key );
 			if ( ! empty( $resmush_list ) && is_array( $resmush_list ) ) {
-				$stats = WP_Smush::get_instance()->core()->mod->db->get_stats_for_attachments( $resmush_list );
+				$stats = WP_Smush::get_instance()->core()->db()->get_stats_for_attachments( $resmush_list );
 			}
 		} else {
 			// For Nextgen. Get the stats (get the re-Smush IDs).

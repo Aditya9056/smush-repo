@@ -115,7 +115,7 @@ module.exports = function( grunt ) {
 							.replace( /Plugin Name\:       Smush Pro/g, 'Plugin Name:       Smush' )
 							.replace( /Plugin URI\:        http:\/\/premium.wpmudev.org\/projects\/wp-smush-pro\//g, 'Plugin URI:        http://wordpress.org/extend/plugins/wp-smushit/' )
 							.replace( /SEO using the/g, 'SEO using the free' )
-							.replace( /Author - Aaron Edwards, Sam Najian, Umesh Kumar\n/g, '' )
+							.replace( /Author - Aaron Edwards, Sam Najian, Umesh Kumar, Anton Vanyukov\n/g, '' )
 							.replace( /\%\%CHANGELOG\%\%/g, changelog )
 							.replace( /\%\%VERSION\%\%/g, pkg.version );
 					}

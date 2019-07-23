@@ -34,25 +34,13 @@ class SmushTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Set setting value temporarily.
-	 *
-	 * @param string $key Setting name.
-	 * @param bool   $value True or false.
-	 */
-	private function setSetting( $key, $value = true ) {
-		$settings = Settings::get_instance();
-		$settings->set( $key, $value );
-	}
-
-	/**
 	 * Test Smush single image.
 	 *
 	 * @group single
 	 */
 	public function testSmushSingle() {
-		$smush = WP_Smush::get_instance();
 		// Make sure it is not auto smushed.
-		$smush->core()->mod->settings->set( 'auto', false );
+		Settings::get_instance()->set( 'auto', false );
 
 		// Upload image.
 		$id = $this->tester->upload_image();
@@ -61,7 +49,7 @@ class SmushTest extends WP_UnitTestCase {
 		WP_Smush::get_instance()->core()->mod->smush->smush_single( $id, true );
 
 		// Try to get the smushed meta.
-		$smush_meta = get_post_meta( $id, Smush::$smushed_meta_key, true );
+		$smush_meta = get_post_meta( $id, Smush::$smushed_meta_key );
 
 		// We don't need the attachment anymore. Delete.
 		wp_delete_attachment( $id, true );

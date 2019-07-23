@@ -2,26 +2,30 @@
  * Admin modules
  */
 
-let WP_Smush = WP_Smush || {};
+const WP_Smush = WP_Smush || {};
 window.WP_Smush = WP_Smush;
 
 /**
  * IE polyfill for includes.
  *
  * @since 3.1.0
+ * @param {string} search
+ * @param {number} start
+ * @return {boolean}  Returns true if searchString appears as a substring of the result of converting this
+ * object to a String, at one or more positions that are
+ * greater than or equal to position; otherwise, returns false.
  */
-if (!String.prototype.includes) {
-    String.prototype.includes = function(search, start) {
-        if (typeof start !== 'number') {
-            start = 0;
-        }
+if ( ! String.prototype.includes ) {
+	String.prototype.includes = function( search, start ) {
+		if ( typeof start !== 'number' ) {
+			start = 0;
+		}
 
-        if (start + search.length > this.length) {
-            return false;
-        } else {
-            return this.indexOf(search, start) !== -1;
-        }
-    };
+		if ( start + search.length > this.length ) {
+			return false;
+		}
+		return this.indexOf( search, start ) !== -1;
+	};
 }
 
 require( './modules/helpers' );

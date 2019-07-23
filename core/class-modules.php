@@ -20,13 +20,6 @@ if ( ! defined( 'WPINC' ) ) {
 class Modules {
 
 	/**
-	 * Database module.
-	 *
-	 * @var Modules\DB
-	 */
-	public $db;
-
-	/**
 	 * Directory Smush module.
 	 *
 	 * @var Modules\Dir
@@ -69,13 +62,6 @@ class Modules {
 	public $cdn;
 
 	/**
-	 * Settings module.
-	 *
-	 * @var Settings
-	 */
-	public $settings;
-
-	/**
 	 * Image lazy load module.
 	 *
 	 * @since 3.2
@@ -88,13 +74,11 @@ class Modules {
 	 * Modules constructor.
 	 */
 	public function __construct() {
-		$this->db       = new Modules\DB();
-		$this->dir      = new Modules\Dir();
-		$this->smush    = new Modules\Smush();
-		$this->backup   = new Modules\Backup();
-		$this->png2jpg  = new Modules\Png2jpg();
-		$this->resize   = new Modules\Resize();
-		$this->settings = Settings::get_instance();
+		$this->dir     = new Modules\Dir();
+		$this->smush   = new Modules\Smush();
+		$this->backup  = new Modules\Backup();
+		$this->png2jpg = new Modules\Png2jpg();
+		$this->resize  = new Modules\Resize();
 
 		$page_parser = new Modules\Helpers\Parser();
 		$this->cdn   = new Modules\CDN( $page_parser );

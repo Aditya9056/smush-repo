@@ -10,6 +10,8 @@
 - Fix: Issue with CDN auto resize and Revolution Slider
 - Fix: CDN auto resize feature overwriting the correct sizes attribute
 - Fix: NextGen summary meta box layout
+- Fix: PHP warnings on NextGen integration
+- Fix: UI layout in NextGen integration
 - Fix: Images with empty class not lazy loading
 - Fix: Lazy loading spinner layout issue
 - Fix: Compatibility with RT Media

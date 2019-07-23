@@ -42,6 +42,14 @@ class Core {
 	public $mod;
 
 	/**
+	 * Database module.
+	 *
+	 * @since 3.3.0
+	 * @var Modules\DB
+	 */
+	private $database;
+
+	/**
 	 * Allowed mime types of image.
 	 *
 	 * @var array $mime_types
@@ -70,24 +78,6 @@ class Core {
 		'toplevel_page_smush-network',
 		'toplevel_page_smush',
 	);
-
-	/**
-	 * List of smush settings pages.
-	 *
-	 * @var array $plugin_pages
-	 */
-	public static $plugin_pages = array(
-		'gallery_page_wp-smush-nextgen-bulk',
-		'toplevel_page_smush-network',
-		'toplevel_page_smush',
-	);
-
-	/**
-	 * Link to upgrade.
-	 *
-	 * @var string $upgrade_url
-	 */
-	public $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
 
 	/**
 	 * Settings array.
@@ -196,9 +186,11 @@ class Core {
 	 * Core constructor.
 	 *
 	 * @since 2.9.0
+	 * @param Modules\DB $db  Database module.
 	 * @throws Exception  Autoload exception.
 	 */
-	public function __construct() {
+	public function __construct( Modules\DB $db ) {
+		$this->database = $db;
 		$this->init();
 
 		if ( is_admin() ) {
@@ -219,6 +211,17 @@ class Core {
 		 * work, also load after settings have been saved on init action.
 		 */
 		add_action( 'plugins_loaded', array( $this, 'load_libs' ), 90 );
+	}
+
+	/**
+	 * Getter for database module.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @return Modules\DB
+	 */
+	public function db() {
+		return $this->database;
 	}
 
 	/**
@@ -432,7 +435,8 @@ class Core {
 		// Load the stats on selected screens only.
 		if ( 'toplevel_page_smush' === $current_page ) {
 			// Get resmush list, If we have a resmush list already, localize those IDs.
-			if ( $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
+			$resmush_ids = get_option( 'wp-smush-resmush-list' );
+			if ( $resmush_ids ) {
 				// Get the attachments, and get lossless count.
 				$this->resmush_ids = $resmush_ids;
 			}
@@ -445,7 +449,7 @@ class Core {
 
 			if ( empty( $this->unsmushed_attachments ) ) {
 				// Get attachments if all the images are not smushed.
-				$this->unsmushed_attachments = $this->remaining_count > 0 ? $this->mod->db->get_unsmushed_attachments() : array();
+				$this->unsmushed_attachments = $this->remaining_count > 0 ? $this->database->get_unsmushed_attachments() : array();
 				$this->unsmushed_attachments = ! empty( $this->unsmushed_attachments ) && is_array( $this->unsmushed_attachments ) ? array_values( $this->unsmushed_attachments ) : $this->unsmushed_attachments;
 			}
 
@@ -608,25 +612,25 @@ class Core {
 		$this->dir_stats = Modules\Dir::should_continue() ? $this->mod->dir->total_stats() : array();
 
 		// Setup Attachments and total count.
-		$this->mod->db->total_count( true );
+		$this->database->total_count( true );
 
 		$this->stats = $this->global_stats( $force_update );
 
 		if ( empty( $this->smushed_attachments ) ) {
 			// Get smushed attachments.
-			$this->smushed_attachments = $this->mod->db->smushed_count( true, $force_update );
+			$this->smushed_attachments = $this->database->smushed_count( true, $force_update );
 		}
 
 		// Get supersmushed images count.
 		if ( empty( $this->super_smushed ) ) {
-			$this->super_smushed = $this->mod->db->super_smushed_count();
+			$this->super_smushed = $this->database->super_smushed_count();
 		}
 
 		// Set pro savings.
 		$this->set_pro_savings();
 
 		// Get skipped attachments.
-		$this->skipped_attachments = $this->mod->db->skipped_count( $force_update );
+		$this->skipped_attachments = $this->database->skipped_count( $force_update );
 		$this->skipped_count       = count( $this->skipped_attachments );
 
 		// Set smushed count.
@@ -644,7 +648,8 @@ class Core {
 	 * @todo: remove id from global stats stored in db
 	 */
 	public function global_stats( $force_update = false ) {
-		if ( ! $force_update && $stats = get_option( 'smush_global_stats' ) ) {
+		$stats = get_option( 'smush_global_stats' );
+		if ( ! $force_update && $stats ) {
 			if ( ! empty( $stats ) && isset( $stats['size_before'] ) ) {
 				if ( isset( $stats['id'] ) ) {
 					unset( $stats['id'] );
@@ -668,7 +673,7 @@ class Core {
 		 * Allows to set a limit of mysql query
 		 * Default value is 2000
 		 */
-		$limit      = $this->mod->db->query_limit();
+		$limit      = apply_filters( 'wp_smush_query_limit', 2000 );
 		$offset     = 0;
 		$query_next = true;
 
@@ -746,12 +751,12 @@ class Core {
 		}
 
 		// Resize Savings.
-		$smush_data['resize_count']   = $this->mod->db->resize_savings( false, false, true );
-		$resize_savings               = $this->mod->db->resize_savings( false );
+		$smush_data['resize_count']   = $this->database->resize_savings( false, false, true );
+		$resize_savings               = $this->database->resize_savings( false );
 		$smush_data['resize_savings'] = ! empty( $resize_savings['bytes'] ) ? $resize_savings['bytes'] : 0;
 
 		// Conversion Savings.
-		$conversion_savings               = $this->mod->db->conversion_savings( false );
+		$conversion_savings               = $this->database->conversion_savings( false );
 		$smush_data['conversion_savings'] = ! empty( $conversion_savings['bytes'] ) ? $conversion_savings['bytes'] : 0;
 
 		if ( ! isset( $smush_data['bytes'] ) || $smush_data['bytes'] < 0 ) {
@@ -856,8 +861,9 @@ class Core {
 	public function get_max_image_dimensions() {
 		global $_wp_additional_image_sizes;
 
-		$width = $height = 0;
-		$limit = 9999; // Post-thumbnail.
+		$width  = 0;
+		$height = 0;
+		$limit  = 9999; // Post-thumbnail.
 
 		$image_sizes = get_intermediate_image_sizes();
 

@@ -894,7 +894,7 @@ class Dashboard extends Abstract_Page {
 	public function dashboard_summary_metabox() {
 		$core = WP_Smush::get_instance()->core();
 
-		$resize_count = $core->mod->db->resize_savings( false, false, true );
+		$resize_count = $core->db()->resize_savings( false, false, true );
 
 		// Split human size to get format and size.
 		$human = explode( ' ', $core->stats['human'] );
@@ -935,7 +935,7 @@ class Dashboard extends Abstract_Page {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_stats_enable_lossy',
 			),
-			$core->upgrade_url
+			$this->upgrade_url
 		);
 
 		$bulk_upgrade_url = add_query_arg(
@@ -944,7 +944,7 @@ class Dashboard extends Abstract_Page {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_bulksmush_limit_notice',
 			),
-			$core->upgrade_url
+			$this->upgrade_url
 		);
 
 		$pro_upgrade_url = add_query_arg(
@@ -953,7 +953,7 @@ class Dashboard extends Abstract_Page {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_bulksmush_upsell_notice',
 			),
-			$core->upgrade_url
+			$this->upgrade_url
 		);
 
 		$this->view(
@@ -1009,7 +1009,7 @@ class Dashboard extends Abstract_Page {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush-advanced-settings-upsell',
 			),
-			WP_Smush::get_instance()->core()->upgrade_url
+			$this->upgrade_url
 		);
 
 		$this->view(
@@ -1031,7 +1031,7 @@ class Dashboard extends Abstract_Page {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_advancedsettings_profeature_tag',
 			),
-			WP_Smush::get_instance()->core()->upgrade_url
+			$this->upgrade_url
 		);
 
 		$this->view(
@@ -1060,7 +1060,7 @@ class Dashboard extends Abstract_Page {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_directorysmush_limit_notice',
 			),
-			$core->upgrade_url
+			$this->upgrade_url
 		);
 
 		$errors = 0;
@@ -1096,7 +1096,7 @@ class Dashboard extends Abstract_Page {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush-nextgen-settings-upsell',
 			),
-			$core->upgrade_url
+			$this->upgrade_url
 		);
 
 		$this->view(
@@ -1124,7 +1124,7 @@ class Dashboard extends Abstract_Page {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_cdn_upgrade_button',
 			),
-			WP_Smush::get_instance()->core()->upgrade_url
+			$this->upgrade_url
 		);
 
 		$this->view(

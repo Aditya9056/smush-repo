@@ -409,7 +409,7 @@ class Backup extends Abstract_Module {
 		check_ajax_referer( 'smush_bulk_restore', '_wpnonce' );
 		wp_send_json_success(
 			array(
-				'items' => WP_Smush::get_instance()->core()->mod->db->get_attachments_with_backups( true ),
+				'items' => WP_Smush::get_instance()->core()->db()->get_attachments_with_backups( true ),
 			)
 		);
 	}

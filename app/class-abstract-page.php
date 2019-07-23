@@ -7,7 +7,6 @@
 
 namespace Smush\App;
 
-use Smush\Core\Core;
 use Smush\Core\Modules\Dir;
 use Smush\Core\Settings;
 use Smush\WP_Smush;
@@ -58,6 +57,13 @@ abstract class Abstract_Page {
 	 * @var Settings
 	 */
 	protected $settings;
+
+	/**
+	 * Link to upgrade.
+	 *
+	 * @var string $upgrade_url
+	 */
+	protected $upgrade_url = 'https://premium.wpmudev.org/project/wp-smush-pro/';
 
 	/**
 	 * Abstract_Page constructor.
@@ -195,7 +201,7 @@ abstract class Abstract_Page {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_dashboard_upgrade_notice',
 			),
-			$core->upgrade_url
+			$this->upgrade_url
 		);
 		?>
 		<div class="notice smush-notice" style="display: none;">
@@ -290,7 +296,7 @@ abstract class Abstract_Page {
 		$current_screen = get_current_screen();
 
 		// If not on plugin page.
-		if ( ! in_array( $current_screen->id, Core::$plugin_pages, true ) ) {
+		if ( ! in_array( $current_screen->id, Admin::$plugin_pages, true ) ) {
 			return $classes;
 		}
 
