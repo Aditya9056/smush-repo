@@ -756,11 +756,11 @@ class Dashboard extends Abstract_Page {
 			<div class="sui-side-tabs sui-tabs">
 				<div data-tabs="">
 					<label for="all-image-sizes" class="sui-tab-item <?php echo $all_selected ? 'active' : ''; ?>">
-						<input type="radio" name="auto-image-sizes" value="all" id="all-image-sizes" <?php checked( $all_selected ); ?>>
+						<input type="radio" name="wp-smush-auto-image-sizes" value="all" id="all-image-sizes" <?php checked( $all_selected ); ?>>
 						<?php esc_html_e( 'All', 'wp-smushit' ); ?>
 					</label>
 					<label for="custom-image-sizes" class="sui-tab-item <?php echo $all_selected ? '' : 'active'; ?>">
-						<input type="radio" name="auto-image-sizes" value="custom" id="custom-image-sizes" <?php checked( $all_selected, false ); ?>>
+						<input type="radio" name="wp-smush-auto-image-sizes" value="custom" id="custom-image-sizes" <?php checked( $all_selected, false ); ?>>
 						<?php esc_html_e( 'Custom', 'wp-smushit' ); ?>
 					</label>
 				</div><!-- end data-tabs -->

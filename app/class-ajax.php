@@ -491,6 +491,12 @@ class Ajax extends Abstract_Module {
 
 					// Check if new sizes have been selected.
 					$image_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'image_sizes' );
+
+					// Empty means we need to smush all images. So get all sizes of current site.
+					if ( empty( $image_sizes ) ) {
+						$image_sizes = array_keys( WP_Smush::get_instance()->core()->image_dimensions() );
+					}
+					
 					/**
 					 * This is a too complicated way to check if the attachment needs a resmush.
 					 * Basically, smaller images might not have all the image sizes. And if, let's say, image does not
