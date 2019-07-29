@@ -42,7 +42,7 @@ class ParserTest extends WP_UnitTestCase {
 		$images = $this->tester->call_private_method( $parser, 'get_background_images', [ $content ] );
 
 		// Check that result is an array, has the correct keys and all the images are there.
-		$this->assertIsIterable( $images );
+		$this->assertInternalType( 'array', $images );
 		$this->assertArrayHasKey( '0', $images );
 		$this->assertArrayHasKey( 'img_url', $images );
 		$this->assertCount( 3, $images[0] );
