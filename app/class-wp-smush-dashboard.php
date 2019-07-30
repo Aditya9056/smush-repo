@@ -1198,6 +1198,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'settings_data' => WP_Smush::get_instance()->core()->settings,
 				'status_msg'    => $status_msg[ $status ],
 				'class'         => $status_color[ $status ],
+				'status'        => $status,
 			)
 		);
 	}
