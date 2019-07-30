@@ -178,8 +178,7 @@ window.lazySizesConfig.lazyClass    = 'lazyload';
 window.lazySizesConfig.loadingClass = 'lazyloading';
 window.lazySizesConfig.loadedClass  = 'lazyloaded';
 
-//page is optimized for fast onload event
-lazySizesConfig.loadMode = 1;";
+lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 
 		wp_add_inline_script( 'smush-lazy-load', $custom, 'before' );
 
@@ -283,7 +282,6 @@ lazySizesConfig.loadMode = 1;";
 		$src = Helpers\Parser::get_attribute( $new_image, 'src' );
 		Helpers\Parser::remove_attribute( $new_image, 'src' );
 		Helpers\Parser::add_attribute( $new_image, 'data-src', $src );
-		Helpers\Parser::add_attribute( $new_image, 'data-sizes', 'auto' );
 
 		// Change srcset to data-srcset attribute.
 		$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
