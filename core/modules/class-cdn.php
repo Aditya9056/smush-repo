@@ -154,6 +154,10 @@ class CDN extends Abstract_Module {
 
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
+		if ( ! $cdn ) {
+			return 'disabled';
+		}
+
 		if ( isset( $cdn->cdn_enabling ) && $cdn->cdn_enabling ) {
 			return 'activating';
 		}

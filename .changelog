@@ -8,8 +8,10 @@
 - Enhance: Error descriptions during optimization
 - Enhance: Detection of image sizes when "All" option is selected in Bulk Smush settings
 - Enhance: CDN detection of background images
+- Enhance: CDN activation process
 - Fix: Issue with CDN auto resize and Revolution Slider
 - Fix: CDN auto resize feature overwriting the correct sizes attribute
+- Fix: CDN upgrade status issue
 - Fix: NextGen summary meta box layout
 - Fix: PHP warnings on NextGen integration
 - Fix: UI layout in NextGen integration
