@@ -225,7 +225,7 @@ class Parser {
 	public static function get_images_from_content( $content ) {
 		$images = array();
 
-		if ( preg_match_all( '/(?:<img[^>]*?\s+?src=["|\'](?P<img_url>[^\s]+?)["|\'].*?>){1}/is', $content, $images ) ) {
+		if ( preg_match_all( '/(?:<img[^>]*?\s+?src=["|\'](?P<img_url>[^\s]+?)["|\'].*?>)/is', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
 				if ( is_numeric( $key ) && $key > 0 ) {
@@ -289,11 +289,8 @@ class Parser {
 	 * @return string
 	 */
 	public static function get_attribute( $element, $name ) {
-		$value = array();
-
-		preg_match( '/<[img|div|span](.*?)' . $name . '=[\'|"](.*?)[\'|"](.*?)>/i', $element, $value );
-
-		return isset( $value['2'] ) ? $value['2'] : '';
+		preg_match( "/{$name}=['\"]([^'\"]+)\"/is", $element, $value );
+		return isset( $value['1'] ) ? $value['1'] : '';
 	}
 
 	/**
@@ -323,7 +320,7 @@ class Parser {
 	public static function get_links_from_content( $content ) {
 		$images = array();
 
-		if ( preg_match_all( '/([http:|https:][^\s]*){1}/is', $content, $images ) ) {
+		if ( preg_match_all( '/([http:|https:][^\s]*)/is', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
 				if ( is_numeric( $key ) && $key > 0 ) {
