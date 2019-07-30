@@ -4,6 +4,7 @@
 - Enhance: Minor user experience improvements and updates
 - Enhance: CDN activation process
 - Fix: CDN upgrade status issue
+- Fix: Remove auto sizing in lazy loading
 
 = 3.2.2.1 =
 
