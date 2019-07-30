@@ -17,6 +17,7 @@
 - Fix: UI layout in NextGen integration
 - Fix: Images with empty class not lazy loading
 - Fix: Lazy loading spinner layout issue
+- Fix: Lazy loading not working on front page when a static page is selected as a homepage
 - Fix: Compatibility with RT Media
 
 = 3.2.2.1 =
