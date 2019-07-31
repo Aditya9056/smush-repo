@@ -258,6 +258,8 @@ class WP_Smush_Admin {
 		include_once WP_SMUSH_DIR . 'app/abstract-wp-smush-view.php';
 		/* @noinspection PhpIncludeInspection */
 		include_once WP_SMUSH_DIR . 'app/class-wp-smush-dashboard.php';
+		/* @noinspection PhpIncludeInspection */
+		include_once WP_SMUSH_DIR . 'app/class-wp-smush-upgrade.php';
 	}
 
 	/**
@@ -267,12 +269,17 @@ class WP_Smush_Admin {
 		$title = WP_Smush::is_pro() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 
 		if ( WP_Smush_Settings::can_access( false, true ) ) {
-			$this->pages['smush'] = new WP_Smush_Dashboard( $title, 'smush' );
+			$this->pages['smush']           = new WP_Smush_Dashboard( 'smush', $title );
+			$this->pages['smush-dashboard'] = new WP_Smush_Dashboard( 'smush', __( 'Dashboard', 'wp-smushit' ), 'smush' );
+
+			if ( ! WP_Smush::is_pro() ) {
+				$this->pages['smush-upgrade'] = new WP_Smush_Upgrade_Page( 'smush-upgrade', __( 'Smush Pro', 'wp-smushit' ), 'smush' );
+			}
 		}
 
 		// Add a bulk smush option for NextGen gallery.
 		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->nextgen->is_enabled() && WP_Smush::is_pro() && ! is_network_admin() ) {
-			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( $title, 'wp-smush-nextgen-bulk', true );
+			$this->pages['nextgen'] = new WP_Smush_Nextgen_Page( 'wp-smush-nextgen-bulk', $title, NGGFOLDER );
 		}
 	}
 
