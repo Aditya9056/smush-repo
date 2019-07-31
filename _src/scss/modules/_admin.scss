@@ -5,6 +5,18 @@
 	.sui-wrap {
 
 		/**
+		 * Upesll notices.
+		 *
+		 * @since 3.2.3
+		 */
+		.smush-upsell-notice {
+			margin-left: 130px;
+			@media screen and (max-width: 782px) {
+				margin-left: 0;
+			}
+		}
+
+		/**
 		 * Lazy loading
 		 *
 		 * @since 3.2.2
@@ -355,7 +367,11 @@
 		// Bulk smush and directory smush (overwrite when the limit is exceeded)
 		.wp-smush-exceed-limit {
 			.wp-smush-progress-inner {
-				background: #888888 !important;
+				background: #FECF2F !important;
+			}
+
+			.sui-icon-info:before {
+				color: #FECF2F;
 			}
 		}
 		// Directory smush overwrites when limit exceeded
@@ -369,7 +385,7 @@
 					.sui-icon-loader {
 						@include icon( before, info );
 						&:before {
-							color: #888888;
+							color: #FECF2F;
 							animation: none;
 						}
 					}
@@ -608,7 +624,7 @@
 				padding: 0 0 0 30px;
 				position: relative;
 				&:before {
-					color: #43a9e4;
+					color: #8D00B1;
 					vertical-align: middle;
 					margin-left: -30px;
 					margin-right: 10px;

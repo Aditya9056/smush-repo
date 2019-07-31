@@ -1030,7 +1030,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/pro-features/meta-box-header',
 			array(
-				'title'       => __( 'Pro Features', 'wp-smushit' ),
+				'title'       => __( 'Smush Pro', 'wp-smushit' ),
 				'upgrade_url' => $upgrade_url,
 			)
 		);

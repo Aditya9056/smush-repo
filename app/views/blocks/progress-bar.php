@@ -27,7 +27,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 	<div class="sui-notice sui-notice-warning sui-hidden"></div>
 
-	<div class="sui-notice sui-hidden" id="bulk_smush_warning">
+	<div class="sui-notice sui-notice-warning sui-hidden" id="bulk_smush_warning">
 		<p>
 			<?php
 			$upgrade_url = add_query_arg(
@@ -41,22 +41,13 @@ if ( ! defined( 'WPINC' ) ) {
 
 			printf(
 				/* translators: %s1$d - bulk smush limit, %2$s - upgrade link, %3$s - </a>, %4$s - <strong>, $5$s - </strong> */
-				esc_html__( 'The free version of Smush allows you to compress %1$d images at a time. You can easily click %4$sResume%5$s to optimize another %1$d images, or %2$sUpgrade to Pro%3$s to compress unlimited images at once.', 'wp-smushit' ),
+				esc_html__( 'The free version of Smush allows you to compress %1$d images at a time. %2$sUpgrade to Pro for FREE%3$s to compress unlimited images at once or click Resume to compress another %1$d images.', 'wp-smushit' ),
 				absint( WP_Smush_Core::$max_free_bulk ),
 				'<a href="' . esc_url( $upgrade_url ) . '" target="_blank">',
-				'</a>',
-				'<strong>',
-				'</strong>'
+				'</a>'
 			)
 			?>
 		</p>
-
-		<div class="sui-notice-buttons">
-			<a class="wp-smush-all sui-button wp-smush-started">
-				<i class="sui-icon-play" aria-hidden="true"></i>
-				<?php esc_html_e( 'Resume', 'wp-smushit' ); ?>
-			</a>
-		</div>
 	</div>
 
 	<div class="sui-progress-block sui-progress-can-close">
@@ -83,5 +74,14 @@ if ( ! defined( 'WPINC' ) ) {
 		<span class="sui-progress-state-text">
 			<span>0</span>/<span><?php echo absint( $count->remaining_count ); ?></span> <?php esc_html_e( 'images optimized', 'wp-smushit' ); ?>
 		</span>
+	</div>
+
+	<div id="bulk-smush-resume-button" class="sui-hidden">
+		<div style="display: flex; flex-flow: row-reverse;">
+			<a class="wp-smush-all sui-button wp-smush-started">
+				<i class="sui-icon-play" aria-hidden="true"></i>
+				<?php esc_html_e( 'Resume', 'wp-smushit' ); ?>
+			</a>
+		</div>
 	</div>
 </div>
