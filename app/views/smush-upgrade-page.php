@@ -38,6 +38,20 @@ $upgrade_url = add_query_arg(
 			<div class="sui-upgrade-page-header__image"></div>
 		</div>
 	</div>
+	<div class="smush-stats">
+		<div class="smush-stats-item">
+			<div><span>35.82</span> Billion</div>
+			<div class="smush-stats-description">Images Optimized</div>
+		</div>
+		<div class="smush-stats-item">
+			<div><span>226,794</span></div>
+			<div class="smush-stats-description">Sites Optimized</div>
+		</div>
+		<div class="smush-stats-item">
+			<div><span>121,884</span> GB</div>
+			<div class="smush-stats-description">Total Savings</div>
+		</div>
+	</div>
 	<div class="sui-upgrade-page-features">
 		<div class="sui-upgrade-page-features__header">
 			<h2><?php esc_html_e( 'Pro Features', 'wp-smushit' ); ?></h2>
