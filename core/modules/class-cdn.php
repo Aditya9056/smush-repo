@@ -449,7 +449,7 @@ class CDN extends Abstract_Module {
 			// Store the original $src to be used later on.
 			$original_src = $src;
 
-			$src = $this->process_src( $image, $src );
+			$src = $this->process_src( $image, $src, false );
 
 			// Replace the src of the image with CDN link.
 			if ( ! empty( $src ) ) {
@@ -541,20 +541,26 @@ class CDN extends Abstract_Module {
 	 *
 	 * @since 3.2.1
 	 *
-	 * @param string $image  Image tag.
-	 * @param string $src    Image src attribute.
+	 * @param string $image     Image tag.
+	 * @param string $src       Image src attribute.
+	 * @param bool   $resizing  Add resizing arguments. Defaults to true.
+	 *                          We should never add resize arguments to the images from src. But we can and should
+	 *                          add them to the srcset and other possible attributes.
 	 *
 	 * @return string
 	 */
-	private function process_src( $image, $src ) {
-		/**
-		 * Filter hook to alter image src arguments before going through cdn.
-		 *
-		 * @param array  $args   Arguments.
-		 * @param string $src    Image src.
-		 * @param string $image  Image tag.
-		 */
-		$args = apply_filters( 'smush_image_cdn_args', array(), $image );
+	private function process_src( $image, $src, $resizing = true ) {
+		// Don't need to auto resize - return default args.
+		if ( $resizing && $this->settings->get( 'auto_resize' ) ) {
+			/**
+			 * Filter hook to alter image src arguments before going through cdn.
+			 *
+			 * @param array  $args   Arguments.
+			 * @param string $src    Image src.
+			 * @param string $image  Image tag.
+			 */
+			$args = apply_filters( 'smush_image_cdn_args', array(), $image );
+		}
 
 		/**
 		 * Filter hook to alter image src before going through cdn.
@@ -684,13 +690,8 @@ class CDN extends Abstract_Module {
 	 * @return array $args
 	 */
 	public function update_cdn_image_src_args( $args, $image ) {
-		// Don't need to auto resize - return default args.
-		if ( ! $this->settings->get( 'auto_resize' ) ) {
-			return $args;
-		}
-
 		// Get registered image sizes.
-		$image_sizes = $this->get_image_sizes();
+		$image_sizes = WP_Smush::get_instance()->core()->image_dimensions();
 
 		// Find the width and height attributes.
 		$width  = false;
@@ -833,7 +834,6 @@ class CDN extends Abstract_Module {
 	 * @see get_url_without_dimensions()
 	 * @see max_content_width()
 	 * @see set_additional_srcset()
-	 * @see get_image_sizes()
 	 * @see generate_srcset()
 	 * @see maybe_generate_srcset()
 	 * @see is_supported_path()
@@ -987,11 +987,13 @@ class CDN extends Abstract_Module {
 		// Get width and height calculated by WP.
 		list( $constrained_width, $constrained_height ) = wp_constrain_dimensions( $full_width, $full_height, $current_width, $current_height );
 
+		$crop = false;
 		// Calculate base width.
 		// If $constrained_width sizes are smaller than current size, set maximum content width.
 		if ( abs( $constrained_width - $current_width ) <= 1 && abs( $constrained_height - $current_height ) <= 1 ) {
 			$base_width = $content_width;
 		} else {
+			$crop       = true;
 			$base_width = $current_width;
 		}
 
@@ -1039,6 +1041,10 @@ class CDN extends Abstract_Module {
 			// We need the width as well...
 			$dimensions = wp_constrain_dimensions( $current_width, $current_height, $new_width );
 
+			if ( $crop ) {
+				$a = 1;
+			}
+
 			// Arguments for cdn url.
 			$args = array(
 				'size' => "{$new_width}x{$dimensions[1]}",
@@ -1061,52 +1067,6 @@ class CDN extends Abstract_Module {
 		}
 
 		return $sources;
-	}
-
-	/**
-	 * Get registered image sizes and its sizes.
-	 *
-	 * Custom function to get all registered image sizes
-	 * and their width and height.
-	 *
-	 * @since 3.0
-	 *
-	 * @return array|bool|mixed
-	 */
-	private function get_image_sizes() {
-		// Get from cache if available to avoid duplicate looping.
-		$sizes = wp_cache_get( 'get_image_sizes', 'smush_image_sizes' );
-		if ( $sizes ) {
-			return $sizes;
-		}
-
-		// Get additional sizes registered by themes.
-		global $_wp_additional_image_sizes;
-
-		$sizes = array();
-
-		// Get intermediate image sizes.
-		$get_intermediate_image_sizes = get_intermediate_image_sizes();
-
-		// Create the full array with sizes and crop info.
-		foreach ( $get_intermediate_image_sizes as $_size ) {
-			if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ), true ) ) {
-				$sizes[ $_size ]['width']  = get_option( $_size . '_size_w' );
-				$sizes[ $_size ]['height'] = get_option( $_size . '_size_h' );
-				$sizes[ $_size ]['crop']   = (bool) get_option( $_size . '_crop' );
-			} elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
-				$sizes[ $_size ] = array(
-					'width'  => $_wp_additional_image_sizes[ $_size ]['width'],
-					'height' => $_wp_additional_image_sizes[ $_size ]['height'],
-					'crop'   => $_wp_additional_image_sizes[ $_size ]['crop'],
-				);
-			}
-		}
-
-		// Set cache to avoid this loop next time.
-		wp_cache_set( 'get_image_sizes', $sizes, 'smush_image_sizes' );
-
-		return $sizes;
 	}
 
 	/**

@@ -566,6 +566,12 @@ class Core {
 	 * @return array
 	 */
 	public function image_dimensions() {
+		// Get from cache if available to avoid duplicate looping.
+		$sizes = wp_cache_get( 'get_image_sizes', 'smush_image_sizes' );
+		if ( $sizes ) {
+			return $sizes;
+		}
+
 		global $_wp_additional_image_sizes;
 		$additional_sizes = get_intermediate_image_sizes();
 		$sizes            = array();
@@ -588,6 +594,7 @@ class Core {
 				);
 			}
 		}
+
 		// Medium Large.
 		if ( ! isset( $sizes['medium_large'] ) || empty( $sizes['medium_large'] ) ) {
 			$width  = intval( get_option( 'medium_large_size_w' ) );
@@ -598,6 +605,9 @@ class Core {
 				'height' => $height,
 			);
 		}
+
+		// Set cache to avoid this loop next time.
+		wp_cache_set( 'get_image_sizes', $sizes, 'smush_image_sizes' );
 
 		return $sizes;
 	}
