@@ -489,10 +489,26 @@ class WP_Smush_Core {
 
 		$handle = 'smush-admin';
 
+		$upgrade_url = add_query_arg(
+			array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => 'smush_bulksmush_issues_filesizelimit_notice',
+			),
+			$this->upgrade_url
+		);
+
 		$wp_smush_msgs = array(
 			'resmush'                 => esc_html__( 'Super-Smush', 'wp-smushit' ),
 			'smush_now'               => esc_html__( 'Smush Now', 'wp-smushit' ),
-			'error_in_bulk'           => esc_html__( '{{smushed}}/{{total}} images were successfully compressed, {{errors}} encountered issues.', 'wp-smushit' ),
+			'error_in_bulk'           => sprintf(
+				/* translators: %1$s - opening link tag, %2$s - </a>, %3$s - <strong>, %4$s - </strong> */
+				esc_html__( '{{smushed}}/{{total}} images were successfully compressed, {{errors}} encountered issues. %1$sUpgrade to pro for FREE%2$s to avoid skipping images due to %3$s“size limit exceeded”%4$s error and compress large images up to 32 MB.', 'wp-smushit' ),
+				'<a href="' . esc_url( $upgrade_url ) . '" target="_blank">',
+				'</a>',
+				'<strong>',
+				'</strong>'
+			),
 			'all_resmushed'           => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
 			'restore'                 => esc_html__( 'Restoring image..', 'wp-smushit' ),
 			'smushing'                => esc_html__( 'Smushing image..', 'wp-smushit' ),
