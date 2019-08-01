@@ -186,7 +186,7 @@ if ( $is_pro && $lossy_enabled ) {
 				?>
 			</p>
 			<div class="sui-notice-buttons">
-				<a href="<?php esc_url( $pro_upgrade_url ); ?>" class="sui-button sui-button-purple" target="_blank">
+				<a href="<?php echo esc_url( $pro_upgrade_url ); ?>" class="sui-button sui-button-purple" target="_blank">
 					<?php esc_html_e( 'Try it absolutely FREE', 'wp-smushit' ); ?>
 				</a>
 			</div>

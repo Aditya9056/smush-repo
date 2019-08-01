@@ -101,7 +101,7 @@ if ( ! defined( 'WPINC' ) ) {
 			?>
 		</p>
 		<div class="sui-notice-buttons">
-			<a href="<?php esc_url( $upsell_url ); ?>" class="sui-button sui-button-purple" target="_blank">
+			<a href="<?php echo esc_url( $upsell_url ); ?>" class="sui-button sui-button-purple" target="_blank">
 				<?php esc_html_e( 'Try Free for 30 Days', 'wp-smushit' ); ?>
 			</a>
 		</div>
