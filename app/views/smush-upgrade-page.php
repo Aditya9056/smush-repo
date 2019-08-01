@@ -21,8 +21,8 @@ $upgrade_url = add_query_arg(
 		<div class="sui-upgrade-page__container">
 			<div class="sui-upgrade-page-header__content">
 				<h1><?php esc_html_e( 'Upgrade to Smush Pro', 'wp-smushit' ); ?></h1>
-				<p><?php esc_html_e( 'Get Smush Pro to bulk smush unlimited images with one-click, compress huge photos up to 32 MB and use our blazing-fast CDN to serve high-quality images from 45 locations around the globe.', 'wp-smushit' ); ?></p>
-				<p><?php esc_html_e( 'Plus - 2x your savings with Super-Smush image compression, WebP support, auto-convert PNGs to JPEGs and get absolutely everything WPMU DEV membership offers! ', 'wp-smushit' ); ?></p>
+				<p><?php esc_html_e( 'Get Smush Pro and bulk optimize every image you’ve ever added to your site with one-click. Save 2x more with lossy Super-Smush. Serve stunning, high-quality images from 45 locations around the globe with our blazing-fast CDN.', 'wp-smushit' ); ?></p>
+				<p><?php esc_html_e( 'Automatically compress and resize huge photos up to 32MB. Double your savings and fix your Google PageSpeed with the best image optimizer WordPress has ever known.', 'wp-smushit' ); ?></p>
 				<a href="<?php echo esc_url( add_query_arg( 'utm_campaign', 'smush_propage_topbutton', $upgrade_url ) ); ?>" class="sui-button sui-button-lg sui-button-purple" target="_blank">
 					<?php esc_html_e( 'Try Free for 30 Days', 'wp-smushit' ); ?>
 				</a>
@@ -68,13 +68,13 @@ $upgrade_url = add_query_arg(
 			</div>
 			<div class="sui-upgrade-page-features__item">
 				<i class="sui-icon-graph-line" aria-hidden="true"></i>
-				<h3><?php esc_html_e( '2x savings with the Super-Smush compression', 'wp-smushit' ); ?></h3>
-				<p><?php esc_html_e( 'Don’t just Smush your images, Smush Pro users get Super-Smush with advanced multi-pass lossy compression that increases savings more than 2x on average without any visible loss in image quality.', 'wp-smushit' ); ?></p>
+				<h3><?php esc_html_e( 'More than double your savings with Super-Smush', 'wp-smushit' ); ?></h3>
+				<p><?php esc_html_e( 'Smush Pro users get unlimited access to Super-Smush advanced multi-pass lossy compression increasing savings by more than 2x on average without any visible loss in quality.', 'wp-smushit' ); ?></p>
 			</div>
 			<div class="sui-upgrade-page-features__item">
 				<i class="sui-icon-web-globe-world" aria-hidden="true"></i>
-				<h3><?php esc_html_e( 'WPMU DEV CDN with WebP Support', 'wp-smushit' ); ?></h3>
-				<p><?php esc_html_e( 'Smush Pro gives access to our blazing-fast CDN to serve high-quality images from 45 locations around the globe, deliver perfect fit images based on container size, WebP support to save 25% more over PNG and JPEG, and your website will be literally flying.', 'wp-smushit' ); ?></p>
+				<h3><?php esc_html_e( 'WPMU DEV CDN with WebP support', 'wp-smushit' ); ?></h3>
+				<p><?php esc_html_e( 'Use the blazing-fast Smush image CDN to automatically resize your files to the perfect size and serve WebP files 25% smaller than PNG and JPG compression from 45 locations around the globe.', 'wp-smushit' ); ?></p>
 			</div>
 			<div class="sui-upgrade-page-features__item">
 				<i class="sui-icon-smush" aria-hidden="true"></i>
@@ -89,7 +89,7 @@ $upgrade_url = add_query_arg(
 			<div class="sui-upgrade-page-features__item">
 				<i class="sui-icon-wand-magic" aria-hidden="true"></i>
 				<h3><?php esc_html_e( 'Auto-convert PNGs to JPEGs (lossy)', 'wp-smushit' ); ?></h3>
-				<p><?php esc_html_e( 'When you upload a PNG image, Smush Pro will automatically check if converting it to JPEG could further reduce its size, and auto-convert it if necessary.', 'wp-smushit' ); ?></p>
+				<p><?php esc_html_e( "Smush looks for additional savings and automatically converts PNG files to JPEG if it will further reduce the size without a visible drop in quality. Now that's smart image compression.", 'wp-smushit' ); ?></p>
 			</div>
 			<div class="sui-upgrade-page-features__item">
 				<i class="sui-icon-gdpr" aria-hidden="true"></i>
@@ -109,14 +109,14 @@ $upgrade_url = add_query_arg(
 			<div class="sui-upgrade-page-features__item">
 				<i class="sui-icon-wpmudev-logo" aria-hidden="true"></i>
 				<h3><?php esc_html_e( 'The WPMU DEV Guarantee', 'wp-smushit' ); ?></h3>
-				<p><?php esc_html_e( "You'll be delighted with Smush Pro You've got a 30-day free trial to test the WPMU DEV Membership, and if you continue but change your mind, you can cancel any time.", 'wp-smushit' ); ?></p>
+				<p><?php esc_html_e( "You'll be delighted with Smush Pro. You've got a 30-day free trial to test the WPMU DEV Membership, and if you continue but change your mind, you can cancel any time.", 'wp-smushit' ); ?></p>
 			</div>
 		</div>
 	</div>
 	<div class="sui-upgrade-page-cta">
 		<div class="sui-upgrade-page-cta__inner">
 			<h2><?php esc_html_e( 'Join 771,093 Happy Members', 'wp-smushit' ); ?></h2>
-			<p><?php esc_html_e( "97% of customers are happy with WPMU DEV's service, and it’s a great time to join them: as a Smush user you’ll get a free 30-day trial, so you can see what all the fuss is about. ", 'wp-smushit' ); ?></p>
+			<p><?php esc_html_e( "97% of customers are happy with WPMU DEV's service, and it’s a great time to join them: as a Smush user you’ll get a free 30-day trial, so you can see what all the fuss is about.", 'wp-smushit' ); ?></p>
 			<a href="<?php echo esc_url( add_query_arg( 'utm_campaign', 'smush_propage_bottombutton', $upgrade_url ) ); ?>" class="sui-button sui-button-lg sui-button-purple" target="_blank">
 				<?php esc_html_e( 'Get Smush Pro, and get a faster WordPress', 'wp-smushit' ); ?>
 			</a>

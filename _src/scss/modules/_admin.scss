@@ -23,6 +23,10 @@
 		}
 
 		.sui-upgrade-page {
+			.sui-upgrade-page-cta__inner a:hover {
+				color: #fff !important;
+			}
+
 			.smush-stats {
 				position: relative;
 				display: flex;
