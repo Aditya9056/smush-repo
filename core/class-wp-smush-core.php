@@ -503,12 +503,10 @@ class WP_Smush_Core {
 			'resmush'                 => esc_html__( 'Super-Smush', 'wp-smushit' ),
 			'smush_now'               => esc_html__( 'Smush Now', 'wp-smushit' ),
 			'error_in_bulk'           => sprintf(
-				/* translators: %1$s - opening link tag, %2$s - </a>, %3$s - <strong>, %4$s - </strong> */
-				esc_html__( '{{smushed}}/{{total}} images were successfully compressed, {{errors}} encountered issues. %1$sUpgrade to pro for FREE%2$s to avoid skipping images due to %3$s“size limit exceeded”%4$s error and compress large images up to 32 MB.', 'wp-smushit' ),
+				/* translators: %1$s - opening link tag, %2$s - </a> */
+				esc_html__( 'Smush could not finish because some of your images exceed the 5MB size limit. %1$sUpgrade to Smush pro for FREE%2$s to optimize your remaining image files up to 32MB.', 'wp-smushit' ),
 				'<a href="' . esc_url( $upgrade_url ) . '" target="_blank">',
-				'</a>',
-				'<strong>',
-				'</strong>'
+				'</a>'
 			),
 			'all_resmushed'           => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
 			'restore'                 => esc_html__( 'Restoring image..', 'wp-smushit' ),
