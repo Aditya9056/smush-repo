@@ -643,7 +643,7 @@ abstract class WP_Smush_View {
 		}
 
 		// Show settings saved message.
-		if ( 1 != $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings_updated', false ) ) {
+		if ( ! $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings_updated' ) ) {
 			return;
 		}
 
