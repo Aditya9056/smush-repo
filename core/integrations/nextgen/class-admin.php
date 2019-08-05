@@ -187,10 +187,24 @@ class Admin extends NextGen {
 	public function localize() {
 		$handle = 'smush-admin';
 
+		$upgrade_url = add_query_arg(
+			array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => 'smush_bulksmush_issues_filesizelimit_notice',
+			),
+			WP_Smush::get_instance()->core()->upgrade_url
+		);
+
 		$wp_smush_msgs = array(
 			'resmush'          => esc_html__( 'Super-Smush', 'wp-smushit' ),
 			'smush_now'        => esc_html__( 'Smush Now', 'wp-smushit' ),
-			'error_in_bulk'    => esc_html__( '{{smushed}}/{{total}} images were successfully compressed, {{errors}} encountered issues.', 'wp-smushit' ),
+			'error_in_bulk'    => sprintf(
+				/* translators: %1$s - opening link tag, %2$s - </a> */
+				esc_html__( 'Smush could not finish because some of your images exceed the 5MB size limit. %1$sUpgrade to Smush pro for FREE%2$s to optimize your remaining image files up to 32MB.', 'wp-smushit' ),
+				'<a href="' . esc_url( $upgrade_url ) . '" target="_blank">',
+				'</a>'
+			),
 			'all_resmushed'    => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
 			'restore'          => esc_html__( 'Restoring image..', 'wp-smushit' ),
 			'smushing'         => esc_html__( 'Smushing image..', 'wp-smushit' ),
