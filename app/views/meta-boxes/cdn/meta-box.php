@@ -9,6 +9,7 @@
  * @var string   $class          CDN status class (for icon color).
  * @var array    $settings       Settings.
  * @var array    $settings_data  Settings data (titles, descriptions, fields).
+ * @var string   $status         CDN status.
  * @var string   $status_msg     CDN status messages.
  */
 
@@ -32,7 +33,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 	<div class="sui-notice sui-notice-<?php echo esc_attr( $class ); ?> smush-notice-sm">
 		<p><?php echo $status_msg; ?></p>
-		<?php if ( 'error' === $class ) : ?>
+		<?php if ( 'error' === $class && 'overcap' === $status ) : ?>
 			<div class="sui-notice-buttons">
 				<a href="https://premium.wpmudev.org/hub/account/" target="_blank" class="sui-button">
 					<?php esc_html_e( 'Upgrade Plan', 'wp-smushit' ); ?>

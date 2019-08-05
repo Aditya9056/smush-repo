@@ -1030,7 +1030,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 		$this->view(
 			'meta-boxes/pro-features/meta-box-header',
 			array(
-				'title'       => __( 'Pro Features', 'wp-smushit' ),
+				'title'       => __( 'Smush Pro', 'wp-smushit' ),
 				'upgrade_url' => $upgrade_url,
 			)
 		);
@@ -1198,6 +1198,7 @@ class WP_Smush_Dashboard extends WP_Smush_View {
 				'settings_data' => WP_Smush::get_instance()->core()->settings,
 				'status_msg'    => $status_msg[ $status ],
 				'class'         => $status_color[ $status ],
+				'status'        => $status,
 			)
 		);
 	}

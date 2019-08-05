@@ -174,17 +174,22 @@ if ( $is_pro && $lossy_enabled ) {
 	?>
 	<div class="sui-upsell-row">
 		<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-graphic-bulksmush-upsell@2x.png' ); ?>">
-		<div class="sui-upsell-notice">
+		<div class="sui-notice sui-notice-purple smush-upsell-notice">
 			<p>
 				<?php
 				printf(
 					/* translators: %1$s: opening a tag, %2$s: closing a tag */
-					esc_html__( 'Did you know WP Smush Pro delivers up to 2x better compression, allows you to smush your originals and removes any bulk smushing limits? – %1$sTry it absolutely FREE%2$s', 'wp-smushit' ),
-					'<a href="' . esc_url( $pro_upgrade_url ) . '" target="_blank" title="' . esc_html__( 'Try Smush Pro for FREE', 'wp-smushit' ) . '">',
-					'</a>'
+					esc_html__( 'Did you know %1$sSmush Pro%2$s delivers up to 2x better compression, allows you to smush your originals and removes any bulk smushing limits?', 'wp-smushit' ),
+					'<strong>',
+					'</strong>'
 				);
 				?>
 			</p>
+			<div class="sui-notice-buttons">
+				<a href="<?php echo esc_url( $pro_upgrade_url ); ?>" class="sui-button sui-button-purple" target="_blank">
+					<?php esc_html_e( 'Try it absolutely FREE', 'wp-smushit' ); ?>
+				</a>
+			</div>
 		</div>
 	</div>
 	<?php

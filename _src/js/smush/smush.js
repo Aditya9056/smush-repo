@@ -145,7 +145,7 @@ class Smush {
 		jQuery( '.sui-notice-top' ).remove();
 
 		// Hide the bulk limit message.
-		jQuery( '.wp-smush-bulk-progress-bar-wrapper .sui-notice-warning' ).hide();
+		jQuery( '.wp-smush-bulk-progress-bar-wrapper .sui-notice-warning:first-of-type' ).hide();
 
 		// Hide parent wrapper, if there are no other messages.
 		if ( 0 >= jQuery( 'div.smush-final-log .smush-bulk-error-row' ).length ) {
@@ -539,6 +539,8 @@ class Smush {
 		progress.find('i.sui-icon-loader').addClass('sui-icon-info')
 			.removeClass('sui-icon-loader')
 			.removeClass('sui-loading');
+
+		document.getElementById( 'bulk-smush-resume-button' ).classList.remove( 'sui-hidden' );
 	};
 
 	/**

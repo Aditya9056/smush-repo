@@ -495,7 +495,7 @@ class WP_Smush_Ajax extends WP_Smush_Module {
 					if ( is_array( $image_sizes ) && count( $image_sizes ) > count( $smush_data['sizes'] ) ) {
 						// Move this inside an if statement.
 						$attachment_data = wp_get_attachment_metadata( $attachment );
-						if ( count( $attachment_data['sizes'] ) !== count( $smush_data['sizes'] ) ) {
+						if ( isset( $attachment_data['sizes'] ) && count( $attachment_data['sizes'] ) !== count( $smush_data['sizes'] ) ) {
 							foreach ( $image_sizes as $image_size ) {
 								// Already compressed.
 								if ( isset( $smush_data['sizes'][ $image_size ] ) ) {

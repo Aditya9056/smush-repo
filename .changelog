@@ -1,3 +1,13 @@
+= 3.2.3 =
+
+- New: Pro page to highlight Smush Pro features
+- Enhance: Minor user experience improvements and updates
+- Enhance: CDN activation process
+- Fix: CDN upgrade status issue
+- Fix: Remove auto sizing in lazy loading
+- Fix: Images with empty class not lazy loading
+- Fix: Lazy loading not working on front page when a static page is selected as a homepage
+
 = 3.2.2.1 =
 
 - Fix: Preserve network settings after update

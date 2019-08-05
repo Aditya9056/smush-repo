@@ -579,13 +579,21 @@ class WP_Smush_Settings {
 	 */
 	private function parse_cdn_settings() {
 		// $status = connect to CDN.
-		$enabled = WP_Smush::get_instance()->core()->mod->cdn->get_status();
+		$status = WP_Smush::get_instance()->core()->mod->cdn->status();
 
-		if ( ! $enabled ) {
+		if ( 'disabled' === $status ) {
 			$response = WP_Smush::get_instance()->api()->enable();
-			$response = json_decode( $response['body'] );
 
-			$this->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $response->data );
+			// Probably an exponential backoff.
+			if ( is_wp_error( $response ) ) {
+				sleep( 1 ); // This is needed so we don't trigger the 597 API response.
+				$response = WP_Smush::get_instance()->api()->enable( true );
+			}
+
+			if ( ! is_wp_error( $response ) ) {
+				$response = json_decode( $response['body'] );
+				$this->set_setting( WP_SMUSH_PREFIX . 'cdn_status', $response->data );
+			}
 		}
 	}
 

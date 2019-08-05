@@ -176,8 +176,7 @@ window.lazySizesConfig.lazyClass    = 'lazyload';
 window.lazySizesConfig.loadingClass = 'lazyloading';
 window.lazySizesConfig.loadedClass  = 'lazyloaded';
 
-//page is optimized for fast onload event
-lazySizesConfig.loadMode = 1;";
+lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 
 		wp_add_inline_script( 'smush-lazy-load', $custom, 'before' );
 
@@ -278,7 +277,6 @@ lazySizesConfig.loadMode = 1;";
 		$src = WP_Smush_Page_Parser::get_attribute( $new_image, 'src' );
 		WP_Smush_Page_Parser::remove_attribute( $new_image, 'src' );
 		WP_Smush_Page_Parser::add_attribute( $new_image, 'data-src', $src );
-		WP_Smush_Page_Parser::add_attribute( $new_image, 'data-sizes', 'auto' );
 
 		// Change srcset to data-srcset attribute.
 		$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
@@ -286,11 +284,11 @@ lazySizesConfig.loadMode = 1;";
 		// Add .lazyload class.
 		$class = WP_Smush_Page_Parser::get_attribute( $new_image, 'class' );
 		if ( $class ) {
-			WP_Smush_Page_Parser::remove_attribute( $new_image, 'class' );
 			$class .= ' lazyload';
 		} else {
 			$class = 'lazyload';
 		}
+		WP_Smush_Page_Parser::remove_attribute( $new_image, 'class' );
 		WP_Smush_Page_Parser::add_attribute( $new_image, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
 
 		WP_Smush_Page_Parser::add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
@@ -349,19 +347,22 @@ lazySizesConfig.loadMode = 1;";
 			return false;
 		}
 
-		$blog_is_frontpage = ( 'posts' === get_option( 'show_on_front' ) && ! is_multisite() ) ? true : false;
+		// Static home page is selected (is_home() is false, is_front_page() is true).
+		if ( is_front_page() ) {
+			return isset( $this->options['include']['frontpage'] ) && $this->options['include']['frontpage'];
+		}
 
-		if ( is_front_page() && ( ! isset( $this->options['include']['frontpage'] ) || ! $this->options['include']['frontpage'] ) ) {
-			return false;
-		} elseif ( is_home() && isset( $this->options['include']['home'] ) && $this->options['include']['home'] && ! $blog_is_frontpage ) {
-			return true;
-		} elseif ( is_page() && ! is_front_page() && isset( $this->options['include']['page'] ) && $this->options['include']['page'] ) {
+		// Latest posts selected as homepage (both is_home() and is_front_page() will return true).
+		if ( is_home() ) {
+			return isset( $this->options['include']['home'] ) && $this->options['include']['home'];
+		}
+
+		if ( is_page() && isset( $this->options['include']['page'] ) && $this->options['include']['page'] ) {
 			return true;
 		} elseif ( is_single() && isset( $this->options['include']['single'] ) && $this->options['include']['single'] ) {
 			return true;
 		} elseif ( is_category() && isset( $this->options['include']['category'] ) && ! $this->options['include']['category'] ) {
-			// Show false, because a category is also an archive.
-			return false;
+			return false; // Show false, because a category is also an archive.
 		} elseif ( is_tag() && isset( $this->options['include']['tag'] ) && ! $this->options['include']['tag'] ) {
 			return false;
 		} elseif ( is_archive() && isset( $this->options['include']['archive'] ) && $this->options['include']['archive'] ) {

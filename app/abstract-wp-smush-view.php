@@ -54,40 +54,47 @@ abstract class WP_Smush_View {
 	/**
 	 * WP_Smush_View constructor.
 	 *
+	 * @param string $slug     Page slug.
 	 * @param string $title    Page title.
-	 * @param string $slug     Page slug. Default: 'smush'.
-	 * @param bool   $submenu  Is a submenu page.
+	 * @param bool   $parent   Does a page have a parent (will be added as a sub menu).
+	 * @param bool   $nextgen  Is that a NextGen subpage.
 	 */
-	public function __construct( $title, $slug = 'smush', $submenu = false ) {
+	public function __construct( $slug, $title, $parent = false, $nextgen = false ) {
 		$this->slug     = $slug;
 		$this->settings = WP_Smush_Settings::get_instance();
 
-		if ( ! $submenu ) {
+		if ( ! $parent ) {
 			$this->page_id = add_menu_page(
 				$title,
 				$title,
 				'manage_options',
 				$this->slug,
-				array( $this, 'render' ),
+				$parent ? array( $this, 'render' ) : null,
 				$this->get_menu_icon()
 			);
 		} else {
 			$this->page_id = add_submenu_page(
-				NGGFOLDER,
+				$parent,
 				$title,
 				$title,
-				'NextGEN Manage gallery',
+				$nextgen ? 'NextGEN Manage gallery' : 'manage_options',
 				$this->slug,
 				array( $this, 'render' )
 			);
 
-			// Enqueue js on Post screen (Edit screen for media ).
-			add_action( 'admin_print_scripts-' . $this->page_id, array( WP_Smush::get_instance()->core()->nextgen->ng_admin, 'localize' ) );
+			// TODO: can this be moved out to the NextGen admin class?
+			if ( $nextgen ) {
+				// Enqueue js on Post screen (Edit screen for media ).
+				add_action( 'admin_print_scripts-' . $this->page_id, array( WP_Smush::get_instance()->core()->nextgen->ng_admin, 'localize' ) );
+			}
 		}
 
-		add_filter( 'load-' . $this->page_id, array( $this, 'on_load' ) );
-		add_action( 'load-' . $this->page_id, array( $this, 'register_meta_boxes' ) );
-		add_filter( 'load-' . $this->page_id, array( $this, 'add_action_hooks' ) );
+		// No need to load these action on parent pages, as they are just placeholders for sub pages.
+		if ( $parent ) {
+			add_filter( 'load-' . $this->page_id, array( $this, 'on_load' ) );
+			add_action( 'load-' . $this->page_id, array( $this, 'register_meta_boxes' ) );
+			add_filter( 'load-' . $this->page_id, array( $this, 'add_action_hooks' ) );
+		}
 	}
 
 	/**
@@ -636,7 +643,7 @@ abstract class WP_Smush_View {
 		}
 
 		// Show settings saved message.
-		if ( 1 != $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings_updated', false ) ) {
+		if ( ! $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings_updated' ) ) {
 			return;
 		}
 

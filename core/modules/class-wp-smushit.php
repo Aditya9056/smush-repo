@@ -636,25 +636,19 @@ class WP_Smushit extends WP_Smush_Module {
 		$full_image = get_attached_file( $image_id );
 
 		// If full image was not smushed, reason 1. Large Size logic, 2. Free and greater than 5Mb.
-		if ( ! array_key_exists( 'full', $size_stats ) ) {
+		if ( ! array_key_exists( 'full', $size_stats ) && ! WP_Smush::is_pro() ) {
 			// For free version, Check the image size.
-			if ( ! WP_Smush::is_pro() ) {
-				// For free version, check if full size is greater than 5 Mb, show the skipped status.
-				$file_size = file_exists( $full_image ) ? filesize( $full_image ) : '';
-				if ( ! empty( $file_size ) && ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
-					$skipped[] = array(
-						'size'   => 'full',
-						'reason' => 'size_limit',
-					);
-				}
-			}
+			$skipped[] = array(
+				'size'   => 'full',
+				'reason' => 'large_size',
+			);
 
-			// In other case, if full size is skipped.
-			if ( ! isset( $skipped['full'] ) ) {
-				// Paid version, Check if we have large size.
+			// For free version, check if full size is greater than 5 Mb, show the skipped status.
+			$file_size = file_exists( $full_image ) ? filesize( $full_image ) : '';
+			if ( empty( $skipped ) && ! empty( $file_size ) && ( $file_size / WP_SMUSH_MAX_BYTES ) > 1 ) {
 				$skipped[] = array(
 					'size'   => 'full',
-					'reason' => 'large_size',
+					'reason' => 'size_limit',
 				);
 			}
 		}
