@@ -1,6 +1,6 @@
 <?php
 /**
- * Smush upgrade page class: WP_Smush_Upgrade_Page extends WP_Smush_View.
+ * Smush upgrade page class: Upgrade extends Abstract_Page.
  *
  * @since 3.2.3
  * @package Smush\App\Pages
