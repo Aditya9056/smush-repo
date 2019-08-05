@@ -404,7 +404,7 @@ class Core {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_bulksmush_issues_filesizelimit_notice',
 			),
-			$this->upgrade_url
+			'https://premium.wpmudev.org/project/wp-smush-pro/'
 		);
 
 		$wp_smush_msgs = array(

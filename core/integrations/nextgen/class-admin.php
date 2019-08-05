@@ -193,7 +193,7 @@ class Admin extends NextGen {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_bulksmush_issues_filesizelimit_notice',
 			),
-			WP_Smush::get_instance()->core()->upgrade_url
+			'https://premium.wpmudev.org/project/wp-smush-pro/'
 		);
 
 		$wp_smush_msgs = array(
