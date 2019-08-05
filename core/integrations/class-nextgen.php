@@ -79,8 +79,7 @@ class NextGen extends Abstract_Integration {
 
 		$this->add_mixins();
 
-		$this->ng_stats = new NextGen\Stats();
-		$this->ng_admin = new NextGen\Admin( $this->ng_stats );
+		add_action( 'admin_init', array( $this, 'init_modules' ) );
 
 		/**
 		 * FILTERS
@@ -137,6 +136,16 @@ class NextGen extends Abstract_Integration {
 	 *
 	 * PUBLIC CLASSES
 	 */
+
+	/**
+	 * Initialize the stats and admin modules, once admin is ready.
+	 *
+	 * @since 3.3.0
+	 */
+	public function init_modules() {
+		$this->ng_stats = new NextGen\Stats();
+		$this->ng_admin = new NextGen\Admin( $this->ng_stats );
+	}
 
 	/**
 	 * Check if NextGen integration is active.

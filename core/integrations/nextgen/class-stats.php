@@ -47,6 +47,7 @@ class Stats extends NextGen {
 	 * Stats constructor.
 	 */
 	public function __construct() {
+		parent::__construct();
 		$this->is_pro_user = WP_Smush::is_pro();
 
 		// Update Total Image count.
