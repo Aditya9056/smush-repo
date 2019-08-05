@@ -217,7 +217,8 @@ class Admin extends NextGen {
 		wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
 
 		// If premium, Super smush allowed, all images are smushed, localize lossless smushed ids for bulk compression.
-		if ( $resmush_ids = get_option( 'wp-smush-nextgen-resmush-list', array() ) ) {
+		$resmush_ids = get_option( 'wp-smush-nextgen-resmush-list', array() );
+		if ( $resmush_ids ) {
 			$this->resmush_ids = $resmush_ids;
 		}
 
@@ -296,13 +297,13 @@ class Admin extends NextGen {
 	/**
 	 * Set send button status
 	 *
-	 * @param $pid
-	 * @param bool $echo
-	 * @param bool $text_only
+	 * @param int  $pid        ID.
+	 * @param bool $echo       Echo or return.
+	 * @param bool $text_only  Text only.
 	 *
 	 * @return string
 	 */
-	function set_status( $pid, $echo = true, $text_only = false ) {
+	private function set_status( $pid, $echo = true, $text_only = false ) {
 		// the status.
 		$status_txt = __( 'Not processed', 'wp-smushit' );
 
@@ -329,17 +330,17 @@ class Admin extends NextGen {
 	/**
 	 * Print the column html
 	 *
-	 * @param string  $pid          Media id
-	 * @param string  $status_txt   Status text
-	 * @param string  $button_txt   Button label
-	 * @param boolean $show_button  Whether to shoe the button
+	 * @param string  $pid          Media id.
+	 * @param string  $status_txt   Status text.
+	 * @param string  $button_txt   Button label.
+	 * @param boolean $show_button  Whether to shoe the button.
 	 * @param bool    $smushed      Image compressed or not.
 	 * @param bool    $echo         Echo or return.
-	 * @param bool    $wrapper      Add a wrapper?
+	 * @param bool    $wrapper      Add a wrapper.
 	 *
 	 * @return string|void
 	 */
-	function column_html( $pid, $status_txt = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true, $wrapper = false ) {
+	public function column_html( $pid, $status_txt = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true, $wrapper = false ) {
 		$class = $smushed ? '' : ' sui-hidden';
 		$html  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
 		$html .= wp_nonce_field( 'wp_smush_nextgen', '_wp_smush_nonce', '', false );
@@ -384,20 +385,20 @@ class Admin extends NextGen {
 	/**
 	 * Updates the resmush list for NextGen gallery, remove the given id
 	 *
-	 * @param $attachment_id
+	 * @param int $attachment_id  Attachment ID.
 	 */
-	function update_resmush_list( $attachment_id ) {
+	public function update_resmush_list( $attachment_id ) {
 		WP_Smush::get_instance()->core()->mod->smush->update_resmush_list( $attachment_id, 'wp-smush-nextgen-resmush-list' );
 	}
 
 	/**
 	 * Fetch the stats for the given attachment id, and subtract them from Global stats
 	 *
-	 * @param int $attachment_id
+	 * @param int $attachment_id  Attachment ID.
 	 *
 	 * @return bool
 	 */
-	function update_nextgen_stats( $attachment_id ) {
+	public function update_nextgen_stats( $attachment_id ) {
 		if ( empty( $attachment_id ) ) {
 			return false;
 		}
@@ -428,9 +429,9 @@ class Admin extends NextGen {
 			if ( 0 === $nextgen_stats['bytes'] && 0 === $nextgen_stats['size_before'] ) {
 				$nextgen_stats['percent'] = 0;
 			} else {
-				$nextgen_stats['percent']     = ( $nextgen_stats['bytes'] / $nextgen_stats['size_before'] ) * 100;
+				$nextgen_stats['percent'] = ( $nextgen_stats['bytes'] / $nextgen_stats['size_before'] ) * 100;
 			}
-			$nextgen_stats['human']       = size_format( $nextgen_stats['bytes'], 1 );
+			$nextgen_stats['human'] = size_format( $nextgen_stats['bytes'], 1 );
 		}
 
 		// Update Stats.
@@ -443,10 +444,10 @@ class Admin extends NextGen {
 	/**
 	 * Update the Super Smush count for NextGen Gallery
 	 *
-	 * @param $image_id
-	 * @param $stats
+	 * @param int   $image_id  Image ID.
+	 * @param array $stats     Stats.
 	 */
-	function update_lists( $image_id, $stats ) {
+	public function update_lists( $image_id, $stats ) {
 		WP_Smush::get_instance()->core()->mod->smush->update_lists( $image_id, $stats, 'wp-smush-super_smushed_nextgen' );
 		if ( ! empty( $this->resmush_ids ) && in_array( $image_id, $this->resmush_ids ) ) {
 			$this->update_resmush_list( $image_id );
@@ -456,7 +457,7 @@ class Admin extends NextGen {
 	/**
 	 * Initialize NextGen Gallery Stats
 	 */
-	function setup_image_counts() {
+	public function setup_image_counts() {
 		$smushed_images = $this->ng_stats->get_ngg_images( 'smushed' );
 
 		// Check if resmush ids are not set, get it.
@@ -485,13 +486,12 @@ class Admin extends NextGen {
 	/**
 	 * Get the image count for nextgen images
 	 *
-	 * @param array $images Array of attachments to get the image count for
-	 *
-	 * @param bool  $exclude_resmush_ids Whether to exclude resmush ids or not
+	 * @param array $images               Array of attachments to get the image count for.
+	 * @param bool  $exclude_resmush_ids  Whether to exclude resmush ids or not.
 	 *
 	 * @return int
 	 */
-	function get_image_count( $images = array(), $exclude_resmush_ids = true ) {
+	public function get_image_count( $images = array(), $exclude_resmush_ids = true ) {
 		if ( empty( $images ) || ! is_array( $images ) ) {
 			return 0;
 		}
@@ -527,11 +527,11 @@ class Admin extends NextGen {
 	/**
 	 * Combine the resizing stats and smush stats , One time operation - performed during the image optimization
 	 *
-	 * @param array $metadata
+	 * @param array $metadata  Image metadata.
 	 *
 	 * @return mixed
 	 */
-	function get_combined_stats( $metadata ) {
+	private function get_combined_stats( $metadata ) {
 		if ( empty( $metadata ) ) {
 			return $metadata;
 		}
@@ -573,7 +573,7 @@ class Admin extends NextGen {
 	 *
 	 * @return array|mixed|void
 	 */
-	function cleanup_super_smush_data() {
+	private function cleanup_super_smush_data() {
 		$super_smushed = get_option( 'wp-smush-super_smushed_nextgen', array() );
 		$ids           = $this->ng_stats->total_count( false, true );
 
