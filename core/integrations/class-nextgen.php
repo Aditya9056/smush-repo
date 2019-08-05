@@ -151,8 +151,8 @@ class NextGen extends Abstract_Integration {
 
 	/**
 	 * Bulk Smush for Nextgen.
-     *
-	 * @throws Exception
+	 *
+	 * @throws Exception  Exception.
 	 */
 	public function smush_bulk() {
 		$stats = array();
