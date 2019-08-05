@@ -107,9 +107,10 @@ class Stats extends NextGen {
 	 * @param bool|false $force_update  True/false to update the cache or not.
 	 *
 	 * @return bool|mixed Returns assoc array of image ids and meta or Image count
-	 * @throws Exception
+	 *
+	 * @throws Exception  Exception.
 	 */
-	function get_ngg_images( $type = 'smushed', $count = false, $force_update = false ) {
+	public function get_ngg_images( $type = 'smushed', $count = false, $force_update = false ) {
 		global $wpdb;
 
 		$limit  = apply_filters( 'wp_smush_nextgen_query_limit', 1000 );
@@ -191,12 +192,15 @@ class Stats extends NextGen {
 	 *
 	 * @return bool|array|string
 	 */
-	function show_stats( $pid, $wp_smush_data = false, $image_type = '', $text_only = false, $echo = true ) {
+	public function show_stats( $pid, $wp_smush_data = false, $image_type = '', $text_only = false, $echo = true ) {
 		if ( empty( $wp_smush_data ) ) {
 			return false;
 		}
-		$button_txt  = $stats = '';
-		$show_button = $show_resmush = $show_restore = false;
+		$button_txt   = '';
+		$stats        = '';
+		$show_button  = false;
+		$show_resmush = false;
+		$show_restore = false;
 
 		$mush = WP_Smush::get_instance()->core()->mod->smush;
 
@@ -312,10 +316,10 @@ class Stats extends NextGen {
 	/**
 	 * Updated the global smush stats for NextGen gallery
 	 *
-	 * @param $image_id
-	 * @param array $stats Compression stats fo respective image
+	 * @param int   $image_id  Image ID.
+	 * @param array $stats     Compression stats fo respective image.
 	 */
-	function update_stats( $image_id, $stats ) {
+	private function update_stats( $image_id, $stats ) {
 		$stats = ! empty( $stats['stats'] ) ? $stats['stats'] : '';
 
 		$smush_stats = get_option( 'wp_smush_stats_nextgen', array() );
@@ -342,9 +346,10 @@ class Stats extends NextGen {
 	/**
 	 * Updated the global smush stats for NextGen gallery
 	 *
-	 * @param array $stats Compression stats fo respective image
+	 * @param int   $image_id  Image ID.
+	 * @param array $stats     Compression stats for respective image.
 	 */
-	function update_resize_stats( $image_id, $stats ) {
+	private function update_resize_stats( $image_id, $stats ) {
 		$stats = ! empty( $stats['stats'] ) ? $stats['stats'] : '';
 
 		$smush_stats = get_option( 'wp_smush_stats_nextgen', array() );
@@ -371,11 +376,11 @@ class Stats extends NextGen {
 	/**
 	 * Get the attachment stats for a image
 	 *
-	 * @param $id
+	 * @param object|array|int $id  Attachment ID.
 	 *
 	 * @return null
 	 */
-	function get_attachment_stats( $id ) {
+	private function get_attachment_stats( $id ) {
 		// We'll get the image object in $id itself, else fetch it using Gallery Storage.
 		if ( is_object( $id ) || is_array( $id ) ) {
 			$image = $id;
@@ -411,7 +416,7 @@ class Stats extends NextGen {
 	 *
 	 * @return bool|mixed|void
 	 */
-	function get_smush_stats() {
+	public function get_smush_stats() {
 		$smushed_stats = array(
 			'savings_bytes'   => 0,
 			'size_before'     => 0,
@@ -455,21 +460,21 @@ class Stats extends NextGen {
 	/**
 	 * Updates the cache for Smushed and Unsmushed images
 	 */
-	function update_cache() {
+	public function update_cache() {
 		$this->get_ngg_images( 'smushed', '', true );
 	}
 
 	/**
 	 * Returns the Stats for a image formatted into a nice table
 	 *
-	 * @param $image_id
-	 * @param $wp_smush_data
-	 * @param $attachment_metadata
-	 * @param $full_image
+	 * @param int    $image_id             Image ID.
+	 * @param array  $wp_smush_data        Smush data.
+	 * @param array  $attachment_metadata  Attachment metadata.
+	 * @param string $full_image           Full sized image.
 	 *
 	 * @return string
 	 */
-	function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata, $full_image ) {
+	private function get_detailed_stats( $image_id, $wp_smush_data, $attachment_metadata, $full_image ) {
 		$stats      = '<div id="smush-stats-' . $image_id . '" class="smush-stats-wrapper hidden">
 			<table class="wp-smush-stats-holder">
 				<thead>
@@ -526,12 +531,12 @@ class Stats extends NextGen {
 	/**
 	 * Compare Values
 	 *
-	 * @param $a
-	 * @param $b
+	 * @param object|array $a  First object.
+	 * @param object|array $b  Second object.
 	 *
 	 * @return int
 	 */
-	function cmp( $a, $b ) {
+	public function cmp( $a, $b ) {
 		if ( is_object( $a ) ) {
 			// Check and typecast $b if required.
 			$b = is_object( $b ) ? $b : (object) $b;
@@ -547,17 +552,17 @@ class Stats extends NextGen {
 	/**
 	 * Return a list of images not smushed and reason
 	 *
-	 * @param $size_stats
-	 * @param $full_image
+	 * @param array  $size_stats  Size stats.
+	 * @param string $full_image  Full size image.
 	 *
 	 * @return array
 	 */
-	function get_skipped_images( $size_stats, $full_image ) {
+	private function get_skipped_images( $size_stats, $full_image ) {
 		$skipped = array();
 
 		// If full image was not smushed, reason 1. Large Size logic, 2. Free and greater than 5Mb.
 		if ( ! array_key_exists( 'full', $size_stats ) ) {
-			// For free version, Check the image size
+			// For free version, Check the image size.
 			if ( ! $this->is_pro_user ) {
 				// For free version, check if full size is greater than 5 Mb, show the skipped status.
 				$file_size = file_exists( $full_image ) ? filesize( $full_image ) : '';
@@ -589,12 +594,12 @@ class Stats extends NextGen {
 	/**
 	 * Check if image can be resmushed
 	 *
-	 * @param $show_resmush
-	 * @param $wp_smush_data
+	 * @param bool  $show_resmush   Show resmush button.
+	 * @param array $wp_smush_data  Smush data.
 	 *
 	 * @return bool
 	 */
-	function show_resmush( $show_resmush, $wp_smush_data ) {
+	private function show_resmush( $show_resmush, $wp_smush_data ) {
 		// Resmush: Show resmush link, Check if user have enabled smushing the original and full image was skipped.
 		if ( $this->settings->get( 'original' ) && WP_Smush::is_pro() ) {
 			// IF full image was not smushed.
@@ -604,7 +609,7 @@ class Stats extends NextGen {
 		}
 		if ( $this->settings->get( 'strip_exif' ) ) {
 			// If Keep Exif was set to tru initially, and since it is set to false now.
-			if ( ! empty( $wp_smush_data['stats']['keep_exif'] ) && $wp_smush_data['stats']['keep_exif'] == 1 ) {
+			if ( ! empty( $wp_smush_data['stats']['keep_exif'] ) && 1 == $wp_smush_data['stats']['keep_exif'] ) {
 				$show_resmush = true;
 			}
 		}
@@ -615,11 +620,11 @@ class Stats extends NextGen {
 	/**
 	 * Get the combined stats for given Ids
 	 *
-	 * @param $ids
+	 * @param array $ids  Image IDs.
 	 *
 	 * @return array|bool Array of Stats for the given ids
 	 */
-	function get_stats_for_ids( $ids = array() ) {
+	public function get_stats_for_ids( $ids = array() ) {
 		// Return if we don't have an array or no ids.
 		if ( ! is_array( $ids ) || empty( $ids ) ) {
 			return false;
@@ -633,7 +638,7 @@ class Stats extends NextGen {
 		// Calculate the stats, Expensive Operation.
 		foreach ( $ids as $id ) {
 			$image_stats = $this->get_attachment_stats( $id );
-			// Add the stats to $stats
+			// Add the stats to $stats.
 			foreach ( $stats as $k => $value ) {
 				if ( empty( $image_stats['stats'] ) || empty( $image_stats['stats'][ $k ] ) ) {
 					continue;
@@ -654,13 +659,13 @@ class Stats extends NextGen {
 	 * Add/Subtract the values from 2nd array to First array
 	 * This function is very specific to current requirement of stats re-calculation
 	 *
-	 * @param string $op 'add', 'sub' Add or Subtract the values
-	 * @param array  $a1
-	 * @param array  $a2
+	 * @param string $op 'add', 'sub' Add or Subtract the values.
+	 * @param array  $a1  First array.
+	 * @param array  $a2  Second array.
 	 *
 	 * @return array Return $a1
 	 */
-	function recalculate_stats( $op = 'add', $a1 = array(), $a2 = array() ) {
+	private function recalculate_stats( $op = 'add', $a1 = array(), $a2 = array() ) {
 		// If the first array itself is not set, return.
 		if ( empty( $a1 ) ) {
 			return $a1;
@@ -673,11 +678,11 @@ class Stats extends NextGen {
 				continue;
 			}
 			// Else perform the operation, Considers the value to be integer, doesn't performs a check.
-			if ( 'sub' == $op ) {
+			if ( 'sub' === $op ) {
 				// Subtract the value.
 				$a1[ $k ] -= $a2[ $k ];
-			} elseif ( 'add' == $op ) {
-				// add the value
+			} elseif ( 'add' === $op ) {
+				// Add the value.
 				$a1[ $k ] += $a2[ $k ];
 			}
 		}
@@ -692,11 +697,11 @@ class Stats extends NextGen {
 	/**
 	 * Get Super smushed images from the given images array
 	 *
-	 * @param array $images Array of images containing metadata
+	 * @param array $images Array of images containing metadata.
 	 *
 	 * @return array Array containing ids of supersmushed images
 	 */
-	function get_super_smushed_images( $images = array() ) {
+	private function get_super_smushed_images( $images = array() ) {
 		if ( empty( $images ) ) {
 			return array();
 		}
@@ -717,9 +722,10 @@ class Stats extends NextGen {
 	/**
 	 * Recalculate stats for the given smushed ids and update the cache
 	 * Update Super smushed image ids
-	 * @throws Exception
+	 *
+	 * @throws Exception  Exception.
 	 */
-	function update_stats_cache() {
+	public function update_stats_cache() {
 		// Get the Image ids.
 		$smushed_images = $this->get_ngg_images( 'smushed' );
 		$super_smushed  = array(
@@ -742,14 +748,14 @@ class Stats extends NextGen {
 		$super_smushed['ids']       = $lossy;
 		$super_smushed['timestamp'] = current_time( 'timestamp' );
 
-		// Update Re-smush list
+		// Update Re-smush list.
 		if ( is_array( WP_Smush::get_instance()->core()->nextgen->ng_admin->resmush_ids ) && is_array( $smushed_images ) ) {
 			$resmush_ids = array_intersect( WP_Smush::get_instance()->core()->nextgen->ng_admin->resmush_ids, array_keys( $smushed_images ) );
 		}
 
 		// If we have resmush ids, add it to db.
 		if ( ! empty( $resmush_ids ) ) {
-			// Update re-smush images to db
+			// Update re-smush images to db.
 			update_option( 'wp-smush-nextgen-resmush-list', $resmush_ids, false );
 		}
 
