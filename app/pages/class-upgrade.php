@@ -3,17 +3,21 @@
  * Smush upgrade page class: WP_Smush_Upgrade_Page extends WP_Smush_View.
  *
  * @since 3.2.3
- * @package WP_Smush
+ * @package Smush\App\Pages
  */
+
+namespace Smush\App\Pages;
+
+use Smush\App\Abstract_Page;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Class WP_Smush_Upgrade_Page
+ * Class Upgrade
  */
-class WP_Smush_Upgrade_Page extends WP_Smush_View {
+class Upgrade extends Abstract_Page {
 
 	/**
 	 * Render the page.
@@ -44,13 +48,6 @@ class WP_Smush_Upgrade_Page extends WP_Smush_View {
 	 */
 	public function add_action_hooks() {
 		add_filter( 'admin_body_class', array( $this, 'smush_body_classes' ) );
-	}
-
-	/**
-	 * Enqueue admin styles.
-	 */
-	public function enqueue_styles() {
-
 	}
 
 }
