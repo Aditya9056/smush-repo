@@ -8,6 +8,7 @@
 namespace Smush\App\Pages;
 
 use Smush\App\Abstract_Page;
+use Smush\App\Admin;
 use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -63,7 +64,7 @@ class Nextgen extends Abstract_Page {
 	 */
 	public function enqueue() {
 		$current_screen = get_current_screen();
-		if ( ! empty( $current_screen ) && 'nggallery-manage-images' === $current_screen->base ) {
+		if ( ! empty( $current_screen ) && in_array( $current_screen->base, Admin::$plugin_pages, true ) ) {
 			WP_Smush::get_instance()->core()->nextgen->ng_admin->localize();
 		}
 	}

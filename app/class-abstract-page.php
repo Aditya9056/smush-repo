@@ -95,12 +95,6 @@ abstract class Abstract_Page {
 				$this->slug,
 				array( $this, 'render' )
 			);
-
-			// TODO: can this be moved out to the NextGen admin class?
-			if ( $nextgen ) {
-				// Enqueue js on Post screen (Edit screen for media ).
-				add_action( 'admin_print_scripts-' . $this->page_id, array( WP_Smush::get_instance()->core()->nextgen->ng_admin, 'localize' ) );
-			}
 		}
 
 		// No need to load these action on parent pages, as they are just placeholders for sub pages.
