@@ -46,6 +46,8 @@ class Admin {
 		'gallery_page_wp-smush-nextgen-bulk',
 		'toplevel_page_smush-network',
 		'toplevel_page_smush',
+		'smush_page_smush-upgrade-network',
+		'smush_page_smush-upgrade',
 	);
 
 	/**
