@@ -100,6 +100,12 @@ class Lazy extends Abstract_Module {
 	 * @since 3.2.0
 	 */
 	public function add_inline_styles() {
+		// Fix for poorly coded themes that do not remove the no-js in the HTML class.
+		?>
+		<script>
+			document.documentElement.className = document.documentElement.className.replace( 'no-js', 'js' );
+		</script>
+		<?php
 		if ( ! $this->options['animation']['selected'] ) {
 			return;
 		}

@@ -1,3 +1,7 @@
+= 3.4.0 =
+
+- Fix: Lazy loading not properly working on Bootstrap based themes
+
 = 3.3.0 =
 
 - New: Integration with Envira Gallery
