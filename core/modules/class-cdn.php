@@ -1230,7 +1230,12 @@ class CDN extends Abstract_Module {
 
 		$mapped_domain = $this->check_mapped_domain();
 
-		if ( false === strpos( $src, content_url() ) || ( is_multisite() && $mapped_domain && false === strpos( $src, $mapped_domain ) ) ) {
+		// There are chances for a custom uploads directory using UPLOADS constant.
+		$uploads = wp_get_upload_dir();
+		// Check if the src is within custom uploads directory.
+		$uploads = isset( $uploads['baseurl'] ) ? false !== strpos( $src, $uploads['baseurl'] ) : true;
+
+		if ( ( false === strpos( $src, content_url() ) && ! $uploads ) || ( is_multisite() && $mapped_domain && false === strpos( $src, $mapped_domain ) ) ) {
 			return false;
 		}
 
