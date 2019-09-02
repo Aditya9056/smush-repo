@@ -16,6 +16,11 @@
 - Fix: Lazy loading spinner layout issue
 - Fix: Compatibility with RT Media
 
+= 3.2.4 =
+
+- Enhance: Minor user experience improvements and updates
+- Fix: Bulk Smush notices and errors
+
 = 3.2.3 =
 
 - New: Pro page to highlight Smush Pro features
