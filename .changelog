@@ -1,5 +1,6 @@
 = 3.4.0 =
 
+- Enhance: CDN support for custom UPLOADS directories
 - Fix: Lazy loading not properly working on Bootstrap based themes
 
 = 3.3.0 =
