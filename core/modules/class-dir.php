@@ -571,7 +571,7 @@ class Dir extends Abstract_Module {
 			// Prevent phar deserialization vulnerability.
 			$path = trim( $path );
 			if ( stripos( $path, 'phar://' ) !== false ) {
-				continue;
+				throw new \Exception( 'Potential Phar PHP Object Injection detected.' );
 			}
 
 			/**
