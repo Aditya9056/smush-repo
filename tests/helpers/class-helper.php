@@ -7,6 +7,7 @@
 
 namespace Helpers;
 
+use DOMDocument;
 use ReflectionClass;
 use ReflectionException;
 use Smush\WP_Smush;
@@ -125,6 +126,24 @@ class Helper extends WP_UnitTestCase {
 		$this->set_private_property( $smush, 'is_pro', false );
 
 		$smush->validate_install();
+	}
+
+	/**
+	 * Prepare HTML content from a test file.
+	 *
+	 * @param string $file  File name in tests/_data/cdn folder.
+	 * @param string $dir   Directory to get file from.
+	 *
+	 * @return string
+	 */
+	public function get_content( $file, $dir = 'cdn' ) {
+		$path    = dirname( dirname( __FILE__ ) ) . '/_data/' . $dir . '/';
+		$content = file_get_contents( $path . $file );
+
+		$document = new DOMDocument();
+		$document->loadHTML( utf8_decode( $content ) );
+
+		return $document->saveHTML();
 	}
 
 }

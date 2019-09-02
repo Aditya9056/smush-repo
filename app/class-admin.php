@@ -46,6 +46,8 @@ class Admin {
 		'gallery_page_wp-smush-nextgen-bulk',
 		'toplevel_page_smush-network',
 		'toplevel_page_smush',
+		'smush_page_smush-upgrade-network',
+		'smush_page_smush-upgrade',
 	);
 
 	/**
@@ -53,8 +55,6 @@ class Admin {
 	 */
 	public function __construct() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		// Load js and css on pages with Media Uploader - WP Enqueue Media.
-		add_action( 'wp_enqueue_media', array( $this, 'enqueue_scripts' ) );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'network_admin_menu', array( $this, 'add_menu_pages' ) );
@@ -124,8 +124,6 @@ class Admin {
 	 * Enqueue scripts.
 	 */
 	public function enqueue_scripts() {
-		$this->register_scripts();
-
 		$current_page   = '';
 		$current_screen = '';
 
@@ -134,36 +132,16 @@ class Admin {
 			$current_page   = ! empty( $current_screen ) ? $current_screen->base : $current_page;
 		}
 
-		/**
-		 * If this is called by wp_enqueue_media action, check if we are on one of the
-		 * required screen to avoid duplicate queries.
-		 * We have already enqueued scripts using admin_enqueue_scripts on required pages.
-		 */
-		if ( in_array( $current_page, Core::$pages, true ) && doing_action( 'wp_enqueue_media' ) ) {
+		if ( ! in_array( $current_page, Core::$pages, true ) ) {
 			return;
-		}
-
-		/**
-		 * Load js and css on all admin pages, in order to display install/upgrade notice.
-		 * And If upgrade/install message is dismissed or for pro users, Do not enqueue script.
-		 */
-		if ( get_site_option( WP_SMUSH_PREFIX . 'hide_upgrade_notice' ) || WP_Smush::is_pro() ) {
-			/**
-			 * Do not enqueue, unless it is one of the required screen, or not in WordPress backend.
-			 *
-			 * @var array $pages  List of screens where script needs to be loaded.
-			 */
-			if ( empty( $current_page ) || ! is_admin() || ( ! in_array( $current_page, Core::$pages, true ) && ! did_action( 'wp_enqueue_media' ) ) ) {
-				return;
-			}
 		}
 
 		// Allows to disable enqueuing smush files on a particular page.
-		$enqueue_smush = apply_filters( 'wp_smush_enqueue', true );
-
-		if ( ! $enqueue_smush ) {
+		if ( ! apply_filters( 'wp_smush_enqueue', true ) ) {
 			return;
 		}
+
+		$this->register_scripts();
 
 		// Load on all Smush page only.
 		if ( isset( $current_screen->id ) && in_array( $current_screen->id, self::$plugin_pages, true ) ) {
@@ -280,12 +258,17 @@ class Admin {
 		$title = WP_Smush::is_pro() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 
 		if ( Settings::can_access( false, true ) ) {
-			$this->pages['smush'] = new Pages\Dashboard( $title, 'smush' );
+			$this->pages['smush']           = new Pages\Dashboard( 'smush', $title );
+			$this->pages['smush-dashboard'] = new Pages\Dashboard( 'smush', __( 'Dashboard', 'wp-smushit' ), 'smush' );
+
+			if ( ! WP_Smush::is_pro() ) {
+				$this->pages['smush-upgrade'] = new Pages\Upgrade( 'smush-upgrade', __( 'Smush Pro', 'wp-smushit' ), 'smush' );
+			}
 		}
 
 		// Add a bulk smush option for NextGen gallery.
 		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->nextgen->is_enabled() && WP_Smush::is_pro() && ! is_network_admin() ) {
-			$this->pages['nextgen'] = new Pages\Nextgen( $title, 'wp-smush-nextgen-bulk', true );
+			$this->pages['nextgen'] = new Pages\Nextgen( 'wp-smush-nextgen-bulk', $title, NGGFOLDER, true );
 		}
 	}
 

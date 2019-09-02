@@ -154,6 +154,10 @@ class CDN extends Abstract_Module {
 
 		$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
 
+		if ( ! $cdn ) {
+			return 'disabled';
+		}
+
 		if ( isset( $cdn->cdn_enabling ) && $cdn->cdn_enabling ) {
 			return 'activating';
 		}
@@ -1201,7 +1205,7 @@ class CDN extends Abstract_Module {
 	 * Check if the image path is supported by the CDN.
 	 *
 	 * @since 3.0
-	 * @since 3.2.3 Changed access to public.
+	 * @since 3.3.0 Changed access to public.
 	 *
 	 * @param string $src  Image path.
 	 *

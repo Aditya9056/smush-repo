@@ -83,23 +83,6 @@ class CdnTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Prepare HTML content from a test file.
-	 *
-	 * @param string $file  File name in tests/_data/cdn folder.
-	 *
-	 * @return string
-	 */
-	private function get_content( $file ) {
-		$path    = dirname( __FILE__ ) . '/_data/cdn/';
-		$content = file_get_contents( $path . $file );
-
-		$document = new DOMDocument();
-		$document->loadHTML( utf8_decode( $content ) );
-
-		return $document->saveHTML();
-	}
-
-	/**
 	 * Enable CDN.
 	 *
 	 * @param CDN $cdn  CDN module.
@@ -232,7 +215,7 @@ class CdnTest extends WP_UnitTestCase {
 		$parser = new Parser();
 		$parser->enable( 'cdn' );
 
-		$content = $this->get_content( 'external-images.html' );
+		$content = $this->tester->get_content( 'external-images.html' );
 
 		$this->assertEquals( $content, $parser->parse_page( $content ) );
 	}
@@ -269,7 +252,7 @@ class CdnTest extends WP_UnitTestCase {
 		$parser->enable( 'cdn' );
 
 		$cdn     = WP_Smush::get_instance()->core()->mod->cdn;
-		$content = $this->get_content( 'single-image.html' );
+		$content = $this->tester->get_content( 'single-image.html' );
 
 		$this->enableCDN( $cdn );
 		Settings::get_instance()->set( 'auto_resize', true );

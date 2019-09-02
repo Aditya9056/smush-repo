@@ -153,14 +153,15 @@ class Request {
 	 *
 	 * @since 3.0
 	 *
-	 * @param string $path  Endpoint route.
-	 * @param array  $data  Data array.
+	 * @param string $path    Endpoint route.
+	 * @param array  $data    Data array.
+	 * @param bool   $manual  If it's a manual check. Overwrites exponential back off.
 	 *
 	 * @return mixed|WP_Error
 	 */
-	public function post( $path, $data = array() ) {
+	public function post( $path, $data = array(), $manual = false ) {
 		try {
-			$result = $this->request( $path, $data, 'post' );
+			$result = $this->request( $path, $data, 'post', $manual );
 			return $result;
 		} catch ( Exception $e ) {
 			return new WP_Error( $e->getCode(), $e->getMessage() );
@@ -288,7 +289,6 @@ class Request {
 			'time'  => time(),
 			'fails' => 0,
 		);
-
 
 		$last_run = get_site_option( WP_SMUSH_PREFIX . 'last_run_sync', $defaults );
 
