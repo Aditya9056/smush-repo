@@ -196,7 +196,7 @@ class Parser {
 	 * Compatibility with SmartCrawl readability analysis.
 	 * Do not process page on analysis.
 	 *
-	 * @since 3.2.3
+	 * @since 3.3.0
 	 */
 	private function is_smartcrawl_analysis() {
 		$wds_analysis = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
@@ -311,7 +311,7 @@ class Parser {
 	 *
 	 * This is mostly used to get the URLs from srcset and parse each single URL to use in CDN.
 	 *
-	 * @since 3.2.3
+	 * @since 3.3.0
 	 *
 	 * @param string $content  Content.
 	 *

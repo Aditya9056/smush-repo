@@ -234,7 +234,7 @@ class Settings {
 	/**
 	 * Getter method for lazy loading fields.
 	 *
-	 * @since 3.2.3
+	 * @since 3.3.0
 	 * @return array
 	 */
 	public function get_lazy_load_fields() {

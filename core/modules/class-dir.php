@@ -570,7 +570,7 @@ class Dir extends Abstract_Module {
 		foreach ( $paths as $path ) {
 			// Prevent phar deserialization vulnerability.
 			$path = trim( $path );
-			if ( strpos( strtolower( $path ), 'phar://' ) === 0 ) {
+			if ( stripos( $path, 'phar://' ) !== false ) {
 				continue;
 			}
 

@@ -1037,7 +1037,7 @@ class Dashboard extends Abstract_Page {
 		$this->view(
 			'pro-features/meta-box-header',
 			array(
-				'title'       => __( 'Pro Features', 'wp-smushit' ),
+				'title'       => __( 'Smush Pro', 'wp-smushit' ),
 				'upgrade_url' => $upgrade_url,
 			)
 		);

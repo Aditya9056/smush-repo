@@ -2,7 +2,7 @@
 /**
  * Test the Smush Parser: ParserTest
  *
- * @since 3.2.3
+ * @since 3.3.0
  * @package WP_Smush
  */
 

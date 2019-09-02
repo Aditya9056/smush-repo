@@ -46,6 +46,8 @@ class Admin {
 		'gallery_page_wp-smush-nextgen-bulk',
 		'toplevel_page_smush-network',
 		'toplevel_page_smush',
+		'smush_page_smush-upgrade-network',
+		'smush_page_smush-upgrade',
 	);
 
 	/**
@@ -256,12 +258,17 @@ class Admin {
 		$title = WP_Smush::is_pro() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 
 		if ( Settings::can_access( false, true ) ) {
-			$this->pages['smush'] = new Pages\Dashboard( $title, 'smush' );
+			$this->pages['smush']           = new Pages\Dashboard( 'smush', $title );
+			$this->pages['smush-dashboard'] = new Pages\Dashboard( 'smush', __( 'Dashboard', 'wp-smushit' ), 'smush' );
+
+			if ( ! WP_Smush::is_pro() ) {
+				$this->pages['smush-upgrade'] = new Pages\Upgrade( 'smush-upgrade', __( 'Smush Pro', 'wp-smushit' ), 'smush' );
+			}
 		}
 
 		// Add a bulk smush option for NextGen gallery.
 		if ( defined( 'NGGFOLDER' ) && WP_Smush::get_instance()->core()->nextgen->is_enabled() && WP_Smush::is_pro() && ! is_network_admin() ) {
-			$this->pages['nextgen'] = new Pages\Nextgen( $title, 'wp-smush-nextgen-bulk', true );
+			$this->pages['nextgen'] = new Pages\Nextgen( 'wp-smush-nextgen-bulk', $title, NGGFOLDER, true );
 		}
 	}
 
