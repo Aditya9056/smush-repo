@@ -8,6 +8,8 @@
 
 namespace Smush\Core\Modules;
 
+use Smush\Core\Helper;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -267,16 +269,17 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 			return $image;
 		}
 
-		/**
-		 * Check if some image formats are excluded.
-		 */
-		if ( in_array( false, $this->options['format'], true ) ) {
-			$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
-			$ext = 'jpg' === $ext ? 'jpeg' : $ext;
+		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
+		$ext = 'jpg' === $ext ? 'jpeg' : $ext;
 
-			if ( isset( $this->options['format'][ $ext ] ) && ! $this->options['format'][ $ext ] ) {
-				return $image;
-			}
+		// If not a supported image in src - skip.
+		if ( ! in_array( $ext, array( 'jpeg', 'gif', 'png', 'svg' ), true ) ) {
+			return $image;
+		}
+
+		// Check if some image formats are excluded.
+		if ( in_array( false, $this->options['format'], true ) && isset( $this->options['format'][ $ext ] ) && ! $this->options['format'][ $ext ] ) {
+			return $image;
 		}
 
 		if ( $this->has_excluded_class_or_id( $image ) ) {
