@@ -2,6 +2,8 @@
 
 - Enhance: CDN support for custom UPLOADS directories
 - Fix: Lazy loading not properly working on Bootstrap based themes
+- Fix: Failed parsing srcset attribute value since its w descriptor is invalid warnings
+- Fix: PHP warnings for getimagesize() disabled wrapper
 
 = 3.3.0 =
 

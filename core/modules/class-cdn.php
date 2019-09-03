@@ -1129,13 +1129,13 @@ class CDN extends Abstract_Module {
 			// Revolution slider fix: images will always return 0 height and 0 width.
 			if ( 0 === $width && 0 === $height ) {
 				// Try to get the dimensions directly from the file.
-				list( $width, $height ) = getimagesize( $src );
+				list( $width, $height ) = $this->get_image_size( $src );
 			}
 
 			$image_meta = wp_get_attachment_metadata( $attachment_id );
 		} else {
 			// Try to get the dimensions directly from the file.
-			list( $width, $height ) = getimagesize( $src );
+			list( $width, $height ) = $this->get_image_size( $src );
 
 			// This is an image placeholder - do not generate srcset.
 			if ( $width === $height && 1 === $width ) {
@@ -1296,6 +1296,20 @@ class CDN extends Abstract_Module {
 
 		// Make sure we always continue page parsing if CDN is enabled.
 		add_filter( 'wp_smush_should_skip_parse', '__return_false', 15 );
+	}
+
+	/**
+	 * Try to get the image dimensions from a local file.
+	 *
+	 * @since 3.4.0
+	 * @param string $url  Image URL.
+	 *
+	 * @return array|false
+	 */
+	private function get_image_size( $url ) {
+		$path = wp_make_link_relative( $url );
+		$path = wp_normalize_path( ABSPATH . $path );
+		return getimagesize( $path );
 	}
 
 }
