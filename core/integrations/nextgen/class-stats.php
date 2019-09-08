@@ -320,7 +320,7 @@ class Stats extends NextGen {
 	 * @param int   $image_id  Image ID.
 	 * @param array $stats     Compression stats fo respective image.
 	 */
-	private function update_stats( $image_id, $stats ) {
+	public function update_stats( $image_id, $stats ) {
 		$stats = ! empty( $stats['stats'] ) ? $stats['stats'] : '';
 
 		$smush_stats = get_option( 'wp_smush_stats_nextgen', array() );
