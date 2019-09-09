@@ -16,6 +16,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Smush\Core\Core;
 use Smush\Core\Installer;
+use Smush\Core\Settings;
 use Smush\WP_Smush;
 use WP_Error;
 
@@ -275,6 +276,10 @@ class Dir extends Abstract_Module {
 
 		// Get file time.
 		$file_time = @filectime( $path );
+
+		if ( ! $this->settings ) {
+			$this->settings = Settings::get_instance();
+		}
 
 		// If Super-Smush enabled, update supersmushed meta value also.
 		$lossy = WP_Smush::is_pro() && $this->settings->get( 'lossy' ) ? 1 : 0;
