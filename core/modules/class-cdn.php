@@ -524,7 +524,7 @@ class CDN extends Abstract_Module {
 
 			// Replace the src of the image with CDN link.
 			if ( ! empty( $src ) ) {
-				$new_image = preg_replace( '#(background-image:?\surl\(["|\'])' . $original_src . '(["|\']\);)#i', '\1' . $src . '\2', $new_image, 1 );
+				$new_image = preg_replace( '#(background-image:?\surl\([\'"]*?)' . $original_src . '([\'")]*?\);)#i', '\1' . $src . '\2', $new_image, 1 );
 			}
 		}
 
