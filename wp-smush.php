@@ -390,6 +390,16 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			/* @noinspection PhpIncludeInspection */
 			require_once WP_SMUSH_DIR . 'core/external/free-dashboard/module.php';
 
+			// Add the Mailchimp group value.
+			add_action(
+				'frash_subscribe_form_fields',
+				function ( $mc_list_id ) {
+					if ( '4b14b58816' === $mc_list_id ) {
+						echo '<input type="hidden" id="mce-group[53]-53-0" name="group[53][1]" value="1" />';
+					}
+				}
+			);
+
 			// Register the current plugin.
 			do_action(
 				'wdev-register-plugin',
