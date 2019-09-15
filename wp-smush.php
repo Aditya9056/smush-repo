@@ -372,8 +372,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @return string
 		 */
 		public function wp_smush_email_message( $message ) {
-			$message = "You're awesome for installing %s! Site speed isn't all image optimization though, so we've
-			collected all the best speed resources we know in a single email - just for users of Smush!";
+			$message = 'Sign up now to get %s Guide to Image Optimization for free and learn the tricks used on more than 1 million sites to optimize over 36 billion images.';
 
 			return $message;
 		}
@@ -406,7 +405,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				/* 1             Plugin ID */ WP_SMUSH_BASENAME,
 				/* 2          Plugin Title */ 'Smush',
 				/* 3 https://wordpress.org */ '/plugins/wp-smushit/',
-				/* 4      Email Button CTA */ __( 'Get Fast!', 'wp-smushit' ),
+				/* 4      Email Button CTA */ __( 'Free Download', 'wp-smushit' ),
 				/* 5  Mailchimp List id for the plugin - e.g. 4b14b58816 is list id for Smush */ '4b14b58816'
 			);
 
