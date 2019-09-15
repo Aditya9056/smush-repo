@@ -365,19 +365,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		}
 
 		/**
-		 * NewsLetter
-		 *
-		 * @param string $message  Message text.
-		 *
-		 * @return string
-		 */
-		public function wp_smush_email_message( $message ) {
-			$message = 'Sign up now to get %s Guide to Image Optimization for free and learn the tricks used on more than 1 million sites to optimize over 36 billion images.';
-
-			return $message;
-		}
-
-		/**
 		 * Register sub-modules.
 		 * Only for wordpress.org members.
 		 */
@@ -412,7 +399,12 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			// The rating message contains 2 variables: user-name, plugin-name.
 			add_filter( 'wdev-rating-message-' . WP_SMUSH_BASENAME, array( $this, 'wp_smush_rating_message' ) );
 			// The email message contains 1 variable: plugin-name.
-			add_filter( 'wdev-email-message-' . WP_SMUSH_BASENAME, array( $this, 'wp_smush_email_message' ) );
+			add_filter(
+				'wdev-email-message-' . WP_SMUSH_BASENAME,
+				function () {
+					return 'Sign up now to get %s Guide to Image Optimization for free and learn the tricks used on more than 1 million sites to optimize over 36 billion images.';
+				}
+			);
 		}
 
 		/**
