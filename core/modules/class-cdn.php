@@ -624,7 +624,7 @@ class CDN extends Abstract_Module {
 			list( $width, $height ) = $this->get_size_from_file_name( $source['url'] );
 
 			// The file already has a resized version as a thumbnail.
-			if ( 'w' === $source['descriptor'] && $width === $source['value'] ) {
+			if ( 'w' === $source['descriptor'] && $width === (int) $source['value'] ) {
 				$sources[ $i ]['url'] = $this->generate_cdn_url( $source['url'] );
 				continue;
 			}
@@ -987,13 +987,11 @@ class CDN extends Abstract_Module {
 		// Get width and height calculated by WP.
 		list( $constrained_width, $constrained_height ) = wp_constrain_dimensions( $full_width, $full_height, $current_width, $current_height );
 
-		$crop = false;
 		// Calculate base width.
 		// If $constrained_width sizes are smaller than current size, set maximum content width.
 		if ( abs( $constrained_width - $current_width ) <= 1 && abs( $constrained_height - $current_height ) <= 1 ) {
 			$base_width = $content_width;
 		} else {
-			$crop       = true;
 			$base_width = $current_width;
 		}
 
@@ -1040,10 +1038,6 @@ class CDN extends Abstract_Module {
 
 			// We need the width as well...
 			$dimensions = wp_constrain_dimensions( $current_width, $current_height, $new_width );
-
-			if ( $crop ) {
-				$a = 1;
-			}
 
 			// Arguments for cdn url.
 			$args = array(
