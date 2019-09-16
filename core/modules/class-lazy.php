@@ -64,11 +64,6 @@ class Lazy extends Abstract_Module {
 			return;
 		}
 
-		// Skip AMP pages.
-		if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ) {
-			return;
-		}
-
 		// Load js file that is required in public facing pages.
 		add_action( 'wp_head', array( $this, 'add_inline_styles' ) );
 
@@ -102,6 +97,9 @@ class Lazy extends Abstract_Module {
 	 * @since 3.2.0
 	 */
 	public function add_inline_styles() {
+		if ( $this->is_amp() ) {
+			return;
+		}
 		// Fix for poorly coded themes that do not remove the no-js in the HTML class.
 		?>
 		<script>
@@ -170,6 +168,10 @@ class Lazy extends Abstract_Module {
 	 * @since 3.2.0
 	 */
 	public function enqueue_assets() {
+		if ( $this->is_amp() ) {
+			return;
+		}
+
 		$in_footer = isset( $this->options['footer'] ) ? $this->options['footer'] : true;
 
 		wp_enqueue_script(
@@ -251,6 +253,10 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 	 * @return string
 	 */
 	public function parse_image( $src, $image ) {
+		if ( $this->is_amp() ) {
+			return $image;
+		}
+
 		/**
 		 * Filter to skip a single image from lazy load.
 		 *
@@ -469,6 +475,17 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 		echo $this->exclude_from_lazy_loading( $content );
 
 		unset( $content );
+	}
+
+	/**
+	 * Determine whether it is an AMP page.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @return bool Whether AMP.
+	 */
+	private function is_amp() {
+		return function_exists( 'is_amp_endpoint' ) && is_amp_endpoint();
 	}
 
 }
