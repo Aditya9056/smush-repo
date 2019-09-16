@@ -45,8 +45,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 namespace Smush;
 
-use Exception;
-use Smush\Core\Modules\DB;
 use WP_CLI;
 use WPMUDEV_Dashboard;
 
