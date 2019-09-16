@@ -1,3 +1,13 @@
+= 3.4.0 =
+
+- Enhance: CDN support for custom UPLOADS directories
+- Enhance: Lazy loading image format detection
+- Enhance: Lazy loading compatibility with AMP
+- Fix: Lazy loading not properly working on Bootstrap based themes
+- Fix: Failed parsing srcset attribute value since its w descriptor is invalid warnings
+- Fix: PHP warnings for getimagesize() disabled wrapper
+- Fix: UI conflict with Store Locator Plus plugin
+
 = 3.3.0 =
 
 - New: Integration with Envira Gallery

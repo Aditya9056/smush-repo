@@ -2,8 +2,12 @@
 
 @include body-class {
 
-	.sui-wrap {
+	/** Override WP Footer Styling, Hide it on WPMU pages only, if we really need to **/
+	#wpfooter {
+		display: block;
+	}
 
+	.sui-wrap {
 		/**
 		 * Upesll notices.
 		 *

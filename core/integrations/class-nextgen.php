@@ -422,11 +422,15 @@ class NextGen extends Abstract_Integration {
 	}
 
 	/**
-	 * Process auto smush request for nextgen gallery images
+	 * Process auto smush request for NextGen gallery images.
 	 *
-	 * @param $image
+	 * @param stdClass $image  Image.
 	 */
 	public function auto_smush( $image ) {
+		if ( ! $this->ng_stats || ! $this->ng_admin ) {
+			$this->init_modules();
+		}
+
 		$this->smush_image( '', $image, false );
 	}
 

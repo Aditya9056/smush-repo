@@ -540,11 +540,6 @@ div.wp-smush-resize-note {
 	font-weight: 400;
 }
 
-/** Override WP Footer Styling, Hide it on WPMU pages only, if we really need to **/
-.wp-admin #wpfooter {
-	display: block;
-}
-
 /** Directory Browser **/
 div.wp-smush-dir-desc {
 	font-size: 15px;

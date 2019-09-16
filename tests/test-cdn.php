@@ -318,7 +318,6 @@ class CdnTest extends WP_UnitTestCase {
 
 		// Convert image src to CDN.
 		$cdn_image = $parser->parse_page( $image );
-		// Will have 4 images, because example.com is not a default domain.
 		$this->assertEquals( 4, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
 
 		wp_delete_attachment( $attachment_id );
