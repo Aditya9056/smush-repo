@@ -9,6 +9,7 @@
 - Fix: UI conflict with Store Locator Plus plugin
 - Fix: CDN incorrectly resizing cropped images
 - Fix: Directory Smush permissions
+- Fix: NextGen gallery bulk Smush functionality
 
 = 3.3.0 =
 

@@ -506,7 +506,7 @@ class Ajax {
 					if ( empty( $image_sizes ) ) {
 						$image_sizes = array_keys( WP_Smush::get_instance()->core()->image_dimensions() );
 					}
-					
+
 					/**
 					 * This is a too complicated way to check if the attachment needs a resmush.
 					 * Basically, smaller images might not have all the image sizes. And if, let's say, image does not
@@ -627,7 +627,12 @@ class Ajax {
 
 		if ( ! empty( $count ) ) {
 			/* translators: %1$d - number of images, %2$s - opening a tag, %3$s - closing a tag */
-			$message = sprintf( esc_html__( 'Image check complete, you have %1$d images that need smushing. %2$sBulk smush now!%3$s', 'wp-smushit' ), $count, '<a href="#" class="wp-smush-trigger-bulk">', '</a>' );
+			$message = sprintf(
+				esc_html__( 'Image check complete, you have %1$d images that need smushing. %2$sBulk smush now!%3$s', 'wp-smushit' ),
+				$count,
+				'<a href="#" class="wp-smush-trigger-bulk" data-type="' . $type . '">',
+				'</a>'
+			);
 			$resp    = '<div class="sui-notice-top sui-notice-warning sui-can-dismiss">
 					<div class="sui-notice-content">
 						<p>' . $message . '</p>

@@ -770,8 +770,14 @@ jQuery( function ( $ ) {
 	//Trigger Bulk
 	$( 'body' ).on( 'click', '.wp-smush-trigger-bulk', function ( e ) {
 		e.preventDefault();
+
 		//Induce Setting button save click
-		$( '.wp-smush-all' ).click();
+		if ( 'undefined' !== typeof e.target.dataset.type && 'nextgen' === e.target.dataset.type ) {
+			$( '.wp-smush-nextgen-bulk' ).click();
+		} else {
+			$( '.wp-smush-all' ).click();
+		}
+
 		$( 'span.sui-notice-dismiss' ).click();
 	} );
 
