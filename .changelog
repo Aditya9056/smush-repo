@@ -8,6 +8,7 @@
 - Fix: PHP warnings for getimagesize() disabled wrapper
 - Fix: UI conflict with Store Locator Plus plugin
 - Fix: CDN incorrectly resizing cropped images
+- Fix: Directory Smush permissions
 
 = 3.3.0 =
 

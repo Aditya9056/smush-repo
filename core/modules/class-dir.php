@@ -111,7 +111,7 @@ class Dir extends Abstract_Module {
 	 */
 	public static function should_continue() {
 		// Do not show directory smush, if not main site in a network.
-		if ( ! is_main_site() || is_network_admin() ) {
+		if ( ! is_main_site() || ! is_network_admin() ) {
 			return false;
 		}
 

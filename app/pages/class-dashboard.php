@@ -72,7 +72,6 @@ class Dashboard extends Abstract_Page {
 
 		if ( ( ! is_network_admin() && ! $access ) || ( is_network_admin() && true === $access ) ) {
 			unset( $this->tabs['bulk'] );
-			unset( $this->tabs['directory'] );
 			unset( $this->tabs['integrations'] );
 			unset( $this->tabs['lazy_load'] );
 			unset( $this->tabs['cdn'] );
