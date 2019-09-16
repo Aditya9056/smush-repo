@@ -275,6 +275,11 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 			return $image;
 		}
 
+		// Compatibility with Essential Grid lazy loading.
+		if ( false !== strpos( $image, 'data-lazysrc' ) ) {
+			return $image;
+		}
+
 		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
 		$ext = 'jpg' === $ext ? 'jpeg' : $ext;
 
