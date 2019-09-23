@@ -772,7 +772,7 @@ class Smush {
 				 * Bulk Smush limit exceeded: Stop ajax requests, remove progress bar, append the last image ID
 				 * back to Smush variable, and reset variables to allow the user to continue bulk Smush.
 				 */
-				if ( 'undefined' !== typeof res.data && 'limit_exceeded' === res.data.error && ! 'resolved' === self.deferred.state() ) {
+				if ( 'undefined' !== typeof res.data && 'limit_exceeded' === res.data.error && 'resolved' !== self.deferred.state() ) {
 					// Show error message.
 					const bulkWarning = document.getElementById( 'bulk_smush_warning' );
 					bulkWarning.classList.remove( 'sui-hidden' );
