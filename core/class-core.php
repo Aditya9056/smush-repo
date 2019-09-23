@@ -862,7 +862,7 @@ class Core {
 	 *
 	 * @return int
 	 */
-	public function remaining_count() {
+	private function remaining_count() {
 		// Check if the resmush count is equal to remaining count.
 		$resmush_count   = count( $this->resmush_ids );
 		$remaining_count = $this->total_count - $this->smushed_count - $this->skipped_count;
