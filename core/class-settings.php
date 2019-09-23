@@ -270,9 +270,11 @@ class Settings {
 			$site_settings = array_merge( $site_settings, $undefined );
 
 			// Settings are taken from global settings.
-			$site_settings['accessible_colors'] = $global_settings['accessible_colors'];
-			$site_settings['usage']             = $global_settings['usage'];
-			$site_settings['keep_data']         = $global_settings['keep_data'];
+			if ( ! empty( $global_settings ) ) {
+				$site_settings['accessible_colors'] = $global_settings['accessible_colors'];
+				$site_settings['usage']             = $global_settings['usage'];
+				$site_settings['keep_data']         = $global_settings['keep_data'];
+			}
 		}
 
 		// Custom access enabled - combine settings from network with site settings.
