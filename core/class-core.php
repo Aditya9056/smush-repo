@@ -876,7 +876,7 @@ class Core {
 		// Check if the resmush count is equal to remaining count.
 		$resmush_count   = count( $this->resmush_ids );
 		$remaining_count = $this->total_count - $this->smushed_count - $this->skipped_count;
-		if ( $resmush_count > 0 && $resmush_count !== $this->smushed_count ) {
+		if ( $resmush_count > 0 && ( $resmush_count !== $this->smushed_count || 0 === $remaining_count ) ) {
 			return $resmush_count + $remaining_count;
 		}
 

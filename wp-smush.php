@@ -12,7 +12,7 @@
  * @wordpress-plugin
  * Plugin Name:       Smush Pro
  * Plugin URI:        http://premium.wpmudev.org/projects/wp-smush-pro/
- * Description:       Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
+ * Description:       Reduce image file sizes, improve performance and boost your SEO using the <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
  * Version:           3.4.0-beta.1
  * Author:            WPMU DEV
  * Author URI:        https://premium.wpmudev.org/
