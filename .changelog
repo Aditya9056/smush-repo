@@ -4,7 +4,7 @@
 - Enhance: Lazy loading image format detection
 - Enhance: Lazy loading compatibility with AMP
 - Enhance: Lazy loading compatibility with Essential Grid
-- Enhance: Integration settings pages UI
+- Enhance: Integration settings pages UI, summary meta box UI
 - Fix: Lazy loading not properly working on Bootstrap based themes
 - Fix: Failed parsing srcset attribute value since its w descriptor is invalid warnings
 - Fix: PHP warnings for getimagesize() disabled wrapper

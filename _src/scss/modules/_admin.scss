@@ -841,17 +841,31 @@
 			}
 		}
 
+		.sui-summary-segment {
+			overflow: visible;
+		}
+
 		.sui-summary-details {
+			& > .sui-summary-detail { margin-left: -13px; }
+
 			.sui-summary-detail {
 				font-size: 15px;
 				font-weight: 500;
 				line-height: 22px;
 				display: inline-flex;
-				.wp-smush-stats-percent {
+
+				.wp-smush-stats-percent { margin-left: 5px; }
+				.wp-smush-stats-human { margin-right: 5px; }
+			}
+
+			.sui-tooltip {
+				&:before {
+					margin-bottom: 20px;
 					margin-left: 5px;
 				}
-				.wp-smush-stats-human {
-					margin-right: 5px;
+				&:after {
+					margin-bottom: 30px;
+					margin-left: 5px;
 				}
 			}
 		}
