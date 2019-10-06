@@ -110,7 +110,7 @@ class Settings {
 	 *
 	 * @var array
 	 */
-	private $integrations_fields = array( 'gutenberg', 's3', 'nextgen', 'js_builder' );
+	private $integrations_fields = array( 'gutenberg', 'js_builder', 's3', 'nextgen' );
 
 	/**
 	 * List of fields in CDN form.

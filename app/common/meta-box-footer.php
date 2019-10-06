@@ -13,8 +13,8 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 $current_tab = $this->get_current_tab();
-$button_msg  = 'bulk' === $current_tab ? '' : __( 'Saving changes...', 'wp-smushit' );
-$button_text = __( 'Save changes', 'wp-smushit' );
+$button_msg  = 'bulk' === $current_tab ? '' : __( 'Updating settings...', 'wp-smushit' );
+$button_text = __( 'Update settings', 'wp-smushit' );
 
 /**
  * Filter to enable/disable submit button in integration settings.

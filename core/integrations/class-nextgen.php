@@ -74,6 +74,8 @@ class NextGen extends Abstract_Integration {
 
 		// Do not continue if not PRO member or NextGen plugin not installed.
 		if ( ! $is_pro || ! $this->enabled || ! $this->is_enabled() ) {
+			// Add Pro tag.
+			add_action( 'smush_setting_column_tag', array( $this, 'add_pro_tag' ) );
 			return;
 		}
 
@@ -254,13 +256,13 @@ class NextGen extends Abstract_Integration {
 	public function additional_notice( $name ) {
 		if ( 'nextgen' === $name && ! $this->enabled ) {
 			?>
-			<div class="sui-notice sui-notice-sm">
-				<p>
-					<?php
-					esc_html_e( 'To use this feature you need to install and activate NextGen Gallery.', 'wp-smushit' );
-					?>
-				</p>
-			</div>
+            <div class="sui-toggle-content">
+                <div class="sui-notice sui-notice-sm">
+                    <p>
+                        <?php esc_html_e( 'To use this feature you need to be using NextGen Gallery.', 'wp-smushit' ); ?>
+                    </p>
+                </div>
+            </div>
 			<?php
 		}
 	}
@@ -662,6 +664,23 @@ class NextGen extends Abstract_Integration {
 			);
 		}
 	}
+
+	/**
+	 * Add a pro tag next to the setting title.
+	 *
+	 * @param string $setting_key  Setting key name.
+	 *
+	 * @since 3.4.0
+	 */
+	public function add_pro_tag( $setting_key ) {
+		// Return if not NextGen integration.
+		if ( $this->module !== $setting_key || WP_Smush::is_pro() ) {
+			return;
+		}
+		?>
+        <span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Pro', 'wp-smushit' ); ?></span>
+		<?php
+    }
 
 	/**************************************
 	 *

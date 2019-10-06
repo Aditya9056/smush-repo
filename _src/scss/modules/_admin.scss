@@ -77,6 +77,24 @@
 		}
 
 		/**
+		 * Integrations
+		 *
+		 * @since 3.4.0
+		 */
+		.sui-integrations {
+			.sui-settings-label {
+				display: flex;
+				align-items: center;
+
+				.sui-tag { margin-left: 10px; }
+			}
+
+			.sui-toggle-content .sui-notice {
+				margin-top: 10px;
+			}
+		}
+
+		/**
 		 * Lazy loading
 		 *
 		 * @since 3.2.2
