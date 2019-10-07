@@ -759,18 +759,16 @@ class Smush extends Abstract_Module {
 			return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
 		}
 
-		$html .= '
-		<a href="#" class="wp-smush-send" data-id="' . $id . '">
-            ' . $button_txt . '
-		</a>';
+		$html .= "<a href='#' class='wp-smush-send' data-id='{$id}'>{$button_txt}</a>";
 
 		$skipped = get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true );
 		if ( 'true' === $skipped ) {
 			$nonce = wp_create_nonce( 'wp-smush-remove-skipped' );
-			$html .= '
-			<a  class="wp-smush-remove-skipped" data-id="' . $id . '" data-nonce="' . $nonce . '">
-                ' . __( 'Show in bulk Smush', 'wp-smushit' ) . '
-			</a>';
+			$html .= " | <a href='#' class='wp-smush-remove-skipped' data-id={$id} data-nonce={$nonce}>"
+                . __( 'Show in bulk Smush', 'wp-smushit' ) . "</a>";
+		} else {
+			$html .= " | <a href='#' class='smush-ignore-image' data-id='{$id}'>"
+				. esc_html__( 'Ignore', 'wp-smushit' ) . "</a>";
 		}
 
 		$html .= $this->progress_bar();

@@ -442,8 +442,6 @@ jQuery( function ( $ ) {
 		var slide_symbol = $( this ).find( '.stats-toggle' );
 		$( this ).parents().eq( 1 ).find( '.smush-stats-wrapper' ).slideToggle();
 		slide_symbol.text( slide_symbol.text() == '+' ? '-' : '+' );
-
-
 	} );
 
 	/** Handle smush button click **/
@@ -457,13 +455,19 @@ jQuery( function ( $ ) {
 	$( 'body' ).on( 'click', '.wp-smush-remove-skipped', function( e ) {
 		e.preventDefault();
 
+		const self = $( this );
+
 		// Send Ajax request to remove the image from the skip list.
 		$.post( ajaxurl, {
 			action: 'remove_from_skip_list',
-			id: $(this).attr('data-id')
-		} );
-
-		remove_element( $(this) );
+			id: self.attr( 'data-id' ),
+		} )
+			.done( () => {
+				e.target.classList.remove( 'wp-smush-remove-skipped' );
+				e.target.classList.add( 'smush-ignore-image' );
+				e.target.text = wp_smush_msgs.ignore;
+				self.parent().find( '.smush-status' ).text( wp_smush_msgs.not_processed );
+			} );
 	} );
 
 	/** Handle NextGen Gallery smush button click **/
