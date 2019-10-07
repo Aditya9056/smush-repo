@@ -490,7 +490,6 @@
 		}
 
 		.wp-smush-bulk-progress-bar-wrapper {
-			margin-bottom: 30px;
 			.sui-progress-state {
 				span {
 					display: inline-block;
@@ -504,6 +503,7 @@
 
 		// Bulk Smush error messages: Start.
 		.smush-final-log {
+			margin-top: 30px;
 
 			.smush-bulk-error-row {
 				align-content: center;
@@ -846,8 +846,6 @@
 		}
 
 		.sui-summary-details {
-			& > .sui-summary-detail { margin-left: -13px; }
-
 			.sui-summary-detail {
 				font-size: 15px;
 				font-weight: 500;
@@ -859,6 +857,10 @@
 			}
 
 			.sui-tooltip {
+				position: absolute;
+				margin-top: 25px;
+				margin-left: -5px;
+
 				&:before {
 					margin-bottom: 20px;
 					margin-left: 5px;
