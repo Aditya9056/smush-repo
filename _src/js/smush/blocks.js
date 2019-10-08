@@ -1,5 +1,3 @@
-/* global smush_vars */
-
 /**
  * BLOCK: extend image block
  */
@@ -40,7 +38,7 @@ function humanFileSize( bytes ) {
  */
 export function smushStats( id, stats ) {
 	if ( 'undefined' === typeof stats ) {
-		return smush_vars.strings.gb.select_image;
+		return window.smush_vars.strings.gb.select_image;
 	} else if ( 'string' === typeof stats ) {
 		return stats;
 	}
@@ -50,8 +48,8 @@ export function smushStats( id, stats ) {
 			<table className="wp-smush-stats-holder">
 				<thead>
 					<tr>
-						<th className="smush-stats-header">{ smush_vars.strings.gb.size }</th>
-						<th className="smush-stats-header">{ smush_vars.strings.gb.savings }</th>
+						<th className="smush-stats-header">{ window.smush_vars.strings.gb.size }</th>
+						<th className="smush-stats-header">{ window.smush_vars.strings.gb.savings }</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -70,7 +68,7 @@ export function smushStats( id, stats ) {
 /**
  * Fetch image data. If image is Smushing, update in 3 seconds.
  *
- * @todo this could be optimized not to query so much.
+ * TODO: this could be optimized not to query so much.
  *
  * @param {Object} props
  */
@@ -112,7 +110,7 @@ const smushStatsControl = createHigherOrderComponent( ( BlockEdit ) => {
 			<Fragment>
 				<BlockEdit { ...props } />
 				<InspectorControls>
-					<PanelBody title={ smush_vars.strings.gb.stats }>
+					<PanelBody title={ window.smush_vars.strings.gb.stats }>
 						{ smushStats( props.attributes.id, smushData ) }
 					</PanelBody>
 				</InspectorControls>

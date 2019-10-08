@@ -1,8 +1,12 @@
+/* global WP_Smush */
+/* global A11yDialog */
+/* global ajaxurl */
+
 /**
  * Bulk restore JavaScript code.
+ *
  * @since 3.2.2
  */
-
 ( function() {
 	'use strict';
 
@@ -143,7 +147,7 @@
 						self.step();
 					}
 				} else {
-					console.log( 'Request failed.  Returned status of ' + xhr.status );
+					window.console.log( 'Request failed.  Returned status of ' + xhr.status );
 				}
 			};
 			xhr.send( '_ajax_nonce=' + _nonce.value );
@@ -208,8 +212,8 @@
 		let compiled;
 		const options = {
 			evaluate: /<#([\s\S]+?)#>/g,
-			interpolate: /\{\{\{([\s\S]+?)\}\}\}/g,
-			escape: /\{\{([^\}]+?)\}\}(?!\})/g,
+			interpolate: /{{{([\s\S]+?)}}}/g,
+			escape: /{{([^}]+?)}}(?!})/g,
 			variable: 'data',
 		};
 

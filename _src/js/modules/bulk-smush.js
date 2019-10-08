@@ -1,6 +1,5 @@
 /* global WP_Smush */
 /* global ajaxurl */
-/* global wp_smushit_data */
 
 /**
  * Bulk Smush functionality.
@@ -40,9 +39,9 @@ import Smush from '../smush/smush';
 				$( '.wp-resmush.wp-smush-action, .wp-smush-scan, .wp-smush-all:not(.sui-progress-close), a.wp-smush-lossy-enable, button.wp-smush-resize-enable, button#wp-smush-save-settings' ).attr( 'disabled', 'disabled' );
 
 				// Check for IDs, if there is none (unsmushed or lossless), don't call Smush function.
-				/** @member {Array} wp_smushit_data.unsmushed */
-				if ( 'undefined' === typeof wp_smushit_data ||
-					( 0 === wp_smushit_data.unsmushed.length && 0 === wp_smushit_data.resmush.length )
+				/** @param {Array} wp_smushit_data.unsmushed */
+				if ( 'undefined' === typeof window.wp_smushit_data ||
+					( 0 === window.wp_smushit_data.unsmushed.length && 0 === window.wp_smushit_data.resmush.length )
 				) {
 					return false;
 				}
@@ -78,8 +77,8 @@ import Smush from '../smush/smush';
 						if ( self.is( 'a' ) ) {
 							e.target.classList.remove( 'smush-ignore-image' );
 							e.target.classList.add( 'wp-smush-remove-skipped' );
-							e.target.text = wp_smush_msgs.bulkShow;
-							self.parent().find( '.smush-status' ).text( wp_smush_msgs.ignored );
+							e.target.text = window.wp_smush_msgs.bulkShow;
+							self.parent().find( '.smush-status' ).text( window.wp_smush_msgs.ignored );
 						}
 					} );
 			} );
