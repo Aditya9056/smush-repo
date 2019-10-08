@@ -1,6 +1,7 @@
 = 3.4.0 =
 
 - New: Option to ignore images from Smushing
+- Enhance: Compatibility with WP Engine
 - Enhance: CDN support for custom UPLOADS directories
 - Enhance: Lazy loading image format detection
 - Enhance: Lazy loading compatibility with AMP
