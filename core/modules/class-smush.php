@@ -1326,8 +1326,7 @@ class Smush extends Abstract_Module {
 				 * @param bool , Smush image or not
 				 * @$size string, Size of image being smushed
 				 */
-				$smush_image = apply_filters( 'wp_smush_media_image', true, $size_key );
-				if ( ! $smush_image ) {
+				if ( ! apply_filters( 'wp_smush_media_image', true, $size_key ) ) {
 					continue;
 				}
 
@@ -1618,7 +1617,7 @@ class Smush extends Abstract_Module {
 		// Set a transient to avoid multiple request.
 		update_option( "smush-in-progress-{$attachment_id}", true );
 
-		$attachment_id = absint( (int) ( $attachment_id ) );
+		$attachment_id = absint( (int) $attachment_id );
 
 		// Get the file path for backup.
 		$attachment_file_path = Helper::get_attached_file( $attachment_id );
@@ -1869,9 +1868,8 @@ class Smush extends Abstract_Module {
 	/**
 	 * Perform the resize operation for the image
 	 *
-	 * @param $attachment_id
-	 *
-	 * @param $meta
+	 * @param int   $attachment_id  Attachment ID.
+	 * @param array $meta           Attachment meta.
 	 *
 	 * @return mixed
 	 */

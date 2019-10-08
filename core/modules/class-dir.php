@@ -299,8 +299,6 @@ class Dir extends Abstract_Module {
 		Core::update_smush_count( 'dir_sent_count' );
 	}
 
-
-
 	/**
 	 * Create the Smush image table to store the paths of scanned images, and stats
 	 */

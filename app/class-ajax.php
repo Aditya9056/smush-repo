@@ -278,13 +278,11 @@ class Ajax {
 			wp_die( esc_html__( "You don't have permission to work with uploaded files.", 'wp-smushit' ) );
 		}
 
-		if ( ! isset( $_GET['attachment_id'] ) ) {
+		$attachment_id = filter_input( INPUT_GET, 'attachment_id', FILTER_VALIDATE_INT );
+
+		if ( is_null( $attachment_id ) ) {
 			wp_die( esc_html__( 'No attachment ID was provided.', 'wp-smushit' ) );
 		}
-
-		$attachment_id = intval( $_GET['attachment_id'] );
-
-		$core = WP_Smush::get_instance()->core();
 
 		/**
 		 * Filter: wp_smush_image.
@@ -299,13 +297,13 @@ class Ajax {
 			wp_send_json_error(
 				array(
 					'error_msg'    => sprintf( '<p class="wp-smush-error-message">%s</p>', $error ),
-					'show_warning' => intval( $core->mod->smush->show_warning() ),
+					'show_warning' => intval( WP_Smush::get_instance()->core()->mod->smush->show_warning() ),
 				)
 			);
 		}
 
 		// Pass on the attachment id to smush single function.
-		$core->mod->smush->smush_single( $attachment_id );
+		WP_Smush::get_instance()->core()->mod->smush->smush_single( $attachment_id );
 	}
 
 	/**
