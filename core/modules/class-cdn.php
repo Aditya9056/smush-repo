@@ -453,6 +453,15 @@ class CDN extends Abstract_Module {
 
 			// Replace the src of the image with CDN link.
 			if ( ! empty( $src ) ) {
+				// Support for source in picture element.
+				if ( false !== strpos( $new_image, '<source' ) ) {
+					Helpers\Parser::remove_attribute( $new_image, 'srcset' );
+					Helpers\Parser::add_attribute( $new_image, 'srcset', $src );
+
+					// We can exit early, to avoid additional parsing.
+					return $new_image;
+				}
+
 				$new_image = preg_replace( '#(src=["|\'])' . $original_src . '(["|\'])#i', '\1' . $src . '\2', $new_image, 1 );
 			}
 
