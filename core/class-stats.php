@@ -196,8 +196,11 @@ class Stats {
 		// Set directory smush status.
 		$this->dir_stats = Modules\Dir::should_continue() ? $this->mod->dir->total_stats() : array();
 
-		// Setup attachments and total count.
-		$this->total_count( true );
+		// Set Attachment IDs, and total count.
+		$this->attachments = $this->get_media_attachments();
+
+		// Set total count.
+		$this->total_count = ! empty( $this->attachments ) && is_array( $this->attachments ) ? count( $this->attachments ) : 0;
 
 		$this->stats = $this->global_stats( $force_update );
 
@@ -648,45 +651,13 @@ class Stats {
 	}
 
 	/**
-	 * Total image count.
-	 *
-	 * @param bool $force_update  Force update.
-	 *
-	 * @return bool|int|mixed
-	 */
-	private function total_count( $force_update = false ) {
-		// Retrieve from Cache.
-		if ( ! $force_update && $count = wp_cache_get( 'total_count', 'wp-smush' ) ) {
-			if ( $count ) {
-				return $count;
-			}
-		}
-
-		// Set Attachment IDs, and total count.
-		$posts = $this->get_media_attachments( false, $force_update );
-
-		$this->attachments = $posts;
-
-		// Get total count from attachments.
-		$total_count = ! empty( $posts ) && is_array( $posts ) ? count( $posts ) : 0;
-
-		// Set total count.
-		$this->total_count = $total_count;
-
-		wp_cache_add( 'total_count', $total_count, 'wp-smush' );
-
-		// Send the count.
-		return $total_count;
-	}
-
-	/**
 	 * Get the attachments (either super smushed, or not smushed at all).
 	 *
 	 * @param string $smushed  Accepts: none, super. Default: none.
 	 *
 	 * @return array
 	 */
-	public function get_attachments( $smushed = 'none' ) {
+	private function get_attachments( $smushed = 'none' ) {
 		// Get all the attachments with wp-smush-lossy.
 		$limit       = apply_filters( 'wp_smush_query_limit', 2000 );
 		$get_posts   = true;
