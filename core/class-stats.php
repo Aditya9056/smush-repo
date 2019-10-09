@@ -264,7 +264,7 @@ class Stats {
 		// Remove the Filters added by WP Media Folder.
 		do_action( 'wp_smush_remove_filters' );
 
-		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s ORDER BY `post_id` DESC LIMIT $offset, $limit", Modules\Smush::$smushed_meta_key ) ) ) {
+		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT $offset, $limit", Modules\Smush::$smushed_meta_key ) ) ) {
 			if ( ! is_wp_error( $results ) && count( $results ) > 0 ) {
 				$posts = array_merge( $posts, $results );
 			}
@@ -324,7 +324,7 @@ class Stats {
 		while ( $get_posts ) {
 			$results = $wpdb->get_col(
 				$wpdb->prepare(
-					"SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_mime_type IN ('$mime') ORDER BY `ID` DESC LIMIT %d, %d",
+					"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_mime_type IN ('$mime') ORDER BY `ID` DESC LIMIT %d, %d",
 					$offset,
 					$limit
 				)
@@ -534,7 +534,7 @@ class Stats {
 		while ( $query_next ) {
 			$global_data = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s LIMIT %d, %d",
+					"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT %d, %d",
 					Modules\Smush::$smushed_meta_key,
 					$offset,
 					$limit
