@@ -278,11 +278,11 @@ class Ajax {
 			wp_die( esc_html__( "You don't have permission to work with uploaded files.", 'wp-smushit' ) );
 		}
 
-		$attachment_id = filter_input( INPUT_GET, 'attachment_id', FILTER_VALIDATE_INT );
-
-		if ( is_null( $attachment_id ) ) {
+		if ( ! isset( $_GET['attachment_id'] ) ) {
 			wp_die( esc_html__( 'No attachment ID was provided.', 'wp-smushit' ) );
 		}
+
+		$attachment_id = intval( $_GET['attachment_id'] );
 
 		/**
 		 * Filter: wp_smush_image.
