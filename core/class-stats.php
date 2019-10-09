@@ -134,43 +134,47 @@ class Stats {
 				)
 			); // Db call ok.
 
-			if ( ! empty( $query_data ) ) {
-				foreach ( $query_data as $data ) {
-					// Skip resmush IDs.
-					if ( ! empty( $this->resmush_ids ) && in_array( $data->post_id, $this->resmush_ids, true ) ) {
-						continue;
-					}
+			// No results - break out of loop.
+			if ( empty( $query_data ) ) {
+				break;
+			}
 
-					$count++;
+			foreach ( $query_data as $data ) {
+				// Skip resmush IDs.
+				if ( ! empty( $this->resmush_ids ) && in_array( $data->post_id, $this->resmush_ids, true ) ) {
+					continue;
+				}
 
-					if ( empty( $data ) ) {
-						continue;
-					}
+				$count++;
 
-					$meta = maybe_unserialize( $data->meta_value );
+				if ( empty( $data ) ) {
+					continue;
+				}
 
-					// Resize mete already contains all the stats.
-					if ( 'resize' === $type && ! empty( $meta ) && ! empty( $meta['bytes'] ) ) {
-						$savings['bytes']       += $meta['bytes'];
-						$savings['size_before'] += $meta['size_before'];
-						$savings['size_after']  += $meta['size_after'];
-					}
+				$meta = maybe_unserialize( $data->meta_value );
 
-					// PNG - JPG conversion meta contains stats by attachment size.
-					if ( 'pngjpg' === $type && is_array( $meta ) ) {
-						foreach ( $meta as $size ) {
-							$savings['bytes']       += isset( $size['bytes'] ) ? $size['bytes'] : 0;
-							$savings['size_before'] += isset( $size['size_before'] ) ? $size['size_before'] : 0;
-							$savings['size_after']  += isset( $size['size_after'] ) ? $size['size_after'] : 0;
-						}
+				// Resize mete already contains all the stats.
+				if ( 'resize' === $type && ! empty( $meta ) && ! empty( $meta['bytes'] ) ) {
+					$savings['bytes']       += $meta['bytes'];
+					$savings['size_before'] += $meta['size_before'];
+					$savings['size_after']  += $meta['size_after'];
+				}
+
+				// PNG - JPG conversion meta contains stats by attachment size.
+				if ( 'pngjpg' === $type && is_array( $meta ) ) {
+					foreach ( $meta as $size ) {
+						$savings['bytes']       += isset( $size['bytes'] ) ? $size['bytes'] : 0;
+						$savings['size_before'] += isset( $size['size_before'] ) ? $size['size_before'] : 0;
+						$savings['size_after']  += isset( $size['size_after'] ) ? $size['size_after'] : 0;
 					}
 				}
 			}
+
 			// Update the offset.
 			$offset += $limit;
 
-			// Compare the offset value to total images. Continue when there are results.
-			$query_next = ( $this->total_count > $offset ) && $query_data;
+			// Compare the offset value to total images.
+			$query_next = $this->total_count > $offset;
 		}
 
 		if ( $format ) {
@@ -192,7 +196,7 @@ class Stats {
 		// Set directory smush status.
 		$this->dir_stats = Modules\Dir::should_continue() ? $this->mod->dir->total_stats() : array();
 
-		// Setup Attachments and total count.
+		// Setup attachments and total count.
 		$this->total_count( true );
 
 		$this->stats = $this->global_stats( $force_update );
@@ -203,8 +207,8 @@ class Stats {
 		}
 
 		// Get supersmushed images count.
-		if ( empty( $this->super_smushed ) ) {
-			$this->super_smushed = $this->super_smushed_count();
+		if ( ! $this->super_smushed ) {
+			$this->super_smushed = count( $this->get_attachments( 'super' ) );
 		}
 
 		// Set pro savings.
@@ -222,78 +226,73 @@ class Stats {
 	/**
 	 * Returns/Updates the number of images Super Smushed.
 	 *
-	 * @param string $type media/nextgen, Type of images to get/set the super smushed count for.
-	 *
-	 * @param array  $attachments Optional, By default Media attachments will be fetched.
+	 * @param array $attachments  Optional, By default Media attachments will be fetched.
 	 *
 	 * @return array|mixed
 	 *
 	 * @todo Refactor Method, Separate Media Library and Nextgen, moreover nextgen functionality is broken
 	 */
-	public function super_smushed_count( $type = 'media', $attachments = array() ) {
-		if ( 'media' === $type ) {
-			$count = $this->get_super_smushed_attachments();
+	public function nextgen_super_smushed_count( $attachments = array() ) {
+		$key = 'wp-smush-super_smushed_nextgen';
+
+		// Clear up the stats, if there are no images.
+		if ( method_exists( 'Smush\\Core\\Integrations\\NextGen\\Stats', 'total_count' ) && 0 === Integrations\NextGen\Stats::total_count() ) {
+			delete_option( $key );
+		}
+
+		// Flag to check if we need to re-evaluate the count.
+		$reevaluate = false;
+
+		$super_smushed = get_option( $key, false );
+
+		// Check if need to revalidate.
+		if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['ids'] ) ) {
+			$super_smushed = array(
+				'ids' => array(),
+			);
+
+			$reevaluate = true;
 		} else {
-			$key = 'wp-smush-super_smushed_nextgen';
+			$last_checked = $super_smushed['timestamp'];
 
-			// Clear up the stats, if there are no images.
-			if ( method_exists( 'Smush\\Core\\Integrations\\NextGen\\Stats', 'total_count' ) && 0 === Integrations\NextGen\Stats::total_count() ) {
-				delete_option( $key );
-			}
+			$diff = $last_checked - current_time( 'timestamp' );
 
-			// Flag to check if we need to re-evaluate the count.
-			$reevaluate = false;
+			// Difference in hour.
+			$diff_h = $diff / 3600;
 
-			$super_smushed = get_option( $key, false );
-
-			// Check if need to revalidate.
-			if ( ! $super_smushed || empty( $super_smushed ) || empty( $super_smushed['ids'] ) ) {
-				$super_smushed = array(
-					'ids' => array(),
-				);
-
+			// if last checked was more than 1 hours.
+			if ( $diff_h > 1 ) {
 				$reevaluate = true;
-			} else {
-				$last_checked = $super_smushed['timestamp'];
-
-				$diff = $last_checked - current_time( 'timestamp' );
-
-				// Difference in hour.
-				$diff_h = $diff / 3600;
-
-				// if last checked was more than 1 hours.
-				if ( $diff_h > 1 ) {
-					$reevaluate = true;
-				}
 			}
-			// Do not reevaluate stats if nextgen attachments are not provided.
-			if ( 'nextgen' === $type && empty( $attachments ) && $reevaluate ) {
-				$reevaluate = false;
-			}
+		}
 
-			// Need to scan all the image.
-			if ( $reevaluate ) {
-				// Get all the Smushed attachments ids
-				// Note: Wrong Method called, it'll fetch media images and not NextGen images
-				// Should be $attachments, in place of $super_smushed_images.
-				$super_smushed_images = $this->get_super_smushed_attachments( true );
+		// Do not reevaluate stats if nextgen attachments are not provided.
+		if ( 'nextgen' === $type && empty( $attachments ) && $reevaluate ) {
+			$reevaluate = false;
+		}
 
-				if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
-					// Iterate over all the attachments to check if it's already there in list, else add it.
-					foreach ( $super_smushed_images as $id ) {
-						if ( ! in_array( $id, $super_smushed['ids'] ) ) {
-							$super_smushed['ids'][] = $id;
-						}
+		// Need to scan all the image.
+		if ( $reevaluate ) {
+			// Get all the Smushed attachments ids
+			// Note: Wrong Method called, it'll fetch media images and not NextGen images
+			// Should be $attachments, in place of $super_smushed_images.
+			$super_smushed_images = $this->get_attachments( 'super' );
+
+			if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
+				// Iterate over all the attachments to check if it's already there in list, else add it.
+				foreach ( $super_smushed_images as $id ) {
+					if ( ! in_array( $id, $super_smushed['ids'] ) ) {
+						$super_smushed['ids'][] = $id;
 					}
 				}
-
-				$super_smushed['timestamp'] = current_time( 'timestamp' );
-
-				update_option( $key, $super_smushed, false );
 			}
 
-			$count = ! empty( $super_smushed['ids'] ) ? count( $super_smushed['ids'] ) : 0;
+			$super_smushed['timestamp'] = current_time( 'timestamp' );
+
+			update_option( $key, $super_smushed, false );
 		}
+
+		$count = ! empty( $super_smushed['ids'] ) ? count( $super_smushed['ids'] ) : 0;
 
 		return $count;
 	}
@@ -307,8 +306,6 @@ class Stats {
 	 * @return array|int
 	 */
 	public function smushed_count( $return_ids = false, $force_update = false ) {
-		global $wpdb;
-
 		// Don't query again, if the variable is already set.
 		if ( ! $return_ids && ! empty( $this->smushed_count ) && $this->smushed_count > 0 ) {
 			return $this->smushed_count;
@@ -327,6 +324,8 @@ class Stats {
 			}
 		}
 
+		global $wpdb;
+
 		/**
 		 * Allows to set a limit of mysql query
 		 * Default value is 2000.
@@ -334,11 +333,11 @@ class Stats {
 		$limit      = apply_filters( 'wp_smush_query_limit', 2000 );
 		$offset     = 0;
 		$query_next = true;
-
-		$posts = array();
+		$posts      = array();
 
 		// Remove the Filters added by WP Media Folder.
 		do_action( 'wp_smush_remove_filters' );
+
 		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key=%s ORDER BY `post_id` DESC LIMIT $offset, $limit", Modules\Smush::$smushed_meta_key ) ) ) {
 			if ( ! is_wp_error( $results ) && count( $results ) > 0 ) {
 				$posts = array_merge( $posts, $results );
@@ -404,8 +403,8 @@ class Stats {
 					$limit
 				)
 			); // Db call ok.
-			if ( ! empty( $results ) && is_array( $results ) && count( $results ) > 0 ) {
 
+			if ( ! empty( $results ) && is_array( $results ) && count( $results ) > 0 ) {
 				// Get a filtered list of post ids.
 				$posts = array_merge( $posts, $results );
 
@@ -738,7 +737,7 @@ class Stats {
 		}
 
 		// Set Attachment IDs, and total count.
-		$posts = $this->get_media_attachments( '', $force_update );
+		$posts = $this->get_media_attachments( false, $force_update );
 
 		$this->attachments = $posts;
 
@@ -836,26 +835,15 @@ class Stats {
 	}
 
 	/**
-	 * Updates the meta for existing smushed images and retrieves the count of super smushed images.
-	 *
-	 * @param bool $return_ids  Whether to return IDs or just the count.
-	 *
-	 * @return array|int  Array of super smushed image IDs / number of super smushed images.
-	 */
-	private function get_super_smushed_attachments( $return_ids = false ) {
-		$attachments = $this->get_attachments( 'super' );
-		return $return_ids ? $attachments : count( $attachments );
-	}
-
-	/**
 	 * Returns remaining count
 	 *
 	 * @return int
 	 */
 	private function remaining_count() {
-		// Check if the resmush count is equal to remaining count.
 		$resmush_count   = count( $this->resmush_ids );
 		$remaining_count = $this->total_count - $this->smushed_count - $this->skipped_count;
+
+		// Check if the resmush count is equal to remaining count.
 		if ( $resmush_count > 0 && ( $resmush_count !== $this->smushed_count || 0 === $remaining_count ) ) {
 			return $resmush_count + $remaining_count;
 		}
@@ -873,12 +861,13 @@ class Stats {
 	 * @return array
 	 */
 	private function skipped_count( $force ) {
-		if ( ! $force && $images = wp_cache_get( 'skipped_images', 'wp-smush' ) ) {
+		$images = wp_cache_get( 'skipped_images', 'wp-smush' );
+		if ( ! $force && $images ) {
 			return $images;
 		}
 
 		global $wpdb;
-		$images = $wpdb->get_col( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='wp-smush-ignore-bulk'" ); // Db call ok.
+		$images = $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key='wp-smush-ignore-bulk'" ); // Db call ok.
 		wp_cache_set( 'skipped_images', $images, 'wp-smush' );
 
 		return $images;
