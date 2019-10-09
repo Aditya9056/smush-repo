@@ -112,14 +112,14 @@ class Core extends Stats {
 	 *
 	 * @var int $smushed_count
 	 */
-	public $smushed_count;
+	public $smushed_count = 0;
 
 	/**
 	 * Smushed attachments out of total attachments.
 	 *
 	 * @var int $remaining_count
 	 */
-	public $remaining_count;
+	public $remaining_count = 0;
 
 	/**
 	 * Images with errors that have been skipped from bulk smushing.
@@ -127,21 +127,21 @@ class Core extends Stats {
 	 * @since 3.0
 	 * @var int $skipped_count
 	 */
-	public $skipped_count;
+	public $skipped_count = 0;
 
 	/**
 	 * Super Smushed attachments count.
 	 *
 	 * @var int $super_smushed
 	 */
-	public $super_smushed;
+	public $super_smushed = 0;
 
 	/**
 	 * Total count of attachments for smushing.
 	 *
 	 * @var int $total_count
 	 */
-	public $total_count;
+	public $total_count = 0;
 
 	/**
 	 * Image ids that needs to be resmushed.
