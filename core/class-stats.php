@@ -142,7 +142,7 @@ class Stats {
 			if ( ! empty( $global_data ) ) {
 				foreach ( $global_data as $data ) {
 					// Skip attachment, if not in attachment list.
-					if ( ! in_array( $data->post_id, $this->attachments ) ) {
+					if ( ! in_array( $data->post_id, $this->attachments, true ) ) {
 						continue;
 					}
 
@@ -152,7 +152,7 @@ class Stats {
 						if ( ! empty( $meta['stats'] ) ) {
 
 							// Check for lossy compression.
-							if ( 1 == $meta['stats']['lossy'] ) {
+							if ( true === $meta['stats']['lossy'] ) {
 								$supersmushed_count++;
 							}
 
@@ -160,9 +160,8 @@ class Stats {
 							if ( ! empty( $meta['stats'] ) && $meta['stats']['size_before'] >= $meta['stats']['size_after'] ) {
 								// Total Image Smushed.
 								$smush_data['total_images'] += ! empty( $meta['sizes'] ) ? count( $meta['sizes'] ) : 0;
-
-								$smush_data['size_before'] += ! empty( $meta['stats']['size_before'] ) ? (int) $meta['stats']['size_before'] : 0;
-								$smush_data['size_after']  += ! empty( $meta['stats']['size_after'] ) ? (int) $meta['stats']['size_after'] : 0;
+								$smush_data['size_before']  += ! empty( $meta['stats']['size_before'] ) ? (int) $meta['stats']['size_before'] : 0;
+								$smush_data['size_after']   += ! empty( $meta['stats']['size_after'] ) ? (int) $meta['stats']['size_after'] : 0;
 							}
 						}
 					}
