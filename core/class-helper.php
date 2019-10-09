@@ -14,7 +14,6 @@ namespace Smush\Core;
 
 use finfo;
 use Smush\WP_Smush;
-use wpdb;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
