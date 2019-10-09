@@ -893,7 +893,7 @@ class Dashboard extends Abstract_Page {
 	public function dashboard_summary_metabox() {
 		$core = WP_Smush::get_instance()->core();
 
-		$resize_count = $core->db()->resize_savings( false, false, true );
+		$resize_count = $core->resize_savings( false, false, true );
 
 		// Split human size to get format and size.
 		$human = explode( ' ', $core->stats['human'] );

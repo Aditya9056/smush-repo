@@ -174,7 +174,7 @@ class CLI extends WP_CLI_Command {
 		// We need to initialize the database module (maybe all other modules as well?).
 		Settings::get_instance()->init();
 
-		$unsmushed_attachments = $core->db()->get_unsmushed_attachments();
+		$unsmushed_attachments = $core->get_unsmushed_attachments();
 
 		while ( $images ) {
 			$progress->tick();
@@ -222,7 +222,7 @@ class CLI extends WP_CLI_Command {
 	 * @param int    $batch  Compress only this number of images.
 	 */
 	private function smush_all( $msg, $batch = 0 ) {
-		$attachments = WP_Smush::get_instance()->core()->db()->get_unsmushed_attachments();
+		$attachments = WP_Smush::get_instance()->core()->get_unsmushed_attachments();
 
 		if ( $batch > 0 ) {
 			$attachments = array_slice( $attachments, 0, $batch );
@@ -249,7 +249,7 @@ class CLI extends WP_CLI_Command {
 	private function restore_image( $id = 0 ) {
 		$core = WP_Smush::get_instance()->core();
 
-		$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->db()->smushed_count( true );
+		$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->smushed_count( true );
 
 		if ( empty( $attachments ) ) {
 			WP_CLI::success( __( 'No images available to restore', 'wp-smushit' ) );

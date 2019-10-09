@@ -418,7 +418,7 @@ class Core extends Stats {
 
 			if ( empty( $this->unsmushed_attachments ) ) {
 				// Get attachments if all the images are not smushed.
-				$this->unsmushed_attachments = $this->remaining_count > 0 ? $this->database->get_unsmushed_attachments() : array();
+				$this->unsmushed_attachments = $this->remaining_count > 0 ? $this->get_unsmushed_attachments() : array();
 				$this->unsmushed_attachments = ! empty( $this->unsmushed_attachments ) && is_array( $this->unsmushed_attachments ) ? array_values( $this->unsmushed_attachments ) : $this->unsmushed_attachments;
 			}
 

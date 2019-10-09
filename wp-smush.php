@@ -274,7 +274,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			self::$is_pro = $this->validate_install();
 
-			$this->core  = new Core\Core( new Core\Modules\DB() );
+			$this->core  = new Core\Core();
 			$this->admin = new App\Admin();
 
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {

@@ -401,6 +401,34 @@ class Backup extends Abstract_Module {
 	}
 
 	/**
+	 * Get the attachments that can be restored.
+	 *
+	 * @param bool $return_ids  Whether to return ids or just the count.
+	 *
+	 * @return array|int  Attachments IDs / Number of attachments.
+	 */
+	private function get_attachments_with_backups( $return_ids = false ) {
+		$images = wp_cache_get( 'images_with_backups', 'wp-smush' );
+
+		if ( ! $images ) {
+			global $wpdb;
+			$images = $wpdb->get_col(
+				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key='_wp_attachment_backup_sizes' AND post_id IN (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key='wp-smpro-smush-data')"
+			); // Db call ok.
+
+			if ( $images ) {
+				wp_cache_set( 'images_with_backups', $images, 'wp-smush' );
+			}
+		}
+
+		if ( $return_ids ) {
+			return $images;
+		}
+
+		return count( $images );
+	}
+
+	/**
 	 * Get the number of attachments that can be restored.
 	 *
 	 * @since 3.2.2
@@ -409,7 +437,7 @@ class Backup extends Abstract_Module {
 		check_ajax_referer( 'smush_bulk_restore', '_wpnonce' );
 		wp_send_json_success(
 			array(
-				'items' => WP_Smush::get_instance()->core()->db()->get_attachments_with_backups( true ),
+				'items' => $this->get_attachments_with_backups( true ),
 			)
 		);
 	}
