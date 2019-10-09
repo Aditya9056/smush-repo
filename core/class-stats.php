@@ -732,7 +732,7 @@ class Stats {
 
 			if ( ! empty( $query->post_count ) && count( $query->posts ) > 0 ) {
 				// Get a filtered list of post ids.
-				$posts = $this->filter_by_mime( $query->posts );
+				$posts = Helper::filter_by_mime( $query->posts );
 				// Merge the results.
 				$attachments = array_merge( $attachments, $posts );
 
@@ -797,29 +797,6 @@ class Stats {
 		wp_cache_set( 'skipped_images', $images, 'wp-smush' );
 
 		return $images;
-	}
-
-	/**
-	 * Filter the Posts object as per mime type.
-	 *
-	 * @param array $posts Object of Posts.
-	 *
-	 * @return mixed array of post ids
-	 */
-	private function filter_by_mime( $posts ) {
-		if ( empty( $posts ) ) {
-			return $posts;
-		}
-
-		foreach ( $posts as $post_k => $post ) {
-			if ( ! isset( $post->post_mime_type ) || ! in_array( $post->post_mime_type, Core::$mime_types, true ) ) {
-				unset( $posts[ $post_k ] );
-			} else {
-				$posts[ $post_k ] = $post->ID;
-			}
-		}
-
-		return $posts;
 	}
 
 }
