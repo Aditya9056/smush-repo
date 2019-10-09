@@ -72,7 +72,7 @@ class Backup extends Abstract_Module {
 
 		// Get a backup path if empty.
 		if ( empty( $backup_path ) ) {
-			$backup_path = $mod->smush->get_image_backup_path( $file_path );
+			$backup_path = $this->get_image_backup_path( $file_path );
 		}
 
 		// If we don't have any backup path yet, bail!
@@ -209,7 +209,7 @@ class Backup extends Abstract_Module {
 					$backup_path = $backup_sizes[ $this->backup_key ];
 				} else {
 					// If we don't have a backup path, check for legacy backup naming convention.
-					$backup_path = $smush->get_image_backup_path( $file_path );
+					$backup_path = $this->get_image_backup_path( $file_path );
 				}
 			}
 			$backup_path = is_array( $backup_path ) && ! empty( $backup_path['file'] ) ? $backup_path['file'] : $backup_path;
@@ -444,6 +444,70 @@ class Backup extends Abstract_Module {
 				'link'    => Helper::get_image_media_link( $id, $file_name, true ),
 			)
 		);
+	}
+
+	/**
+	 * Returns the backup path for attachment
+	 *
+	 * @param string $attachment_path  Attachment path.
+	 *
+	 * @return bool|string
+	 */
+	public function get_image_backup_path( $attachment_path ) {
+		// If attachment id is not available, return false.
+		if ( empty( $attachment_path ) ) {
+			return false;
+		}
+		$path = pathinfo( $attachment_path );
+
+		// If we don't have complete filename return false.
+		if ( empty( $path['extension'] ) ) {
+			return false;
+		}
+
+		$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . '.bak.' . $path['extension'];
+
+		return $backup_name;
+	}
+
+	/**
+	 * Clear up all the backup files for the image, if any.
+	 *
+	 * @param int $image_id  Attachment ID.
+	 */
+	public function delete_backup_files( $image_id ) {
+		$smush_meta = get_post_meta( $image_id, Smush::$smushed_meta_key, true );
+		if ( empty( $smush_meta ) ) {
+			// Return if we don't have any details.
+			return;
+		}
+
+		// Get the attachment details.
+		$meta = wp_get_attachment_metadata( $image_id );
+
+		// Attachment file path.
+		$file = get_attached_file( $image_id );
+
+		// Get the backup path.
+		$backup_name = $this->get_image_backup_path( $file );
+
+		// If file exists, corresponding to our backup path, delete it.
+		@unlink( $backup_name );
+
+		// Check meta for rest of the sizes.
+		if ( ! empty( $meta ) && ! empty( $meta['sizes'] ) ) {
+			foreach ( $meta['sizes'] as $size ) {
+				// Get the file path.
+				if ( empty( $size['file'] ) ) {
+					continue;
+				}
+
+				// Image Path and Backup path.
+				$image_size_path  = path_join( dirname( $file ), $size['file'] );
+				$image_bckup_path = $this->get_image_backup_path( $image_size_path );
+				@unlink( $image_bckup_path );
+			}
+		}
 	}
 
 }

@@ -447,7 +447,7 @@ class NextGen extends Abstract_Integration {
 	 * @return bool
 	 */
 	public function show_restore_option( $pid, $attachment_data ) {
-		$smush = WP_Smush::get_instance()->core()->mod->smush;
+		$backup = WP_Smush::get_instance()->core()->mod->backup;
 
 		// Registry Object for NextGen Gallery.
 		$registry = C_Component_Registry::get_instance();
@@ -465,7 +465,7 @@ class NextGen extends Abstract_Integration {
 		$attachment_file_path = $storage->get_image_abspath( $image, 'full' );
 
 		// Get the backup path.
-		$backup_path = $smush->get_image_backup_path( $attachment_file_path );
+		$backup_path = $backup->get_image_backup_path( $attachment_file_path );
 
 		// If one of the backup(Ours/NextGen) exists, show restore option.
 		if ( file_exists( $backup_path ) || file_exists( $attachment_file_path . '_backup' ) ) {
@@ -486,7 +486,7 @@ class NextGen extends Abstract_Integration {
 			$attachment_size_file_path = $storage->get_image_abspath( $image, $size );
 
 			// Get the backup path.
-			$backup_path = $smush->get_image_backup_path( $attachment_size_file_path );
+			$backup_path = $backup->get_image_backup_path( $attachment_size_file_path );
 
 			// If one of the backup(Ours/NextGen) exists, show restore option.
 			if ( file_exists( $backup_path ) || file_exists( $attachment_size_file_path . '_backup' ) ) {
@@ -523,7 +523,7 @@ class NextGen extends Abstract_Integration {
 			);
 		}
 
-		$smush = WP_Smush::get_instance()->core()->mod->smush;
+		$backup = WP_Smush::get_instance()->core()->mod->backup;
 
 		// Store the restore success/failure for all the sizes.
 		$restored = array();
@@ -548,7 +548,7 @@ class NextGen extends Abstract_Integration {
 		$attachment_file_path = $storage->get_image_abspath( $image, 'full' );
 
 		// Get the backup path.
-		$backup_path = $smush->get_image_backup_path( $attachment_file_path );
+		$backup_path = $backup->get_image_backup_path( $attachment_file_path );
 
 		// Restoring the full image.
 		// If file exists, corresponding to our backup path.
@@ -573,7 +573,7 @@ class NextGen extends Abstract_Integration {
 				$attachment_size_file_path = $storage->get_image_abspath( $image, $size );
 
 				// Get the backup path.
-				$backup_path = $smush->get_image_backup_path( $attachment_size_file_path );
+				$backup_path = $backup->get_image_backup_path( $attachment_size_file_path );
 
 				// If file exists, corresponding to our backup path.
 				if ( file_exists( $backup_path ) ) {
@@ -743,7 +743,7 @@ class NextGen extends Abstract_Integration {
 		$errors = new WP_Error();
 		$stats  = array(
 			'stats' => array_merge(
-				$smush->_get_size_signature(),
+				$smush->get_size_signature(),
 				array(
 					'api_version' => - 1,
 					'lossy'       => - 1,
@@ -829,7 +829,7 @@ class NextGen extends Abstract_Integration {
 					continue;
 				}
 
-				$stats['sizes'][ $size ] = (object) $smush->_array_fill_placeholders( $smush->_get_size_signature(), (array) $response['data'] );
+				$stats['sizes'][ $size ] = (object) $smush->array_fill_placeholders( $smush->get_size_signature(), (array) $response['data'] );
 
 				if ( empty( $stats['stats']['api_version'] ) || - 1 == $stats['stats']['api_version'] ) {
 					$stats['stats']['api_version'] = $response['data']->api_version;

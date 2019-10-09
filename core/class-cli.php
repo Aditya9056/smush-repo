@@ -321,7 +321,7 @@ class CLI extends WP_CLI_Command {
 		// If we still don't have a backup path, use traditional method to get it.
 		if ( empty( $backup ) ) {
 			// Check backup for Full size.
-			$backup = WP_Smush::get_instance()->core()->mod->smush->get_image_backup_path( $file );
+			$backup = WP_Smush::get_instance()->core()->mod->backup->get_image_backup_path( $file );
 		} else {
 			// Get the full path for file backup.
 			$backup = str_replace( wp_basename( $file ), wp_basename( $backup ), $file );
