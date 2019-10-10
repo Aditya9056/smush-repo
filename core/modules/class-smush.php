@@ -138,7 +138,7 @@ class Smush extends Abstract_Module {
 					$status_txt = $image_count > 1 ? sprintf( __( '%d images reduced ', 'wp-smushit' ), $image_count ) : __( 'Reduced ', 'wp-smushit' );
 
 					$stats_percent = number_format_i18n( $percent, 2 );
-					$stats_percent = $stats_percent > 0 ? sprintf( '(  %01.1f%% )', $stats_percent ) : '';
+					$stats_percent = $stats_percent > 0 ? sprintf( '(%01.1f%%)', $stats_percent ) : '';
 					/* translators: %1$s: bytes in readable format, %2$s: percent */
 					$status_txt .= sprintf( __( 'by %1$s %2$s', 'wp-smushit' ), $bytes_readable, $stats_percent );
 

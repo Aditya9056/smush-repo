@@ -297,7 +297,7 @@ class Stats extends NextGen {
 					$status_txt .= '<br />' . $mush->get_resmsuh_link( $pid, 'nextgen' );
 				}
 			} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
-				$status_txt = sprintf( __( 'Reduced by %1$s (  %2$01.1f%% )', 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2 ) );
+				$status_txt = sprintf( __( 'Reduced by %1$s (%2$01.1f%%)', 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2 ) );
 
 				$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
 
