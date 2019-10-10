@@ -319,15 +319,15 @@ abstract class Abstract_Page {
 	/**
 	 * Add meta box.
 	 *
-	 * @param string $id               Meta box ID.
-	 * @param string $title            Meta box title.
-	 * @param string $callback         Callback for meta box content.
-	 * @param string $callback_header  Callback for meta box header.
-	 * @param string $callback_footer  Callback for meta box footer.
-	 * @param string $context          Meta box context.
-	 * @param array  $args             Arguments.
+	 * @param string   $id               Meta box ID.
+	 * @param string   $title            Meta box title.
+	 * @param callable $callback         Callback for meta box content.
+	 * @param callable $callback_header  Callback for meta box header.
+	 * @param callable $callback_footer  Callback for meta box footer.
+	 * @param string   $context          Meta box context.
+	 * @param array    $args             Arguments.
 	 */
-	public function add_meta_box( $id, $title, $callback = '', $callback_header = '', $callback_footer = '', $context = 'main', $args = array() ) {
+	public function add_meta_box( $id, $title, $callback = null, $callback_header = null, $callback_footer = null, $context = 'main', $args = array() ) {
 		$default_args = array(
 			'box_class'         => 'sui-box',
 			'box_header_class'  => 'sui-box-header',

@@ -747,10 +747,11 @@ class Settings {
 	public function init_lazy_load_defaults() {
 		$defaults = array(
 			'format'          => array(
-				'jpeg' => true,
-				'png'  => true,
-				'gif'  => true,
-				'svg'  => true,
+				'jpeg'   => true,
+				'png'    => true,
+				'gif'    => true,
+				'svg'    => true,
+				'iframe' => true,
 			),
 			'output'          => array(
 				'content'    => true,
