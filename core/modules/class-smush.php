@@ -720,7 +720,7 @@ class Smush extends Abstract_Module {
 		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images, true ) ) {
 			$status_txt = __( 'Not processed', 'wp-smushit' );
 			if ( $echo ) {
-				echo esc_html( $status_txt );
+				echo '<p class="smush-status">' . esc_html( $status_txt ) . '</p>';
 				return false;
 			}
 
@@ -737,6 +737,10 @@ class Smush extends Abstract_Module {
 			$class = $smushed ? ' smushed' : ' currently-smushing';
 
 			return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
+		}
+
+		if ( 'Super-Smush' === $button_txt ) {
+			$html .= ' | ';
 		}
 
 		$html .= "<a href='#' class='wp-smush-send' data-id='{$id}'>{$button_txt}</a>";
