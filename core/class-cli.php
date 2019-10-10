@@ -249,7 +249,7 @@ class CLI extends WP_CLI_Command {
 	private function restore_image( $id = 0 ) {
 		$core = WP_Smush::get_instance()->core();
 
-		$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->smushed_count( true );
+		$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->get_smushed_attachments();
 
 		if ( empty( $attachments ) ) {
 			WP_CLI::success( __( 'No images available to restore', 'wp-smushit' ) );

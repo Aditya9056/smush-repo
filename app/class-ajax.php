@@ -381,7 +381,7 @@ class Ajax {
 		}
 
 		// If there aren't any images in the library, return the notice.
-		if ( 0 == $core->get_media_attachments( true ) && 'nextgen' !== $type ) {
+		if ( 0 === count( $core->get_media_attachments() ) && 'nextgen' !== $type ) {
 			$notice = esc_html__( 'We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' );
 			$resp   = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
 					<div class="sui-notice-content">
@@ -447,7 +447,7 @@ class Ajax {
 		// Get Smushed Attachments.
 		if ( 'nextgen' !== $type ) {
 			// Get list of Smushed images.
-			$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->smushed_count( true );
+			$attachments = ! empty( $core->smushed_attachments ) ? $core->smushed_attachments : $core->get_smushed_attachments();
 		} else {
 			// Get smushed attachments list from nextgen class, We get the meta as well.
 			$attachments = $core->nextgen->ng_stats->get_ngg_images();

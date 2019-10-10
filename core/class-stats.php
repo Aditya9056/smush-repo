@@ -35,6 +35,20 @@ class Stats {
 	public $dir_stats;
 
 	/**
+	 * Set a limit of MySQL query. Default: 2000.
+	 *
+	 * @var int $query_limit
+	 */
+	private $query_limit = 2000;
+
+	/**
+	 * Set a limit to max number of rows in MySQL query. Default: 5000.
+	 *
+	 * @var int $max_rows
+	 */
+	private $max_rows = 5000;
+
+	/**
 	 * Protected init class, used in child methods instead of constructor.
 	 *
 	 * @since 3.4.0
@@ -45,6 +59,9 @@ class Stats {
 	 * Stats constructor.
 	 */
 	public function __construct() {
+		$this->query_limit = apply_filters( 'wp_smush_query_limit', 2000 );
+		$this->max_rows    = apply_filters( 'wp_smush_max_rows', 5000 );
+
 		// Recalculate resize savings.
 		add_action(
 			'wp_smush_image_resized',
@@ -114,7 +131,6 @@ class Stats {
 		// If savings or resize image count is not stored in db, recalculate.
 		$count      = 0;
 		$offset     = 0;
-		$limit      = apply_filters( 'wp_smush_query_limit', 2000 );
 		$query_next = true;
 		$savings    = array(
 			'bytes'       => 0,
@@ -130,7 +146,7 @@ class Stats {
 					"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT %d, %d",
 					$key,
 					$offset,
-					$limit
+					$this->query_limit
 				)
 			); // Db call ok.
 
@@ -171,7 +187,7 @@ class Stats {
 			}
 
 			// Update the offset.
-			$offset += $limit;
+			$offset += $this->query_limit;
 
 			// Compare the offset value to total images.
 			$query_next = $this->total_count > $offset;
@@ -206,7 +222,7 @@ class Stats {
 
 		if ( empty( $this->smushed_attachments ) ) {
 			// Get smushed attachments.
-			$this->smushed_attachments = $this->smushed_count( true, $force_update );
+			$this->smushed_attachments = $this->get_smushed_attachments( $force_update );
 		}
 
 		// Get supersmushed images count.
@@ -227,21 +243,73 @@ class Stats {
 	}
 
 	/**
-	 * Optimised images count or IDs.
+	 * Get the media attachment IDs.
 	 *
-	 * @param bool $return_ids Should return ids?.
-	 * @param bool $force_update Should force update?.
+	 * @param bool $force_update  Force update.
 	 *
-	 * @return array|int
+	 * @return array
 	 */
-	public function smushed_count( $return_ids = false, $force_update = false ) {
+	public function get_media_attachments( $force_update = false ) {
+		global $wpdb;
+
+		// Return results from cache.
+		$posts = wp_cache_get( 'media_attachments', 'wp-smush' );
+		if ( ! $force_update && $posts ) {
+			return $posts;
+		}
+
+		$posts = array();
+
+		// Else Get it Fresh!!
+		$offset = 0;
+		$mime   = implode( "', '", Core::$mime_types );
+		// Remove the Filters added by WP Media Folder.
+		do_action( 'wp_smush_remove_filters' );
+
+		$get_posts = true;
+
+		while ( $get_posts ) {
+			$results = $wpdb->get_col(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_mime_type IN ('$mime') ORDER BY `ID` DESC LIMIT %d, %d",
+					$offset,
+					$this->query_limit
+				)
+			); // Db call ok.
+
+			if ( ! empty( $results ) && is_array( $results ) && count( $results ) > 0 ) {
+				// Get a filtered list of post ids.
+				$posts = array_merge( $posts, $results );
+
+				// Update the offset.
+				$offset += $this->query_limit;
+			} else {
+				// If we didn't get any posts from query, set $get_posts to false.
+				$get_posts = false;
+			}
+		}
+
+		// Add the attachments to cache.
+		wp_cache_add( 'media_attachments', $posts, 'wp-smush' );
+
+		return $posts;
+	}
+
+	/**
+	 * Optimised image IDs.
+	 *
+	 * @param bool $force_update  Force update.
+	 *
+	 * @return array
+	 */
+	public function get_smushed_attachments( $force_update = false ) {
 		// Don't query again, if the variable is already set.
-		if ( ! $return_ids && ! empty( $this->smushed_count ) && $this->smushed_count > 0 ) {
+		if ( ! empty( $this->smushed_count ) && $this->smushed_count > 0 ) {
 			return $this->smushed_count;
 		}
 
 		// Key for cache.
-		$key = $return_ids ? WP_SMUSH_PREFIX . 'smushed_ids' : WP_SMUSH_PREFIX . 'smushed_count';
+		$key = WP_SMUSH_PREFIX . 'smushed_ids';
 
 		// If not forced to update, try to get from cache.
 		if ( ! $force_update ) {
@@ -255,11 +323,6 @@ class Stats {
 
 		global $wpdb;
 
-		/**
-		 * Allows to set a limit of mysql query
-		 * Default value is 2000.
-		 */
-		$limit      = apply_filters( 'wp_smush_query_limit', 2000 );
 		$offset     = 0;
 		$query_next = true;
 		$posts      = array();
@@ -267,12 +330,12 @@ class Stats {
 		// Remove the Filters added by WP Media Folder.
 		do_action( 'wp_smush_remove_filters' );
 
-		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT $offset, $limit", Modules\Smush::$smushed_meta_key ) ) ) {
+		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT {$offset}, {$this->query_limit}", Modules\Smush::$smushed_meta_key ) ) ) {
 			if ( ! is_wp_error( $results ) && count( $results ) > 0 ) {
 				$posts = array_merge( $posts, $results );
 			}
 			// Update the offset.
-			$offset += $limit;
+			$offset += $this->query_limit;
 
 			// Compare the Offset value to total images.
 			if ( ! empty( $this->total_count ) && $this->total_count <= $offset ) {
@@ -286,71 +349,7 @@ class Stats {
 		}
 
 		// Set in cache.
-		wp_cache_set( $key, $return_ids ? $posts : count( $posts ), 'wp-smush' );
-
-		return $return_ids ? $posts : count( $posts );
-	}
-
-	/**
-	 * Get the media attachment ID/count.
-	 *
-	 * @param bool $return_count  Return count.
-	 * @param bool $force_update  Force update.
-	 *
-	 * @return array|bool|int|mixed
-	 */
-	public function get_media_attachments( $return_count = false, $force_update = false ) {
-		global $wpdb;
-
-		// Return results from cache.
-		if ( ! $force_update ) {
-			$posts = wp_cache_get( 'media_attachments', 'wp-smush' );
-			$count = ! empty( $posts ) ? count( $posts ) : 0;
-
-			// Return results only if we've got any.
-			if ( $count ) {
-				return $return_count ? $count : $posts;
-			}
-		}
-
-		$posts = array();
-
-		// Else Get it Fresh!!
-		$offset = 0;
-		$limit  = apply_filters( 'wp_smush_query_limit', 2000 );
-		$mime   = implode( "', '", Core::$mime_types );
-		// Remove the Filters added by WP Media Folder.
-		do_action( 'wp_smush_remove_filters' );
-
-		$get_posts = true;
-
-		while ( $get_posts ) {
-			$results = $wpdb->get_col(
-				$wpdb->prepare(
-					"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_mime_type IN ('$mime') ORDER BY `ID` DESC LIMIT %d, %d",
-					$offset,
-					$limit
-				)
-			); // Db call ok.
-
-			if ( ! empty( $results ) && is_array( $results ) && count( $results ) > 0 ) {
-				// Get a filtered list of post ids.
-				$posts = array_merge( $posts, $results );
-
-				// Update the offset.
-				$offset += $limit;
-			} else {
-				// If we didn't get any posts from query, set $get_posts to false.
-				$get_posts = false;
-			}
-		}
-
-		// Add the attachments to cache.
-		wp_cache_add( 'media_attachments', $posts, 'wp-smush' );
-
-		if ( $return_count ) {
-			return count( $posts );
-		}
+		wp_cache_set( $key, $posts, 'wp-smush' );
 
 		return $posts;
 	}
@@ -374,7 +373,7 @@ class Stats {
 				$attachments = array_diff( $attachments, $this->skipped_attachments );
 			}
 
-			$attachments = ! empty( $attachments ) && is_array( $attachments ) ? array_slice( $attachments, 0, apply_filters( 'wp_smush_max_rows', 5000 ) ) : array();
+			$attachments = ! empty( $attachments ) && is_array( $attachments ) ? array_slice( $attachments, 0, $this->max_rows ) : array();
 		} else {
 			$attachments = $this->get_attachments();
 		}
@@ -523,11 +522,6 @@ class Stats {
 			'bytes'       => 0,
 		);
 
-		/**
-		 * Allows to set a limit of mysql query
-		 * Default value is 2000
-		 */
-		$limit      = apply_filters( 'wp_smush_query_limit', 2000 );
 		$offset     = 0;
 		$query_next = true;
 
@@ -540,7 +534,7 @@ class Stats {
 					"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT %d, %d",
 					Modules\Smush::$smushed_meta_key,
 					$offset,
-					$limit
+					$this->query_limit
 				)
 			); // Db call ok; no-cache ok.
 			if ( ! empty( $global_data ) ) {
@@ -575,7 +569,7 @@ class Stats {
 			$smush_data['bytes'] = $smush_data['size_before'] - $smush_data['size_after'];
 
 			// Update the offset.
-			$offset += $limit;
+			$offset += $this->query_limit;
 
 			// Compare the Offset value to total images.
 			if ( ! empty( $this->total_count ) && $this->total_count <= $offset ) {
@@ -659,7 +653,6 @@ class Stats {
 	 */
 	private function get_attachments( $smushed = 'none' ) {
 		// Get all the attachments with wp-smush-lossy.
-		$limit       = apply_filters( 'wp_smush_query_limit', 2000 );
 		$get_posts   = true;
 		$attachments = array();
 		$args        = array(
@@ -668,7 +661,7 @@ class Stats {
 			'post_status'            => 'any',
 			'orderby'                => 'ID',
 			'order'                  => 'DESC',
-			'posts_per_page'         => $limit,
+			'posts_per_page'         => $this->query_limit,
 			'offset'                 => 0,
 			'update_post_term_cache' => false,
 			'no_found_rows'          => true,
@@ -708,14 +701,14 @@ class Stats {
 				$attachments = array_merge( $attachments, $posts );
 
 				// Update the offset.
-				$args['offset'] += $limit;
+				$args['offset'] += $this->query_limit;
 			} else {
 				// If we didn't get any posts from query, set $get_posts to false.
 				$get_posts = false;
 			}
 
 			// If we already got enough posts.
-			if ( count( $attachments ) >= apply_filters( 'wp_smush_max_rows', 5000 ) ) {
+			if ( count( $attachments ) >= $this->max_rows ) {
 				$get_posts = false;
 			} elseif ( ! empty( $this->total_count ) && $this->total_count <= $args['offset'] ) {
 				// If total Count is set, and it is alread lesser than offset, don't query.
