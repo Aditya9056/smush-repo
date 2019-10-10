@@ -33,6 +33,7 @@
 - Fix: UI layout in NextGen integration
 - Fix: Lazy loading spinner layout issue
 - Fix: Compatibility with RT Media
+- Fix: Re-check images notification not dismissing
 
 = 3.2.4 =
 
