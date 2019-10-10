@@ -286,50 +286,27 @@ class Stats {
 			return $this->smushed_count;
 		}
 
-		// Key for cache.
-		$key = WP_SMUSH_PREFIX . 'smushed_ids';
-
 		// If not forced to update, try to get from cache.
 		if ( ! $force_update ) {
 			// TODO: This is an issue. If not forcing the update, the cached version is never incremented during image Smush.
-			$smushed_count = wp_cache_get( $key, 'wp-smush' );
+			$smushed_count = wp_cache_get( WP_SMUSH_PREFIX . 'smushed_ids', 'wp-smush' );
 			// Return the cache value if cache is set.
 			if ( false !== $smushed_count && ! empty( $smushed_count ) ) {
 				return $smushed_count;
 			}
 		}
 
-		global $wpdb;
-
-		$offset     = 0;
-		$query_next = true;
-		$posts      = array();
-
 		// Remove the Filters added by WP Media Folder.
 		do_action( 'wp_smush_remove_filters' );
 
-		while ( $query_next ) {
-			$results = $wpdb->get_col(
-				$wpdb->prepare(
-					"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT %d, %d",
-					Modules\Smush::$smushed_meta_key,
-					$offset,
-					$this->query_limit
-				)
-			); // Db call ok.
+		global $wpdb;
 
-			if ( ! is_wp_error( $results ) && count( $results ) > 0 ) {
-				$posts = array_merge( $posts, $results );
-			}
-
-			// Update the offset.
-			$offset += $this->query_limit;
-
-			// Compare the Offset value to total images.
-			if ( ! empty( $this->total_count ) && $this->total_count <= $offset ) {
-				$query_next = false;
-			}
-		}
+		$posts = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key=%s",
+				Modules\Smush::$smushed_meta_key
+			)
+		); // Db call ok.
 
 		// Remove resmush IDs from the list.
 		if ( ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) {
@@ -337,7 +314,7 @@ class Stats {
 		}
 
 		// Set in cache.
-		wp_cache_set( $key, $posts, 'wp-smush' );
+		wp_cache_set( WP_SMUSH_PREFIX . 'smushed_ids', $posts, 'wp-smush' );
 
 		return $posts;
 	}
