@@ -35,11 +35,11 @@ class Stats {
 	public $dir_stats;
 
 	/**
-	 * Set a limit of MySQL query. Default: 2000.
+	 * Set a limit of MySQL query. Default: 3000.
 	 *
 	 * @var int $query_limit
 	 */
-	private $query_limit = 2000;
+	private $query_limit = 3000;
 
 	/**
 	 * Set a limit to max number of rows in MySQL query. Default: 5000.
@@ -61,7 +61,7 @@ class Stats {
 	public function __construct() {
 		$this->init();
 
-		$this->query_limit = apply_filters( 'wp_smush_query_limit', 2000 );
+		$this->query_limit = apply_filters( 'wp_smush_query_limit', 3000 );
 		$this->max_rows    = apply_filters( 'wp_smush_max_rows', 5000 );
 
 		// Recalculate resize savings.
