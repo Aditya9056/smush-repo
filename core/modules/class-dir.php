@@ -916,22 +916,24 @@ class Dir extends Abstract_Module {
 		$optimised = 0;
 		$limit     = 1000;
 		$images    = array();
+		$continue  = true;
 
-		$total = $wpdb->get_col( "SELECT count(id) FROM {$wpdb->prefix}smush_dir_images" ); // Db call ok; no-cache ok.
+		while ( $continue ) {
+			$results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL ORDER BY `id` LIMIT %d, %d",
+					$offset,
+					$limit
+				),
+				ARRAY_A
+			); // Db call ok; no-cache ok.
 
-		$total = ! empty( $total ) && is_array( $total ) ? $total[0] : 0;
-
-		$continue = true;
-
-		while ( $continue && $results = $wpdb->get_results( "SELECT path, image_size, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE image_size IS NOT NULL ORDER BY `id` LIMIT $offset, $limit", ARRAY_A ) ) { // Db call ok; no-cache ok.
-			if ( ! empty( $results ) ) {
-				$images = array_merge( $images, $results );
+			if ( ! $results ) {
+				break;
 			}
+
+			$images  = array_merge( $images, $results );
 			$offset += $limit;
-			// If offset is above total number, do not query.
-			if ( $offset > $total ) {
-				$continue = false;
-			}
 		}
 
 		// Iterate over stats, return count and savings.
@@ -963,7 +965,7 @@ class Dir extends Abstract_Module {
 			$this->stats['human'] = size_format( $this->stats['bytes'], 1 );
 		}
 
-		$this->stats['total']     = $total;
+		$this->stats['total']     = count( $images );
 		$this->stats['optimised'] = $optimised;
 
 		// Set stats in cache.
