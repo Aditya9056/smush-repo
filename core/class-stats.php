@@ -59,6 +59,8 @@ class Stats {
 	 * Stats constructor.
 	 */
 	public function __construct() {
+		$this->init();
+
 		$this->query_limit = apply_filters( 'wp_smush_query_limit', 2000 );
 		$this->max_rows    = apply_filters( 'wp_smush_max_rows', 5000 );
 
@@ -80,8 +82,6 @@ class Stats {
 
 		// Send Smush stats for PRO members.
 		add_filter( 'wpmudev_api_project_extra_data-912164', array( $this, 'send_smush_stats' ) );
-
-		$this->init();
 	}
 
 	/**
@@ -250,44 +250,22 @@ class Stats {
 	 * @return array
 	 */
 	public function get_media_attachments( $force_update = false ) {
-		global $wpdb;
-
 		// Return results from cache.
-		$posts = wp_cache_get( 'media_attachments', 'wp-smush' );
-		if ( ! $force_update && $posts ) {
-			return $posts;
+		if ( ! $force_update ) {
+			$posts = wp_cache_get( 'media_attachments', 'wp-smush' );
+			if ( $posts ) {
+				return $posts;
+			}
 		}
 
-		$posts = array();
-
-		// Else Get it Fresh!!
-		$offset = 0;
-		$mime   = implode( "', '", Core::$mime_types );
 		// Remove the Filters added by WP Media Folder.
 		do_action( 'wp_smush_remove_filters' );
 
-		$get_posts = true;
+		$mime = implode( "', '", Core::$mime_types );
 
-		while ( $get_posts ) {
-			$results = $wpdb->get_col(
-				$wpdb->prepare(
-					"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_mime_type IN ('$mime') LIMIT %d, %d",
-					$offset,
-					$this->query_limit
-				)
-			); // Db call ok.
+		global $wpdb;
 
-			if ( ! empty( $results ) && is_array( $results ) && count( $results ) > 0 ) {
-				// Get a filtered list of post ids.
-				$posts = array_merge( $posts, $results );
-
-				// Update the offset.
-				$offset += $this->query_limit;
-			} else {
-				// If we didn't get any posts from query, set $get_posts to false.
-				$get_posts = false;
-			}
-		}
+		$posts = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type IN ('$mime')" ); // Db call ok.
 
 		// Add the attachments to cache.
 		wp_cache_add( 'media_attachments', $posts, 'wp-smush' );

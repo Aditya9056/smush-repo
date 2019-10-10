@@ -59,7 +59,7 @@ class Dir extends Abstract_Module {
 	/**
 	 * Dir constructor.
 	 */
-	public function __construct() {
+	public function init() {
 		// We only run in admin.
 		if ( ! is_admin() ) {
 			return;
