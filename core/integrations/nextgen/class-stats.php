@@ -125,7 +125,7 @@ class Stats extends NextGen {
 			// Get all the Smushed attachments ids
 			// Note: Wrong Method called, it'll fetch media images and not NextGen images
 			// Should be $attachments, in place of $super_smushed_images.
-			$super_smushed_images = WP_Smush::get_instance()->core()->get_attachments( 'super' );
+			$super_smushed_images = WP_Smush::get_instance()->core()->get_super_smushed_attachments();
 
 			if ( ! empty( $super_smushed_images ) && is_array( $super_smushed_images ) ) {
 				// Iterate over all the attachments to check if it's already there in list, else add it.

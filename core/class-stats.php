@@ -103,6 +103,45 @@ class Stats {
 	}
 
 	/**
+	 * Runs the expensive queries to get our global smush stats
+	 *
+	 * @param bool $force_update  Whether to force update the global stats or not.
+	 */
+	public function setup_global_stats( $force_update = false ) {
+		// Set directory smush status.
+		$this->dir_stats = Modules\Dir::should_continue() ? $this->mod->dir->total_stats() : array();
+
+		// Set Attachment IDs, and total count.
+		$this->attachments = $this->get_media_attachments();
+
+		// Set total count.
+		$this->total_count = ! empty( $this->attachments ) && is_array( $this->attachments ) ? count( $this->attachments ) : 0;
+
+		$this->stats = $this->global_stats( $force_update );
+
+		if ( empty( $this->smushed_attachments ) ) {
+			// Get smushed attachments.
+			$this->smushed_attachments = $this->get_smushed_attachments( $force_update );
+		}
+
+		// Get supersmushed images count.
+		if ( ! $this->super_smushed ) {
+			$this->super_smushed = count( $this->get_super_smushed_attachments() );
+		}
+
+		// Set pro savings.
+		$this->set_pro_savings();
+
+		// Get skipped attachments.
+		$this->skipped_attachments = $this->skipped_count( $force_update );
+		$this->skipped_count       = count( $this->skipped_attachments );
+
+		// Set smushed count.
+		$this->smushed_count   = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
+		$this->remaining_count = $this->remaining_count();
+	}
+
+	/**
 	 * Get the savings from image resizing or PNG -> JPG conversion savings.
 	 *
 	 * @param string $type          Savings type. Accepts: resize, pngjpg.
@@ -204,45 +243,6 @@ class Stats {
 	}
 
 	/**
-	 * Runs the expensive queries to get our global smush stats
-	 *
-	 * @param bool $force_update  Whether to force update the global stats or not.
-	 */
-	public function setup_global_stats( $force_update = false ) {
-		// Set directory smush status.
-		$this->dir_stats = Modules\Dir::should_continue() ? $this->mod->dir->total_stats() : array();
-
-		// Set Attachment IDs, and total count.
-		$this->attachments = $this->get_media_attachments();
-
-		// Set total count.
-		$this->total_count = ! empty( $this->attachments ) && is_array( $this->attachments ) ? count( $this->attachments ) : 0;
-
-		$this->stats = $this->global_stats( $force_update );
-
-		if ( empty( $this->smushed_attachments ) ) {
-			// Get smushed attachments.
-			$this->smushed_attachments = $this->get_smushed_attachments( $force_update );
-		}
-
-		// Get supersmushed images count.
-		if ( ! $this->super_smushed ) {
-			$this->super_smushed = count( $this->get_attachments( 'super' ) );
-		}
-
-		// Set pro savings.
-		$this->set_pro_savings();
-
-		// Get skipped attachments.
-		$this->skipped_attachments = $this->skipped_count( $force_update );
-		$this->skipped_count       = count( $this->skipped_attachments );
-
-		// Set smushed count.
-		$this->smushed_count   = ! empty( $this->smushed_attachments ) ? count( $this->smushed_attachments ) : 0;
-		$this->remaining_count = $this->remaining_count();
-	}
-
-	/**
 	 * Get the media attachment IDs.
 	 *
 	 * @param bool $force_update  Force update.
@@ -271,7 +271,7 @@ class Stats {
 		while ( $get_posts ) {
 			$results = $wpdb->get_col(
 				$wpdb->prepare(
-					"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_mime_type IN ('$mime') ORDER BY `ID` DESC LIMIT %d, %d",
+					"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_mime_type IN ('$mime') LIMIT %d, %d",
 					$offset,
 					$this->query_limit
 				)
@@ -330,10 +330,20 @@ class Stats {
 		// Remove the Filters added by WP Media Folder.
 		do_action( 'wp_smush_remove_filters' );
 
-		while ( $query_next && $results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT {$offset}, {$this->query_limit}", Modules\Smush::$smushed_meta_key ) ) ) {
+		while ( $query_next ) {
+			$results = $wpdb->get_col(
+				$wpdb->prepare(
+					"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key=%s LIMIT %d, %d",
+					Modules\Smush::$smushed_meta_key,
+					$offset,
+					$this->query_limit
+				)
+			); // Db call ok.
+
 			if ( ! is_wp_error( $results ) && count( $results ) > 0 ) {
 				$posts = array_merge( $posts, $results );
 			}
+
 			// Update the offset.
 			$offset += $this->query_limit;
 
@@ -355,9 +365,72 @@ class Stats {
 	}
 
 	/**
-	 * Fetch all the unsmushed attachments
+	 * Get all the attachments with wp-smush-lossy.
 	 *
-	 * @return array $attachments
+	 * @return array
+	 */
+	public function get_super_smushed_attachments() {
+		$get_posts   = true;
+		$attachments = array();
+		$args        = array(
+			'fields'                 => array( 'ids', 'post_mime_type' ),
+			'post_type'              => 'attachment',
+			'post_status'            => 'any',
+			'orderby'                => 'ID',
+			'order'                  => 'DESC',
+			'posts_per_page'         => $this->query_limit,
+			'offset'                 => 0,
+			'update_post_term_cache' => false,
+			'no_found_rows'          => true,
+			'meta_query'             => array(
+				array(
+					'key'   => 'wp-smush-lossy',
+					'value' => 1,
+				),
+			),
+		);
+
+		// Loop over to get all the attachments.
+		while ( $get_posts ) {
+			// Remove the Filters added by WP Media Folder.
+			do_action( 'wp_smush_remove_filters' );
+
+			$query = new WP_Query( $args );
+
+			if ( ! empty( $query->post_count ) && count( $query->posts ) > 0 ) {
+				// Get a filtered list of post ids.
+				$posts = Helper::filter_by_mime( $query->posts );
+				// Merge the results.
+				$attachments = array_merge( $attachments, $posts );
+
+				// Update the offset.
+				$args['offset'] += $this->query_limit;
+			} else {
+				// If we didn't get any posts from query, set $get_posts to false.
+				$get_posts = false;
+			}
+
+			// If we already got enough posts.
+			if ( count( $attachments ) >= $this->max_rows ) {
+				$get_posts = false;
+			} elseif ( ! empty( $this->total_count ) && $this->total_count <= $args['offset'] ) {
+				// If total Count is set, and it is alread lesser than offset, don't query.
+				$get_posts = false;
+			}
+		}
+
+		// Remove resmush IDs from the list.
+		if ( ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) {
+			$attachments = array_diff( $attachments, $this->resmush_ids );
+		}
+
+		return $attachments;
+	}
+
+	/**
+	 * Fetch all the unsmushed attachments.
+	 *
+	 * @return array
 	 */
 	public function get_unsmushed_attachments() {
 		if ( isset( $_REQUEST['ids'] ) ) {
@@ -379,6 +452,75 @@ class Stats {
 		}
 
 		// Remove resmush list from unsmushed images.
+		if ( ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) {
+			$attachments = array_diff( $attachments, $this->resmush_ids );
+		}
+
+		return $attachments;
+	}
+
+	/**
+	 * Get attachments that are not optimized.
+	 *
+	 * @return array
+	 */
+	private function get_attachments() {
+		// Get all the attachments with wp-smush-lossy.
+		$get_posts   = true;
+		$attachments = array();
+		$args        = array(
+			'fields'                 => array( 'ids', 'post_mime_type' ),
+			'post_type'              => 'attachment',
+			'post_status'            => 'any',
+			'orderby'                => 'ID',
+			'order'                  => 'DESC',
+			'posts_per_page'         => $this->query_limit,
+			'offset'                 => 0,
+			'update_post_term_cache' => false,
+			'no_found_rows'          => true,
+			'meta_query'             => array(
+				array(
+					'key'     => Modules\Smush::$smushed_meta_key,
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => 'wp-smush-ignore-bulk',
+					'value'   => 'true',
+					'compare' => 'NOT EXISTS',
+				),
+			),
+		);
+
+		// Loop over to get all the attachments.
+		while ( $get_posts ) {
+			// Remove the Filters added by WP Media Folder.
+			do_action( 'wp_smush_remove_filters' );
+
+			$query = new WP_Query( $args );
+
+			if ( ! empty( $query->post_count ) && count( $query->posts ) > 0 ) {
+				// Get a filtered list of post ids.
+				$posts = Helper::filter_by_mime( $query->posts );
+				// Merge the results.
+				$attachments = array_merge( $attachments, $posts );
+
+				// Update the offset.
+				$args['offset'] += $this->query_limit;
+			} else {
+				// If we didn't get any posts from query, set $get_posts to false.
+				$get_posts = false;
+			}
+
+			// If we already got enough posts.
+			if ( count( $attachments ) >= $this->max_rows ) {
+				$get_posts = false;
+			} elseif ( ! empty( $this->total_count ) && $this->total_count <= $args['offset'] ) {
+				// If total Count is set, and it is alread lesser than offset, don't query.
+				$get_posts = false;
+			}
+		}
+
+		// Remove resmush IDs from the list.
 		if ( ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) {
 			$attachments = array_diff( $attachments, $this->resmush_ids );
 		}
@@ -503,6 +645,7 @@ class Stats {
 	 */
 	private function global_stats( $force_update = false ) {
 		$stats = get_option( 'smush_global_stats' );
+
 		// Remove id from global stats stored in db.
 		if ( ! $force_update && $stats && ! empty( $stats ) && isset( $stats['size_before'] ) ) {
 			if ( isset( $stats['id'] ) ) {
@@ -515,18 +658,17 @@ class Stats {
 		global $wpdb;
 
 		$smush_data = array(
-			'size_before' => 0,
-			'size_after'  => 0,
-			'percent'     => 0,
-			'human'       => 0,
-			'bytes'       => 0,
+			'size_before'  => 0,
+			'size_after'   => 0,
+			'percent'      => 0,
+			'human'        => 0,
+			'bytes'        => 0,
+			'total_images' => 0,
 		);
 
-		$offset     = 0;
-		$query_next = true;
-
-		$supersmushed_count         = 0;
-		$smush_data['total_images'] = 0;
+		$offset       = 0;
+		$supersmushed = 0;
+		$query_next   = true;
 
 		while ( $query_next ) {
 			$global_data = $wpdb->get_results(
@@ -537,30 +679,34 @@ class Stats {
 					$this->query_limit
 				)
 			); // Db call ok; no-cache ok.
-			if ( ! empty( $global_data ) ) {
-				foreach ( $global_data as $data ) {
-					// Skip attachment, if not in attachment list.
-					if ( ! in_array( $data->post_id, $this->attachments, true ) ) {
-						continue;
-					}
 
-					$smush_data['id'][] = $data->post_id;
-					if ( ! empty( $data->meta_value ) ) {
-						$meta = maybe_unserialize( $data->meta_value );
-						if ( ! empty( $meta['stats'] ) ) {
+			// If we didn' got any results.
+			if ( ! $global_data ) {
+				break;
+			}
 
-							// Check for lossy compression.
-							if ( true === $meta['stats']['lossy'] ) {
-								$supersmushed_count++;
-							}
+			foreach ( $global_data as $data ) {
+				// Skip attachment, if not in attachment list.
+				if ( ! in_array( $data->post_id, $this->attachments, true ) ) {
+					continue;
+				}
 
-							// If the image was optimised.
-							if ( ! empty( $meta['stats'] ) && $meta['stats']['size_before'] >= $meta['stats']['size_after'] ) {
-								// Total Image Smushed.
-								$smush_data['total_images'] += ! empty( $meta['sizes'] ) ? count( $meta['sizes'] ) : 0;
-								$smush_data['size_before']  += ! empty( $meta['stats']['size_before'] ) ? (int) $meta['stats']['size_before'] : 0;
-								$smush_data['size_after']   += ! empty( $meta['stats']['size_after'] ) ? (int) $meta['stats']['size_after'] : 0;
-							}
+				$smush_data['id'][] = $data->post_id;
+				if ( ! empty( $data->meta_value ) ) {
+					$meta = maybe_unserialize( $data->meta_value );
+					if ( ! empty( $meta['stats'] ) ) {
+
+						// Check for lossy compression.
+						if ( true === $meta['stats']['lossy'] ) {
+							$supersmushed++;
+						}
+
+						// If the image was optimised.
+						if ( ! empty( $meta['stats'] ) && $meta['stats']['size_before'] >= $meta['stats']['size_after'] ) {
+							// Total Image Smushed.
+							$smush_data['total_images'] += ! empty( $meta['sizes'] ) ? count( $meta['sizes'] ) : 0;
+							$smush_data['size_before']  += ! empty( $meta['stats']['size_before'] ) ? (int) $meta['stats']['size_before'] : 0;
+							$smush_data['size_after']   += ! empty( $meta['stats']['size_after'] ) ? (int) $meta['stats']['size_after'] : 0;
 						}
 					}
 				}
@@ -573,9 +719,6 @@ class Stats {
 
 			// Compare the Offset value to total images.
 			if ( ! empty( $this->total_count ) && $this->total_count <= $offset ) {
-				$query_next = false;
-			} elseif ( ! $global_data ) {
-				// If we didn' got any results.
 				$query_next = false;
 			}
 		}
@@ -633,7 +776,7 @@ class Stats {
 		$this->smushed_attachments = ! empty( $smush_data['id'] ) ? $smush_data['id'] : '';
 
 		// Super Smushed attachment count.
-		$this->super_smushed = $supersmushed_count;
+		$this->super_smushed = $supersmushed;
 
 		// Remove ids from stats.
 		unset( $smush_data['id'] );
@@ -642,86 +785,6 @@ class Stats {
 		update_option( 'smush_global_stats', $smush_data, false );
 
 		return $smush_data;
-	}
-
-	/**
-	 * Get the attachments (either super smushed, or not smushed at all).
-	 *
-	 * @param string $smushed  Accepts: none, super. Default: none.
-	 *
-	 * @return array
-	 */
-	private function get_attachments( $smushed = 'none' ) {
-		// Get all the attachments with wp-smush-lossy.
-		$get_posts   = true;
-		$attachments = array();
-		$args        = array(
-			'fields'                 => array( 'ids', 'post_mime_type' ),
-			'post_type'              => 'attachment',
-			'post_status'            => 'any',
-			'orderby'                => 'ID',
-			'order'                  => 'DESC',
-			'posts_per_page'         => $this->query_limit,
-			'offset'                 => 0,
-			'update_post_term_cache' => false,
-			'no_found_rows'          => true,
-			'meta_query'             => array(
-				array(
-					'key'     => Modules\Smush::$smushed_meta_key,
-					'compare' => 'NOT EXISTS',
-				),
-				array(
-					'key'     => 'wp-smush-ignore-bulk',
-					'value'   => 'true',
-					'compare' => 'NOT EXISTS',
-				),
-			),
-		);
-
-		if ( 'super' === $smushed ) {
-			$args['meta_query'] = array(
-				array(
-					'key'   => 'wp-smush-lossy',
-					'value' => 1,
-				),
-			);
-		}
-
-		// Loop over to get all the attachments.
-		while ( $get_posts ) {
-			// Remove the Filters added by WP Media Folder.
-			do_action( 'wp_smush_remove_filters' );
-
-			$query = new WP_Query( $args );
-
-			if ( ! empty( $query->post_count ) && count( $query->posts ) > 0 ) {
-				// Get a filtered list of post ids.
-				$posts = Helper::filter_by_mime( $query->posts );
-				// Merge the results.
-				$attachments = array_merge( $attachments, $posts );
-
-				// Update the offset.
-				$args['offset'] += $this->query_limit;
-			} else {
-				// If we didn't get any posts from query, set $get_posts to false.
-				$get_posts = false;
-			}
-
-			// If we already got enough posts.
-			if ( count( $attachments ) >= $this->max_rows ) {
-				$get_posts = false;
-			} elseif ( ! empty( $this->total_count ) && $this->total_count <= $args['offset'] ) {
-				// If total Count is set, and it is alread lesser than offset, don't query.
-				$get_posts = false;
-			}
-		}
-
-		// Remove resmush IDs from the list.
-		if ( ! empty( $this->resmush_ids ) && is_array( $this->resmush_ids ) ) {
-			$attachments = array_diff( $attachments, $this->resmush_ids );
-		}
-
-		return $attachments;
 	}
 
 	/**
