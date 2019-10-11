@@ -1277,12 +1277,8 @@ class Dashboard extends Abstract_Page {
 	 * @since 3.2.0
 	 */
 	public function lazyload_metabox() {
-		$this->view(
-			'lazyload/meta-box',
-			array(
-				'settings' => $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' ),
-			)
-		);
+		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+		$this->view( 'lazyload/meta-box', array( 'settings' => $settings ) );
 	}
 
 	/**

@@ -2,6 +2,7 @@
 
 - New: Option to ignore images from Smushing
 - New: CDN support for picture element
+- New: Lazy load for iframes
 - Enhance: Compatibility with WP Engine
 - Enhance: CDN support for custom UPLOADS directories
 - Enhance: Lazy loading image format detection

@@ -121,6 +121,10 @@ class Installer {
 				self::upgrade_3_2_2_1();
 			}
 
+			if ( version_compare( $version, '3.4.0', '<' ) ) {
+				self::upgrade_3_4();
+			}
+
 			// Create/upgrade directory smush table.
 			self::directory_smush_table();
 
@@ -292,6 +296,24 @@ class Installer {
 		$network_enabled = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
 		update_site_option( WP_SMUSH_PREFIX . 'networkwide', ! ( '1' === $network_enabled ) );
 		wp_cache_flush();
+	}
+
+	/**
+	 * Adds new lazy load iframe setting.
+	 *
+	 * @since 3.4.0
+	 */
+	private static function upgrade_3_4() {
+		// Add new lazy-load options.
+		$lazy = Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
+
+		if ( ! $lazy ) {
+			return;
+		}
+
+		$lazy['format']['iframe'] = true;
+
+		Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $lazy );
 	}
 
 }
