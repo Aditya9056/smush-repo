@@ -559,6 +559,8 @@ class CDN extends Abstract_Module {
 	 * @return string
 	 */
 	private function process_src( $image, $src, $resizing = true ) {
+		$args = array();
+
 		// Don't need to auto resize - return default args.
 		if ( $resizing && $this->settings->get( 'auto_resize' ) ) {
 			/**
