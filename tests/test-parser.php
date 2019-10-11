@@ -11,7 +11,7 @@ use Smush\Core\Modules\Helpers\Parser;
 /**
  * Class ParserTest
  *
- * @covers Parser
+ * @covers Smush\Core\Modules\Helpers\Parser
  */
 class ParserTest extends WP_UnitTestCase {
 
@@ -33,7 +33,7 @@ class ParserTest extends WP_UnitTestCase {
 	/**
 	 * Test background image support.
 	 *
-	 * @covers Parser::get_background_images
+	 * @covers Smush\Core\Modules\Helpers\Parser::get_background_images
 	 */
 	public function test_parse_background_images() {
 		$content = $this->tester->get_content( 'background-images.html' );

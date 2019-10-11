@@ -21,7 +21,7 @@ use Smush\WP_Smush;
 /**
  * Class CdnTest
  *
- * @covers CDN
+ * @covers Smush\Core\Modules\CDN
  */
 class CdnTest extends WP_UnitTestCase {
 
@@ -132,7 +132,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Verify that the proper settings are registered in the module.
 	 *
-	 * @covers CDN::add_settings
+	 * @covers Smush\Core\Settings::get_cdn_fields
 	 */
 	public function testCdnAddSettingsToGroup() {
 		$this->assertEquals( [ 'background_images', 'auto_resize', 'webp' ], Settings::get_instance()->get_cdn_fields() );
@@ -142,7 +142,7 @@ class CdnTest extends WP_UnitTestCase {
 	 * Test if CDN settings descriptions are properly registered and match the settings fields.
 	 *
 	 * @depends testCdnAddSettingsToGroup
-	 * @covers CDN::register
+	 * @covers Smush\Core\Modules\CDN::register
 	 */
 	public function testCdnSettings() {
 		$smush = WP_Smush::get_instance();
@@ -161,7 +161,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Test to see if init_flags() method can set the status property.
 	 *
-	 * @covers CDN::init_flags
+	 * @covers Smush\Core\Modules\CDN::init_flags
 	 * @group single
 	 */
 	public function testCdnInitFlagsMethod() {
@@ -198,7 +198,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Check that CDN does not fail when process_buffer() sends empty content.
 	 *
-	 * @covers CDN::process_img_tags
+	 * @covers Smush\Core\Modules\Helpers\Parser::parse_page
 	 */
 	public function testCdnParseImagesFromEmptyHTML() {
 		$parser = new Parser();
@@ -209,7 +209,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Verify external images are not parsed by the CDN.
 	 *
-	 * @covers CDN::process_img_tags
+	 * @covers Smush\Core\Modules\Helpers\Parser::parse_page
 	 */
 	public function testCdnSkipImagesFromExternalSources() {
 		$parser = new Parser();
@@ -223,7 +223,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Try to get dimensions from image name.
 	 *
-	 * @covers CDN::get_size_from_file_name
+	 * @covers Smush\Core\Modules\CDN::get_size_from_file_name
 	 * @throws ReflectionException  Exception.
 	 */
 	public function testCdnGet_size_from_file_nameMethod() {
@@ -268,7 +268,7 @@ class CdnTest extends WP_UnitTestCase {
 	 *
 	 * TODO: see if we can test it via wp_calculate_image_srcset filter.
 	 *
-	 * @covers CDN::is_valid_url
+	 * @covers Smush\Core\Modules\CDN::is_valid_url
 	 * @throws ReflectionException  Exception.
 	 */
 	public function testCdnIs_valid_urlMethod() {
@@ -294,7 +294,7 @@ class CdnTest extends WP_UnitTestCase {
 	 *
 	 * This seems a bit too long for a single test.
 	 *
-	 * @covers CDN::update_image_srcset
+	 * @covers Smush\Core\Modules\CDN::update_image_srcset
 	 */
 	public function testCdnUpdate_image_srcsetMethod() {
 		$attachment_id = $this->tester->upload_image();
