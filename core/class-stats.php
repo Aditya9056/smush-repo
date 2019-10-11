@@ -281,11 +281,6 @@ class Stats {
 	 * @return array
 	 */
 	public function get_smushed_attachments( $force_update = false ) {
-		// Don't query again, if the variable is already set.
-		if ( ! empty( $this->smushed_count ) && $this->smushed_count > 0 ) {
-			return $this->smushed_count;
-		}
-
 		// If not forced to update, try to get from cache.
 		if ( ! $force_update ) {
 			// TODO: This is an issue. If not forcing the update, the cached version is never incremented during image Smush.
