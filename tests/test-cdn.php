@@ -35,9 +35,9 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Global variables.
 	 *
-	 * @var array $_globals
+	 * @var array $globals
 	 */
-	protected $_globals;
+	protected $globals;
 
 	/**
 	 * Run before actions.
@@ -48,7 +48,7 @@ class CdnTest extends WP_UnitTestCase {
 
 		// Preserve global variables.
 		global $content_width;
-		$this->_globals['content_width'] = $content_width;
+		$this->globals['content_width'] = $content_width;
 
 		// Remove extra image sizes.
 		$this->remove_image_sizes();
@@ -60,7 +60,10 @@ class CdnTest extends WP_UnitTestCase {
 	public function tearDown() {
 		// Restore global variables.
 		global $content_width;
-		$content_width = $this->_globals['content_width'];
+		$content_width = $this->globals['content_width'];
+
+		delete_option( 'wp-smush-settings' );
+		delete_option( 'wp-smush-cdn_status' );
 	}
 
 	/**
@@ -190,7 +193,7 @@ class CdnTest extends WP_UnitTestCase {
 
 		// Remove the fake dash plugin.
 		if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
-			$this->unlink( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' );
+			unlink( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' );
 			rmdir( WP_PLUGIN_DIR . '/wpmudev-updates' );
 		}
 	}
@@ -261,6 +264,8 @@ class CdnTest extends WP_UnitTestCase {
 		add_filter( 'smush_skip_image_from_cdn', '__return_true', 10, 2 );
 
 		$this->assertEquals( $content, $parser->parse_page( $content ) );
+
+		remove_filter( 'smush_skip_image_from_cdn', '__return_true', 10 );
 	}
 
 	/**
@@ -313,19 +318,17 @@ class CdnTest extends WP_UnitTestCase {
 		$this->enableCDN( $cdn );
 		$cdn->init();
 
+		// We need to add this filter manually, to allow using on admin frontend.
+		add_filter( 'wp_calculate_image_srcset', array( $cdn, 'update_image_srcset' ), 99, 5 );
+
 		// This will convert all srcset links to CDN.
 		$image = wp_get_attachment_image( $attachment_id, 'full' );
 
 		// Convert image src to CDN.
 		$cdn_image = $parser->parse_page( $image );
-		$this->assertEquals( 4, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
+		$this->assertEquals( 5, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
 
-		wp_delete_attachment( $attachment_id );
+		wp_delete_attachment( $attachment_id, true );
 	}
-
-	/**
-	 * 1. Image from media library
-	 * 2. Image from wp-contents folder (not in media library)
-	 */
 
 }

@@ -31,6 +31,15 @@ class ParserTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Run after actions.
+	 *
+	 * @since 3.4.0
+	 */
+	public function tearDown() {
+		delete_option( 'wp-smush-settings' );
+	}
+
+	/**
 	 * Test background image support.
 	 *
 	 * @covers Smush\Core\Modules\Helpers\Parser::get_background_images
