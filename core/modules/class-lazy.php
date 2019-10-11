@@ -73,6 +73,10 @@ class Lazy extends Abstract_Module {
 		add_filter( 'wp_kses_allowed_html', array( $this, 'add_lazy_load_attributes' ) );
 
 		$this->parser->enable( 'lazy_load' );
+		if ( isset( $this->options['format']['iframe'] ) && $this->options['format']['iframe'] ) {
+			$this->parser->enable( 'iframes' );
+		}
+
 		add_filter( 'wp_smush_should_skip_parse', array( $this, 'maybe_skip_parse' ), 10 );
 
 		// Filter images.
@@ -322,6 +326,58 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 		$new_image .= '<noscript>' . $image . '</noscript>';
 
 		return $new_image;
+	}
+
+	/**
+	 * Parse iframe for Lazy load.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param string $src     Iframe src URL.
+	 * @param string $iframe  Iframe tag (<iframe>).
+	 *
+	 * @return string
+	 */
+	public function parse_iframe( $src, $iframe ) {
+		/**
+		 * Filter to skip a single iframe from lazy load.
+		 *
+		 * @param bool   $skip    Should skip? Default: false.
+		 * @param string $src     Iframe src URL.
+		 * @param string $iframe  Iframe.
+		 */
+		if ( apply_filters( 'smush_skip_iframe_from_lazy_load', false, $src, $iframe ) ) {
+			return $iframe;
+		}
+
+		// Avoid conflicts if attributes are set (another plugin, for example).
+		if ( false !== strpos( $iframe, 'data-src' ) ) {
+			return $iframe;
+		}
+
+		if ( $this->has_excluded_class_or_id( $iframe ) ) {
+			return $iframe;
+		}
+
+		$new_iframe = $iframe;
+
+		$src = Helpers\Parser::get_attribute( $new_iframe, 'src' );
+		Helpers\Parser::remove_attribute( $new_iframe, 'src' );
+		Helpers\Parser::add_attribute( $new_iframe, 'data-src', $src );
+
+		// Add .lazyload class.
+		$class = Helpers\Parser::get_attribute( $new_iframe, 'class' );
+		if ( $class ) {
+			$class .= ' lazyload';
+		} else {
+			$class = 'lazyload';
+		}
+		Helpers\Parser::remove_attribute( $new_iframe, 'class' );
+		Helpers\Parser::add_attribute( $new_iframe, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
+
+		Helpers\Parser::add_attribute( $new_iframe, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
+
+		return $new_iframe;
 	}
 
 	/**
