@@ -60,6 +60,7 @@ class ApiTest extends WP_UnitTestCase {
 	 */
 	public function tearDown() {
 		$this->client = null;
+		delete_option( 'wp-smush-settings' );
 	}
 
 	/**

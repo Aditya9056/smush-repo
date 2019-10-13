@@ -41,6 +41,22 @@ class SettingsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Cleanup.
+	 *
+	 * @since 3.4.0
+	 */
+	public function tearDown() {
+
+		delete_option( 'wp-smush-install-type' );
+		delete_option( 'wp-smush-version' );
+		delete_option( 'wp-smush-settings' );
+
+		delete_transient( 'timeout_wp-smush-bulk_sent_count' );
+		delete_transient( 'wp-smush-bulk_sent_count' );
+
+	}
+
+	/**
 	 * Test bulk limit for free users.
 	 */
 	public function testBulkLimit() {

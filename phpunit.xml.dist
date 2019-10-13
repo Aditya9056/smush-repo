@@ -19,4 +19,21 @@
 			<group>multisite</group>
 		</exclude>
 	</groups>
+
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">app/pages</directory>
+			<file>app/pages/class-abstract-page.php</file>
+			<file>app/pages/class-admin.php</file>
+			<file>app/pages/class-ajax.php</file>
+			<directory suffix=".php">core</directory>
+			<file>wp-smush.php</file>
+			<exclude>
+				<file>core/class-cli.php</file>
+				<directory>core/external</directory>
+				<directory>core/integrations/nextgen</directory>
+				<directory>core/integrations/s3</directory>
+			</exclude>
+		</whitelist>
+	</filter>
 </phpunit>
