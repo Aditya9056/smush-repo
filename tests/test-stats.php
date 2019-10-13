@@ -105,18 +105,69 @@ class StatsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test getting media attachment IDs.
+	 * Test getting smushed media attachment IDs.
 	 *
 	 * @since 3.4.0
-	 * @covers \Smush\Core\Stats::get_media_attachments
+	 * @covers \Smush\Core\Stats::get_smushed_attachments
 	 */
-	/*
-	public function testSetupGlobalStats() {
+	public function testGetSmushedAttachments() {
 
-		$posts = $this->smush->core()->get_media_attachments();
-		var_dump( $posts );
+		// No images.
+		$attachments = $this->smush->core()->get_smushed_attachments( true );
+		$this->assertEmpty( $attachments );
+
+		// Smush an image.
+		$image_id    = $this->tester->upload_image();
+		$attachments = $this->smush->core()->get_smushed_attachments( true );
+		$this->assertCount( 1, $attachments );
+		$this->assertEquals( $image_id, $attachments[0] );
+
+		// Test db cache.
+		wp_delete_attachment( $image_id, true );
+		$attachments = $this->smush->core()->get_smushed_attachments();
+		$this->assertCount( 1, $attachments );
+		$this->assertEquals( $image_id, $attachments[0] );
+		$attachments = $this->smush->core()->get_smushed_attachments( true );
+		$this->assertEmpty( $attachments );
+
+		/** TODO: Test re-Smush IDs.
+		\Smush\Core\Settings::get_instance()->set( 'lossy', true );
+		$image_id    = $this->tester->upload_image();
+		$attachments = $this->smush->core()->get_smushed_attachments( true );
+		wp_delete_attachment( $image_id, true );
+		*/
 
 	}
-	*/
+
+	/**
+	 * Test getting unsmushed attachments IDs.
+	 *
+	 * @since 3.4.0
+	 * @covers \Smush\Core\Stats::get_unsmushed_attachments
+	 */
+	public function testGetUnsmushedAttachments() {
+
+		\Smush\Core\Settings::get_instance()->set( 'auto', false );
+
+		$attachments = $this->smush->core()->get_unsmushed_attachments();
+		$this->assertEmpty( $attachments );
+
+		// Upload an image.
+		$image_id = $this->tester->upload_image();
+		// Update stats.
+		$this->smush->core()->setup_global_stats( true );
+		$attachments = $this->smush->core()->get_unsmushed_attachments();
+		// Now there's one unsmushed attachment.
+		$this->assertCount( 1, $attachments );
+		$this->assertEquals( $image_id, $attachments[0] );
+
+		// Smush it - now there's none.
+		$this->smush->core()->mod->smush->smush_single( $image_id, true );
+		$attachments = $this->smush->core()->get_unsmushed_attachments();
+		$this->assertEmpty( $attachments );
+
+		wp_delete_attachment( $image_id, true );
+
+	}
 
 }
