@@ -53,6 +53,7 @@ class StatsTest extends \WP_UnitTestCase {
 	 */
 	public function tearDown() {
 		delete_option( 'smush_global_stats' );
+		delete_option( 'wp-smush-settings' );
 	}
 
 	/**
@@ -165,6 +166,53 @@ class StatsTest extends \WP_UnitTestCase {
 		$this->smush->core()->mod->smush->smush_single( $image_id, true );
 		$attachments = $this->smush->core()->get_unsmushed_attachments();
 		$this->assertEmpty( $attachments );
+
+		wp_delete_attachment( $image_id, true );
+
+	}
+
+	/**
+	 * Test set pro savings stats if not premium user.
+	 *
+	 * TODO: this is a weird method. Best to refactor.
+	 *
+	 * @since 3.4.0
+	 * @covers \Smush\Core\Stats::set_pro_savings
+	 */
+	public function testSetProSavings() {
+
+		$stats = [
+			'percent' => 0,
+			'savings' => 0,
+		];
+
+		$this->assertArrayNotHasKey( 'pro_savings', $this->smush->core()->stats );
+
+		$this->tester->set_free();
+
+		$this->smush->core()->setup_global_stats();
+		$this->smush->core()->set_pro_savings();
+		$this->assertEquals( $stats, $this->smush->core()->stats['pro_savings'] );
+
+		$image_id = $this->tester->upload_image();
+
+		$this->smush->core()->setup_global_stats( true );
+		$this->smush->core()->set_pro_savings();
+
+		// Check default values.
+		$stats['percent'] = number_format_i18n( $this->smush->core()->stats['percent'] * 2.22058824, 1 );
+		$stats['savings'] = size_format( $this->smush->core()->stats['bytes'] * 2.22058824, 1 );
+
+		$this->assertEquals( $stats, $this->smush->core()->stats['pro_savings'] );
+
+		// Check stats if savings larger than 49%.
+		$this->smush->core()->stats['percent'] = 50;
+		$this->smush->core()->set_pro_savings();
+
+		$stats['percent'] = number_format_i18n( $this->smush->core()->stats['percent'] * 1.22054412, 1 );
+		$stats['savings'] = size_format( $this->smush->core()->stats['bytes'] * 1.22054412, 1 );
+
+		$this->assertEquals( $stats, $this->smush->core()->stats['pro_savings'] );
 
 		wp_delete_attachment( $image_id, true );
 
