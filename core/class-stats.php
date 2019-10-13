@@ -392,7 +392,7 @@ class Stats {
 			$attachments = array_diff( $this->attachments, $this->smushed_attachments );
 
 			// Remove skipped attachments.
-			if ( ! empty( $this->smushed_attachments ) ) {
+			if ( ! empty( $this->skipped_attachments ) ) {
 				$attachments = array_diff( $attachments, $this->skipped_attachments );
 			}
 
