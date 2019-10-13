@@ -33,10 +33,17 @@ class Parser {
 	 * Process background images.
 	 *
 	 * @since 3.2.2
-	 *
 	 * @var bool $background_images
 	 */
 	private $background_images = false;
+
+	/**
+	 * Process iframes.
+	 *
+	 * @since 3.4.0
+	 * @var bool $iframes
+	 */
+	private $iframes = false;
 
 	/**
 	 * Parser constructor.
@@ -65,7 +72,7 @@ class Parser {
 	 * @param string $module  Module ID.
 	 */
 	public function enable( $module ) {
-		if ( ! in_array( $module, array( 'cdn', 'lazy_load', 'background_images' ), true ) ) {
+		if ( ! in_array( $module, array( 'cdn', 'lazy_load', 'iframes', 'background_images' ), true ) ) {
 			return;
 		}
 
@@ -120,8 +127,13 @@ class Parser {
 		}
 
 		$content = $this->process_images( $content );
+
 		if ( $this->background_images ) {
 			$content = $this->process_background_images( $content );
+		}
+
+		if ( $this->iframes ) {
+			$content = $this->process_iframes( $content );
 		}
 
 		return $content;
@@ -187,6 +199,35 @@ class Parser {
 			$new_image = WP_Smush::get_instance()->core()->mod->cdn->parse_background_image( $img_src, $new_image );
 
 			$content = str_replace( $image, $new_image, $content );
+		}
+
+		return $content;
+	}
+
+	/**
+	 * Process all iframes.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param string $content  Current buffer content.
+	 *
+	 * @return string
+	 */
+	private function process_iframes( $content ) {
+		$iframes = self::get_iframes( $content );
+
+		if ( empty( $iframes ) ) {
+			return $content;
+		}
+
+		foreach ( $iframes[0] as $key => $iframe ) {
+			$frame_src  = $iframes['frame_url'][ $key ];
+			$new_iframe = $iframe;
+
+			// Update the image with correct CDN links.
+			$new_iframe = WP_Smush::get_instance()->core()->mod->lazy->parse_iframe( $frame_src, $new_iframe );
+
+			$content = str_replace( $iframe, $new_iframe, $content );
 		}
 
 		return $content;
@@ -259,6 +300,30 @@ class Parser {
 		}
 
 		return $images;
+	}
+
+	/**
+	 * Get iframes from content.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param string $content  Page content.
+	 *
+	 * @return array
+	 */
+	private static function get_iframes( $content ) {
+		$iframes = array();
+
+		if ( preg_match_all( '/(?:<iframe[^>]*?\s+?src=["|\'](?P<frame_url>[^\s]+?)["|\'].*?>)/is', $content, $iframes ) ) {
+			foreach ( $iframes as $key => $unused ) {
+				// Simplify the output as much as possible, mostly for confirming test results.
+				if ( is_numeric( $key ) && $key > 0 ) {
+					unset( $iframes[ $key ] );
+				}
+			}
+		}
+
+		return $iframes;
 	}
 
 	/**

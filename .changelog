@@ -2,6 +2,7 @@
 
 - New: Option to ignore images from Smushing
 - New: CDN support for picture element
+- New: Lazy load for iframes
 - Enhance: Compatibility with WP Engine
 - Enhance: CDN support for custom UPLOADS directories
 - Enhance: Lazy loading image format detection
@@ -34,6 +35,7 @@
 - Fix: UI layout in NextGen integration
 - Fix: Lazy loading spinner layout issue
 - Fix: Compatibility with RT Media
+- Fix: Re-check images notification not dismissing
 
 = 3.2.4 =
 
