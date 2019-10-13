@@ -35,6 +35,15 @@ class AjaxSmushTest extends WP_Ajax_UnitTestCase {
 	}
 
 	/**
+	 * Run after actions.
+	 *
+	 * @since 3.4.0
+	 */
+	public function tearDown() {
+		delete_option( 'wp-smush-settings' );
+	}
+
+	/**
 	 * Trigger wp_ajax_wp_smushit_manual ajax request.
 	 *
 	 * @param int $id  Image ID.
@@ -98,6 +107,9 @@ class AjaxSmushTest extends WP_Ajax_UnitTestCase {
 
 		$error_message = '<p class="wp-smush-error-message">Attachment Skipped - Check `wp_smush_image` filter.</p>';
 		$this->assertEquals( $error_message, $response['data']['error_msg'] );
+
+		// We don't need the attachment anymore. Delete.
+		wp_delete_attachment( $id, true );
 	}
 
 }

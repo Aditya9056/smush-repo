@@ -21,6 +21,7 @@
 
 - New: Integration with Envira Gallery
 - New: Integration with Avada Fusion Builder background images
+- Enhance: Significantly increase performance on sites with large media libraries
 - Enhance: Compatibility with staging environment on WPMU DEV hosting
 - Enhance: SmartCrawl readability analysis compatibility
 - Enhance: Allow optimizing directories in root folder

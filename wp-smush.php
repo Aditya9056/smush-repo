@@ -150,7 +150,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Plugin instance.
 		 *
 		 * @since 2.9.0
-		 *
 		 * @var null|WP_Smush
 		 */
 		private static $instance = null;
@@ -159,7 +158,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Plugin core.
 		 *
 		 * @since 2.9.0
-		 *
 		 * @var Core\Core
 		 */
 		private $core;
@@ -168,7 +166,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Plugin admin.
 		 *
 		 * @since 2.9.0
-		 *
 		 * @var App\Admin
 		 */
 		private $admin;
@@ -177,7 +174,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Plugin API.
 		 *
 		 * @since 3.0
-		 *
 		 * @var Core\Api\API
 		 */
 		private $api = '';
@@ -193,7 +189,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Smush project ID.
 		 *
 		 * @since  3.1.1
-		 *
 		 * @var int $project_id
 		 */
 		private static $project_id = 912164;
@@ -279,7 +274,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			self::$is_pro = $this->validate_install();
 
-			$this->core  = new Core\Core( new Core\Modules\DB() );
+			$this->core  = new Core\Core();
 			$this->admin = new App\Admin();
 
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
