@@ -1,3 +1,21 @@
+= 3.3.0 =
+
+- New: Integration with Envira Gallery
+- New: Integration with Avada Fusion Builder background images
+- Enhance: Compatibility with staging environment on WPMU DEV hosting
+- Enhance: SmartCrawl readability analysis compatibility
+- Enhance: Allow optimizing directories in root folder
+- Enhance: Error descriptions during optimization
+- Enhance: Detection of image sizes when "All" option is selected in Bulk Smush settings
+- Enhance: CDN detection of background images
+- Fix: Issue with CDN auto resize and Revolution Slider
+- Fix: CDN auto resize feature overwriting the correct sizes attribute
+- Fix: NextGen summary meta box layout
+- Fix: PHP warnings on NextGen integration
+- Fix: UI layout in NextGen integration
+- Fix: Lazy loading spinner layout issue
+- Fix: Compatibility with RT Media
+
 = 3.2.4 =
 
 - Enhance: Minor user experience improvements and updates

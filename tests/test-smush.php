@@ -6,6 +6,10 @@
  */
 
 use Helpers\Helper;
+use Smush\Core\Installer;
+use Smush\Core\Modules\Smush;
+use Smush\Core\Settings;
+use Smush\WP_Smush;
 
 /**
  * Class SmushTest
@@ -26,18 +30,7 @@ class SmushTest extends WP_UnitTestCase {
 		require_once 'helpers/class-helper.php';
 		$this->tester = new Helper();
 
-		WP_Smush_Installer::smush_activated();
-	}
-
-	/**
-	 * Set setting value temporarily.
-	 *
-	 * @param string $key Setting name.
-	 * @param bool   $value True or false.
-	 */
-	private function setSetting( $key, $value = true ) {
-		$settings = WP_Smush_Settings::get_instance();
-		$settings->set( $key, $value );
+		Installer::smush_activated();
 	}
 
 	/**
@@ -46,9 +39,8 @@ class SmushTest extends WP_UnitTestCase {
 	 * @group single
 	 */
 	public function testSmushSingle() {
-		$smush = WP_Smush::get_instance();
 		// Make sure it is not auto smushed.
-		$smush->core()->mod->settings->set( 'auto', false );
+		Settings::get_instance()->set( 'auto', false );
 
 		// Upload image.
 		$id = $this->tester->upload_image();
@@ -57,7 +49,7 @@ class SmushTest extends WP_UnitTestCase {
 		WP_Smush::get_instance()->core()->mod->smush->smush_single( $id, true );
 
 		// Try to get the smushed meta.
-		$smush_meta = get_post_meta( $id, WP_Smushit::$smushed_meta_key, true );
+		$smush_meta = get_post_meta( $id, Smush::$smushed_meta_key );
 
 		// We don't need the attachment anymore. Delete.
 		wp_delete_attachment( $id, true );

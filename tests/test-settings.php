@@ -6,6 +6,9 @@
  */
 
 use Helpers\Helper;
+use Smush\Core\Core;
+use Smush\Core\Installer;
+use Smush\Core\Settings;
 
 /**
  * Class SettingsTest
@@ -22,7 +25,7 @@ class SettingsTest extends WP_UnitTestCase {
 	/**
 	 * Settings instance.
 	 *
-	 * @var WP_Smush_Settings $settings
+	 * @var Settings $settings
 	 */
 	private $settings;
 
@@ -33,8 +36,8 @@ class SettingsTest extends WP_UnitTestCase {
 		require_once 'helpers/class-helper.php';
 		$this->tester = new Helper();
 
-		WP_Smush_Installer::smush_activated();
-		$this->settings = WP_Smush_Settings::get_instance();
+		Installer::smush_activated();
+		$this->settings = Settings::get_instance();
 	}
 
 	/**
@@ -51,7 +54,7 @@ class SettingsTest extends WP_UnitTestCase {
 				$condition = false;
 			}
 
-			$this->assertEquals( $condition, WP_Smush_Core::check_bulk_limit() );
+			$this->assertEquals( $condition, Core::check_bulk_limit() );
 			$i++;
 		}
 	}
