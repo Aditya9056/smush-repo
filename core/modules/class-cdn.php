@@ -952,18 +952,13 @@ class CDN extends Abstract_Module {
 	 */
 	private function max_content_width() {
 		// Get global content width (if content width is empty, set 1900).
-		$content_width = isset( $GLOBALS['content_width'] ) ? $GLOBALS['content_width'] : 1900;
+		$content_width = isset( $GLOBALS['content_width'] ) ? (int) $GLOBALS['content_width'] : 1900;
 
 		// Check to see if we are resizing the images (can not go over that value).
 		$resize_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 
 		if ( isset( $resize_sizes['width'] ) && $resize_sizes['width'] < $content_width ) {
 			return $resize_sizes['width'];
-		}
-
-		// Just in case something goes wrong with the above checks.
-		if ( ! $content_width ) {
-			$content_width = 1900;
 		}
 
 		return $content_width;
