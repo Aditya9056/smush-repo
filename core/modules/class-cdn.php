@@ -1040,8 +1040,15 @@ class CDN extends Abstract_Module {
 		foreach ( $additional_multipliers as $multiplier ) {
 			// New width by multiplying with original size.
 			$new_width = intval( $base_width * $multiplier );
+
+			// In most cases - going over the current width is not recommended and probably not what the user is expecting.
+			if ( $new_width > $current_width ) {
+				continue;
+			}
+
 			// If a nearly sized image already exist, skip.
 			foreach ( $current_widths as $_width ) {
+				// If +- 50 pixel difference - skip.
 				if ( abs( $_width - $new_width ) < 50 || ( $new_width > $full_width ) ) {
 					continue 2;
 				}

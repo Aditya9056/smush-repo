@@ -5,6 +5,7 @@
 - New: Lazy load for iframes
 - Enhance: Compatibility with WP Engine
 - Enhance: CDN support for custom UPLOADS directories
+- Enhance: Max width detection with CDN auto resize functionality
 - Enhance: Lazy loading image format detection
 - Enhance: Lazy loading compatibility with AMP
 - Enhance: Lazy loading compatibility with Essential Grid
