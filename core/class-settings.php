@@ -77,7 +77,7 @@ class Settings {
 	 * @sincr 3.2.2
 	 * @var array $modules
 	 */
-	private $modules = array( 'bulk', 'integrations', 'cdn', 'tools', 'settings' );
+	private $modules = array( 'bulk', 'integrations', 'lazy_load', 'cdn', 'tools', 'settings' );
 
 	/**
 	 * List of features/settings that are free.
@@ -434,7 +434,13 @@ class Settings {
 
 		$global = $this->is_network_enabled();
 
-		return $global && ! is_array( $global ) ? get_site_option( $name, $default ) : get_option( $name, $default );
+		if ( $global && ! is_array( $global ) ) {
+			return get_site_option( $name, $default );
+		}
+
+		// Fallback to network settings.
+		$settings = get_option( $name, $default );
+		return $settings ? $settings : get_site_option( $name, $default );
 	}
 
 	/**

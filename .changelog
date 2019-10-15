@@ -16,6 +16,7 @@
 - Fix: CDN incorrectly resizing cropped images
 - Fix: Directory Smush permissions
 - Fix: NextGen gallery bulk Smush functionality
+- Fix: Network access control settings
 
 = 3.3.0 =
 
