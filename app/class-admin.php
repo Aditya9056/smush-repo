@@ -87,6 +87,9 @@ class Admin {
 		add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
 		// Smush image filter from Media Library (list view).
 		add_action( 'restrict_manage_posts', array( $this, 'media_add_author_dropdown' ) );
+
+		// Add pre WordPress 5.0 compatibility.
+		add_filter( 'wp_kses_allowed_html', array( $this, 'filter_html_attributes' ) );
 	}
 
 	/**
@@ -555,6 +558,30 @@ class Admin {
 		} else {
 			return $notice;
 		}
+	}
+
+	/**
+	 * Data attributes are not allowed on <a> elements on WordPress before 5.0.0.
+	 * Add backward compatibility.
+	 *
+	 * @since 3.5.0
+	 * @see https://github.com/WordPress/WordPress/commit/a0309e80b6a4d805e4f230649be07b4bfb1a56a5#diff-a0e0d196dd71dde453474b0f791828fe
+	 * @param array $context  Context.
+	 *
+	 * @return mixed
+	 */
+	public function filter_html_attributes( $context ) {
+		global $wp_version;
+
+		if ( version_compare( '5.0.0', $wp_version, '<' ) ) {
+			return $context;
+		}
+
+		$context['a']['data-tooltip'] = true;
+		$context['a']['data-id']      = true;
+		$context['a']['data-nonce']   = true;
+
+		return $context;
 	}
 
 }

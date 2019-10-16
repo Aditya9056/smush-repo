@@ -2,6 +2,7 @@
 
 - New: Lazy load compatibility with Block Gallery plugin
 - New: Lazy load compatibility with CoBlocks plugin
+- Enhance: Support for WordPress 4.x
 
 = 3.4.0 =
 
