@@ -605,7 +605,7 @@ class Ajax {
 		}
 
 		$resmush_count = $count = count( $resmush_list );
-		$count        += 'nextgen' == $type ? $core->nextgen->ng_admin->remaining_count : $core->remaining_count;
+		$count        += 'nextgen' === $type ? $core->nextgen->ng_admin->remaining_count : $core->remaining_count;
 
 		// Return the Remsmush list and UI to be appended to Bulk Smush UI.
 		if ( $return_ui ) {
