@@ -268,7 +268,7 @@ class Stats {
 		$posts = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type IN ('$mime')" ); // Db call ok.
 
 		// Add the attachments to cache.
-		wp_cache_add( 'media_attachments', $posts, 'wp-smush' );
+		wp_cache_set( 'media_attachments', $posts, 'wp-smush' );
 
 		return $posts;
 	}
@@ -746,8 +746,11 @@ class Stats {
 		$resmush_count   = count( $this->resmush_ids );
 		$remaining_count = $this->total_count - $this->smushed_count - $this->skipped_count;
 
+		// Just a failsafe - can't have remaining value be a negative value.
+		$remaining_count = $remaining_count > 0 ? $remaining_count : 0;
+
 		// Check if the resmush count is equal to remaining count.
-		if ( $resmush_count > 0 && ( $resmush_count !== $this->smushed_count || 0 === $remaining_count ) ) {
+		if ( $resmush_count > 0 && ( $resmush_count !== $this->smushed_count || 0 === absint( $remaining_count ) ) ) {
 			return $resmush_count + $remaining_count;
 		}
 
