@@ -1,3 +1,8 @@
+= 3.5.0 =
+
+- New: Lazy load compatibility with Block Gallery plugin
+- New: Lazy load compatibility with CoBlocks plugin
+
 = 3.4.0 =
 
 - New: Option to ignore images from Smushing

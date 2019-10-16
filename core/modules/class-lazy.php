@@ -8,8 +8,6 @@
 
 namespace Smush\Core\Modules;
 
-use Smush\Core\Helper;
-
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -195,8 +193,34 @@ window.lazySizesConfig.loadedClass  = 'lazyloaded';
 lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 
 		wp_add_inline_script( 'smush-lazy-load', $custom, 'before' );
-
 		wp_add_inline_script( 'smush-lazy-load', 'lazySizes.init();' );
+
+		$this->add_masonry_support();
+	}
+
+	/**
+	 * Add support for plugins that use the masonry grid system (Block Gallery and CoBlocks plugins).
+	 *
+	 * @since 3.5.0
+	 *
+	 * @see https://wordpress.org/plugins/coblocks/
+	 * @see https://github.com/godaddy/block-gallery
+	 * @see https://masonry.desandro.com/methods.html#layout-masonry
+	 */
+	private function add_masonry_support() {
+		// None of the supported blocks are active - exit.
+		if ( ! has_block( 'blockgallery/masonry' ) && ! has_block( 'coblocks/gallery-masonry' ) ) {
+			return;
+		}
+
+		$js = "var e = jQuery( '.wp-block-coblocks-gallery-masonry ul' );";
+		if ( has_block( 'blockgallery/masonry' ) ) {
+			$js = "var e = jQuery( '.wp-block-blockgallery-masonry ul' );";
+		}
+
+		$block_gallery_compat = "jQuery(document).on('lazyloaded', function(){{$js} if ('function' === typeof e.masonry) e.masonry();});";
+
+		wp_add_inline_script( 'smush-lazy-load', $block_gallery_compat );
 	}
 
 	/**
