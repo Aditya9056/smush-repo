@@ -275,11 +275,19 @@ class Ajax {
 		@error_reporting( 0 );
 
 		if ( ! current_user_can( 'upload_files' ) ) {
-			wp_die( esc_html__( "You don't have permission to work with uploaded files.", 'wp-smushit' ) );
+			wp_send_json_error(
+				array(
+					'error_msg' => __( "You don't have permission to work with uploaded files.", 'wp-smushit' ),
+				)
+			);
 		}
 
 		if ( ! isset( $_GET['attachment_id'] ) ) {
-			wp_die( esc_html__( 'No attachment ID was provided.', 'wp-smushit' ) );
+			wp_send_json_error(
+				array(
+					'error_msg' => __( 'No attachment ID was provided.', 'wp-smushit' ),
+				)
+			);
 		}
 
 		$attachment_id = intval( $_GET['attachment_id'] );
