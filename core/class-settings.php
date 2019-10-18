@@ -271,9 +271,9 @@ class Settings {
 
 			// Settings are taken from global settings.
 			if ( ! empty( $global_settings ) ) {
-				$site_settings['accessible_colors'] = $global_settings['accessible_colors'];
-				$site_settings['usage']             = $global_settings['usage'];
-				$site_settings['keep_data']         = $global_settings['keep_data'];
+				$site_settings['accessible_colors'] = isset( $global_settings['accessible_colors'] ) ? $global_settings['accessible_colors'] : $this->defaults['accessible_colors'];
+				$site_settings['usage']             = isset( $global_settings['usage'] ) ? $global_settings['usage'] : $this->defaults['usage'];
+				$site_settings['keep_data']         = isset( $global_settings['keep_data'] ) ? $global_settings['keep_data'] : $this->defaults['keep_data'];
 			}
 		}
 
