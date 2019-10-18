@@ -111,18 +111,7 @@ class Parser {
 			return $content;
 		}
 
-		/**
-		 * Internal filter to disable page parsing.
-		 *
-		 * Because the page parser module is universal, we need to make sure that all modules have the ability to skip
-		 * parsing of certain pages. For example, lazy loading should skip if_preview() pages. In order to achieve this
-		 * functionality, I've introduced this filter. Filter priority can be used to overwrite the $skip param.
-		 *
-		 * @since 3.2.2
-		 *
-		 * @param bool $skip  Skip status.
-		 */
-		if ( empty( $content ) || apply_filters( 'wp_smush_should_skip_parse', false ) ) {
+		if ( empty( $content ) ) {
 			return $content;
 		}
 
@@ -159,13 +148,23 @@ class Parser {
 			$img_src   = $images['img_url'][ $key ];
 			$new_image = $image;
 
-			// Then update the image with correct CDN links.
+			// Update the image with correct CDN links.
 			if ( $this->cdn ) {
 				$new_image = WP_Smush::get_instance()->core()->mod->cdn->parse_image( $img_src, $new_image );
 			}
 
-			// First prepare for lazy-loading, as that does not require any URL rewrites.
-			if ( $this->lazy_load ) {
+			/**
+			 * Internal filter to disable page parsing.
+			 *
+			 * Because the page parser module is universal, we need to make sure that all modules have the ability to skip
+			 * parsing of certain pages. For example, lazy loading should skip if_preview() pages. In order to achieve this
+			 * functionality, I've introduced this filter. Filter priority can be used to overwrite the $skip param.
+			 *
+			 * @since 3.2.2
+			 *
+			 * @param bool $skip  Skip status.
+			 */
+			if ( $this->lazy_load && ! apply_filters( 'wp_smush_should_skip_parse', false ) ) {
 				$new_image = WP_Smush::get_instance()->core()->mod->lazy->parse_image( $img_src, $new_image );
 			}
 

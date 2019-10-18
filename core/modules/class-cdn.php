@@ -1259,9 +1259,6 @@ class CDN extends Abstract_Module {
 		}
 
 		$this->parser->enable( 'cdn' );
-
-		// Make sure we always continue page parsing if CDN is enabled.
-		add_filter( 'wp_smush_should_skip_parse', '__return_false' );
 	}
 
 	/**
