@@ -1196,8 +1196,37 @@ class CDN extends Abstract_Module {
 
 		$mapped_domain = $this->check_mapped_domain();
 
-		// There are chances for a custom uploads directory using UPLOADS constant.
-		$uploads = wp_get_upload_dir();
+		/**
+		 * There are chances for a custom uploads directory using UPLOADS constant.
+		 *
+		 * But some security plugins (for example, WP Hide & Security Enhance) will allow replacing paths via Nginx/Apache
+		 * rules. So for this reason, we don't want the path to be replaced everywhere with the custom UPLOADS constant,
+		 * we just want to let the user redefine it here, in the CDN.
+		 *
+		 * @since 3.4.0
+		 *
+		 * @param array $uploads {
+		 *     Array of information about the upload directory.
+		 *
+		 *     @type string       $path    Base directory and subdirectory or full path to upload directory.
+		 *     @type string       $url     Base URL and subdirectory or absolute URL to upload directory.
+		 *     @type string       $subdir  Subdirectory if uploads use year/month folders option is on.
+		 *     @type string       $basedir Path without subdir.
+		 *     @type string       $baseurl URL path without subdir.
+		 *     @type string|false $error   False or error message.
+		 * }
+		 *
+		 * Usage (replace /wp-content/uploads/ with /media/ directory):
+		 *
+		 * add_filter(
+		 *     'smush_cdn_custom_uploads_dir',
+		 *     function( $uploads ) {
+		 *         $uploads['baseurl'] = 'https://example.com/media';
+		 *         return $uploads;
+		 *     }
+		 * );
+		 */
+		$uploads = apply_filters( 'smush_cdn_custom_uploads_dir', wp_get_upload_dir() );
 		// Check if the src is within custom uploads directory.
 		$uploads = isset( $uploads['baseurl'] ) ? false !== strpos( $src, $uploads['baseurl'] ) : true;
 

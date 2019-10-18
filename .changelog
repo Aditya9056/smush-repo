@@ -2,6 +2,7 @@
 
 - New: Lazy load compatibility with Block Gallery plugin
 - New: Lazy load compatibility with CoBlocks plugin
+- New: smush_cdn_custom_uploads_dir filter for use with custom upload directories in CDN
 - Enhance: Support for WordPress 4.x
 - Fix: Undefined index PHP notices
 
