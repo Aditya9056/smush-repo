@@ -3,6 +3,7 @@
 - New: Lazy load compatibility with Block Gallery plugin
 - New: Lazy load compatibility with CoBlocks plugin
 - Enhance: Support for WordPress 4.x
+- Fix: Undefined index PHP notices
 
 = 3.4.0 =
 
