@@ -17,6 +17,7 @@
 - Enhance: Lazy loading compatibility with Essential Grid
 - Enhance: Integration settings pages UI, summary meta box UI
 - Fix: Lazy loading not properly working on Bootstrap based themes
+- Fix: Lazy loading exclusion rules not working with active CDN
 - Fix: Failed parsing srcset attribute value since its w descriptor is invalid warnings
 - Fix: PHP warnings for getimagesize() disabled wrapper
 - Fix: UI conflict with Store Locator Plus plugin

@@ -413,11 +413,19 @@ class NextGen extends Abstract_Integration {
 
 		// Check for media upload permission.
 		if ( ! current_user_can( 'upload_files' ) ) {
-			wp_die( __( "You don't have permission to work with uploaded files.", 'wp-smushit' ) );
+			wp_send_json_error(
+				array(
+					'error_msg' => __( "You don't have permission to work with uploaded files.", 'wp-smushit' ),
+				)
+			);
 		}
 
 		if ( empty( $pid ) ) {
-			wp_die( __( 'No attachment ID was provided.', 'wp-smushit' ) );
+			wp_send_json_error(
+				array(
+					'error_msg' => __( 'No attachment ID was provided.', 'wp-smushit' ),
+				)
+			);
 		}
 
 		$this->smush_image( $pid, '' );
