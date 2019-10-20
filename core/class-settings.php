@@ -611,7 +611,7 @@ class Settings {
 		if ( 'disabled' === $status ) {
 			$response = WP_Smush::get_instance()->api()->enable();
 
-			// Probably an exponential backoff.
+			// Probably an exponential back-off.
 			if ( is_wp_error( $response ) ) {
 				sleep( 1 ); // This is needed so we don't trigger the 597 API response.
 				$response = WP_Smush::get_instance()->api()->enable( true );

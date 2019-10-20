@@ -292,10 +292,10 @@ class Admin {
 			'<p>' . __( 'Smush sends images to the WPMU DEV servers to optimize them for web use. This includes the transfer of EXIF data. The EXIF data will either be stripped or returned as it is. It is not stored on the WPMU DEV servers.', 'wp-smushit' ) . '</p>';
 		$content .=
 			'<p>' . sprintf(
-				__( "Smush uses the Stackpath Content Delivery Network (CDN). Stackpath may store web log information of site visitors, including IPs, UA, referrer, Location and ISP info of site visitors for 7 days. Files and images served by the CDN may be stored and served from countries other than your own. Stackpath's privacy policy can be found %1\$shere%2\$s.", 'wp-smushit' ),
-				'<a href="https://www.stackpath.com/legal/privacy-statement/" target="_blank">',
-				'</a>'
-			) . '</p>';
+			__( "Smush uses the Stackpath Content Delivery Network (CDN). Stackpath may store web log information of site visitors, including IPs, UA, referrer, Location and ISP info of site visitors for 7 days. Files and images served by the CDN may be stored and served from countries other than your own. Stackpath's privacy policy can be found %1\$shere%2\$s.", 'wp-smushit' ),
+			'<a href="https://www.stackpath.com/legal/privacy-statement/" target="_blank">',
+			'</a>'
+		) . '</p>';
 
 		if ( strpos( WP_SMUSH_DIR, 'wp-smushit' ) !== false ) {
 			// Only for wordpress.org members.

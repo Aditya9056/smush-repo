@@ -1081,10 +1081,11 @@ class CDN extends Abstract_Module {
 	 */
 	private function generate_srcset( $src ) {
 		/**
-         * Try to get the attachment URL.
-         *
+		 * Try to get the attachment URL.
+		 *
 		 * TODO: attachment_url_to_postid() can be resource intensive and cause 100% CPU spikes.
-         * @see https://core.trac.wordpress.org/ticket/41281
+		 *
+		 * @see https://core.trac.wordpress.org/ticket/41281
 		 */
 		$attachment_id = attachment_url_to_postid( $src );
 

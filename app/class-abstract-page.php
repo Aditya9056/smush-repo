@@ -679,7 +679,8 @@ abstract class Abstract_Page {
 			$message_class = ' sui-notice-warning';
 			// Show link to bulk smush tab from other tabs.
 			$bulk_smush_link = 'bulk' === $this->get_current_tab() ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '">';
-			$message        .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
+			/* translators: %1$s - <a>, %2$s - </a> */
+			$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
 		}
 		?>
 		<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $message_class ); ?>">
