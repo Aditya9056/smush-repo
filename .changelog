@@ -3,6 +3,7 @@
 - New: Lazy load compatibility with Block Gallery plugin
 - New: Lazy load compatibility with CoBlocks plugin
 - New: smush_cdn_custom_uploads_dir filter for use with custom upload directories in CDN
+- New: CDN support for images in data-original attribute
 - Enhance: Support for WordPress 4.x
 - Enhance: Compatibility with Oxygen Builder
 - Fix: Undefined index PHP notices

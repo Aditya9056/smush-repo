@@ -480,7 +480,7 @@ class CDN extends Abstract_Module {
 		}
 
 		// Support for 3rd party lazy loading plugins.
-		$lazy_attributes = array( 'data-src', 'data-lazy-src', 'data-lazyload' );
+		$lazy_attributes = array( 'data-src', 'data-lazy-src', 'data-lazyload', 'data-original' );
 		foreach ( $lazy_attributes as $attr ) {
 			$data_src = Helpers\Parser::get_attribute( $new_image, $attr );
 			$data_src = $this->is_supported_path( $data_src );
