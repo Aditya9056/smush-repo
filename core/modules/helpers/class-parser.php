@@ -111,6 +111,11 @@ class Parser {
 			return $content;
 		}
 
+		// Add support for Oxygen Builder.
+		if ( defined( 'SHOW_CT_BUILDER' ) && SHOW_CT_BUILDER ) {
+			return $content;
+		}
+
 		/**
 		 * Internal filter to disable page parsing.
 		 *

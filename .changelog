@@ -4,6 +4,7 @@
 - New: Lazy load compatibility with CoBlocks plugin
 - New: smush_cdn_custom_uploads_dir filter for use with custom upload directories in CDN
 - Enhance: Support for WordPress 4.x
+- Enhance: Compatibility with Oxygen Builder
 - Fix: Undefined index PHP notices
 
 = 3.4.0 =
