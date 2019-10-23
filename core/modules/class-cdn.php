@@ -666,7 +666,7 @@ class CDN extends Abstract_Module {
 		// Get maximum content width.
 		$content_width = $this->max_content_width();
 
-		if ( is_array( $size ) && $size[0] > $content_width ) {
+		if ( is_array( $size ) && $size[0] < $content_width ) {
 			return $sizes;
 		}
 
