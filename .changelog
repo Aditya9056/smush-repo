@@ -1,3 +1,8 @@
+= 3.3.1 =
+
+- Fix: CDN incorrect calculation for image sizes attribute
+- Fix: Undefined index PHP notices
+
 = 3.3.0 =
 
 - New: Integration with Envira Gallery

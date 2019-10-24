@@ -666,7 +666,7 @@ class CDN extends Abstract_Module {
 		// Get maximum content width.
 		$content_width = $this->max_content_width();
 
-		if ( is_array( $size ) && $size[0] > $content_width ) {
+		if ( is_array( $size ) && $size[0] < $content_width ) {
 			return $sizes;
 		}
 
@@ -1029,6 +1029,12 @@ class CDN extends Abstract_Module {
 		foreach ( $additional_multipliers as $multiplier ) {
 			// New width by multiplying with original size.
 			$new_width = intval( $base_width * $multiplier );
+
+			// In most cases - going over the current width is not recommended and probably not what the user is expecting.
+			if ( $new_width > $current_width ) {
+				continue;
+			}
+
 			// If a nearly sized image already exist, skip.
 			foreach ( $current_widths as $_width ) {
 				if ( abs( $_width - $new_width ) < 50 || ( $new_width > $full_width ) ) {
