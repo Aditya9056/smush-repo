@@ -1,5 +1,4 @@
 /* global WP_Smush */
-/* global A11yDialog */
 /* global ajaxurl */
 
 /**
@@ -46,8 +45,8 @@
 			this.renderTemplate();
 
 			// Show the modal.
-			const dialog = new A11yDialog( this.modal );
-			dialog.show();
+
+			window.SUI.openModal( 'smush-restore-images-dialog', 'wpbody-content', undefined, false );
 		},
 
 		/**
@@ -74,7 +73,7 @@
 			if ( confirmButton ) {
 				confirmButton.addEventListener( 'click', function( e ) {
 					e.preventDefault();
-					self.modal.querySelector( '.sui-dialog-content' ).style.maxWidth = '460px';
+					self.modal.querySelector( '.sui-box' ).style.maxWidth = '460px';
 
 					self.settings = { slide: 'progress' };
 					self.errors = [];
@@ -91,8 +90,7 @@
 		cancel() {
 			if ( 'start' === this.settings.slide || 'finish' === this.settings.slide ) {
 				// Hide the modal.
-				const dialog = new A11yDialog( this.modal );
-				dialog.hide();
+				window.SUI.closeModal();
 			} else {
 				this.updateProgressBar( true );
 				window.location.reload();
@@ -197,7 +195,7 @@
 
 				self.renderTemplate();
 				if ( 0 < this.errors.length ) {
-					this.modal.querySelector( '.sui-dialog-content' ).style.maxWidth = '660px';
+					this.modal.querySelector( '.sui-box' ).style.maxWidth = '660px';
 				}
 			}
 		},

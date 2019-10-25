@@ -1,5 +1,4 @@
 /* global WP_Smush */
-/* global A11yDialog */
 /* global ajaxurl */
 
 /**
@@ -60,8 +59,7 @@
 			}
 
 			// Show the modal.
-			const dialog = new A11yDialog( this.onboardingModal );
-			dialog.show();
+			window.SUI.openModal( 'smush-onboarding-dialog', 'checking-files-dialog', undefined, false );
 		},
 
 		/**
@@ -242,11 +240,8 @@
 		 * Show checking files dialog.
 		 */
 		showScanDialog() {
-			const dialog = new A11yDialog( this.onboardingModal );
-			dialog.hide();
-
-			const scanDialog = new A11yDialog( this.scanFilesModal );
-			scanDialog.show();
+			window.SUI.closeModal();
+			window.SUI.openModal( 'checking-files-dialog', 'wpbody-content', undefined, false );
 
 			const nonce = document.getElementById( 'wp_smush_options_nonce' );
 
@@ -257,7 +252,7 @@
 				xhr.onload = () => {
 					const elem = document.querySelector( '#smush-onboarding-dialog' );
 					elem.parentNode.removeChild( elem );
-					scanDialog.hide();
+					window.SUI.closeModal();
 
 					if ( 200 === xhr.status ) {
 						setTimeout( function() {
