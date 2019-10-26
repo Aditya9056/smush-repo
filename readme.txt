@@ -48,9 +48,9 @@ Smush meticulously scans every image you upload – or have already added to you
 
 In addition to smushing your media uploads, you may want to compress the images stored in other folders. Smush now lets you compress any image in any directory so that you can optimize all the images on your site – including [NextGEN](https://wordpress.org/plugins/nextgen-gallery/) images, images stored on Amazon S3 using [WP Offload Media](https://wordpress.org/plugins/amazon-s3-and-cloudfront/) and images in EVERY WordPress plugin and theme package!
 
-### Compatible with Your Favorite Media Library Plugins
+### Compatible with Your Favorite Themes, Builders and Media Library Plugins
 
-No matter what plugins you use to better manage your WordPress media library, Smush has you covered. Check out just a few of the plugins Smush is working with to help make your site faster and more efficient:
+No matter what theme or plugins you use to better manage your WordPress media library, Smush has you covered. Check out just a few of the popular products Smush is working with to help make your site faster and more efficient:
 
 - [WP All Import](https://wordpress.org/plugins/wp-all-import/)
 - [WP Offload Media](https://wordpress.org/plugins/amazon-s3-and-cloudfront/)
@@ -58,7 +58,8 @@ No matter what plugins you use to better manage your WordPress media library, Sm
 - [WP Retina 2x](https://wordpress.org/plugins/wp-retina-2x/)
 - [NextGen Gallery](https://wordpress.org/plugins/nextgen-gallery/)
 - [WPML](https://wpml.org/)
-- [WPML Media Translation Add-on](https://wpml.org/2011/05/new-plugin-wpml-media-translation/)
+- [Envira Gallery](https://enviragallery.com/)
+- [Avada Fusion Builder](https://theme-fusion.com/products/fusion-builder/)
 - [Styles](https://wordpress.org/plugins/styles/)
 - And many, many, more!
 
@@ -154,9 +155,10 @@ It depends what side of the pond you live on...but whether you say optimize, opt
 
 == Screenshots ==
 
-1. Watch as your image library is processed – up to 50 images at a time.
-2. Set automatic smush to resize and optimize every image as it is uploaded.
-3. Smush will find and optimize images for you.
+1. Simple to get started with the Smush set up wizard.
+2. Watch as your image library is processed – up to 50 images at a time.
+3. Set automatic smush to resize and optimize every image as it is uploaded.
+4. Smush will find and optimize images for you.
 
 == Changelog ==
 
