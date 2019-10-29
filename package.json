@@ -1,6 +1,6 @@
 {
   "name": "wp-smushit",
-  "version": "3.4.0-beta.1",
+  "version": "3.5.0-beta.1",
   "private": true,
   "description": "Resize, optimize, optimise and compress all of your images with the incredibly powerful and 100% free WordPress image smusher, brought to you by the superteam at WPMU DEV!",
   "keywords": [
@@ -35,7 +35,7 @@
     "build": "grunt clean && npm run compile && grunt prepare && grunt build && grunt build:wporg"
   },
   "dependencies": {
-    "@wpmudev/shared-ui": "2.4.1",
+    "@wpmudev/shared-ui": "2.5.0",
     "jquery.fancytree": "^2.32.0",
     "lazysizes": "^5.1.2"
   },

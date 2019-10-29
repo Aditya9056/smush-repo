@@ -87,6 +87,9 @@ class Admin {
 		add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
 		// Smush image filter from Media Library (list view).
 		add_action( 'restrict_manage_posts', array( $this, 'media_add_author_dropdown' ) );
+
+		// Add pre WordPress 5.0 compatibility.
+		add_filter( 'wp_kses_allowed_html', array( $this, 'filter_html_attributes' ) );
 	}
 
 	/**
@@ -289,10 +292,10 @@ class Admin {
 			'<p>' . __( 'Smush sends images to the WPMU DEV servers to optimize them for web use. This includes the transfer of EXIF data. The EXIF data will either be stripped or returned as it is. It is not stored on the WPMU DEV servers.', 'wp-smushit' ) . '</p>';
 		$content .=
 			'<p>' . sprintf(
-				__( "Smush uses the Stackpath Content Delivery Network (CDN). Stackpath may store web log information of site visitors, including IPs, UA, referrer, Location and ISP info of site visitors for 7 days. Files and images served by the CDN may be stored and served from countries other than your own. Stackpath's privacy policy can be found %1\$shere%2\$s.", 'wp-smushit' ),
-				'<a href="https://www.stackpath.com/legal/privacy-statement/" target="_blank">',
-				'</a>'
-			) . '</p>';
+			__( "Smush uses the Stackpath Content Delivery Network (CDN). Stackpath may store web log information of site visitors, including IPs, UA, referrer, Location and ISP info of site visitors for 7 days. Files and images served by the CDN may be stored and served from countries other than your own. Stackpath's privacy policy can be found %1\$shere%2\$s.", 'wp-smushit' ),
+			'<a href="https://www.stackpath.com/legal/privacy-statement/" target="_blank">',
+			'</a>'
+		) . '</p>';
 
 		if ( strpos( WP_SMUSH_DIR, 'wp-smushit' ) !== false ) {
 			// Only for wordpress.org members.
@@ -555,6 +558,30 @@ class Admin {
 		} else {
 			return $notice;
 		}
+	}
+
+	/**
+	 * Data attributes are not allowed on <a> elements on WordPress before 5.0.0.
+	 * Add backward compatibility.
+	 *
+	 * @since 3.5.0
+	 * @see https://github.com/WordPress/WordPress/commit/a0309e80b6a4d805e4f230649be07b4bfb1a56a5#diff-a0e0d196dd71dde453474b0f791828fe
+	 * @param array $context  Context.
+	 *
+	 * @return mixed
+	 */
+	public function filter_html_attributes( $context ) {
+		global $wp_version;
+
+		if ( version_compare( '5.0.0', $wp_version, '<' ) ) {
+			return $context;
+		}
+
+		$context['a']['data-tooltip'] = true;
+		$context['a']['data-id']      = true;
+		$context['a']['data-nonce']   = true;
+
+		return $context;
 	}
 
 }
