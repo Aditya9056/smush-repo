@@ -1,18 +1,12 @@
-= 3.5.0 =
-
-- New: Lazy load compatibility with Block Gallery plugin
-- New: Lazy load compatibility with CoBlocks plugin
-- New: smush_cdn_custom_uploads_dir filter for use with custom upload directories in CDN
-- New: CDN support for images in data-original attribute
-- Enhance: Support for WordPress 4.x
-- Enhance: Compatibility with Oxygen Builder
-- Fix: Undefined index PHP notices
-
 = 3.4.0 =
 
 - New: Option to ignore images from Smushing
 - New: CDN support for picture element
 - New: Lazy load for iframes
+- New: Lazy load compatibility with Block Gallery plugin
+- New: Lazy load compatibility with CoBlocks plugin
+- New: smush_cdn_custom_uploads_dir filter for use with custom upload directories in CDN
+- New: CDN support for images in data-original attribute
 - Enhance: Compatibility with WP Engine
 - Enhance: CDN support for custom UPLOADS directories
 - Enhance: Max width detection with CDN auto resize functionality
@@ -21,6 +15,10 @@
 - Enhance: Lazy loading compatibility with Essential Grid
 - Enhance: Integration settings pages UI, summary meta box UI
 - Enhance: Significantly increase performance on sites with large media libraries
+- Enhance: Support for WordPress 4.x
+- Enhance: Compatibility with Oxygen Builder
+- Enhance: Accessibility in modals
+- Fix: Undefined index PHP notices
 - Fix: Lazy loading not properly working on Bootstrap based themes
 - Fix: Lazy loading exclusion rules not working with active CDN
 - Fix: Failed parsing srcset attribute value since its w descriptor is invalid warnings
