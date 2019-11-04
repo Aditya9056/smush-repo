@@ -257,7 +257,7 @@ class Smush extends Abstract_Module {
 			$status_txt .= $this->progress_bar();
 		}
 
-		$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $wp_smush_data, $echo );
+		$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $echo );
 		if ( ! $echo ) {
 			return $text;
 		}
@@ -706,12 +706,11 @@ class Smush extends Abstract_Module {
 	 * @param string  $html         Status text.
 	 * @param string  $button_txt   Button label.
 	 * @param boolean $show_button  Whether to shoe the button.
-	 * @param bool    $smushed      Whether image is smushed or not.
 	 * @param bool    $echo         If true, it directly outputs the HTML.
 	 *
 	 * @return string
 	 */
-	private function column_html( $id, $html = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true ) {
+	private function column_html( $id, $html = '', $button_txt = '', $show_button = true, $echo = true ) {
 		$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png', 'image/gif' );
 
 		// Don't proceed if attachment is not image, or if image is not a jpg, png or gif.
@@ -872,7 +871,7 @@ class Smush extends Abstract_Module {
 			$show_button = false;
 			$button_txt  = __( 'Smush Now!', 'wp-smushit' );
 
-			return $this->column_html( $id, $status_txt, $button_txt, $show_button, true, false, true );
+			return $this->column_html( $id, $status_txt, $button_txt, $show_button, false );
 		}
 		// Else Return the normal status.
 		$response = trim( $this->set_status( $id, false ) );
