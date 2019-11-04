@@ -397,7 +397,7 @@ class Admin {
 	 */
 	public function custom_column( $column_name, $id ) {
 		if ( 'smushit' === $column_name ) {
-			WP_Smush::get_instance()->core()->mod->smush->set_status( $id );
+			echo WP_Smush::get_instance()->core()->mod->smush->set_status( $id );
 		}
 	}
 

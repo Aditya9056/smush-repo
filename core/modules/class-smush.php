@@ -257,10 +257,7 @@ class Smush extends Abstract_Module {
 			$status_txt .= $this->progress_bar();
 		}
 
-		$text = $this->column_html( $id, $status_txt, $button_txt, $show_button );
-		if ( ! $echo ) {
-			return $text;
-		}
+		return $this->column_html( $id, $status_txt, $button_txt, $show_button );
 	}
 
 	/**
