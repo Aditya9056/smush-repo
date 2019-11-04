@@ -35,6 +35,11 @@ class Media_Library {
 		add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
 		// Smush image filter from Media Library (list view).
 		add_action( 'restrict_manage_posts', array( $this, 'add_filter_dropdown' ) );
+
+		// Add pre WordPress 5.0 compatibility.
+		add_filter( 'wp_kses_allowed_html', array( $this, 'filter_html_attributes' ) );
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'extend_media_modal' ), 15 );
 	}
 
 	/**
@@ -171,11 +176,83 @@ class Media_Library {
 		$ignored = filter_input( INPUT_GET, 'smush-filter', FILTER_SANITIZE_STRING );
 
 		?>
+		<label for="smush_filter" class="screen-reader-text"><?php esc_html_e( 'Filter by Smush status', 'wp-smushit' ); ?></label>
 		<select class="smush-filters" name="smush-filter" id="smush_filter">
 			<option value="" <?php selected( $ignored, '' ); ?>><?php esc_html_e( 'Smush: All images', 'wp-smushit' ); ?></option>
 			<option value="ignored" <?php selected( $ignored, 'ignored' ); ?>><?php esc_html_e( 'Smush: Bulk ignored', 'wp-smushit' ); ?></option>
 		</select>
 		<?php
+	}
+
+	/**
+	 * Data attributes are not allowed on <a> elements on WordPress before 5.0.0.
+	 * Add backward compatibility.
+	 *
+	 * @since 3.5.0
+	 * @see https://github.com/WordPress/WordPress/commit/a0309e80b6a4d805e4f230649be07b4bfb1a56a5#diff-a0e0d196dd71dde453474b0f791828fe
+	 * @param array $context  Context.
+	 *
+	 * @return mixed
+	 */
+	public function filter_html_attributes( $context ) {
+		global $wp_version;
+
+		if ( version_compare( '5.0.0', $wp_version, '<' ) ) {
+			return $context;
+		}
+
+		$context['a']['data-tooltip'] = true;
+		$context['a']['data-id']      = true;
+		$context['a']['data-nonce']   = true;
+
+		return $context;
+	}
+
+	/**
+	 * Load media assets.
+	 *
+	 * Localization also used in Gutenberg integration.
+	 */
+	public function extend_media_modal() {
+		if ( wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'smush-backbone-extension',
+			WP_SMUSH_URL . 'app/assets/js/smush-media.min.js',
+			array(
+				'jquery',
+				'media-editor', // Used in image filters.
+				'media-views',
+				'media-grid',
+				'wp-util',
+				'wp-api',
+			),
+			WP_SMUSH_VERSION,
+			true
+		);
+
+		wp_localize_script(
+			'smush-backbone-extension',
+			'smush_vars',
+			array(
+				'strings' => array(
+					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
+					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
+					'filter_excl' => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
+					'gb'          => array(
+						'stats'        => esc_html__( 'Smush Stats', 'wp-smushit' ),
+						'select_image' => esc_html__( 'Select an image to view Smush stats.', 'wp-smushit' ),
+						'size'         => esc_html__( 'Image size', 'wp-smushit' ),
+						'savings'      => esc_html__( 'Savings', 'wp-smushit' ),
+					),
+				),
+				'nonce'   => array(
+					'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
+				),
+			)
+		);
 	}
 
 }

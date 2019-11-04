@@ -71,13 +71,8 @@ class Admin {
 		add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
 		add_filter( 'network_admin_plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
 
-		/**
-		 * Prints a membership validation issue notice in Media Library
-		 */
+		// Prints a membership validation issue notice in Media Library.
 		add_action( 'admin_notices', array( $this, 'media_library_membership_notice' ) );
-
-		// Add pre WordPress 5.0 compatibility.
-		add_filter( 'wp_kses_allowed_html', array( $this, 'filter_html_attributes' ) );
 	}
 
 	/**
@@ -147,55 +142,6 @@ class Admin {
 
 		// Localize translatable strings for js.
 		WP_Smush::get_instance()->core()->localize();
-
-		$this->extend_media_modal();
-	}
-
-	/**
-	 * Load media assets.
-	 *
-	 * Localization also used in Gutenberg integration.
-	 */
-	private function extend_media_modal() {
-		if ( wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
-			return;
-		}
-
-		wp_enqueue_script(
-			'smush-backbone-extension',
-			WP_SMUSH_URL . 'app/assets/js/smush-media.min.js',
-			array(
-				'jquery',
-				'media-editor', // Used in image filters.
-				'media-views',
-				'media-grid',
-				'wp-util',
-				'wp-api',
-			),
-			WP_SMUSH_VERSION,
-			true
-		);
-
-		wp_localize_script(
-			'smush-backbone-extension',
-			'smush_vars',
-			array(
-				'strings' => array(
-					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
-					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
-					'filter_excl' => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
-					'gb'          => array(
-						'stats'        => esc_html__( 'Smush Stats', 'wp-smushit' ),
-						'select_image' => esc_html__( 'Select an image to view Smush stats.', 'wp-smushit' ),
-						'size'         => esc_html__( 'Image size', 'wp-smushit' ),
-						'savings'      => esc_html__( 'Savings', 'wp-smushit' ),
-					),
-				),
-				'nonce'   => array(
-					'get_smush_status' => wp_create_nonce( 'get-smush-status' ),
-				),
-			)
-		);
 	}
 
 	/**
@@ -307,14 +253,10 @@ class Admin {
 		}
 
 		// Show it on Media Library page only.
-		$screen    = get_current_screen();
-		$screen_id = ! empty( $screen ) ? $screen->id : '';
-		// Do not show notice anywhere else.
-		if ( empty( $screen ) || 'upload' !== $screen_id ) {
-			return;
+		$screen = get_current_screen();
+		if ( ! empty( $screen ) && 'upload' === $screen->id ) {
+			$this->get_user_validation_message( false );
 		}
-
-		$this->get_user_validation_message( false );
 	}
 
 	/**
@@ -392,30 +334,6 @@ class Admin {
 		}
 
 		return $notice;
-	}
-
-	/**
-	 * Data attributes are not allowed on <a> elements on WordPress before 5.0.0.
-	 * Add backward compatibility.
-	 *
-	 * @since 3.5.0
-	 * @see https://github.com/WordPress/WordPress/commit/a0309e80b6a4d805e4f230649be07b4bfb1a56a5#diff-a0e0d196dd71dde453474b0f791828fe
-	 * @param array $context  Context.
-	 *
-	 * @return mixed
-	 */
-	public function filter_html_attributes( $context ) {
-		global $wp_version;
-
-		if ( version_compare( '5.0.0', $wp_version, '<' ) ) {
-			return $context;
-		}
-
-		$context['a']['data-tooltip'] = true;
-		$context['a']['data-id']      = true;
-		$context['a']['data-nonce']   = true;
-
-		return $context;
 	}
 
 }
