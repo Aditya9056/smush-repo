@@ -626,7 +626,7 @@ class Ajax {
 			}
 
 			if ( $resmush_count ) {
-				$ajax_response = WP_Smush::get_instance()->admin()->bulk_resmush_content( $count, false );
+				$ajax_response = WP_Smush::get_instance()->admin()->bulk_resmush_content( $count );
 			}
 		}
 

@@ -9,10 +9,8 @@ namespace Smush\App;
 
 use Smush\Core\Core;
 use Smush\Core\Helper;
-use Smush\Core\Modules\Smush;
 use Smush\Core\Settings;
 use Smush\WP_Smush;
-use WP_Query;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -67,6 +65,9 @@ class Admin {
 			$this->ajax = new Ajax();
 		}
 
+		// Register media library UI.
+		new Media_Library();
+
 		add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
 		add_filter( 'network_admin_plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
 
@@ -74,19 +75,6 @@ class Admin {
 		 * Prints a membership validation issue notice in Media Library
 		 */
 		add_action( 'admin_notices', array( $this, 'media_library_membership_notice' ) );
-
-		// Add Smush Columns.
-		add_filter( 'manage_media_columns', array( $this, 'columns' ) );
-		add_action( 'manage_media_custom_column', array( $this, 'custom_column' ), 10, 2 );
-		add_filter( 'manage_upload_sortable_columns', array( $this, 'sortable_column' ) );
-
-		// Manage column sorting.
-		add_action( 'pre_get_posts', array( $this, 'smushit_orderby' ) );
-
-		// Smush image filter from Media Library.
-		add_filter( 'ajax_query_attachments_args', array( $this, 'filter_media_query' ) );
-		// Smush image filter from Media Library (list view).
-		add_action( 'restrict_manage_posts', array( $this, 'media_add_author_dropdown' ) );
 
 		// Add pre WordPress 5.0 compatibility.
 		add_filter( 'wp_kses_allowed_html', array( $this, 'filter_html_attributes' ) );
@@ -363,171 +351,22 @@ class Admin {
 	}
 
 	/**
-	 * Print column header for Smush results in the media library using the `manage_media_columns` hook.
-	 *
-	 * @param array $defaults  Defaults array.
-	 *
-	 * @return mixed
-	 */
-	public function columns( $defaults ) {
-		$defaults['smushit'] = 'Smush';
-
-		return $defaults;
-	}
-
-	/**
-	 * Add the Smushit Column to sortable list
-	 *
-	 * @param array $columns  Columns array.
-	 *
-	 * @return mixed
-	 */
-	public function sortable_column( $columns ) {
-		$columns['smushit'] = 'smushit';
-
-		return $columns;
-	}
-
-	/**
-	 * Print column data for Smush results in the media library using
-	 * the `manage_media_custom_column` hook.
-	 *
-	 * @param string $column_name  Column name.
-	 * @param int    $id           Attachment ID.
-	 */
-	public function custom_column( $column_name, $id ) {
-		if ( 'smushit' === $column_name ) {
-			echo WP_Smush::get_instance()->core()->mod->smush->set_status( $id );
-		}
-	}
-
-	/**
-	 * Order by query for smush columns.
-	 *
-	 * @param WP_Query $query  Query.
-	 *
-	 * @return WP_Query
-	 */
-	public function smushit_orderby( $query ) {
-		global $current_screen;
-
-		// Filter only media screen.
-		if ( ! is_admin() || ( ! empty( $current_screen ) && 'upload' !== $current_screen->base ) ) {
-			return $query;
-		}
-
-		if ( isset( $_REQUEST['smush-filter'] ) && 'ignored' === $_REQUEST['smush-filter'] ) {
-			$query->set(
-				'meta_query',
-				array(
-					array(
-						'key'     => WP_SMUSH_PREFIX . 'ignore-bulk',
-						'value'   => 'true',
-						'compare' => 'EXISTS',
-					),
-				)
-			);
-
-			return $query;
-		}
-
-		$orderby = $query->get( 'orderby' );
-
-		if ( isset( $orderby ) && 'smushit' === $orderby ) {
-			$query->set(
-				'meta_query',
-				array(
-					'relation' => 'OR',
-					array(
-						'key'     => Smush::$smushed_meta_key,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => Smush::$smushed_meta_key,
-						'compare' => 'NOT EXISTS',
-					),
-				)
-			);
-			$query->set( 'orderby', 'meta_value_num' );
-		}
-
-		return $query;
-	}
-
-	/**
-	 * Add our filter to the media query filter in Media Library.
-	 *
-	 * @since 2.9.0
-	 *
-	 * @see wp_ajax_query_attachments()
-	 *
-	 * @param array $query  Query.
-	 *
-	 * @return mixed
-	 */
-	public function filter_media_query( $query ) {
-		if ( isset( $_POST['query']['stats'] ) && 'null' === $_POST['query']['stats'] ) {
-			$query['meta_query'] = array(
-				array(
-					'key'     => 'wp-smush-ignore-bulk',
-					'value'   => 'true',
-					'compare' => 'EXISTS',
-				),
-			);
-		}
-
-		return $query;
-	}
-
-	/**
-	 * Adds a search dropdown in Media Library list view to filter out images that have been
-	 * ignored with bulk Smush.
-	 *
-	 * @since 3.2.0
-	 */
-	public function media_add_author_dropdown() {
-		$scr = get_current_screen();
-
-		if ( 'upload' !== $scr->base ) {
-			return;
-		}
-
-		$ignored = filter_input( INPUT_GET, 'smush-filter', FILTER_SANITIZE_STRING );
-
-		?>
-		<select class="smush-filters" name="smush-filter" id="smush_filter">
-			<option value="" <?php selected( $ignored, '' ); ?>><?php esc_html_e( 'Smush: All images', 'wp-smushit' ); ?></option>
-			<option value="ignored" <?php selected( $ignored, 'ignored' ); ?>><?php esc_html_e( 'Smush: Bulk ignored', 'wp-smushit' ); ?></option>
-		</select>
-		<?php
-	}
-
-	/**
 	 * Shows a option to ignore the Image ids which can be resmushed while bulk smushing.
 	 *
 	 * @param bool|int $count  Resmush + unsmushed image count.
-	 * @param bool     $show   Should show or not.
 	 *
 	 * @return mixed $notice
 	 */
-	public function bulk_resmush_content( $count = false, $show = false ) {
+	public function bulk_resmush_content( $count = false ) {
 		// If we already have count, don't fetch it.
-		if ( false === $count ) {
+		if ( false === $count && $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
 			// If we have the resmush ids list, Show Resmush notice and button.
-			if ( $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
-				// Count.
-				$count = count( $resmush_ids );
-
-				// Whether to show the remaining re-smush notice.
-				$show = $count > 0 ? true : false;
-
-				// Get the actual remainaing count.
-				if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) ) {
-					WP_Smush::get_instance()->core()->setup_global_stats();
-				}
-
-				$count = WP_Smush::get_instance()->core()->remaining_count;
+			// Get the actual remainaing count.
+			if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) ) {
+				WP_Smush::get_instance()->core()->setup_global_stats();
 			}
+
+			$count = WP_Smush::get_instance()->core()->remaining_count;
 		}
 
 		$notice = '';
@@ -552,12 +391,7 @@ class Admin {
 			$notice .= '</div>';
 		}
 
-		// Echo only if $show is true, otherwise return content.
-		if ( $show ) {
-			echo $notice;
-		} else {
-			return $notice;
-		}
+		return $notice;
 	}
 
 	/**
