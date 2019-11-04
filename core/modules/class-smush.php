@@ -127,7 +127,7 @@ class Smush extends Abstract_Module {
 				}
 				$show_button = false;
 			} else {
-				if ( $bytes == 0 || $percent == 0 ) {
+				if ( 0 === $bytes || 0 === $percent ) {
 					$status_txt = __( 'Already Optimized', 'wp-smushit' );
 
 					if ( $show_resmush ) {

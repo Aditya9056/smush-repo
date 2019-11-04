@@ -9,7 +9,10 @@
 
 	// Local reference to the WordPress media namespace.
 	const smushMedia = wp.media,
-		sharedTemplate = "<label class='setting smush-stats' data-setting='description'><span class='name'><%= label %></span><span class='value'><%= value %></span></label>",
+		sharedTemplate = "<span class='setting smush-stats' data-setting='smush'>" +
+				"<span class='name'><%= label %></span>" +
+				"<span class='value'><%= value %></span>" +
+			'</span>',
 		template = _.template( sharedTemplate );
 
 	/**

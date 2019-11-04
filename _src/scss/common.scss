@@ -8,11 +8,13 @@
  *
  * @since 2.8.0
  */
+
 .attachment-details .smush-wrap {
 	.smush-status {
 		margin: 0 0 1em;
 		padding: 0;
 		line-height: 16px;
+		flex-basis: 100%;
 	}
 
 	.wp-smush-send {
@@ -41,30 +43,7 @@
 	}
 }
 
-/*
- * Smush button transformation
- */
-
-.button.wp-smush-finished.disabled, .button.wp-smush-finished:disabled, .button.wp-smush-finished[disabled] {
-	color: #fff !important;
-	background: #00cf21 !important;
-	border-color: #619f6b !important;
-	-webkit-box-shadow: inset 0 1px 0 rgba(0, 207, 33, .5), 0 1px 0 rgba(0, 0, 0, .15) !important;
-	box-shadow: inset 0 1px 0 rgba(0, 207, 33, .5), 0 1px 0 rgba(0, 0, 0, .15) !important;
-}
-
 /** Settings Page **/
-
-.smush-submit-note {
-	color: #9B9B9B;
-	float: left;
-	font-family: 'Roboto', sans-serif;
-	font-size: 13px;
-	line-height: 22px;
-	margin-top: 5px;
-	margin-right: 20px;
-}
-
 .currently-smushing .smush-status {
 	color: #0074a2;
 }
@@ -89,10 +68,14 @@
 	margin: 0 0 1em;
 }
 
-label.setting.smush-stats .smush-wrap,
+span.setting.smush-stats .smush-wrap,
 .compat-field-wp_smush .smush-wrap {
-	margin: 0 0 5px 0;
-	max-width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+
+	.smush-ignore-image, .wp-smush-remove-skipped {
+		margin-left: 5px;
+	}
 }
 
 .smush-stats-wrapper .row {
@@ -144,7 +127,6 @@ label.setting.smush-stats .smush-wrap,
 }
 
 /** Resmush Button **/
-
 #wp-smush-resmush {
 	margin: 20px 0;
 }
