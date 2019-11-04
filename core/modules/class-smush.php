@@ -257,7 +257,7 @@ class Smush extends Abstract_Module {
 			$status_txt .= $this->progress_bar();
 		}
 
-		$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $echo );
+		$text = $this->column_html( $id, $status_txt, $button_txt, $show_button );
 		if ( ! $echo ) {
 			return $text;
 		}
@@ -706,31 +706,20 @@ class Smush extends Abstract_Module {
 	 * @param string  $html         Status text.
 	 * @param string  $button_txt   Button label.
 	 * @param boolean $show_button  Whether to shoe the button.
-	 * @param bool    $echo         If true, it directly outputs the HTML.
 	 *
 	 * @return string
 	 */
-	private function column_html( $id, $html = '', $button_txt = '', $show_button = true, $echo = true ) {
+	private function column_html( $id, $html = '', $button_txt = '', $show_button = true ) {
 		$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png', 'image/gif' );
 
 		// Don't proceed if attachment is not image, or if image is not a jpg, png or gif.
 		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), $allowed_images, true ) ) {
 			$status_txt = __( 'Not processed', 'wp-smushit' );
-			if ( $echo ) {
-				echo '<p class="smush-status">' . esc_html( $status_txt ) . '</p>';
-				return false;
-			}
-
 			return $status_txt;
 		}
 
 		// If we aren't showing the button.
 		if ( ! $show_button ) {
-			if ( $echo ) {
-				echo wp_kses_post( $html );
-				return false;
-			}
-
 			return $html;
 		}
 
@@ -750,11 +739,7 @@ class Smush extends Abstract_Module {
 
 		$html .= $this->progress_bar();
 
-		if ( ! $echo ) {
-			return $html;
-		}
-
-		echo wp_kses_post( $html );
+		return $html;
 	}
 
 	/**
@@ -871,7 +856,7 @@ class Smush extends Abstract_Module {
 			$show_button = false;
 			$button_txt  = __( 'Smush Now!', 'wp-smushit' );
 
-			return $this->column_html( $id, $status_txt, $button_txt, $show_button, false );
+			return $this->column_html( $id, $status_txt, $button_txt, $show_button );
 		}
 		// Else Return the normal status.
 		$response = trim( $this->set_status( $id, false ) );
