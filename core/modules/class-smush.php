@@ -84,12 +84,11 @@ class Smush extends Abstract_Module {
 	 * Set send button status
 	 *
 	 * @param int  $id        Attachment ID.
-	 * @param bool $echo      Echo or return.
 	 * @param bool $text_only Returns the stats text instead of button.
 	 *
 	 * @return string|array
 	 */
-	public function set_status( $id, $echo = true, $text_only = false ) {
+	public function set_status( $id, $text_only = false ) {
 		$status_txt  = $button_txt = $stats = $links = '';
 		$show_button = $show_resmush = false;
 
@@ -98,7 +97,6 @@ class Smush extends Abstract_Module {
 		$conversion_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
 
 		$combined_stats = $this->combined_stats( $wp_smush_data, $wp_resize_savings );
-
 		$combined_stats = $this->combine_conversion_stats( $combined_stats, $conversion_savings );
 
 		// Remove Smush s3 hook, as it downloads the file again.
@@ -856,9 +854,7 @@ class Smush extends Abstract_Module {
 			return $this->column_html( $id, $status_txt, $button_txt, $show_button );
 		}
 		// Else Return the normal status.
-		$response = trim( $this->set_status( $id, false ) );
-
-		return $response;
+		return trim( $this->set_status( $id ) );
 	}
 
 	/**
@@ -1562,7 +1558,7 @@ class Smush extends Abstract_Module {
 		// If the smushing option is already set, return the status.
 		if ( get_option( "smush-in-progress-{$attachment_id}", false ) || get_option( "wp-smush-restore-{$attachment_id}", false ) ) {
 			// Get the button status.
-			$status = $this->set_status( $attachment_id, false, true );
+			$status = $this->set_status( $attachment_id, true );
 			if ( $return ) {
 				return $status;
 			}
@@ -1616,7 +1612,7 @@ class Smush extends Abstract_Module {
 		wp_update_attachment_metadata( $attachment_id, $original_meta );
 
 		// Get the button status.
-		$status = $this->set_status( $attachment_id, false, true );
+		$status = $this->set_status( $attachment_id, true );
 
 		// Delete the transient after attachment meta is updated.
 		delete_option( 'smush-in-progress-' . $attachment_id );
