@@ -90,6 +90,7 @@ jQuery( function( $ ) {
 					current_button.parent().html( r.data.button );
 				} else {
 					//Show the smush button, and remove stats and restore option
+					console.log( current_button.parents().eq( 2 ) );
 					current_button.parents().eq( 1 ).html( r.data.button );
 				}
 
@@ -494,11 +495,6 @@ jQuery( function( $ ) {
 	$( 'body' ).on( 'click', '.wp-smush-action.wp-smush-restore', function( e ) {
 		const current_button = $( this );
 		process_smush_action( e, current_button, 'smush_restore_image', 'restore' );
-		// Change the class oa parent div ( Level 2 )
-		const parent = current_button.parents().eq( 1 );
-		if ( parent.hasClass( 'smushed' ) ) {
-			parent.removeClass( 'smushed' ).addClass( 'unsmushed' );
-		}
 	} );
 
 	/** Resmush: Media Library **/

@@ -8,33 +8,6 @@
  *
  * @since 2.8.0
  */
-
-.attachment-details .smush-wrap {
-	.smush-status {
-		margin: 0 0 1em;
-		padding: 0;
-		line-height: 16px;
-		flex-basis: 100%;
-	}
-
-	.wp-smush-send {
-		display: block;
-		margin-right: 5px;
-	}
-
-	.spinner {
-		background-position: left;
-		padding: 0 0 0 25px;
-		width: auto;
-		margin: 10px 0 0;
-		line-height: 23px;
-	}
-
-	.spinner.visible {
-		visibility: visible;
-	}
-}
-
 .wp-list-table.media {
 	.spinner.visible {
 		width: 100%;
@@ -44,10 +17,6 @@
 }
 
 /** Settings Page **/
-.currently-smushing .smush-status {
-	color: #0074a2;
-}
-
 .smush-status.fail {
 	color: #dd3d36;
 }
@@ -66,16 +35,6 @@
 
 .attachment-info .wp-smush-error-message {
 	margin: 0 0 1em;
-}
-
-span.setting.smush-stats .smush-wrap,
-.compat-field-wp_smush .smush-wrap {
-	display: flex;
-	flex-wrap: wrap;
-
-	.smush-ignore-image, .wp-smush-remove-skipped {
-		margin-left: 5px;
-	}
 }
 
 .smush-stats-wrapper .row {

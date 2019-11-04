@@ -230,7 +230,6 @@ class Smush {
 
 				if ( response.success && 'Not processed' !== response.data ) {
 					self.status.removeClass( 'sui-hidden' );
-					self.button.parent().removeClass( 'unsmushed' ).addClass( 'smushed' );
 					self.button.remove();
 				} else {
 					self.status.addClass( 'error' );

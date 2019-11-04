@@ -275,26 +275,26 @@ class Backup extends Abstract_Module {
 			delete_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings' );
 
 			// Get the Button html without wrapper.
-			$button_html = $smush->set_status( $attachment_id, false, false, false );
+			$button_html = $smush->set_status( $attachment_id, false, false );
 
 			// Remove the transient.
 			delete_option( "wp-smush-restore-$attachment_id" );
 
-			if ( $resp ) {
-				$size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
-				if ( $size > 0 ) {
-					$update_size = size_format( $size, 0 ); // Used in js to update image stat.
-				}
-
-				wp_send_json_success(
-					array(
-						'button'   => $button_html,
-						'new_size' => isset( $update_size ) ? $update_size : 0,
-					)
-				);
-			} else {
+			if ( ! $resp ) {
 				return true;
 			}
+
+			$size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
+			if ( $size > 0 ) {
+				$update_size = size_format( $size, 0 ); // Used in js to update image stat.
+			}
+
+			wp_send_json_success(
+				array(
+					'button'   => $button_html,
+					'new_size' => isset( $update_size ) ? $update_size : 0,
+				)
+			);
 		}
 		// Remove the transient.
 		delete_option( "wp-smush-restore-$attachment_id" );

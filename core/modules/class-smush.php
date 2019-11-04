@@ -86,11 +86,10 @@ class Smush extends Abstract_Module {
 	 * @param int  $id        Attachment ID.
 	 * @param bool $echo      Echo or return.
 	 * @param bool $text_only Returns the stats text instead of button.
-	 * @param bool $wrapper   Required for `column_html`, to include the wrapper div or not.
 	 *
 	 * @return string|array
 	 */
-	public function set_status( $id, $echo = true, $text_only = false, $wrapper = true ) {
+	public function set_status( $id, $echo = true, $text_only = false ) {
 		$status_txt  = $button_txt = $stats = $links = '';
 		$show_button = $show_resmush = false;
 
@@ -258,7 +257,7 @@ class Smush extends Abstract_Module {
 			$status_txt .= $this->progress_bar();
 		}
 
-		$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $wp_smush_data, $echo, $wrapper );
+		$text = $this->column_html( $id, $status_txt, $button_txt, $show_button, $wp_smush_data, $echo );
 		if ( ! $echo ) {
 			return $text;
 		}
@@ -709,11 +708,10 @@ class Smush extends Abstract_Module {
 	 * @param boolean $show_button  Whether to shoe the button.
 	 * @param bool    $smushed      Whether image is smushed or not.
 	 * @param bool    $echo         If true, it directly outputs the HTML.
-	 * @param bool    $wrapper      Whether to return the button with wrapper div or not.
 	 *
 	 * @return string
 	 */
-	private function column_html( $id, $html = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true, $wrapper = true ) {
+	private function column_html( $id, $html = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true ) {
 		$allowed_images = array( 'image/jpeg', 'image/jpg', 'image/x-citrix-jpeg', 'image/png', 'image/x-png', 'image/gif' );
 
 		// Don't proceed if attachment is not image, or if image is not a jpg, png or gif.
@@ -734,9 +732,7 @@ class Smush extends Abstract_Module {
 				return false;
 			}
 
-			$class = $smushed ? ' smushed' : ' currently-smushing';
-
-			return $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
+			return $html;
 		}
 
 		if ( 'Super-Smush' === $button_txt ) {
@@ -756,9 +752,6 @@ class Smush extends Abstract_Module {
 		$html .= $this->progress_bar();
 
 		if ( ! $echo ) {
-			$class = $smushed ? ' smushed' : ' unsmushed';
-			$html  = $wrapper ? '<div class="smush-wrap' . $class . '">' . $html . '</div>' : $html;
-
 			return $html;
 		}
 
