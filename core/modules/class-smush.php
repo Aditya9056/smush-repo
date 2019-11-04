@@ -117,7 +117,7 @@ class Smush extends Abstract_Module {
 			// Show resmush link, if the settings were changed.
 			$show_resmush = $this->show_resmush( $id, $wp_smush_data, $attachment_data );
 
-			if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
+			if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && 0 === $wp_smush_data['stats']['size_before'] && ! empty( $wp_smush_data['sizes'] ) ) {
 				$status_txt = __( 'Already Optimized', 'wp-smushit' );
 				if ( $show_resmush ) {
 					$links .= $this->get_resmsuh_link( $id );
@@ -181,9 +181,7 @@ class Smush extends Abstract_Module {
 						// Stats.
 						$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
 
-						if ( ! $text_only ) {
-							$links .= $stats;
-						}
+						$links .= $stats;
 					}
 				}
 			}
@@ -194,8 +192,7 @@ class Smush extends Abstract_Module {
 			// IF current compression is lossy.
 			$is_lossy = false;
 			if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
-				$lossy    = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : '';
-				$is_lossy = $lossy == 1;
+				$is_lossy = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : false;
 			}
 
 			// Check image type.
