@@ -182,8 +182,6 @@ class Backup extends Abstract_Module {
 		// Get the backup path.
 		$backup_sizes = get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
 
-		$smush = WP_Smush::get_instance()->core()->mod->smush;
-
 		// If there are.
 		if ( ! empty( $backup_sizes ) ) {
 			// 1. Check if the image was converted from PNG->JPG, Get the corresponding backup path
@@ -193,7 +191,7 @@ class Backup extends Abstract_Module {
 				if ( empty( $backup_path ) ) {
 					// Check if it's a jpg converted from png, and restore the jpg to png.
 					$original_file = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'original_file', true );
-					$backup_path   = $smush->original_file( $original_file );
+					$backup_path   = Helper::original_file( $original_file );
 				}
 
 				// If we have a backup path for PNG file, use restore_png().
@@ -275,7 +273,7 @@ class Backup extends Abstract_Module {
 			delete_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings' );
 
 			// Get the Button html without wrapper.
-			$button_html = $smush->set_status( $attachment_id );
+			$button_html = WP_Smush::get_instance()->library()->set_status( $attachment_id );
 
 			// Remove the transient.
 			delete_option( "wp-smush-restore-$attachment_id" );
@@ -337,7 +335,7 @@ class Backup extends Abstract_Module {
 		if ( empty( $original_file ) ) {
 			$original_file = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
 		}
-		$original_file_path = $mod->smush->original_file( $original_file );
+		$original_file_path = Helper::original_file( $original_file );
 		if ( file_exists( $original_file_path ) ) {
 			// Update the path details in meta and attached file, replace the image.
 			$meta = $mod->png2jpg->update_image_path( $image_id, $file_path, $original_file_path, $meta, 'full', 'restore' );

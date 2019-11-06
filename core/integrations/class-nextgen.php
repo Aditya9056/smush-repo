@@ -880,7 +880,7 @@ class NextGen extends Abstract_Integration {
 			}
 
 			// Total Stats.
-			$stats                 = $smush->total_compression( $stats );
+			$stats                 = WP_Smush::get_instance()->core()->total_compression( $stats );
 			$stats['total_images'] = ! empty( $stats['sizes'] ) ? count( $stats['sizes'] ) : 0;
 
 			// If there was any compression and there was no error in smushing.

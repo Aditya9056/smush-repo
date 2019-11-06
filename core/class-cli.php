@@ -339,7 +339,7 @@ class CLI extends WP_CLI_Command {
 
 			// Get the original File path and check if it exists.
 			$backup = get_post_meta( $image_id, WP_SMUSH_PREFIX . 'original_file', true );
-			$backup = WP_Smush::get_instance()->core()->mod->smush->original_file( $backup );
+			$backup = Helper::original_file( $backup );
 
 			if ( ! empty( $backup ) && is_file( $backup ) ) {
 				return true;

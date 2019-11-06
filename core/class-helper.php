@@ -327,4 +327,18 @@ class Helper {
 		}
 	}
 
+	/**
+	 * Original File path
+	 *
+	 * @param string $original_file  Original file.
+	 *
+	 * @return string File Path
+	 */
+	public static function original_file( $original_file = '' ) {
+		$uploads     = wp_get_upload_dir();
+		$upload_path = $uploads['basedir'];
+
+		return path_join( $upload_path, $original_file );
+	}
+
 }

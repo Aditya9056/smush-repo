@@ -179,6 +179,14 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		private $api = '';
 
 		/**
+		 * Media library UI.
+		 *
+		 * @since 3.4.0
+		 * @var App\Media_Library
+		 */
+		private $library;
+
+		/**
 		 * Stores the value of validate_install function.
 		 *
 		 * @var bool $is_pro
@@ -274,8 +282,9 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			self::$is_pro = $this->validate_install();
 
-			$this->core  = new Core\Core();
-			$this->admin = new App\Admin();
+			$this->core    = new Core\Core();
+			$this->library = new App\Media_Library( $this->core() );
+			$this->admin   = new App\Admin( $this->library() );
 
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				WP_CLI::add_command( 'smush', '\\Smush\\Core\\CLI' );
@@ -313,6 +322,17 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 */
 		public function api() {
 			return $this->api;
+		}
+
+		/**
+		 * Getter method for library.
+		 *
+		 * @since 3.4.0
+		 *
+		 * @return App\Media_Library
+		 */
+		public function library() {
+			return $this->library;
 		}
 
 		/**
