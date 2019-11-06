@@ -65,8 +65,9 @@ class Smush extends Abstract_Module {
 		// Update the Super Smush count, after the Smush'ing.
 		add_action( 'wp_smush_image_optimised', array( $this, 'update_lists' ), '', 2 );
 
-		// Smush image (Auto Smush) when `wp_update_attachment_metadata` filter is fired.
-		add_filter( 'wp_update_attachment_metadata', array( $this, 'smush_image' ), 15, 2 );
+		// Smush image (Auto Smush) when `wp_generate_attachment_metadata` filter is fired.
+		add_filter( 'wp_generate_attachment_metadata', array( $this, 'smush_image' ), 15, 2 );
+
 		// Delete backup files.
 		add_action( 'delete_attachment', array( $this, 'delete_images' ), 12 );
 
@@ -1496,12 +1497,12 @@ class Smush extends Abstract_Module {
 	 *
 	 * @uses resize_from_meta_data
 	 *
-	 * @param mixed    $meta  Attachment metadata.
-	 * @param null|int $id    Attachment ID.
+	 * @param array $meta  Attachment metadata.
+	 * @param int   $id    Attachment ID.
 	 *
 	 * @return mixed
 	 */
-	public function smush_image( $meta, $id = null ) {
+	public function smush_image( $meta, $id ) {
 		// We need to check if this call originated from Gutenberg and allow only media.
 		if ( ! empty( $GLOBALS['wp']->query_vars['rest_route'] ) ) {
 			$route = untrailingslashit( $GLOBALS['wp']->query_vars['rest_route'] );
@@ -1574,14 +1575,12 @@ class Smush extends Abstract_Module {
 			 * Check for use of http url (Hostgator mostly).
 			 */
 			$use_http = wp_cache_get( WP_SMUSH_PREFIX . 'use_http', 'smush' );
-
 			if ( ! $use_http ) {
 				$use_http = $this->settings->get_setting( WP_SMUSH_PREFIX . 'use_http', false );
 				wp_cache_add( WP_SMUSH_PREFIX . 'use_http', $use_http, 'smush' );
 			}
 
 			if ( $use_http ) {
-				// HTTP url.
 				define( 'WP_SMUSH_API_HTTP', 'http://smushpro.wpmudev.org/1.0/' );
 			}
 
