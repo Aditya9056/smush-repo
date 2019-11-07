@@ -59,7 +59,12 @@ class SmushTest extends WP_UnitTestCase {
 
 		$default_sizes = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
 
-		if ( version_compare( $wp_version, '5.3', '>' ) ) {
+		/**
+		 * Pre-release versions, such as 5.3-RC4, are considered lower than their final release counterparts (like 5.3.0).
+		 *
+		 * @see https://www.php.net/manual/en/function.version-compare.php#refsect1-function.version-compare-notes
+		 */
+		if ( version_compare( $wp_version, '5.2.999', '>' ) ) {
 			// WordPress 5.3 adds two ned additional image sizes.
 			array_push( $default_sizes, '1536x1536', '2048x2048' );
 		}
