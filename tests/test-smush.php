@@ -23,10 +23,24 @@ class SmushTest extends WP_UnitTestCase {
 	private static $id;
 
 	/**
+	 * Smush mock.
+	 *
+	 * @var Smush $smush
+	 */
+	private $smush;
+
+	/**
 	 * Setup method.
 	 */
 	public function setUp() {
 		Installer::smush_activated();
+
+		$this->smush = $this->getMockBuilder( Smush::class )
+							->setMethods( [ 'do_smushit' ] )
+							->getMock();
+
+		$this->smush->method( 'do_smushit' )
+					->will( $this->returnCallback( [ $this, 'fake_do_smushit' ] ) );
 	}
 
 	/**
@@ -82,48 +96,72 @@ class SmushTest extends WP_UnitTestCase {
 	 *
 	 * @param string $attachment_file_path_size  Image.
 	 *
-	 * @return array|\WP_Error
+	 * @return array|WP_Error
 	 */
 	public function fake_do_smushit( $attachment_file_path_size ) {
 		$data = new stdClass();
 
+		$settings = get_option( 'wp-smush-settings' );
+
 		$data->api_version = '1.0';
-		$data->is_premium  = false;
-		$data->lossy       = false;
-		$data->keep_exif   = false;
+		$data->is_premium  = \Smush\WP_Smush::is_pro();
+		$data->lossy       = $settings['lossy'];
+		$data->keep_exif   = ! $settings['strip_exif'];
 		$data->time        = 0.02;
 
 		if ( preg_match( '/150x150\.jpg$/i', $attachment_file_path_size ) ) {
 			$data->before_size = 8770;
-			$data->after_size  = 5692;
-			$data->bytes_saved = 3078;
-			$data->compression = 35.1;
-			$data->image_md5   = '1370fbbb309892abf154124ce7432df6';
+
+			if ( $settings['lossy'] ) {
+				// Super Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 5021 : 8183;
+			} else {
+				// Regular Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 5692 : 8770;
+			}
 		}
 
 		if ( preg_match( '/240x300\.jpg$/i', $attachment_file_path_size ) ) {
 			$data->before_size = 17966;
-			$data->after_size  = 14533;
-			$data->bytes_saved = 3433;
-			$data->compression = 19.11;
-			$data->image_md5   = 'ebd1666383fb790d25c5ba517c9db79e';
+
+			if ( $settings['lossy'] ) {
+				// Super Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 12976 : 16138;
+			} else {
+				// Regular Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 14533 : 17695;
+			}
 		}
 
 		if ( preg_match( '/768x960\.jpg$/i', $attachment_file_path_size ) ) {
 			$data->before_size = 144433;
-			$data->after_size  = 136672;
-			$data->bytes_saved = 7761;
-			$data->compression = 5.37;
-			$data->image_md5   = '4a238e9df5c0b0426b5ae0e4b8120e11';
+
+			if ( $settings['lossy'] ) {
+				// Super Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 120600 : 123762;
+			} else {
+				// Regular Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 136672 : 139834;
+			}
 		}
 
 		if ( preg_match( '/819x1024\.jpg$/i', $attachment_file_path_size ) ) {
 			$data->before_size = 164017;
-			$data->after_size  = 155780;
-			$data->bytes_saved = 8237;
-			$data->compression = 5.02;
-			$data->image_md5   = 'da0346fb2d13aa6f229ee34f6b06ff66';
+
+			if ( $settings['lossy'] ) {
+				// Super Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 137291 : 140453;
+			} else {
+				// Regular Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 155780 : 158942;
+			}
 		}
+
+		// TODO: add support for new image sizes.
+
+		$data->bytes_saved = $data->before_size - $data->after_size;
+		$data->compression = round( $data->bytes_saved / $data->after_size * 100, 2 );
+		$data->image_md5   = '1370fbbb309892abf154124ce7432df6';
 
 		if ( isset( $data->image_md5 ) ) {
 			return [
@@ -132,35 +170,186 @@ class SmushTest extends WP_UnitTestCase {
 			];
 		}
 
-		return new \WP_Error( 'unkonwn_attachment_size', 'Unkown attachment size' );
+		return new WP_Error( 'unkonwn_attachment_size', 'Unkown attachment size' );
 	}
 
 	/**
-	 * Test Smush single image.
+	 * Get savings percentage.
+	 *
+	 * @return double
+	 */
+	private function get_percent() {
+		return $this->get_bytes_saved() / $this->get_size_before() * 100;
+	}
+
+	/**
+	 * Get saved bytes.
+	 *
+	 * TODO: calculate return for WP 5.3 and lossy.
+	 *
+	 * @return int
+	 */
+	private function get_bytes_saved() {
+		global $wp_version;
+
+		$settings = get_option( 'wp-smush-settings' );
+
+		if ( version_compare( $wp_version, '5.2.999', '>' ) ) {
+			if ( $settings['lossy'] ) {
+				return $settings['strip_exif'] ? 0 : 0;
+			}
+
+			return $settings['strip_exif'] ? 0 : 0;
+		}
+
+		if ( $settings['lossy'] ) {
+			return $settings['strip_exif'] ? 59298 : 46650;
+		}
+
+		return $settings['strip_exif'] ? 22509 : 9945;
+	}
+
+	/**
+	 * Get size before.
+	 *
+	 * TODO: calculate return for WP 5.3.
+	 *
+	 * @return int
+	 */
+	private function get_size_before() {
+		global $wp_version;
+		return version_compare( $wp_version, '5.2.999', '>' ) ? 0 : 335186;
+	}
+
+	/**
+	 * Get size after.
+	 *
+	 * TODO: calculate return for WP 5.3 and lossy.
+	 *
+	 * @return int
+	 */
+	private function get_size_after() {
+		global $wp_version;
+
+		$settings = get_option( 'wp-smush-settings' );
+
+		if ( version_compare( $wp_version, '5.2.999', '>' ) ) {
+			if ( $settings['lossy'] ) {
+				return $settings['strip_exif'] ? 0 : 0;
+			}
+
+			return $settings['strip_exif'] ? 0 : 0;
+		}
+
+		if ( $settings['lossy'] ) {
+			return $settings['strip_exif'] ? 275888 : 288536;
+		}
+
+		return $settings['strip_exif'] ? 312677 : 325241;
+	}
+
+	/**
+	 * Test Smush single image + keep EXIF.
 	 *
 	 * @group single
 	 */
-	public function testSmushSingle() {
-		$smush = $this->getMockBuilder( Smush::class )
-					->setMethods( null )
-					->setMethods( [ 'do_smushit' ] )
-					->getMock();
+	public function testSmushKeepExif() {
+		Settings::get_instance()->set( 'lossy', false );
+		Settings::get_instance()->set( 'strip_exif', false );
 
-		$smush->method( 'do_smushit' )
-			->will( $this->returnCallback( [ $this, 'fake_do_smushit' ] ) );
-
-		/**
-		 * Smush the image.
-		 *
-		 * @var Smush $smush
-		 */
-		$smush->smush_single( self::$id, true );
+		$this->smush->smush_single( self::$id, true );
 
 		// Try to get the smushed meta.
-		$smush_meta = get_post_meta( self::$id, Smush::$smushed_meta_key );
+		$smush_meta = get_post_meta( self::$id, Smush::$smushed_meta_key, true );
 
 		// Make sure meta is set.
 		$this->assertNotEmpty( $smush_meta );
+
+		$this->assertFalse( $smush_meta['stats']['lossy'] );
+		$this->assertTrue( $smush_meta['stats']['keep_exif'] );
+
+		$this->assertEquals( $this->get_percent(), $smush_meta['stats']['percent'] );
+		$this->assertEquals( $this->get_bytes_saved(), $smush_meta['stats']['bytes'] );
+		$this->assertEquals( $this->get_size_before(), $smush_meta['stats']['size_before'] );
+		$this->assertEquals( $this->get_size_after(), $smush_meta['stats']['size_after'] );
+	}
+
+	/**
+	 * Test Smush single image + strip EXIF.
+	 *
+	 * @group single
+	 */
+	public function testSmushStripExif() {
+		Settings::get_instance()->set( 'lossy', false );
+		Settings::get_instance()->set( 'strip_exif', true );
+
+		$this->smush->smush_single( self::$id, true );
+
+		// Try to get the smushed meta.
+		$smush_meta = get_post_meta( self::$id, Smush::$smushed_meta_key, true );
+
+		// Make sure meta is set.
+		$this->assertNotEmpty( $smush_meta );
+
+		$this->assertFalse( $smush_meta['stats']['lossy'] );
+		$this->assertEquals( 0, $smush_meta['stats']['keep_exif'] );
+
+		$this->assertEquals( $this->get_percent(), $smush_meta['stats']['percent'] );
+		$this->assertEquals( $this->get_bytes_saved(), $smush_meta['stats']['bytes'] );
+		$this->assertEquals( $this->get_size_before(), $smush_meta['stats']['size_before'] );
+		$this->assertEquals( $this->get_size_after(), $smush_meta['stats']['size_after'] );
+	}
+
+	/**
+	 * Test super Smush single imag + keep EXIF.
+	 *
+	 * @group single
+	 */
+	public function testSuperSmushKeepExif() {
+		Settings::get_instance()->set( 'lossy', true );
+		Settings::get_instance()->set( 'strip_exif', false );
+
+		$this->smush->smush_single( self::$id, true );
+
+		// Try to get the smushed meta.
+		$smush_meta = get_post_meta( self::$id, Smush::$smushed_meta_key, true );
+
+		// Make sure meta is set.
+		$this->assertNotEmpty( $smush_meta );
+
+		$this->assertTrue( $smush_meta['stats']['lossy'] );
+		$this->assertTrue( $smush_meta['stats']['keep_exif'] );
+
+		$this->assertEquals( $this->get_percent(), $smush_meta['stats']['percent'] );
+		$this->assertEquals( $this->get_bytes_saved(), $smush_meta['stats']['bytes'] );
+		$this->assertEquals( $this->get_size_before(), $smush_meta['stats']['size_before'] );
+		$this->assertEquals( $this->get_size_after(), $smush_meta['stats']['size_after'] );
+	}
+
+	/**
+	 * Test Smush single image + strip EXIF.
+	 *
+	 * @group single
+	 */
+	public function testSuperSmushStripExif() {
+		Settings::get_instance()->set( 'lossy', true );
+		Settings::get_instance()->set( 'strip_exif', true );
+
+		$this->smush->smush_single( self::$id, true );
+
+		// Try to get the smushed meta.
+		$smush_meta = get_post_meta( self::$id, Smush::$smushed_meta_key, true );
+
+		// Make sure meta is set.
+		$this->assertNotEmpty( $smush_meta );
+
+		$this->assertTrue( $smush_meta['stats']['lossy'] );
+		$this->assertEquals( 0, $smush_meta['stats']['keep_exif'] );
+
+		$this->assertEquals( $this->get_percent(), $smush_meta['stats']['percent'] );
+		$this->assertEquals( $this->get_bytes_saved(), $smush_meta['stats']['bytes'] );
+		$this->assertEquals( $this->get_size_before(), $smush_meta['stats']['size_before'] );
+		$this->assertEquals( $this->get_size_after(), $smush_meta['stats']['size_after'] );
 	}
 
 }
