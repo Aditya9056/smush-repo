@@ -75,7 +75,7 @@ class Lazy extends Abstract_Module {
 			$this->parser->enable( 'iframes' );
 		}
 
-		add_filter( 'wp_smush_should_skip_parse', array( $this, 'maybe_skip_parse' ), 10 );
+		add_filter( 'wp_smush_should_skip_parse', array( $this, 'maybe_skip_parse' ) );
 
 		// Filter images.
 		if ( ! isset( $this->options['output']['content'] ) || ! $this->options['output']['content'] ) {
@@ -305,6 +305,11 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 
 		// Compatibility with Essential Grid lazy loading.
 		if ( false !== strpos( $image, 'data-lazysrc' ) ) {
+			return $image;
+		}
+
+		// Compatibility with JetPack lazy loading.
+		if ( false !== strpos( $image, 'jetpack-lazy-image' ) ) {
 			return $image;
 		}
 
