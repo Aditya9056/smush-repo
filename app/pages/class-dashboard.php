@@ -815,8 +815,6 @@ class Dashboard extends Abstract_Page {
 
 		$setting_val = $this->settings->get( 'backup' );
 		$setting_key = WP_SMUSH_PREFIX . 'backup';
-
-		global $wp_version;
 		?>
 		<div class="sui-form-field">
 			<label class="sui-toggle">
@@ -830,11 +828,6 @@ class Dashboard extends Abstract_Page {
 			<span class="sui-description sui-toggle-description">
 				<?php echo esc_html( WP_Smush::get_instance()->core()->settings['backup']['desc'] ); ?>
 			</span>
-			<?php if ( version_compare( $wp_version, '5.2.999', '>' ) ) : ?>
-				<span class="sui-description sui-toggle-description" style="margin-top: 10px">
-					<?php esc_html_e( 'As of WordPress v5.3, full size images above a certain size (2560px by default) will be stored as originals, while a new max sized image will be created. However, if the uploaded image is smaller than this size, WordPress won’t create a backup. Use this setting to ensure you have backups of all your image uploads.', 'wp-smushit' ); ?>
-				</span>
-			<?php endif; ?>
 		</div>
 		<?php
 	}

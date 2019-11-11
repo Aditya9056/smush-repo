@@ -382,7 +382,8 @@ class Core {
 		global $wp_version;
 
 		if ( version_compare( $wp_version, '5.2.999', '>' ) ) {
-			$this->settings['backup']['desc'] = __( 'Save a copy of your original full-size images separately so you can restore them at any point. Note: Keeping a copy of your original files can significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' );
+			$this->settings['backup']['label'] = __( 'Store a copy of my small originals', 'wp-smushit' );
+			$this->settings['backup']['desc']  = __( 'As of WordPress v5.3, full size images above a certain size (2560px by default) will be stored as originals, while a new max sized image will be created. However, if the uploaded image is smaller than the specified size WordPress won’t create a backup for it. Enable this setting to ensure you always have backups of all your image uploads.', 'wp-smushit' );
 		}
 
 		/**
