@@ -32,6 +32,17 @@ class Helper extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Upload single large image to media library.
+	 *
+	 * @return mixed  Image ID on success.
+	 */
+	public function upload_image_large() {
+		$file = dirname( dirname( __FILE__ ) ) . '/_data/images/image-large.jpg';
+
+		return $this->factory->attachment->create_upload_object( $file );
+	}
+
+	/**
 	 * Add an image to the wp_posts table.
 	 *
 	 * @return mixed  Image ID on success.

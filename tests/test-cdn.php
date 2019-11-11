@@ -40,6 +40,14 @@ class CdnTest extends WP_UnitTestCase {
 	protected $globals;
 
 	/**
+	 * Registered images sizes.
+	 *
+	 * @since 2.3.2
+	 * @var array $image_sizes
+	 */
+	protected $image_sizes;
+
+	/**
 	 * Run before actions.
 	 */
 	public function setUp() {
@@ -60,7 +68,18 @@ class CdnTest extends WP_UnitTestCase {
 	public function tearDown() {
 		// Restore global variables.
 		global $content_width;
-		$content_width = $this->globals['content_width'];
+		$content_width = $this->_globals['content_width'];
+
+		// Add back missing sizes.
+		$default_image_sizes = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
+		foreach ( $this->image_sizes as $size ) {
+			if ( in_array( $size, $default_image_sizes, true ) ) {
+				continue;
+			}
+
+			add_image_size( '1536x1536', 1536, 1536 );
+			add_image_size( '2048x2048', 2048, 2048 );
+		}
 
 		delete_option( 'wp-smush-settings' );
 		delete_option( 'wp-smush-cdn_status' );
@@ -72,11 +91,11 @@ class CdnTest extends WP_UnitTestCase {
 	 */
 	private function remove_image_sizes() {
 		// Default WordPress image sizes.
-		$default_image_sizes  = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
-		$all_registered_sizes = get_intermediate_image_sizes();
+		$default_image_sizes = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
+		$this->image_sizes   = get_intermediate_image_sizes();
 
 		// Remove everything else.
-		foreach ( $all_registered_sizes as $size ) {
+		foreach ( $this->image_sizes as $size ) {
 			if ( in_array( $size, $default_image_sizes, true ) ) {
 				continue;
 			}
