@@ -377,6 +377,12 @@ class Core {
 			),
 		);
 
+		global $wp_version;
+
+		if ( version_compare( $wp_version, '5.2.999', '>' ) ) {
+			$this->settings['backup']['desc'] = __( 'Save a copy of your original full-size images separately so you can restore them at any point. Note: Keeping a copy of your original files can significantly increase the size of your uploads folder by nearly twice as much.', 'wp-smushit' );
+		}
+
 		/**
 		 * Allow to add other settings via filtering the variable
 		 *
