@@ -101,7 +101,7 @@ class Media_Library extends Abstract_Module {
 	 */
 	public function custom_column( $column_name, $id ) {
 		if ( 'smushit' === $column_name ) {
-			echo $this->set_status( $id );
+			echo $this->set_status( absint( $id ) );
 		}
 	}
 
