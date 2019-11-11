@@ -9,6 +9,7 @@ use Helpers\Helper;
 use Smush\Core\Installer;
 use Smush\Core\Modules\Smush;
 use Smush\Core\Settings;
+use Smush\WP_Smush;
 
 /**
  * Class SmushTest
@@ -92,8 +93,6 @@ class SmushTest extends WP_UnitTestCase {
 	 * example, a file '/tmp/wordpress/wp-content/uploads/2019/11/image-large-29-150x150.jpg' will be matched against
 	 * '150x150.jpg'. Hope that makes sense.
 	 *
-	 * TODO: make sure that all attachment sizes are processed. Needs future proofing.
-	 *
 	 * @param string $attachment_file_path_size  Image.
 	 *
 	 * @return array|WP_Error
@@ -104,7 +103,7 @@ class SmushTest extends WP_UnitTestCase {
 		$settings = get_option( 'wp-smush-settings' );
 
 		$data->api_version = '1.0';
-		$data->is_premium  = \Smush\WP_Smush::is_pro();
+		$data->is_premium  = WP_Smush::is_pro();
 		$data->lossy       = $settings['lossy'];
 		$data->keep_exif   = ! $settings['strip_exif'];
 		$data->time        = 0.02;
@@ -157,7 +156,29 @@ class SmushTest extends WP_UnitTestCase {
 			}
 		}
 
-		// TODO: add support for new image sizes.
+		if ( preg_match( '/1229x1536\.jpg$/i', $attachment_file_path_size ) ) {
+			$data->before_size = 353148;
+
+			if ( $settings['lossy'] ) {
+				// Super Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 299022 : 302184;
+			} else {
+				// Regular Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 338570 : 341732;
+			}
+		}
+
+		if ( preg_match( '/1639x2048\.jpg$/i', $attachment_file_path_size ) ) {
+			$data->before_size = 606061;
+
+			if ( $settings['lossy'] ) {
+				// Super Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 513710 : 516872;
+			} else {
+				// Regular Smush variations.
+				$data->after_size = $settings['strip_exif'] ? 581810 : 584972;
+			}
+		}
 
 		$data->bytes_saved = $data->before_size - $data->after_size;
 		$data->compression = round( $data->bytes_saved / $data->after_size * 100, 2 );
@@ -185,8 +206,6 @@ class SmushTest extends WP_UnitTestCase {
 	/**
 	 * Get saved bytes.
 	 *
-	 * TODO: calculate return for WP 5.3 and lossy.
-	 *
 	 * @return int
 	 */
 	private function get_bytes_saved() {
@@ -196,10 +215,10 @@ class SmushTest extends WP_UnitTestCase {
 
 		if ( version_compare( $wp_version, '5.2.999', '>' ) ) {
 			if ( $settings['lossy'] ) {
-				return $settings['strip_exif'] ? 0 : 0;
+				return $settings['strip_exif'] ? 205775 : 186803;
 			}
 
-			return $settings['strip_exif'] ? 0 : 0;
+			return $settings['strip_exif'] ? 61338 : 42450;
 		}
 
 		if ( $settings['lossy'] ) {
@@ -212,19 +231,15 @@ class SmushTest extends WP_UnitTestCase {
 	/**
 	 * Get size before.
 	 *
-	 * TODO: calculate return for WP 5.3.
-	 *
 	 * @return int
 	 */
 	private function get_size_before() {
 		global $wp_version;
-		return version_compare( $wp_version, '5.2.999', '>' ) ? 0 : 335186;
+		return version_compare( $wp_version, '5.2.999', '>' ) ? 1294395 : 335186;
 	}
 
 	/**
 	 * Get size after.
-	 *
-	 * TODO: calculate return for WP 5.3 and lossy.
 	 *
 	 * @return int
 	 */
@@ -235,10 +250,10 @@ class SmushTest extends WP_UnitTestCase {
 
 		if ( version_compare( $wp_version, '5.2.999', '>' ) ) {
 			if ( $settings['lossy'] ) {
-				return $settings['strip_exif'] ? 0 : 0;
+				return $settings['strip_exif'] ? 1088620 : 1107592;
 			}
 
-			return $settings['strip_exif'] ? 0 : 0;
+			return $settings['strip_exif'] ? 1233057 : 1251945;
 		}
 
 		if ( $settings['lossy'] ) {
