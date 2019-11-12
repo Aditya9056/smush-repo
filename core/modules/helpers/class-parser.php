@@ -358,7 +358,7 @@ class Parser {
 	 * @return string
 	 */
 	public static function get_attribute( $element, $name ) {
-		preg_match( "/{$name}=['\"]([^'\"]+)\"/is", $element, $value );
+		preg_match( "/{$name}=['\"]([^'\"]+)['\"]/is", $element, $value );
 		return isset( $value['1'] ) ? $value['1'] : '';
 	}
 
