@@ -65,6 +65,13 @@ class Dir extends Abstract_Module {
 			return;
 		}
 
+		/**
+		 * Handle Ajax request 'smush_get_directory_list'.
+		 *
+		 * This needs to be before self::should_continue so that the request from network admin is processed.
+		 */
+		add_action( 'wp_ajax_smush_get_directory_list', array( $this, 'directory_list' ) );
+
 		if ( ! self::should_continue() ) {
 			// Remove directory smush from tabs if not required.
 			add_filter( 'smush_setting_tabs', array( $this, 'remove_directory_tab' ) );
@@ -86,9 +93,6 @@ class Dir extends Abstract_Module {
 
 		// Check to see if the scanner should be running.
 		add_action( 'admin_footer', array( $this, 'check_scan' ) );
-
-		// Handle Ajax request 'smush_get_directory_list'.
-		add_action( 'wp_ajax_smush_get_directory_list', array( $this, 'directory_list' ) );
 
 		// Scan the given directory path for the list of images.
 		add_action( 'wp_ajax_image_list', array( $this, 'image_list' ) );
@@ -438,6 +442,7 @@ class Dir extends Abstract_Module {
 		if ( ! current_user_can( 'manage_options' ) || ! is_user_logged_in() ) {
 			wp_send_json_error( __( 'Unauthorized', 'wp-smushit' ) );
 		}
+
 		// Verify nonce.
 		check_ajax_referer( 'smush_get_dir_list', 'list_nonce' );
 
