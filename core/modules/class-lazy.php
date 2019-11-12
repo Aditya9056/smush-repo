@@ -533,7 +533,7 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 			}
 
 			// Internal class to skip images.
-			if ( 'no-lazyload' === $class ) {
+			if ( 'no-lazyload' === $class || 'skip-lazy' === $class ) {
 				return true;
 			}
 
