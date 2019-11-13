@@ -111,6 +111,11 @@ class Parser {
 			return $content;
 		}
 
+		// We probably don't want any processing during Ajax requests.
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return $content;
+		}
+
 		// Add support for Oxygen Builder.
 		if ( defined( 'SHOW_CT_BUILDER' ) && SHOW_CT_BUILDER ) {
 			return $content;
