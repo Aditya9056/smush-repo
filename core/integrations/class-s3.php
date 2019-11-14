@@ -380,7 +380,7 @@ class S3 extends Abstract_Integration {
 				$key = path_join( $size_file_prefix, $size_details['file'] );
 			} elseif ( ! empty( $uf_file_path ) ) {
 				// Get the File path using basename for given attachment path.
-				$key = path_join( $size_file_prefix, $size_details['file'] );
+				$key = path_join( $size_file_prefix, wp_basename( $uf_file_path ) );
 			}
 
 			if ( is_array( $s3_object ) ) {
