@@ -33,6 +33,7 @@
 = 3.3.2 =
 
 - New: Support for big images in WordPress 5.3
+- Fix: WP Offload Media integration with Pro version
 
 = 3.3.1 =
 
