@@ -131,7 +131,7 @@ class Parser {
 			$content = $this->process_background_images( $content );
 		}
 
-		if ( $this->iframes ) {
+		if ( $this->iframes && ! apply_filters( 'wp_smush_should_skip_parse', false ) ) {
 			$content = $this->process_iframes( $content );
 		}
 
