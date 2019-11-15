@@ -38,14 +38,6 @@ class Parser {
 	private $background_images = false;
 
 	/**
-	 * Process iframes.
-	 *
-	 * @since 3.4.0
-	 * @var bool $iframes
-	 */
-	private $iframes = false;
-
-	/**
 	 * Parser constructor.
 	 *
 	 * @since 3.2.2
@@ -131,10 +123,6 @@ class Parser {
 			$content = $this->process_background_images( $content );
 		}
 
-		if ( $this->iframes && ! apply_filters( 'wp_smush_should_skip_parse', false ) ) {
-			$content = $this->process_iframes( $content );
-		}
-
 		return $content;
 	}
 
@@ -214,35 +202,6 @@ class Parser {
 	}
 
 	/**
-	 * Process all iframes.
-	 *
-	 * @since 3.4.0
-	 *
-	 * @param string $content  Current buffer content.
-	 *
-	 * @return string
-	 */
-	private function process_iframes( $content ) {
-		$iframes = self::get_iframes( $content );
-
-		if ( empty( $iframes ) ) {
-			return $content;
-		}
-
-		foreach ( $iframes[0] as $key => $iframe ) {
-			$frame_src  = $iframes['frame_url'][ $key ];
-			$new_iframe = $iframe;
-
-			// Update the image with correct CDN links.
-			$new_iframe = WP_Smush::get_instance()->core()->mod->lazy->parse_iframe( $frame_src, $new_iframe );
-
-			$content = str_replace( $iframe, $new_iframe, $content );
-		}
-
-		return $content;
-	}
-
-	/**
 	 * Compatibility with SmartCrawl readability analysis.
 	 * Do not process page on analysis.
 	 *
@@ -275,7 +234,7 @@ class Parser {
 	public static function get_images_from_content( $content ) {
 		$images = array();
 
-		if ( preg_match_all( '/(?:<(img|source)[^>]*?\s+?(src|srcset)=["|\'](?P<img_url>[^\s]+?)["|\'].*?>)/is', $content, $images ) ) {
+		if ( preg_match_all( '/(?:<(img|source|iframe)[^>]*?\s+?(src|srcset)=["|\'](?P<img_url>[^\s]+?)["|\'].*?>)/is', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
 				if ( is_numeric( $key ) && $key > 0 ) {
