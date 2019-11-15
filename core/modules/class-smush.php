@@ -218,7 +218,6 @@ class Smush extends Abstract_Module {
 			// The button text.
 			$button_txt = '';
 		} else {
-
 			// Show status text.
 			$wp_smush_data = true;
 
