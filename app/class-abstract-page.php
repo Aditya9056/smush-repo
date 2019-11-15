@@ -777,7 +777,7 @@ abstract class Abstract_Page {
 
 		$access = get_site_option( WP_SMUSH_PREFIX . 'networkwide' );
 
-		if ( ! $access ) {
+		if ( ! $access || 'directory' === $this->get_current_tab() ) {
 			return is_network_admin() ? true : false;
 		}
 

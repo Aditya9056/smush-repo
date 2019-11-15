@@ -4,6 +4,31 @@
 @import "/modules/media";
 
 /**
+ * Media details (grid layout)
+ * @since 3.4.0
+ */
+.attachment-info .smush-stats .value {
+	display: flex;
+	flex-wrap: wrap;
+
+	.smush-status {
+		margin: 0 0 10px;
+		flex-basis: 100%;
+		font-size: 12px;
+		line-height: 1.33333;
+	}
+
+	a {
+		margin-left: 5px;
+	}
+
+	a:first-of-type {
+		margin-left: 0;
+		margin-right: 5px;
+	}
+}
+
+/**
  * Smush buttons & stats in the media library, media upload and featured image modals.
  *
  * @since 2.8.0

@@ -222,6 +222,8 @@ class Smush {
 				if ( response.data.status ) {
 					//remove Links
 					parent.find( '.smush-status-links' ).remove();
+					// TODO: this should be removed
+					parent.find( '.smush-ignore-image' ).remove();
 					self.status.replaceWith( response.data.status );
 				}
 

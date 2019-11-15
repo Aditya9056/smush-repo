@@ -13,6 +13,7 @@
 - Enhance: Lazy loading image format detection
 - Enhance: Lazy loading compatibility with AMP
 - Enhance: Lazy loading compatibility with Essential Grid
+- Enhance: Lazy loading compatibility with JetPack
 - Enhance: Integration settings pages UI, summary meta box UI
 - Enhance: Significantly increase performance on sites with large media libraries
 - Enhance: Support for WordPress 4.x
@@ -32,6 +33,7 @@
 = 3.3.2 =
 
 - New: Support for big images in WordPress 5.3
+- Fix: WP Offload Media integration with Pro version
 
 = 3.3.1 =
 

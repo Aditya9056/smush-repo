@@ -75,7 +75,7 @@ class Lazy extends Abstract_Module {
 			$this->parser->enable( 'iframes' );
 		}
 
-		add_filter( 'wp_smush_should_skip_parse', array( $this, 'maybe_skip_parse' ), 10 );
+		add_filter( 'wp_smush_should_skip_parse', array( $this, 'maybe_skip_parse' ) );
 
 		// Filter images.
 		if ( ! isset( $this->options['output']['content'] ) || ! $this->options['output']['content'] ) {
@@ -308,16 +308,27 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 			return $image;
 		}
 
+		// Compatibility with JetPack lazy loading.
+		if ( false !== strpos( $image, 'jetpack-lazy-image' ) ) {
+			return $image;
+		}
+
 		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
 		$ext = 'jpg' === $ext ? 'jpeg' : $ext;
 
-		// If not a supported image in src - skip.
-		if ( ! in_array( $ext, array( 'jpeg', 'gif', 'png', 'svg' ), true ) ) {
+		// If not a supported image in src or not an iframe - skip.
+		$iframe = 'iframe' === substr( $image, 1, 6 );
+		if ( ! in_array( $ext, array( 'jpeg', 'gif', 'png', 'svg' ), true ) && ! $iframe ) {
 			return $image;
 		}
 
 		// Check if some image formats are excluded.
 		if ( in_array( false, $this->options['format'], true ) && isset( $this->options['format'][ $ext ] ) && ! $this->options['format'][ $ext ] ) {
+			return $image;
+		}
+
+		// Check if iframes are excluded.
+		if ( $iframe && isset( $this->options['format']['iframe'] ) && ! $this->options['format']['iframe'] ) {
 			return $image;
 		}
 
@@ -350,58 +361,6 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 		$new_image .= '<noscript>' . $image . '</noscript>';
 
 		return $new_image;
-	}
-
-	/**
-	 * Parse iframe for Lazy load.
-	 *
-	 * @since 3.4.0
-	 *
-	 * @param string $src     Iframe src URL.
-	 * @param string $iframe  Iframe tag (<iframe>).
-	 *
-	 * @return string
-	 */
-	public function parse_iframe( $src, $iframe ) {
-		/**
-		 * Filter to skip a single iframe from lazy load.
-		 *
-		 * @param bool   $skip    Should skip? Default: false.
-		 * @param string $src     Iframe src URL.
-		 * @param string $iframe  Iframe.
-		 */
-		if ( apply_filters( 'smush_skip_iframe_from_lazy_load', false, $src, $iframe ) ) {
-			return $iframe;
-		}
-
-		// Avoid conflicts if attributes are set (another plugin, for example).
-		if ( false !== strpos( $iframe, 'data-src' ) ) {
-			return $iframe;
-		}
-
-		if ( $this->has_excluded_class_or_id( $iframe ) ) {
-			return $iframe;
-		}
-
-		$new_iframe = $iframe;
-
-		$src = Helpers\Parser::get_attribute( $new_iframe, 'src' );
-		Helpers\Parser::remove_attribute( $new_iframe, 'src' );
-		Helpers\Parser::add_attribute( $new_iframe, 'data-src', $src );
-
-		// Add .lazyload class.
-		$class = Helpers\Parser::get_attribute( $new_iframe, 'class' );
-		if ( $class ) {
-			$class .= ' lazyload';
-		} else {
-			$class = 'lazyload';
-		}
-		Helpers\Parser::remove_attribute( $new_iframe, 'class' );
-		Helpers\Parser::add_attribute( $new_iframe, 'class', apply_filters( 'wp_smush_lazy_load_classes', $class ) );
-
-		Helpers\Parser::add_attribute( $new_iframe, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
-
-		return $new_iframe;
 	}
 
 	/**
@@ -528,7 +487,7 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 			}
 
 			// Internal class to skip images.
-			if ( 'no-lazyload' === $class ) {
+			if ( 'no-lazyload' === $class || 'skip-lazy' === $class ) {
 				return true;
 			}
 
