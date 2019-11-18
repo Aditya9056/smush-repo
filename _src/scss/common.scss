@@ -18,6 +18,10 @@
 		line-height: 1.33333;
 	}
 
+	.smush-status-links {
+		width: 100%;
+	}
+
 	a {
 		margin-left: 5px;
 	}
@@ -79,7 +83,7 @@
 .attachment-info .wp-smush-error-message {
 	margin: 0 0 1em;
 }
-/*
+
 .smush-stats-wrapper .row {
 	padding: 8px 0;
 }
@@ -91,7 +95,7 @@
 .smush-stats-wrapper td, .smush-stats-wrapper th {
 	font-size: 11px;
 }
-
+/*
 .smush-skipped {
 	display: flex;
 	align-items: center;

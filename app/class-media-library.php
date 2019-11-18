@@ -465,7 +465,7 @@ class Media_Library extends Abstract_Module {
 	 *
 	 * @return string
 	 */
-	private function get_optimization_links( $id, $smush_data, $attachment_data ) {
+	public function get_optimization_links( $id, $smush_data = array(), $attachment_data = array() ) {
 		if ( get_option( 'smush-in-progress-' . $id, false ) ) {
 			return '';
 		}

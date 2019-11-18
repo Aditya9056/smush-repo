@@ -74,8 +74,9 @@ import Smush from '../smush/smush';
 					id: self.attr( 'data-id' ),
 				} )
 					.done( ( response ) => {
-						if ( self.is( 'a' ) && response.success && 'undefined' !== typeof response.data.status ) {
-							e.target.closest( '.column-smushit' ).innerHTML = response.data.status;
+						if ( self.is( 'a' ) && response.success && 'undefined' !== typeof response.data.links ) {
+							self.parent().parent().find( '.smush-status' ).text( wp_smush_msgs.ignored );
+							e.target.closest( '.smush-status-links' ).innerHTML = response.data.links;
 						}
 					} );
 			} );

@@ -773,7 +773,7 @@ class Ajax {
 
 		wp_send_json_success(
 			array(
-				'status' => WP_Smush::get_instance()->library()->generate_markup( $id ),
+				'links' => WP_Smush::get_instance()->library()->get_optimization_links( $id ),
 			)
 		);
 	}
@@ -976,7 +976,7 @@ class Ajax {
 
 		wp_send_json_success(
 			array(
-				'status' => WP_Smush::get_instance()->library()->generate_markup( absint( $_POST['id'] ) ),
+				'links' => WP_Smush::get_instance()->library()->get_optimization_links( absint( $_POST['id'] ) ),
 			)
 		);
 	}

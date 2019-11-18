@@ -455,8 +455,9 @@ jQuery( function( $ ) {
 			id: self.attr( 'data-id' ),
 		} )
 			.done( ( response ) => {
-				if ( response.success && 'undefined' !== typeof response.data.status ) {
-					e.target.closest( '.column-smushit' ).innerHTML = response.data.status;
+				if ( response.success && 'undefined' !== typeof response.data.links ) {
+					self.parent().parent().find( '.smush-status' ).text( wp_smush_msgs.not_processed );
+					e.target.closest( '.smush-status-links' ).innerHTML = response.data.links;
 				}
 			} );
 	} );
