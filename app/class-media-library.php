@@ -323,170 +323,7 @@ class Media_Library extends Abstract_Module {
 		}
 
 		// Else Return the normal status.
-		return trim( $this->set_status( $id ) );
-	}
-
-	/**
-	 * Set send button status
-	 *
-	 * @param int  $id        Attachment ID.
-	 * @param bool $text_only Returns the stats text instead of button.
-	 *
-	 * @return string|array
-	 */
-	public function set_status( $id, $text_only = false ) {
-		$status_txt = '';
-		$button_txt = '';
-		$stats      = '';
-		$links      = '';
-
-		$show_button = false;
-
-		$wp_smush_data      = get_post_meta( $id, Smush::$smushed_meta_key, true );
-		$wp_resize_savings  = get_post_meta( $id, WP_SMUSH_PREFIX . 'resize_savings', true );
-		$conversion_savings = get_post_meta( $id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
-
-		$combined_stats = $this->core->combined_stats( $wp_smush_data, $wp_resize_savings );
-		$combined_stats = $this->core->combine_conversion_stats( $combined_stats, $conversion_savings );
-
-		// Remove Smush s3 hook, as it downloads the file again.
-		if ( class_exists( '\Compat' ) && class_exists( '\AS3CF_Plugin_Compatibility' ) ) {
-			$s3_compat = new Compat();
-			remove_filter( 'as3cf_get_attached_file', array( $s3_compat, 'smush_download_file' ), 11, 4 );
-		}
-		$attachment_data = wp_get_attachment_metadata( $id );
-
-		// If the image is smushed.
-		if ( ! empty( $wp_smush_data ) ) {
-			$image_count    = count( $wp_smush_data['sizes'] );
-			$bytes          = isset( $combined_stats['stats']['bytes'] ) ? $combined_stats['stats']['bytes'] : 0;
-			$bytes_readable = ! empty( $bytes ) ? size_format( $bytes, 1 ) : '';
-			$percent        = isset( $combined_stats['stats']['percent'] ) ? $combined_stats['stats']['percent'] : 0;
-			$percent        = $percent < 0 ? 0 : $percent;
-
-			// Show resmush link, if the settings were changed.
-			$show_resmush = $this->show_resmush( $id, $wp_smush_data, $attachment_data );
-
-			if ( empty( $wp_resize_savings['bytes'] ) && isset( $wp_smush_data['stats']['size_before'] ) && 0 === $wp_smush_data['stats']['size_before'] && ! empty( $wp_smush_data['sizes'] ) ) {
-				$status_txt = __( 'Already Optimized', 'wp-smushit' );
-				if ( $show_resmush ) {
-					$links .= self::get_resmsuh_link( $id );
-				}
-				$show_button = false;
-			} else {
-				if ( 0 === $bytes || 0 === $percent ) {
-					$status_txt = __( 'Already Optimized', 'wp-smushit' );
-
-					if ( $show_resmush ) {
-						$links .= self::get_resmsuh_link( $id );
-					}
-				} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
-					/* translators: %d: number of images reduced */
-					$status_txt = $image_count > 1 ? sprintf( __( '%d images reduced ', 'wp-smushit' ), $image_count ) : __( 'Reduced ', 'wp-smushit' );
-
-					$stats_percent = number_format_i18n( $percent, 2 );
-					$stats_percent = $stats_percent > 0 ? sprintf( '(%01.1f%%)', $stats_percent ) : '';
-					/* translators: %1$s: bytes in readable format, %2$s: percent */
-					$status_txt .= sprintf( __( 'by %1$s %2$s', 'wp-smushit' ), $bytes_readable, $stats_percent );
-
-					$file_path = get_attached_file( $id );
-					$size      = file_exists( $file_path ) ? filesize( $file_path ) : 0;
-					if ( $size > 0 ) {
-						$update_size = size_format( $size, 0 ); // Used in js to update image stat.
-						$size        = size_format( $size, 1 );
-						/* translators: %s: image size */
-						$image_size  = sprintf( __( '<br /> Image Size: %s', 'wp-smushit' ), $size );
-						$status_txt .= $image_size;
-					}
-
-					if ( $show_resmush ) {
-						$links .= self::get_resmsuh_link( $id );
-					}
-
-					// Restore Image: Check if we need to show the restore image option.
-					if ( $this->show_restore_option( $id, $attachment_data ) ) {
-						$links .= empty( $links ) ? '' : ' | ';
-						$links .= self::get_restore_link( $id );
-					}
-
-					// Detailed Stats: Show detailed stats if available.
-					if ( ! empty( $wp_smush_data['sizes'] ) ) {
-						$links .= empty( $links ) ? '' : ' | ';
-
-						// Detailed Stats Link.
-						$links .= sprintf(
-							'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-mobile sui-tooltip-top-left-mobile" data-tooltip="%s">%s</a>',
-							esc_html__( 'Detailed stats for all the image sizes', 'wp-smushit' ),
-							esc_html__( 'View Stats', 'wp-smushit' )
-						);
-
-						// Stats.
-						$stats = $this->get_detailed_stats( $id, $wp_smush_data, $attachment_data );
-
-						$links .= $stats;
-					}
-				}
-			}
-			// Wrap links if not empty.
-			$links = ! empty( $links ) ? "<div class='sui-smush-media smush-status-links'>" . $links . '</div>' : '';
-
-			/** Super Smush Button  */
-			// IF current compression is lossy.
-			$is_lossy = false;
-			if ( ! empty( $wp_smush_data ) && ! empty( $wp_smush_data['stats'] ) ) {
-				$is_lossy = ! empty( $wp_smush_data['stats']['lossy'] ) ? $wp_smush_data['stats']['lossy'] : false;
-			}
-
-			// Check image type.
-			$image_type = get_post_mime_type( $id );
-
-			// Check if premium user, compression was lossless, and lossy compression is enabled.
-			// If we are displaying the resmush option already, no need to show the Super Smush button.
-			if ( ! $show_resmush && ! $is_lossy && WP_Smush::is_pro() && $this->settings->get( 'lossy' ) && 'image/gif' !== $image_type ) {
-				$button_txt  = __( 'Super-Smush', 'wp-smushit' );
-				$show_button = true;
-			}
-		} elseif ( get_option( 'smush-in-progress-' . $id, false ) ) {
-			// The status.
-			$status_txt = __( 'Smushing in progress..', 'wp-smushit' );
-
-			// We need to show the smush button.
-			$show_button = false;
-
-			// The button text.
-			$button_txt = '';
-		} else {
-			// The status.
-			$ignored    = get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true );
-			$status_txt = 'true' === $ignored ? __( 'Ignored in Bulk Smush', 'wp-smushit' ) : __( 'Not processed', 'wp-smushit' );
-
-			// We need to show the smush button.
-			$show_button = true;
-
-			// The button text.
-			$button_txt = __( 'Smush', 'wp-smushit' );
-		}
-
-		$status_txt = '<p class="smush-status">' . $status_txt . '</p>';
-
-		$status_txt .= $links;
-
-		if ( $text_only ) {
-			// For ajax response.
-			return array(
-				'status'       => $status_txt,
-				'stats'        => $stats,
-				'show_warning' => intval( $this->core->mod->smush->show_warning() ),
-				'new_size'     => isset( $update_size ) ? $update_size : 0,
-			);
-		}
-
-		// If we are not showing smush button, append progress bar, else it is already there.
-		if ( ! $show_button ) {
-			$status_txt .= self::progress_bar();
-		}
-
-		return $this->column_html( $id, $status_txt, $button_txt, $show_button );
+		return trim( $this->generate_markup( $id ) );
 	}
 
 	/**
@@ -530,11 +367,12 @@ class Media_Library extends Abstract_Module {
 	 *
 	 * @since 3.5.0  Refactored from set_status().
 	 *
-	 * @param int $id  Attachment ID.
+	 * @param int  $id    Attachment ID.
+	 * @param bool $html  Return results embeded in HTML. If set to FALSE will return array.
 	 *
-	 * @return string  HTML content.
+	 * @return string|array  HTML content or array of results.
 	 */
-	public function generate_markup( $id ) {
+	public function generate_markup( $id, $html = true ) {
 		// Remove Smush s3 hook, as it downloads the file again.
 		if ( class_exists( '\Compat' ) && class_exists( '\AS3CF_Plugin_Compatibility' ) ) {
 			$s3_compat = new Compat();
@@ -544,7 +382,8 @@ class Media_Library extends Abstract_Module {
 		$smush_data      = get_post_meta( $id, Smush::$smushed_meta_key, true );
 		$attachment_data = wp_get_attachment_metadata( $id );
 
-		$html = '<p class="smush-status">' . $this->get_optimization_status( $id, $smush_data ) . '</p>';
+		$status = $this->get_optimization_status( $id, $smush_data );
+		$html   = '<p class="smush-status">' . $status['text'] . '</p>';
 
 		// Need links, except the time that the image can't be optimized anymore.
 		$links = $this->get_optimization_links( $id, $smush_data, $attachment_data );
@@ -554,12 +393,22 @@ class Media_Library extends Abstract_Module {
 
 		// Attach the stats table.
 		if ( isset( $smush_data['sizes'] ) ) {
-			$html .= $this->get_detailed_stats( $id, $smush_data, $attachment_data );
+			$stats = $this->get_detailed_stats( $id, $smush_data, $attachment_data );
+			$html .= $stats;
 		}
 
 		$html .= self::progress_bar();
 
-		return $html;
+		if ( $html ) {
+			return $html;
+		}
+
+		return array(
+			'status'       => $status['text'],
+			'stats'        => isset( $stats ) ? $stats : '',
+			'show_warning' => intval( $this->core->mod->smush->show_warning() ),
+			'new_size'     => $status['size'],
+		);
 	}
 
 	/**
@@ -576,25 +425,34 @@ class Media_Library extends Abstract_Module {
 	 * @param int   $id          Attachment ID.
 	 * @param array $smush_data  Optimization data.
 	 *
-	 * @return string  Optimization status, embedded in <p> element.
+	 * @return array
 	 */
 	private function get_optimization_status( $id, $smush_data ) {
+		$status = array(
+			'size' => 0,
+			'text' => '',
+		);
+
 		if ( get_option( 'smush-in-progress-' . $id, false ) ) {
-			return __( 'Smushing in progress..', 'wp-smushit' );
+			$status['text'] = __( 'Smushing in progress..', 'wp-smushit' );
+			return $status;
 		}
 
 		if ( 'true' === get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true ) ) {
-			return __( 'Ignored from auto-smush', 'wp-smushit' );
+			$status['text'] = __( 'Ignored from auto-smush', 'wp-smushit' );
+			return $status;
 		}
 
 		if ( empty( $smush_data ) ) {
-			return __( 'Not optimized', 'wp-smushit' );
+			$status['text'] = __( 'Not optimized', 'wp-smushit' );
+			return $status;
 		}
 
 		$stats = $this->core->get_stats_for_attachments( array( $id ) );
 
 		if ( $stats['size_after'] === $stats['size_before'] ) {
-			return __( 'Already optimized', 'wp-smushit' );
+			$status['text'] = __( 'Already optimized', 'wp-smushit' );
+			return $status;
 		}
 
 		$percent     = ( $stats['size_before'] - $stats['size_after'] ) / $stats['size_before'] * 100;
@@ -609,11 +467,13 @@ class Media_Library extends Abstract_Module {
 		$file_path = get_attached_file( $id );
 		$size      = file_exists( $file_path ) ? filesize( $file_path ) : 0;
 		if ( $size > 0 ) {
+			$status['size'] = size_format( $size, 0 ); // Used in js to update image stat.
 			/* translators: %1$s: new line, %2$s: image size */
 			$status_text .= sprintf( __( '%1$sImage size: %2$s', 'wp-smushit' ), '<br />', size_format( $size, 1 ) );
 		}
+		$status['text'] = $status_text;
 
-		return $status_text;
+		return $status;
 	}
 
 	/**

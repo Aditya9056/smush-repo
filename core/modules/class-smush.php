@@ -867,7 +867,7 @@ class Smush extends Abstract_Module {
 		// If the smushing option is already set, return the status.
 		if ( get_option( "smush-in-progress-{$attachment_id}", false ) || get_option( "wp-smush-restore-{$attachment_id}", false ) ) {
 			// Get the button status.
-			$status = WP_Smush::get_instance()->library()->set_status( $attachment_id, true );
+			$status = WP_Smush::get_instance()->library()->generate_markup( $attachment_id, false );
 			if ( $return ) {
 				return $status;
 			}
@@ -921,7 +921,7 @@ class Smush extends Abstract_Module {
 		wp_update_attachment_metadata( $attachment_id, $original_meta );
 
 		// Get the button status.
-		$status = WP_Smush::get_instance()->library()->set_status( $attachment_id, true );
+		$status = WP_Smush::get_instance()->library()->generate_markup( $attachment_id, false );
 
 		// Delete the transient after attachment meta is updated.
 		delete_option( 'smush-in-progress-' . $attachment_id );
