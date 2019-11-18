@@ -43,8 +43,7 @@ class Smush {
 		}
 
 		this.is_bulk_resmush = 0 < wp_smushit_data.resmush.length && ! this.skip_resmush;
-
-		this.status = this.button.parent().find( '.smush-status' );
+		this.status = this.button.parent().prev( '.smush-status' );
 
 		// Added for NextGen support.
 		this.smush_type = type;
@@ -166,7 +165,8 @@ class Smush {
 		if ( this.is_bulk ) {
 			return;
 		}
-		Smush.progressBar( this.button, window.wp_smush_msgs.smushing, 'show' );
+
+		this.button.html( '<span class="spinner wp-smush-progress">' + window.wp_smush_msgs.smushing + '</span>' );
 		this.status.removeClass( 'error' );
 	}
 
@@ -174,31 +174,10 @@ class Smush {
 	 * Enable button.
 	 */
 	enableButton() {
-		this.button.prop( 'disabled', false );
+		this.button.removeAttr( 'disabled' );
 		// For bulk process, enable other buttons.
 		jQuery( '.wp-smush-all' ).removeAttr( 'disabled' );
 		jQuery( 'button.wp-smush-scan, a.wp-smush-lossy-enable, button.wp-smush-resize-enable, button#wp-smush-save-settings' ).removeAttr( 'disabled' );
-	}
-
-	/**
-	 * Show/hide the progress bar for Smushing/Restore/SuperSmush.
-	 *
-	 * @param {Object} curEle  Current element.
-	 * @param {string} txt     Message to be displayed.
-	 * @param {string} state   Show/hide.
-	 */
-	static progressBar( curEle, txt, state ) {
-		// Update progress bar text and show it.
-		const progressButton = curEle.parents().eq( 1 ).find( '.wp-smush-progress' );
-
-		if ( 'show' === state ) {
-			progressButton.html( txt );
-		} else {
-			/** @param {string} wp_smush_msgs.all_done */
-			progressButton.html( window.wp_smush_msgs.all_done );
-		}
-
-		progressButton.toggleClass( 'visible' );
 	}
 
 	/**
@@ -209,38 +188,38 @@ class Smush {
 			return;
 		}
 
-		Smush.progressBar( this.button, window.wp_smush_msgs.smushing, 'hide' );
-
 		const self = this;
+
+		this.button.html( window.wp_smush_msgs.all_done );
 
 		this.request.done( function( response ) {
 			if ( 'undefined' !== typeof response.data ) {
 				// Check if stats div exists.
 				const parent = self.status.parent();
 
-				// If we've updated status, replace the content.
-				if ( response.data.status ) {
-					//remove Links
-					parent.find( '.smush-status-links' ).remove();
-					// TODO: this should be removed
-					parent.find( '.smush-ignore-image' ).remove();
-					self.status.replaceWith( response.data.status );
-				}
-
 				// Check whether to show membership validity notice or not.
 				Smush.membershipValidity( response.data );
 
-				if ( response.success && 'Not processed' !== response.data ) {
-					self.status.removeClass( 'sui-hidden' );
-					self.button.remove();
-				} else {
+				if ( ! response.success ) {
 					self.status.addClass( 'error' );
 					/** @param {string} response.data.error_msg */
 					self.status.html( response.data.error_msg );
-					self.status.show();
+					self.button.html( window.smush_vars.strings.stats_label );
+				} else {
+					// If we've updated status, replace the content.
+					parent.html( response.data );
+				}
+
+				/*
+				// If we've updated status, replace the content.
+				if ( response.success && response.data.status ) {
+					//remove Links
+					parent.find( '.smush-status-links' ).remove();
+					self.status.html( response.data.status );
 				}
 
 				parent.append( response.data.stats );
+				*/
 
 				/**
 				 * Update image size in attachment info panel.

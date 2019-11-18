@@ -367,12 +367,11 @@ class Media_Library extends Abstract_Module {
 	 *
 	 * @since 3.5.0  Refactored from set_status().
 	 *
-	 * @param int  $id    Attachment ID.
-	 * @param bool $html  Return results embeded in HTML. If set to FALSE will return array.
+	 * @param int $id  Attachment ID.
 	 *
 	 * @return string|array  HTML content or array of results.
 	 */
-	public function generate_markup( $id, $html = true ) {
+	public function generate_markup( $id ) {
 		// Remove Smush s3 hook, as it downloads the file again.
 		if ( class_exists( '\Compat' ) && class_exists( '\AS3CF_Plugin_Compatibility' ) ) {
 			$s3_compat = new Compat();
@@ -382,8 +381,7 @@ class Media_Library extends Abstract_Module {
 		$smush_data      = get_post_meta( $id, Smush::$smushed_meta_key, true );
 		$attachment_data = wp_get_attachment_metadata( $id );
 
-		$status = $this->get_optimization_status( $id, $smush_data );
-		$html   = '<p class="smush-status">' . $status['text'] . '</p>';
+		$html = '<p class="smush-status">' . $this->get_optimization_status( $id, $smush_data ) . '</p>';
 
 		// Need links, except the time that the image can't be optimized anymore.
 		$links = $this->get_optimization_links( $id, $smush_data, $attachment_data );
@@ -393,22 +391,10 @@ class Media_Library extends Abstract_Module {
 
 		// Attach the stats table.
 		if ( isset( $smush_data['sizes'] ) ) {
-			$stats = $this->get_detailed_stats( $id, $smush_data, $attachment_data );
-			$html .= $stats;
+			$html .= $this->get_detailed_stats( $id, $smush_data, $attachment_data );
 		}
 
-		$html .= self::progress_bar();
-
-		if ( $html ) {
-			return $html;
-		}
-
-		return array(
-			'status'       => $status['text'],
-			'stats'        => isset( $stats ) ? $stats : '',
-			'show_warning' => intval( $this->core->mod->smush->show_warning() ),
-			'new_size'     => $status['size'],
-		);
+		return $html;
 	}
 
 	/**
@@ -428,31 +414,22 @@ class Media_Library extends Abstract_Module {
 	 * @return array
 	 */
 	private function get_optimization_status( $id, $smush_data ) {
-		$status = array(
-			'size' => 0,
-			'text' => '',
-		);
-
 		if ( get_option( 'smush-in-progress-' . $id, false ) ) {
-			$status['text'] = __( 'Smushing in progress..', 'wp-smushit' );
-			return $status;
+			return __( 'Smushing in progress..', 'wp-smushit' );
 		}
 
 		if ( 'true' === get_post_meta( $id, WP_SMUSH_PREFIX . 'ignore-bulk', true ) ) {
-			$status['text'] = __( 'Ignored from auto-smush', 'wp-smushit' );
-			return $status;
+			return __( 'Ignored from auto-smush', 'wp-smushit' );
 		}
 
 		if ( empty( $smush_data ) ) {
-			$status['text'] = __( 'Not optimized', 'wp-smushit' );
-			return $status;
+			return __( 'Not processed', 'wp-smushit' );
 		}
 
 		$stats = $this->core->get_stats_for_attachments( array( $id ) );
 
 		if ( $stats['size_after'] === $stats['size_before'] ) {
-			$status['text'] = __( 'Already optimized', 'wp-smushit' );
-			return $status;
+			return __( 'Already optimized', 'wp-smushit' );
 		}
 
 		$percent     = ( $stats['size_before'] - $stats['size_after'] ) / $stats['size_before'] * 100;
@@ -467,13 +444,11 @@ class Media_Library extends Abstract_Module {
 		$file_path = get_attached_file( $id );
 		$size      = file_exists( $file_path ) ? filesize( $file_path ) : 0;
 		if ( $size > 0 ) {
-			$status['size'] = size_format( $size, 0 ); // Used in js to update image stat.
 			/* translators: %1$s: new line, %2$s: image size */
 			$status_text .= sprintf( __( '%1$sImage size: %2$s', 'wp-smushit' ), '<br />', size_format( $size, 1 ) );
 		}
-		$status['text'] = $status_text;
 
-		return $status;
+		return $status_text;
 	}
 
 	/**
