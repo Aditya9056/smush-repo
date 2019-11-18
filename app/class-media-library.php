@@ -101,7 +101,7 @@ class Media_Library extends Abstract_Module {
 	 */
 	public function custom_column( $column_name, $id ) {
 		if ( 'smushit' === $column_name ) {
-			echo wp_kses_post( $this->generate_smush_stats( $id ) );
+			echo wp_kses_post( $this->generate_markup( $id ) );
 		}
 	}
 
@@ -309,8 +309,10 @@ class Media_Library extends Abstract_Module {
 	 * @return string
 	 */
 	private function smush_status( $id ) {
+		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING, FILTER_NULL_ON_FAILURE );
+
 		// Show Temporary Status, For Async Optimisation, No Good workaround.
-		if ( ! get_option( "wp-smush-restore-{$id}", false ) && ! empty( $_POST['action'] ) && 'upload-attachment' === $_POST['action'] && $this->settings->get( 'auto' ) ) {
+		if ( ! get_option( "wp-smush-restore-{$id}", false ) && 'upload-attachment' === $action && $this->settings->get( 'auto' ) ) {
 			$status_txt = '<p class="smush-status">' . __( 'Smushing in progress..', 'wp-smushit' ) . '</p>';
 
 			// We need to show the smush button.
@@ -532,7 +534,7 @@ class Media_Library extends Abstract_Module {
 	 *
 	 * @return string  HTML content.
 	 */
-	public function generate_smush_stats( $id ) {
+	public function generate_markup( $id ) {
 		// Remove Smush s3 hook, as it downloads the file again.
 		if ( class_exists( '\Compat' ) && class_exists( '\AS3CF_Plugin_Compatibility' ) ) {
 			$s3_compat = new Compat();
@@ -667,7 +669,7 @@ class Media_Library extends Abstract_Module {
 		if ( $stats['size_after'] !== $stats['size_before'] ) {
 			$links .= empty( $links ) ? '' : ' | ';
 			$links .= sprintf(
-				'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-mobile sui-tooltip-top-left-mobile" data-tooltip="%s">%s</a>',
+				'<a href="#" class="wp-smush-action smush-stats-details wp-smush-title sui-tooltip sui-tooltip-top-right" data-tooltip="%s">%s</a>',
 				esc_html__( 'Detailed stats for all the image sizes', 'wp-smushit' ),
 				esc_html__( 'View Stats', 'wp-smushit' )
 			);
@@ -992,7 +994,7 @@ class Media_Library extends Abstract_Module {
 
 		return sprintf(
 			'<a href="#" data-tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>',
-			esc_html__( 'Smush image including original file.', 'wp-smushit' ),
+			esc_html__( 'Smush image including original file', 'wp-smushit' ),
 			$image_id,
 			wp_create_nonce( 'wp-smush-resmush-' . $image_id ),
 			$class,
@@ -1018,7 +1020,7 @@ class Media_Library extends Abstract_Module {
 
 		return sprintf(
 			'<a href="#" data-tooltip="%s" data-id="%d" data-nonce="%s" class="%s">%s</a>',
-			esc_html__( 'Restore original image.', 'wp-smushit' ),
+			esc_html__( 'Restore original image', 'wp-smushit' ),
 			$image_id,
 			wp_create_nonce( 'wp-smush-restore-' . $image_id ),
 			$class,

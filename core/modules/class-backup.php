@@ -273,7 +273,7 @@ class Backup extends Abstract_Module {
 			delete_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'resize_savings' );
 
 			// Get the Button html without wrapper.
-			$button_html = WP_Smush::get_instance()->library()->set_status( $attachment_id );
+			$button_html = WP_Smush::get_instance()->library()->generate_markup( $attachment_id );
 
 			// Remove the transient.
 			delete_option( "wp-smush-restore-$attachment_id" );
