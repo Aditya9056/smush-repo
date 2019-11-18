@@ -73,12 +73,9 @@ import Smush from '../smush/smush';
 					action: 'ignore_bulk_image',
 					id: self.attr( 'data-id' ),
 				} )
-					.done( () => {
-						if ( self.is( 'a' ) ) {
-							e.target.classList.remove( 'smush-ignore-image' );
-							e.target.classList.add( 'wp-smush-remove-skipped' );
-							e.target.text = window.wp_smush_msgs.bulkShow;
-							self.parent().find( '.smush-status' ).text( window.wp_smush_msgs.ignored );
+					.done( ( response ) => {
+						if ( self.is( 'a' ) && response.success && 'undefined' !== typeof response.data.status ) {
+							e.target.closest( '.column-smushit' ).innerHTML = response.data.status;
 						}
 					} );
 			} );

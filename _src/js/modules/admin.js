@@ -454,11 +454,10 @@ jQuery( function( $ ) {
 			action: 'remove_from_skip_list',
 			id: self.attr( 'data-id' ),
 		} )
-			.done( () => {
-				e.target.classList.remove( 'wp-smush-remove-skipped' );
-				e.target.classList.add( 'smush-ignore-image' );
-				e.target.text = wp_smush_msgs.ignore;
-				self.parent().find( '.smush-status' ).text( wp_smush_msgs.not_processed );
+			.done( ( response ) => {
+				if ( response.success && 'undefined' !== typeof response.data.status ) {
+					e.target.closest( '.column-smushit' ).innerHTML = response.data.status;
+				}
 			} );
 	} );
 

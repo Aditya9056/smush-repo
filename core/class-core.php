@@ -402,11 +402,6 @@ class Core extends Stats {
 			'smush_url'               => network_admin_url( 'admin.php?page=smush' ),
 			// Errors.
 			'error_ignore'            => esc_html__( 'Ignore this image from bulk smushing', 'wp-smushit' ),
-			// Ignore text.
-			'ignore'                  => esc_html__( 'Ignore', 'wp-smushit' ),
-			'ignored'                 => esc_html__( 'Ignored in Bulk Smush', 'wp-smushit' ),
-			'not_processed'           => esc_html__( 'Not processed', 'wp-smushit' ),
-			'bulkShow'                => esc_html__( ' Show in bulk Smush', 'wp-smushit' ),
 		);
 
 		wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
