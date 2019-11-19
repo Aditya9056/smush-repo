@@ -337,23 +337,13 @@ class Media_Library extends Abstract_Module {
 		$count           = count( get_intermediate_image_sizes() );
 		$smush_orgnl_txt = sprintf(
 			/* translators: %s: number of thumbnails */
-			esc_html__(
-				'When you upload an image to WordPress it automatically creates %s thumbnail sizes
-			that are commonly used in your pages. WordPress also stores the original full-size image, but because
-			these are not usually embedded on your site we don’t Smush them. Pro users can
-			override this.',
-				'wp-smushit'
-			),
+			esc_html__( 'When you upload an image to WordPress it automatically creates %s thumbnail sizes that are commonly used in your pages. WordPress also stores the original full-size image, but because these are not usually embedded on your site we don’t Smush them. Pro users can override this.', 'wp-smushit' ),
 			$count
 		);
 
 		$skip_msg = array(
 			'large_size' => $smush_orgnl_txt,
-			'size_limit' => esc_html__(
-				"Image couldn't be smushed as it exceeded the 5Mb size limit,
-			Pro users can smush images with size up to 32Mb.",
-				'wp-smushit'
-			),
+			'size_limit' => esc_html__( "Image couldn't be smushed as it exceeded the 5Mb size limit, Pro users can smush images with size up to 32Mb.", 'wp-smushit' ),
 		);
 
 		$skip_rsn = ! empty( $skip_msg[ $msg_id ] ) ? esc_html__( ' Skipped', 'wp-smushit' ) : '';
@@ -727,8 +717,8 @@ class Media_Library extends Abstract_Module {
 		foreach ( $size_stats as $size_key => $size_value ) {
 			$dimensions = '';
 			// Get the dimensions for the image size if available.
-			if ( ! empty( $this->image_sizes ) && ! empty( $this->image_sizes[ $size_key ] ) ) {
-				$dimensions = $this->image_sizes[ $size_key ]['width'] . 'x' . $this->image_sizes[ $size_key ]['height'];
+			if ( ! empty( $attachment_metadata['sizes']) && ! empty( $attachment_metadata['sizes'][ $size_key ] ) ) {
+				$dimensions = $attachment_metadata['sizes'][ $size_key ]['width'] . 'x' . $attachment_metadata['sizes'][ $size_key ]['height'];
 			}
 			$dimensions = ! empty( $dimensions ) ? sprintf( ' <br /> (%s)', $dimensions ) : '';
 			if ( $size_value->bytes > 0 ) {
