@@ -186,8 +186,6 @@ class StatsTest extends \WP_UnitTestCase {
 			'savings' => 0,
 		];
 
-		$this->assertArrayNotHasKey( 'pro_savings', $this->smush->core()->stats );
-
 		$this->tester->set_free();
 
 		$this->smush->core()->setup_global_stats();

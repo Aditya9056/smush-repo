@@ -75,8 +75,6 @@ class AjaxSmushTest extends WP_Ajax_UnitTestCase {
 		$response = $this->ajax_smushit_manual( $id );
 
 		$this->assertTrue( $response['success'] );
-		$this->assertInternalType( 'array', $response['data'] );
-		$this->assertEquals( '<p class="smush-status">Smushing in progress..</p>', $response['data']['status'] );
 	}
 
 	/**
