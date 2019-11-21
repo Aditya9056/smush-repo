@@ -50,8 +50,10 @@ class Admin {
 
 	/**
 	 * Admin constructor.
+	 *
+	 * @param Media_Library $media_lib  Media uploads library.
 	 */
-	public function __construct() {
+	public function __construct( Media_Library $media_lib ) {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
@@ -65,8 +67,8 @@ class Admin {
 			$this->ajax = new Ajax();
 		}
 
-		// Register media library UI.
-		new Media_Library();
+		// Init media library UI.
+		$media_lib->init_ui();
 
 		add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
 		add_filter( 'network_admin_plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );

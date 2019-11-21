@@ -9,6 +9,7 @@
 namespace Smush\Core;
 
 use Smush\WP_Smush;
+use stdClass;
 use WP_Query;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -584,6 +585,107 @@ class Stats {
 				'savings' => size_format( $savings_bytes, 1 ),
 			);
 		}
+	}
+
+	/**
+	 * Smush and Resizing Stats Combined together.
+	 *
+	 * @param array $smush_stats     Smush stats.
+	 * @param array $resize_savings  Resize savings.
+	 *
+	 * @return array Array of all the stats
+	 */
+	public function combined_stats( $smush_stats, $resize_savings ) {
+		if ( empty( $smush_stats ) || empty( $resize_savings ) ) {
+			return $smush_stats;
+		}
+
+		// Initialize key full if not there already.
+		if ( ! isset( $smush_stats['sizes']['full'] ) ) {
+			$smush_stats['sizes']['full']              = new stdClass();
+			$smush_stats['sizes']['full']->bytes       = 0;
+			$smush_stats['sizes']['full']->size_before = 0;
+			$smush_stats['sizes']['full']->size_after  = 0;
+			$smush_stats['sizes']['full']->percent     = 0;
+		}
+
+		// Full Image.
+		if ( ! empty( $smush_stats['sizes']['full'] ) ) {
+			$smush_stats['sizes']['full']->bytes       = ! empty( $resize_savings['bytes'] ) ? $smush_stats['sizes']['full']->bytes + $resize_savings['bytes'] : $smush_stats['sizes']['full']->bytes;
+			$smush_stats['sizes']['full']->size_before = ! empty( $resize_savings['size_before'] ) && ( $resize_savings['size_before'] > $smush_stats['sizes']['full']->size_before ) ? $resize_savings['size_before'] : $smush_stats['sizes']['full']->size_before;
+			$smush_stats['sizes']['full']->percent     = ! empty( $smush_stats['sizes']['full']->bytes ) && $smush_stats['sizes']['full']->size_before > 0 ? ( $smush_stats['sizes']['full']->bytes / $smush_stats['sizes']['full']->size_before ) * 100 : $smush_stats['sizes']['full']->percent;
+
+			$smush_stats['sizes']['full']->size_after = $smush_stats['sizes']['full']->size_before - $smush_stats['sizes']['full']->bytes;
+
+			$smush_stats['sizes']['full']->percent = round( $smush_stats['sizes']['full']->percent, 1 );
+		}
+
+		$smush_stats = $this->total_compression( $smush_stats );
+
+		return $smush_stats;
+	}
+
+	/**
+	 * Combine Savings from PNG to JPG conversion with smush stats
+	 *
+	 * @param array $stats               Savings from Smushing the image.
+	 * @param array $conversion_savings  Savings from converting the PNG to JPG.
+	 *
+	 * @return Object|array Total Savings
+	 */
+	public function combine_conversion_stats( $stats, $conversion_savings ) {
+		if ( empty( $stats ) || empty( $conversion_savings ) ) {
+			return $stats;
+		}
+
+		foreach ( $conversion_savings as $size_k => $savings ) {
+			// Initialize Object for size.
+			if ( empty( $stats['sizes'][ $size_k ] ) ) {
+				$stats['sizes'][ $size_k ]              = new stdClass();
+				$stats['sizes'][ $size_k ]->bytes       = 0;
+				$stats['sizes'][ $size_k ]->size_before = 0;
+				$stats['sizes'][ $size_k ]->size_after  = 0;
+				$stats['sizes'][ $size_k ]->percent     = 0;
+			}
+
+			if ( ! empty( $stats['sizes'][ $size_k ] ) && ! empty( $savings ) ) {
+				$stats['sizes'][ $size_k ]->bytes       = $stats['sizes'][ $size_k ]->bytes + $savings['bytes'];
+				$stats['sizes'][ $size_k ]->size_before = $stats['sizes'][ $size_k ]->size_before > $savings['size_before'] ? $stats['sizes'][ $size_k ]->size_before : $savings['size_before'];
+				$stats['sizes'][ $size_k ]->percent     = ! empty( $stats['sizes'][ $size_k ]->bytes ) && $stats['sizes'][ $size_k ]->size_before > 0 ? ( $stats['sizes'][ $size_k ]->bytes / $stats['sizes'][ $size_k ]->size_before ) * 100 : $stats['sizes'][ $size_k ]->percent;
+				$stats['sizes'][ $size_k ]->percent     = round( $stats['sizes'][ $size_k ]->percent, 1 );
+			}
+		}
+
+		$stats = $this->total_compression( $stats );
+
+		return $stats;
+	}
+
+	/**
+	 * Iterate over all the size stats and calculate the total stats
+	 *
+	 * @param array $stats  Stats array.
+	 *
+	 * @return mixed
+	 */
+	public function total_compression( $stats ) {
+		$stats['stats']['size_before'] = 0;
+		$stats['stats']['size_after']  = 0;
+		$stats['stats']['time']        = 0;
+
+		foreach ( $stats['sizes'] as $size_stats ) {
+			$stats['stats']['size_before'] += ! empty( $size_stats->size_before ) ? $size_stats->size_before : 0;
+			$stats['stats']['size_after']  += ! empty( $size_stats->size_after ) ? $size_stats->size_after : 0;
+			$stats['stats']['time']        += ! empty( $size_stats->time ) ? $size_stats->time : 0;
+		}
+
+		$stats['stats']['bytes'] = ! empty( $stats['stats']['size_before'] ) && $stats['stats']['size_before'] > $stats['stats']['size_after'] ? $stats['stats']['size_before'] - $stats['stats']['size_after'] : 0;
+
+		if ( ! empty( $stats['stats']['bytes'] ) && ! empty( $stats['stats']['size_before'] ) ) {
+			$stats['stats']['percent'] = ( $stats['stats']['bytes'] / $stats['stats']['size_before'] ) * 100;
+		}
+
+		return $stats;
 	}
 
 	/**

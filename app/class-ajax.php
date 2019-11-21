@@ -771,7 +771,11 @@ class Ajax {
 		$id = absint( $_POST['id'] );
 		update_post_meta( $id, 'wp-smush-ignore-bulk', 'true' );
 
-		wp_send_json_success();
+		wp_send_json_success(
+			array(
+				'links' => WP_Smush::get_instance()->library()->get_optimization_links( $id ),
+			)
+		);
 	}
 
 	/**
@@ -970,7 +974,11 @@ class Ajax {
 
 		delete_post_meta( absint( $_POST['id'] ), 'wp-smush-ignore-bulk' );
 
-		wp_send_json_success();
+		wp_send_json_success(
+			array(
+				'links' => WP_Smush::get_instance()->library()->get_optimization_links( absint( $_POST['id'] ) ),
+			)
+		);
 	}
 
 	/***************************************

@@ -14,6 +14,7 @@ namespace Smush\Core\Integrations\NextGen;
 
 use C_Component_Registry;
 use C_Gallery_Storage;
+use Smush\App\Media_Library;
 use Smush\Core\Core;
 use Smush\Core\Integrations\NextGen;
 use Smush\WP_Smush;
@@ -212,9 +213,9 @@ class Admin extends NextGen {
 			'smush_now'        => esc_html__( 'Smush Now', 'wp-smushit' ),
 			'error_in_bulk'    => $error_in_bulk,
 			'all_resmushed'    => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
-			'restore'          => esc_html__( 'Restoring image..', 'wp-smushit' ),
-			'smushing'         => esc_html__( 'Smushing image..', 'wp-smushit' ),
-			'checking'         => esc_html__( 'Checking images..', 'wp-smushit' ),
+			'restore'          => esc_html__( 'Restoring image...', 'wp-smushit' ),
+			'smushing'         => esc_html__( 'Smushing image...', 'wp-smushit' ),
+			'checking'         => esc_html__( 'Checking images...', 'wp-smushit' ),
 			// Button text.
 			'resmush_check'    => esc_html__( 'RE-CHECK IMAGES', 'wp-smushit' ),
 			'resmush_complete' => esc_html__( 'CHECK COMPLETE', 'wp-smushit' ),
@@ -324,7 +325,7 @@ class Admin extends NextGen {
 
 		// If we are not showing smush button, append progree bar, else it is already there.
 		if ( ! $show_button ) {
-			$status_txt .= WP_Smush::get_instance()->core()->mod->smush->progress_bar();
+			$status_txt .= Media_Library::progress_bar();
 		}
 
 		$text = $this->column_html( $pid, $status_txt, $button_txt, $show_button, false, $echo );
@@ -353,7 +354,7 @@ class Admin extends NextGen {
 		// if we aren't showing the button.
 		if ( ! $show_button ) {
 			if ( $echo ) {
-				echo $html . WP_Smush::get_instance()->core()->mod->smush->progress_bar();
+				echo $html . Media_Library::progress_bar();
 
 				return;
 			} else {
@@ -365,13 +366,13 @@ class Admin extends NextGen {
 			<button  class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
 				<span>' . $button_txt . '</span>
 			</button>';
-			$html .= WP_Smush::get_instance()->core()->mod->smush->progress_bar();
+			$html .= Media_Library::progress_bar();
 			return $html;
 		} else {
 			$html .= '<button class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
 				<span>' . $button_txt . '</span>
 			</button>';
-			echo $html . WP_Smush::get_instance()->core()->mod->smush->progress_bar();
+			echo $html . Media_Library::progress_bar();
 		}
 	}
 

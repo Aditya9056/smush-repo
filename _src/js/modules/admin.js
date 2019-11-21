@@ -34,7 +34,7 @@ jQuery( function( $ ) {
 	};
 	/**
 	 * Restore image request with a specified action for Media Library / NextGen Gallery
-  *
+     *
 	 * @param e
 	 * @param current_button
 	 * @param smush_action
@@ -74,11 +74,11 @@ jQuery( function( $ ) {
 		//Reduce the opacity of stats and disable the click
 		disable_links( current_button );
 
-		Smush.progressBar( current_button, wp_smush_msgs[ action ], 'show' );
+		current_button.html( '<span class="spinner wp-smush-progress">' + wp_smush_msgs[ action ] + '</span>' );
 
 		//Restore the image
 		$.post( ajaxurl, params, function( r ) {
-			Smush.progressBar( current_button, wp_smush_msgs[ action ], 'hide' );
+			current_button.html( window.wp_smush_msgs.all_done );
 
 			//reset all functionality
 			enable_links( current_button );
@@ -90,7 +90,6 @@ jQuery( function( $ ) {
 					current_button.parent().html( r.data.button );
 				} else {
 					//Show the smush button, and remove stats and restore option
-					console.log( current_button.parents().eq( 2 ) );
 					current_button.parents().eq( 1 ).html( r.data.button );
 				}
 
@@ -111,7 +110,6 @@ jQuery( function( $ ) {
 	 * @param width_only Whether to validate only width
 	 * @param height_only Validate only Height
 	 * @return {boolean} All Good or not
-	 *
 	 */
 	const validate_resize_settings = function( wrapper_div, width_only, height_only ) {
 		const resize_checkbox = wrapper_div.find( '#wp-smush-resize, #wp-smush-resize-quick-setup' );
@@ -456,11 +454,11 @@ jQuery( function( $ ) {
 			action: 'remove_from_skip_list',
 			id: self.attr( 'data-id' ),
 		} )
-			.done( () => {
-				e.target.classList.remove( 'wp-smush-remove-skipped' );
-				e.target.classList.add( 'smush-ignore-image' );
-				e.target.text = wp_smush_msgs.ignore;
-				self.parent().find( '.smush-status' ).text( wp_smush_msgs.not_processed );
+			.done( ( response ) => {
+				if ( response.success && 'undefined' !== typeof response.data.links ) {
+					self.parent().parent().find( '.smush-status' ).text( wp_smush_msgs.not_processed );
+					e.target.closest( '.smush-status-links' ).innerHTML = response.data.links;
+				}
 			} );
 	} );
 

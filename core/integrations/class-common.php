@@ -217,7 +217,7 @@ class Common {
 		}
 
 		// Calculate the total compression.
-		$stats = $smush->total_compression( $stats );
+		$stats = WP_Smush::get_instance()->core()->total_compression( $stats );
 
 		update_post_meta( $id, Smush::$smushed_meta_key, $stats );
 	}
