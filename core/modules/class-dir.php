@@ -243,6 +243,17 @@ class Dir extends Abstract_Module {
 
 		$path = $image['path'];
 
+		if ( false !== stripos( $path, 'phar://' ) ) {
+			wp_send_json_error(
+				array(
+					'error' => esc_html_e( 'Potential Phar PHP Object Injection detected', 'wp-smushit' ),
+					'image' => array(
+						'id' => $id,
+					),
+				)
+			);
+		}
+
 		// We have the image path, optimise.
 		$smush_results = WP_Smush::get_instance()->core()->mod->smush->do_smushit( $path );
 
