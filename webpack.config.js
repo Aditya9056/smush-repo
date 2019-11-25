@@ -58,9 +58,6 @@ const scssConfig = _.assign( _.cloneDeep( sharedConfig ), {
 						},
 					},
 					{
-						loader: 'resolve-url-loader',
-					},
-					{
 						loader: 'sass-loader',
 						options: {
 							sourceMap: true,
