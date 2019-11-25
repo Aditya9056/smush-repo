@@ -609,6 +609,12 @@ class Dir extends Abstract_Module {
 				$images[] = $path;
 				$images[] = md5( $path );
 				$images[] = @filesize( $path );  // Get the file size.
+
+				// Double check to prevent RIPS from marking this as insecure.
+				if ( false !== stripos( $path, 'phar://' ) ) {
+					continue;
+				}
+
 				$images[] = @filectime( $path ); // Get the file modification time.
 				$images[] = $timestamp;
 				$values[] = '(%s, %s, %d, %d, %s)';
