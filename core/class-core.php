@@ -658,6 +658,10 @@ class Core extends Stats {
 	 * @return int  New threshold.
 	 */
 	public function big_image_size_threshold( $threshold, $imagesize, $file, $attachment_id ) {
+		if ( ! Settings::get_instance()->get( 'resize' ) ) {
+			return $threshold;
+		}
+
 		$resize_sizes = Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 		if ( ! $resize_sizes || ! is_array( $resize_sizes ) ) {
 			return $threshold;
