@@ -778,6 +778,10 @@ class Dir extends Abstract_Module {
 			return false;
 		}
 
+		if ( false !== stripos( $path, 'phar://' ) ) {
+			return false;
+		}
+
 		$a = @getimagesize( $path );
 
 		// If a is not set.
