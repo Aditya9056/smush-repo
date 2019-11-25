@@ -470,10 +470,14 @@ class CDN extends Abstract_Module {
 				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
 
 				if ( ! is_null( $srcset ) && false !== $srcset ) {
+					// Remove possibly empty srcset attribute.
+					Helpers\Parser::remove_attribute( $new_image, 'srcset' );
 					Helpers\Parser::add_attribute( $new_image, 'srcset', $srcset );
 				}
 
 				if ( ! is_null( $srcset ) && false !== $sizes ) {
+					// Remove possibly empty sizes attribute.
+					Helpers\Parser::remove_attribute( $new_image, 'sizes' );
 					Helpers\Parser::add_attribute( $new_image, 'sizes', $sizes );
 				}
 			}
