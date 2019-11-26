@@ -384,10 +384,6 @@ class Stats {
 	 * @return array
 	 */
 	public function get_unsmushed_attachments() {
-		if ( isset( $_REQUEST['ids'] ) ) {
-			return array_map( 'intval', explode( ',', $_REQUEST['ids'] ) );
-		}
-
 		// Check if we can get the unsmushed attachments from the other two variables.
 		if ( ! empty( $this->attachments ) && ! empty( $this->smushed_attachments ) ) {
 			$attachments = array_diff( $this->attachments, $this->smushed_attachments );
