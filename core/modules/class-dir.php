@@ -114,6 +114,10 @@ class Dir extends Abstract_Module {
 	 * @return bool True/False, whether to display the Directory smush or not
 	 */
 	public static function should_continue() {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && isset( $_SERVER['HTTP_REFERER'] ) && preg_match( '#^' . network_admin_url() . '#i', wp_unslash( $_SERVER['HTTP_REFERER'] ) ) ) { // Input var ok.
+			return true;
+		}
+
 		// Do not show directory smush, if not main site in a network.
 		if ( is_multisite() && ( ! is_main_site() || ! is_network_admin() ) ) {
 			return false;

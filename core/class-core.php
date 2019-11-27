@@ -395,7 +395,7 @@ class Core extends Stats {
 			'resmush_complete'        => esc_html__( 'CHECK COMPLETE', 'wp-smushit' ),
 			// Progress bar text.
 			'progress_smushed'        => esc_html__( 'images optimized', 'wp-smushit' ),
-			'directory_url'           => admin_url( 'admin.php?page=smush&view=directory' ),
+			'directory_url'           => network_admin_url( 'admin.php?page=smush&view=directory' ),
 			'add_dir'                 => esc_html__( 'Choose directory', 'wp-smushit' ),
 			'bulk_resume'             => esc_html__( 'Resume scan', 'wp-smushit' ),
 			'bulk_stop'               => esc_html__( 'Stop current bulk smush process.', 'wp-smushit' ),
@@ -656,6 +656,10 @@ class Core extends Stats {
 	 * @return int  New threshold.
 	 */
 	public function big_image_size_threshold( $threshold, $imagesize, $file, $attachment_id ) {
+		if ( ! Settings::get_instance()->get( 'resize' ) ) {
+			return $threshold;
+		}
+
 		$resize_sizes = Settings::get_instance()->get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
 		if ( ! $resize_sizes || ! is_array( $resize_sizes ) ) {
 			return $threshold;
