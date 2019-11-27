@@ -2,6 +2,7 @@
 
 - Enhance: Media library UI
 - Enhance: CDN compatibility with empty srcset and sizes image attributes
+- Enhance: CDN support for background images
 
 = 3.4.0 =
 
