@@ -267,6 +267,28 @@ class Parser {
 			}
 		}
 
+		/**
+		 * Make sure that the image doesn't start and end with &quot;.
+		 *
+		 * @since 3.5.0
+		 */
+		$images['img_url'] = array_map(
+			function ( $image ) {
+				// Remove the starting &quot;.
+				if ( '&quot;' === substr( $image, 0, 6 ) ) {
+					$image = substr( $image, 6 );
+				}
+
+				// Remove the ending &quot;.
+				if ( '&quot;' === substr( '&quot;', -6 ) ) {
+					$image = substr( $image, 0, -6 );
+				}
+
+				return $image;
+			},
+			$images['img_url']
+		);
+
 		return $images;
 	}
 
