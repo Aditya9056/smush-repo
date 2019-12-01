@@ -280,7 +280,7 @@ class Parser {
 				}
 
 				// Remove the ending &quot;.
-				if ( '&quot;' === substr( '&quot;', -6 ) ) {
+				if ( '&quot;' === substr( $image, -6 ) ) {
 					$image = substr( $image, 0, -6 );
 				}
 

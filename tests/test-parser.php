@@ -54,8 +54,8 @@ class ParserTest extends WP_UnitTestCase {
 		$this->assertInternalType( 'array', $images );
 		$this->assertArrayHasKey( '0', $images );
 		$this->assertArrayHasKey( 'img_url', $images );
-		$this->assertCount( 3, $images[0] );
-		$this->assertCount( 3, $images['img_url'] );
+		$this->assertCount( 4, $images[0] );
+		$this->assertCount( 4, $images['img_url'] );
 
 		// Validate that parser is correct.
 		$this->assertEquals( '<div class="div-image" style="background-image: url(https://example.com/image.jpg);">', $images[0][0] );
