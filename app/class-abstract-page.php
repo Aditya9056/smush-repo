@@ -676,7 +676,7 @@ abstract class Abstract_Page {
 		}
 
 		// Show settings saved message.
-		if ( ! $this->settings->get_setting( WP_SMUSH_PREFIX . 'settings_updated' ) ) {
+		if ( ! get_option( WP_SMUSH_PREFIX . 'settings_updated' ) ) {
 			return;
 		}
 

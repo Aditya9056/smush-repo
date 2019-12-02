@@ -440,6 +440,8 @@ class Settings {
 
 		// Fallback to network settings.
 		$settings = get_option( $name, $default );
+
+		// TODO: this fallback is dangerous! Make sure that a proper false option is not replaced.
 		return $settings ? $settings : get_site_option( $name, $default );
 	}
 
