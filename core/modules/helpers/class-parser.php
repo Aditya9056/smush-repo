@@ -213,7 +213,7 @@ class Parser {
 			return true;
 		}
 
-		if ( isset( $_GET['wds-frontend-check'] ) ) {
+		if ( null !== filter_input( INPUT_GET, 'wds-frontend-check', FILTER_SANITIZE_STRING ) ) {
 			return true;
 		}
 
