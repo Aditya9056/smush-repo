@@ -43,6 +43,10 @@ class Parser {
 	 * @since 3.2.2
 	 */
 	public function __construct() {
+		if ( is_admin() ) {
+			return;
+		}
+
 		if ( $this->is_smartcrawl_analysis() ) {
 			return;
 		}
