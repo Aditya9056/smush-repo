@@ -293,30 +293,6 @@ class Parser {
 	}
 
 	/**
-	 * Get iframes from content.
-	 *
-	 * @since 3.4.0
-	 *
-	 * @param string $content  Page content.
-	 *
-	 * @return array
-	 */
-	private static function get_iframes( $content ) {
-		$iframes = array();
-
-		if ( preg_match_all( '/(?:<iframe[^>]*?\s+?src=["|\'](?P<frame_url>[^\s]+?)["|\'].*?>)/is', $content, $iframes ) ) {
-			foreach ( $iframes as $key => $unused ) {
-				// Simplify the output as much as possible, mostly for confirming test results.
-				if ( is_numeric( $key ) && $key > 0 ) {
-					unset( $iframes[ $key ] );
-				}
-			}
-		}
-
-		return $iframes;
-	}
-
-	/**
 	 * Add attribute to selected tag.
 	 *
 	 * @since 3.1.0
