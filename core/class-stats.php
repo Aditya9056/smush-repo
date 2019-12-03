@@ -154,7 +154,7 @@ class Stats {
 	 */
 	public function get_savings( $type, $force_update = true, $format = false, $return_count = false ) {
 		$key       = WP_SMUSH_PREFIX . $type . '_savings';
-		$key_count = WP_SMUSH_PREFIX . $type . '_count';
+		$key_count = WP_SMUSH_PREFIX . 'resize_count';
 
 		if ( ! $force_update ) {
 			$savings = wp_cache_get( $key, 'wp-smush' );
@@ -163,7 +163,7 @@ class Stats {
 			}
 
 			$count = wp_cache_get( $key_count, 'wp-smush' );
-			if ( $return_count && $count ) {
+			if ( $return_count && false !== $count ) {
 				return $count;
 			}
 		}
@@ -172,10 +172,18 @@ class Stats {
 		$count      = 0;
 		$offset     = 0;
 		$query_next = true;
-		$savings    = array(
-			'bytes'       => 0,
-			'size_before' => 0,
-			'size_after'  => 0,
+
+		$savings = array(
+			'resize' => array(
+				'bytes'       => 0,
+				'size_before' => 0,
+				'size_after'  => 0,
+			),
+			'pngjpg' => array(
+				'bytes'       => 0,
+				'size_before' => 0,
+				'size_after'  => 0,
+			),
 		);
 
 		global $wpdb;
@@ -210,18 +218,18 @@ class Stats {
 				$meta = maybe_unserialize( $data->meta_value );
 
 				// Resize mete already contains all the stats.
-				if ( 'resize' === $type && ! empty( $meta ) && ! empty( $meta['bytes'] ) ) {
-					$savings['bytes']       += $meta['bytes'];
-					$savings['size_before'] += $meta['size_before'];
-					$savings['size_after']  += $meta['size_after'];
+				if ( ! empty( $meta ) && ! empty( $meta['bytes'] ) ) {
+					$savings['resize']['bytes']       += $meta['bytes'];
+					$savings['resize']['size_before'] += $meta['size_before'];
+					$savings['resize']['size_after']  += $meta['size_after'];
 				}
 
 				// PNG - JPG conversion meta contains stats by attachment size.
-				if ( 'pngjpg' === $type && is_array( $meta ) ) {
+				if ( is_array( $meta ) ) {
 					foreach ( $meta as $size ) {
-						$savings['bytes']       += isset( $size['bytes'] ) ? $size['bytes'] : 0;
-						$savings['size_before'] += isset( $size['size_before'] ) ? $size['size_before'] : 0;
-						$savings['size_after']  += isset( $size['size_after'] ) ? $size['size_after'] : 0;
+						$savings['pngjpg']['bytes']       += isset( $size['bytes'] ) ? $size['bytes'] : 0;
+						$savings['pngjpg']['size_before'] += isset( $size['size_before'] ) ? $size['size_before'] : 0;
+						$savings['pngjpg']['size_after']  += isset( $size['size_after'] ) ? $size['size_after'] : 0;
 					}
 				}
 			}
@@ -234,13 +242,14 @@ class Stats {
 		}
 
 		if ( $format ) {
-			$savings['bytes'] = size_format( $savings['bytes'], 1 );
+			$savings[ $type ]['bytes'] = size_format( $savings[ $type ]['bytes'], 1 );
 		}
 
-		wp_cache_set( $key, $savings, 'wp-smush' );
+		wp_cache_set( WP_SMUSH_PREFIX . 'resize_savings', $savings['resize'], 'wp-smush' );
+		wp_cache_set( WP_SMUSH_PREFIX . 'pngjpg_savings', $savings['pngjpg'], 'wp-smush' );
 		wp_cache_set( $key_count, $count, 'wp-smush' );
 
-		return $return_count ? $count : $savings;
+		return $return_count ? $count : $savings[ $type ];
 	}
 
 	/**
