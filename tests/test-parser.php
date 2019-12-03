@@ -58,14 +58,17 @@ class ParserTest extends WP_UnitTestCase {
 		$this->assertCount( 4, $images['img_url'] );
 
 		// Validate that parser is correct.
-		$this->assertEquals( '<div class="div-image" style="background-image: url(https://example.com/image.jpg);">', $images[0][0] );
+		$this->assertEquals( 'background-image: url(https://example.com/image.jpg)', $images[0][0] );
 		$this->assertEquals( 'https://example.com/image.jpg', $images['img_url'][0] );
 
-		$this->assertEquals( '<div style="background-image: url(\'https://example.com/image.png\');" class="div-image">', $images[0][1] );
+		$this->assertEquals( 'background-image: url(\'https://example.com/image.png\')', $images[0][1] );
 		$this->assertEquals( 'https://example.com/image.png', $images['img_url'][1] );
 
-		$this->assertEquals( '<span class="span-image" style=\'background-image: url("https://example.com/image.gif");\' id="imageID">', $images[0][2] );
+		$this->assertEquals( 'background-image: url("https://example.com/image.gif")', $images[0][2] );
 		$this->assertEquals( 'https://example.com/image.gif', $images['img_url'][2] );
+
+		$this->assertEquals( 'background-image: url("https://example.com/image.gif")', $images[0][3] );
+		$this->assertEquals( 'https://example.com/image.gif', $images['img_url'][3] );
 	}
 
 }
