@@ -263,7 +263,7 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 			$skip = true;
 		}
 
-		if ( ! $this->is_allowed_post_type() || $this->is_exluded_uri() ) {
+		if ( $this->skip_post_type() || $this->is_exluded_uri() ) {
 			$skip = true;
 		}
 
@@ -405,31 +405,46 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 	 *
 	 * @return bool
 	 */
-	private function is_allowed_post_type() {
+	private function skip_post_type() {
 		// If not settings are set, probably, all are disabled.
 		if ( ! is_array( $this->options['include'] ) ) {
 			return false;
 		}
 
-		// Static home page is selected (is_home() is false, is_front_page() is true).
-		if ( is_front_page() ) {
-			return isset( $this->options['include']['frontpage'] ) && $this->options['include']['frontpage'];
-		}
+		$blog_is_frontpage = ( 'posts' === get_option( 'show_on_front' ) && ! is_multisite() ) ? true : false;
 
-		// Latest posts selected as homepage (both is_home() and is_front_page() will return true).
-		if ( is_home() ) {
-			return isset( $this->options['include']['home'] ) && $this->options['include']['home'];
-		}
-
-		if ( is_page() && isset( $this->options['include']['page'] ) && $this->options['include']['page'] ) {
+		if ( is_front_page() && isset( $this->options['include']['frontpage'] ) && ! $this->options['include']['frontpage'] ) {
 			return true;
-		} elseif ( is_single() && isset( $this->options['include']['single'] ) && $this->options['include']['single'] ) {
+		} elseif ( is_home() && isset( $this->options['include']['home'] ) && ! $this->options['include']['home'] && ! $blog_is_frontpage ) {
+			return true;
+		} elseif ( is_page() && isset( $this->options['include']['page'] ) && ! $this->options['include']['page'] ) {
+			return true;
+		} elseif ( is_single() && isset( $this->options['include']['single'] ) && ! $this->options['include']['single'] ) {
+			return true;
+		} elseif ( is_archive() && isset( $this->options['include']['archive'] ) && ! $this->options['include']['archive'] ) {
 			return true;
 		} elseif ( is_category() && isset( $this->options['include']['category'] ) && ! $this->options['include']['category'] ) {
-			return false; // Show false, because a category is also an archive.
+			return true;
 		} elseif ( is_tag() && isset( $this->options['include']['tag'] ) && ! $this->options['include']['tag'] ) {
-			return false;
-		} elseif ( is_archive() && isset( $this->options['include']['archive'] ) && $this->options['include']['archive'] ) {
+			return true;
+		} elseif ( self::skip_custom_post_type( get_post_type() ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Skip custom post type added in settings.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param string $post_type  Post type to check in settings.
+	 *
+	 * @return bool
+	 */
+	private function skip_custom_post_type( $post_type ) {
+		if ( isset( $this->options['include'][ $post_type ] ) && ! $this->options['include'][ $post_type ] ) {
 			return true;
 		}
 

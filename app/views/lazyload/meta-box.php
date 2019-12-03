@@ -5,6 +5,7 @@
  * @since 3.2.0
  * @package WP_Smush
  *
+ * @var array $cpts      Custom post types.
  * @var array $settings  Lazy loading settings.
  */
 
@@ -400,6 +401,20 @@ wp_enqueue_style( 'wp-color-picker' );
 							</label>
 						</td>
 					</tr>
+					<?php foreach ( $cpts  as $custom_post_type ) : ?>
+						<tr>
+							<td><strong><?php echo esc_html( $custom_post_type->label ); ?></strong></td>
+							<td><?php echo esc_html( $custom_post_type->name ); ?></td>
+							<td>
+								<label class="sui-toggle" for="include-<?php echo esc_attr( $custom_post_type->name ); ?>">
+									<input type='hidden' value='0' name='include[<?php echo esc_attr( $custom_post_type->name ); ?>]' />
+									<input type="checkbox" name="include[<?php echo esc_attr( $custom_post_type->name ); ?>]" id="include-<?php echo esc_attr( $custom_post_type->name ); ?>"
+										<?php checked( isset( $settings['include'][ $custom_post_type->name ] ) && $settings['include'][ $custom_post_type->name ] ); ?> />
+									<span class="sui-toggle-slider"></span>
+								</label>
+							</td>
+						</tr>
+					<?php endforeach; ?>
 					</tbody>
 				</table>
 			</div>
