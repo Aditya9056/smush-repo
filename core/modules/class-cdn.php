@@ -423,13 +423,16 @@ class CDN extends Abstract_Module {
 	 * Parse image for CDN.
 	 *
 	 * @since 3.2.2  Moved out to a separate function.
+	 * @since 3.5.0  Added $srcset and $type params.
 	 *
-	 * @param string $src    Image URL.
-	 * @param string $image  Image tag (<img>).
+	 * @param string $src     Image URL.
+	 * @param string $image   Image tag (<img>).
+	 * @param string $srcset  Image srcset content.
+	 * @param string $type    Element type. Accepts: 'img', 'source' or 'iframe'. Default: 'img'.
 	 *
 	 * @return string
 	 */
-	public function parse_image( $src, $image ) {
+	public function parse_image( $src, $image, $srcset = '', $type = 'img' ) {
 		/**
 		 * Filter to skip a single image from cdn.
 		 *
@@ -443,6 +446,33 @@ class CDN extends Abstract_Module {
 
 		$new_image = $image;
 
+		/**
+		 * Support for source in picture element.
+		 */
+		if ( 'source' === $type && $srcset ) {
+			$links = Helpers\Parser::get_links_from_content( $srcset );
+			if ( ! isset( $links[0] ) || ! is_array( $links[0] ) ) {
+				return $new_image;
+			}
+
+			foreach ( $links[0] as $link ) {
+				$src = $this->is_supported_path( $link );
+				if ( ! $src ) {
+					continue;
+				}
+
+				// Replace the data-envira-srcset of the image with CDN link.
+				$src = $this->generate_cdn_url( $src );
+				if ( $src ) {
+					// Replace the src of the image with CDN link.
+					$new_image = str_replace( $link, $src, $new_image );
+				}
+			}
+
+			// We can exit early, to avoid additional parsing.
+			return $new_image;
+		}
+
 		// Make sure this image is inside a supported directory. Try to convert to valid path.
 		$src = $this->is_supported_path( $src );
 		if ( $src ) {
@@ -453,20 +483,11 @@ class CDN extends Abstract_Module {
 
 			// Replace the src of the image with CDN link.
 			if ( ! empty( $src ) ) {
-				// Support for source in picture element.
-				if ( false !== strpos( $new_image, '<source' ) ) {
-					Helpers\Parser::remove_attribute( $new_image, 'srcset' );
-					Helpers\Parser::add_attribute( $new_image, 'srcset', $src );
-
-					// We can exit early, to avoid additional parsing.
-					return $new_image;
-				}
-
 				$new_image = preg_replace( '#(src=["|\'])' . $original_src . '(["|\'])#i', '\1' . $src . '\2', $new_image, 1 );
 			}
 
 			// See if srcset is already set.
-			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $image ) && $this->settings->get( 'auto_resize' ) && ! apply_filters( 'smush_skip_adding_srcset', false ) ) {
+			if ( empty( $srcset ) && $this->settings->get( 'auto_resize' ) && ! apply_filters( 'smush_skip_adding_srcset', false ) ) {
 				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
 
 				if ( ! is_null( $srcset ) && false !== $srcset ) {
@@ -1189,6 +1210,12 @@ class CDN extends Abstract_Module {
 	 * @return bool|string
 	 */
 	public function is_supported_path( $src ) {
+		// Allow only these extensions in CDN.
+		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
+		if ( ! in_array( $ext, array( 'gif', 'jpg', 'jpeg', 'png' ), true ) ) {
+			return false;
+		}
+
 		$url_parts = wp_parse_url( $src );
 
 		// Unsupported scheme.
@@ -1242,12 +1269,6 @@ class CDN extends Abstract_Module {
 		$uploads = isset( $uploads['baseurl'] ) ? false !== strpos( $src, $uploads['baseurl'] ) : true;
 
 		if ( ( false === strpos( $src, content_url() ) && ! $uploads ) || ( is_multisite() && $mapped_domain && false === strpos( $src, $mapped_domain ) ) ) {
-			return false;
-		}
-
-		// Allow only these extensions in CDN.
-		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
-		if ( ! in_array( $ext, array( 'gif', 'jpg', 'jpeg', 'png' ), true ) ) {
 			return false;
 		}
 

@@ -1,10 +1,11 @@
 = 3.5.0 =
 
 - New: Add custom post types to include/exclude filters in lazy load module
-- Fix: CDN not detecting background images surrounded by HTML entities
+- New: CDN support for source in picture element
 - Enhance: Media library UI
 - Enhance: CDN compatibility with empty srcset and sizes image attributes
 - Enhance: CDN support for background images
+- Fix: CDN not detecting background images surrounded by HTML entities
 
 = 3.4.0 =
 

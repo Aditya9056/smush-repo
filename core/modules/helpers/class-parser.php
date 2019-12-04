@@ -140,19 +140,19 @@ class Parser {
 	 * @return string
 	 */
 	private function process_images( $content ) {
-		$images = self::get_images_from_content( $content );
+		$images = $this->get_images_from_content( $content );
 
 		if ( empty( $images ) ) {
 			return $content;
 		}
 
 		foreach ( $images[0] as $key => $image ) {
-			$img_src   = $images['img_url'][ $key ];
+			$img_src   = $images['src'][ $key ];
 			$new_image = $image;
 
 			// Update the image with correct CDN links.
 			if ( $this->cdn ) {
-				$new_image = WP_Smush::get_instance()->core()->mod->cdn->parse_image( $img_src, $new_image );
+				$new_image = WP_Smush::get_instance()->core()->mod->cdn->parse_image( $img_src, $new_image, $images['srcset'][ $key ], $images['type'][ $key ] );
 			}
 
 			/**
@@ -231,14 +231,18 @@ class Parser {
 	 * @since 3.2.0  Moved to WP_Smush_Content from \Smush\Core\Modules\CDN
 	 * @since 3.2.2  Moved to Parser from WP_Smush_Content
 	 *
+	 * Performance test: auto generated page with ~900 lines of HTML code, 84 images.
+	 * - Smush 2.4.0: 82 matches, 104359 steps (~80 ms) <- does not match <source> images in <picture>.
+	 * - Smush 2.5.0: 84 matches, 63791 steps (~51 ms).
+	 *
 	 * @param string $content  Page content.
 	 *
 	 * @return array
 	 */
-	public static function get_images_from_content( $content ) {
+	public function get_images_from_content( $content ) {
 		$images = array();
 
-		if ( preg_match_all( '/(?:<(img|source|iframe)[^>]*?\s+?(src|srcset)=["|\'](?P<img_url>[^\s]+?)["|\'].*?>)/is', $content, $images ) ) {
+		if ( preg_match_all( '/<(?P<type>img|source|iframe)\b(?>\s+(?:src=[\'"](?P<src>[^\'"]*)[\'"]|srcset=[\'"](?P<srcset>[^\'"]*)[\'"])|[^\s>]+|\s+)*>/is', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
 				if ( is_numeric( $key ) && $key > 0 ) {
@@ -254,6 +258,10 @@ class Parser {
 	 * Get background images from content.
 	 *
 	 * @since 3.2.2
+	 *
+	 * Performance test: auto generated page with ~900 lines of HTML code, 84 images (only 1 with background image).
+	 * - Smush 2.4.0: 1 match, 522510 steps (~355 ms)
+	 * - Smush 2.5.0: 1 match, 12611 steps, (~12 ms)
 	 *
 	 * @param string $content  Page content.
 	 *
@@ -345,6 +353,10 @@ class Parser {
 	 * Get URLs from a string of content.
 	 *
 	 * This is mostly used to get the URLs from srcset and parse each single URL to use in CDN.
+	 *
+	 * Performance test: auto generated page with ~900 lines of HTML code, 84 images
+	 * - Smush 2.4.0: 11957 matches, 237227 steps (~169 ms) <- many false positive matches.
+	 * - Smush 2.5.0: 278 matches, 14509 steps, (~15 ms).
 	 *
 	 * @since 3.3.0
 	 *

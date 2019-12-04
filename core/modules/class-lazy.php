@@ -373,7 +373,7 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 	 * @return string
 	 */
 	public function exclude_from_lazy_loading( $content ) {
-		$images = Helpers\Parser::get_images_from_content( $content );
+		$images = $this->parser->get_images_from_content( $content );
 
 		if ( empty( $images ) ) {
 			return $content;
