@@ -1212,7 +1212,7 @@ class CDN extends Abstract_Module {
 	public function is_supported_path( $src ) {
 		// Allow only these extensions in CDN.
 		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
-		if ( ! in_array( $ext, array( 'gif', 'jpg', 'jpeg', 'png' ), true ) ) {
+		if ( ! in_array( $ext, $this->supported_extensions, true ) ) {
 			return false;
 		}
 
