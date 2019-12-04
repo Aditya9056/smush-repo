@@ -4,6 +4,7 @@
 - New: CDN support for source in picture element
 - New: Lazy loading for webp images
 - New: Lazy loading support for picture element
+- Enhance: Page parsing performance
 - Enhance: Media library UI
 - Enhance: CDN compatibility with empty srcset and sizes image attributes
 - Enhance: CDN support for background images
