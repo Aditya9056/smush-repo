@@ -167,7 +167,7 @@ class Parser {
 			 * @param bool $skip  Skip status.
 			 */
 			if ( $this->lazy_load && ! apply_filters( 'wp_smush_should_skip_parse', false ) ) {
-				$new_image = WP_Smush::get_instance()->core()->mod->lazy->parse_image( $img_src, $new_image );
+				$new_image = WP_Smush::get_instance()->core()->mod->lazy->parse_image( $img_src, $new_image, $images['type'][ $key ] );
 			}
 
 			$content = str_replace( $image, $new_image, $content );

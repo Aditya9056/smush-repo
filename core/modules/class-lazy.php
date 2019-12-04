@@ -64,7 +64,6 @@ class Lazy extends Abstract_Module {
 
 		// Load js file that is required in public facing pages.
 		add_action( 'wp_head', array( $this, 'add_inline_styles' ) );
-
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
 		// Allow lazy load attributes in img tag.
@@ -277,10 +276,11 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 	 *
 	 * @param string $src    Image URL.
 	 * @param string $image  Image tag (<img>).
+	 * @param string $type   Element type. Accepts: 'img', 'source' or 'iframe'. Default: 'img'.
 	 *
 	 * @return string
 	 */
-	public function parse_image( $src, $image ) {
+	public function parse_image( $src, $image, $type = 'img' ) {
 		if ( $this->is_amp() ) {
 			return $image;
 		}
@@ -298,27 +298,12 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 			return $image;
 		}
 
-		// Avoid conflicts if attributes are set (another plugin, for example).
-		if ( false !== strpos( $image, 'data-src' ) ) {
-			return $image;
-		}
-
-		// Compatibility with Essential Grid lazy loading.
-		if ( false !== strpos( $image, 'data-lazysrc' ) ) {
-			return $image;
-		}
-
-		// Compatibility with JetPack lazy loading.
-		if ( false !== strpos( $image, 'jetpack-lazy-image' ) ) {
-			return $image;
-		}
-
 		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
 		$ext = 'jpg' === $ext ? 'jpeg' : $ext;
 
 		// If not a supported image in src or not an iframe - skip.
 		$iframe = 'iframe' === substr( $image, 1, 6 );
-		if ( ! in_array( $ext, array( 'jpeg', 'gif', 'png', 'svg' ), true ) && ! $iframe ) {
+		if ( ! in_array( $ext, array( 'jpeg', 'gif', 'png', 'svg', 'webp' ), true ) && ! $iframe && 'source' !== $type ) {
 			return $image;
 		}
 
@@ -339,11 +324,18 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 		$new_image = $image;
 
 		$src = Helpers\Parser::get_attribute( $new_image, 'src' );
-		Helpers\Parser::remove_attribute( $new_image, 'src' );
-		Helpers\Parser::add_attribute( $new_image, 'data-src', $src );
+		if ( $src ) {
+			Helpers\Parser::remove_attribute( $new_image, 'src' );
+			Helpers\Parser::add_attribute( $new_image, 'data-src', $src );
+		}
 
 		// Change srcset to data-srcset attribute.
-		$new_image = preg_replace( '/<img(.*?)(srcset=)(.*?)>/i', '<img$1data-$2$3>', $new_image );
+		$new_image = preg_replace( '/<(.*?)(srcset=)(.*?)>/i', '<$1data-$2$3>', $new_image );
+
+		// Exit early if this is a <source> element from <picture>.
+		if ( 'source' === $type ) {
+			return $new_image;
+		}
 
 		// Add .lazyload class.
 		$class = Helpers\Parser::get_attribute( $new_image, 'class' );
