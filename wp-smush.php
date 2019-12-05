@@ -88,20 +88,17 @@ if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
 	define( 'WP_SMUSH_TIMEOUT', apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 ) );
 }
 
-// Compat with WPMU DEV staging.
-if ( isset( $_SERVER['WPMUDEV_HOSTING_ENV'] ) && 'staging' === wp_unslash( $_SERVER['WPMUDEV_HOSTING_ENV'] ) ) {
-	define( 'WP_SMUSH_ASYNC', false );
-}
-
 /**
  * To support Smushing on staging sites like SiteGround staging where staging site urls are different
  * but redirects to main site url. Remove the protocols and www, and get the domain name.*
  * If Set to false, WP Smush switch backs to the Old Sync Optimisation.
  */
 $site_url = str_replace( array( 'http://', 'https://', 'www.' ), '', site_url() );
-if ( ! defined( 'WP_SMUSH_ASYNC' ) && ! empty( $_SERVER['SERVER_NAME'] ) && ( 0 !== strpos( $site_url, $_SERVER['SERVER_NAME'] ) ) ) { // Input var ok.
+// Compat with WPMU DEV staging.
+$wpmu_host = isset( $_SERVER['WPMUDEV_HOSTING_ENV'] ) && 'staging' === wp_unslash( $_SERVER['WPMUDEV_HOSTING_ENV'] );
+if ( ( ! empty( $_SERVER['SERVER_NAME'] ) && 0 !== strpos( $site_url, wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) || $wpmu_host ) {
 	define( 'WP_SMUSH_ASYNC', false );
-} elseif ( ! defined( 'WP_SMUSH_ASYNC' ) ) {
+} else {
 	define( 'WP_SMUSH_ASYNC', true );
 }
 
