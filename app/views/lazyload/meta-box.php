@@ -409,7 +409,7 @@ wp_enqueue_style( 'wp-color-picker' );
 								<label class="sui-toggle" for="include-<?php echo esc_attr( $custom_post_type->name ); ?>">
 									<input type='hidden' value='0' name='include[<?php echo esc_attr( $custom_post_type->name ); ?>]' />
 									<input type="checkbox" name="include[<?php echo esc_attr( $custom_post_type->name ); ?>]" id="include-<?php echo esc_attr( $custom_post_type->name ); ?>"
-										<?php checked( isset( $settings['include'][ $custom_post_type->name ] ) && $settings['include'][ $custom_post_type->name ] ); ?> />
+										<?php checked( ! isset( $settings['include'][ $custom_post_type->name ] ) || $settings['include'][ $custom_post_type->name ] ); ?> />
 									<span class="sui-toggle-slider"></span>
 								</label>
 							</td>
