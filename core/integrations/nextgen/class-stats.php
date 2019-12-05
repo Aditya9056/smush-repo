@@ -207,8 +207,7 @@ class Stats extends NextGen {
 				foreach ( $attachments as $attachment ) {
 					// Check if it has `wp_smush` key.
 					if ( class_exists( 'Ngg_Serializable' ) ) {
-						$serializer = new Ngg_Serializable();
-						$meta       = $serializer->unserialize( $attachment->meta_data );
+						$meta = ( new Ngg_Serializable() )->unserialize( $attachment->meta_data );
 					} elseif ( class_exists( 'C_NextGen_Serializable' ) && method_exists( 'C_NextGen_Serializable', 'unserialize' ) ) {
 						$meta = C_NextGen_Serializable::unserialize( $attachment->meta_data );
 					} else {
