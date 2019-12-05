@@ -15,7 +15,7 @@ Compress and optimize (or optimise) image files, improve performance and boost y
 
 == Description ==
 
-*Resize, optimize, optimise and compress all of your images with the incredibly powerful and 100% free WordPress image smusher, brought to you by the superteam at WPMU DEV!*
+**Resize, optimize, optimise and compress all of your images with the incredibly powerful and 100% free WordPress image smusher, brought to you by the superteam at WPMU DEV!**
 
 (You say optimise I say optimize...let's call the whole thing off ;) )
 
@@ -36,7 +36,7 @@ Smush has been benchmarked and tested number one for speed and quality and is th
 - Super Servers - Smush images with no slowdown using WPMU DEV's fast, reliable Smush API
 - And many, many, more!
 
-###Preserve Image Quality
+### Preserve Image Quality
 
 Some image compression tools destroy images with as much as a 30% loss in quality. Our servers strip hidden bulky information from your images and reduce file size without affecting the appearance.
 
@@ -78,7 +78,10 @@ Smush has lazy load built-in. If your page has a bunch of images below the fold,
 ★★★★★
 > “Smush helped reduce the total files size on my site and increased browsing speed. Well done guys!” - [pdci](https://wordpress.org/support/users/pdci/)
 
-###What about Multisite?
+★★★★★
+> “It’s very discrete and does not bother me with an API key or other additional installation steps. The main dashboard of the plugin gives me nice insight. Overall it really fits my needs and I’ll be willing to upgrade to pro if my needs change. I’d recommend it to clients/friends without hesitation. Keep it up!” - [tarkan_](https://wordpress.org/support/users/tarkan_/)
+
+### What about Multisite?
 
 Smush can be used to optimize all the images across your entire network! Use global settings or configure each site individually.
 
