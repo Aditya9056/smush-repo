@@ -46,7 +46,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace Smush;
 
 use WP_CLI;
-use WPMUDEV_Dashboard;
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -115,7 +114,6 @@ if ( WP_SMUSH_BASENAME !== plugin_basename( __FILE__ ) ) {
 	}
 
 	if ( ! function_exists( 'is_plugin_active' ) ) {
-		/* @noinspection PhpIncludeInspection */
 		include_once ABSPATH . 'wp-admin/includes/plugin.php';
 	}
 
@@ -191,14 +189,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		private static $is_pro;
 
 		/**
-		 * Smush project ID.
-		 *
-		 * @since  3.1.1
-		 * @var int $project_id
-		 */
-		private static $project_id = 912164;
-
-		/**
 		 * Return the plugin instance.
 		 *
 		 * @return WP_Smush
@@ -218,12 +208,8 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			spl_autoload_register( array( $this, 'autoload' ) );
 
 			$this->register_actions();
-
-			$this->maybe_upgrade_to_pro();
-
 			$this->init();
 		}
-
 
 		/**
 		 * Autoload method.
@@ -542,74 +528,6 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			}
 
 			return $api_key;
-		}
-
-		/**
-		 * Upgrade free version to pro.
-		 *
-		 * @since 3.1.1
-		 */
-		public function upgrade_to_pro() {
-			if ( WPMUDEV_Dashboard::$upgrader->install( self::$project_id ) ) {
-				delete_site_option( 'smush_cron_update_running' );
-				activate_plugin( 'wp-smush-pro/wp-smush.php' );
-
-				// Do we need to deactivate?
-				deactivate_plugins( 'wp-smushit/wp-smush.php', true );
-
-				define( 'WP_SMUSH_PRESERVE_STATS', true );
-				delete_plugins( array( 'wp-smushit/wp-smush.php' ) );
-			}
-		}
-
-		/**
-		 * Check if we can upgrade to Pro version.
-		 *
-		 * @since 3.1.1
-		 */
-		private function maybe_upgrade_to_pro() {
-			if ( 'wp-smush-pro/wp-smush.php' === WP_SMUSH_BASENAME ) {
-				return;
-			}
-
-			// Check that dashboard plugin is installed.
-			if ( ! class_exists( '\WPMUDEV_Dashboard' ) ) {
-				return;
-			}
-
-			if ( ! is_object( WPMUDEV_Dashboard::$api ) || is_null( WPMUDEV_Dashboard::$api ) ) {
-				return;
-			}
-
-			if ( ! method_exists( WPMUDEV_Dashboard::$api, 'has_key' ) ) {
-				return;
-			}
-
-			// If user can't install - exit.
-			if ( ! WPMUDEV_Dashboard::$upgrader->user_can_install( self::$project_id ) ) {
-				return;
-			}
-
-			// Check permissions and configuration.
-			if ( ! WPMUDEV_Dashboard::$upgrader->can_auto_install( self::$project_id ) ) {
-				return;
-			}
-
-			if ( ! method_exists( WPMUDEV_Dashboard::$api, 'get_project_data' ) ) {
-				return;
-			}
-
-			$plugin = WPMUDEV_Dashboard::$api->get_project_data( self::$project_id );
-			if ( version_compare( WP_SMUSH_VERSION, $plugin['version'], '>' ) ) {
-				return;
-			}
-
-			$running_cron_update = get_site_option( 'smush_cron_update_running' );
-			if ( empty( $running_cron_update ) ) {
-				// Schedule upgrade.
-				wp_schedule_single_event( time(), 'smush_upgrade_to_pro' );
-				update_site_option( 'smush_cron_update_running', true );
-			}
 		}
 
 	}
