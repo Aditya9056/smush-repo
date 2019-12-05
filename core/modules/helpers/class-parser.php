@@ -346,7 +346,7 @@ class Parser {
 	 * @param string $attribute  Img attribute name (srcset, size, etc).
 	 */
 	public static function remove_attribute( &$element, $attribute ) {
-		$element = preg_replace( '/' . $attribute . '=[\' | "](.*?)[\'|"]/i', '', $element );
+		$element = preg_replace( '/' . $attribute . '=[\'"](.*?)[\'"]/i', '', $element );
 	}
 
 	/**
