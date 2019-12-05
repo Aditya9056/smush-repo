@@ -120,7 +120,7 @@ class CDN extends Abstract_Module {
 
 		// Update responsive image srcset and sizes if required.
 		add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
-		add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 10, 5 );
+		add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 1, 2 );
 
 		// Add resizing arguments to image src.
 		add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
@@ -977,7 +977,7 @@ class CDN extends Abstract_Module {
 	 */
 	private function max_content_width() {
 		// Get global content width (if content width is empty, set 1900).
-		$content_width = isset( $GLOBALS['content_width'] ) ? (int) $GLOBALS['content_width'] : 1900;
+		$content_width = isset( $GLOBALS['content_width'] ) ? (int) $GLOBALS['content_width'] : 1920;
 
 		// Check to see if we are resizing the images (can not go over that value).
 		$resize_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
