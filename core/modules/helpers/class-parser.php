@@ -38,11 +38,11 @@ class Parser {
 	private $background_images = false;
 
 	/**
-	 * Parser constructor.
+	 * Smush will __construct this class multiple times, but only once does it need to be initialized.
 	 *
-	 * @since 3.2.2
+	 * @since 3.5.0  Moved from __construct().
 	 */
-	public function __construct() {
+	public function init() {
 		if ( is_admin() ) {
 			return;
 		}
