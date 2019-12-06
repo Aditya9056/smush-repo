@@ -374,6 +374,16 @@ class CDN extends Abstract_Module {
 			return $src;
 		}
 
+		/**
+		 * Filter hook to alter image src before going through cdn.
+		 *
+		 * @since 3.4.0
+		 * @see smush_image_src_before_cdn filter if you need earlier access with the image element.
+		 *
+		 * @param string $src  Image src.
+		 */
+		$src = apply_filters( 'smush_filter_generate_cdn_url', $src );
+
 		// Support for WP installs in subdirectories: remove the site url and leave only the file path.
 		$path = str_replace( get_site_url(), '', $src );
 
