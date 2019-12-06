@@ -26,7 +26,7 @@
 /*
 This plugin was originally developed by Alex Dunae (http://dialect.ca/).
 
-Copyright 2007-2018 Incsub (http://incsub.com)
+Copyright 2007-2020 Incsub (http://incsub.com)
 Author - Aaron Edwards, Sam Najian, Umesh Kumar, Anton Vanyukov
 
 This program is free software; you can redistribute it and/or modify
