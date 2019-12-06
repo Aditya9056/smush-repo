@@ -35,7 +35,7 @@ echo WP_Smush::get_instance()->admin()->bulk_resmush_content();
 // If there are no images in media library.
 if ( 0 === absint( $core->total_count ) ) {
 	?>
-	<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
+	<?php if ( ! apply_filters( 'wpmudev_branding_hide_branding', false ) ) : ?>
 		<span class="wp-smush-no-image tc">
 			<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-no-media.png' ); ?>"
 				alt="<?php esc_attr_e( 'No attachments found - Upload some images', 'wp-smushit' ); ?>">

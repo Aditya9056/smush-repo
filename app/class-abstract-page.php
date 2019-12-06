@@ -558,7 +558,7 @@ abstract class Abstract_Page {
 						<?php esc_html_e( 'Re-Check Images', 'wp-smushit' ); ?>
 					</button>
 				<?php endif; ?>
-				<?php if ( ! $this->hide_wpmudev_doc_link() ) : ?>
+				<?php if ( ! apply_filters( 'wpmudev_branding_hide_doc_link', false ) ) : ?>
 					<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" class="sui-button sui-button-ghost" target="_blank">
 						<i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?>
 					</a>
@@ -738,28 +738,6 @@ abstract class Abstract_Page {
 		);
 
 		return $plugin_pages;
-	}
-
-	/**
-	 * Flag to hide wpmudev branding image.
-	 *
-	 * @since 3.0
-	 *
-	 * @return bool
-	 */
-	public function hide_wpmudev_branding() {
-		return apply_filters( 'wpmudev_branding_hide_branding', false );
-	}
-
-	/**
-	 * Flag to hide wpmudev doc link.
-	 *
-	 * @since 3.0
-	 *
-	 * @return bool
-	 */
-	public function hide_wpmudev_doc_link() {
-		return apply_filters( 'wpmudev_branding_hide_doc_link', false );
 	}
 
 	/**
