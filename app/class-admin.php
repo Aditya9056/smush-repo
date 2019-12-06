@@ -72,6 +72,7 @@ class Admin {
 
 		add_filter( 'plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
 		add_filter( 'network_admin_plugin_action_links_' . WP_SMUSH_BASENAME, array( $this, 'settings_link' ) );
+		add_filter( 'plugin_row_meta', array( $this, 'add_plugin_meta_links' ), 10, 2 );
 
 		// Prints a membership validation issue notice in Media Library.
 		add_action( 'admin_notices', array( $this, 'media_library_membership_notice' ) );
@@ -149,43 +150,61 @@ class Admin {
 	/**
 	 * Adds a Smush pro settings link on plugin page.
 	 *
-	 * @param array $links        Current links.
-	 * @param bool  $url_only     Get only URL.
-	 * @param bool  $networkwide  Do we need the network wide setting url.
+	 * @param array $links  Current links.
 	 *
 	 * @return array|string
 	 */
-	public function settings_link( $links, $url_only = false, $networkwide = false ) {
-		$settings_page = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
-		// If networkwide setting url is needed.
-		$settings_page = $url_only && $networkwide && is_multisite() ? network_admin_url( 'admin.php?page=smush' ) : $settings_page;
-		$settings      = '<a href="' . $settings_page . '">' . __( 'Settings', 'wp-smushit' ) . '</a>';
-
-		// Return only settings page link.
-		if ( $url_only ) {
-			return $settings_page;
-		}
-
-		// Added a fix for weird warning in multisite, "array_unshift() expects parameter 1 to be array, null given".
-		if ( ! empty( $links ) ) {
-			array_unshift( $links, $settings );
-		} else {
-			$links = array( $settings );
-		}
-
+	public function settings_link( $links ) {
 		// Upgrade link.
 		if ( ! WP_Smush::is_pro() ) {
 			$upgrade_url = add_query_arg(
 				array(
 					'utm_source'   => 'smush',
 					'utm_medium'   => 'plugin',
-					'utm_campaign' => 'smush_pluginlist_upgrade',
+					'utm_campaign' => 'wp-smush-pro/wp-smush.php' !== WP_SMUSH_BASENAME ? 'smush_pluginlist_upgrade' : 'smush_pluginlist_renew',
 				),
 				esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro/' )
 			);
 
-			$links['upgrade'] = '<a href="' . esc_url( $upgrade_url ) . '" aria-label="' . esc_attr( __( 'Upgrade to Smush Pro', 'wp-smushit' ) ) . '" target="_blank" style="color: #1ABC9C;">' . esc_html__( 'Upgrade', 'wp-smushit' ) . '</a>';
+			$label = 'wp-smush-pro/wp-smush.php' !== WP_SMUSH_BASENAME ? __( 'Upgrade to Smush Pro', 'wp-smushit' ) : __( 'Renew Membership', 'wp-smushit' );
+			$text  = 'wp-smush-pro/wp-smush.php' !== WP_SMUSH_BASENAME ? __( 'Upgrade', 'wp-smushit' ) : __( 'Renew Membership', 'wp-smushit' );
+
+			$links['upgrade'] = '<a href="' . esc_url( $upgrade_url ) . '" aria-label="' . esc_attr( $label ) . '" target="_blank" style="color: #8D00B1;">' . $text . '</a>';
 		}
+
+		// Documentation link.
+		$links['docs'] = '<a href="https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation" aria-label="' . esc_attr( __( 'View Smush Documentation', 'wp-smushit' ) ) . '" target="_blank">' . esc_html__( 'Docs', 'wp-smushit' ) . '</a>';
+
+		// Settings link.
+		$settings_page      = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
+		$links['dashboard'] = '<a href="' . $settings_page . '" aria-label="' . esc_attr( __( 'Go to Smush Dashboard', 'wp-smushit' ) ) . '">' . esc_html__( 'Settings', 'wp-smushit' ) . '</a>';
+
+		return array_reverse( $links );
+	}
+
+	/**
+	 * Add additional links next to the plugin version.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param array  $links  Links array.
+	 * @param string $file   Plugin basename.
+	 *
+	 * @return array
+	 */
+	public function add_plugin_meta_links( $links, $file ) {
+		if ( ! defined( 'WP_SMUSH_BASENAME' ) || WP_SMUSH_BASENAME !== $file ) {
+			return $links;
+		}
+
+		if ( 'wp-smush-pro/wp-smush.php' !== WP_SMUSH_BASENAME ) {
+			$links[] = '<a href="https://wordpress.org/support/plugin/wp-smushit/reviews/#new-post" target="_blank" title="' . esc_attr__( 'Rate Smush', 'wp-smushit' ) . '">' . esc_html__( 'Rate Smush', 'wp-smushit' ) . '</a>';
+			$links[] = '<a href="https://wordpress.org/support/plugin/wp-smushit" target="_blank" title="' . esc_attr__( 'Support', 'wp-smushit' ) . '">' . esc_html__( 'Support', 'wp-smushit' ) . '</a>';
+		} else {
+			$links[] = '<a href="https://premium.wpmudev.org/hub/support" target="_blank" title="' . esc_attr__( 'Premium Support', 'wp-smushit' ) . '">' . esc_html__( 'Premium Support', 'wp-smushit' ) . '</a>';
+		}
+
+		$links[] = '<a href="https://premium.wpmudev.org/roadmap" target="_blank" title="' . esc_attr__( 'Roadmap', 'wp-smushit' ) . '">' . esc_html__( 'Roadmap', 'wp-smushit' ) . '</a>';
 
 		return $links;
 	}
