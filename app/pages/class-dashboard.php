@@ -540,10 +540,8 @@ class Dashboard extends Abstract_Page {
 						<p class="wp-smush-stats-label-message">
 							<?php
 							$link_class = 'wp-smush-lossy-enable-link';
-							if ( is_multisite() && Settings::can_access( 'bulk' ) ) {
-								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true, true ) . '#enable-lossy';
-							} elseif ( 'bulk' !== $this->get_current_tab() ) {
-								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '#enable-lossy';
+							if ( ( is_multisite() && Settings::can_access( 'bulk' ) ) || 'bulk' !== $this->get_current_tab() ) {
+								$settings_link = $this->get_page_url() . '#enable-lossy';
 							} else {
 								$settings_link = '#';
 								$link_class    = 'wp-smush-lossy-enable';

@@ -700,7 +700,7 @@ abstract class Abstract_Page {
 		if ( $smush_count || $resmush_count ) {
 			$message_class = ' sui-notice-warning';
 			// Show link to bulk smush tab from other tabs.
-			$bulk_smush_link = 'bulk' === $this->get_current_tab() ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '">';
+			$bulk_smush_link = 'bulk' === $this->get_current_tab() ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . $this->get_page_url() . '">';
 			/* translators: %1$s - <a>, %2$s - </a> */
 			$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
 		}
@@ -772,6 +772,36 @@ abstract class Abstract_Page {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Return this menu page URL
+	 *
+	 * @since 3.5.0
+	 *
+	 * @return string
+	 */
+	public function get_page_url() {
+		if ( is_multisite() && is_network_admin() ) {
+			global $_parent_pages;
+
+			if ( isset( $_parent_pages[ $this->slug ] ) ) {
+				$parent_slug = $_parent_pages[ $this->slug ];
+				if ( $parent_slug && ! isset( $_parent_pages[ $parent_slug ] ) ) {
+					$url = network_admin_url( add_query_arg( 'page', $this->slug, $parent_slug ) );
+				} else {
+					$url = network_admin_url( 'admin.php?page=' . $this->slug );
+				}
+			} else {
+				$url = '';
+			}
+
+			$url = esc_url( $url );
+
+			return $url;
+		} else {
+			return menu_page_url( $this->slug, false );
+		}
 	}
 
 }
