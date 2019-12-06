@@ -422,9 +422,10 @@ abstract class Abstract_Page {
 	 */
 	public function get_current_tab() {
 		$tabs = $this->get_tabs();
+		$view = filter_input( INPUT_GET, 'view', FILTER_SANITIZE_STRING );
 
-		if ( isset( $_GET['view'] ) && array_key_exists( wp_unslash( $_GET['view'] ), $tabs ) ) { // Input var ok.
-			return wp_unslash( $_GET['view'] ); // Input var ok.
+		if ( array_key_exists( $view, $tabs ) ) {
+			return $view;
 		}
 
 		if ( empty( $tabs ) ) {
@@ -616,15 +617,12 @@ abstract class Abstract_Page {
 	 * Display a admin notice on smush screen if the custom table wasn't created
 	 */
 	private function show_table_error() {
-		$notice = '';
-
 		$current_screen = get_current_screen();
 		if ( 'toplevel_page_smush' !== $current_screen->id && 'toplevel_page_smush-network' !== $current_screen->id ) {
-			return $notice;
+			return;
 		}
 
-		if ( ! Dir::table_exist() ) {
-			// Display a notice.
+		if ( ! Dir::table_exist() ) { // Display a notice.
 			?>
 			<div class="sui-notice sui-notice-warning missing_table">
 				<p>
@@ -658,7 +656,7 @@ abstract class Abstract_Page {
 		?>
 
 		<div class="sui-notice wp-smush-api-message <?php echo esc_attr( $type_class ); ?>">
-			<p><?php echo $message; ?></p>
+			<p><?php echo wp_kses_post( $message ); ?></p>
 			<span class="sui-notice-dismiss">
 				<a href="#"><?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?></a>
 			</span>
@@ -709,7 +707,7 @@ abstract class Abstract_Page {
 		?>
 		<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $message_class ); ?>">
 			<div class="sui-notice-content">
-				<p><?php echo $message; ?></p>
+				<p><?php echo wp_kses_post( $message ); ?></p>
 			</div>
 			<span class="sui-notice-dismiss">
 				<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>

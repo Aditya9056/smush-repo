@@ -3,6 +3,8 @@
  * Render Smush pages.
  *
  * @package WP_Smush
+ *
+ * @var \Smush\App\Pages\Dashboard $this
  */
 
 namespace Smush\App\Views;
