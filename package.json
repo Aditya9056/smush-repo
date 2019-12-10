@@ -40,8 +40,8 @@
     "lazysizes": "^5.1.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
+    "@babel/core": "^7.7.5",
+    "@babel/preset-env": "^7.7.6",
     "@babel/preset-react": "^7.7.4",
     "@wordpress/eslint-plugin": "^3.2.0",
     "ajv": "6.10.2",
@@ -49,7 +49,7 @@
     "autoprefixer": "^9.7.3",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
-    "css-loader": "^3.2.1",
+    "css-loader": "^3.3.0",
     "eslint": "^6.7.2",
     "file-loader": "^5.0.2",
     "grunt": "^1.0.4",
