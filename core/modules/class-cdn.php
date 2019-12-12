@@ -190,9 +190,9 @@ class CDN extends Abstract_Module {
 			$settings,
 			array(
 				'background_images' => array(
-					'label'       => esc_html__( 'Serve background images from the CDN', 'wp-smushit' ),
-					'short_label' => esc_html__( 'Background Images', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Where possible we will serve background images declared with CSS directly from the CDN.', 'wp-smushit' ),
+					'label'       => __( 'Serve background images from the CDN', 'wp-smushit' ),
+					'short_label' => __( 'Background Images', 'wp-smushit' ),
+					'desc'        => __( 'Where possible we will serve background images declared with CSS directly from the CDN.', 'wp-smushit' ),
 				),
 				'auto_resize'       => array(
 					'label'       => __( 'Enable automatic resizing of my images', 'wp-smushit' ),
@@ -203,6 +203,11 @@ class CDN extends Abstract_Module {
 					'label'       => __( 'Enable WebP conversion', 'wp-smushit' ),
 					'short_label' => __( 'WebP Conversion', 'wp-smushit' ),
 					'desc'        => __( 'Smush can automatically convert and serve your images as WebP to compatible browsers.', 'wp-smushit' ),
+				),
+				'dynamic_support'   => array(
+					'label'       => __( 'Add support for dynamic loading', 'wp-smushit' ),
+					'short_label' => __( 'Dynamic Image Loading', 'wp-smushit' ),
+					'desc'        => __( 'Smush can automatically replace image URLs when fetched via various WordPress functions.', 'wp-smushit' ),
 				),
 			)
 		);
@@ -252,6 +257,17 @@ class CDN extends Abstract_Module {
 						'<a href="' . esc_url( network_admin_url( 'admin.php?page=smush&view=directory' ) ) . '">',
 						'</a>'
 					);
+					break;
+				case 'dynamic_support':
+					printf(
+						/* translators: %1$s - link, %2$s - closing link tag */
+						esc_html__( 'By default Smush will replace all images with CDN links within the content of your page during the template_redirect action. Add support for  plugins and themes that dynamically load images via %1$swp_get_attachment_image_src%3$s or %2$swp_get_attachment_image%3$s functions.', 'wp-smushit' ),
+						'<a href="https://developer.wordpress.org/reference/functions/wp_get_attachment_image_src/" target="_blank">',
+						'<a href="https://developer.wordpress.org/reference/functions/wp_get_attachment_image/" target="_blank">',
+						'</a>'
+					);
+					echo '<br>';
+					esc_html_e( 'Note: this is a compatibility option only. Test before using.', 'wp-smushit' );
 					break;
 				default:
 					break;
