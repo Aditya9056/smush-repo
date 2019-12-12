@@ -5,3 +5,6 @@
 	path = core/external/dash-notice
 	url = git@bitbucket.org:incsub/wpmudev-dashboard-notification.git
 	branch = master
+[submodule "core/external/plugin-notice"]
+	path = core/external/plugin-notice
+	url = git@bitbucket.org:incsub/recommended-plugins-notice.git

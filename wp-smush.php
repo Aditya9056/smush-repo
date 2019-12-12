@@ -371,6 +371,8 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 
 			/* @noinspection PhpIncludeInspection */
 			require_once WP_SMUSH_DIR . 'core/external/free-dashboard/module.php';
+			/* @noinspection PhpIncludeInspection */
+			require_once WP_SMUSH_DIR . 'core/external/plugin-notice/notice.php';
 
 			// Add the Mailchimp group value.
 			add_action(
@@ -401,6 +403,9 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 					return 'Sign up now to get %s Guide to Image Optimization for free and learn the tricks used on more than 1 million sites to optimize over 36 billion images.';
 				}
 			);
+
+			// Recommended plugin notice.
+			do_action( 'wpmudev-recommended-plugins-register-notice', WPHB_BASENAME, __( 'Smush', 'wp-smushit' ), App\Admin::$plugin_pages );
 		}
 
 		/**

@@ -2,6 +2,17 @@
 
 @include body-class {
 
+	/**
+	 * Plugin upsell styles
+	 * @since 3.6.0
+	 */
+	.wpmudev-recommended-plugins {
+		margin: 10px 30px 15px 10px;
+		a { text-decoration: none; }
+		p.wpmudev-notice-status { margin-top: 0; }
+		h3.wpmudev-plugin-name { margin-top: 8px; }
+	}
+
 	/** Override WP Footer Styling, Hide it on WPMU pages only, if we really need to **/
 	#wpfooter {
 		display: block;
