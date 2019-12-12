@@ -366,7 +366,7 @@ class Parser {
 	 */
 	public static function get_links_from_content( $content ) {
 		$images = array();
-		preg_match_all( '/(?:https?[^\s]*)/is', $content, $images );
+		preg_match_all( '/(?:https?[^\s\'"]*)/is', $content, $images );
 		return $images;
 	}
 

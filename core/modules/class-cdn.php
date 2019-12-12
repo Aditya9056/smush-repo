@@ -124,6 +124,9 @@ class CDN extends Abstract_Module {
 
 		// Add resizing arguments to image src.
 		add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
+
+		// Add REST API integration.
+		add_filter( 'rest_pre_echo_response', array( $this, 'filter_rest_api_response' ) );
 	}
 
 	/**************************************
@@ -440,6 +443,7 @@ class CDN extends Abstract_Module {
 	 * @see update_stats()
 	 * @see unschedule_cron()
 	 * @see schedule_cron()
+	 * @see filter_rest_api_response()
 	 */
 
 	/**
@@ -878,6 +882,50 @@ class CDN extends Abstract_Module {
 			// Schedule first run for next day, as we've already checked just now.
 			wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', 'smush_update_cdn_stats' );
 		}
+	}
+
+	/**
+	 * Filters the API response.
+	 *
+	 * Allows modification of the response data after inserting
+	 * embedded data (if any) and before echoing the response data.
+	 *
+	 * @since 3.6.0
+	 *
+	 * @param array $response  Response data to send to the client.
+	 *
+	 * @return array
+	 */
+	public function filter_rest_api_response( $response ) {
+		if ( ! $this->settings->get( 'rest_api_support' ) ) {
+			return $response;
+		}
+
+		if ( ! isset( $response['content']['rendered'] ) ) {
+			return $response;
+		}
+
+		$images = Helpers\Parser::get_links_from_content( $response['content']['rendered'] );
+
+		if ( ! isset( $images[0] ) || empty( $images[0] ) ) {
+			return $response;
+		}
+
+		foreach ( $images[0] as $key => $image ) {
+			$image = $this->is_supported_path( $image );
+			if ( ! $image ) {
+				continue;
+			}
+
+			// Replace the data-envira-srcset of the image with CDN link.
+			$image = $this->generate_cdn_url( $image );
+			if ( $image ) {
+				// Replace the src of the image with CDN link.
+				$response['content']['rendered'] = str_replace( $images[0][ $key ], $image, $response['content']['rendered'] );
+			}
+		}
+
+		return $response;
 	}
 
 	/**************************************
