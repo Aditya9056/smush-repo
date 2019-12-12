@@ -204,10 +204,10 @@ class CDN extends Abstract_Module {
 					'short_label' => __( 'WebP Conversion', 'wp-smushit' ),
 					'desc'        => __( 'Smush can automatically convert and serve your images as WebP to compatible browsers.', 'wp-smushit' ),
 				),
-				'dynamic_support'   => array(
-					'label'       => __( 'Add support for dynamic loading', 'wp-smushit' ),
-					'short_label' => __( 'Dynamic Image Loading', 'wp-smushit' ),
-					'desc'        => __( 'Smush can automatically replace image URLs when fetched via various WordPress functions.', 'wp-smushit' ),
+				'rest_api_support'  => array(
+					'label'       => __( 'Enable REST API support', 'wp-smushit' ),
+					'short_label' => __( 'REST API', 'wp-smushit' ),
+					'desc'        => __( 'Smush can automatically replace image URLs when fetched via REST API endpoints.', 'wp-smushit' ),
 				),
 			)
 		);
@@ -258,16 +258,13 @@ class CDN extends Abstract_Module {
 						'</a>'
 					);
 					break;
-				case 'dynamic_support':
+				case 'rest_api_support':
 					printf(
 						/* translators: %1$s - link, %2$s - closing link tag */
-						esc_html__( 'By default Smush will replace all images with CDN links within the content of your page during the template_redirect action. Add support for  plugins and themes that dynamically load images via %1$swp_get_attachment_image_src%3$s or %2$swp_get_attachment_image%3$s functions.', 'wp-smushit' ),
-						'<a href="https://developer.wordpress.org/reference/functions/wp_get_attachment_image_src/" target="_blank">',
-						'<a href="https://developer.wordpress.org/reference/functions/wp_get_attachment_image/" target="_blank">',
+						esc_html__( 'Note: Smush will use the %1$srest_pre_echo_response%2$s hook to filter images in REST API responses.', 'wp-smushit' ),
+						'<a href="https://developer.wordpress.org/reference/hooks/rest_pre_echo_response/" target="_blank">',
 						'</a>'
 					);
-					echo '<br>';
-					esc_html_e( 'Note: this is a compatibility option only. Test before using.', 'wp-smushit' );
 					break;
 				default:
 					break;
