@@ -69,6 +69,7 @@ class Settings {
 		'keep_data'         => true,
 		'lazy_load'         => false,
 		'background_images' => true,
+		'rest_api_support'  => false, // CDN option.
 	);
 
 	/**
@@ -119,7 +120,7 @@ class Settings {
 	 *
 	 * @var array
 	 */
-	private $cdn_fields = array( 'background_images', 'auto_resize', 'webp' );
+	private $cdn_fields = array( 'background_images', 'auto_resize', 'webp', 'rest_api_support' );
 
 	/**
 	 * List of fields in Settings form.

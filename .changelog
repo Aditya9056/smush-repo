@@ -1,3 +1,7 @@
+= 3.6.0 =
+
+- New: CDN support for images in REST API responses
+
 = 3.5.0 =
 
 - New: Add custom post types to include/exclude filters in lazy load module
