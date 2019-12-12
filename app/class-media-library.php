@@ -120,21 +120,19 @@ class Media_Library extends Abstract_Module {
 			return $query;
 		}
 
+		// Ignored.
 		if ( isset( $_REQUEST['smush-filter'] ) && 'ignored' === $_REQUEST['smush-filter'] ) {
-			$query->set(
-				'meta_query',
-				array(
-					array(
-						'key'     => WP_SMUSH_PREFIX . 'ignore-bulk',
-						'value'   => 'true',
-						'compare' => 'EXISTS',
-					),
-				)
-			);
-
+			$query->set( 'meta_query', $this->query_ignored() );
 			return $query;
 		}
 
+		// Not processed.
+		if ( isset( $_REQUEST['smush-filter'] ) && 'unsmushed' === $_REQUEST['smush-filter'] ) {
+			$query->set( 'meta_query', $this->query_unsmushed() );
+			return $query;
+		}
+
+		// TODO: do we need this?
 		$orderby = $query->get( 'orderby' );
 
 		if ( isset( $orderby ) && 'smushit' === $orderby ) {
@@ -171,17 +169,41 @@ class Media_Library extends Abstract_Module {
 	 */
 	public function filter_media_query( $query ) {
 		$post_query = filter_input( INPUT_POST, 'query', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY );
-		if ( isset( $post_query['stats'] ) && 'null' === $post_query['stats'] ) {
-			$query['meta_query'] = array(
-				array(
-					'key'     => WP_SMUSH_PREFIX . 'ignore-bulk',
-					'value'   => 'true',
-					'compare' => 'EXISTS',
-				),
-			);
+
+		// Excluded.
+		if ( isset( $post_query['stats'] ) && 'excluded' === $post_query['stats'] ) {
+			$query['meta_query'] = $this->query_ignored();
+		}
+
+		// Unsmushed.
+		if ( isset( $post_query['stats'] ) && 'unsmushed' === $post_query['stats'] ) {
+			$query['meta_query'] = $this->query_unsmushed();
 		}
 
 		return $query;
+	}
+
+	private function query_ignored() {
+		return array(
+			array(
+				'key'     => WP_SMUSH_PREFIX . 'ignore-bulk',
+				'value'   => 'true',
+				'compare' => 'EXISTS',
+			),
+		);
+	}
+
+	private function query_unsmushed() {
+		return array(
+			array(
+				'key'     => Smush::$smushed_meta_key,
+				'compare' => 'NOT EXISTS',
+			),
+			array(
+				'key'     => WP_SMUSH_PREFIX . 'ignore-bulk',
+				'compare' => 'NOT EXISTS',
+			),
+		);
 	}
 
 	/**
@@ -205,6 +227,7 @@ class Media_Library extends Abstract_Module {
 		</label>
 		<select class="smush-filters" name="smush-filter" id="smush_filter">
 			<option value="" <?php selected( $ignored, '' ); ?>><?php esc_html_e( 'Smush: All images', 'wp-smushit' ); ?></option>
+			<option value="unsmushed" <?php selected( $ignored, 'unsmushed' ); ?>><?php esc_html_e( 'Smush: Not processed', 'wp-smushit' ); ?></option>
 			<option value="ignored" <?php selected( $ignored, 'ignored' ); ?>><?php esc_html_e( 'Smush: Bulk ignored', 'wp-smushit' ); ?></option>
 		</select>
 		<?php
@@ -264,10 +287,11 @@ class Media_Library extends Abstract_Module {
 			'smush_vars',
 			array(
 				'strings' => array(
-					'stats_label' => esc_html__( 'Smush', 'wp-smushit' ),
-					'filter_all'  => esc_html__( 'Smush: All images', 'wp-smushit' ),
-					'filter_excl' => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
-					'gb'          => array(
+					'stats_label'          => esc_html__( 'Smush', 'wp-smushit' ),
+					'filter_all'           => esc_html__( 'Smush: All images', 'wp-smushit' ),
+					'filter_not_processed' => esc_html__( 'Smush: Not processed', 'wp-smushit' ),
+					'filter_excl'          => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
+					'gb'                   => array(
 						'stats'        => esc_html__( 'Smush Stats', 'wp-smushit' ),
 						'select_image' => esc_html__( 'Select an image to view Smush stats.', 'wp-smushit' ),
 						'size'         => esc_html__( 'Image size', 'wp-smushit' ),
