@@ -89,7 +89,7 @@ if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
 }
 
 // Compat with WPMU DEV staging.
-if ( isset( $_SERVER['WPMUDEV_HOSTING_ENV'] ) && 'staging' === wp_unslash( $_SERVER['WPMUDEV_HOSTING_ENV'] ) ) {
+if ( ! defined( 'WP_SMUSH_ASYNC' ) && isset( $_SERVER['WPMUDEV_HOSTING_ENV'] ) && 'staging' === wp_unslash( $_SERVER['WPMUDEV_HOSTING_ENV'] ) ) {
 	define( 'WP_SMUSH_ASYNC', false );
 }
 
