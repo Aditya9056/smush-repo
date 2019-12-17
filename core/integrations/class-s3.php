@@ -170,13 +170,11 @@ class S3 extends Abstract_Integration {
 	 *
 	 * Show a error message to admins, if they need to enable S3 support. If "remove files from
 	 * server" option is enabled in WP Offload Media plugin, we need WP Smush Pro to enable S3 support.
-	 *
-	 * @return bool
 	 */
 	public function s3_support_required_notice() {
 		// Do not display it for other users. Do not display on network screens, if network-wide option is disabled.
 		if ( ! current_user_can( 'manage_options' ) || ! Settings::can_access( 'integrations' ) ) {
-			return true;
+			return;
 		}
 
 		// Do not display the notice on Bulk Smush Screen.
@@ -189,17 +187,17 @@ class S3 extends Abstract_Integration {
 		);
 
 		if ( ! empty( $current_screen->base ) && ! in_array( $current_screen->base, $allowed_pages, true ) ) {
-			return true;
+			return;
 		}
 
 		// If already dismissed, do not show.
 		if ( '1' === get_site_option( 'wp-smush-hide_s3support_alert' ) ) {
-			return true;
+			return;
 		}
 
 		// Return early, if support is not required.
 		if ( ! $this->s3_support_required() ) {
-			return true;
+			return;
 		}
 
 		// Settings link.
@@ -216,9 +214,7 @@ class S3 extends Abstract_Integration {
 				 * %3$s: opening a and strong tags, %4$s: closing a and strong tags
 				 */
 				__(
-					"We can see you have WP Offload Media installed with the %1\$sRemove Files From Server%2\$s option
-				activated. If you want to optimize your S3 images you'll need to enable the %3\$sAmazon S3 Support%4\$s
-				feature in Smush's settings.",
+					"We can see you have WP Offload Media installed with the %1\$sRemove Files From Server%2\$s option activated. If you want to optimize your S3 images you'll need to enable the %3\$sAmazon S3 Support%4\$s feature in Smush's settings.",
 					'wp-smushit'
 				),
 				'<strong>',
@@ -235,8 +231,7 @@ class S3 extends Abstract_Integration {
 				 * %3$s: opening a and strong tags, %4$s: closing a and strong tags
 				 */
 				__(
-					"We can see you have WP Offload Media installed with the %1\$sRemove Files From Server%2\$s option
-				activated. If you want to optimize your S3 images you'll need to %3\$supgrade to Smush Pro%4\$s",
+					"We can see you have WP Offload Media installed with the %1\$sRemove Files From Server%2\$s option activated. If you want to optimize your S3 images you'll need to %3\$supgrade to Smush Pro%4\$s",
 					'wp-smushit'
 				),
 				'<strong>',
@@ -248,7 +243,7 @@ class S3 extends Abstract_Integration {
 
 		?>
 		<div class="sui-notice sui-notice-warning wp-smush-s3support-alert">
-			<p><?php echo $message; ?></p>
+			<p><?php echo wp_kses_post( $message ); ?></p>
 			<span class="sui-notice-dismiss">
 				<a href="#">
 					<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>
@@ -327,11 +322,11 @@ class S3 extends Abstract_Integration {
 			return;
 		}
 		?>
-        <div class="sui-toggle-content">
-            <div class="sui-notice<?php echo esc_attr( $class ); ?> smush-notice-sm">
-                <p><?php echo $message; ?></p>
-            </div>
-        </div>
+		<div class="sui-toggle-content">
+			<div class="sui-notice<?php echo esc_attr( $class ); ?> smush-notice-sm">
+				<p><?php echo wp_kses_post( $message ); ?></p>
+			</div>
+		</div>
 		<?php
 	}
 
@@ -348,7 +343,9 @@ class S3 extends Abstract_Integration {
 			return;
 		}
 		?>
-        <span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Pro', 'wp-smushit' ); ?></span>
+		<span class="sui-tag sui-tag-pro">
+			<?php esc_html_e( 'Pro', 'wp-smushit' ); ?>
+		</span>
 		<?php
 	}
 
