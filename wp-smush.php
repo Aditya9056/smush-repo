@@ -95,10 +95,12 @@ if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
 $site_url = str_replace( array( 'http://', 'https://', 'www.' ), '', site_url() );
 // Compat with WPMU DEV staging.
 $wpmu_host = isset( $_SERVER['WPMUDEV_HOSTING_ENV'] ) && 'staging' === wp_unslash( $_SERVER['WPMUDEV_HOSTING_ENV'] );
-if ( ( ! empty( $_SERVER['SERVER_NAME'] ) && 0 !== strpos( $site_url, wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) || $wpmu_host ) {
-	define( 'WP_SMUSH_ASYNC', false );
-} else {
-	define( 'WP_SMUSH_ASYNC', true );
+if ( ! defined( 'WP_SMUSH_ASYNC' ) ) {
+	if ( ( ! empty( $_SERVER['SERVER_NAME'] ) && 0 !== strpos( $site_url, wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) || $wpmu_host ) {
+		define( 'WP_SMUSH_ASYNC', false );
+	} else {
+		define( 'WP_SMUSH_ASYNC', true );
+	}
 }
 
 /**
@@ -376,7 +378,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			add_action(
 				'frash_subscribe_form_fields',
 				function ( $mc_list_id ) {
-					if ( '4b14b58816' === $mc_list_id ) {
+					if ( '341717' === $mc_list_id ) {
 						echo '<input type="hidden" id="mce-group[53]-53-0" name="group[53][1]" value="1" />';
 					}
 				}
@@ -388,8 +390,8 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				/* 1             Plugin ID */ WP_SMUSH_BASENAME,
 				/* 2          Plugin Title */ 'Smush',
 				/* 3 https://wordpress.org */ '/plugins/wp-smushit/',
-				/* 4      Email Button CTA */ __( 'Free Download', 'wp-smushit' ),
-				/* 5  Mailchimp List id for the plugin - e.g. 4b14b58816 is list id for Smush */ '4b14b58816'
+				/* 4      Email Button CTA */ __( 'Get Fast!', 'wp-smushit' ),
+				/* 5  Mailchimp List id for the plugin - e.g. 4b14b58816 is list id for Smush */ '341717'
 			);
 
 			// The rating message contains 2 variables: user-name, plugin-name.
@@ -398,7 +400,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			add_filter(
 				'wdev-email-message-' . WP_SMUSH_BASENAME,
 				function () {
-					return 'Sign up now to get %s Guide to Image Optimization for free and learn the tricks used on more than 1 million sites to optimize over 36 billion images.';
+					return "You're awesome for installing %s! Make sure you get the most out of it, boost your Google PageSpeed score with these tips and tricks - just for users of Smush!";
 				}
 			);
 		}
