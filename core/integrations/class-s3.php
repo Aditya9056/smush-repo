@@ -40,10 +40,13 @@ class S3 extends Abstract_Integration {
 		// Hook at the end of setting row to output a error div.
 		add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ), 15 );
 
-		// Do not continue if not PRO member or S3 Offload plugin is not installed.
+		// Add Pro tag.
 		if ( ! WP_Smush::is_pro() || ! $this->enabled ) {
-			// Add Pro tag.
 			add_action( 'smush_setting_column_tag', array( $this, 'add_pro_tag' ) );
+		}
+
+		// Do not continue if not enabled or S3 Offload plugin is not installed.
+		if ( ! $this->enabled || ! $this->settings->get( $this->module ) ) {
 			return;
 		}
 
@@ -62,6 +65,8 @@ class S3 extends Abstract_Integration {
 		add_action( 'smush_file_exists', array( $this, 'maybe_download_file' ), 10, 3 );
 		// Show S3 integration message, if user hasn't enabled it.
 		add_action( 'wp_smush_header_notices', array( $this, 's3_support_required_notice' ) );
+		// Fetch file and make sure it is returned back to S3 bucket.
+		add_action( 'smush_s3_integration_fetch_file', array( $this, 'fetch_file' ) );
 	}
 
 	/**************************************
@@ -347,6 +352,18 @@ class S3 extends Abstract_Integration {
 			<?php esc_html_e( 'Pro', 'wp-smushit' ); ?>
 		</span>
 		<?php
+	}
+
+	/**
+	 * Force WP Offload Media to copy the file back to the server if missing when get_attached_file() is called,
+	 * instead of returning the stream wrapper URL.
+	 *
+	 * @since 3.4.0
+	 */
+	public function fetch_file() {
+		if ( $this->enabled && $this->settings->get( $this->module ) ) {
+			add_filter( 'as3cf_get_attached_file_copy_back_to_local', '__return_true' );
+		}
 	}
 
 	/**************************************
