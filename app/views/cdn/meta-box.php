@@ -27,7 +27,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 	<p>
 		<?php
-		esc_html_e( 'Take a load off your server by delivering your images from our blazingly-fast CDN.', 'wp-smushit' );
+		esc_html_e( 'Multiply the speed and savings! Upload huge images and the Smush CDN will perfectly resize the files, safely convert to a Next-Gen format (WebP), and delivers them directly to your visitors from our blazing-fast multi-location globe servers.', 'wp-smushit' );
 		?>
 	</p>
 
