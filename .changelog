@@ -11,6 +11,7 @@
 - Enhance: Lazy load compatibility with Envira Gallery plugin
 - Enhance: Plugins page links
 - Fix: CDN not detecting background images surrounded by HTML entities
+- Fix: Lazy load gravatars
 
 = 3.4.0 =
 
