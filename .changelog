@@ -12,6 +12,7 @@
 - Enhance: Plugins page links
 - Fix: CDN not detecting background images surrounded by HTML entities
 - Fix: Lazy load gravatars
+- Fix: WPBakery Page Builder integration
 
 = 3.4.0 =
 
