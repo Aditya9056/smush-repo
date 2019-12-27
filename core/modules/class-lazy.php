@@ -129,10 +129,9 @@ class Lazy extends Abstract_Module {
 			if ( isset( $this->options['animation']['placeholder']['selected'] ) && 2 < (int) $this->options['animation']['placeholder']['selected'] ) {
 				$loader = wp_get_attachment_image_src( $this->options['animation']['placeholder']['selected'], 'full' );
 				$loader = $loader[0];
-
-				if ( isset( $this->options['animation']['placeholder']['color'] ) ) {
-					$background = $this->options['animation']['placeholder']['color'];
-				}
+			}
+			if ( isset( $this->options['animation']['placeholder']['color'] ) ) {
+				$background = $this->options['animation']['placeholder']['color'];
 			}
 		}
 
