@@ -302,11 +302,11 @@ class Core extends Stats {
 				'short_label' => esc_html__( 'Subsite Controls', 'wp-smushit' ),
 				'desc'        => esc_html__( 'By default, subsites will inherit your network settings. Choose which modules you want to allow subsite admins to override.', 'wp-smushit' ),
 			),
-			/*'usage'             => array(
+			'usage'             => array(
 				'label'       => esc_html__( 'Help us make Smush better by allowing usage tracking', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Usage Tracking', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Help make Smush better by letting our designers learn how you’re using the plugin.', 'wp-smushit' ),
-			),*/
+			),
 			'keep_data'         => array(
 				'label'       => esc_html__( 'Uninstallation', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Data', 'wp-smushit' ),
