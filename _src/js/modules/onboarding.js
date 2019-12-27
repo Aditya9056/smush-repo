@@ -28,7 +28,7 @@
 			strip_exif: true,
 			original: false,
 			lazy_load: true,
-			usage: true,
+			usage: false,
 		},
 		contentContainer: document.getElementById( 'smush-onboarding-content' ),
 		onboardingSlides: [ 'start', 'auto', 'lossy', 'strip_exif', 'original', 'lazy_load', 'usage' ],

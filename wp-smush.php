@@ -380,8 +380,8 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			add_action(
 				'frash_subscribe_form_fields',
 				function ( $mc_list_id ) {
-					if ( '341717' === $mc_list_id ) {
-						echo '<input type="hidden" id="mce-group[53]-53-0" name="group[53][1]" value="1" />';
+					if ( '4b14b58816' === $mc_list_id ) {
+						echo '<input type="hidden" id="mce-group[53]-53-1" name="group[53][2]" value="2" />';
 					}
 				}
 			);
@@ -393,7 +393,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 				/* 2          Plugin Title */ 'Smush',
 				/* 3 https://wordpress.org */ '/plugins/wp-smushit/',
 				/* 4      Email Button CTA */ __( 'Get Fast!', 'wp-smushit' ),
-				/* 5  Mailchimp List id for the plugin - e.g. 4b14b58816 is list id for Smush */ '341717'
+				/* 5  Mailchimp List id for the plugin - e.g. 4b14b58816 is list id for Smush */ '4b14b58816'
 			);
 
 			// The rating message contains 2 variables: user-name, plugin-name.

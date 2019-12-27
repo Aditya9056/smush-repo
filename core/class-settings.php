@@ -64,7 +64,7 @@ class Settings {
 		'cdn'               => false,
 		'auto_resize'       => false,
 		'webp'              => true,
-		'usage'             => true,
+		'usage'             => false,
 		'accessible_colors' => false,
 		'keep_data'         => true,
 		'lazy_load'         => false,
