@@ -55,11 +55,11 @@ if ( ! defined( 'WPINC' ) ) {
 			<# } else if ( 'lossy' === data.slide ) { #>
 			<?php esc_html_e( 'Optimize images up to 2x more than regular smush with our multi-pass lossy compression.', 'wp-smushit' ); ?>
 			<# } else if ( 'strip_exif' === data.slide ) { #>
-			<?php esc_html_e( 'Whenever you take a photo, your camera stores metadata, such as focal length, date, time and location, within the image. Removing this data will reduce your image sizes.', 'wp-smushit' ); ?>
+			<?php esc_html_e( 'Photos often store camera settings in the file, i.e., focal length, date, time and location. Removing EXIF data reduces the file size. Note: it does not strip SEO metadata.', 'wp-smushit' ); ?>
 			<# } else if ( 'original' === data.slide ) { #>
 			<?php esc_html_e( 'You can also have Smush compress your original images - this is helpful if your theme serves full size images.', 'wp-smushit' ); ?>
 			<# } else if ( 'lazy_load' === data.slide ) { #>
-			<?php esc_html_e( 'This feature defers the loading of below the fold imagery until the page has loaded. This reduces load on your server and speeds up the page load time.', 'wp-smushit' ); ?>
+			<?php esc_html_e( 'This feature stops offscreen images from loading until a visitor scrolls to them. Make your page load faster, use less bandwidth and fix the “defer offscreen images” recommendation from a Google PageSpeed test.', 'wp-smushit' ); ?>
 			<# } else if ( 'usage' === data.slide ) { #>
 			<?php esc_html_e( 'Help us improve Smush by letting our product designers gain insight into what features need improvement. We don’t track any personalized data, it’s all basic stuff.', 'wp-smushit' ); ?>
 			<# } #>

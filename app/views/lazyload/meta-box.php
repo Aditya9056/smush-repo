@@ -21,7 +21,7 @@ wp_enqueue_style( 'wp-color-picker' );
 
 <p>
 	<?php
-	esc_html_e( 'This feature defers the loading of below the fold imagery until the page has loaded. This reduces load on your server and speeds up the page load time.', 'wp-smushit' );
+	esc_html_e( 'This feature stops offscreen images from loading until a visitor scrolls to them. Make your page load faster, use less bandwidth and fix the “defer offscreen images” recommendation from a Google PageSpeed test.', 'wp-smushit' );
 	?>
 </p>
 

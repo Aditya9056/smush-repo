@@ -254,9 +254,9 @@ class Core extends Stats {
 				'desc'        => esc_html__( 'WordPress generates multiple image thumbnails for each image you upload. Choose which of those thumbnail sizes you want to include when bulk smushing.', 'wp-smushit' ),
 			),
 			'auto'              => array(
-				'label'       => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
+				'label'       => esc_html__( 'Automatically compress my images on upload', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Automatic compression', 'wp-smushit' ),
-				'desc'        => esc_html__( 'When you upload images to your site, we can automatically optimize and compress them for you without you needing to do it yourself.', 'wp-smushit' ),
+				'desc'        => esc_html__( 'When you upload images to your site, we will automatically optimize and compress them for you.', 'wp-smushit' ),
 			),
 			'lossy'             => array(
 				'label'       => esc_html__( 'Super-Smush my images', 'wp-smushit' ),
@@ -266,7 +266,7 @@ class Core extends Stats {
 			'strip_exif'        => array(
 				'label'       => esc_html__( 'Strip my image metadata', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Metadata', 'wp-smushit' ),
-				'desc'        => esc_html__( 'Whenever you take a photo, your camera stores metadata, such as focal length, date, time and location, within the image.', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Photos often store camera settings in the file, i.e., focal length, date, time and location. Removing EXIF data reduces the file size. Note: it does not strip SEO metadata.', 'wp-smushit' ),
 			),
 			'resize'            => array(
 				'label'       => esc_html__( 'Resize my full size images', 'wp-smushit' ),
@@ -302,11 +302,11 @@ class Core extends Stats {
 				'short_label' => esc_html__( 'Subsite Controls', 'wp-smushit' ),
 				'desc'        => esc_html__( 'By default, subsites will inherit your network settings. Choose which modules you want to allow subsite admins to override.', 'wp-smushit' ),
 			),
-			/*'usage'             => array(
+			'usage'             => array(
 				'label'       => esc_html__( 'Help us make Smush better by allowing usage tracking', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Usage Tracking', 'wp-smushit' ),
 				'desc'        => esc_html__( 'Help make Smush better by letting our designers learn how you’re using the plugin.', 'wp-smushit' ),
-			),*/
+			),
 			'keep_data'         => array(
 				'label'       => esc_html__( 'Uninstallation', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Data', 'wp-smushit' ),
