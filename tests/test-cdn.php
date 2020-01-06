@@ -21,7 +21,7 @@ use Smush\WP_Smush;
 /**
  * Class CdnTest
  *
- * @covers CDN
+ * @covers Smush\Core\Modules\CDN
  */
 class CdnTest extends WP_UnitTestCase {
 
@@ -35,9 +35,9 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Global variables.
 	 *
-	 * @var array $_globals
+	 * @var array $globals
 	 */
-	protected $_globals;
+	protected $globals;
 
 	/**
 	 * Registered images sizes.
@@ -56,7 +56,7 @@ class CdnTest extends WP_UnitTestCase {
 
 		// Preserve global variables.
 		global $content_width;
-		$this->_globals['content_width'] = $content_width;
+		$this->globals['content_width'] = $content_width;
 
 		// Remove extra image sizes.
 		$this->remove_image_sizes();
@@ -80,6 +80,9 @@ class CdnTest extends WP_UnitTestCase {
 			add_image_size( '1536x1536', 1536, 1536 );
 			add_image_size( '2048x2048', 2048, 2048 );
 		}
+
+		delete_option( 'wp-smush-settings' );
+		delete_option( 'wp-smush-cdn_status' );
 	}
 
 	/**
@@ -151,7 +154,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Verify that the proper settings are registered in the module.
 	 *
-	 * @covers CDN::add_settings
+	 * @covers Smush\Core\Settings::get_cdn_fields
 	 */
 	public function testCdnAddSettingsToGroup() {
 		$this->assertEquals( [ 'background_images', 'auto_resize', 'webp' ], Settings::get_instance()->get_cdn_fields() );
@@ -161,7 +164,7 @@ class CdnTest extends WP_UnitTestCase {
 	 * Test if CDN settings descriptions are properly registered and match the settings fields.
 	 *
 	 * @depends testCdnAddSettingsToGroup
-	 * @covers CDN::register
+	 * @covers Smush\Core\Modules\CDN::register
 	 */
 	public function testCdnSettings() {
 		$smush = WP_Smush::get_instance();
@@ -180,7 +183,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Test to see if init_flags() method can set the status property.
 	 *
-	 * @covers CDN::init_flags
+	 * @covers Smush\Core\Modules\CDN::init_flags
 	 * @group single
 	 */
 	public function testCdnInitFlagsMethod() {
@@ -209,7 +212,7 @@ class CdnTest extends WP_UnitTestCase {
 
 		// Remove the fake dash plugin.
 		if ( file_exists( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' ) ) {
-			$this->unlink( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' );
+			unlink( WP_PLUGIN_DIR . '/wpmudev-updates/update-notifications.php' );
 			rmdir( WP_PLUGIN_DIR . '/wpmudev-updates' );
 		}
 	}
@@ -217,7 +220,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Check that CDN does not fail when process_buffer() sends empty content.
 	 *
-	 * @covers CDN::process_img_tags
+	 * @covers Smush\Core\Modules\Helpers\Parser::parse_page
 	 */
 	public function testCdnParseImagesFromEmptyHTML() {
 		$parser = new Parser();
@@ -228,7 +231,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Verify external images are not parsed by the CDN.
 	 *
-	 * @covers CDN::process_img_tags
+	 * @covers Smush\Core\Modules\Helpers\Parser::parse_page
 	 */
 	public function testCdnSkipImagesFromExternalSources() {
 		$parser = new Parser();
@@ -242,7 +245,7 @@ class CdnTest extends WP_UnitTestCase {
 	/**
 	 * Try to get dimensions from image name.
 	 *
-	 * @covers CDN::get_size_from_file_name
+	 * @covers Smush\Core\Modules\CDN::get_size_from_file_name
 	 * @throws ReflectionException  Exception.
 	 */
 	public function testCdnGet_size_from_file_nameMethod() {
@@ -280,6 +283,8 @@ class CdnTest extends WP_UnitTestCase {
 		add_filter( 'smush_skip_image_from_cdn', '__return_true', 10, 2 );
 
 		$this->assertEquals( $content, $parser->parse_page( $content ) );
+
+		remove_filter( 'smush_skip_image_from_cdn', '__return_true', 10 );
 	}
 
 	/**
@@ -287,7 +292,7 @@ class CdnTest extends WP_UnitTestCase {
 	 *
 	 * TODO: see if we can test it via wp_calculate_image_srcset filter.
 	 *
-	 * @covers CDN::is_valid_url
+	 * @covers Smush\Core\Modules\CDN::is_valid_url
 	 * @throws ReflectionException  Exception.
 	 */
 	public function testCdnIs_valid_urlMethod() {
@@ -313,7 +318,7 @@ class CdnTest extends WP_UnitTestCase {
 	 *
 	 * This seems a bit too long for a single test.
 	 *
-	 * @covers CDN::update_image_srcset
+	 * @covers Smush\Core\Modules\CDN::update_image_srcset
 	 */
 	public function testCdnUpdate_image_srcsetMethod() {
 		$attachment_id = $this->tester->upload_image();
@@ -332,20 +337,17 @@ class CdnTest extends WP_UnitTestCase {
 		$this->enableCDN( $cdn );
 		$cdn->init();
 
+		// We need to add this filter manually, to allow using on admin frontend.
+		add_filter( 'wp_calculate_image_srcset', array( $cdn, 'update_image_srcset' ), 99, 5 );
+
 		// This will convert all srcset links to CDN.
 		$image = wp_get_attachment_image( $attachment_id, 'full' );
 
 		// Convert image src to CDN.
 		$cdn_image = $parser->parse_page( $image );
-		// Will have 4 images, because example.com is not a default domain.
-		$this->assertEquals( 4, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
+		$this->assertEquals( 5, substr_count( $cdn_image, 'sid.smushcdn.com' ) );
 
-		wp_delete_attachment( $attachment_id );
+		wp_delete_attachment( $attachment_id, true );
 	}
-
-	/**
-	 * 1. Image from media library
-	 * 2. Image from wp-contents folder (not in media library)
-	 */
 
 }

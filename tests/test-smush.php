@@ -45,6 +45,17 @@ class SmushTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Cleanup.
+	 *
+	 * @since 3.4.0
+	 */
+	public function tearDown() {
+		delete_option( 'wp-smush-settings' );
+		delete_option( 'wp-smush-install-type' );
+		delete_option( 'wp-smush-version' );
+	}
+
+	/**
 	 * Runs before the test case class’ first test.
 	 */
 	public static function setUpBeforeClass() {
