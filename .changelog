@@ -9,7 +9,7 @@
 - New: CDN support for images in data-original attribute
 - Enhance: Compatibility with WP Engine
 - Enhance: CDN support for custom UPLOADS directories
-- Enhance: Max width detection with CDN auto resize functionality
+- Enhance: Max width detection with CDN auto-resize functionality
 - Enhance: Lazy loading image format detection
 - Enhance: Lazy loading compatibility with AMP
 - Enhance: Lazy loading compatibility with Essential Grid
@@ -29,7 +29,7 @@
 - Fix: Directory Smush permissions
 - Fix: NextGen gallery bulk Smush functionality
 - Fix: Network access control settings
-- Fix: Resize threshold not resetting when auto resize is disabled
+- Fix: Resize threshold not resetting when auto-resize is disabled
 
 = 3.3.2 =
 
