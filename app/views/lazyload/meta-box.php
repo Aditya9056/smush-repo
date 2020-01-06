@@ -503,7 +503,7 @@ wp_enqueue_style( 'wp-color-picker' );
 							<p><?php esc_html_e( 'Your theme must be using the wp_footer() function.', 'wp-smushit' ); ?></p>
 						</div>
 						<div class="sui-notice">
-							<p><?php esc_html_e( 'Your theme must be using the wp_header() function.', 'wp-smushit' ); ?></p>
+							<p><?php esc_html_e( 'Your theme must be using the wp_head() function.', 'wp-smushit' ); ?></p>
 						</div>
 					</div>
 				</div>
