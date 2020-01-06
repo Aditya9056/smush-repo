@@ -19,7 +19,7 @@ use Exception;
 use Ngg_Serializable;
 use Smush\App\Media_Library;
 use Smush\Core\Integrations\NextGen;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

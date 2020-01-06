@@ -18,9 +18,9 @@ use Exception;
 use nggdb;
 use Smush\Core\Core;
 use Smush\Core\Helper;
-use Smush\WP_Smush;
 use stdClass;
 use WP_Error;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

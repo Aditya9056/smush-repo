@@ -15,9 +15,9 @@ use Smush\Core\Helper;
 use Smush\Core\Integrations\S3\Compat;
 use Smush\Core\Modules\Abstract_Module;
 use Smush\Core\Modules\Smush;
-use Smush\WP_Smush;
 use WP_Post;
 use WP_Query;
+use WP_Smush;
 
 /**
  * Class Media_Library

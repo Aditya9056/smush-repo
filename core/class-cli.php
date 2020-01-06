@@ -8,9 +8,9 @@
 
 namespace Smush\Core;
 
-use Smush\WP_Smush;
 use WP_CLI;
 use WP_CLI_Command;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

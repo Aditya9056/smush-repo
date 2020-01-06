@@ -9,7 +9,6 @@ use Helpers\Helper;
 use Smush\Core\Installer;
 use Smush\Core\Modules\Smush;
 use Smush\Core\Settings;
-use Smush\WP_Smush;
 
 /**
  * Class SmushTest

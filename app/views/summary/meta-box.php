@@ -15,7 +15,6 @@
  */
 
 use Smush\Core\Settings;
-use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

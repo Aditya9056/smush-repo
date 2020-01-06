@@ -9,7 +9,7 @@ namespace Smush\App;
 
 use Smush\Core\Modules\Dir;
 use Smush\Core\Settings;
-use Smush\WP_Smush;
+use WP_Smush;
 use WPMUDEV_Dashboard;
 
 if ( ! defined( 'WPINC' ) ) {

@@ -13,7 +13,7 @@
 namespace Smush\Core\Integrations;
 
 use Smush\Core\Modules\Smush;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

@@ -10,7 +10,7 @@ namespace Smush\App;
 use Smush\Core\Core;
 use Smush\Core\Helper;
 use Smush\Core\Settings;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

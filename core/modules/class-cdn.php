@@ -8,10 +8,10 @@
 
 namespace Smush\Core\Modules;
 
-use Smush\WP_Smush;
 use stdClass;
 use WPMUDEV_Dashboard;
 use WP_Error;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

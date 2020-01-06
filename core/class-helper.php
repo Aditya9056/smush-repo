@@ -13,7 +13,7 @@
 namespace Smush\Core;
 
 use finfo;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

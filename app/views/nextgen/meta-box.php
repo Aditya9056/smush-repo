@@ -16,7 +16,6 @@
 
 use Smush\Core\Helper;
 use Smush\Core\Integrations\Nextgen\Admin;
-use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

@@ -7,7 +7,6 @@
  */
 
 use Helpers\Helper;
-use Smush\WP_Smush;
 
 /**
  * Class StatsTest
