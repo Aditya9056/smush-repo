@@ -49,6 +49,7 @@ $smushit_keys = array(
 	'lazy_load',
 	'last_run_sync',
 	'networkwide',
+	'cron_update_running',
 );
 
 $db_keys = array(
