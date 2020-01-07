@@ -1,3 +1,7 @@
+= 3.4.1 =
+
+Fix: Upgrade from Free to Pro causing an error
+
 = 3.4.0 =
 
 - New: Option to ignore images from Smushing
