@@ -133,7 +133,7 @@ register_deactivation_hook( __FILE__, array( 'Smush\\Core\\Installer', 'smush_de
 // Init the plugin and load the plugin instance for the first time.
 add_action( 'plugins_loaded', array( 'WP_Smush', 'get_instance' ) );
 
-if ( ! class_exists( 'WP_Smush' ) ) {
+if ( ! class_exists( 'Smush\\WP_Smush' ) ) {
 	/**
 	 * Class WP_Smush
 	 */
