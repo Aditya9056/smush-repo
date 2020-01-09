@@ -205,7 +205,7 @@ class Admin {
 				$links[2] = sprintf(
 					'<a href="%s" target="_blank">%s</a>',
 					'https://premium.wpmudev.org/project/wp-smush-pro/',
-					__( 'View details', 'wphb' )
+					__( 'View details', 'wp-smushit' )
 				);
 			}
 
