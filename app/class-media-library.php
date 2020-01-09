@@ -482,7 +482,7 @@ class Media_Library extends Abstract_Module {
 			return self::get_resmsuh_link( $id );
 		}
 
-		$links = $show_resmush ? self::get_resmsuh_link( $id ) . ' | ' : $this->get_super_smush_link( $id, $smush_data );
+		$links = $show_resmush ? self::get_resmsuh_link( $id ) : $this->get_super_smush_link( $id, $smush_data );
 
 		// Show restore link only for images that had actual savings.
 		if ( $stats['size_after'] !== $stats['size_before'] && $this->show_restore_option( $id, $attachment_data ) ) {
