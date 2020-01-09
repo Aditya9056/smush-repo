@@ -5,13 +5,13 @@
  * Reduce image file sizes, improve performance and boost your SEO using the
  * <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
  *
- * @link              http://premium.wpmudev.org/projects/wp-smush-pro/
+ * @link              http://premium.wpmudev.org/project/wp-smush-pro/
  * @since             1.0.0
  * @package           WP_Smush
  *
  * @wordpress-plugin
  * Plugin Name:       Smush Pro
- * Plugin URI:        http://premium.wpmudev.org/projects/wp-smush-pro/
+ * Plugin URI:        http://premium.wpmudev.org/project/wp-smush-pro/
  * Description:       Reduce image file sizes, improve performance and boost your SEO using the <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
  * Version:           3.5.0-alpha.1
  * Author:            WPMU DEV
