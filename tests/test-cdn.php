@@ -16,7 +16,6 @@ use Helpers\Helper;
 use Smush\Core\Modules\CDN;
 use Smush\Core\Modules\Helpers\Parser;
 use Smush\Core\Settings;
-use Smush\WP_Smush;
 
 /**
  * Class CdnTest

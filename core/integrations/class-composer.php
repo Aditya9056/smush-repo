@@ -12,7 +12,7 @@
 
 namespace Smush\Core\Integrations;
 
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -135,7 +135,10 @@ class Composer extends Abstract_Integration {
 		$vc_editable = filter_input( INPUT_GET, 'vc_editable', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 		$vc_action   = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 
-		if ( ! $vc_editable || 'vc_load_shortcode' !== $vc_action ) {
+		global $pagename;
+
+		// $vc_editable and $vc_action will be set in the frontend page builder, $pagename in the backend.
+		if ( ( ! $vc_editable || 'vc_load_shortcode' !== $vc_action ) && ( ! isset( $pagename ) || 'page-builder' !== $pagename ) ) {
 			return $image_src;
 		}
 
@@ -182,7 +185,6 @@ class Composer extends Abstract_Integration {
 	 */
 	private function check_for_js_builder() {
 		if ( ! function_exists( 'is_plugin_active' ) ) {
-			/* @noinspection PhpIncludeInspection */
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 

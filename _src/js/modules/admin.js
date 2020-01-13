@@ -78,7 +78,7 @@ jQuery( function( $ ) {
 
 		//Restore the image
 		$.post( ajaxurl, params, function( r ) {
-			current_button.html( window.wp_smush_msgs.all_done );
+			current_button.replaceWith( '<span style="color: #32373c;">' + window.wp_smush_msgs.all_done + '</span>' );
 
 			//reset all functionality
 			enable_links( current_button );

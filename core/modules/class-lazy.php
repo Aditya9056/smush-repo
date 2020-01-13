@@ -129,10 +129,9 @@ class Lazy extends Abstract_Module {
 			if ( isset( $this->options['animation']['placeholder']['selected'] ) && 2 < (int) $this->options['animation']['placeholder']['selected'] ) {
 				$loader = wp_get_attachment_image_src( $this->options['animation']['placeholder']['selected'], 'full' );
 				$loader = $loader[0];
-
-				if ( isset( $this->options['animation']['placeholder']['color'] ) ) {
-					$background = $this->options['animation']['placeholder']['color'];
-				}
+			}
+			if ( isset( $this->options['animation']['placeholder']['color'] ) ) {
+				$background = $this->options['animation']['placeholder']['color'];
 			}
 		}
 
@@ -298,12 +297,14 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 			return $image;
 		}
 
+		$is_gravatar = false !== strpos( $src, 'gravatar.com' );
+
 		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
 		$ext = 'jpg' === $ext ? 'jpeg' : $ext;
 
 		// If not a supported image in src or not an iframe - skip.
 		$iframe = 'iframe' === substr( $image, 1, 6 );
-		if ( ! in_array( $ext, array( 'jpeg', 'gif', 'png', 'svg', 'webp' ), true ) && ! $iframe && 'source' !== $type ) {
+		if ( ! $is_gravatar && ! in_array( $ext, array( 'jpeg', 'gif', 'png', 'svg', 'webp' ), true ) && ! $iframe && 'source' !== $type ) {
 			return $image;
 		}
 

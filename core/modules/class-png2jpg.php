@@ -17,7 +17,7 @@ use Exception;
 use Imagick;
 use ImagickPixel;
 use Smush\Core\Helper;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

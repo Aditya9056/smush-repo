@@ -17,8 +17,8 @@ use RecursiveIteratorIterator;
 use Smush\Core\Core;
 use Smush\Core\Installer;
 use Smush\Core\Settings;
-use Smush\WP_Smush;
 use WP_Error;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

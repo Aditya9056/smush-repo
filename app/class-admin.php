@@ -10,7 +10,7 @@ namespace Smush\App;
 use Smush\Core\Core;
 use Smush\Core\Helper;
 use Smush\Core\Settings;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -199,12 +199,21 @@ class Admin {
 
 		if ( 'wp-smush-pro/wp-smush.php' !== WP_SMUSH_BASENAME ) {
 			$links[] = '<a href="https://wordpress.org/support/plugin/wp-smushit/reviews/#new-post" target="_blank" title="' . esc_attr__( 'Rate Smush', 'wp-smushit' ) . '">' . esc_html__( 'Rate Smush', 'wp-smushit' ) . '</a>';
-			$links[] = '<a href="https://wordpress.org/support/plugin/wp-smushit" target="_blank" title="' . esc_attr__( 'Support', 'wp-smushit' ) . '">' . esc_html__( 'Support', 'wp-smushit' ) . '</a>';
+			$links[] = '<a href="https://wordpress.org/support/plugin/wp-smushit/" target="_blank" title="' . esc_attr__( 'Support', 'wp-smushit' ) . '">' . esc_html__( 'Support', 'wp-smushit' ) . '</a>';
 		} else {
-			$links[] = '<a href="https://premium.wpmudev.org/hub/support" target="_blank" title="' . esc_attr__( 'Premium Support', 'wp-smushit' ) . '">' . esc_html__( 'Premium Support', 'wp-smushit' ) . '</a>';
+			if ( isset( $links[2] ) && false !== strpos( $links[2], 'project/wp-smush-pro' ) ) {
+				$links[2] = sprintf(
+					'<a href="%s" target="_blank">%s</a>',
+					'https://premium.wpmudev.org/project/wp-smush-pro/',
+					__( 'View details', 'wp-smushit' )
+				);
+			}
+
+
+			$links[] = '<a href="https://premium.wpmudev.org/get-support/" target="_blank" title="' . esc_attr__( 'Premium Support', 'wp-smushit' ) . '">' . esc_html__( 'Premium Support', 'wp-smushit' ) . '</a>';
 		}
 
-		$links[] = '<a href="https://premium.wpmudev.org/roadmap" target="_blank" title="' . esc_attr__( 'Roadmap', 'wp-smushit' ) . '">' . esc_html__( 'Roadmap', 'wp-smushit' ) . '</a>';
+		$links[] = '<a href="https://premium.wpmudev.org/roadmap/" target="_blank" title="' . esc_attr__( 'Roadmap', 'wp-smushit' ) . '">' . esc_html__( 'Roadmap', 'wp-smushit' ) . '</a>';
 
 		return $links;
 	}

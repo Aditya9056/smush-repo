@@ -15,8 +15,8 @@ namespace Smush\Core\Integrations;
 
 use Amazon_S3_And_CloudFront;
 use DeliciousBrains\WP_Offload_Media\Items\Media_Library_Item;
-use Smush\WP_Smush;
 use Smush\Core\Settings;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

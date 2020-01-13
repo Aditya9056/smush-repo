@@ -115,7 +115,8 @@ module.exports = function( grunt ) {
 						const pkg = grunt.file.readJSON( 'package.json' );
 						return content.replace( / \* WDP ID: {12}912164\n \*\//g, ' *\/' )
 							.replace( /Plugin Name: {7}Smush Pro/g, 'Plugin Name:       Smush' )
-							.replace( /Plugin URI: {8}http:\/\/premium.wpmudev.org\/projects\/wp-smush-pro\//g, 'Plugin URI:        http:\/\/wordpress.org\/plugins\/wp-smushit\/' )
+							.replace( /Plugin URI: {8}http:\/\/premium.wpmudev.org\/project\/wp-smush-pro\//g, 'Plugin URI:        http:\/\/wordpress.org\/plugins\/wp-smushit\/' )
+							.replace( /Author URI: {8}https:\/\/premium.wpmudev.org\//g, 'Author URI:        https://profiles.wordpress.org/wpmudev/' )
 							.replace( /SEO using the/g, 'SEO using the free' )
 							.replace( /Author - Aaron Edwards, Sam Najian, Umesh Kumar, Anton Vanyukov\n/g, '' )
 							.replace( /%%CHANGELOG%%/g, changelog )

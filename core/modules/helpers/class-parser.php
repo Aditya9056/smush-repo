@@ -8,7 +8,7 @@
 
 namespace Smush\Core\Modules\Helpers;
 
-use Smush\WP_Smush;
+use WP_Smush;
 
 /**
  * Class Parser

@@ -8,10 +8,10 @@
 
 namespace Smush\Core\Modules;
 
-use Smush\WP_Smush;
 use stdClass;
 use WPMUDEV_Dashboard;
 use WP_Error;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -513,8 +513,14 @@ class CDN extends Abstract_Module {
 				$new_image = preg_replace( '#(src=["|\'])' . $original_src . '(["|\'])#i', '\1' . $src . '\2', $new_image, 1 );
 			}
 
-			// See if srcset is already set.
-			if ( empty( $srcset ) && $this->settings->get( 'auto_resize' ) && ! apply_filters( 'smush_skip_adding_srcset', false ) ) {
+			/**
+			 * See if srcset is already set.
+			 *
+			 * The preg_match is required to make sure that srcset is not already defined.
+			 * For the majority of images, srcset will be parsed as part of the wp_calculate_image_srcset filter.
+			 * But some images, for example, logos in Avada - will add their own srcset. For such images - generate our own.
+			 */
+			if ( ! preg_match( '/srcset=["\'](.*?smushcdn\.com[^"\']+)["\']/i', $image ) && $this->settings->get( 'auto_resize' ) && ! apply_filters( 'smush_skip_adding_srcset', false ) ) {
 				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
 
 				if ( ! is_null( $srcset ) && false !== $srcset ) {

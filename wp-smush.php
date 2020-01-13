@@ -5,13 +5,13 @@
  * Reduce image file sizes, improve performance and boost your SEO using the
  * <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
  *
- * @link              http://premium.wpmudev.org/projects/wp-smush-pro/
+ * @link              http://premium.wpmudev.org/project/wp-smush-pro/
  * @since             1.0.0
  * @package           WP_Smush
  *
  * @wordpress-plugin
  * Plugin Name:       Smush Pro
- * Plugin URI:        http://premium.wpmudev.org/projects/wp-smush-pro/
+ * Plugin URI:        http://premium.wpmudev.org/project/wp-smush-pro/
  * Description:       Reduce image file sizes, improve performance and boost your SEO using the <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
  * Version:           3.6.0-alpha.1
  * Author:            WPMU DEV
@@ -42,10 +42,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-namespace Smush;
-
-use WP_CLI;
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -135,9 +131,9 @@ register_activation_hook( __FILE__, array( 'Smush\\Core\\Installer', 'smush_acti
 register_deactivation_hook( __FILE__, array( 'Smush\\Core\\Installer', 'smush_deactivated' ) );
 
 // Init the plugin and load the plugin instance for the first time.
-add_action( 'plugins_loaded', array( 'Smush\\WP_Smush', 'get_instance' ) );
+add_action( 'plugins_loaded', array( 'WP_Smush', 'get_instance' ) );
 
-if ( ! class_exists( 'WP_Smush' ) ) {
+if ( ! class_exists( 'Smush\\WP_Smush' ) ) {
 	/**
 	 * Class WP_Smush
 	 */
@@ -155,7 +151,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Plugin core.
 		 *
 		 * @since 2.9.0
-		 * @var Core\Core
+		 * @var Smush\Core\Core
 		 */
 		private $core;
 
@@ -163,7 +159,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Plugin admin.
 		 *
 		 * @since 2.9.0
-		 * @var App\Admin
+		 * @var Smush\App\Admin
 		 */
 		private $admin;
 
@@ -171,7 +167,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Plugin API.
 		 *
 		 * @since 3.0
-		 * @var Core\Api\API
+		 * @var Smush\Core\Api\API
 		 */
 		private $api = '';
 
@@ -179,7 +175,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * Media library UI.
 		 *
 		 * @since 3.4.0
-		 * @var App\Media_Library
+		 * @var Smush\App\Media_Library
 		 */
 		private $library;
 
@@ -263,13 +259,13 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 * @since 2.9.0
 		 */
 		private function init() {
-			$this->api = new Core\Api\API( self::get_api_key() );
+			$this->api = new Smush\Core\Api\API( self::get_api_key() );
 
 			self::$is_pro = $this->validate_install();
 
-			$this->core    = new Core\Core();
-			$this->library = new App\Media_Library( $this->core() );
-			$this->admin   = new App\Admin( $this->library() );
+			$this->core    = new Smush\Core\Core();
+			$this->library = new Smush\App\Media_Library( $this->core() );
+			$this->admin   = new Smush\App\Admin( $this->library() );
 
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				WP_CLI::add_command( 'smush', '\\Smush\\Core\\CLI' );
@@ -281,7 +277,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @return Core\Core
+		 * @return Smush\Core\Core
 		 */
 		public function core() {
 			return $this->core;
@@ -292,7 +288,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 2.9.0
 		 *
-		 * @return App\Admin
+		 * @return Smush\App\Admin
 		 */
 		public function admin() {
 			return $this->admin;
@@ -303,7 +299,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 3.0
 		 *
-		 * @return Core\Api\API
+		 * @return Smush\Core\Api\API
 		 */
 		public function api() {
 			return $this->api;
@@ -314,7 +310,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 *
 		 * @since 3.4.0
 		 *
-		 * @return App\Media_Library
+		 * @return Smush\App\Media_Library
 		 */
 		public function library() {
 			return $this->library;

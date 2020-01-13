@@ -9,7 +9,7 @@ namespace Smush\App;
 
 use Smush\Core\Modules\Dir;
 use Smush\Core\Settings;
-use Smush\WP_Smush;
+use WP_Smush;
 use WPMUDEV_Dashboard;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -188,7 +188,7 @@ abstract class Abstract_Page {
 		// Prepare notice.
 		if ( 'new' === $install_type ) {
 			$notice_heading = __( 'Thanks for installing Smush. We hope you like it!', 'wp-smushit' );
-			$notice_content = __( 'And hey, if you do, you can join WPMU DEV for a free 30 day trial and get access to even more features!', 'wp-smushit' );
+			$notice_content = __( 'And hey, if you do, you can join WPMU DEV for a free trial and get access to even more features!', 'wp-smushit' );
 			$button_content = __( 'Try Smush Pro Free', 'wp-smushit' );
 		} else {
 			$notice_heading = __( 'Thanks for updating Smush!', 'wp-smushit' );

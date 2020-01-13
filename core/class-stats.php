@@ -8,9 +8,9 @@
 
 namespace Smush\Core;
 
-use Smush\WP_Smush;
 use stdClass;
 use WP_Query;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
