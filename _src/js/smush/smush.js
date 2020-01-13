@@ -2,6 +2,8 @@
 /* global ajaxurl */
 /* global wp_smushit_data */
 
+let perf = 0;
+
 /**
  * Smush class.
  *
@@ -209,17 +211,6 @@ class Smush {
 					// If we've updated status, replace the content.
 					parent.html( response.data );
 				}
-
-				/*
-				// If we've updated status, replace the content.
-				if ( response.success && response.data.status ) {
-					//remove Links
-					parent.find( '.smush-status-links' ).remove();
-					self.status.html( response.data.status );
-				}
-
-				parent.append( response.data.stats );
-				*/
 
 				/**
 				 * Update image size in attachment info panel.
@@ -709,6 +700,18 @@ class Smush {
 	 * @return {*}  Ajax call response.
 	 */
 	callAjax() {
+		/**
+		 * This here little piece of code allows to track auto continue clicks and halts bulk Smush until the page
+		 * is reloaded.
+		 *
+		 * @since 3.5.0
+		 * @see https://wordpress.org/plugins/wp-nonstop-smushit/
+		 */
+		if ( 0 !== perf && 'undefined' !== typeof perf && 10 > performance.now() - perf ) {
+			this.freeExceeded();
+			return this.deferred;
+		}
+
 		let nonceValue = '';
 		// Remove from array while processing so we can continue where left off.
 		this.current_id = this.is_bulk ? this.ids.shift() : this.button.data( 'id' );
@@ -764,6 +767,7 @@ class Smush {
 					wp_smushit_data.unsmushed.unshift( self.current_id );
 					self.ids.unshift( self.current_id );
 
+					perf = performance.now();
 					self.freeExceeded();
 				} else if ( self.is_bulk ) {
 					self.updateProgress( res );
