@@ -15,3 +15,5 @@ lazySizes.cfg.nativeLoading = {
 		scroll: true,
 	},
 };
+
+lazySizes.init();
