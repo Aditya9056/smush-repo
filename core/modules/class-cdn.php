@@ -239,12 +239,7 @@ class CDN extends Abstract_Module {
 					);
 					break;
 				case 'auto_resize':
-					esc_html_e(
-						'Having trouble with Google PageSpeeds ‘compress and resize’ suggestion? This feature
-						will fix this without any coding needed! Note: No resizing is done on your actual images, only
-						what is served from the CDN - so your original images will remain untouched.',
-						'wp-smushit'
-					);
+					esc_html_e( 'Having trouble with Google PageSpeeds ‘properly size images’ suggestion? This feature will fix this without any coding needed! Note: No resizing is done on your actual images, only what is served from the CDN - so your original images will remain untouched.', 'wp-smushit' );
 					break;
 				case 'background_images':
 					printf(
