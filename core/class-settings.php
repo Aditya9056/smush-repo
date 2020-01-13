@@ -85,15 +85,7 @@ class Settings {
 	 *
 	 * @var array $basic_features
 	 */
-	public static $basic_features = array(
-		'bulk',
-		'auto',
-		'strip_exif',
-		'resize',
-		'gutenberg',
-		'js_builder',
-		'lazy_load',
-	);
+	public static $basic_features = array( 'bulk', 'auto', 'strip_exif', 'resize', 'gutenberg', 'js_builder', 'lazy_load' );
 
 	/**
 	 * List of fields in bulk smush form.

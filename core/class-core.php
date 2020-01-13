@@ -320,7 +320,12 @@ class Core extends Stats {
 			'bulk_restore'      => array(
 				'label'       => esc_html__( 'Bulk Restore', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Bulk Restore', 'wp-smushit' ),
-				'desc'        => esc_html__( 'Made a mistake? Use this feature to restore your image thumbnails to their original state.', 'wp-smushit' ),
+				'desc'        => sprintf(
+					/* translators: %1$s - a tag, %2$s - closing a tag */
+					__( 'Made a mistake? Use this feature to restore your image thumbnails to their original state. Please note, that you need to have “%1$sStore a copy of my full size images%2$s” option enabled to bulk restore the images. ', 'wp-smushit' ),
+					'<a href="' . network_admin_url( 'admin.php?page=smush' ) . '">',
+					'</a>'
+				),
 			),
 		);
 

@@ -90,7 +90,7 @@ if ( ! defined( 'WPINC' ) ) {
 				<# } else { #>
 				<div class="sui-notice sui-notice-warning" style="text-align: left">
 					<p>{{{ data.success }}}/{{{ data.total }}}
-						<?php esc_html_e( 'images were successfully restored but some were unrecoverable. You can try again, or reupload these images.', 'wp-smushit' ); ?>
+						<?php esc_html_e( 'images were successfully restored but some were unrecoverable. You can try again, or re-upload these images.', 'wp-smushit' ); ?>
 					</p>
 				</div>
 				<# } #>

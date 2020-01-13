@@ -38,7 +38,7 @@ if ( ! defined( 'WPINC' ) ) {
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">
 			<span class="sui-settings-label"><?php echo esc_html( $settings_data['bulk_restore']['short_label'] ); ?></span>
-			<span class="sui-description"><?php echo esc_html( $settings_data['bulk_restore']['desc'] ); ?></span>
+			<span class="sui-description"><?php echo wp_kses_post( $settings_data['bulk_restore']['desc'] ); ?></span>
 		</div>
 
 		<div class="sui-box-settings-col-2">
@@ -47,7 +47,14 @@ if ( ! defined( 'WPINC' ) ) {
 				<?php esc_html_e( 'Restore Thumbnails', 'wp-smushit' ); ?>
 			</button>
 			<span class="sui-description">
-				<?php esc_html_e( 'Note: This feature uses your original image uploads to regenerate thumbnails. If you have “Smush my original images” enabled, we can still restore your thumbnails, but the quality will reflect your compressed original image.', 'wp-smushit' ); ?>
+				<?php
+				printf(
+					/* translators: %1$s - a tag, %2$s - closing a tag */
+					wp_kses( 'Note: This feature uses your original image uploads to regenerate thumbnails. If you have “%1$sSmush my original images%2$s” enabled, we can still restore your thumbnails, but the quality will reflect your compressed original image. ', 'wp-smushit' ),
+					'<a href="' . esc_url( network_admin_url( 'admin.php?page=smush' ) ) . '">',
+					'</a>'
+				);
+				?>
 			</span>
 		</div>
 	</div>
