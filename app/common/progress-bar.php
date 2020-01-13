@@ -53,8 +53,8 @@ if ( ! defined( 'WPINC' ) ) {
 				<span class="wp-smush-progress-inner" style="width: 0%"></span>
 			</div>
 		</div>
-		<button class="sui-progress-close sui-button-icon sui-tooltip wp-smush-cancel-bulk" type="button" data-tooltip="<?php esc_html_e( 'Stop current bulk smush process.', 'wp-smushit' ); ?>">
-			<i class="sui-icon-close"></i>
+		<button class="sui-progress-close wp-smush-cancel-bulk" type="button">
+			<?php esc_html_e( 'Cancel', 'wphb' ); ?>
 		</button>
 		<button class="sui-progress-close sui-button-icon sui-tooltip wp-smush-all sui-hidden" type="button" data-tooltip="<?php esc_html_e( 'Resume scan.', 'wp-smushit' ); ?>">
 			<i class="sui-icon-play"></i>

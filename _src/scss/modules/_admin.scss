@@ -620,6 +620,18 @@
 			}
 		}
 
+		.sui-progress-close {
+			border: 0;
+			background: 0;
+			text-transform: uppercase;
+			color: #888888;
+			font-size: 12px;
+			font-weight: 500;
+			letter-spacing: -0.25px;
+			margin-left: 10px;
+			cursor: pointer;
+		}
+
 		.sui-progress-close.wp-smush-cancel-bulk.sui-hidden,
 		.sui-progress-close.wp-smush-all.sui-hidden {
 			display: none !important;
