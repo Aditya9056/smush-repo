@@ -2,6 +2,7 @@
 
 - New: CDN support for images in REST API responses
 - New: Media library filter to show uncompressed images
+- Enhance: Improve restore backup UI
 
 = 3.5.0 =
 

@@ -1312,6 +1312,7 @@ class Dashboard extends Abstract_Page {
 				'grouped_settings' => $this->settings->get_tools_fields(),
 				'settings'         => $this->settings->get(),
 				'settings_data'    => WP_Smush::get_instance()->core()->settings,
+				'backups_count'    => WP_Smush::get_instance()->core()->mod->backup->get_attachments_with_backups(),
 			)
 		);
 	}

@@ -7,6 +7,7 @@
  *
  * @var array $settings_data
  * @var array $grouped_settings
+ * @var int   $backups_count
  */
 
 if ( ! defined( 'WPINC' ) ) {
@@ -42,7 +43,7 @@ if ( ! defined( 'WPINC' ) ) {
 		</div>
 
 		<div class="sui-box-settings-col-2">
-			<button type="button" class="sui-button sui-button-ghost" onclick="WP_Smush.restore.init()">
+			<button type="button" class="sui-button sui-button-ghost" onclick="WP_Smush.restore.init()" <?php disabled( ! $backups_count ); ?>>
 				<i class="sui-icon-undo" aria-hidden="true"></i>
 				<?php esc_html_e( 'Restore Thumbnails', 'wp-smushit' ); ?>
 			</button>

@@ -405,11 +405,13 @@ class Backup extends Abstract_Module {
 	/**
 	 * Get the attachments that can be restored.
 	 *
+	 * @since 3.6.0  Changed from private to public.
+	 *
 	 * @param bool $return_ids  Whether to return ids or just the count.
 	 *
 	 * @return array|int  Attachments IDs / Number of attachments.
 	 */
-	private function get_attachments_with_backups( $return_ids = false ) {
+	public function get_attachments_with_backups( $return_ids = false ) {
 		$images = wp_cache_get( 'images_with_backups', 'wp-smush' );
 
 		if ( ! $images ) {
