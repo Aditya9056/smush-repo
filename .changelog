@@ -4,6 +4,7 @@
 - New: Media library filter to show uncompressed images
 - New: Native lazy loading support
 - Enhance: Improve restore backup UI
+- Enhance: Bulk smush UI
 
 = 3.5.0 =
 
