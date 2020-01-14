@@ -659,6 +659,17 @@ class Dashboard extends Abstract_Page {
 			return;
 		}
 
+		if ( 'png_to_jpg' === $setting_key ) {
+			?>
+			<div class="sui-notice sui-notice-info auto-smush-notice">
+				<p>
+					<?php esc_html_e( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and any hard-coded URLs on your site that contain the original PNG filename will need to be updated manually.', 'wp-smushit' ); ?>
+				</p>
+			</div>
+			<?php
+			return;
+		}
+
 		global $wp_version;
 
 		?>
@@ -683,15 +694,6 @@ class Dashboard extends Abstract_Page {
 					esc_html_e(
 						'Note: This data adds to the size of the image. While this information might be
 					important to photographers, it’s unnecessary for most users and safe to remove.',
-						'wp-smushit'
-					);
-					break;
-				case 'png_to_jpg':
-					esc_html_e(
-						'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs
-					if it results in a smaller file size. The resulting file will have a new filename and extension
-					(JPEG), and any hard-coded URLs on your site that contain the original PNG filename will need
-					to be updated.',
 						'wp-smushit'
 					);
 					break;
