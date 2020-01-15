@@ -208,6 +208,10 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 	 * @see https://masonry.desandro.com/methods.html#layout-masonry
 	 */
 	private function add_masonry_support() {
+		if ( ! function_exists( 'has_block' ) ) {
+			return;
+		}
+
 		// None of the supported blocks are active - exit.
 		if ( ! has_block( 'blockgallery/masonry' ) && ! has_block( 'coblocks/gallery-masonry' ) ) {
 			return;
@@ -329,6 +333,18 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 
 		// Check if iframes are excluded.
 		if ( $iframe && isset( $this->options['format']['iframe'] ) && ! $this->options['format']['iframe'] ) {
+			return $image;
+		}
+
+		/**
+		 * Filter to skip a iframe from lazy load.
+		 *
+		 * @since 3.4.2
+		 *
+		 * @param bool   $skip  Should skip? Default: false.
+		 * @param string $src   Iframe url.
+		 */
+		if ( $iframe && apply_filters( 'smush_skip_iframe_from_lazy_load', false, $src ) ) {
 			return $image;
 		}
 

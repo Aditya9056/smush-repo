@@ -77,10 +77,9 @@ class Media_Library {
 	 */
 	public function custom_column( $column_name, $id ) {
 		if ( 'smushit' === $column_name ) {
-			echo WP_Smush::get_instance()->core()->mod->smush->set_status( $id );
+			echo wp_kses_post( WP_Smush::get_instance()->core()->mod->smush->set_status( $id ) );
 		}
 	}
-
 
 	/**
 	 * Order by query for smush columns.
