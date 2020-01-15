@@ -131,6 +131,10 @@ class Resize_Detection extends Abstract_Module {
 			<div id="smush-image-bar-items-smaller">
 				<strong><?php esc_html_e( 'Undersized', 'wp-smushit' ); ?></strong>
 			</div>
+
+			<div id="smush-image-bar-notice">
+				<p><?php esc_html_e( 'All images optimized', 'wp-smushit' ); ?></p>
+			</div>
 			<p>
 				<?php esc_html_e( 'Note: It’s not always easy to make this happen, fix up what you can.', 'wp-smushit' ); ?>
 			</p>

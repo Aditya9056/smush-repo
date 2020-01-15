@@ -3,6 +3,7 @@
 - New: CDN support for images in REST API responses
 - New: Media library filter to show uncompressed images
 - New: Native lazy loading support
+- Enhance: Image resize detection functionality
 - Enhance: Improve restore backup UI
 - Enhance: Bulk smush UI
 
