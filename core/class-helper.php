@@ -87,6 +87,8 @@ class Helper {
 			return false;
 		}
 
+		do_action( 'smush_s3_integration_fetch_file' );
+
 		$file_path = get_attached_file( $attachment_id );
 		if ( ! empty( $file_path ) && strpos( $file_path, 's3' ) !== false ) {
 			$file_path = get_attached_file( $attachment_id, true );
