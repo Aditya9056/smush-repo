@@ -327,6 +327,11 @@ class Lazy extends Abstract_Module {
 			return $image;
 		}
 
+		// Check for the data-skip-lazy attribute.
+		if ( false !== strpos( $image, 'data-skip-lazy' ) ) {
+			return $image;
+		}
+
 		$new_image = $image;
 
 		$src = Helpers\Parser::get_attribute( $new_image, 'src' );
