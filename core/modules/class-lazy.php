@@ -332,6 +332,18 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 			return $image;
 		}
 
+		/**
+		 * Filter to skip a iframe from lazy load.
+		 *
+		 * @since 3.4.2
+		 *
+		 * @param bool   $skip  Should skip? Default: false.
+		 * @param string $src   Iframe url.
+		 */
+		if ( $iframe && apply_filters( 'smush_skip_iframe_from_lazy_load', false, $src ) ) {
+			return $image;
+		}
+
 		if ( $this->has_excluded_class_or_id( $image ) ) {
 			return $image;
 		}
