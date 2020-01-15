@@ -1,5 +1,7 @@
 = 3.4.2 =
 
+- Enhance: Security
+- Fix: Fatal error on WordPress 4.x
 - Fix: Compatibility issue with ReCaptcha and lazy loading
 
 = 3.4.1 =

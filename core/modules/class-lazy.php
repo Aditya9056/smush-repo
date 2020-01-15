@@ -208,6 +208,10 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 	 * @see https://masonry.desandro.com/methods.html#layout-masonry
 	 */
 	private function add_masonry_support() {
+		if ( ! function_exists( 'has_block' ) ) {
+			return;
+		}
+
 		// None of the supported blocks are active - exit.
 		if ( ! has_block( 'blockgallery/masonry' ) && ! has_block( 'coblocks/gallery-masonry' ) ) {
 			return;
