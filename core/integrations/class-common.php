@@ -42,6 +42,9 @@ class Common {
 		// Remove any pre_get_posts_filters added by WP Media Folder plugin.
 		add_action( 'wp_smush_remove_filters', array( $this, 'remove_filters' ) );
 
+		// ReCaptcha lazy load.
+		add_filter( 'smush_skip_iframe_from_lazy_load', array( $this, 'exclude_recaptcha_iframe' ), 10, 2 );
+
 		// Compatibility modules for lazy loading.
 		add_filter( 'smush_skip_image_from_lazy_load', array( $this, 'lazy_load_compat' ), 10, 3 );
 	}
@@ -306,6 +309,20 @@ class Common {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Skip ReCaptcha iframes from lazy loading.
+	 *
+	 * @since 3.4.2
+	 *
+	 * @param bool   $skip  Should skip? Default: false.
+	 * @param string $src   Iframe url.
+	 *
+	 * @return bool
+	 */
+	public function exclude_recaptcha_iframe( $skip, $src ) {
+		return false !== strpos( $src, 'recaptcha/api' );
 	}
 
 	/**************************************
