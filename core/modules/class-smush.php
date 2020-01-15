@@ -883,9 +883,6 @@ class Smush extends Abstract_Module {
 		// Get the file path for backup.
 		$attachment_file_path = Helper::get_attached_file( $attachment_id );
 
-		// Download file if not exists.
-		do_action( 'smush_file_exists', $attachment_file_path, $attachment_id );
-
 		Helper::check_animated_status( $attachment_file_path, $attachment_id );
 
 		// Take backup.

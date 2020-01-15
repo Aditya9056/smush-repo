@@ -1296,7 +1296,7 @@ class CDN extends Abstract_Module {
 		}
 
 		if ( ! isset( $url_parts['scheme'] ) && 0 === strpos( $src, '//' ) ) {
-			$src = is_ssl() ? 'https:' : 'http:' . $src;
+			$src = is_ssl() ? 'https:' . $src : 'http:' . $src;
 		}
 
 		// This is a relative path, try to get the URL.

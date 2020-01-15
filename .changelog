@@ -24,9 +24,15 @@
 - Fix: WPBakery Page Builder integration
 - Fix: Typos in lazy load module
 
+= 3.4.2 =
+
+- Enhance: Security
+- Fix: Fatal error on WordPress 4.x
+- Fix: Compatibility issue with ReCaptcha and lazy loading
+
 = 3.4.1 =
 
-Fix: Upgrade from Free to Pro causing an error
+- Fix: Upgrade from Free to Pro causing an error
 
 = 3.4.0 =
 
