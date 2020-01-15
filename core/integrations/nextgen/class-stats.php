@@ -211,7 +211,7 @@ class Stats extends NextGen {
 					} elseif ( class_exists( 'C_NextGen_Serializable' ) && method_exists( 'C_NextGen_Serializable', 'unserialize' ) ) {
 						$meta = C_NextGen_Serializable::unserialize( $attachment->meta_data );
 					} else {
-						$meta = unserialize( $attachment->meta_data );
+						$meta = maybe_unserialize( $attachment->meta_data );
 					}
 
 					// Store pid in image meta.
