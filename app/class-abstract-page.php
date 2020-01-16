@@ -560,7 +560,13 @@ abstract class Abstract_Page {
 					</button>
 				<?php endif; ?>
 				<?php if ( ! apply_filters( 'wpmudev_branding_hide_doc_link', false ) ) : ?>
-					<a href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/smush/?utm_source=smush&utm_medium=plugin&utm_campaign=smush_pluginlist_docs" class="sui-button sui-button-ghost" target="_blank">
+					<?php
+					$doc = 'https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation';
+					if ( WP_Smush::is_pro() ) {
+						$doc = 'https://premium.wpmudev.org/docs/wpmu-dev-plugins/smush/?utm_source=smush&utm_medium=plugin&utm_campaign=smush_pluginlist_docs';
+					}
+					?>
+					<a href="<?php echo esc_url( $doc ); ?>>" class="sui-button sui-button-ghost" target="_blank">
 						<i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?>
 					</a>
 				<?php endif; ?>
