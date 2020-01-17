@@ -183,6 +183,11 @@ class Media_Library extends Abstract_Module {
 		return $query;
 	}
 
+	/**
+	 * Meta query for images skipped from bulk smush.
+	 *
+	 * @return array
+	 */
 	private function query_ignored() {
 		return array(
 			array(
@@ -193,6 +198,11 @@ class Media_Library extends Abstract_Module {
 		);
 	}
 
+	/**
+	 * Meta query for uncompressed images.
+	 *
+	 * @return array
+	 */
 	private function query_unsmushed() {
 		return array(
 			array(
@@ -425,7 +435,7 @@ class Media_Library extends Abstract_Module {
 	 * @param int   $id          Attachment ID.
 	 * @param array $smush_data  Optimization data.
 	 *
-	 * @return array
+	 * @return string
 	 */
 	private function get_optimization_status( $id, $smush_data ) {
 		if ( get_option( 'smush-in-progress-' . $id, false ) ) {
@@ -665,8 +675,7 @@ class Media_Library extends Abstract_Module {
 	private function column_html( $id, $html = '', $button_txt = '', $show_button = true ) {
 		// Don't proceed if attachment is not image, or if image is not a jpg, png or gif.
 		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), Core::$mime_types, true ) ) {
-			$status_txt = __( 'Not processed', 'wp-smushit' );
-			return $status_txt;
+			return __( 'Not processed', 'wp-smushit' );
 		}
 
 		// If we aren't showing the button.
@@ -741,7 +750,7 @@ class Media_Library extends Abstract_Module {
 		foreach ( $size_stats as $size_key => $size_value ) {
 			$dimensions = '';
 			// Get the dimensions for the image size if available.
-			if ( ! empty( $attachment_metadata['sizes']) && ! empty( $attachment_metadata['sizes'][ $size_key ] ) ) {
+			if ( ! empty( $attachment_metadata['sizes'] ) && ! empty( $attachment_metadata['sizes'][ $size_key ] ) ) {
 				$dimensions = $attachment_metadata['sizes'][ $size_key ]['width'] . 'x' . $attachment_metadata['sizes'][ $size_key ]['height'];
 			}
 			$dimensions = ! empty( $dimensions ) ? sprintf( ' <br /> (%s)', $dimensions ) : '';

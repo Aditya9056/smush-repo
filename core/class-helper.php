@@ -197,11 +197,8 @@ class Helper {
 	 * @return string
 	 */
 	public static function get_user_name() {
-		// Get username.
 		$current_user = wp_get_current_user();
-		$name         = ! empty( $current_user->first_name ) ? $current_user->first_name : $current_user->display_name;
-
-		return $name;
+		return ! empty( $current_user->first_name ) ? $current_user->first_name : $current_user->display_name;
 	}
 
 	/**

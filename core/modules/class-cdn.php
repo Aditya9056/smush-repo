@@ -762,11 +762,11 @@ class CDN extends Abstract_Module {
 		$height = false;
 
 		// Try to get the width and height from img tag.
-		if ( preg_match( '/width=["|\']?(\b[[:digit:]]+(?!\%)\b)["|\']?/i', $image, $width_string ) ) {
+		if ( preg_match( '/width=["|\']?(\b[[:digit:]]+(?!%)\b)["|\']?/i', $image, $width_string ) ) {
 			$width = $width_string[1];
 		}
 
-		if ( preg_match( '/height=["|\']?(\b[[:digit:]]+(?!\%)\b)["|\']?/i', $image, $height_string ) ) {
+		if ( preg_match( '/height=["|\']?(\b[[:digit:]]+(?!%)\b)["|\']?/i', $image, $height_string ) ) {
 			$height = $height_string[1];
 		}
 
@@ -988,7 +988,7 @@ class CDN extends Abstract_Module {
 	private function get_size_from_file_name( $src ) {
 		$size = array();
 
-		if ( preg_match( '/(\d+)x(\d+)\.(?:' . implode( '|', $this->supported_extensions ) . '){1}$/i', $src, $size ) ) {
+		if ( preg_match( '/(\d+)x(\d+)\.(?:' . implode( '|', $this->supported_extensions ) . ')$/i', $src, $size ) ) {
 			// Get size and width.
 			$width  = (int) $size[1];
 			$height = (int) $size[2];
@@ -1018,7 +1018,7 @@ class CDN extends Abstract_Module {
 	 * @return string
 	 */
 	private function get_url_without_dimensions( $src ) {
-		if ( ! preg_match( '/(-\d+x\d+)\.(' . implode( '|', $this->supported_extensions ) . '){1}(?:\?.+)?$/i', $src, $src_parts ) ) {
+		if ( ! preg_match( '/(-\d+x\d+)\.(' . implode( '|', $this->supported_extensions ) . ')(?:\?.+)?$/i', $src, $src_parts ) ) {
 			return $src;
 		}
 
@@ -1187,7 +1187,6 @@ class CDN extends Abstract_Module {
 		 * Try to get the attachment URL.
 		 *
 		 * TODO: attachment_url_to_postid() can be resource intensive and cause 100% CPU spikes.
-		 *
 		 * @see https://core.trac.wordpress.org/ticket/41281
 		 */
 		$attachment_id = attachment_url_to_postid( $src );
@@ -1368,7 +1367,7 @@ class CDN extends Abstract_Module {
 
 			$domain = $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT domain FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d ORDER BY id ASC LIMIT 1",
+					"SELECT domain FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d ORDER BY id LIMIT 1",
 					get_current_blog_id()
 				)
 			); // Db call ok.

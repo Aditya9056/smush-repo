@@ -32,7 +32,7 @@ if ( ! defined( 'WPINC' ) ) {
 	</p>
 
 	<div class="sui-notice sui-notice-<?php echo esc_attr( $class ); ?> smush-notice-sm">
-		<p><?php echo $status_msg; ?></p>
+		<p><?php echo wp_kses_post( $status_msg ); ?></p>
 		<?php if ( 'error' === $class && 'overcap' === $status ) : ?>
 			<div class="sui-notice-buttons">
 				<a href="https://premium.wpmudev.org/hub/account/" target="_blank" class="sui-button">

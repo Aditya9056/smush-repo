@@ -3,8 +3,6 @@
  * Render Smush pages.
  *
  * @package WP_Smush
- *
- * @var \Smush\App\Pages\Dashboard $this
  */
 
 namespace Smush\App\Views;
@@ -15,6 +13,11 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+/**
+ * Prevent warnings.
+ *
+ * @var \Smush\App\Abstract_Page $this
+ */
 $this->do_meta_boxes( 'summary' );
 ?>
 

@@ -29,7 +29,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 <?php
 // Show re-smush notice.
-echo WP_Smush::get_instance()->admin()->bulk_resmush_content();
+echo wp_kses_post( WP_Smush::get_instance()->admin()->bulk_resmush_content() );
 
 // If there are no images in media library.
 if ( 0 === absint( $core->total_count ) ) {
@@ -175,7 +175,7 @@ if ( $is_pro && $lossy_enabled ) {
 } elseif ( ! $is_pro ) {
 	?>
 	<div class="sui-upsell-row">
-		<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-graphic-bulksmush-upsell@2x.png' ); ?>">
+		<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-graphic-bulksmush-upsell@2x.png' ); ?>" alt="">
 		<div class="sui-notice sui-notice-purple smush-upsell-notice">
 			<p>
 				<?php

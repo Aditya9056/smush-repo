@@ -209,7 +209,6 @@ class Admin {
 				);
 			}
 
-
 			$links[] = '<a href="https://premium.wpmudev.org/get-support/" target="_blank" title="' . esc_attr__( 'Premium Support', 'wp-smushit' ) . '">' . esc_html__( 'Premium Support', 'wp-smushit' ) . '</a>';
 		}
 

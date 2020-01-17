@@ -53,19 +53,17 @@ class Backup extends Abstract_Module {
 	 * @param string $file_path      File path.
 	 * @param string $backup_path    Backup path.
 	 * @param string $attachment_id  Attachment ID.
-	 *
-	 * @return string
 	 */
 	public function create_backup( $file_path = '', $backup_path = '', $attachment_id = '' ) {
 		$copied = false;
 
 		if ( empty( $file_path ) ) {
-			return '';
+			return;
 		}
 
 		// Return file path if backup is disabled.
 		if ( ! $this->settings->get( 'backup' ) || ! WP_Smush::is_pro() ) {
-			return $file_path;
+			return;
 		}
 
 		$mod = WP_Smush::get_instance()->core()->mod;
@@ -77,19 +75,20 @@ class Backup extends Abstract_Module {
 
 		// If we don't have any backup path yet, bail!
 		if ( empty( $backup_path ) ) {
-			return $file_path;
+			return;
 		}
 
 		$attachment_id = ! empty( $mod->smush->attachment_id ) ? $mod->smush->attachment_id : $attachment_id;
 		if ( ! empty( $attachment_id ) && $mod->png2jpg->is_converted( $attachment_id ) ) {
 			// No need to create a backup, we already have one if enabled.
-			return $file_path;
+			return;
 		}
 
 		// Check for backup from other plugins, like nextgen, if it doesn't exists, create our own.
 		if ( ! file_exists( $backup_path ) ) {
 			$copied = @copy( $file_path, $backup_path );
 		}
+
 		// Store the backup path in image backup sizes.
 		if ( $copied ) {
 			$this->add_to_image_backup_sizes( $attachment_id, $backup_path );
@@ -246,7 +245,7 @@ class Backup extends Abstract_Module {
 					$this->remove_from_backup_sizes( $attachment_id, '', $backup_sizes );
 
 					// Delete the backup.
-					$this->remove_backup( $attachment_id, $backup_full_path );
+					@unlink( $backup_full_path );
 				}
 			}
 		} elseif ( file_exists( $file_path . '_backup' ) ) {
@@ -370,16 +369,6 @@ class Backup extends Abstract_Module {
 	}
 
 	/**
-	 *  Remove the backup path for a give attachment id and path
-	 *
-	 * @param string $attachment_id  Attachment ID.
-	 * @param string $path           File path.
-	 */
-	private function remove_backup( $attachment_id = '', $path = '' ) {
-		@unlink( $path );
-	}
-
-	/**
 	 * Remove a specific backup key from Backup Size array
 	 *
 	 * @param string $attachment_id  Attachment ID.
@@ -497,9 +486,7 @@ class Backup extends Abstract_Module {
 			return false;
 		}
 
-		$backup_name = trailingslashit( $path['dirname'] ) . $path['filename'] . '.bak.' . $path['extension'];
-
-		return $backup_name;
+		return trailingslashit( $path['dirname'] ) . $path['filename'] . '.bak.' . $path['extension'];
 	}
 
 	/**

@@ -596,11 +596,11 @@ class Ajax {
 			update_option( $key, $resmush_list, false );
 		}
 
-		// Get updated stats for Nextgen.
+		// Get updated stats for NextGen.
 		if ( 'nextgen' === $type ) {
-			// Reinitialize Nextgen stats.
+			// Reinitialize NextGen stats.
 			$core->nextgen->ng_admin->setup_image_counts();
-			// Image count, Smushed Count, Supersmushed Count, Savings.
+			// Image count, Smushed Count, Super-smushed Count, Savings.
 			$stats               = $core->nextgen->ng_stats->get_smush_stats();
 			$image_count         = $core->nextgen->ng_admin->image_count;
 			$smushed_count       = $core->nextgen->ng_admin->smushed_count;
@@ -631,8 +631,8 @@ class Ajax {
 		}
 
 		if ( ! empty( $count ) ) {
-			/* translators: %1$d - number of images, %2$s - opening a tag, %3$s - closing a tag */
 			$message = sprintf(
+				/* translators: %1$d - number of images, %2$s - opening a tag, %3$s - closing a tag */
 				esc_html__( 'Image check complete, you have %1$d images that need smushing. %2$sBulk smush now!%3$s', 'wp-smushit' ),
 				$count,
 				'<a href="#" class="wp-smush-trigger-bulk" data-type="' . $type . '">',
@@ -714,7 +714,7 @@ class Ajax {
 				$stats = WP_Smush::get_instance()->core()->get_stats_for_attachments( $resmush_list );
 			}
 		} else {
-			// For Nextgen. Get the stats (get the re-Smush IDs).
+			// For NextGen. Get the stats (get the re-Smush IDs).
 			$resmush_ids = get_option( 'wp-smush-nextgen-resmush-list', array() );
 
 			$stats = WP_Smush::get_instance()->core()->nextgen->ng_stats->get_stats_for_ids( $resmush_ids );
