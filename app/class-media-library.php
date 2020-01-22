@@ -641,8 +641,7 @@ class Media_Library extends Abstract_Module {
 	private function column_html( $id, $html = '', $button_txt = '', $show_button = true ) {
 		// Don't proceed if attachment is not image, or if image is not a jpg, png or gif.
 		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), Core::$mime_types, true ) ) {
-			$status_txt = __( 'Not processed', 'wp-smushit' );
-			return $status_txt;
+			return __( 'Not processed', 'wp-smushit' );
 		}
 
 		// If we aren't showing the button.
