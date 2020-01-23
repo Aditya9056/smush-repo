@@ -82,8 +82,6 @@ jQuery( function( $ ) {
 			// Reset all functionality.
 			enable_links( currentButton );
 
-			console.log( r );
-
 			if ( r.success && 'undefined' !== typeof r.data ) {
 				// Replace in immediate parent for NextGEN.
 				if ( 'undefined' !== typeof this.data && this.data.indexOf( 'nextgen' ) > -1 ) {
