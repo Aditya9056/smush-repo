@@ -362,6 +362,11 @@ class Media_Library extends Abstract_Module {
 	 * @return string|array  HTML content or array of results.
 	 */
 	public function generate_markup( $id ) {
+		// Don't proceed if attachment is not image, or if image is not a jpg, png or gif.
+		if ( ! wp_attachment_is_image( $id ) || ! in_array( get_post_mime_type( $id ), Core::$mime_types, true ) ) {
+			return __( 'Not processed', 'wp-smushit' );
+		}
+
 		// Remove Smush s3 hook, as it downloads the file again.
 		if ( class_exists( '\Compat' ) && class_exists( '\AS3CF_Plugin_Compatibility' ) ) {
 			$s3_compat = new Compat();
