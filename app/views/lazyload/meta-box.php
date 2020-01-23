@@ -71,7 +71,7 @@ wp_enqueue_style( 'wp-color-picker' );
 			</label>
 			<label for="format-iframe" class="sui-checkbox sui-checkbox-stacked">
 				<input type='hidden' value='0' name='format[iframe]' />
-				<input type="checkbox" name="format[iframe]" id="format-iframe" <?php checked( $settings['format']['iframe'] ); ?> />
+				<input type="checkbox" name="format[iframe]" id="format-iframe" <?php checked( ! isset( $settings['format']['iframe'] ) || $settings['format']['iframe'] ); ?> />
 				<span aria-hidden="true"></span>
 				<span><?php esc_html_e( 'iframe', 'wp-smushit' ); ?></span>
 			</label>
