@@ -158,7 +158,7 @@ class Resize_Detection extends Abstract_Module {
 			return $image;
 		}
 
-		Helpers\Parser::add_attribute( $image, 'data-resize-detection', '0' );
+		Helpers\Parser::add_attribute( $image, 'no-resize-detection' );
 
 		return $image;
 	}

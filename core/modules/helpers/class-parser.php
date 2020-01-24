@@ -315,9 +315,13 @@ class Parser {
 	 * @param string $name     Img attribute name (srcset, size, etc).
 	 * @param string $value    Attribute value.
 	 */
-	public static function add_attribute( &$element, $name, $value ) {
+	public static function add_attribute( &$element, $name, $value = null ) {
 		$closing = false === strpos( $element, '/>' ) ? '>' : ' />';
-		$element = rtrim( $element, $closing ) . " {$name}=\"{$value}\"{$closing}";
+		if ( ! is_null( $value ) ) {
+			$element = rtrim( $element, $closing ) . " {$name}=\"{$value}\"{$closing}";
+		} else {
+			$element = rtrim( $element, $closing ) . " {$name}{$closing}";
+		}
 	}
 
 	/**

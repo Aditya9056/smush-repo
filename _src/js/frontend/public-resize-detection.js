@@ -61,7 +61,7 @@
 			}
 
 			// Skip images from Smush CDN with auto-resize feature.
-			if ( 'undefined' !== typeof image.dataset.resizeDetection && '0' === image.dataset.resizeDetection ) {
+			if ( 'string' === typeof image.getAttribute( 'no-resize-detection' ) ) {
 				return true;
 			}
 
