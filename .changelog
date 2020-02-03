@@ -1,8 +1,8 @@
 = 3.5.0 =
 
-- New: Add custom post types to include/exclude filters in lazy load module
-- New: CDN support for source in picture element
-- New: Lazy loading for webp images
+- New: Add custom post types to include/exclude filters in the lazy load module
+- New: CDN support for source in the picture element
+- New: Lazy loading for WebP images
 - New: Lazy loading support for picture element
 - Enhance: Page parsing performance
 - Enhance: Media library UI
@@ -12,9 +12,9 @@
 - Enhance: Plugins page links
 - Fix: CDN not detecting background images surrounded by HTML entities
 - Fix: CDN not replacing srcset in some cases
-- Fix: Lazy load gravatars
+- Fix: Lazy load Gravatars
 - Fix: WPBakery Page Builder integration
-- Fix: Typos in lazy load module
+- Fix: Typos in the lazy load module
 
 = 3.4.2 =
 
