@@ -32,30 +32,31 @@ jQuery( function( $ ) {
 		//Disable Links
 		parent.find( 'a' ).removeAttr( 'disabled' );
 	};
+
 	/**
 	 * Restore image request with a specified action for Media Library / NextGen Gallery
-     *
-	 * @param e
-	 * @param current_button
-	 * @param smush_action
-	 * @return {boolean}
+	 *
+	 * @param {Object} e
+	 * @param {string} currentButton
+	 * @param {string} smushAction
+	 * @param {string} action
 	 */
-	const process_smush_action = function( e, current_button, smush_action, action ) {
-		//If disabled
-		if ( 'disabled' == current_button.attr( 'disabled' ) ) {
-			return false;
+	const process_smush_action = function( e, currentButton, smushAction, action ) {
+		// If disabled.
+		if ( 'disabled' === currentButton.attr( 'disabled' ) ) {
+			return;
 		}
 
 		e.preventDefault();
 
-		//Remove Error
+		// Remove Error.
 		$( '.wp-smush-error' ).remove();
 
-		//Hide stats
+		// Hide stats.
 		$( '.smush-stats-wrapper' ).hide();
 
 		let mode = 'grid';
-		if ( 'smush_restore_image' == smush_action ) {
+		if ( 'smush_restore_image' === smushAction ) {
 			if ( $( document ).find( 'div.media-modal.wp-core-ui' ).length > 0 ) {
 				mode = 'grid';
 			} else {
@@ -63,42 +64,41 @@ jQuery( function( $ ) {
 			}
 		}
 
-		//Get the image ID and nonce
+		// Get the image ID and nonce.
 		const params = {
-			action: smush_action,
-			attachment_id: current_button.data( 'id' ),
+			action: smushAction,
+			attachment_id: currentButton.data( 'id' ),
 			mode,
-			_nonce: current_button.data( 'nonce' ),
+			_nonce: currentButton.data( 'nonce' ),
 		};
 
-		//Reduce the opacity of stats and disable the click
-		disable_links( current_button );
+		// Reduce the opacity of stats and disable the click.
+		disable_links( currentButton );
 
-		current_button.html( '<span class="spinner wp-smush-progress">' + wp_smush_msgs[ action ] + '</span>' );
+		currentButton.html( '<span class="spinner wp-smush-progress">' + wp_smush_msgs[ action ] + '</span>' );
 
-		//Restore the image
+		// Restore the image.
 		$.post( ajaxurl, params, function( r ) {
-			current_button.replaceWith( '<span style="color: #32373c;">' + window.wp_smush_msgs.all_done + '</span>' );
+			// Reset all functionality.
+			enable_links( currentButton );
 
-			//reset all functionality
-			enable_links( current_button );
-
-			if ( r.success && 'undefined' !== typeof ( r.data.button ) ) {
-				//Replace in immediate parent for nextgen
-				if ( 'undefined' !== typeof ( this.data ) && this.data.indexOf( 'nextgen' ) > -1 ) {
-					//Show the smush button, and remove stats and restore option
-					current_button.parent().html( r.data.button );
+			if ( r.success && 'undefined' !== typeof r.data ) {
+				// Replace in immediate parent for NextGEN.
+				if ( 'undefined' !== typeof this.data && this.data.indexOf( 'nextgen' ) > -1 ) {
+					// Show the smush button, and remove stats and restore option.
+					currentButton.parent().html( r.data );
+				} else if ( 'restore' === action ) { // Show the smush button, and remove stats and restore option.
+					currentButton.parents().eq( 1 ).html( r.data.stats );
 				} else {
-					//Show the smush button, and remove stats and restore option
-					current_button.parents().eq( 1 ).html( r.data.button );
+					currentButton.parents().eq( 1 ).html( r.data );
 				}
 
-				if ( 'undefined' !== typeof ( r.data ) && 'restore' === action ) {
+				if ( 'undefined' !== typeof r.data && 'restore' === action ) {
 					Smush.updateImageStats( r.data.new_size );
 				}
-			} else if ( r.data.message ) {
-				//show error
-				current_button.parent().append( r.data.message );
+			} else if ( r.data.error_msg ) {
+				// Show error.
+				currentButton.parent().append( r.data.error_msg );
 			}
 		} );
 	};

@@ -106,8 +106,13 @@ class Resize extends Abstract_Module {
 	 * @return bool Should resize or not
 	 */
 	public function should_resize( $id = '', $meta = '' ) {
-		// If resizing not enabled, or if both max width and height is set to 0, return.
-		if ( ! $this->resize_enabled || ( 0 === $this->max_w && 0 === $this->max_h ) ) {
+		/**
+		 * If resizing not enabled, or if both max width and height is set to 0, return.
+		 *
+		 * Do not use $this->resize_enabled here, because the initialize does not always detect the proper screen
+		 * in the media library or via ajax requests.
+		 */
+		if ( ! $this->settings->get( 'resize' ) || ( 0 === $this->max_w && 0 === $this->max_h ) ) {
 			return false;
 		}
 

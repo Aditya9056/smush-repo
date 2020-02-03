@@ -324,8 +324,7 @@ class Ajax {
 		if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
 			wp_send_json_error(
 				array(
-					'error'   => 'empty_fields',
-					'message' => '<div class="wp-smush-error">' . esc_html__( 'Image not smushed, fields empty.', 'wp-smushit' ) . '</div>',
+					'error_msg' => '<div class="wp-smush-error">' . esc_html__( 'Image not smushed, fields empty.', 'wp-smushit' ) . '</div>',
 				)
 			);
 		}
@@ -334,34 +333,14 @@ class Ajax {
 		if ( ! wp_verify_nonce( $_POST['_nonce'], 'wp-smush-resmush-' . $_POST['attachment_id'] ) ) {
 			wp_send_json_error(
 				array(
-					'error'   => 'empty_fields',
-					'message' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", 'wp-smushit' ) . '</div>',
+					'error_msg' => '<div class="wp-smush-error">' . esc_html__( "Image couldn't be smushed as the nonce verification failed, try reloading the page.", 'wp-smushit' ) . '</div>',
 				)
 			);
 		}
 
 		$image_id = intval( $_POST['attachment_id'] );
 
-		$smushed = WP_Smush::get_instance()->core()->mod->smush->smush_single( $image_id, true );
-
-		// If any of the image is restored, we count it as success.
-		if ( ! empty( $smushed['status'] ) ) {
-			// Send button content.
-			wp_send_json_success(
-				array(
-					'button' => $smushed['status'] . $smushed['stats'],
-				)
-			);
-		}
-
-		// Send error Message.
-		if ( ! empty( $smushed['error'] ) ) {
-			wp_send_json_error(
-				array(
-					'message' => '<div class="wp-smush-error">' . $smushed['error'] . '</div>',
-				)
-			);
-		}
+		WP_Smush::get_instance()->core()->mod->smush->smush_single( $image_id );
 	}
 
 	/**

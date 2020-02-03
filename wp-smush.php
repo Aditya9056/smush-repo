@@ -121,6 +121,10 @@ if ( WP_SMUSH_BASENAME !== plugin_basename( __FILE__ ) ) {
 		return; // Return to avoid errors with free-dashboard module.
 	} elseif ( $pro_installed && is_plugin_active( WP_SMUSH_BASENAME ) ) {
 		deactivate_plugins( WP_SMUSH_BASENAME );
+		// If WordPress is already in the process of activating - return.
+		if ( defined( 'WP_SANDBOX_SCRAPING' ) && WP_SANDBOX_SCRAPING ) {
+			return;
+		}
 		activate_plugin( plugin_basename( __FILE__ ) );
 	}
 }

@@ -323,7 +323,7 @@ class Admin extends NextGen {
 			return $status_txt;
 		}
 
-		// If we are not showing smush button, append progree bar, else it is already there.
+		// If we are not showing smush button, append progress bar, else it is already there.
 		if ( ! $show_button ) {
 			$status_txt .= Media_Library::progress_bar();
 		}
@@ -343,7 +343,6 @@ class Admin extends NextGen {
 	 * @param boolean $show_button  Whether to shoe the button.
 	 * @param bool    $smushed      Image compressed or not.
 	 * @param bool    $echo         Echo or return.
-	 * @param bool    $wrapper      Add a wrapper.
 	 *
 	 * @return string|void
 	 */
@@ -355,7 +354,6 @@ class Admin extends NextGen {
 		if ( ! $show_button ) {
 			if ( $echo ) {
 				echo $html . Media_Library::progress_bar();
-
 				return;
 			} else {
 				return $html;
@@ -366,13 +364,12 @@ class Admin extends NextGen {
 			<button  class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
 				<span>' . $button_txt . '</span>
 			</button>';
-			$html .= Media_Library::progress_bar();
 			return $html;
 		} else {
 			$html .= '<button class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
 				<span>' . $button_txt . '</span>
 			</button>';
-			echo $html . Media_Library::progress_bar();
+			echo $html;
 		}
 	}
 

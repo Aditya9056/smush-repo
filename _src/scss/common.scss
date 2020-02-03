@@ -47,14 +47,21 @@
 }
 
 .wp-smush-progress {
-	width: 100%;
 	padding-left: 25px;
 	margin: 0;
 	background-size: 17px 17px;
 	visibility: visible;
+	vertical-align: initial !important; /* prevent from jumping on a line */
 	display: inline;
 	color: #32373c;
 	cursor: default;
+}
+
+// Fix grid view links.
+.attachment-details .setting span.wp-smush-progress {
+	width: auto;
+	line-height: 0;
+	margin-right: 5px;
 }
 
 /** Settings Page **/

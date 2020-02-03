@@ -153,8 +153,7 @@ class Backup extends Abstract_Module {
 			if ( empty( $_POST['attachment_id'] ) || empty( $_POST['_nonce'] ) ) {
 				wp_send_json_error(
 					array(
-						'error'   => 'empty_fields',
-						'message' => esc_html__( 'Error in processing restore action, Fields empty.', 'wp-smushit' ),
+						'error_msg' => esc_html__( 'Error in processing restore action, Fields empty.', 'wp-smushit' ),
 					)
 				);
 			}
@@ -162,8 +161,7 @@ class Backup extends Abstract_Module {
 			if ( ! wp_verify_nonce( $_POST['_nonce'], 'wp-smush-restore-' . $_POST['attachment_id'] ) ) {
 				wp_send_json_error(
 					array(
-						'error'   => 'empty_fields',
-						'message' => esc_html__( 'Image not restored, Nonce verification failed.', 'wp-smushit' ),
+						'error_msg' => esc_html__( 'Image not restored, Nonce verification failed.', 'wp-smushit' ),
 					)
 				);
 			}
@@ -292,7 +290,7 @@ class Backup extends Abstract_Module {
 
 			wp_send_json_success(
 				array(
-					'button'   => $button_html,
+					'stats'    => $button_html,
 					'new_size' => isset( $update_size ) ? $update_size : 0,
 				)
 			);

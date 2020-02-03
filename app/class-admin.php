@@ -221,7 +221,7 @@ class Admin {
 	 * Add menu pages.
 	 */
 	public function add_menu_pages() {
-		$title = WP_Smush::is_pro() ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
+		$title = 'wp-smush-pro/wp-smush.php' === WP_SMUSH_BASENAME ? esc_html__( 'Smush Pro', 'wp-smushit' ) : esc_html__( 'Smush', 'wp-smushit' );
 
 		if ( Settings::can_access( false, true ) ) {
 			$this->pages['smush']           = new Pages\Dashboard( 'smush', $title );
