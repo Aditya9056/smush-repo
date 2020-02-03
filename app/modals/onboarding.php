@@ -7,7 +7,6 @@
  */
 
 use Smush\Core\Helper;
-use Smush\WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -17,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 <script type="text/template" id="smush-onboarding" data-type="<?php echo WP_Smush::is_pro() ? 'pro' : 'free'; ?>">
 	<div class="sui-box-header sui-flatten sui-content-center sui-spacing-sides--90">
-		<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
+		<?php if ( ! apply_filters( 'wpmudev_branding_hide_branding', false ) ) : ?>
 		<figure class="sui-box-banner" aria-hidden="true">
 			<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}.png"
 				srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}.png 1x, <?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding-' ); ?>{{{ data.slide }}}@2x.png 2x"
@@ -101,14 +100,14 @@ if ( ! defined( 'WPINC' ) ) {
 		<p class="sui-description" style="padding: 0 90px">
 			<?php esc_html_e( 'Note: By default we will store a copy of your original uploads just in case you want to revert in the future - you can turn this off at any time.', 'wp-smushit' ); ?>
 		</p>
-		<# } else if ( 'lazy_load' === data.slide ) { #>
+		<# } else if ( 'usage' === data.slide ) { #>
 		<button type="submit" class="sui-button sui-button-blue sui-button-icon-left" data-modal-close="">
 			<i class="sui-icon-check" aria-hidden="true"> </i>
 			<?php esc_html_e( 'Finish setup wizard', 'wp-smushit' ); ?>
 		</button>
 		<# } #>
 
-		<# if ( 'start' !== data.slide && 'lazy_load' !== data.slide ) { #>
+		<# if ( 'start' !== data.slide && 'usage' !== data.slide ) { #>
 		<a class="sui-button sui-button-gray next" onclick="WP_Smush.onboarding.next(this)">
 			<?php esc_html_e( 'Next', 'wp-smushit' ); ?>
 		</a>
@@ -148,11 +147,9 @@ if ( ! defined( 'WPINC' ) ) {
 			<button onclick="WP_Smush.onboarding.goTo('lazy_load')" class="<# if ( 'lazy_load' === data.slide ) { #>sui-current<# } #>" <# if ( 'lazy_load' === data.slide ) { #>disabled<# } #>>
 				<?php esc_html_e( 'Lazy Load', 'wp-smushit' ); ?>
 			</button>
-			<!--
 			<button onclick="WP_Smush.onboarding.goTo('usage')" class="<# if ( 'usage' === data.slide ) { #>sui-current<# } #>" <# if ( 'usage' === data.slide ) { #>disabled<# } #>>
 				<?php esc_html_e( 'Usage Data', 'wp-smushit' ); ?>
 			</button>
-			-->
 		</div>
 	</div>
 </script>

@@ -150,7 +150,7 @@ if ( ! defined( 'WPINC' ) ) {
 	</div>
 	<# } #>
 
-	<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
+	<?php if ( ! apply_filters( 'wpmudev_branding_hide_branding', false ) ) : ?>
 		<div class="sui-box-footer sui-flatten sui-spacing-bottom--0">
 			<img class="sui-image sui-image-center"
 				src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/onboarding/graphic-onboarding.png' ); ?>"

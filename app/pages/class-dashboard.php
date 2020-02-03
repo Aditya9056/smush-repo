@@ -11,7 +11,7 @@ namespace Smush\App\Pages;
 use Smush\App\Abstract_Page;
 use Smush\Core\Core;
 use Smush\Core\Settings;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -540,10 +540,8 @@ class Dashboard extends Abstract_Page {
 						<p class="wp-smush-stats-label-message">
 							<?php
 							$link_class = 'wp-smush-lossy-enable-link';
-							if ( is_multisite() && Settings::can_access( 'bulk' ) ) {
-								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true, true ) . '#enable-lossy';
-							} elseif ( 'bulk' !== $this->get_current_tab() ) {
-								$settings_link = WP_Smush::get_instance()->admin()->settings_link( array(), true ) . '#enable-lossy';
+							if ( ( is_multisite() && Settings::can_access( 'bulk' ) ) || 'bulk' !== $this->get_current_tab() ) {
+								$settings_link = $this->get_page_url() . '#enable-lossy';
 							} else {
 								$settings_link = '#';
 								$link_class    = 'wp-smush-lossy-enable';
@@ -1277,8 +1275,20 @@ class Dashboard extends Abstract_Page {
 	 * @since 3.2.0
 	 */
 	public function lazyload_metabox() {
-		$settings = $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' );
-		$this->view( 'lazyload/meta-box', array( 'settings' => $settings ) );
+		$this->view(
+			'lazyload/meta-box',
+			array(
+				'settings' => $this->settings->get_setting( WP_SMUSH_PREFIX . 'lazy_load' ),
+				'cpts'     => get_post_types( // custom post types.
+					array(
+						'public'   => true,
+						'_builtin' => false,
+					),
+					'objects',
+					'and'
+				),
+			)
+		);
 	}
 
 	/**

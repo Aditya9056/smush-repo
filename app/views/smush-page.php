@@ -3,11 +3,13 @@
  * Render Smush pages.
  *
  * @package WP_Smush
+ *
+ * @var \Smush\App\Pages\Dashboard $this
  */
 
 namespace Smush\App\Views;
 
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

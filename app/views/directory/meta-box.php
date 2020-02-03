@@ -24,7 +24,7 @@ if ( ! defined( 'WPINC' ) ) {
 <input type="hidden" name="wp-smush-base-path" value="<?php echo esc_attr( $root_path ); ?>" />
 
 <div class="wp-smush-scan-result">
-	<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
+	<?php if ( ! apply_filters( 'wpmudev_branding_hide_branding', false ) ) : ?>
 		<span class="wp-smush-no-image">
 				<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-no-media.png' ); ?>" alt="<?php esc_html_e( 'Directory Smush - Choose Folder', 'wp-smushit' ); ?>">
 			</span>

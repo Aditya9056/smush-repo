@@ -12,8 +12,8 @@ use C_Gallery_Storage;
 use C_Image;
 use Mixin;
 use nggdb;
-use Smush\WP_Smush;
 use stdClass;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;

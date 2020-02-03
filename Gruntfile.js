@@ -1,35 +1,36 @@
 module.exports = function( grunt ) {
-	require('load-grunt-tasks')(grunt);
+	require( 'load-grunt-tasks' )( grunt );
 
-	var commonFiles = [
+	const commonFiles = [
 		'_src/**',
+		'!_src/images/**',
 		'app/**',
 		'core/**',
 		'uninstall.php',
-		'wp-smush.php'
+		'wp-smush.php',
 	];
 
-	var includeFilesPro = commonFiles.slice(0).concat([
+	const includeFilesPro = commonFiles.slice( 0 ).concat( [
 		'changelog.txt',
-		'!core/external/free-dashboard/**'
-	]);
+		'!core/external/free-dashboard/**',
+	] );
 
-	var includeFilesFree = commonFiles.slice(0).concat([
+	const includeFilesFree = commonFiles.slice( 0 ).concat( [
 		'readme.txt',
-		'!core/external/dash-notice/**'
-	]);
+		'!core/external/dash-notice/**',
+	] );
 
-	var changelog = grunt.file.read('.changelog');
+	const changelog = grunt.file.read( '.changelog' );
 
-	grunt.initConfig({
-		pkg: grunt.file.readJSON('package.json'),
+	grunt.initConfig( {
+		pkg: grunt.file.readJSON( 'package.json' ),
 
 		clean: {
-			main: ['build/']
+			main: [ 'build/' ],
 		},
 
 		checktextdomain: {
-			options:{
+			options: {
 				text_domain: 'wp-smushit',
 				keywords: [
 					'__:1,2d',
@@ -45,119 +46,120 @@ module.exports = function( grunt ) {
 					'_n:1,2,4d',
 					'_nx:1,2,4c,5d',
 					'_n_noop:1,2,3d',
-					'_nx_noop:1,2,3c,4d'
-				]
+					'_nx_noop:1,2,3c,4d',
+				],
 			},
 			files: {
-				src:  [
+				src: [
 					'app/**/*.php',
 					'core/**/*.php',
 					'uninstall.php',
 					'wp-smush.php',
-					'!core/external/**'
+					'!core/external/**',
 				],
-				expand: true
-			}
+				expand: true,
+			},
 		},
 
 		makepot: {
 			options: {
 				domainPath: 'languages',
 				exclude: [
-					'core/external/.*'
+					'core/external/.*',
 				],
 				mainFile: 'wp-smush.php',
 				potFilename: 'wp-smushit.pot',
 				potHeaders: {
 					'report-msgid-bugs-to': 'https://wpmudev.org',
-					'language-team': 'LANGUAGE <EMAIL@ADDRESS>'
+					'language-team': 'LANGUAGE <EMAIL@ADDRESS>',
 				},
 				type: 'wp-plugin',
-				updateTimestamp: false // Update POT-Creation-Date header if no other changes are detected
+				updateTimestamp: false, // Update POT-Creation-Date header if no other changes are detected
 			},
 			main: {
 				options: {
-					cwd: ''
-				}
+					cwd: '',
+				},
 			},
 			pro: {
 				options: {
-					cwd: 'build/wp-smush-pro'
-				}
+					cwd: 'build/wp-smush-pro',
+				},
 			},
 			free: {
 				options: {
-					cwd: 'build/wp-smushit'
-				}
-			}
+					cwd: 'build/wp-smushit',
+				},
+			},
 		},
 
 		copy: {
 			pro: {
-				src:  includeFilesPro,
+				src: includeFilesPro,
 				dest: 'build/wp-smush-pro/',
 				options: {
-					noProcess: ['**/*.{png,gif,jpg,ico,svg,eot,ttf,woff,woff2}'],
-					process: function (content, srcpath) {
-						return content.replace( /\%\%CHANGELOG\%\%/g, changelog )
+					noProcess: [ '**/*.{png,gif,jpg,ico,svg,eot,ttf,woff,woff2}' ],
+					process( content, srcpath ) {
+						return content.replace( /%%CHANGELOG%%/g, changelog )
 							.replace( /\/\*\nThis plugin was originally developed by Alex Dunae \(http:\/\/dialect.ca\/\).\n/g, '/*' );
-					}
-				}
+					},
+				},
 			},
 			free: {
-				src:  includeFilesFree,
+				src: includeFilesFree,
 				dest: 'build/wp-smushit/',
 				options: {
-					noProcess: ['**/*.{png,gif,jpg,ico,svg,eot,ttf,woff,woff2}'],
-					process: function (content, srcpath) {
-						const pkg = grunt.file.readJSON('package.json');
-						return content.replace( / \* WDP ID\:            912164\n \*\//g, ' *\/' )
-							.replace( /Plugin Name\:       Smush Pro/g, 'Plugin Name:       Smush' )
-							.replace( /Plugin URI\:        http:\/\/premium.wpmudev.org\/projects\/wp-smush-pro\//g, 'Plugin URI:        http://wordpress.org/extend/plugins/wp-smushit/' )
+					noProcess: [ '**/*.{png,gif,jpg,ico,svg,eot,ttf,woff,woff2}' ],
+					process( content, srcpath ) {
+						const pkg = grunt.file.readJSON( 'package.json' );
+						return content.replace( / \* WDP ID: {12}912164\n \*\//g, ' *\/' )
+							.replace( /Plugin Name: {7}Smush Pro/g, 'Plugin Name:       Smush' )
+							.replace( /Plugin URI: {8}http:\/\/premium.wpmudev.org\/project\/wp-smush-pro\//g, 'Plugin URI:        http:\/\/wordpress.org\/plugins\/wp-smushit\/' )
+							.replace( /Author URI: {8}https:\/\/premium.wpmudev.org\//g, 'Author URI:        https://profiles.wordpress.org/wpmudev/' )
 							.replace( /SEO using the/g, 'SEO using the free' )
 							.replace( /Author - Aaron Edwards, Sam Najian, Umesh Kumar, Anton Vanyukov\n/g, '' )
-							.replace( /\%\%CHANGELOG\%\%/g, changelog )
-							.replace( /\%\%VERSION\%\%/g, pkg.version );
-					}
-				}
-			}
+							.replace( /%%CHANGELOG%%/g, changelog )
+							.replace( /%%VERSION%%/g, pkg.version );
+					},
+				},
+			},
 		},
 
 		compress: {
 			pro: {
 				options: {
-					archive: './build/wp-smush-pro-<%= pkg.version %>.zip'
+					archive: './build/wp-smush-pro-<%= pkg.version %>.zip',
 				},
 				expand: true,
 				cwd: 'build/wp-smush-pro/',
-				src: ['**/*'],
-				dest: 'wp-smush-pro/'
+				src: [ '**/*' ],
+				dest: 'wp-smush-pro/',
 			},
 			free: {
 				options: {
-					archive: './build/wp-smushit-<%= pkg.version %>.zip'
+					archive: './build/wp-smushit-<%= pkg.version %>.zip',
 				},
 				expand: true,
 				cwd: 'build/wp-smushit/',
-				src: ['**/*'],
-				dest: 'wp-smushit/'
-			}
+				src: [ '**/*' ],
+				dest: 'wp-smushit/',
+			},
 		},
-	});
+	} );
 
-	grunt.registerTask('prepare', ['checktextdomain']);
+	grunt.registerTask( 'prepare', [ 'checktextdomain' ] );
 
-	grunt.registerTask('translate', ['makepot:main']);
+	grunt.registerTask( 'translate', [ 'makepot:main' ] );
 
-	grunt.registerTask('build', [
+	grunt.registerTask( 'build', [
 		'copy:pro',
 		'makepot:pro',
-		'compress:pro'
-	]);
+		'compress:pro',
+	] );
 
-	grunt.registerTask('build:wporg', [
+	grunt.registerTask( 'build:wporg', [
 		'copy:free',
 		'makepot:free',
-		'compress:free'
-	]);
+		'compress:free',
+	] );
 };

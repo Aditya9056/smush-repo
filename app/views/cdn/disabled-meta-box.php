@@ -13,7 +13,7 @@ if ( ! defined( 'WPINC' ) ) {
 ?>
 
 <div class="sui-block-content-center">
-	<?php if ( ! $this->hide_wpmudev_branding() ) : ?>
+	<?php if ( ! apply_filters( 'wpmudev_branding_hide_branding', false ) ) : ?>
 		<img src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/graphic-smush-cdn-default.png' ); ?>"
 			srcset="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/graphic-smush-cdn-default@2x.png' ); ?> 2x"
 			alt="<?php esc_html_e( 'Smush CDN', 'wp-smushit' ); ?>">

@@ -7,7 +7,6 @@
  */
 
 use Helpers\Helper;
-use Smush\WP_Smush;
 
 /**
  * Class StatsTest
@@ -185,8 +184,6 @@ class StatsTest extends \WP_UnitTestCase {
 			'percent' => 0,
 			'savings' => 0,
 		];
-
-		$this->assertArrayNotHasKey( 'pro_savings', $this->smush->core()->stats );
 
 		$this->tester->set_free();
 

@@ -17,8 +17,9 @@ use C_Gallery_Storage;
 use C_NextGen_Serializable;
 use Exception;
 use Ngg_Serializable;
+use Smush\App\Media_Library;
 use Smush\Core\Integrations\NextGen;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -206,12 +207,12 @@ class Stats extends NextGen {
 				foreach ( $attachments as $attachment ) {
 					// Check if it has `wp_smush` key.
 					if ( class_exists( 'Ngg_Serializable' ) ) {
-						$serializer = new Ngg_Serializable();
-						$meta       = $serializer->unserialize( $attachment->meta_data );
+						$meta = ( new Ngg_Serializable() )->unserialize( $attachment->meta_data );
 					} elseif ( class_exists( 'C_NextGen_Serializable' ) && method_exists( 'C_NextGen_Serializable', 'unserialize' ) ) {
 						$meta = C_NextGen_Serializable::unserialize( $attachment->meta_data );
 					} else {
-						$meta = maybe_unserialize( $attachment->meta_data );
+						// If you can't parse it without NextGen - don't parse at all.
+						continue;
 					}
 
 					// Store pid in image meta.
@@ -275,7 +276,6 @@ class Stats extends NextGen {
 		$stats        = '';
 		$show_button  = false;
 		$show_resmush = false;
-		$show_restore = false;
 
 		$mush = WP_Smush::get_instance()->core()->mod->smush;
 
@@ -294,7 +294,7 @@ class Stats extends NextGen {
 				// Add resmush option if needed.
 				$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
 				if ( $show_resmush ) {
-					$status_txt .= '<br />' . $mush->get_resmsuh_link( $pid, 'nextgen' );
+					$status_txt .= '<br />' . Media_Library::get_resmsuh_link( $pid, 'nextgen' );
 				}
 			} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
 				$status_txt = sprintf( __( 'Reduced by %1$s (%2$01.1f%%)', 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2 ) );
@@ -302,7 +302,7 @@ class Stats extends NextGen {
 				$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
 
 				if ( $show_resmush ) {
-					$status_txt .= '<br />' . $mush->get_resmsuh_link( $pid, 'nextgen' );
+					$status_txt .= '<br />' . Media_Library::get_resmsuh_link( $pid, 'nextgen' );
 				}
 
 				// Restore Image: Check if we need to show the restore image option.
@@ -316,7 +316,7 @@ class Stats extends NextGen {
 						// Show the link in next line.
 						$status_txt .= '<br />';
 					}
-					$status_txt .= $mush->get_restore_link( $pid, 'nextgen' );
+					$status_txt .= Media_Library::get_restore_link( $pid, 'nextgen' );
 				}
 				// Show detailed stats if available.
 				if ( ! empty( $wp_smush_data['sizes'] ) ) {
@@ -573,7 +573,7 @@ class Stats extends NextGen {
 					$skip_class = 'size_limit' === $img_data['reason'] ? ' error' : '';
 					$stats     .= '<tr>
 				<td>' . strtoupper( $img_data['size'] ) . '</td>
-				<td class="smush-skipped' . $skip_class . '">' . WP_Smush::get_instance()->core()->mod->smush->skip_reason( $img_data['reason'] ) . '</td>
+				<td class="smush-skipped' . $skip_class . '">' . WP_Smush::get_instance()->library()->skip_reason( $img_data['reason'] ) . '</td>
 			</tr>';
 				}
 			}

@@ -9,7 +9,6 @@ use Helpers\Helper;
 use Smush\Core\Installer;
 use Smush\Core\Modules\Smush;
 use Smush\Core\Settings;
-use Smush\WP_Smush;
 
 /**
  * Class SmushTest
@@ -118,6 +117,8 @@ class SmushTest extends WP_UnitTestCase {
 		$data->lossy       = $settings['lossy'];
 		$data->keep_exif   = ! $settings['strip_exif'];
 		$data->time        = 0.02;
+		$data->before_size = 0;
+		$data->after_size  = 0;
 
 		if ( preg_match( '/150x150\.jpg$/i', $attachment_file_path_size ) ) {
 			$data->before_size = 8770;

@@ -8,10 +8,10 @@
 
 namespace Smush\Core\Modules;
 
-use Smush\WP_Smush;
 use stdClass;
 use WPMUDEV_Dashboard;
 use WP_Error;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -120,7 +120,7 @@ class CDN extends Abstract_Module {
 
 		// Update responsive image srcset and sizes if required.
 		add_filter( 'wp_calculate_image_srcset', array( $this, 'update_image_srcset' ), 99, 5 );
-		add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 10, 5 );
+		add_filter( 'wp_calculate_image_sizes', array( $this, 'update_image_sizes' ), 1, 2 );
 
 		// Add resizing arguments to image src.
 		add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
@@ -433,13 +433,16 @@ class CDN extends Abstract_Module {
 	 * Parse image for CDN.
 	 *
 	 * @since 3.2.2  Moved out to a separate function.
+	 * @since 3.5.0  Added $srcset and $type params.
 	 *
-	 * @param string $src    Image URL.
-	 * @param string $image  Image tag (<img>).
+	 * @param string $src     Image URL.
+	 * @param string $image   Image tag (<img>).
+	 * @param string $srcset  Image srcset content.
+	 * @param string $type    Element type. Accepts: 'img', 'source' or 'iframe'. Default: 'img'.
 	 *
 	 * @return string
 	 */
-	public function parse_image( $src, $image ) {
+	public function parse_image( $src, $image, $srcset = '', $type = 'img' ) {
 		/**
 		 * Filter to skip a single image from cdn.
 		 *
@@ -453,6 +456,33 @@ class CDN extends Abstract_Module {
 
 		$new_image = $image;
 
+		/**
+		 * Support for source in picture element.
+		 */
+		if ( 'source' === $type && $srcset ) {
+			$links = Helpers\Parser::get_links_from_content( $srcset );
+			if ( ! isset( $links[0] ) || ! is_array( $links[0] ) ) {
+				return $new_image;
+			}
+
+			foreach ( $links[0] as $link ) {
+				$src = $this->is_supported_path( $link );
+				if ( ! $src ) {
+					continue;
+				}
+
+				// Replace the data-envira-srcset of the image with CDN link.
+				$src = $this->generate_cdn_url( $src );
+				if ( $src ) {
+					// Replace the src of the image with CDN link.
+					$new_image = str_replace( $link, $src, $new_image );
+				}
+			}
+
+			// We can exit early, to avoid additional parsing.
+			return $new_image;
+		}
+
 		// Make sure this image is inside a supported directory. Try to convert to valid path.
 		$src = $this->is_supported_path( $src );
 		if ( $src ) {
@@ -463,27 +493,28 @@ class CDN extends Abstract_Module {
 
 			// Replace the src of the image with CDN link.
 			if ( ! empty( $src ) ) {
-				// Support for source in picture element.
-				if ( false !== strpos( $new_image, '<source' ) ) {
-					Helpers\Parser::remove_attribute( $new_image, 'srcset' );
-					Helpers\Parser::add_attribute( $new_image, 'srcset', $src );
-
-					// We can exit early, to avoid additional parsing.
-					return $new_image;
-				}
-
 				$new_image = preg_replace( '#(src=["|\'])' . $original_src . '(["|\'])#i', '\1' . $src . '\2', $new_image, 1 );
 			}
 
-			// See if srcset is already set.
-			if ( ! preg_match( '/srcset=["|\']([^"|\']+)["|\']/i', $image ) && $this->settings->get( 'auto_resize' ) && ! apply_filters( 'smush_skip_adding_srcset', false ) ) {
+			/**
+			 * See if srcset is already set.
+			 *
+			 * The preg_match is required to make sure that srcset is not already defined.
+			 * For the majority of images, srcset will be parsed as part of the wp_calculate_image_srcset filter.
+			 * But some images, for example, logos in Avada - will add their own srcset. For such images - generate our own.
+			 */
+			if ( ! preg_match( '/srcset=["\'](.*?smushcdn\.com[^"\']+)["\']/i', $image ) && $this->settings->get( 'auto_resize' ) && ! apply_filters( 'smush_skip_adding_srcset', false ) ) {
 				list( $srcset, $sizes ) = $this->generate_srcset( $original_src );
 
 				if ( ! is_null( $srcset ) && false !== $srcset ) {
+					// Remove possibly empty srcset attribute.
+					Helpers\Parser::remove_attribute( $new_image, 'srcset' );
 					Helpers\Parser::add_attribute( $new_image, 'srcset', $srcset );
 				}
 
 				if ( ! is_null( $srcset ) && false !== $sizes ) {
+					// Remove possibly empty sizes attribute.
+					Helpers\Parser::remove_attribute( $new_image, 'sizes' );
 					Helpers\Parser::add_attribute( $new_image, 'sizes', $sizes );
 				}
 			}
@@ -533,17 +564,17 @@ class CDN extends Abstract_Module {
 
 		$new_image = $image;
 
+		// Store the original $src to be used later on.
+		$original_src = $src;
+
 		// Make sure this image is inside a supported directory. Try to convert to valid path.
 		$src = $this->is_supported_path( $src );
 		if ( $src ) {
-			// Store the original $src to be used later on.
-			$original_src = $src;
-
 			$src = $this->process_src( $image, $src );
 
 			// Replace the src of the image with CDN link.
 			if ( ! empty( $src ) ) {
-				$new_image = preg_replace( '#(background-image:\s*?url\([\'"]*?)' . $original_src . '([\'")]*?\);)#i', '\1' . $src . '\2', $new_image, 1 );
+				$new_image = str_replace( $original_src, $src, $new_image );
 			}
 		}
 
@@ -962,7 +993,7 @@ class CDN extends Abstract_Module {
 	 */
 	private function max_content_width() {
 		// Get global content width (if content width is empty, set 1900).
-		$content_width = isset( $GLOBALS['content_width'] ) ? (int) $GLOBALS['content_width'] : 1900;
+		$content_width = isset( $GLOBALS['content_width'] ) ? (int) $GLOBALS['content_width'] : 1920;
 
 		// Check to see if we are resizing the images (can not go over that value).
 		$resize_sizes = $this->settings->get_setting( WP_SMUSH_PREFIX . 'resize_sizes' );
@@ -1195,6 +1226,12 @@ class CDN extends Abstract_Module {
 	 * @return bool|string
 	 */
 	public function is_supported_path( $src ) {
+		// Allow only these extensions in CDN.
+		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
+		if ( ! in_array( $ext, $this->supported_extensions, true ) ) {
+			return false;
+		}
+
 		$url_parts = wp_parse_url( $src );
 
 		// Unsupported scheme.
@@ -1203,7 +1240,7 @@ class CDN extends Abstract_Module {
 		}
 
 		if ( ! isset( $url_parts['scheme'] ) && 0 === strpos( $src, '//' ) ) {
-			$src = is_ssl() ? 'https:' : 'http:' . $src;
+			$src = is_ssl() ? 'https:' . $src : 'http:' . $src;
 		}
 
 		// This is a relative path, try to get the URL.
@@ -1248,12 +1285,6 @@ class CDN extends Abstract_Module {
 		$uploads = isset( $uploads['baseurl'] ) ? false !== strpos( $src, $uploads['baseurl'] ) : true;
 
 		if ( ( false === strpos( $src, content_url() ) && ! $uploads ) || ( is_multisite() && $mapped_domain && false === strpos( $src, $mapped_domain ) ) ) {
-			return false;
-		}
-
-		// Allow only these extensions in CDN.
-		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
-		if ( ! in_array( $ext, array( 'gif', 'jpg', 'jpeg', 'png' ), true ) ) {
 			return false;
 		}
 

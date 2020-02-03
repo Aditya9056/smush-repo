@@ -10,7 +10,7 @@ namespace Helpers;
 use DOMDocument;
 use ReflectionClass;
 use ReflectionException;
-use Smush\WP_Smush;
+use WP_Smush;
 use WP_UnitTestCase;
 
 /**
