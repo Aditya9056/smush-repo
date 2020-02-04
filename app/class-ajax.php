@@ -371,9 +371,7 @@ class Ajax {
 		if ( 0 === count( $core->get_media_attachments() ) && 'nextgen' !== $type ) {
 			$notice = esc_html__( 'We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' );
 			$resp   = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
-					<div class="sui-notice-content">
-						<p>' . $notice . '</p>
-					</div>
+					<p>' . $notice . '</p>
 					<span class="sui-notice-dismiss">
 						<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check"></a>
 					</span>
@@ -391,9 +389,7 @@ class Ajax {
 		// Default Notice, to be displayed at the top of page. Show a message, at the top.
 		$message = esc_html__( 'Yay! All images are optimized as per your current settings.', 'wp-smushit' );
 		$resp    = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
-					<div class="sui-notice-content">
-						<p>' . $message . '</p>
-					</div>
+					<p>' . $message . '</p>
 					<span class="sui-notice-dismiss">
 						<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check" id="bulk-smush-top-notice-close"></a>
 					</span>
