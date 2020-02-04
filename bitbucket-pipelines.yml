@@ -35,4 +35,5 @@ pipelines:
           - composer require wp-coding-standards/wpcs
           - composer install
           - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
+          - vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
           - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
