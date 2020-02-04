@@ -64,7 +64,7 @@ $upgrade_url = add_query_arg(
 			<div class="sui-upgrade-page-features__item">
 				<i class="sui-icon-unlock" aria-hidden="true"></i>
 				<h3><?php esc_html_e( 'No limits, no restrictions', 'wp-smushit' ); ?></h3>
-				<p><?php esc_html_e( "Need a one-click bulk optimization solution for compressing your entire existing image library fast and easy? Pro unlocks unlimited bulk smushing, and lifts the image size limit from 5Mb to 32Mb. Did somebody say 'retina'? Yes, please.", 'wp-smushit' ); ?></p>
+				<p><?php esc_html_e( 'Need a one-click bulk optimization solution for compressing your entire existing image library fast and easy? Pro unlocks unlimited bulk smushing, and lifts the image size limit from 5Mb to 32Mb.', 'wp-smushit' ); ?></p>
 			</div>
 			<div class="sui-upgrade-page-features__item">
 				<i class="sui-icon-graph-line" aria-hidden="true"></i>

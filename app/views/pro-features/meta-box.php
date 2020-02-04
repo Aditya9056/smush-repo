@@ -44,7 +44,7 @@ if ( ! defined( 'WPINC' ) ) {
 		<div class="smush-pro-feature-desc">
 			<?php
 			esc_html_e(
-				"Need a one-click bulk optimization solution for compressing your entire existing image library fast and easy? Pro unlocks unlimited bulk smushing, and lifts the image size limit from 5Mb to 32Mb. Did somebody say 'retina'? Yes, please.",
+				'Need a one-click bulk optimization solution for compressing your entire existing image library fast and easy? Pro unlocks unlimited bulk smushing, and lifts the image size limit from 5Mb to 32Mb.',
 				'wp-smushit'
 			);
 			?>
@@ -86,15 +86,17 @@ if ( ! defined( 'WPINC' ) ) {
 			?>
 		</div>
 	</li>
-	<li class="smush-pro-feature-row">
-		<div class="smush-pro-feature-title">
-			<?php esc_html_e( 'NextGen Gallery Integration', 'wp-smushit' ); ?></div>
-		<div class="smush-pro-feature-desc">
-			<?php
-			esc_html_e( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' );
-			?>
-		</div>
-	</li>
+	<?php if ( class_exists( '\C_NextGEN_Bootstrap' ) ) : ?>
+		<li class="smush-pro-feature-row">
+			<div class="smush-pro-feature-title">
+				<?php esc_html_e( 'NextGen Gallery Integration', 'wp-smushit' ); ?></div>
+			<div class="smush-pro-feature-desc">
+				<?php
+				esc_html_e( 'Allow smushing images directly through NextGen Gallery settings.', 'wp-smushit' );
+				?>
+			</div>
+		</li>
+	<?php endif; ?>
 </ul>
 <div class="sui-upsell-row">
 	<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-promo.png' ); ?>">
