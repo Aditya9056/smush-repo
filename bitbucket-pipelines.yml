@@ -3,13 +3,13 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: incsub/wp-test-env
 
 pipelines:
   default:
     - parallel:
       - step:
           name: Unit Tests
+          image: incsub/wp-test-env
           script:
             - mkdir -p ~/.ssh
             - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
@@ -20,11 +20,6 @@ pipelines:
             - phpunit-multi 5.6,7.0,7.1
             - phpunit-multi 5.6,7.0,7.1 --group ajax
             - phpunit-multi 5.6,7.0,7.1 -c tests/phpunit/multisite.xml
-      - step:
-          name: RIPS Security Scan
-          image: rips/rips-cli:3
-          script:
-            - rips-cli -vvv rips:scan:start -a $RIPS_APP_ID -p $BITBUCKET_CLONE_DIR -t 1
       - step:
           name: CodeSniffer Tests
           image: php:7.2
@@ -39,3 +34,8 @@ pipelines:
             - vendor/bin/phpcs --config-set ignore_errors_on_exit 1
             - vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
             - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
+      - step:
+          name: RIPS Security Scan
+          image: rips/rips-cli:3
+          script:
+            - rips-cli -vvv rips:scan:start -a $RIPS_APP_ID -p $BITBUCKET_CLONE_DIR -t 1
