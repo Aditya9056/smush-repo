@@ -291,6 +291,17 @@
 				&.loaded, &.fadeInLeft, &.fadeInRight { opacity: 1; }
 				&.fadeInLeft { animation-name: fadeInLeft; }
 				&.fadeInRight { animation-name: fadeInRight; }
+
+				.sui-box-selectors {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+
+					label:last-of-type {
+						top: 0;
+						font-size: 13px;
+					}
+				}
 			}
 
 			.smush-onboarding-arrows a {
