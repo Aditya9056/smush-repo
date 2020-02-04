@@ -239,7 +239,7 @@ class Media_Library extends Abstract_Module {
 	 *
 	 * Localization also used in Gutenberg integration.
 	 */
-	public function extend_media_modal( $a ) {
+	public function extend_media_modal() {
 		// Get current screen.
 		$current_screen = get_current_screen();
 
