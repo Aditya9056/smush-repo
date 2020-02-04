@@ -615,7 +615,7 @@ class Dashboard extends Abstract_Page {
 				</span>
 
 				<span class="sui-description">
-					<?php echo WP_Smush::get_instance()->core()->settings[ $name ]['desc']; ?>
+					<?php echo wp_kses_post( WP_Smush::get_instance()->core()->settings[ $name ]['desc'] ); ?>
 				</span>
 			</div>
 			<div class="sui-box-settings-col-2" id="column-<?php echo esc_attr( $setting_m_key ); ?>">
@@ -873,7 +873,7 @@ class Dashboard extends Abstract_Page {
 			?>
 			<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $notice_class ); ?>">
 				<p class="sui-notice-content">
-					<?php echo $notice_message; ?>
+					<?php echo wp_kses_post( $notice_message ); ?>
 				</p>
 				<span class="sui-notice-dismiss">
 					<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>
@@ -988,11 +988,11 @@ class Dashboard extends Abstract_Page {
 		$this->view(
 			'bulk-settings/meta-box',
 			array(
-				'basic_features'      => Settings::$basic_features,
-				'cdn_enabled'         => $this->settings->get( 'cdn' ),
-				'grouped_settings'    => $fields,
-				'settings'            => $this->settings->get(),
-				'settings_data'       => WP_Smush::get_instance()->core()->settings,
+				'basic_features'   => Settings::$basic_features,
+				'cdn_enabled'      => $this->settings->get( 'cdn' ),
+				'grouped_settings' => $fields,
+				'settings'         => $this->settings->get(),
+				'settings_data'    => WP_Smush::get_instance()->core()->settings,
 			)
 		);
 	}
@@ -1234,10 +1234,9 @@ class Dashboard extends Abstract_Page {
 
 		$site_locale = get_locale();
 
-		if ( 'en_US' === $site_locale ) {
+		if ( 'en' === $site_locale || 'en_US' === $site_locale ) {
 			$site_language = 'English';
 		} else {
-			/* @noinspection PhpIncludeInspection */
 			require_once ABSPATH . 'wp-admin/includes/translation-install.php';
 			$translations  = wp_get_available_translations();
 			$site_language = isset( $translations[ $site_locale ] ) ? $translations[ $site_locale ]['native_name'] : __( 'Error detecting language', 'wp-smushit' );
