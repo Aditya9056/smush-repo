@@ -333,7 +333,7 @@ class Admin {
 		if ( false === $count && $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
 			// If we have the resmush ids list, Show Resmush notice and button.
 			// Get the actual remainaing count.
-			if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) ) {
+			if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) && ( ! defined( 'WP_SMUSH_DISABLE_STATS' ) || ! WP_SMUSH_DISABLE_STATS ) ) {
 				WP_Smush::get_instance()->core()->setup_global_stats();
 			}
 

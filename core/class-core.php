@@ -423,8 +423,10 @@ class Core extends Stats {
 				$this->resmush_ids = $resmush_ids;
 			}
 
-			// Setup all the stats.
-			$this->setup_global_stats( true );
+			if ( ! defined( 'WP_SMUSH_DISABLE_STATS' ) || ! WP_SMUSH_DISABLE_STATS ) {
+				// Setup all the stats.
+				$this->setup_global_stats( true );
+			}
 
 			// Localize smushit_IDs variable, if there are fix number of IDs.
 			$this->unsmushed_attachments = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : array();
