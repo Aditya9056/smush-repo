@@ -1,6 +1,6 @@
 = 3.5.1 =
 
-- Fix:
+- Fix: Browser console errors on pages without Backbone js scripts
 
 = 3.5.0 =
 

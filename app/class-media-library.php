@@ -239,7 +239,15 @@ class Media_Library extends Abstract_Module {
 	 *
 	 * Localization also used in Gutenberg integration.
 	 */
-	public function extend_media_modal() {
+	public function extend_media_modal( $a ) {
+		// Get current screen.
+		$current_screen = get_current_screen();
+
+		// Only run on required pages.
+		if ( ! empty( $current_screen ) && ! in_array( $current_screen->id, Core::$pages, true ) ) {
+			return;
+		}
+
 		if ( wp_script_is( 'smush-backbone-extension', 'enqueued' ) ) {
 			return;
 		}
@@ -254,6 +262,7 @@ class Media_Library extends Abstract_Module {
 				'media-grid',
 				'wp-util',
 				'wp-api',
+				'wp-backbone',
 			),
 			WP_SMUSH_VERSION,
 			true
