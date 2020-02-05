@@ -417,7 +417,7 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 	private function skip_post_type() {
 		// If not settings are set, probably, all are disabled.
 		if ( ! is_array( $this->options['include'] ) ) {
-			return false;
+			return true;
 		}
 
 		$blog_is_frontpage = ( 'posts' === get_option( 'show_on_front' ) && ! is_multisite() ) ? true : false;
