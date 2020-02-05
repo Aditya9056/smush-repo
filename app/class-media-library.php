@@ -262,7 +262,6 @@ class Media_Library extends Abstract_Module {
 				'media-grid',
 				'wp-util',
 				'wp-api',
-				'wp-backbone',
 			),
 			WP_SMUSH_VERSION,
 			true
