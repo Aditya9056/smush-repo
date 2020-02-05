@@ -2,6 +2,7 @@
 
 - Fix: Browser console errors on pages without Backbone js scripts
 - Fix: Lazy load compatibility with Beaver Builder
+- Fix: Lazy load breaking videos
 
 = 3.5.0 =
 
