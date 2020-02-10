@@ -46,6 +46,7 @@ class Admin {
 		'toplevel_page_smush',
 		'smush_page_smush-upgrade-network',
 		'smush_page_smush-upgrade',
+		'smush-pro_page_smush-upgrade',
 	);
 
 	/**
