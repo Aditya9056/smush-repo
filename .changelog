@@ -1,3 +1,9 @@
+= 3.5.1 =
+
+- Fix: Browser console errors on pages without Backbone js scripts
+- Fix: Lazy load compatibility with Beaver Builder
+- Fix: Lazy load breaking videos
+
 = 3.5.0 =
 
 - New: Add custom post types to include/exclude filters in the lazy load module

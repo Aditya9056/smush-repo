@@ -308,7 +308,7 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 
 		// If not a supported image in src or not an iframe - skip.
 		$iframe = 'iframe' === substr( $image, 1, 6 );
-		if ( ! $is_gravatar && ! in_array( $ext, array( 'jpeg', 'gif', 'png', 'svg', 'webp' ), true ) && ! $iframe && 'source' !== $type ) {
+		if ( ! $is_gravatar && ! in_array( $ext, array( 'jpeg', 'gif', 'png', 'svg', 'webp' ), true ) && ! $iframe ) {
 			return $image;
 		}
 
@@ -417,7 +417,7 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 	private function skip_post_type() {
 		// If not settings are set, probably, all are disabled.
 		if ( ! is_array( $this->options['include'] ) ) {
-			return false;
+			return true;
 		}
 
 		$blog_is_frontpage = ( 'posts' === get_option( 'show_on_front' ) && ! is_multisite() ) ? true : false;
