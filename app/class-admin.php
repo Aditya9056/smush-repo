@@ -100,6 +100,11 @@ class Admin {
 		// Main JS.
 		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/smush-admin.min.js', array( 'jquery', 'smush-sui', 'underscore', 'wp-color-picker' ), WP_SMUSH_VERSION, true );
 
+		if ( ! WP_Smush::is_pro() ) {
+			// Used on dashboard video widget.
+			wp_register_script( 'smush-wistia', '//fast.wistia.com/assets/external/E-v1.js', array(), WP_SMUSH_VERSION, true );
+		}
+
 		// Main CSS.
 		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/smush-admin.min.css', array(), WP_SMUSH_VERSION );
 
@@ -143,6 +148,11 @@ class Admin {
 		// We need it on media pages and Smush pages.
 		wp_enqueue_script( 'smush-admin' );
 		wp_enqueue_style( 'smush-admin-common' );
+
+		if ( ! WP_Smush::is_pro() ) {
+			// Used on dashboard video widget.
+			wp_enqueue_script( 'smush-wistia' );
+		}
 
 		// Localize translatable strings for js.
 		WP_Smush::get_instance()->core()->localize();

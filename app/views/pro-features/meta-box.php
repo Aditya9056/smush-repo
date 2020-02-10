@@ -25,56 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
 			</a>
 		</div>
 		<div class="sui-col-md-8">
-			<script src="//fast.wistia.com/assets/external/E-v1.js" async></script>
 			<div class="wistia_embed wistia_async_oegnwrdag1"></div>
-			<script>
-				document.addEventListener("DOMContentLoaded", function () {
-					window._wq = window._wq || [];
-					_wq.push({
-						id: "oegnwrdag1", onReady: function (video) {
-							console.log("I got a handle to the video!", video);
-						}
-					});
-				});
-			</script>
-
-			<style>
-				.wistia_embed {
-					/*width: 640px;
-					height: 360px;*/
-					width: 100%;
-					height: auto;
-					margin: 0 auto;
-					border-radius: 50px;
-				}
-
-				#wistia_grid_31_center {
-					border-radius: 15px;
-				}
-
-				.w-bottom-bar-lower {
-					/*display: none !important;*/
-				}
-
-				.w-bpb-wrapper {
-					margin-left: -45px !important;
-					/*margin-top: -25px !important;*/
-				}
-
-				.w-big-play-button,
-				.w-big-play-button div,
-				.w-big-play-button svg {
-					width: 90px !important;
-					height: 90px !important;
-					border-radius: 50%;
-					background-color: #ffffff;
-				}
-
-				.w-big-play-button svg,
-				.w-big-play-button svg polygon {
-					fill: rgb(0, 0, 0);
-				}
-			</style>
 		</div>
 	</div>
 

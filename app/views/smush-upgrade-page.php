@@ -57,58 +57,8 @@ $upgrade_url = add_query_arg(
 		<div class="sui-upgrade-page-features__header" style="margin-top: 70px">
 			<h2><?php esc_html_e( 'Optimize unlimited images with Smush Pro', 'wp-smushit' ); ?></h2>
 			<p><?php esc_html_e( 'Learn why Smush Pro is the best image optimization plugin.', 'wp-smushit' ); ?></p>
-
 			<div class="wistia_embed wistia_async_oegnwrdag1"></div>
 		</div>
-
-		<script src="//fast.wistia.com/assets/external/E-v1.js" async></script>
-
-		<script>
-			document.addEventListener("DOMContentLoaded", function () {
-				window._wq = window._wq || [];
-				_wq.push({
-					id: "oegnwrdag1", onReady: function (video) {
-						console.log("I got a handle to the video!", video);
-					}
-				});
-			});
-		</script>
-
-		<style>
-			.wistia_embed {
-				width: 640px;
-				height: 360px;
-				margin: 0 auto 90px;
-				border-radius: 50px;
-			}
-
-			#wistia_grid_31_center {
-				border-radius: 15px;
-			}
-
-			.w-bottom-bar-lower {
-				/*display: none !important;*/
-			}
-
-			.w-bpb-wrapper {
-				margin-left: -45px !important;
-				/*margin-top: -25px !important;*/
-			}
-
-			.w-big-play-button,
-			.w-big-play-button div,
-			.w-big-play-button svg {
-				width: 90px !important;
-				height: 90px !important;
-				border-radius: 50%;
-				background-color: #ffffff;
-			}
-
-			.w-big-play-button svg,
-			.w-big-play-button svg polygon {
-				fill: rgb(0, 0, 0);
-			}
-		</style>
 	</div>
 
 	<div class="sui-upgrade-page-features">

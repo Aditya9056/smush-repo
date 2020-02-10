@@ -588,7 +588,50 @@
 			background-size: 170px;
 		}
 
+		/**
+		 * Smush video upsell on dedicated upgrade page and dashboard widget.
+		 * @since 3.6.0
+		 */
+		.sui-upgrade-page,
 		.smush-pro-features {
+			.wistia_embed {
+				width: 640px;
+				height: 360px;
+				margin: 0 auto 90px;
+				border-radius: 50px;
+			}
+
+			#wistia_grid_31_center {
+				border-radius: 15px;
+			}
+
+			.w-bpb-wrapper {
+				margin-left: -45px !important;
+			}
+
+			.w-big-play-button,
+			.w-big-play-button div,
+			.w-big-play-button svg {
+				width: 90px !important;
+				height: 90px !important;
+				border-radius: 50%;
+				background-color: #ffffff;
+			}
+
+			.w-big-play-button svg,
+			.w-big-play-button svg polygon {
+				fill: rgb(0, 0, 0);
+			}
+		}
+
+		.smush-pro-features {
+			.wistia_embed {
+				height: 100%;
+				min-height: 400px;
+				width: auto;
+				margin: 0 auto;
+			}
+
 			.smush-pro-features-header {
 				background-color: #FAFAFA;
 				margin: -45px -30px 30px;
