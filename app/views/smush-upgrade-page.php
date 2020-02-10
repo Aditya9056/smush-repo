@@ -52,6 +52,15 @@ $upgrade_url = add_query_arg(
 			<div class="smush-stats-description">Total Savings</div>
 		</div>
 	</div>
+
+	<div class="sui-upgrade-page-features">
+		<div class="sui-upgrade-page-features__header" style="margin-top: 70px">
+			<h2><?php esc_html_e( 'Optimize unlimited images with Smush Pro', 'wp-smushit' ); ?></h2>
+			<p><?php esc_html_e( 'Learn why Smush Pro is the best image optimization plugin.', 'wp-smushit' ); ?></p>
+			<div class="wistia_embed wistia_async_oegnwrdag1"></div>
+		</div>
+	</div>
+
 	<div class="sui-upgrade-page-features">
 		<div class="sui-upgrade-page-features__header">
 			<h2><?php esc_html_e( 'Pro Features', 'wp-smushit' ); ?></h2>
