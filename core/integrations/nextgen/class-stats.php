@@ -261,14 +261,13 @@ class Stats extends NextGen {
 	 * @param int        $pid            Image Id stored in nextgen table.
 	 * @param bool|array $wp_smush_data  Stats, stored after smushing the image.
 	 * @param string     $image_type     Used for determining if not gif, to show the Super Smush button.
-	 * @param bool       $text_only      Return only text instead of button (Useful for Ajax).
 	 * @param bool       $echo           Whether to echo the stats or not.
 	 *
 	 * @uses Admin::column_html(), WP_Smush::get_restore_link(), WP_Smush::get_resmush_link()
 	 *
 	 * @return bool|array|string
 	 */
-	public function show_stats( $pid, $wp_smush_data = false, $image_type = '', $text_only = false, $echo = true ) {
+	public function show_stats( $pid, $wp_smush_data = false, $image_type = '', $echo = true ) {
 		if ( empty( $wp_smush_data ) ) {
 			return false;
 		}
@@ -351,9 +350,7 @@ class Stats extends NextGen {
 					// Stats.
 					$stats = $this->get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
 
-					if ( ! $text_only ) {
-						$status_txt .= $stats;
-					}
+					$status_txt .= $stats;
 				}
 			}
 		}
@@ -372,13 +369,6 @@ class Stats extends NextGen {
 			// the button text.
 			$button_txt  = __( 'Super-Smush', 'wp-smushit' );
 			$show_button = true;
-		}
-		if ( $text_only ) {
-			// For ajax response.
-			return array(
-				'status' => $status_txt,
-				'stats'  => $stats,
-			);
 		}
 
 		// If show button is true for some reason, column html can print out the button for us.

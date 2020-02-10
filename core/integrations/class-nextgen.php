@@ -365,7 +365,7 @@ class NextGen extends Abstract_Integration {
 
 		$status = '';
 		if ( ! is_wp_error( $smush ) ) {
-			$status = $this->ng_stats->show_stats( $pid, $smush, false, true );
+			$status = $this->ng_stats->show_stats( $pid, $smush );
 		}
 
 		// If we are suppose to send the stats, not required for auto smush.
@@ -607,7 +607,7 @@ class NextGen extends Abstract_Integration {
 			nggdb::update_image_meta( $image->pid, $image->meta_data );
 
 			// Get the Button html without wrapper.
-			$button_html = $this->ng_admin->wp_smush_column_options( '', $image_id, false );
+			$button_html = $this->ng_admin->wp_smush_column_options( '', $image_id );
 
 			wp_send_json_success(
 				array(
