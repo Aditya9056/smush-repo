@@ -8,6 +8,7 @@
 - Enhance: Improve restore backup UI
 - Enhance: Bulk smush UI
 - Fix: Error detecting language error on Settings page
+- Fix: "Choose directory" button disabled state after first click
 
 = 3.5.0 =
 

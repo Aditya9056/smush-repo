@@ -50,14 +50,6 @@ import Scanner from '../smush/directory-scanner';
 				// Hide all the notices.
 				$( 'div.wp-smush-scan-result div.wp-smush-notice' ).hide();
 
-				// If disabled, do not process.
-				if ( $( this ).attr( 'disabled' ) ) {
-					return;
-				}
-
-				// Disable buttons.
-				$( this ).attr( 'disabled', 'disabled' );
-
 				// Remove notice.
 				$( 'div.wp-smush-info' ).remove();
 
