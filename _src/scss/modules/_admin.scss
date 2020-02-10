@@ -589,9 +589,18 @@
 		}
 
 		.smush-pro-features {
+			.smush-pro-features-header {
+				background-color: #FAFAFA;
+				margin: -45px -30px 30px;
+				padding: 40px 30px;
+
+				@media screen and (max-width: 782px) {
+					margin: -35px -20px 20px;
+				}
+			}
 
 			.smush-pro-feature-title {
-				@include icon(before, check-tick);
+				@include icon(before, check);
 				font-weight: 500;
 				line-height: 30px;
 				color: #333;

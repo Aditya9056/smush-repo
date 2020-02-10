@@ -4,7 +4,8 @@
  *
  * @package WP_Smush
  *
- * @var string $upsell_url  Upsell URL.
+ * @var string $upgrade_url  Upgrade URL.
+ * @var string $upsell_url   Upsell URL.
  */
 
 if ( ! defined( 'WPINC' ) ) {
@@ -14,6 +15,73 @@ if ( ! defined( 'WPINC' ) ) {
 ?>
 
 <ul class="smush-pro-features">
+
+	<div class="smush-pro-features-header sui-row">
+		<div class="sui-col-md-4">
+			<h2><?php esc_html_e( 'Smush Pro benefits', 'wp-smushit' ); ?></h2>
+			<p class="sui-description"><?php esc_html_e( 'Get Smush Pro and bulk optimize every image you’ve ever added to your site with one-click and fix your Google PageSpeed with the best image optimizer WordPress has ever known. Upgrade to unlock all Pro features today!', 'wp-smushit' ); ?></p>
+			<a href="<?php echo esc_url( $upgrade_url ); ?>" target="_blank" class="sui-button sui-button-purple">
+				<?php esc_html_e( 'Try Smush Pro for Free', 'wp-smushit' ); ?>
+			</a>
+		</div>
+		<div class="sui-col-md-8">
+			<script src="//fast.wistia.com/assets/external/E-v1.js" async></script>
+			<div class="wistia_embed wistia_async_oegnwrdag1"></div>
+			<script>
+				document.addEventListener("DOMContentLoaded", function () {
+					window._wq = window._wq || [];
+					_wq.push({
+						id: "oegnwrdag1", onReady: function (video) {
+							console.log("I got a handle to the video!", video);
+						}
+					});
+				});
+			</script>
+
+			<style>
+				.wistia_embed {
+					/*width: 640px;
+					height: 360px;*/
+					width: 100%;
+					height: auto;
+					margin: 0 auto;
+					border-radius: 50px;
+				}
+
+				#wistia_grid_31_center {
+					border-radius: 15px;
+				}
+
+				.w-bottom-bar-lower {
+					/*display: none !important;*/
+				}
+
+				.w-bpb-wrapper {
+					margin-left: -45px !important;
+					/*margin-top: -25px !important;*/
+				}
+
+				.w-big-play-button,
+				.w-big-play-button div,
+				.w-big-play-button svg {
+					width: 90px !important;
+					height: 90px !important;
+					border-radius: 50%;
+					background-color: #ffffff;
+				}
+
+				.w-big-play-button svg,
+				.w-big-play-button svg polygon {
+					fill: rgb(0, 0, 0);
+				}
+			</style>
+		</div>
+	</div>
+
+	<div class="sui-description" style="margin-bottom: 20px">
+		<?php esc_html_e( 'Upgrading to Pro will get you the following benefits.', 'wp-smushit' ); ?>
+	</div>
+
 	<li class="smush-pro-feature-row">
 		<div class="smush-pro-feature-title">
 			<?php esc_html_e( 'Super-smush lossy compression', 'wp-smushit' ); ?></div>
@@ -103,20 +171,15 @@ if ( ! defined( 'WPINC' ) ) {
 	<div class="sui-notice sui-notice-purple smush-upsell-notice">
 		<p>
 			<?php
-			printf(
-				/* translators: %1$s: starting a tag, %2$s: ending a tag */
-				esc_html__(
-					'Smush Pro gives you all these extra settings and absolutely no limits on smushing your images. Did we mention Smush Pro also gives you up to 2x better compression too? %1$sTry it all free with a WPMU DEV membership today!%2$s',
-					'wp-smushit'
-				),
-				'<strong>',
-				'</strong>'
+			esc_html_e(
+				'Smush Pro gives you all these extra settings and absolutely no limits on smushing your images. Did we mention Smush Pro also gives you up to 2x better compression too? Try it all free with a WPMU DEV membership today!',
+				'wp-smushit'
 			);
 			?>
 		</p>
 		<div class="sui-notice-buttons">
 			<a href="<?php echo esc_url( $upsell_url ); ?>" class="sui-button sui-button-purple" target="_blank">
-				<?php esc_html_e( 'Try Smush Pro for Free', 'wp-smushit' ); ?>
+				<?php esc_html_e( 'Learn More', 'wp-smushit' ); ?>
 			</a>
 		</div>
 	</div>
