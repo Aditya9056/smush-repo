@@ -2,6 +2,9 @@
 
 @include body-class {
 
+	/** Override SUI styles (since 3.6.0) */
+	.sui-notice-top p { width: 100%; }
+
 	/**
 	 * Plugin upsell styles
 	 * @since 3.6.0

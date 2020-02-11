@@ -710,17 +710,17 @@ abstract class Abstract_Page {
 			/* translators: %1$s - <a>, %2$s - </a> */
 			$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
 		}
-		?>
-		<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $message_class ); ?>">
-			<div class="sui-notice-content">
-				<p><?php echo wp_kses_post( $message ); ?></p>
-			</div>
-			<span class="sui-notice-dismiss">
-				<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>
-			</span>
-		</div>
 
-		<?php
+		$this->view(
+			'notice',
+			array(
+				'classes'        => $message_class,
+				'is_dismissible' => true,
+				'message'        => $message,
+			),
+			'common'
+		);
+
 		// Remove the option.
 		$this->settings->delete_setting( WP_SMUSH_PREFIX . 'settings_updated' );
 	}

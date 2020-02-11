@@ -870,16 +870,15 @@ class Dashboard extends Abstract_Page {
 			// Delete the transients.
 			delete_transient( 'wp-smush-show-dir-scan-notice' );
 			delete_transient( 'wp-smush-dir-scan-failed-items' );
-			?>
-			<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $notice_class ); ?>">
-				<p class="sui-notice-content">
-					<?php echo wp_kses_post( $notice_message ); ?>
-				</p>
-				<span class="sui-notice-dismiss">
-					<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>
-				</span>
-			</div>
-			<?php
+			$this->view(
+				'notice',
+				array(
+					'classes'        => $notice_class,
+					'is_dismissible' => true,
+					'message'        => $notice_message,
+				),
+				'common'
+			);
 		}
 	}
 
