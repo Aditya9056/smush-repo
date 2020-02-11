@@ -714,9 +714,8 @@ abstract class Abstract_Page {
 		$this->view(
 			'notice',
 			array(
-				'classes'        => $message_class,
-				'is_dismissible' => true,
-				'message'        => $message,
+				'classes' => $message_class,
+				'message' => $message,
 			),
 			'common'
 		);

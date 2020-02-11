@@ -873,9 +873,8 @@ class Dashboard extends Abstract_Page {
 			$this->view(
 				'notice',
 				array(
-					'classes'        => $notice_class,
-					'is_dismissible' => true,
-					'message'        => $notice_message,
+					'classes' => $notice_class,
+					'message' => $notice_message,
 				),
 				'common'
 			);
