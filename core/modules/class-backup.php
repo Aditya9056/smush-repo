@@ -51,10 +51,9 @@ class Backup extends Abstract_Module {
 	 * Checks if there is a existing backup, else create one
 	 *
 	 * @param string $file_path      File path.
-	 * @param string $backup_path    Backup path.
 	 * @param string $attachment_id  Attachment ID.
 	 */
-	public function create_backup( $file_path = '', $backup_path = '', $attachment_id = '' ) {
+	public function create_backup( $file_path = '', $attachment_id = '' ) {
 		$copied = false;
 
 		if ( empty( $file_path ) ) {
@@ -69,9 +68,7 @@ class Backup extends Abstract_Module {
 		$mod = WP_Smush::get_instance()->core()->mod;
 
 		// Get a backup path if empty.
-		if ( empty( $backup_path ) ) {
-			$backup_path = $this->get_image_backup_path( $file_path );
-		}
+		$backup_path = $this->get_image_backup_path( $file_path );
 
 		// If we don't have any backup path yet, bail!
 		if ( empty( $backup_path ) ) {

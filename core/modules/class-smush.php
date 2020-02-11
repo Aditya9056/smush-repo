@@ -819,7 +819,7 @@ class Smush extends Abstract_Module {
 		Helper::check_animated_status( $attachment_file_path, $id );
 
 		// Take backup.
-		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $id );
+		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, $id );
 
 		// Optionally resize images.
 		$meta = WP_Smush::get_instance()->core()->mod->resize->auto_resize( $id, $meta );
@@ -886,7 +886,7 @@ class Smush extends Abstract_Module {
 		Helper::check_animated_status( $attachment_file_path, $attachment_id );
 
 		// Take backup.
-		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $attachment_id );
+		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, $attachment_id );
 
 		// Get the image metadata from $_POST.
 		$original_meta = ! empty( $_POST['metadata'] ) ? Helper::format_meta_from_post( $_POST['metadata'] ) : '';
