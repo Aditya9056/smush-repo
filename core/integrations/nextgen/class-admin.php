@@ -173,7 +173,7 @@ class Admin extends NextGen {
 			// Check Image metadata, if smushed, print the stats or super smush button.
 			if ( ! empty( $image->meta_data['wp_smush'] ) ) {
 				// Echo the smush stats.
-				return $this->ng_stats->show_stats( $image->pid, $image->meta_data['wp_smush'], $image_type, false );
+				return $this->ng_stats->show_stats( $image->pid, $image->meta_data['wp_smush'], $image_type );
 			}
 
 			// Print the status of image, if Not smushed.
@@ -303,7 +303,7 @@ class Admin extends NextGen {
 	/**
 	 * Set send button status
 	 *
-	 * @param int  $pid  ID.
+	 * @param int $pid  ID.
 	 *
 	 * @return string
 	 */
@@ -322,8 +322,7 @@ class Admin extends NextGen {
 			$status_txt .= Media_Library::progress_bar();
 		}
 
-		$text = $this->column_html( $pid, $status_txt, $button_txt, $show_button, false, false );
-		return $text;
+		return $this->column_html( $pid, $status_txt, $button_txt, $show_button, false );
 	}
 
 	/**
@@ -334,35 +333,22 @@ class Admin extends NextGen {
 	 * @param string  $button_txt   Button label.
 	 * @param boolean $show_button  Whether to shoe the button.
 	 * @param bool    $smushed      Image compressed or not.
-	 * @param bool    $echo         Echo or return.
 	 *
 	 * @return string|void
 	 */
-	public function column_html( $pid, $status_txt = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true ) {
+	public function column_html( $pid, $status_txt = '', $button_txt = '', $show_button = true, $smushed = false ) {
 		$class = $smushed ? '' : ' sui-hidden';
 		$html  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
 		$html .= wp_nonce_field( 'wp_smush_nextgen', '_wp_smush_nonce', '', false );
 		// if we aren't showing the button.
 		if ( ! $show_button ) {
-			if ( $echo ) {
-				echo $html . Media_Library::progress_bar();
-				return;
-			} else {
-				return $html;
-			}
-		}
-		if ( ! $echo ) {
-			$html .= '
-			<button  class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
-				<span>' . $button_txt . '</span>
-			</button>';
 			return $html;
-		} else {
-			$html .= '<button class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
+		}
+
+		$html .= '<button  class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
 				<span>' . $button_txt . '</span>
 			</button>';
-			echo $html;
-		}
+		return $html;
 	}
 
 	/**

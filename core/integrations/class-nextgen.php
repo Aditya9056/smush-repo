@@ -180,7 +180,7 @@ class NextGen extends Abstract_Integration {
 
 		$atchmnt_id = (int) $_GET['attachment_id'];
 
-		$smush = $this->smush_image( $atchmnt_id, '', false, true );
+		$smush = $this->smush_image( $atchmnt_id, '', true );
 
 		if ( is_wp_error( $smush ) ) {
 			$error_message = $smush->get_error_message();
@@ -320,12 +320,11 @@ class NextGen extends Abstract_Integration {
 	 *
 	 * @param string $pid      NextGen Gallery Image id.
 	 * @param string $image    Nextgen gallery image object.
-	 * @param bool   $echo     Whether to echo the stats or not, false for auto smush.
 	 * @param bool   $is_bulk  Whether it's called by bulk smush or not.
 	 *
 	 * @return mixed Stats / Status / Error
 	 */
-	public function smush_image( $pid = '', $image = '', $echo = true, $is_bulk = false ) {
+	public function smush_image( $pid = '', $image = '', $is_bulk = false ) {
 		// Get image, if we have image id.
 		if ( ! empty( $pid ) ) {
 			$image = $this->get_nextgen_image_from_id( $pid );
@@ -366,21 +365,6 @@ class NextGen extends Abstract_Integration {
 		$status = '';
 		if ( ! is_wp_error( $smush ) ) {
 			$status = $this->ng_stats->show_stats( $pid, $smush );
-		}
-
-		// If we are suppose to send the stats, not required for auto smush.
-		if ( $echo ) {
-			// Send stats.
-			if ( is_wp_error( $smush ) ) {
-				/**
-				 * Not used for bulk smush.
-				 *
-				 * @param WP_Error $smush
-				 */
-				wp_send_json_error( $smush->get_error_message() );
-			}
-
-			wp_send_json_success( $status );
 		}
 
 		if ( ! $is_bulk ) {
@@ -428,7 +412,19 @@ class NextGen extends Abstract_Integration {
 			);
 		}
 
-		$this->smush_image( $pid, '' );
+		$status = $this->smush_image( $pid );
+
+		// Send stats.
+		if ( is_wp_error( $status ) ) {
+			/**
+			 * Not used for bulk smush.
+			 *
+			 * @param WP_Error $smush
+			 */
+			wp_send_json_error( $status->get_error_message() );
+		}
+
+		wp_send_json_success( $status );
 	}
 
 	/**
@@ -441,7 +437,7 @@ class NextGen extends Abstract_Integration {
 			$this->init_modules();
 		}
 
-		$this->smush_image( '', $image, false );
+		$this->smush_image( '', $image );
 	}
 
 
@@ -649,7 +645,7 @@ class NextGen extends Abstract_Integration {
 
 		$image_id = intval( $_POST['attachment_id'] );
 
-		$smushed = $this->smush_image( $image_id, '', false );
+		$smushed = $this->smush_image( $image_id );
 
 		// If any of the image is restored, we count it as success.
 		if ( ! empty( $smushed ) && ! is_wp_error( $smushed ) ) {

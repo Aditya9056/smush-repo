@@ -142,9 +142,7 @@ class Stats extends NextGen {
 			update_option( $key, $super_smushed, false );
 		}
 
-		$count = ! empty( $super_smushed['ids'] ) ? count( $super_smushed['ids'] ) : 0;
-
-		return $count;
+		return ! empty( $super_smushed['ids'] ) ? count( $super_smushed['ids'] ) : 0;
 	}
 
 	/**
@@ -261,22 +259,18 @@ class Stats extends NextGen {
 	 * @param int        $pid            Image Id stored in nextgen table.
 	 * @param bool|array $wp_smush_data  Stats, stored after smushing the image.
 	 * @param string     $image_type     Used for determining if not gif, to show the Super Smush button.
-	 * @param bool       $echo           Whether to echo the stats or not.
 	 *
 	 * @uses Admin::column_html(), WP_Smush::get_restore_link(), WP_Smush::get_resmush_link()
 	 *
 	 * @return bool|array|string
 	 */
-	public function show_stats( $pid, $wp_smush_data = false, $image_type = '', $echo = true ) {
+	public function show_stats( $pid, $wp_smush_data = false, $image_type = '' ) {
 		if ( empty( $wp_smush_data ) ) {
 			return false;
 		}
 		$button_txt   = '';
-		$stats        = '';
 		$show_button  = false;
 		$show_resmush = false;
-
-		$mush = WP_Smush::get_instance()->core()->mod->smush;
 
 		$bytes          = isset( $wp_smush_data['stats']['bytes'] ) ? $wp_smush_data['stats']['bytes'] : 0;
 		$bytes_readable = ! empty( $bytes ) ? size_format( $bytes, 1 ) : '';
@@ -287,7 +281,7 @@ class Stats extends NextGen {
 		if ( isset( $wp_smush_data['stats']['size_before'] ) && $wp_smush_data['stats']['size_before'] == 0 && ! empty( $wp_smush_data['sizes'] ) ) {
 			$status_txt = __( 'Already Optimized', 'wp-smushit' );
 		} else {
-			if ( $bytes == 0 || $percent == 0 ) {
+			if ( 0 === (int) $bytes || 0 === (int) $percent ) {
 				$status_txt = __( 'Already Optimized', 'wp-smushit' );
 
 				// Add resmush option if needed.
@@ -372,10 +366,7 @@ class Stats extends NextGen {
 		}
 
 		// If show button is true for some reason, column html can print out the button for us.
-		$text = WP_Smush::get_instance()->core()->nextgen->ng_admin->column_html( $pid, $status_txt, $button_txt, $show_button, true, $echo );
-		if ( ! $echo ) {
-			return $text;
-		}
+		return WP_Smush::get_instance()->core()->nextgen->ng_admin->column_html( $pid, $status_txt, $button_txt, $show_button, true );
 	}
 
 	/**
