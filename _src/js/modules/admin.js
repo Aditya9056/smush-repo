@@ -276,7 +276,14 @@ jQuery( function( $ ) {
 				}
 				// If we have any notice to show.
 				if ( 'undefined' !== typeof r.data.notice ) {
-					$( '.wp-smush-page-header' ).after( r.data.notice );
+					const notice = $( '#wp-smush-ajax-notice' );
+					notice.addClass( 'sui-notice-success' );
+					notice.html( '<p>' + r.data.notice + '</p>' );
+					notice.slideDown();
+
+					setTimeout( function() {
+						notice.slideUp();
+					}, 5000 );
 				}
 				// Hide errors.
 				$( 'div.smush-final-log' ).hide();
