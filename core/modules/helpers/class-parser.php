@@ -47,6 +47,10 @@ class Parser {
 			return;
 		}
 
+		if ( $this->is_page_builder() ) {
+			return;
+		}
+
 		if ( $this->is_smartcrawl_analysis() ) {
 			return;
 		}
@@ -109,11 +113,6 @@ class Parser {
 
 		// We probably don't want any processing during Ajax requests.
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			return $content;
-		}
-
-		// Add support for Oxygen Builder.
-		if ( defined( 'SHOW_CT_BUILDER' ) && SHOW_CT_BUILDER ) {
 			return $content;
 		}
 
@@ -302,6 +301,27 @@ class Parser {
 		);
 
 		return $images;
+	}
+
+	/**
+	 * Check if this is one of the known page builders.
+	 *
+	 * @since 3.5.1
+	 *
+	 * @return bool
+	 */
+	private function is_page_builder() {
+		// Oxygen builder.
+		if ( defined( 'SHOW_CT_BUILDER' ) && SHOW_CT_BUILDER ) {
+			return true;
+		}
+
+		// Beaver builder.
+		if ( null !== filter_input( INPUT_GET, 'fl_builder' ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

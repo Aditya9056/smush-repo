@@ -65,6 +65,8 @@ class Core extends Stats {
 		'gallery_page_wp-smush-nextgen-bulk',
 		'post',
 		'post-new',
+		'page',
+		'edit-page',
 		'upload',
 		'toplevel_page_smush-network',
 		'toplevel_page_smush',

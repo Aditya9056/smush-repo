@@ -166,9 +166,9 @@ class Dashboard extends Abstract_Page {
 			if ( ! WP_Smush::is_pro() ) {
 				$this->add_meta_box(
 					'pro-features',
-					__( 'Pro Features', 'wp-smushit' ),
+					__( 'Upgrade to Smush Pro', 'wp-smushit' ),
 					array( $this, 'pro_features_metabox' ),
-					array( $this, 'pro_features_metabox_header' ),
+					null,
 					null,
 					'bulk'
 				);
@@ -1011,33 +1011,21 @@ class Dashboard extends Abstract_Page {
 			$this->upgrade_url
 		);
 
-		$this->view(
-			'pro-features/meta-box',
-			array(
-				'upsell_url' => $upsell_url,
-			)
-		);
-	}
-
-	/**
-	 * Pro features meta box header.
-	 */
-	public function pro_features_metabox_header() {
 		// Upgrade url with analytics keys.
 		$upgrade_url = add_query_arg(
 			array(
 				'utm_source'   => 'smush',
 				'utm_medium'   => 'plugin',
-				'utm_campaign' => 'smush_advancedsettings_profeature_tag',
+				'utm_campaign' => 'smush-advanced-settings-video-button',
 			),
 			$this->upgrade_url
 		);
 
 		$this->view(
-			'pro-features/meta-box-header',
+			'pro-features/meta-box',
 			array(
-				'title'       => __( 'Smush Pro', 'wp-smushit' ),
 				'upgrade_url' => $upgrade_url,
+				'upsell_url'  => $upsell_url,
 			)
 		);
 	}
