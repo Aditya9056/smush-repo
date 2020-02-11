@@ -60,6 +60,11 @@ class Backup extends Abstract_Module {
 			return;
 		}
 
+		// Add WordPress 5.3 support for -scaled images size.
+		if ( false !== strpos( $file_path, '-scaled.' ) && function_exists( 'wp_get_original_image_path' ) ) {
+			$file_path = wp_get_original_image_path( $attachment_id );
+		}
+
 		// Return file path if backup is disabled.
 		if ( ! $this->settings->get( 'backup' ) || ! WP_Smush::is_pro() ) {
 			return;
@@ -177,6 +182,11 @@ class Backup extends Abstract_Module {
 		// Get the Original Path.
 		$file_path = Helper::get_attached_file( $attachment_id );
 
+		// Add WordPress 5.3 support for -scaled images size.
+		if ( false !== strpos( $file_path, '-scaled.' ) && function_exists( 'wp_get_original_image_path' ) ) {
+			$file_path = wp_get_original_image_path( $attachment_id );
+		}
+
 		// Get the backup path.
 		$backup_sizes = get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
 
@@ -200,7 +210,6 @@ class Backup extends Abstract_Module {
 
 			// 2. If we don't have a backup path from PNG->JPG, check for normal smush backup path.
 			if ( empty( $backup_path ) ) {
-
 				if ( ! empty( $backup_sizes[ $this->backup_key ] ) ) {
 					$backup_path = $backup_sizes[ $this->backup_key ];
 				} else {
