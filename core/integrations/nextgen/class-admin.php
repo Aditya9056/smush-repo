@@ -131,11 +131,10 @@ class Admin extends NextGen {
 	 *
 	 * @param string     $column_name  Column name.
 	 * @param object|int $id           Image object or ID.
-	 * @param bool       $echo         Echo or return.
 	 *
 	 * @return array|bool|string|void
 	 */
-	public function wp_smush_column_options( $column_name, $id, $echo = false ) {
+	public function wp_smush_column_options( $column_name, $id ) {
 		// NExtGen Doesn't returns Column name, weird? yeah, right, it is proper because hook is called for the particular column.
 		if ( 'wp_smush_image' === $column_name || '' === $column_name ) {
 			// We're not using our in-house function Smush\Core\Integrations\Nextgen::get_nextgen_image_from_id()
@@ -174,11 +173,11 @@ class Admin extends NextGen {
 			// Check Image metadata, if smushed, print the stats or super smush button.
 			if ( ! empty( $image->meta_data['wp_smush'] ) ) {
 				// Echo the smush stats.
-				return $this->ng_stats->show_stats( $image->pid, $image->meta_data['wp_smush'], $image_type, false, $echo );
+				return $this->ng_stats->show_stats( $image->pid, $image->meta_data['wp_smush'], $image_type );
 			}
 
 			// Print the status of image, if Not smushed.
-			return $this->set_status( $image->pid, $echo, false );
+			return $this->set_status( $image->pid );
 		}
 	}
 
@@ -304,13 +303,11 @@ class Admin extends NextGen {
 	/**
 	 * Set send button status
 	 *
-	 * @param int  $pid        ID.
-	 * @param bool $echo       Echo or return.
-	 * @param bool $text_only  Text only.
+	 * @param int $pid  ID.
 	 *
 	 * @return string
 	 */
-	private function set_status( $pid, $echo = true, $text_only = false ) {
+	private function set_status( $pid ) {
 		// the status.
 		$status_txt = __( 'Not processed', 'wp-smushit' );
 
@@ -319,19 +316,13 @@ class Admin extends NextGen {
 
 		// the button text.
 		$button_txt = __( 'Smush', 'wp-smushit' );
-		if ( $text_only ) {
-			return $status_txt;
-		}
 
 		// If we are not showing smush button, append progress bar, else it is already there.
 		if ( ! $show_button ) {
 			$status_txt .= Media_Library::progress_bar();
 		}
 
-		$text = $this->column_html( $pid, $status_txt, $button_txt, $show_button, false, $echo );
-		if ( ! $echo ) {
-			return $text;
-		}
+		return $this->column_html( $pid, $status_txt, $button_txt, $show_button );
 	}
 
 	/**
@@ -342,35 +333,25 @@ class Admin extends NextGen {
 	 * @param string  $button_txt   Button label.
 	 * @param boolean $show_button  Whether to shoe the button.
 	 * @param bool    $smushed      Image compressed or not.
-	 * @param bool    $echo         Echo or return.
 	 *
 	 * @return string|void
 	 */
-	public function column_html( $pid, $status_txt = '', $button_txt = '', $show_button = true, $smushed = false, $echo = true ) {
+	public function column_html( $pid, $status_txt = '', $button_txt = '', $show_button = true, $smushed = false ) {
 		$class = $smushed ? '' : ' sui-hidden';
 		$html  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
-		$html .= wp_nonce_field( 'wp_smush_nextgen', '_wp_smush_nonce', '', false );
+
 		// if we aren't showing the button.
 		if ( ! $show_button ) {
-			if ( $echo ) {
-				echo $html . Media_Library::progress_bar();
-				return;
-			} else {
-				return $html;
-			}
-		}
-		if ( ! $echo ) {
-			$html .= '
-			<button  class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
-				<span>' . $button_txt . '</span>
-			</button>';
 			return $html;
-		} else {
-			$html .= '<button class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
+		}
+
+		$html .= '<div class="sui-smush-media smush-status-links">';
+		$html .= wp_nonce_field( 'wp_smush_nextgen', '_wp_smush_nonce', '', false );
+		$html .= '<button  class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
 				<span>' . $button_txt . '</span>
 			</button>';
-			echo $html;
-		}
+		$html .= '</div>';
+		return $html;
 	}
 
 	/**
