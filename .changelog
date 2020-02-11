@@ -10,6 +10,7 @@
 - Fix: NextGEN Gallery integration
 - Fix: Error detecting language error on Settings page
 - Fix: "Choose directory" button disabled state after first click
+- Fix: Some notices not being dismissible
 
 = 3.5.1 =
 
