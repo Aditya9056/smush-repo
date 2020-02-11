@@ -818,7 +818,7 @@ class Ajax {
 
 		Helper::check_animated_status( $attachment_file_path, $attachment_id );
 
-		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, '', $attachment_id );
+		WP_Smush::get_instance()->core()->mod->backup->create_backup( $attachment_file_path, $attachment_id );
 
 		// Proceed only if Smushing Transient is not set for the given attachment id.
 		if ( ! get_option( 'smush-in-progress-' . $attachment_id, false ) ) {
