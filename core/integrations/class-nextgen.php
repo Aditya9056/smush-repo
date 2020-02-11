@@ -607,7 +607,7 @@ class NextGen extends Abstract_Integration {
 
 			wp_send_json_success(
 				array(
-					'button' => $button_html,
+					'stats' => $button_html,
 				)
 			);
 		}

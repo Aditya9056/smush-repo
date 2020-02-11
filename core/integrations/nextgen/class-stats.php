@@ -287,15 +287,18 @@ class Stats extends NextGen {
 				// Add resmush option if needed.
 				$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
 				if ( $show_resmush ) {
-					$status_txt .= '<br />' . Media_Library::get_resmsuh_link( $pid, 'nextgen' );
+					$status_txt .= '<div class="sui-smush-media smush-status-links">';
+					$status_txt .= Media_Library::get_resmsuh_link( $pid, 'nextgen' );
+					$status_txt .= '</div>';
 				}
 			} elseif ( ! empty( $percent ) && ! empty( $bytes_readable ) ) {
-				$status_txt = sprintf( __( 'Reduced by %1$s (%2$01.1f%%)', 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2 ) );
+				$status_txt  = sprintf( __( 'Reduced by %1$s (%2$01.1f%%)', 'wp-smushit' ), $bytes_readable, number_format_i18n( $percent, 2 ) );
+				$status_txt .= '<div class="sui-smush-media smush-status-links">';
 
 				$show_resmush = $this->show_resmush( $show_resmush, $wp_smush_data );
 
 				if ( $show_resmush ) {
-					$status_txt .= '<br />' . Media_Library::get_resmsuh_link( $pid, 'nextgen' );
+					$status_txt .= Media_Library::get_resmsuh_link( $pid, 'nextgen' );
 				}
 
 				// Restore Image: Check if we need to show the restore image option.
@@ -305,9 +308,6 @@ class Stats extends NextGen {
 					if ( $show_resmush ) {
 						// Show Separator.
 						$status_txt .= ' | ';
-					} else {
-						// Show the link in next line.
-						$status_txt .= '<br />';
 					}
 					$status_txt .= Media_Library::get_restore_link( $pid, 'nextgen' );
 				}
@@ -345,6 +345,7 @@ class Stats extends NextGen {
 					$stats = $this->get_detailed_stats( $pid, $wp_smush_data, array( 'sizes' => $sizes ), $full_image );
 
 					$status_txt .= $stats;
+					$status_txt .= '</div>';
 				}
 			}
 		}

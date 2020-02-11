@@ -7,6 +7,7 @@
 - Enhance: Allow excluding images from lazy loading with data-skip-lazy attribute
 - Enhance: Improve restore backup UI
 - Enhance: Bulk smush UI
+- Fix: NextGEN Gallery integration
 - Fix: Error detecting language error on Settings page
 - Fix: "Choose directory" button disabled state after first click
 

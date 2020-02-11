@@ -322,7 +322,7 @@ class Admin extends NextGen {
 			$status_txt .= Media_Library::progress_bar();
 		}
 
-		return $this->column_html( $pid, $status_txt, $button_txt, $show_button, false );
+		return $this->column_html( $pid, $status_txt, $button_txt, $show_button );
 	}
 
 	/**
@@ -339,15 +339,18 @@ class Admin extends NextGen {
 	public function column_html( $pid, $status_txt = '', $button_txt = '', $show_button = true, $smushed = false ) {
 		$class = $smushed ? '' : ' sui-hidden';
 		$html  = '<p class="smush-status' . $class . '">' . $status_txt . '</p>';
-		$html .= wp_nonce_field( 'wp_smush_nextgen', '_wp_smush_nonce', '', false );
+
 		// if we aren't showing the button.
 		if ( ! $show_button ) {
 			return $html;
 		}
 
+		$html .= '<div class="sui-smush-media smush-status-links">';
+		$html .= wp_nonce_field( 'wp_smush_nextgen', '_wp_smush_nonce', '', false );
 		$html .= '<button  class="button button-primary wp-smush-nextgen-send" data-id="' . $pid . '">
 				<span>' . $button_txt . '</span>
 			</button>';
+		$html .= '</div>';
 		return $html;
 	}
 
