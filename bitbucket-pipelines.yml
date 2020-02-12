@@ -4,12 +4,11 @@
 # Will also build and push free and pro builds to Bitbucket Downloads on PR merge.
 
 definitions:
-  scripts: &submodules
-    script:
-      - mkdir -p ~/.ssh
-      - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
-      - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
-      - git submodule update --init --recursive
+  submodules: &submodules |-
+      mkdir -p ~/.ssh
+      (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
+      ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
+      git submodule update --init --recursive
 
 pipelines:
   default:
@@ -17,8 +16,8 @@ pipelines:
         - step:
             name: Unit Tests
             image: incsub/wp-test-env
-            <<: *submodules
-            script+:
+            script:
+              - *submodules
               - service mysql start
               - bash misc/install-wp-tests.sh wordpress_unit_tests root '' localhost latest
               - phpunit-multi 5.6,7.0,7.1
@@ -50,8 +49,8 @@ pipelines:
           image: node:12.15.0
           caches:
             - node
-          <<: *submodules
-          script+:
+          script:
+            - *submodules
             - apt-get update && apt-get install -y jq
             - export TERM=xterm
             - npm install
