@@ -4,11 +4,12 @@
 # Will also build and push free and pro builds to Bitbucket Downloads.
 
 definitions:
-  submodules: &submodules
-    - mkdir -p ~/.ssh
-    - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
-    - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
-    - git submodule update --init --recursive
+  scripts:
+    - script: &submodules
+      - mkdir -p ~/.ssh
+      - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
+      - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
+      - git submodule update --init --recursive
 
 pipelines:
   default:
