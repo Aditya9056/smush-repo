@@ -42,6 +42,7 @@ pipelines:
   custom:
     qa:
       - step:
+          name: Build PRO package
           image: incsub/wp-test-env
           script:
             - mkdir -p ~/.ssh
