@@ -51,8 +51,8 @@ pipelines:
             #- (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
             #- ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
             #- git submodule update --init --recursive
+            - export TERM=xterm &&
             - npm install
-            #- export TERM=xterm &&
             - npm run build:pro
             - pipe: atlassian/bitbucket-upload-file:0.1.2
               variables:
