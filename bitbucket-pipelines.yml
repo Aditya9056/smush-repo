@@ -39,3 +39,19 @@ pipelines:
             - vendor/bin/phpcs --config-set ignore_errors_on_exit 1
             - vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
             - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
+  custom:
+    qa:
+      - step:
+          image: incsub/wp-test-env
+          script:
+            - mkdir -p ~/.ssh
+            - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
+            - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
+            - git submodule update --init --recursive
+            - npm install
+            - npm run build
+            - pipe: atlassian/bitbucket-upload-file:0.1.2
+                variables:
+                  BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                  BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                  FILENAME: "build/wp-smushit-3.6.0-alpha.1.zip"
