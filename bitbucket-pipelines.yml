@@ -4,8 +4,8 @@
 # Will also build and push free and pro builds to Bitbucket Downloads.
 
 definitions:
-  scripts:
-    - script: &submodules
+  scripts: &submodules
+    script:
       - mkdir -p ~/.ssh
       - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
       - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
@@ -17,8 +17,8 @@ pipelines:
         - step:
             name: Unit Tests
             image: incsub/wp-test-env
-            script:
-              - *submodules
+            <<: *submodules
+            script+:
               - service mysql start
               - bash misc/install-wp-tests.sh wordpress_unit_tests root '' localhost latest
               - phpunit-multi 5.6,7.0,7.1
@@ -50,8 +50,8 @@ pipelines:
           image: node:12.15.0
           caches:
             - node
-          script:
-            - *submodules
+            <<: *submodules
+            script+:
             - apt-get update && apt-get install -y jq
             - export TERM=xterm
             - npm install
