@@ -58,5 +58,5 @@ pipelines:
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
-                FILENAME: $BITBUCKET_CLONE_DIR . '/build/wp-smushit-3.6.0-alpha.1.zip'
+                FILENAME: $BITBUCKET_CLONE_DIR . '/build/wp-smush-pro-3.6.0-alpha.1.zip'
 
