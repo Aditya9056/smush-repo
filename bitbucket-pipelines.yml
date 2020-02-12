@@ -52,7 +52,7 @@ pipelines:
             - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
             - git submodule update --init --recursive
             - npm install
-            - npm run build:pro
+            - export TERM=xterm && npm run build:pro
             - pipe: atlassian/bitbucket-upload-file:0.1.2
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
