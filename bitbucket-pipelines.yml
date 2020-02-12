@@ -40,7 +40,7 @@ pipelines:
 #              - vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
 #              - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
   custom:
-    qa:
+    build:
       - step:
           name: Build PRO package
           image: node:12.15.0
@@ -58,5 +58,9 @@ pipelines:
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                FILENAME: "$BITBUCKET_CLONE_DIR/build/wp-smushit-3.6.0-alpha.1.zip"
+            - pipe: atlassian/bitbucket-upload-file:0.1.2
+              variables:
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
                 FILENAME: "$BITBUCKET_CLONE_DIR/build/wp-smush-pro-3.6.0-alpha.1.zip"
-
