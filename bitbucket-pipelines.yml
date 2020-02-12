@@ -44,13 +44,15 @@ pipelines:
       - step:
           name: Build PRO package
           image: incsub/wp-test-env
+          caches:
+            - node
           script:
             - mkdir -p ~/.ssh
             - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
             - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
             - git submodule update --init --recursive
             - npm install
-            - npm run build
+            - npm run build:pro
             - pipe: atlassian/bitbucket-upload-file:0.1.2
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
