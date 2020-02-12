@@ -1,7 +1,7 @@
 # This is a Bitbucket pipelines configuration file.
 # -----
 # Runs 3 steps in parallel: Unit test, RIPS security scan, PHPCS tests.
-# Will also build and push free and pro builds to Bitbucket Downloads.
+# Will also build and push free and pro builds to Bitbucket Downloads on PR merge.
 
 definitions:
   scripts: &submodules
