@@ -5,40 +5,40 @@
 # You can specify a custom docker image from Docker Hub as your build environment.
 
 pipelines:
-#  default:
-#    - parallel:
-#        - step:
-#            name: Unit Tests
-#            image: incsub/wp-test-env
-#            script:
-#              - mkdir -p ~/.ssh
-#              - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
-#              - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
-#              - git submodule update --init --recursive
-#              - service mysql start
-#              - bash misc/install-wp-tests.sh wordpress_unit_tests root '' localhost latest
-#              - phpunit-multi 5.6,7.0,7.1
-#              - phpunit-multi 5.6,7.0,7.1 --group ajax
-#              - phpunit-multi 5.6,7.0,7.1 -c tests/phpunit/multisite.xml
-#        - step:
-#            name: RIPS Security Scan
-#            image: rips/rips-cli:3
-#            script:
-#              - rips-cli -vvv rips:scan:start -a $RIPS_APP_ID -p $BITBUCKET_CLONE_DIR -t 1
-#        - step:
-#            name: CodeSniffer Tests
-#            image: php:7.2
-#            caches:
-#              - composer
-#            script:
-#              - apt-get update && apt-get install -y unzip
-#              - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-#              - composer require wp-coding-standards/wpcs
-#              - composer install
-#              - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
-#              - vendor/bin/phpcs --config-set ignore_errors_on_exit 1
-#              - vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
-#              - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
+  default:
+    - parallel:
+        - step:
+            name: Unit Tests
+            image: incsub/wp-test-env
+            script:
+              - mkdir -p ~/.ssh
+              - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
+              - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
+              - git submodule update --init --recursive
+              - service mysql start
+              - bash misc/install-wp-tests.sh wordpress_unit_tests root '' localhost latest
+              - phpunit-multi 5.6,7.0,7.1
+              - phpunit-multi 5.6,7.0,7.1 --group ajax
+              - phpunit-multi 5.6,7.0,7.1 -c tests/phpunit/multisite.xml
+        - step:
+            name: RIPS Security Scan
+            image: rips/rips-cli:3
+            script:
+              - rips-cli -vvv rips:scan:start -a $RIPS_APP_ID -p $BITBUCKET_CLONE_DIR -t 1
+        - step:
+            name: CodeSniffer Tests
+            image: php:7.2
+            caches:
+              - composer
+            script:
+              - apt-get update && apt-get install -y unzip
+              - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+              - composer require wp-coding-standards/wpcs
+              - composer install
+              - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
+              - vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+              - vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+              - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
   custom:
     build:
       - step:
