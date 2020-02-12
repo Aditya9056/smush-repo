@@ -1,8 +1,13 @@
-# This is a sample build configuration for Docker.
-# Check our guides at https://confluence.atlassian.com/x/O1toN for more examples.
-# Only use spaces to indent your .yml configuration.
+# This is a Bitbucket pipelines configuration file.
 # -----
-# You can specify a custom docker image from Docker Hub as your build environment.
+# Runs 3 steps in parallel: Unit test, RIPS security scan, PHPCS tests.
+# Will also build and push free and pro builds to Bitbucket Downloads.
+
+submodules: &submodules
+  - mkdir -p ~/.ssh
+  - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
+  - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
+  - git submodule update --init --recursive
 
 pipelines:
   default:
@@ -11,10 +16,7 @@ pipelines:
             name: Unit Tests
             image: incsub/wp-test-env
             script:
-              - mkdir -p ~/.ssh
-              - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
-              - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
-              - git submodule update --init --recursive
+              <<: *submodules
               - service mysql start
               - bash misc/install-wp-tests.sh wordpress_unit_tests root '' localhost latest
               - phpunit-multi 5.6,7.0,7.1
@@ -39,20 +41,17 @@ pipelines:
               - vendor/bin/phpcs --config-set ignore_errors_on_exit 1
               - vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
               - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
-  custom:
-    build:
+  pull-requests:
+    '*/*':
       - step:
-          name: Build PRO package
+          name: Build Packages
           image: node:12.15.0
           caches:
             - node
           script:
+            <<: *submodules
             - apt-get update && apt-get install -y jq
             - export TERM=xterm
-            - mkdir -p ~/.ssh
-            - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
-            - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
-            - git submodule update --init --recursive
             - npm install
             - npm run build
             - declare -x VERSION=$(jq -r '.version' package.json)
