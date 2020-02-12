@@ -47,17 +47,16 @@ pipelines:
           caches:
             - node
           script:
-            #- mkdir -p ~/.ssh
-            #- (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
-            #- ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
-            #- git submodule update --init --recursive
-            - export TERM=xterm &&
+            - export TERM=xterm
+            - mkdir -p ~/.ssh
+            - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
+            - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
+            - git submodule update --init --recursive
             - npm install
-            - npm run build:pro
+            - npm run build
             - pipe: atlassian/bitbucket-upload-file:0.1.2
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
-                FILENAME: '/opt/atlassian/pipelines/agent/build/build/wp-smush-pro-3.6.0-alpha.1.zip'
-                #FILENAME: $BITBUCKET_CLONE_DIR . '/build/wp-smush-pro-3.6.0-alpha.1.zip'
+                FILENAME: "$BITBUCKET_CLONE_DIR/build/wp-smush-pro-3.6.0-alpha.1.zip"
 
