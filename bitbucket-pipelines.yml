@@ -47,6 +47,7 @@ pipelines:
           caches:
             - node
           script:
+            - apt-get update && apt-get install -y jq
             - export TERM=xterm
             - mkdir -p ~/.ssh
             - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
@@ -54,13 +55,14 @@ pipelines:
             - git submodule update --init --recursive
             - npm install
             - npm run build
+            - declare -x VERSION=$(jq -r '.version' package.json)
             - pipe: atlassian/bitbucket-upload-file:0.1.2
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
-                FILENAME: "$BITBUCKET_CLONE_DIR/build/wp-smushit-3.6.0-alpha.1.zip"
+                FILENAME: "$BITBUCKET_CLONE_DIR/build/wp-smushit-$VERSION.zip"
             - pipe: atlassian/bitbucket-upload-file:0.1.2
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
-                FILENAME: "$BITBUCKET_CLONE_DIR/build/wp-smush-pro-3.6.0-alpha.1.zip"
+                FILENAME: "$BITBUCKET_CLONE_DIR/build/wp-smush-pro-$VERSION.zip"
