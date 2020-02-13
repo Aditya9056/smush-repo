@@ -621,12 +621,21 @@ class Dashboard extends Abstract_Page {
 			<div class="sui-box-settings-col-2" id="column-<?php echo esc_attr( $setting_m_key ); ?>">
 				<div class="sui-form-field">
 					<?php if ( isset( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ) ) : ?>
-						<label class="sui-toggle">
-							<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>" id="<?php echo esc_attr( $setting_m_key ); ?>" name="<?php echo esc_attr( $setting_m_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
-							<span class="sui-toggle-slider"></span>
-						</label>
-						<label for="<?php echo esc_attr( $setting_m_key ); ?>">
-							<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+						<label for="<?php echo esc_attr( $setting_m_key ); ?>" class="sui-toggle">
+							<input
+								type="checkbox"
+								value="1"
+								id="<?php echo esc_attr( $setting_m_key ); ?>"
+								name="<?php echo esc_attr( $setting_m_key ); ?>"
+								aria-labelledby="<?php echo esc_attr( $setting_m_key . '-label' ); ?>"
+								aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>"
+								<?php checked( $setting_val, 1, true ); ?>
+								<?php disabled( $disable ); ?>
+							/>
+							<span class="sui-toggle-slider" aria-hidden="true"></span>
+							<span id="<?php echo esc_attr( $setting_m_key . '-label' ); ?>" class="sui-toggle-label">
+								<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+							</span>
 						</label>
 					<?php endif; ?>
 					<!-- Print/Perform action in right setting column -->
@@ -816,13 +825,20 @@ class Dashboard extends Abstract_Page {
 		$setting_key = WP_SMUSH_PREFIX . 'backup';
 		?>
 		<div class="sui-form-field">
-			<label class="sui-toggle">
-				<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_key ); ?>-desc" id="<?php echo esc_attr( $setting_key ); ?>" name="<?php echo esc_attr( $setting_key ); ?>" <?php checked( $setting_val, 1 ); ?> value="1">
-				<span class="sui-toggle-slider"></span>
-				<label class="toggle-label <?php echo esc_attr( $setting_key . '-label' ); ?>" for="<?php echo esc_attr( $setting_key ); ?>" aria-hidden="true"></label>
-			</label>
-			<label for="<?php echo esc_attr( $setting_key ); ?>">
-				<?php echo esc_html( WP_Smush::get_instance()->core()->settings['backup']['label'] ); ?>
+			<label for="<?php echo esc_attr( $setting_key ); ?>" class="sui-toggle">
+				<input
+					type="checkbox"
+					value="1"
+					id="<?php echo esc_attr( $setting_key ); ?>"
+					name="<?php echo esc_attr( $setting_key ); ?>"
+					aria-labelledby="<?php echo esc_attr( $setting_key . '-label' ); ?>"
+					aria-describedby="<?php echo esc_attr( $setting_key ); ?>-desc"
+					<?php checked( $setting_val, 1 ); ?>
+				/>
+				<span class="sui-toggle-slider" aria-hidden="true"></span>
+				<span id="<?php echo esc_attr( $setting_key . '-label' ); ?>" class="sui-toggle-label">
+					<?php echo esc_html( WP_Smush::get_instance()->core()->settings['backup']['label'] ); ?>
+				</span>
 			</label>
 			<span class="sui-description sui-toggle-description">
 				<?php echo esc_html( WP_Smush::get_instance()->core()->settings['backup']['desc'] ); ?>

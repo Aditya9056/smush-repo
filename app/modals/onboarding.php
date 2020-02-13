@@ -74,24 +74,24 @@ if ( ! defined( 'WPINC' ) ) {
 		</a>
 		<# } else { #>
 		<div class="sui-box-selectors">
-			<label class="sui-toggle">
-				<input type="checkbox" id="{{{ data.slide }}}" <# if ( data.value ) { #>checked<# } #>>
-				<span class="sui-toggle-slider"> </span>
-			</label>
-			<label for="{{{ data.slide }}}">
-				<# if ( 'auto' === data.slide ) { #>
-				<?php esc_html_e( 'Automatically optimize new uploads', 'wp-smushit' ); ?>
-				<# } else if ( 'lossy' === data.slide ) { #>
-				<?php esc_html_e( 'Enable enhanced multi-pass lossy compression', 'wp-smushit' ); ?>
-				<# } else if ( 'strip_exif' === data.slide ) { #>
-				<?php esc_html_e( 'Strip my image metadata', 'wp-smushit' ); ?>
-				<# } else if ( 'original' === data.slide ) { #>
-				<?php esc_html_e( 'Compress my full size images', 'wp-smushit' ); ?>
-				<# } else if ( 'lazy_load' === data.slide ) { #>
-				<?php esc_html_e( 'Enable Lazy Loading', 'wp-smushit' ); ?>
-				<# } else if ( 'usage' === data.slide ) { #>
-				<?php esc_html_e( 'Allow usage data tracking', 'wp-smushit' ); ?>
-				<# } #>
+			<label for="{{{ data.slide }}}" class="sui-toggle">
+				<input type="checkbox" id="{{{ data.slide }}}" aria-labelledby="{{{ data.slide }}}-label" <# if ( data.value ) { #>checked<# } #>>
+				<span class="sui-toggle-slider" aria-hidden="true"> </span>
+				<span id="{{{ data.slide }}}-label" class="sui-toggle-label">
+					<# if ( 'auto' === data.slide ) { #>
+					<?php esc_html_e( 'Automatically optimize new uploads', 'wp-smushit' ); ?>
+					<# } else if ( 'lossy' === data.slide ) { #>
+					<?php esc_html_e( 'Enable enhanced multi-pass lossy compression', 'wp-smushit' ); ?>
+					<# } else if ( 'strip_exif' === data.slide ) { #>
+					<?php esc_html_e( 'Strip my image metadata', 'wp-smushit' ); ?>
+					<# } else if ( 'original' === data.slide ) { #>
+					<?php esc_html_e( 'Compress my full size images', 'wp-smushit' ); ?>
+					<# } else if ( 'lazy_load' === data.slide ) { #>
+					<?php esc_html_e( 'Enable Lazy Loading', 'wp-smushit' ); ?>
+					<# } else if ( 'usage' === data.slide ) { #>
+					<?php esc_html_e( 'Allow usage data tracking', 'wp-smushit' ); ?>
+					<# } #>
+				</span>
 			</label>
 		</div>
 		<# } #>
