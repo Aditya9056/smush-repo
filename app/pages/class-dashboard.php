@@ -621,12 +621,21 @@ class Dashboard extends Abstract_Page {
 			<div class="sui-box-settings-col-2" id="column-<?php echo esc_attr( $setting_m_key ); ?>">
 				<div class="sui-form-field">
 					<?php if ( isset( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ) ) : ?>
-						<label class="sui-toggle">
-							<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>" id="<?php echo esc_attr( $setting_m_key ); ?>" name="<?php echo esc_attr( $setting_m_key ); ?>" <?php checked( $setting_val, 1, true ); ?> value="1" <?php disabled( $disable ); ?>>
-							<span class="sui-toggle-slider"></span>
-						</label>
-						<label for="<?php echo esc_attr( $setting_m_key ); ?>">
-							<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+						<label for="<?php echo esc_attr( $setting_m_key ); ?>" class="sui-toggle">
+							<input
+								type="checkbox"
+								value="1"
+								id="<?php echo esc_attr( $setting_m_key ); ?>"
+								name="<?php echo esc_attr( $setting_m_key ); ?>"
+								aria-labelledby="<?php echo esc_attr( $setting_m_key . '-label' ); ?>"
+								aria-describedby="<?php echo esc_attr( $setting_m_key . '-desc' ); ?>"
+								<?php checked( $setting_val, 1, true ); ?>
+								<?php disabled( $disable ); ?>
+							/>
+							<span class="sui-toggle-slider" aria-hidden="true"></span>
+							<span id="<?php echo esc_attr( $setting_m_key . '-label' ); ?>" class="sui-toggle-label">
+								<?php echo esc_html( WP_Smush::get_instance()->core()->settings[ $name ]['label'] ); ?>
+							</span>
 						</label>
 					<?php endif; ?>
 					<!-- Print/Perform action in right setting column -->
@@ -663,7 +672,14 @@ class Dashboard extends Abstract_Page {
 			?>
 			<div class="sui-notice sui-notice-info auto-smush-notice">
 				<p>
-					<?php esc_html_e( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and any hard-coded URLs on your site that contain the original PNG filename will need to be updated manually.', 'wp-smushit' ); ?>
+					<?php
+					printf(
+						/* translators: %1$s - <strong>, %2$s - </strong> */
+						wp_kses( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and %1$sany hard-coded URLs on your site that contain the original PNG filename will need to be updated manually%2$s.', 'wp-smushit' ),
+						'<strong>',
+						'</strong>'
+					);
+					?>
 				</p>
 			</div>
 			<?php
@@ -816,13 +832,20 @@ class Dashboard extends Abstract_Page {
 		$setting_key = WP_SMUSH_PREFIX . 'backup';
 		?>
 		<div class="sui-form-field">
-			<label class="sui-toggle">
-				<input type="checkbox" aria-describedby="<?php echo esc_attr( $setting_key ); ?>-desc" id="<?php echo esc_attr( $setting_key ); ?>" name="<?php echo esc_attr( $setting_key ); ?>" <?php checked( $setting_val, 1 ); ?> value="1">
-				<span class="sui-toggle-slider"></span>
-				<label class="toggle-label <?php echo esc_attr( $setting_key . '-label' ); ?>" for="<?php echo esc_attr( $setting_key ); ?>" aria-hidden="true"></label>
-			</label>
-			<label for="<?php echo esc_attr( $setting_key ); ?>">
-				<?php echo esc_html( WP_Smush::get_instance()->core()->settings['backup']['label'] ); ?>
+			<label for="<?php echo esc_attr( $setting_key ); ?>" class="sui-toggle">
+				<input
+					type="checkbox"
+					value="1"
+					id="<?php echo esc_attr( $setting_key ); ?>"
+					name="<?php echo esc_attr( $setting_key ); ?>"
+					aria-labelledby="<?php echo esc_attr( $setting_key . '-label' ); ?>"
+					aria-describedby="<?php echo esc_attr( $setting_key ); ?>-desc"
+					<?php checked( $setting_val, 1 ); ?>
+				/>
+				<span class="sui-toggle-slider" aria-hidden="true"></span>
+				<span id="<?php echo esc_attr( $setting_key . '-label' ); ?>" class="sui-toggle-label">
+					<?php echo esc_html( WP_Smush::get_instance()->core()->settings['backup']['label'] ); ?>
+				</span>
 			</label>
 			<span class="sui-description sui-toggle-description">
 				<?php echo esc_html( WP_Smush::get_instance()->core()->settings['backup']['desc'] ); ?>

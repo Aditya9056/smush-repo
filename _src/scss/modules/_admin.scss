@@ -6,6 +6,16 @@
 	.sui-notice-top p { width: 100%; }
 
 	/**
+	 * Fix summary image size. Overwrite of SUI styles.
+	 * @since 3.6.0
+	 */
+	@media screen and (min-width: 783px) {
+		.sui-wrap .sui-summary:not(.sui-unbranded):not(.sui-summary-sm) {
+			background-size: auto 80%;
+		}
+	}
+
+	/**
 	 * Plugin upsell styles
 	 * @since 3.6.0
 	 */
