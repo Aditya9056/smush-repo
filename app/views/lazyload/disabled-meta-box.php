@@ -22,7 +22,7 @@ if ( ! defined( 'WPINC' ) ) {
 	<p>
 		<?php
 		esc_html_e(
-			'This feature defers the loadingThis feature stops offscreen images from loading until a visitor scrolls to them. Make your page load faster, use less bandwidth and fix the “defer offscreen images” recommendation from a Google PageSpeed test.',
+			'This feature stops offscreen images from loading until a visitor scrolls to them. Make your page load faster, use less bandwidth and fix the “defer offscreen images” recommendation from a Google PageSpeed test.',
 			'wp-smushit'
 		);
 		?>
