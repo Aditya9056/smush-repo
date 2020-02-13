@@ -672,7 +672,14 @@ class Dashboard extends Abstract_Page {
 			?>
 			<div class="sui-notice sui-notice-info auto-smush-notice">
 				<p>
-					<?php esc_html_e( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and any hard-coded URLs on your site that contain the original PNG filename will need to be updated manually.', 'wp-smushit' ); ?>
+					<?php
+					printf(
+						/* translators: %1$s - <strong>, %2$s - </strong> */
+						wp_kses( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and %1$sany hard-coded URLs on your site that contain the original PNG filename will need to be updated manually%2$s.', 'wp-smushit' ),
+						'<strong>',
+						'</strong>'
+					);
+					?>
 				</p>
 			</div>
 			<?php
