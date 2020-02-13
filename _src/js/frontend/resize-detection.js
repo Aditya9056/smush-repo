@@ -54,9 +54,11 @@
 			if ( ! this.images.bigger.length && ! this.images.smaller.length ) {
 				this.toggle.classList.add( 'smush-toggle-success' );
 				document.getElementById( 'smush-image-bar-notice' ).style.display = 'block';
+				document.getElementById( 'smush-image-bar-notice-desc' ).style.display = 'none';
 			} else {
 				this.toggle.classList.remove( 'smush-toggle-success' );
 				document.getElementById( 'smush-image-bar-notice' ).style.display = 'none';
+				document.getElementById( 'smush-image-bar-notice-desc' ).style.display = 'block';
 				this.generateMarkup( 'bigger' );
 				this.generateMarkup( 'smaller' );
 			}
