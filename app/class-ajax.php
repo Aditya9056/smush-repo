@@ -67,6 +67,8 @@ class Ajax {
 		// Hide API message.
 		add_action( 'wp_ajax_hide_api_message', array( $this, 'hide_api_message' ) );
 		add_action( 'wp_ajax_smush_show_warning', array( $this, 'show_warning_ajax' ) );
+		// Detect conflicting plugins.
+		add_action( 'wp_ajax_dismiss_check_for_conflicts', array( $this, 'dismiss_check_for_conflicts' ) );
 
 		/**
 		 * SMUSH
@@ -258,6 +260,16 @@ class Ajax {
 	public function show_warning_ajax() {
 		$show = WP_Smush::get_instance()->core()->mod->smush->show_warning();
 		wp_send_json( intval( $show ) );
+	}
+
+	/**
+	 * Dismiss the plugin conflicts notice.
+	 *
+	 * @since 3.6.0
+	 */
+	public function dismiss_check_for_conflicts() {
+		update_option( WP_SMUSH_PREFIX . 'hide-conflict-notice', true );
+		wp_send_json_success();
 	}
 
 	/***************************************

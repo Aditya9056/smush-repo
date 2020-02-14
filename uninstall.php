@@ -50,6 +50,7 @@ $smushit_keys = array(
 	'last_run_sync',
 	'networkwide',
 	'cron_update_running',
+	'hide-conflict-notice',
 );
 
 $db_keys = array(
