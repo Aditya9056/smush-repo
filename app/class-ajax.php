@@ -67,6 +67,8 @@ class Ajax {
 		// Hide API message.
 		add_action( 'wp_ajax_hide_api_message', array( $this, 'hide_api_message' ) );
 		add_action( 'wp_ajax_smush_show_warning', array( $this, 'show_warning_ajax' ) );
+		// Detect conflicting plugins.
+		add_action( 'wp_ajax_dismiss_check_for_conflicts', array( $this, 'dismiss_check_for_conflicts' ) );
 
 		/**
 		 * SMUSH
@@ -260,6 +262,16 @@ class Ajax {
 		wp_send_json( intval( $show ) );
 	}
 
+	/**
+	 * Dismiss the plugin conflicts notice.
+	 *
+	 * @since 3.6.0
+	 */
+	public function dismiss_check_for_conflicts() {
+		update_option( WP_SMUSH_PREFIX . 'hide-conflict-notice', true );
+		wp_send_json_success();
+	}
+
 	/***************************************
 	 *
 	 * SMUSH
@@ -369,6 +381,16 @@ class Ajax {
 
 		// If there aren't any images in the library, return the notice.
 		if ( 0 === count( $core->get_media_attachments() ) && 'nextgen' !== $type ) {
+			$notice = esc_html__( 'We haven’t found any images in your media library yet so there’s no smushing to be done! Once you upload images, reload this page and start playing!', 'wp-smushit' );
+			$resp   = '<div class="sui-notice-top sui-notice-success sui-can-dismiss">
+					<div class="sui-notice-content">
+						<p>' . $notice . '</p>
+					</div>
+					<span class="sui-notice-dismiss">
+						<a role="button" href="#" aria-label="' . __( 'Dismiss', 'wp-smushit' ) . '" class="sui-icon-check"></a>
+					</span>
+				</div>';
+
 			delete_site_option( WP_SMUSH_PREFIX . 'run_recheck' );
 			wp_send_json_success(
 				array(
