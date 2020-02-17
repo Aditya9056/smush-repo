@@ -36,9 +36,14 @@ if ( ! defined( 'WPINC' ) ) {
 	}
 	?>
 
-	<div class="sui-box-settings-row">
+	<div class="sui-box-settings-row <?php echo WP_Smush::is_pro() ? '' : 'sui-disabled'; ?>">
 		<div class="sui-box-settings-col-1">
-			<span class="sui-settings-label"><?php echo esc_html( $settings_data['bulk_restore']['short_label'] ); ?></span>
+			<span class="<?php echo WP_Smush::is_pro() ? 'sui-settings-label' : 'sui-settings-label-with-tag'; ?>">
+				<?php echo esc_html( $settings_data['bulk_restore']['short_label'] ); ?>
+				<?php if ( ! WP_Smush::is_pro() ) : ?>
+					<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Pro', 'wp-smushit' ); ?></span>
+				<?php endif; ?>
+			</span>
 			<span class="sui-description"><?php echo wp_kses_post( $settings_data['bulk_restore']['desc'] ); ?></span>
 		</div>
 

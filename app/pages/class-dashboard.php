@@ -267,13 +267,17 @@ class Dashboard extends Abstract_Page {
 		}
 
 		if ( 'tools' === $this->get_current_tab() && $this->should_render() ) {
+			$box_body_class = WP_Smush::is_pro() ? '' : 'sui-upsell-items';
 			$this->add_meta_box(
 				'tools',
 				__( 'Tools', 'wp-smushit' ),
 				array( $this, 'tools_metabox' ),
 				null,
 				array( $this, 'common_metabox_footer' ),
-				'tools'
+				'tools',
+				array(
+					'box_content_class' => "sui-box-body {$box_body_class}",
+				)
 			);
 		}
 
