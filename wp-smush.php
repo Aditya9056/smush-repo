@@ -407,7 +407,13 @@ if ( ! class_exists( 'Smush\\WP_Smush' ) ) {
 			);
 
 			// Recommended plugin notice.
-			do_action( 'wpmudev-recommended-plugins-register-notice', WP_SMUSH_BASENAME, __( 'Smush', 'wp-smushit' ), \Smush\App\Admin::$plugin_pages );
+			do_action(
+				'wpmudev-recommended-plugins-register-notice',
+				WP_SMUSH_BASENAME,
+				__( 'Smush', 'wp-smushit' ),
+				\Smush\App\Admin::$plugin_pages,
+				array( 'after', '.sui-wrap .sui-header' )
+			);
 		}
 
 		/**
