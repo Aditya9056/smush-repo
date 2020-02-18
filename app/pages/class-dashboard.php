@@ -191,9 +191,7 @@ class Dashboard extends Abstract_Page {
 
 		if ( 'integrations' === $this->get_current_tab() && $this->should_render() ) {
 			// Show integrations box.
-			$class          = WP_Smush::is_pro() ? 'smush-integrations-wrapper wp-smush-pro' : 'smush-integrations-wrapper';
-			$box_body_class = WP_Smush::is_pro() ? '' : 'sui-upsell-items';
-
+			$class = WP_Smush::is_pro() ? 'smush-integrations-wrapper wp-smush-pro' : 'smush-integrations-wrapper';
 			$this->add_meta_box(
 				'integrations',
 				__( 'Integrations', 'wp-smushit' ),
@@ -203,7 +201,7 @@ class Dashboard extends Abstract_Page {
 				'integrations',
 				array(
 					'box_class'         => "sui-box {$class}",
-					'box_content_class' => "sui-box-body {$box_body_class}",
+					'box_content_class' => 'sui-box-body sui-upsell-items',
 				)
 			);
 		}
@@ -611,7 +609,7 @@ class Dashboard extends Abstract_Page {
 	 */
 	public function settings_row( $setting_m_key, $label, $name, $setting_val, $disable = false, $upsell = false ) {
 		?>
-		<div class="sui-box-settings-row wp-smush-basic <?php echo $upsell ? 'sui-disabled' : ''; ?>">
+		<div class="sui-box-settings-row wp-smush-basic <?php echo $upsell || $disable ? 'sui-disabled' : ''; ?>">
 			<div class="sui-box-settings-col-1">
 				<span class="sui-settings-label <?php echo 'gutenberg' === $name ? 'sui-settings-label-with-tag' : ''; ?>">
 					<?php echo esc_html( $label ); ?>
