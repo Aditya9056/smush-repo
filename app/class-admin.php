@@ -81,6 +81,8 @@ class Admin {
 		// Plugin conflict notice.
 		add_action( 'admin_notices', array( $this, 'show_plugin_conflict_notice' ) );
 		add_action( 'smush_check_for_conflicts', array( $this, 'check_for_conflicts_cron' ) );
+		add_action( 'activated_plugin', array( $this, 'check_for_conflicts_cron' ) );
+		add_action( 'deactivated_plugin', array( $this, 'check_for_conflicts_cron' ) );
 	}
 
 	/**
@@ -389,8 +391,10 @@ class Admin {
 	 * Check for plugin conflicts cron.
 	 *
 	 * @since 3.6.0
+	 *
+	 * @param string $deactivated  Holds the slug of activated/deactivated plugin.
 	 */
-	public function check_for_conflicts_cron() {
+	public function check_for_conflicts_cron( $deactivated = '' ) {
 		$conflicting_plugins = array(
 			'ewww-image-optimizer/ewww-image-optimizer.php',
 			'imagify/imagify.php',
@@ -408,6 +412,11 @@ class Admin {
 			}
 
 			if ( ! is_plugin_active( $plugin ) ) {
+				continue;
+			}
+
+			// Deactivation of the plugin in process.
+			if ( doing_action( 'deactivated_plugin' ) && $deactivated === $plugin ) {
 				continue;
 			}
 
