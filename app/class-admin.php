@@ -429,7 +429,7 @@ class Admin {
 		}
 
 		$conflict_check = get_transient( WP_SMUSH_PREFIX . 'conflict_check' );
-		if ( false === $conflict_check ) {
+		if ( false === $conflict_check || empty( $conflict_check ) ) {
 			wp_schedule_single_event( time(), 'smush_check_for_conflicts' );
 			return;
 		}
