@@ -464,7 +464,7 @@ class Backup extends Abstract_Module {
 		wp_send_json_success(
 			array(
 				'success' => $status,
-				'src'     => $file_name,
+				'src'     => $file_name ? $file_name : __( 'Error getting file name', 'wp-smushit' ),
 				'thumb'   => wp_get_attachment_image( $id ),
 				'link'    => Helper::get_image_media_link( $id, $file_name, true ),
 			)
