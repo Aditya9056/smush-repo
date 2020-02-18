@@ -16,16 +16,46 @@ if ( ! defined( 'WPINC' ) ) {
 
 <ul class="smush-pro-features">
 
-	<div class="smush-pro-features-header sui-row">
-		<div class="sui-col-md-4">
+	<div class="smush-pro-features-header">
+		<div>
 			<h2><?php esc_html_e( 'Smush Pro benefits', 'wp-smushit' ); ?></h2>
 			<p class="sui-description"><?php esc_html_e( 'Get Smush Pro and bulk optimize every image you’ve ever added to your site with one-click and fix your Google PageSpeed with the best image optimizer WordPress has ever known. Upgrade to unlock all Pro features today!', 'wp-smushit' ); ?></p>
 			<a href="<?php echo esc_url( $upgrade_url ); ?>" target="_blank" class="sui-button sui-button-purple">
 				<?php esc_html_e( 'Try Smush Pro for Free', 'wp-smushit' ); ?>
 			</a>
 		</div>
-		<div class="sui-col-md-8">
-			<div class="wistia_embed wistia_async_oegnwrdag1"></div>
+		<div>
+			<div class="thumbnail-container">
+				<img src="https://premium.wpmudev.org/wp-content/themes/wpmudev-2015-1/assets/img/projects/Smush-Thumbnail@2x.png?v=2" alt="<?php esc_attr_e( 'Play', 'wp-smushit' ); ?>" id="wistia-play-button" role="button">
+			</div>
+			<span id="wistia_oegnwrdag1"></span>
+			<script>
+				document.addEventListener("DOMContentLoaded", function() {
+					var trigger = document.getElementById("wistia-play-button");
+
+					window.wistiaSmushEmbed = null;
+					window.wistiaInit = function(Wistia) {
+						window.wistiaSmushEmbed = Wistia.embed("oegnwrdag1", {
+							version: "v2",
+							videoWidth: 1280,
+							videoHeight: 720,
+							playerColor: "14485f",
+							videoQuality: "hd-only",
+							popover: true,
+							popoverPreventScroll: true
+						});
+					};
+
+					if (trigger) {
+						trigger.addEventListener("click", function(e) {
+							e.preventDefault();
+							if (window.wistiaSmushEmbed) {
+								window.wistiaSmushEmbed.play();
+							}
+						});
+					}
+				});
+			</script>
 		</div>
 	</div>
 

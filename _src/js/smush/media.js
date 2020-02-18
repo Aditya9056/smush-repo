@@ -157,14 +157,3 @@
 		},
 	} );
 }( jQuery, _ ) );
-
-/* global _wq */
-document.addEventListener('DOMContentLoaded', function () {
-	window._wq = window._wq || [];
-	_wq.push({
-		id: 'oegnwrdag1',
-		options: {
-			controlsVisibleOnLoad: false,
-		}
-	});
-});

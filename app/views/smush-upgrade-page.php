@@ -57,7 +57,37 @@ $upgrade_url = add_query_arg(
 		<div class="sui-upgrade-page-features__header" style="margin-top: 70px">
 			<h2><?php esc_html_e( 'Optimize unlimited images with Smush Pro', 'wp-smushit' ); ?></h2>
 			<p><?php esc_html_e( 'Learn why Smush Pro is the best image optimization plugin.', 'wp-smushit' ); ?></p>
-			<div class="wistia_embed wistia_async_oegnwrdag1"></div>
+			<div class="thumbnail-container">
+				<img src="https://premium.wpmudev.org/wp-content/themes/wpmudev-2015-1/assets/img/projects/Smush-Thumbnail@2x.png?v=2" alt="<?php esc_attr_e( 'Play', 'wp-smushit' ); ?>" id="wistia-play-button" role="button">
+			</div>
+			<span id="wistia_oegnwrdag1"></span>
+			<script>
+				document.addEventListener("DOMContentLoaded", function() {
+					var trigger = document.getElementById("wistia-play-button");
+
+					window.wistiaSmushEmbed = null;
+					window.wistiaInit = function(Wistia) {
+						window.wistiaSmushEmbed = Wistia.embed("oegnwrdag1", {
+							version: "v2",
+							videoWidth: 1280,
+							videoHeight: 720,
+							playerColor: "14485f",
+							videoQuality: "hd-only",
+							popover: true,
+							popoverPreventScroll: true
+						});
+					};
+
+					if (trigger) {
+						trigger.addEventListener("click", function(e) {
+							e.preventDefault();
+							if (window.wistiaSmushEmbed) {
+								window.wistiaSmushEmbed.play();
+							}
+						});
+					}
+				});
+			</script>
 		</div>
 	</div>
 
