@@ -19,9 +19,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", ajaxurl + "?action=dismiss_check_for_conflicts", true);
     xhr.onload = () => {
-      document
-        .querySelector("#smush-conflict-notice > button.notice-dismiss")
-        .click();
+      const btn = document.querySelector("#smush-conflict-notice > button.notice-dismiss");
+      if (btn) {
+        btn.click();
+      }
     };
     xhr.send();
   }
