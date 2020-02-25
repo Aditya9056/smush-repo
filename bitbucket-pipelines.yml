@@ -1,34 +1,67 @@
-# This is a sample build configuration for Docker.
-# Check our guides at https://confluence.atlassian.com/x/O1toN for more examples.
-# Only use spaces to indent your .yml configuration.
+# This is a Bitbucket pipelines configuration file.
 # -----
-# You can specify a custom docker image from Docker Hub as your build environment.
-image: incsub/wp-test-env
+# Runs 3 steps in parallel: Unit test, RIPS security scan, PHPCS tests.
+# Will also build and push free and pro builds to Bitbucket Downloads.
+
+definitions:
+  submodules: &submodules |-
+      mkdir -p ~/.ssh
+      (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
+      ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
+      git submodule update --init --recursive
 
 pipelines:
-  default:
-    - parallel:
-      - step:
-          name: Unit Tests
-          script:
-            - mkdir -p ~/.ssh
-            - (umask  077 ; echo $PIPELINES_SSH_KEY | base64 --decode > ~/.ssh/id_rsa)
-            - ssh-keyscan -t rsa -H bitbucket.org >> ~/.ssh/known_hosts
-            - git submodule update --init --recursive
-            - service mysql start
-            - bash misc/install-wp-tests.sh wordpress_unit_tests root '' localhost latest
-            - phpunit-multi 5.6,7.0,7.1
-            - phpunit-multi 5.6,7.0,7.1 --group ajax
-            - phpunit-multi 5.6,7.0,7.1 -c tests/phpunit/multisite.xml
-      - step:
-          name: RIPS Security Scan
-          image: rips/rips-cli:3
-          script:
-            - rips-cli -vvv rips:scan:start -a $RIPS_APP_ID -p $BITBUCKET_CLONE_DIR -t 1
-    - step:
-        name: CodeSniffer tests
-        trigger: manual
-        script:
-          # Will fail the pipeline, if errors are present
-          - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
-          - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
+  branches:
+    'release/*':
+      - parallel:
+          - step:
+              name: Unit Tests
+              image: incsub/wp-test-env
+              script:
+                - *submodules
+                - service mysql start
+                - bash misc/install-wp-tests.sh wordpress_unit_tests root '' localhost latest
+                - phpunit-multi 5.6,7.0,7.1
+                - phpunit-multi 5.6,7.0,7.1 --group ajax
+                - phpunit-multi 5.6,7.0,7.1 -c tests/phpunit/multisite.xml
+          - step:
+              name: RIPS Security Scan
+              image: rips/rips-cli:3
+              script:
+                - rips-cli -vvv rips:scan:start -a $RIPS_APP_ID -p $BITBUCKET_CLONE_DIR -t 1
+          - step:
+              name: CodeSniffer Tests
+              image: php:7.2
+              caches:
+                - composer
+              script:
+                - apt-get update && apt-get install -y unzip
+                - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+                - composer require wp-coding-standards/wpcs
+                - composer install
+                - vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
+                - vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+                - vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+                - vendor/bin/phpcs -p --colors --report=summary --standard=WordPress app/*.php app/views/ core/*.php core/api/ core/integrations/ core/modules/ wp-smush.php
+          - step:
+              name: Build Packages
+              image: node:12.15.0
+              caches:
+                - node
+              script:
+                - *submodules
+                - apt-get update && apt-get install -y jq
+                - export TERM=xterm
+                - npm install
+                - npm run build
+                - declare -x VERSION=$(jq -r '.version' package.json)
+                - pipe: atlassian/bitbucket-upload-file:0.1.2
+                  variables:
+                    BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                    BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                    FILENAME: "$BITBUCKET_CLONE_DIR/build/wp-smushit-$VERSION.zip"
+                - pipe: atlassian/bitbucket-upload-file:0.1.2
+                  variables:
+                    BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                    BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                    FILENAME: "$BITBUCKET_CLONE_DIR/build/wp-smush-pro-$VERSION.zip"

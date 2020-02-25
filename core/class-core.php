@@ -256,9 +256,9 @@ class Core extends Stats {
 				'desc'        => esc_html__( 'WordPress generates multiple image thumbnails for each image you upload. Choose which of those thumbnail sizes you want to include when bulk smushing.', 'wp-smushit' ),
 			),
 			'auto'              => array(
-				'label'       => esc_html__( 'Automatically smush my images on upload', 'wp-smushit' ),
+				'label'       => esc_html__( 'Automatically compress my images on upload', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Automatic compression', 'wp-smushit' ),
-				'desc'        => esc_html__( 'When you upload images to your site, we can automatically optimize and compress them for you without you needing to do it yourself.', 'wp-smushit' ),
+				'desc'        => esc_html__( 'When you upload images to your site, we will automatically optimize and compress them for you.', 'wp-smushit' ),
 			),
 			'lossy'             => array(
 				'label'       => esc_html__( 'Super-Smush my images', 'wp-smushit' ),
@@ -268,7 +268,7 @@ class Core extends Stats {
 			'strip_exif'        => array(
 				'label'       => esc_html__( 'Strip my image metadata', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Metadata', 'wp-smushit' ),
-				'desc'        => esc_html__( 'Whenever you take a photo, your camera stores metadata, such as focal length, date, time and location, within the image.', 'wp-smushit' ),
+				'desc'        => esc_html__( 'Photos often store camera settings in the file, i.e., focal length, date, time and location. Removing EXIF data reduces the file size. Note: it does not strip SEO metadata.', 'wp-smushit' ),
 			),
 			'resize'            => array(
 				'label'       => esc_html__( 'Resize my full size images', 'wp-smushit' ),
@@ -322,7 +322,12 @@ class Core extends Stats {
 			'bulk_restore'      => array(
 				'label'       => esc_html__( 'Bulk Restore', 'wp-smushit' ),
 				'short_label' => esc_html__( 'Bulk Restore', 'wp-smushit' ),
-				'desc'        => esc_html__( 'Made a mistake? Use this feature to restore your image thumbnails to their original state.', 'wp-smushit' ),
+				'desc'        => sprintf(
+					/* translators: %1$s - a tag, %2$s - closing a tag */
+					__( 'Made a mistake? Use this feature to restore your image thumbnails to their original state. Please note, that you need to have “%1$sStore a copy of my full size images%2$s” option enabled to bulk restore the images. ', 'wp-smushit' ),
+					'<a href="' . network_admin_url( 'admin.php?page=smush' ) . '">',
+					'</a>'
+				),
 			),
 		);
 
@@ -420,8 +425,10 @@ class Core extends Stats {
 				$this->resmush_ids = $resmush_ids;
 			}
 
-			// Setup all the stats.
-			$this->setup_global_stats( true );
+			if ( ! defined( 'WP_SMUSH_DISABLE_STATS' ) || ! WP_SMUSH_DISABLE_STATS ) {
+				// Setup all the stats.
+				$this->setup_global_stats( true );
+			}
 
 			// Localize smushit_IDs variable, if there are fix number of IDs.
 			$this->unsmushed_attachments = ! empty( $_REQUEST['ids'] ) ? array_map( 'intval', explode( ',', $_REQUEST['ids'] ) ) : array();

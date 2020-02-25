@@ -1,3 +1,18 @@
+= 3.6.0 =
+
+- New: CDN support for images in REST API responses
+- New: Media library filter to show uncompressed images
+- New: Native lazy loading support
+- Enhance: Image resize detection functionality
+- Enhance: Allow excluding images from lazy loading with data-skip-lazy attribute
+- Enhance: Improve restore backup UI
+- Enhance: Bulk smush UI
+- Fix: NextGEN Gallery integration
+- Fix: Error detecting language error on Settings page
+- Fix: "Choose directory" button disabled state after first click
+- Fix: Some notices not being dismissible
+- Fix: Image restore
+
 = 3.5.1 =
 
 - Fix: Browser console errors on pages without Backbone js scripts

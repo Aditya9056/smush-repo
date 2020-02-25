@@ -18,14 +18,12 @@
 			bigger: [],
 			smaller: [],
 		},
+		strings: window.wp_smush_resize_vars,
 
 		/**
 		 * Init scripts.
 		 */
 		init() {
-			/** @param {Array} wp_smush_resize_vars */
-			this.strings = window.wp_smush_resize_vars || {};
-
 			/**
 			 * Make sure these are set, before we proceed.
 			 */
@@ -36,16 +34,39 @@
 				this.toggle = document.getElementById( 'smush-image-bar-toggle' );
 			}
 
-			this.detectImages();
-			this.generateMarkup( 'bigger' );
-			this.generateMarkup( 'smaller' );
-			this.removeEmptyDivs();
-
-			this.toggle.querySelector( 'i' ).classList.add( 'sui-icon-info' );
-			this.toggle.querySelector( 'i' ).classList.remove( 'sui-icon-loader' );
+			this.process();
 
 			// Register the event handler after everything is done.
 			this.toggle.addEventListener( 'click', this.handleToggleClick.bind( this ) );
+		},
+
+		/**
+		 * Do image processing.
+		 */
+		process() {
+			const icon = this.toggle.querySelector( 'i' );
+
+			icon.classList.add( 'sui-icon-loader' );
+			icon.classList.remove( 'sui-icon-info' );
+
+			this.detectImages();
+
+			if ( ! this.images.bigger.length && ! this.images.smaller.length ) {
+				this.toggle.classList.add( 'smush-toggle-success' );
+				document.getElementById( 'smush-image-bar-notice' ).style.display = 'block';
+				document.getElementById( 'smush-image-bar-notice-desc' ).style.display = 'none';
+			} else {
+				this.toggle.classList.remove( 'smush-toggle-success' );
+				document.getElementById( 'smush-image-bar-notice' ).style.display = 'none';
+				document.getElementById( 'smush-image-bar-notice-desc' ).style.display = 'block';
+				this.generateMarkup( 'bigger' );
+				this.generateMarkup( 'smaller' );
+			}
+
+			this.toggleDivs();
+
+			icon.classList.remove( 'sui-icon-loader' );
+			icon.classList.add( 'sui-icon-info' );
 		},
 
 		/**
@@ -62,6 +83,16 @@
 
 			// Skip images from Smush CDN with auto-resize feature.
 			if ( 'string' === typeof image.getAttribute( 'no-resize-detection' ) ) {
+				return true;
+			}
+
+			// Skip 1x1px images.
+			if ( image.clientWidth === image.clientHeight && 1 === image.clientWidth ) {
+				return true;
+			}
+
+			// Skip 1x1px placeholders.
+			if ( image.naturalWidth === image.naturalHeight && 1 === image.naturalWidth ) {
 				return true;
 			}
 
@@ -120,14 +151,16 @@
 		},
 
 		/**
-		 * Remove sections that don't have images.
+		 * Show/hide sections based on images.
 		 */
-		removeEmptyDivs() {
+		toggleDivs() {
 			const types = [ 'bigger', 'smaller' ];
 			types.forEach( ( type ) => {
+				const div = document.getElementById( 'smush-image-bar-items-' + type );
 				if ( 0 === this.images[ type ].length ) {
-					const div = document.getElementById( 'smush-image-bar-items-' + type );
 					div.style.display = 'none';
+				} else {
+					div.style.display = 'block';
 				}
 			} );
 		},
@@ -181,12 +214,9 @@
 		 */
 		detectImages() {
 			const images = document.getElementsByTagName( 'img' );
-
-			Object.keys( images ).map( ( e ) => {
-				const image = images[ e ];
-
+			for ( const image of images ) {
 				if ( this.shouldSkipImage( image ) ) {
-					return;
+					continue;
 				}
 
 				// Get defined width and height.
@@ -203,7 +233,7 @@
 
 				// In case image is in correct size, do not continue.
 				if ( ! props.bigger_width && ! props.bigger_height && ! props.smaller_width && ! props.smaller_height ) {
-					return;
+					continue;
 				}
 
 				const imgType = props.bigger_width || props.bigger_height ? 'bigger' : 'smaller',
@@ -223,13 +253,34 @@
 				 */
 				image.classList.add( 'smush-detected-img' );
 				image.classList.add( imageClass );
-			} );
+			}
 		}, // End detectImages()
 
+		/**
+		 * Allows refreshing the list. A good way is to refresh on lazyload actions.
+		 *
+		 * @since 3.6.0
+		 */
+		refresh() {
+			this.images = {
+				bigger: [],
+				smaller: [],
+			};
+
+			// This might be overkill - there will probably never be a situation when there are less images than on
+			// initial page load.
+			const elements = document.getElementsByClassName( 'smush-resize-box' );
+			while ( elements.length > 0 ) {
+				elements[ 0 ].remove();
+			}
+
+			this.process();
+		},
 	}; // End WP_Smush_IRS
 
 	/**
 	 * After page load, initialize toggle event.
 	 */
-	window.addEventListener( 'load', () => SmushIRS.init() );
+	window.addEventListener( 'DOMContentLoaded', () => SmushIRS.init() );
+	window.addEventListener( 'lazyloaded', () => SmushIRS.refresh() );
 }() );

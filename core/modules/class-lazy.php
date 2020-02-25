@@ -182,17 +182,6 @@ class Lazy extends Abstract_Module {
 			$in_footer
 		);
 
-		$custom = "window.lazySizesConfig = window.lazySizesConfig || {};
-
-window.lazySizesConfig.lazyClass    = 'lazyload';
-window.lazySizesConfig.loadingClass = 'lazyloading';
-window.lazySizesConfig.loadedClass  = 'lazyloaded';
-
-lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
-
-		wp_add_inline_script( 'smush-lazy-load', $custom, 'before' );
-		wp_add_inline_script( 'smush-lazy-load', 'lazySizes.init();' );
-
 		$this->add_masonry_support();
 	}
 
@@ -335,6 +324,11 @@ lazySizesConfig.loadMode = 1;"; // Page is optimized for fast onload event.
 		}
 
 		if ( $this->has_excluded_class_or_id( $image ) ) {
+			return $image;
+		}
+
+		// Check for the data-skip-lazy attribute.
+		if ( false !== strpos( $image, 'data-skip-lazy' ) ) {
 			return $image;
 		}
 

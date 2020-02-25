@@ -86,7 +86,7 @@ jQuery( function( $ ) {
 				// Replace in immediate parent for NextGEN.
 				if ( 'undefined' !== typeof this.data && this.data.indexOf( 'nextgen' ) > -1 ) {
 					// Show the smush button, and remove stats and restore option.
-					currentButton.parent().html( r.data );
+					currentButton.parents().eq(1).html( r.data.stats );
 				} else if ( 'restore' === action ) { // Show the smush button, and remove stats and restore option.
 					currentButton.parents().eq( 1 ).html( r.data.stats );
 				} else {
@@ -276,7 +276,14 @@ jQuery( function( $ ) {
 				}
 				// If we have any notice to show.
 				if ( 'undefined' !== typeof r.data.notice ) {
-					$( '.wp-smush-page-header' ).after( r.data.notice );
+					const notice = $( '#wp-smush-ajax-notice' );
+					notice.addClass( 'sui-notice-success' );
+					notice.html( '<p>' + r.data.notice + '</p>' );
+					notice.slideDown();
+
+					setTimeout( function() {
+						notice.slideUp();
+					}, 5000 );
 				}
 				// Hide errors.
 				$( 'div.smush-final-log' ).hide();

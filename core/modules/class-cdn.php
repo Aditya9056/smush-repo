@@ -124,6 +124,9 @@ class CDN extends Abstract_Module {
 
 		// Add resizing arguments to image src.
 		add_filter( 'smush_image_cdn_args', array( $this, 'update_cdn_image_src_args' ), 99, 3 );
+
+		// Add REST API integration.
+		add_filter( 'rest_pre_echo_response', array( $this, 'filter_rest_api_response' ) );
 	}
 
 	/**************************************
@@ -190,9 +193,9 @@ class CDN extends Abstract_Module {
 			$settings,
 			array(
 				'background_images' => array(
-					'label'       => esc_html__( 'Serve background images from the CDN', 'wp-smushit' ),
-					'short_label' => esc_html__( 'Background Images', 'wp-smushit' ),
-					'desc'        => esc_html__( 'Where possible we will serve background images declared with CSS directly from the CDN.', 'wp-smushit' ),
+					'label'       => __( 'Serve background images from the CDN', 'wp-smushit' ),
+					'short_label' => __( 'Background Images', 'wp-smushit' ),
+					'desc'        => __( 'Where possible we will serve background images declared with CSS directly from the CDN.', 'wp-smushit' ),
 				),
 				'auto_resize'       => array(
 					'label'       => __( 'Enable automatic resizing of my images', 'wp-smushit' ),
@@ -203,6 +206,11 @@ class CDN extends Abstract_Module {
 					'label'       => __( 'Enable WebP conversion', 'wp-smushit' ),
 					'short_label' => __( 'WebP Conversion', 'wp-smushit' ),
 					'desc'        => __( 'Smush can automatically convert and serve your images as WebP to compatible browsers.', 'wp-smushit' ),
+				),
+				'rest_api_support'  => array(
+					'label'       => __( 'Enable REST API support', 'wp-smushit' ),
+					'short_label' => __( 'REST API', 'wp-smushit' ),
+					'desc'        => __( 'Smush can automatically replace image URLs when fetched via REST API endpoints.', 'wp-smushit' ),
 				),
 			)
 		);
@@ -231,12 +239,7 @@ class CDN extends Abstract_Module {
 					);
 					break;
 				case 'auto_resize':
-					esc_html_e(
-						'Having trouble with Google PageSpeeds ‘compress and resize’ suggestion? This feature
-						will fix this without any coding needed! Note: No resizing is done on your actual images, only
-						what is served from the CDN - so your original images will remain untouched.',
-						'wp-smushit'
-					);
+					esc_html_e( 'Having trouble with Google PageSpeeds ‘properly size images’ suggestion? This feature will fix this without any coding needed! Note: No resizing is done on your actual images, only what is served from the CDN - so your original images will remain untouched.', 'wp-smushit' );
 					break;
 				case 'background_images':
 					printf(
@@ -250,6 +253,14 @@ class CDN extends Abstract_Module {
 						/* translators: %1$s - link, %2$s - closing link tag */
 						esc_html__( 'For any non-media library uploads, you can still use the %1$sDirectory Smush%2$s feature to compress them, they just won’t be served from the CDN.', 'wp-smushit' ),
 						'<a href="' . esc_url( network_admin_url( 'admin.php?page=smush&view=directory' ) ) . '">',
+						'</a>'
+					);
+					break;
+				case 'rest_api_support':
+					printf(
+						/* translators: %1$s - link, %2$s - closing link tag */
+						esc_html__( 'Note: Smush will use the %1$srest_pre_echo_response%2$s hook to filter images in REST API responses.', 'wp-smushit' ),
+						'<a href="https://developer.wordpress.org/reference/hooks/rest_pre_echo_response/" target="_blank">',
 						'</a>'
 					);
 					break;
@@ -427,6 +438,7 @@ class CDN extends Abstract_Module {
 	 * @see update_stats()
 	 * @see unschedule_cron()
 	 * @see schedule_cron()
+	 * @see filter_rest_api_response()
 	 */
 
 	/**
@@ -750,11 +762,11 @@ class CDN extends Abstract_Module {
 		$height = false;
 
 		// Try to get the width and height from img tag.
-		if ( preg_match( '/width=["|\']?(\b[[:digit:]]+(?!\%)\b)["|\']?/i', $image, $width_string ) ) {
+		if ( preg_match( '/width=["|\']?(\b[[:digit:]]+(?!%)\b)["|\']?/i', $image, $width_string ) ) {
 			$width = $width_string[1];
 		}
 
-		if ( preg_match( '/height=["|\']?(\b[[:digit:]]+(?!\%)\b)["|\']?/i', $image, $height_string ) ) {
+		if ( preg_match( '/height=["|\']?(\b[[:digit:]]+(?!%)\b)["|\']?/i', $image, $height_string ) ) {
 			$height = $height_string[1];
 		}
 
@@ -873,6 +885,50 @@ class CDN extends Abstract_Module {
 		}
 	}
 
+	/**
+	 * Filters the API response.
+	 *
+	 * Allows modification of the response data after inserting
+	 * embedded data (if any) and before echoing the response data.
+	 *
+	 * @since 3.6.0
+	 *
+	 * @param array $response  Response data to send to the client.
+	 *
+	 * @return array
+	 */
+	public function filter_rest_api_response( $response ) {
+		if ( ! $this->settings->get( 'rest_api_support' ) ) {
+			return $response;
+		}
+
+		if ( ! isset( $response['content']['rendered'] ) ) {
+			return $response;
+		}
+
+		$images = Helpers\Parser::get_links_from_content( $response['content']['rendered'] );
+
+		if ( ! isset( $images[0] ) || empty( $images[0] ) ) {
+			return $response;
+		}
+
+		foreach ( $images[0] as $key => $image ) {
+			$image = $this->is_supported_path( $image );
+			if ( ! $image ) {
+				continue;
+			}
+
+			// Replace the data-envira-srcset of the image with CDN link.
+			$image = $this->generate_cdn_url( $image );
+			if ( $image ) {
+				// Replace the src of the image with CDN link.
+				$response['content']['rendered'] = str_replace( $images[0][ $key ], $image, $response['content']['rendered'] );
+			}
+		}
+
+		return $response;
+	}
+
 	/**************************************
 	 *
 	 * PRIVATE METHODS
@@ -932,7 +988,7 @@ class CDN extends Abstract_Module {
 	private function get_size_from_file_name( $src ) {
 		$size = array();
 
-		if ( preg_match( '/(\d+)x(\d+)\.(?:' . implode( '|', $this->supported_extensions ) . '){1}$/i', $src, $size ) ) {
+		if ( preg_match( '/(\d+)x(\d+)\.(?:' . implode( '|', $this->supported_extensions ) . ')$/i', $src, $size ) ) {
 			// Get size and width.
 			$width  = (int) $size[1];
 			$height = (int) $size[2];
@@ -962,7 +1018,7 @@ class CDN extends Abstract_Module {
 	 * @return string
 	 */
 	private function get_url_without_dimensions( $src ) {
-		if ( ! preg_match( '/(-\d+x\d+)\.(' . implode( '|', $this->supported_extensions ) . '){1}(?:\?.+)?$/i', $src, $src_parts ) ) {
+		if ( ! preg_match( '/(-\d+x\d+)\.(' . implode( '|', $this->supported_extensions ) . ')(?:\?.+)?$/i', $src, $src_parts ) ) {
 			return $src;
 		}
 
@@ -1131,7 +1187,6 @@ class CDN extends Abstract_Module {
 		 * Try to get the attachment URL.
 		 *
 		 * TODO: attachment_url_to_postid() can be resource intensive and cause 100% CPU spikes.
-		 *
 		 * @see https://core.trac.wordpress.org/ticket/41281
 		 */
 		$attachment_id = attachment_url_to_postid( $src );
@@ -1312,7 +1367,7 @@ class CDN extends Abstract_Module {
 
 			$domain = $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT domain FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d ORDER BY id ASC LIMIT 1",
+					"SELECT domain FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d ORDER BY id LIMIT 1",
 					get_current_blog_id()
 				)
 			); // Db call ok.

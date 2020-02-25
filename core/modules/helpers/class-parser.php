@@ -47,6 +47,10 @@ class Parser {
 			return;
 		}
 
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
+
 		if ( $this->is_page_builder() ) {
 			return;
 		}
@@ -108,11 +112,6 @@ class Parser {
 	public function parse_page( $content ) {
 		// Do not parse page if CDN and Lazy load modules are disabled.
 		if ( ! $this->cdn && ! $this->lazy_load ) {
-			return $content;
-		}
-
-		// We probably don't want any processing during Ajax requests.
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return $content;
 		}
 
@@ -390,7 +389,7 @@ class Parser {
 	 */
 	public static function get_links_from_content( $content ) {
 		$images = array();
-		preg_match_all( '/(?:https?[^\s]*)/is', $content, $images );
+		preg_match_all( '/(?:https?[^\s\'"]*)/is', $content, $images );
 		return $images;
 	}
 

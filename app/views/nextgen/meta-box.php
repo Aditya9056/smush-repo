@@ -29,7 +29,7 @@ if ( ! defined( 'WPINC' ) ) {
 <?php
 // Get the counts.
 if ( $count > 0 ) {
-	echo WP_Smush::get_instance()->admin()->bulk_resmush_content( $count );
+	echo wp_kses_post( WP_Smush::get_instance()->admin()->bulk_resmush_content( $count ) );
 }
 
 // If there are no images in Media Library.

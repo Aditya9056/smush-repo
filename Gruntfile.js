@@ -13,6 +13,7 @@ module.exports = function( grunt ) {
 	const includeFilesPro = commonFiles.slice( 0 ).concat( [
 		'changelog.txt',
 		'!core/external/free-dashboard/**',
+		'!core/external/plugin-notice/**',
 	] );
 
 	const includeFilesFree = commonFiles.slice( 0 ).concat( [

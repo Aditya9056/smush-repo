@@ -13,7 +13,7 @@
  * Plugin Name:       Smush Pro
  * Plugin URI:        http://premium.wpmudev.org/project/wp-smush-pro/
  * Description:       Reduce image file sizes, improve performance and boost your SEO using the <a href="https://premium.wpmudev.org/">WPMU DEV</a> WordPress Smush API.
- * Version:           3.5.1
+ * Version:           3.6.0-beta.1
  * Author:            WPMU DEV
  * Author URI:        https://premium.wpmudev.org/
  * License:           GPLv2
@@ -49,11 +49,11 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 if ( ! defined( 'WP_SMUSH_VERSION' ) ) {
-	define( 'WP_SMUSH_VERSION', '3.5.1' );
+	define( 'WP_SMUSH_VERSION', '3.6.0-beta.1' );
 }
 // Used to define body class.
 if ( ! defined( 'WP_SHARED_UI_VERSION' ) ) {
-	define( 'WP_SHARED_UI_VERSION', 'sui-2-5-2' );
+	define( 'WP_SHARED_UI_VERSION', 'sui-2-6-0' );
 }
 if ( ! defined( 'WP_SMUSH_BASENAME' ) ) {
 	define( 'WP_SMUSH_BASENAME', plugin_basename( __FILE__ ) );
@@ -80,7 +80,7 @@ if ( ! defined( 'WP_SMUSH_PREFIX' ) ) {
 	define( 'WP_SMUSH_PREFIX', 'wp-smush-' );
 }
 if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
-	define( 'WP_SMUSH_TIMEOUT', apply_filters( 'WP_SMUSH_API_TIMEOUT', 150 ) );
+	define( 'WP_SMUSH_TIMEOUT', 150 );
 }
 
 /**
@@ -90,9 +90,9 @@ if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
  */
 $site_url = str_replace( array( 'http://', 'https://', 'www.' ), '', site_url() );
 // Compat with WPMU DEV staging.
-$wpmu_host = isset( $_SERVER['WPMUDEV_HOSTING_ENV'] ) && 'staging' === wp_unslash( $_SERVER['WPMUDEV_HOSTING_ENV'] );
+$wpmu_host = isset( $_SERVER['WPMUDEV_HOSTING_ENV'] ) && 'staging' === sanitize_text_field( wp_unslash( $_SERVER['WPMUDEV_HOSTING_ENV'] ) );
 if ( ! defined( 'WP_SMUSH_ASYNC' ) ) {
-	if ( ( ! empty( $_SERVER['SERVER_NAME'] ) && 0 !== strpos( $site_url, wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) || $wpmu_host ) {
+	if ( ( ! empty( $_SERVER['SERVER_NAME'] ) && 0 !== strpos( $site_url, sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) ) || $wpmu_host ) {
 		define( 'WP_SMUSH_ASYNC', false );
 	} else {
 		define( 'WP_SMUSH_ASYNC', true );
@@ -373,6 +373,8 @@ if ( ! class_exists( 'Smush\\WP_Smush' ) ) {
 
 			/* @noinspection PhpIncludeInspection */
 			require_once WP_SMUSH_DIR . 'core/external/free-dashboard/module.php';
+			/* @noinspection PhpIncludeInspection */
+			require_once WP_SMUSH_DIR . 'core/external/plugin-notice/notice.php';
 
 			// Add the Mailchimp group value.
 			add_action(
@@ -402,6 +404,15 @@ if ( ! class_exists( 'Smush\\WP_Smush' ) ) {
 				function () {
 					return "You're awesome for installing %s! Make sure you get the most out of it, boost your Google PageSpeed score with these tips and tricks - just for users of Smush!";
 				}
+			);
+
+			// Recommended plugin notice.
+			do_action(
+				'wpmudev-recommended-plugins-register-notice',
+				WP_SMUSH_BASENAME,
+				__( 'Smush', 'wp-smushit' ),
+				\Smush\App\Admin::$plugin_pages,
+				array( 'after', '.sui-wrap .sui-header' )
 			);
 		}
 

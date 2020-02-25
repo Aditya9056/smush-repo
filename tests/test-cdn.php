@@ -156,7 +156,7 @@ class CdnTest extends WP_UnitTestCase {
 	 * @covers Smush\Core\Settings::get_cdn_fields
 	 */
 	public function testCdnAddSettingsToGroup() {
-		$this->assertEquals( [ 'background_images', 'auto_resize', 'webp' ], Settings::get_instance()->get_cdn_fields() );
+		$this->assertEquals( [ 'background_images', 'auto_resize', 'webp', 'rest_api_support' ], Settings::get_instance()->get_cdn_fields() );
 	}
 
 	/**

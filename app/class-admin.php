@@ -77,6 +77,12 @@ class Admin {
 
 		// Prints a membership validation issue notice in Media Library.
 		add_action( 'admin_notices', array( $this, 'media_library_membership_notice' ) );
+
+		// Plugin conflict notice.
+		add_action( 'admin_notices', array( $this, 'show_plugin_conflict_notice' ) );
+		add_action( 'smush_check_for_conflicts', array( $this, 'check_for_conflicts_cron' ) );
+		add_action( 'activated_plugin', array( $this, 'check_for_conflicts_cron' ) );
+		add_action( 'deactivated_plugin', array( $this, 'check_for_conflicts_cron' ) );
 	}
 
 	/**
@@ -100,6 +106,11 @@ class Admin {
 		// Main JS.
 		wp_register_script( 'smush-admin', WP_SMUSH_URL . 'app/assets/js/smush-admin.min.js', array( 'jquery', 'smush-sui', 'underscore', 'wp-color-picker' ), WP_SMUSH_VERSION, true );
 
+		if ( ! WP_Smush::is_pro() ) {
+			// Used on dashboard video widget.
+			wp_register_script( 'smush-wistia', '//fast.wistia.com/assets/external/E-v1.js', array(), WP_SMUSH_VERSION, true );
+		}
+
 		// Main CSS.
 		wp_register_style( 'smush-admin', WP_SMUSH_URL . 'app/assets/css/smush-admin.min.css', array(), WP_SMUSH_VERSION );
 
@@ -114,6 +125,11 @@ class Admin {
 	 * Enqueue scripts.
 	 */
 	public function enqueue_scripts() {
+		$dismissed = get_option( WP_SMUSH_PREFIX . 'hide-conflict-notice' );
+		if ( ! $dismissed ) {
+			wp_enqueue_script( 'smush-global', WP_SMUSH_URL . 'app/assets/js/smush-global.min.js', array(), WP_SMUSH_VERSION, true );
+		}
+
 		$current_page   = '';
 		$current_screen = '';
 
@@ -143,6 +159,11 @@ class Admin {
 		// We need it on media pages and Smush pages.
 		wp_enqueue_script( 'smush-admin' );
 		wp_enqueue_style( 'smush-admin-common' );
+
+		if ( ! WP_Smush::is_pro() ) {
+			// Used on dashboard video widget.
+			wp_enqueue_script( 'smush-wistia' );
+		}
 
 		// Localize translatable strings for js.
 		WP_Smush::get_instance()->core()->localize();
@@ -209,7 +230,6 @@ class Admin {
 					__( 'View details', 'wp-smushit' )
 				);
 			}
-
 
 			$links[] = '<a href="https://premium.wpmudev.org/get-support/" target="_blank" title="' . esc_attr__( 'Premium Support', 'wp-smushit' ) . '">' . esc_html__( 'Premium Support', 'wp-smushit' ) . '</a>';
 		}
@@ -335,7 +355,7 @@ class Admin {
 		if ( false === $count && $resmush_ids = get_option( 'wp-smush-resmush-list' ) ) {
 			// If we have the resmush ids list, Show Resmush notice and button.
 			// Get the actual remainaing count.
-			if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) ) {
+			if ( ! isset( WP_Smush::get_instance()->core()->remaining_count ) && ( ! defined( 'WP_SMUSH_DISABLE_STATS' ) || ! WP_SMUSH_DISABLE_STATS ) ) {
 				WP_Smush::get_instance()->core()->setup_global_stats();
 			}
 
@@ -365,6 +385,86 @@ class Admin {
 		}
 
 		return $notice;
+	}
+
+	/**
+	 * Check for plugin conflicts cron.
+	 *
+	 * @since 3.6.0
+	 *
+	 * @param string $deactivated  Holds the slug of activated/deactivated plugin.
+	 */
+	public function check_for_conflicts_cron( $deactivated = '' ) {
+		$conflicting_plugins = array(
+			'ewww-image-optimizer/ewww-image-optimizer.php',
+			'imagify/imagify.php',
+			'resmushit-image-optimizer/resmushit.php',
+			'shortpixel-image-optimiser/wp-shortpixel.php',
+			'tiny-compress-images/tiny-compress-images.php',
+		);
+
+		$plugins = get_plugins();
+
+		$active_plugins = array();
+		foreach ( $conflicting_plugins as $plugin ) {
+			if ( ! array_key_exists( $plugin, $plugins ) ) {
+				continue;
+			}
+
+			if ( ! is_plugin_active( $plugin ) ) {
+				continue;
+			}
+
+			// Deactivation of the plugin in process.
+			if ( doing_action( 'deactivated_plugin' ) && $deactivated === $plugin ) {
+				continue;
+			}
+
+			$active_plugins[] = $plugins[ $plugin ]['Name'];
+		}
+
+		set_transient( WP_SMUSH_PREFIX . 'conflict_check', $active_plugins, 3600 );
+	}
+
+	/**
+	 * Display plugin incompatibility notice.
+	 *
+	 * @since 3.6.0
+	 */
+	public function show_plugin_conflict_notice() {
+		$dismissed = get_option( WP_SMUSH_PREFIX . 'hide-conflict-notice' );
+		if ( $dismissed ) {
+			return;
+		}
+
+		$conflict_check = get_transient( WP_SMUSH_PREFIX . 'conflict_check' );
+		if ( false === $conflict_check || empty( $conflict_check ) ) {
+			wp_schedule_single_event( time(), 'smush_check_for_conflicts' );
+			return;
+		}
+
+		array_walk(
+			$conflict_check,
+			function( &$item ) {
+				$item = '<strong>' . $item . '</strong>';
+			}
+		);
+		?>
+		<div class="notice notice-info is-dismissible" id="smush-conflict-notice">
+			<p><?php esc_html_e( 'You have multiple WordPress image optimization plugins installed. This may cause unpredictable behavior while optimizing your images, inaccurate reporting, or images to not display. For best results use only one image optimizer plugin at a time. These plugins may cause issues with Smush:', 'wp-smushit' ); ?></p>
+			<p>
+				<?php echo wp_kses_post( join( '<br>', $conflict_check ) ); ?>
+			</p>
+			<p>
+				<a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>" class="button button-primary">
+					<?php esc_html_e( 'Manage Plugins', 'wp-smushit' ); ?>
+				</a>
+				<a href="#" style="margin-left: 15px" id="smush-dismiss-conflict-notice" >
+					<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>
+				</a>
+			</p>
+		</div>
+		<?php
 	}
 
 }

@@ -560,7 +560,13 @@ abstract class Abstract_Page {
 					</button>
 				<?php endif; ?>
 				<?php if ( ! apply_filters( 'wpmudev_branding_hide_doc_link', false ) ) : ?>
-					<a href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/smush/?utm_source=smush&utm_medium=plugin&utm_campaign=smush_pluginlist_docs" class="sui-button sui-button-ghost" target="_blank">
+					<?php
+					$doc = 'https://premium.wpmudev.org/project/wp-smush-pro/#wpmud-hg-project-documentation';
+					if ( WP_Smush::is_pro() ) {
+						$doc = 'https://premium.wpmudev.org/docs/wpmu-dev-plugins/smush/?utm_source=smush&utm_medium=plugin&utm_campaign=smush_pluginlist_docs';
+					}
+					?>
+					<a href="<?php echo esc_url( $doc ); ?>>" class="sui-button sui-button-ghost" target="_blank">
 						<i class="sui-icon-academy" aria-hidden="true"></i> <?php esc_html_e( 'Documentation', 'wp-smushit' ); ?>
 					</a>
 				<?php endif; ?>
@@ -704,17 +710,16 @@ abstract class Abstract_Page {
 			/* translators: %1$s - <a>, %2$s - </a> */
 			$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
 		}
-		?>
-		<div class="sui-notice-top sui-can-dismiss <?php echo esc_attr( $message_class ); ?>">
-			<div class="sui-notice-content">
-				<p><?php echo wp_kses_post( $message ); ?></p>
-			</div>
-			<span class="sui-notice-dismiss">
-				<a role="button" href="#" aria-label="<?php esc_attr_e( 'Dismiss', 'wp-smushit' ); ?>" class="sui-icon-check"></a>
-			</span>
-		</div>
 
-		<?php
+		$this->view(
+			'notice',
+			array(
+				'classes' => $message_class,
+				'message' => $message,
+			),
+			'common'
+		);
+
 		// Remove the option.
 		$this->settings->delete_setting( WP_SMUSH_PREFIX . 'settings_updated' );
 	}

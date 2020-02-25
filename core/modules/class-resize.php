@@ -357,11 +357,14 @@ class Resize extends Abstract_Module {
 			return false;
 		}
 
-		return add_filter( 'wp_image_editors', function( $editors ) {
-			$editors = array_diff( $editors, array( 'WP_Image_Editor_GD' ) );
-			array_unshift( $editors, 'WP_Image_Editor_GD' );
-			return $editors;
-		} );
+		return add_filter(
+			'wp_image_editors',
+			function( $editors ) {
+				$editors = array_diff( $editors, array( 'WP_Image_Editor_GD' ) );
+				array_unshift( $editors, 'WP_Image_Editor_GD' );
+				return $editors;
+			}
+		);
 	}
 
 	/**
@@ -425,6 +428,7 @@ class Resize extends Abstract_Module {
 				$unlink = false;
 			}
 		}
+
 		if ( $unlink ) {
 			@unlink( $path );
 		}

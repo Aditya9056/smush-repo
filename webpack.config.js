@@ -101,9 +101,10 @@ const jsConfig = _.assign( _.cloneDeep( sharedConfig ), {
 		'smush-sui': './_src/js/shared-ui.js',
 		'smush-admin': './_src/js/app.js',
 		'smush-media': './_src/js/smush/media.js',
-		'smush-rd': './_src/js/frontend/public-resize-detection.js',
+		'smush-rd': './_src/js/frontend/resize-detection.js',
 		'smush-blocks': './_src/js/smush/blocks.js',
-		'smush-lazy-load': 'lazysizes/lazysizes.js',
+		'smush-lazy-load': './_src/js/frontend/lazy-load.js',
+		'smush-global': './_src/js/global.js',
 	},
 
 	output: {
@@ -124,6 +125,10 @@ const jsConfig = _.assign( _.cloneDeep( sharedConfig ), {
 				},
 			},
 		],
+	},
+
+	externals: {
+		jquery: 'jQuery', // this is required for jquery.fancytree
 	},
 
 	devtool: 'source-map',
