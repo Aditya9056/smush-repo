@@ -12,7 +12,7 @@ definitions:
 
 pipelines:
   branches:
-    'release/*':
+    'development':
       - parallel:
           - step:
               name: Unit Tests
