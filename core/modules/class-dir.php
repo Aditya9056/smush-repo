@@ -160,7 +160,7 @@ class Dir extends Abstract_Module {
 	 * @since 2.8.1
 	 */
 	public function directory_smush_check_step() {
-		$urls         = $this->get_unsmushed_images()q;
+		$urls         = $this->get_unsmushed_images();
 		$current_step = absint( $_POST['step'] ); // Input var ok.
 
 		$this->scanner->update_current_step( $current_step );
