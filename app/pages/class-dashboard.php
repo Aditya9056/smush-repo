@@ -868,11 +868,30 @@ class Dashboard extends Abstract_Page {
 		// Get the counts from transient.
 		$items          = get_transient( 'wp-smush-show-dir-scan-notice' );
 		$failed_items   = get_transient( 'wp-smush-dir-scan-failed-items' );
+		$skipped_items  = get_transient( 'wp-smush-dir-scan-skipped-items' );
 		$notice_message = esc_html__( 'All images failed to optimize.', 'wp-smushit' );
 		$notice_class   = 'sui-notice-error';
 
-		// Not all images optimized.
-		if ( ! empty( $failed_items ) && ! empty( $items ) ) {
+
+		if ( ( ! empty( $items ) || ! empty( $skipped_items ) ) && empty( $failed_items ) ) {
+			if ( ! empty( $skipped_items ) ) {
+				$notice_message = sprintf(
+					/* translators: %1$d: number of images smushed and %1$d number of skipped. */
+					esc_html__( '%1$d images were successfully optimized (%2$d skipped, already optimized).', 'wp-smushit' ),
+					absint( $items ),
+					absint( $skipped_items )
+				);
+			} else {
+				// Yay! All images were optimized.
+				$notice_message = sprintf(
+				/* translators: %d: number of images */
+					esc_html__( '%d images were successfully optimized.', 'wp-smushit' ),
+					absint( $items )
+				);
+			}
+			$notice_class = 'sui-notice-success';
+		} elseif ( ! empty( $failed_items ) && ! empty( $items ) ) {
+			// Not all images optimized.
 			$notice_message = sprintf(
 				/* translators: %1$d: number of images smushed and %1$d number of failed. */
 				esc_html__( '%1$d images were successfully optimized and %2$d images failed.', 'wp-smushit' ),
@@ -880,21 +899,15 @@ class Dashboard extends Abstract_Page {
 				absint( $failed_items )
 			);
 			$notice_class = 'sui-notice-warning';
-		} elseif ( ! empty( $items ) && empty( $failed_items ) ) {
-			// Yay! All images were optimized.
-			$notice_message = sprintf(
-				/* translators: %d: number of images */
-				esc_html__( '%d images were successfully optimized.', 'wp-smushit' ),
-				absint( $items )
-			);
-			$notice_class = 'sui-notice-success';
 		}
 
 		// If we have counts, show the notice.
-		if ( ! empty( $items ) || ! empty( $failed_items ) ) {
+		if ( ! empty( $items ) || ! empty( $skipped_items ) || ! empty( $failed_items ) ) {
 			// Delete the transients.
 			delete_transient( 'wp-smush-show-dir-scan-notice' );
 			delete_transient( 'wp-smush-dir-scan-failed-items' );
+			delete_transient( 'wp-smush-dir-scan-skipped-items' );
+
 			$this->view(
 				'notice',
 				array(

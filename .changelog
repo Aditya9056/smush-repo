@@ -1,5 +1,7 @@
 = 3.6.1 =
 
+- Enhance: Directory Smush image processing
+
 = 3.6.0 =
 
 - New: CDN support for images in REST API responses

@@ -16,7 +16,8 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 	currentStep = parseInt( currentStep );
 
 	let cancelling = false,
-		failedItems = 0;
+		failedItems = 0,
+		skippedItems = 0;
 
 	const obj = {
 		scan() {
@@ -92,6 +93,10 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 			}, ( response ) => {
 				// We're good - continue on.
 				if ( 'undefined' !== typeof response.success && response.success ) {
+					if ( 'undefined' !== typeof response.data && 'undefined' !== typeof response.data.skipped && true === response.data.skipped ) {
+						skippedItems++;
+					}
+
 					currentStep++;
 					remainingSteps = remainingSteps - 1;
 					obj.onFinishStep( obj.getProgress() );
@@ -111,8 +116,9 @@ const DirectoryScanner = ( totalSteps, currentStep ) => {
 		} else {
 			jQuery.post( ajaxurl, {
 				action: 'directory_smush_finish',
-				items: ( totalSteps - failedItems ),
+				items: ( totalSteps - ( failedItems + skippedItems ) ),
 				failed: failedItems,
+				skipped: skippedItems,
 			}, ( response ) => obj.onFinish( response ) );
 		}
 	};

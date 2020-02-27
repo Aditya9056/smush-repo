@@ -160,7 +160,7 @@ class Dir extends Abstract_Module {
 	 * @since 2.8.1
 	 */
 	public function directory_smush_check_step() {
-		$urls         = $this->get_unsmushed_images();
+		$urls         = $this->get_scanned_images();
 		$current_step = absint( $_POST['step'] ); // Input var ok.
 
 		$this->scanner->update_current_step( $current_step );
@@ -178,12 +178,19 @@ class Dir extends Abstract_Module {
 	 * @since 2.8.1
 	 */
 	public function directory_smush_finish() {
-		$items  = isset( $_POST['items'] ) ? absint( $_POST['items'] ) : 0; // Input var ok.
-		$failed = isset( $_POST['failed'] ) ? absint( $_POST['failed'] ) : 0; // Input var ok.
+		$items   = isset( $_POST['items'] ) ? absint( $_POST['items'] ) : 0; // Input var ok.
+		$failed  = isset( $_POST['failed'] ) ? absint( $_POST['failed'] ) : 0; // Input var ok.
+		$skipped = isset( $_POST['skipped'] ) ? absint( $_POST['skipped'] ) : 0; // Input var ok.
+
 		// If any images failed to smush, store count.
 		if ( $failed > 0 ) {
 			set_transient( 'wp-smush-dir-scan-failed-items', $failed, 60 * 5 ); // 5 minutes max.
 		}
+
+		if ( $skipped > 0 ) {
+			set_transient( 'wp-smush-dir-scan-skipped-items', $skipped, 60 * 5 ); // 5 minutes max.
+		}
+
 		// Store optimized items count.
 		set_transient( 'wp-smush-show-dir-scan-notice', $items, 60 * 5 ); // 5 minutes max.
 		$this->scanner->reset_scan();
@@ -240,9 +247,10 @@ class Dir extends Abstract_Module {
 		$image = $this->get_image( $id, '', $scanned_images );
 
 		if ( empty( $image ) ) {
+			wp_send_json_success( array( 'skipped' => true ) );
 			// If there are no stats.
-			$error_msg = esc_html__( 'Could not find image id in last scanned images', 'wp-smushit' );
-			wp_send_json_error( $error_msg );
+			//$error_msg = esc_html__( 'Could not find image id in last scanned images', 'wp-smushit' );
+			//wp_send_json_error( $error_msg );
 		}
 
 		$path = $image['path'];
@@ -293,9 +301,6 @@ class Dir extends Abstract_Module {
 			);
 		}
 
-		// Get file time.
-		$file_time = @filectime( $path );
-
 		if ( ! $this->settings ) {
 			$this->settings = Settings::get_instance();
 		}
@@ -305,7 +310,7 @@ class Dir extends Abstract_Module {
 			$wpdb->prepare(
 				"UPDATE {$wpdb->prefix}smush_dir_images SET error=NULL, image_size=%d, file_time=%d, lossy=%d, meta=%d WHERE id=%d LIMIT 1",
 				$results['data']->after_size,
-				$file_time,
+				@filectime( $path ), // Get file time.
 				WP_Smush::is_pro() && $this->settings->get( 'lossy' ),
 				$this->settings->get( 'strip_exif' ),
 				$id
