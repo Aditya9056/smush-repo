@@ -155,7 +155,7 @@
 						self.selection[ input.id ] = input.checked;
 					}
 
-					const _nonce = document.getElementById( '_wpnonce' );
+					const _nonce = document.getElementById( 'smush_quick_setup_nonce' );
 
 					const xhr = new XMLHttpRequest();
 					xhr.open( 'POST', ajaxurl + '?action=smush_setup', true );
@@ -222,7 +222,7 @@
 		 * Skip onboarding experience.
 		 */
 		skipSetup: () => {
-			const _nonce = document.getElementById( '_wpnonce' );
+			const _nonce = document.getElementById( 'smush_quick_setup_nonce' );
 
 			const xhr = new XMLHttpRequest();
 			xhr.open( 'POST', ajaxurl + '?action=skip_smush_setup&_ajax_nonce=' + _nonce.value );
