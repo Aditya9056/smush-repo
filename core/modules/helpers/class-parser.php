@@ -51,6 +51,10 @@ class Parser {
 			return;
 		}
 
+		if ( wp_doing_cron() ) {
+			return;
+		}
+
 		if ( $this->is_page_builder() ) {
 			return;
 		}
@@ -312,6 +316,11 @@ class Parser {
 	private function is_page_builder() {
 		// Oxygen builder.
 		if ( defined( 'SHOW_CT_BUILDER' ) && SHOW_CT_BUILDER ) {
+			return true;
+		}
+
+		// Oxygen builder as well.
+		if ( null !== filter_input( INPUT_GET, 'ct_builder' ) ) {
 			return true;
 		}
 
