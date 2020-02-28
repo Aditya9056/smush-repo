@@ -1,6 +1,7 @@
 = 3.6.1 =
 
 - Enhance: Directory Smush image processing
+- Fix: Lazy loading breaking Oxygen visual editor
 - Fix: WooCommerce breaking Smush onboarding dialog
 
 = 3.6.0 =
