@@ -1,8 +1,10 @@
 = 3.6.1 =
 
 - Enhance: Directory Smush image processing
+- Enhance: CDN background image processing performance
 - Fix: Lazy loading breaking Oxygen visual editor
 - Fix: WooCommerce breaking Smush onboarding dialog
+- Fix: CDN processing of background images with spaces
 
 = 3.6.0 =
 

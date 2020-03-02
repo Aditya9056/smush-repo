@@ -1281,6 +1281,9 @@ class CDN extends Abstract_Module {
 	 * @return bool|string
 	 */
 	public function is_supported_path( $src ) {
+		// Remove whitespaces.
+		$src = trim( $src );
+
 		// Allow only these extensions in CDN.
 		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
 		if ( ! in_array( $ext, $this->supported_extensions, true ) ) {
