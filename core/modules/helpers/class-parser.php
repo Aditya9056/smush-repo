@@ -337,6 +337,16 @@ class Parser {
 			return true;
 		}
 
+		// Thrive Architect Builder.
+		if ( null !== filter_input( INPUT_GET, 'tve' ) && null !== filter_input( INPUT_GET, 'tcbf' ) ) {
+			return true;
+		}
+
+		// Tatsu page builder.
+		if ( null !== filter_input( INPUT_GET, 'tatsu' ) ) {
+			return true;
+		}
+
 		return false;
 	}
 

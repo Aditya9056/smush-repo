@@ -2,7 +2,7 @@
 
 - Enhance: Directory Smush image processing
 - Enhance: CDN background image processing performance
-- Fix: Lazy loading breaking Oxygen visual editor
+- Fix: Lazy loading breaking visual editors (Oxygen, Thrive Architect, Tatsu)
 - Fix: WooCommerce breaking Smush onboarding dialog
 - Fix: CDN processing of background images with spaces
 
