@@ -194,6 +194,14 @@ class Parser {
 			return $content;
 		}
 
+		// Try to sort out the duplicate entries.
+		$elements = array_unique( $images[0] );
+		$urls     = array_unique( $images['img_url'] );
+		if ( count( $elements ) === count( $urls ) ) {
+			$images[0]         = $elements;
+			$images['img_url'] = $urls;
+		}
+
 		foreach ( $images[0] as $key => $image ) {
 			$img_src   = $images['img_url'][ $key ];
 			$new_image = $image;
@@ -272,7 +280,7 @@ class Parser {
 	private static function get_background_images( $content ) {
 		$images = array();
 
-		if ( preg_match_all( '/(?:background-image:\s*?url\([\'"]?(?P<img_url>.*?[^\s\'"]+)[\'"]?\))/is', $content, $images ) ) {
+		if ( preg_match_all( '/(?:background-image:\s*?url\((?P<img_url>.*?[^)]+)\))/i', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
 				if ( is_numeric( $key ) && $key > 0 ) {
