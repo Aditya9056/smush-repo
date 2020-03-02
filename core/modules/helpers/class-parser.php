@@ -280,7 +280,7 @@ class Parser {
 	private static function get_background_images( $content ) {
 		$images = array();
 
-		if ( preg_match_all( '/(?:background-image:\s*?url\((?P<img_url>.*?[^)]+)\))/i', $content, $images ) ) {
+		if ( preg_match_all( '/(?:background-image:\s*?url\([\'"]?(?P<img_url>.*?[^)\'"]+)[\'"]?\))/i', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
 				if ( is_numeric( $key ) && $key > 0 ) {
