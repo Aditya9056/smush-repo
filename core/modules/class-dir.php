@@ -239,18 +239,11 @@ class Dir extends Abstract_Module {
 			}
 		}
 
-		$scanned_images = wp_cache_get( 'wp_smush_scanned_images' );
-		if ( ! $scanned_images ) {
-			$scanned_images = $this->get_unsmushed_images();
-		}
-
-		$image = $this->get_image( $id, '', $scanned_images );
+		$scanned_images = $this->get_unsmushed_images();
+		$image          = $this->get_image( $id, '', $scanned_images );
 
 		if ( empty( $image ) ) {
 			wp_send_json_success( array( 'skipped' => true ) );
-			// If there are no stats.
-			//$error_msg = esc_html__( 'Could not find image id in last scanned images', 'wp-smushit' );
-			//wp_send_json_error( $error_msg );
 		}
 
 		$path = $image['path'];
@@ -406,7 +399,6 @@ class Dir extends Abstract_Module {
 		if ( $this->settings->get( 'strip_exif' ) ) {
 			$condition .= ' OR meta <> 1';
 		}
-
 
 		$results = $wpdb->get_results( "SELECT id, path, orig_size FROM {$wpdb->prefix}smush_dir_images WHERE {$condition} && last_scan = (SELECT MAX(last_scan) FROM {$wpdb->prefix}smush_dir_images )  GROUP BY id ORDER BY id", ARRAY_A ); // Db call ok; no-cache ok.
 
