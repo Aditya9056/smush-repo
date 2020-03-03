@@ -931,7 +931,7 @@ class Dashboard extends Abstract_Page {
 		}
 
 		// If we have counts, show the notice.
-		if ( 0 <= $total ) {
+		if ( 0 < $total ) {
 			// Delete the transients.
 			delete_transient( 'wp-smush-show-dir-scan-notice' );
 			delete_transient( 'wp-smush-dir-scan-failed-items' );
