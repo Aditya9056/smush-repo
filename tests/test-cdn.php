@@ -175,6 +175,10 @@ class CdnTest extends WP_UnitTestCase {
 
 		// Loop through all the settings and check for a description.
 		foreach ( $registered_settings as $setting ) {
+			// This option is just a setting, but we don't actually show it in the UI, so skip.
+			if ( 'cdn' === $setting ) {
+				continue;
+			}
 			$this->assertArrayHasKey( $setting, $smush->core()->settings );
 		}
 	}
