@@ -112,7 +112,7 @@ class Settings {
 	 *
 	 * @var array
 	 */
-	private $cdn_fields = array( 'background_images', 'auto_resize', 'webp', 'rest_api_support' );
+	private $cdn_fields = array( 'cdn', 'background_images', 'auto_resize', 'webp', 'rest_api_support' );
 
 	/**
 	 * List of fields in Settings form.

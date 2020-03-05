@@ -126,10 +126,6 @@ const jsConfig = _.assign(_.cloneDeep(sharedConfig), {
     ]
   },
 
-  externals: {
-    jquery: "jQuery" // this is required for jquery.fancytree
-  },
-
   devtool: "source-map",
 
   plugins: [new CleanWebpackPlugin()]

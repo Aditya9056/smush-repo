@@ -59,7 +59,7 @@ class Core extends Stats {
 	 *
 	 * @var array $pages
 	 */
-	public static $all_pages = array(
+	public static $pages = array(
 		'nggallery-manage-images',
 		'gallery_page_nggallery-manage-gallery',
 		'gallery_page_wp-smush-nextgen-bulk',
@@ -70,34 +70,6 @@ class Core extends Stats {
 		'upload',
 		'toplevel_page_smush-network',
 		'toplevel_page_smush',
-	);
-
-	/**
-	 * List of Smush pages.
-	 *
-	 * @since 3.6.1
-	 * @var array $smush_pages
-	 */
-	public static $smush_pages = array(
-		'nggallery-manage-images',
-		'gallery_page_nggallery-manage-gallery',
-		'gallery_page_wp-smush-nextgen-bulk',
-		'toplevel_page_smush-network',
-		'toplevel_page_smush',
-	);
-
-	/**
-	 * List of non-Smush admin pages.
-	 *
-	 * @since 3.6.1
-	 * @var array $wp_pages
-	 */
-	public static $wp_pages = array(
-		'post',
-		'post-new',
-		'page',
-		'edit-page',
-		'upload',
 	);
 
 	/**
