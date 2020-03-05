@@ -1,7 +1,6 @@
 /* global WP_Smush */
 /* global ajaxurl */
 /* global wp_smush_msgs */
-/* global smush_vars */
 
 /**
  * Helpers functions.
@@ -82,6 +81,7 @@
      * @since 3.2.0
      */
     resetSettings: () => {
+      const _nonce = document.getElementById("wp_smush_reset");
       const xhr = new XMLHttpRequest();
       xhr.open("POST", ajaxurl + "?action=reset_settings", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -97,7 +97,7 @@
           );
         }
       };
-      xhr.send("_ajax_nonce=" + smush_vars.nonce.get_smush_status);
+      xhr.send("_ajax_nonce=" + _nonce.value);
     }
   };
 
