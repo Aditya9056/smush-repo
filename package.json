@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@wpmudev/shared-ui": "2.6.0",
-    "jquery.fancytree": "2.34.0",
+    "jquery.fancytree": "2.32.0",
     "lazysizes": "^5.2.0"
   },
   "devDependencies": {

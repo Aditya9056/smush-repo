@@ -138,7 +138,7 @@ class Admin {
 			$current_page   = ! empty( $current_screen ) ? $current_screen->base : $current_page;
 		}
 
-		if ( ! in_array( $current_page, Core::$smush_pages, true ) ) {
+		if ( ! in_array( $current_page, Core::$pages, true ) ) {
 			return;
 		}
 
