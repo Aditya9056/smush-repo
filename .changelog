@@ -5,6 +5,7 @@
 - Fix: Lazy loading breaking visual editors (Oxygen, Thrive Architect, Tatsu)
 - Fix: WooCommerce breaking Smush onboarding dialog
 - Fix: CDN processing of background images with spaces
+- Fix: REST API errors
 
 = 3.6.0 =
 

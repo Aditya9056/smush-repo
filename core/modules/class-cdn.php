@@ -902,7 +902,7 @@ class CDN extends Abstract_Module {
 			return $response;
 		}
 
-		if ( ! isset( $response['content']['rendered'] ) ) {
+		if ( ! is_array( $response ) || ! isset( $response['content']['rendered'] ) ) {
 			return $response;
 		}
 
