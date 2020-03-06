@@ -156,7 +156,7 @@ class CdnTest extends WP_UnitTestCase {
 	 * @covers Smush\Core\Settings::get_cdn_fields
 	 */
 	public function testCdnAddSettingsToGroup() {
-		$this->assertEquals( [ 'background_images', 'auto_resize', 'webp', 'rest_api_support' ], Settings::get_instance()->get_cdn_fields() );
+		$this->assertEquals( [ 'cdn', 'background_images', 'auto_resize', 'webp', 'rest_api_support' ], Settings::get_instance()->get_cdn_fields() );
 	}
 
 	/**
@@ -175,6 +175,10 @@ class CdnTest extends WP_UnitTestCase {
 
 		// Loop through all the settings and check for a description.
 		foreach ( $registered_settings as $setting ) {
+			// This option is just a setting, but we don't actually show it in the UI, so skip.
+			if ( 'cdn' === $setting ) {
+				continue;
+			}
 			$this->assertArrayHasKey( $setting, $smush->core()->settings );
 		}
 	}

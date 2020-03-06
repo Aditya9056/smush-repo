@@ -1,3 +1,12 @@
+= 3.6.1 =
+
+- Enhance: Directory Smush image processing
+- Enhance: CDN background image processing performance
+- Fix: Lazy loading breaking visual editors (Oxygen, Thrive Architect, Tatsu)
+- Fix: WooCommerce breaking Smush onboarding dialog
+- Fix: CDN processing of background images with spaces
+- Fix: REST API errors
+
 = 3.6.0 =
 
 - New: CDN support for images in REST API responses
