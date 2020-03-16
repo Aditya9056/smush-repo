@@ -364,6 +364,8 @@ class Ajax {
 	public function scan_images() {
 		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );
 
+		wp_cache_delete( 'media_attachments', 'wp-smush' );
+
 		$resmush_list = array();
 
 		// Scanning for NextGen or Media Library.
