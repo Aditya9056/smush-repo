@@ -1,3 +1,7 @@
+= 3.6.2 =
+
+- Fix: Object cache not clearing out stats during Re-Check Images action
+
 = 3.6.1 =
 
 - Enhance: Directory Smush image processing
