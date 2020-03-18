@@ -252,7 +252,16 @@ class Parser {
 	public function get_images_from_content( $content ) {
 		$images = array();
 
-		if ( preg_match_all( '/<(?P<type>img|source|iframe)\b(?>\s+(?:src=[\'"](?P<src>[^\'"]*)[\'"]|srcset=[\'"](?P<srcset>[^\'"]*)[\'"])|[^\s>]+|\s+)*>/is', $content, $images ) ) {
+		/**
+		 * Filter out only <body> content. As this was causing issues with escaped JS strings in <head>.
+		 *
+		 * @since 3.6.2
+		 */
+		if ( ! preg_match( '/(?=<body).*<\/body>/is', $content, $body ) ) {
+			return $images;
+		}
+
+		if ( preg_match_all( '/<(?P<type>img|source|iframe)\b(?>\s+(?:src=[\'"](?P<src>[^\'"]*)[\'"]|srcset=[\'"](?P<srcset>[^\'"]*)[\'"])|[^\s>]+|\s+)*>/is', $body[0], $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
 				if ( is_numeric( $key ) && $key > 0 ) {

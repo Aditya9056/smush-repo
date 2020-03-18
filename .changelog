@@ -1,5 +1,6 @@
 = 3.6.2 =
 
+- Enhance: Lazy load and CDN page parsing
 - Fix: Object cache not clearing out stats during Re-Check Images action
 
 = 3.6.1 =
