@@ -495,12 +495,12 @@ class CDN extends Abstract_Module {
 			return $new_image;
 		}
 
+		// Store the original $src to be used later on.
+		$original_src = $src;
+
 		// Make sure this image is inside a supported directory. Try to convert to valid path.
 		$src = $this->is_supported_path( $src );
 		if ( $src ) {
-			// Store the original $src to be used later on.
-			$original_src = $src;
-
 			$src = $this->process_src( $image, $src, false );
 
 			// Replace the src of the image with CDN link.
