@@ -257,11 +257,11 @@ class Parser {
 		 *
 		 * @since 3.6.2
 		 */
-		if ( ! preg_match( '/(?=<body).*<\/body>/is', $content, $body ) ) {
-			return $images;
+		if ( preg_match( '/(?=<body).*<\/body>/is', $content, $body ) ) {
+			$content = $body[0];
 		}
 
-		if ( preg_match_all( '/<(?P<type>img|source|iframe)\b(?>\s+(?:src=[\'"](?P<src>[^\'"]*)[\'"]|srcset=[\'"](?P<srcset>[^\'"]*)[\'"])|[^\s>]+|\s+)*>/is', $body[0], $images ) ) {
+		if ( preg_match_all( '/<(?P<type>img|source|iframe)\b(?>\s+(?:src=[\'"](?P<src>[^\'"]*)[\'"]|srcset=[\'"](?P<srcset>[^\'"]*)[\'"])|[^\s>]+|\s+)*>/is', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {
 				// Simplify the output as much as possible, mostly for confirming test results.
 				if ( is_numeric( $key ) && $key > 0 ) {
