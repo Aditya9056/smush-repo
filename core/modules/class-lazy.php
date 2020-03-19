@@ -231,6 +231,7 @@ class Lazy extends Abstract_Module {
 		$smush_attributes = array(
 			'data-src'    => true,
 			'data-srcset' => true,
+			'data-sizes'  => true,
 		);
 
 		$img_attributes = array_merge( $allowedposttags['img'], $smush_attributes );
@@ -334,10 +335,18 @@ class Lazy extends Abstract_Module {
 
 		$new_image = $image;
 
-		$src = Helpers\Parser::get_attribute( $new_image, 'src' );
-		if ( $src ) {
-			Helpers\Parser::remove_attribute( $new_image, 'src' );
-			Helpers\Parser::add_attribute( $new_image, 'data-src', $src );
+		/**
+		 * The sizes attribute does not have to be replaced to data-sizes, but it fixes the W3C validation.
+		 *
+		 * @since 3.6.2
+		 */
+		$attributes = array( 'src', 'sizes' );
+		foreach ( $attributes as $attribute ) {
+			$attr = Helpers\Parser::get_attribute( $new_image, $attribute );
+			if ( $attr ) {
+				Helpers\Parser::remove_attribute( $new_image, $attribute );
+				Helpers\Parser::add_attribute( $new_image, "data-{$attribute}", $attr );
+			}
 		}
 
 		// Change srcset to data-srcset attribute.
