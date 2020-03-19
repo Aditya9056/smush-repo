@@ -3,6 +3,8 @@
 - Enhance: Lazy load and CDN page parsing
 - Fix: Images with relative paths not processing by CDN
 - Fix: Object cache not clearing out stats during Re-Check Images action
+- Fix: Pages with lazy loading showing errors during W3C validation
+- Fix: Multiple noscript tags when lazy loading duplicate images
 
 = 3.6.1 =
 
