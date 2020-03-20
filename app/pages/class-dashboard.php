@@ -539,7 +539,7 @@ class Dashboard extends Abstract_Page {
 				<span class="sui-list-label">
 					<?php esc_html_e( 'Super-Smush Savings', 'wp-smushit' ); ?>
 					<?php if ( ! $this->settings->get( 'lossy' ) ) { ?>
-						<p class="wp-smush-stats-label-message">
+						<p class="wp-smush-stats-label-message sui-hidden-sm sui-hidden-md sui-hidden-lg">
 							<?php
 							$link_class = 'wp-smush-lossy-enable-link';
 							if ( ( is_multisite() && Settings::can_access( 'bulk' ) ) || 'bulk' !== $this->get_current_tab() ) {
@@ -558,13 +558,13 @@ class Dashboard extends Abstract_Page {
 						</p>
 					<?php } ?>
 				</span>
-				<?php if ( WP_Smush::is_pro() && $this->settings->get( 'lossy' ) ) { ?>
+				<?php if ( WP_Smush::is_pro() ) : ?>
 					<span class="sui-list-detail wp-smush-stats">
 						<span class="smushed-savings">
 							<?php echo esc_html( size_format( $compression_savings, 1 ) ); ?>
 						</span>
 					</span>
-				<?php } ?>
+				<?php endif; ?>
 			</li>
 			<?php
 		}

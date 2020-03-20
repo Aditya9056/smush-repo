@@ -1173,7 +1173,7 @@ class Dir extends Abstract_Module {
 		<li class="smush-dir-savings">
 			<span class="sui-list-label"><?php esc_html_e( 'Directory Smush Savings', 'wp-smushit' ); ?>
 				<?php if ( $human <= 0 ) { ?>
-					<p class="wp-smush-stats-label-message">
+					<p class="wp-smush-stats-label-message sui-hidden-sm sui-hidden-md sui-hidden-lg">
 						<?php esc_html_e( "Smush images that aren't located in your uploads folder.", 'wp-smushit' ); ?>
 						<a href="<?php echo esc_url( admin_url( 'admin.php?page=smush&view=directory' ) ); ?>" class="wp-smush-dir-link"
 						title="<?php esc_attr_e( "Select a directory you'd like to Smush.", 'wp-smushit' ); ?>">
@@ -1187,6 +1187,10 @@ class Dir extends Abstract_Module {
 				<span class="wp-smush-stats-human"></span>
 				<span class="wp-smush-stats-sep sui-hidden">/</span>
 				<span class="wp-smush-stats-percent"></span>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=smush&view=directory' ) ); ?>" class="wp-smush-dir-link sui-hidden-xs sui-hidden"
+				   title="<?php esc_attr_e( "Select a directory you'd like to Smush.", 'wp-smushit' ); ?>">
+					<?php esc_html_e( 'Choose directory', 'wp-smushit' ); ?>
+				</a>
 			</span>
 		</li>
 		<?php

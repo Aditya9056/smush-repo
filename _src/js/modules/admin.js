@@ -441,6 +441,8 @@ jQuery(function($) {
 
       // Do not replace if 0 savings.
       if (stats.dir_smush.bytes > 0) {
+        $(".wp-smush-dir-link").addClass("sui-hidden");
+
         // Hide selector.
         $("li.smush-dir-savings .wp-smush-stats-label-message").hide();
         //Update Savings in bytes
@@ -470,6 +472,8 @@ jQuery(function($) {
               "</span>";
           }
         }
+      } else {
+        $(".wp-smush-dir-link").removeClass("sui-hidden");
       }
     }
 
