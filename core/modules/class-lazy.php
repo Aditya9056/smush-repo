@@ -34,6 +34,19 @@ class Lazy extends Abstract_Module {
 	protected $parser;
 
 	/**
+	 * Excluded classes list.
+	 *
+	 * @since 3.6.2
+	 * @var array
+	 */
+	private $excluded_classes = array(
+		'no-lazyload', // Internal class to skip images.
+		'skip-lazy',
+		'rev-slidebg', // Skip Revolution slider images.
+		'soliloquy-preload', // Soliloquy slider.
+	);
+
+	/**
 	 * Lazy constructor.
 	 *
 	 * @since 3.2.2
@@ -510,13 +523,7 @@ class Lazy extends Abstract_Module {
 		}
 
 		foreach ( $image_classes as $class ) {
-			// Skip Revolution Slider images.
-			if ( 'rev-slidebg' === $class ) {
-				return true;
-			}
-
-			// Internal class to skip images.
-			if ( 'no-lazyload' === $class || 'skip-lazy' === $class ) {
+			if ( in_array( $class, $this->excluded_classes, true ) ) {
 				return true;
 			}
 
