@@ -1,5 +1,6 @@
 = 3.6.2 =
 
+- New: CDN and lazy load integration with Soliloquy slider
 - Enhance: Lazy load and CDN page parsing
 - Fix: Images with relative paths not processing by CDN
 - Fix: Object cache not clearing out stats during Re-Check Images action
