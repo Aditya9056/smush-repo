@@ -88,7 +88,7 @@ $tooltip = sprintf(
 							/* translators: %1$1s - opening <a> tag, %2$2s - closing <a> tag */
 							esc_html__( 'Save a ton of space by not storing over-sized images on your server. %1$1sEnable image resizing%2$2s', 'wp-smushit' ),
 							'<a role="button" class="' . esc_attr( $link_class ) . '" href="' . esc_url( $settings_link ) . '">',
-							'<span class="sui-screen-reader-text">' . esc_html__( 'Clicking this link will toggle the Enable image resizing checkbox.', 'wp-smushit' ) . '</span></a>'
+							'</a>'
 						);
 						?>
 					</p>

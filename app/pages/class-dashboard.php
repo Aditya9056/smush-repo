@@ -552,7 +552,7 @@ class Dashboard extends Abstract_Page {
 								/* translators: %1$s; starting a tag, %2$s: ending a tag */
 								esc_html__( 'Compress images up to 2x more than regular smush with almost no visible drop in quality. %1$sEnable Super-Smush%2$s', 'wp-smushit' ),
 								'<a role="button" class="' . esc_attr( $link_class ) . '" href="' . esc_url( $settings_link ) . '">',
-								'<span class="sui-screen-reader-text">' . esc_html__( 'Clicking this link will toggle the Super Smush checkbox.', 'wp-smushit' ) . '</span></a>'
+								'</a>'
 							);
 							?>
 						</p>
@@ -561,7 +561,13 @@ class Dashboard extends Abstract_Page {
 				<?php if ( WP_Smush::is_pro() ) : ?>
 					<span class="sui-list-detail wp-smush-stats">
 						<span class="smushed-savings">
-							<?php echo esc_html( size_format( $compression_savings, 1 ) ); ?>
+							<?php if ( ! $this->settings->get( 'lossy' ) ) : ?>
+								<a role="button" class="sui-hidden-xs <?php echo esc_attr( $link_class ); ?>" href="<?php echo esc_url( $settings_link ); ?>">
+									<?php esc_html_e( 'Enable Super-Smush', 'wp-smushit' ); ?>
+								</a>
+							<?php else : ?>
+								<?php echo esc_html( size_format( $compression_savings, 1 ) ); ?>
+							<?php endif; ?>
 						</span>
 					</span>
 				<?php endif; ?>

@@ -911,58 +911,19 @@ jQuery(function($) {
     });
   });
 
-  /**
-   * Enable resize in settings and scroll.
-   */
-  const scroll_and_enable_resize = function() {
-    // Enable resize, show resize settings.
-    $("#wp-smush-resize")
-      .prop("checked", true)
-      .focus();
-    $("div.wp-smush-resize-settings-wrap").show();
-
-    // Scroll down to settings area.
-    goToByScroll("#column-wp-smush-resize");
-  };
-
-  /**
-   * Enable super smush in settings and scroll.
-   */
-  const scroll_and_enable_lossy = function() {
-    // Enable super smush.
-    $("#wp-smush-lossy")
-      .prop("checked", true)
-      .focus();
-
-    // Scroll down to settings area.
-    goToByScroll("#column-wp-smush-lossy");
-  };
-
   // Enable super smush on clicking link from stats area.
   $("a.wp-smush-lossy-enable").on("click", function(e) {
     e.preventDefault();
-
-    scroll_and_enable_lossy();
+    // Scroll down to settings area.
+    goToByScroll("#column-wp-smush-lossy");
   });
 
   // Enable resize on clicking link from stats area.
   $(".wp-smush-resize-enable").on("click", function(e) {
     e.preventDefault();
-
-    scroll_and_enable_resize();
+    // Scroll down to settings area.
+    goToByScroll("#column-wp-smush-resize");
   });
-
-  // If settings string is found in url, enable and scroll.
-  if (window.location.hash) {
-    const setting_hash = window.location.hash.substring(1);
-    // Enable and scroll to resize settings.
-    if ("enable-resize" === setting_hash) {
-      scroll_and_enable_resize();
-    } else if ("enable-lossy" === setting_hash) {
-      // Enable and scroll to lossy settings.
-      scroll_and_enable_lossy();
-    }
-  }
 
   //Trigger Bulk
   $("body").on("click", ".wp-smush-trigger-bulk", function(e) {
