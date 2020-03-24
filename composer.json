@@ -17,7 +17,7 @@
         "Smush.it"
     ],
     "homepage": "https://premium.wpmudev.org",
-    "license": "GPL-2.0+",
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "Incsub",
