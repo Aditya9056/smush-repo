@@ -9,6 +9,7 @@
 - Fix: Pages with lazy loading showing errors during W3C validation
 - Fix: Multiple noscript tags when lazy loading duplicate images
 - Fix: NextGen Re-Smush UI
+- Fix: Image resize settings not respecting the largest dimension
 
 = 3.6.1 =
 

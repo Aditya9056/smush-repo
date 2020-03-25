@@ -674,7 +674,7 @@ class Core extends Stats {
 			return $threshold;
 		}
 
-		return $resize_sizes['width'];
+		return $resize_sizes['width'] > $resize_sizes['height'] ? $resize_sizes['width'] : $resize_sizes['height'];
 	}
 
 }
