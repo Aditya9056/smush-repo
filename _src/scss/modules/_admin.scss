@@ -596,7 +596,12 @@
 		 */
 		.sui-upgrade-page .thumbnail-container {
 			cursor: pointer;
-			img { width: 640px; }
+			img {
+				width: 640px;
+				@media screen and (max-width: 600px) {
+					width: 100%;
+				}
+			}
 		}
 
 		.smush-pro-features {
