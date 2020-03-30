@@ -51,7 +51,7 @@ class Parser {
 			return;
 		}
 
-		if ( wp_doing_cron() ) {
+		if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 			return;
 		}
 
