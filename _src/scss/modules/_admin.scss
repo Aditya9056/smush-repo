@@ -606,7 +606,8 @@
 
 		.smush-pro-features {
 			.smush-pro-features-header {
-				background: #FAFAFA url('#{$img--path}/widget-background-smush.svg') center;
+				background: #F6F6F6 url('#{$img--path}/widget-background-smush.svg') center no-repeat;
+				background-size: cover;
 				margin: -45px -30px 30px;
 				padding: 40px 30px;
 				text-align: center;
