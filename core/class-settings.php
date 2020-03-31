@@ -647,6 +647,7 @@ class Settings {
 			'exclude-pages'   => FILTER_SANITIZE_STRING,
 			'exclude-classes' => FILTER_SANITIZE_STRING,
 			'footer'          => FILTER_VALIDATE_BOOLEAN,
+			'compatibility'   => FILTER_VALIDATE_BOOLEAN,
 			'native'          => FILTER_VALIDATE_BOOLEAN,
 		);
 
@@ -789,6 +790,7 @@ class Settings {
 			'exclude-pages'   => array(),
 			'exclude-classes' => array(),
 			'footer'          => true,
+			'compatibility'   => false,
 			'native'          => false,
 		);
 

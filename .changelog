@@ -1,6 +1,7 @@
 = 3.6.2 =
 
 - New: CDN and lazy load integration with Soliloquy slider
+- New: Lazy load compatibility mode
 - Enhance: Native lazy loading disabled by default, added option to enable it
 - Enhance: Lazy load and CDN page parsing
 - Enhance: Summary module layout
