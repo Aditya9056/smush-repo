@@ -925,6 +925,18 @@ jQuery(function($) {
     goToByScroll("#column-wp-smush-resize");
   });
 
+  // If settings string is found in url, enable and scroll.
+  if (window.location.hash) {
+    const setting_hash = window.location.hash.substring(1);
+    // Enable and scroll to resize settings.
+    if ("enable-resize" === setting_hash) {
+      goToByScroll("#column-wp-smush-resize");
+    } else if ("enable-lossy" === setting_hash) {
+      // Enable and scroll to lossy settings.
+      goToByScroll("#column-wp-smush-lossy");
+    }
+  }
+
   //Trigger Bulk
   $("body").on("click", ".wp-smush-trigger-bulk", function(e) {
     e.preventDefault();
