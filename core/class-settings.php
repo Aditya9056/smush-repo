@@ -647,6 +647,7 @@ class Settings {
 			'exclude-pages'   => FILTER_SANITIZE_STRING,
 			'exclude-classes' => FILTER_SANITIZE_STRING,
 			'footer'          => FILTER_VALIDATE_BOOLEAN,
+			'native'          => FILTER_VALIDATE_BOOLEAN,
 		);
 
 		$settings = filter_input_array( INPUT_POST, $args );
@@ -788,6 +789,7 @@ class Settings {
 			'exclude-pages'   => array(),
 			'exclude-classes' => array(),
 			'footer'          => true,
+			'native'          => false,
 		);
 
 		$this->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $defaults );

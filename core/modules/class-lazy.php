@@ -195,6 +195,12 @@ class Lazy extends Abstract_Module {
 			$in_footer
 		);
 
+		// Native lazy loading support.
+		$native = isset( $this->options['native'] ) ? $this->options['native'] : false;
+		$custom = 'lazySizes.cfg.nativeLoading={setLoadingAttribute:' . $native . ',disableListeners:{scroll:true}};lazySizes.init();';
+
+		wp_add_inline_script( 'smush-lazy-load', $custom );
+
 		$this->add_masonry_support();
 	}
 

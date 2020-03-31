@@ -514,6 +514,45 @@ wp_enqueue_style( 'wp-color-picker' );
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">
 			<span class="sui-settings-label">
+				<?php esc_html_e( 'Native lazy load', 'wp-smushit' ); ?>
+			</span>
+			<span class="sui-description">
+				<?php esc_html_e( 'Enable support for native browser lazy loading', 'wp-smushit' ); ?>
+			</span>
+		</div>
+		<div class="sui-box-settings-col-2">
+			<div class="sui-form-field">
+				<label for="native" class="sui-toggle">
+					<input
+						type="checkbox"
+						id="native"
+						name="native"
+						aria-labelledby="native-label"
+						aria-describedby="native-description"
+						<?php checked( isset( $settings['native'] ) && $settings['native'] ); ?>
+					/>
+					<span class="sui-toggle-slider" aria-hidden="true"></span>
+					<span id="native-label" class="sui-toggle-label">
+						<?php esc_html_e( 'Enable native lazy loading', 'wp-smushit' ); ?>
+					</span>
+					<span id="native-description" class="sui-description">
+						<?php
+						printf(
+							/* translators: %1$s - opening a tag, %2$s - closing a tag */
+							esc_html__( 'In some cases can cause the "Defer offscreen images" Google PageSpeed audit to fail. See browser compatibility %1$shere%2$s.', 'wp-smushit' ),
+							'<a href="https://caniuse.com/#feat=loading-lazy-attr" target="_blank">',
+							'</a>'
+						);
+						?>
+					</span>
+				</label>
+			</div>
+		</div>
+	</div>
+
+	<div class="sui-box-settings-row">
+		<div class="sui-box-settings-col-1">
+			<span class="sui-settings-label">
 				<?php esc_html_e( 'Deactivate', 'wp-smushit' ); ?>
 			</span>
 			<span class="sui-description">
