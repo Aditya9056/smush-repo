@@ -441,6 +441,8 @@ jQuery(function($) {
 
       // Do not replace if 0 savings.
       if (stats.dir_smush.bytes > 0) {
+        $(".wp-smush-dir-link").addClass("sui-hidden");
+
         // Hide selector.
         $("li.smush-dir-savings .wp-smush-stats-label-message").hide();
         //Update Savings in bytes
@@ -470,6 +472,8 @@ jQuery(function($) {
               "</span>";
           }
         }
+      } else {
+        $(".wp-smush-dir-link").removeClass("sui-hidden");
       }
     }
 
@@ -907,45 +911,18 @@ jQuery(function($) {
     });
   });
 
-  /**
-   * Enable resize in settings and scroll.
-   */
-  const scroll_and_enable_resize = function() {
-    // Enable resize, show resize settings.
-    $("#wp-smush-resize")
-      .prop("checked", true)
-      .focus();
-    $("div.wp-smush-resize-settings-wrap").show();
-
-    // Scroll down to settings area.
-    goToByScroll("#column-wp-smush-resize");
-  };
-
-  /**
-   * Enable super smush in settings and scroll.
-   */
-  const scroll_and_enable_lossy = function() {
-    // Enable super smush.
-    $("#wp-smush-lossy")
-      .prop("checked", true)
-      .focus();
-
-    // Scroll down to settings area.
-    goToByScroll("#column-wp-smush-lossy");
-  };
-
   // Enable super smush on clicking link from stats area.
   $("a.wp-smush-lossy-enable").on("click", function(e) {
     e.preventDefault();
-
-    scroll_and_enable_lossy();
+    // Scroll down to settings area.
+    goToByScroll("#column-wp-smush-lossy");
   });
 
   // Enable resize on clicking link from stats area.
   $(".wp-smush-resize-enable").on("click", function(e) {
     e.preventDefault();
-
-    scroll_and_enable_resize();
+    // Scroll down to settings area.
+    goToByScroll("#column-wp-smush-resize");
   });
 
   // If settings string is found in url, enable and scroll.
@@ -953,10 +930,10 @@ jQuery(function($) {
     const setting_hash = window.location.hash.substring(1);
     // Enable and scroll to resize settings.
     if ("enable-resize" === setting_hash) {
-      scroll_and_enable_resize();
+      goToByScroll("#column-wp-smush-resize");
     } else if ("enable-lossy" === setting_hash) {
       // Enable and scroll to lossy settings.
-      scroll_and_enable_lossy();
+      goToByScroll("#column-wp-smush-lossy");
     }
   }
 

@@ -291,6 +291,21 @@
      * @since 3.6.0
      */
     refresh() {
+      // Clear out classes on DOM.
+      for (let id in this.images.bigger) {
+        if (this.images.bigger.hasOwnProperty(id)) {
+          this.images.bigger[id].src.classList.remove("smush-detected-img");
+          this.images.bigger[id].src.classList.remove("smush-image-" + ++id);
+        }
+      }
+
+      for (let id in this.images.smaller) {
+        if (this.images.smaller.hasOwnProperty(id)) {
+          this.images.smaller[id].src.classList.remove("smush-detected-img");
+          this.images.smaller[id].src.classList.remove("smush-image-" + ++id);
+        }
+      }
+
       this.images = {
         bigger: [],
         smaller: []
