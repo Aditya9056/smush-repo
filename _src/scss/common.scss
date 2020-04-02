@@ -128,52 +128,6 @@
 	width: 100%;
 }
 
-#wp-smush-invalid-member {
-	&.loading-notice:before {
-		content: attr(data-message);
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: 0;
-		background-color: rgba(255, 255, 255, 0.7);
-		z-index: 5;
-		text-align: center;
-		line-height: 40px;
-		font-size: 15px;
-	}
-
-	&.loaded-notice:before {
-		content: attr(data-message);
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: 0;
-		background-color: rgba(255, 255, 255, 0.7);
-		z-index: 5;
-		text-align: center;
-		line-height: 40px;
-		font-size: 15px;
-	}
-
-	a {
-		color: #514a30;
-		text-decoration: underline;
-	}
-
-	&.loading-notice,
-	&.loaded-notice {
-		> div {
-			-webkit-filter: blur(2px);
-			-moz-filter: blur(2px);
-			-o-filter: blur(2px);
-			-ms-filter: blur(2px);
-			filter: blur(2px);
-		}
-	}
-}
-
 /** Bulk Smush **/
 /** No Images **/
 .wp-smush-no-image {

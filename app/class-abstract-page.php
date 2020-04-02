@@ -581,9 +581,6 @@ abstract class Abstract_Page {
 		<div class="sui-notice sui-notice-top sui-hidden" id="wp-smush-ajax-notice"></div>
 
 		<?php
-		// User API check, and display a message if not valid.
-		WP_Smush::get_instance()->admin()->get_user_validation_message();
-
 		// Re-check images notice.
 		$this->get_recheck_message();
 
