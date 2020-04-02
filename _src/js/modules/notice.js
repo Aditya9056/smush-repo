@@ -62,7 +62,7 @@
     elNotice.attr("data-message", message);
     elNotice.addClass("loading");
 
-    //Send a ajax request to save the dismissed notice option
+    // Send a ajax request to save the dismissed notice option.
     $.post(ajaxurl, { action: "dismiss_upgrade_notice" });
   }
 
