@@ -39,6 +39,8 @@ class S3 extends Abstract_Integration {
 
 		// Hook at the end of setting row to output a error div.
 		add_action( 'smush_setting_column_right_inside', array( $this, 's3_setup_message' ), 15 );
+		// Show S3 integration message, if user hasn't enabled it.
+		add_action( 'wp_ajax_smush_notice_s3_support_required', array( $this, 's3_support_required_notice' ) );
 
 		// Add Pro tag.
 		if ( ! WP_Smush::is_pro() || ! $this->enabled ) {
@@ -63,8 +65,6 @@ class S3 extends Abstract_Integration {
 		 */
 		// Check if the file exists for the given path and download.
 		add_action( 'smush_file_exists', array( $this, 'maybe_download_file' ), 10, 3 );
-		// Show S3 integration message, if user hasn't enabled it.
-		add_action( 'wp_smush_header_notices', array( $this, 's3_support_required_notice' ) );
 		// Fetch file and make sure it is returned back to S3 bucket.
 		add_action( 'smush_s3_integration_fetch_file', array( $this, 'fetch_file' ) );
 	}
@@ -246,16 +246,7 @@ class S3 extends Abstract_Integration {
 			);
 		}
 
-		?>
-		<div class="sui-notice sui-notice-warning wp-smush-s3support-alert">
-			<p><?php echo wp_kses_post( $message ); ?></p>
-			<span class="sui-notice-dismiss">
-				<a href="#">
-					<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>
-				</a>
-			</span>
-		</div>
-		<?php
+		wp_send_json_success( array( '<p>' . wp_kses_post( $message ) . '</p>' ) );
 	}
 
 	/**

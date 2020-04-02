@@ -573,6 +573,11 @@ abstract class Abstract_Page {
 			</div>
 		</div>
 
+		<div class="sui-floating-notices">
+			<div role="alert" id="wp-smush-s3support-alert" class="sui-notice" aria-live="assertive"></div>
+			<?php do_action( 'wp_smush_header_notices' ); ?>
+		</div>
+
 		<div class="sui-notice sui-notice-top sui-hidden" id="wp-smush-ajax-notice"></div>
 
 		<?php
@@ -591,8 +596,6 @@ abstract class Abstract_Page {
 		$this->show_api_message();
 
 		$this->settings_updated();
-
-		do_action( 'wp_smush_header_notices' );
 	}
 
 	/**

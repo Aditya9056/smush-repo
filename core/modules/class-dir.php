@@ -762,7 +762,7 @@ class Dir extends Abstract_Module {
 	 * Not used to display any messages.
 	 */
 	private function send_error() {
-		$message = sprintf( "<div class='sui-floating-notices'><p>%s</p></div>", esc_html__( 'We could not find any images in the selected directory.', 'wp-smushit' ) );
+		$message = sprintf( '<p>%s</p>', esc_html__( 'We could not find any images in the selected directory.', 'wp-smushit' ) );
 		wp_send_json_error(
 			array(
 				'message' => $message,

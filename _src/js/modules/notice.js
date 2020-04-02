@@ -1,9 +1,40 @@
 /* global ajaxurl */
+/* global wp_smush_msgs */
 
 /**
  * @typedef {Object} jQuery
  */
 (function($) {
+  "use strict";
+
+  /**
+   * S3 support alert.
+   *
+   * @since 3.6.2  Moved from class-s3.php
+   */
+  $.get(ajaxurl, { action: "smush_notice_s3_support_required" }, function(r) {
+    if ("undefined" === typeof r.data) {
+      return;
+    }
+
+    const noticeOptions = {
+      type: "warning",
+      icon: "info",
+      dismiss: {
+        show: true,
+        label: wp_smush_msgs.noticeDismiss,
+        tooltip: wp_smush_msgs.noticeDismissTooltip
+      }
+    };
+
+    window.SUI.openNotice("wp-smush-s3support-alert", r.data, noticeOptions);
+  });
+
+  // Dismiss S3 support alert.
+  $("#wp-smush-s3support-alert").on("click", "button", () => {
+    $.post(ajaxurl, { action: "dismiss_s3support_alert" });
+  });
+
   let elNotice = $(".smush-notice");
   const btnAct = elNotice.find(".smush-notice-act");
 
@@ -42,15 +73,4 @@
     removeNotice();
     $.post(ajaxurl, { action: "dismiss_update_info" });
   });
-
-  // Dismiss S3 support alert.
-  $("div.wp-smush-s3support-alert").on(
-    "click",
-    ".sui-notice-dismiss > a",
-    () => {
-      elNotice = $(this);
-      removeNotice();
-      $.post(ajaxurl, { action: "dismiss_s3support_alert" });
-    }
-  );
 })(jQuery);

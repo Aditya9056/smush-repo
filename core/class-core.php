@@ -412,6 +412,9 @@ class Core extends Stats {
 			// Ignore text.
 			'ignored'                 => esc_html__( 'Ignored from auto-smush', 'wp-smushit' ),
 			'not_processed'           => esc_html__( 'Not processed', 'wp-smushit' ),
+			// Notices.
+			'noticeDismiss'           => esc_html__( 'Dismiss', 'wp-smushit' ),
+			'noticeDismissTooltip'    => esc_html__( 'Dismiss notice', 'wp-smushit' ),
 		);
 
 		wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
