@@ -260,7 +260,7 @@ class NextGen extends Abstract_Integration {
 				<div class="sui-notice">
 					<div class="sui-notice-content">
 						<div class="sui-notice-message">
-							<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+							<i class="sui-notice-icon sui-icon-info" aria-hidden="true"></i>
 							<p><?php esc_html_e( 'To use this feature you need to be using NextGen Gallery.', 'wp-smushit' ); ?></p>
 						</div>
 					</div>

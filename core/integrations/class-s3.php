@@ -313,7 +313,7 @@ class S3 extends Abstract_Integration {
 			<div class="sui-notice<?php echo esc_attr( $class ); ?>">
 				<div class="sui-notice-content">
 					<div class="sui-notice-message">
-						<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+						<i class="sui-notice-icon sui-icon-info" aria-hidden="true"></i>
 						<p><?php echo wp_kses_post( $message ); ?></p>
 					</div>
 				</div>
