@@ -360,14 +360,11 @@ jQuery(function($) {
         }
         // If we have any notice to show.
         if ("undefined" !== typeof r.data.notice) {
-          const notice = $("#wp-smush-ajax-notice");
-          notice.addClass("sui-notice-success");
-          notice.html("<p>" + r.data.notice + "</p>");
-          notice.slideDown();
-
-          setTimeout(function() {
-            notice.slideUp();
-          }, 5000);
+          window.SUI.openNotice(
+            "wp-smush-ajax-notice",
+            "<p>" + r.data.notice + "</p>",
+            { type: "success", icon: "check-tick" }
+          );
         }
         // Hide errors.
         $("div.smush-final-log").hide();
