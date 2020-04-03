@@ -352,10 +352,10 @@ class Admin {
 		// Show only if we have any images to ber resmushed.
 		if ( $count > 0 ) {
 			$notice  = '<div class="sui-notice sui-notice-warning wp-smush-resmush-notice wp-smush-remaining" tabindex="0">';
-			$notice .= '<p>';
-			$notice .= '<span class="wp-smush-notice-text">';
+			$notice .= '<div class="sui-notice-content"><div class="sui-notice-message">';
+			$notice .= '<i class="sui-notice-icon sui-icon-warning-alert" aria-hidden="true"></i><p>';
 			$notice .= sprintf(
-				/* translators: %1$s: user name, %2$s: strong tag, %3$s: span tag, %4$d: number of remaining umages, %5$s: closing span tag, %6$s: closing strong tag  */
+			/* translators: %1$s: user name, %2$s: strong tag, %3$s: span tag, %4$d: number of remaining umages, %5$s: closing span tag, %6$s: closing strong tag  */
 				_n( '%1$s, you have %2$s%3$s%4$d%5$s attachment%6$s that needs re-compressing!', '%1$s, you have %2$s%3$s%4$d%5$s attachments%6$s that need re-compressing!', $count, 'wp-smushit' ),
 				esc_html( Helper::get_user_name() ),
 				'<strong>',
@@ -364,9 +364,8 @@ class Admin {
 				'</span>',
 				'</strong>'
 			);
-			$notice .= '</span>';
-			$notice .= '</p>';
-			$notice .= '</div>';
+			$notice .= '</p></div></div></div>';
+
 		}
 
 		return $notice;
