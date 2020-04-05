@@ -195,7 +195,17 @@ class Lazy extends Abstract_Module {
 			$in_footer
 		);
 
+		// Native lazy loading support.
+		$native = isset( $this->options['native'] ) && $this->options['native'] ? 'true' : 'false';
+		$custom = 'lazySizes.cfg.nativeLoading={setLoadingAttribute:' . $native . ',disableListeners:{scroll:true}};lazySizes.init();';
+
+		wp_add_inline_script( 'smush-lazy-load', $custom );
+
 		$this->add_masonry_support();
+
+		if ( isset( $this->options['compatibility'] ) && $this->options['compatibility'] ) {
+			wp_add_inline_script( 'smush-lazy-load', "jQuery(document).on('lazyloaded', function(){jQuery(window).trigger('resize');});" );
+		}
 	}
 
 	/**
