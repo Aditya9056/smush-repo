@@ -115,6 +115,8 @@ abstract class Abstract_Page {
 		add_action( 'admin_notices', array( $this, 'smush_upgrade_notice' ) );
 		add_action( 'admin_notices', array( $this, 'smush_deactivated' ) );
 		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
+		// Check for any stored API message and show it.
+		add_action( 'wp_smush_header_notices', array( $this, 'show_api_message' ) );
 
 		add_action( 'admin_notices', array( $this, 'smush_dash_required' ) );
 		add_action( 'network_admin_notices', array( $this, 'smush_dash_required' ) );
@@ -578,18 +580,14 @@ abstract class Abstract_Page {
 			<div role="alert" id="wp-smush-s3support-alert" class="sui-notice" aria-live="assertive"></div>
 			<?php do_action( 'wp_smush_header_notices' ); ?>
 		</div>
-
 		<?php
-		// Check for any stored API message and show it.
-		$this->show_api_message();
-
 		$this->settings_updated();
 	}
 
 	/**
 	 * Display a stored API message.
 	 */
-	private function show_api_message() {
+	public function show_api_message() {
 		// Do not show message for any other users.
 		if ( ! is_network_admin() && ! is_super_admin() ) {
 			return;
@@ -608,11 +606,19 @@ abstract class Abstract_Page {
 		$type_class   = 'warning' === $message_type ? 'sui-notice-warning' : 'sui-notice-info';
 		?>
 
-		<div class="sui-notice wp-smush-api-message <?php echo esc_attr( $type_class ); ?>">
-			<p><?php echo wp_kses_post( $message ); ?></p>
-			<span class="sui-notice-dismiss">
-				<a href="#"><?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?></a>
-			</span>
+		<div class="sui-notice <?php echo esc_attr( $type_class ); ?>" id="wp-smush-api-message">
+			<div class="sui-notice-content">
+				<div class="sui-notice-message">
+					<i class="sui-notice-icon sui-icon-info" aria-hidden="true"></i>
+					<p><?php echo wp_kses_post( $message ); ?></p>
+				</div>
+				<div class="sui-notice-actions">
+					<button class="sui-button-icon">
+						<i class="sui-icon-check" aria-hidden="true"></i>
+						<span class="sui-screen-reader-text"><?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?></span>
+					</button>
+				</div>
+			</div>
 		</div>
 		<?php
 	}

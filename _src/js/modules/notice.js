@@ -35,6 +35,16 @@
     $.post(ajaxurl, { action: "dismiss_s3support_alert" });
   });
 
+  // Remove API message.
+  $("#wp-smush-api-message button.sui-button-icon").on("click", function(e) {
+    e.preventDefault();
+    const notice = $("#wp-smush-api-message");
+    notice.slideUp("slow", function() {
+      notice.remove();
+    });
+    $.post(ajaxurl, { action: "hide_api_message" });
+  });
+
   let elNotice = $(".smush-notice");
   const btnAct = elNotice.find(".smush-notice-act");
 

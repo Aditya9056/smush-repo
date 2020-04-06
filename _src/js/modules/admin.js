@@ -1123,23 +1123,6 @@ jQuery(function($) {
     });
   });
 
-  //Remove API message
-  $("div.wp-smush-api-message i.icon-fi-close").on("click", function(e) {
-    e.preventDefault();
-    const parent = $(this).parent();
-    //remove div and save preference in db
-    parent.hide("slow", function() {
-      parent.remove();
-    });
-    $.ajax({
-      type: "POST",
-      url: ajaxurl,
-      data: {
-        action: "hide_api_message"
-      }
-    });
-  });
-
   /**
    * Scroll to resize settings.
    *

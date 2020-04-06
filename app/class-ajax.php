@@ -248,9 +248,9 @@ class Ajax {
 		$api_message = get_site_option( WP_SMUSH_PREFIX . 'api_message', array() );
 		if ( ! empty( $api_message ) && is_array( $api_message ) ) {
 			$api_message[ key( $api_message ) ]['status'] = 'hide';
+			update_site_option( WP_SMUSH_PREFIX . 'api_message', $api_message );
 		}
 
-		update_site_option( WP_SMUSH_PREFIX . 'api_message', true );
 		wp_send_json_success();
 	}
 

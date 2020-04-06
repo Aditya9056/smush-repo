@@ -166,8 +166,7 @@ div.smush-notice-cta a.smush-notice-act.button-primary {
 }
 
 .wp-smush-resmush-message,
-.wp-smush-settings-updated,
-.wp-smush-api-message {
+.wp-smush-settings-updated {
 	border: none;
 	margin-bottom: 25px;
 	padding: 18px 50px;
@@ -203,8 +202,7 @@ ol.smush-recommendation-list li {
 /** Image Remaining **/
 div.wp-smush-remaining,
 div.wp-smush-dir-limit,
-div.smush-s3-setup-message,
-div.wp-smush-notice.wp-smush-api-message.warning {
+div.smush-s3-setup-message {
 	background-color: #FFF5D5;
 	border: none;
 	color: #333333;
@@ -213,8 +211,7 @@ div.wp-smush-notice.wp-smush-api-message.warning {
 	letter-spacing: -0.015em;
 }
 
-div.smush-s3-setup-message,
-div.wp-smush-notice.wp-smush-api-message.info {
+div.smush-s3-setup-message {
 	background-color: #DFF6FA;
 }
 
