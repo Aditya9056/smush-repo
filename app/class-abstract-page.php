@@ -583,11 +583,6 @@ abstract class Abstract_Page {
 		// Re-check images notice.
 		$this->get_recheck_message();
 
-		// Check and show missing directory smush table error only on main site.
-		if ( Dir::should_continue() ) {
-			$this->show_table_error();
-		}
-
 		// Check for any stored API message and show it.
 		$this->show_api_message();
 
@@ -616,26 +611,6 @@ abstract class Abstract_Page {
 			<span class="sui-notice-dismiss"><a href="#"><?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?></a></span>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Display a admin notice on smush screen if the custom table wasn't created
-	 */
-	private function show_table_error() {
-		$current_screen = get_current_screen();
-		if ( 'toplevel_page_smush' !== $current_screen->id && 'toplevel_page_smush-network' !== $current_screen->id ) {
-			return;
-		}
-
-		if ( ! Dir::table_exist() ) { // Display a notice.
-			?>
-			<div class="sui-notice sui-notice-warning missing_table">
-				<p>
-					<?php esc_html_e( 'Directory smushing requires custom tables and it seems there was an error creating tables. For help, please contact our team on the support forums', 'wp-smushit' ); ?>
-				</p>
-			</div>
-			<?php
-		}
 	}
 
 	/**

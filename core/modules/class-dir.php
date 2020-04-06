@@ -87,6 +87,8 @@ class Dir extends Abstract_Module {
 
 		// Add stats to stats box.
 		add_action( 'stats_ui_after_resize_savings', array( $this, 'directory_stats_ui' ), 10 );
+		// Check and show missing directory smush table error.
+		add_action( 'wp_smush_header_notices', array( $this, 'show_table_error' ) );
 
 		// Check directory smush table after screen is set.
 		add_action( 'current_screen', array( $this, 'check_table' ) );
@@ -1196,6 +1198,26 @@ class Dir extends Abstract_Module {
 			</span>
 		</li>
 		<?php
+	}
+
+	/**
+	 * Display a admin notice on smush screen if the custom table wasn't created
+	 */
+	public function show_table_error() {
+		if ( ! self::table_exist() ) { // Display a notice.
+			?>
+		<div class="sui-notice sui-notice-warning">
+			<div class="sui-notice-content">
+				<div class="sui-notice-message">
+					<i class="sui-notice-icon sui-icon-info" aria-hidden="true"></i>
+					<p>
+						<?php esc_html_e( 'Directory smushing requires custom tables and it seems there was an error creating tables. For help, please contact our team on the support forums.', 'wp-smushit' ); ?>
+					</p>
+				</div>
+			</div>
+		</div>
+			<?php
+		}
 	}
 
 }
