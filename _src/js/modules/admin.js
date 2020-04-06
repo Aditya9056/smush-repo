@@ -404,12 +404,6 @@ jQuery(function($) {
       }, 2000);
 
       $(".wp-smush-all").removeAttr("disabled");
-
-      // If wp-smush-re-check-message is there, remove it.
-      const reCheckMessage = $(".wp-smush-re-check-message");
-      if (reCheckMessage.length) {
-        remove_element(reCheckMessage);
-      }
     });
   };
 
@@ -1066,15 +1060,6 @@ jQuery(function($) {
       }
     });
   });
-
-  //Initiate Re-check if the variable is set
-  if (
-    "undefined" !== typeof wp_smush_run_re_check &&
-    1 == wp_smush_run_re_check &&
-    $(".wp-smush-scan").length > 0
-  ) {
-    run_re_check(false);
-  }
 
   if ($("li.smush-dir-savings").length > 0) {
     // Update Directory Smush, as soon as the page loads.

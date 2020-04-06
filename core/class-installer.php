@@ -129,6 +129,10 @@ class Installer {
 				self::upgrade_3_4();
 			}
 
+			if ( version_compare( $version, '3.6.2', '<' ) ) {
+				self::upgrade_3_6_2();
+			}
+
 			// Create/upgrade directory smush table.
 			self::directory_smush_table();
 
@@ -327,6 +331,15 @@ class Installer {
 		$lazy['format']['iframe'] = true;
 
 		Settings::get_instance()->set_setting( WP_SMUSH_PREFIX . 'lazy_load', $lazy );
+	}
+
+	/**
+	 * Upgrade to 3.6.2
+	 *
+	 * @since 3.6.2
+	 */
+	private static function upgrade_3_6_2() {
+		delete_site_option( WP_SMUSH_PREFIX . 'run_recheck' );
 	}
 
 }

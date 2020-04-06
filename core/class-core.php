@@ -488,14 +488,6 @@ class Core extends Stats {
 		$data['timeout'] = WP_SMUSH_TIMEOUT * 1000;
 
 		wp_localize_script( $handle, 'wp_smushit_data', $data );
-
-		// Check if settings were changed for a multisite, and localize whether to run re-check on page load.
-		if ( Settings::can_access( 'bulk' ) ) {
-			// If not same, Set a variable to run re-check on page load.
-			if ( get_site_option( WP_SMUSH_PREFIX . 'run_recheck', false ) ) {
-				wp_localize_script( $handle, 'wp_smush_run_re_check', array( 1 ) );
-			}
-		}
 	}
 
 	/**

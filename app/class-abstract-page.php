@@ -580,37 +580,10 @@ abstract class Abstract_Page {
 		</div>
 
 		<?php
-		// Re-check images notice.
-		$this->get_recheck_message();
-
 		// Check for any stored API message and show it.
 		$this->show_api_message();
 
 		$this->settings_updated();
-	}
-
-	/**
-	 * Get re-check notice after settings update.
-	 */
-	private function get_recheck_message() {
-		// Return if not multisite, or on network settings page, Netowrkwide settings is disabled.
-		if ( ! is_multisite() || is_network_admin() || ! Settings::can_access( 'bulk' ) ) {
-			return;
-		}
-
-		// Check the last settings stored in db.
-		$run_recheck = $this->settings->get_setting( WP_SMUSH_PREFIX . 'run_recheck', false );
-
-		// If not same, display notice.
-		if ( ! $run_recheck ) {
-			return;
-		}
-		?>
-		<div class="sui-notice sui-notice-success wp-smush-re-check-message">
-			<p><?php esc_html_e( 'Smush settings were updated, performing a quick scan to check if any of the images need to be Smushed again.', 'wp-smushit' ); ?></p>
-			<span class="sui-notice-dismiss"><a href="#"><?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?></a></span>
-		</div>
-		<?php
 	}
 
 	/**
