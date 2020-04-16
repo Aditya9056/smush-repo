@@ -25,8 +25,13 @@ wp_enqueue_style( 'wp-color-picker' );
 	?>
 </p>
 
-<div class="sui-notice sui-notice-info smush-notice-sm">
-	<p><?php esc_html_e( 'Lazy loading is active.', 'wp-smushit' ); ?></p>
+<div class="sui-notice sui-notice-info">
+	<div class="sui-notice-content">
+		<div class="sui-notice-message">
+			<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+			<p><?php esc_html_e( 'Lazy loading is active.', 'wp-smushit' ); ?></p>
+		</div>
+	</div>
 </div>
 
 <form id="wp-smush-settings-form" method="post">
@@ -293,7 +298,12 @@ wp_enqueue_style( 'wp-color-picker' );
 					</div>
 
 					<div class="sui-notice <?php echo ! $settings['animation']['selected'] ? 'active' : ''; ?>">
-						<p><?php esc_html_e( 'Images will flash into view as soon as they are ready to display.', 'wp-smushit' ); ?></p>
+						<div class="sui-notice-content">
+							<div class="sui-notice-message">
+								<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+								<p><?php esc_html_e( 'Images will flash into view as soon as they are ready to display.', 'wp-smushit' ); ?></p>
+							</div>
+						</div>
 					</div>
 				</div><!-- end data-panes -->
 			</div><!-- end .sui-tabs -->
@@ -500,10 +510,20 @@ wp_enqueue_style( 'wp-color-picker' );
 
 					<div data-panes>
 						<div class="sui-notice active">
-							<p><?php esc_html_e( 'Your theme must be using the wp_footer() function.', 'wp-smushit' ); ?></p>
+							<div class="sui-notice-content">
+								<div class="sui-notice-message">
+									<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+									<p><?php esc_html_e( 'Your theme must be using the wp_footer() function.', 'wp-smushit' ); ?></p>
+								</div>
+							</div>
 						</div>
 						<div class="sui-notice">
-							<p><?php esc_html_e( 'Your theme must be using the wp_head() function.', 'wp-smushit' ); ?></p>
+							<div class="sui-notice-content">
+								<div class="sui-notice-message">
+									<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+									<p><?php esc_html_e( 'Your theme must be using the wp_head() function.', 'wp-smushit' ); ?></p>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

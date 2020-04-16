@@ -33,9 +33,9 @@
 		 * @since 3.2.3
 		 */
 		.smush-upsell-notice {
-			margin-left: 130px;
+			margin-left: 130px !important;
 			@media screen and (max-width: 782px) {
-				margin-left: 0;
+				margin-left: 0 !important;
 			}
 		}
 
@@ -692,7 +692,6 @@
 			.sui-upsell-image {
 				&.sui-upsell-image-smush:not(.integrations-upsell-image) {
 					bottom: -30px;
-					width: 85px;
 				}
 			}
 		}
@@ -715,12 +714,6 @@
 		}
 
 		.sui-notice {
-			&.smush-notice-sm {
-				p {
-					font-size: 13px;
-				}
-			}
-
 			&.smush-highlighting-notice,
 			&.smush-highlighting-warning {
 				margin-top: 10px;
