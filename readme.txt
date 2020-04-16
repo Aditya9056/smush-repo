@@ -5,7 +5,7 @@ Author: WPMU DEV
 Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: optimize images, convert webp, lazy load, image, resize, optimize, optimise, compress, performance, optimisation, photography, optimizer
-Requires at least: 4.6
+Requires at least: 5.2
 Tested up to: 5.4
 Stable tag: %%VERSION%%
 Requires PHP: 5.6.20
