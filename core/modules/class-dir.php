@@ -781,11 +781,11 @@ class Dir extends Abstract_Module {
 		check_ajax_referer( 'smush_get_image_list', 'image_list_nonce' );
 
 		// Check if directory path is set or not.
-		if ( empty( $_GET['smush_path'] ) ) { // Input var ok.
+		if ( empty( $_POST['smush_path'] ) ) { // Input var ok.
 			wp_send_json_error( __( 'Empty Directory Path', 'wp-smushit' ) );
 		}
 
-		$smush_path = filter_input( INPUT_GET, 'smush_path', FILTER_SANITIZE_URL, FILTER_REQUIRE_ARRAY );
+		$smush_path = filter_input( INPUT_POST, 'smush_path', FILTER_SANITIZE_URL, FILTER_REQUIRE_ARRAY );
 
 		// This will add the images to the database and get the file list.
 		$files = $this->get_image_list( $smush_path );
