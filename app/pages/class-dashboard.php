@@ -382,17 +382,22 @@ class Dashboard extends Abstract_Page {
 					'</strong>'
 				);
 				?>
-			</div>
-			<div class="sui-description sui-notice sui-notice-info wp-smush-update-width sui-no-margin-bottom sui-hidden" tabindex="0">
-				<p>
-					<?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", 'wp-smushit' ); ?>
-				</p>
-
-			</div>
-			<div class="sui-description sui-notice sui-notice-info wp-smush-update-height sui-no-margin-bottom sui-hidden" tabindex="0">
-				<p>
-					<?php esc_html_e( 'Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.', 'wp-smushit' ); ?>
-				</p>
+				<div class="sui-notice sui-notice-info wp-smush-update-width sui-no-margin-bottom sui-hidden">
+					<div class="sui-notice-content">
+						<div class="sui-notice-message">
+							<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+							<p><?php esc_html_e( "Just to let you know, the width you've entered is less than your largest image and may result in pixelation.", 'wp-smushit' ); ?></p>
+						</div>
+					</div>
+				</div>
+				<div class="sui-notice sui-notice-info wp-smush-update-height sui-no-margin-bottom sui-hidden">
+					<div class="sui-notice-content">
+						<div class="sui-notice-message">
+							<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+							<p><?php esc_html_e( 'Just to let you know, the height you’ve entered is less than your largest image and may result in pixelation.', 'wp-smushit' ); ?></p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<span class="sui-description sui-toggle-description">
@@ -455,40 +460,51 @@ class Dashboard extends Abstract_Page {
 			?>
 			<?php if ( $this->settings->get( 'detection' ) ) : ?>
 				<?php if ( $this->settings->get( 'cdn' ) && $this->settings->get( 'auto_resize' ) ) : ?>
-					<div class="sui-notice smush-notice-sm smush-highlighting-notice">
-						<p>
-							<?php
-							esc_html_e(
-								'Note: Images served via the Smush CDN are automatically resized to fit their containers, these will be skipped.',
-								'wp-smushit'
-							);
-							?>
-						</p>
+					<div class="sui-notice smush-highlighting-notice">
+						<div class="sui-notice-content">
+							<div class="sui-notice-message">
+								<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+								<p>
+									<?php
+									esc_html_e(
+										'Note: Images served via the Smush CDN are automatically resized to fit their containers, these will be skipped.',
+										'wp-smushit'
+									);
+									?>
+								</p>
+							</div>
+						</div>
 					</div>
 				<?php else : ?>
-					<div class="sui-notice sui-notice-info smush-notice-sm smush-highlighting-notice">
-						<p>
-							<?php
-							printf(
-								/* translators: %1$s: opening a tag, %2$s: closing a tag */
-								esc_html__(
-									'Incorrect image size highlighting is active. %1$sView the frontend%2$s of your website to see if any images aren\'t the correct size for their containers.',
-									'wp-smushit'
-								),
-								'<a href="' . esc_url( home_url() ) . '" target="_blank">',
-								'</a>'
-							);
-							?>
-						</p>
+					<div class="sui-notice sui-notice-info smush-highlighting-notice">
+						<div class="sui-notice-content">
+							<div class="sui-notice-message">
+								<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+								<p>
+									<?php
+									printf(
+										/* translators: %1$s: opening a tag, %2$s: closing a tag */
+										esc_html__(
+											'Incorrect image size highlighting is active. %1$sView the frontend%2$s of your website to see if any images aren\'t the correct size for their containers.',
+											'wp-smushit'
+										),
+										'<a href="' . esc_url( home_url() ) . '" target="_blank">',
+										'</a>'
+									);
+									?>
+								</p>
+							</div>
+						</div>
 					</div>
 				<?php endif; ?>
 			<?php elseif ( 'detection' === $name ) : ?>
-				<div class="sui-notice sui-notice-warning smush-notice-sm smush-highlighting-warning sui-hidden">
-					<p>
-						<?php
-						esc_html_e( 'Almost there! To finish activating this feature you must save your settings.', 'wp-smushit' );
-						?>
-					</p>
+				<div class="sui-notice sui-notice-warning smush-highlighting-warning sui-hidden">
+					<div class="sui-notice-content">
+						<div class="sui-notice-message">
+							<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+							<p><?php esc_html_e( 'Almost there! To finish activating this feature you must save your settings.', 'wp-smushit' ); ?></p>
+						</div>
+					</div>
 				</div>
 			<?php endif; ?>
 		</span>
@@ -679,16 +695,21 @@ class Dashboard extends Abstract_Page {
 		if ( 'png_to_jpg' === $setting_key ) {
 			?>
 			<div class="sui-notice sui-notice-info auto-smush-notice">
-				<p>
-					<?php
-					printf(
-						/* translators: %1$s - <strong>, %2$s - </strong> */
-						wp_kses( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and %1$sany hard-coded URLs on your site that contain the original PNG filename will need to be updated manually%2$s.', 'wp-smushit' ),
-						'<strong>',
-						'</strong>'
-					);
-					?>
-				</p>
+				<div class="sui-notice-content">
+					<div class="sui-notice-message">
+						<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+						<p>
+							<?php
+							printf(
+								/* translators: %1$s - <strong>, %2$s - </strong> */
+								wp_kses( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and %1$sany hard-coded URLs on your site that contain the original PNG filename will need to be updated manually%2$s.', 'wp-smushit' ),
+								'<strong>',
+								'</strong>'
+							);
+							?>
+						</p>
+					</div>
+				</div>
 			</div>
 			<?php
 			return;
@@ -749,9 +770,12 @@ class Dashboard extends Abstract_Page {
 
 		?>
 		<div class="sui-notice smush-notice-sm auto-smush-notice <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
-			<p>
-				<?php esc_html_e( 'Note: We will only automatically compress the image sizes selected above.', 'wp-smushit' ); ?>
-			</p>
+			<div class="sui-notice-content">
+				<div class="sui-notice-message">
+					<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+					<p><?php esc_html_e( 'Note: We will only automatically compress the image sizes selected above.', 'wp-smushit' ); ?></p>
+				</div>
+			</div>
 		</div>
 		<?php
 	}
