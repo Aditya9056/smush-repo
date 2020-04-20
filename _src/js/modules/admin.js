@@ -993,17 +993,6 @@ jQuery(function($) {
     }
   );
 
-  // Handle Automatic Smush Checkbox toggle, to show/hide image size settings.
-  $("#column-wp-smush-auto").on("click", "#wp-smush-auto", function() {
-    const settings_wrap = $("#column-wp-smush-auto .auto-smush-notice");
-
-    if ($(this).is(":checked")) {
-      settings_wrap.show();
-    } else {
-      settings_wrap.hide();
-    }
-  });
-
   // Handle auto detect checkbox toggle, to show/hide highlighting notice.
   $("body").on("click", "#wp-smush-detection", function() {
     const self = $(this);

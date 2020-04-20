@@ -694,20 +694,22 @@ class Dashboard extends Abstract_Page {
 
 		if ( 'png_to_jpg' === $setting_key ) {
 			?>
-			<div class="sui-notice sui-notice-info auto-smush-notice">
-				<div class="sui-notice-content">
-					<div class="sui-notice-message">
-						<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
-						<p>
-							<?php
-							printf(
-								/* translators: %1$s - <strong>, %2$s - </strong> */
-								wp_kses( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and %1$sany hard-coded URLs on your site that contain the original PNG filename will need to be updated manually%2$s.', 'wp-smushit' ),
-								'<strong>',
-								'</strong>'
-							);
-							?>
-						</p>
+			<div class="sui-toggle-content">
+				<div class="sui-notice sui-notice-info" style="margin-top: 10px">
+					<div class="sui-notice-content">
+						<div class="sui-notice-message">
+							<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+							<p>
+								<?php
+								printf(
+									/* translators: %1$s - <strong>, %2$s - </strong> */
+									wp_kses( 'Note: Any PNGs with transparency will be ignored. Smush will only convert PNGs if it results in a smaller file size. The resulting file will have a new filename and extension (JPEG), and %1$sany hard-coded URLs on your site that contain the original PNG filename will need to be updated manually%2$s.', 'wp-smushit' ),
+									'<strong>',
+									'</strong>'
+								);
+								?>
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -769,11 +771,13 @@ class Dashboard extends Abstract_Page {
 		$setting_status = $this->settings->get( 'auto' );
 
 		?>
-		<div class="sui-notice smush-notice-sm auto-smush-notice <?php echo $setting_status ? '' : ' sui-hidden'; ?>">
-			<div class="sui-notice-content">
-				<div class="sui-notice-message">
-					<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
-					<p><?php esc_html_e( 'Note: We will only automatically compress the image sizes selected above.', 'wp-smushit' ); ?></p>
+		<div class="sui-toggle-content">
+			<div class="sui-notice <?php echo $setting_status ? '' : ' sui-hidden'; ?>" style="margin-top: 10px">
+				<div class="sui-notice-content">
+					<div class="sui-notice-message">
+						<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+						<p><?php esc_html_e( 'Note: We will only automatically compress the image sizes selected above.', 'wp-smushit' ); ?></p>
+					</div>
 				</div>
 			</div>
 		</div>
