@@ -502,6 +502,8 @@ class Settings {
 	 * Save settings.
 	 *
 	 * @param bool $json_response  Send a JSON response.
+	 *
+	 * @TODO: Refactor. Why do we have two different methods for mu and single?
 	 */
 	public function save( $json_response = true ) {
 		check_ajax_referer( 'save_wp_smush_options', 'wp_smush_options_nonce' );

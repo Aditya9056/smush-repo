@@ -371,14 +371,11 @@ jQuery( function( $ ) {
 				}
 				// If we have any notice to show.
 				if ( 'undefined' !== typeof r.data.notice ) {
-					const notice = $( '#wp-smush-ajax-notice' );
-					notice.addClass( 'sui-notice-success' );
-					notice.html( '<p>' + r.data.notice + '</p>' );
-					notice.slideDown();
-
-					setTimeout( function() {
-						notice.slideUp();
-					}, 5000 );
+					window.SUI.openNotice(
+						'wp-smush-ajax-notice',
+						'<p>' + r.data.notice + '</p>',
+						{ type: 'success', icon: 'check-tick' }
+					);
 				}
 				// Hide errors.
 				$( 'div.smush-final-log' ).hide();
@@ -423,12 +420,6 @@ jQuery( function( $ ) {
 			}, 2000 );
 
 			$( '.wp-smush-all' ).removeAttr( 'disabled' );
-
-			// If wp-smush-re-check-message is there, remove it.
-			const reCheckMessage = $( '.wp-smush-re-check-message' );
-			if ( reCheckMessage.length ) {
-				remove_element( reCheckMessage );
-			}
 		} );
 	};
 
@@ -1068,17 +1059,6 @@ jQuery( function( $ ) {
 		}
 	);
 
-	// Handle Automatic Smush Checkbox toggle, to show/hide image size settings.
-	$( '#column-wp-smush-auto' ).on( 'click', '#wp-smush-auto', function() {
-		const settings_wrap = $( '#column-wp-smush-auto .auto-smush-notice' );
-
-		if ( $( this ).is( ':checked' ) ) {
-			settings_wrap.show();
-		} else {
-			settings_wrap.hide();
-		}
-	} );
-
 	// Handle auto detect checkbox toggle, to show/hide highlighting notice.
 	$( 'body' ).on( 'click', '#wp-smush-detection', function() {
 		const self = $( this );
@@ -1135,15 +1115,6 @@ jQuery( function( $ ) {
 			}
 		} );
 	} );
-
-	//Initiate Re-check if the variable is set
-	if (
-		'undefined' !== typeof wp_smush_run_re_check &&
-		1 == wp_smush_run_re_check &&
-		$( '.wp-smush-scan' ).length > 0
-	) {
-		run_re_check( false );
-	}
 
 	if ( $( 'li.smush-dir-savings' ).length > 0 ) {
 		// Update Directory Smush, as soon as the page loads.
@@ -1205,23 +1176,6 @@ jQuery( function( $ ) {
 			url: ajaxurl,
 			data: {
 				action: 'hide_pagespeed_suggestion',
-			},
-		} );
-	} );
-
-	//Remove API message
-	$( 'div.wp-smush-api-message i.icon-fi-close' ).on( 'click', function( e ) {
-		e.preventDefault();
-		const parent = $( this ).parent();
-		//remove div and save preference in db
-		parent.hide( 'slow', function() {
-			parent.remove();
-		} );
-		$.ajax( {
-			type: 'POST',
-			url: ajaxurl,
-			data: {
-				action: 'hide_api_message',
 			},
 		} );
 	} );

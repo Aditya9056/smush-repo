@@ -62,7 +62,7 @@ import Smush from '../smush/smush';
 
 				// Show loader.
 				progress
-					.find( 'i.sui-icon-info' )
+					.find( '.sui-progress-block i.sui-icon-info' )
 					.removeClass( 'sui-icon-info' )
 					.addClass( 'sui-loading' )
 					.addClass( 'sui-icon-loader' );

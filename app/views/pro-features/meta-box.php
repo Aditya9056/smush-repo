@@ -155,18 +155,23 @@ if ( ! defined( 'WPINC' ) ) {
 <div class="sui-upsell-row">
 	<img class="sui-image sui-upsell-image sui-upsell-image-smush" src="<?php echo esc_url( WP_SMUSH_URL . 'app/assets/images/smush-promo.png' ); ?>">
 	<div class="sui-notice sui-notice-purple smush-upsell-notice">
-		<p>
-			<?php
-			esc_html_e(
-				'Smush Pro gives you all these extra settings and absolutely no limits on smushing your images. Did we mention Smush Pro also gives you up to 2x better compression too? Try it all free with a WPMU DEV membership today!',
-				'wp-smushit'
-			);
-			?>
-		</p>
-		<div class="sui-notice-buttons">
-			<a href="<?php echo esc_url( $upsell_url ); ?>" class="sui-button sui-button-purple" target="_blank">
-				<?php esc_html_e( 'Learn More', 'wp-smushit' ); ?>
-			</a>
+		<div class="sui-notice-content">
+			<div class="sui-notice-message">
+				<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+				<p>
+					<?php
+					esc_html_e(
+						'Smush Pro gives you all these extra settings and absolutely no limits on smushing your images. Did we mention Smush Pro also gives you up to 2x better compression too? Try it all free with a WPMU DEV membership today!',
+						'wp-smushit'
+					);
+					?>
+				</p>
+				<p>
+					<a href="<?php echo esc_url( $upsell_url ); ?>" class="sui-button sui-button-purple" target="_blank">
+						<?php esc_html_e( 'Learn More', 'wp-smushit' ); ?>
+					</a>
+				</p>
+			</div>
 		</div>
 	</div>
 </div>
