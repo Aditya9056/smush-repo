@@ -371,10 +371,14 @@ jQuery( function( $ ) {
 				}
 				// If we have any notice to show.
 				if ( 'undefined' !== typeof r.data.notice ) {
+					let type = 'success';
+					if ( 'undefined' !== typeof r.data.noticeType ) {
+						type = r.data.noticeType;
+					}
 					window.SUI.openNotice(
 						'wp-smush-ajax-notice',
 						'<p>' + r.data.notice + '</p>',
-						{ type: 'success', icon: 'check-tick' }
+						{ type, icon: 'check-tick' }
 					);
 				}
 				// Hide errors.

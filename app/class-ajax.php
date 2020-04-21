@@ -644,7 +644,8 @@ class Ajax {
 		}
 
 		if ( ! empty( $count ) ) {
-			$return['notice'] = sprintf(
+			$return['noticeType'] = 'warning';
+			$return['notice']     = sprintf(
 				/* translators: %1$d - number of images, %2$s - opening a tag, %3$s - closing a tag */
 				esc_html__( 'Image check complete, you have %1$d images that need smushing. %2$sBulk smush now!%3$s', 'wp-smushit' ),
 				$count,
