@@ -121,7 +121,7 @@ import Scanner from '../smush/directory-scanner';
 					).val(),
 				};
 
-				$.get( ajaxurl, param, function( response ) {
+				$.post( ajaxurl, param, function( response ) {
 					window.SUI.closeModal();
 
 					// TODO: check for errors.

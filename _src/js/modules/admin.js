@@ -522,15 +522,6 @@ jQuery( function( $ ) {
 		}
 	};
 
-	//Remove span tag from URL
-	function removeSpan( url ) {
-		var url = url.slice( url.indexOf( '?' ) + 1 ).split( '&' );
-		for ( let i = 0; i < url.length; i++ ) {
-			const urlparam = decodeURI( url[ i ] ).split( /=(.+)/ )[ 1 ];
-			return urlparam.replace( /<(?:.|\n)*?>/gm, '' );
-		}
-	}
-
 	/**
 	 * When 'All' is selected for the Image Sizes setting, select all available sizes.
 	 *
