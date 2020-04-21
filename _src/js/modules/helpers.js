@@ -7,7 +7,7 @@
  *
  * @since 2.9.0  Moved from admin.js
  */
-(function () {
+( function() {
 	'use strict';
 
 	WP_Smush.helpers = {
@@ -20,11 +20,11 @@
 		 * @param {number} b  Number of digits
 		 * @return {*} Formatted Bytes
 		 */
-		formatBytes: (a, b) => {
+		formatBytes: ( a, b ) => {
 			const thresh = 1024,
-				units = ['KB', 'MB', 'GB', 'TB', 'PB'];
+				units = [ 'KB', 'MB', 'GB', 'TB', 'PB' ];
 
-			if (Math.abs(a) < thresh) {
+			if ( Math.abs( a ) < thresh ) {
 				return a + ' B';
 			}
 
@@ -33,9 +33,9 @@
 			do {
 				a /= thresh;
 				++u;
-			} while (Math.abs(a) >= thresh && u < units.length - 1);
+			} while ( Math.abs( a ) >= thresh && u < units.length - 1 );
 
-			return a.toFixed(b) + ' ' + units[u];
+			return a.toFixed( b ) + ' ' + units[ u ];
 		},
 
 		/**
@@ -44,8 +44,8 @@
 		 * @param {string} formattedSize  Formatter string
 		 * @return {*} Formatted Bytes
 		 */
-		getSizeFromString: (formattedSize) => {
-			return formattedSize.replace(/[a-zA-Z]/g, '').trim();
+		getSizeFromString: ( formattedSize ) => {
+			return formattedSize.replace( /[a-zA-Z]/g, '' ).trim();
 		},
 
 		/**
@@ -54,8 +54,8 @@
 		 * @param {string} formattedSize  Formatted string
 		 * @return {*} Formatted Bytes
 		 */
-		getFormatFromString: (formattedSize) => {
-			return formattedSize.replace(/[0-9.]/g, '').trim();
+		getFormatFromString: ( formattedSize ) => {
+			return formattedSize.replace( /[0-9.]/g, '' ).trim();
 		},
 
 		/**
@@ -65,13 +65,13 @@
 		 * @param {number} decimals
 		 * @return {number}  Number
 		 */
-		precise_round: (num, decimals) => {
+		precise_round: ( num, decimals ) => {
 			const sign = num >= 0 ? 1 : -1;
 			// Keep the percentage below 100.
 			num = num > 100 ? 100 : num;
 			return (
-				Math.round(num * Math.pow(10, decimals) + sign * 0.001) /
-				Math.pow(10, decimals)
+				Math.round( num * Math.pow( 10, decimals ) + sign * 0.001 ) /
+				Math.pow( 10, decimals )
 			);
 		},
 
@@ -81,17 +81,17 @@
 		 * @since 3.2.0
 		 */
 		resetSettings: () => {
-			const _nonce = document.getElementById('wp_smush_reset');
+			const _nonce = document.getElementById( 'wp_smush_reset' );
 			const xhr = new XMLHttpRequest();
-			xhr.open('POST', ajaxurl + '?action=reset_settings', true);
+			xhr.open( 'POST', ajaxurl + '?action=reset_settings', true );
 			xhr.setRequestHeader(
 				'Content-type',
 				'application/x-www-form-urlencoded'
 			);
 			xhr.onload = () => {
-				if (200 === xhr.status) {
-					const res = JSON.parse(xhr.response);
-					if ('undefined' !== typeof res.success && res.success) {
+				if ( 200 === xhr.status ) {
+					const res = JSON.parse( xhr.response );
+					if ( 'undefined' !== typeof res.success && res.success ) {
 						window.location.href = wp_smush_msgs.smush_url;
 					}
 				} else {
@@ -100,9 +100,9 @@
 					);
 				}
 			};
-			xhr.send('_ajax_nonce=' + _nonce.value);
+			xhr.send( '_ajax_nonce=' + _nonce.value );
 		},
 	};
 
 	WP_Smush.helpers.init();
-})();
+} )();

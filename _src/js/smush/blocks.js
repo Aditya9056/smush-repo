@@ -12,11 +12,11 @@ const { createHigherOrderComponent } = wp.compose,
  * @param {number} bytes
  * @return {string}  Readable size string.
  */
-function humanFileSize(bytes) {
+function humanFileSize( bytes ) {
 	const thresh = 1024,
-		units = ['kB', 'MB', 'GB', 'TB'];
+		units = [ 'kB', 'MB', 'GB', 'TB' ];
 
-	if (Math.abs(bytes) < thresh) {
+	if ( Math.abs( bytes ) < thresh ) {
 		return bytes + ' B';
 	}
 
@@ -24,9 +24,9 @@ function humanFileSize(bytes) {
 	do {
 		bytes /= thresh;
 		++u;
-	} while (Math.abs(bytes) >= thresh && u < units.length - 1);
+	} while ( Math.abs( bytes ) >= thresh && u < units.length - 1 );
 
-	return bytes.toFixed(1) + ' ' + units[u];
+	return bytes.toFixed( 1 ) + ' ' + units[ u ];
 }
 
 /**
@@ -36,10 +36,10 @@ function humanFileSize(bytes) {
  * @param {Object} stats
  * @return {*}  Smush stats.
  */
-export function smushStats(id, stats) {
-	if ('undefined' === typeof stats) {
+export function smushStats( id, stats ) {
+	if ( 'undefined' === typeof stats ) {
 		return window.smush_vars.strings.gb.select_image;
-	} else if ('string' === typeof stats) {
+	} else if ( 'string' === typeof stats ) {
 		return stats;
 	}
 
@@ -47,31 +47,33 @@ export function smushStats(id, stats) {
 		<div
 			id="smush-stats"
 			className="sui-smush-media smush-stats-wrapper hidden"
-			style={{ display: 'block' }}
+			style={ { display: 'block' } }
 		>
 			<table className="wp-smush-stats-holder">
 				<thead>
 					<tr>
 						<th className="smush-stats-header">
-							{window.smush_vars.strings.gb.size}
+							{ window.smush_vars.strings.gb.size }
 						</th>
 						<th className="smush-stats-header">
-							{window.smush_vars.strings.gb.savings}
+							{ window.smush_vars.strings.gb.savings }
 						</th>
 					</tr>
 				</thead>
 				<tbody>
-					{Object.keys(stats.sizes)
-						.filter((item) => 0 < stats.sizes[item].percent)
-						.map((item, i) => (
-							<tr key={i}>
-								<td>{item.toUpperCase()}</td>
+					{ Object.keys( stats.sizes )
+						.filter( ( item ) => 0 < stats.sizes[ item ].percent )
+						.map( ( item, i ) => (
+							<tr key={ i }>
+								<td>{ item.toUpperCase() }</td>
 								<td>
-									{humanFileSize(stats.sizes[item].bytes)} ({' '}
-									{stats.sizes[item].percent}% )
+									{ humanFileSize(
+										stats.sizes[ item ].bytes
+									) }{ ' ' }
+									( { stats.sizes[ item ].percent }% )
 								</td>
 							</tr>
-						))}
+						) ) }
 				</tbody>
 			</table>
 		</div>
@@ -85,58 +87,58 @@ export function smushStats(id, stats) {
  *
  * @param {Object} props
  */
-export function fetchProps(props) {
-	const image = new wp.api.models.Media({ id: props.attributes.id }),
+export function fetchProps( props ) {
+	const image = new wp.api.models.Media( { id: props.attributes.id } ),
 		smushData = props.attributes.smush;
 
-	image.fetch({ attribute: 'smush' }).done(function (img) {
-		if ('string' === typeof img.smush) {
-			props.setAttributes({ smush: img.smush });
+	image.fetch( { attribute: 'smush' } ).done( function( img ) {
+		if ( 'string' === typeof img.smush ) {
+			props.setAttributes( { smush: img.smush } );
 			//setTimeout( () => fetch( props ), 3000 );
 		} else if (
 			'undefined' !== typeof img.smush &&
-			('undefined' === typeof smushData ||
-				JSON.stringify(smushData) !== JSON.stringify(img.smush))
+			( 'undefined' === typeof smushData ||
+				JSON.stringify( smushData ) !== JSON.stringify( img.smush ) )
 		) {
-			props.setAttributes({ smush: img.smush });
+			props.setAttributes( { smush: img.smush } );
 		}
-	});
+	} );
 }
 
 /**
  * Modify the block’s edit component.
  * Receives the original block BlockEdit component and returns a new wrapped component.
  */
-const smushStatsControl = createHigherOrderComponent((BlockEdit) => {
-	return (props) => {
+const smushStatsControl = createHigherOrderComponent( ( BlockEdit ) => {
+	return ( props ) => {
 		// If not image block or not selected, return unmodified block.
 		if (
 			'core/image' !== props.name ||
-			!props.isSelected ||
+			! props.isSelected ||
 			'undefined' === typeof props.attributes.id
 		) {
 			return (
 				<Fragment>
-					<BlockEdit {...props} />
+					<BlockEdit { ...props } />
 				</Fragment>
 			);
 		}
 
 		const smushData = props.attributes.smush;
-		fetchProps(props);
+		fetchProps( props );
 
 		return (
 			<Fragment>
-				<BlockEdit {...props} />
+				<BlockEdit { ...props } />
 				<InspectorControls>
-					<PanelBody title={window.smush_vars.strings.gb.stats}>
-						{smushStats(props.attributes.id, smushData)}
+					<PanelBody title={ window.smush_vars.strings.gb.stats }>
+						{ smushStats( props.attributes.id, smushData ) }
 					</PanelBody>
 				</InspectorControls>
 			</Fragment>
 		);
 	};
-}, 'withInspectorControl');
+}, 'withInspectorControl' );
 
 wp.hooks.addFilter(
 	'editor.BlockEdit',
