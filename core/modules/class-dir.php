@@ -622,6 +622,8 @@ class Dir extends Abstract_Module {
 
 			/**
 			 * Path is an image.
+			 *
+			 * @TODO: The is_dir() check fails directories with spaces.
 			 */
 			if ( ! is_dir( $path ) && ! $this->is_media_library_file( $path ) && ! strpos( $path, '.bak' ) ) {
 				if ( ! $this->is_image( $path ) ) {

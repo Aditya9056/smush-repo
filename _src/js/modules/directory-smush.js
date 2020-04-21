@@ -124,10 +124,17 @@ import Scanner from '../smush/directory-scanner';
 				$.post( ajaxurl, param, function( response ) {
 					window.SUI.closeModal();
 
-					// TODO: check for errors.
-					self.scanner = new Scanner( response.data, 0 );
-					self.showProgressDialog( response.data );
-					self.scanner.scan();
+					if ( response.success ) {
+						self.scanner = new Scanner( response.data, 0 );
+						self.showProgressDialog( response.data );
+						self.scanner.scan();
+					} else {
+						window.SUI.openNotice(
+							'wp-smush-ajax-notice',
+							response.data.message,
+							{ type: 'warning' }
+						);
+					}
 				} );
 			} );
 
