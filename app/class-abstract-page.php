@@ -673,11 +673,6 @@ abstract class Abstract_Page {
 					{
 						type: '<?php echo $message_class; ?>',
 						icon: 'info',
-						dismiss: {
-							show: true,
-							label: '<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>',
-							tooltip: '<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>',
-						},
 					}
 				);
 			});
