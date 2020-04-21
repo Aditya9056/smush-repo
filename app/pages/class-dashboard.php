@@ -904,7 +904,7 @@ class Dashboard extends Abstract_Page {
 		$failed_items   = (int) get_transient( 'wp-smush-dir-scan-failed-items' );
 		$skipped_items  = (int) get_transient( 'wp-smush-dir-scan-skipped-items' );
 		$notice_message = esc_html__( 'Image compression complete.', 'wp-smushit' ) . ' ';
-		$notice_class   = 'sui-notice-error';
+		$notice_class   = 'error';
 
 		$total = $items + $failed_items + $skipped_items;
 
@@ -927,7 +927,7 @@ class Dashboard extends Abstract_Page {
 				),
 				$items
 			);
-			$notice_class = 'sui-notice-success';
+			$notice_class = 'success';
 		} elseif ( 0 <= $skipped_items && 0 === $failed_items ) {
 			$notice_message .= sprintf(
 				/* translators: %1$d - number of skipped images, %2$d - total number of images */
@@ -940,7 +940,7 @@ class Dashboard extends Abstract_Page {
 				$skipped_items,
 				$total
 			);
-			$notice_class = 'sui-notice-success';
+			$notice_class = 'success';
 		} elseif ( 0 === $skipped_items && 0 <= $failed_items ) {
 			$notice_message .= sprintf(
 				/* translators: %1$d - number of failed images, %2$d - total number of images */
@@ -961,7 +961,7 @@ class Dashboard extends Abstract_Page {
 				$total,
 				$failed_items
 			);
-			$notice_class = 'sui-notice-warning';
+			$notice_class = 'warning';
 		}
 
 		// If we have counts, show the notice.
@@ -970,15 +970,25 @@ class Dashboard extends Abstract_Page {
 			delete_transient( 'wp-smush-show-dir-scan-notice' );
 			delete_transient( 'wp-smush-dir-scan-failed-items' );
 			delete_transient( 'wp-smush-dir-scan-skipped-items' );
-
-			$this->view(
-				'notice',
-				array(
-					'classes' => $notice_class,
-					'message' => $notice_message,
-				),
-				'common'
-			);
+			?>
+			<script>
+				document.addEventListener("DOMContentLoaded", function() {
+					window.SUI.openNotice(
+						'wp-smush-ajax-notice',
+						'<p><?php echo $notice_message; ?></p>',
+						{
+							type: '<?php echo $notice_class; ?>',
+							icon: 'info',
+							dismiss: {
+								show: true,
+								label: '<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>',
+								tooltip: '<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>',
+							},
+						}
+					);
+				});
+			</script>
+			<?php
 		}
 	}
 

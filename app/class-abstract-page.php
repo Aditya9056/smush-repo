@@ -7,7 +7,6 @@
 
 namespace Smush\App;
 
-use Smush\Core\Modules\Dir;
 use Smush\Core\Settings;
 use WP_Smush;
 use WPMUDEV_Dashboard;
@@ -115,6 +114,7 @@ abstract class Abstract_Page {
 		add_action( 'admin_notices', array( $this, 'smush_upgrade_notice' ) );
 		add_action( 'admin_notices', array( $this, 'smush_deactivated' ) );
 		add_action( 'network_admin_notices', array( $this, 'smush_deactivated' ) );
+		add_action( 'wp_smush_header_notices', array( $this, 'settings_updated' ) );
 		// Check for any stored API message and show it.
 		add_action( 'wp_smush_header_notices', array( $this, 'show_api_message' ) );
 
@@ -581,7 +581,6 @@ abstract class Abstract_Page {
 			<?php do_action( 'wp_smush_header_notices' ); ?>
 		</div>
 		<?php
-		$this->settings_updated();
 	}
 
 	/**
@@ -625,8 +624,11 @@ abstract class Abstract_Page {
 
 	/**
 	 * Displays a admin notice for settings update.
+	 *
+	 * @TODO: Refactor. This is a weird way to check for settings update.
+	 * @see Settings::save()
 	 */
-	private function settings_updated() {
+	public function settings_updated() {
 		// Check if network-wide settings are enabled, do not show settings updated message.
 		if ( is_multisite() && ! is_network_admin() && ! Settings::can_access( 'bulk' ) ) {
 			return;
@@ -642,7 +644,7 @@ abstract class Abstract_Page {
 		// Default message.
 		$message = esc_html__( 'Your settings have been updated!', 'wp-smushit' );
 		// Notice class.
-		$message_class = ' sui-notice-success';
+		$message_class = 'success';
 
 		if ( 'cdn' === $this->get_current_tab() ) {
 			$cdn = $this->settings->get_setting( WP_SMUSH_PREFIX . 'cdn_status' );
@@ -656,22 +658,31 @@ abstract class Abstract_Page {
 		$smush_count   = is_array( $core->remaining_count ) && $core->remaining_count > 0;
 
 		if ( $smush_count || $resmush_count ) {
-			$message_class = ' sui-notice-warning';
+			$message_class = 'warning';
 			// Show link to bulk smush tab from other tabs.
 			$bulk_smush_link = 'bulk' === $this->get_current_tab() ? '<a href="#" class="wp-smush-trigger-bulk">' : '<a href="' . $this->get_page_url() . '">';
 			/* translators: %1$s - <a>, %2$s - </a> */
 			$message .= ' ' . sprintf( esc_html__( 'You have images that need smushing. %1$sBulk smush now!%2$s', 'wp-smushit' ), $bulk_smush_link, '</a>' );
 		}
-
-		$this->view(
-			'notice',
-			array(
-				'classes' => $message_class,
-				'message' => $message,
-			),
-			'common'
-		);
-
+		?>
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+				window.SUI.openNotice(
+					'wp-smush-ajax-notice',
+					'<p><?php echo $message; ?></p>',
+					{
+						type: '<?php echo $message_class; ?>',
+						icon: 'info',
+						dismiss: {
+							show: true,
+							label: '<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>',
+							tooltip: '<?php esc_html_e( 'Dismiss', 'wp-smushit' ); ?>',
+						},
+					}
+				);
+			});
+		</script>
+		<?php
 		// Remove the option.
 		$this->settings->delete_setting( WP_SMUSH_PREFIX . 'settings_updated' );
 	}
