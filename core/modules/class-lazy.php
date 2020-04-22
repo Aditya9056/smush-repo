@@ -204,7 +204,7 @@ class Lazy extends Abstract_Module {
 		$this->add_masonry_support();
 
 		if ( isset( $this->options['compatibility'] ) && $this->options['compatibility'] ) {
-			wp_add_inline_script( 'smush-lazy-load', "jQuery(document).on('lazyloaded', function(){jQuery(window).trigger('resize');});" );
+			wp_add_inline_script( 'smush-lazy-load', "jQuery(document).on('lazyloaded', function(){window.dispatchEvent(new Event('resize'));});" );
 		}
 	}
 
