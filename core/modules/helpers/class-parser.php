@@ -43,7 +43,7 @@ class Parser {
 	 * @since 3.5.0  Moved from __construct().
 	 */
 	public function init() {
-		if ( is_admin() ) {
+		if ( is_admin() || is_customize_preview() ) {
 			return;
 		}
 
