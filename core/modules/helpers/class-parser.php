@@ -43,7 +43,7 @@ class Parser {
 	 * @since 3.5.0  Moved from __construct().
 	 */
 	public function init() {
-		if ( is_admin() ) {
+		if ( is_admin() || is_customize_preview() ) {
 			return;
 		}
 
@@ -51,7 +51,7 @@ class Parser {
 			return;
 		}
 
-		if ( wp_doing_cron() ) {
+		if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 			return;
 		}
 
@@ -146,6 +146,18 @@ class Parser {
 
 		if ( empty( $images ) ) {
 			return $content;
+		}
+
+		// Try to sort out the duplicate entries.
+		$elements = array_unique( $images[0] );
+		$urls     = array_unique( $images['src'] );
+		if ( count( $elements ) === count( $urls ) ) {
+			$matching         = array_intersect( $elements, $images[0] );
+			$matching_keys    = array_keys( $matching );
+			$images[0]        = array_values( $matching );
+			$images['src']    = array_intersect_key( $urls, $matching_keys );
+			$images['srcset'] = array_intersect_key( $images['srcset'], $matching_keys );
+			$images['type']   = array_intersect_key( $images['type'], $matching_keys );
 		}
 
 		foreach ( $images[0] as $key => $image ) {
@@ -251,6 +263,15 @@ class Parser {
 	 */
 	public function get_images_from_content( $content ) {
 		$images = array();
+
+		/**
+		 * Filter out only <body> content. As this was causing issues with escaped JS strings in <head>.
+		 *
+		 * @since 3.6.2
+		 */
+		if ( preg_match( '/(?=<body).*<\/body>/is', $content, $body ) ) {
+			$content = $body[0];
+		}
 
 		if ( preg_match_all( '/<(?P<type>img|source|iframe)\b(?>\s+(?:src=[\'"](?P<src>[^\'"]*)[\'"]|srcset=[\'"](?P<srcset>[^\'"]*)[\'"])|[^\s>]+|\s+)*>/is', $content, $images ) ) {
 			foreach ( $images as $key => $unused ) {

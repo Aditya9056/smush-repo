@@ -1,6 +1,6 @@
 Plugin Name: WP Smush Pro
 Author: WPMU DEV
-Tested up to: 5.3.2
+Tested up to: 5.4.1
 
 Change Log:
 ----------------------------------------------------------------------

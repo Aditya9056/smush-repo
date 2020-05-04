@@ -1,3 +1,17 @@
+= 3.6.2 =
+
+- New: CDN and lazy load integration with Soliloquy slider
+- Enhance: Native lazy loading disabled by default, added option to enable it
+- Enhance: Lazy load and CDN page parsing
+- Enhance: Summary module layout
+- Enhance: Image resize detection highlighting
+- Fix: Images with relative paths not processing by CDN
+- Fix: Object cache not clearing out stats during Re-Check Images action
+- Fix: Pages with lazy loading showing errors during W3C validation
+- Fix: Multiple noscript tags when lazy loading duplicate images
+- Fix: NextGen Re-Smush UI
+- Fix: Image resize settings not respecting the largest dimension
+
 = 3.6.1 =
 
 - Enhance: Directory Smush image processing
