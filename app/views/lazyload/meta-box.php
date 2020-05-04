@@ -534,38 +534,6 @@ wp_enqueue_style( 'wp-color-picker' );
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">
 			<span class="sui-settings-label">
-				<?php esc_html_e( 'Compatibility', 'wp-smushit' ); ?>
-			</span>
-			<span class="sui-description">
-				<?php esc_html_e( 'Some galleries and layout tools need to know the final image size to render correctly. Because of the way lazy loading delays loading images, you may see issues with these tools. Enable this option to provide better support for these tools.', 'wp-smushit' ); ?>
-			</span>
-		</div>
-		<div class="sui-box-settings-col-2">
-			<div class="sui-form-field">
-				<label for="compatibility" class="sui-toggle">
-					<input
-						type="checkbox"
-						id="compatibility"
-						name="compatibility"
-						aria-labelledby="compatibility-label"
-						aria-describedby="compatibility-description"
-						<?php checked( isset( $settings['compatibility'] ) && $settings['compatibility'] ); ?>
-					/>
-					<span class="sui-toggle-slider" aria-hidden="true"></span>
-					<span id="compatibility-label" class="sui-toggle-label">
-						<?php esc_html_e( 'Enable capability mode', 'wp-smushit' ); ?>
-					</span>
-					<span id="compatibility-description" class="sui-description">
-						<?php esc_html_e( 'This option will help communicate the final size of the image to your layout tools (like Masonry) that need the information to render correctly.', 'wp-smushit' ); ?>
-					</span>
-				</label>
-			</div>
-		</div>
-	</div>
-
-	<div class="sui-box-settings-row">
-		<div class="sui-box-settings-col-1">
-			<span class="sui-settings-label">
 				<?php esc_html_e( 'Native lazy load', 'wp-smushit' ); ?>
 			</span>
 			<span class="sui-description">
