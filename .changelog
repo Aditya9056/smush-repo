@@ -1,3 +1,7 @@
+= 3.6.3 =
+
+Fix: CDN auto resize option causing issues with images
+
 = 3.6.2 =
 
 - New: CDN and lazy load integration with Soliloquy slider

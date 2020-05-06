@@ -148,18 +148,6 @@ class Parser {
 			return $content;
 		}
 
-		// Try to sort out the duplicate entries.
-		$elements = array_unique( $images[0] );
-		$urls     = array_unique( $images['src'] );
-		if ( count( $elements ) === count( $urls ) ) {
-			$matching         = array_intersect( $elements, $images[0] );
-			$matching_keys    = array_keys( $matching );
-			$images[0]        = array_values( $matching );
-			$images['src']    = array_intersect_key( $urls, $matching_keys );
-			$images['srcset'] = array_intersect_key( $images['srcset'], $matching_keys );
-			$images['type']   = array_intersect_key( $images['type'], $matching_keys );
-		}
-
 		foreach ( $images[0] as $key => $image ) {
 			$img_src   = $images['src'][ $key ];
 			$new_image = $image;
