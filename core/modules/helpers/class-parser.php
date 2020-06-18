@@ -119,6 +119,10 @@ class Parser {
 			return $content;
 		}
 
+        if( is_customize_preview() ){
+            return $content;
+        }
+
 		if ( empty( $content ) ) {
 			return $content;
 		}
