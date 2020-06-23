@@ -650,6 +650,7 @@ class Settings {
 			'exclude-classes' => FILTER_SANITIZE_STRING,
 			'footer'          => FILTER_VALIDATE_BOOLEAN,
 			'native'          => FILTER_VALIDATE_BOOLEAN,
+			'noscript'        => FILTER_VALIDATE_BOOLEAN,
 		);
 
 		$settings = filter_input_array( INPUT_POST, $args );
