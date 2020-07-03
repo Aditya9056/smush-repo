@@ -305,13 +305,13 @@ class Parser {
 		 */
 		$images['img_url'] = array_map(
 			function ( $image ) {
-				// Remove the starting &quot;.
-				if ( '&quot;' === substr( $image, 0, 6 ) ) {
+				// Remove the starting &quot;. Remove it with html entity-name(&quot;) and entity-number(&#034;).
+				if ( '&quot;' || '&#034;' || '&apos;' || '&#039;' === substr( $image, 0, 6 ) ) {
 					$image = substr( $image, 6 );
 				}
 
-				// Remove the ending &quot;.
-				if ( '&quot;' === substr( $image, -6 ) ) {
+				// Remove the ending &quot;.  Remove it with html entity entity-name(&quot;) and entity-number(&#034;).
+				if ( '&quot;' || '&#034;' || '&apos;' || '&#039;' === substr( $image, -6 ) ) {
 					$image = substr( $image, 0, -6 );
 				}
 
