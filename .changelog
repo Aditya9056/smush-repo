@@ -1,6 +1,7 @@
 = 3.7.0 =
 
 - Enhance: Compatibility with S3-Uploads plugin
+- Enhance: Disable CDN and Lazy load modules on customizer pages
 - Fix: Fix errors detecting mime type of remote streams
 - Fix: Lazy loading not working with images that have GET parameters
 
