@@ -312,8 +312,9 @@ class Lazy extends Abstract_Module {
 
 		$is_gravatar = false !== strpos( $src, 'gravatar.com' );
 
-		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
-		$ext = 'jpg' === $ext ? 'jpeg' : $ext;
+		$path = wp_parse_url( $src, PHP_URL_PATH );
+		$ext  = strtolower( pathinfo( $path, PATHINFO_EXTENSION ) );
+		$ext  = 'jpg' === $ext ? 'jpeg' : $ext;
 
 		// If not a supported image in src or not an iframe - skip.
 		$iframe = 'iframe' === substr( $image, 1, 6 );

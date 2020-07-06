@@ -1,3 +1,7 @@
+= 3.7.0 =
+
+- Fix: Lazy loading not working with images that have GET parameters
+
 = 3.6.3 =
 
 Fix: CDN auto resize option causing issues with images
