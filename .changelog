@@ -3,6 +3,7 @@
 - New: Option to disable noscript in lazy load
 - Enhance: Compatibility with S3-Uploads plugin
 - Enhance: Disable CDN and lazy load modules on customizer pages
+- Enhance: CDN parsing of background images
 - Fix: Fix errors detecting mime type of remote streams
 - Fix: Lazy loading not working with images that have GET parameters
 - Fix: Skip iframes with invalid URLs from lazy loading

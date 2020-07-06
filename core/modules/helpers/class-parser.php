@@ -309,13 +309,16 @@ class Parser {
 		 */
 		$images['img_url'] = array_map(
 			function ( $image ) {
-				// Remove the starting &quot;.
-				if ( '&quot;' === substr( $image, 0, 6 ) ) {
+				// Quote entities.
+				$quotes = apply_filters( 'wp_smush_background_image_quotes', array( '&quot;', '&#034;', '&#039;', '&apos;' ) );
+
+				// Remove the starting quotes.
+				if ( in_array( substr( $image, 0, 6 ), $quotes, true ) ) {
 					$image = substr( $image, 6 );
 				}
 
-				// Remove the ending &quot;.
-				if ( '&quot;' === substr( $image, -6 ) ) {
+				// Remove the ending quotes.
+				if ( in_array( substr( $image, -6 ), $quotes, true ) ) {
 					$image = substr( $image, 0, -6 );
 				}
 
