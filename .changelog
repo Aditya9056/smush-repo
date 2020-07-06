@@ -1,3 +1,12 @@
+= 3.7.0 =
+
+- New: Option to disable noscript in lazy load
+- Enhance: Compatibility with S3-Uploads plugin
+- Enhance: Disable CDN and lazy load modules on customizer pages
+- Fix: Fix errors detecting mime type of remote streams
+- Fix: Lazy loading not working with images that have GET parameters
+- Fix: W3C validation warnings with CDN
+
 = 3.6.3 =
 
 Fix: CDN auto resize option causing issues with images

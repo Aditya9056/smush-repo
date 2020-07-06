@@ -312,8 +312,9 @@ class Lazy extends Abstract_Module {
 
 		$is_gravatar = false !== strpos( $src, 'gravatar.com' );
 
-		$ext = strtolower( pathinfo( $src, PATHINFO_EXTENSION ) );
-		$ext = 'jpg' === $ext ? 'jpeg' : $ext;
+		$path = wp_parse_url( $src, PHP_URL_PATH );
+		$ext  = strtolower( pathinfo( $path, PATHINFO_EXTENSION ) );
+		$ext  = 'jpg' === $ext ? 'jpeg' : $ext;
 
 		// If not a supported image in src or not an iframe - skip.
 		$iframe = 'iframe' === substr( $image, 1, 6 );
@@ -394,7 +395,7 @@ class Lazy extends Abstract_Module {
 		Helpers\Parser::add_attribute( $new_image, 'src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
 
 		// Use noscript element in HTML to load elements normally when JavaScript is disabled in browser.
-		if ( ! $iframe ) {
+		if ( ! $iframe && ! $this->options['noscript'] ) {
 			$new_image .= '<noscript>' . $image . '</noscript>';
 		}
 
