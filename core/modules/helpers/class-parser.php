@@ -119,7 +119,7 @@ class Parser {
 			return $content;
 		}
 
-        if( is_customize_preview() ){
+        if ( is_customize_preview() ) {
             return $content;
         }
 
