@@ -5,6 +5,7 @@
 - Enhance: Disable CDN and lazy load modules on customizer pages
 - Fix: Fix errors detecting mime type of remote streams
 - Fix: Lazy loading not working with images that have GET parameters
+- Fix: Skip iframes with invalid URLs from lazy loading
 - Fix: W3C validation warnings with CDN
 
 = 3.6.3 =
