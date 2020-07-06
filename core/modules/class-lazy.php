@@ -344,6 +344,11 @@ class Lazy extends Abstract_Module {
 			return $image;
 		}
 
+		// Check if the iframe URL is valid if not skip it from lazy load.
+		if ( $iframe && esc_url_raw( $src ) !== $src ) {
+			return $image;
+		}
+
 		if ( $this->has_excluded_class_or_id( $image ) ) {
 			return $image;
 		}
