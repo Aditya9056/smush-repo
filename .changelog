@@ -1,5 +1,7 @@
 = 3.7.0 =
 
+- Enhance: Compatibility with S3-Uploads plugin
+- Fix: Fix errors detecting mime type of remote streams
 - Fix: Lazy loading not working with images that have GET parameters
 
 = 3.6.3 =
