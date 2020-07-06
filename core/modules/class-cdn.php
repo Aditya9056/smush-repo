@@ -1289,6 +1289,9 @@ class CDN extends Abstract_Module {
 		foreach ( $sources as $source ) {
 			$srcset .= str_replace( ' ', '%20', $source['url'] ) . ' ' . $source['value'] . $source['descriptor'] . ', ';
 		}
+		// Remove extra space and comma if only one source is present.
+		$srcset = rtrim( $srcset );
+		$srcset = rtrim( $srcset, ',' );
 
 		return $srcset;
 	}
