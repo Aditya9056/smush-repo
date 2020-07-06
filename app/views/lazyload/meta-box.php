@@ -597,7 +597,7 @@ wp_enqueue_style( 'wp-color-picker' );
 					</span>
 					<span id="noscript-description" class="sui-description">
 						<?php
-						/* translators: %1$s - opening a tag, %2$s - closing a tag */
+							/* translators: %1$s - opening a tag, %2$s - closing a tag */
 							esc_html_e( 'Sometimes W3C HTML5 Validation may give error due to No Script.', 'wp-smushit' );
 						?>
 					</span>
