@@ -113,7 +113,7 @@ class Stats {
 		$this->dir_stats = Modules\Dir::should_continue() ? $this->mod->dir->total_stats() : array();
 
 		// Set Attachment IDs, and total count.
-		$this->attachments = $this->get_media_attachments();
+		$this->attachments = $this->get_media_attachments( $force_update );
 
 		// Set total count.
 		$this->total_count = ! empty( $this->attachments ) && is_array( $this->attachments ) ? count( $this->attachments ) : 0;
