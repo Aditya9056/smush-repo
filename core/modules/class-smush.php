@@ -74,6 +74,13 @@ class Smush extends Abstract_Module {
 
 		// Register function for sending unsmushed image count to hub.
 		add_filter( 'wdp_register_hub_action', array( $this, 'smush_stats' ) );
+
+		// Fix cache issue with WPMU dev hosting.
+		add_action( 'wp_generate_attachment_metadata', function() {
+			if ( ! defined( 'WP_SMUSH_DISABLE_STATS' ) || ! WP_SMUSH_DISABLE_STATS ) {
+				$this->get_media_attachments( true );
+			}
+		} );
 	}
 
 	/**
